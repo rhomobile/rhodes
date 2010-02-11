@@ -25,6 +25,31 @@ typedef bool boolean;
 
 #define null 0
 
+inline String trimRight(const String& str)
+{
+    // trim trailing spaces
+    size_t endpos = str.find_last_not_of(" \t");
+    if( String::npos != endpos )
+        return str.substr( 0, endpos+1 );
+
+    return str;
+}
+
+inline String trimLeft(const String& str)
+{
+    size_t startpos = str.find_first_not_of(" \t");
+    if( String::npos != startpos )
+        return str.substr( startpos );
+
+    return str;
+}
+
+inline String trim(const String& str)
+{
+    String strRes = trimLeft(str);
+    return trimRight(strRes);
+}
+
 template<class Type>
 class Vector : public std::vector<Type>{
 public:
@@ -38,6 +63,23 @@ public:
     boolean isEmpty()
     {
         return std::vector<Type>::size()==0;
+    }
+
+    void setElementAt(const Type& item, typename std::vector<Type>::size_type i)
+    {
+        (*this)[i] = item;
+    }
+
+    void removeElement(const Type& item)
+    {
+        for (typename std::vector<Type>::iterator it = Vector<Type>::begin();  it !=Vector<Type>::end();  )
+        {
+            if ( *it == item )
+            {
+                it = erase(it);    
+            }else
+                it++;
+        }
     }
 
     typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
@@ -57,6 +99,20 @@ public:
         
         Vector<Type>::clear();
     }
+
+    void removeElement(const Type& item)
+    {
+        for (typename std::vector<Type>::iterator it = Vector<Type>::begin();  it !=Vector<Type>::end();  )
+        {
+            if ( *it == item )
+            {
+                delete *it;
+                it = erase(it);    
+            }else
+                it++;
+        }
+    }
+
 };
 
 template<class Type>

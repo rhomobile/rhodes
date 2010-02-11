@@ -361,31 +361,50 @@ bool CHttpServer::run()
     return true;
 }
 
+typedef Vector<char> ByteVector;
+
+bool receive_request_test(ByteVector &request, int attempt)
+{
+	String data;
+	switch (attempt) {
+		case 0:
+			data += "GET / HTTP/1.1\r\n";
+			data += "Accept: */*\r\n";
+			break;
+		case 1:
+			break;
+		case 2:
+			data += "User-Agent: Test\r\n";
+			data += "Host";
+			break;
+		case 3:
+			data += ": localhost\r\n";
+			data += "Content-Length: 4\r\n";
+			break;
+		case 4:
+			data += "\r\n";
+			break;
+		case 5:
+			break;
+		case 6:
+			data += "12";
+			break;
+		case 7:
+			data += "34";
+			break;
+		default:
+			return false;
+	}
+	
+	request.insert(request.end(), data.begin(), data.end());
+	return true;
+}
+
 bool CHttpServer::receive_request(ByteVector &request)
 {
-    request.clear();
+	if (verbose) RAWTRACE("Receiving request...");
 
-    if (verbose) RAWTRACE("Receiving request...");
-    
-    // First of all, make socket non-blocking
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
-	unsigned long optval = 1;
-	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
-		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
-		return false;
-	}
-#else
-    int flags = fcntl(m_sock, F_GETFL);
-    if (flags == -1) {
-        RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
-        return false;
-    }
-    if (fcntl(m_sock, F_SETFL, flags | O_NONBLOCK) == -1) {
-        RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", errno);
-        return false;
-    }
-#endif
-    
+	ByteVector r;
     char buf[BUF_SIZE];
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
@@ -395,9 +414,12 @@ bool CHttpServer::receive_request(ByteVector &request)
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (e == EINTR)
                 continue;
+#else
+			if (e == WSAEINTR)
+				continue;
 #endif
             if (e == EAGAIN) {
-                if (!request.empty())
+                if (!r.empty())
                     break;
                 
                 fd_set fds;
@@ -417,13 +439,13 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (verbose) RAWTRACE1("Actually read %d bytes", n);
-        request.insert(request.end(), &buf[0], &buf[0] + n);
+        r.insert(r.end(), &buf[0], &buf[0] + n);
     }
     
-    if (request.empty())
-        return false;
+    if (r.empty())
+        return true;
     
-    request.push_back('\0');
+	request.insert(request.end(), r.begin(), r.end());
     RAWTRACE1("Received request:\n%s", &request[0]);
     return true;
 }
@@ -532,21 +554,33 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
 bool CHttpServer::process(SOCKET sock)
 {
     m_sock = sock;
+
+	// First of all, make socket non-blocking
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+	unsigned long optval = 1;
+	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
+		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
+		return false;
+	}
+#else
+	int flags = fcntl(m_sock, F_GETFL);
+	if (flags == -1) {
+		RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
+		return false;
+	}
+	if (fcntl(m_sock, F_SETFL, flags | O_NONBLOCK) == -1) {
+		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", errno);
+		return false;
+	}
+#endif
+
     // Read request from socket
     ByteVector request;
-    if (!receive_request(request))
-        return false;
-    
-    if (request.empty() || (request.size() == 3 && memcmp(&request[0], "\r\n", 3) == 0)) {
-        RAWTRACE("This is empty request, skip it");
-        return true;
-    }
-    
-    if (verbose) RAWTRACE("Parsing request...");
+
     String method, uri, query;
     HeaderList headers;
     String body;
-    if (!parse_request(request, method, uri, query, headers, body)) {
+    if (!parse_request(method, uri, query, headers, body)) {
         RAWLOG_ERROR("Parsing error");
         send_response(create_response("500 Internal Error"));
         return false;
@@ -555,44 +589,76 @@ bool CHttpServer::process(SOCKET sock)
     return decide(method, uri, query, headers, body);
 }
 
-bool CHttpServer::parse_request(ByteVector &request, String &method, String &uri,
-                                String &query, HeaderList &headers, String &body)
+bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body)
 {
     method.clear();
     uri.clear();
     headers.clear();
     body.clear();
-    
-    char *s = &request[0];
-    for(;;) {
-        char *e;
-        for(e = s; *e != '\r' && *e != '\0'; ++e);
-        if (*e == '\0' || *(e + 1) != '\n')
-            return false;
-        *e = 0;
-        
-        String line = s;
-        s = e + 2;
-        
-        if (!line.empty()) {
-            if (uri.empty()) {
-                // Parse start line
-                if (!parse_startline(line, method, uri, query) || uri.empty())
-                    return false;
-            }
-            else {
-                Header hdr;
-                if (!parse_header(line, hdr) || hdr.name.empty())
-                    return false;
-                headers.push_back(hdr);
-            }
-        }
-        else {
-            // Stop parsing
-            body = s;
-            return true;
-        }
-    }
+
+	size_t s = 0;
+	ByteVector request;
+
+	bool parsing_headers = true;
+	size_t content_length = 0;
+
+//	int attempt = 0;
+//#define receive_request(request) receive_request_test(request, attempt++)
+	for (;;) {
+		if (!receive_request(request))
+			return false;
+
+		size_t lim = request.size();
+		while (parsing_headers) {
+			size_t e;
+			for(e = s; e < lim && request[e] != '\r'; ++e);
+			if (e >= lim - 1) {
+				// Incomplete line, will read further
+				break;
+			}
+			if (request[e + 1] != '\n') {
+				// Wrong request, should be '\r\n'
+				return false;
+			}
+	        
+			String line(&request[s], e - s);
+			s = e + 2;
+	        
+			if (line.empty()) {
+				parsing_headers = false;
+				break;
+			}
+			
+			if (uri.empty()) {
+				// Parse start line
+				if (!parse_startline(line, method, uri, query) || uri.empty())
+					return false;
+			}
+			else {
+				Header hdr;
+				if (!parse_header(line, hdr) || hdr.name.empty())
+					return false;
+				headers.push_back(hdr);
+				
+				String low;
+				std::transform(hdr.name.begin(), hdr.name.end(), std::back_inserter(low), &::tolower);
+				if (low == "content-length") {
+					content_length = ::atoi(hdr.value.c_str());
+				}
+			}
+		}
+
+		if (!parsing_headers) {
+			if (content_length == 0)
+				return true;
+
+			if (lim - s < content_length)
+				continue;
+
+			body.assign(&request[s], &request[s] + content_length);
+			return true;
+		}
+	}
 }
 
 bool CHttpServer::parse_startline(String const &line, String &method, String &uri, String &query)

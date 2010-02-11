@@ -245,7 +245,9 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
+#ifndef _WIN32_WCE
 #include <errno.h>
+#endif //_WIN32_WCE
 
 #ifdef __TANDEM /* for nsr-tandem-nsk systems */
 #include <floss.h>

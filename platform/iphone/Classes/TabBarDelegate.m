@@ -31,6 +31,15 @@
 	[super dealloc];
 }
 
+- (int)getSelectedIndex {
+    int index = tabBarController.selectedIndex;
+    int count = [barItems count];
+    if (index >= count) index = count - 1;
+    if (index < 0) index = 0;
+    tabBarController.selectedIndex = index;
+    return index;
+}
+
 - (void)loadTabBarItemFirstPage:(BarItem*)item {
 	if (item.loaded == NO || item.reload == YES) {
         [item.viewController navigateRedirect:item.location];
@@ -39,7 +48,7 @@
 }
 
 - (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url {
-    int index = self.tabBarController.selectedIndex;
+    int index = [self getSelectedIndex];
     BarItem *activeBar = (BarItem*)[barItems objectAtIndex:index];
     if (activeBar == item || item.loaded == YES)
         [item.viewController navigateRedirect:url];
@@ -48,7 +57,7 @@
 }
 
 - (void)refresh:(BarItem*)item {
-    int index = self.tabBarController.selectedIndex;
+    int index = [self getSelectedIndex];
     BarItem *activeBar = (BarItem*)[barItems objectAtIndex:index];
     if (activeBar == item || item.loaded == YES)
         [item.viewController refresh];
@@ -120,7 +129,7 @@
 	if(self.tabBarController.selectedIndex > barItems.count) {
 		[NSException raise:@"Exception" format:@"Rhodes currently only supports up to 5 tabs.  Please change your tabs array and try again."];
 	} else {
-        int index = self.tabBarController.selectedIndex;
+        int index = [self getSelectedIndex];
 		[self loadTabBarItemFirstPage:(BarItem*)[barItems objectAtIndex:index]];
 	}
 	self.activeTab = self.tabBarController.selectedIndex;
@@ -128,7 +137,8 @@
 
 - (void)switchTab:(int)index {
     self.tabBarController.selectedIndex = index;
-    self.activeTab = index;
+    self.tabBarController.selectedIndex = [self getSelectedIndex];
+    self.activeTab = self.tabBarController.selectedIndex;
 }
 
 @end

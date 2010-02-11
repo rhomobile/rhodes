@@ -12,28 +12,26 @@ IMPLEMENT_LOGCLASS(CNetRequest,"Net");
 
 INetResponse* CNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
-    return doRequest("GET",strUrl,String(),oSession);
+    return doRequest("GET",strUrl,String(),oSession,null);
 }
 
 INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    return doRequest("POST",strUrl,strBody,oSession);
+    return doRequest("POST",strUrl,strBody,oSession,null);
 }
 
 INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    INetResponse* resp = doRequest("POST",strUrl,strBody,oSession);
+    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,null);
+    CNetResponseImpl* resp = oImpl.sendString(strBody);
+
     if ( resp && resp->isOK() )
-        ((CNetResponseImpl*)resp)->getRawData() = "exists";
+    {
+        ((CNetResponseImpl*)resp)->getRawData() = oImpl.makeRhoCookie();
+        //((CNetResponseImpl*)resp)->getRawData() = "exists";
+    }
 
     return resp;
-}
-
-//if strUrl.length() == 0 delete all cookies if possible
-void CNetRequest::deleteCookie(const String& strUrl)
-{
-    if ( strUrl.length() > 0 )
-        ::InternetSetCookieA(strUrl.c_str(), NULL, "");
 }
 
 String CNetRequest::resolveUrl(const String& strUrl)
@@ -45,7 +43,7 @@ void CNetRequest::cancel()
 {
     m_bCancel = true;
     if ( m_pCurNetRequestImpl != null )
-        m_pCurNetRequestImpl->close();
+        m_pCurNetRequestImpl->cancel();
 }
 
 INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
@@ -65,7 +63,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
         if ( pResp )
             delete pResp;
 
-        CNetRequestImpl oImpl(this, "POST",strUrl);
+        CNetRequestImpl oImpl(this, "POST",strUrl,oSession,null);
         pResp = oImpl.sendStream(oFile.getInputStream());
         nTry++;
 
@@ -91,7 +89,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
         if ( pResp )
             delete pResp;
 
-        CNetRequestImpl oImpl(this, "GET",strUrl);
+        CNetRequestImpl oImpl(this, "GET",strUrl,oSession,null);
         pResp = oImpl.downloadFile(oFile);
         nTry++;
 
@@ -100,7 +98,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
     return pResp;
 }
 
-INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession )
+INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
     int nTry = 0;
     m_bCancel = false;
@@ -110,7 +108,7 @@ INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, 
         if ( pResp )
             delete pResp;
 
-        CNetRequestImpl oImpl(this, method,strUrl);
+        CNetRequestImpl oImpl(this, method,strUrl,oSession,pHeaders);
         pResp = oImpl.sendString(strBody);
         nTry++;
 
