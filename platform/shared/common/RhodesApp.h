@@ -46,6 +46,7 @@ private:
     common::CMutex m_mxViewMenuItems;
     Hashtable<String,String> m_hashViewMenuItems;
     String m_strAppBackUrl;
+    Vector<unsigned long> m_arCallbackObjects;
 
 public:
     ~CRhodesApp(void);
@@ -80,6 +81,10 @@ public:
     void addViewMenuItem( const String& strLabel, const String& strLink );
 
     boolean sendLog();
+
+    String addCallbackObject(unsigned long valObject, String strName);
+    void delCallbackObject(unsigned long valObject);
+    unsigned long getCallbackObject(int nIndex);
 private:
     virtual void run();
 
@@ -128,6 +133,7 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
     const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 void rho_rhodesapp_callAppActiveCallback();
+unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();

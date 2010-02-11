@@ -2,55 +2,81 @@ package com.rho.location;
 
 import javax.microedition.location.*;
 
+import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhoThread;
 
-public class GeoLocationAsync {
+public class GeoLocationAsync extends RhoThread implements IGeoLocationImpl {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("GeoLocationAsync");
 
 	private LocationProvider m_lp = null;
-	private String m_strLog = "";
 	private double m_lat = 0.0;
 	private double m_lon = 0.0;
 	private boolean m_bDetermined = false;
 	private long m_nDeterminedTime = 0;
 	private LocationListenerImpl m_locListener;
+	static private Object sync = new Object();
+	//private int m_nResetTimeoutSec = 2; 
+	private int m_nPingTimeoutSec;
+	private boolean m_bInCallback = false;
 	
 	private final String errorStrDontSupport = "Location API doesn't support";
-	//private final String errorStrLocationException= "Location could not be determined";
+	private final String errorStrLocationException= "Location could not be determined";
 	
-	class LocationListenerImpl implements LocationListener{
-
+	static class LocationListenerImpl implements LocationListener{
+        
+		GeoLocationAsync m_parent;
+		LocationListenerImpl(GeoLocationAsync parent)
+		{
+			m_parent = parent;
+		}
+		
 		public void locationUpdated(LocationProvider provider, Location location) {
-			if ( location == null )
-			{
-				LOG.TRACE("GetLocation - locationUpdated: location is null.");
-				return;
-			}
-			
-			if( !location.isValid() )
-			{
-				LOG.TRACE("GetLocation - locationUpdated: location invalid.");
-				return;
-			}
-			
-			java.util.Date now = new java.util.Date();
-			m_nDeterminedTime = now.getTime();
-			
-			Coordinates coord = location.getQualifiedCoordinates();
-	
-			if(coord != null ) {
-				synchronized (this) {
-				  m_lat = coord.getLatitude();
-				  m_lon = coord.getLongitude();
-				  m_bDetermined = true;
+			m_parent.m_bInCallback = true;
+			try{
+				if ( location == null )
+				{
+					LOG.TRACE("GetLocation - locationUpdated: location is null.");
+					return;
 				}
-				LOG.TRACE("GetLocation - latitude: " + Double.toString(m_lat));
-				LOG.TRACE("GetLocation - longitude: " + Double.toString(m_lon));
-			}else
-				LOG.TRACE("GetLocation - getQualifiedCoordinates: return null.");
+				
+				if( !location.isValid() )
+				{
+					LOG.TRACE("GetLocation - locationUpdated: location invalid.");
+					return;
+				}
+				
+				java.util.Date now = new java.util.Date();
+				
+				synchronized(m_parent.sync)
+				{
+					m_parent.m_nDeterminedTime = now.getTime();
+					
+					Coordinates coord = location.getQualifiedCoordinates();
 			
+					if(coord != null ) 
+					{
+						m_parent.m_lat = coord.getLatitude();
+						m_parent.m_lon = coord.getLongitude();
+						m_parent.m_bDetermined = true;
+						
+						LOG.TRACE("GetLocation - latitude: " + Double.toString(m_parent.m_lat));
+						LOG.TRACE("GetLocation - longitude: " + Double.toString(m_parent.m_lon));
+					}else
+						LOG.TRACE("GetLocation - getQualifiedCoordinates: return null.");
+				}
+			}catch(Exception exc)
+			{
+				LOG.ERROR("locationUpdated failed.", exc);
+			}catch(Throwable exc)
+			{
+				LOG.ERROR("locationUpdated crashed.", exc);
+			}
+			
+			m_parent.m_bInCallback = false;
 		}
 
 		public void providerStateChanged(LocationProvider provider, int newState) {
@@ -67,72 +93,141 @@ public class GeoLocationAsync {
 	}
 	
 	public GeoLocationAsync() {
-		//Criteria cr= new Criteria();
-		//cr.setHorizontalAccuracy(HORIZONTAL_ACCURANCE);
-		
-		try{
-			LOG.TRACE("GeoLocationImpl constructor");
+		super(new RhoClassFactory());
+		start(epLow);
+	}
+	
+	public void run()
+	{
+		LOG.INFO( "Starting main routine..." );
+
+		/*try{
 			m_lp = LocationProvider.getInstance(null);
-			checkAlive();
 		}catch(LocationException ex)
 		{
-			LOG.TRACE(errorStrDontSupport + ex.getMessage());
+			LOG.INFO(errorStrDontSupport + ex.getMessage());
+		}*/
+		/*try{
+			Location loc = LocationProvider.getLastKnownLocation();
+			if ( loc != null )
+			{
+				Coordinates coord = loc.getQualifiedCoordinates();
+				if ( coord != null )
+					LOG.TRACE("getLastKnownLocation - latitude: " + Double.toString(coord.getLatitude()) + "; long: " + Double.toString(coord.getLongitude()));
+			}
+		}catch(Exception exc)
+		{
+			LOG.ERROR("getLastKnownLocation failed.", exc);
+		}*/
+		
+		m_nPingTimeoutSec = RhoConf.getInstance().getInt("gps_ping_timeout_sec");
+		if (m_nPingTimeoutSec==0)
+			m_nPingTimeoutSec = 10;
+		
+		while(!m_bStop)
+		{
+			wait( 10*10000);
+			
+			if (!m_bStop)
+				checkAlive();
 		}
+
+		synchronized(sync)
+		{
+			try{
+				while(m_bInCallback)
+					sync.wait(100);
+			}catch(InterruptedException exc)
+			{}
+			
+			if ( m_lp != null ){
+				m_lp.setLocationListener(null, 0, 0, 0);
+				m_lp.reset();
+			}
+		}
+		
+		LOG.INFO( "End main routine..." );
 	}
 
 	private void checkAlive(){
 		java.util.Date now = new java.util.Date();
 		long nNow = now.getTime();
-		if ( m_nDeterminedTime == 0 || ((nNow - m_nDeterminedTime)>1000*60*5)){ //5 minutes
-			if ( m_lp != null ){
-				if ( m_locListener != null )
-				{
-					LOG.TRACE("Reset LocationListener");
-					m_lp.reset();
-					m_lp.setLocationListener(null, -1,1, 1 	);
-					m_locListener = null;
-				}
+		synchronized(sync)
+		{
+			boolean bReset = !m_bInCallback;//m_nDeterminedTime == 0 || ((nNow - m_nDeterminedTime)>1000*m_nResetTimeoutSec);
+			
+			if ( bReset ){
 				
-				m_locListener = new LocationListenerImpl();
-				LOG.TRACE("setLocationListener");
-				m_lp.setLocationListener( m_locListener, 1, 1, 1);
-				m_nDeterminedTime = nNow;
+				try {
+					if ( m_lp != null ){
+						if ( m_locListener != null )
+						{
+							LOG.TRACE("Reset LocationListener");
+							m_lp.reset();
+							m_lp.setLocationListener(null, 0,0, 0 	);
+							m_locListener = null;
+						}
+						
+						m_lp = null;
+					}
+					
+					m_lp = LocationProvider.getInstance(null);
+					if ( m_lp != null ){
+						m_locListener = new LocationListenerImpl(this);
+						LOG.TRACE("setLocationListener");
+						m_lp.setLocationListener( m_locListener, 
+								m_nDeterminedTime == 0 ? 1 : m_nPingTimeoutSec, -1, -1);
+						m_nDeterminedTime = nNow;
+					}
+				}catch(Exception exc)
+				{
+					if ( m_lp != null )
+						LOG.INFO(errorStrLocationException + exc.getMessage());
+					else	
+						LOG.INFO(errorStrDontSupport + exc.getMessage());
+				}
 			}
 		}
 	}
 	
-	public synchronized double GetLatitude(){
-		checkAlive();
-		return m_lat;
-	}
-	
-	public synchronized double GetLongitude(){
-		checkAlive();
-		return m_lon;
-	}
-	
-	public synchronized boolean isStarted(){
-		checkAlive();
-		return m_lp != null;
-	}
-
-	public synchronized String getLog(){
-		return m_strLog;
-	}
-	
-	public synchronized boolean isKnownPosition(){
-		checkAlive();
-		return m_bDetermined;
-	}
-	
-	public synchronized void quit() {
-		if ( m_lp != null ){
-			m_lp.setLocationListener(null, 0, 0, 0);
-			m_lp.reset();
+	public double GetLatitude(){
+		//stopWait();
+		synchronized(sync)
+		{
+			return m_lat;
 		}
 	}
 	
+	public double GetLongitude(){
+		//stopWait();
+		synchronized(sync)
+		{
+			return m_lon;
+		}
+	}
+	
+	public boolean isStarted(){
+		//stopWait();
+		synchronized(sync)
+		{
+			return m_lp != null;
+		}
+	}
+
+	public boolean isKnownPosition(){
+		//stopWait();
+		synchronized(sync)
+		{
+			return m_bDetermined;
+		}
+	}
+	
+	public void quit() {
+		this.stop(2);
+	}
+	
 	public void wakeUp() {
+		stopWait();
 	}
 	
 }

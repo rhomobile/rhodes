@@ -468,7 +468,7 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
         rho_net_impl_network_indicator(1);
 
         String result;
-        curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, session, result);
+        curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, "", session, result);
 
         curl_httppost *post = NULL, *last = NULL;
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
@@ -546,6 +546,12 @@ INetResponse* CURLNetRequest::pushData(const String& strUrl, const String& strBo
     return doRequestTry("POST", strUrl, strBody, &CURLNetRequest::request, oSession );
 }
 
+INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
+{
+    //TODO: doRequest - pHeaders
+    return doRequestTry(method, strUrl, strBody, &CURLNetRequest::request, oSession );
+}
+
 INetResponse* CURLNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
     INetResponse* resp = doRequestTry("POST", strUrl, strBody, &CURLNetRequest::requestCookies, oSession );
@@ -596,11 +602,6 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
     return new CURLNetResponseImpl(response,nRespCode);
-}
-
-void CURLNetRequest::deleteCookie(const String& strUrl)
-{
-    // Not implemented
 }
 
 String CURLNetRequest::resolveUrl(const String& strUrl)

@@ -3,6 +3,8 @@
 #include "NetRequestImpl.h"
 #include "common/RhoFile.h"
 #include "NetRequest.h"
+#include "common/StringConverter.h"
+#include "net/URI.h"
 
 #if defined(_WIN32_WCE)
 #include <connmgr.h>
@@ -22,10 +24,12 @@ static boolean isLocalHost(const char* szUrl)
         strnicmp(szUrl, "http://127.0.0.0", strlen("http://127.0.0.0")) == 0;
 }
 
-CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl)
+CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     m_pParent = pParent;
     m_pParent->m_pCurNetRequestImpl = this;
+    m_pHeaders = pHeaders;
+    m_bCancel = false;
 
     pszErrFunction = NULL;
     hInet = NULL, hConnection = NULL, hRequest = NULL;
@@ -75,12 +79,42 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
 
         strReqUrlW = uri.lpszUrlPath;
         strReqUrlW += uri.lpszExtraInfo;
-        hRequest = HttpOpenRequest( hConnection, CAtlStringW(method), strReqUrlW, NULL, NULL, NULL, 
-          INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE, NULL );
+        DWORD dwFlags = INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES;
+        if ( uri.lpszScheme && wcsicmp(uri.lpszScheme,L"https")==0)
+            dwFlags |= INTERNET_FLAG_SECURE;
+
+        hRequest = HttpOpenRequest( hConnection, CAtlStringW(method), strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
         if ( !hRequest ) 
         {
             pszErrFunction = L"HttpOpenRequest";
             break;
+        }
+
+        if ( pHeaders && pHeaders->size() > 0 )
+        {
+            String strHeaders;
+
+            for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
+                strHeaders += it->first + ":" + it->second + "\r\n";
+
+            if ( !HttpAddRequestHeaders( hRequest, common::convertToStringW(strHeaders).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+            {
+                pszErrFunction = L"HttpAddRequestHeaders";
+                break;
+            }
+        }
+
+        if (oSession!=null)
+        {
+			String strSession = oSession->getSession();
+			LOG(INFO) + "Cookie : " + strSession;
+			if ( strSession.length() > 0 )
+            {
+                String strHeader = "Cookie: " + strSession + "\r\n";
+
+                if ( !HttpAddRequestHeaders( hRequest, common::convertToStringW(strHeader).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+                    pszErrFunction = L"HttpAddRequestHeaders";
+            }
         }
 
     }while(0);
@@ -95,11 +129,14 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
         if ( isError() )
             break;
 
-        CAtlStringW strHeaders = L"Content-Type: application/x-www-form-urlencoded\r\n";
-        if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+        if ( strBody.length() > 0 )
         {
-            pszErrFunction = L"HttpAddRequestHeaders";
-            break;
+            CAtlStringW strHeaders = L"Content-Type: application/x-www-form-urlencoded\r\n";
+            if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+            {
+                pszErrFunction = L"HttpAddRequestHeaders";
+                break;
+            }
         }
 
         if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
@@ -118,6 +155,86 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
     return pNetResp;
 }
 
+boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
+{
+    oHeaders.clear();
+
+    CAtlStringW strHeaders;
+    DWORD dwLen = 0;
+    DWORD nIndex = 0;
+    if( !HttpQueryInfo( hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, null, &dwLen, &nIndex) )
+    {   
+        DWORD dwErr = ::GetLastError();
+        if ( dwErr != ERROR_INSUFFICIENT_BUFFER )
+        {
+            pszErrFunction = L"HttpQueryInfo";
+            return false;
+        }
+    }
+    if( !HttpQueryInfo( hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, strHeaders.GetBuffer(dwLen), &dwLen, &nIndex) )
+    {
+        pszErrFunction = L"HttpQueryInfo";
+        return false;
+    }
+    strHeaders.ReleaseBuffer();
+
+    int nStart = 0;
+    for(int nEnd = strHeaders.Find(L"\r\n", nStart); nEnd > 0; nStart = nEnd+2, nEnd = strHeaders.Find(L"\r\n", nStart) )
+    {
+        CAtlStringW strHeader = strHeaders.Mid(nStart, nEnd-nStart);
+        int nSep = strHeader.Find(':');
+        if (nSep < 0 )
+            continue;
+
+        CAtlStringW strName = strHeader.Mid(0, nSep);
+        strName.Trim();
+        CAtlStringW strValue = strHeader.Mid(nSep+1);
+        strValue.Trim();
+
+        oHeaders.put(common::convertToStringA(strName.GetString()),common::convertToStringA(strValue.GetString()));
+    }
+
+    return true;
+}
+
+String CNetRequestImpl::makeRhoCookie()
+{
+    DWORD nIndex = 0;
+    URI::CParsedCookie cookie;
+    while(true)
+    {
+        CAtlStringW strCookie;
+        DWORD dwLen = 0;
+        if( !HttpQueryInfo( hRequest, HTTP_QUERY_SET_COOKIE, null, &dwLen, &nIndex) )
+        {   
+            DWORD dwErr = ::GetLastError();
+            if ( dwErr == ERROR_HTTP_HEADER_NOT_FOUND  )
+                break;
+
+            if ( dwErr != ERROR_INSUFFICIENT_BUFFER )
+            {
+                pszErrFunction = L"HttpQueryInfo";
+                break;
+            }
+        }
+        if( !HttpQueryInfo( hRequest, HTTP_QUERY_SET_COOKIE, strCookie.GetBuffer(dwLen), &dwLen, &nIndex) )
+        {
+            pszErrFunction = L"HttpQueryInfo";
+            break;
+        }
+        strCookie.ReleaseBuffer();
+
+        URI::parseCookie(common::convertToStringA(strCookie.GetString()).c_str(), cookie);
+    }
+    if (pszErrFunction)
+        return "";
+
+    if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+        return cookie.strAuth + ";" + cookie.strSession + ";";
+
+    return "";
+}
+
 void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 {
     DWORD dwLen = 10;
@@ -126,11 +243,17 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 
     if( !HttpQueryInfo( hRequest, HTTP_QUERY_STATUS_CODE, szHttpRes, &dwLen, &nIndex) )
     {
-        pszErrFunction = L"HttpSendRequest";
+        pszErrFunction = L"HttpQueryInfo";
         return;
     }
     int nCode = _wtoi(szHttpRes);
     pNetResp->setResponseCode(nCode);
+
+    if ( m_pHeaders )
+    {
+        if ( !readHeaders(*m_pHeaders) )
+            return;
+    }
 
     if ( nCode != 200 )
     {
@@ -266,9 +389,14 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
     return pNetResp;
 }
 
+void CNetRequestImpl::cancel()
+{
+    m_bCancel = true;
+}
+
 void CNetRequestImpl::close()
 {
-	if (pszErrFunction)
+	if (!m_bCancel && pszErrFunction)
 		ErrorMessage(pszErrFunction);
 
     free_url_components(&uri);
@@ -393,12 +521,18 @@ void CNetRequestImpl::alloc_url_components(URL_COMPONENTS *uri, const wchar_t *u
 
 void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri) 
 {
-  free(uri->lpszScheme);
-  free(uri->lpszHostName);
-  free(uri->lpszUserName);
-  free(uri->lpszPassword);
-  free(uri->lpszUrlPath);
-  free(uri->lpszExtraInfo);
+  if ( uri->lpszScheme )
+    free(uri->lpszScheme);
+  if ( uri->lpszHostName )
+    free(uri->lpszHostName);
+  if (uri->lpszUserName)
+    free(uri->lpszUserName);
+  if (uri->lpszPassword)
+    free(uri->lpszPassword);
+  if (uri->lpszUrlPath)
+    free(uri->lpszUrlPath);
+  if (uri->lpszExtraInfo)
+    free(uri->lpszExtraInfo);
 }
 
 bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
