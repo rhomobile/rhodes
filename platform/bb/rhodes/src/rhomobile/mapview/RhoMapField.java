@@ -6,6 +6,10 @@ public interface RhoMapField {
 	
 	public Field getBBField();
 	
+	public boolean handleClick();
+	
+	public boolean needToClose();
+	
 	public void redraw();
 	
 	public void addAnnotation(Annotation ann);

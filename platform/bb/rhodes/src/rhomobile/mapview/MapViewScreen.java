@@ -23,7 +23,7 @@ public class MapViewScreen extends MainScreen {
 	private static final int ZOOM_MODE = 2;
 	
 	private static final int MIN_MOVE_STEP = 1;
-	private static final int MAX_MOVE_STEP = 16;
+	private static final int MAX_MOVE_STEP = 8;
 	
 	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
@@ -146,16 +146,6 @@ public class MapViewScreen extends MainScreen {
 		
 		// TODO: draw overlays here
 		graphics.setColor(0x00000000); // Black
-		// Draw black cross at center
-		int xCenter = mapField.getLeft() + mapField.getWidth()/2;
-		int yCenter = mapField.getTop() + mapField.getHeight()/2;
-		int delta = 10;
-		int yTop = yCenter - delta;
-		int yBottom = yCenter + delta;
-		int xLeft = xCenter - delta;
-		int xRight = xCenter + delta;
-		graphics.drawLine(xCenter, yTop, xCenter, yBottom);
-		graphics.drawLine(xLeft, yCenter, xRight, yCenter);
 		
 		// Draw current mode
 		String strMode  = null;
@@ -171,6 +161,56 @@ public class MapViewScreen extends MainScreen {
 		}
 	}
 	
+	private int calcDxSmooth(int dx, long curTime) {
+		int newDx;
+		if (curTime > prevMoveTime + MOVE_TIMEOUT_DOUBLING) {
+			newDx = dx;
+		}
+		else {
+			if (dx == 0)
+				newDx = 0;
+			else {
+				newDx = dx < 0 ? (prevDx < 0 ? prevDx*2 : -MIN_MOVE_STEP) : (prevDx > 0 ? prevDx*2 : MIN_MOVE_STEP);
+				if (newDx < -MAX_MOVE_STEP)
+					newDx = -MAX_MOVE_STEP;
+				else if (newDx > MAX_MOVE_STEP)
+					newDx = MAX_MOVE_STEP;
+			}
+		}
+		prevDx = newDx;
+		return newDx;
+	}
+	
+	private int calcDySmooth(int dy, long curTime) {
+		int newDy;
+		if (curTime > prevMoveTime + MOVE_TIMEOUT_DOUBLING) {
+			newDy = dy;
+		}
+		else {
+			if (dy == 0)
+				newDy = 0;
+			else {
+				newDy = dy < 0 ? (prevDy < 0 ? prevDy*2 : -MIN_MOVE_STEP) : (prevDy > 0 ? prevDy*2 : MIN_MOVE_STEP);
+				if (newDy < -MAX_MOVE_STEP)
+					newDy = -MAX_MOVE_STEP;
+				else if (newDy > MAX_MOVE_STEP)
+					newDy = MAX_MOVE_STEP;
+			}
+		}
+		prevDy = newDy;
+		return newDy;
+	}
+	
+	private int calcDx(int dx, long curTime) {
+		//return dx*2;
+		return calcDxSmooth(dx, curTime);
+	}
+	
+	private int calcDy(int dy, long curTime) {
+		//return dy*2;
+		return calcDySmooth(dy, curTime);
+	}
+	
 	protected boolean navigationMovement(int dx, int dy, int status, int time) {
 		if ((status & KeypadListener.STATUS_TRACKWHEEL) == 0 &&
 				(status & KeypadListener.STATUS_FOUR_WAY) == 0)
@@ -178,44 +218,14 @@ public class MapViewScreen extends MainScreen {
 
 		if (mode == PAN_MODE) {
 			long curTime = System.currentTimeMillis();
-			int newDx;
-			if (curTime > prevMoveTime + MOVE_TIMEOUT_DOUBLING) {
-				newDx = dx;
-			}
-			else {
-				if (dx == 0)
-					newDx = 0;
-				else {
-					newDx = dx < 0 ? (prevDx < 0 ? prevDx*2 : -MIN_MOVE_STEP) : (prevDx > 0 ? prevDx*2 : MIN_MOVE_STEP);
-					if (newDx < -MAX_MOVE_STEP)
-						newDx = -MAX_MOVE_STEP;
-					else if (newDx > MAX_MOVE_STEP)
-						newDx = MAX_MOVE_STEP;
-				}
-			}
-			prevDx = newDx;
-			
-			int newDy;
-			if (curTime > prevMoveTime + MOVE_TIMEOUT_DOUBLING) {
-				newDy = dy;
-			}
-			else {
-				if (dy == 0)
-					newDy = 0;
-				else {
-					newDy = dy < 0 ? (prevDy < 0 ? prevDy*2 : -MIN_MOVE_STEP) : (prevDy > 0 ? prevDy*2 : MIN_MOVE_STEP);
-					if (newDy < -MAX_MOVE_STEP)
-						newDy = -MAX_MOVE_STEP;
-					else if (newDy > MAX_MOVE_STEP)
-						newDy = MAX_MOVE_STEP;
-				}
-			}
-			prevDy = newDy;
+			int newDx = calcDx(dx, curTime);
+			int newDy = calcDy(dy, curTime);
 			
 			prevMoveTime = curTime;
 			
 			//int newDx = dx*10;
 			//int newDy = dy*10;
+			
 			//LOG.TRACE("Scroll by " + newDx + "," + newDy);
 			mapField.move(newDx, newDy);
 			mapField.redraw();
@@ -240,6 +250,12 @@ public class MapViewScreen extends MainScreen {
 	}
 	
 	protected boolean trackwheelClick(int status, int time) {
+		if (mapField.handleClick()) {
+			if (mapField.needToClose())
+				this.close();
+			return true;
+		}
+		
 		if (mode == PAN_MODE)
 			mode = ZOOM_MODE;
 		else if (mode == ZOOM_MODE)
