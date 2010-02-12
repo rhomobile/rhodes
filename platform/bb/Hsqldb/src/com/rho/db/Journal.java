@@ -145,7 +145,7 @@ public class Journal
 				jf = null;
 			}
 
-			if ( bSuccess )
+//			if ( bSuccess )
 			{
 				FileUtilBB.getDefaultInstance().removeElement(m_journalName);
 				LOG.INFO("End rollback journal");
