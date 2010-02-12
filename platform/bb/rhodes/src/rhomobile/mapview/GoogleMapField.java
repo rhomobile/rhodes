@@ -700,14 +700,18 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return Double.toString(y) + ',' + Double.toString(x) + ";zoom=" + Integer.toString(z);
 	}
 	
-	private void paintImage(Graphics graphics, CachedImage img, Hashtable painted) {
+	private void paintImage(Graphics graphics, CachedImage img) {
+		// Temporary solution
+		// TODO: implement drawing of images with different zoom levels
+		if (img.zoom != zoom)
+			return;
+		
 		long left = -toCurrentZoom(longitude - img.longitude, zoom);
 		long top = -toCurrentZoom(latitude - img.latitude, zoom);
 		
 		if (img.zoom != zoom) {
 			double x = math_pow(2, img.zoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
-			//factor = Fixed32.mul(factor, image.image.getScaleX32());
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
 		}
@@ -731,8 +735,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (img.bitmap == null)
 			img.bitmap = img.image.getBitmap();
 		graphics.drawBitmap((int)left, (int)top, w, h, img.bitmap, 0, 0);
-		
-		painted.put(img.key, new Boolean(true));
 	}
 	
 	protected void paint(Graphics graphics) {
@@ -741,8 +743,12 @@ public class GoogleMapField extends Field implements RhoMapField {
 			imgCache = cache;
 		}
 		
-		Hashtable painted = new Hashtable();
+		// Draw background
+		for (int i = 1, lim = 2*Math.max(width, height); i < lim; i += 5) {
+			graphics.drawLine(0, i, i, 0);
+		}
 		
+		// Draw map tiles
 		Enumeration e = imgCache.sortedByCoordinates();
 		while (e.hasMoreElements()) {
 			// Draw map
@@ -750,11 +756,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			if (img.image == null)
 				continue;
 			
-			Boolean imgPainted = (Boolean)painted.get(makeCacheKey(img.latitude, img.longitude, zoom));
-			if (imgPainted != null && imgPainted.booleanValue())
-				continue;
-			
-			paintImage(graphics, img, painted);
+			paintImage(graphics, img);
 		}
 		
 		// Draw pointer at center
