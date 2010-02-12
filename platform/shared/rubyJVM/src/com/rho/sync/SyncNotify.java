@@ -314,16 +314,26 @@ public class SyncNotify {
 		m_initialSyncNotify = new SyncNotification( strFullUrl, strParams, true );
 	}
 	
-    public void setSyncStatusListener(ISyncStatusListener listener) { m_syncStatusListener = listener; }
-    private void reportSyncStatus(String status, int error, String strDetails) {
-    	if (m_syncStatusListener != null) {
-    		if ( strDetails.length() == 0 )
-    			strDetails = RhoRuby.getErrorText(error);
-    		status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
-    		
-        	LOG.INFO("Status: "+status);
-    		
-        	m_syncStatusListener.reportStatus( status, error);
+    public void setSyncStatusListener(ISyncStatusListener listener) 
+    { 
+    	synchronized(m_mxSyncNotifications){
+    		m_syncStatusListener = listener;
+    	}
+    }
+    
+    private void reportSyncStatus(String status, int error, String strDetails) 
+    {
+    	synchronized(m_mxSyncNotifications)
+    	{    	
+	    	if (m_syncStatusListener != null) {
+	    		if ( strDetails.length() == 0 )
+	    			strDetails = RhoRuby.getErrorText(error);
+	    		status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+	    		
+	        	LOG.INFO("Status: "+status);
+	    		
+	        	m_syncStatusListener.reportStatus( status, error);
+	    	}
     	}
     }
 	
