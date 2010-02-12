@@ -626,6 +626,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 				catch (Exception e) {
 					LOG.ERROR("Cache update task failed", e);
 				}
+				catch (Throwable e) {
+					LOG.ERROR("Cache update task failed", e);
+				}
 			}
 			LOG.TRACE("Cache update thread stopped");
 		}
