@@ -260,8 +260,13 @@ namespace "run" do
 
     # Run local http server
     $iphonespec = true
-    require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
-    NetHTTPSpecs.start_server
+    httpserver = false
+    httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
+
+    if httpserver
+      require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
+      NetHTTPSpecs.start_server
+    end
 
     faillog = []
     getdump = false
@@ -295,7 +300,8 @@ namespace "run" do
     }
     finish = Time.now
 
-    NetHTTPSpecs.stop_server
+
+    NetHTTPSpecs.stop_server if httpserver
 
     rm_rf $app_path + "/faillog.txt"
     File.open($app_path + "/faillog.txt", "w") { |io| faillog.each {|x| io << x }  } if failed.to_i > 0
