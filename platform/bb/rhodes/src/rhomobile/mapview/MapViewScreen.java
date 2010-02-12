@@ -69,29 +69,17 @@ public class MapViewScreen extends MainScreen {
 		}
 	};
 	
-	private class CloseMenuItem extends MenuItem {
-		
-		private MapViewScreen screen;
-		
-		public CloseMenuItem(MapViewScreen scr, int ordinal, int priority) {
-			super("Close", ordinal, priority);
-			screen = scr;
-		}
-		
-		public void run() {
-			screen.mapField.close();
-			screen.close();
-		}
-	};
-	
 	MapViewScreen(String providerName, Hashtable settings, Vector annotations) {
-		super(DEFAULT_MENU & ~DEFAULT_CLOSE);
+		super(DEFAULT_MENU | DEFAULT_CLOSE);
 		addMenuItem(new PanModeMenuItem(this, 0, 100));
 		addMenuItem(new ZoomModeMenuItem(this, 1, 100));
-		MenuItem.separator(19);
-		addMenuItem(new CloseMenuItem(this, 20, 100));
 		createMapProvider(providerName);
 		createUI(settings, annotations);
+	}
+	
+	public void close() {
+		mapField.close();
+		super.close();
 	}
 	
 	private void setMode(int m) {
