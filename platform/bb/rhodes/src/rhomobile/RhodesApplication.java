@@ -518,7 +518,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				LOG.ERROR("Error in application.", exc);
         	RhoConf.sendLog();
 			
-        	throw new RuntimeException("Application failed and will exit. Log will send to log server.");
+        	throw new RuntimeException("Application failed and will exit. Log will send to log server." + exc.toString());
+		}catch(Throwable e)
+		{
+			if ( RhoConf.getInstance() != null )
+				LOG.ERROR("Error in application.", e);
+        	RhoConf.sendLog();
+			
+        	throw new RuntimeException("Application failed and will exit. Log will send to log server." + e.toString());
 		}
 		
 		_pushListeningThread.stop();
@@ -1015,8 +1022,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     	
     	try{
+    		System.out.println("RHODES - 1");
     		if ( !Jsr75File.isSDCardExist() )
     			Thread.sleep(5000); //Wait till SDCard may appear
+    		System.out.println("RHODES - 1");
     		
         	RhoLogger.InitRhoLog();
 	    	
