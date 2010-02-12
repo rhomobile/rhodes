@@ -1069,8 +1069,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		        }
 	        }
 	        
-	    	_pushListeningThread = new PushListeningThread();
-	    	_pushListeningThread.start();
+//	    	_pushListeningThread = new PushListeningThread();
+//	    	_pushListeningThread.start();
 	        
 	    	try {
 	    		RhoClassFactory.getNetworkAccess().configure();
@@ -1440,7 +1440,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             {
         		LOG.INFO( "Starting HttpServerThread main routine..." );
             	//wait(80);
-        		_application.initRuby();
+    	    	try{
+        		
+	        		_application.initRuby();
+	        		
+	    	    	_pushListeningThread = new PushListeningThread();
+	    	    	_pushListeningThread.start();
+    	    	}catch(Exception e)
+    	    	{
+    	    		LOG.ERROR("HttpServerThread failed.", e);
+    	    	}catch(Throwable exc)
+    	    	{
+    	    		LOG.ERROR("HttpServerThread crashed.", exc);
+    	    	}
         		
         		while( !m_bExit )
         		{
