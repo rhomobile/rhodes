@@ -70,7 +70,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
 			
 			if ( oSession != null )
 			{
