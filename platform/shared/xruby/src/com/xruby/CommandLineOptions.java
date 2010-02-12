@@ -209,6 +209,7 @@ class CommandLineOptions {
 		options.addOption("s", false, "enable some switch parsing for switches after script name");
 		options.addOption("x", false, "strip off text before #!ruby line");
         options.addOption("g", false, "enable debug");
+        options.addOption("n", true, "provide class prefix name");
 
         CommandLine line;
 		try {
@@ -225,7 +226,12 @@ class CommandLineOptions {
             }
             if (line.hasOption("v")) {
     			verbose_ = true;
-    		} 
+    		}
+    		if (line.hasOption("n")) {
+    			String str = line.getOptionValue("n"); 
+    			com.xruby.compiler.codegen.NameFactory.name_classprefix_ = str;
+    		}
+            
         } else if (line.hasOption("h")) {
 			help_ = true;
 		} else if (line.hasOption("v")) {
