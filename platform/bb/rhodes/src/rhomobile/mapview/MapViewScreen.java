@@ -177,9 +177,14 @@ public class MapViewScreen extends MainScreen {
 			strMode = "Zoom mode";
 		
 		if (strMode != null) {
-			int x = mapField.getLeft() + mapField.getWidth()/2 - 60;
-			int y = mapField.getTop() + mapField.getHeight() - 40;
-			graphics.drawText(strMode, x, y);
+			// Detect drawn text width
+			int x = mapField.getLeft() + mapField.getWidth()/2;
+			int y = mapField.getTop() + mapField.getHeight() + 20;
+			int tw = graphics.drawText(strMode, x, y);
+			// Actual drawing
+			x -= tw/2;
+			y -= 60;
+			tw = graphics.drawText(strMode, x, y);
 		}
 	}
 	
