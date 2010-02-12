@@ -92,7 +92,15 @@ public class PushListeningThread extends Thread {
                             db.write(data, 0, chunk);
                         }
                         
-                        processPushMessage(data);
+                        try{
+                        	processPushMessage(data);
+                        }catch(Exception exc)
+                        {
+                        	LOG.ERROR("processPushMessage failed.Data: " + new String(data), exc);
+                        }catch(Throwable th)
+                        {
+                        	LOG.ERROR("processPushMessage crashed.Data: " + new String(data), th);
+                        }
                         
                         // This method is called to accept the push.
                         pushInputStream.accept();
@@ -108,7 +116,7 @@ public class PushListeningThread extends Thread {
                     {
                         // A problem occurred with the input stream , however, the original 
                         // StreamConnectionNotifier is still valid.
-                        System.err.println(e1.toString());
+                    	LOG.ERROR("A problem occurred with the input stream", e1 );
 
                         if ( input != null ) 
                         {
@@ -140,7 +148,7 @@ public class PushListeningThread extends Thread {
             } 
             catch (IOException ioe)
             {
-            	LOG.TRACE("Exception thrown by _notify.acceptAndOpen() - exiting push thread");
+            	LOG.ERROR("Exception thrown by _notify.acceptAndOpen() - exiting push thread", ioe);
             	
             	// Likely the stream was closed. Catches the exception thrown by 
                 // _notify.acceptAndOpen() when this program exits.
@@ -213,12 +221,12 @@ public class PushListeningThread extends Thread {
    
     private void processPushMessage(final byte[] data)
     {
-        Application.getApplication().invokeLater(new Runnable() 
+       /* Application.getApplication().invokeLater(new Runnable() 
         {
             public void run() 
-            {
+            {*/
             	String msg = new String(data);
-            	LOG.TRACE("Triger sync on PUSH message [" + msg + " ]\n");
+            	LOG.INFO("Triger sync on PUSH message [" + msg + " ]\n");
 
             	String[] op;
             	String[] ops = split(msg,"\n");
@@ -254,8 +262,8 @@ public class PushListeningThread extends Thread {
             			}            			
             		}
             	}            	
-            }
-        });
+            /*}
+        });*/
     }
 
 }
