@@ -133,6 +133,7 @@ namespace "config" do
 
     $appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
     $outfilebase = $appname.gsub(/[^A-Za-z_0-9]/, '_')
+    $bundleClassName = $outfilebase + '_'  unless $bundleClassName
     
     $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
       $preverified+"/RubyVM.jar"
@@ -197,7 +198,11 @@ namespace "build" do
       
     end
 
-    task :devrhobundle => :rhobundle do
+    task :set_dev_outname do
+        $bundleClassName = "rhodes_"
+    end
+    
+    task :devrhobundle => [:set_dev_outname,:rhobundle] do
       cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
       
       sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes/apps/rhoconfig.txt"
