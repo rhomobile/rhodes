@@ -4,6 +4,8 @@ import net.rim.device.api.ui.Field;
 
 public interface RhoMapField {
 	
+	public void close();
+	
 	public Field getBBField();
 	
 	public boolean handleClick();
