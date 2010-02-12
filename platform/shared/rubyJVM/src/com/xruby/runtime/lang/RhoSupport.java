@@ -2,6 +2,7 @@ package com.xruby.runtime.lang;
 
 import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -171,7 +172,32 @@ public class RhoSupport {
 	    }
 	}
 	
+	private static String m_strAppName = null;
+	public static String getAppName()
+	{
+		try{
+	    	/*if ( m_strAppName == null)
+	    	{
+	    		IRhoRubyHelper systemInfo = RhoClassFactory.createRhoRubyHelper();
+	    		m_strAppName = systemInfo.getAppProperty("MIDlet-Name");
+	        	if ( m_strAppName == null || m_strAppName.length() == 0 )
+	        		m_strAppName = systemInfo.getModuleName();
+	        	if ( m_strAppName == null || m_strAppName.length() == 0 )
+	        		m_strAppName = "rhodesApp";
+	        	
+	        	m_strAppName += "_"; 
+	    	}*/
+			m_strAppName = "xruby";
+		}catch(Exception exc)
+		{
+			LOG.ERROR("getAppName failed.", exc);
+			m_strAppName = "";
+		}
+    	return m_strAppName;
+	}
+	
     public static String createMainClassName(String required_file) {
+
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {
             required_file = required_file.substring(0, required_file.length() - 3);
@@ -187,7 +213,7 @@ public class RhoSupport {
         required_file = StringMe.replaceAll(required_file,"-", "minus");
         
         required_file += ".main";
-        return "xruby." + required_file;
+        return getAppName() + "." + required_file;
     }
 
 	//@RubyLevelMethod(name="__rhoGetCurrentDir", module=true)
@@ -201,7 +227,17 @@ public class RhoSupport {
 		
 		try{
 			c = Class.forName(name);
-		}catch(ClassNotFoundException exc){}
+
+			if ( c != null )
+			{
+	            Object o = c.newInstance();
+	            if ( !(o instanceof RubyProgram) )
+	            	return null;
+			}
+			
+			//if ( !c.isAssignableFrom(RubyProgram.class) )
+			//	return null;
+		}catch(Exception exc){}
 		
 		return c;
 	}
@@ -317,6 +353,7 @@ public class RhoSupport {
             try {
             	c = Class.forName(name);
             } catch (ClassNotFoundException e) {
+            	LOG.INFO("1" + e.toString());
             }
             if ( c == null ){
             	String altPath = "/apps/app/";
@@ -325,6 +362,7 @@ public class RhoSupport {
                 try {
                 	c = Class.forName(name);
                 } catch (ClassNotFoundException e) {
+                	LOG.INFO("2" + e.toString());
                 }
             	
             	arg1 = ObjectFactory.createString(altPath+required_file);
@@ -339,6 +377,12 @@ public class RhoSupport {
             }
             
             Object o = c.newInstance();
+            if ( !(o instanceof RubyProgram) )
+            {
+            	LOG.INFO("Wrong object: " + o.getClass().getName());
+            	return RubyConstant.QFALSE;
+            }
+            
             RubyProgram p = (RubyProgram) o;
 
             //$".push(file_name) unless $".include?(file_name)

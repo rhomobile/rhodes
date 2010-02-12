@@ -395,6 +395,7 @@ namespace "build" do
       rm "#{$srcdir}/bb.rb"
 
       chdir $bindir
+      # -n#{$bundleClassName}
       output = `java -jar "#{xruby}" -v -c RhoBundle 2>&1`
       output.each_line { |x| puts ">>> " + x  }
       unless $? == 0
