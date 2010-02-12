@@ -25,6 +25,7 @@ import com.rho.file.PersistRAFileImpl;
 import com.rho.net.SSLSocket;
 import com.rho.net.TCPSocket;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.lang.RhoSupport;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
 
@@ -51,7 +52,18 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         MapView.initMethods(RubyRuntime.MapViewClass);
 	}
 	
-	public RubyProgram createMainObject() {
+	public RubyProgram createMainObject() throws Exception
+	{
+    	/*RhoRubyHelper helper = new RhoRubyHelper();
+    	String appName = RhoSupport.getAppName();
+		
+		String strName = appName + ".ServeME.main";//com.xruby.runtime.lang.RhoSupport.createMainClassName("");
+		
+        Class c = Class.forName(strName);
+        Object o = c.newInstance();
+        RubyProgram p = (RubyProgram) o;
+		
+		return p;*/
 		return new xruby.ServeME.main();
 	}
 

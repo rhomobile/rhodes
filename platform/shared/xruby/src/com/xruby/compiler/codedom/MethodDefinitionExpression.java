@@ -105,7 +105,7 @@ public class MethodDefinitionExpression extends Expression {
     // Extract script file's name, as same as the one in the Block.java
     // TODO: so, we do need a global variable  to keep current script name
     private static String extractScriptName(String uniqueMethodName) {
-        if(uniqueMethodName.startsWith("xruby/")) {
+        if(uniqueMethodName.startsWith(com.xruby.compiler.codegen.NameFactory.name_classprefix_ + "/")) {
             uniqueMethodName = uniqueMethodName.substring(6);
         }
         StringTokenizer st = new StringTokenizer(uniqueMethodName, "/");
