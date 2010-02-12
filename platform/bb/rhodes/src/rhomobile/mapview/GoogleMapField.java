@@ -45,10 +45,10 @@ public class GoogleMapField extends Field implements RhoMapField {
 	// Interval of checking workers if they are finished
 	private static final int WORKER_CHECK_INTERVAL = 500; // milliseconds
 	// Maximum size of queue of waiting commands
-	private static final int MAX_WAITING_QUEUE_SIZE = 10;
+	private static final int MAX_WAITING_QUEUE_SIZE = 20;
 	
-	// Trackwheel movement stopped trigger (in milliseconds after last trackwheel movement event)
-	private static final int TRACKWHEEL_STOPPED_TRIGGER = 500;
+	// Image cache update interval
+	private static final int CACHE_UPDATE_INTERVAL = 500; // milliseconds
 	
 	// Maximum size of image cache (number of images stored locally)
 	private static final int MAX_IMAGE_CACHE_SIZE = 32;
@@ -56,7 +56,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	// Width of additional area appended to each tile at top, bottom, left and right
 	private static final int ADDITIONAL_AREA_WIDTH = 16;
 	// Size of own tiles
-	private static final int TILE_SIZE = 400 - 2*ADDITIONAL_AREA_WIDTH;
+	private static final int TILE_SIZE = 300 - 2*ADDITIONAL_AREA_WIDTH;
 	
 	// Mode of decoding EncodedImage to bitmap
 	private static final int DECODE_MODE = EncodedImage.DECODE_NATIVE |
@@ -588,13 +588,13 @@ public class GoogleMapField extends Field implements RhoMapField {
 			while (active) {
 				try {
 					try {
-						Thread.sleep(TRACKWHEEL_STOPPED_TRIGGER);
+						Thread.sleep(CACHE_UPDATE_INTERVAL);
 					} catch (InterruptedException e) {
 						// Ignore
 					}
 					
 					long curTime = System.currentTimeMillis();
-					if (curTime - lastFetchCommandSent < TRACKWHEEL_STOPPED_TRIGGER)
+					if (curTime + CACHE_UPDATE_INTERVAL < lastFetchCommandSent)
 						continue;
 					
 					boolean fetchCommandWasSent = false;
@@ -614,7 +614,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 							synchronized (this) {
 								CachedImage img = cache.get(key);
 								if (img == null) {
-									if (curTime - lastFetchCommandSent > TRACKWHEEL_STOPPED_TRIGGER) {
+									if (curTime - CACHE_UPDATE_INTERVAL > lastFetchCommandSent) {
 										cmd = new MapFetchCommand(lat, lon, zoom,
 												rts, rts, maptype, annotations, mapField);
 										CachedImage dummy = new CachedImage(null, lat, lon, zoom);
@@ -849,7 +849,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		longitude = degreesToPixelsX(lon, MAX_ZOOM);
 		validateCoordinates();
 		
-		lastFetchCommandSent = System.currentTimeMillis();
+		lastFetchCommandSent = System.currentTimeMillis() + CACHE_UPDATE_INTERVAL;
 	}
 
 	public void move(int dx, int dy) {
@@ -857,7 +857,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		longitude += toMaxZoom(dx, zoom);
 		validateCoordinates();
 		
-		lastFetchCommandSent = System.currentTimeMillis();
+		lastFetchCommandSent = System.currentTimeMillis() + CACHE_UPDATE_INTERVAL;
 	}
 
 	public int getMaxZoom() {
