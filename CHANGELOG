@@ -5,7 +5,7 @@
 * native mapping for RIM
 * improved logging from ruby
 * added OSX debugger, supports step debugging in ruby
-* added extension framework for packaing 3rd party extensions
+* added extension framework for packaging 3rd party extensions
 * added crypt, openssl, digest, lang, set, fcntl, net/http(s), json, rexml extensions
 * support for RIM 5.0 JDE
 
