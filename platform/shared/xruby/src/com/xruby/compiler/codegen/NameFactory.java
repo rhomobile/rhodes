@@ -12,6 +12,7 @@ public class NameFactory {
 
     private static AtomicInteger count_ = new AtomicInteger(0);
     private static final String DefaultName = "main";
+	public static String name_classprefix_ = "xruby";
 
     public static String DEFAULT_RUBY_ID_CLASS_NAME = "RubyIDContainer";
 
@@ -38,9 +39,9 @@ public class NameFactory {
         }
 
         if (null == method_name) {
-            return "xruby/" + getNameWithoutPrefixAndSufix(extra, script_name) + "/" + DefaultName;
+            return name_classprefix_ + "/" + getNameWithoutPrefixAndSufix(extra, script_name) + "/" + DefaultName;
         } else {
-            return "xruby/" + getNameWithoutPrefixAndSufix(extra, script_name) + "/" + removeInvalidIdentifierPart(method_name, false) + "$" + count_.getAndIncrement();
+            return name_classprefix_ + "/" + getNameWithoutPrefixAndSufix(extra, script_name) + "/" + removeInvalidIdentifierPart(method_name, false) + "$" + count_.getAndIncrement();
         }
     }
 
@@ -53,7 +54,7 @@ public class NameFactory {
             script_name = "STDIN";
         }
 
-        return "xruby/" + getNameWithoutPrefixAndSufix(extra, script_name) + "/" + DEFAULT_RUBY_ID_CLASS_NAME;
+        return name_classprefix_ + "/" + getNameWithoutPrefixAndSufix(extra, script_name) + "/" + DEFAULT_RUBY_ID_CLASS_NAME;
     }
 
     private static String removeInvalidIdentifierPart(String method_name, boolean ignore_back_slash_and_dot) {
@@ -114,7 +115,7 @@ public class NameFactory {
             script_name = "STDIN";
         }
 
-        return "xruby/" + getNameWithoutPrefixAndSufix(extra, script_name) +
+        return name_classprefix_ + "/" + getNameWithoutPrefixAndSufix(extra, script_name) +
             "/BLOCK" +
             ((null == method_name) ? "" : "_" + removeInvalidIdentifierPart(method_name, false)) +
             "$" +
@@ -122,11 +123,11 @@ public class NameFactory {
     }
 
     public static String createClassNameForSmap(String script_name) {
-        return "xruby/" + getNameWithoutSufix(script_name) + "/" + script_name + ".smap";
+        return name_classprefix_ + "/" + getNameWithoutSufix(script_name) + "/" + script_name + ".smap";
     }
 
     public static String createMainClass(String script_name) {
-        return "xruby." + getNameWithoutSufix(script_name) + "." + DefaultName;
+        return name_classprefix_ + "." + getNameWithoutSufix(script_name) + "." + DefaultName;
     }
 
     public static String createClassFileName(String method_name) {
@@ -146,7 +147,7 @@ public class NameFactory {
         required_file = required_file.replace('/', '.');
         required_file = required_file.replace('\\', '.');
         required_file += ".main";
-        return "xruby." + required_file;
+        return name_classprefix_ + "." + required_file;
     }
 
     private static String getNameWithoutSufix(String script_name) {

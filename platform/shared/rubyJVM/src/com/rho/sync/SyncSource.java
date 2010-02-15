@@ -111,7 +111,7 @@ class SyncSource
 	DBAdapter getDB(){ return getSync().getDB(); }
 	NetRequest getNet(){ return getSync().getNet(); }
 	void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
-	void setUrlParams(String strParams){m_strUrlParams=strParams;}
+	void setUrlParams(String strParams){m_strUrlParams=strParams!=null?strParams:"";}
 	void setUrl(String strUrl){m_strUrl=strUrl;}
 	
     SyncSource(int id, String strUrl, String name, long token, SyncEngine syncEngine )

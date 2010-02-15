@@ -213,7 +213,18 @@ String CSyncEngine::loadClientID()
         }else if ( bResetClient )
         {
     	    if ( !resetClientIDByNet(clientID) )
+            {
+                if ( m_sources.size() > 0 )
+                {
+                    CSyncSource& src = *m_sources.elementAt(getStartSource());
+                    src.m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+
+                    getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
+                }else
+                    getNotify().fireSyncNotification(null, true, RhoRuby.ERR_REMOTESERVER, "");
+
     		    stopSync();
+            }
     	    else
     		    getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
         }

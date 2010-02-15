@@ -92,7 +92,7 @@ public class BlockFarm {
     }
 
     private static String extractScriptName(String blockName) {
-        if(blockName.startsWith("xruby/")) {
+        if(blockName.startsWith(com.xruby.compiler.codegen.NameFactory.name_classprefix_ + "/")) {
             blockName = blockName.substring(6);
         }
         StringTokenizer st = new StringTokenizer(blockName, "/");

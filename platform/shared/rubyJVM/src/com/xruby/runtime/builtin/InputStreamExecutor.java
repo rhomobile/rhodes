@@ -1,6 +1,7 @@
 package com.xruby.runtime.builtin;
 
 import com.rho.RhoClassFactory;
+import com.rho.RhoRuby;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyValue;
 import java.io.InputStream;
@@ -23,7 +24,8 @@ public class InputStreamExecutor implements RubyIOExecutor {
 			throw new Error("Read Only!");
 		
     	try {
-			m_is = RhoClassFactory.createFile().getResourceAsStream(filename.getClass(), filename);
+//			m_is = RhoClassFactory.createFile().getResourceAsStream(filename.getClass(), filename);
+    		m_is = RhoRuby.loadFile(filename);
 		} catch (Exception e) {
 			throw new Error( e.getMessage() );
 		}
