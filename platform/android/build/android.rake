@@ -490,6 +490,7 @@ namespace "build" do
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
       mkdir_p destdir unless File.exists? destdir
       cp_r libname, destdir
+      cc_run($stripbin, [File.join(destdir, File.basename(libname))])
     end
 
  #   desc "Build Rhodes for android"
