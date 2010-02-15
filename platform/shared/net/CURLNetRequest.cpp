@@ -95,7 +95,7 @@ static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void 
 {
     String *pStr = (String *)opaque;
     size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes", nBytes);
+    RAWTRACE1("Received %d bytes (string)", nBytes);
     pStr->append((const char *)ptr, nBytes);
     return nBytes;
 }
@@ -104,7 +104,7 @@ static size_t curlBodyFileCallback(void *ptr, size_t size, size_t nmemb, void *o
 {
     common::CRhoFile *pFile = (common::CRhoFile*)opaque;
     size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes", nBytes);
+    RAWTRACE1("Received %d bytes (blob)", nBytes);
     return pFile->write(ptr, nBytes);
 }
 
@@ -135,7 +135,7 @@ static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, v
     }
     
     String strData(data, size);
-    RAWLOG_INFO2("%s: %s", text, strData.c_str());
+    RAWLOG_INFO3("%s (%d bytes): %s", text, size, strData.c_str());
     return 0;
 }
 
@@ -449,7 +449,7 @@ char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, v
                 oSession->logout();
     }
     
-    return (char*)"OK";
+    return str_assign("OK");
 }
 
 char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession)
@@ -588,7 +588,7 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
     {
-        LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
+        RAWLOG_ERROR1("pullFile: cannot create file: %s", strFilePath.c_str());
         return new CURLNetResponseImpl(0,-1);
     }
 

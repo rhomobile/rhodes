@@ -157,9 +157,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "#{$ndktools}/arm-eabi/lib/interwork/libstdc++.a" unless USE_STLPORT
   args << "#{$ndktools}/arm-eabi/lib/interwork/libsupc++.a" unless USE_STLPORT
   cc_run($gccbin, args)
-  return false unless $? == 0
-
-  cc_run($stripbin, [outname]) if $build_release
   return $? == 0
 end
 
