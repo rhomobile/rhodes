@@ -156,6 +156,8 @@
 		BD2C945610AE01D7008D4692 /* stdcheaders.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944C10AE01D7008D4692 /* stdcheaders.h */; };
 		BD2C945710AE01D7008D4692 /* typecheck-gcc.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944D10AE01D7008D4692 /* typecheck-gcc.h */; };
 		BD2C945810AE01D7008D4692 /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944E10AE01D7008D4692 /* types.h */; };
+		BD9343A21129B55D0097B5A0 /* ssl_iphone.c in Sources */ = {isa = PBXBuildFile; fileRef = BD9343A01129B55D0097B5A0 /* ssl_iphone.c */; };
+		BD9343A31129B55D0097B5A0 /* ssl_iphone.h in Headers */ = {isa = PBXBuildFile; fileRef = BD9343A11129B55D0097B5A0 /* ssl_iphone.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -308,6 +310,8 @@
 		BD2C944C10AE01D7008D4692 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdcheaders.h; sourceTree = "<group>"; };
 		BD2C944D10AE01D7008D4692 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "typecheck-gcc.h"; sourceTree = "<group>"; };
 		BD2C944E10AE01D7008D4692 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		BD9343A01129B55D0097B5A0 /* ssl_iphone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ssl_iphone.c; sourceTree = "<group>"; };
+		BD9343A11129B55D0097B5A0 /* ssl_iphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssl_iphone.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* libcurl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcurl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -352,6 +356,8 @@
 		BD2C932D10AE01B7008D4692 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				BD9343A01129B55D0097B5A0 /* ssl_iphone.c */,
+				BD9343A11129B55D0097B5A0 /* ssl_iphone.h */,
 				BD2C932E10AE01B7008D4692 /* amigaos.c */,
 				BD2C932F10AE01B7008D4692 /* arpa_telnet.h */,
 				BD2C933010AE01B7008D4692 /* base64.c */,
@@ -602,6 +608,7 @@
 				BD2C945610AE01D7008D4692 /* stdcheaders.h in Headers */,
 				BD2C945710AE01D7008D4692 /* typecheck-gcc.h in Headers */,
 				BD2C945810AE01D7008D4692 /* types.h in Headers */,
+				BD9343A31129B55D0097B5A0 /* ssl_iphone.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -722,6 +729,7 @@
 				BD2C943E10AE01B7008D4692 /* transfer.c in Sources */,
 				BD2C944010AE01B7008D4692 /* url.c in Sources */,
 				BD2C944310AE01B7008D4692 /* version.c in Sources */,
+				BD9343A21129B55D0097B5A0 /* ssl_iphone.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,7 +746,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
-				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
+				OTHER_CFLAGS = (
+					"-DHAVE_CONFIG_H",
+					"-DUSE_SSL_IPHONE",
+				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphonesimulator2.2.1;
 				SYMROOT = ../build;
@@ -753,7 +764,10 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
+				OTHER_CFLAGS = (
+					"-DHAVE_CONFIG_H",
+					"-DUSE_SSL_IPHONE",
+				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
@@ -806,7 +820,10 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
+				OTHER_CFLAGS = (
+					"-DHAVE_CONFIG_H",
+					"-DUSE_SSL_IPHONE",
+				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
