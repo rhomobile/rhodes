@@ -490,6 +490,7 @@ namespace "build" do
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
       mkdir_p destdir unless File.exists? destdir
       cp_r libname, destdir
+      cc_run($stripbin, [File.join(destdir, File.basename(libname))])
     end
 
  #   desc "Build Rhodes for android"
@@ -603,9 +604,12 @@ namespace "package" do
     rm_rf $bindir + "/lib"
     mkdir_p $bindir + "/lib/armeabi"
     cp_r $bindir + "/libs/" + $confdir + "/librhodes.so", $bindir + "/lib/armeabi"
+    cc_run($stripbin, [$bindir + "/lib/armeabi/librhodes.so"])
     args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
     puts Jake.run($aapt, args, $bindir)
-    unless $? == 0
+    err = $?
+    rm_rf $bindir + "/lib"
+    unless err == 0
       puts "Error running AAPT"
       exit 1
     end
