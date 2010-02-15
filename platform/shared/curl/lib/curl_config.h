@@ -62,7 +62,7 @@
 /* #undef CURL_LDAP_WIN */
 
 /* when not building a shared library */
-/* #undef CURL_STATICLIB */
+#define CURL_STATICLIB 1
 
 /* Set to explicitly specify we don't want to use thread-safe functions */
 /* #undef DISABLED_THREADSAFE */
@@ -965,3 +965,11 @@
 
 /* the signed version of size_t */
 /* #undef ssize_t */
+
+/* RHO BEGIN */
+#if defined(OS_IPHONE)
+#define USE_SSL_IPHONE
+#elif defined(OS_ANDROID)
+#define USE_SSL_ANDROID
+#endif
+/* RHO END */
