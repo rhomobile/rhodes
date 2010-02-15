@@ -603,9 +603,12 @@ namespace "package" do
     rm_rf $bindir + "/lib"
     mkdir_p $bindir + "/lib/armeabi"
     cp_r $bindir + "/libs/" + $confdir + "/librhodes.so", $bindir + "/lib/armeabi"
+    cc_run($stripbin, [$bindir + "/lib/armeabi/librhodes.so"])
     args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
     puts Jake.run($aapt, args, $bindir)
-    unless $? == 0
+    err = $?
+    rm_rf $bindir + "/lib"
+    unless err == 0
       puts "Error running AAPT"
       exit 1
     end
