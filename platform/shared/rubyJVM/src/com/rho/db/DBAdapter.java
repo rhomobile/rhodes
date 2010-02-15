@@ -121,7 +121,6 @@ public class DBAdapter extends RubyBasic {
 	
 	public static String makeBlobFolderName()throws Exception{
 		String fName = RhoClassFactory.createFile().getDirPath("apps/public/db-files");
-		
 		return fName;
 	}
 	
@@ -858,7 +857,7 @@ public class DBAdapter extends RubyBasic {
 				    SimpleFile oFile = RhoClassFactory.createFile();
 				    
 			        String strFilePath = oFile.getDirPath("");
-			        strFilePath += url;
+			        strFilePath += url.startsWith("/") ? url.substring(1) : url;
 				    
 				    oFile.delete(strFilePath);
 				}catch(Exception exc){

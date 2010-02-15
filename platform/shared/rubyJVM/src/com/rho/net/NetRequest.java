@@ -70,7 +70,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, bCloseConnection);
 			
 			if ( oSession != null )
 			{
@@ -163,7 +163,12 @@ public class NetRequest
     		if ( resp.isOK() )
     		{
     			ParsedCookie cookie = makeCookie(m_connection);
-    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+    			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+    				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+    			else
+    				resp.setCharData("");
+    			
+//    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
     			LOG.INFO("pullCookies: " + resp.getCharData() );
     		}
 		}finally
@@ -193,6 +198,10 @@ public class NetRequest
 		try{
 			file = RhoClassFactory.createFile();
 			file.open(strFileName, true, true);
+			if ( !file.isOpened() ){
+				LOG.ERROR("File not found: " + strFileName);
+				throw new RuntimeException("File not found:" + strFileName);
+			}
 			
 			int nTry = 0;
 			do{
@@ -338,7 +347,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
 			
 			String strSession = oSession.getSession();
 			if ( strSession != null && strSession.length() > 0 )
