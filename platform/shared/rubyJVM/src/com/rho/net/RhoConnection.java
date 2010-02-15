@@ -53,8 +53,11 @@ public class RhoConnection implements IHttpConnection {
     public RhoConnection(URI _uri) {
     	uri = new URI(_uri.toString());
     	uri_external = _uri;
-    	
-    	uri.setPath("/apps" + uri.getPath());
+    
+    	if ( !uri.getPath().startsWith("/apps") )
+    		uri.setPath("/apps" + uri.getPath());
+    	else
+    		uri.setPath(uri.getPath());
     }
     
 	public Object getNativeConnection() {
@@ -519,8 +522,8 @@ public class RhoConnection implements IHttpConnection {
 			try{
 				file = RhoClassFactory.createFile();
 				String strFileName = strPath;
-				if ( strFileName.startsWith("/apps") )
-					strFileName = strPath.substring(5);
+//				if ( strFileName.startsWith("/apps") )
+//					strFileName = strPath.substring(5);
 				
 				file.open(strFileName, true, true);
 				responseData = file.getInputStream();
