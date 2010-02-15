@@ -10,6 +10,7 @@ import java.io.IOException;
 import j2me.util.Iterator;
 
 import com.rho.RhoClassFactory;
+import com.rho.RhoRuby;
 import com.xruby.runtime.lang.GlobalVariables;
 import com.xruby.runtime.lang.RubyAPI;
 import com.xruby.runtime.lang.RubyBasic;
@@ -307,7 +308,8 @@ public class RubyIO extends RubyBasic {
     static RubyValue loadFromResources(String fileName){
     	InputStream stream = null;
 		try {
-			stream = RhoClassFactory.createFile().getResourceAsStream(fileName.getClass(), "/"+fileName);
+			//stream = RhoClassFactory.createFile().getResourceAsStream(fileName.getClass(), "/"+fileName);
+			stream = RhoRuby.loadFile("/" + fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

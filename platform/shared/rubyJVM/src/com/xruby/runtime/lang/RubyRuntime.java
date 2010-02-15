@@ -356,7 +356,7 @@ public class RubyRuntime {
 
     private static void loadBuildinDotRb() {
         try {
-            Class c = Class.forName("xruby.builtinME.main");
+            Class c = Class.forName(RhoSupport.getAppName() + ".builtinME.main");
             Object o = c.newInstance();
             RubyProgram p = (RubyProgram) o;
             p.invoke();
