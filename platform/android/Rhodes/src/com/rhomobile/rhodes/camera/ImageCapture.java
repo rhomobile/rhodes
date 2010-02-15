@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes.camera;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -87,9 +88,10 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 				Uri uri = getContentResolver().insert(
 						Media.EXTERNAL_CONTENT_URI, values);
 				// String filename = timeStampFormat.format(new Date());
+				String dir = com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR;
+				(new File(dir)).mkdirs();
 				iccb = new ImageCaptureCallback(getContentResolver().openOutputStream(uri),
-						com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR + "/" +
-						filename + ".jpg");
+						dir + "/" + filename + ".jpg");
 			} catch (Exception ex) {
 				Logger.E(TAG, ex.getMessage());
 			}

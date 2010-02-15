@@ -237,7 +237,7 @@ public class Rhodes extends Activity {
 		}
 	}
 	
-	private void checkSDCard() {
+	private boolean checkSDCard() {
 		Log.d(TAG, "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
 		Log.d(TAG, "Storage state: " + state);
@@ -254,9 +254,10 @@ public class Rhodes extends Activity {
 				})
 				.create()
 				.show();
-			return;
+			return false;
 		}
 		Log.d(TAG, "SD card check passed, going on");
+		return true;
 	}
 	
 	private void copyFilesFromBundle() {
@@ -416,7 +417,8 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				checkSDCard();
+				if (!checkSDCard())
+					return;
 				copyFilesFromBundle();
 				startRhodesApp();
 				
