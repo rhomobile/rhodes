@@ -56,6 +56,7 @@
 #include "gtls.h"   /* GnuTLS versions */
 #include "nssg.h"   /* NSS versions */
 #include "qssl.h"   /* QSOSSL versions */
+#include "ssl_iphone.h" /* iPhone versions */
 #include "sendf.h"
 #include "rawstr.h"
 #include "url.h"
