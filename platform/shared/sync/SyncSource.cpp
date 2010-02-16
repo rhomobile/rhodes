@@ -156,7 +156,10 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
             return;
         }
 
+        getDB().startTransaction();
+        getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and attrib_type=? and value=?", getID(), "blob.file", blob.getFilePath() );
         getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and attrib_type=? and value=?", getID(), "blob.file", blob.getFilePath() );
+        getDB().endTransaction();
     }
 
     m_arSyncBlobs.clear();
