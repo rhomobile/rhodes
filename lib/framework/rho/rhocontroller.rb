@@ -60,9 +60,10 @@ module Rho
       
       if @params['rho_callback']
         res = "" unless res.is_a?(String)
-      else
-        res = render unless @rendered or @redirected
+        return res
       end
+        
+      res = render unless @rendered or @redirected
         
       application.set_menu(@menu, @back_action)
   	  @menu = nil

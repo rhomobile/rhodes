@@ -63,7 +63,7 @@ class CNetRequestImpl
     CNetRequest* m_pParent;
     Hashtable<String,String>* m_pHeaders;
     boolean m_bCancel;
-    boolean readHeaders(Hashtable<String,String>& oHeaders);
+
 public :
     CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
     ~CNetRequestImpl();
@@ -75,6 +75,9 @@ public :
     CNetResponseImpl* sendStream(common::InputStream* body);
     CNetResponseImpl* downloadFile(common::CRhoFile& oFile);
 
+    String makeRhoCookie();
+
+private:
     void ErrorMessage(LPCTSTR pszFunction);
     void readInetFile( void* hRequest, CNetResponseImpl* pNetData, common::CRhoFile* pFile = NULL );
     void alloc_url_components(URL_COMPONENTS *uri, const wchar_t *url);
@@ -82,7 +85,9 @@ public :
     void readResponse(CNetResponseImpl* pNetData);
     bool SetupInternetConnection(LPCTSTR url);
 
-    String makeRhoCookie();
+    boolean readHeaders(Hashtable<String,String>& oHeaders);
+    void    writeHeaders(Hashtable<String,String>* pHeaders);
+
 };
 
 }
