@@ -145,7 +145,7 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         String strFilePath = RHODESAPP().getRhoRootPath() + "apps" + blob.getFilePath() ;
 
         strQuery = strBaseQuery + "&" + blob.getBody();
-        NetResponse( resp, getNet().pushFile(strQuery, strFilePath, &getSync()) );
+        NetResponse( resp, getNet().pushFile(strQuery, strFilePath, &getSync(), null) );
         if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
@@ -665,7 +665,7 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
 		url += "?";
 	url += "client_id=" + getSync().getClientID();
 
-    NetResponse(resp, getNet().pullFile(url, fName, &getSync()));
+    NetResponse(resp, getNet().pullFile(url, fName, &getSync(), null));
     if ( !resp.isOK() )
     {
 		if (resp.isResponseRecieved())

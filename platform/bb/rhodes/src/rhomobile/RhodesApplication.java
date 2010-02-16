@@ -61,7 +61,7 @@ import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
 import com.rho.Jsr75File;
-
+import com.rho.RhodesApp;
 /**
  *
  */
@@ -304,7 +304,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
         
     	int nPos = -1;
-    	for( int i = _history.size()-1; i >= 0; i-- ){
+    	for( int i = 0; i < _history.size(); i++ ){
     		if ( strUrl.equalsIgnoreCase((String)_history.elementAt(i)) ){
     			nPos = i;
     			break;
@@ -1031,6 +1031,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
 	    	
+	        RhodesApp.Create(RhoConf.getInstance().getRhoRootPath());
+	        
 	    	CKeyListener list = new CKeyListener();
 	    	CTrackwheelListener wheel = new CTrackwheelListener();
 	    	this._history = new Vector();

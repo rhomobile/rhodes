@@ -381,13 +381,21 @@ module Rho
       
     end
   end # RhoConfig
+  
+    module AsyncHttp
+        def self.get(args)
+            AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param] )
+        end
+        def self.post(args)
+            AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param] )
+        end
+        def self.download_file(args)
+            AsyncHttp.do_downloadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] )
+        end
+        def self.upload_file(args)
+            AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] )
+        end
+    end
+  
 end # Rho
 
-module AsyncHttp
-    def self.get(args)
-        AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param] )
-    end
-    def self.post(args)
-        AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param] )
-    end
-end

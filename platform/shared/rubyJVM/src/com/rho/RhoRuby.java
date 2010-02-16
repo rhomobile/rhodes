@@ -6,12 +6,15 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
+
 import java.io.IOException;
 import com.rho.db.DBAdapter;
 import com.rho.sync.SyncThread;
+import com.rho.net.AsyncHttp;
 import com.rho.Properties;
 //import net.rim.device.api.system.CodeModuleManager;
 import com.rho.location.GeoLocation;
+import java.util.Hashtable;
 
 public class RhoRuby {
 
@@ -108,6 +111,7 @@ public class RhoRuby {
 	        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
 	        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
 	        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
+	        AsyncHttp.initMethods(RubyRuntime.AsyncHttpModule);
 	        
 	        helper = RhoClassFactory.createRhoRubyHelper();
 	        helper.initRubyExtensions();
@@ -269,4 +273,23 @@ public class RhoRuby {
 		return hash.add( ObjectFactory.createString(key), val);	
 	}
 	
+	public static Hashtable enum_strhash( RubyValue valHash)
+	{
+		Hashtable hash = new Hashtable();
+		
+		if ( valHash == null || valHash == RubyConstant.QNIL )
+			return hash;
+		
+		RubyHash items = (RubyHash)valHash;
+		RubyArray keys = items.keys();
+		RubyArray values = items.values();
+		for( int i = 0; i < keys.size(); i++ ){
+			String label = keys.get(i).toString();
+			String value = values.get(i).toString();
+			
+			hash.put(label, value);
+		}
+		
+		return hash;
+	}
 }

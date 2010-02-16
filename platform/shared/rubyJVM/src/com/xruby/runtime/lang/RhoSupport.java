@@ -5,6 +5,7 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 //import com.xruby.runtime.stdlib.RubyStringIO;
@@ -44,6 +45,10 @@ public class RhoSupport {
 		RubyRuntime.KernelModule.defineModuleMethod( "rho_get_app_property", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return rb_rho_get_app_property(receiver, arg, block);}
+		});
+		RubyRuntime.KernelModule.defineModuleMethod( "__rhoGetCallbackObject", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+				return RhodesApp.getInstance().getCallbackObject(arg.toInt());}
 		});
 		
 		SystemModule = RubyAPI.defineModule("System");

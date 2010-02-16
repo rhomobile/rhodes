@@ -28,7 +28,7 @@ public class RhoConf {
 	String getConfFilePath(){ return m_strConfFilePath; }
     
 	void setRhoRootPath(String szRootPath){ m_strRhoRootPath = szRootPath;}
-	String getRhoRootPath(){ return m_strRhoRootPath;}
+	public String getRhoRootPath(){ return m_strRhoRootPath;}
 	
     public void saveToFile(){
         String strData = saveToString();
@@ -269,7 +269,7 @@ public class RhoConf {
 		
 		NetResponse resp = null;
 		try{
-			resp = nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), com.rho.sync.SyncThread.getSyncEngine() );
+			resp = nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), com.rho.sync.SyncThread.getSyncEngine(), null );
 		}catch(Exception exc)
 		{
 			LOG.ERROR("send_log failed.", exc);

@@ -13,6 +13,9 @@ import com.rho.RhoLogger;
 import com.rho.SimpleFile;
 import com.rho.Tokenizer;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 public class NetRequest
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -30,13 +33,14 @@ public class NetRequest
 	private IHttpConnection m_connection = null;
 	//private char[] m_charBuffer = new char[1024];
 	public  byte[]  m_byteBuffer = new byte[4096];
-	
+	private boolean m_bIgnoreSuffixOnSim = true;
+	public boolean isCancelled(){ return m_bCancel;}
 	public NetResponse pullData(String strUrl, IRhoSession oSession ) throws Exception
     {
-		return doRequestTry(strUrl, "", oSession, true);
+		return doRequestTry(strUrl, "", oSession);
     }
 
-	public NetResponse doRequestTry(String strUrl, String strBody, IRhoSession oSession, boolean bCloseConnection ) throws Exception
+	private NetResponse doRequestTry(String strUrl, String strBody, IRhoSession oSession ) throws Exception
     {
 		NetResponse resp = null;
 		
@@ -45,7 +49,7 @@ public class NetRequest
 	    do
 	    {
 	    	try{
-	    		resp = doRequest(strUrl, strBody, oSession, bCloseConnection);
+	    		resp = doRequest(strBody != null && strBody.length() > 0 ? "POST" : "GET", strUrl, strBody, oSession, null);
 	    		break;
 	    	}catch(IOException exc)
 	    	{
@@ -60,8 +64,43 @@ public class NetRequest
 		
 		return resp;
     }
+
+	private void writeHeaders(Hashtable headers) throws Exception
+	{
+		if (headers != null && headers.size() > 0)
+		{
+	    	Enumeration valsHeaders = headers.elements();
+	    	Enumeration keysHeaders = headers.keys();
+			while (valsHeaders.hasMoreElements()) 
+			{
+				String strName = (String)keysHeaders.nextElement();
+				String strValue = (String)valsHeaders.nextElement();
+				m_connection.setRequestProperty(strName,strValue);
+		    }
+			
+		}
+	}
+
+	private void readHeaders(Hashtable headers) throws Exception
+	{
+		if ( headers != null )
+		{
+			headers.clear();
+			for (int i = 0;; i++) {
+				String strField = m_connection.getHeaderFieldKey(i);
+				if (strField == null && i > 0)
+					break;
+
+				if (strField != null ) 
+				{
+					String header_field = m_connection.getHeaderField(i);
+					headers.put(strField, header_field);
+				}
+			}
+		}
+	}
 	
-	public NetResponse doRequest(String strUrl, String strBody, IRhoSession oSession, boolean bCloseConnection ) throws Exception
+	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
     {
 		String strRespBody = null;
 		InputStream is = null;
@@ -70,7 +109,7 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, bCloseConnection);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
 			
 			if ( oSession != null )
 			{
@@ -84,13 +123,14 @@ public class NetRequest
 			m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
+			writeHeaders(headers);
 			if ( strBody != null && strBody.length() > 0 )
 			{
-				m_connection.setRequestMethod(IHttpConnection.POST);
+				m_connection.setRequestMethod(strMethod);
 				os = m_connection.openOutputStream();
 				os.write(strBody.getBytes(), 0, strBody.length());
 			}else
-				m_connection.setRequestMethod(IHttpConnection.GET);
+				m_connection.setRequestMethod(strMethod);
 			
 			is = m_connection.openInputStream();
 			code = m_connection.getResponseCode();
@@ -123,15 +163,8 @@ public class NetRequest
 				LOG.INFO("fetchRemoteData data readFully.");
 			}
 
-			if ( is != null )
-				try{ is.close(); }catch(IOException exc){}
-			if ( os != null )
-				try{ os.close(); }catch(IOException exc){}
-			
-			if ( bCloseConnection )
-				closeConnection();
-
-		}catch(Exception e)
+			readHeaders(headers);	
+		}finally
 		{
 			if ( is != null )
 				try{ is.close(); }catch(IOException exc){}
@@ -139,7 +172,8 @@ public class NetRequest
 				try{ os.close(); }catch(IOException exc){}
 			
 			closeConnection();
-			throw e;
+			
+			m_bIgnoreSuffixOnSim = true;
 		}
 		
 		return new NetResponse(strRespBody != null ? strRespBody : "", code );
@@ -147,7 +181,7 @@ public class NetRequest
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-		return doRequest(strUrl, strBody, oSession, true);
+		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	
 	static class ParsedCookie {
@@ -157,23 +191,18 @@ public class NetRequest
 
 	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-		NetResponse resp = null;
-		try{
-    		resp = doRequest/*Try*/(strUrl, strBody, oSession, false);
-    		if ( resp.isOK() )
-    		{
-    			ParsedCookie cookie = makeCookie(m_connection);
-    			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
-    				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
-    			else
-    				resp.setCharData("");
-    			
-//    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
-    			LOG.INFO("pullCookies: " + resp.getCharData() );
-    		}
-		}finally
+		Hashtable headers = new Hashtable();
+		m_bIgnoreSuffixOnSim = false;
+		NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
+		if ( resp.isOK() )
 		{
-			closeConnection();
+			ParsedCookie cookie = makeCookie(headers);
+			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+			else
+				resp.setCharData("");
+			
+			LOG.INFO("pullCookies: " + resp.getCharData() );
 		}
 		
 		return resp;
@@ -190,7 +219,7 @@ public class NetRequest
 	static String szMultipartContType = 
 	    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 
-	public NetResponse pushFile( String strUrl, String strFileName, IRhoSession oSession)throws Exception
+	public NetResponse pushFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable headers)throws Exception
 	{
 		SimpleFile file = null;
 		NetResponse resp = null;
@@ -206,7 +235,7 @@ public class NetRequest
 			int nTry = 0;
 			do{
 				try{
-					resp = pushFile1(strUrl, file, oSession );
+					resp = pushFile1(strUrl, file, oSession, headers );
 					break;
 				}catch(IOException e)
 				{
@@ -224,7 +253,7 @@ public class NetRequest
 		return resp;
 	}
 	
-	private NetResponse pushFile1( String strUrl, SimpleFile file, IRhoSession oSession)throws Exception
+	private NetResponse pushFile1( String strUrl, SimpleFile file, IRhoSession oSession, Hashtable headers)throws Exception
     {
 		String strRespBody = null;
 		InputStream is = null;
@@ -244,6 +273,7 @@ public class NetRequest
 			}
 			
 			m_connection.setRequestProperty("content-type", szMultipartContType);
+			writeHeaders(headers);
 			m_connection.setRequestMethod(IHttpConnection.POST);
 			
 			//PUSH specific
@@ -286,7 +316,9 @@ public class NetRequest
 				strRespBody = readFully(is);
 				
 				LOG.INFO("fetchRemoteData data readFully.");
-			}			
+			}
+			
+			readHeaders(headers);			
 		}finally{
 			try{
 				if (fis != null)
@@ -305,7 +337,7 @@ public class NetRequest
 		return new NetResponse(strRespBody != null ? strRespBody : "", code );
     }
 	
-	public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession )throws Exception
+	public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		SimpleFile file = null;
 		OutputStream fstream = null;
@@ -318,7 +350,7 @@ public class NetRequest
 			int nTry = 0;
 			do{
 				try{
-					resp = pullFile1( strUrl, fstream, oSession );
+					resp = pullFile1( strUrl, fstream, oSession, headers );
 					break;
 				}catch(IOException e)
 				{
@@ -339,7 +371,7 @@ public class NetRequest
 		return resp;
 	}
 	
-	NetResponse pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession )throws Exception
+	NetResponse pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		String strRespBody = null;
 		InputStream is = null;
@@ -349,9 +381,13 @@ public class NetRequest
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
 			
-			String strSession = oSession.getSession();
-			if ( strSession != null && strSession.length() > 0 )
-				m_connection.setRequestProperty("Cookie", strSession );
+			if ( oSession != null )
+			{
+				String strSession = oSession.getSession();
+				if ( strSession != null && strSession.length() > 0 )
+					m_connection.setRequestProperty("Cookie", strSession );
+			}
+			writeHeaders(headers);
 			
 			m_connection.setRequestMethod(IHttpConnection.GET);
 			
@@ -390,6 +426,7 @@ public class NetRequest
 				
 			}
 
+			readHeaders(headers);
 		}finally
 		{
 			if ( is != null )
@@ -467,34 +504,6 @@ public class NetRequest
 					bSession = true;
 				}
 			}
-			
-/*			int i = tok.indexOf('=');
-			String s1;
-			String s2;
-			if (i > 0) {
-				s1 = tok.substring(0, i);
-				s2 = tok.substring(i + 1);
-			} else {
-				s1 = tok;
-				s2 = "";
-			}
-			s1 = s1.trim();
-			s2 = s2.trim();
-
-			if (s1.equalsIgnoreCase("auth_token") && s2.length() > 0) {
-				cookie.strAuth = s1 + "=" + s2;
-				bAuth = true;
-			} else if (s1.equalsIgnoreCase("path") && s2.length() > 0) {
-				if (bAuth)
-					cookie.strAuth += ";" + s1 + "=" + s2;
-				else if (bSession)
-					cookie.strSession += ";" + s1 + "=" + s2;
-			} else if (s1.equalsIgnoreCase("rhosync_session")
-					&& s2.length() > 0) {
-				cookie.strSession = s1 + "=" + s2;
-				bSession = true;
-			}*/
-
 		}
 	}
 
@@ -518,19 +527,22 @@ public class NetRequest
 		
 	}*/
 	
-	private static ParsedCookie makeCookie(IHttpConnection connection)
-			throws IOException {
+	private static ParsedCookie makeCookie(Hashtable headers)
+			throws IOException 
+	{
 		ParsedCookie cookie = new ParsedCookie();
 
-		for (int i = 0;; i++) {
-			String strField = connection.getHeaderFieldKey(i);
-			if (strField == null && i > 0)
-				break;
+    	Enumeration valsHeaders = headers.elements();
+    	Enumeration keysHeaders = headers.keys();
+		while (valsHeaders.hasMoreElements()) 
+		{
+			String strName = (String)keysHeaders.nextElement();
+			String strValue = (String)valsHeaders.nextElement();
 
-			if (strField != null && strField.equalsIgnoreCase("Set-Cookie")) {
-				String header_field = connection.getHeaderField(i);
-				LOG.INFO("Set-Cookie: " + header_field);
-				parseCookie(header_field, cookie);
+			if (strName.equalsIgnoreCase("Set-Cookie")) 
+			{
+				LOG.INFO("Set-Cookie: " + strValue);
+				parseCookie(strValue, cookie);
 				// Hack to make it work on 4.6 device which doesn't parse
 				// cookies correctly
 				// if (cookie.strAuth==null) {
@@ -539,8 +551,7 @@ public class NetRequest
 				// System.out.println("Extracted auth_token: " + auth);
 				// }
 				if (cookie.strSession == null) {
-					String rhosync_session = extractToc("rhosync_session",
-							header_field);
+					String rhosync_session = extractToc("rhosync_session", strValue);
 					cookie.strSession = rhosync_session;
 					LOG.INFO("Extracted rhosync_session: " + rhosync_session);
 				}

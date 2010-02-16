@@ -40,7 +40,7 @@ CRhodesApp* CRhodesApp::m_pInstance = 0;
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath)
 {
-    if ( m_pInstance ) 
+    if ( m_pInstance != null) 
         return m_pInstance;
 
     m_pInstance = new CRhodesApp(strRootPath);
@@ -543,7 +543,7 @@ boolean CRhodesApp::sendLog()
 	String strQuery = strLogUrl + "client_log?" +
 	    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
 
-    NetResponse( resp, getNet().pushFile( strQuery, LOGCONF().getLogFilePath(), &(rho::sync::CSyncThread::getSyncEngine()) ) );
+    NetResponse( resp, getNet().pushFile( strQuery, LOGCONF().getLogFilePath(), &(rho::sync::CSyncThread::getSyncEngine()), null ) );
     if ( !resp.isOK() )
     {
         LOG(ERROR) + "send_log failed : network error";

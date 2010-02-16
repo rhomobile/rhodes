@@ -20,15 +20,15 @@ extern "C" void header_iter(const char* szName, const char* szValue, void* pHash
     ((Hashtable<String,String>*)pHash)->put(szName, szValue);
 }
 
-CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory,
+CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
     const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params) :  CRhoThread(factory)
 {
     m_ptrFactory = factory;
     m_strUrl = url != null ? url : "";
-    m_bPost = body != null;
     m_strBody = body != null ? body : "";
     m_strCallback = callback != null ? callback : "";
     m_strCallbackParams = callback_params != null ? callback_params : "";
+    m_eCmd = eCmd;
 
     rho_ruby_enum_strhash(headers, header_iter, &m_mapHeaders);
 
@@ -90,12 +90,27 @@ void CAsyncHttp::run()
 	LOG(INFO) + "RhoHttp thread start.";
 
     m_pNetRequest = m_ptrFactory->createNetRequest();
-    
-    m_pNetResponse = m_pNetRequest->doRequest((m_bPost?"POST":"GET"), m_strUrl, m_strBody, null, &m_mapHeaders);
-    INetResponse& resp = *m_pNetResponse;
+
+    switch( m_eCmd )
+    {
+    case hcGet:
+        m_pNetResponse = m_pNetRequest->doRequest("GET", m_strUrl, m_strBody, null, &m_mapHeaders);
+        break;
+    case hcPost:
+        m_pNetResponse = m_pNetRequest->doRequest("POST", m_strUrl, m_strBody, null, &m_mapHeaders);
+        break;
+
+    case hcDownload:
+        m_pNetResponse = m_pNetRequest->pullFile(m_strUrl, m_strBody, null, &m_mapHeaders);
+        break;
+
+    case hcUpload:
+        m_pNetResponse = m_pNetRequest->pushFile(m_strUrl, m_strBody, null, &m_mapHeaders);
+        break;
+    }
 
     if ( !m_pNetRequest->isCancelled() && m_strCallback.length() > 0)
-        callNotify(resp);
+        callNotify(*m_pNetResponse);
 
 	LOG(INFO) + "RhoHttp thread end.";
 
@@ -105,11 +120,11 @@ void CAsyncHttp::run()
 
 String CAsyncHttp::makeHeadersString()
 {
-    String strRes;
+    String strRes = "";
 
     for ( Hashtable<String,String>::iterator it = m_mapHeaders.begin();  it != m_mapHeaders.end(); ++it )
     {
-        if ( strRes.length() )
+        if ( strRes.length() > 0)
             strRes += "&";
 
         strRes += "headers[";
@@ -193,12 +208,22 @@ using namespace rho::net;
 
 void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params)
 {
-    new CAsyncHttp(rho::common::createClassFactory(), url, headers, null, callback, callback_params );
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcGet, url, headers, null, callback, callback_params );
 }
 
 void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params)
 {
-    new CAsyncHttp(rho::common::createClassFactory(), url, headers, body!=null?body:"", callback, callback_params );
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcPost, url, headers, body!=null?body:"", callback, callback_params );
+}
+
+void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params)
+{
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcDownload, url, headers, file_path, callback, callback_params );
+}
+
+void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params)
+{
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcUpload, url, headers, file_path, callback, callback_params );
 }
 
 void rho_asynchttp_cancel(const char* cancel_callback)
