@@ -72,19 +72,31 @@ void Curl_ssl_iphone_cleanup(void)
 {
 }
 
+static CURLcode ssl_iphone_connect_common(struct connectdata *conn, int sockindex,
+                                          bool blocking, bool *done)
+{
+  struct SessionHandle *data = conn->data;
+  curl_socket_t sockfd = conn->sock[sockindex];
+  struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+
+  if (connssl->state == ssl_connection_complete)
+    return CURLE_OK;
+
+  // TODO: implement
+  return CURLE_SSL_CONNECT_ERROR;
+}
+
 CURLcode Curl_ssl_iphone_connect_nonblocking(struct connectdata *conn,
                                              int sockindex,
                                              bool *done)
 {
-  // TODO: implement
-  return CURLE_OK;
+  return ssl_iphone_connect_common(conn, sockindex, FALSE, done);
 }
 
 CURLcode Curl_ssl_iphone_connect(struct connectdata *conn,
                                  int sockindex)
 {
-  // TODO: implement
-  return CURLE_OK;
+  return ssl_iphone_connect_common(conn, sockindex, TRUE, NULL);
 }
 
 void Curl_ssl_iphone_session_free(void *ptr)
