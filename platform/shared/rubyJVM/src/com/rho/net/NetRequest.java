@@ -197,10 +197,10 @@ public class NetRequest
 		if ( resp.isOK() )
 		{
 			ParsedCookie cookie = makeCookie(headers);
-			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+			//if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
 				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
-			else
-				resp.setCharData("");
+			//else
+			//	resp.setCharData("");
 			
 			LOG.INFO("pullCookies: " + resp.getCharData() );
 		}
