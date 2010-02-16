@@ -235,6 +235,10 @@ hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
 void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
 {
     struct CHashEnumData enumData;
+
+    if ( !hash || hash ==Qnil )
+        return;
+
     enumData.data = data;
     enumData.func = func;
 

@@ -44,7 +44,7 @@ public class CameraFilesListener implements FileSystemJournalListener {
 					_exists.put(e.nextElement(), new Boolean(true));
 				}
 			} catch (IOException e) {
-				LOG.ERROR("CameraFilesListener", e);
+				LOG.ERROR("CameraFilesListener: " + _folders[i], e);
 				continue;
 			}
 		}
