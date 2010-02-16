@@ -222,7 +222,7 @@ class SyncSource
 	        
 	        strQuery = strBaseQuery + "&" + blob.getBody();
 	        try{
-		        NetResponse resp = getNet().pushFile(strQuery, strFilePath, getSync() );
+		        NetResponse resp = getNet().pushFile(strQuery, strFilePath, getSync(), null );
 		        if ( !resp.isOK() )
 		        {
 		            getSync().setState(SyncEngine.esStop);
@@ -764,7 +764,7 @@ class SyncSource
 		url += "client_id=" + getSync().getClientID();
 		
 		try{
-			NetResponse resp = getNet().pullFile(url, fName, getSync());
+			NetResponse resp = getNet().pullFile(url, fName, getSync(), null);
 	        if ( !resp.isOK() )
 	        {
 	        	m_nErrCode = RhoRuby.ERR_REMOTESERVER;

@@ -90,20 +90,6 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
             break;
         }
 
-        if ( pHeaders && pHeaders->size() > 0 )
-        {
-            String strHeaders;
-
-            for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
-                strHeaders += it->first + ":" + it->second + "\r\n";
-
-            if ( !HttpAddRequestHeaders( hRequest, common::convertToStringW(strHeaders).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
-            {
-                pszErrFunction = L"HttpAddRequestHeaders";
-                break;
-            }
-        }
-
         if (oSession!=null)
         {
 			String strSession = oSession->getSession();
@@ -138,6 +124,7 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
                 break;
             }
         }
+        writeHeaders(m_pHeaders);
 
         if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
         {
@@ -153,6 +140,23 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
     }while(0);
 
     return pNetResp;
+}
+
+void CNetRequestImpl::writeHeaders(Hashtable<String,String>* pHeaders)
+{
+    if ( pHeaders && pHeaders->size() > 0 )
+    {
+        String strHeaders;
+
+        for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
+            strHeaders += it->first + ":" + it->second + "\r\n";
+
+        if ( !HttpAddRequestHeaders( hRequest, common::convertToStringW(strHeaders).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+        {
+            pszErrFunction = L"HttpAddRequestHeaders";
+            return;
+        }
+    }
 }
 
 boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
@@ -281,6 +285,8 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 
     do
     {
+        writeHeaders(m_pHeaders);
+
         if ( isError() )
             break;
 
@@ -317,6 +323,8 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
 
     do
     {
+        writeHeaders(m_pHeaders);
+
         if ( isError() )
             break;
 
