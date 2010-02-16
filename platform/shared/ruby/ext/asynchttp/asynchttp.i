@@ -1,5 +1,5 @@
 /* asynchttp.i */
-%module AsyncHttp
+%module "Rho::AsyncHttp"
 %{
 /* Put header files here or function declarations like below */
 	extern void rho_asynchttp_get(const char* url, VALUE headers, const char* callback, const char* callback_params);
@@ -7,6 +7,12 @@
 	
 	extern void rho_asynchttp_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
 	#define do_post rho_asynchttp_post
+
+	extern void rho_asynchttp_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+	#define do_downloadfile rho_asynchttp_downloadfile
+
+	extern void rho_asynchttp_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+	#define do_uploadfile rho_asynchttp_uploadfile
 
 	extern void rho_asynchttp_cancel(const char* cancel_callback);
 	#define cancel rho_asynchttp_cancel
@@ -22,5 +28,7 @@
 
 extern void do_get(const char* url, VALUE headers, const char* callback, const char* callback_params);
 extern void do_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
+extern void do_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+extern void do_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
 extern void cancel(const char* cancel_callback);
 extern void set_threaded_mode(int b);

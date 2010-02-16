@@ -32,8 +32,8 @@ struct INetRequest
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession ) = 0;
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)=0;
-    virtual INetResponse* pushFile(const String& strUrl, const String& strFileName, IRhoSession* oSession)=0;
-    virtual INetResponse* pullFile(const String& strUrl, const String& strFileName, IRhoSession* oSession)=0;
+    virtual INetResponse* pushFile(const String& strUrl, const String& strFileName, IRhoSession* oSession, Hashtable<String,String>* pHeaders)=0;
+    virtual INetResponse* pullFile(const String& strUrl, const String& strFileName, IRhoSession* oSession, Hashtable<String,String>* pHeaders)=0;
     virtual INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)=0;
 
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )=0;

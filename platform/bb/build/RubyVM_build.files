@@ -14,12 +14,14 @@ platform\shared\rubyJVM\src\com\rho\IRhoRubyHelper.java
 platform\shared\rubyJVM\src\com\rho\location\GeoLocation.java
 platform\shared\rubyJVM\src\com\rho\location\IGeoLocationImpl.java
 platform\shared\rubyJVM\src\com\rho\Mutex.java
+platform\shared\rubyJVM\src\com\rho\RhodesApp.java
 platform\shared\rubyJVM\src\com\rho\net\IHttpConnection.java
 platform\shared\rubyJVM\src\com\rho\net\INetworkAccess.java
 platform\shared\rubyJVM\src\com\rho\net\NetRequest.java
 platform\shared\rubyJVM\src\com\rho\net\NetResponse.java
 platform\shared\rubyJVM\src\com\rho\net\RhoConnection.java
 platform\shared\rubyJVM\src\com\rho\net\URI.java
+platform\shared\rubyJVM\src\com\rho\net\AsyncHttp.java
 platform\shared\rubyJVM\src\com\rho\Properties.java
 platform\shared\rubyJVM\src\com\rho\RhoClassFactory.java
 platform\shared\rubyJVM\src\com\rho\RhoConf.java

@@ -37,12 +37,14 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\location\GeoLocation.java
 ..\..\shared\rubyJVM\src\com\rho\location\IGeoLocationImpl.java
 ..\..\shared\rubyJVM\src\com\rho\Mutex.java
+..\..\shared\rubyJVM\src\com\rho\RhodesApp.java
 ..\..\shared\rubyJVM\src\com\rho\net\IHttpConnection.java
 ..\..\shared\rubyJVM\src\com\rho\net\INetworkAccess.java
 ..\..\shared\rubyJVM\src\com\rho\net\NetRequest.java
 ..\..\shared\rubyJVM\src\com\rho\net\NetResponse.java
 ..\..\shared\rubyJVM\src\com\rho\net\RhoConnection.java
 ..\..\shared\rubyJVM\src\com\rho\net\URI.java
+..\..\shared\rubyJVM\src\com\rho\net\AsyncHttp.java
 ..\..\shared\rubyJVM\src\com\rho\Properties.java
 ..\..\shared\rubyJVM\src\com\rho\RhoClassFactory.java
 ..\..\shared\rubyJVM\src\com\rho\RhoConf.java

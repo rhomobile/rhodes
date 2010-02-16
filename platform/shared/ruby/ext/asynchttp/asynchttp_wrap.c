@@ -1533,7 +1533,7 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 /* -------- TYPES TABLE (END) -------- */
 
 #define SWIG_init    Init_AsyncHttp
-#define SWIG_name    "AsyncHttp"
+#define SWIG_name    "Rho::AsyncHttp"
 
 static VALUE mAsyncHttp;
 
@@ -1551,6 +1551,12 @@ static VALUE mAsyncHttp;
 	
 	extern void rho_asynchttp_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
 	#define do_post rho_asynchttp_post
+
+	extern void rho_asynchttp_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+	#define do_downloadfile rho_asynchttp_downloadfile
+
+	extern void rho_asynchttp_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+	#define do_uploadfile rho_asynchttp_uploadfile
 
 	extern void rho_asynchttp_cancel(const char* cancel_callback);
 	#define cancel rho_asynchttp_cancel
@@ -1770,6 +1776,124 @@ _wrap_do_post(int argc, VALUE *argv, VALUE self) {
   }
   arg5 = (char *)(buf5);
   do_post((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_do_downloadfile(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  VALUE arg2 = (VALUE) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "do_downloadfile" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  arg2 = argv[1];
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "do_downloadfile" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "do_downloadfile" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "do_downloadfile" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  do_downloadfile((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_do_uploadfile(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  VALUE arg2 = (VALUE) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "do_uploadfile" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  arg2 = argv[1];
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "do_uploadfile" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "do_uploadfile" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "do_uploadfile" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  do_uploadfile((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
@@ -2088,7 +2212,8 @@ SWIGEXPORT void Init_AsyncHttp(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mAsyncHttp = rb_define_module("AsyncHttp");
+  mAsyncHttp = rb_define_module("Rho");
+  mAsyncHttp = rb_define_module_under(mAsyncHttp, "AsyncHttp");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -2098,6 +2223,8 @@ SWIGEXPORT void Init_AsyncHttp(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mAsyncHttp, "do_get", _wrap_do_get, -1);
   rb_define_module_function(mAsyncHttp, "do_post", _wrap_do_post, -1);
+  rb_define_module_function(mAsyncHttp, "do_downloadfile", _wrap_do_downloadfile, -1);
+  rb_define_module_function(mAsyncHttp, "do_uploadfile", _wrap_do_uploadfile, -1);
   rb_define_module_function(mAsyncHttp, "cancel", _wrap_cancel, -1);
   rb_define_module_function(mAsyncHttp, "set_threaded_mode", _wrap_set_threaded_mode, -1);
 }

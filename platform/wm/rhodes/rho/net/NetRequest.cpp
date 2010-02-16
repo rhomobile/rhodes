@@ -46,7 +46,7 @@ void CNetRequest::cancel()
         m_pCurNetRequestImpl->cancel();
 }
 
-INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
+INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
@@ -63,7 +63,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
         if ( pResp )
             delete pResp;
 
-        CNetRequestImpl oImpl(this, "POST",strUrl,oSession,null);
+        CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders);
         pResp = oImpl.sendStream(oFile.getInputStream());
         nTry++;
 
@@ -72,7 +72,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
     return pResp;
 }
 
-INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession)
+INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
@@ -89,7 +89,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
         if ( pResp )
             delete pResp;
 
-        CNetRequestImpl oImpl(this, "GET",strUrl,oSession,null);
+        CNetRequestImpl oImpl(this, "GET",strUrl,oSession,pHeaders);
         pResp = oImpl.downloadFile(oFile);
         nTry++;
 

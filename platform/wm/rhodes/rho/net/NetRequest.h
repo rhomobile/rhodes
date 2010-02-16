@@ -18,8 +18,8 @@ public:
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
-    virtual INetResponse* pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession);
-    virtual INetResponse* pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession);
+    virtual INetResponse* pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    virtual INetResponse* pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
     virtual INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
 
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );

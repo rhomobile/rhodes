@@ -20,8 +20,8 @@ public:
 
     INetResponse *pullData(const String& strUrl, IRhoSession *oSession);
     INetResponse *pushData(const String& strUrl, const String& strBody, IRhoSession *oSession);
-    INetResponse *pushFile(const String& strUrl, const String& strFileName, IRhoSession *oSession);
-    INetResponse *pullFile(const String& strUrl, const String& strFilePath, IRhoSession *oSession);
+    INetResponse *pushFile(const String& strUrl, const String& strFileName, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
+    INetResponse *pullFile(const String& strUrl, const String& strFilePath, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
     INetResponse *pullCookies(const String& strUrl, const String& strBody, IRhoSession *oSession);
     INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
 
