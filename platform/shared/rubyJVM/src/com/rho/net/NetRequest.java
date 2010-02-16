@@ -163,12 +163,12 @@ public class NetRequest
     		if ( resp.isOK() )
     		{
     			ParsedCookie cookie = makeCookie(m_connection);
-    			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+/*    			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
     				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
     			else
     				resp.setCharData("");
-    			
-//    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+*/    			
+    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
     			LOG.INFO("pullCookies: " + resp.getCharData() );
     		}
 		}finally
