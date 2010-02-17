@@ -1,3 +1,6 @@
+== 1.4.1
+* fixed issue with empty cookie check failing
+
 == 1.4.0
 * improved spec running framework, see spec/framework_spec for details
 * added api for returning screensize
