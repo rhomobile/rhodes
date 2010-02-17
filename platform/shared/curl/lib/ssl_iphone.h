@@ -20,7 +20,6 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: ssluse.h,v 1.32 2008-09-05 14:29:21 bagder Exp $
  ***************************************************************************/
 
 #ifdef USE_SSL_IPHONE
@@ -31,8 +30,8 @@
 #include "urldata.h"
 CURLcode Curl_ssl_iphone_connect(struct connectdata *conn, int sockindex);
 CURLcode Curl_ssl_iphone_connect_nonblocking(struct connectdata *conn,
-                                       int sockindex,
-                                       bool *done);
+                                             int sockindex,
+                                             bool *done);
 
 /* close a SSL connection */
 void Curl_ssl_iphone_close(struct connectdata *conn, int sockindex);
@@ -58,22 +57,21 @@ int Curl_ssl_iphone_init(void);
 void Curl_ssl_iphone_cleanup(void);
 
 ssize_t Curl_ssl_iphone_send(struct connectdata *conn,
-                       int sockindex,
-                       const void *mem,
-                       size_t len);
-ssize_t Curl_ssl_iphone_recv(struct connectdata *conn, /* connection data */
-                       int num,                  /* socketindex */
-                       char *buf,                /* store read data here */
-                       size_t buffersize,        /* max amount to read */
-                       bool *wouldblock);
+                             int sockindex,
+                             const void *mem,
+                             size_t len);
+ssize_t Curl_ssl_iphone_recv(struct connectdata *conn,
+                             int sockindex,
+                             char *buf,
+                             size_t size,
+                             bool *wouldblock);
 
 size_t Curl_ssl_iphone_version(char *buffer, size_t size);
 int Curl_ssl_iphone_check_cxn(struct connectdata *cxn);
 int Curl_ssl_iphone_seed(struct SessionHandle *data);
 
 int Curl_ssl_iphone_shutdown(struct connectdata *conn, int sockindex);
-bool Curl_ssl_iphone_data_pending(const struct connectdata *conn,
-                            int connindex);
+bool Curl_ssl_iphone_data_pending(const struct connectdata *conn, int connindex);
 
 /* API setup for OpenSSL */
 #define curlssl_init Curl_ssl_iphone_init
