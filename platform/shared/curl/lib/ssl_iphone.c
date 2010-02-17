@@ -65,7 +65,7 @@
  */
 int Curl_ssl_iphone_init(void)
 {
-  return 1;
+    return 1;
 }
 
 void Curl_ssl_iphone_cleanup(void)
@@ -75,99 +75,132 @@ void Curl_ssl_iphone_cleanup(void)
 static CURLcode ssl_iphone_connect_common(struct connectdata *conn, int sockindex,
                                           bool blocking, bool *done)
 {
-  struct SessionHandle *data = conn->data;
-  curl_socket_t sockfd = conn->sock[sockindex];
-  struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    CURLcode retcode;
+    struct SessionHandle *data = conn->data;
+    curl_socket_t sockfd = conn->sock[sockindex];
+    struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    long timeout_ms;
 
-  if (connssl->state == ssl_connection_complete)
-    return CURLE_OK;
+    if (connssl->state == ssl_connection_complete)
+        return CURLE_OK;
+    
+    if (connssl->connecting_state == ssl_connect_1) {
+        timeout_ms = Curl_timeleft(conn, NULL, TRUE);
+        
+        if (timeout_ms < 0) {
+            failf(data, "SSL connection timeout");
+            return CURLE_OPERATION_TIMEDOUT;
+        }
+        
+        
+        retcode = ssl_iphone_connect_1(conn, sockindex);
+        if (retcode)
+            return retcode;
+    }
+    
+    while (connssl->connecting_state == ssl_connect_2 ||
+           connssl->connecting_state == ssl_connect_2_reading ||
+           connssl->connecting_state == ssl_connect_2_writing) {
+        timeout_ms = Curl_timeleft(conn, NULL, TRUE);
+        if (timeout_ms < 0) {
+            failf(data, "SSL connection timeout");
+            return CURLE_OPERATION_TIMEDOUT;
+        }
+    }
 
-  // TODO: implement
-  return CURLE_SSL_CONNECT_ERROR;
+    // TODO: implement
+    return CURLE_SSL_CONNECT_ERROR;
 }
 
 CURLcode Curl_ssl_iphone_connect_nonblocking(struct connectdata *conn,
                                              int sockindex,
                                              bool *done)
 {
-  return ssl_iphone_connect_common(conn, sockindex, FALSE, done);
+    return ssl_iphone_connect_common(conn, sockindex, FALSE, done);
 }
 
 CURLcode Curl_ssl_iphone_connect(struct connectdata *conn,
                                  int sockindex)
 {
-  return ssl_iphone_connect_common(conn, sockindex, TRUE, NULL);
+    CURLcode retcode;
+    bool done = FALSE;
+    retcode = ssl_iphone_connect_common(conn, sockindex, TRUE, &done);
+    if (retcode)
+        return retcode;
+    
+    DEBUGASSERT(done);
+    return CURLE_OK;
 }
 
 void Curl_ssl_iphone_session_free(void *ptr)
 {
-  // TODO: implement
+    // TODO: implement
 }
 
 int Curl_ssl_iphone_close_all(struct SessionHandle *data)
 {
-  // TODO: implement
-  return 0;
+    // TODO: implement
+    return 0;
 }
 
 void Curl_ssl_iphone_close(struct connectdata *conn, int sockindex)
 {
-  // TODO: implement
+    // TODO: implement
 }
 
 int Curl_ssl_iphone_shutdown(struct connectdata *conn, int sockindex)
 {
-  // TODO: implement
-  return 0;
+    // TODO: implement
+    return 0;
 }
 
 CURLcode Curl_ssl_iphone_set_engine(struct SessionHandle *data, const char *engine)
 {
-  // TODO: implement
-  return CURLE_OK;
+    // TODO: implement
+    return CURLE_OK;
 }
 
 CURLcode Curl_ssl_iphone_set_engine_default(struct SessionHandle *data)
 {
-  // TODO: implement
-  return CURLE_OK;
+    // TODO: implement
+    return CURLE_OK;
 }
 
 struct curl_slist *Curl_ssl_iphone_engines_list(struct SessionHandle *data)
 {
-  // TODO: implement
-  return NULL;
+    // TODO: implement
+    return NULL;
 }
 
 ssize_t Curl_ssl_iphone_send(struct connectdata *conn, int sockindex, const void *mem, size_t len)
 {
-  // TODO: implement
-  return -1;
+    // TODO: implement
+    return -1;
 }
 
 ssize_t Curl_ssl_iphone_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, bool *wouldblock)
 {
-  // TODO: implement
-  return -1;
+    // TODO: implement
+    return -1;
 }
 
 size_t Curl_ssl_iphone_version(char *buffer, size_t size)
 {
-  // TODO: implement
-  return 0;
+    // TODO: implement
+    return 0;
 }
 
 int Curl_ssl_iphone_check_cxn(struct connectdata *cxn)
 {
-  // TODO: implement
-  return 0;
+    // TODO: implement
+    return 0;
 }
 
 bool Curl_ssl_iphone_data_pending(const struct connectdata *conn,
                                   int connindex)
 {
-  // TODO: implement
-  return 0;
+    // TODO: implement
+    return 0;
 }
 
 #endif /* USE_SSL_IPHONE */
