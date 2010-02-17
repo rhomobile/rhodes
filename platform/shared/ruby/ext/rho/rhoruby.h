@@ -25,6 +25,7 @@ typedef unsigned long VALUE;
 typedef unsigned __int64 uint64__;
 #else
 typedef unsigned long long uint64__;
+typedef unsigned long long __int64;	
 #endif
 	
 void RhoRubyStart();
