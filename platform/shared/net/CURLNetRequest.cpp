@@ -18,41 +18,37 @@ IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
 
 class CURLNetResponseImpl : public INetResponse
 {
-    char* m_pData;
+    String m_data;
     int   m_nRespCode;
 
 public:
-    CURLNetResponseImpl(char* data, int nRespCode) : m_pData(data), m_nRespCode(nRespCode){}
-    ~CURLNetResponseImpl()
-    {
-      if (m_pData)
-        free(m_pData);
-    }
+    CURLNetResponseImpl(String const &data, int nRespCode) : m_data(data), m_nRespCode(nRespCode){}
 
     virtual const char* getCharData()
     {
-      return m_pData ? m_pData : "";
+        return m_data.c_str();
     }
 
     virtual unsigned int getDataSize()
     {
-      return m_pData ? strlen(m_pData) : 0;
+        return m_data.size();
     }
 
     void setRespCode(int nRespCode) 
     {
-      m_nRespCode = nRespCode;
+        m_nRespCode = nRespCode;
     }
 
     virtual int getRespCode() 
     {
-      return m_nRespCode;
+        return m_nRespCode;
     }
 
     virtual boolean isOK()
     {
-      return m_nRespCode == 200;
+        return m_nRespCode == 200;
     }
+    
     virtual boolean isUnathorized()
     {
         return m_nRespCode == 401;
@@ -60,14 +56,9 @@ public:
 
     virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 
-    void setCharData(const char* pData)
+    void setCharData(const String &data)
     {
-        if (m_pData)
-        {
-            free(m_pData);
-            m_pData = 0;
-        }
-        m_pData = strdup(pData);
+        m_data = data;
     }
 };
 
@@ -242,7 +233,7 @@ static CURLMcode do_curl_perform(CURLM *curlm, CURL *curl)
 	return err;
 }
 
-char* CURLNetRequest::request(const char *method, const String& strUrl, const String& strBody,
+String CURLNetRequest::request(const char *method, const String& strUrl, const String& strBody,
                            int *pnRespCode, IRhoSession* oSession)
 {
     if (pnRespCode)
@@ -251,7 +242,7 @@ char* CURLNetRequest::request(const char *method, const String& strUrl, const St
     if (oSession)
         session = oSession->getSession();
     if (session.empty() && !isLocalHost(strUrl))
-        return NULL;
+        return String();
 
     RAWLOG_INFO1("Request url: %s", strUrl.c_str());
 
@@ -267,7 +258,7 @@ char* CURLNetRequest::request(const char *method, const String& strUrl, const St
 	
 	if (err != CURLM_OK) {
 		RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
-		return NULL;
+		return String();
 	}
 
     long statusCode = 0;
@@ -276,28 +267,24 @@ char* CURLNetRequest::request(const char *method, const String& strUrl, const St
     if (pnRespCode)
         *pnRespCode = (int)statusCode;
 
-    char* respData = NULL;
-    if (statusCode != 500 && statusCode != 422)
-        respData = str_assign((char*)result.c_str());
-
     if (statusCode != 200) {
         RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
-                      (int)statusCode, respData ? respData : "<null>");
+                      (int)statusCode, result.c_str());
         if (statusCode == 401)
             if (oSession)
                 oSession->logout();
     }
     else {
         RAWTRACE("RESPONSE-----");
-        RAWTRACE(respData);
+        RAWTRACE(result.c_str());
         RAWTRACE("END RESPONSE-----");
     }
 
-    return respData;
+    return result;
 }
 
-char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, const String& strBody,
-                                  int *pnRespCode, IRhoSession* oSession)
+String CURLNetRequest::requestCookies(const char *method, const String& strUrl, const String& strBody,
+                                      int *pnRespCode, IRhoSession* oSession)
 {
     if (pnRespCode)
         *pnRespCode = -1;
@@ -310,7 +297,7 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
         if (pnRespCode)
             *pnRespCode = 200;
 
-        return NULL;
+        return String();
     }
 
     RAWLOG_INFO1("Request cookies by Url: %s", strUrl.c_str());
@@ -336,13 +323,9 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
     if (pnRespCode)
         *pnRespCode = (int)statusCode;
 
-    char* respData = NULL;
-    if (statusCode != 500 && statusCode != 422)
-        respData = str_assign((char*)result.c_str());
-
     if (statusCode != 200) {
         RAWLOG_ERROR2("Request cookies failed. HTTP Code: %d returned. HTTP Response: %s", 
-                      (int)statusCode, respData ? respData : "<null>");
+                      (int)statusCode, result.c_str());
         if (statusCode == 401)
             if (oSession)
                 oSession->logout();
@@ -407,18 +390,15 @@ char* CURLNetRequest::requestCookies(const char *method, const String& strUrl, c
         }
     }
 
-    return respData;
+    return result;
 }
 
-char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, IRhoSession *oSession)
+int CURLNetRequest::pullMultipartData(const String& strUrl, void* oFile, IRhoSession *oSession)
 {
-    if (pnRespCode)
-        *pnRespCode = -1;
+    int respCode = -1;
     String session;
     if (oSession)
         session = oSession->getSession();
-    //if (session.empty() && !isLocalHost(strUrl))
-    //    return NULL;
     
     RAWLOG_INFO1("Request url: %s", strUrl.c_str());
     
@@ -433,14 +413,13 @@ char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, v
 	
 	if (err != CURLM_OK) {
 		RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
-		return NULL;
+		return respCode;
 	}
     
     long statusCode = 0;
     if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
         statusCode = 500;
-    if (pnRespCode)
-        *pnRespCode = (int)statusCode;
+    respCode = (int)statusCode;
     
     if (statusCode != 200) {
         RAWLOG_ERROR1("Request failed. HTTP Code: %d returned", (int)statusCode);
@@ -449,10 +428,11 @@ char* CURLNetRequest::pullMultipartData(const String& strUrl, int* pnRespCode, v
                 oSession->logout();
     }
     
-    return str_assign("OK");
+    return respCode;
 }
 
-char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession)
+String CURLNetRequest::pushMultipartData(const String& strUrl, const String& strFilePath,
+                                         int* pnRespCode, IRhoSession *oSession)
 {
     if (pnRespCode)
         *pnRespCode = -1;
@@ -461,61 +441,60 @@ char* CURLNetRequest::pushMultipartData(const String& strUrl, const String& strF
     if (oSession)
         session = oSession->getSession();
 
-    char *respData = NULL;
-    if (!session.empty()) {
-        RAWLOG_INFO2("Push file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
+    if (session.empty()) {
+        RAWLOG_ERROR("Push file failed: session empty");
+        return String();
+    }
+    
+    RAWLOG_INFO2("Push file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
 
-        rho_net_impl_network_indicator(1);
+    rho_net_impl_network_indicator(1);
 
-        String result;
-        curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, "", session, result);
+    String result;
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, "", session, result);
 
-        curl_httppost *post = NULL, *last = NULL;
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
-        curl_formadd(&post, &last,
-                     CURLFORM_COPYNAME, "blob",
-                     CURLFORM_FILE, strFilePath.c_str(),
-                     CURLFORM_CONTENTTYPE, "application/octet-stream",
-                     CURLFORM_END);
-        curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-		
-        //curl_easy_perform(curl);
-		CURLMcode err = do_curl_perform(curlm, curl);
+    curl_httppost *post = NULL, *last = NULL;
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+    curl_formadd(&post, &last,
+                 CURLFORM_COPYNAME, "blob",
+                 CURLFORM_FILE, strFilePath.c_str(),
+                 CURLFORM_CONTENTTYPE, "application/octet-stream",
+                 CURLFORM_END);
+    curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+    
+    //curl_easy_perform(curl);
+    CURLMcode err = do_curl_perform(curlm, curl);
 
-        curl_slist_free_all(hdrs);
-        curl_formfree(post);
+    curl_slist_free_all(hdrs);
+    curl_formfree(post);
 
-        rho_net_impl_network_indicator(0);
-		
-		if (err != CURLM_OK) {
-			RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
-			return NULL;
-		}
-
-        long statusCode = 0;
-        if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
-            statusCode = 500;
-        if (pnRespCode)
-            *pnRespCode = (int)statusCode;
-
-        if (statusCode != 500 && statusCode != 422)
-            respData = str_assign((char*)result.c_str());
-
-        if (statusCode != 200) {
-            RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
-                          (int)statusCode, respData ? respData : "<null>");
-            if (statusCode == 401)
-                if (oSession)
-                    oSession->logout();
-        }
-        else {
-            RAWTRACE("RESPONSE-----");
-            RAWTRACE(respData);
-            RAWTRACE("END RESPONSE-----");
-        }
+    rho_net_impl_network_indicator(0);
+    
+    if (err != CURLM_OK) {
+        RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
+        return String();
     }
 
-    return respData;
+    long statusCode = 0;
+    if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
+        statusCode = 500;
+    if (pnRespCode)
+        *pnRespCode = (int)statusCode;
+
+    if (statusCode != 200) {
+        RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
+                      (int)statusCode, result.c_str());
+        if (statusCode == 401)
+            if (oSession)
+                oSession->logout();
+    }
+    else {
+        RAWTRACE("RESPONSE-----");
+        RAWTRACE(result.c_str());
+        RAWTRACE("END RESPONSE-----");
+    }
+
+    return result;
 }
 
 INetResponse* CURLNetRequest::doRequestTry(const char* method, const String& strUrl, const String& strBody,
@@ -524,7 +503,7 @@ INetResponse* CURLNetRequest::doRequestTry(const char* method, const String& str
     int nRespCode = -1;
     int nTry = 0;
     m_bCancel = false;
-    char* response = 0;
+    String response;
 
     do{
 		//RAWLOG_INFO("start Net request");
@@ -573,7 +552,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
     int nRespCode = -1;
     int nTry = 0;
     m_bCancel = false;
-    char* response = 0;
+    String response;
 
     do{
         response = pushMultipartData(strUrl, strFilePath, &nRespCode, oSession);
@@ -595,13 +574,12 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     int nRespCode = -1;
     int nTry = 0;
     m_bCancel = false;
-    char* response = 0;
     do{
-        response = pullMultipartData(strUrl, &nRespCode, &oFile, oSession);
+        nRespCode = pullMultipartData(strUrl, &oFile, oSession);
         nTry++;
     }while( !m_bCancel && nRespCode<0 && nTry < MAX_NETREQUEST_RETRY);
 
-    return new CURLNetResponseImpl(response,nRespCode);
+    return new CURLNetResponseImpl("", nRespCode);
 }
 
 String CURLNetRequest::resolveUrl(const String& strUrl)
