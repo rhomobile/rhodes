@@ -22,6 +22,7 @@ platform\shared\rubyJVM\src\com\rho\net\NetResponse.java
 platform\shared\rubyJVM\src\com\rho\net\RhoConnection.java
 platform\shared\rubyJVM\src\com\rho\net\URI.java
 platform\shared\rubyJVM\src\com\rho\net\AsyncHttp.java
+platform\shared\rubyJVM\src\com\rho\rjson\RJSONTokener.java
 platform\shared\rubyJVM\src\com\rho\Properties.java
 platform\shared\rubyJVM\src\com\rho\RhoClassFactory.java
 platform\shared\rubyJVM\src\com\rho\RhoConf.java

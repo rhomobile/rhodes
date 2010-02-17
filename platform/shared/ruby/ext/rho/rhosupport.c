@@ -21,6 +21,7 @@ static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result);
 VALUE RhoPreparePath(VALUE path);
 VALUE rb_iseq_eval(VALUE iseqval);
+static void Init_RhoJSON();
 
 VALUE __rhoGetCurrentDir(void)
 {
@@ -362,6 +363,7 @@ void Init_RhoSupport()
 
 	Init_RhoLog();
 	Init_RhoBlobs();
+    Init_RhoJSON();
 }
 
 static void Init_RhoBlobs()
@@ -509,6 +511,20 @@ static void Init_RhoLog(){
     
     rb_gv_set("$stdout", appLog);
     rb_gv_set("$stderr", appLog);
+}
+
+static VALUE rb_RhoModule;
+static VALUE rb_RhoJSON;
+extern VALUE rho_json_parse(VALUE,VALUE);
+static void Init_RhoJSON()
+{
+
+    VALUE appLog; //, appErrLog;
+
+    rb_RhoModule = rb_define_module("Rho");
+    rb_RhoJSON = rb_define_class_under(rb_RhoModule, "JSON", rb_cObject);
+
+    rb_define_method(rb_RhoJSON, "parse", rho_json_parse, 1);
 }
 
 static void Init_RhoLog2()
