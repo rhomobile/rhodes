@@ -1,6 +1,7 @@
 lib/**/*.o
 *~
 *.iseq
+tags
 .DS_Store
 rakefile.rb
 rhobuild.yml
@@ -16,6 +17,7 @@ platform/iphone/rhosynclib/build/*
 platform/iphone/tcmalloc/build/*
 platform/iphone/RhoLib/build/*
 platform/iphone/Tests/build/*
+platform/iphone/curl/build/*
 platform/iphone/bin/*
 platform/mac/bin/*
 platform/osx/Rhodes Debugger/build/*
