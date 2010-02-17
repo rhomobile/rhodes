@@ -1139,6 +1139,10 @@
 				RelativePath="..\..\shared\json\printbuf.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\json\RJSONTokener.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="sync"
