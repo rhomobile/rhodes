@@ -31,16 +31,16 @@ public:
     virtual boolean isCancelled(){return m_bCancel;}
 
 private:
-    char* request(const char *method, const String& strUrl, const String& strBody,
+    String request(const char *method, const String& strUrl, const String& strBody,
                   int *pnRespCode, IRhoSession* oSession);
-    char* requestCookies(const char *method, const String& strUrl, const String& strBody,
+    String requestCookies(const char *method, const String& strUrl, const String& strBody,
                   int *pnRespCode, IRhoSession* oSession);
 
-    typedef char* (CURLNetRequest::*Frho_net_impl_request)(const char* method, const String& strUrl,
+    typedef String (CURLNetRequest::*Frho_net_impl_request)(const char* method, const String& strUrl,
                   const String& strBody, int* pnRespCode, IRhoSession* oSession);
 
-    char* pullMultipartData(const String& strUrl, int* pnRespCode, void* oFile, IRhoSession *oSession);
-    char* pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession);
+    int pullMultipartData(const String& strUrl, void* oFile, IRhoSession *oSession);
+    String pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession);
 
     INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody,
         Frho_net_impl_request func, IRhoSession* oSession );
