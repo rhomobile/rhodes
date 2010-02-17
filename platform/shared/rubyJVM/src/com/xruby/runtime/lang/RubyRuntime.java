@@ -87,6 +87,7 @@ public class RubyRuntime {
     public static RubyClass PBRecordClass;
     public static RubyClass GeoLocationClass;
     public static RubyModule AsyncHttpModule;
+    public static RubyClass JSONClass;
     public static RubyClass CameraClass;
     public static RubyClass WebViewClass;
     public static RubyClass RhoConfClass;
@@ -258,6 +259,7 @@ public class RubyRuntime {
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);
         RubyModule rhoModule = RubyAPI.defineModule("Rho"); 
         AsyncHttpModule = rhoModule.defineModule("AsyncHttp");
+        JSONClass = rhoModule.defineClass("JSON", RubyRuntime.ObjectClass);
         CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);
         WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);
         RhoConfClass = RubyAPI.defineClass("RhoConf", RubyRuntime.ObjectClass);

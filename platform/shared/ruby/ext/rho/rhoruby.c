@@ -272,6 +272,21 @@ VALUE rho_ruby_create_string(const char* szVal)
     return rb_str_new2(szVal);
 }
 
+VALUE rho_ruby_create_boolean(unsigned char b)
+{
+    return b ? Qtrue : Qfalse;
+}
+
+VALUE rho_ruby_create_integer(__int64 i)
+{
+    return rb_ll2inum(i);
+}
+
+VALUE rho_ruby_create_double(double d)
+{
+    return rb_float_new(d);
+}
+
 void rho_ruby_add_to_array(VALUE ar, VALUE val)
 {
     rb_ary_push(ar,val);

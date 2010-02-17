@@ -1,6 +1,7 @@
 package com.rho.net;
 
 import com.rho.*;
+import com.rho.rjson.RJSONTokener;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -117,10 +118,7 @@ public class AsyncHttp extends RhoThread
 		    }
 		    
 		    if ( !m_pNetRequest.isCancelled() && m_strCallback.length() > 0)
-		    {
-		    	processResponse(m_pNetResponse);
 		        callNotify(m_pNetResponse);
-		    }
 	    }catch(Exception exc)
 	    {
 	    	callNotify(new NetResponse( "", RhoRuby.ERR_NETWORK));
@@ -155,9 +153,22 @@ public class AsyncHttp extends RhoThread
 
 	void processResponse(NetResponse resp )
 	{
-	    if (resp.isOK())
+	    if (resp.isOK() && m_mapHeaders != null)
 	    {
-	        //TODO: parse JSON or xml
+	    	String strContType = (String)m_mapHeaders.get("Content-Type");
+	    	if ( strContType.indexOf("application/json") >=0 )
+	    	{
+	    		RJSONTokener json = new RJSONTokener(resp.getCharData());
+	    		
+	    		try{
+	    			m_valBody = json.nextRValue();
+	    			
+	    			return;
+	    		}catch(Exception exc)
+	    		{
+	    			LOG.ERROR("Incorrect json body.", exc);
+	    		}
+	    	}
 	    }
 
 	    m_valBody = RhoRuby.create_string(resp.getCharData());

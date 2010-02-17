@@ -136,11 +136,20 @@ String CAsyncHttp::makeHeadersString()
     return strRes;
 }
 
+extern "C" VALUE rjson_tokener_parse(const char *str);
 void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
 {
     if (resp.isOK())
     {
-        //TODO: parse JSON or xml
+        String strContType = m_mapHeaders.get("Content-Type");
+    	if ( strContType.find("application/json") >=0 )
+        {
+            m_valBody = rjson_tokener_parse(resp.getCharData());
+            if ( m_valBody != 0 )
+                return;
+
+            LOG(ERROR) + "Incorrect json body.";
+        }
     }
 
     m_valBody = rho_ruby_create_string(resp.getCharData());
