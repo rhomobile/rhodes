@@ -36,11 +36,7 @@
 #include "json_object.h"
 #include "json_tokener.h"
 
-extern struct json_tokener* json_tokener_new(void);
-extern void json_tokener_free(struct json_tokener *tok);
-extern void json_tokener_reset(struct json_tokener *tok);
-extern struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
-						 char *str, int len);
+#include "ruby/ext/rho/rhoruby.h"
 
 #if !HAVE_STRNCASECMP && defined(_MSC_VER)
   /* MSC has the version as _strnicmp */
@@ -51,97 +47,115 @@ extern struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "JSON"
+#define DEFAULT_LOGCATEGORY "RJSON"
 
 static const char* json_null_str = "null";
 static const char* json_true_str = "true";
 static const char* json_false_str = "false";
 
-const char* json_tokener_errors[] = {
-  "success",
-  "continue",
-  "nesting to deep",
-  "unexpected end of data",
-  "unexpected character",
-  "null expected",
-  "boolean expected",
-  "number expected",
-  "array value separator ',' expected",
-  "quoted object property name expected",
-  "object property name separator ':' expected",
-  "object value separator ',' expected",
-  "invalid string sequence",
-  "expected comment",
-};
+extern const char* json_tokener_errors[];
 
+void rjson_tokener_reset(struct json_tokener *tok);
+struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
+					  const char *str, int len);
 
-struct json_tokener* json_tokener_new()
+struct json_tokener* rjson_tokener_new()
 {
   struct json_tokener *tok = calloc(1, sizeof(struct json_tokener));
   tok->pb = printbuf_new();
-  json_tokener_reset(tok);
+  rjson_tokener_reset(tok);
   return tok;
 }
 
-void json_tokener_free(struct json_tokener *tok)
+void rjson_tokener_free(struct json_tokener *tok)
 {
-  json_tokener_reset(tok);
+  rjson_tokener_reset(tok);
   if(tok) printbuf_free(tok->pb);
   free(tok);
 }
 
-static void json_tokener_reset_level(struct json_tokener *tok, int depth)
+static void rjson_tokener_reset_level(struct json_tokener *tok, int depth)
 {
   tok->stack[depth].state = json_tokener_state_eatws;
   tok->stack[depth].saved_state = json_tokener_state_start;
-  json_object_put(tok->stack[depth].current);
+  //json_object_put(tok->stack[depth].current);
   tok->stack[depth].current = NULL;
   free(tok->stack[depth].obj_field_name);
   tok->stack[depth].obj_field_name = NULL;
 }
 
-void json_tokener_reset(struct json_tokener *tok)
+void rjson_tokener_reset(struct json_tokener *tok)
 {
   int i;
   for(i = tok->depth; i >= 0; i--)
-    json_tokener_reset_level(tok, i);
+    rjson_tokener_reset_level(tok, i);
   tok->depth = 0;
   tok->err = json_tokener_success;
 }
 
-struct json_object* json_tokener_parse(char *str)
+VALUE rjson_tokener_parse(const char *str)
 {
   struct json_tokener* tok;
   struct json_object* obj;
 
-  tok = json_tokener_new();
-  obj = json_tokener_parse_ex(tok, str, -1);
+  tok = rjson_tokener_new();
+  obj = rjson_tokener_parse_ex(tok, str, -1);
   if(tok->err != json_tokener_success)
     obj = error_ptr(-tok->err);
-  json_tokener_free(tok);
-  return obj;
+  rjson_tokener_free(tok);
+  return (VALUE)obj;
 }
 
+struct json_object* rjson_object_new_object()
+{
+    return (struct json_object*)createHash();
+}
+
+struct json_object* rjson_object_new_array()
+{
+    return (struct json_object*)rho_ruby_create_array();
+}
+
+struct json_object* rjson_object_get(struct json_object *obj)
+{
+    return obj;
+}
+
+struct json_object* rjson_object_new_string(const char *s)
+{
+    return (struct json_object*)rho_ruby_create_string(s);
+}
+
+struct json_object* rjson_object_new_boolean(boolean b)
+{
+    return (struct json_object*)rho_ruby_create_boolean(b);
+}
+
+struct json_object* rjson_object_new_int(int64 i)
+{
+    return (struct json_object*)rho_ruby_create_integer(i);
+}
+
+struct json_object* rjson_object_new_double(double d)
+{
+    return (struct json_object*)rho_ruby_create_double(d);
+}
+
+int rjson_object_array_add(struct json_object *ar,struct json_object *val)
+{
+    rho_ruby_add_to_array((VALUE)ar,(VALUE)val);
+    return 0;
+}
+
+void rjson_object_object_add(struct json_object* hash, const char *key,
+			    struct json_object *val)
+{
+    addHashToHash((VALUE)hash, key, (VALUE)val);
+}
 
 #if !HAVE_STRNDUP
 /* CAW: compliant version of strndup() */
-char* strndup(const char* str, size_t n)
-{
-  if(str) {
-    size_t len = strlen(str);
-    size_t nn = min(len,n);
-    char* s = (char*)malloc(sizeof(char) * (nn + 1));
-
-    if(s) {
-      memcpy(s, str, nn);
-      s[nn] = '\0';
-    }
-
-    return s;
-  }
-
-  return NULL;
-}
+extern char* strndup(const char* str, size_t n);
 #endif
 
 
@@ -150,8 +164,8 @@ char* strndup(const char* str, size_t n)
 #define current tok->stack[tok->depth].current
 #define obj_field_name tok->stack[tok->depth].obj_field_name
 
-struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
-					  char *str, int len)
+struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
+					  const char *str, int len)
 {
   struct json_object *obj = NULL;
   char c;
@@ -191,12 +205,12 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       case '{':
 	state = json_tokener_state_eatws;
 	saved_state = json_tokener_state_object_field_start;
-	current = json_object_new_object();
+	current = rjson_object_new_object();
 	break;
       case '[':
 	state = json_tokener_state_eatws;
 	saved_state = json_tokener_state_array;
-	current = json_object_new_array();
+	current = rjson_object_new_array();
 	break;
       case 'N':
       case 'n':
@@ -245,8 +259,8 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_finish:
       if(tok->depth == 0) goto out;
-      obj = json_object_get(current);
-      json_tokener_reset_level(tok, tok->depth);
+      obj = rjson_object_get(current);
+      rjson_tokener_reset_level(tok, tok->depth);
       tok->depth--;
       goto redo_char;
 
@@ -255,7 +269,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       if(strncasecmp(json_null_str, tok->pb->buf,
 		     min(tok->st_pos+1, strlen(json_null_str))) == 0) {
 	if(tok->st_pos == strlen(json_null_str)) {
-	  current = NULL;
+	  current = (struct json_object*)getnil();
 	  saved_state = json_tokener_state_finish;
 	  state = json_tokener_state_eatws;
 	  goto redo_char;
@@ -305,7 +319,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_string:
       if(c == tok->quote_char) {
-	current = json_object_new_string(tok->pb->buf);
+	current = rjson_object_new_string(tok->pb->buf);
 	saved_state = json_tokener_state_finish;
 	state = json_tokener_state_eatws;
       } else if(c == '\\') {
@@ -376,7 +390,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       if(strncasecmp(json_true_str, tok->pb->buf,
 		     min(tok->st_pos+1, strlen(json_true_str))) == 0) {
 	if(tok->st_pos == strlen(json_true_str)) {
-	  current = json_object_new_boolean(1);
+	  current = rjson_object_new_boolean(1);
 	  saved_state = json_tokener_state_finish;
 	  state = json_tokener_state_eatws;
 	  goto redo_char;
@@ -384,7 +398,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       } else if(strncasecmp(json_false_str, tok->pb->buf,
 			    min(tok->st_pos+1, strlen(json_false_str))) == 0) {
 	if(tok->st_pos == strlen(json_false_str)) {
-	  current = json_object_new_boolean(0);
+	  current = rjson_object_new_boolean(0);
 	  saved_state = json_tokener_state_finish;
 	  state = json_tokener_state_eatws;
 	  goto redo_char;
@@ -404,9 +418,9 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 	int64 numi;
 	double numd;
 	if(!tok->is_double && sscanf(tok->pb->buf, "%lli", &numi) == 1) {
-	  current = json_object_new_int(numi);
+	  current = rjson_object_new_int(numi);
 	} else if(tok->is_double && sscanf(tok->pb->buf, "%lf", &numd) == 1) {
-	  current = json_object_new_double(numd);
+	  current = rjson_object_new_double(numd);
 	} else {
 	  tok->err = json_tokener_error_parse_number;
 	  goto out;
@@ -428,13 +442,13 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 	}
 	state = json_tokener_state_array_add;
 	tok->depth++;
-	json_tokener_reset_level(tok, tok->depth);
+	rjson_tokener_reset_level(tok, tok->depth);
 	goto redo_char;
       }
       break;
 
     case json_tokener_state_array_add:
-      json_object_array_add(current, obj);
+      rjson_object_array_add(current, obj);
       saved_state = json_tokener_state_array_sep;
       state = json_tokener_state_eatws;
       goto redo_char;
@@ -500,11 +514,11 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       }
       state = json_tokener_state_object_value_add;
       tok->depth++;
-      json_tokener_reset_level(tok, tok->depth);
+      rjson_tokener_reset_level(tok, tok->depth);
       goto redo_char;
 
     case json_tokener_state_object_value_add:
-      json_object_object_add(current, obj_field_name, obj);
+      rjson_object_object_add(current, obj_field_name, obj);
       free(obj_field_name);
       obj_field_name = NULL;
       saved_state = json_tokener_state_object_sep;
@@ -535,10 +549,21 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
  out:
   if(tok->err == json_tokener_success) 
-      return json_object_get(current);
+      return rjson_object_get(current);
 
-  RAWLOG_ERROR3("json_tokener_parse_ex: error %s at offset %d; String: %s",
+  RAWLOG_ERROR3("rjson_tokener_parse_ex: error %s at offset %d; String: %s",
       json_tokener_errors[tok->err], tok->char_offset, (tok->pb && tok->pb->buf&&tok->pb->bpos ? tok->pb->buf : "") );
 
   return NULL;
+}
+
+VALUE rho_json_parse(VALUE v,VALUE str)
+{
+    VALUE res = rjson_tokener_parse(getStringFromValue(str));
+    if ( res != 0 )
+        return res;
+
+    RAWLOG_ERROR("Incorrect json body.");
+
+    return getnil();
 }

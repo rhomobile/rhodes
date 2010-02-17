@@ -45,6 +45,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\net\RhoConnection.java
 ..\..\shared\rubyJVM\src\com\rho\net\URI.java
 ..\..\shared\rubyJVM\src\com\rho\net\AsyncHttp.java
+..\..\shared\rubyJVM\src\com\rho\rjson\RJSONTokener.java
 ..\..\shared\rubyJVM\src\com\rho\Properties.java
 ..\..\shared\rubyJVM\src\com\rho\RhoClassFactory.java
 ..\..\shared\rubyJVM\src\com\rho\RhoConf.java

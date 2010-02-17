@@ -53,6 +53,9 @@ void RhoRubyStop();
 VALUE rho_ruby_get_NIL();
 VALUE rho_ruby_create_array();
 VALUE rho_ruby_create_string(const char* szVal);
+VALUE rho_ruby_create_boolean(unsigned char b);
+VALUE rho_ruby_create_integer(__int64 i);
+VALUE rho_ruby_create_double(double d);
 void rho_ruby_add_to_array(VALUE ar, VALUE val);
 
 char* RhoRuby_getRhoDBVersion();
