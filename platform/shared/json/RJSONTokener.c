@@ -93,7 +93,7 @@ void rjson_tokener_reset(struct json_tokener *tok)
   tok->err = json_tokener_success;
 }
 
-VALUE rjson_tokener_parse(const char *str)
+VALUE rjson_tokener_parse(const char *str, char** pszError)
 {
   struct json_tokener* tok;
   struct json_object* obj;
@@ -101,7 +101,17 @@ VALUE rjson_tokener_parse(const char *str)
   tok = rjson_tokener_new();
   obj = rjson_tokener_parse_ex(tok, str, -1);
   if(tok->err != json_tokener_success)
-    obj = error_ptr(-tok->err);
+  {
+     if ( pszError )
+     {
+         *pszError = malloc(100);
+         sprintf(*pszError,"JSON error code: %d; Offset: %d", tok->err, tok->char_offset);
+     }
+     
+     obj = 0;
+     //obj = error_ptr(-tok->err);
+  }
+
   rjson_tokener_free(tok);
   return (VALUE)obj;
 }
@@ -559,11 +569,15 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
 
 VALUE rho_json_parse(VALUE v,VALUE str)
 {
-    VALUE res = rjson_tokener_parse(getStringFromValue(str));
+    char* szError = 0;
+    VALUE res = rjson_tokener_parse(getStringFromValue(str), &szError);
     if ( res != 0 )
         return res;
 
-    RAWLOG_ERROR("Incorrect json body.");
+    RAWLOG_ERROR1("Incorrect json body.Error:%s", (szError ? szError:""));
+
+    if ( szError )
+        free(szError);
 
     return getnil();
 }
