@@ -8,9 +8,11 @@ import java.io.OutputStream;
 
 import com.rho.RhoClassFactory;
 //import com.rho.RhoConf;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.SimpleFile;
+import com.rho.IRAFile;
 import com.rho.Tokenizer;
 
 import java.util.Enumeration;
@@ -21,7 +23,7 @@ public class NetRequest
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Net");
 	
-	static final int  MAX_NETREQUEST_RETRY  = 3;
+	static final int  MAX_NETREQUEST_RETRY  = 1;
 	boolean m_bCancel = false;
 	
 	public static interface IRhoSession
@@ -34,6 +36,7 @@ public class NetRequest
 	//private char[] m_charBuffer = new char[1024];
 	public  byte[]  m_byteBuffer = new byte[4096];
 	private boolean m_bIgnoreSuffixOnSim = true;
+	private Hashtable m_OutHeaders;
 	public boolean isCancelled(){ return m_bCancel;}
 	public NetResponse pullData(String strUrl, IRhoSession oSession ) throws Exception
     {
@@ -85,7 +88,7 @@ public class NetRequest
 	{
 		if ( headers != null )
 		{
-			headers.clear();
+			m_OutHeaders = new Hashtable();
 			for (int i = 0;; i++) {
 				String strField = m_connection.getHeaderFieldKey(i);
 				if (strField == null && i > 0)
@@ -94,10 +97,25 @@ public class NetRequest
 				if (strField != null ) 
 				{
 					String header_field = m_connection.getHeaderField(i);
-					headers.put(strField, header_field);
+					m_OutHeaders.put(strField, header_field);
 				}
 			}
 		}
+	}
+	
+	public static void copyHashtable(Hashtable from, Hashtable to)
+	{
+		if ( from == null || to == null )
+			return;
+		
+    	Enumeration valsHeaders = from.elements();
+    	Enumeration keysHeaders = from.keys();
+		while (valsHeaders.hasMoreElements()) 
+		{
+			Object key = (String)keysHeaders.nextElement();
+			Object value = (String)valsHeaders.nextElement();
+			to.put(key, value);
+	    }
 	}
 	
 	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
@@ -163,7 +181,8 @@ public class NetRequest
 				LOG.INFO("fetchRemoteData data readFully.");
 			}
 
-			readHeaders(headers);	
+			readHeaders(headers);
+			copyHashtable(m_OutHeaders, headers);
 		}finally
 		{
 			if ( is != null )
@@ -249,6 +268,8 @@ public class NetRequest
 			if ( file != null )
 				try{ file.close(); }catch(IOException e){}
 		}
+		
+		copyHashtable(m_OutHeaders, headers);
 		
 		return resp;
 	}
@@ -337,41 +358,69 @@ public class NetRequest
 		return new NetResponse(strRespBody != null ? strRespBody : "", code );
     }
 	
+	long m_nMaxPacketSize = 0;
+	int m_nCurDownloadSize = 0;
+	boolean m_bFlushFileAfterWrite = false;
 	public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable headers )throws Exception
 	{
-		SimpleFile file = null;
-		OutputStream fstream = null;
+		IRAFile file = null;
 		NetResponse resp = null;
-		try{
-			file = RhoClassFactory.createFile();
-			file.open(strFileName, false, true);
-			fstream = file.getOutStream();
+		
+		m_nMaxPacketSize = RhoClassFactory.getNetworkAccess().getMaxPacketSize();
+		m_bFlushFileAfterWrite = RhoConf.getInstance().getBool("use_persistent_storage");
 			
-			int nTry = 0;
+		try{
+
+	        if (!strFileName.startsWith("file:")) { 
+            	try{
+            		//TODO: implement FilePath.join
+            		String url = RhoClassFactory.createFile().getDirPath("");
+	            	if ( strFileName.charAt(0) == '/' || strFileName.charAt(0) == '\\' )
+	            		url += strFileName.substring(1);
+	            	else
+	            		url += strFileName;
+	            	
+	            	strFileName = url;
+            	} catch (IOException x) { 
+                 	LOG.ERROR("getDirPath failed.", x);
+                    throw x;
+                }              	
+	        }
+			
+			file = RhoClassFactory.createRAFile();
+			file.open(strFileName, "rw");
+			file.seek(file.size());
+			
+			int nFailTry = 0;
 			do{
+
 				try{
-					resp = pullFile1( strUrl, fstream, oSession, headers );
-					break;
+					resp = pullFile1( strUrl, file, file.size(), oSession, headers );
 				}catch(IOException e)
 				{
-		    		if ( nTry+1 >= MAX_NETREQUEST_RETRY )
+		    		if ( m_bCancel || nFailTry+1 >= MAX_NETREQUEST_RETRY )
 		    			throw e;
+		    		
+		    		nFailTry++;
+		    		m_nCurDownloadSize = 1;
 		    	}
-		        nTry++;
-			}while( true );
+			}while( !m_bCancel && (resp == null || resp.isOK()) && m_nCurDownloadSize > 0 && m_nMaxPacketSize > 0 );
 			
 		}finally{
-			if ( fstream != null )
-				try{ fstream.close();}catch(IOException e){}
-			
 			if ( file != null )
-				try{ file.close(); }catch(IOException e){}
+			{
+				file.close();
+				file = null;
+			}
 		}
 		
-		return resp;
+		copyHashtable(m_OutHeaders, headers);
+		
+		return resp != null && !m_bCancel ? resp : new NetResponse("", IHttpConnection.HTTP_INTERNAL_ERROR );
 	}
 	
-	NetResponse pullFile1( String strUrl, OutputStream fstream, IRhoSession oSession, Hashtable headers )throws Exception
+	static byte[]  m_byteDownloadBuffer = new byte[1024*20]; 
+	NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		String strRespBody = null;
 		InputStream is = null;
@@ -379,49 +428,70 @@ public class NetRequest
 		
 		try{
 			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
 			
-			if ( oSession != null )
+			if (oSession!= null)
 			{
 				String strSession = oSession.getSession();
 				if ( strSession != null && strSession.length() > 0 )
 					m_connection.setRequestProperty("Cookie", strSession );
 			}
+			
+			m_connection.setRequestProperty("Connection", "keep-alive");
+			
+			if ( nStartPos > 0 || m_nMaxPacketSize > 0 )
+			{
+				if ( m_nMaxPacketSize > 0 )
+					m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-" + (nStartPos + m_nMaxPacketSize-1));
+				else
+					m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-");
+			}
 			writeHeaders(headers);
 			
 			m_connection.setRequestMethod(IHttpConnection.GET);
 			
-			is = m_connection.openInputStream();
 			code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);
 			
-			if (code != IHttpConnection.HTTP_OK) 
+			m_nCurDownloadSize = 0;
+			
+			if ( code == IHttpConnection.HTTP_RANGENOTSATISFY )
+				code = IHttpConnection.HTTP_PARTIAL_CONTENT;
+			else
 			{
-				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
-					oSession.logout();
-				
-				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					strRespBody = readFully(is);
-			}else
-			{
-				//long len = connection.getLength();
-				//LOG.INFO("pullFile data size:" + len );
-				//int nAvail = is.available();
-				//boolean bReadByBytes = RhoClassFactory.createRhoRubyHelper().isSimulator();	
-				synchronized (m_byteBuffer) {			
+				if (code != IHttpConnection.HTTP_OK && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
+				{
+					LOG.ERROR("Error retrieving data: " + code);
+					if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
+						oSession.logout();
+					
+					if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					{
+						is = m_connection.openInputStream();
+						strRespBody = readFully(is);
+					}
+				}else
+				{
 					int nRead = 0;
+					
+					is = m_connection.openInputStream();
+					
 		    		do{
-/*		    			if ( bReadByBytes )
-		    				nRead = bufferedReadByByte(m_byteBuffer,is);
-		    			else
-		    				nRead = bufferedRead(m_byteBuffer,is);*/
-		    			
-		    			nRead = is.read(m_byteBuffer);
+		    			nRead = /*bufferedReadByByte(m_byteBuffer, is);*/is.read(m_byteDownloadBuffer);
 		    			if ( nRead > 0 )
-		    				fstream.write(m_byteBuffer, 0, nRead);
-		    		}while( nRead >= 0 );
+		    			{
+		    				file.write(m_byteDownloadBuffer, 0, nRead);
+		    				
+		    				if (m_bFlushFileAfterWrite)
+		    					file.sync();
+
+		    				m_nCurDownloadSize += nRead;
+		    			}
+		    		}while( !m_bCancel && nRead >= 0 );
+		    		
+		    		if ( code == IHttpConnection.HTTP_PARTIAL_CONTENT && isFinishDownload() )
+		    			m_nCurDownloadSize = 0;
 				}
 				
 			}
@@ -436,6 +506,29 @@ public class NetRequest
 		}
 		
 		return new NetResponse(strRespBody != null ? strRespBody : "", code );
+	}
+	
+	private boolean isFinishDownload()throws IOException
+	{
+		String strContRange = m_connection.getHeaderField("Content-Range");
+		if ( strContRange != null )
+		{
+			int nMinus = strContRange.indexOf('-');
+			if ( nMinus > 0 )
+			{
+				int nSep = strContRange.indexOf('/', nMinus);
+				if ( nSep > 0 )
+				{
+					String strHigh = strContRange.substring(nMinus+1,nSep);
+					String strTotal = strContRange.substring(nSep+1);
+					
+					if ( Integer.parseInt(strHigh) + 1 >= Integer.parseInt(strTotal) )
+						return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public String resolveUrl(String url) throws Exception
