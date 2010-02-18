@@ -28,7 +28,7 @@ public class NetResponse {
 	
 	public boolean isOK()
 	{
-		return m_nRespCode == IHttpConnection.HTTP_OK;
+		return m_nRespCode == IHttpConnection.HTTP_OK || m_nRespCode == IHttpConnection.HTTP_PARTIAL_CONTENT;
 	}
 
 	public boolean isUnathorized()
