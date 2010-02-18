@@ -1169,8 +1169,8 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/build/Debug-iphonesimulator\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
@@ -1198,8 +1198,8 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/build/Debug-iphonesimulator\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -1317,9 +1317,9 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/build/Debug-iphonesimulator\"",
-					"\"$(SRCROOT)/openssl/build\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/build/Debug-iphonesimulator",
+					"$(SRCROOT)/openssl/build",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -1388,8 +1388,8 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)\\\"",
-					"\\\"$(SRCROOT)/build/Debug-iphonesimulator\\\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
@@ -1417,8 +1417,8 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)\\\"",
-					"\\\"$(SRCROOT)/build/Debug-iphonesimulator\\\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -1458,9 +1458,9 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)\\\"",
-					"\\\"$(SRCROOT)/build/Debug-iphonesimulator\\\"",
-					"\\\"$(SRCROOT)/openssl/build\\\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/build/Debug-iphonesimulator",
+					"$(SRCROOT)/openssl/build",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
