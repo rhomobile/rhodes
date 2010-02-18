@@ -12,6 +12,7 @@ import net.rim.device.api.system.RadioInfo;
 import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhoConf;
 import com.rho.net.bb.BBHttpConnection;
 import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.servicebook.ServiceBook;
@@ -25,6 +26,7 @@ public class NetworkAccess implements INetworkAccess {
 	private static String WIFIsuffix;
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
+	private static long  m_nMaxPacketSize = 0;
 	
 	public String getHomeUrl()
 	{
@@ -42,6 +44,7 @@ public class NetworkAccess implements INetworkAccess {
 
 		if (DeviceInfo.isSimulator()) {
 			URLsuffix = ";deviceside=true";
+			WIFIsuffix = ";interface=wifi;deviceside=true";
 			networkConfigured = true;
 		}else{
 			ServiceBook sb = ServiceBook.getSB();
@@ -124,6 +127,22 @@ public class NetworkAccess implements INetworkAccess {
 		
 		return new BBHttpConnection(http);
 	}*/
+	
+	public long getMaxPacketSize()
+	{
+		if ( WIFIsuffix != null && isWifiActive() )
+			return 0;
+		
+		m_nMaxPacketSize = RhoConf.getInstance().getInt("bb_net_maxpacketsize_kb")*1024;
+		if ( (DeviceInfo.isSimulator() || URLsuffix.indexOf(";deviceside=true") < 0) && m_nMaxPacketSize == 0 )
+		{
+			//avoid 403 error on BES/BIS
+			//http://supportforums.blackberry.com/t5/Java-Development/HTTP-Error-413-when-downloading-small-files/m-p/103918
+			m_nMaxPacketSize = 1024*250;
+		}
+		
+		return m_nMaxPacketSize;
+	}
 	
 	public boolean isWifiActive()
 	{
