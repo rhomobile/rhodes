@@ -1175,17 +1175,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         BrowserContent browserContent = null;
 
         try {
+        	/*try{
+        		connection.getResponseCode();
+        	}catch(IOException exc)
+        	{
+        		LOG.ERROR("getResponseCode failed.", exc);
+        	}*/
+        	
             browserContent = _renderingSession.getBrowserContent(connection, this, e);
 
             if (browserContent != null) {
-
-                Field field = browserContent.getDisplayableContent();
-                if (field != null) {
-                    synchronized (Application.getEventLock()) {
-                        _mainScreen.deleteAll();
-                        _mainScreen.add(field);
-                    }
-                }
 
                 if ( _isFullBrowser )
                 	browserContent.finishLoading();
@@ -1193,7 +1192,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 {
                 	if ( URI.isLocalHost(connection.getURL()) )
             		{
-	                	synchronized (Application.getEventLock())
+	                	//synchronized (Application.getEventLock())
 		                //synchronized (getAppEventLock())
 		                {
 		                	browserContent.finishLoading();
@@ -1201,6 +1200,15 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             		}else
             			browserContent.finishLoading();
                 }
+                
+                Field field = browserContent.getDisplayableContent();
+                if (field != null) {
+                    synchronized (Application.getEventLock()) {
+                        _mainScreen.deleteAll();
+                        _mainScreen.add(field);
+                    }
+                }
+                
             }
 
         } catch (RenderingException re) {
@@ -1310,14 +1318,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
             case Event.EVENT_SET_HEADER :
             case Event.EVENT_SET_HTTP_COOKIE : {
-            	String cookie = ((SetHttpCookieEvent)event).getCookie();
+            	/*String cookie = ((SetHttpCookieEvent)event).getCookie();
         		String response = processAjaxCall(cookie);
         		if (response != null)
         			synchronized (pendingResponses) {
         				pendingResponses.addElement(response);
         			}
         		response = null;
-            	cookie = null;
+            	cookie = null;*/
             	break;
             }
             case Event.EVENT_HISTORY :           // no history support
