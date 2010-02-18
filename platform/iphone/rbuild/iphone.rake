@@ -133,7 +133,7 @@ namespace "build" do
       end
       ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
       ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
-        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner-iPhone.build"
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
       ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
@@ -169,7 +169,7 @@ namespace "build" do
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
 
       chdir $config["build"]["iphonepath"]
-      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
+      args = ['build', '-target', 'rhorunner-iPhone', '-configuration', $configuration, '-sdk', $sdk]
 
       puts Jake.run("xcodebuild",args)
       unless $? == 0
@@ -192,10 +192,10 @@ namespace "run" do
      end
      `killall "iPhone Simulator"`
      
-     rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
+     rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner-iPhone.app"
 
      Find.find($simapp) do |path| 
-       if File.basename(path) == "rhorunner.app"
+       if File.basename(path) == "rhorunner-iPhone.app"
          $guid = File.basename(File.dirname(path))
        end
      end
@@ -246,7 +246,7 @@ namespace "run" do
     ENV["DYLD_FRAMEWORK_PATH"] = sdkroot + "/System/Library/Frameworks"
     ENV["IPHONE_SIMULATOR_ROOT"] = sdkroot
 
-    command = '"' + $simrhodes + '/rhorunner.app/rhorunner"' + " -RegisterForSystemEvents"
+    command = '"' + $simrhodes + '/rhorunner-iPhone.app/rhorunner-iPhone"' + " -RegisterForSystemEvents"
 
     total = failed = passed = 1
 
@@ -327,7 +327,7 @@ namespace "clean" do
     task :rhodes => ["config:iphone"] do 
       chdir $config["build"]["iphonepath"]
     
-      args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
+      args = ['clean', '-target', 'rhorunner-iPhone', '-configuration', $configuration, '-sdk', $sdk]
       puts Jake.run("xcodebuild",args)
       unless $? == 0
         puts "Error cleaning"
@@ -345,7 +345,7 @@ namespace "clean" do
       while found do
         found = false
         Find.find($simapp) do |path|
-          if File.basename(path) == "rhorunner.app"
+          if File.basename(path) == "rhorunner-iPhone.app"
             $guid = File.basename(File.dirname(path))
             found = true
           end
