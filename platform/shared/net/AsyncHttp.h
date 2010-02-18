@@ -46,7 +46,7 @@ private:
     virtual void run();
 
     void processResponse(INetResponse& resp );
-    void callNotify(INetResponse& resp );
+    void callNotify(INetResponse& resp, int nError );
 
     String makeHeadersString();
 };

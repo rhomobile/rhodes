@@ -118,10 +118,18 @@ public class AsyncHttp extends RhoThread
 		    }
 		    
 		    if ( !m_pNetRequest.isCancelled() && m_strCallback.length() > 0)
-		        callNotify(m_pNetResponse);
+		    {
+			    processResponse(m_pNetResponse);
+		        callNotify(m_pNetResponse, 0);
+		    }
+	    }catch(IOException exc)
+	    {
+	    	LOG.ERROR("command failed: " + m_eCmd + "url: " + m_strUrl, exc);
+	    	callNotify(null, RhoRuby.ERR_NETWORK);
 	    }catch(Exception exc)
 	    {
-	    	callNotify(new NetResponse( "", RhoRuby.ERR_NETWORK));
+	    	LOG.ERROR("command crashed: " + m_eCmd + "url: " + m_strUrl, exc);
+	    	callNotify(null, RhoRuby.ERR_RUNTIME);
 	    }finally
 	    {
 			LOG.INFO("RhoHttp thread end.");
@@ -156,7 +164,7 @@ public class AsyncHttp extends RhoThread
 	    if (resp.isOK() && m_mapHeaders != null)
 	    {
 	    	String strContType = (String)m_mapHeaders.get("Content-Type");
-	    	if ( strContType.indexOf("application/json") >=0 )
+	    	if ( strContType != null && strContType.indexOf("application/json") >=0 )
 	    	{
 	    		RJSONTokener json = new RJSONTokener(resp.getCharData());
 	    		
@@ -174,34 +182,38 @@ public class AsyncHttp extends RhoThread
 	    m_valBody = RhoRuby.create_string(resp.getCharData());
 	}
 
-	void callNotify(NetResponse resp )
+	void callNotify(NetResponse resp, int nError )
 	{
-	    processResponse(resp);
-
 	    String strBody = "rho_callback=1";
 	    strBody += "&status=";
-	    if ( resp.isOK() )
-	    	strBody += "ok";
-	    else
+	    if ( nError > 0 )
 	    {
-	    	strBody += "error&error_code=";
-	        /*if ( !resp.isResponseRecieved())
-	            strBody += RhoRuby.ERR_NETWORK;
-	        else */if ( resp.isUnathorized() )
-	            strBody += RhoRuby.ERR_UNATHORIZED;
-	        else
-		        strBody += RhoRuby.ERR_REMOTESERVER;
+	    	strBody += "error&error_code=" + nError;
+	    }else
+	    {
+	    	if ( resp.isOK() )
+	    		strBody += "ok";
+		    else
+		    {
+		    	strBody += "error&error_code=";
+		        /*if ( !resp.isResponseRecieved())
+		            strBody += RhoRuby.ERR_NETWORK;
+		        else */if ( resp.isUnathorized() )
+		            strBody += RhoRuby.ERR_UNATHORIZED;
+		        else
+			        strBody += RhoRuby.ERR_REMOTESERVER;
+	
+		        //if ( resp.isResponseRecieved())
+			        strBody += "&http_error=" + resp.getRespCode();
+		    }
 
-	        //if ( resp.isResponseRecieved())
-		        strBody += "&http_error=" + resp.getRespCode();
+	    	strBody += "&" + makeHeadersString();
+	    	strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
 	    }
-
-	    strBody += "&" + makeHeadersString();
-
+	    
 	    if ( m_strCallbackParams.length() > 0 )
 	        strBody += "&" + m_strCallbackParams;
-
-	    strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
+	    	
 /*
 	    if ( m_bNoThreaded )
 	    {
