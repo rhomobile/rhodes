@@ -132,7 +132,7 @@ namespace "build" do
               $sdk.gsub(/iphoneos/,"") + ".sdk"
       end
       ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
-      ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner-iPhone.build/#{$configuration}-" +
+      ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
         ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner-iPhone.build"
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
