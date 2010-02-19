@@ -1,7 +1,5 @@
 package com.rhomobile.rhodes.camera;
 
-import java.io.File;
-
 import android.content.Intent;
 
 import com.rhomobile.rhodes.RhodesInstance;
