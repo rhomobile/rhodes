@@ -1,3 +1,9 @@
+== 1.4.2
+* Fix for BB push data
+* Fix BB map drawing on world boundaries: 90 N/90 S, 180 W/180 E
+* Fix issue #2539966 - System::get_property('platform') on Android is UNKNOWN
+* Fix issue #2540390 - blackberry map causes exception
+
 == 1.4.1
 * fixed issue with empty cookie check failing
 
