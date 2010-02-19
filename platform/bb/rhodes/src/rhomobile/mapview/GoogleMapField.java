@@ -60,7 +60,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	// Mode of decoding EncodedImage to bitmap
 	private static final int DECODE_MODE = EncodedImage.DECODE_NATIVE |
-		EncodedImage.DECODE_NO_DITHER | EncodedImage.DECODE_READONLY;
+		EncodedImage.DECODE_NO_DITHER | EncodedImage.DECODE_READONLY |
+		EncodedImage.DECODE_ALPHA;
 
 	// Static google parameters
 	private static final int MIN_ZOOM = 0;
@@ -69,6 +70,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private static final int MAX_GOOGLE_TILE_SIZE = 640;
 	
 	// Constants required to coordinates calculations
+	private static final long MIN_LATITUDE = degreesToPixelsY(90, MAX_ZOOM);
 	private static final long MAX_LATITUDE = degreesToPixelsY(-90, MAX_ZOOM);
 	private static final long MAX_LONGITUDE = degreesToPixelsX(180, MAX_ZOOM);
 	
@@ -81,8 +83,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	
 	//===============================================================================
 	// Coordinates of center in pixels of maximum zoom level
-	private long latitude = 0;
-	private long longitude = 0;
+	private long latitude = degreesToPixelsY(0, MAX_ZOOM);
+	private long longitude = degreesToPixelsX(0, MAX_ZOOM);
 	private int zoom = 0;
 	
 	private int tileSize;
@@ -683,6 +685,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private String makeCacheKey(long lat, long lon, int z) {
+		while (lon < 0) lon += MAX_LONGITUDE;
+		while (lon > MAX_LONGITUDE) lon -= MAX_LONGITUDE;
 		long x = lon/tileSize;
 		long y = lat/tileSize;
 		StringBuffer buf = new StringBuffer();
@@ -836,15 +840,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private void validateCoordinates() {
-		if (latitude < 0) latitude = 0;
+		if (latitude < MIN_LATITUDE) latitude = MIN_LATITUDE;
 		if (latitude > MAX_LATITUDE) latitude = MAX_LATITUDE;
-		if (longitude < 0) longitude = 0;
-		if (longitude > MAX_LONGITUDE) longitude = MAX_LONGITUDE;
-	}
-	
-	private void validateZoom() {
-		if (zoom < MIN_ZOOM) zoom = MIN_ZOOM;
-		if (zoom > MAX_ZOOM) zoom = MAX_ZOOM;
 	}
 	
 	public void moveTo(double lat, double lon) {
@@ -877,7 +874,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 
 	public void setZoom(int z) {
 		zoom = z;
-		validateZoom();
+		if (zoom < MIN_ZOOM) zoom = MIN_ZOOM;
+		if (zoom > MAX_ZOOM) zoom = MAX_ZOOM;
 		lastFetchCommandSent = 0;
 	}
 	
@@ -937,8 +935,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 
 	private static long degreesToPixelsX(double n, int z) {
-		if (n < -180.0) n = -180.0;
-		if (n > 180.0) n = 180.0;
+		while (n < -180.0) n += 360.0;
+		while (n > 180.0) n -= 360.0;
 		double angleRatio = 360/math_pow(2, z);
 		double val = (n + 180)*GOOGLE_TILE_SIZE/angleRatio;
 		return (long)val;
@@ -958,16 +956,14 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private static double pixelsToDegreesX(long n, int z) {
-		if (n < 0) n = 0;
-		if (n > MAX_LONGITUDE) n = MAX_LONGITUDE;
+		while (n < 0) n += MAX_LONGITUDE;
+		while (n > MAX_LONGITUDE) n -= MAX_LONGITUDE;
 		double angleRatio = 360/math_pow(2, z);
 		double val = n*angleRatio/GOOGLE_TILE_SIZE - 180.0;
 		return val;
 	}
 	
 	private static double pixelsToDegreesY(long n, int z) {
-		if (n < 0) n = 0;
-		if (n > MAX_LATITUDE) n = MAX_LATITUDE;
 		// Revert calculation of Merkator projection
 		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*math_pow(2, z));
 		double th = math_tanh(ath);
