@@ -30,6 +30,7 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
     m_pParent->m_pCurNetRequestImpl = this;
     m_pHeaders = pHeaders;
     m_bCancel = false;
+    m_pSession = oSession;
 
     pszErrFunction = NULL;
     hInet = NULL, hConnection = NULL, hRequest = NULL;
@@ -265,16 +266,9 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 
         // If we're unauthorized, delete any cookies that might have been
         // stored so we don't reuse them later
-        if ( nCode == 401 ) 
+        if ( nCode == 401 && m_pSession ) 
         {
-            CAtlStringA strUrlA;
-            int nQuest = strReqUrlW.Find('?'); 
-            if ( nQuest > 0 )
-                strUrlA = strReqUrlW.Mid(0,nQuest-1);
-            else
-                strUrlA = strReqUrlW;
-
-            ::InternetSetCookieA(strUrlA, NULL, "");
+            m_pSession->logout();
         }
 	}
 }
