@@ -7,4 +7,5 @@ platform/shared/net/AsyncHttp.cpp
 platform/shared/net/CURLNetRequest.cpp
 platform/shared/net/HttpServer.cpp
 platform/shared/net/URI.cpp
+platform/shared/net/ssl.cpp
 platform/shared/statistic/RhoProfiler.cpp

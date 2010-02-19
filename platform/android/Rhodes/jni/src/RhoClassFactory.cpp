@@ -3,6 +3,7 @@
 
 #include "RhoClassFactory.h"
 #include "SystemInfoImpl.h"
+#include "SSLImpl.h"
 
 namespace rho
 {
@@ -22,6 +23,11 @@ IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
 ISystemInfo *CRhoClassFactory::createSystemInfo()
 {
     return new CSystemInfoImpl();
+}
+
+net::ISSL *CRhoClassFactory::createSSLEngine()
+{
+    return new net::SSLImpl();
 }
 
 } // namespace common

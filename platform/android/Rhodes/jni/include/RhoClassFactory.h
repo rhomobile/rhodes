@@ -3,6 +3,7 @@
 
 #include <common/IRhoClassFactory.h>
 #include <net/INetRequest.h>
+#include <net/ssl.h>
 #include <common/ISystemInfo.h>
 #include <common/IRhoThreadImpl.h>
 
@@ -14,10 +15,10 @@ namespace common
 class CRhoClassFactory : public IRhoClassFactory
 {
 public:
-    virtual ~CRhoClassFactory() {}
     net::INetRequest *createNetRequest();
     IRhoThreadImpl *createThreadImpl();
     ISystemInfo *createSystemInfo();
+    net::ISSL *createSSLEngine();
 };
 
 } // namespace common
