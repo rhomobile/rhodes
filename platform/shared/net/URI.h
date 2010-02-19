@@ -25,6 +25,8 @@ public:
 	};
 
     static void parseCookie(const char* szCookie, CParsedCookie& cookie);
+	
+	static boolean isLocalHost(const String& strUrl);
 };
 
 }
