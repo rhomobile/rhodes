@@ -225,7 +225,8 @@ struct ssl_connect_data {
   SSLHandle *handle;
 #endif /* USE_QSOSSL */
 #ifdef USE_SSL_IPHONE
-  ssl_connect_state connecting_state;
+  void *writeStream;
+  void *readStream;
 #endif
 };
 
