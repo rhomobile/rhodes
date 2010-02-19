@@ -47,6 +47,7 @@
 		BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */; };
 		BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A310B1B9E500BAAFAB /* home_btn.png */; };
 		BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A610B1BA2000BAAFAB /* icon.png */; };
+		BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB155112EE65900AE3724 /* sslimpl.cpp */; };
 		F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
 		F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
@@ -212,6 +213,8 @@
 		BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		BDFBD9A310B1B9E500BAAFAB /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
 		BDFBD9A610B1BA2000BAAFAB /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
+		BDFCB154112EE53D00AE3724 /* sslimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sslimpl.h; path = rho/net/sslimpl.h; sourceTree = "<group>"; };
+		BDFCB155112EE65900AE3724 /* sslimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sslimpl.cpp; path = rho/net/sslimpl.cpp; sourceTree = "<group>"; };
 		F5128ADB1069752F002F00E5 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
 		F5128ADC1069752F002F00E5 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
 		F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = Classes/MapView/GoogleGeocoder.h; sourceTree = SOURCE_ROOT; };
@@ -448,6 +451,8 @@
 			isa = PBXGroup;
 			children = (
 				5C5333790FC1B20000F268F0 /* NetRequestImpl.m */,
+				BDFCB154112EE53D00AE3724 /* sslimpl.h */,
+				BDFCB155112EE65900AE3724 /* sslimpl.cpp */,
 			);
 			name = net;
 			sourceTree = "<group>";
@@ -814,6 +819,7 @@
 				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
 				463577BF107272A400BEC653 /* JSString.m in Sources */,
 				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
+				BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
