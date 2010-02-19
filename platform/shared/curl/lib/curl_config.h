@@ -967,9 +967,7 @@
 /* #undef ssize_t */
 
 /* RHO BEGIN */
-#if defined(OS_IPHONE)
-#define USE_SSL_IPHONE
-#elif defined(OS_ANDROID)
-#define USE_SSL_ANDROID
+#if defined(OS_IPHONE) || defined(OS_ANDROID)
+#define USE_RHOSSL
 #endif
 /* RHO END */
