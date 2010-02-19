@@ -43,7 +43,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,7 +56,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -68,8 +66,8 @@ public class Rhodes extends Activity {
 
 	private static final String TAG = "Rhodes";
 	
-	private static final boolean SHOW_PROGRESS_BAR = false;
-	private static final int MAX_PROGRESS = 10000;
+	//private static final boolean SHOW_PROGRESS_BAR = false;
+	//private static final int MAX_PROGRESS = 10000;
 	
 	private static final boolean DB_ON_SDCARD = true;
 	private static final int DB_BACKUP_INTERVAL = 60000;
@@ -299,7 +297,7 @@ public class Rhodes extends Activity {
 					File sdf = new File(sdRootPath, item);
 					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
 					copyFromBundle(fs, item, sdf, removeFiles);
-					if (DB_ON_SDCARD || !item.equals("db")) {
+					if (!item.equals("db") || DB_ON_SDCARD) {
 						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
 								phf.getAbsolutePath() + "'");
 						makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
@@ -367,17 +365,23 @@ public class Rhodes extends Activity {
 
 		w.setWebViewClient(new WebViewClient() {
 
+			/*
 			@Override
 			public void onPageFinished(WebView view, String url) {
-				onStopLoading();
+				if (!SHOW_PROGRESS_BAR)
+					return;
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
 			}
 
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				onStartLoading();
+				if (!SHOW_PROGRESS_BAR)
+					return;
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
 				super.onPageStarted(view, url, favicon);
 			}
+			*/
 			
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -386,16 +390,27 @@ public class Rhodes extends Activity {
 
 		});
 
+		/*
 		w.setWebChromeClient(new WebChromeClient() {
 
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
 
-				onLoadingProgress(newProgress * 100);
+				int curProgress = newProgress * 100;
+				if (!SHOW_PROGRESS_BAR)
+					return;
+				
+				if (curProgress < 0)
+					curProgress = 0;
+				if (curProgress > 10000)
+					curProgress = 10000;
+
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, curProgress);
 				super.onProgressChanged(view, newProgress);
 			}
 
 		});
+		*/
 		
 		return w;
 	}
@@ -520,30 +535,6 @@ public class Rhodes extends Activity {
 			
 		});
 		init.start();
-	}
-
-	protected void onStartLoading() {
-		if (!SHOW_PROGRESS_BAR)
-			return;
-		this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
-	}
-
-	protected void onStopLoading() {
-		if (!SHOW_PROGRESS_BAR)
-			return;
-		this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
-	}
-
-	protected void onLoadingProgress(int curProgress) {
-		if (!SHOW_PROGRESS_BAR)
-			return;
-		
-		if (curProgress < 0)
-			curProgress = 0;
-		if (curProgress > 10000)
-			curProgress = 10000;
-
-		this.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, curProgress);
 	}
 
 	@Override
