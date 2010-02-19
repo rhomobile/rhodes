@@ -158,6 +158,7 @@
 		BD2C945810AE01D7008D4692 /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944E10AE01D7008D4692 /* types.h */; };
 		BD9343A21129B55D0097B5A0 /* ssl_iphone.c in Sources */ = {isa = PBXBuildFile; fileRef = BD9343A01129B55D0097B5A0 /* ssl_iphone.c */; };
 		BD9343A31129B55D0097B5A0 /* ssl_iphone.h in Headers */ = {isa = PBXBuildFile; fileRef = BD9343A11129B55D0097B5A0 /* ssl_iphone.h */; };
+		BDFCB036112EC4C500AE3724 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDFCB035112EC4C500AE3724 /* CFNetwork.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -312,6 +313,7 @@
 		BD2C944E10AE01D7008D4692 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		BD9343A01129B55D0097B5A0 /* ssl_iphone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ssl_iphone.c; sourceTree = "<group>"; };
 		BD9343A11129B55D0097B5A0 /* ssl_iphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssl_iphone.h; sourceTree = "<group>"; };
+		BDFCB035112EC4C500AE3724 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D2AAC046055464E500DB518D /* libcurl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcurl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -320,6 +322,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDFCB036112EC4C500AE3724 /* CFNetwork.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +335,7 @@
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				BDFCB035112EC4C500AE3724 /* CFNetwork.framework */,
 			);
 			name = curl;
 			sourceTree = "<group>";

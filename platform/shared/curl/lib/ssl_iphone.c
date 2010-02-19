@@ -57,6 +57,16 @@
 
 #include "ssl_iphone.h"
 
+static void report_error(struct SessionHandle *data, char *s, CFStreamError *e)
+{
+    if (e->domain == kCFStreamErrorDomainPOSIX)
+        failf(data, "%s, errno: %d", s, e->error);
+    else if (e->domain == kCFStreamErrorDomainMacOSStatus)
+        failf(data, "%s, Mac OS status: %d", s, e->error);
+    else
+        failf(data, "%s, unknown error", s);
+}
+
 /**
  * Global SSL init
  *
@@ -73,50 +83,50 @@ void Curl_ssl_iphone_cleanup(void)
 }
 
 static CURLcode ssl_iphone_connect_common(struct connectdata *conn, int sockindex,
-                                          bool blocking, bool *done)
+                                          bool nonblocking, bool *done)
 {
-    CURLcode retcode;
     struct SessionHandle *data = conn->data;
     curl_socket_t sockfd = conn->sock[sockindex];
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    long timeout_ms;
+    CFReadStreamRef readStream;
+    CFWriteStreamRef writeStream;
 
     if (connssl->state == ssl_connection_complete)
         return CURLE_OK;
     
-    if (connssl->connecting_state == ssl_connect_1) {
-        timeout_ms = Curl_timeleft(conn, NULL, TRUE);
-        
-        if (timeout_ms < 0) {
-            failf(data, "SSL connection timeout");
-            return CURLE_OPERATION_TIMEDOUT;
-        }
-        
-        
-        retcode = ssl_iphone_connect_1(conn, sockindex);
-        if (retcode)
-            return retcode;
+    /*
+    timeout_ms = Curl_timeleft(conn, NULL, TRUE);
+    
+    if (timeout_ms < 0) {
+        failf(data, "SSL connection timeout");
+        return CURLE_OPERATION_TIMEDOUT;
+    }
+    */
+    
+    CFStreamCreatePairWithSocket(kCFAllocatorDefault, sockfd, &readStream, &writeStream);
+    // Indicate that the connection needs to be done in secure manner
+    CFReadStreamSetProperty(readStream, kCFStreamPropertySocketSecurityLevel, kCFStreamSocketSecurityLevelSSLv3);
+    CFWriteStreamSetProperty(writeStream, kCFStreamPropertySocketSecurityLevel, kCFStreamSocketSecurityLevelSSLv3);
+    
+    if (!CFReadStreamOpen(readStream) || !CFWriteStreamOpen(writeStream)) {
+        failf(data, "SSL connection error");
+        return CURLE_SSL_CONNECT_ERROR;
     }
     
-    while (connssl->connecting_state == ssl_connect_2 ||
-           connssl->connecting_state == ssl_connect_2_reading ||
-           connssl->connecting_state == ssl_connect_2_writing) {
-        timeout_ms = Curl_timeleft(conn, NULL, TRUE);
-        if (timeout_ms < 0) {
-            failf(data, "SSL connection timeout");
-            return CURLE_OPERATION_TIMEDOUT;
-        }
-    }
-
-    // TODO: implement
-    return CURLE_SSL_CONNECT_ERROR;
+    connssl->readStream = readStream;
+    connssl->writeStream = writeStream;
+    
+    connssl->state = ssl_connection_complete;
+    *done = TRUE;
+    
+    return CURLE_OK;
 }
 
 CURLcode Curl_ssl_iphone_connect_nonblocking(struct connectdata *conn,
                                              int sockindex,
                                              bool *done)
 {
-    return ssl_iphone_connect_common(conn, sockindex, FALSE, done);
+    return ssl_iphone_connect_common(conn, sockindex, TRUE, done);
 }
 
 CURLcode Curl_ssl_iphone_connect(struct connectdata *conn,
@@ -124,7 +134,7 @@ CURLcode Curl_ssl_iphone_connect(struct connectdata *conn,
 {
     CURLcode retcode;
     bool done = FALSE;
-    retcode = ssl_iphone_connect_common(conn, sockindex, TRUE, &done);
+    retcode = ssl_iphone_connect_common(conn, sockindex, FALSE, &done);
     if (retcode)
         return retcode;
     
@@ -134,54 +144,93 @@ CURLcode Curl_ssl_iphone_connect(struct connectdata *conn,
 
 void Curl_ssl_iphone_session_free(void *ptr)
 {
-    // TODO: implement
+    free(ptr);
 }
 
 int Curl_ssl_iphone_close_all(struct SessionHandle *data)
 {
-    // TODO: implement
+    (void)data;
     return 0;
 }
 
 void Curl_ssl_iphone_close(struct connectdata *conn, int sockindex)
 {
-    // TODO: implement
+    Curl_ssl_iphone_shutdown(conn, sockindex);
 }
 
 int Curl_ssl_iphone_shutdown(struct connectdata *conn, int sockindex)
 {
-    // TODO: implement
+    struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    if (connssl->readStream) {
+        CFReadStreamRef readStream = (CFReadStreamRef)connssl->readStream;
+        CFReadStreamClose(readStream);
+        connssl->readStream = NULL;
+    }
+    if (connssl->writeStream) {
+        CFWriteStreamRef writeStream = (CFWriteStreamRef)connssl->writeStream;
+        CFWriteStreamClose(writeStream);
+        connssl->writeStream = NULL;
+    }
     return 0;
 }
 
 CURLcode Curl_ssl_iphone_set_engine(struct SessionHandle *data, const char *engine)
 {
-    // TODO: implement
-    return CURLE_OK;
+    return CURLE_FAILED_INIT;
 }
 
 CURLcode Curl_ssl_iphone_set_engine_default(struct SessionHandle *data)
 {
-    // TODO: implement
-    return CURLE_OK;
+    return CURLE_FAILED_INIT;
 }
 
 struct curl_slist *Curl_ssl_iphone_engines_list(struct SessionHandle *data)
 {
-    // TODO: implement
     return NULL;
 }
 
 ssize_t Curl_ssl_iphone_send(struct connectdata *conn, int sockindex, const void *mem, size_t len)
 {
-    // TODO: implement
-    return -1;
+    struct SessionHandle *data = conn->data;
+    struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    CFWriteStreamRef writeStream = (CFWriteStreamRef)connssl->writeStream;
+    int rc;
+    
+    if (!CFWriteStreamCanAcceptBytes(writeStream))
+        return 0;
+    
+    rc = CFWriteStreamWrite(writeStream, mem, len);
+    if (rc < 0) {
+        CFStreamError err = CFWriteStreamGetError(writeStream);
+        report_error(data, "SSL send failed", &err);
+        return -1;
+    }
+    
+    return rc;
 }
 
 ssize_t Curl_ssl_iphone_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, bool *wouldblock)
 {
-    // TODO: implement
-    return -1;
+    struct SessionHandle *data = conn->data;
+    struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    CFReadStreamRef readStream = (CFReadStreamRef)connssl->readStream;
+    CFIndex rc;
+    
+    if (!CFReadStreamHasBytesAvailable(readStream)) {
+        *wouldblock = TRUE;
+        return -1;
+    }
+    
+    *wouldblock = FALSE;
+    
+    rc = CFReadStreamRead(readStream, (UInt8*)buf, size);
+    if (rc < 0) {
+        CFStreamError err = CFReadStreamGetError(readStream);
+        report_error(data, "SSL recv failed", &err);
+        return -1;
+    }
+    
+    return rc;
 }
 
 size_t Curl_ssl_iphone_version(char *buffer, size_t size)
@@ -192,15 +241,16 @@ size_t Curl_ssl_iphone_version(char *buffer, size_t size)
 
 int Curl_ssl_iphone_check_cxn(struct connectdata *cxn)
 {
-    // TODO: implement
-    return 0;
+    (void)cxn;
+    return -1;
 }
 
 bool Curl_ssl_iphone_data_pending(const struct connectdata *conn,
                                   int connindex)
 {
-    // TODO: implement
-    return 0;
+    (void)conn;
+    (void)connindex;
+    return FALSE;
 }
 
 #endif /* USE_SSL_IPHONE */
