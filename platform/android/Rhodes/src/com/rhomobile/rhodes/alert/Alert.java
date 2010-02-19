@@ -37,7 +37,7 @@ public class Alert {
 					// Do nothing here
 				}					
 			});
-			RhodesInstance.getInstance().uiHandler.post(new ShowDialog(builder));
+			Rhodes.performOnUiThread(new ShowDialog(builder));
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e.getMessage());

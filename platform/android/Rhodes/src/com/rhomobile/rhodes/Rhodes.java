@@ -56,10 +56,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.os.Process;
 
 public class Rhodes extends Activity {
@@ -75,12 +77,18 @@ public class Rhodes extends Activity {
 	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
-	public final Handler uiHandler = new Handler();
+	private long uiThreadId;
+	public long getUiThreadId() {
+		return uiThreadId;
+	}
+	
+	private final Handler uiHandler = new Handler();
 	
 	private static int screenWidth;
 	private static int screenHeight;
 
-	private WebView webView;
+	private FrameLayout outerFrame;
+	private MainView mainView;
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 		
@@ -113,6 +121,8 @@ public class Rhodes extends Activity {
 	public native String getOptionsUrl();
 	public native String getStartUrl();
 	public native String getCurrentUrl();
+	
+	public native String normalizeUrl(String url);
 	
 	private native void dblock();
 	private native void dbunlock();
@@ -335,30 +345,13 @@ public class Rhodes extends Activity {
 		handler.handle(uri);
 		return true;
 	}
-
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	
+	public WebView createWebView() {
+		WebView w = new WebView(getApplicationContext());
 		
-		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
-
-		this.requestWindowFeature(Window.FEATURE_PROGRESS);
-
-		setContentView(AndroidR.layout.main);
+		w.loadUrl("file:///android_asset/apps/app/loading.html");
 		
-		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-		Display d = wm.getDefaultDisplay();
-		screenHeight = d.getHeight();
-		screenWidth = d.getWidth();
-
-		webView = (WebView) findViewById(AndroidR.id.webview);
-		
-		// Register custom uri handlers here
-		uriHandlers.put("mailto", new MailUriHandler(this));
-		uriHandlers.put("tel", new TelUriHandler(this));
-
-		WebSettings webSettings = webView.getSettings();
+		WebSettings webSettings = w.getSettings();
 		webSettings.setSavePassword(false);
 		webSettings.setSaveFormData(false);
 		webSettings.setJavaScriptEnabled(true);
@@ -368,10 +361,10 @@ public class Rhodes extends Activity {
 		webSettings.setSupportMultipleWindows(false);
 		// webSettings.setLoadsImagesAutomatically(true);
 
-		webView.setVerticalScrollBarEnabled(true);
-		webView.setHorizontalScrollBarEnabled(true);
+		w.setVerticalScrollBarEnabled(true);
+		w.setHorizontalScrollBarEnabled(true);
 
-		webView.setWebViewClient(new WebViewClient() {
+		w.setWebViewClient(new WebViewClient() {
 
 			@Override
 			public void onPageFinished(WebView view, String url) {
@@ -392,7 +385,7 @@ public class Rhodes extends Activity {
 
 		});
 
-		webView.setWebChromeClient(new WebChromeClient() {
+		w.setWebChromeClient(new WebChromeClient() {
 
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
@@ -403,10 +396,87 @@ public class Rhodes extends Activity {
 
 		});
 		
-		Log.i("Rhodes", "Loading...");
-		webView.loadUrl("file:///android_asset/apps/app/loading.html");
+		return w;
+	}
+	
+	public void setMainView(MainView v) {
+		outerFrame.removeAllViews();
+		mainView = v;
+		outerFrame.addView(mainView.getView());
+	}
+	
+	public MainView getMainView() {
+		return mainView;
+	}
+	
+	private static class PerformOnUiThread implements Runnable {
 		
+		private Runnable runnable;
+		
+		public PerformOnUiThread(Runnable r) {
+			runnable = r;
+		}
+		
+		public void run() {
+			try {
+				runnable.run();
+			}
+			finally {
+				synchronized (runnable) {
+					runnable.notify();
+				}
+			}
+		}
+	};
+	
+	public static void performOnUiThread(Runnable r) {
+		try {
+			long thrId = Thread.currentThread().getId();
+			Rhodes rhodes = RhodesInstance.getInstance();
+			if (rhodes.getUiThreadId() == thrId) {
+				// We are in UI thread
+				r.run();
+			}
+			else {
+				// Post request to UI thread and wait while it would be done
+				synchronized (r) {
+					rhodes.uiHandler.post(new PerformOnUiThread(r));
+					r.wait();
+				}
+			}
+		}
+		catch (InterruptedException e) {
+			Logger.E("Rhodes", "performOnUiThread failed: " + e.getMessage());
+		}
+	}
+	
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		uiThreadId = Thread.currentThread().getId();
 		RhodesInstance.setInstance(this);
+		
+		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
+
+		this.requestWindowFeature(Window.FEATURE_PROGRESS);
+
+		outerFrame = new FrameLayout(this);
+		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		
+		setMainView(new SimpleMainView());
+		
+		Log.i("Rhodes", "Loading...");
+		
+		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+		Display d = wm.getDefaultDisplay();
+		screenHeight = d.getHeight();
+		screenWidth = d.getWidth();
+		
+		// Register custom uri handlers here
+		uriHandlers.put("mailto", new MailUriHandler(this));
+		uriHandlers.put("tel", new TelUriHandler(this));
 		
 		// WARNING!!! This function MUST be called in context of UI thread
 		// to be correctly initialized
@@ -517,7 +587,7 @@ public class Rhodes extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			this.webView.goBack();
+			mainView.back(mainView.activeTab());
 			return true;
 		case KeyEvent.KEYCODE_HOME:
 			stopSelf();
@@ -539,15 +609,15 @@ public class Rhodes extends Activity {
 
 			return true;
 		case AndroidR.id.navigation_back:
-			this.webView.goBack();
+			mainView.back(mainView.activeTab());
 			return true;
 
 		case AndroidR.id.navigation_forward:
-			this.webView.goForward();
+			mainView.forward(mainView.activeTab());
 			return true;
 
 		case AndroidR.id.navigation_home:
-			this.webView.loadUrl(getStartUrl());
+			mainView.navigate(getStartUrl(), mainView.activeTab());
 			return true;
 
 		case AndroidR.id.sync:
@@ -588,59 +658,15 @@ public class Rhodes extends Activity {
 
 		case AndroidR.id.options:
 			String curUrl = getOptionsUrl();
-			this.webView.loadUrl(curUrl);
+			mainView.navigate(curUrl, mainView.activeTab());
 			return true;
 
 		case AndroidR.id.refresh:
-			webView.reload();
+			mainView.reload(mainView.activeTab());
 			return true;
 		}
 
 		return false;
-	}
-	
-	private static class WebviewNavigate implements Runnable {
-		private WebView webView;
-		private String url;
-		
-		public WebviewNavigate(WebView w, String u) {
-			webView = w;
-			url = u;
-		}
-		public void run() {
-			webView.loadUrl(url);
-		}
-	};
-	
-	private static class WebviewReload implements Runnable {
-		private WebView webView;
-		
-		public WebviewReload(WebView w) {
-			webView = w;
-		}
-		
-		public void run() {
-			webView.reload();
-		}
-	};
-	
-	public void webview_navigate(String url) {
-		if (handleUrlLoading(url))
-			return;
-		uiHandler.post(new WebviewNavigate(webView, url));
-	}
-	
-	public void webview_refresh() {
-		uiHandler.post(new WebviewReload(webView));
-	}
-	
-	public String webview_currentLocation() {
-		return this.webView.getUrl();
-	}
-
-	public String webview_executeJs(String js) {
-		webview_navigate("javascript:" + js);
-		return "";
 	}
 	
 	public static void deleteFilesInFolder(String folder) {

@@ -170,6 +170,7 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_ITERATOR,
         RHODES_JAVA_CLASS_SET,
         RHODES_JAVA_CLASS_MAP,
+        RHODES_JAVA_CLASS_VECTOR,
         RHODES_JAVA_CLASS_RHODES,
         RHODES_JAVA_CLASS_WEB_VIEW,
         RHODES_JAVA_CLASS_GEO_LOCATION,
@@ -179,7 +180,8 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_CONTACT,
         RHODES_JAVA_CLASS_CONTACT_FIELD,
         RHODES_JAVA_CLASS_ALERT,
-        RHODES_JAVA_CLASS_RINGTONE_MANAGER
+        RHODES_JAVA_CLASS_RINGTONE_MANAGER,
+        RHODES_JAVA_CLASS_NATIVEBAR
     };
 
 //#define RHO_LOG_JNI_INIT
@@ -347,5 +349,17 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dbunlock
   (JNIEnv *, jobject)
 {
     rho::sync::CSyncThread::getDBAdapter().executeSQL("rollback");
+}
+
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
+  (JNIEnv *, jobject, jstring strUrl)
+{
+    JNIEnv *env = jnienv();
+    const char *s = env->GetStringUTFChars(strUrl, JNI_FALSE);
+    char *normalized = rho_http_normalizeurl(s);
+    env->ReleaseStringUTFChars(strUrl, s);
+    jstring newStr = env->NewStringUTF(normalized);
+    free(normalized);
+    return newStr;
 }
 
