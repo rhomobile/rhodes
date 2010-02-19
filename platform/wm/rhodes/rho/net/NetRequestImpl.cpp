@@ -18,12 +18,6 @@ namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
 
-static boolean isLocalHost(const char* szUrl)
-{
-    return strnicmp(szUrl, "http://localhost", strlen("http://localhost")) == 0 ||
-        strnicmp(szUrl, "http://127.0.0.0", strlen("http://127.0.0.0")) == 0;
-}
-
 CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     m_pParent = pParent;
@@ -41,7 +35,7 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
     LOG(INFO) + "Method: " + method + ";Url: " + strUrl;
     do 
     {
-        if ( !isLocalHost(strUrl.c_str()) && !SetupInternetConnection(strUrlW) )
+        if ( !URI::isLocalHost(strUrl.c_str()) && !SetupInternetConnection(strUrlW) )
         {
             pszErrFunction = L"SetupInternetConnection";
             break;
