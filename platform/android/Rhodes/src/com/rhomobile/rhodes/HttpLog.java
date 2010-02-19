@@ -6,8 +6,9 @@ import android.util.Config;
 public class HttpLog {
 	private final static String LOGTAG = "http";
 
-	private static final boolean DEBUG = false;
-	static final boolean LOGV = DEBUG ? Config.LOGD : Config.LOGV;
+	//private static final boolean DEBUG = false;
+	//public static final boolean LOGV = DEBUG ? Config.LOGD : Config.LOGV;
+	public static final boolean LOGV = Config.LOGV;
 
 	static void v(String logMe) {
 		Logger.T(LOGTAG, SystemClock.uptimeMillis() + " "
