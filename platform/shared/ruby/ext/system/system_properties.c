@@ -30,6 +30,8 @@ char* get_property(char* property) {
 			return "WINDOWS";
 #elif defined(__SYMBIAN32__)
 			return "SYMBIAN";
+#elif defined(OS_ANDROID)
+            return "ANDROID";
 #else
 			return "UNKNOWN";
 #endif			
