@@ -20,12 +20,13 @@ RHO_GLOBAL void create_nativebar(int bar_type, int nparams, char** params)
 	if (!midCreate) return;
 
 	for (int i = 0; i != nparams; ++i) {
-		jstring strObj = env->NewStringUTF(params[i] ? params[i] : "");
-		env->CallObjectMethod(vectorObj, midAddElement, strObj);
+		char const *s = params[i] ? params[i] : "";
+		jstring strObj = env->NewStringUTF(s);
+		env->CallVoidMethod(vectorObj, midAddElement, strObj);
 		env->DeleteLocalRef(strObj);
 	}
 
-	env->CallStaticObjectMethod(clsNativeBar, midCreate, bar_type, vectorObj);
+	env->CallStaticVoidMethod(clsNativeBar, midCreate, bar_type, vectorObj);
 	env->DeleteLocalRef(vectorObj);
 }
 
