@@ -799,7 +799,10 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
 
 bool CHttpServer::send_file(String const &path)
 {
-    String fullPath = m_root + "/" + path;
+    String fullPath = path;
+	if (path.find(m_root) != 0)
+		fullPath = m_root + (path[0]!= '/' ? "/": "") + path;
+	
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
     
     struct stat st;
