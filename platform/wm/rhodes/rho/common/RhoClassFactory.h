@@ -26,6 +26,12 @@ public:
     {
         return new CSystemInfoImpl;
     }
+
+    net::ISSL* createSSLEngine()
+    {
+        return null;
+    }
+
 };
 
 }
