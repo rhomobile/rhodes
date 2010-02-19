@@ -46,7 +46,6 @@ public final class AndroidR {
         public static final int sync=R.id.sync;
         public static final int text=R.id.text;
         public static final int text1=R.id.text1;
-        public static final int webview=R.id.webview;
         public static final int widget28=R.id.widget28;
         public static final int datePicker=R.id.datePicker;
         public static final int timePicker=R.id.timePicker;
@@ -58,7 +57,6 @@ public final class AndroidR {
         public static final int file_row=R.layout.file_row;
         public static final int logoptions=R.layout.logoptions;
         public static final int logview=R.layout.logview;
-        public static final int main=R.layout.main;
         public static final int datetime=R.layout.datetime;
     }
     public static final class menu {
