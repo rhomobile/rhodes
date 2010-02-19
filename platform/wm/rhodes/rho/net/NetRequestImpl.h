@@ -63,6 +63,7 @@ class CNetRequestImpl
     CNetRequest* m_pParent;
     Hashtable<String,String>* m_pHeaders;
     boolean m_bCancel;
+    IRhoSession* m_pSession;
 
 public :
     CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
