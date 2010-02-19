@@ -3,6 +3,7 @@
 #include "common/RhoFile.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
+#include "net/URI.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
@@ -74,12 +75,6 @@ CURLNetRequest::~CURLNetRequest()
 {
     curl_easy_cleanup(curl);
 	curl_multi_cleanup(curlm);
-}
-
-static bool isLocalHost(const String& strUrl)
-{
-    return strUrl.find("http://localhost") == 0 ||
-        strUrl.find("http://127.0.0.1") == 0;
 }
 
 static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
@@ -155,7 +150,7 @@ static curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, 
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
     // could repeated twice or more times
-    if (isLocalHost(strUrl))
+    if (net::URI::isLocalHost(strUrl))
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10*24*60*60);
 	
 	curl_slist *hdrs = NULL;
