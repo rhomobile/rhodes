@@ -4,6 +4,7 @@
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
 #include "SystemInfoImpl.h"
+#include "../net/sslimpl.h"
 
 namespace rho {
 namespace common {
@@ -11,18 +12,21 @@ namespace common {
 class CRhoClassFactory : public common::IRhoClassFactory
 {
 public:
-    virtual ~CRhoClassFactory(void){}
     net::INetRequest* createNetRequest()
     {
         return new net::CURLNetRequest();
     }
-    virtual common::IRhoThreadImpl* createThreadImpl()
+    common::IRhoThreadImpl* createThreadImpl()
     {
         return new CPosixThreadImpl;
     }
-    virtual ISystemInfo* createSystemInfo()
+    ISystemInfo* createSystemInfo()
     {
         return new CSystemInfoImpl;
+    }
+    net::ISSL* createSSLEngine()
+    {
+        return new net::SSLImpl();
     }
 };
 
