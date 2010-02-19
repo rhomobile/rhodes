@@ -226,7 +226,7 @@ public class PushListeningThread extends Thread {
             public void run() 
             {*/
             	String msg = new String(data, 0, nLen);
-            	LOG.INFO("Triger sync on PUSH message [" + msg + " ]\n");
+            	LOG.INFO("Triger sync on PUSH message [" + msg + " ]");
 
             	String[] op;
             	String[] ops = split(msg,"\n");
