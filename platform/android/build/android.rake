@@ -719,19 +719,24 @@ namespace "run" do
   desc "build and launch emulator"
   task :android => "device:android:debug" do
     apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
-    puts `#{$adb} start-server`
-    sleep 5
+    #puts `#{$adb} start-server`
+    #sleep 5
 
-    system("#{$androidbin} create avd --name #{$avdname} --target #{$androidtargets[ANDROID_API_LEVEL]} --sdcard 32M --skin HVGA")
+    createavd = "#{$androidbin} create avd --name #{$avdname} --target #{$androidtargets[ANDROID_API_LEVEL]} --sdcard 32M --skin HVGA"
+    system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+  
+    running = false
+    `adb devices`.split("\n").each do |line|
+      next unless line =~ /^emulator/
+      running = true
+      break
+    end
+    Thread.new { system("#{$emulator} -avd #{$avdname}") } unless running
 
-    Thread.new { system("#{$emulator} -avd #{$avdname}") }
-
-    sleep 10
-
-    puts "Waiting for emulator to get started"
+    puts "Waiting for emulator to get started" unless running
+    puts "Emulator is up and running" if running
     $stdout.flush
     puts `#{$adb} -e wait-for-device`
-    sleep 10
 
     puts "Loading package into emulator"
     theoutput = `#{$adb} -e install -r "#{apkfile}"`
