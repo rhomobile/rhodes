@@ -93,7 +93,7 @@ public class PushListeningThread extends Thread {
                         }
                         
                         try{
-                        	processPushMessage(data);
+                        	processPushMessage(data, db.getLength());
                         }catch(Exception exc)
                         {
                         	LOG.ERROR("processPushMessage failed.Data: " + new String(data), exc);
@@ -219,13 +219,13 @@ public class PushListeningThread extends Thread {
     	RhodesApplication.getInstance().play_file(file_name, media_type);
     }
    
-    private void processPushMessage(final byte[] data)
+    private void processPushMessage(final byte[] data, int nLen)
     {
        /* Application.getApplication().invokeLater(new Runnable() 
         {
             public void run() 
             {*/
-            	String msg = new String(data);
+            	String msg = new String(data, 0, nLen);
             	LOG.INFO("Triger sync on PUSH message [" + msg + " ]\n");
 
             	String[] op;
