@@ -343,7 +343,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 			url.append("&zoom=" + cmd.zoom);
 			url.append("&size=" + cmd.width + "x" + cmd.height);
 			url.append("&maptype=" + cmd.maptype);
-			url.append("&format=png&mobile=true&sensor=false");
+			url.append("&format=png&sensor=false");
+			url.append("&mobile=" + (cmd.maptype.equals("roadmap") ? "true" : "false"));
 			url.append("&key=" + mapkey);
 			if (!cmd.annotations.isEmpty()) {
 				url.append("&markers=color:blue");
