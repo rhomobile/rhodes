@@ -1893,7 +1893,7 @@ static int https_getsock(struct connectdata *conn,
   return GETSOCK_BLANK;
 }
 #else
-#ifdef USE_SSL_IPHONE
+#ifdef USE_RHOSSL
 static int https_getsock(struct connectdata *conn,
                          curl_socket_t *socks,
                          int numsocks)
