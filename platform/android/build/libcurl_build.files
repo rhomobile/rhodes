@@ -19,9 +19,9 @@ platform/shared/curl/lib/gtls.c
 platform/shared/curl/lib/hash.c
 platform/shared/curl/lib/hostares.c
 platform/shared/curl/lib/hostasyn.c
+platform/shared/curl/lib/hostip.c
 platform/shared/curl/lib/hostip4.c
 platform/shared/curl/lib/hostip6.c
-platform/shared/curl/lib/hostip.c
 platform/shared/curl/lib/hostsyn.c
 platform/shared/curl/lib/hostthre.c
 platform/shared/curl/lib/http.c
@@ -49,6 +49,7 @@ platform/shared/curl/lib/parsedate.c
 platform/shared/curl/lib/progress.c
 platform/shared/curl/lib/qssl.c
 platform/shared/curl/lib/rawstr.c
+platform/shared/curl/lib/rhossl.c
 platform/shared/curl/lib/security.c
 platform/shared/curl/lib/select.c
 platform/shared/curl/lib/sendf.c

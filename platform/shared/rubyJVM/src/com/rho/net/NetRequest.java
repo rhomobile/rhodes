@@ -210,10 +210,21 @@ public class NetRequest
 
 	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-		Hashtable headers = new Hashtable();
-		m_bIgnoreSuffixOnSim = false;
-		NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
-		if ( resp.isOK() )
+		NetResponse resp = null;
+		try{
+    		resp = doRequest/*Try*/(strUrl, strBody, oSession, false);
+    		if ( resp.isOK() )
+    		{
+    			ParsedCookie cookie = makeCookie(m_connection);
+/*    			if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+    				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+    			else
+    				resp.setCharData("");
+*/    			
+    			resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+    			LOG.INFO("pullCookies: " + resp.getCharData() );
+    		}
+		}finally
 		{
 			ParsedCookie cookie = makeCookie(headers);
 			//if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
