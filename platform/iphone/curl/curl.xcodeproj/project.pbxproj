@@ -156,6 +156,9 @@
 		BD2C945610AE01D7008D4692 /* stdcheaders.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944C10AE01D7008D4692 /* stdcheaders.h */; };
 		BD2C945710AE01D7008D4692 /* typecheck-gcc.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944D10AE01D7008D4692 /* typecheck-gcc.h */; };
 		BD2C945810AE01D7008D4692 /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944E10AE01D7008D4692 /* types.h */; };
+		BDFCB036112EC4C500AE3724 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDFCB035112EC4C500AE3724 /* CFNetwork.framework */; };
+		BDFCB120112EDB7600AE3724 /* rhossl.c in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB11E112EDB7600AE3724 /* rhossl.c */; };
+		BDFCB121112EDB7600AE3724 /* rhossl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB11F112EDB7600AE3724 /* rhossl.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -308,6 +311,9 @@
 		BD2C944C10AE01D7008D4692 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdcheaders.h; sourceTree = "<group>"; };
 		BD2C944D10AE01D7008D4692 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "typecheck-gcc.h"; sourceTree = "<group>"; };
 		BD2C944E10AE01D7008D4692 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		BDFCB035112EC4C500AE3724 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		BDFCB11E112EDB7600AE3724 /* rhossl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rhossl.c; sourceTree = "<group>"; };
+		BDFCB11F112EDB7600AE3724 /* rhossl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhossl.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* libcurl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcurl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -316,6 +322,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDFCB036112EC4C500AE3724 /* CFNetwork.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,6 +335,7 @@
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				BDFCB035112EC4C500AE3724 /* CFNetwork.framework */,
 			);
 			name = curl;
 			sourceTree = "<group>";
@@ -352,6 +360,8 @@
 		BD2C932D10AE01B7008D4692 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				BDFCB11E112EDB7600AE3724 /* rhossl.c */,
+				BDFCB11F112EDB7600AE3724 /* rhossl.h */,
 				BD2C932E10AE01B7008D4692 /* amigaos.c */,
 				BD2C932F10AE01B7008D4692 /* arpa_telnet.h */,
 				BD2C933010AE01B7008D4692 /* base64.c */,
@@ -602,6 +612,7 @@
 				BD2C945610AE01D7008D4692 /* stdcheaders.h in Headers */,
 				BD2C945710AE01D7008D4692 /* typecheck-gcc.h in Headers */,
 				BD2C945810AE01D7008D4692 /* types.h in Headers */,
+				BDFCB121112EDB7600AE3724 /* rhossl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -722,6 +733,7 @@
 				BD2C943E10AE01B7008D4692 /* transfer.c in Sources */,
 				BD2C944010AE01B7008D4692 /* url.c in Sources */,
 				BD2C944310AE01B7008D4692 /* version.c in Sources */,
+				BDFCB120112EDB7600AE3724 /* rhossl.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,7 +750,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
-				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
+				OTHER_CFLAGS = (
+					"-DHAVE_CONFIG_H",
+					"-DUSE_RHOSSL",
+				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphonesimulator2.2.1;
 				SYMROOT = ../build;
@@ -753,7 +768,10 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
+				OTHER_CFLAGS = (
+					"-DHAVE_CONFIG_H",
+					"-DUSE_RHOSSL",
+				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
@@ -806,7 +824,10 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
+				OTHER_CFLAGS = (
+					"-DHAVE_CONFIG_H",
+					"-DUSE_RHOSSL",
+				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
