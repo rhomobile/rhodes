@@ -13,6 +13,8 @@
 extern "C" {
 #endif
 
+#include "common/RhoDefs.h"
+
 #ifdef __SYMBIAN32__
 #include <sys/types.h>
 #endif //__SYMBIAN32__
