@@ -39,6 +39,7 @@ extern void Init_NativeBar(void);
 extern void Init_MapView(void);
 extern void Init_RingtoneManager(void);
 extern void Init_socket(void);
+extern void Init_AsyncHttp(void);
 extern void Init_Extensions(void);
 
 //RhoSupport extension
