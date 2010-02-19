@@ -78,8 +78,8 @@ CURLNetRequest::~CURLNetRequest()
 
 static bool isLocalHost(const String& strUrl)
 {
-    return strUrl.find_first_of("http://localhost") == 0 ||
-        strUrl.find_first_of("http://127.0.0.1") == 0;
+    return strUrl.find("http://localhost") == 0 ||
+        strUrl.find("http://127.0.0.1") == 0;
 }
 
 static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
@@ -241,8 +241,6 @@ String CURLNetRequest::request(const char *method, const String& strUrl, const S
     String session;
     if (oSession)
         session = oSession->getSession();
-    if (session.empty() && !isLocalHost(strUrl))
-        return String();
 
     RAWLOG_INFO1("Request url: %s", strUrl.c_str());
 
@@ -291,14 +289,6 @@ String CURLNetRequest::requestCookies(const char *method, const String& strUrl, 
     String session;
     if (oSession)
         session = oSession->getSession();
-    if (!session.empty()) {
-        RAWLOG_INFO("Found existing session for url...");
-
-        if (pnRespCode)
-            *pnRespCode = 200;
-
-        return String();
-    }
 
     RAWLOG_INFO1("Request cookies by Url: %s", strUrl.c_str());
 
@@ -441,11 +431,6 @@ String CURLNetRequest::pushMultipartData(const String& strUrl, const String& str
     if (oSession)
         session = oSession->getSession();
 
-    if (session.empty()) {
-        RAWLOG_ERROR("Push file failed: session empty");
-        return String();
-    }
-    
     RAWLOG_INFO2("Push file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
 
     rho_net_impl_network_indicator(1);
