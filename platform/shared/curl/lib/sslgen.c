@@ -56,6 +56,7 @@
 #include "gtls.h"   /* GnuTLS versions */
 #include "nssg.h"   /* NSS versions */
 #include "qssl.h"   /* QSOSSL versions */
+#include "rhossl.h" /* Rhodes versions */
 #include "sendf.h"
 #include "rawstr.h"
 #include "url.h"

@@ -224,6 +224,9 @@ struct ssl_connect_data {
 #ifdef USE_QSOSSL
   SSLHandle *handle;
 #endif /* USE_QSOSSL */
+#ifdef USE_RHOSSL
+  void *storage;
+#endif
 };
 
 struct ssl_config_data {

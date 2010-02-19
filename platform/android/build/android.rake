@@ -468,6 +468,7 @@ namespace "build" do
       args << "-ljson"
       args << "-lstlport" if USE_STLPORT
       args << "-lcurl"
+      args << "-lrhocommon" # Need to specify twice because libcurl depends on librhocommon and vice versa
       args << "-lsqlite"
       args << "-ldl"
       args << "-lz"

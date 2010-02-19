@@ -1,3 +1,5 @@
+platform/android/Rhodes/jni/src/RhoClassFactory.cpp
+platform/android/Rhodes/jni/src/SSLImpl.cpp
 platform/android/Rhodes/jni/src/alert.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
 platform/android/Rhodes/jni/src/camera.cpp
@@ -8,7 +10,6 @@ platform/android/Rhodes/jni/src/logger.cpp
 platform/android/Rhodes/jni/src/mapview.cpp
 platform/android/Rhodes/jni/src/nativebar.cpp
 platform/android/Rhodes/jni/src/phonebook.cpp
-platform/android/Rhodes/jni/src/RhoClassFactory.cpp
 platform/android/Rhodes/jni/src/rhodes.cpp
 platform/android/Rhodes/jni/src/ringtones.cpp
 platform/android/Rhodes/jni/src/syncengine.cpp
