@@ -24,9 +24,11 @@
 
 #ifdef USE_SSL_IPHONE
 /*
- * This header should only be needed to get included by sslgen.c and ssluse.c
+ * This header should only be needed to get included by sslgen.c and ssl_iphone.c
  */
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <CFNetwork/CFNetwork.h>
 #include "urldata.h"
 CURLcode Curl_ssl_iphone_connect(struct connectdata *conn, int sockindex);
 CURLcode Curl_ssl_iphone_connect_nonblocking(struct connectdata *conn,
