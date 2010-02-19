@@ -164,7 +164,7 @@ class SyncSource
 
 	            if ( bSyncedServer && isPendingClientChanges() )
 	            {
-	            	LOG.INFO("Client still has unconfirmed items in database. Sync is stopped.");
+	            	LOG.ERROR("Client still has unconfirmed items in database. Sync is stopped.");
 	                getSync().setState(SyncEngine.esStop);
 	            }
 	            else
