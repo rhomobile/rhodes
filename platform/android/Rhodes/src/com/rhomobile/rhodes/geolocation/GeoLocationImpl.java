@@ -13,15 +13,13 @@ import android.os.Looper;
 public class GeoLocationImpl implements LocationListener {
 
 	private static final String TAG = "GeoLocationImpl";
+	private static final String PROVIDER = LocationManager.GPS_PROVIDER;
 	private LocationManager locationManager;
 	private double longitude = 0;
 	private double latitude = 0;
 	private boolean determined = false;
-
+	
 	public GeoLocationImpl() {
-
-		Looper.prepare();
-
 		setCurrentGpsLocation(null);
 	}
 
@@ -29,13 +27,10 @@ public class GeoLocationImpl implements LocationListener {
 		Logger.T(TAG, "GeoLocationImpl.setCurrentGpsLocation");
 		try {
 			if (location == null) {
-				locationManager = (LocationManager) RhodesInstance
-						.getInstance().getSystemService(
-								Context.LOCATION_SERVICE);
-				locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 0, 0, this);
-				location = locationManager
-						.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				locationManager = (LocationManager) RhodesInstance.getInstance()
+					.getSystemService(Context.LOCATION_SERVICE);
+				locationManager.requestLocationUpdates(PROVIDER, 0, 0, this, Looper.getMainLooper());
+				location = locationManager.getLastKnownLocation(PROVIDER);
 			}
 			if (location != null) {
 				longitude = location.getLongitude();
@@ -45,8 +40,7 @@ public class GeoLocationImpl implements LocationListener {
 				determined = false;
 			}
 
-			Logger.T(TAG, "gps enabled: " + new Boolean(locationManager.isProviderEnabled(
-					LocationManager.GPS_PROVIDER)).toString());
+			Logger.T(TAG, "gps enabled: " + new Boolean(locationManager.isProviderEnabled(PROVIDER)).toString());
 			Logger.T(TAG, "determined: " + new Boolean(determined).toString());
 			if (determined) {
 				Logger.T(TAG, "longitude: " + new Double(longitude).toString());
