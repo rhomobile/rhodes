@@ -3,6 +3,7 @@ package com.rhomobile.rhodes.geolocation;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesInstance;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -14,7 +15,7 @@ public class GeoLocationImpl implements LocationListener {
 
 	private static final String TAG = "GeoLocationImpl";
 	private static final String PROVIDER = LocationManager.GPS_PROVIDER;
-	private LocationManager locationManager;
+	private LocationManager locationManager = null;
 	private double longitude = 0;
 	private double latitude = 0;
 	private boolean determined = false;
@@ -26,12 +27,15 @@ public class GeoLocationImpl implements LocationListener {
 	private void setCurrentGpsLocation(Location location) {
 		Logger.T(TAG, "GeoLocationImpl.setCurrentGpsLocation");
 		try {
-			if (location == null) {
-				locationManager = (LocationManager) RhodesInstance.getInstance()
-					.getSystemService(Context.LOCATION_SERVICE);
+			if (locationManager == null) {
+				Activity r = RhodesInstance.getInstance();
+				locationManager = (LocationManager)r.getSystemService(Context.LOCATION_SERVICE);
 				locationManager.requestLocationUpdates(PROVIDER, 0, 0, this, Looper.getMainLooper());
-				location = locationManager.getLastKnownLocation(PROVIDER);
 			}
+			
+			if (location == null)
+				location = locationManager.getLastKnownLocation(PROVIDER);
+			
 			if (location != null) {
 				longitude = location.getLongitude();
 				latitude = location.getLatitude();
