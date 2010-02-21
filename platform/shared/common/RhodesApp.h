@@ -66,6 +66,7 @@ public:
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
     const String& getFirstStartUrl();
+    const String& getHomeUrl(){ return m_strHomeUrl; }
 
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
