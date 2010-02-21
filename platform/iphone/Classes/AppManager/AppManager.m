@@ -9,12 +9,12 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <Foundation/Foundation.h>
 
-#import "defs.h"
+#include "common/RhoPort.h"
 #import "unzip.h"
 #import "AppManager.h"
-#import "HttpContext.h"
-#import "HttpMessage.h"
-#import "Dispatcher.h"
+//#import "HttpContext.h"
+//#import "HttpMessage.h"
+//#import "Dispatcher.h"
 #import "AppLoader.h"
 #import "common/RhoConf.h"
 #import "common/RhodesApp.h"
@@ -250,7 +250,7 @@ bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int zipl
 	
 	return true;
 }
-
+/*
 int _LoadApp(HttpContextRef context) {
 
 	if ( (context->_request->_query!=NULL) && 
@@ -271,7 +271,7 @@ int _LoadApp(HttpContextRef context) {
 	
 	HttpSendErrorToTheServer(context, 400, "Application name to load and install is not specifyed");
 	return -1;
-}
+}*/
 
 void rho_appmanager_load( void* httpContext, const char* szQuery)
 {
@@ -290,13 +290,13 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 	}
 	
 	char location[strlen(szQuery)+2];
-	HttpSnprintf(location, sizeof(location), "/%s", szQuery);
+	rho_http_snprintf(location, sizeof(location), "/%s", szQuery);
     rho_http_redirect(httpContext, location);
 	
 	return;
 }
 
-
+/*
 #define MAX_ACTIONS 4
 const static struct {
 	char*  _name;
@@ -343,4 +343,4 @@ int ExecuteAppManager(HttpContextRef context, RouteRef route) {
 	sprintf(err,"No [%s] controller found for App Manager", route->_model); 
 	HttpSendErrorToTheServer(context, 404, err);
 	return -1;
-}
+}*/

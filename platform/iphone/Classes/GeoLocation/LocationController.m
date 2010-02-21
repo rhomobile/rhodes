@@ -8,7 +8,7 @@
 
 #import <CFNetwork/CFNetwork.h>
 
-#import "defs.h"
+//#import "defs.h"
 #import <CoreLocation/CoreLocation.h>
 #import "LocationController.h"
 #import "logging/RhoLog.h"

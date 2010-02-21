@@ -519,7 +519,7 @@ extern VALUE rho_json_parse(VALUE,VALUE);
 static void Init_RhoJSON()
 {
 
-    VALUE appLog; //, appErrLog;
+    //VALUE appLog; //, appErrLog;
 
     rb_RhoModule = rb_define_module("Rho");
     rb_RhoJSON = rb_define_class_under(rb_RhoModule, "JSON", rb_cObject);
