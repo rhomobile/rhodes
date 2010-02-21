@@ -242,38 +242,39 @@ NSMutableArray* parse_annotations(int nannotations, char** annotation) {
 }
 
 NSMutableArray* parse_settings(int nparams, char** params) {
-	if (nparams <= 0) return [NSMutableArray arrayWithCapacity:0];
-	NSMutableArray *settings = [NSMutableArray arrayWithCapacity:nparams];
-	BOOL array_flag = FALSE;
-	for(int i = 0; i < nparams; i++) {
-		if (params[i]) {
-			if (array_flag) {
-				NSMutableArray *arr = [NSMutableArray arrayWithCapacity:1];
-				char **array = (char**)params[i];
-				while(*array) {
-					[arr addObject:[NSString stringWithCString:*array]];
-					array++;
-				}
-				array_flag = FALSE;
-				[settings addObject:arr];
-			} else {
-				if (strcmp(params[i],"region")==0) {
-					array_flag = TRUE;
-				} 
-				[settings addObject:[NSString stringWithCString:params[i]]];
-				printf("param %s\n", params[i]);
-			}
-		} else {
-			if (array_flag) {
-				array_flag = FALSE;
-				NSMutableArray *arr = [NSMutableArray arrayWithCapacity:1];
-				[settings addObject:arr];
-			} else {
-				[settings addObject:@""];
-			}
-		}
-	}
-	return settings;
+    if (nparams <= 0) return [NSMutableArray arrayWithCapacity:0];
+    NSMutableArray *settings = [NSMutableArray arrayWithCapacity:nparams];
+    BOOL array_flag = FALSE;
+    for(int i = 0; i < nparams; i++) {
+        if (params[i]) {
+            if (array_flag) {
+                NSMutableArray *arr = [NSMutableArray arrayWithCapacity:4];
+                char **array = (char**)params[i];
+                while(*array) {
+                    char const *s = *array;
+                    [arr addObject:[NSString stringWithCString:*array]];
+                    array++;
+                    printf("param %s\n", s);
+                }
+                array_flag = FALSE;
+                [settings addObject:arr];
+            } else {
+                if (strcmp(params[i],"region")==0)
+                    array_flag = TRUE;
+                [settings addObject:[NSString stringWithCString:params[i]]];
+                printf("param %s\n", params[i]);
+            }
+        } else {
+            if (array_flag) {
+                array_flag = FALSE;
+                NSMutableArray *arr = [NSMutableArray arrayWithCapacity:1];
+                [settings addObject:arr];
+            } else {
+                [settings addObject:@""];
+            }
+        }
+    }
+    return settings;
 }
 
 #endif
