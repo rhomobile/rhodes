@@ -97,8 +97,10 @@ char* get_current_location() {
 
 -(void)navigateRedirect:(NSString*)url {
     //RAWLOG_INFO1("Navigate (redirect) to: %s", [url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
-	NSString* redirector = [@"http://localhost:8080/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+	NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+	NSString* homeurl = [NSString stringWithCString:rho_rhodesapp_gethomeurl() encoding:[NSString defaultCStringEncoding]];
+	NSString* redirector1 = [@"/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+	NSString* redirector = [homeurl stringByAppendingString:redirector1];
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
 }
 
