@@ -66,6 +66,7 @@ public:
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
     const String& getFirstStartUrl();
+    const String& getHomeUrl(){ return m_strHomeUrl; }
 
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
@@ -115,6 +116,7 @@ const char* rho_native_rhopath();
 const char* rho_rhodesapp_getstarturl();
 const char* rho_rhodesapp_getfirststarturl();
 
+const char* rho_rhodesapp_gethomeurl();
 const char* rho_rhodesapp_getoptionsurl();
 void rho_rhodesapp_keeplastvisitedurl(const char* szUrl);
 const char* rho_rhodesapp_getcurrenturl(int tabindex);
