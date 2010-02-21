@@ -339,76 +339,77 @@ void CRhodesApp::initHttpServer()
 #endif
 }
 
-const char* CRhodesApp::getFreeListeningPort()
-{
+	const char* CRhodesApp::getFreeListeningPort()
+	{
+		if ( m_strListeningPorts.length() > 0 )
+			return m_strListeningPorts.c_str();
+		
+		int noerrors = 1;
+		LOG(INFO) + "Trying to get free listening port.";
+		
+		//get free port
+		int sockfd = -1;
+		struct sockaddr_in serv_addr = {0};
+		//struct hostent *server = {0};
+		//int result = -1;
+		
+		if ( noerrors )
+		{
+			sockfd = socket(AF_INET, SOCK_STREAM, 0);
+			if ( sockfd < 0 )
+			{
+				LOG(WARNING) + ("Unable to open socket");
+				noerrors = 0;
+			}
+			
+			if ( noerrors )
+			{
+				//server = gethostbyname( "localhost" );
+				
+				memset((void *) &serv_addr, 0, sizeof(serv_addr));
+				serv_addr.sin_family = AF_INET;
+				serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+				serv_addr.sin_port = htons(0);
+				
+				if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
+				{
+					LOG(WARNING) + "Unable to bind";
+					noerrors = 0;
+				}
+				else
+				{
+					char buf[10] = {0};
 #ifdef OS_MACOSX
-    return "8080";
-#else
-    if ( m_strListeningPorts.length() > 0 )
-        return m_strListeningPorts.c_str();
-
-    int noerrors = 1;
-    LOG(INFO) + "Trying to get free listening port.";
-    
-    //get free port
-    int sockfd = -1;
-    struct sockaddr_in serv_addr = {0};
-    //struct hostent *server = {0};
-    //int result = -1;
-
-    if ( noerrors )
-    {
-        sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        if ( sockfd < 0 )
-        {
-            LOG(WARNING) + ("Unable to open socket");
-            noerrors = 0;
-        }
-        
-        if ( noerrors )
-        {
-            //server = gethostbyname( "localhost" );
-
-            memset((void *) &serv_addr, 0, sizeof(serv_addr));
-            serv_addr.sin_family = AF_INET;
-            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-            serv_addr.sin_port = htons(0);
-
-            if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
-            {
-                LOG(WARNING) + "Unable to bind";
-                noerrors = 0;
-            }
-            else
-            {
-                char buf[10] = {0};
-                /*socklen_t*/int length = sizeof( serv_addr );
-
-                getsockname( sockfd, (struct sockaddr *)&serv_addr, &length );
-                
-                sprintf(buf,"%d",ntohs(serv_addr.sin_port));
-                
-                m_strListeningPorts = buf;
-            }
-            //Clean up
+					socklen_t
+#else				
+					int
+#endif				
+					length = sizeof( serv_addr );
+					
+					getsockname( sockfd, (struct sockaddr *)&serv_addr, &length );
+					
+					sprintf(buf,"%d",ntohs(serv_addr.sin_port));
+					
+					m_strListeningPorts = buf;
+				}
+				//Clean up
 #if defined(OS_ANDROID)
-            close(sockfd);
+				close(sockfd);
 #else
-            closesocket(sockfd);
+				closesocket(sockfd);
 #endif
-        }
-
-    }
-
-    if ( !noerrors )
-        m_strListeningPorts = "8080";
-
-    LOG(INFO) + "Free listening port: " + m_strListeningPorts;
-
-    return m_strListeningPorts.c_str();
-#endif
-}
-
+			}
+			
+		}
+		
+		if ( !noerrors )
+			m_strListeningPorts = "8080";
+		
+		LOG(INFO) + "Free listening port: " + m_strListeningPorts;
+		
+		return m_strListeningPorts.c_str();
+	}
+	
 void CRhodesApp::initAppUrls() 
 {
     m_currentTabIndex = 0;
