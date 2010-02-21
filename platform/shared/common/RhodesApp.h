@@ -125,7 +125,8 @@ const char* rho_rhodesapp_getblobsdirpath();
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
 void rho_http_sendresponse(void* httpContext, const char* szBody);
-
+int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...);
+	
 char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
 

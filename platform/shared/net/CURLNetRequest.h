@@ -31,26 +31,13 @@ public:
     virtual boolean isCancelled(){return m_bCancel;}
 
 private:
-    String request(const char *method, const String& strUrl, const String& strBody,
-                  int *pnRespCode, IRhoSession* oSession);
-    String requestCookies(const char *method, const String& strUrl, const String& strBody,
-                  int *pnRespCode, IRhoSession* oSession);
-
-    typedef String (CURLNetRequest::*Frho_net_impl_request)(const char* method, const String& strUrl,
-                  const String& strBody, int* pnRespCode, IRhoSession* oSession);
-
-    int pullMultipartData(const String& strUrl, void* oFile, IRhoSession *oSession);
-    String pushMultipartData(const String& strUrl, const String& strFilePath, int* pnRespCode, IRhoSession *oSession);
-
-    INetResponse* doRequestTry(const char* method, const String& strUrl, const String& strBody,
-        Frho_net_impl_request func, IRhoSession* oSession );
-
-private:
+	int getResponseCode(CURLMcode err, const String& strRespBody, IRhoSession* oSession);
+	String makeCookies();
+	
     boolean m_bCancel;
 	CURLM *curlm;
     CURL *curl;
     char *errbuf[CURL_ERROR_SIZE];
-    String cookies;
     boolean m_bTraceCalls;
 };
 
