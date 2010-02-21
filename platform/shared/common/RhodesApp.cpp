@@ -721,6 +721,25 @@ void rho_http_sendresponse(void* httpContext, const char* szBody)
 #endif
 }
 
+int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
+{
+	va_list		ap;
+	int		n;
+		
+	if (buflen == 0)
+		return (0);
+		
+	va_start(ap, fmt);
+	n = vsnprintf(buf, buflen, fmt, ap);
+	va_end(ap);
+		
+	if (n < 0 || (size_t) n >= buflen)
+		n = buflen - 1;
+	buf[n] = '\0';
+		
+	return (n);
+}
+	
 void rho_rhodesapp_create(const char* szRootPath)
 {
     rho::common::CRhodesApp::Create(szRootPath);

@@ -11,15 +11,15 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "defs.h"
-#include "Server.h"
-#include "HttpContext.h"
+#include "common/RhoPort.h"
+//#include "Server.h"
+//#include "HttpContext.h"
 #include "ServerHost.h"
 //#include "Dispatcher.h"
 #include "AppManagerI.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLogConf.h"
-#include "sync/syncthread.h"
+//#include "sync/syncthread.h"
 #include "common/RhodesApp.h"
 #include "JSString.h"
 #import "WebViewUrl.h"
@@ -45,11 +45,11 @@ extern void geo_init();
 #pragma mark -
 #pragma mark Static Function Declarations
 
-static void AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info);
+//static void AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info);
 
 
-/* static */ void
-AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info) {
+/* static */ //void
+/*AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info) {
     
 	if (sock == ((CFSocketNativeHandle)(-1))) {
         
@@ -67,7 +67,7 @@ AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* err
 		if ((http != NULL) && !HttpContextOpen(http))
 			HttpContextRelease(http);
 	}
-}
+}*/
 
 #pragma mark -
 

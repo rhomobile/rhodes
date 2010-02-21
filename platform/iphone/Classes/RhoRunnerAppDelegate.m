@@ -7,7 +7,7 @@
 //
 #import <AudioToolbox/AudioToolbox.h>
 
-#import "defs.h"
+#include "common/RhoPort.h"
 #import "RhoRunnerAppDelegate.h"
 #import "WebViewController.h"
 //#import "AppManager.h"
