@@ -8,19 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05377B3D0E709170003B8BD1 /* WebViewController.m */; };
-		05377CEC0E74D6C0003B8BD1 /* HttpContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CE80E74D6C0003B8BD1 /* HttpContext.c */; };
-		05377CED0E74D6C0003B8BD1 /* Server.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CEA0E74D6C0003B8BD1 /* Server.c */; };
 		05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */; };
-		05CF70EB0E78B14D00D41986 /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 05CF70EA0E78B14D00D41986 /* ServerHost.m */; };
-		05CF72500E7B16F800D41986 /* HttpMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 05CF724E0E7B16F800D41986 /* HttpMessage.c */; };
 		1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
-		463577BF107272A400BEC653 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 463577BE107272A400BEC653 /* JSString.m */; };
 		4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
-		468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 468276EF10713FD600ADBCD4 /* WebViewUrl.m */; };
 		4684391210445A810019C7F0 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
 		468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
 		46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB21117AFB9009A974A /* MapKit.framework */; };
@@ -29,6 +23,9 @@
 		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
+		5C4775F71130832B0092D21E /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C4775F61130832B0092D21E /* ServerHost.m */; };
+		5C477604113083F10092D21E /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477603113083F10092D21E /* JSString.m */; };
+		5C477608113084290092D21E /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477607113084290092D21E /* WebViewUrl.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
 		BD666DED112D5EA300948654 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
@@ -41,14 +38,9 @@
 		BD666DF6112D5EA300948654 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		BD666DF7112D5EA300948654 /* RhoRunnerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */; };
 		BD666DF8112D5EA300948654 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05377B3D0E709170003B8BD1 /* WebViewController.m */; };
-		BD666DF9112D5EA300948654 /* HttpContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CE80E74D6C0003B8BD1 /* HttpContext.c */; };
-		BD666DFA112D5EA300948654 /* Server.c in Sources */ = {isa = PBXBuildFile; fileRef = 05377CEA0E74D6C0003B8BD1 /* Server.c */; };
-		BD666DFB112D5EA300948654 /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 05CF70EA0E78B14D00D41986 /* ServerHost.m */; };
-		BD666DFC112D5EA300948654 /* HttpMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 05CF724E0E7B16F800D41986 /* HttpMessage.c */; };
 		BD666DFD112D5EA300948654 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		BD666DFE112D5EA300948654 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
 		BD666DFF112D5EA300948654 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
-		BD666E00112D5EA300948654 /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 		BD666E01112D5EA300948654 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
 		BD666E02112D5EA300948654 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
 		BD666E03112D5EA300948654 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
@@ -66,8 +58,6 @@
 		BD666E0F112D5EA300948654 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
 		BD666E10112D5EA300948654 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
 		BD666E11112D5EA300948654 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
-		BD666E12112D5EA300948654 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 468276EF10713FD600ADBCD4 /* WebViewUrl.m */; };
-		BD666E13112D5EA300948654 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 463577BE107272A400BEC653 /* JSString.m */; };
 		BD666E14112D5EA300948654 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BD666E16112D5EA300948654 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
 		BD666E17112D5EA300948654 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
@@ -121,7 +111,6 @@
 		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
 		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
 		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
-		F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C1064F0E917D2A0049A94A /* Dispatcher.c */; };
 		F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F06667102CB134006CFD39 /* ParamsWrapper.m */; };
 		F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
 /* End PBXBuildFile section */
@@ -258,16 +247,7 @@
 /* Begin PBXFileReference section */
 		05377B3D0E709170003B8BD1 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 		05377B3E0E709170003B8BD1 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
-		05377CE80E74D6C0003B8BD1 /* HttpContext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HttpContext.c; path = Server/HttpContext.c; sourceTree = "<group>"; };
-		05377CE90E74D6C0003B8BD1 /* HttpContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpContext.h; path = Server/HttpContext.h; sourceTree = "<group>"; };
-		05377CEA0E74D6C0003B8BD1 /* Server.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Server.c; path = Server/Server.c; sourceTree = "<group>"; };
-		05377CEB0E74D6C0003B8BD1 /* Server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Server.h; path = Server/Server.h; sourceTree = "<group>"; };
 		05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
-		05CF70E90E78B14D00D41986 /* ServerHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerHost.h; path = Server/ServerHost.h; sourceTree = "<group>"; };
-		05CF70EA0E78B14D00D41986 /* ServerHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerHost.m; path = Server/ServerHost.m; sourceTree = "<group>"; };
-		05CF724E0E7B16F800D41986 /* HttpMessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HttpMessage.c; path = Server/HttpMessage.c; sourceTree = "<group>"; };
-		05CF724F0E7B16F800D41986 /* HttpMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpMessage.h; path = Server/HttpMessage.h; sourceTree = "<group>"; };
-		05CF72930E7F2EAC00D41986 /* defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defs.h; path = Server/defs.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoRunnerAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoRunnerAppDelegate.m; sourceTree = "<group>"; };
@@ -277,11 +257,7 @@
 		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
 		46056D201031EDA900C21967 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
 		46056D211031EDA900C21967 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
-		463577BD107272A400BEC653 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = Classes/JSString.h; sourceTree = SOURCE_ROOT; };
-		463577BE107272A400BEC653 /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSString.m; path = Classes/JSString.m; sourceTree = SOURCE_ROOT; };
 		4678FCA80F8185920054340C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../../../../Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
-		468276EE10713FD600ADBCD4 /* WebViewUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewUrl.h; path = Server/WebViewUrl.h; sourceTree = "<group>"; };
-		468276EF10713FD600ADBCD4 /* WebViewUrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewUrl.m; path = Server/WebViewUrl.m; sourceTree = "<group>"; };
 		4684391010445A810019C7F0 /* BarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarItem.h; sourceTree = "<group>"; };
 		4684391110445A810019C7F0 /* BarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarItem.m; sourceTree = "<group>"; };
 		468E57401035DBC100A2293C /* TabBarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarDelegate.h; sourceTree = "<group>"; };
@@ -296,6 +272,12 @@
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
+		5C4775F51130832B0092D21E /* ServerHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerHost.h; path = Server/ServerHost.h; sourceTree = "<group>"; };
+		5C4775F61130832B0092D21E /* ServerHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerHost.m; path = Server/ServerHost.m; sourceTree = "<group>"; };
+		5C477602113083F10092D21E /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSString.h; sourceTree = "<group>"; };
+		5C477603113083F10092D21E /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSString.m; sourceTree = "<group>"; };
+		5C477606113084290092D21E /* WebViewUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewUrl.h; path = Server/WebViewUrl.h; sourceTree = "<group>"; };
+		5C477607113084290092D21E /* WebViewUrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewUrl.m; path = Server/WebViewUrl.m; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = rho/common/RhoClassFactory.cpp; sourceTree = "<group>"; };
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
@@ -345,8 +327,6 @@
 		F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F5B8FAD20F44EA7B00C9AF85 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera/PickImageDelegate.h; sourceTree = "<group>"; };
 		F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera/PickImageDelegate.m; sourceTree = "<group>"; };
-		F5C1064E0E917D2A0049A94A /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = Dispatcher/Dispatcher.h; sourceTree = "<group>"; };
-		F5C1064F0E917D2A0049A94A /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = Dispatcher/Dispatcher.c; sourceTree = "<group>"; };
 		F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = rhoextlib/rhoextlib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F5F06666102CB134006CFD39 /* ParamsWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParamsWrapper.h; sourceTree = "<group>"; };
 		F5F06667102CB134006CFD39 /* ParamsWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParamsWrapper.m; sourceTree = "<group>"; };
@@ -410,26 +390,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		05377CEE0E74D6CB003B8BD1 /* Server */ = {
-			isa = PBXGroup;
-			children = (
-				463577BD107272A400BEC653 /* JSString.h */,
-				463577BE107272A400BEC653 /* JSString.m */,
-				05CF724F0E7B16F800D41986 /* HttpMessage.h */,
-				05CF724E0E7B16F800D41986 /* HttpMessage.c */,
-				05CF70E90E78B14D00D41986 /* ServerHost.h */,
-				05CF70EA0E78B14D00D41986 /* ServerHost.m */,
-				05377CE90E74D6C0003B8BD1 /* HttpContext.h */,
-				05377CE80E74D6C0003B8BD1 /* HttpContext.c */,
-				05377CEB0E74D6C0003B8BD1 /* Server.h */,
-				05377CEA0E74D6C0003B8BD1 /* Server.c */,
-				05CF72930E7F2EAC00D41986 /* defs.h */,
-				468276EE10713FD600ADBCD4 /* WebViewUrl.h */,
-				468276EF10713FD600ADBCD4 /* WebViewUrl.m */,
-			);
-			name = Server;
-			sourceTree = "<group>";
-		};
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -442,15 +402,16 @@
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
-				F5C106510E917D4A0049A94A /* Dispatcher */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
-				05377CEE0E74D6CB003B8BD1 /* Server */,
+				5C4775EC113082290092D21E /* Server */,
 				05377B3E0E709170003B8BD1 /* WebViewController.h */,
 				05377B3D0E709170003B8BD1 /* WebViewController.m */,
 				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
 				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
 				46C25E39103240A400A26428 /* RhoDelegate.h */,
 				46C25E3A103240A400A26428 /* RhoDelegate.m */,
+				5C477602113083F10092D21E /* JSString.h */,
+				5C477603113083F10092D21E /* JSString.m */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 			);
 			path = Classes;
@@ -566,6 +527,17 @@
 				5C12568C0F7CEA9200C87274 /* libtcmalloc.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5C4775EC113082290092D21E /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				5C477606113084290092D21E /* WebViewUrl.h */,
+				5C477607113084290092D21E /* WebViewUrl.m */,
+				5C4775F51130832B0092D21E /* ServerHost.h */,
+				5C4775F61130832B0092D21E /* ServerHost.m */,
+			);
+			name = Server;
 			sourceTree = "<group>";
 		};
 		5C5332610FBD6AC700F268F0 /* rho */ = {
@@ -710,15 +682,6 @@
 				F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */,
 			);
 			name = Camera;
-			sourceTree = "<group>";
-		};
-		F5C106510E917D4A0049A94A /* Dispatcher */ = {
-			isa = PBXGroup;
-			children = (
-				F5C1064E0E917D2A0049A94A /* Dispatcher.h */,
-				F5C1064F0E917D2A0049A94A /* Dispatcher.c */,
-			);
-			name = Dispatcher;
 			sourceTree = "<group>";
 		};
 		F5F06492102B946F006CFD39 /* Products */ = {
@@ -1022,14 +985,9 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */,
 				05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */,
-				05377CEC0E74D6C0003B8BD1 /* HttpContext.c in Sources */,
-				05377CED0E74D6C0003B8BD1 /* Server.c in Sources */,
-				05CF70EB0E78B14D00D41986 /* ServerHost.m in Sources */,
-				05CF72500E7B16F800D41986 /* HttpMessage.c in Sources */,
 				F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */,
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
 				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
-				F5C106500E917D2A0049A94A /* Dispatcher.c in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
 				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
@@ -1047,10 +1005,11 @@
 				F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */,
 				F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */,
 				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,
-				468276F010713FD600ADBCD4 /* WebViewUrl.m in Sources */,
-				463577BF107272A400BEC653 /* JSString.m in Sources */,
 				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
 				BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */,
+				5C4775F71130832B0092D21E /* ServerHost.m in Sources */,
+				5C477604113083F10092D21E /* JSString.m in Sources */,
+				5C477608113084290092D21E /* WebViewUrl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1061,14 +1020,9 @@
 				BD666DF6112D5EA300948654 /* main.m in Sources */,
 				BD666DF7112D5EA300948654 /* RhoRunnerAppDelegate.m in Sources */,
 				BD666DF8112D5EA300948654 /* WebViewController.m in Sources */,
-				BD666DF9112D5EA300948654 /* HttpContext.c in Sources */,
-				BD666DFA112D5EA300948654 /* Server.c in Sources */,
-				BD666DFB112D5EA300948654 /* ServerHost.m in Sources */,
-				BD666DFC112D5EA300948654 /* HttpMessage.c in Sources */,
 				BD666DFD112D5EA300948654 /* AppManager.m in Sources */,
 				BD666DFE112D5EA300948654 /* AppLoader.m in Sources */,
 				BD666DFF112D5EA300948654 /* unzip.cpp in Sources */,
-				BD666E00112D5EA300948654 /* Dispatcher.c in Sources */,
 				BD666E01112D5EA300948654 /* LocationController.m in Sources */,
 				BD666E02112D5EA300948654 /* phonebook.m in Sources */,
 				BD666E03112D5EA300948654 /* PickImageDelegate.m in Sources */,
@@ -1086,8 +1040,6 @@
 				BD666E0F112D5EA300948654 /* MapViewController.m in Sources */,
 				BD666E10112D5EA300948654 /* MapAnnotation.m in Sources */,
 				BD666E11112D5EA300948654 /* GoogleGeocoder.m in Sources */,
-				BD666E12112D5EA300948654 /* WebViewUrl.m in Sources */,
-				BD666E13112D5EA300948654 /* JSString.m in Sources */,
 				BD666E14112D5EA300948654 /* RhoFileImpl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

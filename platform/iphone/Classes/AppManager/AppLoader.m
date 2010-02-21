@@ -5,8 +5,7 @@
 //  Created by vlad on 9/24/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
-
-#import "defs.h"
+#include "common/RhoPort.h"
 #import "AppManager.h"
 #import "AppLoader.h"
 #import "logging/RhoLog.h"
