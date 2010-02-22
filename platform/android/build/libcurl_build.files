@@ -47,9 +47,7 @@ platform/shared/curl/lib/nwlib.c
 platform/shared/curl/lib/nwos.c
 platform/shared/curl/lib/parsedate.c
 platform/shared/curl/lib/progress.c
-platform/shared/curl/lib/qssl.c
 platform/shared/curl/lib/rawstr.c
-platform/shared/curl/lib/rhossl.c
 platform/shared/curl/lib/security.c
 platform/shared/curl/lib/select.c
 platform/shared/curl/lib/sendf.c

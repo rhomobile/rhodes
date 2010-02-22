@@ -9,7 +9,6 @@ if RUBY_PLATFORM =~ /(win|w)32$/
   $bat_ext = ".bat"
   $exe_ext = ".exe"
   $ndkhost = "windows"
-
 else
   $bat_ext = ""
   $exe_ext = ""
@@ -26,10 +25,7 @@ def setup_ndk(ndkpath,apilevel)
   $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
   $ranlib = $ndktools + "/bin/arm-eabi-ranlib" + $exe_ext
   $stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
-
 end
-
-
 
 def cc_def_args
   if $cc_def_args_val.nil?
@@ -93,11 +89,22 @@ def cc_deps(filename, objdir, additional)
   out.split(/\s+/)
 end
 
-def cc_run(command, args)
+def cc_run(command, args, chdir = nil)
+  save_cwd = FileUtils.pwd
+  FileUtils.cd chdir unless chdir.nil?
   cmdline = command + ' ' + args.join(' ')
   puts cmdline
-  puts `#{cmdline}`
   $stdout.flush
+  #puts `#{cmdline}`
+  IO.popen(cmdline) do |f|
+    while data = f.gets
+      puts data
+      $stdout.flush
+    end
+  end
+  ret = $?
+  FileUtils.cd save_cwd
+  ret == 0
 end
 
 def cc_compile(filename, objdir, additional = nil)
@@ -119,13 +126,11 @@ def cc_compile(filename, objdir, additional = nil)
   args << objname
   cmdline = ccbin + ' ' + args.join(' ')
   cc_run(ccbin, args)
-  return $? == 0
 end
 
 def cc_ar(libname, objects)
   return true if FileUtils.uptodate? libname, objects
   cc_run($arbin, ["crs", libname] + objects)
-  return $? == 0
 end
 
 def cc_link(outname, objects, additional = nil, deps = nil)
@@ -157,7 +162,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "#{$ndktools}/arm-eabi/lib/interwork/libstdc++.a" unless USE_STLPORT
   args << "#{$ndktools}/arm-eabi/lib/interwork/libsupc++.a" unless USE_STLPORT
   cc_run($gccbin, args)
-  return $? == 0
 end
 
 def cc_clean(name)
