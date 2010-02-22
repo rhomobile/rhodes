@@ -39,7 +39,8 @@ private:
 #endif
     String m_strRhoRootPath, m_strLoadingPagePath, m_strBlobsDirPath;
     String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
-    
+    String m_strRhoMessage;
+
     int m_currentTabIndex;
     String m_currentUrls[5];
 
@@ -86,6 +87,8 @@ public:
     String addCallbackObject(unsigned long valObject, String strName);
     void delCallbackObject(unsigned long valObject);
     unsigned long getCallbackObject(int nIndex);
+
+    const String& getRhoMessage(int nError, const char* szName);
 private:
     virtual void run();
 
