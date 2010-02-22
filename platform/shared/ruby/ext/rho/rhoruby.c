@@ -246,18 +246,6 @@ void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
     rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
 }
 
-const char* rho_ruby_getMessageText(const char* szName)
-{
-    return "";
-    //TODO: rho_ruby_getMessageText
-}
-
-const char* rho_ruby_getErrorText(int nError)
-{
-    return "";
-    //TODO: rho_ruby_getErrorText
-}
-
 VALUE rho_ruby_get_NIL()
 {
     return Qnil;
