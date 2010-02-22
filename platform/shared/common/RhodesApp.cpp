@@ -752,6 +752,11 @@ const char* rho_rhodesapp_getstarturl()
     return RHODESAPP().getStartUrl().c_str();
 }
 
+const char* rho_rhodesapp_gethomeurl()
+{
+	return RHODESAPP().getHomeUrl().c_str();
+}
+	
 const char* rho_rhodesapp_getoptionsurl()
 {
     return RHODESAPP().getOptionsUrl().c_str();
