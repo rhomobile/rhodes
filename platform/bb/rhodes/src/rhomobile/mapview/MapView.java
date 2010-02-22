@@ -16,6 +16,7 @@ import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
+import com.xruby.runtime.lang.RubySymbol;
 import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 import com.xruby.runtime.lang.RubyVarArgMethod;
@@ -72,11 +73,23 @@ public class MapView extends RubyBasic {
 					RubyArray arKeys = hash.keys();
 					RubyArray arValues = hash.values();
 					for (int i = 0; i != arKeys.size(); ++i) {
-						String strKey = arKeys.get(i).toString();
-						if (strKey.equals("settings"))
-							settingsHash = (RubyHash)arValues.get(i);
-						else if (strKey.equals("annotations"))
-							annotationsArray = (RubyArray)arValues.get(i);
+						RubyValue key = arKeys.get(i);
+						RubyValue value = arValues.get(i);
+						if (key == null || value == null)
+							continue;
+						String strKey = key.toString();
+						if (strKey.equals("settings")) {
+							if (!(value instanceof RubyHash))
+								throw new RubyException(RubyRuntime.ArgumentErrorClass,
+										"Wrong 'settings' type, should be Hash");
+							settingsHash = (RubyHash)value;
+						}
+						else if (strKey.equals("annotations")) {
+							if (!(value instanceof RubyArray))
+								throw new RubyException(RubyRuntime.ArgumentErrorClass,
+										"Wrong 'annotations' type, should be Array");
+							annotationsArray = (RubyArray)value;
+						}
 					}
 				}
 				
@@ -84,24 +97,47 @@ public class MapView extends RubyBasic {
 					RubyArray arKeys = settingsHash.keys();
 					RubyArray arValues = settingsHash.values();
 					for (int i = 0; i != arKeys.size(); ++i) {
-						String strKey = arKeys.get(i).toString();
+						RubyValue key = arKeys.get(i);
 						RubyValue value = arValues.get(i);
-						if (strKey.equals("map_type"))
-							settings.put(strKey, value.toString());
+						if (key == null || value == null)
+							continue;
+						String strKey = key.toString();
+						if (strKey.equals("map_type")) {
+							String strValue = value.toString();
+							if (!strValue.equals("roadmap") && !strValue.equals("satellite")
+									&& !strValue.equals("terrain") && !strValue.equals("hybrid"))
+								throw new RubyException(RubyRuntime.ArgumentErrorClass,
+										"Wrong 'map_type' value: " + strValue);
+							settings.put(strKey, strValue);
+						}
 						else if (strKey.equals("zoom_enabled"))
-							settings.put(strKey, new Boolean(((RubyConstant)value).isTrue()));
+							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
 						else if (strKey.equals("scroll_enabled"))
-							settings.put(strKey, new Boolean(((RubyConstant)value).isTrue()));
+							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
 						else if (strKey.equals("shows_user_location"))
-							settings.put(strKey, new Boolean(((RubyConstant)value).isTrue()));
+							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
 						else if (strKey.equals("region")) {
+							if (!(value instanceof RubyArray))
+								throw new RubyException(RubyRuntime.ArgumentErrorClass,
+										"Wrong 'region' type, should be Array");
 							RubyArray arr = (RubyArray)value;
 							if (arr.size() == 4) {
 								Hashtable region = new Hashtable();
-								region.put("latitude", new Double(arr.get(0).toFloat()));
-								region.put("longitude", new Double(arr.get(1).toFloat()));
-								region.put("latDelta", new Double(arr.get(2).toFloat()));
-								region.put("lonDelta", new Double(arr.get(3).toFloat()));
+								double[] cs = {0.0, 0.0, 0.0, 0.0};
+								for (int k = 0; k != 4; ++k) {
+									String v = arr.get(k).toString();
+									try {
+										cs[k] = Double.parseDouble(v);
+									}
+									catch (NumberFormatException e) {
+										throw new RubyException(RubyRuntime.ArgumentErrorClass,
+												"Wrong region value: " + v + ", should be Float");
+									}
+								}
+								region.put("latitude", new Double(cs[0]));
+								region.put("longitude", new Double(cs[1]));
+								region.put("latDelta", new Double(cs[2]));
+								region.put("lonDelta", new Double(cs[3]));
 								settings.put(strKey, region);
 							}
 						}
@@ -111,34 +147,60 @@ public class MapView extends RubyBasic {
 				if (annotationsArray != null) {
 					for (int i = 0; i != annotationsArray.size(); ++i) {
 						Annotation annotation = new Annotation();
-						RubyHash ann = (RubyHash)annotationsArray.get(i);
+						RubyValue val = annotationsArray.get(i);
+						if (!(val instanceof RubyHash))
+							throw new RubyException(RubyRuntime.ArgumentErrorClass,
+									"Wrong annotation value type, should be Hash");
+						RubyHash ann = (RubyHash)val;
 						RubyArray arKeys = ann.keys();
 						RubyArray arValues = ann.values();
 						for (int j = 0, lim = arKeys.size(); j < lim; ++j) {
-							String strKey = arKeys.get(j).toString();
+							RubyValue key = arKeys.get(j);
 							RubyValue value = arValues.get(j);
+							if (key == null || value == null ||
+									key.equals(RubyConstant.QNIL) ||
+									value.equals(RubyConstant.QNIL))
+								continue;
+							String strKey = key.toString();
+							String strValue = value.toString();
 							if (strKey.equals("latitude")) {
+								double v;
+								try {
+									v = Double.parseDouble(strValue);
+								}
+								catch (NumberFormatException e) {
+									throw new RubyException(RubyRuntime.ArgumentErrorClass,
+											"Wrong 'latitude' parameter: " + strValue + ", should be Float");
+								}
 								if (annotation.coordinates == null)
-									annotation.coordinates = new Annotation.Coordinates(value.toFloat(), 0);
+									annotation.coordinates = new Annotation.Coordinates(v, 0);
 								else
-									annotation.coordinates.latitude = value.toFloat();
+									annotation.coordinates.latitude = v;
 							}
 							else if (strKey.equals("longitude")) {
+								double v;
+								try {
+									v = Double.parseDouble(strValue);
+								}
+								catch (NumberFormatException e) {
+									throw new RubyException(RubyRuntime.ArgumentErrorClass,
+											"Wrong 'longitude' parameter: " + strValue + ", should be Float");
+								}
 								if (annotation.coordinates == null)
-									annotation.coordinates = new Annotation.Coordinates(0, value.toFloat());
+									annotation.coordinates = new Annotation.Coordinates(0, v);
 								else
-									annotation.coordinates.longitude = value.toFloat();
+									annotation.coordinates.longitude = v;
 							}
 							else if (strKey.equals("title"))
-								annotation.title = value.toString();
+								annotation.title = strValue;
 							else if (strKey.equals("subtitle"))
-								annotation.subtitle = value.toString();
+								annotation.subtitle = strValue;
 							else if (strKey.equals("street_address"))
-								annotation.street_address = value.toString();
+								annotation.street_address = strValue;
 							else if (strKey.equals("resolved_address"))
-								annotation.resolved_address = value.toString();
+								annotation.resolved_address = strValue;
 							else if (strKey.equals("url"))
-								annotation.url = value.toString();
+								annotation.url = strValue;
 						}
 						annotations.addElement(annotation);
 					}
