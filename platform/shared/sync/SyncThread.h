@@ -30,28 +30,33 @@ public:
 	    int m_nCmdCode;
 	    int m_nCmdParam;
 	    String m_strCmdParam;
+   		boolean m_bShowStatus;
 
-	    CSyncCommand(int nCode, int nParam)
+	    CSyncCommand(int nCode, int nParam, boolean bShowStatus)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = nParam;
+            m_bShowStatus = bShowStatus;
 	    }
-	    CSyncCommand(int nCode, String strParam)
+	    CSyncCommand(int nCode, String strParam, boolean bShowStatus)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
+            m_bShowStatus = bShowStatus;
 	    }
-	    CSyncCommand(int nCode, String strParam, int nCmdParam)
+	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_nCmdParam = nCmdParam;
+            m_bShowStatus = bShowStatus;
 	    }
 
-	    CSyncCommand(int nCode)
+	    CSyncCommand(int nCode, boolean bShowStatus)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = 0;
+            m_bShowStatus = bShowStatus;
 	    }
 
 	    boolean equals(const CSyncCommand& oSyncCmd)
@@ -66,7 +71,7 @@ public:
     {
     public:
 	    String m_strName, m_strPassword;
-        CSyncLoginCommand(String name, String password, String callback) : CSyncCommand(CSyncThread::scLogin,callback)
+        CSyncLoginCommand(String name, String password, String callback) : CSyncCommand(CSyncThread::scLogin,callback,false)
 	    {
 		    m_strName = name;
 		    m_strPassword = password;
@@ -79,7 +84,7 @@ public:
         boolean m_bSyncChanges;
         int     m_nProgressStep;
 
-        CSyncSearchCommand(String from, String params, int source_id, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,source_id)
+        CSyncSearchCommand(String from, String params, int source_id, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,source_id, false)
 	    {
 		    m_strFrom = from;
             m_bSyncChanges = sync_changes;
@@ -119,6 +124,7 @@ private:
     void processCommand(CSyncCommand& oSyncCmd);
     boolean isNoCommands();
 
+    void checkShowStatus(CSyncCommand& oSyncCmd);
 };
 
 }

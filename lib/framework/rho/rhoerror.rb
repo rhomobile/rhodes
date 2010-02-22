@@ -11,6 +11,7 @@ module Rho
     ERR_CUSTOMSYNCSERVER = 8
     ERR_UNATHORIZED = 9
     ERR_CANCELBYUSER = 10
+    ERR_SYNCVERSION = 11
     
     attr_reader :code
     
