@@ -876,7 +876,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		zoom = z;
 		if (zoom < MIN_ZOOM) zoom = MIN_ZOOM;
 		if (zoom > MAX_ZOOM) zoom = MAX_ZOOM;
-		lastFetchCommandSent = 0;
+		lastFetchCommandSent = System.currentTimeMillis() + CACHE_UPDATE_INTERVAL;
 	}
 	
 	public int calculateZoom(double latDelta, double lonDelta) {
@@ -891,6 +891,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	public void addAnnotation(Annotation ann) {
+		if (ann.street_address == null && ann.coordinates == null)
+			return;
 		if (ann.coordinates != null) {
 			long nlat = degreesToPixelsY(ann.coordinates.latitude, MAX_ZOOM);
 			long nlon = degreesToPixelsX(ann.coordinates.longitude, MAX_ZOOM);
