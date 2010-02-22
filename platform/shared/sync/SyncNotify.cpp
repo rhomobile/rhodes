@@ -274,12 +274,24 @@ void CSyncNotify::setInitialSyncNotification(String strUrl, String strParams )//
 	m_initialSyncNotify = CSyncNotification( strFullUrl, strParams, true );
 }
 
+extern "C" void alert_show_popup(const char* message);
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
+    if ( error == RhoRuby.ERR_SYNCVERSION )
+    {
+        status = RhoRuby.getErrorText(error);
+        alert_show_popup(status.c_str());
+        return;
+    }
     //TODO: reportStatus
-	//if (m_statusListener != null) {
-		//if ( strDetails.length() == 0 )
-		//	strDetails = RhoRuby.getErrorText(error);
-        //status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+	//if (m_statusListener != null && (m_bEnableReporting || error == RhoRuby.ERR_SYNCVERSION) ) {
+//        if ( error == RhoRuby.ERR_SYNCVERSION )
+//    		status = RhoRuby.getErrorText(error);
+//		else
+//		{
+		    //if ( strDetails.length() == 0 )
+		    //	strDetails = RhoRuby.getErrorText(error);
+            //status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+//        }
 	//	m_statusListener.reportStatus( status, error);
 	//}
 	//LOG(INFO) + "Status: "+status;
@@ -351,16 +363,16 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
 	
-	/*if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+	if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 	{
 		if ( !( psrc != null && psrc->m_strParams.length()>0) )
         {
-			if ( psrc != null && strMessage.length() == 0 )
-				strMessage = RhoRuby.getMessageText("sync_failed_for") + psrc->getName() + ".";
+	//		if ( psrc != null && strMessage.length() == 0 )
+	//			strMessage = RhoRuby.getMessageText("sync_failed_for") + psrc->getName() + ".";
 			
             reportSyncStatus(strMessage,nErrCode,psrc?psrc->m_strError:"");
         }
-	}*/
+	}
 
 	doFireSyncNotification(psrc, bFinish, nErrCode, strMessage );
 }

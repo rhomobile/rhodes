@@ -139,7 +139,7 @@ boolean CSyncThread::isNoCommands()
 void CSyncThread::processCommands()//throws Exception
 {
     if ( isNoCommands() )
-        addSyncCommand(new CSyncCommand(scNone));
+        addSyncCommand(new CSyncCommand(scNone,false));
 
 	while(!isNoCommands())
 	{
@@ -153,15 +153,27 @@ void CSyncThread::processCommands()//throws Exception
 	}
 }
 
+void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
+{
+	boolean bShowStatus = oSyncCmd.m_bShowStatus;
+	m_oSyncEngine.getNotify().enableReporting(bShowStatus);
+	//if (bShowStatus)
+		//m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
+}	
+
 void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
 {
     switch(oSyncCmd.m_nCmdCode)
     {
     case scNone:
         if ( m_nPollInterval )
+        {
+            checkShowStatus(oSyncCmd);
             m_oSyncEngine.doSyncAllSources();
+        }
         break;
     case scSyncAll:
+        checkShowStatus(oSyncCmd);
         m_oSyncEngine.doSyncAllSources();
         break;
     case scChangePollInterval:
@@ -171,6 +183,7 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
             CSyncEngine::CSourceID oSrcID;
             oSrcID.m_strUrl = oSyncCmd.m_strCmdParam;
 
+            checkShowStatus(oSyncCmd);
             m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
         }
         break;
@@ -180,6 +193,7 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
             oSrcID.m_nID = oSyncCmd.m_nCmdParam;
             oSrcID.m_strName = oSyncCmd.m_strCmdParam;
 
+            checkShowStatus(oSyncCmd);
             m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
         }
         break;
@@ -188,6 +202,7 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
             CSyncEngine::CSourceID oSrcID;
             oSrcID.m_nID = oSyncCmd.m_nCmdParam;
 
+            checkShowStatus(oSyncCmd);
             m_oSyncEngine.doSyncSource(oSrcID,oSyncCmd.m_strCmdParam, 
                 ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges,
                 ((CSyncSearchCommand&)oSyncCmd).m_nProgressStep);
@@ -196,6 +211,8 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
     case scLogin:
     	{
     		CSyncLoginCommand& oLoginCmd = (CSyncLoginCommand&)oSyncCmd;
+
+            checkShowStatus(oSyncCmd);
     		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_strCmdParam );
     	}
         break;
@@ -208,7 +225,7 @@ void CSyncThread::setPollInterval(int nInterval)
     if ( m_nPollInterval == 0 )
         m_oSyncEngine.stopSync();
 
-    addSyncCommand( new CSyncCommand(scChangePollInterval) );
+    addSyncCommand( new CSyncCommand(scChangePollInterval,false) );
 }
 
 };
@@ -224,14 +241,14 @@ void rho_sync_destroy()
 	
 void rho_sync_doSyncAllSources(int show_status_popup)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll));
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0));
     //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
 void rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 {
     CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt ) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0 ) );
 }	
 
 void rho_sync_stop()
@@ -257,7 +274,7 @@ void rho_sync_doSearchSource(int source_id, const char *from, const char *params
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOneByUrl, szSrcUrl) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOneByUrl, szSrcUrl, false) );
 }	
 
 void rho_sync_set_pollinterval(int nInterval)
