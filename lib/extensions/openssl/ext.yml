@@ -1,2 +1,0 @@
-entry: Init_openssl
-libraries: [ "libcrypto.a", "libssl.a", "libossl.a" ]
