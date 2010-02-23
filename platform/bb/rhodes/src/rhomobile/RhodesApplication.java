@@ -42,18 +42,7 @@ import net.rim.device.api.ui.Manager;
 
 import javax.microedition.media.*;
 
-import com.rho.Mutex;
-import com.rho.RhoClassFactory;
-import com.rho.RhoConf;
-import com.rho.RhoEmptyLogger;
-import com.rho.RhoEmptyProfiler;
-import com.rho.RhoLogger;
-import com.rho.RhoMainScreen;
-import com.rho.RhoProfiler;
-import com.rho.RhoRuby;
-import com.rho.RhoThread;
-import com.rho.SimpleFile;
-import com.rho.Version;
+import com.rho.*;
 //import com.rho.db.DBAdapter;
 import com.rho.location.GeoLocation;
 import com.rho.net.RhoConnection;
@@ -196,12 +185,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			return "";
 
 		url.replace('\\', '/');
-		if ( !url.startsWith(_httpRoot) && !isExternalUrl(url) ){
-    		if ( url.charAt(0) == '/' )
-    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
-    		else
-    			url = _httpRoot + url;
-		}
+		if ( !url.startsWith(_httpRoot) && !isExternalUrl(url) )
+			url = FilePath.join(_httpRoot,url);
 
 		return url;
     }
