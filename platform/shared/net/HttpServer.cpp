@@ -839,7 +839,7 @@ bool CHttpServer::send_file(String const &path)
     char buf[8192];
     
     size_t fileSize = st.st_size;
-    snprintf(buf, sizeof(buf), "%d", fileSize);
+    snprintf(buf, sizeof(buf), "%lu", (unsigned long)fileSize);
     headers.push_back(Header("Content-Length", buf));
     
     // Send headers
