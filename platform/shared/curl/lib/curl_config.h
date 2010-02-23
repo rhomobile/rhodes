@@ -972,7 +972,6 @@
 #endif
 
 #if defined(OS_ANDROID)
-#define USE_SSLEAY 1
-#define USE_OPENSSL 1
+#include <rhoconf.h>
 #endif
 /* RHO END */
