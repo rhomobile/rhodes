@@ -1,6 +1,7 @@
 == 1.5.0
 * native screen resolution for iPad
 * native tab bar for android
+* support of SSL in AsyncHttp for iPhone and Android
 
 == 1.4.0
 * improved spec running framework, see spec/framework_spec for details
