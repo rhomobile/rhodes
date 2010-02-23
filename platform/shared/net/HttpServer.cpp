@@ -442,11 +442,10 @@ bool CHttpServer::receive_request(ByteVector &request)
         r.insert(r.end(), &buf[0], &buf[0] + n);
     }
     
-    if (r.empty())
-        return true;
-    
-	request.insert(request.end(), r.begin(), r.end());
-    RAWTRACE1("Received request:\n%s", &request[0]);
+    if (!r.empty()) {
+        request.insert(request.end(), r.begin(), r.end());
+        RAWTRACE1("Received request:\n%s", &request[0]);
+    }
     return true;
 }
 
@@ -596,69 +595,69 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
     headers.clear();
     body.clear();
 
-	size_t s = 0;
-	ByteVector request;
+    size_t s = 0;
+    ByteVector request;
 
-	bool parsing_headers = true;
-	size_t content_length = 0;
+    bool parsing_headers = true;
+    size_t content_length = 0;
 
 //	int attempt = 0;
 //#define receive_request(request) receive_request_test(request, attempt++)
-	for (;;) {
-		if (!receive_request(request))
-			return false;
+    for (;;) {
+        if (!receive_request(request))
+            return false;
 
-		size_t lim = request.size();
-		while (parsing_headers) {
-			size_t e;
-			for(e = s; e < lim && request[e] != '\r'; ++e);
-			if (e >= lim - 1) {
-				// Incomplete line, will read further
-				break;
-			}
-			if (request[e + 1] != '\n') {
-				// Wrong request, should be '\r\n'
-				return false;
-			}
-	        
-			String line(&request[s], e - s);
-			s = e + 2;
-	        
-			if (line.empty()) {
-				parsing_headers = false;
-				break;
-			}
-			
-			if (uri.empty()) {
-				// Parse start line
-				if (!parse_startline(line, method, uri, query) || uri.empty())
-					return false;
-			}
-			else {
-				Header hdr;
-				if (!parse_header(line, hdr) || hdr.name.empty())
-					return false;
-				headers.push_back(hdr);
-				
-				String low;
-				std::transform(hdr.name.begin(), hdr.name.end(), std::back_inserter(low), &::tolower);
-				if (low == "content-length") {
-					content_length = ::atoi(hdr.value.c_str());
-				}
-			}
-		}
+        size_t lim = request.size();
+        while (parsing_headers) {
+            size_t e;
+            for(e = s; e < lim && request[e] != '\r'; ++e);
+            if (e >= lim - 1) {
+                // Incomplete line, will read further
+                break;
+            }
+            if (request[e + 1] != '\n') {
+                RAWLOG_ERROR("Wrong request syntax, line should ends by '\\r\\n'");
+                return false;
+            }
+            
+            String line(&request[s], e - s);
+            s = e + 2;
+            
+            if (line.empty()) {
+                parsing_headers = false;
+                break;
+            }
+            
+            if (uri.empty()) {
+                // Parse start line
+                if (!parse_startline(line, method, uri, query) || uri.empty())
+                    return false;
+            }
+            else {
+                Header hdr;
+                if (!parse_header(line, hdr) || hdr.name.empty())
+                    return false;
+                headers.push_back(hdr);
+                
+                String low;
+                std::transform(hdr.name.begin(), hdr.name.end(), std::back_inserter(low), &::tolower);
+                if (low == "content-length") {
+                    content_length = ::atoi(hdr.value.c_str());
+                }
+            }
+        }
 
-		if (!parsing_headers) {
-			if (content_length == 0)
-				return true;
+        if (!parsing_headers) {
+            if (content_length == 0)
+                return true;
 
-			if (lim - s < content_length)
-				continue;
+            if (lim - s < content_length)
+                continue;
 
-			body.assign(&request[s], &request[s] + content_length);
-			return true;
-		}
-	}
+            body.assign(&request[s], &request[s] + content_length);
+            return true;
+        }
+    }
 }
 
 bool CHttpServer::parse_startline(String const &line, String &method, String &uri, String &query)
@@ -667,8 +666,10 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
     
     // Find first space
     for(s = line.c_str(), e = s; *e != ' ' && *e != '\0'; ++e);
-    if (*e == '\0')
+    if (*e == '\0') {
+        RAWLOG_ERROR1("Parse startline (1): syntax error: \"%s\"", line.c_str());
         return false;
+    }
     
     method.assign(s, e);
     
@@ -676,8 +677,10 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
     for(s = e; *s == ' '; ++s);
     
     for(e = s; *e != '?' && *e != ' ' && *e != '\0'; ++e);
-    if (*e == '\0')
+    if (*e == '\0') {
+        RAWLOG_ERROR1("Parse startline (2): syntax error: \"%s\"", line.c_str());
         return false;
+    }
     
     uri.assign(s, e);
     uri = decode(uri);
@@ -697,8 +700,10 @@ bool CHttpServer::parse_header(String const &line, Header &hdr)
 {
     const char *s, *e;
     for(s = line.c_str(), e = s; *e != ' ' && *e != ':' && *e != '\0'; ++e);
-    if (*e == '\0')
+    if (*e == '\0') {
+        RAWLOG_ERROR1("Parse header (1): syntax error: %s", line.c_str());
         return false;
+    }
     hdr.name.assign(s, e);
     
     // Skip spaces and colon
