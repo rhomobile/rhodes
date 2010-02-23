@@ -300,8 +300,8 @@
 	
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath: soundFilePath];
 	NSError* err = nil;
-	AVAudioPlayer *newPlayer =
-		[[AVAudioPlayer alloc] initWithContentsOfURL: fileURL error: &err];
+	AVAudioPlayer *newPlayer = [AVAudioPlayer alloc];
+	[newPlayer initWithContentsOfURL:fileURL error:&err];
 	NSLog(@"Init media player returns: %@", err);
 	
 	[fileURL release];
