@@ -289,10 +289,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        if ( strDbUrl.length() == 0 )
 	        	continue;
 	        
-	        if ( strDbUrl.charAt(0) == '/' || strDbUrl.charAt(0) == '\\' )
-	        	strDbUrl = strDbUrl.substring(1);
-	        
-	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : (RhoConf.getInstance().getPath("syncserver") + strDbUrl);
+	        String strUrl = strDbUrl.startsWith("http") ? strDbUrl : FilePath.join(RhoConf.getInstance().getPath("syncserver"), strDbUrl);
 	        if ( strUrl.charAt(strUrl.length()-1) == '/' || strUrl.charAt(strUrl.length()-1) == '\\' )
 	        	strUrl = strUrl.substring(0, strUrl.length()-1);	        
 	        
