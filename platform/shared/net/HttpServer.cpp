@@ -2,6 +2,7 @@
 
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
+#include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 #if !defined(OS_WINCE)
@@ -42,6 +43,7 @@ namespace rho
 {
 namespace net
 {
+using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
     
@@ -261,7 +263,7 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_exit(false), m_port(port), m_root(root), verbose(false)
+    :m_exit(false), m_port(port), m_root(root), verbose(true)
 {
     RAWTRACE("Open listening socket...");
     
@@ -806,7 +808,7 @@ bool CHttpServer::send_file(String const &path)
 {
     String fullPath = path;
 	if (path.find(m_root) != 0)
-		fullPath = m_root + (path[0]!= '/' ? "/": "") + path;
+        fullPath = CFilePath::join( m_root, path );
 	
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
     
@@ -873,7 +875,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         return true;
     }
     
-    String fullPath = m_root + "/" + uri;
+    String fullPath = CFilePath::join(m_root,uri);
     
     Route route;
     if (dispatch(uri, route)) {
@@ -897,11 +899,10 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     
     if (isdir(fullPath)) {
         RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
-        String slash = !uri.empty() && uri[uri.size() - 1] == '/' ? "" : "/";
         String q = query.empty() ? "" : "?" + query;
         
         HeaderList headers;
-        headers.push_back(Header("Location", uri + slash + "index_erb.iseq" + q));
+        headers.push_back(Header("Location", CFilePath::join( uri, "index_erb.iseq") + q));
         
         send_response(create_response("301 Moved Permanently", headers));
         return false;

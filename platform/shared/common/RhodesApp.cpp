@@ -2,6 +2,7 @@
 #include "common/RhoMutexLock.h"
 #include "common/IRhoClassFactory.h"
 #include "common/RhoConf.h"
+#include "common/RhoFilePath.h"
 #include "net/INetRequest.h"
 #include "net/HttpServer.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -536,13 +537,7 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
         strncmp("tel:", strUrl.c_str(), 4) == 0)
         return strUrl;
 
-    String strRes = m_strHomeUrl;
-    if ( strUrl.at(0) != '/' && strUrl.at(0) != '\\' )
-        strRes += '/';
-
-    strRes += strUrl;
-    
-    return strRes;
+    return CFilePath::join(m_strHomeUrl,strUrl);
 }
 
 void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink )
