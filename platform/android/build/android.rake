@@ -727,6 +727,14 @@ namespace "package" do
   end
 end
 
+def get_app_log(appname, device)
+  pkgname = 'com.rhomobile.' + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
+  path = File.join('/sdcard/rhomobile', pkgname, 'RhoLog.txt')
+  cc_run('adb', [device ? '-d' : '-e', 'pull', path, '.']) or return false
+  puts "RhoLog.txt stored to current directory"
+  return true
+end
+
 namespace "device" do
   namespace "android" do
 
@@ -821,6 +829,18 @@ namespace "device" do
       #   puts "Error running zipalign"
       #   exit 1
       # end
+    end
+
+    task :getlog => "config:android" do
+      get_app_log($appname, true) or exit 1
+    end
+  end
+end
+
+namespace "emulator" do
+  namespace "android" do
+    task :getlog => "config:android" do
+      get_app_log($appname, false) or exit 1
     end
   end
 end
