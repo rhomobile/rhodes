@@ -1,6 +1,7 @@
 require 'find'
 require 'erb'
 require 'rake/rdoctask'
+require 'digest/sha2'
 
 #Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
 module Rake
@@ -20,6 +21,15 @@ load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
 
+def get_dir_hash(dir, init = nil)
+  hash = init
+  hash = Digest::SHA2.new if hash.nil?
+  Dir.glob(dir + "/**/*").each do |f|
+    hash << f
+    hash.file(f) if File.file? f
+  end
+  hash
+end
 
 namespace "framework" do
   task :spec do
