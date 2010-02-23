@@ -109,11 +109,13 @@ namespace "build" do
       Rake::Task["build:iphone:extensions"].execute
 
       # Calculate hash of newly built files
-      hash = ''
+      hash = Digest::SHA2.new
       Dir.glob($srcdir + "/**/*").each do |f|
-        hash += Digest::SHA2.file(f).hexdigest if File.file? f and f !~ /\/hash$/
+        hash << f
+        hash += Digest::SHA2.file(f).hexdigest if File.file? f
       end
-      File.open(File.join($srcdir, "hash"), "w") { |f| f.write(Digest::SHA2.hexdigest(hash)) }
+      hash = hash.hexdigest
+      File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash) }
       # Store app name
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
