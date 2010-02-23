@@ -369,14 +369,19 @@ const char* CRhodesApp::getFreeListeningPort()
 			memset((void *) &serv_addr, 0, sizeof(serv_addr));
 			serv_addr.sin_family = AF_INET;
 			serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-			serv_addr.sin_port = htons(0);
-			
+			serv_addr.sin_port = htons(8080);
+
 			if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
-			{
-				LOG(WARNING) + "Unable to bind";
-				noerrors = 0;
-			}
-			else
+            {
+    			serv_addr.sin_port = htons(0);
+			    if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
+			    {
+				    LOG(WARNING) + "Unable to bind";
+				    noerrors = 0;
+			    }
+            }
+
+			if ( noerrors )
 			{
 				char buf[10] = {0};
 #ifdef OS_MACOSX
