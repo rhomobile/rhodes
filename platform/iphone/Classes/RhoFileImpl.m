@@ -36,5 +36,5 @@ extern void delete_files_in_folder(const char *szFolderPath);
 
 void delete_files_in_folder(const char *szFolderPath)
 {
-	[RhoFileImpl deleteFilesInFolder:[NSString stringWithCString:szFolderPath]];
+	[RhoFileImpl deleteFilesInFolder:[NSString stringWithUTF8String:szFolderPath]];
 }

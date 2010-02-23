@@ -1688,7 +1688,6 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
             lat=lon="10000";
             addr=title=subtitle=url="";
             for(j=0; j<keys_len; j++) {
-              VALUE val;
               char *tmp;
               VALUE key = rb_ary_entry(keys_arr, j);
               VALUE data = rb_hash_aref(hash,key);
