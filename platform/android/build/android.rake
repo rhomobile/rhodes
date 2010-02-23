@@ -580,6 +580,7 @@ namespace "build" do
       args << "-lssl" if USE_OPENSSL
       args << "-lcrypto" if USE_OPENSSL
       args << "-lsqlite"
+      args << "-llog"
       args << "-ldl"
       args << "-lz"
 
