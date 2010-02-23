@@ -445,7 +445,7 @@ void alert_show_popup(char* message) {
 	if (message==NULL) {
 		RAWLOG_ERROR("Alert.show_popup - wrong arguments");
 	} else {
-		[[ServerHost sharedInstance] showPopup:[NSString stringWithCString:message]];
+		[[ServerHost sharedInstance] showPopup:[NSString stringWithUTF8String:message]];
 	}
 }
 
@@ -457,29 +457,29 @@ void alert_play_file(char* file_name, char* media_type) {
 	if (file_name==NULL) {
 		RAWLOG_ERROR("Alert.play_file - please specify file name to play");
 	} else {
-		[[ServerHost sharedInstance] playFile:[NSString stringWithCString:file_name] 
-								mediaType:media_type?[NSString stringWithCString:media_type]:NULL];
+		[[ServerHost sharedInstance] playFile:[NSString stringWithUTF8String:file_name] 
+								mediaType:media_type?[NSString stringWithUTF8String:media_type]:NULL];
 	}
 }
 
 void take_picture(char* callback_url) {
-	[[ServerHost sharedInstance] takePicture:[NSString stringWithCString:callback_url]];		
+	[[ServerHost sharedInstance] takePicture:[NSString stringWithUTF8String:callback_url]];		
 }
 
 void choose_picture(char* callback_url) {
-	[[ServerHost sharedInstance] choosePicture:[NSString stringWithCString:callback_url]];		
+	[[ServerHost sharedInstance] choosePicture:[NSString stringWithUTF8String:callback_url]];		
 }
 
 void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
-	[[ServerHost sharedInstance] chooseDateTime:[NSString stringWithCString:callback] 
-										  title:[NSString stringWithCString:title]
+	[[ServerHost sharedInstance] chooseDateTime:[NSString stringWithUTF8String:callback] 
+										  title:[NSString stringWithUTF8String:title]
 									initialTime:initial_time 
 										 format:format
-										   data:[NSString stringWithCString:data]];
+										   data:[NSString stringWithUTF8String:data]];
 }
 
 void rho_map_location(char* query) {
-	[[ServerHost sharedInstance] mapLocation:[NSString stringWithCString:query]];
+	[[ServerHost sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];
 }
 
 void mapview_create(int nparams, char** params, int nannotations, char** annotation) {
@@ -502,7 +502,7 @@ void create_nativebar(int bar_type, int nparams, char** params) {
 	for(int i = 0; i < nparams; i++) {
 		if (params[i]) {
 			printf("param: %s\n", params[i]);
-			[items addObject:[NSString stringWithCString:params[i]]];
+			[items addObject:[NSString stringWithUTF8String:params[i]]];
 		} else {
 			printf("param: nil\n");   
 			[items addObject:@""];

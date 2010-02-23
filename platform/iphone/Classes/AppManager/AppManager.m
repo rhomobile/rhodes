@@ -114,7 +114,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	BOOL copyFiles = YES;
 	
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
-	NSString *rhoRoot = [NSString stringWithCString:rho_native_rhopath()];
+	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
@@ -282,7 +282,7 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 	}
 	
 	AppLoader* appLoader = [[AppLoader alloc] init];
-	bool ret = [appLoader loadApplication:[NSString stringWithCString:szQuery]];
+	bool ret = [appLoader loadApplication:[NSString stringWithUTF8String:szQuery]];
 	[appLoader release];
 	if (!ret) {
 		rho_http_senderror(httpContext, 500, "Error loading application");
