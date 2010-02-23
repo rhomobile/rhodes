@@ -226,16 +226,16 @@ NSMutableArray* parse_annotations(int nannotations, char** annotation) {
 	NSString* tmp;
 	for(int i = 0; i < nannotations;) {
 		MapAnnotation* annotation_obj = [[MapAnnotation alloc] init];
-		tmp = [NSString stringWithCString:annotation[i++]];
+		tmp = [NSString stringWithUTF8String:annotation[i++]];
 		current_coordinate.latitude = [tmp doubleValue];
-		tmp = [NSString stringWithCString:annotation[i++]];
+		tmp = [NSString stringWithUTF8String:annotation[i++]];
 		current_coordinate.longitude = [tmp doubleValue];
 		[annotation_obj setCoordinate:current_coordinate];
 		
-		[annotation_obj setAddress:[NSString stringWithCString:annotation[i++]]];
-		[annotation_obj setTitle:[NSString stringWithCString:annotation[i++]]];
-		[annotation_obj setSubtitle:[NSString stringWithCString:annotation[i++]]];
-		[annotation_obj setUrl:[NSString stringWithCString:annotation[i++]]];
+		[annotation_obj setAddress:[NSString stringWithUTF8String:annotation[i++]]];
+		[annotation_obj setTitle:[NSString stringWithUTF8String:annotation[i++]]];
+		[annotation_obj setSubtitle:[NSString stringWithUTF8String:annotation[i++]]];
+		[annotation_obj setUrl:[NSString stringWithUTF8String:annotation[i++]]];
 		[annotations addObject:annotation_obj];		
 	}
 	return annotations;	
@@ -252,7 +252,7 @@ NSMutableArray* parse_settings(int nparams, char** params) {
                 char **array = (char**)params[i];
                 while(*array) {
                     char const *s = *array;
-                    [arr addObject:[NSString stringWithCString:*array]];
+                    [arr addObject:[NSString stringWithUTF8String:*array]];
                     array++;
                     printf("param %s\n", s);
                 }
@@ -261,7 +261,7 @@ NSMutableArray* parse_settings(int nparams, char** params) {
             } else {
                 if (strcmp(params[i],"region")==0)
                     array_flag = TRUE;
-                [settings addObject:[NSString stringWithCString:params[i]]];
+                [settings addObject:[NSString stringWithUTF8String:params[i]]];
                 printf("param %s\n", params[i]);
             }
         } else {
