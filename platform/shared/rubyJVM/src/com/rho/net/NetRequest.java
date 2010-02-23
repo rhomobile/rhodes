@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import com.rho.RhoClassFactory;
 //import com.rho.RhoConf;
+import com.rho.FilePath;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -373,14 +374,7 @@ public class NetRequest
 
 	        if (!strFileName.startsWith("file:")) { 
             	try{
-            		//TODO: implement FilePath.join
-            		String url = RhoClassFactory.createFile().getDirPath("");
-	            	if ( strFileName.charAt(0) == '/' || strFileName.charAt(0) == '\\' )
-	            		url += strFileName.substring(1);
-	            	else
-	            		url += strFileName;
-	            	
-	            	strFileName = url;
+	            	strFileName = FilePath.join(RhoClassFactory.createFile().getDirPath(""), strFileName);
             	} catch (IOException x) { 
                  	LOG.ERROR("getDirPath failed.", x);
                     throw x;
@@ -540,12 +534,9 @@ public class NetRequest
 		if(!_httpRoot.endsWith("/"))
 			_httpRoot = _httpRoot + "/";
 		url.replace('\\', '/');
-		if ( !url.startsWith(_httpRoot) ){
-    		if ( url.charAt(0) == '/' )
-    			url = _httpRoot.substring(0, _httpRoot.length()-1) + url;
-    		else
-    			url = _httpRoot + url;
-		}
+		if ( !url.startsWith(_httpRoot) )
+			url = FilePath.join(_httpRoot, url);
+		
 		return url;
     }
 

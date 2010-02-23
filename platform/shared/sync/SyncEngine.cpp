@@ -3,6 +3,7 @@
 
 #include "json/JSONIterator.h"
 #include "common/RhoConf.h"
+#include "common/RhoFilePath.h"
 #include "common/StringConverter.h"
 #include "sync/ClientRegister.h"
 #include "net/URI.h"
@@ -174,10 +175,7 @@ void CSyncEngine::loadAllSources()
         if ( strDbUrl.length() == 0 )
             continue;
 
-        if ( strDbUrl.at(0) == '/' || strDbUrl.at(0) == '\\' )
-            strDbUrl.erase(strDbUrl.begin());
-
-		String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : (RHOCONF().getPath("syncserver") + strDbUrl);
+        String strUrl = strDbUrl.find("http") == 0 ? strDbUrl : CFilePath::join(RHOCONF().getPath("syncserver") , strDbUrl);
         if ( strUrl.at(strUrl.length()-1) == '/' || strUrl.at(strUrl.length()-1) == '\\' )
             strUrl.erase(strUrl.end()-1);
 
