@@ -1,5 +1,4 @@
 #
-require 'digest/sha2'
 require File.dirname(__FILE__) + '/androidcommon.rb'
 
 USE_STLPORT = true
@@ -209,18 +208,13 @@ namespace "build" do
 #      Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
-      hash = ""
+      hash = nil
       ["apps", "db", "lib"].each do |d|
         cp_r File.join($srcdir, d), assets
         # Calculate hash of directories
-        hash = Digest::SHA2.new
-        Dir.glob(File.join(assets, d, "**/*")) do |f|
-          hash << f
-          hash.file(f) if File.file? f
-        end
-        hash = hash.hexdigest
+        hash = get_dir_hash(File.join(assets, d), hash)
       end
-      File.open(File.join(assets, "hash"), "w") { |f| f.write(hash) }
+      File.open(File.join(assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
 
     File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
 
@@ -285,12 +279,7 @@ namespace "build" do
 
         objdir += '/openssl'
 
-        hash = Digest::SHA2.new
-        Dir.glob(objdir + '/**/*').each do |f|
-          hash << f
-          hash.file(f) if File.file? f
-        end
-        hash = hash.hexdigest
+        hash = get_dir_hash(objdir).hexdigest
 
         oldhash = ''
         oldhash = File.new(hashloc, 'r').read if File.file? hashloc
@@ -322,12 +311,7 @@ namespace "build" do
           cp File.join(objdir, 'libssl.a'), File.join(objdir, '..', '..')
           cp File.join(objdir, 'libcrypto.a'), File.join(objdir, '..', '..')
 
-          hash = Digest::SHA2.new
-          Dir.glob(objdir + '/**/*').each do |f|
-            hash << f
-            hash.file(f) if File.file? f
-          end
-          hash = hash.hexdigest
+          hash = get_dir_hash(objdir).hexdigest
           File.open(hashloc, 'w') { |f| f.write(hash) }
         end
 
