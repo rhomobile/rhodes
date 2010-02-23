@@ -88,6 +88,10 @@
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
 		BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
+		BDF33C23113463B900169E20 /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB155112EE65900AE3724 /* sslimpl.cpp */; };
+		BDF33C24113463BD00169E20 /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C4775F61130832B0092D21E /* ServerHost.m */; };
+		BDF33C25113463C300169E20 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477603113083F10092D21E /* JSString.m */; };
+		BDF33C26113463C700169E20 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477607113084290092D21E /* WebViewUrl.m */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
@@ -1041,6 +1045,10 @@
 				BD666E10112D5EA300948654 /* MapAnnotation.m in Sources */,
 				BD666E11112D5EA300948654 /* GoogleGeocoder.m in Sources */,
 				BD666E14112D5EA300948654 /* RhoFileImpl.m in Sources */,
+				BDF33C23113463B900169E20 /* sslimpl.cpp in Sources */,
+				BDF33C24113463BD00169E20 /* ServerHost.m in Sources */,
+				BDF33C25113463C300169E20 /* JSString.m in Sources */,
+				BDF33C26113463C700169E20 /* WebViewUrl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
