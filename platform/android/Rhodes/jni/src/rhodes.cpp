@@ -1,3 +1,5 @@
+#include <android/log.h>
+
 #include <com_rhomobile_rhodes_Rhodes.h>
 
 #include <common/RhoConf.h>
@@ -27,33 +29,20 @@ namespace rho
 namespace common
 {
 
-jclass clsAndroidLog = NULL;
-jmethodID midAndroidLogI = NULL;
-jstring tagAndroidLog;
-
 class AndroidLogSink : public ILogSink
 {
 public:
     void writeLogMessage(String &strMsg)
     {
-        JNIEnv *env = jnienv();
-        if (!env) return;
-        jstring strObj = env->NewStringUTF(strMsg.c_str());
-        env->CallStaticIntMethod(clsAndroidLog, midAndroidLogI,
-            tagAndroidLog, strObj);
-        env->DeleteLocalRef(strObj);
+        __android_log_write(ANDROID_LOG_INFO, "APP", strMsg.c_str());
     }
 
     int getCurPos()
     {
-        // TODO
         return 0;
     }
 
-    void clear()
-    {
-        // TODO
-    }
+    void clear() {}
 };
 
 static CAutoPtr<AndroidLogSink> g_androidLogSink(new AndroidLogSink());
@@ -146,27 +135,7 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     pthread_key_create(&g_thrkey, NULL);
     store_thr_jnienv(env);
 
-    jclass cls = env->FindClass("android/util/Log");
-    if (!cls) return -1;
-    jmethodID mid = env->GetStaticMethodID(cls, "i", "(Ljava/lang/String;Ljava/lang/String;)I");
-    if (!mid) return -1;
-
-    rho::common::clsAndroidLog = (jclass)env->NewGlobalRef(cls);
-    if (!rho::common::clsAndroidLog) return -1;
-    env->DeleteLocalRef(cls);
-    rho::common::midAndroidLogI = mid;
-
-    jstring strTag = env->NewStringUTF("APP");
-    if (!strTag) return -1;
-    rho::common::tagAndroidLog = (jstring)env->NewGlobalRef(strTag);
-    if (!rho::common::tagAndroidLog) return -1;
-    env->DeleteLocalRef(strTag);
-
-    // env->CallStaticIntMethod(rho::common::clsAndroidLog, rho::common::midAndroidLogI,
-    //     rho::common::tagAndroidLog, env->NewStringUTF("++++++ INIT ++++++"));
-
     const char *classes[] = {
-        RHODES_JAVA_CLASS_ANDROID_LOG,
         RHODES_JAVA_CLASS_ITERATOR,
         RHODES_JAVA_CLASS_SET,
         RHODES_JAVA_CLASS_MAP,
