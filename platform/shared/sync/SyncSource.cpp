@@ -305,7 +305,7 @@ void CSyncSource::syncServerChanges()
         setCurPageCount(0);
         String strUrl = getUrl();
         if ( m_strAction.length() > 0 )
-            strUrl += '/' + m_strAction;
+            strUrl = CFilePath::join( strUrl, m_strAction);
 
         String strQuery = getSync().SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
                 "&p_size=" + getSync().SYNC_PAGE_SIZE() + "&version=" + convertToStringA(getSync().SYNC_VERSION());
