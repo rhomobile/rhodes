@@ -41,6 +41,7 @@ private:
     HashtablePtr<int, Hashtable<String,String>* > m_hashCreateObjectErrors;
     String m_strSingleObjectSrcName, m_strSingleObjectID;
     Hashtable<int,int> m_hashSrcObjectCount;
+    boolean m_bEnableReporting;
 
     static common::CMutex m_mxObjectNotify;
 
@@ -53,7 +54,7 @@ private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     db::CDBAdapter& getDB();
 public:
-    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine){}
+    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false){}
 
     //Object notifications
     void fireObjectsNotification();
@@ -86,6 +87,8 @@ public:
     int getLastSyncObjectCount(int nSrcID);
 
     void callLoginCallback(String callback, int nErrCode, String strMessage);
+
+    void enableReporting(boolean bEnable){m_bEnableReporting = bEnable;}
 
 private:
     String makeCreateObjectErrorBody(int nSrcID);
