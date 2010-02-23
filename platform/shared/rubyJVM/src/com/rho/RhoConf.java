@@ -134,10 +134,7 @@ public class RhoConf {
         if ( strPath.length() == 0 )
             return strPath;
 
-        if ( strPath.charAt(strPath.length()-1) != '/' && strPath.charAt(strPath.length()-1) != '\\' )
-            strPath += '/';
-
-        return strPath;
+        return FilePath.join(strPath, "/");
     }
     
     public int getInt(String szName){
