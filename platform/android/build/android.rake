@@ -290,11 +290,41 @@ namespace "build" do
           args << "no-shared"
           args << "zlib-dynamic"
           args << "no-asm"
+          args << "no-mdc2"
+          args << "no-rc5"
+          args << "no-camellia"
+          args << "no-seed"
+          args << "no-cms"
+          args << "no-jpake"
           args << "no-dso"
           args << "no-krb5"
           args << "no-montasm"
+          args << "no-fips"
+          args << "no-engines"
+          args << "no-apps"
+          args << "no-tools"
+          args << "no-test"
           args << "linux-elf"
           cc_run('perl', args, objdir) or exit 1
+
+          if RUBY_PLATFORM =~ /(win|w)32$/
+            afs = []
+            Dir.glob(File.join(objdir, 'crypto', '*.h')).each do |f|
+              next if f =~ /\/buildinf\.h$/
+              afs << f
+            end
+            Dir.glob(File.join(objdir, 'ssl', '*.h')).each do |f|
+              afs << f
+            end
+            afs << File.join(objdir, 'fips', 'fips.h')
+            afs << File.join(objdir, 'e_os2.h')
+
+            incpath = File.join(objdir, 'include', 'openssl')
+            afs.each do |f|
+              cp_r f, incpath, :remove_destination => true unless FileUtils.uptodate? File.join(incpath, File.basename(f)), f
+            end
+          end
+
           #cc_run('make', 'clean', objdir)
 
           args = []
@@ -332,24 +362,27 @@ namespace "build" do
       libname = $libname["curl"]
 
       use_openssl = false
-      File.open(File.join(srcdir, 'rhoconf.h'), 'r') do |f|
-        while line = f.gets
-          use_openssl = true if line =~ /USE_OPENSSL\s+1/
-          break if use_openssl
+      rhoconf_h = File.join(srcdir, 'rhoconf.h')
+      if File.file? rhoconf_h
+        File.open(rhoconf_h, 'r') do |f|
+          while line = f.gets
+            use_openssl = true if line =~ /USE_OPENSSL\s+1/
+            break if use_openssl
+          end
         end
       end
       if USE_OPENSSL != use_openssl
         ssldef = []
         ssldef << "#define USE_SSLEAY 1" if USE_OPENSSL
         ssldef << "#define USE_OPENSSL 1" if USE_OPENSSL
-        File.open(File.join(srcdir, 'rhoconf.h'), 'w') { |f| f.write(ssldef.join("\n") + "\n") }
+        File.open(rhoconf_h, 'w') { |f| f.write(ssldef.join("\n") + "\n") }
       end
 
       args = []
       args << "-DHAVE_CONFIG_H"
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
-      args << "-I#{srcdir}/../../openssl/include" if USE_OPENSSL
+      args << "-I#{objdir}/../libopenssl/openssl/include" if USE_OPENSSL
 
       File.read(File.join($builddir, "libcurl_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -393,30 +426,35 @@ namespace "build" do
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    task :libstlport => "config:android" do
-      if USE_STLPORT
-        objdir = $objdir["stlport"]
-        libname = $libname["stlport"]
+    unless USE_STLPORT
+      task :libstlport do
+      end
+    else
+      task :libstlport => "config:android" do
+        if USE_STLPORT
+          objdir = $objdir["stlport"]
+          libname = $libname["stlport"]
 
-        args = []
-        args << "-I#{$stlport_includes}"
-        args << "-DTARGET_OS=android"
-        args << "-DOSNAME=android"
-        args << "-DCOMPILER_NAME=gcc"
-        args << "-DBUILD_OSNAME=android"
-        args << "-D_REENTRANT"
-        args << "-D__NEW__"
-        args << "-ffunction-sections"
-        args << "-fdata-sections"
-        args << "-fvisibility=hidden"
-        args << "-fno-rtti"
-        args << "-fno-exceptions"
-        args << "-fvisibility-inlines-hidden"
+          args = []
+          args << "-I#{$stlport_includes}"
+          args << "-DTARGET_OS=android"
+          args << "-DOSNAME=android"
+          args << "-DCOMPILER_NAME=gcc"
+          args << "-DBUILD_OSNAME=android"
+          args << "-D_REENTRANT"
+          args << "-D__NEW__"
+          args << "-ffunction-sections"
+          args << "-fdata-sections"
+          args << "-fvisibility=hidden"
+          args << "-fno-rtti"
+          args << "-fno-exceptions"
+          args << "-fvisibility-inlines-hidden"
 
-        File.read(File.join($builddir, "libstlport_build.files")).each do |f|
-          cc_compile f, objdir, args or exit 1
+          File.read(File.join($builddir, "libstlport_build.files")).each do |f|
+            cc_compile f, objdir, args or exit 1
+          end
+          cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
         end
-        cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
       end
     end
 
@@ -539,8 +577,8 @@ namespace "build" do
       args << "-lstlport" if USE_STLPORT
       args << "-lcurl"
       args << "-lrhocommon" # Need to specify twice because libcurl depends on librhocommon and vice versa
-      args << "-lssl"
-      args << "-lcrypto"
+      args << "-lssl" if USE_OPENSSL
+      args << "-lcrypto" if USE_OPENSSL
       args << "-lsqlite"
       args << "-ldl"
       args << "-lz"
