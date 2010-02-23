@@ -1,5 +1,4 @@
 #
-require 'digest/sha2'
 
 def set_app_name(newname)
   fname = $config["build"]["iphonepath"] + "/Info.plist"
@@ -108,14 +107,8 @@ namespace "build" do
 
       Rake::Task["build:iphone:extensions"].execute
 
-      # Calculate hash of newly built files
-      hash = Digest::SHA2.new
-      Dir.glob($srcdir + "/**/*").each do |f|
-        hash << f
-        hash += Digest::SHA2.file(f).hexdigest if File.file? f
-      end
-      hash = hash.hexdigest
-      File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash) }
+      # Store hash
+      File.open(File.join($srcdir, "hash"), "w") { |f| f.write(get_dir_hash($srcdir).hexdigest) }
       # Store app name
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
