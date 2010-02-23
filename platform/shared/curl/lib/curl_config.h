@@ -967,7 +967,11 @@
 /* #undef ssize_t */
 
 /* RHO BEGIN */
-#if defined(OS_IPHONE) || defined(OS_ANDROID)
-#define USE_RHOSSL
+#if defined(OS_IPHONE)
+#define USE_RHOSSL 1
+#endif
+
+#if defined(OS_ANDROID)
+#include <rhoconf.h>
 #endif
 /* RHO END */
