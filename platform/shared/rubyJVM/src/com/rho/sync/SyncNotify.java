@@ -44,6 +44,7 @@ public class SyncNotify {
     
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
+    boolean m_bEnableReporting = false;
     
     SyncEngine getSync(){ return m_syncEngine; }
 	DBAdapter getDB(){ return getSync().getDB(); }
@@ -321,14 +322,25 @@ public class SyncNotify {
     	}
     }
     
+    void enableReporting(boolean bEnable)
+    {
+    	m_bEnableReporting = bEnable;
+    }
+    
     private void reportSyncStatus(String status, int error, String strDetails) 
     {
     	synchronized(m_mxSyncNotifications)
     	{    	
-	    	if (m_syncStatusListener != null) {
-	    		if ( strDetails.length() == 0 )
-	    			strDetails = RhoRuby.getErrorText(error);
-	    		status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+	    	if (m_syncStatusListener != null && (m_bEnableReporting || error == RhoRuby.ERR_SYNCVERSION) ) {
+	    		
+	    		if ( error == RhoRuby.ERR_SYNCVERSION )
+	    			status = RhoRuby.getErrorText(error);
+	    		else
+	    		{
+		    		if ( strDetails.length() == 0 )
+		    			strDetails = RhoRuby.getErrorText(error);
+		    		status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+	    		}
 	    		
 	        	LOG.INFO("Status: "+status);
 	    		
@@ -336,7 +348,7 @@ public class SyncNotify {
 	    	}
     	}
     }
-	
+
 	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strMessage, Vector/*Ptr<CSyncSource*>&*/ sources )
 	{
 	    for( int i = 0; i < sources.size(); i++ )

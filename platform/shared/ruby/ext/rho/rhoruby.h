@@ -77,6 +77,7 @@ struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val);
 
 const char* rho_ruby_getMessageText(const char* szName);
 const char* rho_ruby_getErrorText(int nError);
+const char* rho_ruby_internal_getErrorText(int nError);
 
 #if defined(__cplusplus)
 }

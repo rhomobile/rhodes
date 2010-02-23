@@ -50,28 +50,33 @@ public class SyncThread extends RhoThread
    		int m_nCmdCode;
    		int m_nCmdParam;
    		String m_strCmdParam;
+   		boolean m_bShowStatus;
    		
-   		SyncCommand(int nCode, int nParam)
+   		SyncCommand(int nCode, int nParam, boolean bShowStatus)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = nParam;
+   			m_bShowStatus = bShowStatus;
    		}
-   		SyncCommand(int nCode, String strParam)
+   		SyncCommand(int nCode, String strParam, boolean bShowStatus)
    		{
    			m_nCmdCode = nCode;
    			m_strCmdParam = strParam;
+   			m_bShowStatus = bShowStatus;
    		}
-	    SyncCommand(int nCode, String strParam, int nCmdParam)
+	    SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_nCmdParam = nCmdParam;
+            m_bShowStatus = bShowStatus;
 	    }
    		
-   		SyncCommand(int nCode)
+   		SyncCommand(int nCode, boolean bShowStatus)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = 0;
+   			m_bShowStatus = bShowStatus;
    		}
    		
    		public boolean equals(Object obj)
@@ -87,7 +92,7 @@ public class SyncThread extends RhoThread
    		String m_strName, m_strPassword;
    		public SyncLoginCommand(String name, String password, String callback)
    		{
-   			super(scLogin,callback);
+   			super(scLogin,callback,false);
    			
    			m_strName = name;
    			m_strPassword = password;
@@ -100,7 +105,7 @@ public class SyncThread extends RhoThread
 	    int     m_nProgressStep;
         public SyncSearchCommand(String from, String params, int source_id, boolean sync_changes, int nProgressStep)
 	    {
-        	super(scSearchOne,params,source_id);
+        	super(scSearchOne,params,source_id, false);
 		    m_strFrom = from;
 		    m_bSyncChanges = sync_changes;
 		    m_nProgressStep = nProgressStep;
@@ -249,7 +254,7 @@ public class SyncThread extends RhoThread
 	void processCommands()throws Exception
 	{
 		if ( isNoCommands() )
-			addSyncCommand(new SyncCommand(scNone));
+			addSyncCommand(new SyncCommand(scNone, false));
     	
 		while(!isNoCommands())
 		{
@@ -262,6 +267,14 @@ public class SyncThread extends RhoThread
 			processCommand(oSyncCmd);
 		}
 	}
+
+	void checkShowStatus(SyncCommand oSyncCmd)
+	{
+		boolean bShowStatus = oSyncCmd.m_bShowStatus;
+		m_oSyncEngine.getNotify().enableReporting(bShowStatus);
+		if (bShowStatus)
+			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
+	}	
 	
 	void processCommand(SyncCommand oSyncCmd)throws Exception
 	{
@@ -269,9 +282,13 @@ public class SyncThread extends RhoThread
 	    {
 	    case scNone:
 	        if ( m_nPollInterval > 0 )
+	        {
+	        	checkShowStatus(oSyncCmd);
 	            m_oSyncEngine.doSyncAllSources();
+	        }
 	        break;
 	    case scSyncAll:
+	    	checkShowStatus(oSyncCmd);
 	        m_oSyncEngine.doSyncAllSources();
 	        break;
 	    case scChangePollInterval:
@@ -281,6 +298,7 @@ public class SyncThread extends RhoThread
 	            SyncEngine.SourceID oSrcID = new SyncEngine.SourceID();
 	            oSrcID.m_strUrl = oSyncCmd.m_strCmdParam;
 	
+	            checkShowStatus(oSyncCmd);
 	            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
 	        }
 	        break;
@@ -290,6 +308,7 @@ public class SyncThread extends RhoThread
 	            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
 	            oSrcID.m_strName = oSyncCmd.m_strCmdParam;
 	
+	            checkShowStatus(oSyncCmd);
 	            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
 	        }
 	        break;
@@ -299,6 +318,7 @@ public class SyncThread extends RhoThread
 	            SyncEngine.SourceID oSrcID = new SyncEngine.SourceID();
 	            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
 		    	
+	            checkShowStatus(oSyncCmd);
 		        m_oSyncEngine.doSyncSource(oSrcID, oSyncCmd.m_strCmdParam, 
 		            ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges,
 		            ((SyncSearchCommand)oSyncCmd).m_nProgressStep);
@@ -308,6 +328,7 @@ public class SyncThread extends RhoThread
 	    case scLogin:
 	    	{
 	    		SyncLoginCommand oLoginCmd = (SyncLoginCommand)oSyncCmd;
+	    		checkShowStatus(oSyncCmd);
 	    		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_strCmdParam );
 	    	}
 	        break;
@@ -331,36 +352,22 @@ public class SyncThread extends RhoThread
 	    if ( m_nPollInterval == 0 )
 	        m_oSyncEngine.stopSync();
 	
-	    addSyncCommand(new SyncCommand(scChangePollInterval)); 
+	    addSyncCommand(new SyncCommand(scChangePollInterval, false)); 
 	}
 	
 	public static void doSyncAllSources(boolean bShowStatus)
 	{
-		if (bShowStatus&&(m_statusListener != null)) {
-			getInstance().m_oSyncEngine.getNotify().setSyncStatusListener(m_statusListener);
-			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
-		}else
-			getInstance().m_oSyncEngine.getNotify().setSyncStatusListener(null);
-		
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncAll));
+		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus));
 	}
 
 	public static void doSyncSource(int nSrcID, String strName, boolean bShowStatus)
 	{
-		if (bShowStatus&&(m_statusListener != null)) {
-			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
-		}
-		
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID) );
+		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus) );
 	}
 	
 	public static void doSyncSourceByUrl(String strSrcUrl, boolean bShowStatus)
 	{
-		if (bShowStatus&&(m_statusListener != null)) {
-			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
-		}
-		
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOneByUrl, strSrcUrl) );
+		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOneByUrl, strSrcUrl, bShowStatus) );
 	}
 	
 	public static void stopSync()throws Exception

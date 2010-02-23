@@ -678,6 +678,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			public void run() {
 				if (_syncStatusPopup != null) { 
 					_syncStatusPopup.showStatus(_lastStatusMessage);
+				}else
+				{
+					SyncStatusPopup popup = new SyncStatusPopup(_lastStatusMessage);
+					RhodesApplication.getInstance().setSyncStatusPopup(popup);
+					pushScreen(popup);
 				}
 			}
 		});	

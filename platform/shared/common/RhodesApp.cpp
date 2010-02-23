@@ -264,7 +264,7 @@ static void callback_redirect_to(void *arg
 #if !defined(RHO_HTTPD_COMMON_IMPL)
     String strQuery = shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING");
 #endif
-    size_t nUrl = strQuery.find_first_of("url=");
+    size_t nUrl = strQuery.find("url=");
     String strUrl;
     if ( nUrl != String::npos )
         strUrl = strQuery.substr(nUrl+4);
@@ -309,6 +309,44 @@ static void callback_AppManager_load(void *arg
     rho_appmanager_load( arg, query.c_str() );
 }
 
+static void callback_getrhomessage(void *arg, String const &strQuery)
+{
+    String strMsg;
+    size_t nErrorPos = strQuery.find("error=");
+    if ( nErrorPos != String::npos )
+    {
+        String strError = strQuery.substr(nErrorPos+6);
+        int nError = atoi(strError.c_str());
+
+        strMsg = rho_ruby_internal_getErrorText(nError);
+    }
+
+    rho_http_sendresponse(arg, strMsg.c_str());
+}
+
+const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
+{
+    String strUrl = m_strHomeUrl + "/system/getrhomessage?";
+    if ( nError )
+        strUrl += "error=" + convertToStringA(nError);
+    else if ( szName && *szName )
+    {
+        strUrl = "msgid=";
+        strUrl += szName;
+    }
+
+    NetResponse(resp,getNet().pullData( strUrl, null ));
+    if ( !resp.isOK() )
+    {
+        LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        m_strRhoMessage = "";
+    }
+    else
+        m_strRhoMessage = resp.getCharData();
+
+    return m_strRhoMessage;
+}
+
 void CRhodesApp::initHttpServer()
 {
     String strAppRootPath = getRhoRootPath() + "apps";
@@ -336,6 +374,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/map", callback_map);
     m_httpServer->register_uri("/system/shared", callback_shared);
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
+    m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
 #endif
 }
 
@@ -369,14 +408,19 @@ const char* CRhodesApp::getFreeListeningPort()
 			memset((void *) &serv_addr, 0, sizeof(serv_addr));
 			serv_addr.sin_family = AF_INET;
 			serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-			serv_addr.sin_port = htons(0);
-			
+			serv_addr.sin_port = htons(8080);
+
 			if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
-			{
-				LOG(WARNING) + "Unable to bind";
-				noerrors = 0;
-			}
-			else
+            {
+    			serv_addr.sin_port = htons(0);
+			    if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
+			    {
+				    LOG(WARNING) + "Unable to bind";
+				    noerrors = 0;
+			    }
+            }
+
+			if ( noerrors )
 			{
 				char buf[10] = {0};
 #ifdef OS_MACOSX
@@ -820,6 +864,16 @@ void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 const char* rho_rhodesapp_getappbackurl()
 {
     return RHODESAPP().getAppBackUrl().c_str();
+}
+
+const char* rho_ruby_getErrorText(int nError)
+{
+    return RHODESAPP().getRhoMessage( nError, "").c_str();
+}
+
+const char* rho_ruby_getMessageText(const char* szName)
+{
+    return "";//RHODESAPP().getRhoMessage( 0, szName).c_str();
 }
 
 int rho_rhodesapp_isrubycompiler()
