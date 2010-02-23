@@ -230,7 +230,8 @@ public class Jsr75File implements SimpleFile
     		throw new IOException("Could not find storage");
     	
     	if ( strDir != null && strDir.length() > 0 ){
-    		String strDirPath = strRoot + strDir + "/";
+    		String strDirPath = FilePath.join(strRoot, strDir);
+    		strDirPath = FilePath.join(strDirPath, "/");
     		createDir( strDirPath );
     		return strDirPath;
     	}
@@ -368,11 +369,7 @@ public class Jsr75File implements SimpleFile
             } else {*/ 
            
             	try{
-	            	url = getRhoPath();
-	            	if ( path.charAt(0) == '/' || path.charAt(0) == '\\' )
-	            		url += path.substring(1);
-	            	else
-	            		url += path;
+	            	url = FilePath.join(getRhoPath(), path);
 	            	
             	} catch (IOException x) { 
                  	log("getRhoPath Exception: " + x.getMessage());

@@ -36,6 +36,21 @@ public class FilePath
         return makeFullPath(szFileName);
     }
 
+    static public String join(String path1, String path2)
+    {
+        boolean bSlash1 = path1.length()>0 && (path1.charAt(path1.length()-1) == '/' || path1.charAt(path1.length()-1) == '\\');
+        boolean bSlash2 = path2.length()>0 && (path2.charAt(0) == '/' || path2.charAt(0) == '\\');
+        String res;
+        if (bSlash1 && bSlash2)
+            res = path1 + path2.substring(1);
+        else if ( bSlash1 || bSlash2 )
+            res = path1 + path2;
+        else
+            res = path1 + '/' + path2;
+
+        return res;
+    }
+    
     int findLastSlash()
     {
         int slash = m_szPath.lastIndexOf('/');

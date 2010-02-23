@@ -560,9 +560,7 @@ public class RhoConnection implements IHttpConnection {
 		
 		if ( strContType.length() == 0 )
 		{
-			String strTemp = uri.getPath();
-			if ( strTemp.length() == 0 || strTemp.charAt(strTemp.length()-1)!='/')
-				strTemp += '/';
+			String strTemp = FilePath.join(uri.getPath(), "/");
 	
 			if( RhoSupport.findClass(strTemp + "controller") != null )
 				return false;

@@ -119,10 +119,7 @@ String RhoSettings::getPath(const char* szName){
     if ( strPath.length() == 0 )
         return strPath;
 
-    if ( strPath.at(strPath.length()-1) != '/' && strPath.at(strPath.length()-1) != '\\' )
-        strPath += '/';
-
-    return strPath;
+    return CFilePath::join(strPath, "/");
 }
 
 int RhoSettings::getInt(const char* szName){

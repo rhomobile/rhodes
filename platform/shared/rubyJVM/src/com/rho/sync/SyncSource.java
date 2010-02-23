@@ -389,7 +389,7 @@ class SyncSource
 	        setCurPageCount(0);
 	        String strUrl = getUrl();
 	        if ( m_strAction.length() > 0 )
-	            strUrl += '/' + m_strAction;
+	            strUrl = FilePath.join(strUrl, m_strAction);
 	        
 			String strQuery = SyncEngine.SYNC_SOURCE_FORMAT() + "&client_id=" + getSync().getClientID() + 
 	                "&p_size=" + getSync().SYNC_PAGE_SIZE() + "&version=" + getSync().SYNC_VERSION();
