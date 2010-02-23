@@ -527,6 +527,31 @@ static void Init_RhoJSON()
     rb_define_method(rb_RhoJSON, "parse", rho_json_parse, 1);
 }
 
+const char* rho_ruby_internal_getMessageText(const char* szName)
+{
+    return "";
+    //TODO: rho_ruby_getMessageText
+}
+
+static VALUE rb_RhoError;
+static ID err_message_mid;
+const char* rho_ruby_internal_getErrorText(int nError)
+{
+    VALUE callres, strVal;
+    const char* szValue;
+    if ( !rb_RhoError )
+    {
+        rb_RhoError = rb_const_get(rb_RhoModule,rb_intern("RhoError"));
+        CONST_ID(err_message_mid, "err_message");
+    }
+
+    callres = rb_funcall(rb_RhoError, err_message_mid, 1, rb_int_new(nError) );
+    strVal = rb_funcall(callres, rb_intern("to_s"), 0);
+    szValue = RSTRING_PTR(strVal);
+
+    return szValue;
+}
+
 static void Init_RhoLog2()
 {
   VALUE path = __rhoGetCurrentDir();

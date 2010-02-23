@@ -21,6 +21,8 @@ module Rho
             return "You entered an invalid login/password, please try again."
         elsif code ==  ERR_CANCELBYUSER
             return "Operation was cancelled by user."
+        elsif code ==  ERR_SYNCVERSION
+            return "Connection terminated by server. Your mobile application needs to be updated. Please contact your administrator."
         elsif code ==  ERR_NONE
             return ""
         end

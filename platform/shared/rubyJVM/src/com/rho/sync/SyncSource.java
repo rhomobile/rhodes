@@ -490,6 +490,15 @@ class SyncSource
 	        oJsonArr.next();
 	    }
 	    
+	    if ( nVersion != getSync().SYNC_VERSION() )
+	    {
+	        LOG.ERROR("Sync server send data with incompatible version. Client version: " + getSync().SYNC_VERSION() +
+	            "; Server response version: " + nVersion + ". Source name: " + getName() );
+	        getSync().stopSync();
+	        m_nErrCode = RhoRuby.ERR_SYNCVERSION;
+	        return;
+	    }
+	    
 	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("rt") )
 	    {
 	        setRefreshTime(oJsonArr.getCurItem().getInt("rt"));
