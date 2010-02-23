@@ -2,6 +2,9 @@
 require 'digest/sha2'
 require File.dirname(__FILE__) + '/androidcommon.rb'
 
+USE_STLPORT = true
+USE_OPENSSL = true
+
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -34,8 +37,6 @@ namespace "config" do
     # market names (such as "Android-1.5" etc) see output of
     # command "android list targets"
     ANDROID_API_LEVEL = 3
-
-    USE_STLPORT = true
 
     # Here is switch between release/debug configuration used for
     # building native libraries
@@ -141,7 +142,8 @@ namespace "config" do
     
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
-    $native_libs = ["sqlite", "openssl", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+    $native_libs = ["sqlite", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+    $native_libs << "openssl" if USE_OPENSSL
 
     if $build_release
       $confdir = "release"
@@ -267,44 +269,21 @@ namespace "build" do
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    task :libopenssl => "config:android" do
-      srcdir = File.join($shareddir, "openssl")
-      objdir = $objdir["openssl"]
-      hashloc = File.join(objdir, 'hash')
-
-      unless FileUtils.uptodate? hashloc, Dir.glob(srcdir + '/**/*')
-        mkdir_p objdir + "/openssl"
-        cp_r srcdir, objdir, :remove_destination => true
+    unless USE_OPENSSL
+      task :libopenssl do
       end
+    else
+      task :libopenssl => "config:android" do
+        srcdir = File.join($shareddir, "openssl")
+        objdir = $objdir["openssl"]
+        hashloc = File.join(objdir, 'hash')
 
-      objdir += '/openssl'
+        unless FileUtils.uptodate? hashloc, Dir.glob(srcdir + '/**/*')
+          mkdir_p objdir + "/openssl"
+          cp_r srcdir, objdir, :remove_destination => true
+        end
 
-      hash = Digest::SHA2.new
-      Dir.glob(objdir + '/**/*').each do |f|
-        hash << f
-        hash.file(f) if File.file? f
-      end
-      hash = hash.hexdigest
-
-      oldhash = ''
-      oldhash = File.new(hashloc, 'r').read if File.file? hashloc
-      if oldhash != hash
-        cc_run('./config', [], objdir) or exit 1
-        #cc_run('make', 'clean', objdir)
-
-        args = []
-        args << "CC=#{$gccbin}"
-        args << "CFLAG=\"#{cc_def_args.join(' ')}\""
-        args << "AR=\"#{$arbin} cr\""
-        args << "RANLIB=\"#{$ranlib}\""
-        args << "SHARED_LDFLAGS=\"-dynamiclib\""
-        args << "build_libs"
-        cc_run('make', args, objdir) or exit 1
-
-        rm_f File.join(objdir, '..', ',,', 'libssl.a')
-        rm_f File.join(objdir, '..', '..', 'libcrypto.a')
-        cp File.join(objdir, 'libssl.a'), File.join(objdir, '..', '..')
-        cp File.join(objdir, 'libcrypto.a'), File.join(objdir, '..', '..')
+        objdir += '/openssl'
 
         hash = Digest::SHA2.new
         Dir.glob(objdir + '/**/*').each do |f|
@@ -312,9 +291,47 @@ namespace "build" do
           hash.file(f) if File.file? f
         end
         hash = hash.hexdigest
-        File.open(hashloc, 'w') { |f| f.write(hash) }
-      end
 
+        oldhash = ''
+        oldhash = File.new(hashloc, 'r').read if File.file? hashloc
+        if oldhash != hash
+          args = []
+          args << "Configure"
+          args << "no-threads"
+          args << "no-shared"
+          args << "zlib-dynamic"
+          args << "no-asm"
+          args << "no-dso"
+          args << "no-krb5"
+          args << "no-montasm"
+          args << "linux-elf"
+          cc_run('perl', args, objdir) or exit 1
+          #cc_run('make', 'clean', objdir)
+
+          args = []
+          args << "CC=#{$gccbin}"
+          args << "CFLAG=\"#{cc_def_args.join(' ')}\""
+          args << "AR=\"#{$arbin} cr\""
+          args << "RANLIB=\"#{$ranlib}\""
+          args << "SHARED_LDFLAGS=\"-dynamiclib\""
+          args << "build_crypto build_ssl"
+          cc_run('make', args, objdir) or exit 1
+
+          rm_f File.join(objdir, '..', ',,', 'libssl.a')
+          rm_f File.join(objdir, '..', '..', 'libcrypto.a')
+          cp File.join(objdir, 'libssl.a'), File.join(objdir, '..', '..')
+          cp File.join(objdir, 'libcrypto.a'), File.join(objdir, '..', '..')
+
+          hash = Digest::SHA2.new
+          Dir.glob(objdir + '/**/*').each do |f|
+            hash << f
+            hash.file(f) if File.file? f
+          end
+          hash = hash.hexdigest
+          File.open(hashloc, 'w') { |f| f.write(hash) }
+        end
+
+      end
     end
 
     task :libcurl => "config:android" do
@@ -329,11 +346,26 @@ namespace "build" do
       srcdir = File.join $shareddir, "curl", "lib"
       objdir = $objdir["curl"]
       libname = $libname["curl"]
+
+      use_openssl = false
+      File.open(File.join(srcdir, 'rhoconf.h'), 'r') do |f|
+        while line = f.gets
+          use_openssl = true if line =~ /USE_OPENSSL\s+1/
+          break if use_openssl
+        end
+      end
+      if USE_OPENSSL != use_openssl
+        ssldef = []
+        ssldef << "#define USE_SSLEAY 1" if USE_OPENSSL
+        ssldef << "#define USE_OPENSSL 1" if USE_OPENSSL
+        File.open(File.join(srcdir, 'rhoconf.h'), 'w') { |f| f.write(ssldef.join("\n") + "\n") }
+      end
+
       args = []
       args << "-DHAVE_CONFIG_H"
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
-      args << "-I#{srcdir}/../../openssl/include"
+      args << "-I#{srcdir}/../../openssl/include" if USE_OPENSSL
 
       File.read(File.join($builddir, "libcurl_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
