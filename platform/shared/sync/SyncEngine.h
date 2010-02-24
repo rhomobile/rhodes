@@ -106,7 +106,6 @@ public:
     String loadClientID();
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
-    void doInitialSync(String strClientID);//throws Exception
 
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
     CSyncNotify& getNotify(){ return m_oSyncNotify; }
