@@ -1,3 +1,4 @@
+require 'yaml'
 
 unless File.exists? "build.yml"
   puts "Cannot find build.yml"
