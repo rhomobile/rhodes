@@ -7,14 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef com_rhomobile_rhodes_Rhodes_SHOW_PROGRESS_BAR
-#define com_rhomobile_rhodes_Rhodes_SHOW_PROGRESS_BAR 0L
-#undef com_rhomobile_rhodes_Rhodes_MAX_PROGRESS
-#define com_rhomobile_rhodes_Rhodes_MAX_PROGRESS 10000L
-#undef com_rhomobile_rhodes_Rhodes_DB_ON_SDCARD
-#define com_rhomobile_rhodes_Rhodes_DB_ON_SDCARD 1L
-#undef com_rhomobile_rhodes_Rhodes_DB_BACKUP_INTERVAL
-#define com_rhomobile_rhodes_Rhodes_DB_BACKUP_INTERVAL 60000L
 #undef com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS
 #define com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS 1024L
 #undef com_rhomobile_rhodes_Rhodes_WINDOW_MASK
@@ -82,22 +74,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
   (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    dblock
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dblock
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    dbunlock
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dbunlock
-  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
