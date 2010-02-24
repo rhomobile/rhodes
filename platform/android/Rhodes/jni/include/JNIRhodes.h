@@ -40,6 +40,7 @@ VALUE convertJavaMapToRubyHash(jobject objMap);
 #define RHODES_JAVA_CLASS_ALERT "com/rhomobile/rhodes/alert/Alert"
 #define RHODES_JAVA_CLASS_RINGTONE_MANAGER "com/rhomobile/rhodes/RingtoneManager"
 #define RHODES_JAVA_CLASS_NATIVEBAR "com/rhomobile/rhodes/NativeBar"
+#define RHODES_JAVA_CLASS_MAPVIEW "com/rhomobile/rhodes/mapview/MapView"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 

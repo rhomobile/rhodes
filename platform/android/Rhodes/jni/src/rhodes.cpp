@@ -11,6 +11,8 @@
 
 #include "JNIRhodes.h"
 
+#include "gapikey.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
 
@@ -136,6 +138,9 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     store_thr_jnienv(env);
 
     const char *classes[] = {
+#ifdef GOOGLE_API_KEY
+        RHODES_JAVA_CLASS_MAPVIEW,
+#endif
         RHODES_JAVA_CLASS_ITERATOR,
         RHODES_JAVA_CLASS_SET,
         RHODES_JAVA_CLASS_MAP,
@@ -306,18 +311,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
     return env->NewStringUTF(s);
-}
-
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dblock
-  (JNIEnv *, jobject)
-{
-    rho::sync::CSyncThread::getDBAdapter().executeSQL("begin immediate");
-}
-
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_dbunlock
-  (JNIEnv *, jobject)
-{
-    rho::sync::CSyncThread::getDBAdapter().executeSQL("rollback");
 }
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
