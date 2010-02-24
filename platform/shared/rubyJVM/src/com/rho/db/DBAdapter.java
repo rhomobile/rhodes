@@ -3,6 +3,7 @@ package com.rho.db;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
+import java.util.Vector;
 
 public class DBAdapter extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -330,6 +331,60 @@ public class DBAdapter extends RubyBasic {
         file.close();
 	}
     
+	boolean migrateDB(DBVersion dbVer, String strRhoDBVer, String strAppDBVer )
+	{
+	    //1.2.2 -> 1.5.0,1.4.1
+	    if ( dbVer != null && strRhoDBVer != null &&
+	    	 dbVer.m_strRhoVer.compareTo("1.2.2") == 0 && (strRhoDBVer.compareTo("1.5.0")==0||strRhoDBVer.compareTo("1.4.1")==0) )
+	    {
+	    //sources
+	    //priority INTEGER, ADD
+	    //backend_refresh_time int default 0, ADD
+			IDBStorage db = null;
+			try{
+			    db = RhoClassFactory.createDBStorage();	    
+				db.open( m_strDBPath, getSqlScript() );
+	
+		        db.executeSQL( "ALTER TABLE sources ADD priority INTEGER", null, false);
+		        db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0", null, false);
+	
+		        {
+		            Vector/*<int>*/ vecSrcIds = new Vector();
+		            IDBResult res2 = db.executeSQL( "SELECT source_id FROM sources", null, false );
+		            for ( ; !res2.isEnd(); res2.next() )
+		                vecSrcIds.addElement( new Integer(res2.getIntByIdx(0)) );
+	
+		            for( int i = 0; i < vecSrcIds.size(); i++)
+		            {
+		            	Object[] values = {vecSrcIds.elementAt(i), vecSrcIds.elementAt(i)};
+		                db.executeSQL( "UPDATE sources SET priority=? where source_id=?", values, false );
+		            }
+		        }
+		        db.close();
+		        db = null;
+		        
+		        writeDBVersion( new DBVersion(strRhoDBVer, strAppDBVer) );
+	
+		        return true;
+			}catch(Exception e)
+			{
+	    		LOG.ERROR("migrateDB failed.", e);
+	    		
+				if (db!=null)
+				{
+					try{db.close();}catch(DBException exc)
+					{
+						LOG.ERROR("migrateDB : close db after error failed.", e);
+					}
+					db = null;
+				}
+			}
+		}
+
+
+	    return false;
+	}
+	
 	void checkDBVersion()throws Exception
 	{
 		String strRhoDBVer = RhoSupport.getRhoDBVersion();
@@ -337,20 +392,24 @@ public class DBAdapter extends RubyBasic {
 		
 		DBVersion dbVer = readDBVersion();
 
-		boolean bReset = false;
+		boolean bRhoReset = false;
+	    boolean bAppReset = false;
 		
 		if ( strRhoDBVer != null && strRhoDBVer.length() > 0 )
 		{
 			if ( dbVer == null || dbVer.m_strRhoVer == null || !dbVer.m_strRhoVer.equalsIgnoreCase(strRhoDBVer) )
-				bReset = true;
+				bRhoReset = true;
 		}
 		if ( strAppDBVer != null && strAppDBVer.length() > 0 )
 		{
 			if ( dbVer == null || dbVer.m_strAppVer == null || !dbVer.m_strAppVer.equalsIgnoreCase(strAppDBVer) )
-				bReset = true;
+				bAppReset = true;
 		}
 		
-		if ( bReset )
+	    if ( bRhoReset && !bAppReset )
+	        bRhoReset = !migrateDB(dbVer, strRhoDBVer, strAppDBVer);
+
+		if ( bRhoReset || bAppReset )
 		{
 			m_dbStorage.deleteAllFiles(m_strDBPath);
 			

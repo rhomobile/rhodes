@@ -122,11 +122,19 @@ module Rho
             
             Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
           else
-            Rhom::RhomDbAdapter::insert_into_table('sources',
-                {"source_id"=>start_id,"source_url"=>url,"name"=>name, "priority"=>priority})
-            Rho::RhoConfig::sources[name]['source_id'] = start_id
+            if !source['source_id']
+                srcid = start_id
+                start_id += 1
+            else
+                srcid = source['source_id'].to_i
+            end
             
-            start_id += 1
+            hash = {"source_id"=>srcid,"source_url"=>url,"name"=>name, "priority"=>priority}
+            puts "hash: #{hash}"
+            
+            Rhom::RhomDbAdapter::insert_into_table('sources', hash )
+            Rho::RhoConfig::sources[name]['source_id'] = srcid
+            
           end
         end
       end

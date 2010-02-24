@@ -25,6 +25,7 @@ public:
     boolean getReportNonUnique(){ return m_bReportNonUnique; }
     void setReportNonUnique(boolean bSet){ m_bReportNonUnique = bSet; }
     boolean isNonUnique(){ return m_nErrorCode==SQLITE_CONSTRAINT; }
+    boolean isError(){ return m_nErrorCode!=SQLITE_OK; }
     int     getErrorCode(){ return m_nErrorCode; }
     void    setErrorCode(int nError){ m_nErrorCode=nError; }
 
