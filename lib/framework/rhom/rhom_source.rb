@@ -62,7 +62,12 @@ module Rhom
           puts 'result: ' + result.inspect
           list << RhomSource.new(result)
         end
-        list.size > 1 ? list : list[0]
+        
+        if args.first == :first
+            return list.length > 0 ? list[0] : nil
+        end 
+        
+        list
       end
       
       def update_attributes(params=nil)

@@ -191,17 +191,6 @@ String CSyncEngine::loadClientID()
     synchronized(m_mxLoadClientID)
     {
         boolean bResetClient = false;
-        int nInitialSyncState = 0;
-        {
-            DBResult( res, getDB().executeSQL("SELECT client_id,reset,initialsync_state from client_info limit 1") );
-            if ( !res.isEnd() )
-            {
-                clientID = res.getStringByIdx(0);
-                bResetClient = res.getIntByIdx(1) > 0;
-                nInitialSyncState = res.getIntByIdx(2);
-            }
-        }
-
         if ( clientID.length() == 0 )
         {
             clientID = requestClientIDByNet();
@@ -226,9 +215,6 @@ String CSyncEngine::loadClientID()
     	    else
     		    getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
         }
-//TODO: doInitialSync
-//        if ( nInitialSyncState == 0 && isContinueSync() )
-//        	doInitialSync(clientID);
     }
     return clientID;
 }
@@ -273,70 +259,6 @@ String CSyncEngine::requestClientIDByNet()
     }
 
     return "";
-}
-
-void CSyncEngine::doInitialSync(String strClientID)//throws Exception
-{
-	LOG(INFO) + "Initial sync: start";
-	getNotify().fireInitialSyncNotification(false, RhoRuby.ERR_NONE);
-
-    String serverUrl = RHOCONF().getPath("syncserver");
-    String strUrl = serverUrl + "initialsync";
-    String strQuery = "?client_id=" + strClientID;
-    String strDataUrl = "";
-/*
-    {	    
-        NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
-        if ( !resp.isOK() )
-        {
-    	    LOG(ERROR) + "Initial sync failed: server return an error.";
-    	    stopSync();
-    	    getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
-    	    return;
-        }
-        //TODO: check is server return no initial sync
-        if ( resp.getCharData() != null )
-        {
-		    LOG(INFO) + "Initial sync: got response from server: " + resp.getCharData();
-        	
-            const char* szData = resp.getCharData();
-            CJSONEntry oJsonEntry(szData);
-
-            CJSONEntry oJsonObject = oJsonEntry.getEntry("initialsync");
-            if ( !oJsonObject.isEmpty() )
-            {
-        	    strDataUrl = oJsonObject.getString("data");
-            }
-        }
-        if ( strDataUrl.length() == 0 )
-        {
-    	    LOG(ERROR) + "Initial sync failed: server return incorrect response.";
-    	    stopSync();
-    	    getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
-    	    return;
-        }
-    }*/
-
-    String fDataName =  getDB().getDBPath() + "_initial";
-    /*{
-	    LOG(INFO) + "Initial sync: download data from server: " + strDataUrl;
-        NetResponse( resp1, getNet().pullFile(strDataUrl+strQuery, fDataName, this) );
-        if ( !resp1.isOK() )
-        {
-    	    LOG(ERROR) + "Initial sync failed: cannot download database file.";
-    	    stopSync();
-    	    getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_REMOTESERVER);
-    	    return;
-        }
-    } */
-
-	LOG(INFO) + "Initial sync: change db";
-    
-    //getDB().setInitialSyncDB(fDataName);
-    
-	getDB().executeSQL("UPDATE client_info SET initialsync_state=? where client_id=?", 1, strClientID );	    	
-    
-    getNotify().fireInitialSyncNotification(true, RhoRuby.ERR_NONE);        
 }
 
 int CSyncEngine::getStartSource()

@@ -105,28 +105,73 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     getAttrMgr().load(*this);
 }
 
+boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer )
+{
+    //1.2.2 -> 1.5.0,1.4.1
+    if ( dbVer.m_strRhoVer.compare("1.2.2") == 0 && (strRhoDBVer.compare("1.5.0")==0||strRhoDBVer.compare("1.4.1")==0) )
+    {
+    //sources
+    //priority INTEGER, ADD
+    //backend_refresh_time int default 0, ADD
+    //id INTEGER PRIMARY KEY, REMOVE
+
+    //changed_values
+    //id INTEGER PRIMARY KEY, REMOVE
+
+        CDBAdapter db;
+        db.open( m_strDbPath, m_strDbVer, true );
+        DBResult( res, db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" ));
+        DBResult( res1, db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" ));
+
+        {
+            Vector<int> vecSrcIds;
+            DBResult( res2, db.executeSQL( "SELECT source_id FROM sources" ));
+            for ( ; !res2.isEnd(); res2.next() )
+                vecSrcIds.addElement(res2.getIntByIdx(0));
+
+            for( int i = 0; i < vecSrcIds.size(); i++)
+            {
+                DBResult( res3, db.executeSQL( "UPDATE sources SET priority=? where source_id=?", 
+                    vecSrcIds.elementAt(i), vecSrcIds.elementAt(i) ));
+            }
+        }
+        db.close();
+
+        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+
+        return true;
+    }
+
+
+    return false;
+}
+
 void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 {
 	String strAppDBVer = RHOCONF().getString("app_db_version");
 	
 	CDBVersion dbVer = readDBVersion();
 
-	boolean bReset = false;
-	
+	boolean bRhoReset = false;
+    boolean bAppReset = false;
+
 	if ( strRhoDBVer.length() > 0 )
 	{
 		if ( dbVer.m_strRhoVer.compare(strRhoDBVer) != 0 )
-			bReset = true;
+			bRhoReset = true;
 	}
 	if ( strAppDBVer.length() > 0 )
 	{
 		if ( dbVer.m_strAppVer.compare(strAppDBVer) != 0 )
-			bReset = true;
+			bAppReset = true;
 	}
-	
-	if ( bReset )
+
+    if ( bRhoReset && !bAppReset )
+        bRhoReset = !migrateDB(dbVer, strRhoDBVer, strAppDBVer);
+
+	if ( bRhoReset || bAppReset )
 	{
-        LOG(INFO) + "Reset database bacause version is changed.";
+        LOG(INFO) + "Reset database because version is changed.";
 
         CRhoFile::deleteFile(m_strDbPath.c_str());
         CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
