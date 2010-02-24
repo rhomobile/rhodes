@@ -11,6 +11,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/SimpleMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/TabbedMainView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/Utils.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/Alert.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/Camera.java
@@ -21,6 +22,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Contact.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactField.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java

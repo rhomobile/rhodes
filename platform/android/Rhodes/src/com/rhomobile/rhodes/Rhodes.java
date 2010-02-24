@@ -21,15 +21,12 @@
 package com.rhomobile.rhodes;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Locale;
 
+import com.rhomobile.rhodes.Utils.AssetsSource;
+import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
@@ -41,7 +38,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,12 +62,6 @@ public class Rhodes extends Activity {
 
 	private static final String TAG = "Rhodes";
 	
-	//private static final boolean SHOW_PROGRESS_BAR = false;
-	//private static final int MAX_PROGRESS = 10000;
-	
-	private static final boolean DB_ON_SDCARD = true;
-	private static final int DB_BACKUP_INTERVAL = 60000;
-	
 	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
@@ -87,29 +77,14 @@ public class Rhodes extends Activity {
 
 	private FrameLayout outerFrame;
 	private MainView mainView;
+	
+	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 		
 	private String rootPath = null;
 	
 	private native void setRootPath(String path);
-	
-	private String phoneMemoryRootPath() {
-		return "/data/data/" + getPackageName() + "/data/";
-	}
-	
-	private String sdcardRootPath() {
-		return "/sdcard/rhomobile/" + getPackageName() + "/";
-	}
-	
-	private void initRootPath() {
-		rootPath = phoneMemoryRootPath();
-		setRootPath(rootPath);
-	}
-	
-	public String getRootPath() {
-		return rootPath;
-	}
 	
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
@@ -122,127 +97,28 @@ public class Rhodes extends Activity {
 	
 	public native String normalizeUrl(String url);
 	
-	private native void dblock();
-	private native void dbunlock();
-	
 	public native static void makeLink(String src, String dst);
+	
+	private void initRootPath() {
+		rootPath = phoneMemoryRootPath();
+		setRootPath(rootPath);
+	}
+	
+	public String getRootPath() {
+		return rootPath;
+	}
+	
+	private String phoneMemoryRootPath() {
+		return "/data/data/" + getPackageName() + "/data/";
+	}
+	
+	private String sdcardRootPath() {
+		return "/sdcard/rhomobile/" + getPackageName() + "/";
+	}
 	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
-	}
-	
-	private boolean deleteRecursively(File target) {
-		if (target.isDirectory()) {
-			String[] children = target.list();
-			for(int i = 0; i != children.length; ++i)
-				if (!deleteRecursively(new File(target, children[i])))
-					return false;
-		}
-		return target.delete();
-	}
-	
-	
-	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
-	
-	private class FileSource {
-		
-		AssetManager amgr;
-		
-		public FileSource() {
-			amgr = null;
-		}
-		
-		public FileSource(AssetManager a) {
-			amgr = a;
-		}
-		
-		String[] list(String dir) throws IOException {
-			if (amgr != null)
-				return amgr.list(dir);
-			return new File(dir).list();
-		}
-		
-		InputStream open(String file) throws FileNotFoundException, IOException {
-			return amgr != null ? amgr.open(file) : new FileInputStream(file);
-		}
-	};
-	
-	private void copyFromBundle(File source, File target, boolean remove) throws IOException {
-		copyFromBundle(new FileSource(), source.getAbsolutePath(), target, remove);
-	}
-	
-	private void copyFromBundle(FileSource fs, String source, File target, boolean remove) throws IOException
-	{
-		if (remove && target.exists() && !deleteRecursively(target))
-			throw new IOException("Can not delete " + target.getAbsolutePath());
-		
-		String[] children = fs.list(source);
-		if (children != null && children.length > 0) {
-			if (!target.exists())
-				target.mkdirs();
-			
-			for(int i = 0; i != children.length; ++i)
-				copyFromBundle(fs, source + "/" + children[i], new File(target, children[i]), false);
-		}
-		else {
-			InputStream in = null;
-			OutputStream out = null;
-			try {
-				in = fs.open(source);
-				out = new FileOutputStream(target);
-				
-				byte[] buf = new byte[1024];
-				int len;
-				while((len = in.read(buf)) > 0)
-					out.write(buf, 0, len);
-				
-			}
-			catch (FileNotFoundException e) {
-				if (in != null)
-					throw e;
-				
-				target.createNewFile();
-			}
-			finally {
-				if (in != null)
-					in.close();
-				if (out != null)
-					out.close();
-			}
-		}
-	}
-	
-	private String getContent(InputStream in) throws IOException {
-		String retval = "";
-		byte[] buf = new byte[512];
-		while(true) {
-			int n = in.read(buf);
-			if (n <= 0)
-				break;
-			retval += new String(buf);
-		}
-		return retval;
-	}
-	
-	private boolean isContentsEquals(String bundleFile, File sdcardFile) throws IOException {
-		AssetManager amgr = getResources().getAssets();
-		InputStream bundleIn = null;
-		InputStream sdcardIn = null;
-		try {
-			bundleIn = amgr.open(bundleFile);
-			sdcardIn = new FileInputStream(sdcardFile);
-			
-			String newName = getContent(bundleIn);
-			String oldName = getContent(sdcardIn);
-			return newName.equals(oldName);
-		} catch (Exception e) {
-			return false;
-		}
-		finally {
-			if (bundleIn != null) bundleIn.close();
-			if (sdcardIn != null) sdcardIn.close();
-		}
 	}
 	
 	private boolean checkSDCard() {
@@ -276,9 +152,12 @@ public class Rhodes extends Activity {
 			boolean removeFiles = true;
 			boolean copyFiles = true;
 			
-			removeFiles = !isContentsEquals("name", new File(sdRootPath, "name"));
+			FileSource as = new AssetsSource(getResources().getAssets());
+			FileSource fs = new FileSource();
+			
+			removeFiles = !Utils.isContentsEquals(as, "name", fs, new File(sdRootPath, "name").getPath());
 			if (!removeFiles)
-				copyFiles = !isContentsEquals("hash", new File(sdRootPath, "hash"));
+				copyFiles = !Utils.isContentsEquals(as, "hash", fs, new File(sdRootPath, "hash").getPath());
 			
 			if (copyFiles) {
 				Log.d(TAG, "Copying required files from bundle to sdcard");
@@ -288,16 +167,14 @@ public class Rhodes extends Activity {
 					phrf.mkdirs();
 				phrf = null;
 				
-				FileSource fs = new FileSource(getResources().getAssets());
-				
 				String items[] = {"apps", "lib", "db", "RhoLog.txt", "RhoLog.txt_pos", "hash", "name"};
 				for (int i = 0; i != items.length; ++i) {
 					String item = items[i];
 					File phf = new File(phRootPath, item);
 					File sdf = new File(sdRootPath, item);
 					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
-					copyFromBundle(fs, item, sdf, removeFiles);
-					if (!item.equals("db") || DB_ON_SDCARD) {
+					Utils.copyRecursively(as, item, sdf, removeFiles);
+					if (!item.equals("db")) {
 						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
 								phf.getAbsolutePath() + "'");
 						makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
@@ -313,26 +190,10 @@ public class Rhodes extends Activity {
 			}
 			else
 				Log.d(TAG, "No need to copy files to SD card");
-			
-			if (!DB_ON_SDCARD) {
-				// Load DB from SD card to phone memory
-				File phdb = new File(phRootPath, "db");
-				File sddb = new File(sdRootPath, "db");
-				Log.d(TAG, "Load DB to memory");
-				copyFromBundle(sddb, phdb, false);
-			}
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return;
 		}
-	}
-	
-	private void flushDb() throws IOException {
-		// Store DB from phone memory to SD card
-		Log.d(TAG, "Store DB to SD card");
-		File phdb = new File(phoneMemoryRootPath(), "db");
-		File sddb = new File(sdcardRootPath(), "db");
-		copyFromBundle(phdb, sddb, true);
 	}
 	
 	private boolean handleUrlLoading(String url) {
@@ -365,24 +226,6 @@ public class Rhodes extends Activity {
 
 		w.setWebViewClient(new WebViewClient() {
 
-			/*
-			@Override
-			public void onPageFinished(WebView view, String url) {
-				if (!SHOW_PROGRESS_BAR)
-					return;
-				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
-				super.onPageFinished(view, url);
-			}
-
-			@Override
-			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				if (!SHOW_PROGRESS_BAR)
-					return;
-				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
-				super.onPageStarted(view, url, favicon);
-			}
-			*/
-			
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				return handleUrlLoading(url);
@@ -390,28 +233,6 @@ public class Rhodes extends Activity {
 
 		});
 
-		/*
-		w.setWebChromeClient(new WebChromeClient() {
-
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-
-				int curProgress = newProgress * 100;
-				if (!SHOW_PROGRESS_BAR)
-					return;
-				
-				if (curProgress < 0)
-					curProgress = 0;
-				if (curProgress > 10000)
-					curProgress = 10000;
-
-				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, curProgress);
-				super.onProgressChanged(view, newProgress);
-			}
-
-		});
-		*/
-		
 		return w;
 	}
 	
@@ -437,6 +258,9 @@ public class Rhodes extends Activity {
 			try {
 				runnable.run();
 			}
+			catch (Exception e) {
+				Logger.E("Rhodes", "PerformOnUiThread failed: " + e.getMessage());
+			}
 			finally {
 				synchronized (runnable) {
 					runnable.notify();
@@ -450,7 +274,7 @@ public class Rhodes extends Activity {
 			long thrId = Thread.currentThread().getId();
 			Rhodes rhodes = RhodesInstance.getInstance();
 			if (rhodes.getUiThreadId() == thrId) {
-				// We are in UI thread
+				// We are already in UI thread
 				r.run();
 			}
 			else {
@@ -461,7 +285,7 @@ public class Rhodes extends Activity {
 				}
 			}
 		}
-		catch (InterruptedException e) {
+		catch (Exception e) {
 			Logger.E("Rhodes", "performOnUiThread failed: " + e.getMessage());
 		}
 	}
@@ -491,8 +315,12 @@ public class Rhodes extends Activity {
 		screenWidth = d.getWidth();
 		
 		// Register custom uri handlers here
-		uriHandlers.put("mailto", new MailUriHandler(this));
-		uriHandlers.put("tel", new TelUriHandler(this));
+		UriHandler[] handlers = {
+				new MailUriHandler(this),
+				new TelUriHandler(this)
+		};
+		for (int i = 0; i < handlers.length; ++i)
+			uriHandlers.put(handlers[i].scheme(), handlers[i]);
 		
 		// WARNING!!! This function MUST be called in context of UI thread
 		// to be correctly initialized
@@ -506,31 +334,6 @@ public class Rhodes extends Activity {
 					return;
 				copyFilesFromBundle();
 				startRhodesApp();
-				
-				if (!DB_ON_SDCARD) {
-					Thread flush = new Thread(new Runnable() {
-	
-						public void run() {
-							for(;;) {
-								try {
-									Thread.sleep(DB_BACKUP_INTERVAL);
-								} catch (InterruptedException e) {}
-								
-								dblock();
-								try {
-									flushDb();
-								} catch (IOException e) {
-									Logger.E(TAG, e.getMessage());
-								}
-								finally {
-									dbunlock();
-								}
-							}
-						}
-						
-					});
-					flush.start();
-				}
 			}
 			
 		});
@@ -547,11 +350,6 @@ public class Rhodes extends Activity {
 		super.onPause();
 		
 		saveCurrentLocation(getCurrentUrl());
-		
-		/*
-		GeoLocation.stop();
-		RingtoneManager.stop();
-		*/
 	}
 	
 	@Override
@@ -618,7 +416,7 @@ public class Rhodes extends Activity {
 			return true;
 			
 		case AndroidR.id.logview:
-			this.runOnUiThread(new Runnable() {
+			performOnUiThread(new Runnable() {
 
 				public void run() {
 					final LogViewDialog logViewDialog = new LogViewDialog(RhodesInstance.getInstance());
@@ -632,7 +430,7 @@ public class Rhodes extends Activity {
 			return true;
 			
 		case AndroidR.id.logoptions:
-			this.runOnUiThread(new Runnable() {
+			performOnUiThread(new Runnable() {
 
 				public void run() {
 					final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(RhodesInstance.getInstance());
@@ -662,21 +460,13 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
+	// Called from native code
 	public static void deleteFilesInFolder(String folder) {
 		String[] children = new File(folder).list();
 		for (int i = 0; i != children.length; ++i)
-			delete(new File(folder, children[i]));
+			Utils.deleteRecursively(new File(folder, children[i]));
 	}
-	
-	public static void delete(File f) {
-		if (f.isDirectory()) {
-			String[] children = f.list();
-			for (int i = 0; i != children.length; ++i)
-				delete(new File(f, children[i]));
-		}
-		f.delete();
-	}
-	
+		
 	public static boolean hasNetwork() {
 		// TODO:
 		return true;
@@ -712,14 +502,6 @@ public class Rhodes extends Activity {
 	
 	public void stopSelf() {
 		stopRhodesApp();
-		if (!DB_ON_SDCARD) {
-			try {
-				flushDb();
-				deleteRecursively(new File(phoneMemoryRootPath(), "db"));
-			} catch (IOException e) {
-				Logger.E(TAG, e.getMessage());
-			}
-		}
 		Process.killProcess(Process.myPid());
 	}
 	
