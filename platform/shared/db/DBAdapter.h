@@ -212,6 +212,8 @@ public:
     sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
 
     virtual DBResultPtr prepareStatement( const char* szSt );
+
+    boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
 };
 
 }

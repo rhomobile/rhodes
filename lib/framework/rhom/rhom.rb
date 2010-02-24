@@ -46,7 +46,6 @@ module Rhom
         SyncEngine.stop_sync
         
         ::Rhom::RhomDbAdapter.execute_sql("UPDATE client_info SET reset=1")
-        ::Rhom::RhomDbAdapter.execute_sql("UPDATE client_info SET initialsync_state=0")
         ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=0")
         
         ::Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
