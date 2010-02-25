@@ -20,6 +20,8 @@
  */
 package com.rhomobile.rhodes.alert;
 
+import java.io.File;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -61,6 +63,7 @@ public class Alert {
 
 	public static void showPopup(String message) {
 		try {
+			Logger.T(TAG, "showPopup");
 			Rhodes.performOnUiThread(new ShowDialog(message));
 		}
 		catch (Exception e) {
@@ -70,6 +73,7 @@ public class Alert {
 	
 	public static void vibrate(int duration) {
 		try {
+			Logger.T(TAG, "vibrate: " + duration);
 			Rhodes instance = RhodesInstance.getInstance();
 			Vibrator vibrator = (Vibrator)instance.getSystemService(Context.VIBRATOR_SERVICE);
 			vibrator.vibrate(duration);
@@ -81,8 +85,19 @@ public class Alert {
 	
 	public static void playFile(String fileName, String mediaType) {
 		try {
+			Logger.T(TAG, "playFile: " + fileName + " (" + mediaType + ")");
 			MediaPlayer mp = new MediaPlayer();
-			String source = RhodesInstance.getInstance().getRootPath() + "/apps/" + fileName;
+			mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+					Logger.E(TAG, "Error when playing file : " + what + ", " + extra);
+					return false;
+				}
+			});
+			File f = new File(RhodesInstance.getInstance().getRootPath());
+			f = new File(f, "apps");
+			f = new File(f, fileName);
+			String source = f.getCanonicalPath();
+			Logger.T(TAG, "Final file name: " + source);
 			mp.setDataSource(source);
 			mp.prepare();
 			mp.start();
