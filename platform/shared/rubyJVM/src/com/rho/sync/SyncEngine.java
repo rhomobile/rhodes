@@ -306,6 +306,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 		synchronized( m_mxLoadClientID )
 		{
 		    boolean bResetClient = false;
+	        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
+	        if ( !res.isEnd() )
+	        {
+	            clientID = res.getStringByIdx(0);
+	            bResetClient = res.getIntByIdx(1) > 0;
+	        }
+		    
 		    if ( clientID.length() == 0 )
 		    {
 		        clientID = requestClientIDByNet();
