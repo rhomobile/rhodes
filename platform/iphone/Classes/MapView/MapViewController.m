@@ -29,67 +29,146 @@
     return self;
 }
 
-- (void)setParams:(NSMutableArray*)params {
-	NSEnumerator * enumerator = [params objectEnumerator];
-	NSString* element;	
-	while(element = [enumerator nextObject]) {
-		if ([element isEqualToString:@"map_type"]) {
-			element = [enumerator nextObject];
-			if ([element isEqualToString:@"standard"]) {
-				mapType =  MKMapTypeStandard;
-			} else if ([element isEqualToString:@"satellite"]) {
-				mapType = MKMapTypeSatellite;
-			} else if ([element isEqualToString:@"hybrid"]) {
-				mapType = MKMapTypeHybrid;
-			}
-		} else if ([element isEqualToString:@"region"]) {
-			NSMutableArray *arr = [enumerator nextObject];
-			if ([arr count] != 4) {			
-				region_set = FALSE;
-			} else {
-				CLLocationCoordinate2D location;	
-				location.latitude=[[arr objectAtIndex:0] doubleValue];
-				location.longitude=[[arr objectAtIndex:1] doubleValue];
-				MKCoordinateSpan span;
-				span.latitudeDelta=[[arr objectAtIndex:2] doubleValue];
-				span.longitudeDelta=[[arr objectAtIndex:3] doubleValue];
-				region.span=span;
-				region.center=location;
-				region_set = TRUE;
-			}
-		} else if ([element isEqualToString:@"zoom_enabled"]) {
-			element = [enumerator nextObject];
-			if ([element isEqualToString:@"true"]) {
-				zoomEnabled = TRUE;
-			} else {
-				zoomEnabled = FALSE;
-			}
-		} else if ([element isEqualToString:@"scroll_enabled"]) {
-			element = [enumerator nextObject];
-			if ([element isEqualToString:@"true"]) {
-				scrollEnabled = TRUE;
-			} else {
-				scrollEnabled = FALSE;
-			}
-		} else if ([element isEqualToString:@"shows_user_location"]) {
-			element = [enumerator nextObject];
-			if ([element isEqualToString:@"true"]) {
-				showsUserLocation = TRUE;
-			} else {
-				showsUserLocation = FALSE;
-			}
-		} else if ([element isEqualToString:@"api_key"]) {
-			gapikey = [[enumerator nextObject] copy]; 
-		} else {
-			[enumerator nextObject];
-		}
+- (void)setSettings:(rho_param*)p {
+    if (!p || p->type != RHO_PARAM_HASH)
+        return;
+    
+    for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+        char *name = p->v.hash->name[i];
+        rho_param *value = p->v.hash->value[i];
+        if (!name || !value)
+            continue;
+        
+        if (strcasecmp(name, "map_type") == 0) {
+            if (value->type != RHO_PARAM_STRING)
+                continue;
+            char *map_type = value->v.string;
+            if (strcasecmp(map_type, "standard") == 0)
+                mapType = MKMapTypeStandard;
+            else if (strcasecmp(map_type, "satellite") == 0)
+                mapType = MKMapTypeSatellite;
+            else if (strcasecmp(map_type, "hybrid") == 0)
+                mapType = MKMapTypeHybrid;
+        }
+        else if (strcasecmp(name, "region") == 0) {
+            if (value->type != RHO_PARAM_ARRAY)
+                continue;
+            if (value->v.array->size != 4)
+                continue;
+            
+            rho_param *lat = value->v.array->value[0];
+            rho_param *lon = value->v.array->value[1];
+            rho_param *latSpan = value->v.array->value[2];
+            rho_param *lonSpan = value->v.array->value[3];
+            
+            CLLocationCoordinate2D location;	
+            location.latitude = lat->type == RHO_PARAM_STRING ? strtod(lat->v.string, NULL) : 0;
+            location.longitude = lon->type == RHO_PARAM_STRING ? strtod(lon->v.string, NULL) : 0;
+            MKCoordinateSpan span;
+            span.latitudeDelta = latSpan->type == RHO_PARAM_STRING ? strtod(latSpan->v.string, NULL) : 0;
+            span.longitudeDelta = lonSpan->type == RHO_PARAM_STRING ? strtod(lonSpan->v.string, NULL) : 0;
+            region.span = span;
+            region.center = location;
+            region_set = TRUE;
+        }
+        else if (strcasecmp(name, "zoom_enabled") == 0) {
+            if (value->type != RHO_PARAM_STRING)
+                continue;
+            zoomEnabled = strcasecmp(value->v.string, "true") == 0;
+        }
+        else if (strcasecmp(name, "scroll_enabled") == 0) {
+            if (value->type != RHO_PARAM_STRING)
+                continue;
+            scrollEnabled = strcasecmp(value->v.string, "true") == 0;
+        }
+        else if (strcasecmp(name, "shows_user_location") == 0) {
+            if (value->type != RHO_PARAM_STRING)
+                continue;
+            showsUserLocation = strcasecmp(value->v.string, "true") == 0;
+        }
+        else if (strcasecmp(name, "api_key") == 0) {
+            if (value->type != RHO_PARAM_STRING)
+                continue;
+            gapikey = [NSString stringWithUTF8String:value->v.string];
+        }
     }
 }
 
-- (void)setAnnotations:(NSMutableArray*)annotations {
-	ggeoCoder = [[GoogleGeocoder alloc] initWithAnnotations:annotations apikey:gapikey];
+- (void)setAnnotations:(rho_param*)p {
+    int size = 0;
+    if (p && p->type == RHO_PARAM_ARRAY)
+        size = p->v.array->size;
+    NSMutableArray *annotations = [NSMutableArray arrayWithCapacity:size];
+    if (p && p->type == RHO_PARAM_ARRAY) {
+        for (int i = 0, lim = p->v.array->size; i < lim; ++i) {
+            rho_param *ann = p->v.array->value[i];
+            if (ann->type != RHO_PARAM_HASH)
+                continue;
+            
+            CLLocationCoordinate2D coord;
+            coord.latitude = 10000;
+            coord.longitude = 10000;
+            
+            NSString *address = nil;
+            NSString *title = nil;
+            NSString *subtitle = nil;
+            NSString *url = nil;
+            
+            for (int j = 0, limm = ann->v.hash->size; j < limm; ++j) {
+                char *name = ann->v.hash->name[j];
+                rho_param *value = ann->v.hash->value[j];
+                if (!name || !value)
+                    continue;
+                if (value->type != RHO_PARAM_STRING)
+                    continue;
+                char *v = value->v.string;
+                
+                if (strcasecmp(name, "latitude") == 0) {
+                    coord.latitude = strtod(v, NULL);
+                }
+                else if (strcasecmp(name, "longitude") == 0) {
+                    coord.longitude = strtod(v, NULL);
+                }
+                else if (strcasecmp(name, "street_address") == 0) {
+                    address = [NSString stringWithUTF8String:v];
+                }
+                else if (strcasecmp(name, "title") == 0) {
+                    title = [NSString stringWithUTF8String:v];
+                }
+                else if (strcasecmp(name, "subtitle") == 0) {
+                    subtitle = [NSString stringWithUTF8String:v];
+                }
+                else if (strcasecmp(name, "url") == 0) {
+                    url = [NSString stringWithUTF8String:v];
+                }
+            }
+            
+            MapAnnotation *annObj = [[MapAnnotation alloc] init];
+            [annObj setCoordinate:coord];
+            if (address) [annObj setAddress:address];
+            if (title) [annObj setTitle:title];
+            if (subtitle) [annObj setSubtitle:subtitle];
+            if (url) [annObj setUrl:url];
+            [annotations addObject:annObj];
+        }
+    }
+    ggeoCoder = [[GoogleGeocoder alloc] initWithAnnotations:annotations apikey:gapikey];
 	ggeoCoder.actionTarget = self;
 	ggeoCoder.onDidFindAddress = @selector(didFindAddress:);
+}
+
+- (void)setParams:(rho_param*)p {
+    if (p && p->type == RHO_PARAM_HASH) {
+        for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+            char *name = p->v.hash->name[i];
+            rho_param *value = p->v.hash->value[i];
+            if (strcasecmp(name, "settings") == 0)
+                [self setSettings:value];
+            else if (strcasecmp(name, "annotations") == 0)
+                [self setAnnotations:value];
+        }
+    }
+    rho_param_free(p);
 }
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
@@ -140,7 +219,8 @@
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view 
-calloutAccessoryControlTapped:(UIControl *)control {
+    calloutAccessoryControlTapped:(UIControl *)control
+{
 	MapAnnotation *ann = (MapAnnotation*)[view annotation];
 	NSString* url = [ann url];
 	NSLog(@"Callout tapped... Url = %@\n", url);
@@ -207,10 +287,10 @@ calloutAccessoryControlTapped:(UIControl *)control {
 	MKPinAnnotationView *annView=[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"currentloc"];
 	annView.animatesDrop = TRUE;
 	annView.canShowCallout = YES;
-	MapAnnotation* ann = (MapAnnotation*)annotation;
-    if ([ann respondsToSelector:@selector(url)]) {
-        NSString* surl = [ann url];
-        if ( [surl length] > 0 ) {
+    if ([annotation isKindOfClass:[MapAnnotation class]]) {
+        MapAnnotation* ann = (MapAnnotation*)annotation;
+        NSString* url = [ann url];
+        if ([url length] > 0) {
             [annView setRightCalloutAccessoryView:[UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
         }
     }
@@ -218,63 +298,5 @@ calloutAccessoryControlTapped:(UIControl *)control {
 }
 
 @end
-
-NSMutableArray* parse_annotations(int nannotations, char** annotation) {
-	if (nannotations<=0) return [NSMutableArray arrayWithCapacity:0];
-	NSMutableArray *annotations = [NSMutableArray arrayWithCapacity:1];
-	CLLocationCoordinate2D current_coordinate;
-	NSString* tmp;
-	for(int i = 0; i < nannotations;) {
-		MapAnnotation* annotation_obj = [[MapAnnotation alloc] init];
-		tmp = [NSString stringWithUTF8String:annotation[i++]];
-		current_coordinate.latitude = [tmp doubleValue];
-		tmp = [NSString stringWithUTF8String:annotation[i++]];
-		current_coordinate.longitude = [tmp doubleValue];
-		[annotation_obj setCoordinate:current_coordinate];
-		
-		[annotation_obj setAddress:[NSString stringWithUTF8String:annotation[i++]]];
-		[annotation_obj setTitle:[NSString stringWithUTF8String:annotation[i++]]];
-		[annotation_obj setSubtitle:[NSString stringWithUTF8String:annotation[i++]]];
-		[annotation_obj setUrl:[NSString stringWithUTF8String:annotation[i++]]];
-		[annotations addObject:annotation_obj];		
-	}
-	return annotations;	
-}
-
-NSMutableArray* parse_settings(int nparams, char** params) {
-    if (nparams <= 0) return [NSMutableArray arrayWithCapacity:0];
-    NSMutableArray *settings = [NSMutableArray arrayWithCapacity:nparams];
-    BOOL array_flag = FALSE;
-    for(int i = 0; i < nparams; i++) {
-        if (params[i]) {
-            if (array_flag) {
-                NSMutableArray *arr = [NSMutableArray arrayWithCapacity:4];
-                char **array = (char**)params[i];
-                while(*array) {
-                    char const *s = *array;
-                    [arr addObject:[NSString stringWithUTF8String:*array]];
-                    array++;
-                    printf("param %s\n", s);
-                }
-                array_flag = FALSE;
-                [settings addObject:arr];
-            } else {
-                if (strcmp(params[i],"region")==0)
-                    array_flag = TRUE;
-                [settings addObject:[NSString stringWithUTF8String:params[i]]];
-                printf("param %s\n", params[i]);
-            }
-        } else {
-            if (array_flag) {
-                array_flag = FALSE;
-                NSMutableArray *arr = [NSMutableArray arrayWithCapacity:1];
-                [settings addObject:arr];
-            } else {
-                [settings addObject:@""];
-            }
-        }
-    }
-    return settings;
-}
 
 #endif

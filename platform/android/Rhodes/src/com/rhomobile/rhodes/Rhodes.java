@@ -62,6 +62,8 @@ public class Rhodes extends Activity {
 
 	private static final String TAG = "Rhodes";
 	
+	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
+	
 	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
