@@ -14,7 +14,7 @@
 
 @synthesize coordinate;
 
--(id)init{
+-(id) init {
 	[super init];
 	_title = [[NSString alloc] initWithFormat:@""];
 	_subtitle = [[NSString alloc] initWithFormat:@""];
@@ -25,13 +25,14 @@
 	return self;
 }
 
-- (void) dealloc {
-/*	self._title = nil;
-	self._subtitle = nil;
-	self._street_address = nil;
-	self._coordinate_string = nil; 
-	self._resolved_address = nil; 
-*/	[super dealloc];
+-(void) dealloc {
+    [_title dealloc];
+    [_subtitle dealloc];
+    [_street_address dealloc];
+    [_coordinate_string dealloc];
+    [_resolved_address dealloc];
+    [_url dealloc];
+    [super dealloc];
 }
 
 - (void)setCoordinate:(CLLocationCoordinate2D)c {
@@ -80,8 +81,9 @@
 }
 
 - (void)setUrl:(NSString*)url {
-    const char *norm_url = rho_http_normalizeurl([url UTF8String]);
-    _url = [NSString stringWithUTF8String:norm_url];
+    const char *surl = [url UTF8String];
+    const char *norm_url = rho_http_normalizeurl(surl);
+    _url = [[NSString stringWithUTF8String:norm_url] copy];
 }
 
 - (NSString*)url {
