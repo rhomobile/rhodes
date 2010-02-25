@@ -1,5 +1,10 @@
 package com.rhomobile.rhodes.mapview;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 import java.util.Vector;
 
@@ -8,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
@@ -180,7 +186,7 @@ public class MapView extends MapActivity {
 			ann.address = extras.getString(prefix + "address");
 			ann.title = extras.getString(prefix + "title");
 			ann.subtitle = extras.getString(prefix + "subtitle");
-			ann.url = extras.getString(prefix + "url");
+			ann.url = RhodesInstance.getInstance().normalizeUrl(extras.getString(prefix + "url"));
 			annotations.addElement(ann);
 		}
 		
@@ -192,7 +198,7 @@ public class MapView extends MapActivity {
 		Bitmap bitmap = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
 		Drawable marker = new BitmapDrawable(bitmap);
 		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
-		annOverlay = new AnnotationsOverlay(marker);
+		annOverlay = new AnnotationsOverlay(this, marker);
 		view.getOverlays().add(annOverlay);
 		
 		// Apply extracted parameters
@@ -241,11 +247,83 @@ public class MapView extends MapActivity {
 				continue;
 			annOverlay.addAnnotation(ann);
 		}
+		
+		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
+			Annotation ann = annotations.elementAt(i);
+			if (ann.latitude != 10000 && ann.longitude != 10000)
+				continue;
+			if (ann.address == null)
+				continue;
+			
+			try {
+				StringBuffer b = new StringBuffer();
+				b.append("http://maps.google.com/maps/geo?q=");
+				b.append(Uri.encode(ann.address));
+				b.append("&output=csv&mobile=false&sensor=false");
+				
+				URL url = new URL(b.toString());
+				
+				b = new StringBuffer();
+				
+				InputStream is = url.openStream();
+				byte[] buf = new byte[128];
+				for (;;) {
+					int n = is.read(buf);
+					if (n == -1)
+						break;
+					
+					String s = new String(buf, 0, n);
+					b.append(s);
+				}
+				
+				String response = b.toString();
+				Vector<String> res = split(response, ",");
+				if (res.size() != 4) {
+					Logger.E(TAG, "Geocoding response parse error. Response: " + response);
+					continue;
+				}
+				
+				//int statusCode = Integer.parseInt(res.elementAt(0));
+				//int accuracy = Integer.parseInt(res.elementAt(1));
+				double latitude = Double.parseDouble(res.elementAt(2));
+				double longitude = Double.parseDouble(res.elementAt(3));
+				
+				ann.latitude = latitude;
+				ann.longitude = longitude;
+				annOverlay.addAnnotation(ann);
+			}
+			catch (Exception e) {
+				Logger.E(TAG, "GeoCoding request failed");
+			}
+			
+			Rhodes.performOnUiThread(new Runnable() {
+				public void run() {
+					view.invalidate();
+				}
+			});
+		}
 	}
 
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
+	}
+	
+	private static Vector<String> split(String s, String delimiter) {
+		Vector<String> res = new Vector<String>();
+		for (int start = 0, end = start;;) {
+			end = s.indexOf(delimiter, start);
+			if (end == -1) {
+				res.addElement(s.substring(start));
+				break;
+			}
+			else {
+				res.addElement(s.substring(start, end));
+				start = end + delimiter.length();
+			}
+		}
+
+		return res;
 	}
 	
 }
