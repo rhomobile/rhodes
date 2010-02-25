@@ -276,7 +276,7 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     if (!objIterator) return Qnil;
 
     VALUE retval = createHash();
-    while(env->CallObjectMethod(objIterator, midHasNext))
+    while(env->CallBooleanMethod(objIterator, midHasNext))
     {
         jstring objKey = (jstring)env->CallObjectMethod(objIterator, midNext);
         if (!objKey) return Qnil;
