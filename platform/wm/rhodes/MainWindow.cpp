@@ -5,6 +5,7 @@
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #include <soundfile.h>
+#include <nled.h>
 #endif
 #include <string>
 #if defined(OS_WINDOWS)
@@ -565,11 +566,11 @@ LRESULT CMainWindow::OnAlertPlayFile (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
     hr = SndPlayAsync (hSound, 0);
       
     if (hr != S_OK) {
-        //LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
+        LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
         return 0;
     }
       
-    WaitForSingleObject(hSound, INFINITE);
+    //WaitForSingleObject(hSound, INFINITE);
     
     hr = SndClose(hSound);
     SndStop(SND_SCOPE_PROCESS, NULL);
@@ -578,11 +579,36 @@ LRESULT CMainWindow::OnAlertPlayFile (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 	return 0;
 }
 
-LRESULT CMainWindow::OnAlertVibrate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+/***
+ *  FIXME: it's shame and lame and should be rewritten ASAP
+ */
+DWORD WINAPI Vibrate (LPVOID lpParam)
 {
-  /**
-      *  TODO
-      */
+#if defined(_WIN32_WCE)
+    const int seconds = 3;
+    NLED_SETTINGS_INFO settings;
+    
+    //on
+    settings.LedNum= 1; 
+    settings.OffOnBlink= 1; 
+    NLedSetDevice (NLED_SETTINGS_INFO_ID, &settings);
+    
+    Sleep(1000 * seconds);
+    
+    //off
+    settings.LedNum= 1; 
+    settings.OffOnBlink= 0; 
+    NLedSetDevice (NLED_SETTINGS_INFO_ID, &settings);
+#endif
+    return 0;
+}
+  
+
+ LRESULT CMainWindow::OnAlertVibrate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+#if defined(_WIN32_WCE)
+    CreateThread( NULL, 0,  Vibrate, NULL, 0, NULL);
+#endif    
     return 0;
 }
 
