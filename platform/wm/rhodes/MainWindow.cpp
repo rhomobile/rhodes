@@ -4,6 +4,7 @@
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
+#include <soundfile.h>
 #endif
 #include <string>
 #if defined(OS_WINDOWS)
@@ -528,6 +529,61 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 
 	return 0;
+}
+
+LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    rho::String path = RHODESAPP().getRhoRootPath();
+    int last, pre_last;
+
+    last = path.find_last_of('\\');
+    pre_last = path.substr(0, last).find_last_of('\\');
+
+    USES_CONVERSION;
+    MessageBox(A2T((const char*)lParam),
+               A2T((path.substr(pre_last + 1, last - pre_last - 1)).c_str()),
+               MB_ICONWARNING | MB_OK);
+    return 0;
+}
+
+LRESULT CMainWindow::OnAlertPlayFile (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+#if defined(_WIN32_WCE)
+    rho::String path = RHODESAPP().getRhoRootPath() + "apps" + (const char *)lParam;
+    HSOUND hSound;
+    
+    rho::String::size_type pos = 0;
+    while ( (pos = path.find('/', pos)) != rho::String::npos ) {
+        path.replace( pos, 1, "\\");
+        pos++;
+    }
+
+    USES_CONVERSION;
+    //SndPlaySync(A2T(path.c_str()),  SND_PLAY_IGNOREUSERSETTINGS);
+      
+    HRESULT hr = SndOpen(A2T(path.c_str()), &hSound);
+    hr = SndPlayAsync (hSound, 0);
+      
+    if (hr != S_OK) {
+        //LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
+        return 0;
+    }
+      
+    WaitForSingleObject(hSound, INFINITE);
+    
+    hr = SndClose(hSound);
+    SndStop(SND_SCOPE_PROCESS, NULL);
+#endif
+
+	return 0;
+}
+
+LRESULT CMainWindow::OnAlertVibrate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+  /**
+      *  TODO
+      */
+    return 0;
 }
 
 // **************************************************************************

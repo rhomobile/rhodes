@@ -21,6 +21,11 @@ static UINT WM_SELECTPICTURE = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE
 
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
 
+//Alerts messages
+static UINT WM_ALERT_SHOWPOPUP = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOWPOPUP");
+static UINT WM_ALERT_PLAYFILE  = ::RegisterWindowMessage(L"RHODES_WM_ALERT_PLAYFILE");
+static UINT WM_ALERT_VIBRATE   = ::RegisterWindowMessage(L"RHODES_WM_ALERT_VIBRATE");
+
 class CMainWindow :
 #if defined(_WIN32_WCE)
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
@@ -86,7 +91,10 @@ public:
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
-		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount);
+		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
+        MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup)
+        MESSAGE_HANDLER(WM_ALERT_PLAYFILE, OnAlertPlayFile)
+        MESSAGE_HANDLER(WM_ALERT_VIBRATE,   OnAlertVibrate);
     END_MSG_MAP()
 
 private:
@@ -120,6 +128,10 @@ private:
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
+    LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnAlertPlayFile  (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnAlertVibrate   (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 public:
     BEGIN_SINK_MAP(CMainWindow)
