@@ -107,6 +107,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 
 boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer )
 {
+    LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
     //1.2.2 -> 1.5.0,1.4.1
     if ( dbVer.m_strRhoVer.compare("1.2.2") == 0 && (strRhoDBVer.compare("1.5.0")==0||strRhoDBVer.compare("1.4.1")==0) )
     {
@@ -117,6 +118,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 
     //changed_values
     //id INTEGER PRIMARY KEY, REMOVE
+        LOG(INFO) + "Migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
 
         CDBAdapter db;
         db.open( m_strDbPath, m_strDbVer, true );

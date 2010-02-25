@@ -249,6 +249,8 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     else
         CHttpServer::Instance()->FreezeThread();
 */
+    RHODESAPP().callAppActiveCallback(fActive!=0);
+
 #endif
 
     return 0;

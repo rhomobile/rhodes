@@ -77,7 +77,7 @@ public:
 
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
-    void callAppActiveCallback();
+    void callAppActiveCallback(boolean bActive);
 
     void setViewMenu(unsigned long valMenu);
     void addViewMenuItem( const String& strLabel, const String& strLink );
@@ -138,7 +138,7 @@ void rho_http_free(void* data);
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
     const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
-void rho_rhodesapp_callAppActiveCallback();
+void rho_rhodesapp_callAppActiveCallback(int nActive);
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu);
