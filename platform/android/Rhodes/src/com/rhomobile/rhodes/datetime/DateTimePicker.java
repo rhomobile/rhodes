@@ -23,11 +23,14 @@ package com.rhomobile.rhodes.datetime;
 import android.content.Intent;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
 
 public class DateTimePicker {
 	
 	private static final String TAG = "DateTimePicker";
+	
+	private static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX;
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
@@ -37,11 +40,11 @@ public class DateTimePicker {
 		try {
 			Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(),
 					DateTimePickerScreen.class);
-			intent.putExtra("callback", callback);
-			intent.putExtra("title", title);
-			intent.putExtra("init", init);
-			intent.putExtra("fmt", v);
-			intent.putExtra("opaque", opaque);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", callback);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "title", title);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "init", init);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "fmt", v);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "opaque", opaque);
 			
 			RhodesInstance.getInstance().startActivityForResult(intent, 5);
 		}

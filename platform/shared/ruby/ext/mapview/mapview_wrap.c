@@ -1525,7 +1525,7 @@ SWIG_Ruby_SetModule(swig_module_info *pointer)
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-#define SWIGTYPE_p_p_char swig_types[1]
+#define SWIGTYPE_p_rho_param swig_types[1]
 static swig_type_info *swig_types[3];
 static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
@@ -1546,195 +1546,28 @@ static VALUE mMapView;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void mapview_create(int nparams, char** params, int nannotations, char** annotation);
+#include "ext/rho/rhoruby.h"
+extern void mapview_create(rho_param *p);
 #define create mapview_create
-
-
-#include <limits.h>
-#ifndef LLONG_MIN
-# define LLONG_MIN	LONG_LONG_MIN
-#endif
-#ifndef LLONG_MAX
-# define LLONG_MAX	LONG_LONG_MAX
-#endif
-#ifndef ULLONG_MAX
-# define ULLONG_MAX	ULONG_LONG_MAX
-#endif
-
-
-SWIGINTERN VALUE
-SWIG_ruby_failed(void)
-{
-  return Qnil;
-} 
-
-
-/*@SWIG:%ruby_aux_method@*/
-SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
-{
-  VALUE obj = args[0];
-  VALUE type = TYPE(obj);
-  long *res = (long *)(args[1]);
-  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
-  return obj;
-}
-/*@SWIG@*/
-
-SWIGINTERN int
-SWIG_AsVal_long (VALUE obj, long* val)
-{
-  VALUE type = TYPE(obj);
-  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
-    long v;
-    VALUE a[2];
-    a[0] = obj;
-    a[1] = (VALUE)(&v);
-    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
-      if (val) *val = v;
-      return SWIG_OK;
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_int (VALUE obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (int)(v);
-    }
-  }  
-  return res;
-}
 
 SWIGINTERN VALUE
 _wrap_create(int argc, VALUE *argv, VALUE self) {
-  int arg1 ;
-  char **arg2 = (char **) 0 ;
-  int arg3 ;
-  char **arg4 = (char **) 0 ;
+  rho_param *arg1 = (rho_param *) 0 ;
   
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   {
-    VALUE input_arr = argv[0];
-    int i, j, len = 0;
-    char **ret_val, **settings;
-    ret_val = settings = NULL;
-    arg1 = arg3 = 0;
-    if (input_arr) {
-      VALUE main_keys_arr = rb_funcall(argv[0], rb_intern("keys"), 0, NULL);
-      int mk,main_keys_len = RARRAY_LEN(main_keys_arr);
-      for(mk=0; mk<main_keys_len; mk++) {
-        VALUE main_key = rb_ary_entry(main_keys_arr, mk);
-        VALUE main_data = rb_hash_aref(argv[0],main_key);
-        char *main_key_str = StringValuePtr(main_key);
-        if (!strcmp(main_key_str,"settings")) {
-          int arr_len = 0;
-          VALUE settings_keys_arr = rb_funcall(main_data, rb_intern("keys"), 0, NULL);
-          int len = RARRAY_LEN(settings_keys_arr);
-          settings = (char **)malloc(2*len*sizeof(char*));
-          for(j=0; j<len; j++) {
-            VALUE val;
-            char *tmp;
-            VALUE key = rb_ary_entry(settings_keys_arr, j);
-            VALUE data = rb_hash_aref(main_data,key);
-            char *key_str = StringValuePtr(key);
-            switch(TYPE(data)) {
-            case T_STRING:
-              tmp = StringValuePtr(data);
-              break;
-            case T_ARRAY:
-              {
-                int alen = RARRAY_LEN(data);
-                char **arr = (char **)malloc((alen+1)*sizeof(char*));
-                for(i=0;i<alen;i++) {
-                  VALUE item = rb_ary_entry(data,i);
-                  if (TYPE(item) != T_STRING)
-                  item = rb_funcall(item, rb_intern("to_s"), 0, NULL);
-                  tmp = StringValuePtr(item);
-                  arr[i] = tmp;
-                }
-                arr[alen] = NULL;
-                tmp = (char*)arr;
-              }
-              break;
-            default:
-              val = rb_funcall(data, rb_intern("to_s"), 0, NULL);
-              tmp = StringValuePtr(val);
-            }
-            settings[arr_len++] = key_str;
-            settings[arr_len++] = tmp;
-          }
-          
-          arg1 = arr_len;
-          arg2 = settings;
-        } else if (!strcmp(main_key_str,"annotations")) {
-          int arr_len = 0;
-          len = RARRAY_LEN(main_data);
-          ret_val = (char **)malloc(6*len*sizeof(char*));
-          for(i=0; i<len; i++) {
-            char *lat, *lon, *addr, *title, *subtitle, *url;
-            VALUE hash = rb_ary_entry(main_data,i);
-            VALUE keys_arr = rb_funcall(hash, rb_intern("keys"), 0, NULL);
-            int keys_len = RARRAY_LEN(keys_arr);
-            lat=lon="10000";
-            addr=title=subtitle=url="";
-            for(j=0; j<keys_len; j++) {
-              char *tmp;
-              VALUE key = rb_ary_entry(keys_arr, j);
-              VALUE data = rb_hash_aref(hash,key);
-              char *key_str = StringValuePtr(key);
-              if (TYPE(data) != T_STRING)
-              data = rb_funcall(data, rb_intern("to_s"), 0, NULL);
-              tmp = StringValuePtr(data);
-              if (!strcmp(key_str,"latitude")) {
-                lat = tmp;
-              } else if (!strcmp(key_str, "longitude")) {
-                lon = tmp;
-              } else if (!strcmp(key_str, "street_address")) {
-                addr = tmp;
-              } else if (!strcmp(key_str, "title")) {
-                title = tmp;
-              } else if (!strcmp(key_str, "subtitle")) {
-                subtitle = tmp;
-              } else if (!strcmp(key_str, "url")) {
-                url = tmp;
-              }  
-            }
-            ret_val[arr_len++] = lat;
-            ret_val[arr_len++] = lon;
-            ret_val[arr_len++] = addr;
-            ret_val[arr_len++] = title;
-            ret_val[arr_len++] = subtitle;
-            ret_val[arr_len++] = url;
-          } /* for(i=0; i<len; i++) */
-          
-          arg3 = arr_len;
-          arg4 = ret_val;
-        } /* if (!strcmp(key_str,"annotations")) */
-      } /* for(mk=0; mk<main_keys_len; mk++) */
-    } /* if (input_arr) */
-    
-    
+    arg1 = valueToRhoParam(argv[0]);
   }
-  create(arg1,arg2,arg3,arg4);
+  create(arg1);
   {
-    free((void *) arg2);
-    free((void *) arg4);
+    rho_param_free(arg1);
   }
   return Qnil;
 fail:
   {
-    free((void *) arg2);
-    free((void *) arg4);
+    rho_param_free(arg1);
   }
   return Qnil;
 }
@@ -1744,19 +1577,19 @@ fail:
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_rho_param = {"_p_rho_param", "rho_param *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
-  &_swigt__p_p_char,
+  &_swigt__p_rho_param,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_rho_param[] = {  {&_swigt__p_rho_param, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
-  _swigc__p_p_char,
+  _swigc__p_rho_param,
 };
 
 
