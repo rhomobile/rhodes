@@ -4,6 +4,7 @@
 * support of SSL in AsyncHttp for iPhone and Android
 * fixed GPS updates on Android (back ported to 1-4-stable)
 * fixed MapView parameters validation for iPhone and Blackberry (back ported to 1-4-stable)
+* native geo mapping for android
 
 == 1.4.0
 * improved spec running framework, see spec/framework_spec for details
