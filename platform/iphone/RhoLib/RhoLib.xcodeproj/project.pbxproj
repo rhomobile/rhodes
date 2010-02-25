@@ -70,6 +70,8 @@
 		BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2CEFCD10ADF10D002356D9 /* INetRequest.h */; };
 		BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */; };
 		BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */ = {isa = PBXBuildFile; fileRef = BD4FC54A10BFE4D100D280D0 /* HttpServer.h */; };
+		BDD11ECD113664E700349BE3 /* rhoparams.c in Sources */ = {isa = PBXBuildFile; fileRef = BDD11ECB113664E700349BE3 /* rhoparams.c */; };
+		BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD11ECC113664E700349BE3 /* rhoparams.h */; };
 		BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB13B112EE2B500AE3724 /* ssl.cpp */; };
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
 /* End PBXBuildFile section */
@@ -138,6 +140,8 @@
 		BD2CEFCD10ADF10D002356D9 /* INetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INetRequest.h; path = ../../shared/net/INetRequest.h; sourceTree = SOURCE_ROOT; };
 		BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpServer.cpp; path = ../../shared/net/HttpServer.cpp; sourceTree = SOURCE_ROOT; };
 		BD4FC54A10BFE4D100D280D0 /* HttpServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpServer.h; path = ../../shared/net/HttpServer.h; sourceTree = SOURCE_ROOT; };
+		BDD11ECB113664E700349BE3 /* rhoparams.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoparams.c; path = ../../shared/common/rhoparams.c; sourceTree = SOURCE_ROOT; };
+		BDD11ECC113664E700349BE3 /* rhoparams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoparams.h; path = ../../shared/common/rhoparams.h; sourceTree = SOURCE_ROOT; };
 		BDFCB13B112EE2B500AE3724 /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -196,6 +200,8 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				BDD11ECB113664E700349BE3 /* rhoparams.c */,
+				BDD11ECC113664E700349BE3 /* rhoparams.h */,
 				BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */,
 				BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */,
 				5C6855E610A02EAA008DA047 /* RhodesApp.cpp */,
@@ -336,6 +342,7 @@
 				BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */,
 				5C8EE85D11220E9E0005C20D /* AsyncHttp.h in Headers */,
 				BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */,
+				BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,6 +415,7 @@
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
 				5C8EE85C11220E9E0005C20D /* AsyncHttp.cpp in Sources */,
 				BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */,
+				BDD11ECD113664E700349BE3 /* rhoparams.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
