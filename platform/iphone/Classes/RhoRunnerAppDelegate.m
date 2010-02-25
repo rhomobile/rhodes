@@ -122,10 +122,9 @@
 }*/
 
 #ifdef __IPHONE_3_0
--(void) onCreateMap:(NSMutableArray*)items {
+-(void) onCreateMap:(NSValue*)value {
 	MapViewController* map = [[MapViewController alloc] init];
-	[map setParams:[items objectAtIndex:0]];
-	[map setAnnotations:[items objectAtIndex:1]];
+    [map setParams:[value pointerValue]];
 	map.actionTarget = self;
 	map.onNavigate = @selector(onNavigateTo:);
 	[window addSubview:map.view];
