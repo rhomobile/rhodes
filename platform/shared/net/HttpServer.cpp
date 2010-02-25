@@ -267,6 +267,7 @@ CHttpServer::CHttpServer(int port, String const &root)
 {
     RAWTRACE("Open listening socket...");
     
+    m_bPause = false;
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     if (m_listener == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
@@ -352,10 +353,12 @@ bool CHttpServer::run()
             RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
             return false;
         }
-        
-        RAWTRACE("Connection accepted, process it...");
-        process(conn);
-        
+
+        if (!m_bPause){
+            RAWTRACE("Connection accepted, process it...");
+            process(conn);
+        }
+
         RAWTRACE("Close connected socket");
         closesocket(conn);
     }

@@ -340,6 +340,8 @@ public class DBAdapter extends RubyBasic {
 	    //sources
 	    //priority INTEGER, ADD
 	    //backend_refresh_time int default 0, ADD
+	    	LOG.INFO("Migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer);
+	    	
 			IDBStorage db = null;
 			try{
 			    db = RhoClassFactory.createDBStorage();	    

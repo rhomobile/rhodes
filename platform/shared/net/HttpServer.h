@@ -75,7 +75,8 @@ public:
     
     bool run();
 	void stop();
-    
+    void pause(bool bPause){m_bPause = bPause;}
+
     bool send_response(String const &response) {return send_response_impl(response, false);}
     bool send_response_body(String const &data) {return send_response_impl(data, true);}
     
@@ -106,6 +107,7 @@ private:
     
 private:
 	bool m_exit;
+    bool m_bPause;
     int m_port;
     String m_root;
     SOCKET m_listener;

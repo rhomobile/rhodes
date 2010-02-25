@@ -94,13 +94,12 @@ void CRhodesApp::run()
     rho_sync_create();
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
-    LOG(INFO) + "Call app active callback";
-    callAppActiveCallback();
+
     LOG(INFO) + "activate app";
     rho_ruby_activateApp();
 
     LOG(INFO) + "navigate to first start url";
-    navigateToUrl(getFirstStartUrl());//canonicalizeRhoUrl("/system/geolocation"));
+    navigateToUrl(getFirstStartUrl());
 
 #if !defined(RHO_HTTPD_COMMON_IMPL)
     while(!m_bExit)
@@ -175,13 +174,26 @@ private:
     }
 };
 
-void CRhodesApp::callAppActiveCallback()
+static void callback_activateapp(void *arg, String const &strQuery)
 {
-    /*String strCallback = RHOCONF().getString("app_did_become_active_callback");
-    if ( strCallback.length() == 0 )
-        return;
+    rho_ruby_activateApp();
+    String strMsg;
+    rho_http_sendresponse(arg, strMsg.c_str());
+}
 
-    new CRhoCallbackCall( canonicalizeRhoUrl(strCallback), m_ptrFactory );*/
+void CRhodesApp::callAppActiveCallback(boolean bActive)
+{
+    m_httpServer->pause(!bActive);
+    if (bActive)
+    {
+        String strUrl = m_strHomeUrl + "/system/activateapp";
+        NetResponse(resp,getNet().pullData( strUrl, null ));
+        if ( !resp.isOK() )
+            LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+
+        LOG(INFO) + "navigate to first start url";
+        navigateToUrl(getFirstStartUrl());
+    }
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
@@ -376,6 +388,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/shared", callback_shared);
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
+    m_httpServer->register_uri("/system/activateapp", callback_activateapp);
 #endif
 }
 
@@ -846,9 +859,9 @@ void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTi
     RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
 }
 
-void rho_rhodesapp_callAppActiveCallback()
+void rho_rhodesapp_callAppActiveCallback(int nActive)
 {
-    RHODESAPP().callAppActiveCallback();
+    RHODESAPP().callAppActiveCallback(nActive!=0);
 }
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
