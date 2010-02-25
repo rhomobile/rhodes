@@ -1,17 +1,11 @@
 package com.rhomobile.rhodes.mapview;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
 import java.util.Vector;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -195,8 +189,7 @@ public class MapView extends MapActivity {
 		view.setClickable(true);
 		layout.addView(view);
 		
-		Bitmap bitmap = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
-		Drawable marker = new BitmapDrawable(bitmap);
+		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
 		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
 		annOverlay = new AnnotationsOverlay(this, marker);
 		view.getOverlays().add(annOverlay);
