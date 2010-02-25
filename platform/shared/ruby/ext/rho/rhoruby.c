@@ -314,6 +314,46 @@ int getStringLenFromValue(VALUE val){
     return RSTRING_LEN(val);
 }
 
+rho_param *valueToRhoParam(VALUE v)
+{
+    int i, size;
+
+    switch(TYPE(v)) {
+    case T_ARRAY:
+        {
+            size = RARRAY_LEN(v);
+            rho_param *p = rho_param_array(size);
+            for (i = 0; i < size; ++i) {
+                VALUE item = rb_ary_entry(v, i);
+                p->v.array->value[i] = valueToRhoParam(item);
+            }
+            return p;
+        }
+        break;
+    case T_HASH:
+        {
+            VALUE keys = rb_funcall(v, rb_intern("keys"), 0, NULL);
+            size = RARRAY_LEN(keys);
+            rho_param *p = rho_param_hash(size);
+            for (i = 0; i < size; ++i) {
+                VALUE key = rb_ary_entry(keys, i);
+                VALUE value = rb_hash_aref(v, key);
+                p->v.hash->name[i] = strdup(StringValuePtr(key));
+                p->v.hash->value[i] = valueToRhoParam(value);
+            }
+            return p;
+        }
+        break;
+    default:
+        {
+            VALUE value = v;
+            if (TYPE(v) != T_STRING)
+                value = rb_funcall(value, rb_intern("to_s"), 0, NULL);
+            return rho_param_str(RSTRING_PTR(value));
+        }
+    }
+}
+
 struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val)
 {
     struct CRhoRubyStringOrInt oRes;
