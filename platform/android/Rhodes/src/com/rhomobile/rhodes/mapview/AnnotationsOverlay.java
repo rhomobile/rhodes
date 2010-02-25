@@ -7,13 +7,17 @@ import android.graphics.drawable.Drawable;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
+import com.google.android.maps.Projection;
+import com.rhomobile.rhodes.WebView;
 
 public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 
+	private MapView mainView;
 	private Vector<Annotation> annotations;
 	
-	public AnnotationsOverlay(Drawable marker) {
+	public AnnotationsOverlay(MapView view, Drawable marker) {
 		super(boundCenterBottom(marker));
+		mainView = view;
 		annotations = new Vector<Annotation>();
 		populate();
 	}
@@ -37,7 +41,12 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 	
 	@Override
 	protected boolean onTap(int i) {
-		return false;
+		Annotation ann = annotations.elementAt(i);
+		if (ann.url == null)
+			return false;
+		WebView.navigate(ann.url, WebView.activeTab());
+		mainView.finish();
+		return true;
 	}
 
 }
