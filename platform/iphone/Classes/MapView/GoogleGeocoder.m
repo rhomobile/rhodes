@@ -10,7 +10,7 @@
 
 @synthesize actionTarget,onDidFindAddress,theElement,annotations,gapikey;
 
--(void)doGeocoding:(id)items {
+-(void)doGeocoding:(NSMutableArray*)items {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	NSEnumerator * enumerator = [items objectEnumerator];
@@ -43,7 +43,7 @@
 
 -(id)initWithAnnotations:(NSMutableArray*)_annotations apikey:(NSString*)key{
 	self = [super init];
-	annotations = _annotations;
+    annotations = _annotations;
 	gapikey = [key copy];
     return self;
 }

@@ -28,6 +28,7 @@ VALUE convertJavaMapToRubyHash(jobject objMap);
 #define RHODES_JAVA_CLASS_ITERATOR "java/util/Iterator"
 #define RHODES_JAVA_CLASS_SET "java/util/Set"
 #define RHODES_JAVA_CLASS_MAP "java/util/Map"
+#define RHODES_JAVA_CLASS_HASHMAP "java/util/HashMap"
 #define RHODES_JAVA_CLASS_VECTOR "java/util/Vector"
 #define RHODES_JAVA_CLASS_RHODES "com/rhomobile/rhodes/Rhodes"
 #define RHODES_JAVA_CLASS_WEB_VIEW "com/rhomobile/rhodes/WebView"
@@ -40,11 +41,32 @@ VALUE convertJavaMapToRubyHash(jobject objMap);
 #define RHODES_JAVA_CLASS_ALERT "com/rhomobile/rhodes/alert/Alert"
 #define RHODES_JAVA_CLASS_RINGTONE_MANAGER "com/rhomobile/rhodes/RingtoneManager"
 #define RHODES_JAVA_CLASS_NATIVEBAR "com/rhomobile/rhodes/NativeBar"
+#define RHODES_JAVA_CLASS_MAPVIEW "com/rhomobile/rhodes/mapview/MapView"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
 //#define RHO_LOG_CALLBACK RAWLOG_INFO1("Callback \"%s\" called", __PRETTY_FUNCTION__)
 //#define RHO_LOG_JNI_CALL RAWLOG_INFO1("JNI method \"%s\" called", __PRETTY_FUNCTION__)
+
+class RhoValueConverter
+{
+private:
+    jclass clsHashMap;
+    jclass clsVector;
+
+    jmethodID midHashMapConstructor;
+    jmethodID midVectorConstructor;
+    jmethodID midPut;
+    jmethodID midAddElement;
+
+    JNIEnv *env;
+    bool init;
+
+public:
+    RhoValueConverter(JNIEnv *e);
+
+    jobject createObject(rho_param *p);
+};
 
 #endif // RHO_JNI_RHODES_57d3a700b706402190ead97fd1383bee
 
