@@ -51,10 +51,10 @@ rho_param *rho_param_hash(int size)
 rho_param *rho_param_dup(rho_param *p)
 {
     int i, lim;
+    rho_param *ret = NULL;
 
     if (!p) return NULL;
 
-    rho_param *ret = NULL;
     switch (p->type) {
     case RHO_PARAM_STRING:
         ret = rho_param_str(p->v.string);
