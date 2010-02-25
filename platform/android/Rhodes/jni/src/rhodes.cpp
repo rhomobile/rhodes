@@ -52,6 +52,64 @@ static CAutoPtr<AndroidLogSink> g_androidLogSink(new AndroidLogSink());
 } // namespace common
 } // namespace rho
 
+RhoValueConverter::RhoValueConverter(JNIEnv *e)
+    :env(e), init(false)
+{
+    clsHashMap = getJNIClass(RHODES_JAVA_CLASS_HASHMAP);
+    if (!clsHashMap) return;
+    clsVector = getJNIClass(RHODES_JAVA_CLASS_VECTOR);
+    if (!clsVector) return;
+    midHashMapConstructor = getJNIClassMethod(clsHashMap, "<init>", "()V");
+    if (!midHashMapConstructor) return;
+    midVectorConstructor = getJNIClassMethod(clsVector, "<init>", "()V");
+    if (!midVectorConstructor) return;
+    midPut = getJNIClassMethod(clsHashMap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    if (!midPut) return;
+    midAddElement = getJNIClassMethod(clsVector, "addElement", "(Ljava/lang/Object;)V");
+    if (!midAddElement) return;
+    init = true;
+}
+
+jobject RhoValueConverter::createObject(rho_param *p)
+{
+    if (!init || !p) return NULL;
+    switch (p->type) {
+    case RHO_PARAM_STRING:
+        return env->NewStringUTF(p->v.string);
+        break;
+    case RHO_PARAM_ARRAY:
+        {
+            jobject v = env->NewObject(clsVector, midVectorConstructor);
+            if (!v) return NULL;
+
+            for (int i = 0, lim = p->v.array->size; i < lim; ++i) {
+                jobject value = createObject(p->v.array->value[i]);
+                env->CallVoidMethod(v, midAddElement, value);
+                env->DeleteLocalRef(value);
+            }
+            return v;
+        }
+        break;
+    case RHO_PARAM_HASH:
+        {
+            jobject v = env->NewObject(clsHashMap, midHashMapConstructor);
+            if (!v) return NULL;
+
+            for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+                jstring key = env->NewStringUTF(p->v.hash->name[i]);
+                jobject value = createObject(p->v.hash->value[i]);
+                env->CallObjectMethod(v, midPut, key, value);
+                env->DeleteLocalRef(key);
+                env->DeleteLocalRef(value);
+            }
+            return v;
+        }
+        break;
+    default:
+        return NULL;
+    }
+}
+
 void store_thr_jnienv(JNIEnv *env)
 {
     pthread_setspecific(g_thrkey, env);
@@ -144,6 +202,7 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_ITERATOR,
         RHODES_JAVA_CLASS_SET,
         RHODES_JAVA_CLASS_MAP,
+        RHODES_JAVA_CLASS_HASHMAP,
         RHODES_JAVA_CLASS_VECTOR,
         RHODES_JAVA_CLASS_RHODES,
         RHODES_JAVA_CLASS_WEB_VIEW,

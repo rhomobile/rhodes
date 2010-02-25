@@ -38,6 +38,8 @@ public class DateTimePickerScreen extends Activity {
 	
 	private static final String TAG = "DateTimePicker";
 	
+	private static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX;
+	
 	private String _callback;
 	private Date _init;
 	private int _fmt;
@@ -79,12 +81,12 @@ public class DateTimePickerScreen extends Activity {
 		
 		Bundle extras = this.getIntent().getExtras();
 		
-		_callback = extras.getString("callback");
-		_init = new Date(extras.getLong("init")*1000);
-		_fmt = extras.getInt("fmt");
-		_opaque = extras.getByteArray("opaque");
+		_callback = extras.getString(INTENT_EXTRA_PREFIX + "callback");
+		_init = new Date(extras.getLong(INTENT_EXTRA_PREFIX + "init")*1000);
+		_fmt = extras.getInt(INTENT_EXTRA_PREFIX + "fmt");
+		_opaque = extras.getByteArray(INTENT_EXTRA_PREFIX + "opaque");
 		
-		this.setTitle(extras.getString("title"));
+		this.setTitle(extras.getString(INTENT_EXTRA_PREFIX + "title"));
 		
 		_datePicker = (DatePicker)findViewById(AndroidR.id.datePicker);
 		_timePicker = (TimePicker)findViewById(AndroidR.id.timePicker);
