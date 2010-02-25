@@ -4,6 +4,10 @@ import java.util.Map;
 import java.util.Vector;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
@@ -11,6 +15,7 @@ import android.widget.RelativeLayout;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
+import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
@@ -23,29 +28,15 @@ public class MapView extends MapActivity {
 	private static final String ANNOTATIONS_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "annotations.";
 	
 	private com.google.android.maps.MapView view;
+	private AnnotationsOverlay annOverlay;
 	
 	private String apiKey;
+	
+	private Vector<Annotation> annotations;
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
-	
-	/*
-	private static class Region {
-		public double latitude;
-		public double longitude;
-		public double latSpan;
-		public double lonSpan;
-	};
-	
-	private static class Settings {
-		public String map_type;
-		public boolean zoom_enabled;
-		public boolean scroll_enabled;
-		public boolean shows_user_location;
-		public Region region;
-	};
-	*/
 	
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
@@ -56,7 +47,7 @@ public class MapView extends MapActivity {
 			
 			Object settings = params.get("settings");
 			if (settings != null && (settings instanceof Map<?,?>)) {
-				Map<String, Object> hash = (Map<String, Object>)settings;
+				Map<Object, Object> hash = (Map<Object, Object>)settings;
 				Object map_type = hash.get("map_type");
 				if (map_type != null && (map_type instanceof String))
 					intent.putExtra(SETTINGS_PREFIX + "map_type", (String)map_type);
@@ -85,6 +76,47 @@ public class MapView extends MapActivity {
 				}
 			}
 			
+			Object annotations = params.get("annotations");
+			if (annotations != null && (annotations instanceof Vector<?>)) {
+				Vector<Object> arr = (Vector<Object>)annotations;
+				
+				intent.putExtra(ANNOTATIONS_PREFIX + "size", arr.size());
+				
+				for (int i = 0, lim = arr.size(); i < lim; ++i) {
+					Object annObj = arr.elementAt(i);
+					if (annObj == null || !(annObj instanceof Map<?, ?>))
+						continue;
+					
+					Map<Object, Object> ann = (Map<Object, Object>)annObj;
+					
+					String prefix = ANNOTATIONS_PREFIX + Integer.toString(i) + ".";
+					
+					Object latitude = ann.get("latitude");
+					if (latitude != null && (latitude instanceof String))
+						intent.putExtra(prefix + "latitude", (String)latitude);
+					
+					Object longitude = ann.get("longitude");
+					if (longitude != null && (longitude instanceof String))
+						intent.putExtra(prefix + "longitude", (String)longitude);
+					
+					Object address = ann.get("street_address");
+					if (address != null && (address instanceof String))
+						intent.putExtra(prefix + "address", (String)address);
+					
+					Object title = ann.get("title");
+					if (title != null && (title instanceof String))
+						intent.putExtra(prefix + "title", (String)title);
+					
+					Object subtitle = ann.get("subtitle");
+					if (subtitle != null && (subtitle instanceof String))
+						intent.putExtra(prefix + "subtitle", (String)subtitle);
+					
+					Object url = ann.get("url");
+					if (url != null && (url instanceof String))
+						intent.putExtra(prefix + "url", (String)url);
+				}
+			}
+			
 			RhodesInstance.getInstance().startActivityForResult(intent, 5);
 		}
 		catch (Exception e) {
@@ -101,9 +133,11 @@ public class MapView extends MapActivity {
 		RelativeLayout layout = new RelativeLayout(this);
 		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
+		// Extrace parameters
 		Bundle extras = getIntent().getExtras();
 		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
 		
+		// Extract settings
 		String map_type = extras.getString(SETTINGS_PREFIX + "map_type");
 		if (map_type == null)
 			map_type = "roadmap";
@@ -117,13 +151,55 @@ public class MapView extends MapActivity {
 		String latSpan = extras.getString(SETTINGS_PREFIX + "region.latSpan");
 		String lonSpan = extras.getString(SETTINGS_PREFIX + "region.lonSpan");
 		
+		// Extract annotations
+		int size = extras.getInt(ANNOTATIONS_PREFIX + "size");
+		annotations = new Vector<Annotation>(size);
+		for (int i = 0; i < size; ++i) {
+			Annotation ann = new Annotation();
+			String prefix = ANNOTATIONS_PREFIX + Integer.toString(i) + ".";
+			
+			ann.latitude = 10000;
+			ann.longitude = 10000;
+			
+			String lat = extras.getString(prefix + "latitude");
+			if (lat != null) {
+				try {
+					ann.latitude = Double.parseDouble(lat);
+				}
+				catch (NumberFormatException e) {}
+			}
+			
+			String lon = extras.getString(prefix + "longitude");
+			if (lon != null) {
+				try {
+					ann.longitude = Double.parseDouble(lon);
+				}
+				catch (NumberFormatException e) {}
+			}
+			
+			ann.address = extras.getString(prefix + "address");
+			ann.title = extras.getString(prefix + "title");
+			ann.subtitle = extras.getString(prefix + "subtitle");
+			ann.url = extras.getString(prefix + "url");
+			annotations.addElement(ann);
+		}
+		
+		// Create view
 		view = new com.google.android.maps.MapView(this, apiKey);
 		view.setClickable(true);
+		layout.addView(view);
+		
+		Bitmap bitmap = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
+		Drawable marker = new BitmapDrawable(bitmap);
+		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+		annOverlay = new AnnotationsOverlay(marker);
+		view.getOverlays().add(annOverlay);
+		
+		// Apply extracted parameters
 		view.setBuiltInZoomControls(zoom_enabled);
 		view.setSatellite(map_type.equals("hybrid") || map_type.equals("satellite"));
 		view.setTraffic(false);
 		view.setStreetView(false);
-		layout.addView(view);
 		
 		MapController controller = view.getController();
 		if (latitude != null && longitude != null) {
@@ -149,6 +225,22 @@ public class MapView extends MapActivity {
 		}
 		
 		view.preLoad();
+		
+		Thread geocoding = new Thread(new Runnable() {
+			public void run() {
+				doGeocoding();
+			}
+		});
+		geocoding.start();
+	}
+	
+	private void doGeocoding() {
+		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
+			Annotation ann = annotations.elementAt(i);
+			if (ann.latitude == 10000 || ann.longitude == 10000)
+				continue;
+			annOverlay.addAnnotation(ann);
+		}
 	}
 
 	@Override
