@@ -112,7 +112,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	
 	BOOL removeFiles = YES;
 	BOOL copyFiles = YES;
-	
+	BOOL nameChanged = NO;
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 
@@ -125,6 +125,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 												  encoding:NSUTF8StringEncoding];
 		NSString *oldName = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathOld]
 												  encoding:NSUTF8StringEncoding];
+		nameChanged = ![newName isEqualToString:oldName];
 		removeFiles = ![newName isEqualToString:oldName];
 	}
 
@@ -157,7 +158,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 		[self copyFromMainBundle:fileManager
 						fromPath:[bundleRoot stringByAppendingPathComponent:@"db"]
 						  toPath:[rhoRoot stringByAppendingPathComponent:@"db"]
-						  remove:NO];
+						  remove:nameChanged];
 		[self copyFromMainBundle:fileManager
 						fromPath:[bundleRoot stringByAppendingPathComponent:@"hash"]
 						  toPath:[rhoRoot stringByAppendingPathComponent:@"hash"]
