@@ -109,7 +109,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 {
     LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
     //1.2.2 -> 1.5.0,1.4.1
-    if ( dbVer.m_strRhoVer.compare("1.2.2") == 0 && (strRhoDBVer.compare("1.5.0")==0||strRhoDBVer.compare("1.4.1")==0) )
+    if ( (dbVer.m_strRhoVer.compare("1.2.2") == 0 || dbVer.m_strRhoVer.compare("1.2.4") == 0)&& (strRhoDBVer.compare("1.5.0")==0||strRhoDBVer.compare("1.4.1")==0) )
     {
     //sources
     //priority INTEGER, ADD
