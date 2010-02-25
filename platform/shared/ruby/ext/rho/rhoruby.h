@@ -14,6 +14,7 @@ extern "C" {
 #endif
 
 #include "common/RhoDefs.h"
+#include "common/rhoparams.h"
 
 #ifdef __SYMBIAN32__
 #include <sys/types.h>
@@ -42,6 +43,8 @@ VALUE addTimeToHash(VALUE hash, const char* key, time_t val);
 VALUE addIntToHash(VALUE hash, const char* key, int val);	
 VALUE addStrToHash(VALUE hash, const char* key, const char* val, int len);
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
+
+rho_param *valueToRhoParam(VALUE v);
 
 char* getStringFromValue(VALUE val);
 int getStringLenFromValue(VALUE val);

@@ -1,3 +1,23 @@
+/*
+ ============================================================================
+ Author	    : Dmitry Moskalchuk
+ Version	: 1.5
+ Copyright  : Copyright (C) 2008 Rhomobile. All rights reserved.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ============================================================================
+ */
 package com.rhomobile.rhodes.datetime;
 
 import java.util.Date;
@@ -17,6 +37,8 @@ import android.widget.TimePicker;
 public class DateTimePickerScreen extends Activity {
 	
 	private static final String TAG = "DateTimePicker";
+	
+	private static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX;
 	
 	private String _callback;
 	private Date _init;
@@ -59,12 +81,12 @@ public class DateTimePickerScreen extends Activity {
 		
 		Bundle extras = this.getIntent().getExtras();
 		
-		_callback = extras.getString("callback");
-		_init = new Date(extras.getLong("init")*1000);
-		_fmt = extras.getInt("fmt");
-		_opaque = extras.getByteArray("opaque");
+		_callback = extras.getString(INTENT_EXTRA_PREFIX + "callback");
+		_init = new Date(extras.getLong(INTENT_EXTRA_PREFIX + "init")*1000);
+		_fmt = extras.getInt(INTENT_EXTRA_PREFIX + "fmt");
+		_opaque = extras.getByteArray(INTENT_EXTRA_PREFIX + "opaque");
 		
-		this.setTitle(extras.getString("title"));
+		this.setTitle(extras.getString(INTENT_EXTRA_PREFIX + "title"));
 		
 		_datePicker = (DatePicker)findViewById(AndroidR.id.datePicker);
 		_timePicker = (TimePicker)findViewById(AndroidR.id.timePicker);
