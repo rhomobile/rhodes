@@ -157,7 +157,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 		[self copyFromMainBundle:fileManager
 						fromPath:[bundleRoot stringByAppendingPathComponent:@"db"]
 						  toPath:[rhoRoot stringByAppendingPathComponent:@"db"]
-						  remove:removeFiles];
+						  remove:NO];
 		[self copyFromMainBundle:fileManager
 						fromPath:[bundleRoot stringByAppendingPathComponent:@"hash"]
 						  toPath:[rhoRoot stringByAppendingPathComponent:@"hash"]
