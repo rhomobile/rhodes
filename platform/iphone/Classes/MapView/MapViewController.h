@@ -11,6 +11,7 @@
 #import <MapKit/MKAnnotation.h>
 #import <MapKit/MKReverseGeocoder.h>
 #import "GoogleGeocoder.h"
+#import "common/rhoparams.h"
 
 @interface MapViewController : UIViewController <MKReverseGeocoderDelegate,MKMapViewDelegate> {
 	MKMapView *mapView;
@@ -37,12 +38,8 @@
 @property (copy) NSString* gapikey; 
 
 //- (IBAction)changeType:(id) sender;
-- (void)setParams:(NSMutableArray*)params;
-- (void)setAnnotations:(NSMutableArray*)annotations;
+- (void)setParams:(rho_param*)params;
 
 @end
-
-NSMutableArray* parse_annotations(int nannotations, char** annotation);
-NSMutableArray* parse_settings(int nparams, char** params);
 
 #endif

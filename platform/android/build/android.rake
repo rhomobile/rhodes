@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 
 USE_STLPORT = true
 USE_OPENSSL = true
+USE_GOOGLE_API = true
 
 def set_app_name_android(newname)
   puts "set_app_name"
@@ -36,6 +37,11 @@ namespace "config" do
     # market names (such as "Android-1.5" etc) see output of
     # command "android list targets"
     ANDROID_API_LEVEL = 3
+
+    $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
+    $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
+    $gapikey = '' unless $gapikey.is_a? String
+    $gapikey = nil if $gapikey.empty?
 
     # Here is switch between release/debug configuration used for
     # building native libraries
@@ -97,7 +103,7 @@ namespace "config" do
       end
     end
 
-    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0"}
+    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1"}
     $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
     $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
 
@@ -107,6 +113,7 @@ namespace "config" do
     $androidbin = File.join( $androidsdkpath, "tools", "android" + $bat_ext )
     $adb = File.join( $androidsdkpath, "tools", "adb" + $exe_ext )
     $zipalign = File.join( $androidsdkpath, "tools", "zipalign" + $exe_ext )
+    $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
@@ -118,7 +125,6 @@ namespace "config" do
 
     # Detect android targets
     if $androidtargets.nil?
-      #$androidtargets = {2 => 1, 3 => 2, 4 => 3, 5 => 4}
       $androidtargets = {}
       id = nil
 
@@ -129,13 +135,40 @@ namespace "config" do
           id = $1
         end
 
-        if line =~ /^\s+API\s+level:\s+([0-9]+)$/ and not id.nil?
-          apilevel = $1
-          $androidtargets[apilevel.to_i] = id.to_i
+        if USE_GOOGLE_API
+          if line =~ /:Google APIs:([0-9]+)/
+            apilevel = $1
+            $androidtargets[apilevel.to_i] = id.to_i
+          end
+        else
+          if line =~ /^\s+API\s+level:\s+([0-9]+)$/ and not id.nil?
+            apilevel = $1
+            $androidtargets[apilevel.to_i] = id.to_i
+          end
         end
       end
     end
 
+    # Detect Google API add-on path
+    if USE_GOOGLE_API
+      Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
+        break unless $gapijar.nil?
+
+        props = File.join(dir, 'source.properties')
+        next unless File.file? props
+
+        apilevel = -1
+        File.open(props, 'r') do |f|
+          while line = f.gets
+            next unless line =~ /^AndroidVersion\.ApiLevel=([0-9]+)$/
+            apilevel = $1.to_i
+            break
+          end
+        end
+
+        $gapijar = File.join(dir, 'libs', 'maps.jar') if apilevel == ANDROID_API_LEVEL
+      end
+    end
 
     setup_ndk($androidndkpath,ANDROID_API_LEVEL)
     
@@ -182,7 +215,6 @@ namespace "build" do
       assets = Jake.get_absolute File.join($androidpath, "Rhodes", "assets")
       nativelibs = Jake.get_absolute File.join($androidpath, "Rhodes", "libs")
       rjava = Jake.get_absolute File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes")
-      androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
 
       mkdir_p $tmpdir
       iconbakname = $tmpdir + "/icon.png.bak"
@@ -190,7 +222,7 @@ namespace "build" do
       cp resource + "/drawable/icon.png",iconbakname
       cp iconappname, resource + "/drawable" if File.exists?(iconappname)
 
-      args = ["package","-f","-M",manifest,"-S", resource,"-A", assets,"-I",androidjar,"-J", rjava  ]
+      args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-J", rjava]
       puts Jake.run($aapt,args)
 
       exitstatus = $?
@@ -542,8 +574,32 @@ namespace "build" do
 
     task :librhodes => :libs do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
+      incdir = File.join $androidpath, "Rhodes", "jni", "include"
       objdir = File.join $bindir, "libs", $confdir, "librhodes"
       libname = File.join $bindir, "libs", $confdir, "librhodes.so"
+
+      # Generate gapikey.h
+      gapikey_h = File.join(incdir, 'gapikey.h')
+      gapi_defined = false
+      if File.file? gapikey_h
+        File.open(gapikey_h, 'r') do |f|
+          while line = f.gets
+            gapi_defined = true if line =~ /GOOGLE_API_KEY/
+            break if gapi_defined
+          end
+        end
+      end
+
+      using_gapi = !$gapikey.nil?
+      if using_gapi != gapi_defined
+        File.open(gapikey_h, 'w') do |f|
+          f.puts "#ifndef RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
+          f.puts "#define RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
+          f.puts "#define GOOGLE_API_KEY \"#{$gapikey}\"" unless $gapikey.nil?
+          f.puts "#endif /* RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F */"
+        end
+      end
+
       args = []
       args << "-I#{srcdir}/../include"
       args << "-I#{$shareddir}"
@@ -645,8 +701,10 @@ namespace "build" do
       args << "1.6"
       args << "-nowarn"
       args << "-classpath"
-      #args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes" + $path_separator + "#{$libs}/RhoBundle.jar"
-      args << "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar" + $path_separator + "#{$tmpdir}/Rhodes"
+      classpath = $androidjar
+      classpath += $path_separator + $gapijar unless $gapijar.nil?
+      classpath += $path_separator + "#{$tmpdir}/Rhodes"
+      args << classpath
       args << "@#{$builddir}/RhodesSRC_build.files"
       puts Jake.run(javac,args)
       unless $? == 0
@@ -690,7 +748,6 @@ namespace "package" do
     manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
     resource = Jake.get_absolute $androidpath + "/Rhodes/res"
     assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
-    androidjar = "#{$androidsdkpath}/platforms/#{$androidplatform}/android.jar"
     resourcepkg =  $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
@@ -701,7 +758,7 @@ namespace "package" do
     cp iconappname, resource + "/drawable" if File.exists?(iconappname)
     set_app_name_android($appname)
 
-    args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", androidjar, "-F", resourcepkg]
+    args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
     puts Jake.run($aapt, args)
     returnval = $?
 
@@ -850,12 +907,20 @@ namespace "run" do
   desc "build and launch emulator"
   task :android => "device:android:debug" do
     apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
-    #puts `#{$adb} start-server`
-    #sleep 5
+    puts `#{$adb} start-server`
 
     createavd = "#{$androidbin} create avd --name #{$avdname} --target #{$androidtargets[ANDROID_API_LEVEL]} --sdcard 32M --skin HVGA"
     system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
-  
+
+    if USE_GOOGLE_API
+      avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
+      avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
+      unless avd_using_gapi
+        puts "Can not use specified AVD (#{$avdname}) because of incompatibility with Google APIs. Delete it and try again."
+        exit 1
+      end
+    end
+
     running = false
     `adb devices`.split("\n").each do |line|
       next unless line =~ /^emulator/
@@ -872,14 +937,28 @@ namespace "run" do
     puts "Loading package into emulator"
     theoutput = `#{$adb} -e install -r "#{apkfile}"`
     count = 0
-    while (not theoutput.to_s.match(/Success/))  and count < 15 do
+    done = false
+    while count < 15
+      theoutput = `#{$adb} -e install -r "#{apkfile}"`
+      puts theoutput.to_s
+      $stdout.flush
+
+      if theoutput.to_s.match(/Success/)
+        done = true
+        break
+      end
+
+      if theoutput.to_s.match(/Failure/)
+        done = false
+        break
+      end
+
       puts "Failed to load (possibly because emulator not done launching)- retrying"
       $stdout.flush
       sleep 5
       count += 1
-      theoutput = `#{$adb} -e install -r "#{apkfile}"`
     end
-    puts "Loading complete, you may now run the application"
+    puts "Loading complete, you may now run the application" if done
   end
 end
 

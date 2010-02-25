@@ -1,21 +1,56 @@
+/*
+ ============================================================================
+ Author	    : Dmitry Moskalchuk
+ Version	: 1.5
+ Copyright  : Copyright (C) 2008 Rhomobile. All rights reserved.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ============================================================================
+ */
 package com.rhomobile.rhodes.datetime;
 
 import android.content.Intent;
 
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
 
 public class DateTimePicker {
+	
+	private static final String TAG = "DateTimePicker";
+	
+	private static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX;
+	
+	private static void reportFail(String name, Exception e) {
+		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+	}
 
 	public static void choose(String callback, String title, long init, int v, byte[] opaque) {
-		Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(),
-				DateTimePickerScreen.class);
-		intent.putExtra("callback", callback);
-		intent.putExtra("title", title);
-		intent.putExtra("init", init);
-		intent.putExtra("fmt", v);
-		intent.putExtra("opaque", opaque);
-		
-		RhodesInstance.getInstance().startActivityForResult(intent, 5);
+		try {
+			Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(),
+					DateTimePickerScreen.class);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", callback);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "title", title);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "init", init);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "fmt", v);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "opaque", opaque);
+			
+			RhodesInstance.getInstance().startActivityForResult(intent, 5);
+		}
+		catch (Exception e) {
+			reportFail("choose", e);
+		}
 	}
 	
 	public native static void callback(String callbackUrl, long result, byte[] opaque, boolean cancelled);

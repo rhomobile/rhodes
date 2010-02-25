@@ -1,6 +1,32 @@
+/*
+ ============================================================================
+ Author	    : Dmitry Moskalchuk
+ Version	: 1.5
+ Copyright  : Copyright (C) 2008 Rhomobile. All rights reserved.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ============================================================================
+ */
 package com.rhomobile.rhodes;
 
 public class WebView {
+	
+	private static final String TAG = "WebView";
+	
+	private static void reportFail(String name, Exception e) {
+		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+	}
 	
 	private static class NavigateTask implements Runnable {
 		private String url;
@@ -60,27 +86,57 @@ public class WebView {
 	};
 
 	public static void navigate(String url, int index) {
-		Rhodes.performOnUiThread(new NavigateTask(url, index));
+		try {
+			Rhodes.performOnUiThread(new NavigateTask(url, index));
+		}
+		catch (Exception e) {
+			reportFail("navigate", e);
+		}
 	}
 	
 	public static void refresh(int index) {
-		Rhodes.performOnUiThread(new RefreshTask(index));
+		try {
+			Rhodes.performOnUiThread(new RefreshTask(index));
+		}
+		catch (Exception e) {
+			reportFail("refresh", e);
+		}
 	}
 	
 	public static String currentLocation(int index) {
-		StringBuffer loc = new StringBuffer();
-		Rhodes.performOnUiThread(new LocationTask(index, loc));
-		return loc.toString();
+		try {
+			StringBuffer loc = new StringBuffer();
+			Rhodes.performOnUiThread(new LocationTask(index, loc));
+			return loc.toString();
+		}
+		catch (Exception e) {
+			reportFail("currentLocation", e);
+		}
+		
+		return "";
 	}
 	
 	public static int activeTab() {
-		IntHolder v = new IntHolder();
-		Rhodes.performOnUiThread(new ActiveTabTask(v));
-		return v.value;
+		try {
+			IntHolder v = new IntHolder();
+			Rhodes.performOnUiThread(new ActiveTabTask(v));
+			return v.value;
+		}
+		catch (Exception e) {
+			reportFail("activeTab", e);
+		}
+		
+		return 0;
 	}
 	
 	public static String executeJs(String js, int index) {
-		Rhodes.performOnUiThread(new NavigateTask("javascript:" + js, index));
+		try {
+			Rhodes.performOnUiThread(new NavigateTask("javascript:" + js, index));
+		}
+		catch (Exception e) {
+			reportFail("executeJs", e);
+		}
+		
 		return "";
 	}
 }

@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "common/RhoPort.h"
+#include "common/rhoparams.h"
 //#include "Server.h"
 //#include "HttpContext.h"
 #include "ServerHost.h"
@@ -203,9 +204,11 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
-- (void)createMap:(NSMutableArray*)items {
+- (void)createMap:(rho_param*)p {
 	if(actionTarget && [actionTarget respondsToSelector:onCreateMap]) {
-		[actionTarget performSelectorOnMainThread:onCreateMap withObject:items waitUntilDone:NO];
+        NSValue *value = [NSValue valueWithPointer:p];
+        if (!value) return;
+		[actionTarget performSelectorOnMainThread:onCreateMap withObject:value waitUntilDone:NO];
 	}
 }
 
@@ -482,14 +485,9 @@ void rho_map_location(char* query) {
 	[[ServerHost sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];
 }
 
-void mapview_create(int nparams, char** params, int nannotations, char** annotation) {
-#ifdef __IPHONE_3_0	
-	NSMutableArray *settings = parse_settings(nparams, params);
-	NSMutableArray *annotations = parse_annotations(nannotations,annotation);
-	NSMutableArray *items = [NSMutableArray arrayWithCapacity:2];
-	[items addObject:settings];
-	[items addObject:annotations];
-	[[ServerHost sharedInstance] createMap:items];
+void mapview_create(rho_param *p) {
+#ifdef __IPHONE_3_0
+	[[ServerHost sharedInstance] createMap:rho_param_dup(p)];
 #endif	
 }
 
