@@ -509,7 +509,7 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	if (appStarted) {
-	    rho_rhodesapp_callAppActiveCallback();
+	    //rho_rhodesapp_callAppActiveCallback();
 /*		RhoDelegate* callback = [[RhoDelegate alloc] init];
 		char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
 		if (callbackUrl && strlen(callbackUrl) > 0) {

@@ -191,6 +191,16 @@ String CSyncEngine::loadClientID()
     synchronized(m_mxLoadClientID)
     {
         boolean bResetClient = false;
+
+        {
+            DBResult( res, getDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
+            if ( !res.isEnd() )
+            {
+                clientID = res.getStringByIdx(0);
+                bResetClient = res.getIntByIdx(1) > 0;
+            }
+        }
+
         if ( clientID.length() == 0 )
         {
             clientID = requestClientIDByNet();
