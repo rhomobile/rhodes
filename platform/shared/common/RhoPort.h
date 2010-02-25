@@ -35,6 +35,7 @@ typedef unsigned __int64 uint64;
 #    include <sys/time.h>
 #  endif
 #  include <stdlib.h>
+#  include <string.h>
 #  include <pthread.h>
 #  include <fcntl.h>
 
