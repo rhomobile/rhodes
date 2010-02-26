@@ -40,6 +40,7 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 
 	private Button refreshButton;
 	private Button clearButton;
+	private Button sendButton;
 	private Button closeButton;
 	private TextView logContent;
 	private int curLine = 0;
@@ -53,10 +54,12 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 		setContentView(AndroidR.layout.logview);
 		refreshButton = (Button) findViewById(AndroidR.id.logviewRefreshButton);
 		clearButton = (Button) findViewById(AndroidR.id.logviewClearButton);
+		sendButton = (Button) findViewById(AndroidR.id.logviewSendButton);
 		closeButton = (Button) findViewById(AndroidR.id.logviewCloseButton);
 
 		refreshButton.setOnClickListener(this);
 		clearButton.setOnClickListener(this);
+		sendButton.setOnClickListener(this);
 		closeButton.setOnClickListener(this);
 
 		logContent = (TextView) this.findViewById(AndroidR.id.logcontent);
@@ -72,6 +75,9 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 		case AndroidR.id.logviewClearButton:
 			RhodesInstance.getLogConf().clearLog();
 			loadLogText();
+			break;
+		case AndroidR.id.logviewSendButton:
+			RhodesInstance.getLogConf().sendLog();
 			break;
 		case AndroidR.id.logviewCloseButton:
 			cancel();

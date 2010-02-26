@@ -87,6 +87,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
 JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_rhomobile_rhodes_RhoLogConf
+ * Method:    sendLog
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

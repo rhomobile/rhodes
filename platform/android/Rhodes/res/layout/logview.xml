@@ -43,13 +43,14 @@ android:gravity="right"
 	android:text="Clear"
 	>
 	</Button>
-	<Button
+	<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Send" android:id="@+id/logviewSendButton"></Button><Button
 	android:id="@+id/logviewCloseButton"
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:text="Close"
 	>
 	</Button>
+
 </LinearLayout>
 
 </LinearLayout>
