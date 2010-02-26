@@ -9,6 +9,8 @@
 #import "LogViewController.h"
 #import "logging/RhoLogConf.h"
 
+extern void rho_conf_send_log();
+
 @implementation LogViewController
 
 @synthesize actionTarget, onShowLogOptions;
@@ -51,29 +53,34 @@
 								 frame.size.width,
 								 toolbarHeight)];	
 		
-	// create the system-defined "OK or Done" button
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc]
-									initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-									target:self action:@selector(actionClose:)];
+                                 initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                 target:self action:@selector(actionClose:)];
 	doneItem.style = UIBarButtonItemStylePlain;
-	
-	// create the system-defined "Refresh" button
+	    
     UIBarButtonItem *refreshItem = [[UIBarButtonItem alloc]
-								   initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
-								   target:self action:@selector(actionRefresh:)];
+								    initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+								    target:self action:@selector(actionRefresh:)];
 	
-	// create a special tab bar item with a custom image and title
-	UIBarButtonItem *settingsItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"gears.png"]
-																style:UIBarButtonItemStylePlain
-																target:self
-																action:@selector(actionSettings:)];	
+    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc]
+                                  initWithTitle:@"Clear" style:UIBarButtonItemStylePlain
+                                  target:self action:@selector(actionClear:)];
+    
+    UIBarButtonItem *sendItem = [[UIBarButtonItem alloc]
+                                 initWithTitle:@"Send" style:UIBarButtonItemStylePlain
+                                 target:self action:@selector(actionSend:)];
+    
+	UIBarButtonItem *settingsItem = [[UIBarButtonItem alloc]
+                                     initWithImage:[UIImage imageNamed:@"gears.png"]
+                                     style:UIBarButtonItemStylePlain
+                                     target:self action:@selector(actionSettings:)];	
 	
 	// flex item used to separate the left groups items and right grouped items
 	UIBarButtonItem *flexItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
 																			  target:nil
 																			  action:nil];
 	
-	NSArray *items = [NSArray arrayWithObjects: doneItem, flexItem, refreshItem, settingsItem, nil];
+	NSArray *items = [NSArray arrayWithObjects: doneItem, flexItem, clearItem, sendItem, refreshItem, settingsItem, nil];
 	[toolbar setItems:items animated:NO];
 	[doneItem release];
 	[refreshItem release];
@@ -106,6 +113,16 @@
 - (void)actionRefresh:(id)sender
 {
 	[self loadLogText];
+}
+
+- (void)actionClear:(id)sender
+{
+    textView.text = @"";
+}
+
+- (void)actionSend:(id)sender
+{
+    rho_conf_send_log();
 }
 
 - (void)actionSettings:(id)sender

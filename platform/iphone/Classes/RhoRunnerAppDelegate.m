@@ -454,6 +454,7 @@
 	serverHost->onMapLocation = @selector(onMapLocation:);
 	serverHost->onCreateMap = @selector(onCreateMap:);
 	serverHost->onActiveTab = @selector(onActiveTab:);
+    serverHost->onShowLog = @selector(onShowLog);
     [serverHost start];
 	
 	// Create View
