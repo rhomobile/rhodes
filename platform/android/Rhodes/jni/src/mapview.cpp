@@ -7,6 +7,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
 
+extern "C" void alert_show_popup(char *);
+
 RHO_GLOBAL void mapview_create(rho_param *p)
 {
 #ifdef GOOGLE_API_KEY
@@ -24,7 +26,7 @@ RHO_GLOBAL void mapview_create(rho_param *p)
     jobject paramsObj = RhoValueConverter(env).createObject(p);
     env->CallStaticVoidMethod(clsMapView, midCreate, env->NewStringUTF(GOOGLE_API_KEY), paramsObj);
 #else
-    RHO_NOT_IMPLEMENTED;
+    alert_show_popup("Google API key problem");
 #endif
 }
 
