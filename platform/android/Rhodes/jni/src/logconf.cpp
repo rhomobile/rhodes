@@ -1,5 +1,8 @@
+#include "JNIRhodes.h"
+
 #include <com_rhomobile_rhodes_RhoLogConf.h>
-#include <logging/RhoLogConf.h>
+
+#include <common/RhodesApp.h>
 
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jobject)
@@ -71,7 +74,19 @@ JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
     return LOGCONF().getLogTextPos();
 }
 
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
+  (JNIEnv *, jobject)
+{
+    rho_conf_send_log();
+}
+
 RHO_GLOBAL void rho_conf_show_log()
 {
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(cls, "showLogView", "()V");
+    if (!mid) return;
+
+    jnienv()->CallStaticVoidMethod(cls, mid);
 }
 

@@ -52,6 +52,7 @@ public final class AndroidR {
         public static final int logoptsSaveButton=R.id.logoptsSaveButton;
         public static final int logview=R.id.logview;
         public static final int logviewClearButton=R.id.logviewClearButton;
+        public static final int logviewSendButton=R.id.logviewSendButton;
         public static final int logviewCloseButton=R.id.logviewCloseButton;
         public static final int logviewRefreshButton=R.id.logviewRefreshButton;
         public static final int lookIn=R.id.lookIn;

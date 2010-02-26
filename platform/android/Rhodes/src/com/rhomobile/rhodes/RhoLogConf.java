@@ -36,4 +36,6 @@ public class RhoLogConf {
 	
 	public native String getLogText();
 	public native int getLogTextPos();
+	
+	public native void sendLog();
 }
