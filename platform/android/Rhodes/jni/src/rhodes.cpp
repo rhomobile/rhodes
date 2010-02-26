@@ -372,6 +372,13 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
     return env->NewStringUTF(s);
 }
 
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
+  (JNIEnv *env, jobject)
+{
+    const char *s = RHODESAPP().getAppBackUrl().c_str();
+    return env->NewStringUTF(s);
+}
+
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
   (JNIEnv *, jobject, jstring strUrl)
 {
