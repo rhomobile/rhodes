@@ -128,6 +128,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
 	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
+    BOOL hasOldName = [fileManager fileExistsAtPath:filePathOld];
     BOOL nameChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 
     BOOL contentChanged;
@@ -142,11 +143,15 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 
 	if (contentChanged) {
         NSString *dirs[] = {@"apps", @"lib", @"db", @"hash", @"name"};
-        for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i)
+        for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
+            BOOL remove = nameChanged;
+            if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
+                remove = NO;
             [self copyFromMainBundle:fileManager
                             fromPath:[bundleRoot stringByAppendingPathComponent:dirs[i]]
                               toPath:[rhoRoot stringByAppendingPathComponent:dirs[i]]
-                              remove:nameChanged];
+                              remove:remove];
+        }
 	}
 
 	rho_logconf_Init(rho_native_rhopath());
