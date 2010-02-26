@@ -66,6 +66,7 @@ namespace "config" do
     $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
+    $rhobindir = File.join($androidpath, "bin")
     $builddir = File.join($androidpath, "build")
     $shareddir = File.join($androidpath, "..", "shared")
     $srcdir = File.join($bindir, "RhoBundle")
@@ -185,8 +186,8 @@ namespace "config" do
     $objdir = {}
     $libname = {}
     $native_libs.each do |x|
-      $objdir[x] = $bindir + "/libs/" + $confdir + "/lib" + x
-      $libname[x] = $bindir + "/libs/" + $confdir + "/lib" + x + ".a"
+      $objdir[x] = File.join($rhobindir, $confdir, "lib" + x)
+      $libname[x] = File.join($rhobindir, $confdir, "lib" + x + ".a")
     end
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
@@ -197,6 +198,7 @@ namespace "config" do
     end
 
     mkdir_p $bindir if not File.exists? $bindir
+    mkdir_p $rhobindir if not File.exists? $rhobindir
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
     mkdir_p $libs if not File.exists? $libs
@@ -575,7 +577,7 @@ namespace "build" do
     task :librhodes => :libs do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
       incdir = File.join $androidpath, "Rhodes", "jni", "include"
-      objdir = File.join $bindir, "libs", $confdir, "librhodes"
+      objdir = File.join $rhobindir, $confdir, "librhodes"
       libname = File.join $bindir, "libs", $confdir, "librhodes.so"
 
       # Generate gapikey.h
@@ -591,7 +593,7 @@ namespace "build" do
       end
 
       using_gapi = !$gapikey.nil?
-      if using_gapi != gapi_defined
+      if using_gapi != gapi_defined or not File.file? gapikey_h
         File.open(gapikey_h, 'w') do |f|
           f.puts "#ifndef RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
           f.puts "#define RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
@@ -621,6 +623,7 @@ namespace "build" do
       end
 
       args = []
+      args << "-L#{$rhobindir}/#{$confdir}"
       args << "-L#{$bindir}/libs/#{$confdir}"
       args << "-L#{$extensionsdir}"
       args << "-lrhomain"
