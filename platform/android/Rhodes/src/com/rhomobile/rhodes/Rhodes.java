@@ -178,11 +178,9 @@ public class Rhodes extends Activity {
 					File sdf = new File(sdRootPath, item);
 					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
 					Utils.copyRecursively(as, item, sdf, nameChanged);
-					if (!item.equals("db")) {
-						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
-								phf.getAbsolutePath() + "'");
-						makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
-					}
+					Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
+							phf.getAbsolutePath() + "'");
+					makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
 				}
 				
 				File dbfiles = new File(rootPath + "apps/public/db-files");
