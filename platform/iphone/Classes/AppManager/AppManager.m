@@ -105,68 +105,53 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	}
 }
 
+- (BOOL)isContentsEqual:(NSFileManager*)fileManager first:(NSString*)filePath1 second:(NSString*)filePath2 {
+    if (![fileManager fileExistsAtPath:filePath1] || ![fileManager fileExistsAtPath:filePath2])
+        return NO;
+    
+    NSString *content1 = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePath1]
+                                               encoding:NSUTF8StringEncoding];
+    NSString *content2 = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePath2]
+                                               encoding:NSUTF8StringEncoding];
+    return [content1 isEqualToString:content2];
+}
+
 /*
  * Configures AppManager
  */
 - (void) configure {
 	
-	BOOL removeFiles = YES;
-	BOOL copyFiles = YES;
-	BOOL nameChanged = NO;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
 	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
-	if ([fileManager fileExistsAtPath:filePathNew] && [fileManager fileExistsAtPath:filePathOld]) {
-		NSString *newName = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathNew]
-												  encoding:NSUTF8StringEncoding];
-		NSString *oldName = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathOld]
-												  encoding:NSUTF8StringEncoding];
-		nameChanged = ![newName isEqualToString:oldName];
-		removeFiles = ![newName isEqualToString:oldName];
-	}
+    BOOL hasOldName = [fileManager fileExistsAtPath:filePathOld];
+    BOOL nameChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 
-	if (!removeFiles) {
+    BOOL contentChanged;
+    if (nameChanged)
+        contentChanged = YES;
+	else {
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
 		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
-		if ([fileManager fileExistsAtPath:filePathNew] && [fileManager fileExistsAtPath:filePathOld]) {
-			// Read new hash into memory
-			NSString *newHash = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathNew]
-													  encoding:NSUTF8StringEncoding];
-			// Read old hash into memory
-			NSString *oldHash = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePathOld]
-													  encoding:NSUTF8StringEncoding];
-			
-			// Compare them
-			copyFiles = ![newHash isEqualToString:oldHash];
-		}
+        contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 	}
 
-	if (copyFiles) {
-		[self copyFromMainBundle:fileManager
-						fromPath:[bundleRoot stringByAppendingPathComponent:@"apps"]
-						  toPath:[rhoRoot stringByAppendingPathComponent:@"apps"]
-						  remove:removeFiles];
-		[self copyFromMainBundle:fileManager
-						fromPath:[bundleRoot stringByAppendingPathComponent:@"lib"]
-						  toPath:[rhoRoot stringByAppendingPathComponent:@"lib"]
-						  remove:removeFiles];
-		[self copyFromMainBundle:fileManager
-						fromPath:[bundleRoot stringByAppendingPathComponent:@"db"]
-						  toPath:[rhoRoot stringByAppendingPathComponent:@"db"]
-						  remove:nameChanged];
-		[self copyFromMainBundle:fileManager
-						fromPath:[bundleRoot stringByAppendingPathComponent:@"hash"]
-						  toPath:[rhoRoot stringByAppendingPathComponent:@"hash"]
-						  remove:removeFiles];
-		[self copyFromMainBundle:fileManager
-						fromPath:[bundleRoot stringByAppendingPathComponent:@"name"]
-						  toPath:[rhoRoot stringByAppendingPathComponent:@"name"]
-						  remove:removeFiles];
+	if (contentChanged) {
+        NSString *dirs[] = {@"apps", @"lib", @"db", @"hash", @"name"};
+        for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
+            BOOL remove = nameChanged;
+            if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
+                remove = NO;
+            [self copyFromMainBundle:fileManager
+                            fromPath:[bundleRoot stringByAppendingPathComponent:dirs[i]]
+                              toPath:[rhoRoot stringByAppendingPathComponent:dirs[i]]
+                              remove:remove];
+        }
 	}
 
 	rho_logconf_Init(rho_native_rhopath());
