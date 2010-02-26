@@ -885,7 +885,7 @@ host_str(VALUE host, char *hbuf, size_t len)
 	}
 	else if (strlen(name) >= len) {
 	    rb_raise(rb_eArgError, "hostname too long (%"PRIuSIZE")",
-                strlen(name));
+                (unsigned int)strlen(name));
 	}
 	else {
 	    strcpy(hbuf, name);
@@ -911,7 +911,7 @@ port_str(VALUE port, char *pbuf, size_t len)
 	serv = RSTRING_PTR(port);
 	if (strlen(serv) >= len) {
 	    rb_raise(rb_eArgError, "service name too long (%"PRIuSIZE")",
-                strlen(serv));
+                (unsigned int)strlen(serv));
 	}
 	strcpy(pbuf, serv);
 	return pbuf;
