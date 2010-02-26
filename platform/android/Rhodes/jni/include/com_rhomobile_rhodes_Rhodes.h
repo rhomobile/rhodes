@@ -69,6 +69,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    getAppBackUrl
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    normalizeUrl
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
