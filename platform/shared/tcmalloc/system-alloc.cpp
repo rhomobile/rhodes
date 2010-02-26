@@ -441,7 +441,7 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
 	
 	g_nTotalMemory += size+extra;
 	int nTotal = g_nTotalMemory/(1024*1024);
-	printf("TCMALLOC: alloc size %d (Bytes); Total : %d (Mb)\r\n",size, nTotal);
+	printf("TCMALLOC: alloc size %d (Bytes); Total : %d (Mb)\r\n", (unsigned int)size, nTotal);
 	
 	if (result == NULL)
 		return NULL;
