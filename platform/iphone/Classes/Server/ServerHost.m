@@ -79,7 +79,7 @@ static ServerHost* sharedSH = nil;
 @synthesize actionTarget, /*onStartFailure,*/ onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
 @synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime;
 @synthesize onCreateNativeBar, onRemoveNativeBar, onSwitchTab;
-@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab;
+@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab, onShowLog;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -170,6 +170,12 @@ static ServerHost* sharedSH = nil;
         NSValue* value = [NSValue valueWithPointer:&index];
         [actionTarget performSelectorOnMainThread:onSwitchTab withObject:value waitUntilDone:YES];
         [value release];
+    }
+}
+
+- (void)showLog {
+    if (actionTarget && [actionTarget respondsToSelector:onShowLog]) {
+        [actionTarget performSelectorOnMainThread:onShowLog withObject:nil waitUntilDone:NO];
     }
 }
 
@@ -427,7 +433,8 @@ void perform_webview_refresh() {
 	[[ServerHost sharedInstance] performRefreshView];														
 }
 
-void rho_conf_show_log() {													
+void rho_conf_show_log() {
+    [[ServerHost sharedInstance] showLog];
 }
 
 char* webview_current_location(int index) {
