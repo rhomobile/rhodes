@@ -400,54 +400,18 @@ public class Rhodes extends Activity {
 			aboutDialog.setCanceledOnTouchOutside(true);
 			aboutDialog.setCancelable(true);
 			aboutDialog.show();
-
 			return true;
+			
 		case AndroidR.id.navigation_back:
 			mainView.navigate(getAppBackUrl(), mainView.activeTab());
 			return true;
-
+			
 		case AndroidR.id.navigation_forward:
 			mainView.forward(mainView.activeTab());
 			return true;
 
 		case AndroidR.id.navigation_home:
 			mainView.navigate(getStartUrl(), mainView.activeTab());
-			return true;
-
-		case AndroidR.id.sync:
-			doSyncAllSources(true);
-			return true;
-			
-		case AndroidR.id.logview:
-			performOnUiThread(new Runnable() {
-
-				public void run() {
-					final LogViewDialog logViewDialog = new LogViewDialog(RhodesInstance.getInstance());
-					logViewDialog.setTitle("Log View");
-					logViewDialog.setCancelable(true);
-					logViewDialog.show();
-				}
-				
-			});
-			
-			return true;
-			
-		case AndroidR.id.logoptions:
-			performOnUiThread(new Runnable() {
-
-				public void run() {
-					final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(RhodesInstance.getInstance());
-					logOptionsDialog.setTitle("Logging Options");
-					logOptionsDialog.setCancelable(true);
-					logOptionsDialog.show();
-				}
-				
-			});
-
-		return true;	
-
-		case AndroidR.id.exit:
-			stopSelf();
 			return true;
 
 		case AndroidR.id.options:
@@ -458,9 +422,47 @@ public class Rhodes extends Activity {
 		case AndroidR.id.refresh:
 			mainView.reload(mainView.activeTab());
 			return true;
+			
+		case AndroidR.id.sync:
+			doSyncAllSources(true);
+			return true;
+			
+		case AndroidR.id.logview:
+			showLogView();
+			return true;
+			
+		case AndroidR.id.logoptions:
+			showLogOptions();
+			return true;	
+
+		case AndroidR.id.exit:
+			stopSelf();
+			return true;
 		}
 
 		return false;
+	}
+	
+	public static void showLogView() {
+		performOnUiThread(new Runnable() {
+			public void run() {
+				final LogViewDialog logViewDialog = new LogViewDialog(RhodesInstance.getInstance());
+				logViewDialog.setTitle("Log View");
+				logViewDialog.setCancelable(true);
+				logViewDialog.show();
+			}
+		});
+	}
+	
+	public static void showLogOptions() {
+		performOnUiThread(new Runnable() {
+			public void run() {
+				final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(RhodesInstance.getInstance());
+				logOptionsDialog.setTitle("Logging Options");
+				logOptionsDialog.setCancelable(true);
+				logOptionsDialog.show();
+			}
+		});
 	}
 	
 	// Called from native code
