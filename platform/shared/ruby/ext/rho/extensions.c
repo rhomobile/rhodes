@@ -1,18 +1,4 @@
-/*
- *  extensions.c
- *  rhorubylib
- *
- *  Created by Brian Moore on 1/19/10.
- *  Copyright 2010 RhoMobile. All rights reserved.
- *
- */
-
-// This file is processed by the build script to add binary extensions
-
-//EXTERNS
-//END
-
+// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!
+// Generated Fri Feb 26 17:54:10 +0300 2010
 void Init_Extensions(void) {
-//CALLS
-//END
 }
