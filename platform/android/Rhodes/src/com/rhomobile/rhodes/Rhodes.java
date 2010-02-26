@@ -96,6 +96,7 @@ public class Rhodes extends Activity {
 	public native String getOptionsUrl();
 	public native String getStartUrl();
 	public native String getCurrentUrl();
+	public native String getAppBackUrl();
 	
 	public native String normalizeUrl(String url);
 	
@@ -380,7 +381,7 @@ public class Rhodes extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			mainView.back(mainView.activeTab());
+			mainView.navigate(getAppBackUrl(), mainView.activeTab());
 			return true;
 		case KeyEvent.KEYCODE_HOME:
 			stopSelf();
@@ -402,7 +403,7 @@ public class Rhodes extends Activity {
 
 			return true;
 		case AndroidR.id.navigation_back:
-			mainView.back(mainView.activeTab());
+			mainView.navigate(getAppBackUrl(), mainView.activeTab());
 			return true;
 
 		case AndroidR.id.navigation_forward:
