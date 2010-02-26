@@ -53,7 +53,6 @@ end
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
-    $binextensions = []
     buildyml = 'rhobuild.yml'
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
@@ -87,26 +86,6 @@ def copy_assets(asset)
   
   cp_r asset + "/.", dest, :remove_destination => true 
   
-end
-
-def check_extension_file
-  extfile = ""
-  File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","r") do |f|
-    f.each_line do |line|
-      if line !~ /;/
-        extfile << line
-      else
-        loaded = false
-        $binextensions.each  { |loadedext| loaded = line.include? loadedext; break if loaded }
-        extfile << line if loaded
-
-      end
-
-    end
-  end
-  if extfile != ""
-    File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","w") { |f| f.write extfile }
-  end
 end
 
 def clear_linker_settings
@@ -173,77 +152,7 @@ def add_extension(path,dest)
 
   Dir.glob("*").each { |f| cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ }
 
-  if File.exist? "ext.yml"
-    extension_config = YAML::load_file("ext.yml")
-
-    if extension_config["entry"] and extension_config["entry"] != ""
-      extfile = ""
-      File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","r") do |f|
-        externstart = false
-        externwritten = false
-        callstart = false
-        callwritten = false
-
-        f.each_line do |line|
-   #       puts line
-          #are we starting a replacement area?
-          externstart = true if line =~ /EXTERNS/
-          callstart = true if line =~ /CALLS/
-
-
-          #if we arent in our replacement area, just copy the line
-          unless externstart or callstart
-            extfile << line
-          else
-            #always write an end marker
-            extfile << line if line =~ /END/
-            #did we just start the extern replacement area?
-            if externstart and not externwritten
-              #write marker and our new extension
-              extfile << line
-              extfile << "extern void #{extension_config["entry"]}(void);\n"
-              externwritten = true
-            end
-
-            #same for calls
-            if callstart and not callwritten
-              extfile << line
-              extfile << "#{extension_config["entry"]}();\n"
-              callwritten = true
-            end
-
-            #did we leave a replacement area
-            externstart = false if externstart and line =~ /END/
-            callstart = false if callstart and line =~ /END/
-
-            #if we are in a replacement area, check for lines that are there
-            #that we have marked as loaded and copy those over
-            #this is to make sure we are only loading things we explicitly marked
-            #leaving out lines that came from a previous run
-            if externstart or callstart
-              loaded = false
-              $binextensions.each  { |loadedext| loaded = line.include? loadedext; break if loaded }
-              extfile << line if loaded
-            end
-          end
-
-        end
-        $binextensions << extension_config["entry"]
-      end
-
-      if extfile != ""
-        File.open($startdir + "/platform/shared/ruby/ext/rho/extensions.c","w") { |f| f.write extfile }
-      end
-      
-    end
-
-    if extension_config["libraries"] and extension_config["libraries"].is_a? Array
-      extension_config["libraries"].each { |lib| add_linker_library(lib) }
-    end
-  end
-
   chdir start
-
 end
 
 def common_bundle_start(startdir, dest)
@@ -276,7 +185,9 @@ def common_bundle_start(startdir, dest)
   extensions += $app_config[$config["platform"]["extensions"]] if $config["platform"] and
     $config["platform"]["extensions"] and $config["platform"]["extensions"].is_a? Array
   $app_config["extensions"] = extensions
-    
+
+  extentries = []
+  extlibs = [] 
   $app_config["extensions"].each do |extname|
     rhoextpath = "lib/extensions/" + extname
     appextpath = $app_path + "/extensions/" + extname
@@ -290,11 +201,43 @@ def common_bundle_start(startdir, dest)
 
     unless extpath.nil?
       add_extension(extpath, dest)
+
+      extyml = File.join(extpath, "ext.yml")
+      if File.file? extyml
+        extconf = YAML::load_file(extyml)
+        entry = extconf["entry"]
+        extentries << entry unless entry.nil?
+        libs = extconf["libraries"]
+        extlibs += libs if !libs.nil? and libs.is_a? Array
+      end
     end
 
   end
 
-  check_extension_file
+  exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+  exists = []
+  File.new(exts, "r").read.split("\n").each do |line|
+    next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
+    exists << $1
+  end
+
+  if exists.sort! != extentries.sort!
+    File.open(exts, "w") do |f|
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f.puts "// Generated #{Time.now.to_s}"
+      extentries.each do |entry|
+        f.puts "extern void #{entry}(void);"
+      end
+      f.puts "void Init_Extensions(void) {"
+      extentries.each do |entry|
+        f.puts "    #{entry}();"
+      end
+      f.puts "}"
+    end
+  end
+
+  extlibs.each { |lib| add_linker_library(lib) }
+
   set_linker_flags
 
   unless $app_config["constants"].nil?
