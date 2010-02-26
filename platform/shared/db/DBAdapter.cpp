@@ -122,8 +122,8 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 
         CDBAdapter db;
         db.open( m_strDbPath, m_strDbVer, true );
-        DBResult( res, db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" ));
-        DBResult( res1, db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" ));
+        rho::db::DBResultPtr pres = db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" );
+        rho::db::DBResultPtr pres1 = db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" );
 
         {
             Vector<int> vecSrcIds;
@@ -133,8 +133,8 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 
             for( int i = 0; i < vecSrcIds.size(); i++)
             {
-                DBResult( res3, db.executeSQL( "UPDATE sources SET priority=? where source_id=?", 
-                    vecSrcIds.elementAt(i), vecSrcIds.elementAt(i) ));
+                rho::db::DBResultPtr pres3 = db.executeSQL( "UPDATE sources SET priority=? where source_id=?", 
+                    vecSrcIds.elementAt(i), vecSrcIds.elementAt(i) );
             }
         }
         db.close();

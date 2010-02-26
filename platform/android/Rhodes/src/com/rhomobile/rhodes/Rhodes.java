@@ -151,17 +151,19 @@ public class Rhodes extends Activity {
 			String phRootPath = phoneMemoryRootPath();
 			String sdRootPath = sdcardRootPath();
 			
-			boolean removeFiles = true;
-			boolean copyFiles = true;
+			boolean nameChanged = false;
+			boolean contentChanged = true;
 			
 			FileSource as = new AssetsSource(getResources().getAssets());
 			FileSource fs = new FileSource();
 			
-			removeFiles = !Utils.isContentsEquals(as, "name", fs, new File(sdRootPath, "name").getPath());
-			if (!removeFiles)
-				copyFiles = !Utils.isContentsEquals(as, "hash", fs, new File(sdRootPath, "hash").getPath());
+			nameChanged = !Utils.isContentsEquals(as, "name", fs, new File(sdRootPath, "name").getPath());
+			if (nameChanged)
+				contentChanged = true;
+			else
+				contentChanged = !Utils.isContentsEquals(as, "hash", fs, new File(sdRootPath, "hash").getPath());
 			
-			if (copyFiles) {
+			if (contentChanged) {
 				Log.d(TAG, "Copying required files from bundle to sdcard");
 				
 				File phrf = new File(phRootPath);
@@ -175,7 +177,7 @@ public class Rhodes extends Activity {
 					File phf = new File(phRootPath, item);
 					File sdf = new File(sdRootPath, item);
 					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
-					Utils.copyRecursively(as, item, sdf, removeFiles);
+					Utils.copyRecursively(as, item, sdf, nameChanged);
 					if (!item.equals("db")) {
 						Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
 								phf.getAbsolutePath() + "'");
