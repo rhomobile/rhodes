@@ -155,13 +155,13 @@ namespace "config" do
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         break unless $gapijar.nil?
 
-        props = File.join(dir, 'source.properties')
+        props = File.join(dir, 'manifest.ini')
         next unless File.file? props
 
         apilevel = -1
         File.open(props, 'r') do |f|
           while line = f.gets
-            next unless line =~ /^AndroidVersion\.ApiLevel=([0-9]+)$/
+            next unless line =~ /^api=([0-9]+)$/
             apilevel = $1.to_i
             break
           end
@@ -656,6 +656,7 @@ namespace "build" do
         stub << lparam
       end
 
+	  mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
       cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
 
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
