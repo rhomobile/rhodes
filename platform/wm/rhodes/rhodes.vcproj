@@ -831,6 +831,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RingtoneManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -938,6 +942,10 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RingtoneManager.h"
 				>
 			</File>
 		</Filter>
