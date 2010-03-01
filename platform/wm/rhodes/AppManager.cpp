@@ -7,7 +7,7 @@
 
 #include "common/RhodesApp.h"
 
-#include "unzip.h"
+#include "unzip/unzip.h"
 #include "ext/rho/rhoruby.h"
 #include "common/AutoPointer.h"
 

@@ -13,7 +13,6 @@ import com.rho.sync.SyncThread;
 import com.rho.net.AsyncHttp;
 import com.rho.Properties;
 //import net.rim.device.api.system.CodeModuleManager;
-import com.rho.location.GeoLocation;
 import java.util.Hashtable;
 import com.rho.rjson.RJSONTokener;
 
@@ -112,7 +111,6 @@ public class RhoRuby {
 	
 	        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
 	        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
-	        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
 	        AsyncHttp.initMethods(RubyRuntime.AsyncHttpModule);
 	        RJSONTokener.initMethods(RubyRuntime.JSONClass);
 	        
