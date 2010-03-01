@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "ServerHost.h"
+#import "SplashViewController.h"
 #import "PickImageDelegate.h"
 #import "DateTimePickerDelegate.h"
 #import "TabBarDelegate.h"
@@ -20,6 +21,7 @@
 
 @interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate, AVAudioPlayerDelegate> {
 	IBOutlet UIWindow *window;
+    IBOutlet SplashViewController *splashViewController;
 	IBOutlet WebViewController *webViewController;
 	LogViewController* logViewController;
 	LogOptionsController* logOptionsController;
@@ -33,6 +35,7 @@
 }
 
 @property (nonatomic, retain) UIWindow *window;
+@property (nonatomic, retain) SplashViewController *splashViewController;
 @property (nonatomic, retain) WebViewController *webViewController;
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) NativeBar* nativeBar;
