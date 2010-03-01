@@ -70,7 +70,7 @@ namespace "config" do
         puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
         exit 1
       end
-      $app_config = YAML::load_file($app_path + "/build.yml")
+      $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
 
     end
     Jake.set_bbver($app_config["bbver"].to_s)
@@ -204,7 +204,7 @@ def common_bundle_start(startdir, dest)
 
       extyml = File.join(extpath, "ext.yml")
       if File.file? extyml
-        extconf = YAML::load_file(extyml)
+        extconf = Jake.config(File.open(extyml))
         entry = extconf["entry"]
         extentries << entry unless entry.nil?
         libs = extconf["libraries"]
