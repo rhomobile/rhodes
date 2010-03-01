@@ -13,6 +13,8 @@
 #import "LocationController.h"
 #import "logging/RhoLog.h"
 #import "../Server/ServerHost.h"
+#include "rubyext/GeoLocation.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Location"
 
@@ -65,15 +67,26 @@ static char location_message[256];
 	_location = _locationManager.location;
 	if (_location==NULL) 
 	{
+        bool bNotify = _iKnownPosition==1 || _dLatitude != 0 || _dLongitude != 0;
+	
 		_dLatitude = 0;
 		_dLongitude = 0;
 		_iKnownPosition = 0;
+		
+        if ( bNotify )
+            rho_geo_callcallback();
+		
 		return;
 	}
+
+    bool bNotify = _iKnownPosition==0 || _dLatitude != _location.coordinate.latitude || _dLongitude != _location.coordinate.longitude;
 	
     _dLatitude = _location.coordinate.latitude;
     _dLongitude = _location.coordinate.longitude;
 	_iKnownPosition = 1;	
+	
+    if ( bNotify )
+        rho_geo_callcallback();
 }
 
 - (id) init {
@@ -219,7 +232,7 @@ _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
 	[[LocationController sharedInstance] stop];
 }
 
-double geo_latitude() {
+double rho_geo_latitude() {
 //	return [[LocationController sharedInstance] getLatitude];
 	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
 	  onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
@@ -232,7 +245,7 @@ void geo_init()
 	//[[LocationController sharedInstance] getLatitude];
 }
 
-double geo_longitude() {
+double rho_geo_longitude() {
 	
 	//return [[LocationController sharedInstance] getLongitude];
 	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
@@ -240,10 +253,13 @@ double geo_longitude() {
 	return [LocationController sharedInstance]->_dLongitude;
 }
 	
-int geo_known_position() {
+int rho_geo_known_position() {
 	//return [[LocationController sharedInstance] isKnownLocation];
 	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
 		 onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
 	return [LocationController sharedInstance]->_iKnownPosition;
 }
 
+void rho_geoimpl_settimeout(int nTimeoutSec)
+{
+}

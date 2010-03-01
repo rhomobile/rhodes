@@ -16,6 +16,7 @@ import rhomobile.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
 import rhomobile.mapview.MapView;
+import com.rho.rubyext.GeoLocation;
 
 import com.rho.db.HsqlDBStorage;
 import com.rho.db.IDBStorage;
@@ -50,6 +51,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         TCPSocket.initMethods(RubyRuntime.TCPSocketClass);
         SSLSocket.initMethods(RubyRuntime.SSLSocketClass);
         MapView.initMethods(RubyRuntime.MapViewClass);
+        GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
 	}
 	
 	public RubyProgram createMainObject() throws Exception
@@ -197,5 +199,33 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public int getScreenWidth() {
 		return Display.getWidth();
+	}
+	
+	public String getGeoLocationText()
+	{
+		String location = "";
+		if ( !GeoLocation.isStarted() )
+			location = "Unavailable;Unavailable;Unavailable";
+		else if( !GeoLocation.isKnownPosition() )
+			location = "reading...;reading...;reading...";//<br/>" + GeoLocation.getLog();
+		else
+		{
+			double latitude = GeoLocation.GetLatitude();
+			double longitude = GeoLocation.GetLongitude();
+		
+			location = String.valueOf(Math.abs(latitude)) + "f° " +
+				(latitude < 0 ? "South" : "North") + ", " +
+				String.valueOf(Math.abs(longitude)) + "f° " +	
+				(longitude < 0 ? "West" : "East") + ";" +
+				String.valueOf(latitude) + ";" +
+				String.valueOf(longitude) + ";";
+		}
+		
+		return location;
+	}
+	
+	public void wakeUpGeoLocation()
+	{
+		GeoLocation.wakeUp();
 	}
 }

@@ -4,7 +4,7 @@
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
-#include "geolocation/LocationController.h"
+#include "rho/rubyext/GeoLocationImpl.h"
 
 //#include "ServerHost.h"
 //#include "logging/RhoLog.h"
