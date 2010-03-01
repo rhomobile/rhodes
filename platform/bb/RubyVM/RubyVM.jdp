@@ -34,8 +34,6 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\IRAFile.java
 ..\..\shared\rubyJVM\src\com\rho\IRhoLogSink.java
 ..\..\shared\rubyJVM\src\com\rho\IRhoRubyHelper.java
-..\..\shared\rubyJVM\src\com\rho\location\GeoLocation.java
-..\..\shared\rubyJVM\src\com\rho\location\IGeoLocationImpl.java
 ..\..\shared\rubyJVM\src\com\rho\Mutex.java
 ..\..\shared\rubyJVM\src\com\rho\RhodesApp.java
 ..\..\shared\rubyJVM\src\com\rho\net\IHttpConnection.java

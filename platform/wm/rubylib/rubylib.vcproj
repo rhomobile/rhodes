@@ -1504,7 +1504,7 @@
 					Name="geolocation"
 					>
 					<File
-						RelativePath="..\..\shared\ruby\ext\geolocation\geolocation_rhowrap.c"
+						RelativePath="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c"
 						>
 					</File>
 				</Filter>
