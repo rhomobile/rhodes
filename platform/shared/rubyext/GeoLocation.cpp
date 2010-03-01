@@ -120,13 +120,17 @@ extern "C" {
 
 void rho_geo_set_notification( const char *url, char* params, int timeout_sec)
 {
-    rho_geo_known_position();
+    if ( url && *url )
+        rho_geo_known_position();
+
     RHODESAPP().getGeo().setGeoCallback(url, params, timeout_sec, false);
 }
 
 void rho_geo_set_view_notification( const char *url, char* params, int timeout_sec)
 {
-    rho_geo_known_position();
+    if ( url && *url )
+        rho_geo_known_position();
+
     RHODESAPP().getGeo().setGeoCallback(url, params, timeout_sec, true);
 }
 
