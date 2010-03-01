@@ -3,7 +3,6 @@ package com.rho;
 import com.rho.db.*;
 import com.rho.net.*;
 import java.io.IOException;
-import com.rho.location.IGeoLocationImpl;
 
 public class RhoClassFactory 
 { 
@@ -81,28 +80,6 @@ public class RhoClassFactory
         	
     }
 
-    public static IGeoLocationImpl createGeoLocationImpl() throws Exception
-    {
-    	LOG.TRACE("createGeoLocationImpl");    	
-        Class wrapperClass;
-        try {
-            wrapperClass = Class.forName("com.rho.location.GeoLocationAsync");
-        } catch (ClassNotFoundException exc) {  
-        	LOG.ERROR("createGeoLocationImpl- Class not found",exc);    	
-        	
-            throw exc;
-        }
-        
-        try{
-        	return (IGeoLocationImpl)wrapperClass.newInstance();
-        }catch(Exception e)
-        {
-        	LOG.ERROR("createGeoLocationImpl - newInstance failed",e);    	
-        	
-        	throw e;
-        }
-    }
-    
     static INetworkAccess m_NAInstance;
     public static INetworkAccess getNetworkAccess() throws IOException
     {
