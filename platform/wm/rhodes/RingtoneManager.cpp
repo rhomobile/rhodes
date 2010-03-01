@@ -4,7 +4,6 @@
 
 #if defined(_WIN32_WCE)
 #include <soundfile.h>
-#endif
 
 CRingtoneManager *CRingtoneManager::m_pInstance = NULL;
 CMutex CRingtoneManager::m_mxRMLocker;
@@ -34,7 +33,6 @@ CRingtoneManager &CRingtoneManager::getCRingtoneManager()
 
 void CRingtoneManager::getAllRingtones (map <String, String> &ringtones)
 {
-#if defined(_WIN32_WCE)
     SNDFILEINFO *sndFilesList = NULL;
     int filesNum = 0;
     
@@ -48,12 +46,10 @@ void CRingtoneManager::getAllRingtones (map <String, String> &ringtones)
                               String((const char *)sndFilesList->szPathName, MAX_PATH)));
         }
     }
-#endif
 }
 
 void CRingtoneManager::play (String ringtone_name)
 {
-#if defined(_WIN32_WCE)
     HRESULT hr;
     
     stop();
@@ -70,12 +66,10 @@ void CRingtoneManager::play (String ringtone_name)
         LOG(WARNING) + "RingtoneManager: failed to play file";
         return;
     }
-#endif
 }
 
 void CRingtoneManager::stop()
 {
-#if defined(_WIN32_WCE)
     HRESULT hr;
 
     hr = SndClose(m_hSound);
@@ -89,14 +83,16 @@ void CRingtoneManager::stop()
         LOG(WARNING) + "RingtoneManager: failed to stop playing";
         return;
     }
-#endif
 }
+
+#endif //_WIN32_WCE
 
 VALUE ringtone_manager_get_all()
 {
     LOG(INFO) + __FUNCTION__;
     
     VALUE retval = createHash();
+#if defined(_WIN32_WCE)
 
     std::map <String, String> ringtones;
     CRingtoneManager::getCRingtoneManager().getAllRingtones(ringtones);
@@ -107,18 +103,23 @@ VALUE ringtone_manager_get_all()
                      itr->first.c_str(), itr->second.c_str(),
                      strlen(itr->second.c_str()));
     }
+#endif
     
     return retval;
 }
 
 void ringtone_manager_stop()
 {
+#if defined(_WIN32_WCE)
     LOG(INFO) + __FUNCTION__;
     CRingtoneManager::getCRingtoneManager().stop();
+#endif
 }
 
 void ringtone_manager_play(char* file_name)
 {
+#if defined(_WIN32_WCE)
     LOG(INFO) + __FUNCTION__;
     CRingtoneManager::getCRingtoneManager().play(String(file_name));
+#endif
 }
