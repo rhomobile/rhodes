@@ -1593,6 +1593,14 @@
 					</File>
 				</Filter>
 				<Filter
+					Name="ringtones"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\ringtones\ringtones_wrap.c"
+						>
+					</File>
+				</Filter>
+				<Filter
 					Name="rhoconf"
 					>
 					<File
