@@ -377,8 +377,13 @@ public class GeoLocation extends RhoThread{
 					if ( args.size() > 2 )
 						nTimeout = args.get(2) != RubyConstant.QNIL ? args.get(2).toInt() : -1;
 					
-					startSelf();
-					m_pInstance.setViewNotification(url, params, nTimeout);
+					if ( url != null && url.length() > 0 )
+					{
+						startSelf();
+						m_pInstance.setViewNotification(url, params, nTimeout);
+					}else if ( m_pInstance != null )
+						m_pInstance.setViewNotification(url, params, nTimeout);
+						
 				}catch(Exception e)
 				{
 					LOG.ERROR("set_view_notification failed", e);
@@ -403,8 +408,13 @@ public class GeoLocation extends RhoThread{
 					if ( args.size() > 2 )
 						nTimeout = args.get(2) != RubyConstant.QNIL ? args.get(2).toInt() : -1;
 					
-					startSelf();
-					m_pInstance.setNotification(url, params, nTimeout);
+					if ( url != null && url.length() > 0 )
+					{
+						startSelf();
+						m_pInstance.setNotification(url, params, nTimeout);
+					}else if ( m_pInstance != null )
+						m_pInstance.setNotification(url, params, nTimeout);
+						
 				}catch(Exception e)
 				{
 					LOG.ERROR("set_view_notification failed", e);
