@@ -34,8 +34,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "ServerHost"
 
-//extern char* get_current_location();
-extern void geo_init();
+extern void rho_geoimpl_init();
 
 #pragma mark -
 #pragma mark Constant Definitions
@@ -288,9 +287,7 @@ static ServerHost* sharedSH = nil;
 	
 	runLoop = CFRunLoopGetCurrent();
 	m_geoThread = [NSThread currentThread];
-	geo_init();
-    [self performSelectorOnMainThread:@selector(serverStarted:) 
-                           withObject:NULL waitUntilDone:NO];
+	rho_geoimpl_init();
 	[[NSRunLoop currentRunLoop] run];
 	
     RAWLOG_INFO("Server host thread routine is completed");
