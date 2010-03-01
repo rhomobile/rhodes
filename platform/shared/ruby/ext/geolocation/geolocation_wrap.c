@@ -1546,21 +1546,153 @@ static VALUE mGeoLocation;
 
 
 /* Put header files here or function declarations like below */
-extern double _geo_latitude();
-extern double _geo_longitude();
+
+	#define latitude rho_geo_latitude
+	extern double rho_geo_latitude();
+
+	#define longitude rho_geo_longitude
+	extern double rho_geo_longitude();
+
+	#define known_position rho_geo_known_position
+	extern int rho_geo_known_position();
+
+	#define set_view_notification rho_geo_set_view_notification
+    extern void rho_geo_set_view_notification( const char *url, char* params, int timeout_sec);
+
+	#define set_notification rho_geo_set_notification
+    extern void rho_geo_set_notification( const char *url, char* params, int timeout_sec);
+
 
 
   #define SWIG_From_double   rb_float_new 
 
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
+{
+  if (TYPE(obj) == T_STRING) {
+    
+
+
+    char *cstr = STR2CSTR(obj);
+    
+    size_t size = RSTRING_LEN(obj) + 1;
+    if (cptr)  {
+      if (alloc) {
+	if (*alloc == SWIG_NEWOBJ) {
+	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      }
+    }
+    if (psize) *psize = size;
+    return SWIG_OK;
+  } else {
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *)vptr;
+	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }  
+  return SWIG_TypeError;
+}
+
+
+
+
+
+#include <limits.h>
+#ifndef LLONG_MIN
+# define LLONG_MIN	LONG_LONG_MIN
+#endif
+#ifndef LLONG_MAX
+# define LLONG_MAX	LONG_LONG_MAX
+#endif
+#ifndef ULLONG_MAX
+# define ULLONG_MAX	ULONG_LONG_MAX
+#endif
+
+
 SWIGINTERN VALUE
-_wrap__geo_latitude(int argc, VALUE *argv, VALUE self) {
+SWIG_ruby_failed(void)
+{
+  return Qnil;
+} 
+
+
+/*@SWIG:%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
+{
+  VALUE obj = args[0];
+  VALUE type = TYPE(obj);
+  long *res = (long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
+  return obj;
+}
+/*@SWIG@*/
+
+SWIGINTERN int
+SWIG_AsVal_long (VALUE obj, long* val)
+{
+  VALUE type = TYPE(obj);
+  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
+    long v;
+    VALUE a[2];
+    a[0] = obj;
+    a[1] = (VALUE)(&v);
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+      if (val) *val = v;
+      return SWIG_OK;
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (VALUE obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
+}
+
+SWIGINTERN VALUE
+_wrap_latitude(int argc, VALUE *argv, VALUE self) {
   double result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (double)_geo_latitude();
+  result = (double)latitude();
   vresult = SWIG_From_double((double)(result));
   return vresult;
 fail:
@@ -1569,17 +1701,139 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap__geo_longitude(int argc, VALUE *argv, VALUE self) {
+_wrap_longitude(int argc, VALUE *argv, VALUE self) {
   double result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (double)_geo_longitude();
+  result = (double)longitude();
   vresult = SWIG_From_double((double)(result));
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_known_positionq___(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)known_position();
+  vresult = (result ? Qtrue : Qfalse);
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_set_view_notification(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  
+  {
+    arg2 = 0;
+  }
+  {
+    arg3 = 0;
+  }
+  if ((argc < 1) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_view_notification" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  if (argc > 1) {
+    res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "set_view_notification" "', argument " "2"" of type '" "char *""'");
+    }
+    arg2 = (char *)(buf2);
+  }
+  if (argc > 2) {
+    ecode3 = SWIG_AsVal_int(argv[2], &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_view_notification" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  set_view_notification((char const *)arg1,arg2,arg3);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_set_notification(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  
+  {
+    arg2 = 0;
+  }
+  {
+    arg3 = 0;
+  }
+  if ((argc < 1) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_notification" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  if (argc > 1) {
+    res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "set_notification" "', argument " "2"" of type '" "char *""'");
+    }
+    arg2 = (char *)(buf2);
+  }
+  if (argc > 2) {
+    ecode3 = SWIG_AsVal_int(argv[2], &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_notification" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  set_notification((char const *)arg1,arg2,arg3);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return Qnil;
 }
 
@@ -1846,7 +2100,10 @@ SWIGEXPORT void Init_GeoLocation(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mGeoLocation, "latitude", _wrap__geo_latitude, -1);
-  rb_define_module_function(mGeoLocation, "longitude", _wrap__geo_longitude, -1);
+  rb_define_module_function(mGeoLocation, "latitude", _wrap_latitude, -1);
+  rb_define_module_function(mGeoLocation, "longitude", _wrap_longitude, -1);
+  rb_define_module_function(mGeoLocation, "known_position?", _wrap_known_positionq___, -1);
+  rb_define_module_function(mGeoLocation, "set_view_notification", _wrap_set_view_notification, -1);
+  rb_define_module_function(mGeoLocation, "set_notification", _wrap_set_notification, -1);
 }
 
