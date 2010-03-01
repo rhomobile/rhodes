@@ -289,6 +289,8 @@ static ServerHost* sharedSH = nil;
 	runLoop = CFRunLoopGetCurrent();
 	m_geoThread = [NSThread currentThread];
 	geo_init();
+    [self performSelectorOnMainThread:@selector(serverStarted:) 
+                           withObject:NULL waitUntilDone:NO];
 	[[NSRunLoop currentRunLoop] run];
 	
     RAWLOG_INFO("Server host thread routine is completed");
