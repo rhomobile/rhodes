@@ -504,7 +504,9 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-#endif
+    
+    free ((void *)lParam);
+#endif    
 	return 0;
 }
 
@@ -530,7 +532,9 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-
+    
+    free ((void *)lParam);
+    
 	return 0;
 }
 
@@ -546,6 +550,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     MessageBox(A2T((const char*)lParam),
                A2T((path.substr(pre_last + 1, last - pre_last - 1)).c_str()),
                MB_ICONWARNING | MB_OK);
+    free ((void *)lParam);
     return 0;
 }
 
@@ -576,6 +581,7 @@ LRESULT CMainWindow::OnAlertPlayFile (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
     
     hr = SndClose(hSound);
     SndStop(SND_SCOPE_PROCESS, NULL);
+    free ((void *)lParam);
 #endif
 
 	return 0;
