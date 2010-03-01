@@ -22,6 +22,7 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -38,7 +39,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,6 +60,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.os.Process;
 
 public class Rhodes extends Activity {
@@ -212,7 +217,12 @@ public class Rhodes extends Activity {
 	public WebView createWebView() {
 		WebView w = new WebView(getApplicationContext());
 		
-		w.loadUrl("file:///android_asset/apps/app/loading.html");
+		try {
+			w.loadUrl("file:///android_asset/apps/app/loading.html");
+		}
+		catch (Exception e) {
+			// Ignore
+		}
 		
 		WebSettings webSettings = w.getSettings();
 		webSettings.setSavePassword(false);
@@ -293,6 +303,15 @@ public class Rhodes extends Activity {
 		}
 	}
 	
+	private void showSplashScreen() throws IOException {
+		ImageView view = new ImageView(this);
+		AssetManager am = getResources().getAssets();
+		InputStream is = am.open("apps/app/loading.png");
+		Bitmap bitmap = BitmapFactory.decodeStream(is);
+		view.setImageBitmap(bitmap);
+		outerFrame.addView(view);
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -308,7 +327,12 @@ public class Rhodes extends Activity {
 		outerFrame = new FrameLayout(this);
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
-		setMainView(new SimpleMainView());
+		try {
+			showSplashScreen();
+		}
+		catch (Exception e) {
+			setMainView(new SimpleMainView());
+		}
 		
 		Log.i("Rhodes", "Loading...");
 		
