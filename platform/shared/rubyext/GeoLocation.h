@@ -31,6 +31,7 @@ private:
         }
     };
     CGeoNotification m_ViewNotify, m_Notify;
+    common::CMutex   m_mxNotify;
 
 public:
     CGeoLocation();

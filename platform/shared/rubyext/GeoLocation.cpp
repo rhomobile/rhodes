@@ -45,8 +45,11 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify)
 
 void CGeoLocation::callGeoCallback()
 {
-    callGeoCallback(m_ViewNotify);
-    callGeoCallback(m_Notify);
+    synchronized(m_mxNotify)
+    {
+        callGeoCallback(m_ViewNotify);
+        callGeoCallback(m_Notify);
+    }
 }
 
 void CGeoLocation::setGeoCallback(const char *url, char* params, int timeout_sec, boolean bView)
