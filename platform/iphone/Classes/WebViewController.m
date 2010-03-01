@@ -66,9 +66,8 @@ char* get_current_location() {
 	}
 }
 
--(void)loadHTMLString:(NSString*)data {
-	RAWLOG_INFO("Loading specified HTML string");
-	[webView loadHTMLString:data baseURL: [NSURL URLWithString:@""]];
+-(void)loadData:(NSData*)data mimeType:(NSString*)type {
+    [webView loadData:data MIMEType:type textEncodingName:@"utf-8" baseURL:[NSURL URLWithString:@""]];
 }
 
 -(void)showToolbar:(BOOL)show {
