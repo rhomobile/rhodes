@@ -8,7 +8,6 @@
 
 #import <CFNetwork/CFNetwork.h>
 
-//#import "defs.h"
 #import <CoreLocation/CoreLocation.h>
 #import "LocationController.h"
 #import "logging/RhoLog.h"
@@ -18,19 +17,11 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Location"
 
-char* GeoGetLocation() {
-	return [[LocationController sharedInstance] getLocation];
-}
-
-//
 static const CFTimeInterval kTimeOutInSeconds = 25;
 static void _TimerCallBack(CFRunLoopTimerRef timer, void* context);
 
 // This is a singleton class, see below
 static LocationController *sharedLC = nil;
-
-//Static return buffer (assuming get methods will be called from the same thread)
-static char location_message[256];
 
 @implementation LocationController
 
@@ -63,30 +54,6 @@ static char location_message[256];
 
 - (void)doUpdateLocation {
 	[self update];
-	
-	_location = _locationManager.location;
-	if (_location==NULL) 
-	{
-        bool bNotify = _iKnownPosition==1 || _dLatitude != 0 || _dLongitude != 0;
-	
-		_dLatitude = 0;
-		_dLongitude = 0;
-		_iKnownPosition = 0;
-		
-        if ( bNotify )
-            rho_geo_callcallback();
-		
-		return;
-	}
-
-    bool bNotify = _iKnownPosition==0 || _dLatitude != _location.coordinate.latitude || _dLongitude != _location.coordinate.longitude;
-	
-    _dLatitude = _location.coordinate.latitude;
-    _dLongitude = _location.coordinate.longitude;
-	_iKnownPosition = 1;	
-	
-    if ( bNotify )
-        rho_geo_callcallback();
 }
 
 - (id) init {
@@ -99,63 +66,12 @@ static char location_message[256];
 		self.onUpdateLocation = @selector(doUpdateLocation);	
 		_dLatitude = 0;
 		_dLongitude = 0;
-		_iKnownPosition = 0;
+		_bKnownPosition = false;
 		
     	RAWLOG_INFO("init");		
 	}
 	
 	return self;
-}
-/*
-- (double) getLatitude{
-	if (![self update]) {
-		return 0.0f;
-	}
-	_location = _locationManager.location;
-	if (_location==NULL) {
-		return 0.0f;
-	}
-	double latitude = _location.coordinate.latitude;
-	return latitude;
-}
-
-- (double) getLongitude{
-	if (![self update]) {
-		return 0.0f;
-	}
-	_location = _locationManager.location;
-	if (_location==NULL) {
-		return 0.0f;
-	}
-	return _location.coordinate.longitude;
-}
-
-- (int) isKnownLocation{
-	if (![self update]) {
-		return 0;
-	}
-	_location = _locationManager.location;
-	if (_location==NULL) {
-		return 0;
-	}
-	return 1;
-}*/
-
-- (char*) getLocation {
-	if (![self update]) {
-		return "Unavailable;Unavailable;Unavailable";
-	}
-	_location = _locationManager.location;
-	if (_location==NULL) {
-		return "Reading;Reading;Reading";
-	}
-	double latitude = _location.coordinate.latitude;
-	double longitude = _location.coordinate.longitude;
-	sprintf(location_message, "%.4f° %s, %.4f° %s;%f;%f",
-			fabs(latitude),signbit(latitude) ? "South" : "North",
-			fabs(longitude),signbit(longitude) ? "West" : "East",
-			latitude,longitude);
-	return location_message;
 }
 
 - (void) stop {
@@ -175,7 +91,57 @@ static char location_message[256];
 	didUpdateToLocation:(CLLocation *)newLocation
 		   fromLocation:(CLLocation *)oldLocation
 {
-	RAWLOG_INFO("Updated location");
+	RAWTRACE("Updated location");
+	if (!newLocation)
+		return;
+	
+    bool bNotify = false; 
+	
+	@synchronized(self){
+		
+		bNotify = _bKnownPosition==0 || _dLatitude != newLocation.coordinate.latitude || _dLongitude != newLocation.coordinate.longitude;
+	
+		_dLatitude = newLocation.coordinate.latitude;
+		_dLongitude = newLocation.coordinate.longitude;
+		_bKnownPosition = true;	
+	}
+	
+    if ( bNotify )
+        rho_geo_callcallback();
+	
+}
+
+- (double) getLatitude{
+	double res = 0; 
+	@synchronized(self){
+		res = _dLatitude;
+	}
+	
+	return res;
+}
+
+- (double) getLongitude{
+	double res = 0; 
+	@synchronized(self){
+		res = _dLongitude;
+	}
+	return res;	
+}
+
+- (bool) isKnownPosition{
+	bool res = false;
+	@synchronized(self){
+		res = _bKnownPosition;
+	}
+	return res;
+}
+
+- (bool) isAvailable{
+	bool res = false;
+	@synchronized(self){
+		res = _locationManager &&_locationManager.locationServicesEnabled;
+	}
+	return res;
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -232,32 +198,34 @@ _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
 	[[LocationController sharedInstance] stop];
 }
 
-double rho_geo_latitude() {
-//	return [[LocationController sharedInstance] getLatitude];
+void geo_update() {
 	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
-	  onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
-	return [LocationController sharedInstance]->_dLatitude;
+        onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:NO];
 }
 
-void geo_init()
+double rho_geo_latitude() {
+	geo_update();
+	return [[LocationController sharedInstance] getLatitude ];
+}
+
+int rho_geoimpl_available()
+{
+	return [[LocationController sharedInstance] isAvailable] ? 1 : 0;	
+}
+
+void rho_geoimpl_init()
 {
 	[LocationController sharedInstance];
-	//[[LocationController sharedInstance] getLatitude];
 }
 
 double rho_geo_longitude() {
-	
-	//return [[LocationController sharedInstance] getLongitude];
-	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
-		 onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
-	return [LocationController sharedInstance]->_dLongitude;
+	geo_update();
+	return [[LocationController sharedInstance] getLongitude];
 }
 	
 int rho_geo_known_position() {
-	//return [[LocationController sharedInstance] isKnownLocation];
-	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
-		 onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:YES];
-	return [LocationController sharedInstance]->_iKnownPosition;
+	geo_update();
+	return [[LocationController sharedInstance] isKnownPosition] ? 1 : 0;
 }
 
 void rho_geoimpl_settimeout(int nTimeoutSec)
