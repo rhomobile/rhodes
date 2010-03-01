@@ -13,6 +13,8 @@
 #import "LocationController.h"
 #import "logging/RhoLog.h"
 #import "../Server/ServerHost.h"
+#include "rubyext/GeoLocation.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Location"
 
@@ -65,15 +67,26 @@ static char location_message[256];
 	_location = _locationManager.location;
 	if (_location==NULL) 
 	{
+        bool bNotify = _iKnownPosition==1 || _dLatitude != 0 || _dLongitude != 0;
+	
 		_dLatitude = 0;
 		_dLongitude = 0;
 		_iKnownPosition = 0;
+		
+        if ( bNotify )
+            rho_geo_callcallback();
+		
 		return;
 	}
+
+    bool bNotify = _iKnownPosition==0 || _dLatitude != _location.coordinate.latitude || _dLongitude != _location.coordinate.longitude;
 	
     _dLatitude = _location.coordinate.latitude;
     _dLongitude = _location.coordinate.longitude;
 	_iKnownPosition = 1;	
+	
+    if ( bNotify )
+        rho_geo_callcallback();
 }
 
 - (id) init {
