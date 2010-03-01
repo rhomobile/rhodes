@@ -958,6 +958,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="rubyext"
+			>
+			<File
+				RelativePath="..\..\shared\rubyext\GeoLocation.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\rubyext\GeoLocation.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

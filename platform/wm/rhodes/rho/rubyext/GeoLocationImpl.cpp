@@ -1,8 +1,7 @@
 #include "stdafx.h"
 
-//#include "../HttpServer.h"
-#include "LocationController.h"
-//#include "shttpd.h"
+#include "GeoLocationImpl.h"
+#include "rubyext/GeoLocation.h"
 
 #if defined(_WIN32_WCE)
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
@@ -270,6 +269,16 @@ CGPSController* CGPSController::Instance() {
     return CGPSController::s_pInstance;
 }
 
+CGPSController* CGPSController::startInstance() {
+    if( CGPSController::s_pInstance == NULL ) {
+        s_pInstance = new CGPSController();
+    }
+	s_pInstance->TurnGpsOn();
+	s_pInstance->UpdateTimeout();
+
+    return CGPSController::s_pInstance;
+}
+
 void CGPSController::DeleteInstance() {
     if( CGPSController::s_pInstance != NULL ) {
 		delete CGPSController::s_pInstance;
@@ -317,10 +326,16 @@ CGPSController::~CGPSController() {
 
 HRESULT CGPSController::SetGPSPosition( GPS_POSITION gps_Position ) {
 	Lock();
+    boolean bNotify = m_knownPosition==false || m_latitude != gps_Position.dblLatitude || m_longitude != gps_Position.dblLongitude;
+
 	m_knownPosition = true;
 	m_latitude = gps_Position.dblLatitude;
 	m_longitude = gps_Position.dblLongitude;
 	Unlock();
+
+    if ( bNotify )
+        rho_geo_callcallback();
+
 	return S_OK;
 }
 
@@ -365,77 +380,41 @@ void CGPSController::Unlock() {
   LeaveCriticalSection(&m_critical_section);
   //ATLTRACE(_T("CGPSController unlocked\n"));
 }
-
-
-#if 0
-/*static*/void CGPSController::show_geolocation(struct shttpd_arg *arg) {
-	char location[256];
-
-	CGPSController* gps = CGPSController::Instance();
-	gps->TurnGpsOn();
-
-	gps->UpdateTimeout();
-	if (gps->IsKnownPosition()) {
-		double latitude = gps->GetLatitude();
-		double longitude = gps->GetLongitude();
-		sprintf(location,"%.4f° %s, %.4f° %s;%f;%f",
-			fabs(latitude),latitude < 0 ? "South" : "North",
-			fabs(longitude),longitude < 0 ? "West" : "East",
-			latitude,longitude);
-	} else {
-		strcpy(location,"reading...;reading...;reading...");
-	}
-
-	LOG(INFO) + "Location: " + location;
-
-	shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
-	shttpd_printf(arg, "Content-Length: %lu\r\n", strlen(location));
-	shttpd_printf(arg, "%s", "Connection: close\r\n");
-	shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-	shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-	shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-	shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
-	shttpd_printf(arg, "%s", location);
-
-	arg->flags |= SHTTPD_END_OF_OUTPUT;
-}
-#endif //0
 #endif //_WIN32_WCE
 
 extern "C"{
-double geo_latitude() {
+double rho_geo_latitude() 
+{
 #if defined(_WIN32_WCE)
-	CGPSController* gps = CGPSController::Instance();
-	gps->TurnGpsOn();
-	gps->UpdateTimeout();
-
+	CGPSController* gps = CGPSController::startInstance();
 	return gps->GetLatitude();
 #else
 	return 0.0;
 #endif
 }
 
-double geo_longitude() {
+double rho_geo_longitude() 
+{
 #if defined(_WIN32_WCE)
-  CGPSController* gps = CGPSController::Instance();
-	gps->TurnGpsOn();
-	gps->UpdateTimeout();
-
+  CGPSController* gps = CGPSController::startInstance();
 	return gps->GetLongitude();
 #else
 	return 0.0;
 #endif
 }
 
-int geo_known_position() {
+int rho_geo_known_position() 
+{
 #if defined(_WIN32_WCE)
-	CGPSController* gps = CGPSController::Instance();
-	gps->TurnGpsOn();
-	gps->UpdateTimeout();
-
+	CGPSController* gps = CGPSController::startInstance();
 	return gps->IsKnownPosition();
 #else
 	return 0;
 #endif
 }
+
+void rho_geoimpl_settimeout(int nTimeoutSec)
+{
+}
+
 }

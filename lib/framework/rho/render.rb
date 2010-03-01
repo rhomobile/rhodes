@@ -20,7 +20,7 @@ module Rho
         res = IO.read(filename)
       end
       RhoController.start_objectnotify()
-
+      RhoController.start_geoview_notification()
       res
     end
 
@@ -95,6 +95,7 @@ module Rho
       end
 
       RhoController.start_objectnotify()
+      RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
       @content
@@ -151,6 +152,22 @@ module Rho
       content
     end
 
+    @@m_geoview_callback = nil
+    @@m_geoview_callback_data = nil
+    @@m_geoview_timeout_sec = 0
+    def set_geoview_notification(callback, callback_data="", timeout_sec=0)
+        @@m_geoview_callback = callback
+        @@m_geoview_callback_data = callback_data
+        @@m_geoview_timeout_sec = timeout_sec
+    end
+    
+    def self.start_geoview_notification()
+        GeoLocation.set_view_notification(@@m_geoview_callback, @@m_geoview_callback_data, @@m_geoview_timeout_sec)
+        @@m_geoview_callback = nil
+        @@m_geoview_callback_data = nil
+        @@m_geoview_timeout_sec = 0
+    end
+
     @@m_arObjectNotify = []
     @@m_arSrcIDNotify = []
     def add_objectnotify(arg)
@@ -176,6 +193,10 @@ module Rho
       0.upto(@@m_arObjectNotify.length()-1) do |i|
         SyncEngine::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
       end
+      
+      @@m_arObjectNotify = []
+      @@m_arSrcIDNotify = []
+      
     end
 
   end # RhoController

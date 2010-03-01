@@ -44,7 +44,7 @@ import javax.microedition.media.*;
 
 import com.rho.*;
 //import com.rho.db.DBAdapter;
-import com.rho.location.GeoLocation;
+import com.rho.rubyext.GeoLocation;
 import com.rho.net.RhoConnection;
 import com.rho.net.URI;
 import com.rho.sync.SyncThread;
@@ -139,7 +139,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
   //  	}
 
     //}
-    
+/*    
     private String processAjaxCall(String request) {
     	if (!request.startsWith(RHODES_AJAX_PROTOCOL))
     		return null;
@@ -173,7 +173,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	}
     	
     	return null;
-    }
+    }*/
 
     boolean isExternalUrl(String strUrl)
     {
