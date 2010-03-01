@@ -132,7 +132,7 @@ void rho_geo_set_view_notification( const char *url, char* params, int timeout_s
 
 void rho_geo_callcallback()
 {
-    RHODESAPP().getGeo().callGeoCallback();
+    //RHODESAPP().getGeo().callGeoCallback();
 }
 
 int rho_geo_gettimeout_sec()
