@@ -27,8 +27,7 @@ ExcludeFromBuildAll=0
 resources\icon.png
 src\com\rho\BBVersionSpecific.java
 src\com\rho\Jsr75File.java
-src\com\rho\location\GeoLocationAsync.java
-src\com\rho\location\GeoLocationImpl.java
+src\com\rho\rubyext\GeoLocation.java
 src\com\rho\net\BaseSocket.java
 src\com\rho\net\bb\BBHttpConnection.java
 src\com\rho\net\bb\NativeBBHttpConnection.java

@@ -6,7 +6,7 @@
 #include "net/INetRequest.h"
 #include "net/HttpServer.h"
 #include "ruby/ext/rho/rhoruby.h"
-#include <math.h>
+//#include <math.h>
 #include "sync/ClientRegister.h"
 #include "sync/SyncThread.h"
 #include "net/AsyncHttp.h"
@@ -25,9 +25,6 @@ extern "C" {
 void rho_sync_create();
 void rho_sync_destroy();
 void rho_sync_doSyncAllSources(int show_status_popup);
-double geo_latitude();
-double geo_longitude();
-int geo_known_position();	
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
 void webview_navigate(char* url, int index);
@@ -67,6 +64,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 
     m_ptrFactory = createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
+    m_oGeoLocation.init(m_ptrFactory);
 
 #if defined( OS_WINCE ) || defined (OS_WINDOWS)
     //initializing winsock
@@ -233,31 +231,6 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
-static void callback_geolocation(void *arg
-#if defined(RHO_HTTPD_COMMON_IMPL)
-                                , String const &/*query*/
-#endif
-                                )
-{
-    if (!geo_known_position())
-    {
-        rho_http_sendresponse(arg, "Reading;Reading;Reading");
-        return;
-    }
-    
-    double latitude = geo_latitude();
-    double longitude = geo_longitude();
-
-    char location[256];
-    sprintf(location,"%.4f\xc2\xb0 %s, %.4f\xc2\xb0 %s;%f;%f",
-        fabs(latitude),latitude < 0 ? "South" : "North",
-        fabs(longitude),longitude < 0 ? "West" : "East",
-        latitude,longitude);
-
-    LOGC(INFO,CRhodesApp::getLogCategory())+ "Location: " + location;
-    rho_http_sendresponse(arg, location);
-}
-
 static void callback_syncdb(void *arg
 #if defined(RHO_HTTPD_COMMON_IMPL)
                             , String const &/*query*/
@@ -381,7 +354,7 @@ void CRhodesApp::initHttpServer()
 #else
 
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
-    m_httpServer->register_uri("/system/geolocation", callback_geolocation);
+    m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
     m_httpServer->register_uri("/system/map", callback_map);

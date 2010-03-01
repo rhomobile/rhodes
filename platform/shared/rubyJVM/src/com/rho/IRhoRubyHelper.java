@@ -27,4 +27,7 @@ public interface IRhoRubyHelper {
 	
 	public int getScreenWidth();
 	public int getScreenHeight();
+	
+	public String getGeoLocationText();
+	public void wakeUpGeoLocation();
 }
