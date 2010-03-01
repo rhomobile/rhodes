@@ -24,6 +24,7 @@ build:
 android:
   # Google API key obtained from http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html
   apikey: "GOOGLE-API-KEY-FOR-ANDROID"
+  version: 1.5
 excludedirs:
   bb:
     - public/js/iui
