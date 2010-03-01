@@ -61,6 +61,7 @@ namespace "config" do
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
     $emuversion = get_market_version(ANDROID_API_LEVEL) if $emuversion.nil?
+    $emuversion = $emuversion.to_s unless $emuversion.nil?
 
     # Here is switch between release/debug configuration used for
     # building native libraries
