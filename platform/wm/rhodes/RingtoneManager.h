@@ -1,8 +1,11 @@
 #ifndef __RINGTONE_MANAGER__H__
 #define __RINGTONE_MANAGER__H__
 
-#include <soundfile.h>
 #include <map>
+
+#if defined(_WIN32_WCE)
+#include <soundfile.h>
+#endif
 
 #include "common/RhoConf.h"
 #include "common/RhoMutexLock.h"
@@ -32,8 +35,10 @@ class CRingtoneManager
     
     static CRingtoneManager *m_pInstance;
     static CMutex m_mxRMLocker;
-    
+
+#if defined(_WIN32_WCE)
     HSOUND m_hSound;
+#endif
 };
 
 
