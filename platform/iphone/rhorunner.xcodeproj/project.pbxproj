@@ -28,6 +28,8 @@
 		5C477608113084290092D21E /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477607113084290092D21E /* WebViewUrl.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
+		BD5B744A113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
+		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BD666DED112D5EA300948654 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BD666DEE112D5EA300948654 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		BD666DEF112D5EA300948654 /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
@@ -288,6 +290,8 @@
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
+		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD666E2E112D5EA300948654 /* rhorunner-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rhorunner-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BD72CCE7112D62F2003B7D27 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = ui/iPhone/MainWindow.xib; sourceTree = "<group>"; };
@@ -408,6 +412,7 @@
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				5C4775EC113082290092D21E /* Server */,
+				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 				05377B3E0E709170003B8BD1 /* WebViewController.h */,
 				05377B3D0E709170003B8BD1 /* WebViewController.m */,
 				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
@@ -416,7 +421,8 @@
 				46C25E3A103240A400A26428 /* RhoDelegate.m */,
 				5C477602113083F10092D21E /* JSString.h */,
 				5C477603113083F10092D21E /* JSString.m */,
-				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
+				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
+				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1014,6 +1020,7 @@
 				5C4775F71130832B0092D21E /* ServerHost.m in Sources */,
 				5C477604113083F10092D21E /* JSString.m in Sources */,
 				5C477608113084290092D21E /* WebViewUrl.m in Sources */,
+				BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1049,6 +1056,7 @@
 				BDF33C24113463BD00169E20 /* ServerHost.m in Sources */,
 				BDF33C25113463C300169E20 /* JSString.m in Sources */,
 				BDF33C26113463C700169E20 /* WebViewUrl.m in Sources */,
+				BD5B744A113BE2DB00C6070A /* SplashViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
