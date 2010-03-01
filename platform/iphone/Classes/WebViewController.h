@@ -30,8 +30,7 @@
 @property (assign) UIWebView* webView;
 @property (assign) SEL  onShowLog;
 
-
--(void)loadHTMLString:(NSString*)data;
+-(void)loadData:(NSData*)data mimeType:(NSString*)type;
 
 -(void)showToolbar:(BOOL)show;
 
