@@ -32,6 +32,7 @@
 @implementation RhoRunnerAppDelegate
 
 @synthesize window;
+@synthesize splashViewController;
 @synthesize webViewController;
 @synthesize player; 
 @synthesize nativeBar;
@@ -80,6 +81,7 @@
 	}*/
 	
 	appStarted = true;
+    [splashViewController hideSplash];
 	[self loadStartPath:location];
 }
 
@@ -397,33 +399,48 @@
 
 - (void) showLoadingPage 
 {
-	NSString *filePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"apps/app/loading.html"];
-//	NSString *filePath = [NSString stringWithCString:rho_rhodesapp_getloadingpagepath() encoding:[NSString defaultCStringEncoding]];
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	if ([fileManager fileExistsAtPath:filePath]) {
-		NSData *data = [fileManager contentsAtPath:filePath];
-		NSString *loadingPage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		[webViewController loadHTMLString:loadingPage];
-	}
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *pngPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
+    NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
+    
+    if ([fileManager fileExistsAtPath:pngPath]) {
+        [splashViewController showSplash:pngPath];
+    }
+    else if ([fileManager fileExistsAtPath:htmPath]) {
+        NSData *data = [fileManager contentsAtPath:htmPath];
+        [webViewController loadData:data mimeType:@"text/html"];
+    }
 }
 
 - (void) doStartUp {
 	appStarted = false;
-	// Log View
+    
+    webViewController->window = window;
+	webViewController->actionTarget = self;
+	webViewController->onShowLog = @selector(onShowLog);
+    
+    // Create View
+	webViewController.toolbar.hidden = YES;
+	[window addSubview:webViewController.view];
+    [window makeKeyAndVisible];
+    
+    splashViewController = [[SplashViewController alloc] init];
+    splashViewController->superView = webViewController.view;
+    [splashViewController loadView];
+    
+    [self showLoadingPage];
+    
+    // Log View
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
 	logViewController->onShowLogOptions = @selector(onShowLogOptions);
 	
-	logOptionsController = [[LogOptionsController alloc] init];
-	
-    webViewController->window = window;
-	webViewController->actionTarget = self;
-	webViewController->onShowLog = @selector(onShowLog);
+	logOptionsController = [[LogOptionsController alloc] init];    
 	
 	//TabBar delegate
 	tabBarDelegate = [[TabBarDelegate alloc] init];
-	
-	[self showLoadingPage];
 	
 	//Camera delegate
 	pickImageDelegate = [[PickImageDelegate alloc] init];
@@ -456,12 +473,7 @@
 	serverHost->onActiveTab = @selector(onActiveTab:);
     serverHost->onShowLog = @selector(onShowLog);
     [serverHost start];
-	
-	// Create View
-	webViewController.toolbar.hidden = YES;
-	[window addSubview:webViewController.view];
-    [window makeKeyAndVisible];
-	
+		
 #ifdef __IPHONE_3_0
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
 																		   | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
