@@ -9,6 +9,7 @@
 #if defined(RHO_HTTPD_COMMON_IMPL)
 #include "net/HttpServer.h"
 #endif
+#include "rubyext/GeoLocation.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -48,6 +49,7 @@ private:
     Hashtable<String,String> m_hashViewMenuItems;
     String m_strAppBackUrl;
     Vector<unsigned long> m_arCallbackObjects;
+    rubyext::CGeoLocation m_oGeoLocation;
 
 public:
     ~CRhodesApp(void);
@@ -89,6 +91,8 @@ public:
     unsigned long getCallbackObject(int nIndex);
 
     const String& getRhoMessage(int nError, const char* szName);
+
+    rubyext::CGeoLocation& getGeo(){ return m_oGeoLocation;}
 private:
     virtual void run();
 
@@ -97,7 +101,6 @@ private:
 
     const char* getFreeListeningPort();
     net::INetRequest& getNet(){ return *m_NetRequest; }
-
 };
 
 }
@@ -147,6 +150,7 @@ int rho_conf_send_log();
 
 int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);
+
 
 #ifdef __cplusplus
 };

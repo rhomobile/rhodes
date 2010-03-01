@@ -18,7 +18,6 @@ import com.xruby.runtime.lang.RhoSupport;
 import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.*;
-import com.rho.location.GeoLocation;
 
 public class RhoConnection implements IHttpConnection {
 
@@ -598,23 +597,13 @@ public class RhoConnection implements IHttpConnection {
 	
 	void showGeoLocation(){
 		String location = "";
-		if ( !GeoLocation.isStarted() )
-			location = "Unavailable;Unavailable;Unavailable";
-		else if( !GeoLocation.isKnownPosition() )
-			location = "reading...;reading...;reading...";//<br/>" + GeoLocation.getLog();
-		else
+		try {
+			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+			location = helper.getGeoLocationText();
+		}catch(Exception exc)
 		{
-			double latitude = GeoLocation.GetLatitude();
-			double longitude = GeoLocation.GetLongitude();
-		
-			location = String.valueOf(Math.abs(latitude)) + "f° " +
-				(latitude < 0 ? "South" : "North") + ", " +
-				String.valueOf(Math.abs(longitude)) + "f° " +	
-				(longitude < 0 ? "West" : "East") + ";" +
-				String.valueOf(latitude) + ";" +
-				String.valueOf(longitude) + ";";
+			LOG.ERROR("getGeoLocationText failed", exc);
 		}
-			
 		respondOK();
 		
 		contentLength = location.length();
@@ -769,8 +758,15 @@ public class RhoConnection implements IHttpConnection {
 				
 			if ( responseData != null )
 				contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
+
+			try {
+				IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+				helper.wakeUpGeoLocation();
+			}catch(Exception exc)
+			{
+				LOG.ERROR("getGeoLocationText failed", exc);
+			}
 			
-			GeoLocation.wakeUp();
 		}
 	}
 	

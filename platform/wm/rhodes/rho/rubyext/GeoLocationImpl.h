@@ -67,6 +67,7 @@ class CGPSController : public IGPSController {
 
 public:
 	static CGPSController* Instance();
+    static CGPSController* startInstance();
 	static void DeleteInstance();
 	static void CheckTimeout();
 	virtual ~CGPSController();
