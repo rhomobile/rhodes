@@ -5,6 +5,27 @@ USE_STLPORT = true
 USE_OPENSSL = true
 USE_GOOGLE_API = true
 
+ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
+ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
+{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1"}.each do |k,v|
+  ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
+  ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
+end
+
+def get_market_version(apilevel)
+  ANDROID_API_LEVEL_TO_MARKET_VERSION[apilevel]
+end
+
+def get_api_level(version)
+  ANDROID_MARKET_VERSION_TO_API_LEVEL[version]
+end
+
+# Here is place were android platform should be specified.
+# For complete list of android API levels and its mapping to
+# market names (such as "Android-1.5" etc) see output of
+# command "android list targets"
+ANDROID_API_LEVEL = 3
+
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -32,16 +53,14 @@ namespace "config" do
   task :android => ["config:common"] do
     $config["platform"] = "android"
 
-    # Here is place were android platform should be specified.
-    # For complete list of android API levels and its mapping to
-    # market names (such as "Android-1.5" etc) see output of
-    # command "android list targets"
-    ANDROID_API_LEVEL = 3
-
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
     $gapikey = '' unless $gapikey.is_a? String
     $gapikey = nil if $gapikey.empty?
+
+    $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+    $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
+    $emuversion = get_market_version(ANDROID_API_LEVEL) if $emuversion.nil?
 
     # Here is switch between release/debug configuration used for
     # building native libraries
@@ -104,10 +123,8 @@ namespace "config" do
       end
     end
 
-    $androidapi = {2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1"}
-    $androidplatform = "android-" + $androidapi[ANDROID_API_LEVEL]
-    $avdname = "rhoAndroid" + $androidapi[ANDROID_API_LEVEL].gsub(/[^0-9]/, "")
-
+    $androidplatform = "android-" + get_market_version(ANDROID_API_LEVEL)
+    
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
     $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
     $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" + $bat_ext )
@@ -149,6 +166,9 @@ namespace "config" do
         end
       end
     end
+
+    $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
+    $avdtarget = $androidtargets[get_api_level($emuversion)]
 
     # Detect Google API add-on path
     if USE_GOOGLE_API
@@ -913,7 +933,7 @@ namespace "run" do
     apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
     puts `#{$adb} start-server`
 
-    createavd = "#{$androidbin} create avd --name #{$avdname} --target #{$androidtargets[ANDROID_API_LEVEL]} --sdcard 32M --skin HVGA"
+    createavd = "#{$androidbin} create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
     system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
     if USE_GOOGLE_API
