@@ -38,12 +38,13 @@ void CRingtoneManager::getAllRingtones (map <String, String> &ringtones)
     
     SndGetSoundFileList(SND_EVENT_RINGTONELINE1, SND_LOCATION_ALL, &sndFilesList, &filesNum);
     LOG(INFO) + __FUNCTION__ + ": " + filesNum + " found";
-    
+
+    USES_CONVERSION;  
     for (int i = 0; i < filesNum; i++) {
         if (sndFilesList[i].sstType == SND_SOUNDTYPE_FILE) {
             ringtones.insert(pair<String, String>
-                             (String((const char *)sndFilesList->szDisplayName, MAX_PATH),
-                              String((const char *)sndFilesList->szPathName, MAX_PATH)));
+                             (W2A(sndFilesList->szDisplayName),
+                              W2A(sndFilesList->szPathName)));
         }
     }
 }
