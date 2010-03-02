@@ -579,7 +579,7 @@ namespace "buildall" do
         if k.to_s =~ /^4/
           puts "BUILDING VERSION: #{k}"
           $app_config["bbver"] = k
-          Jake.reconfig($config)
+#          Jake.reconfig($config)
  
           #reset all tasks used for building
           Rake::Task["config:bb"].reenable
