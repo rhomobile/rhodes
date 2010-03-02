@@ -104,7 +104,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     m_browser.Create(m_hWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
 					 TEXT("Microsoft.PIEDocView"), // ProgID of the control
-                     WS_CHILD | WS_VISIBLE | WS_BORDER, 0,
+                     WS_CHILD | WS_BORDER, 0,
                      ID_BROWSER);
 #else
 	LOGCONF().setLogView(&m_logView);
@@ -230,6 +230,35 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
 #endif
 
+	return 0;
+}
+
+LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	PAINTSTRUCT ps;
+	HDC hDC = BeginPaint(&ps);
+	
+	const char *s = RHODESAPP().getLoadingPngPath().c_str();
+	size_t size = mbstowcs(NULL, s, MAX_PATH);
+	std::vector<wchar_t> path(size);
+	mbstowcs(&path[0], s, MAX_PATH);
+	HBITMAP hbitmap = SHLoadImageFile(&path[0]);
+	if (!hbitmap)
+		return 0;
+
+	BITMAP bmp;
+	GetObject(hbitmap, sizeof(bmp), &bmp);
+
+	HDC hdcMem = CreateCompatibleDC(hDC);
+	SelectObject(hdcMem, hbitmap);
+
+	StretchBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
+
+	DeleteObject(hbitmap);
+
+	EndPaint(&ps);
 	return 0;
 }
 
@@ -652,6 +681,8 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
+	if (!m_bLoading)
+		m_browser.ShowWindow(SW_SHOW);
     LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
 }
 
