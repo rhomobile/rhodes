@@ -68,7 +68,8 @@ static LocationController *sharedLC = nil;
 		_dLongitude = 0;
 		_bKnownPosition = false;
 		
-    	RAWLOG_INFO("init");		
+    	RAWLOG_INFO("init");
+		
 	}
 	
 	return self;
@@ -148,6 +149,7 @@ static LocationController *sharedLC = nil;
 	   didFailWithError:(NSError *)error
 {
 	RAWLOG_ERROR("Error reading location");
+	rho_geo_callcallback_error();
 }
 
 + (LocationController *)sharedInstance {
@@ -208,7 +210,7 @@ double rho_geo_latitude() {
 	return [[LocationController sharedInstance] getLatitude ];
 }
 
-int rho_geoimpl_available()
+int rho_geo_is_available()
 {
 	return [[LocationController sharedInstance] isAvailable] ? 1 : 0;	
 }
@@ -230,11 +232,4 @@ int rho_geo_known_position() {
 
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {
-}
-
-int rho_geo_is_available()
-{
-    //TODO:rho_geo_is_available
-
-    return 1;
 }
