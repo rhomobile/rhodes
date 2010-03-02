@@ -231,3 +231,10 @@ int rho_geo_known_position() {
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {
 }
+
+int rho_geo_is_available()
+{
+    //TODO:rho_geo_is_available
+
+    return 1;
+}
