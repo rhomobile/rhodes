@@ -105,7 +105,7 @@ public :
 		}
 
         // Create the main application window
-        m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"));
+        m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
         {
             return S_FALSE;
