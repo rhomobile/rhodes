@@ -449,7 +449,8 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl += getFreeListeningPort();
 
     m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
-    m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/loading.html"; 
+    m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
+	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
