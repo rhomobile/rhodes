@@ -3,7 +3,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Ringtone"
 
-RHO_GLOBAL VALUE ringtone_manager_get_all()
+RHO_GLOBAL VALUE rho_ringtone_manager_get_all()
 {
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RINGTONE_MANAGER);
     if (!cls) return Qnil;
@@ -17,7 +17,7 @@ RHO_GLOBAL VALUE ringtone_manager_get_all()
     return convertJavaMapToRubyHash(obj);
 }
 
-RHO_GLOBAL void ringtone_manager_stop()
+RHO_GLOBAL void rho_ringtone_manager_stop()
 {
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RINGTONE_MANAGER);
     if (!cls) return;
@@ -26,7 +26,7 @@ RHO_GLOBAL void ringtone_manager_stop()
     jnienv()->CallStaticVoidMethod(cls, mid);
 }
 
-RHO_GLOBAL void ringtone_manager_play(char* file_name)
+RHO_GLOBAL void rho_ringtone_manager_play(char* file_name)
 {
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RINGTONE_MANAGER);
     if (!cls) return;
