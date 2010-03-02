@@ -69,7 +69,7 @@ static VALUE createHashFromContact(jobject contactObj)
 
         const char *keyStr = env->GetStringUTFChars(keyObj, JNI_FALSE);
         const char *valueStr = env->GetStringUTFChars(valueObj, JNI_FALSE);
-        addStrToHash(contactHash, keyStr, valueStr, strlen(valueStr));
+        addStrToHash(contactHash, keyStr, valueStr);
         env->ReleaseStringUTFChars(keyObj, keyStr);
         env->ReleaseStringUTFChars(valueObj, valueStr);
 
