@@ -240,24 +240,24 @@ static VALUE create_request_hash(String const &application, String const &model,
 {
     VALUE hash = createHash();
     
-    addStrToHash(hash, "application", application.c_str(), application.size());
-	addStrToHash(hash, "model", model.c_str(), model.size());
+    addStrToHash(hash, "application", application.c_str());
+	addStrToHash(hash, "model", model.c_str());
     if (!action.empty())
-        addStrToHash(hash, "action", action.c_str(), action.size());
+        addStrToHash(hash, "action", action.c_str());
     if (!id.empty())
-        addStrToHash(hash, "id", id.c_str(), id.size());
+        addStrToHash(hash, "id", id.c_str());
 	
-	addStrToHash(hash, "request-method", method.c_str(), method.size());
-	addStrToHash(hash, "request-uri", uri.c_str(), uri.size());
-    addStrToHash(hash, "request-query", query.c_str(), query.size());
+	addStrToHash(hash, "request-method", method.c_str());
+	addStrToHash(hash, "request-uri", uri.c_str());
+    addStrToHash(hash, "request-query", query.c_str());
 	
 	VALUE hash_headers = createHash();
     for (HttpHeaderList::const_iterator it = headers.begin(), lim = headers.end(); it != lim; ++it)
-        addStrToHash(hash_headers, it->name.c_str(), it->value.c_str(), it->value.size());
+        addStrToHash(hash_headers, it->name.c_str(), it->value.c_str());
 	addHashToHash(hash,"headers",hash_headers);
 	
     if (!body.empty())
-		addStrToHash(hash, "request-body", body.c_str(), body.size());
+		addStrToHash(hash, "request-body", body.c_str());
     
     return hash;
 }

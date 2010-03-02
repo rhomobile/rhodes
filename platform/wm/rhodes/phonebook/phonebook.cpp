@@ -36,7 +36,7 @@ void  closePhonebook(void* pb) {
 }
 
 void _addRecordValue(const char* key, const char* value, void* hash) {
-	addStrToHash(*((unsigned long*)hash), key, value, strlen(value));
+	addStrToHash(*((unsigned long*)hash), key, value);
 }
 
 #if defined (_WIN32_WCE)
