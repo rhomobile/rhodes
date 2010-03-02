@@ -33,3 +33,10 @@ RHO_GLOBAL int rho_geo_known_position()
 RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
 {
 }
+
+RHO_GLOBAL int rho_geo_is_available()
+{
+    //TODO:rho_geo_is_available
+
+    return 1;
+}
