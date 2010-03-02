@@ -12,6 +12,7 @@ module Rho
     ERR_UNATHORIZED = 9
     ERR_CANCELBYUSER = 10
     ERR_SYNCVERSION = 11
+    ERR_GEOLOCATION = 12
     
     attr_reader :code
     

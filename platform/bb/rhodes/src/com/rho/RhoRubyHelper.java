@@ -203,25 +203,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	
 	public String getGeoLocationText()
 	{
-		String location = "";
-		if ( !GeoLocation.isStarted() )
-			location = "Unavailable;Unavailable;Unavailable";
-		else if( !GeoLocation.isKnownPosition() )
-			location = "reading...;reading...;reading...";//<br/>" + GeoLocation.getLog();
-		else
-		{
-			double latitude = GeoLocation.GetLatitude();
-			double longitude = GeoLocation.GetLongitude();
-		
-			location = String.valueOf(Math.abs(latitude)) + "f° " +
-				(latitude < 0 ? "South" : "North") + ", " +
-				String.valueOf(Math.abs(longitude)) + "f° " +	
-				(longitude < 0 ? "West" : "East") + ";" +
-				String.valueOf(latitude) + ";" +
-				String.valueOf(longitude) + ";";
-		}
-		
-		return location;
+		return GeoLocation.getGeoLocationText();
 	}
 	
 	public void wakeUpGeoLocation()

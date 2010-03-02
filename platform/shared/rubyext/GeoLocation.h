@@ -38,7 +38,7 @@ public:
     void init(common::IRhoClassFactory* pFactory);
 
     void setGeoCallback(const char *url, char* params, int timeout_sec, boolean bView);
-    void callGeoCallback();
+    void callGeoCallback(boolean bError);
     int getGeoTimeoutSec();
 
 
@@ -47,7 +47,7 @@ private:
 
     int getDefaultPingTimeoutSec();
     void setPingTimeoutSec( int nTimeout );
-    void callGeoCallback(const CGeoNotification& oNotify);
+    void callGeoCallback(const CGeoNotification& oNotify, boolean bError);
 
     net::INetRequest& getNet(){ return *m_NetRequest; }
 };
@@ -65,6 +65,7 @@ void rho_geo_set_notification( const char *url, char* params, int timeout_sec);
 void rho_geo_set_view_notification( const char *url, char* params, int timeout_sec);
 
 void rho_geo_callcallback();
+void rho_geo_callcallback_error();
 int rho_geo_gettimeout_sec();
 
 #ifdef __cplusplus

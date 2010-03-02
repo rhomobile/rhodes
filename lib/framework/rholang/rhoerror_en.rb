@@ -23,6 +23,8 @@ module Rho
             return "Operation was cancelled by user."
         elsif code ==  ERR_SYNCVERSION
             return "Connection terminated by server. Your mobile application needs to be updated. Please contact your administrator."
+        elsif code ==  ERR_GEOLOCATION
+            return "Location could not be determined."
         elsif code ==  ERR_NONE
             return ""
         end
