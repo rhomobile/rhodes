@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "RingtoneManager.h"
-#include "logging/RhoLog.h"
 
 #if defined(_WIN32_WCE)
-#include <soundfile.h>
 
+IMPLEMENT_LOGCLASS(CRingtoneManager, "RingtoneManager");
 CRingtoneManager *CRingtoneManager::m_pInstance = NULL;
 CMutex CRingtoneManager::m_mxRMLocker;
 
-CRingtoneManager::CRingtoneManager () {}
+CRingtoneManager::CRingtoneManager () : m_hSound(0) {}
 
 CRingtoneManager::~CRingtoneManager () {}
 
@@ -22,7 +21,7 @@ CRingtoneManager &CRingtoneManager::getCRingtoneManager()
 {
     m_mxRMLocker.Lock();
 
-    if (m_pInstance != NULL)
+    if (!m_pInstance)
         createCRingtoneManager();
     
     m_mxRMLocker.Unlock();
@@ -31,21 +30,20 @@ CRingtoneManager &CRingtoneManager::getCRingtoneManager()
 }
 
 
-void CRingtoneManager::getAllRingtones (map <String, String> &ringtones)
+void CRingtoneManager::getAllRingtones (Hashtable<String, String>& ringtones)
 {
     SNDFILEINFO *sndFilesList = NULL;
     int filesNum = 0;
     
+    //TODO: check result
     SndGetSoundFileList(SND_EVENT_RINGTONELINE1, SND_LOCATION_ALL, &sndFilesList, &filesNum);
     LOG(INFO) + __FUNCTION__ + ": " + filesNum + " found";
 
     USES_CONVERSION;  
     for (int i = 0; i < filesNum; i++) {
-        if (sndFilesList[i].sstType == SND_SOUNDTYPE_FILE) {
-            ringtones.insert(pair<String, String>
-                             (W2A(sndFilesList->szDisplayName),
-                              W2A(sndFilesList->szPathName)));
-        }
+        SNDFILEINFO& sndFile = sndFilesList[i];
+        if (sndFile.sstType == SND_SOUNDTYPE_FILE) 
+            ringtones.put( convertToStringA(sndFile.szDisplayName), convertToStringA(sndFile.szPathName));
     }
 }
 
@@ -58,13 +56,15 @@ void CRingtoneManager::play (String ringtone_name)
     USES_CONVERSION;
     
     hr = SndOpen(A2T(ringtone_name.c_str()), &m_hSound);
-    if (hr != S_OK) {
-        LOG(WARNING) + "RingtoneManager: failed to open file";
+    if (hr != S_OK || !m_hSound) {
+        //TODO: log extended error
+        LOG(ERROR) + "RingtoneManager: failed to open file";
         return;
     }
     hr = SndPlayAsync (m_hSound, 0);
     if (hr != S_OK) {
-        LOG(WARNING) + "RingtoneManager: failed to play file";
+        //TODO: log extended error
+        LOG(ERROR) + "RingtoneManager: failed to play file";
         return;
     }
 }
@@ -73,43 +73,49 @@ void CRingtoneManager::stop()
 {
     HRESULT hr;
 
+    if (!m_hSound)
+        return;
+
     hr = SndClose(m_hSound);
     if (hr != S_OK) {
-        LOG(WARNING) + "RingtoneManager: failed to close file";
+        //TODO: log extended error
+        LOG(ERROR) + "RingtoneManager: failed to close file";
         return;
     }
-    
+    m_hSound = 0;
+
     hr = SndStop(SND_SCOPE_PROCESS, NULL);
     if (hr != S_OK) {
-        LOG(WARNING) + "RingtoneManager: failed to stop playing";
+        //TODO: log extended error
+        LOG(ERROR) + "RingtoneManager: failed to stop playing";
         return;
     }
 }
 
 #endif //_WIN32_WCE
 
-VALUE ringtone_manager_get_all()
+extern "C"
+{
+VALUE rho_ringtone_manager_get_all()
 {
     LOG(INFO) + __FUNCTION__;
     
     VALUE retval = createHash();
 #if defined(_WIN32_WCE)
 
-    std::map <String, String> ringtones;
+    Hashtable<String, String> ringtones;
     CRingtoneManager::getCRingtoneManager().getAllRingtones(ringtones);
 
-    for (map<String, String>::iterator itr = ringtones.begin();
+    for (Hashtable<String, String>::iterator itr = ringtones.begin();
          itr != ringtones.end(); ++itr) {
-        addStrToHash(retval,
-                     itr->first.c_str(), itr->second.c_str(),
-                     strlen(itr->second.c_str()));
+        addStrToHash( retval, itr->first.c_str(), itr->second.c_str() );
     }
 #endif
     
     return retval;
 }
 
-void ringtone_manager_stop()
+void rho_ringtone_manager_stop()
 {
 #if defined(_WIN32_WCE)
     LOG(INFO) + __FUNCTION__;
@@ -117,10 +123,12 @@ void ringtone_manager_stop()
 #endif
 }
 
-void ringtone_manager_play(char* file_name)
+void rho_ringtone_manager_play(char* file_name)
 {
 #if defined(_WIN32_WCE)
     LOG(INFO) + __FUNCTION__;
     CRingtoneManager::getCRingtoneManager().play(String(file_name));
 #endif
+}
+
 }
