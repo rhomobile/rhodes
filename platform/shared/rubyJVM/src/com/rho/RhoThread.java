@@ -72,7 +72,7 @@ public class RhoThread extends Thread
     {
 		synchronized (m_syncObj) {
 	    	if ( m_isInWaitState )
-	    		m_syncObj.notify();
+	    		m_syncObj.notifyAll();
     	}    	
     }
 };

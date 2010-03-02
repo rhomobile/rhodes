@@ -24,6 +24,7 @@ static const int ERR_CUSTOMSYNCSERVER = 8;
 static const int ERR_UNATHORIZED = 9;
 static const int ERR_CANCELBYUSER = 10;
 static const int ERR_SYNCVERSION = 11;
+static const int ERR_GEOLOCATION = 12;
 
 static String getMessageText(const char* szName);
 static String getErrorText(int nError);
