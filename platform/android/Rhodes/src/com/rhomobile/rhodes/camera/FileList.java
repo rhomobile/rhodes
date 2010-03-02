@@ -46,8 +46,6 @@ public class FileList extends Activity implements OnClickListener{
 
 	private static final String TAG = "FileList";
 	
-	//public final static String BASE_CAMERA_DIR = "/sdcard/dcim/Camera/";
-	
 	private Button okButton;
 	private Button cancelButton;
 	private TextView lookIn;
