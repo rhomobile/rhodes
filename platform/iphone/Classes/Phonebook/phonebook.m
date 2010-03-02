@@ -63,7 +63,7 @@ static void _addPropertyToHash(VALUE hash, const char* key, CFStringRef property
 	if (property) {
 		char buf[256];
 		snprintf(buf, sizeof(buf), "%s", CFStringGetCStringPtr(property, CFStringGetSystemEncoding()));
-		addStrToHash(hash, key, buf, strlen(buf));
+		addStrToHash(hash, key, buf);
 		CFRelease(property);
 	}
 }
@@ -207,7 +207,7 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	}
 			
 	snprintf(buf, sizeof(buf), "{%d}", recordId);
-	addStrToHash(hash, RUBY_PB_ID, buf, strlen(buf));
+	addStrToHash(hash, RUBY_PB_ID, buf);
 	
 	_addPropertyToHash(hash, RUBY_PB_PREFIX, 
 					   ABRecordCopyValue(ref, kABPersonPrefixProperty));
