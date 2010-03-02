@@ -298,7 +298,11 @@ VALUE addIntToHash(VALUE hash, const char* key, int val) {
     return rb_hash_aset(hash, rb_str_new2(key), INT2FIX(val));
 }
 
-VALUE addStrToHash(VALUE hash, const char* key, const char* val, int len) {
+VALUE addStrToHash(VALUE hash, const char* key, const char* val) {
+    return rb_hash_aset(hash, rb_str_new2(key), rb_str_new2(val));
+}
+
+VALUE addStrToHashLen(VALUE hash, const char* key, const char* val, int len) {
     return rb_hash_aset(hash, rb_str_new2(key), rb_str_new(val, len));
 }
 

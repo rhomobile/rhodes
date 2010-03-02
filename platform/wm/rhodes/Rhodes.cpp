@@ -6,25 +6,9 @@
 #include "common/StringConverter.h"
 #include "rho/rubyext/GeoLocationImpl.h"
 
-//#include "ServerHost.h"
-//#include "logging/RhoLog.h"
-
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
-/*
-//void runAllLogTests();
-extern "C" const char* RhoGetRootPath();
-
-#if defined(OS_WINDOWS)
-extern "C" void __setRootPath(const char* path);
-char* parseToken( const char* start, int len );
-#endif
-//
-extern "C" wchar_t* wce_mbtowc(const char* a);
-extern "C" char* wce_wctomb(const wchar_t* w);
-extern char* canonicalizeURL(const char* path);
-*/
 
 #if defined(OS_WINDOWS)
 char* parseToken( const char* start, int len );
@@ -32,6 +16,7 @@ char* parseToken( const char* start, int len );
 
 extern "C" char* wce_wctomb(const wchar_t* w);
 extern "C" wchar_t* wce_mbtowc(const char* a);
+extern "C" void rho_ringtone_manager_stop();
 
 #if defined(_WIN32_WCE)
 #include <regext.h>
@@ -196,6 +181,7 @@ public :
         CGPSController* pGPS = CGPSController::Instance();
         pGPS->DeleteInstance();
 #endif
+        rho_ringtone_manager_stop();
 
         rho::common::CRhodesApp::Destroy();
     }
@@ -358,10 +344,6 @@ extern "C" void rho_map_location(char* query)
 }
 
 extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
-{
-}
-
-extern "C" void Init_RingtoneManager()
 {
 }
 
