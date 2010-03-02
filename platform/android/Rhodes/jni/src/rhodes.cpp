@@ -285,7 +285,7 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
 
         const char *strKey = env->GetStringUTFChars(objKey, JNI_FALSE);
         const char *strValue = env->GetStringUTFChars(objValue, JNI_FALSE);
-        addStrToHash(retval, strKey, strValue, strlen(strValue));
+        addStrToHash(retval, strKey, strValue);
         env->ReleaseStringUTFChars(objKey, strKey);
         env->ReleaseStringUTFChars(objValue, strValue);
 
