@@ -469,7 +469,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private RenderingSession _renderingSession;
 
-    private Screen _splashScreen = null;
     private CMainScreen _mainScreen = null;
 
     private SyncStatusPopup _syncStatusPopup = null;
@@ -617,7 +616,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		        	navigateHome();
 		        }    
 		
-		        hideSplashScreen();
 		    	LOG.TRACE("Rhodes end activate ***--------------------------***");
     		}
     		
@@ -993,8 +991,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public void showSplashScreen()
     {
     	try {
-    		hideSplashScreen();
-    		
     		RubyProgram obj = new xruby.version.main();
 	    	String pngname = "/apps/app/loading.png";
     		//String pngname = "/resources/icon.png";
@@ -1010,20 +1006,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
 	    	Bitmap bitmap = img.getBitmap();
 	    	BitmapField imageField = new BitmapField(bitmap, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
-	    	_splashScreen = new FullScreen(Screen.FIELD_HCENTER | Screen.FIELD_VCENTER);
-	    	_splashScreen.add(imageField);
-	    	UiApplication.getUiApplication().pushScreen(_splashScreen);
+	    	_mainScreen.add(imageField);
     	}
     	catch (Exception e) {
     		LOG.ERROR("Can't show splash screen", e);
-    	}
-    }
-    
-    public void hideSplashScreen()
-    {
-    	if (_splashScreen != null) {
-	    	UiApplication.getUiApplication().popScreen(_splashScreen);
-	    	_splashScreen = null;
     	}
     }
     
