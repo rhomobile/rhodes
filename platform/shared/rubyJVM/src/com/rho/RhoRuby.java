@@ -52,6 +52,7 @@ public class RhoRuby {
 	public static final int ERR_UNATHORIZED = 9;
 	public static final int ERR_CANCELBYUSER = 10;
 	public static final int ERR_SYNCVERSION = 11;
+	public static final int ERR_GEOLOCATION = 12;
 	
 	public static int getNetErrorCode(Exception exc)
 	{

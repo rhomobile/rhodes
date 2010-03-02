@@ -12,6 +12,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.rho.net.NetRequest;
+import com.rho.RhoRuby;
 
 public class GeoLocation extends RhoThread{
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -43,6 +44,7 @@ public class GeoLocation extends RhoThread{
 		public void locationUpdated(LocationProvider provider, Location location) 
 		{
 			m_parent.m_bInCallback = true;
+			Coordinates coord = null;
 			try{
 				if ( location == null )
 				{
@@ -56,22 +58,26 @@ public class GeoLocation extends RhoThread{
 					return;
 				}
 				
-				Coordinates coord = location.getQualifiedCoordinates();
-		
+				coord = location.getQualifiedCoordinates();
 				if(coord != null ) 
 				{
-					m_parent.updateLocation(coord.getLatitude(), coord.getLongitude());
-					
 					LOG.TRACE("GetLocation - latitude: " + Double.toString(m_parent.m_lat));
 					LOG.TRACE("GetLocation - longitude: " + Double.toString(m_parent.m_lon));
 				}else
 					LOG.TRACE("GetLocation - getQualifiedCoordinates: return null.");
+				
 			}catch(Exception exc)
 			{
 				LOG.ERROR("locationUpdated failed.", exc);
 			}catch(Throwable exc)
 			{
 				LOG.ERROR("locationUpdated crashed.", exc);
+			}finally
+			{
+				if(coord != null ) 
+					m_parent.updateLocation(coord.getLatitude(), coord.getLongitude());
+				else
+					m_parent.onLocationError();
 			}
 			
 			m_parent.m_bInCallback = false;
@@ -131,10 +137,10 @@ public class GeoLocation extends RhoThread{
 
 		while(!m_bStop)
 		{
-			wait( 10*10000);
-			
 			if (!m_bStop)
 				checkAlive();
+			
+			wait( 10*10000);
 		}
 
 		synchronized(sync)
@@ -190,9 +196,11 @@ public class GeoLocation extends RhoThread{
 				}catch(Exception exc)
 				{
 					if ( m_lp != null )
-						LOG.INFO(errorStrLocationException + exc.getMessage());
+						LOG.INFO(errorStrLocationException + " : " + exc.getMessage());
 					else	
-						LOG.INFO(errorStrDontSupport + exc.getMessage());
+						LOG.INFO(errorStrDontSupport + " : " + exc.getMessage());
+					
+					onLocationError();
 				}
 			}
 		}
@@ -208,7 +216,7 @@ public class GeoLocation extends RhoThread{
         	m_strParams = strParams; 
         }
         
-        void fire()
+        void fire(boolean bError)
         {
         	if (m_strUrl.length() == 0)
         		return;
@@ -217,7 +225,13 @@ public class GeoLocation extends RhoThread{
         	
         	try {
 	        	String strFullUrl = netRequest.resolveUrl(m_strUrl);
-	        	String strBody = "status=ok&rho_callback=1";
+	        	String strBody = "rho_callback=1";
+	        	if (bError && isAvailable() )
+	        		strBody += "&status=error&error_code=" + RhoRuby.ERR_GEOLOCATION;
+	        	else	
+	        		strBody += "&status=ok";
+	        		
+        		strBody += "&available=" + (isAvailable() ? 1 : 0);
 	        	strBody += "&known_position=" + (isKnownPosition() ? 1 : 0);
 	        	strBody += "&latitude=" + GetLatitude();
 	        	strBody += "&longitude=" + GetLongitude();
@@ -253,6 +267,21 @@ public class GeoLocation extends RhoThread{
 		}
     }
     
+    private void onLocationError()
+    {
+		if ( m_Notify != null )
+		{
+			m_Notify.fire(true);
+			m_Notify = null;
+		}
+		
+		if ( m_ViewNotify != null )
+		{
+			m_ViewNotify.fire(true);
+			m_ViewNotify = null;
+		}
+    }
+    
 	private void updateLocation( double dLatitude, double dLongitude )
 	{
 		synchronized(sync)
@@ -268,12 +297,12 @@ public class GeoLocation extends RhoThread{
 			
 			if ( bNotify && m_Notify != null )
 			{
-				m_Notify.fire();
+				m_Notify.fire(false);
 				m_Notify = null;
 			}
 			
 			if ( bNotify && m_ViewNotify != null )
-				m_ViewNotify.fire();
+				m_ViewNotify.fire(false);
 		}		
 	}
 	
@@ -290,7 +319,7 @@ public class GeoLocation extends RhoThread{
 			m_pInstance.stopWait();
 	}
 	
-	public static boolean isStarted(){
+	public static boolean isAvailable(){
 		synchronized(sync)
 		{
 			return m_pInstance != null && m_pInstance.m_lp != null;
@@ -319,6 +348,29 @@ public class GeoLocation extends RhoThread{
 		{
 			return m_pInstance.m_bDetermined;
 		}
+	}
+	
+	public static String getGeoLocationText()
+	{
+		String location = "";
+		if ( !isAvailable() )
+			location = "Unavailable;Unavailable;Unavailable";
+		else if( !isKnownPosition() )
+			location = "reading...;reading...;reading...";//<br/>" + GeoLocation.getLog();
+		else
+		{
+			double latitude = GetLatitude();
+			double longitude = GetLongitude();
+		
+			location = String.valueOf(Math.abs(latitude)) + "f° " +
+				(latitude < 0 ? "South" : "North") + ", " +
+				String.valueOf(Math.abs(longitude)) + "f° " +	
+				(longitude < 0 ? "West" : "East") + ";" +
+				String.valueOf(latitude) + ";" +
+				String.valueOf(longitude) + ";";
+		}
+		
+		return location;
 	}
 	
 	private static void startSelf() {

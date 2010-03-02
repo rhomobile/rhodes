@@ -38,6 +38,11 @@ CGPSDevice * CGPSDevice::Instance()
     return CGPSDevice::s_pInstance;
 }
 
+/*static*/ boolean CGPSDevice::isAvailable()
+{
+    return s_pInstance && s_pInstance->m_hGPS_Device;
+}
+
 DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
 {
     DWORD dwRet = 0;
@@ -72,7 +77,10 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
                 &gps_Position, MAX_AGE, 0);
 
             if (ERROR_SUCCESS != dwRet)
+            {
+                rho_geo_callcallback_error();
                 continue;
+            }
             else
                 pDevice->m_pController->SetGPSPosition(gps_Position);
         }
@@ -299,7 +307,11 @@ void CGPSController::TurnGpsOn() {
 	if((!m_gpsIsOn) && SUCCEEDED(CGPSDevice::TurnOn(this))) {
 		m_gpsIsOn = true;
 		m_timeout = time(NULL)+GPS_TIMEOUT;
-	}
+	}else if (!m_gpsIsOn)
+    {
+        rho_geo_callcallback_error();
+    }
+
 	Unlock();
 }
 
@@ -415,6 +427,15 @@ int rho_geo_known_position()
 
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {
+}
+
+int rho_geo_is_available()
+{
+#if defined(_WIN32_WCE)
+    return CGPSDevice::isAvailable() ? 1 : 0;
+#else
+	return 0;
+#endif
 }
 
 }
