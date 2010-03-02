@@ -5,6 +5,7 @@
 * fixed GPS updates on Android (back ported to 1-4-stable)
 * fixed MapView parameters validation for iPhone and Blackberry (back ported to 1-4-stable)
 * native geo mapping for android
+* support of splash screen for iPhone, Android, Blackberry and Windows Mobile
 
 == 1.4.0
 * improved spec running framework, see spec/framework_spec for details
