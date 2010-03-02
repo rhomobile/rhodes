@@ -3,7 +3,7 @@
 #import "JSString.h"
 //#include "SyncEngine.h"
 
-@interface WebViewController : UIViewController <UIActionSheetDelegate> {
+@interface WebViewController : UIViewController <UIActionSheetDelegate, UIWebViewDelegate> {
 	IBOutlet UINavigationBar* navBar;
 	IBOutlet UIToolbar* toolbar;
 	IBOutlet UIBarButtonItem* homeBtn;
@@ -30,6 +30,7 @@
 @property (assign) UIWebView* webView;
 @property (assign) SEL  onShowLog;
 
+-(void)initDelegate;
 -(void)loadData:(NSData*)data mimeType:(NSString*)type;
 
 -(void)showToolbar:(BOOL)show;
