@@ -121,7 +121,7 @@ public class Rhodes extends Activity {
 	}
 	
 	private String sdcardRootPath() {
-		return "/sdcard/rhomobile/" + getPackageName() + "/";
+		return Environment.getExternalStorageDirectory() + "/rhomobile/" + getPackageName() + "/";
 	}
 	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();

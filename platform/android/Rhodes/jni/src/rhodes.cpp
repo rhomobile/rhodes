@@ -217,34 +217,15 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_NATIVEBAR
     };
 
-//#define RHO_LOG_JNI_INIT
-
-#ifdef RHO_LOG_JNI_INIT
-    FILE *fp = fopen("/sdcard/rholog.txt", "wb");
-#endif
     for(size_t i = 0, lim = sizeof(classes)/sizeof(classes[0]); i != lim; ++i)
     {
         const char *className = classes[i];
-#ifdef RHO_LOG_JNI_INIT
-        fprintf(fp, "Find class %s...\n", className);
-#endif
         jclass cls = env->FindClass(className);
         if (!cls)
-        {
-#ifdef RHO_LOG_JNI_INIT
-            fprintf(fp, "Can not resolve Java class: %s (JNI)\n", className);
-#endif
             return -1;
-        }
-#ifdef RHO_LOG_JNI_INIT
-        fprintf(fp, "Class found: %p\n", cls);
-#endif
         g_classes[className] = (jclass)env->NewGlobalRef(cls);
         env->DeleteLocalRef(cls);
     }
-#ifdef RHO_LOG_JNI_INIT
-    fclose(fp);
-#endif
 
     return jversion;
 }
