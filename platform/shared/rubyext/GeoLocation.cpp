@@ -11,6 +11,7 @@ double rho_geo_latitude();
 double rho_geo_longitude();
 int rho_geo_known_position();	
 void rho_geoimpl_settimeout(int nTimeoutSec);
+int rho_geo_is_available();
 }
 
 namespace rho {
@@ -29,13 +30,18 @@ void CGeoLocation::init(common::IRhoClassFactory* pFactory)
     m_NetRequest = pFactory->createNetRequest();
 }
 
-void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify)
+void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bError)
 {
 	if (oNotify.m_strUrl.length() == 0)
 		return;
 	
 	String strFullUrl = getNet().resolveUrl(oNotify.m_strUrl);
-	String strBody = "status=ok&rho_callback=1";
+	String strBody = "rho_callback=1";
+	if (bError && rho_geo_is_available() )
+		strBody += "&status=error&error_code=" + convertToStringA(12);//RhoRuby.ERR_GEOLOCATION;
+	else	
+		strBody += "&status=ok";
+
 	strBody += "&known_position=" + convertToStringA(rho_geo_known_position());
 	strBody += "&latitude=" + convertToStringA(rho_geo_latitude());
 	strBody += "&longitude=" + convertToStringA(rho_geo_longitude());
@@ -43,12 +49,15 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify)
     NetRequest( getNet().pushData( strFullUrl, strBody, null ) );
 }
 
-void CGeoLocation::callGeoCallback()
+void CGeoLocation::callGeoCallback(boolean bError)
 {
     synchronized(m_mxNotify)
     {
-        callGeoCallback(m_ViewNotify);
-        callGeoCallback(m_Notify);
+        callGeoCallback(m_Notify, bError);
+        m_Notify = CGeoNotification();
+        callGeoCallback(m_ViewNotify, bError);
+        if ( bError )
+            m_ViewNotify = CGeoNotification();
     }
 }
 
@@ -94,6 +103,12 @@ int CGeoLocation::getGeoTimeoutSec()
 
 /*static*/ void CGeoLocation::callback_geolocation(void *arg, String const &/*query*/ )
 {
+    if ( !rho_geo_is_available() )
+    {
+        rho_http_sendresponse(arg, "Unavailable;Unavailable;Unavailable");
+        return;
+    }
+
     if (!rho_geo_known_position())
     {
         rho_http_sendresponse(arg, "Reading;Reading;Reading");
@@ -136,7 +151,12 @@ void rho_geo_set_view_notification( const char *url, char* params, int timeout_s
 
 void rho_geo_callcallback()
 {
-    RHODESAPP().getGeo().callGeoCallback();
+    RHODESAPP().getGeo().callGeoCallback(false);
+}
+
+void rho_geo_callcallback_error()
+{
+    RHODESAPP().getGeo().callGeoCallback(true);
 }
 
 int rho_geo_gettimeout_sec()
