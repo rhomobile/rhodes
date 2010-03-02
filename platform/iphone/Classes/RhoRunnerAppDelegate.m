@@ -420,6 +420,7 @@
     webViewController->window = window;
 	webViewController->actionTarget = self;
 	webViewController->onShowLog = @selector(onShowLog);
+    [webViewController initDelegate];
     
     // Create View
 	webViewController.toolbar.hidden = YES;

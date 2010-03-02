@@ -39,6 +39,10 @@ char* get_current_location() {
 //@synthesize viewHomeUrl, viewOptionsUrl;
 @synthesize actionTarget, onShowLog, toolbar, webView;
 
+- (void)initDelegate {
+    webView.delegate = self;
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
 	[super viewDidAppear:animated];
@@ -156,6 +160,11 @@ char* get_current_location() {
 -(void)inactive {
 	[activity stopAnimating];
 	activity.hidden = YES;
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+                navigationType:(UIWebViewNavigationType)navigationType {
+    return YES;
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webview
