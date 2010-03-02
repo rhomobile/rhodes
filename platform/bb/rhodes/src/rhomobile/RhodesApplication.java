@@ -24,15 +24,19 @@ import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Alert;
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.ApplicationManager;
+import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Characters;
+import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.system.SystemListener;
 //import javax.microedition.io.file.FileSystemListener;
 import net.rim.device.api.system.TrackwheelListener;
 import net.rim.device.api.ui.*;
+import net.rim.device.api.ui.component.BitmapField;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.Status;
+import net.rim.device.api.ui.container.FullScreen;
 import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
 //import net.rim.device.api.ui.container.HorizontalFieldManager;
@@ -51,6 +55,7 @@ import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
 import com.rho.Jsr75File;
 import com.rho.RhodesApp;
+import com.xruby.runtime.lang.RubyProgram;
 /**
  *
  */
@@ -464,6 +469,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private RenderingSession _renderingSession;
 
+    private Screen _splashScreen = null;
     private CMainScreen _mainScreen = null;
 
     private SyncStatusPopup _syncStatusPopup = null;
@@ -575,40 +581,48 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	{
 		//DO NOT DO ANYTHING before doStartupWork 
 		doStartupWork();
+		showSplashScreen();
     	LOG.TRACE("Rhodes start activate ***--------------------------***");
 
-    	if ( !m_bRubyInit )
-    	{
-			synchronized (m_eventRubyInit) {
-				try{
-					m_eventRubyInit.wait();
-				}catch(Exception e)
-				{
-					LOG.ERROR("wait failed", e);
-				}
-			}
-    	}
+    	UiApplication.getUiApplication().invokeLater(new Runnable() {
+    		
+    		public void run() {
+		    	if ( !m_bRubyInit )
+		    	{
+					synchronized (m_eventRubyInit) {
+						try{
+							m_eventRubyInit.wait();
+						}catch(Exception e)
+						{
+							LOG.ERROR("wait failed", e);
+						}
+					}
+		    	}
+		    	
+		    	if ( !RhoRuby.rho_ruby_isValid() )
+		    	{
+		    		LOG.ERROR("Cannot initialize Ruby framework. Application will exit.");
+		        	Dialog.alert("Cannot initialize Ruby framework. Application will exit. Log will send to log server.");
+		        	
+		        	RhoConf.sendLog();
+		        	
+		    		System.exit(1);
+		    	}
+		    	
+		    	runActivateHooks();
+		    	
+				RhoRuby.rho_ruby_activateApp();
+		
+		        if(!restoreLocation()) {
+		        	navigateHome();
+		        }    
+		
+		        hideSplashScreen();
+		    	LOG.TRACE("Rhodes end activate ***--------------------------***");
+    		}
+    		
+    	});
     	
-    	if ( !RhoRuby.rho_ruby_isValid() )
-    	{
-    		LOG.ERROR("Cannot initialize Ruby framework. Application will exit.");
-        	Dialog.alert("Cannot initialize Ruby framework. Application will exit. Log will send to log server.");
-        	
-        	RhoConf.sendLog();
-        	
-    		System.exit(1);
-    	}
-    	
-    	runActivateHooks();
-    	
-		RhoRuby.rho_ruby_activateApp();
-
-        if(!restoreLocation()) {
-        	navigateHome();
-        }    
-
-    	LOG.TRACE("Rhodes end activate ***--------------------------***");
-        
 		super.activate();
 	}
 
@@ -976,6 +990,43 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
     }
 
+    public void showSplashScreen()
+    {
+    	try {
+    		hideSplashScreen();
+    		
+    		RubyProgram obj = new xruby.version.main();
+	    	String pngname = "/apps/app/loading.png";
+    		//String pngname = "/resources/icon.png";
+	    	InputStream is = obj.getClass().getResourceAsStream(pngname);
+	    	int size = is.available();
+	    	byte[] data = new byte[size];
+	    	for (int offset = 0; offset < size;) {
+	    		int n = is.read(data, offset, size - offset);
+	    		if (n < 0)
+	    			break;
+	    		offset += n;
+	    	}
+	    	EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
+	    	Bitmap bitmap = img.getBitmap();
+	    	BitmapField imageField = new BitmapField(bitmap, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
+	    	_splashScreen = new FullScreen(Screen.FIELD_HCENTER | Screen.FIELD_VCENTER);
+	    	_splashScreen.add(imageField);
+	    	UiApplication.getUiApplication().pushScreen(_splashScreen);
+    	}
+    	catch (Exception e) {
+    		LOG.ERROR("Can't show splash screen", e);
+    	}
+    }
+    
+    public void hideSplashScreen()
+    {
+    	if (_splashScreen != null) {
+	    	UiApplication.getUiApplication().popScreen(_splashScreen);
+	    	_splashScreen = null;
+    	}
+    }
+    
     public void showLogScreen()
     {
 		LogScreen screen = new LogScreen();
