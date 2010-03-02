@@ -26,15 +26,12 @@ class Jake
 
 
   def self.config(configfile)
-    @@config = YAML::load(configfile)
-    @@config = self.config_parse(@@config)
-    @@config
+    conf = YAML::load(configfile)
+    res = self.config_parse(conf)
+    res
   end
   def self.set_bbver(bbver)
     @@bbver = bbver
-  end
-  def self.reconfig(config)
-    @@config = config
   end
 
   def self.get_absolute(path)
@@ -66,7 +63,7 @@ class Jake
           x
         else
           if x =~ /%(.*?)%/
-            x.gsub!(/%.*?%/, @@config.fetch_r($1).to_s)
+            x.gsub!(/%.*?%/, conf.fetch_r($1).to_s)
           end
           s = x.to_s
           if File.exists? s
@@ -149,9 +146,9 @@ class Jake
   
   def self.unjar(src,targetdir)
     if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
     else
-      cmd =  @@config["env"]["paths"]["java"] + "/jar"
+      cmd =  $config["env"]["paths"]["java"] + "/jar"
     end
 
       p = Pathname.new(src)
@@ -170,9 +167,9 @@ class Jake
   end
   def self.jarfilelist(target)
     if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
     else
-      cmd =  @@config["env"]["paths"]["java"] + "/jar"
+      cmd =  $config["env"]["paths"]["java"] + "/jar"
     end
     target.gsub!(/"/,"")
 
@@ -187,10 +184,10 @@ class Jake
   end
 
   def self.jar(target,manifest,files,isfolder=false)
-     if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd =  @@config["env"]["paths"]["java"] + "/jar.exe"
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
     else
-      cmd =  @@config["env"]["paths"]["java"] + "/jar"
+      cmd =  $config["env"]["paths"]["java"] + "/jar"
     end
     target.gsub!(/"/,"")
     
@@ -212,11 +209,11 @@ class Jake
   end
   
   def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,icon=nil,library=true,cldc=false,quiet=true, nowarn=true)
-    #cmd = @@config["env"]["paths"][@@config["env"]["bbver"]]["java"] + "/java.exe"
+    #cmd = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
 #   cmd = "java.exe"
     
-    jdehome = @@config["env"]["paths"][@@bbver]["jde"]
-    javabin = @@config["env"]["paths"]["java"]
+    jdehome = $config["env"]["paths"][@@bbver]["jde"]
+    javabin = $config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
     
     currentdir = pwd()
@@ -269,11 +266,11 @@ class Jake
   
   def self.ant(dir,target)
   
-    srcdir = @@config["build"]["srcdir"]
-    rubypath = @@config["build"]["rubypath"]
-    excludelib = @@config["build"]["excludelib"]
-    excludeapps = @@config["build"]["excludeapps"]
-    compileERB = @@config["build"]["compileERB"]
+    srcdir = $config["build"]["srcdir"]
+    rubypath = $config["build"]["rubypath"]
+    excludelib = $config["build"]["excludelib"]
+    excludeapps = $config["build"]["excludeapps"]
+    compileERB = $config["build"]["compileERB"]
     
   
     args = []
