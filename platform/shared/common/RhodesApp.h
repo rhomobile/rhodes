@@ -38,7 +38,7 @@ private:
 #else
     common::CAutoPtr<net::CHttpServer> m_httpServer;
 #endif
-    String m_strRhoRootPath, m_strLoadingPagePath, m_strBlobsDirPath;
+    String m_strRhoRootPath, m_strLoadingPagePath, m_strLoadingPngPath, m_strBlobsDirPath;
     String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
     String m_strRhoMessage;
 
@@ -71,6 +71,7 @@ public:
     const String& getFirstStartUrl();
     const String& getHomeUrl(){ return m_strHomeUrl; }
 
+	const String& getLoadingPngPath(){return m_strLoadingPngPath;}
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getRhoRootPath(){return m_strRhoRootPath;}
