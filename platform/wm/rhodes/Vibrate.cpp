@@ -65,7 +65,7 @@ void CVibrate::run()
     settings.LedNum= 1;
     NLedGetDeviceInfo(NLED_SETTINGS_INFO_ID,  &settings);
     
-    if (settings.OffOnBlink) {
+    if (!settings.OffOnBlink) {
         
         settings.LedNum= 1; 
         settings.OffOnBlink= 1;
