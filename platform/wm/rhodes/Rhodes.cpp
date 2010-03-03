@@ -4,6 +4,7 @@
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
+#include "common/rhoparams.h"
 #include "rho/rubyext/GeoLocationImpl.h"
 
 #ifndef RUBY_RUBY_H
@@ -323,7 +324,7 @@ extern "C" void choose_datetime(char* callback, char* title, long initial_time, 
 	//TODO: Implement me!
 }
 
-extern "C" void create_nativebar(int bar_type, int nparams, char** params) {
+extern "C" void create_nativebar(int bar_type, rho_param *p) {
 	//TODO: Implement me!
 }
 
@@ -335,7 +336,7 @@ extern "C" void nativebar_switch_tab(int index) {
 	//TODO: Implement me!
 }
 
-extern "C" void mapview_create(int nparams, char** params, int nannotations, char** annotation) {
+extern "C" void mapview_create(rho_param *p) {
     //TODO: mapview_create
 }
 
