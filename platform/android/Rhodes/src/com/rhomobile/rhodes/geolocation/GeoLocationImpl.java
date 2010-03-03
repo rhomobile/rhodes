@@ -28,6 +28,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Looper;
 
@@ -36,9 +37,12 @@ public class GeoLocationImpl implements LocationListener {
 	private static final String TAG = "GeoLocationImpl";
 	private static final String PROVIDER = LocationManager.GPS_PROVIDER;
 	private LocationManager locationManager = null;
+	private boolean available = false;
 	private double longitude = 0;
 	private double latitude = 0;
 	private boolean determined = false;
+	
+	private native void geoCallback();
 	
 	public GeoLocationImpl() {
 		setCurrentGpsLocation(null);
@@ -50,11 +54,17 @@ public class GeoLocationImpl implements LocationListener {
 			if (locationManager == null) {
 				Activity r = RhodesInstance.getInstance();
 				locationManager = (LocationManager)r.getSystemService(Context.LOCATION_SERVICE);
+				LocationProvider gpsProvider = locationManager.getProvider(PROVIDER);
+				available = gpsProvider != null && locationManager.isProviderEnabled(PROVIDER);
 				locationManager.requestLocationUpdates(PROVIDER, 0, 0, this, Looper.getMainLooper());
 			}
 			
 			if (location == null)
 				location = locationManager.getLastKnownLocation(PROVIDER);
+			
+			boolean prevDetermined = determined;
+			double prevLat = latitude;
+			double prevLon = longitude;
 			
 			if (location != null) {
 				longitude = location.getLongitude();
@@ -70,6 +80,10 @@ public class GeoLocationImpl implements LocationListener {
 				Logger.T(TAG, "longitude: " + new Double(longitude).toString());
 				Logger.T(TAG, "latitude: " + new Double(latitude).toString());
 			}
+			
+			if (determined != prevDetermined || latitude != prevLat || longitude != prevLon)
+				geoCallback();
+			
 		} catch (Exception e) {
 			determined = false;
 			Logger.E(TAG, e.getMessage());
@@ -97,6 +111,10 @@ public class GeoLocationImpl implements LocationListener {
 		setCurrentGpsLocation(null);
 	}
 
+	public synchronized boolean isAvailable() {
+		return available;
+	}
+	
 	public synchronized double GetLatitude() {
 		return latitude;
 	}
@@ -108,4 +126,5 @@ public class GeoLocationImpl implements LocationListener {
 	public synchronized boolean isKnownPosition() {
 		return determined;
 	}
+	
 }
