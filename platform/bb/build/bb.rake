@@ -45,10 +45,14 @@ def startsim
   args << "/data-port=0x4d4e"
   args << "/pin=0x2100000A"
   args << "/no-compact-filesystem"
+  args << "/keep-lcd-on"
     
   if $bbver !~ /^4\.[012](\..*)?$/
     args << "/sdcard-inserted=true"
     args << "/fs-sdcard=true"
+  end
+  if $bbver !~ /^4\.[01235](\..*)?$/
+    args << "/no-guibacklight"
   end
         
   args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"]) +'"'
