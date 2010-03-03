@@ -25,18 +25,40 @@ import com.rhomobile.rhodes.Logger;
 public class GeoLocation {
 
 	private static final String TAG = "GeoLocation";
-	private static GeoLocationImpl locImpl = new GeoLocationImpl();
+	private static GeoLocationImpl locImpl = null;
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
+	private static void init() {
+		if (locImpl != null)
+			return;
+		
+		synchronized (TAG) {
+			if (locImpl == null)
+				locImpl = new GeoLocationImpl();
+		}
+	}
+	
+	public static boolean isAvailable() {
+		try {
+			Logger.T(TAG, "isAvailable");
+			init();
+			return locImpl.isAvailable();
+		}
+		catch (Exception e) {
+			reportFail("isAvailable", e);
+		}
+		
+		return false;
+	}
+	
 	public static double getLatitude() {
 		try {
-			Logger.T(TAG, "GeoLocation.GetLatitude");
-			
-			if (locImpl != null)
-				  return locImpl.GetLatitude();
+			Logger.T(TAG, "getLatitude");
+			init();
+			return locImpl.GetLatitude();
 		}
 		catch (Exception e) {
 			reportFail("getLatitude", e);
@@ -47,10 +69,9 @@ public class GeoLocation {
 
 	public static double getLongitude() {
 		try {
-			Logger.T(TAG, "GeoLocation.GetLongitude");
-			
-			if (locImpl != null)
-			  return locImpl.GetLongitude();
+			Logger.T(TAG, "getLongitude");
+			init();
+			return locImpl.GetLongitude();
 		}
 		catch (Exception e) {
 			reportFail("getLongitude", e);
@@ -61,9 +82,9 @@ public class GeoLocation {
 
 	public static boolean isKnownPosition() {
 		try {
-			Logger.T(TAG, "GeoLocation.isKnownPosition");
-			
-			return locImpl != null && locImpl.isKnownPosition();
+			Logger.T(TAG, "isKnownPosition");
+			init();
+			return locImpl.isKnownPosition();
 		}
 		catch (Exception e) {
 			reportFail("isKnownPosition", e);
