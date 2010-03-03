@@ -38,7 +38,7 @@ public class DateTimePickerScreen extends Activity {
 	
 	private static final String TAG = "DateTimePicker";
 	
-	private static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX;
+	private static final String INTENT_EXTRA_PREFIX = DateTimePicker.INTENT_EXTRA_PREFIX;
 	
 	private String _callback;
 	private Date _init;

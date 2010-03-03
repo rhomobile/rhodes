@@ -263,6 +263,8 @@ namespace "build" do
 #      Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
+      rm_rf assets
+      mkdir_p assets
       hash = nil
       ["apps", "db", "lib"].each do |d|
         cp_r File.join($srcdir, d), assets
