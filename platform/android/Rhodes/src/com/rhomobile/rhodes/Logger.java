@@ -33,4 +33,24 @@ public class Logger {
 	// Trace
 	public native static void T(String tag, String msg);
 	
+	public static void E(String tag, Throwable e) {
+		E(tag, e.getMessage());
+	}
+	
+	public static void W(String tag, Throwable e) {
+		W(tag, e.getMessage());
+	}
+	
+	public static void I(String tag, Throwable e) {
+		I(tag, e.getMessage());
+	}
+	
+	public static void D(String tag, Throwable e) {
+		D(tag, e.getMessage());
+	}
+	
+	public static void T(String tag, Throwable e) {
+		T(tag, e.getMessage());
+	}
+	
 }

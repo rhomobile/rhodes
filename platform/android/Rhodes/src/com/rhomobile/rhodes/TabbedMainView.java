@@ -20,6 +20,7 @@
  */
 package com.rhomobile.rhodes;
 
+import java.util.Map;
 import java.util.Vector;
 
 import android.content.Context;
@@ -36,74 +37,123 @@ import android.widget.TabWidget;
 
 public class TabbedMainView implements MainView {
 	
+	private static final String TAG = "TabbedMainView";
+	
 	private TabHost host;
-	private Vector<WebView> views;
+	private Vector<TabData> tabs;
+	
+	private static class TabData {
+		public WebView view;
+		public String url;
+		public boolean reload;
+		public boolean loaded;
+		
+		public TabData() {
+			loaded = false;
+		}
+	};
 	
 	private static class TabViewFactory implements TabHost.TabContentFactory {
 		
-		private WebView view;
-		private String url;
+		private TabData data;
 		
-		public TabViewFactory(WebView v, String u) {
-			view = v;
-			url = u;
+		public TabViewFactory(TabData d) {
+			data = d;
 		}
 		
 		public View createTabContent(String tag) {
-			view.loadUrl(url);
-			return view;
+			return data.view;
 		}
 		
 	};
 	
 	private WebView getWebView(int index) {
-		return views.elementAt(index);
+		TabData data = tabs.elementAt(index);
+		return data.view;
 	}
 	
-	public TabbedMainView(Vector<String> params) {
-		if (params.size() % 4 != 0)
-			throw new IllegalArgumentException();
-		
+	@SuppressWarnings("unchecked")
+	public TabbedMainView(Vector<Object> params) {
 		Rhodes r = RhodesInstance.getInstance();
 		Context ctx = r.getApplicationContext();
 		
-		int size = params.size()/4;
+		int size = params.size();
 		
 		host = new TabHost(ctx);
-		views = new Vector<WebView>(size);
+		tabs = new Vector<TabData>(size);
 		
-		TabWidget tabs = new TabWidget(ctx);
-		tabs.setId(android.R.id.tabs);
+		TabWidget tabWidget = new TabWidget(ctx);
+		tabWidget.setId(android.R.id.tabs);
 		TabHost.LayoutParams lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT, Gravity.TOP);
-		host.addView(tabs, lpt);
+				LayoutParams.WRAP_CONTENT, Gravity.TOP);
+		host.addView(tabWidget, lpt);
 		
 		FrameLayout frame = new FrameLayout(ctx);
 		frame.setId(android.R.id.tabcontent);
 		FrameLayout.LayoutParams lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT, Gravity.BOTTOM);
 		// TODO: detect tab widget height and use it here instead of hardcoded value
-		lpf.setMargins(0, 63, 0, 0);
+		lpf.setMargins(0, 64, 0, 0);
 		host.addView(frame, lpf);
 		
 		host.setup();
 		
+		host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+			
+			public void onTabChanged(String tabId) {
+				try {
+					int index = Integer.parseInt(tabId);
+					TabData data = tabs.elementAt(index);
+					if (data.reload || !data.loaded) {
+						getWebView(index).loadUrl(data.url);
+						data.loaded = true;
+					}
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, e);
+				}
+			}
+		});
+		
 		TabHost.TabSpec spec;
 		
 		for (int i = 0; i < size; ++i) {
-			int index = i*4;
-			String label = params.elementAt(index++);
-			String location = r.normalizeUrl(params.elementAt(index++));
-			String icon = r.getRootPath() + "/apps/" + params.elementAt(index++);
-			//boolean reload = params.elementAt(index++).equalsIgnoreCase("true");
+			Object param = params.elementAt(i);
+			if (!(param instanceof Map<?,?>))
+				throw new IllegalArgumentException("Hash expected");
+			
+			Map<Object, Object> hash = (Map<Object, Object>)param;
+			
+			Object labelObj = hash.get("label");
+			if (labelObj == null || !(labelObj instanceof String))
+				throw new IllegalArgumentException("'label' should be String");
+			
+			Object actionObj = hash.get("action");
+			if (actionObj == null || !(actionObj instanceof String))
+				throw new IllegalArgumentException("'action' should be String");
+			
+			String label = (String)labelObj;
+			String action = r.normalizeUrl((String)actionObj);
+			String icon = null;
+			boolean reload = false;
+			
+			Object iconObj = hash.get("icon");
+			if (iconObj != null && (iconObj instanceof String))
+				icon = (String)iconObj;
+			
+			Object reloadObj = hash.get("reload");
+			if (reloadObj != null && (reloadObj instanceof String))
+				reload = ((String)reloadObj).equalsIgnoreCase("true");
 			
 			spec = host.newTabSpec(Integer.toString(i));
 			
 			// Set label and icon
-			Bitmap bitmap = BitmapFactory.decodeFile(icon);
 			BitmapDrawable drawable = null;
-			if (bitmap != null)
-				drawable = new BitmapDrawable(bitmap);
+			if (icon != null) {
+				Bitmap bitmap = BitmapFactory.decodeFile(icon);
+				if (bitmap != null)
+					drawable = new BitmapDrawable(bitmap);
+			}
 			if (drawable == null)
 				spec.setIndicator(label);
 			else
@@ -111,10 +161,15 @@ public class TabbedMainView implements MainView {
 			
 			// Set view factory
 			WebView view = r.createWebView();
-			TabViewFactory factory = new TabViewFactory(view, location);
+			TabData data = new TabData();
+			data.view = view;
+			data.url = action;
+			data.reload = reload;
+			
+			TabViewFactory factory = new TabViewFactory(data);
 			spec.setContent(factory);
 			
-			views.addElement(view);
+			tabs.addElement(data);
 			host.addTab(spec);
 		}
 	}

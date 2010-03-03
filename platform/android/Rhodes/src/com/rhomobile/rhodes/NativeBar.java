@@ -33,9 +33,9 @@ public class NativeBar {
 	private static class CreateTask implements Runnable {
 		
 		private int type;
-		private Vector<String> params;
+		private Vector<Object> params;
 		
-		public CreateTask(int t, Vector<String> p) {
+		public CreateTask(int t, Vector<Object> p) {
 			type = t;
 			params = p;
 		}
@@ -80,7 +80,7 @@ public class NativeBar {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 
-	public static void create(int type, Vector<String> params) {
+	public static void create(int type, Vector<Object> params) {
 		try {
 			Rhodes.performOnUiThread(new CreateTask(type, params));
 		}
