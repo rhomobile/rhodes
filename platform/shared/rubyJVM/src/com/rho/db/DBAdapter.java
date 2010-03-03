@@ -334,10 +334,16 @@ public class DBAdapter extends RubyBasic {
 	boolean migrateDB(DBVersion dbVer, String strRhoDBVer, String strAppDBVer )
 	{
 	    LOG.INFO( "Try migrate database from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (strRhoDBVer !=null ? strRhoDBVer:"") );
+	    if ( dbVer != null && strRhoDBVer != null &&
+	    	 (dbVer.m_strRhoVer.startsWith("1.4")||dbVer.m_strRhoVer.startsWith("1.4")) && (strRhoDBVer.startsWith("1.5")||strRhoDBVer.startsWith("1.4")) )
+		{
+            LOG.INFO( "No migration required from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (strRhoDBVer !=null ? strRhoDBVer:"") );		    
+		    return true;
+		}
 		
 	    //1.2.x -> 1.5.x,1.4.x
 	    if ( dbVer != null && strRhoDBVer != null &&
-	    	 dbVer.m_strRhoVer.startsWith("1.2") && (strRhoDBVer.startsWith("1.5")||strRhoDBVer.startsWith("1.4")) )
+	    	 (dbVer.m_strRhoVer.startsWith("1.2")||dbVer.m_strRhoVer.startsWith("1.4")) && (strRhoDBVer.startsWith("1.5")||strRhoDBVer.startsWith("1.4")) )
 	    {
 	    //sources
 	    //priority INTEGER, ADD
