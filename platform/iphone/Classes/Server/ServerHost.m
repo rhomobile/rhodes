@@ -503,18 +503,56 @@ void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 	[[ServerHost sharedInstance] doSysCall:params];
 }
 
-void create_nativebar(int bar_type, int nparams, char** params) {
-	NSMutableArray *items = [NSMutableArray arrayWithCapacity:nparams];
-	for(int i = 0; i < nparams; i++) {
-		if (params[i]) {
-			printf("param: %s\n", params[i]);
-			[items addObject:[NSString stringWithUTF8String:params[i]]];
-		} else {
-			printf("param: nil\n");   
-			[items addObject:@""];
-		}
-	}
-	[[ServerHost sharedInstance] createNativeBar:bar_type dataArray:items];
+void create_nativebar(int bar_type, rho_param *p)
+{
+    if (p->type != RHO_PARAM_ARRAY) {
+        RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array");
+        return;
+    }
+    
+    int size = p->v.array->size;
+    NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
+    for (int i = 0; i < size; ++i) {
+        rho_param *hash = p->v.array->value[i];
+        if (hash->type != RHO_PARAM_HASH) {
+            RAWLOG_ERROR("Unexpected type of array item for create_nativebar, should be Hash");
+            return;
+        }
+        
+        const char *label = NULL;
+        const char *action = NULL;
+        const char *icon = NULL;
+        const char *reload = NULL;
+        
+        for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
+            const char *name = hash->v.hash->name[j];
+            rho_param *value = hash->v.hash->value[j];
+            if (value->type != RHO_PARAM_STRING) {
+                RAWLOG_ERROR1("Unexpected '%s' type, should be String", name);
+                return;
+            }
+            
+            if (strcasecmp(name, "label") == 0)
+                label = value->v.string;
+            else if (strcasecmp(name, "action") == 0)
+                action = value->v.string;
+            else if (strcasecmp(name, "icon") == 0)
+                icon = value->v.string;
+            else if (strcasecmp(name, "reload") == 0)
+                reload = value->v.string;
+        }
+        
+        if (label == NULL || action == NULL) {
+            RAWLOG_ERROR("Illegal argument for create_nativebar");
+            return;
+        }
+        
+        [items addObject:[NSString stringWithUTF8String:label]];
+        [items addObject:[NSString stringWithUTF8String:action]];
+        [items addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
+        [items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
+    }
+    [[ServerHost sharedInstance] createNativeBar:bar_type dataArray:items];
 }
 
 void remove_nativebar() {
