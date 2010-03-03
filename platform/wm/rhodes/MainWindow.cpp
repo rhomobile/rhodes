@@ -43,6 +43,7 @@ extern HREGNOTIFY g_hNotify;
 
 extern "C" int g_rho_net_has_network;
 using namespace rho::common;
+using namespace rho;
 
 #if !defined(_WIN32_WCE)
 int CMainWindow::m_screenWidth;
@@ -237,12 +238,9 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
 	PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(&ps);
-	
-	const char *s = RHODESAPP().getLoadingPngPath().c_str();
-	size_t size = mbstowcs(NULL, s, MAX_PATH);
-	std::vector<wchar_t> path(size);
-	mbstowcs(&path[0], s, MAX_PATH);
-	HBITMAP hbitmap = SHLoadImageFile(&path[0]);
+#ifdef _WIN32_WCE	
+    StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
+    HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
 	if (!hbitmap)
 		return 0;
 
@@ -257,6 +255,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
 
 	DeleteObject(hbitmap);
+#endif //_WIN32_WCE
 
 	EndPaint(&ps);
 	return 0;
