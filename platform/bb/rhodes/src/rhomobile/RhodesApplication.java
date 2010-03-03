@@ -45,6 +45,7 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
 
 import javax.microedition.media.*;
+//import net.rim.device.api.system.EventInjector.KeyCodeEvent;
 
 import com.rho.*;
 //import com.rho.db.DBAdapter;
@@ -90,6 +91,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			  arg1.equals("SDCard/") )
 			m_bSDCardAdded = true;
 	}*/
+	//boolean m_bSkipKeyPress = false;
 	
 	class CKeyListener  implements KeyListener{
 
@@ -101,12 +103,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        }
 			return false;
 		}
-
 		public boolean keyDown(int keycode, int time) {
 			int nKey = Keypad.key(keycode);
 			if ( nKey == Keypad.KEY_ESCAPE )
 			{
-				back();
+				/*if ( m_bSkipKeyPress )
+					m_bSkipKeyPress = false;
+				else*/	
+					back();
 				return true;
 			}
 
@@ -990,26 +994,35 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     public void showSplashScreen()
     {
+    	InputStream is = null;
     	try {
     		RubyProgram obj = new xruby.version.main();
 	    	String pngname = "/apps/app/loading.png";
     		//String pngname = "/resources/icon.png";
-	    	InputStream is = obj.getClass().getResourceAsStream(pngname);
-	    	int size = is.available();
-	    	byte[] data = new byte[size];
-	    	for (int offset = 0; offset < size;) {
-	    		int n = is.read(data, offset, size - offset);
-	    		if (n < 0)
-	    			break;
-	    		offset += n;
+	    	is = obj.getClass().getResourceAsStream(pngname);
+	    	if ( is != null )
+	    	{
+		    	int size = is.available();
+		    	byte[] data = new byte[size];
+		    	for (int offset = 0; offset < size;) {
+		    		int n = is.read(data, offset, size - offset);
+		    		if (n < 0)
+		    			break;
+		    		offset += n;
+		    	}
+		    	EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
+		    	Bitmap bitmap = img.getBitmap();
+		    	BitmapField imageField = new BitmapField(bitmap, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
+		    	_mainScreen.add(imageField);
 	    	}
-	    	EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
-	    	Bitmap bitmap = img.getBitmap();
-	    	BitmapField imageField = new BitmapField(bitmap, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
-	    	_mainScreen.add(imageField);
     	}
     	catch (Exception e) {
     		LOG.ERROR("Can't show splash screen", e);
+    	}finally
+    	{
+    		if ( is != null )
+    			try{is.close();}catch(IOException exc){}
+    		is = null;
     	}
     }
     
@@ -1078,6 +1091,11 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.DEFAULT_CHARSET_VALUE, "utf-8");
 	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.OVERWRITE_CHARSET_MODE, true);
+	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ALLOW_POPUPS, true);
+	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
+	        
+//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.VALUE_THRESHOLD, 100000);
+	        
 	        
 //	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
 //	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.SHOW_IMAGE_PLACEHOLDERS, false);
@@ -1202,42 +1220,29 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         BrowserContent browserContent = null;
 
         try {
-        	/*try{
-        		connection.getResponseCode();
-        	}catch(IOException exc)
-        	{
-        		LOG.ERROR("getResponseCode failed.", exc);
-        	}*/
-        	
             browserContent = _renderingSession.getBrowserContent(connection, this, e);
 
             if (browserContent != null) {
-
-                if ( _isFullBrowser )
-                	browserContent.finishLoading();
-                else
-                {
-                	if ( URI.isLocalHost(connection.getURL()) )
-            		{
-	                	//synchronized (Application.getEventLock())
-		                //synchronized (getAppEventLock())
-		                {
-		                	browserContent.finishLoading();
-		                }
-            		}else
-            			browserContent.finishLoading();
-                }
+       			browserContent.finishLoading();
                 
                 Field field = browserContent.getDisplayableContent();
                 if (field != null) {
                     synchronized (Application.getEventLock()) {
                         _mainScreen.deleteAll();
                         _mainScreen.add(field);
+/*                        
+                        _mainScreen.doPaint();
+                        if ( e == null )
+                        {//This should awake screen in case of long network response
+	                        KeyCodeEvent inject1 = 	new KeyCodeEvent( KeyCodeEvent.KEY_DOWN, (char)Keypad.KEY_ESCAPE, 0);
+	                        KeyCodeEvent inject2 =  new KeyCodeEvent( KeyCodeEvent.KEY_UP, (char)Keypad.KEY_ESCAPE, 0);
+	                        inject1.post();
+	                        inject2.post();
+	                        m_bSkipKeyPress = true;
+                        }*/
                     }
                 }
-                
             }
-
         } catch (RenderingException re) {
 
         } finally {
@@ -1551,8 +1556,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                						Event event) {
-		
+                						Event event) 
+        {
 			_url = url;
 			_requestHeaders = requestHeaders;
 			_postData = postData;
@@ -1561,8 +1566,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      	Event event, Callback callback) {
-
+                                      	Event event, Callback callback) 
+        {
             _url = url;
             _requestHeaders = requestHeaders;
             _postData = postData;
