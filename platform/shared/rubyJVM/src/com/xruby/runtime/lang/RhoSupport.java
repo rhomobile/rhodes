@@ -358,7 +358,7 @@ public class RhoSupport {
             try {
             	c = Class.forName(name);
             } catch (ClassNotFoundException e) {
-            	LOG.INFO("1" + e.toString());
+            	LOG.TRACE("require_compiled first:" + e.toString());
             }
             if ( c == null ){
             	String altPath = "/apps/app/";
@@ -367,7 +367,7 @@ public class RhoSupport {
                 try {
                 	c = Class.forName(name);
                 } catch (ClassNotFoundException e) {
-                	LOG.INFO("2" + e.toString());
+                	LOG.TRACE("require_compiled second: " + e.toString());
                 }
             	
             	arg1 = ObjectFactory.createString(altPath+required_file);

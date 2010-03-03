@@ -7,6 +7,7 @@ import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.i18n.Locale;
+import net.rim.device.api.io.http.HttpHeaders;
 import rhomobile.Alert;
 import rhomobile.NativeBar;
 import rhomobile.RhoPhonebook;
@@ -118,6 +119,14 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		synchronized ( RhodesApplication.getEventLock() ) {		
 			RhodesApplication.getInstance().showLogScreen();
 		}
+	}
+	
+	public void postUrl(String url, String body)
+	{
+		HttpHeaders headers = new HttpHeaders();
+		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+		
+		RhodesApplication.getInstance().postUrl(url, body, headers);
 	}
 	
 	static Hashtable m_appProperties = new Hashtable(); 
