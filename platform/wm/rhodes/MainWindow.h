@@ -16,15 +16,11 @@
 #include "LogView.h"
 
 static const UINT ID_BROWSER = 1;
-static UINT WM_TAKEPICTURE = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
-static UINT WM_SELECTPICTURE = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 
+static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
+static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
-
-//Alerts messages
-static UINT WM_ALERT_SHOWPOPUP = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOWPOPUP");
-static UINT WM_ALERT_PLAYFILE  = ::RegisterWindowMessage(L"RHODES_WM_ALERT_PLAYFILE");
-static UINT WM_ALERT_VIBRATE   = ::RegisterWindowMessage(L"RHODES_WM_ALERT_VIBRATE");
+static UINT WM_ALERT_SHOWPOPUP         = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOWPOPUP");
 
 class CMainWindow :
 #if defined(_WIN32_WCE)
@@ -93,9 +89,7 @@ public:
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
 		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
-        MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup)
-        MESSAGE_HANDLER(WM_ALERT_PLAYFILE, OnAlertPlayFile)
-        MESSAGE_HANDLER(WM_ALERT_VIBRATE,   OnAlertVibrate);
+        MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup);
     END_MSG_MAP()
 
 private:
@@ -132,8 +126,6 @@ private:
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
     LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnAlertPlayFile  (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnAlertVibrate   (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 public:
     BEGIN_SINK_MAP(CMainWindow)
