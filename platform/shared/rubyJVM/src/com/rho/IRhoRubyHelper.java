@@ -30,4 +30,6 @@ public interface IRhoRubyHelper {
 	
 	public String getGeoLocationText();
 	public void wakeUpGeoLocation();
+	
+	public void postUrl(String url, String body);
 }

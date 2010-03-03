@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import com.rho.RhoClassFactory;
 //import com.rho.RhoConf;
 import com.rho.FilePath;
+//import com.rho.IRhoRubyHelper;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -18,6 +19,7 @@ import com.rho.Tokenizer;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 
 public class NetRequest
 {
@@ -159,7 +161,7 @@ public class NetRequest
 			if (code != IHttpConnection.HTTP_OK) 
 			{
 				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null) 
 					oSession.logout();
 				
 				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
@@ -201,6 +203,13 @@ public class NetRequest
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
+/*		if ( URI.isLocalHost(strUrl) )
+		{
+			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+			helper.postUrl(strUrl,strBody);
+			return new NetResponse("", IHttpConnection.HTTP_OK );
+		}
+*/		
 		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	
