@@ -7,7 +7,7 @@
 
 extern void _rho_ext_syscall(PARAMS_WRAPPER* params);
 
-VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
+VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values) {
 	PARAMS_WRAPPER params = {nparams,param_names,param_values,callname,0};
 	PARAMS_WRAPPER* ret;
 	VALUE ret_value = Qnil;
