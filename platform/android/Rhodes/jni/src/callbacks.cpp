@@ -1,6 +1,7 @@
 #include "JNIRhodes.h"
 
 #include "RhoClassFactory.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
@@ -36,13 +37,13 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
     // Nothing
 }
 
-RHO_GLOBAL int rho_net_has_network()
+RHO_GLOBAL VALUE rho_sys_has_network()
 {
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-    if (!cls) return 0;
+    if (!cls) return rho_ruby_create_boolean(0);
     jmethodID mid = getJNIClassStaticMethod(cls, "hasNetwork", "()Z");
-    if (!mid) return 0;
-    return jnienv()->CallStaticBooleanMethod(cls, mid);
+    if (!mid) return rho_ruby_create_boolean(0);
+    return rho_ruby_create_boolean(jnienv()->CallStaticBooleanMethod(cls, mid));
 }
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
@@ -57,7 +58,7 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
     env->DeleteLocalRef(objFolderPath);
 }
 
-RHO_GLOBAL VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values)
+RHO_GLOBAL VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values)
 {
     // TODO:
     RHO_NOT_IMPLEMENTED;
@@ -86,22 +87,22 @@ RHO_GLOBAL void rho_nativethread_end(void *)
     jvm()->DetachCurrentThread();
 }
 
-RHO_GLOBAL const char *rho_sys_get_locale()
+RHO_GLOBAL VALUE rho_sys_get_locale()
 {
 	if (g_currentLocale.empty())
 	{
 		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-		if (!cls) return NULL;
+		if (!cls) return rho_ruby_create_string("");
 		jmethodID mid = getJNIClassStaticMethod(cls, "getCurrentLocale", "()Ljava/lang/String;");
-		if (!mid) return NULL;
+		if (!mid) return rho_ruby_create_string("");
 		JNIEnv *env = jnienv();
 		jstring objLocale = (jstring)env->CallStaticObjectMethod(cls, mid);
-		if (!objLocale) return NULL;
+		if (!objLocale) return rho_ruby_create_string("");
 		const char *s = env->GetStringUTFChars(objLocale, JNI_FALSE);
 		g_currentLocale = s;
 		env->ReleaseStringUTFChars(objLocale, s);
 	}
-	return g_currentLocale.c_str();
+	return rho_ruby_create_string(g_currentLocale.c_str());
 }
 
 RHO_GLOBAL int rho_sys_get_screen_width()
@@ -128,4 +129,13 @@ RHO_GLOBAL int rho_sys_get_screen_height()
 		g_screenHeight = jnienv()->CallStaticIntMethod(cls, mid);
 	}
 	return g_screenHeight;
+}
+
+RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
+{
+    //TODO: has_camera
+	if (strcasecmp("has_camera",szPropName) == 0) 
+        return rho_ruby_create_boolean(1);
+
+    return rho_ruby_get_NIL();
 }

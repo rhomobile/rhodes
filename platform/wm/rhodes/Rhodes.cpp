@@ -209,21 +209,10 @@ public :
         return m_strRootPath; 
     }
 
-    const char* getCurrentLocale()
-    {
-        wchar_t szLang[20];
-        int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME , szLang, 20);
-        szLang[2] = 0;
-        wcslwr(szLang);
-
-        m_strLocale = rho::common::convertToStringA(szLang);
-        return m_strLocale.c_str();
-    }
-
 private:
     CMainWindow m_appWindow;
     //CServerHost* m_pServerHost;
-    rho::String m_strRootPath, m_strLocale;
+    rho::String m_strRootPath;
 	int m_nRestarting;
 };
 
@@ -249,29 +238,6 @@ extern "C" const char* rho_native_rhopath()
 extern "C" void rho_conf_show_log()
 {
     _AtlModule.DoShowLog();
-}
-
-extern "C" char* rho_sys_get_locale()
-{
-    return const_cast<char*>(_AtlModule.getCurrentLocale());
-}
-
-extern "C" int rho_sys_get_screen_width()
-{
-#ifdef _WIN32_WCE
-	return GetSystemMetrics(SM_CXSCREEN);
-#else
-	return CMainWindow::getScreenWidth();
-#endif
-}
-
-extern "C" int rho_sys_get_screen_height()
-{
-#ifdef _WIN32_WCE
-	return GetSystemMetrics(SM_CYSCREEN);
-#else
-	return CMainWindow::getScreenHeight();
-#endif
 }
 
 //Hook for ruby call to refresh web view
@@ -309,10 +275,6 @@ extern "C" int webview_active_tab() {
 
 extern "C" char* webview_current_location(int index) {
     return const_cast<char*>(RHODESAPP().getCurrentUrl(index).c_str());
-}
-
-extern "C" VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
-	return 0;
 }
 
 extern "C" void rho_net_impl_network_indicator(int active)
