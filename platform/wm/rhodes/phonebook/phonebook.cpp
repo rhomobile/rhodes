@@ -46,7 +46,7 @@ static VALUE _getRecord(CABRecord* record) {
 		record->enumValues(_addRecordValue,&hash);
 		return hash;
 	}
-	return getnil();
+	return rho_ruby_get_NIL();
 }
 #endif
 
@@ -72,7 +72,7 @@ VALUE getallPhonebookRecords(void* pb) {
 		return hash;
 	}
 #endif
-	return getnil();	
+	return rho_ruby_get_NIL();	
 }
 
 VALUE getPhonebookRecord(void* pb, char* id) {
@@ -87,17 +87,17 @@ VALUE getPhonebookRecord(void* pb, char* id) {
 		}
 	}
 #endif
-	return getnil();	
+	return rho_ruby_get_NIL();	
 }
 
 //==================================================================================
 
 VALUE getfirstPhonebookRecord(void* pb) {
-	return getnil();
+	return rho_ruby_get_NIL();
 }
 
 VALUE getnextPhonebookRecord(void* pb) {
-	return getnil();}
+	return rho_ruby_get_NIL();}
 
 //==================================================================================
 

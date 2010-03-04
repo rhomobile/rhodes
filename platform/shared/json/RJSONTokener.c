@@ -279,7 +279,7 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
       if(strncasecmp(json_null_str, tok->pb->buf,
 		     min(tok->st_pos+1, strlen(json_null_str))) == 0) {
 	if(tok->st_pos == strlen(json_null_str)) {
-	  current = (struct json_object*)getnil();
+	  current = (struct json_object*)rho_ruby_get_NIL();
 	  saved_state = json_tokener_state_finish;
 	  state = json_tokener_state_eatws;
 	  goto redo_char;
@@ -579,5 +579,5 @@ VALUE rho_json_parse(VALUE v,VALUE str)
     if ( szError )
         free(szError);
 
-    return getnil();
+    return rho_ruby_get_NIL();
 }

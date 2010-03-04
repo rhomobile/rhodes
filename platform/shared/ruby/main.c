@@ -125,7 +125,7 @@ const char* rho_rhodesapp_getblobsdirpath()
     return "";
 }
 
-VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values) {
+VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values) {
 	return 0;
 }
 

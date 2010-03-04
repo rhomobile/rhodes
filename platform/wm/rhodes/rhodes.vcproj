@@ -60,7 +60,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;."
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -157,7 +157,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;."
 				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -253,7 +253,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;."
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;SMARTPHONE2003_UI_MODEL;SMARTPHONE2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -442,7 +442,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;."
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -537,7 +537,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;."
 				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -634,7 +634,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;."
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;SMARTPHONE2003_UI_MODEL;SMARTPHONE2003_UI_MODEL"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -835,10 +835,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Vibrate.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -906,6 +902,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Vibrate.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -949,11 +949,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\RingtoneManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\RingtoneManager.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
@@ -1036,6 +1036,10 @@
 				</File>
 				<File
 					RelativePath=".\rho\rubyext\GeoLocationImpl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\rubyext\SystemImpl.cpp"
 					>
 				</File>
 			</Filter>
