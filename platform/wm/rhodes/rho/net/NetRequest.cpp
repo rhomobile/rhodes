@@ -119,14 +119,3 @@ INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, 
 
 }
 }
-
-extern "C" {
-
-int g_rho_net_has_network = 1;
-
-int rho_net_has_network()
-{
-	return g_rho_net_has_network > 0 ? 1 : 0;
-}
-
-}

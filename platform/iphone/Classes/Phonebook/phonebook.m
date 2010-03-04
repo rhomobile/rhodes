@@ -308,7 +308,7 @@ static VALUE _getRecordByIndex(CFArrayRef people, CFIndex index, ABRecordID* pre
 	if (ref!=NULL) {
 		return _getRecord(ref,precordId);
 	}
-	return getnil();
+	return rho_ruby_get_NIL();
 }
 
 VALUE getallPhonebookRecords(void* pb) {
@@ -327,7 +327,7 @@ VALUE getallPhonebookRecords(void* pb) {
 		
 		return hash; 
 	}
-	return getnil();	
+	return rho_ruby_get_NIL();	
 }
 
 VALUE getPhonebookRecord(void* pb, char* id) {
@@ -341,7 +341,7 @@ VALUE getPhonebookRecord(void* pb, char* id) {
 			return _getRecord(ref,NULL);
 		}
 	}
-	return getnil();		
+	return rho_ruby_get_NIL();		
 }
 
 //==================================================================================
@@ -352,7 +352,7 @@ VALUE getfirstPhonebookRecord(void* pb) {
 		_getAllPeople(phonebook);
 		return _getRecordByIndex(phonebook->_people, phonebook->_index, NULL);
 	}
-	return getnil();
+	return rho_ruby_get_NIL();
 }
 
 VALUE getnextPhonebookRecord(void* pb) {
@@ -363,7 +363,7 @@ VALUE getnextPhonebookRecord(void* pb) {
 			return _getRecordByIndex(phonebook->_people, phonebook->_index, NULL);
 		}
 	}
-	return getnil();
+	return rho_ruby_get_NIL();
 }
 
 //==================================================================================
