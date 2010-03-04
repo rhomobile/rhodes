@@ -78,44 +78,8 @@ static int check_pem(const char *nm, const char *name);
 
 int PEM_def_callback(char *buf, int num, int w, void *key)
 	{
-#ifdef OPENSSL_NO_FP_API
-	/* We should not ever call the default callback routine from
-	 * windows. */
 	PEMerr(PEM_F_PEM_DEF_CALLBACK,ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
 	return(-1);
-#else
-	int i,j;
-	const char *prompt;
-	if(key) {
-		i=strlen(key);
-		i=(i > num)?num:i;
-		memcpy(buf,key,i);
-		return(i);
-	}
-
-	prompt=EVP_get_pw_prompt();
-	if (prompt == NULL)
-		prompt="Enter PEM pass phrase:";
-
-	for (;;)
-		{
-		i=EVP_read_pw_string(buf,num,prompt,w);
-		if (i != 0)
-			{
-			PEMerr(PEM_F_PEM_DEF_CALLBACK,PEM_R_PROBLEMS_GETTING_PASSWORD);
-			memset(buf,0,(unsigned int)num);
-			return(-1);
-			}
-		j=strlen(buf);
-		if (j < MIN_LENGTH)
-			{
-			fprintf(stderr,"phrase is too short, needs to be at least %d chars\n",MIN_LENGTH);
-			}
-		else
-			break;
-		}
-	return(j);
-#endif
 	}
 
 void PEM_proc_type(char *buf, int type)

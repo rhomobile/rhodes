@@ -63,6 +63,7 @@
 #include <openssl/evp.h>
 #include <openssl/ui.h>
 
+#if 0
 /* should be init to zeros. */
 static char prompt_string[80];
 
@@ -106,6 +107,7 @@ int EVP_read_pw_string(char *buf, int len, const char *prompt, int verify)
 	OPENSSL_cleanse(buff,BUFSIZ);
 	return ret;
 	}
+#endif /* #if 0 */
 
 int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md, 
 	     const unsigned char *salt, const unsigned char *data, int datal,

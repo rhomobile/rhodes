@@ -276,7 +276,7 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     return retval;
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
   (JNIEnv *env, jobject, jstring path)
 {
     const char *s = env->GetStringUTFChars(path, JNI_FALSE);
@@ -284,7 +284,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
     env->ReleaseStringUTFChars(path, s);
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
   (JNIEnv *env, jclass, jstring src, jstring dst)
 {
     const char *strSrc = env->GetStringUTFChars(src, JNI_FALSE);
@@ -297,7 +297,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
         env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Can not create symlink");
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
     // Init SQLite temp directory
@@ -320,47 +320,47 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
     rho_rhodesapp_start();
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
   (JNIEnv *, jobject)
 {
     rho_rhodesapp_destroy();
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_doSyncAllSources
   (JNIEnv *, jobject, jboolean show_status_popup)
 {
     rho_sync_doSyncAllSources(show_status_popup);
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
     return env->NewStringUTF(s);
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
     return env->NewStringUTF(s);
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
     return env->NewStringUTF(s);
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
     return env->NewStringUTF(s);
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
   (JNIEnv *, jobject, jstring strUrl)
 {
     JNIEnv *env = jnienv();
