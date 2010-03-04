@@ -49,7 +49,7 @@ VALUE getallPhonebookRecords(void* pb)
 		return phonebook->getallPhonebookRecords();
 	}
 
-	return getnil();	
+	return rho_ruby_get_NIL();	
 }
 
 VALUE getPhonebookRecord(void* pb, char* id) 
@@ -59,19 +59,19 @@ VALUE getPhonebookRecord(void* pb, char* id)
 		CPhonebook* phonebook = (CPhonebook*)pb;
 		return phonebook->getContact(id);
 	}
-	return getnil();	
+	return rho_ruby_get_NIL();	
 }
 
 //==================================================================================
 
 VALUE getfirstPhonebookRecord(void* pb) {
 	pb;
-	return getnil();
+	return rho_ruby_get_NIL();
 }
 
 VALUE getnextPhonebookRecord(void* pb) {
 	pb;
-	return getnil();}
+	return rho_ruby_get_NIL();}
 
 //==================================================================================
 

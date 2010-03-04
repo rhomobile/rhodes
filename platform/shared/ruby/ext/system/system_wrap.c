@@ -1546,12 +1546,16 @@ static VALUE mSystem;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values);
-#define syscall rho_syscall
-extern char* get_property(char* property);
-extern VALUE has_network();
+extern VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values);
+#define syscall rho_sys_makephonecall
 
-extern char* rho_sys_get_locale();
+extern VALUE rho_sys_get_property(char* property);
+#define get_property rho_sys_get_property
+
+extern VALUE rho_sys_has_network();
+#define has_network rho_sys_has_network
+
+extern VALUE rho_sys_get_locale();
 #define get_locale rho_sys_get_locale
 
 extern int rho_sys_get_screen_width();
@@ -1679,30 +1683,6 @@ SWIG_AsVal_int (VALUE obj, int *val)
 }
 
 
-SWIGINTERNINLINE VALUE 
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > LONG_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
-    } else {
-      return rb_str_new(carray, (long)(size));
-    }
-  } else {
-    return Qnil;
-  }
-}
-
-
-SWIGINTERNINLINE VALUE 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
-
   #define SWIG_From_long   LONG2NUM 
 
 
@@ -1776,7 +1756,7 @@ fail:
 SWIGINTERN VALUE
 _wrap_get_property(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
-  char *result = 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -1790,8 +1770,8 @@ _wrap_get_property(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "get_property" "', argument " "1"" of type '" "char *""'");
   }
   arg1 = (char *)(buf1);
-  result = (char *)get_property(arg1);
-  vresult = SWIG_FromCharPtr((const char *)result);
+  result = (VALUE)get_property(arg1);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
 fail:
@@ -1818,14 +1798,14 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_get_locale(int argc, VALUE *argv, VALUE self) {
-  char *result = 0 ;
+  VALUE result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (char *)get_locale();
-  vresult = SWIG_FromCharPtr((const char *)result);
+  result = (VALUE)get_locale();
+  vresult = result;
   return vresult;
 fail:
   return Qnil;

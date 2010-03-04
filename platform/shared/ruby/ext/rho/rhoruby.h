@@ -37,7 +37,6 @@ void RhoRubyInitApp();
 //void RhoRubyThreadStop();
 void rho_ruby_activateApp();
 
-VALUE getnil();	
 VALUE createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
 VALUE addIntToHash(VALUE hash, const char* key, int val);	
