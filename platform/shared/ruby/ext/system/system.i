@@ -1,12 +1,16 @@
 /* system.i */
 %module System
 %{
-extern VALUE rho_syscall(const char* callname, int nparams, char** param_names, char** param_values);
-#define syscall rho_syscall
-extern char* get_property(char* property);
-extern VALUE has_network();
+extern VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values);
+#define syscall rho_sys_makephonecall
 
-extern char* rho_sys_get_locale();
+extern VALUE rho_sys_get_property(char* property);
+#define get_property rho_sys_get_property
+
+extern VALUE rho_sys_has_network();
+#define has_network rho_sys_has_network
+
+extern VALUE rho_sys_get_locale();
 #define get_locale rho_sys_get_locale
 
 extern int rho_sys_get_screen_width();
@@ -41,8 +45,8 @@ extern int rho_sys_get_screen_height();
  free((void *) $3);
 }
 extern VALUE syscall(const char* callname, int nparams, char** param_names, char** param_values);
-extern char* get_property(char* property);
+extern VALUE get_property(char* property);
 extern VALUE has_network();
-extern char* get_locale();
+extern VALUE get_locale();
 extern int get_screen_width();
 extern int get_screen_height();

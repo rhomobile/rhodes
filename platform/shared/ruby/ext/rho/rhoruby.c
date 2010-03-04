@@ -201,10 +201,6 @@ void RhoRubyStop()
 
 char* makeControllerCall(char* classname, char* methodname);
 
-VALUE getnil() {
-    return Qnil;
-}
-
 //typedef void rho_eachstr_func(const char*, const char*, void*);
 struct CHashEnumData
 {
