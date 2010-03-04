@@ -133,9 +133,18 @@ RHO_GLOBAL int rho_sys_get_screen_height()
 
 RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
 {
-    //TODO: has_camera
-	if (strcasecmp("has_camera",szPropName) == 0) 
-        return rho_ruby_create_boolean(1);
+    VALUE nil = rho_ruby_get_NIL();
 
-    return rho_ruby_get_NIL();
+    JNIEnv *env = jnienv();
+
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    if (!cls) return nil;
+    if (strcasecmp("has_camera", szPropName) == 0) {
+        jmethodID mid = getJNIClassStaticMethod(cls, "hasCamera", "()Z");
+        if (!mid) return nil;
+        jboolean result = env->CallStaticBooleanMethod(cls, mid);
+        return rho_ruby_create_boolean((int)result);
+    }
+
+    return nil;
 }
