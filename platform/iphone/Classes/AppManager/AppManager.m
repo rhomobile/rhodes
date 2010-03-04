@@ -199,9 +199,10 @@ int rho_sys_get_screen_height()
 
 VALUE rho_sysimpl_get_property(char* szPropName)
 {
-    //TODO: has_camera
-	if (strcasecmp("has_camera",szPropName) == 0) 
-        return rho_ruby_create_boolean(1);
+    if (strcasecmp("has_camera",szPropName) == 0) {
+        int has_camera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+        return rho_ruby_create_boolean(has_camera);
+    }
 
     return rho_ruby_get_NIL();
 }
