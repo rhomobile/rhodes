@@ -314,7 +314,7 @@ VALUE CPhonebook::getContact(char* id)
         return hash;
 	}
     
-    return getnil();
+    return rho_ruby_get_NIL();
 }
 
 CContactCard* CPhonebook::createRecord()

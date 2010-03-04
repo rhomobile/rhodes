@@ -24,12 +24,11 @@
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <Foundation/Foundation.h>
 #include "common/RhoPort.h"
+#include "ruby/ext/rho/rhoruby.h"
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
 
-//extern int logged_in();
-//extern int has_network_impl();
 extern int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags);
 typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
 
@@ -49,22 +48,22 @@ void rho_net_impl_network_indicator(int active)
 }
 
 // Determines network connectivity
-int rho_net_has_network() {
+VALUE rho_sys_has_network() {
 	SCNetworkReachabilityFlags defaultRouteFlags;
 	int defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
 	if (defaultRouteIsAvailable == 1) {
 		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
 			// Ad-Hoc network, not available
-			return 0;
+			return rho_ruby_create_boolean(0);
 		}
 		else if (defaultRouteFlags & ReachableViaCarrierDataNetwork) {
 			// Cell network available
-			return 1;
+			return rho_ruby_create_boolean(1);
 		}
 		// WIFI available
-		return 1;
+		return rho_ruby_create_boolean(1);
 	}
-	return 0;
+	return rho_ruby_create_boolean(0);
 }
 
 int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)

@@ -969,6 +969,10 @@
 				RelativePath="..\..\shared\rubyext\GeoLocation.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\rubyext\System.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
