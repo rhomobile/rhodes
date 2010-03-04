@@ -7,7 +7,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Camera"
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
   (JNIEnv *env, jclass, jstring callbackObj, jstring filePathObj, jstring errorObj, jboolean cancelled)
 {
     const char *callbackStr = env->GetStringUTFChars(callbackObj, JNI_FALSE);

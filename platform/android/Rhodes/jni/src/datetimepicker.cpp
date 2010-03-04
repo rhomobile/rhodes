@@ -7,7 +7,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "DateTimePicker"
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_datetime_DateTimePicker_callback
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_datetime_DateTimePicker_callback
   (JNIEnv *env, jclass, jstring callbackObj, jlong result, jbyteArray opaqueObj, jboolean cancelled)
 {
     const char *callbackStr = env->GetStringUTFChars(callbackObj, JNI_FALSE);

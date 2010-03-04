@@ -82,7 +82,7 @@ namespace "config" do
       puts "Missing or invalid 'android-ndk' section in rhobuild.yml"
       exit 1
     end
-    
+
     $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
@@ -347,16 +347,33 @@ namespace "build" do
           args << "no-shared"
           args << "zlib-dynamic"
           args << "no-asm"
-          args << "no-mdc2"
-          args << "no-rc5"
+          # Ciphers
           args << "no-camellia"
-          args << "no-seed"
+          args << "no-cast"
           args << "no-cms"
-          args << "no-jpake"
           args << "no-dso"
-          args << "no-krb5"
-          args << "no-montasm"
+          args << "no-ec"
+          args << "no-ecdh"
+          args << "no-ecdsa"
+          args << "no-engine"
+          args << "no-err"
           args << "no-fips"
+          args << "no-idea"
+          args << "no-jpake"
+          args << "no-krb5"
+          args << "no-md2"
+          args << "no-md4"
+          args << "no-mdc2"
+          args << "no-montasm"
+          args << "no-pqueue"
+          args << "no-rc2"
+          args << "no-rc4"
+          args << "no-rc5"
+          args << "no-seed"
+          args << "no-store"
+          args << "no-txt_db"
+          # Others
+          args << "no-ui"
           args << "no-engines"
           args << "no-apps"
           args << "no-tools"
@@ -502,10 +519,8 @@ namespace "build" do
           args << "-D__NEW__"
           args << "-ffunction-sections"
           args << "-fdata-sections"
-          args << "-fvisibility=hidden"
           args << "-fno-rtti"
           args << "-fno-exceptions"
-          args << "-fvisibility-inlines-hidden"
 
           File.read(File.join($builddir, "libstlport_build.files")).each do |f|
             cc_compile f, objdir, args or exit 1
@@ -679,7 +694,7 @@ namespace "build" do
         stub << lparam
       end
 
-	  mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
+  	  mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
       cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
 
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
