@@ -106,7 +106,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 		String strBody = getRegisterBody();
     	strBody += "&client_id=" + client_id;
 
-        NetResponse(resp, getNet().pushData(serverUrl+"clientregister", strBody, null ));
+        NetResponse(resp, getNet().pushData(serverUrl+"clientregister", strBody, &oSync ));
 		if( resp.isOK() )
         {
 //				try {
