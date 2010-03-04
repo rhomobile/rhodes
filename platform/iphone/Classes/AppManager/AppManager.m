@@ -19,6 +19,7 @@
 #import "common/RhoConf.h"
 #import "common/RhodesApp.h"
 #import "logging/RhoLogConf.h"
+#include "ruby/ext/rho/rhoruby.h"
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -177,11 +178,11 @@ const char* rho_native_rhopath()
 	return root;
 }
 
-const char* rho_sys_get_locale() 
+VALUE rho_sys_get_locale() 
 {
 	NSString *preferredLang = [[NSLocale preferredLanguages] objectAtIndex:0];
 	
-	return [preferredLang UTF8String];
+	return rho_ruby_create_string( [preferredLang UTF8String] );
 }
 
 int rho_sys_get_screen_width()
@@ -194,6 +195,15 @@ int rho_sys_get_screen_height()
 {
     CGRect rect = [[UIScreen mainScreen] bounds];
     return rect.size.height;
+}
+
+VALUE rho_sysimpl_get_property(char* szPropName)
+{
+    //TODO: has_camera
+	if (strcasecmp("has_camera",szPropName) == 0) 
+        return rho_ruby_create_boolean(1);
+
+    return rho_ruby_get_NIL();
 }
 
 const char* GetApplicationsRootPath() {
