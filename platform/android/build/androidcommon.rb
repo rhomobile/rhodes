@@ -32,6 +32,7 @@ def cc_def_args
     args = []
     args << "--sysroot"
     args << $ndksysroot
+    #args << "-fvisibility=hidden"
     args << "-fPIC"
     args << "-mandroid"
     args << "-DANDROID"
@@ -52,6 +53,7 @@ end
 def cpp_def_args
   if $cpp_def_args_val.nil?
     args = []
+    args << "-fvisibility-inlines-hidden"
     args << "-fexceptions -frtti" unless USE_STLPORT
     $cpp_def_args_val = args
   end
@@ -140,7 +142,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args = []
   args << "-nostdlib"
   args << "-Wl,-shared,-Bsymbolic"
-  args << "-Wl,--whole-archive"
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"

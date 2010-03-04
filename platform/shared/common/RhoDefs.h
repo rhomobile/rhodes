@@ -19,11 +19,21 @@
 #endif
 
 #ifdef __cplusplus
-#define RHO_GLOBAL extern "C"
-#define RHO_LOCAL
+# if defined(__GNUC__) && __GNUC__ >= 4
+#  define RHO_GLOBAL extern "C" __attribute__ ((visibility ("default")))
+#  define RHO_LOCAL  __attribute__ ((visibility ("hidden")))
+# else
+#  define RHO_GLOBAL extern "C"
+#  define RHO_LOCAL
+# endif
 #else
-#define RHO_GLOBAL extern
-#define RHO_LOCAL
+# if defined(__GNUC__) && __GNUC__ >= 4
+#  define RHO_GLOBAL extern __attribute__ ((visibility ("default")))
+#  define RHO_LOCAL  __attribute__ ((visibility ("hidden")))
+# else
+#  define RHO_GLOBAL extern
+#  define RHO_LOCAL
+# endif
 #endif
 
 #define RHO_ABORT(x) \

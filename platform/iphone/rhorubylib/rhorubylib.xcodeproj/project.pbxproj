@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46056D151031DC7E00C21967 /* datetimepicker_wrap.c */; };
-		4678FCCC0F8187A10054340C /* network.c in Sources */ = {isa = PBXBuildFile; fileRef = 4678FCCA0F8187A10054340C /* network.c */; };
-		4678FCCD0F8187A10054340C /* network.h in Headers */ = {isa = PBXBuildFile; fileRef = 4678FCCB0F8187A10054340C /* network.h */; };
 		46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */; };
 		46AF502F103DE480006E02E1 /* nativebar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46AF502D103DE480006E02E1 /* nativebar_wrap.c */; };
 		5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527B0FD3E3C100CB43FD /* rhoruby.c */; };
@@ -25,8 +23,6 @@
 		D38F7B5F110647510030B1F4 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = D38F7B5E110647510030B1F4 /* extensions.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F5177F180EE5B624000EA1A0 /* system_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5177F170EE5B624000EA1A0 /* system_wrap.c */; };
-		F5177F210EE5C940000EA1A0 /* system_properties.c in Sources */ = {isa = PBXBuildFile; fileRef = F5177F1F0EE5C940000EA1A0 /* system_properties.c */; };
-		F5177F220EE5C940000EA1A0 /* system_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5177F200EE5C940000EA1A0 /* system_properties.h */; };
 		F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FE70F008AA600E46829 /* phonebook_wrap.c */; };
 		F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */; };
 		F5C61CAA0F3CFE7800207621 /* webview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C61CA90F3CFE7800207621 /* webview_wrap.c */; };
@@ -121,8 +117,6 @@
 
 /* Begin PBXFileReference section */
 		46056D151031DC7E00C21967 /* datetimepicker_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = datetimepicker_wrap.c; path = ../../shared/ruby/ext/datetimepicker/datetimepicker_wrap.c; sourceTree = SOURCE_ROOT; };
-		4678FCCA0F8187A10054340C /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network.c; path = ../../shared/ruby/ext/system/network.c; sourceTree = SOURCE_ROOT; };
-		4678FCCB0F8187A10054340C /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = ../../shared/ruby/ext/system/network.h; sourceTree = SOURCE_ROOT; };
 		46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoconf_wrap.c; path = ../../shared/ruby/ext/rhoconf/rhoconf_wrap.c; sourceTree = SOURCE_ROOT; };
 		46AF502D103DE480006E02E1 /* nativebar_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nativebar_wrap.c; sourceTree = "<group>"; };
 		5C76527B0FD3E3C100CB43FD /* rhoruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoruby.c; path = ext/rho/rhoruby.c; sourceTree = "<group>"; };
@@ -139,8 +133,6 @@
 		D38F7B5E110647510030B1F4 /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = ext/rho/extensions.c; sourceTree = "<group>"; };
 		F516687F0FFD39D80079F023 /* alert_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alert_wrap.c; path = ../../shared/ruby/ext/alert/alert_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5177F170EE5B624000EA1A0 /* system_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = system_wrap.c; path = ../../shared/ruby/ext/system/system_wrap.c; sourceTree = SOURCE_ROOT; };
-		F5177F1F0EE5C940000EA1A0 /* system_properties.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = system_properties.c; path = ../../shared/ruby/ext/system/system_properties.c; sourceTree = SOURCE_ROOT; };
-		F5177F200EE5C940000EA1A0 /* system_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = system_properties.h; path = ../../shared/ruby/ext/system/system_properties.h; sourceTree = SOURCE_ROOT; };
 		F58E7FE70F008AA600E46829 /* phonebook_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = phonebook_wrap.c; path = ../../shared/ruby/ext/phonebook/phonebook_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = camera_wrap.c; path = ../../shared/ruby/ext/camera/camera_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5C61CA90F3CFE7800207621 /* webview_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = webview_wrap.c; path = ../../shared/ruby/ext/webview/webview_wrap.c; sourceTree = SOURCE_ROOT; };
@@ -345,10 +337,6 @@
 		F5177F150EE5B5D9000EA1A0 /* system */ = {
 			isa = PBXGroup;
 			children = (
-				4678FCCA0F8187A10054340C /* network.c */,
-				4678FCCB0F8187A10054340C /* network.h */,
-				F5177F1F0EE5C940000EA1A0 /* system_properties.c */,
-				F5177F200EE5C940000EA1A0 /* system_properties.h */,
 				F5177F170EE5B624000EA1A0 /* system_wrap.c */,
 			);
 			name = system;
@@ -598,8 +586,6 @@
 				F5E360D40EB6A84600226287 /* config.h in Headers */,
 				F5E362410EB785C100226287 /* crt_externs.h in Headers */,
 				F5E362990EB7927100226287 /* thread_pthread.h in Headers */,
-				F5177F220EE5C940000EA1A0 /* system_properties.h in Headers */,
-				4678FCCD0F8187A10054340C /* network.h in Headers */,
 				5C76527F0FD3E3C100CB43FD /* rhoruby.h in Headers */,
 				5CF8DBC610B1D45C00247AB4 /* addrinfo.h in Headers */,
 				5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */,
@@ -719,11 +705,9 @@
 				F5E363050EB79F8400226287 /* lgamma_r.c in Sources */,
 				F5E363080EB7A0DB00226287 /* newline.c in Sources */,
 				F5177F180EE5B624000EA1A0 /* system_wrap.c in Sources */,
-				F5177F210EE5C940000EA1A0 /* system_properties.c in Sources */,
 				F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */,
 				F5C61CAA0F3CFE7800207621 /* webview_wrap.c in Sources */,
 				F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */,
-				4678FCCC0F8187A10054340C /* network.c in Sources */,
 				5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */,
 				5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */,
 				5C7652830FD3E3E000CB43FD /* stringio.c in Sources */,

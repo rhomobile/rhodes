@@ -4,13 +4,13 @@
 
 #include <common/RhodesApp.h>
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jobject)
 {
     return env->NewStringUTF(LOGCONF().getEnabledCategories().c_str());
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
   (JNIEnv *env, jobject, jstring value)
 {
     const char *str = env->GetStringUTFChars(value, JNI_FALSE);
@@ -20,13 +20,13 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
     env->ReleaseStringUTFChars(value, str);
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
   (JNIEnv *env, jobject)
 {
     return env->NewStringUTF(LOGCONF().getDisabledCategories().c_str());
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
   (JNIEnv *env, jobject, jstring value)
 {
     const char *str = env->GetStringUTFChars(value, JNI_FALSE);
@@ -36,31 +36,31 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategorie
     env->ReleaseStringUTFChars(value, str);
 }
 
-JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
+RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
   (JNIEnv *, jobject)
 {
     return LOGCONF().getMinSeverity();
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setMinSeverity
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setMinSeverity
   (JNIEnv *, jobject, jint severity)
 {
     LOGCONF().setMinSeverity(severity);
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_saveToFile
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_saveToFile
   (JNIEnv *, jobject)
 {
     LOGCONF().saveToFile();
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_clearLog
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_clearLog
   (JNIEnv *, jobject)
 {
     LOGCONF().clearLog();
 }
 
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
   (JNIEnv *env, jobject)
 {
     rho::String logText;
@@ -68,13 +68,13 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
     return env->NewStringUTF(logText.c_str());
 }
 
-JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
+RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
   (JNIEnv *, jobject)
 {
     return LOGCONF().getLogTextPos();
 }
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
   (JNIEnv *, jobject)
 {
     rho_conf_send_log();

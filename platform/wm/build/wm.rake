@@ -114,3 +114,26 @@ namespace "clean" do
     task :all => "clean:wm:rhodes"
   end
 end
+
+namespace "run" do
+  desc "Run win32" 
+  task :win32 => ["config:wm"] do
+    $vcbuild = "vcbuild"
+    chdir $config["build"]["wmpath"]
+
+    args = ['/M4', 'rhodes.sln', '"debug|win32"']
+    puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+    puts Jake.run($vcbuild,args)
+    unless $? == 0
+      puts "Error building"
+      exit 1
+    end
+
+    args = [' ']
+    puts Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args)
+    unless $? == 0
+      puts "Error to run rhodes"
+      exit 1
+    end
+  end
+end
