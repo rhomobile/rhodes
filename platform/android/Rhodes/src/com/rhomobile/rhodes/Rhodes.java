@@ -81,6 +81,8 @@ public class Rhodes extends Activity {
 	
 	private static int screenWidth;
 	private static int screenHeight;
+	
+	private static boolean isCameraAvailable;
 
 	private FrameLayout outerFrame;
 	private MainView mainView;
@@ -341,6 +343,9 @@ public class Rhodes extends Activity {
 		screenHeight = d.getHeight();
 		screenWidth = d.getWidth();
 		
+		// TODO: detect camera availability
+		isCameraAvailable = true;
+		
 		// Register custom uri handlers here
 		UriHandler[] handlers = {
 				new MailUriHandler(this),
@@ -518,6 +523,10 @@ public class Rhodes extends Activity {
 	
 	public static int getScreenHeight() {
 		return screenHeight;
+	}
+	
+	public static boolean hasCamera() {
+		return isCameraAvailable;
 	}
 	
 	private void saveCurrentLocation(String url) {
