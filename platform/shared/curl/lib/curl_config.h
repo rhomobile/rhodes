@@ -29,6 +29,8 @@
 /* to disable HTTP */
 /* #undef CURL_DISABLE_HTTP */
 
+#define CURL_DISABLE_NTLM 1
+
 /* to disable LDAP */
 #define CURL_DISABLE_LDAP 1
 

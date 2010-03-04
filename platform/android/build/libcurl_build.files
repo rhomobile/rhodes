@@ -28,7 +28,6 @@ platform/shared/curl/lib/http.c
 platform/shared/curl/lib/http_chunks.c
 platform/shared/curl/lib/http_digest.c
 platform/shared/curl/lib/http_negotiate.c
-platform/shared/curl/lib/http_ntlm.c
 platform/shared/curl/lib/if2ip.c
 platform/shared/curl/lib/inet_ntop.c
 platform/shared/curl/lib/inet_pton.c

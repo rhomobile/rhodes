@@ -9,7 +9,7 @@ extern VALUE rho_sys_get_locale();
 extern int rho_sys_get_screen_width();
 extern int rho_sys_get_screen_height();
 
-static char* getPlatformProp()
+static const char* getPlatformProp()
 {
 #if defined(OS_MACOSX)
 	return "APPLE";

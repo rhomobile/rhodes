@@ -7,7 +7,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GeoLocation"
 
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallback
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallback
   (JNIEnv *, jobject)
 {
     RAWTRACE("Call geo callback");

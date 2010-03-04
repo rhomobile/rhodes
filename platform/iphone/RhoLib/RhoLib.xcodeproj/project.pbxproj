@@ -47,6 +47,7 @@
 		5CBD462A1087399700107D0D /* URI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBD46271087399700107D0D /* URI.cpp */; };
 		5CBD462B1087399700107D0D /* URI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBD46281087399700107D0D /* URI.h */; };
 		5CE294121009D8D9009A75F6 /* isysteminfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE294111009D8D9009A75F6 /* isysteminfo.h */; };
+		5CECDBB3113FE3620084A75B /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CECDBB2113FE3620084A75B /* System.cpp */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
 		BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */; };
 		BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */; };
@@ -101,6 +102,7 @@
 		5CBD46271087399700107D0D /* URI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = URI.cpp; path = ../../shared/net/URI.cpp; sourceTree = SOURCE_ROOT; };
 		5CBD46281087399700107D0D /* URI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URI.h; path = ../../shared/net/URI.h; sourceTree = SOURCE_ROOT; };
 		5CE294111009D8D9009A75F6 /* isysteminfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = isysteminfo.h; path = ../../shared/common/isysteminfo.h; sourceTree = SOURCE_ROOT; };
+		5CECDBB2113FE3620084A75B /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../shared/rubyext/System.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixThreadImpl.h; path = ../../shared/common/PosixThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CURLNetRequest.cpp; path = ../../shared/net/CURLNetRequest.cpp; sourceTree = SOURCE_ROOT; };
@@ -218,6 +220,7 @@
 		5C798931113BD10C005F8736 /* rubyext */ = {
 			isa = PBXGroup;
 			children = (
+				5CECDBB2113FE3620084A75B /* System.cpp */,
 				5C798932113BD148005F8736 /* GeoLocation.cpp */,
 				5C798933113BD148005F8736 /* GeoLocation.h */,
 			);
@@ -352,6 +355,7 @@
 				BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */,
 				BDD11ECD113664E700349BE3 /* rhoparams.c in Sources */,
 				5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */,
+				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
