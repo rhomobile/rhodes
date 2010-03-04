@@ -1512,19 +1512,7 @@
 					Name="system"
 					>
 					<File
-						RelativePath="..\..\shared\ruby\ext\system\network.c"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\ruby\ext\system\network.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\ruby\ext\system\system_properties.c"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\ruby\ext\system\system_properties.h"
+						RelativePath="..\..\shared\ruby\ext\system\system.i"
 						>
 					</File>
 					<File

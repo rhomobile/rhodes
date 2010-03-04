@@ -37,8 +37,6 @@ platform/shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c
 platform/shared/ruby/ext/stringio/stringio.c
 platform/shared/ruby/ext/strscan/strscan.c
 platform/shared/ruby/ext/syncengine/syncengine_wrap.c
-platform/shared/ruby/ext/system/network.c
-platform/shared/ruby/ext/system/system_properties.c
 platform/shared/ruby/ext/system/system_wrap.c
 platform/shared/ruby/ext/webview/webview_wrap.c
 platform/shared/ruby/file.c

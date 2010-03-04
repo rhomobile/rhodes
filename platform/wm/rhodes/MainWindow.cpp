@@ -41,7 +41,8 @@ extern HREGNOTIFY g_hNotify;
 
 #endif
 
-extern "C" int g_rho_net_has_network;
+extern "C" void rho_sysimpl_sethas_network(int nValue);
+
 using namespace rho::common;
 using namespace rho;
 
@@ -541,7 +542,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 #if defined (_WIN32_WCE)
 
-	g_rho_net_has_network = (int)wParam;
+	rho_sysimpl_sethas_network( (int)wParam );
 
 #endif
 	return 0;
