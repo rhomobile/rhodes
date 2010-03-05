@@ -1,6 +1,6 @@
 #include "JNIRhodes.h"
 
-#include <com_rhomobile_rhodes_datetime_DateTimePicker.h>
+#include <jni/com_rhomobile_rhodes_datetime_DateTimePicker.h>
 
 #include <common/RhodesApp.h>
 
