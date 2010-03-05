@@ -7,13 +7,13 @@
 
 RHO_GLOBAL void webview_navigate(char* url, int index)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "navigate", "(Ljava/lang/String;I)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "navigate", "(Ljava/lang/String;I)V");
     if (!mid) return;
 
     char *normUrl = rho_http_normalizeurl(url);
-    JNIEnv *env = jnienv();
     jstring objNormUrl = env->NewStringUTF(normUrl);
     env->CallStaticVoidMethod(cls, mid, objNormUrl, index);
     env->DeleteLocalRef(objNormUrl);
@@ -21,23 +21,24 @@ RHO_GLOBAL void webview_navigate(char* url, int index)
 
 RHO_GLOBAL void webview_refresh(int index)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "refresh", "(I)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "refresh", "(I)V");
     if (!mid) return;
-    jnienv()->CallStaticVoidMethod(cls, mid, index);
+    env->CallStaticVoidMethod(cls, mid, index);
 }
 
 RHO_GLOBAL char* webview_current_location(int index)
 {
     static rho::String curLoc;
 
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassStaticMethod(cls, "currentLocation", "(I)Ljava/lang/String;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "currentLocation", "(I)Ljava/lang/String;");
     if (!mid) return NULL;
 
-    JNIEnv *env = jnienv();
     jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, index);
     const char *s = env->GetStringUTFChars(str, JNI_FALSE);
     curLoc = s;
@@ -52,25 +53,25 @@ RHO_GLOBAL void webview_set_menu_items(VALUE valMenu)
 
 RHO_GLOBAL int webview_active_tab()
 {
-	jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
-	if (!cls) return 0;
-	jmethodID mid = getJNIClassStaticMethod(cls, "activeTab", "()I");
-	if (!mid) return 0;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "activeTab", "()I");
+    if (!mid) return 0;
 
-	JNIEnv *env = jnienv();
-	return env->CallStaticIntMethod(cls, mid);
+    return env->CallStaticIntMethod(cls, mid);
 }
 
 RHO_GLOBAL char* webview_execute_js(char* js, int index)
 {
     static rho::String result;
 
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassStaticMethod(cls, "executeJs", "(Ljava/lang/String;I)Ljava/lang/String;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "executeJs", "(Ljava/lang/String;I)Ljava/lang/String;");
     if (!mid) return NULL;
 
-    JNIEnv *env = jnienv();
     jstring objJs = env->NewStringUTF(js);
     jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, objJs, index);
     env->DeleteLocalRef(objJs);
