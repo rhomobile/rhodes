@@ -382,14 +382,10 @@ public class Rhodes extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		
-		saveCurrentLocation(getCurrentUrl());
 	}
 	
 	@Override
 	protected void onResume() {
-		restoreLocation();
-		
 		super.onResume();
 	}
 	
@@ -522,7 +518,7 @@ public class Rhodes extends Activity {
 	}
 	
 	public static void showNetworkIndicator(boolean v) {
-		// TODO:
+		// No GUI indicator
 	}
 	
 	public static String getCurrentLocale() {
@@ -542,15 +538,6 @@ public class Rhodes extends Activity {
 	
 	public static boolean hasCamera() {
 		return isCameraAvailable;
-	}
-	
-	private void saveCurrentLocation(String url) {
-		// TODO:
-	}
-	
-	private boolean restoreLocation() {
-		// TODO:
-		return false;
 	}
 	
 	public void stopSelf() {
