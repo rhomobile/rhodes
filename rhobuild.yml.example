@@ -26,7 +26,7 @@ android:
   #apikey: "GOOGLE-API-KEY-FOR-ANDROID"
   # This is version of Android platform used to run emulator. If not specified, 1.5 will be used.
   #version: 1.5
-  # This enable/disable native geo mapping for Android
+  # This enable/disable native geo mapping for Android. Disabled by default
   #mapping: yes
 excludedirs:
   bb:
