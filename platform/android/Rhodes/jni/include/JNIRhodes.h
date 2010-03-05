@@ -13,11 +13,21 @@
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
 
+#include "gapikey.h"
+
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
 JNIEnv *jnienv();
 
-jclass getJNIClass(const char *name);
+enum rho_java_class_t {
+#define RHODES_DEFINE_JAVA_CLASS(x, name) x,
+#include <details/rhojava.inc>
+#undef RHODES_DEFINE_JAVA_CLASS
+};
+
+extern const char *rho_java_class[];
+
+jclass getJNIClass(int n);
 jclass getJNIObjectClass(JNIEnv *env, jobject obj);
 jfieldID getJNIClassField(JNIEnv *env, jclass cls, const char *name, const char *signature);
 jfieldID getJNIClassStaticField(JNIEnv *env, jclass cls, const char *name, const char *signature);
@@ -26,28 +36,6 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 
 VALUE convertJavaMapToRubyHash(jobject objMap);
 
-#define RHODES_JAVA_CLASS_INTEGER "java/lang/Integer"
-#define RHODES_JAVA_CLASS_BOOLEAN "java/lang/Boolean"
-#define RHODES_JAVA_CLASS_ITERATOR "java/util/Iterator"
-#define RHODES_JAVA_CLASS_SET "java/util/Set"
-#define RHODES_JAVA_CLASS_MAP "java/util/Map"
-#define RHODES_JAVA_CLASS_HASHMAP "java/util/HashMap"
-#define RHODES_JAVA_CLASS_VECTOR "java/util/Vector"
-#define RHODES_JAVA_CLASS_INET4ADDRESS "java/net/Inet4Address"
-#define RHODES_JAVA_CLASS_FILEDESCRIPTOR "java/io/FileDescriptor"
-#define RHODES_JAVA_CLASS_RHODES "com/rhomobile/rhodes/Rhodes"
-#define RHODES_JAVA_CLASS_WEB_VIEW "com/rhomobile/rhodes/WebView"
-#define RHODES_JAVA_CLASS_GEO_LOCATION "com/rhomobile/rhodes/geolocation/GeoLocation"
-#define RHODES_JAVA_CLASS_CAMERA "com/rhomobile/rhodes/camera/Camera"
-#define RHODES_JAVA_CLASS_DATE_TIME_PICKER "com/rhomobile/rhodes/datetime/DateTimePicker"
-#define RHODES_JAVA_CLASS_PHONEBOOK "com/rhomobile/rhodes/phonebook/Phonebook"
-#define RHODES_JAVA_CLASS_CONTACT "com/rhomobile/rhodes/phonebook/Contact"
-#define RHODES_JAVA_CLASS_CONTACT_FIELD "com/rhomobile/rhodes/phonebook/ContactField"
-#define RHODES_JAVA_CLASS_ALERT "com/rhomobile/rhodes/alert/Alert"
-#define RHODES_JAVA_CLASS_RINGTONE_MANAGER "com/rhomobile/rhodes/RingtoneManager"
-#define RHODES_JAVA_CLASS_NATIVEBAR "com/rhomobile/rhodes/NativeBar"
-#define RHODES_JAVA_CLASS_MAPVIEW "com/rhomobile/rhodes/mapview/MapView"
-#define RHODES_JAVA_CLASS_SSLIMPL "com/rhomobile/rhodes/socket/SSLImpl"
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
