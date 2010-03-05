@@ -2,7 +2,6 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 
 USE_STLPORT = true
-USE_OPENSSL = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
@@ -206,7 +205,6 @@ namespace "config" do
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
     $native_libs = ["sqlite", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
-    $native_libs << "openssl" if USE_OPENSSL
 
     if $build_release
       $confdir = "release"
@@ -329,108 +327,6 @@ namespace "build" do
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    unless USE_OPENSSL
-      task :libopenssl do
-      end
-    else
-      task :libopenssl => "config:android" do
-        srcdir = File.join($shareddir, "openssl")
-        objdir = $objdir["openssl"]
-        hashloc = File.join(objdir, 'hash')
-
-        unless FileUtils.uptodate? hashloc, Dir.glob(srcdir + '/**/*')
-          mkdir_p objdir + "/openssl"
-          cp_r srcdir, objdir, :remove_destination => true
-        end
-
-        objdir += '/openssl'
-
-        hash = get_dir_hash(objdir).hexdigest
-
-        oldhash = ''
-        oldhash = File.new(hashloc, 'r').read if File.file? hashloc
-        if oldhash != hash
-          args = []
-          args << "Configure"
-          args << "no-threads"
-          args << "no-shared"
-          args << "zlib-dynamic"
-          args << "no-asm"
-          # Ciphers
-          args << "no-camellia"
-          args << "no-cast"
-          args << "no-cms"
-          args << "no-dso"
-          args << "no-ec"
-          args << "no-ecdh"
-          args << "no-ecdsa"
-          args << "no-engine"
-          args << "no-err"
-          args << "no-fips"
-          args << "no-idea"
-          args << "no-jpake"
-          args << "no-krb5"
-          args << "no-md2"
-          args << "no-md4"
-          args << "no-mdc2"
-          args << "no-montasm"
-          args << "no-pqueue"
-          args << "no-rc2"
-          args << "no-rc4"
-          args << "no-rc5"
-          args << "no-seed"
-          args << "no-store"
-          args << "no-txt_db"
-          # Others
-          args << "no-ui"
-          args << "no-engines"
-          args << "no-apps"
-          args << "no-tools"
-          args << "no-test"
-          args << "linux-elf"
-          cc_run('perl', args, objdir) or exit 1
-
-          if RUBY_PLATFORM =~ /(win|w)32$/
-            afs = []
-            Dir.glob(File.join(objdir, 'crypto', '*.h')).each do |f|
-              next if f =~ /\/buildinf\.h$/
-              afs << f
-            end
-            Dir.glob(File.join(objdir, 'ssl', '*.h')).each do |f|
-              afs << f
-            end
-            afs << File.join(objdir, 'fips', 'fips.h')
-            afs << File.join(objdir, 'e_os2.h')
-
-            incpath = File.join(objdir, 'include', 'openssl')
-            afs.each do |f|
-              cp_r f, incpath, :remove_destination => true unless FileUtils.uptodate? File.join(incpath, File.basename(f)), f
-            end
-          end
-
-          #cc_run('make', 'clean', objdir)
-
-          args = []
-          args << "CC=#{$gccbin}"
-          args << "CFLAG=\"#{cc_def_args.join(' ')}\""
-          args << "AR=\"#{$arbin} cr\""
-          args << "RANLIB=\"#{$ranlib}\""
-          args << "SHARED_LDFLAGS=\"-dynamiclib\""
-          args << "build_crypto build_ssl"
-          cc_run('make', args, objdir) or exit 1
-
-          rm_f File.join(objdir, '..', ',,', 'libssl.a')
-          rm_f File.join(objdir, '..', '..', 'libcrypto.a')
-          cp File.join(objdir, 'libssl.a'), File.join(objdir, '..', '..')
-          cp File.join(objdir, 'libcrypto.a'), File.join(objdir, '..', '..')
-
-          hash = get_dir_hash(objdir).hexdigest
-          File.open(hashloc, 'w') { |f| f.write(hash) }
-        end
-
-      end
-    end
-
     task :libcurl => "config:android" do
       # Steps to get curl_config.h from fresh libcurl sources:
       #export PATH=<ndkroot>/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
@@ -444,28 +340,10 @@ namespace "build" do
       objdir = $objdir["curl"]
       libname = $libname["curl"]
 
-      #use_openssl = false
-      #rhoconf_h = File.join(srcdir, 'rhoconf.h')
-      #if File.file? rhoconf_h
-      #  File.open(rhoconf_h, 'r') do |f|
-      #    while line = f.gets
-      #      use_openssl = true if line =~ /USE_OPENSSL\s+1/
-      #      break if use_openssl
-      #    end
-      #  end
-      #end
-      #if USE_OPENSSL != use_openssl
-      #  ssldef = []
-      #  ssldef << "#define USE_SSLEAY 1" if USE_OPENSSL
-      #  ssldef << "#define USE_OPENSSL 1" if USE_OPENSSL
-      #  File.open(rhoconf_h, 'w') { |f| f.write(ssldef.join("\n") + "\n") }
-      #end
-
       args = []
       args << "-DHAVE_CONFIG_H"
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
-      args << "-I#{objdir}/../libopenssl/openssl/include" if USE_OPENSSL
 
       File.read(File.join($builddir, "libcurl_build.files")).each do |f|
         cc_compile f, objdir, args or exit 1
@@ -619,7 +497,7 @@ namespace "build" do
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    task :libs => [:libsqlite, :libopenssl, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
     task :librhodes => :libs do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
@@ -682,8 +560,6 @@ namespace "build" do
       args << "-lstlport" if USE_STLPORT
       args << "-lcurl"
       args << "-lrhocommon" # Need to specify twice because libcurl depends on librhocommon and vice versa
-      args << "-lssl" if USE_OPENSSL
-      args << "-lcrypto" if USE_OPENSSL
       args << "-lsqlite"
       args << "-llog"
       args << "-ldl"
@@ -1044,12 +920,7 @@ namespace "clean" do
   task :libsqlite => "config:android" do
     cc_clean "sqlite"
   end
-  task :libopenssl => "config:android" do
-    rm_rf $objdir['openssl'] if USE_OPENSSL
-    rm_rf File.dirname($libname['openssl']) + "/libssl.a" if USE_OPENSSL
-    rm_rf File.dirname($libname['openssl']) + "/libcrypto.a" if USE_OPENSSL
-  end
-  task :libs => ["config:android",:libopenssl] do
+  task :libs => ["config:android"] do
     $native_libs.each do |l|
       cc_clean l
     end
