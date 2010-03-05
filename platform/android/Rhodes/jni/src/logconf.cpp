@@ -82,11 +82,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
 
 RHO_GLOBAL void rho_conf_show_log()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "showLogView", "()V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "showLogView", "()V");
     if (!mid) return;
 
-    jnienv()->CallStaticVoidMethod(cls, mid);
+    env->CallStaticVoidMethod(cls, mid);
 }
 

@@ -16,29 +16,32 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_ge
 
 RHO_GLOBAL double rho_geo_latitude()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(cls, "getLatitude", "()D");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getLatitude", "()D");
     if (!mid) return 0;
-    return jnienv()->CallStaticDoubleMethod(cls, mid);
+    return env->CallStaticDoubleMethod(cls, mid);
 }
 
 RHO_GLOBAL double rho_geo_longitude()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(cls, "getLongitude", "()D");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getLongitude", "()D");
     if (!mid) return 0;
-    return jnienv()->CallStaticDoubleMethod(cls, mid);
+    return env->CallStaticDoubleMethod(cls, mid);
 }
 
 RHO_GLOBAL int rho_geo_known_position()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(cls, "isKnownPosition", "()Z");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "isKnownPosition", "()Z");
     if (!mid) return 0;
-    return jnienv()->CallStaticBooleanMethod(cls, mid);
+    return env->CallStaticBooleanMethod(cls, mid);
 }
 
 RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
@@ -47,10 +50,11 @@ RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
 
 RHO_GLOBAL int rho_geo_is_available()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(cls, "isAvailable", "()Z");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "isAvailable", "()Z");
     if (!mid) return 0;
 
-    return jnienv()->CallStaticBooleanMethod(cls, mid);
+    return env->CallStaticBooleanMethod(cls, mid);
 }
