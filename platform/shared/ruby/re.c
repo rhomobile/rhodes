@@ -1194,12 +1194,21 @@ rb_reg_prepare_enc(VALUE re, VALUE str, int warn)
 	}
     }
     else if (rb_reg_fixed_encoding_p(re)) {
+//RHO
         if (RREGEXP(re)->ptr->enc != enc &&
-	    (!rb_enc_asciicompat(RREGEXP(re)->ptr->enc) ||
-	     rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT)) {
-	    reg_enc_error(re, str);
-	}
-	enc = RREGEXP(re)->ptr->enc;
+	        (!rb_enc_asciicompat(RREGEXP(re)->ptr->enc) ||
+	        rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT)) 
+        {
+            rb_encoding *renc = rb_enc_get(re);
+            if (renc != enc &&
+	            (!rb_enc_asciicompat(renc) ||
+	            rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT)) 
+    	            reg_enc_error(re, str);
+            else
+                enc = renc;    
+	    }else
+	        enc = RREGEXP(re)->ptr->enc;
+//RHO
     }
     if (warn && (RBASIC(re)->flags & REG_ENCODING_NONE) &&
 	enc != rb_ascii8bit_encoding() &&
