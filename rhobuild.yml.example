@@ -23,9 +23,11 @@ build:
   bbsignpwd: "somepasswordhere"
 android:
   # Google API key obtained from http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html
-  apikey: "GOOGLE-API-KEY-FOR-ANDROID"
+  #apikey: "GOOGLE-API-KEY-FOR-ANDROID"
   # This is version of Android platform used to run emulator. If not specified, 1.5 will be used.
-  version: 1.5
+  #version: 1.5
+  # This enable/disable native geo mapping for Android
+  #mapping: yes
 excludedirs:
   bb:
     - public/js/iui
