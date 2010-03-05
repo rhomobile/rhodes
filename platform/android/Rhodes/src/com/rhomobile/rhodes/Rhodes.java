@@ -43,6 +43,8 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -502,8 +504,21 @@ public class Rhodes extends Activity {
 	}
 		
 	public static boolean hasNetwork() {
-		// TODO:
-		return true;
+		Context ctx = RhodesInstance.getInstance().getApplicationContext();
+		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (conn == null)
+			return false;
+		
+		NetworkInfo[] info = conn.getAllNetworkInfo();
+		if (info == null)
+			return false;
+		
+		for (int i = 0, lim = info.length; i < lim; ++i) {
+			if (info[i].getState() == NetworkInfo.State.CONNECTED)
+				return true;
+		}
+		
+		return false;
 	}
 	
 	public static void showNetworkIndicator(boolean v) {
