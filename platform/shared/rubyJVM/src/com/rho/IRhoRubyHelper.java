@@ -15,18 +15,12 @@ public interface IRhoRubyHelper {
 	
 	public void loadBackTrace(RubyArray backtrace);
 	public String getDeviceId();
-	public boolean hasNetwork();
 	
 	public String getAppProperty(String name);
 	public String getModuleName();
 	public boolean isSimulator();
 	
 	public void showLog();
-	
-	public String getLocale();
-	
-	public int getScreenWidth();
-	public int getScreenHeight();
 	
 	public String getGeoLocationText();
 	public void wakeUpGeoLocation();
