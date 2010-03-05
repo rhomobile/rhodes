@@ -145,6 +145,16 @@ void unlock_sync_mutex() {
 void dosync() {
 }*/
 
+VALUE rho_json_parse(VALUE v,VALUE str)
+{
+    return 0;
+}
+
+unsigned long rho_rhodesapp_GetCallbackObject(int nIndex)
+{
+    return 0;
+}
+
 void Init_GeoLocation(){
 }
 
