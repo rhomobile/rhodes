@@ -2,13 +2,11 @@ package com.xruby.runtime.lang;
 
 import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
-import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
-//import com.xruby.runtime.stdlib.RubyStringIO;
 import j2me.lang.StringMe;
 
 public class RhoSupport {
@@ -16,9 +14,7 @@ public class RhoSupport {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoSupport");
 	
-	public static RubyModule SystemModule;
 	public static RubyClass  RhoLogClass;
-//	private static String    m_strCurAppPath;
 	
 	public static void init(){
 
@@ -51,38 +47,6 @@ public class RhoSupport {
 				return RhodesApp.getInstance().getCallbackObject(arg.toInt());}
 		});
 		
-		SystemModule = RubyAPI.defineModule("System");
-		SystemModule.defineModuleMethod( "get_property", new RubyOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return get_property(receiver, arg);}
-		});
-		SystemModule.defineModuleMethod( "has_network", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return has_network(receiver);}
-		});
-		SystemModule.defineModuleMethod( "get_locale", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block )
-			{
-				String strLocale = "";
-		    	try {
-		    		strLocale = RhoClassFactory.createRhoRubyHelper().getLocale();
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
-				return ObjectFactory.createString(strLocale);
-			}
-		});
-		SystemModule.defineModuleMethod( "get_screen_width", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return get_screen_width(receiver);
-			}
-		});
-		SystemModule.defineModuleMethod( "get_screen_height", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return get_screen_height(receiver);
-			}
-		});
-
 		RhoLogClass = RubyAPI.defineClass("RhoLog", RubyRuntime.ObjectClass);
 		RhoLog.initMethods(RhoLogClass);
 	}
@@ -277,52 +241,6 @@ public class RhoSupport {
         }
 	}
     
-    //@RubyLevelMethod(name="get_property", module=true)
-    public static RubyValue get_property(RubyValue receiver, RubyValue arg) {
-    	String strPropName = arg.toStr();
-    	if ( strPropName.equalsIgnoreCase("platform") ){
-    		try {
-    			return ObjectFactory.createString( RhoClassFactory.createRhoRubyHelper().getPlatform() );
-    		}catch ( Exception e ) {
-    			return ObjectFactory.createString("Unknown");
-    		}
-    	}
-    	
-    	return RubyConstant.QNIL;
-    }
-
-    //@RubyLevelMethod(name="has_network", module=true)
-    public static RubyValue has_network(RubyValue receiver) {
-    	try {
-			return RhoClassFactory.createRhoRubyHelper().hasNetwork() ? RubyConstant.QTRUE : RubyConstant.QFALSE;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return RubyConstant.QFALSE;
-    }
-    
-    //@RubyLevelMethod(name="get_screen_width", module=true)
-    public static RubyValue get_screen_width(RubyValue receiver) {
-    	try {
-    		return ObjectFactory.createInteger(RhoClassFactory.createRhoRubyHelper().getScreenWidth());
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    	return RubyConstant.QNIL;
-    }
-    
-    //@RubyLevelMethod(name="get_screen_height", module=true)
-    public static RubyValue get_screen_height(RubyValue receiver) {
-    	try {
-    		return ObjectFactory.createInteger(RhoClassFactory.createRhoRubyHelper().getScreenHeight());
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    	return RubyConstant.QNIL;
-    }
-
     public static RubyValue rb_rho_get_app_property(RubyValue receiver, RubyValue arg, RubyBlock block) {
         String name = arg.toStr();
         String strValue = null;
