@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
-import net.rim.device.api.system.Display;
-import net.rim.device.api.i18n.Locale;
 import net.rim.device.api.io.http.HttpHeaders;
 import rhomobile.Alert;
 import rhomobile.NativeBar;
@@ -27,7 +25,6 @@ import com.rho.file.PersistRAFileImpl;
 import com.rho.net.SSLSocket;
 import com.rho.net.TCPSocket;
 import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.lang.RhoSupport;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
 
@@ -53,6 +50,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         SSLSocket.initMethods(RubyRuntime.SSLSocketClass);
         MapView.initMethods(RubyRuntime.MapViewClass);
         GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
+        com.rho.rubyext.System.initMethods(RubyRuntime.SystemClass);
 	}
 	
 	public RubyProgram createMainObject() throws Exception
@@ -76,28 +74,6 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 
 	public void loadBackTrace(RubyArray backtrace) {
 		//TODO:
-	}
-
-	public String getLocale()
-	{
-    	Locale loc = Locale.getDefault();
-    	
-    	String lang = loc != null ? loc.getLanguage() : "en";
-		return lang;
-	}
-	
-	public boolean hasNetwork() {
-		/*if ((RadioInfo.getActiveWAFs() & RadioInfo.WAF_WLAN) != 0) {
-			if (CoverageInfo.isCoverageSufficient( CoverageInfo.COVERAGE_CARRIER,RadioInfo.WAF_WLAN, false) || 
-					CoverageInfo.isCoverageSufficient( CoverageInfo.COVERAGE_MDS,RadioInfo.WAF_WLAN, false) ||
-					CoverageInfo.isCoverageSufficient( COVERAGE_BIS_B,RadioInfo.WAF_WLAN, false))
-				return true;
-		}
-
-		if (CoverageInfo.isOutOfCoverage())
-	        return false; 
-		*/
-		return true;
 	}
 
 	public String getDeviceId(){
@@ -202,14 +178,6 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 			return new Jsr75RAFileImpl();
 	}
 
-	public int getScreenHeight() {
-		return Display.getHeight();
-	}
-
-	public int getScreenWidth() {
-		return Display.getWidth();
-	}
-	
 	public String getGeoLocationText()
 	{
 		return GeoLocation.getGeoLocationText();
