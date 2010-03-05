@@ -19,12 +19,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_datetime_DateTimePicker_callba
 
 RHO_GLOBAL void choose_datetime(char* callback, char* title, long initial_time, int format, char* data)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_DATE_TIME_PICKER);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "choose", "(Ljava/lang/String;Ljava/lang/String;JI[B)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "choose", "(Ljava/lang/String;Ljava/lang/String;JI[B)V");
     if (!mid) return;
 
-    JNIEnv *env = jnienv();
     jsize data_size = strlen(data);
     jbyteArray opaqueObj = env->NewByteArray(data_size);
     if (!opaqueObj) return;
