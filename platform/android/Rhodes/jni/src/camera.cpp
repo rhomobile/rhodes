@@ -21,11 +21,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
 
 RHO_GLOBAL void take_picture(char* callback_url)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CAMERA);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "takePicture", "(Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "takePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    JNIEnv *env = jnienv();
     jstring objCallback = env->NewStringUTF(callback_url);
     env->CallStaticVoidMethod(cls, mid, objCallback);
     env->DeleteLocalRef(objCallback);
@@ -33,11 +33,11 @@ RHO_GLOBAL void take_picture(char* callback_url)
 
 RHO_GLOBAL void choose_picture(char* callback_url)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CAMERA);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "choosePicture", "(Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "choosePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    JNIEnv *env = jnienv();
     jstring objCallback = env->NewStringUTF(callback_url);
     env->CallStaticVoidMethod(cls, mid, objCallback);
     env->DeleteLocalRef(objCallback);
