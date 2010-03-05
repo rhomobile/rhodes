@@ -1,6 +1,6 @@
 #include <android/log.h>
 
-#include <com_rhomobile_rhodes_Rhodes.h>
+#include <jni/com_rhomobile_rhodes_Rhodes.h>
 
 #include <common/RhoConf.h>
 #include <logging/RhoLogConf.h>
