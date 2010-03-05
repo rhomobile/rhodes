@@ -12,9 +12,10 @@ extern "C" void alert_show_popup(char *);
 RHO_GLOBAL void mapview_create(rho_param *p)
 {
 #ifdef GOOGLE_API_KEY
+    JNIEnv *env = jnienv();
     jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!clsMapView) return;
-    jmethodID midCreate = getJNIClassStaticMethod(clsMapView, "create", "(Ljava/lang/String;Ljava/util/Map;)V");
+    jmethodID midCreate = getJNIClassStaticMethod(env, clsMapView, "create", "(Ljava/lang/String;Ljava/util/Map;)V");
     if (!midCreate) return;
 
     if (p->type != RHO_PARAM_HASH) {
@@ -22,7 +23,6 @@ RHO_GLOBAL void mapview_create(rho_param *p)
         return;
     }
 
-    JNIEnv *env = jnienv();
     jobject paramsObj = RhoValueConverter(env).createObject(p);
     env->CallStaticVoidMethod(clsMapView, midCreate, env->NewStringUTF(GOOGLE_API_KEY), paramsObj);
 #else

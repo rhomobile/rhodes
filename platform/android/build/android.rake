@@ -2,7 +2,7 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 
 USE_STLPORT = true
-USE_OPENSSL = true
+USE_OPENSSL = false
 USE_GOOGLE_API = true
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
@@ -435,22 +435,22 @@ namespace "build" do
       objdir = $objdir["curl"]
       libname = $libname["curl"]
 
-      use_openssl = false
-      rhoconf_h = File.join(srcdir, 'rhoconf.h')
-      if File.file? rhoconf_h
-        File.open(rhoconf_h, 'r') do |f|
-          while line = f.gets
-            use_openssl = true if line =~ /USE_OPENSSL\s+1/
-            break if use_openssl
-          end
-        end
-      end
-      if USE_OPENSSL != use_openssl
-        ssldef = []
-        ssldef << "#define USE_SSLEAY 1" if USE_OPENSSL
-        ssldef << "#define USE_OPENSSL 1" if USE_OPENSSL
-        File.open(rhoconf_h, 'w') { |f| f.write(ssldef.join("\n") + "\n") }
-      end
+      #use_openssl = false
+      #rhoconf_h = File.join(srcdir, 'rhoconf.h')
+      #if File.file? rhoconf_h
+      #  File.open(rhoconf_h, 'r') do |f|
+      #    while line = f.gets
+      #      use_openssl = true if line =~ /USE_OPENSSL\s+1/
+      #      break if use_openssl
+      #    end
+      #  end
+      #end
+      #if USE_OPENSSL != use_openssl
+      #  ssldef = []
+      #  ssldef << "#define USE_SSLEAY 1" if USE_OPENSSL
+      #  ssldef << "#define USE_OPENSSL 1" if USE_OPENSSL
+      #  File.open(rhoconf_h, 'w') { |f| f.write(ssldef.join("\n") + "\n") }
+      #end
 
       args = []
       args << "-DHAVE_CONFIG_H"
@@ -1023,9 +1023,9 @@ namespace "clean" do
     cc_clean "sqlite"
   end
   task :libopenssl => "config:android" do
-    rm_rf $objdir['openssl']
-    rm_rf File.dirname($libname['openssl']) + "/libssl.a"
-    rm_rf File.dirname($libname['openssl']) + "/libcrypto.a"
+    rm_rf $objdir['openssl'] if USE_OPENSSL
+    rm_rf File.dirname($libname['openssl']) + "/libssl.a" if USE_OPENSSL
+    rm_rf File.dirname($libname['openssl']) + "/libcrypto.a" if USE_OPENSSL
   end
   task :libs => ["config:android",:libopenssl] do
     $native_libs.each do |l|
@@ -1033,7 +1033,7 @@ namespace "clean" do
     end
   end
   task :librhodes => "config:android" do
-    rm_rf $bindir + "/libs/" + $confdir + "/librhodes"
+    rm_rf $rhobindir + "/" + $confdir + "/librhodes"
     rm_rf $bindir + "/libs/" + $confdir + "/librhodes.so"
   end
 #  desc "clean android"
