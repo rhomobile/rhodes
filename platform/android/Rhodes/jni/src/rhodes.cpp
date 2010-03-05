@@ -11,10 +11,14 @@
 
 #include "JNIRhodes.h"
 
-#include "gapikey.h"
-
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
+
+const char *rho_java_class[] = {
+#define RHODES_DEFINE_JAVA_CLASS(x, name) name,
+#include <details/rhojava.inc>
+#undef RHODES_DEFINE_JAVA_CLASS
+};
 
 static rho::String g_rootPath;
 
@@ -121,17 +125,16 @@ JNIEnv *jnienv()
     return env;
 }
 
-std::map<std::string, jclass> g_classes;
+std::vector<jclass> g_classes;
 
-jclass getJNIClass(const char *name)
+jclass getJNIClass(int n)
 {
-    std::map<std::string, jclass>::const_iterator it = g_classes.find(name);
-    if (it == g_classes.end())
+    if (n < 0 || (size_t)n >= g_classes.size())
     {
-        RAWLOG_ERROR1("Can not find Java class: %s (JNI)", name);
+        RAWLOG_ERROR1("Illegal index when call getJNIClass: %d", n);
         return NULL;
     }
-    return it->second;
+    return g_classes[n];
 }
 
 jclass getJNIObjectClass(JNIEnv *env, jobject obj)
@@ -190,40 +193,13 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     pthread_key_create(&g_thrkey, NULL);
     store_thr_jnienv(env);
 
-    const char *classes[] = {
-#ifdef GOOGLE_API_KEY
-        RHODES_JAVA_CLASS_MAPVIEW,
-#endif
-        RHODES_JAVA_CLASS_INTEGER,
-        RHODES_JAVA_CLASS_BOOLEAN,
-        RHODES_JAVA_CLASS_ITERATOR,
-        RHODES_JAVA_CLASS_SET,
-        RHODES_JAVA_CLASS_MAP,
-        RHODES_JAVA_CLASS_HASHMAP,
-        RHODES_JAVA_CLASS_VECTOR,
-        RHODES_JAVA_CLASS_INET4ADDRESS,
-        RHODES_JAVA_CLASS_FILEDESCRIPTOR,
-        RHODES_JAVA_CLASS_RHODES,
-        RHODES_JAVA_CLASS_WEB_VIEW,
-        RHODES_JAVA_CLASS_GEO_LOCATION,
-        RHODES_JAVA_CLASS_CAMERA,
-        RHODES_JAVA_CLASS_DATE_TIME_PICKER,
-        RHODES_JAVA_CLASS_PHONEBOOK,
-        RHODES_JAVA_CLASS_CONTACT,
-        RHODES_JAVA_CLASS_CONTACT_FIELD,
-        RHODES_JAVA_CLASS_ALERT,
-        RHODES_JAVA_CLASS_RINGTONE_MANAGER,
-        RHODES_JAVA_CLASS_NATIVEBAR,
-        RHODES_JAVA_CLASS_SSLIMPL
-    };
-
-    for(size_t i = 0, lim = sizeof(classes)/sizeof(classes[0]); i != lim; ++i)
+    for(size_t i = 0, lim = sizeof(rho_java_class)/sizeof(rho_java_class[0]); i != lim; ++i)
     {
-        const char *className = classes[i];
+        const char *className = rho_java_class[i];
         jclass cls = env->FindClass(className);
         if (!cls)
             return -1;
-        g_classes[className] = (jclass)env->NewGlobalRef(cls);
+        g_classes.push_back((jclass)env->NewGlobalRef(cls));
         env->DeleteLocalRef(cls);
     }
 
