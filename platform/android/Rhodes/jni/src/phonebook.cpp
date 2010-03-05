@@ -5,12 +5,12 @@
 
 RHO_GLOBAL void* openPhonebook()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return NULL;
-    jmethodID cid = getJNIClassMethod(cls, "<init>", "()V");
+    jmethodID cid = getJNIClassMethod(env, cls, "<init>", "()V");
     if (!cid) return NULL;
 
-    JNIEnv *env = jnienv();
     jobject local = env->NewObject(cls, cid);
     jobject obj = env->NewGlobalRef(local);
     env->DeleteLocalRef(local);
@@ -19,13 +19,13 @@ RHO_GLOBAL void* openPhonebook()
 
 RHO_GLOBAL void closePhonebook(void* pb)
 {
+    JNIEnv *env = jnienv();
     jobject obj = (jobject)pb;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return;
-    jmethodID mid = getJNIClassMethod(cls, "close", "()V");
+    jmethodID mid = getJNIClassMethod(env, cls, "close", "()V");
     if (!mid) return;
 
-    JNIEnv *env = jnienv();
     env->CallVoidMethod(obj, mid);
     env->DeleteGlobalRef(obj);
 }
@@ -38,15 +38,15 @@ static VALUE createHashFromContact(jobject contactObj)
     jclass fieldCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT_FIELD);
     if (!fieldCls) return Qnil;
 
-    jmethodID contactMoveToBeginMID = getJNIClassMethod(contactCls, "moveToBegin", "()V");
+    jmethodID contactMoveToBeginMID = getJNIClassMethod(env, contactCls, "moveToBegin", "()V");
     if (!contactMoveToBeginMID) return Qnil;
-    jmethodID hasNextMID = getJNIClassMethod(contactCls, "hasNext", "()Z");
+    jmethodID hasNextMID = getJNIClassMethod(env, contactCls, "hasNext", "()Z");
     if (!hasNextMID) return Qnil;
-    jmethodID nextMID = getJNIClassMethod(contactCls, "next", "()Ljava/lang/Object;");
+    jmethodID nextMID = getJNIClassMethod(env, contactCls, "next", "()Ljava/lang/Object;");
     if (!nextMID) return Qnil;
-    jmethodID getKeyMID = getJNIClassMethod(fieldCls, "getKey", "()Ljava/lang/String;");
+    jmethodID getKeyMID = getJNIClassMethod(env, fieldCls, "getKey", "()Ljava/lang/String;");
     if (!getKeyMID) return Qnil;
-    jmethodID getValueMID = getJNIClassMethod(fieldCls, "getValue", "()Ljava/lang/String;");
+    jmethodID getValueMID = getJNIClassMethod(env, fieldCls, "getValue", "()Ljava/lang/String;");
     if (!getValueMID) return Qnil;
 
     VALUE contactHash = createHash();
@@ -92,13 +92,13 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
     jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!contactCls) return Qnil;
 
-    jmethodID phonebookMoveToBeginMID = getJNIClassMethod(phonebookCls, "moveToBegin", "()V");
+    jmethodID phonebookMoveToBeginMID = getJNIClassMethod(env, phonebookCls, "moveToBegin", "()V");
     if (!phonebookMoveToBeginMID) return Qnil;
-    jmethodID hasNextMID = getJNIClassMethod(phonebookCls, "hasNext", "()Z");
+    jmethodID hasNextMID = getJNIClassMethod(env, phonebookCls, "hasNext", "()Z");
     if (!hasNextMID) return Qnil;
-    jmethodID nextMID = getJNIClassMethod(phonebookCls, "next", "()Ljava/lang/Object;");
+    jmethodID nextMID = getJNIClassMethod(env, phonebookCls, "next", "()Ljava/lang/Object;");
     if (!nextMID) return Qnil;
-    jmethodID contactIdMID = getJNIClassMethod(contactCls, "id", "()Ljava/lang/String;");
+    jmethodID contactIdMID = getJNIClassMethod(env, contactCls, "id", "()Ljava/lang/String;");
     if (!contactIdMID) return Qnil;
 
     // pb.moveToBegin();
@@ -128,13 +128,13 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
 
 RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
 {
+    JNIEnv *env = jnienv();
     jobject obj = (jobject)pb;
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassMethod(cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
+    jmethodID mid = getJNIClassMethod(env, cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return NULL;
 
-    JNIEnv *env = jnienv();
     jstring objId = env->NewStringUTF(id);
     jobject recordObj = env->CallObjectMethod(obj, mid, objId);
     env->DeleteLocalRef(objId);
@@ -158,12 +158,12 @@ RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
 static VALUE getRecord(void *pb, const char *name)
 {
     jobject obj = (jobject)pb;
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return Qnil;
-    jmethodID mid = getJNIClassMethod(cls, name, "()Lcom/rhomobile/rhodes/phonebook/Contact;");
+    jmethodID mid = getJNIClassMethod(env, cls, name, "()Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return Qnil;
 
-    JNIEnv *env = jnienv();
     jobject recordObj = env->CallObjectMethod(obj, mid);
     if (!recordObj)
         return Qnil;
@@ -182,12 +182,12 @@ RHO_GLOBAL VALUE getnextPhonebookRecord(void* pb)
 
 RHO_GLOBAL void* createRecord(void* pb)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!cls) return NULL;
-    jmethodID cid = getJNIClassMethod(cls, "<init>", "()V");
+    jmethodID cid = getJNIClassMethod(env, cls, "<init>", "()V");
     if (!cid) return NULL;
 
-    JNIEnv *env = jnienv();
     jobject local = env->NewObject(cls, cid);
     jobject obj = env->NewGlobalRef(local);
     env->DeleteLocalRef(local);
@@ -197,12 +197,12 @@ RHO_GLOBAL void* createRecord(void* pb)
 RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
 {
     jobject contactObj = (jobject)record;
+    JNIEnv *env = jnienv();
     jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!contactCls) return 0;
-    jmethodID mid = getJNIClassMethod(contactCls, "setField", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassMethod(env, contactCls, "setField", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return 0;
 
-    JNIEnv *env = jnienv();
     jstring objProperty = env->NewStringUTF(property);
     jstring objValue = env->NewStringUTF(value);
     env->CallVoidMethod(contactObj, mid, objProperty, objValue);
@@ -213,12 +213,12 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
 
 static void doContactOp(jobject pbObj, jobject contactObj, const char *name)
 {
+    JNIEnv *env = jnienv();
     jclass pbCls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!pbCls) return;
-    jmethodID mid = getJNIClassMethod(pbCls, name, "(Lcom/rhomobile/rhodes/phonebook/Contact;)V");
+    jmethodID mid = getJNIClassMethod(env, pbCls, name, "(Lcom/rhomobile/rhodes/phonebook/Contact;)V");
     if (!mid) return;
 
-    JNIEnv *env = jnienv();
     env->CallVoidMethod(pbObj, mid, contactObj);
 }
 

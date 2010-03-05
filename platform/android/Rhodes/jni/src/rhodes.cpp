@@ -59,13 +59,13 @@ RhoValueConverter::RhoValueConverter(JNIEnv *e)
     if (!clsHashMap) return;
     clsVector = getJNIClass(RHODES_JAVA_CLASS_VECTOR);
     if (!clsVector) return;
-    midHashMapConstructor = getJNIClassMethod(clsHashMap, "<init>", "()V");
+    midHashMapConstructor = getJNIClassMethod(env, clsHashMap, "<init>", "()V");
     if (!midHashMapConstructor) return;
-    midVectorConstructor = getJNIClassMethod(clsVector, "<init>", "()V");
+    midVectorConstructor = getJNIClassMethod(env, clsVector, "<init>", "()V");
     if (!midVectorConstructor) return;
-    midPut = getJNIClassMethod(clsHashMap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    midPut = getJNIClassMethod(env, clsHashMap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     if (!midPut) return;
-    midAddElement = getJNIClassMethod(clsVector, "addElement", "(Ljava/lang/Object;)V");
+    midAddElement = getJNIClassMethod(env, clsVector, "addElement", "(Ljava/lang/Object;)V");
     if (!midAddElement) return;
     init = true;
 }
@@ -134,45 +134,40 @@ jclass getJNIClass(const char *name)
     return it->second;
 }
 
-jclass getJNIObjectClass(jobject obj)
+jclass getJNIObjectClass(JNIEnv *env, jobject obj)
 {
-    JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(obj);
     if (!cls)
         RAWLOG_ERROR1("Can not get class for object: %p (JNI)", obj);
     return cls;
 }
 
-jfieldID getJNIClassField(jclass cls, const char *name, const char *signature)
+jfieldID getJNIClassField(JNIEnv *env, jclass cls, const char *name, const char *signature)
 {
-    JNIEnv *env = jnienv();
     jfieldID fid = env->GetFieldID(cls, name, signature);
     if (!fid)
         RAWLOG_ERROR3("Can not get field %s of signature %s for class %p", name, signature, cls);
     return fid;
 }
 
-jfieldID getJNIClassStaticField(jclass cls, const char *name, const char *signature)
+jfieldID getJNIClassStaticField(JNIEnv *env, jclass cls, const char *name, const char *signature)
 {
-    JNIEnv *env = jnienv();
     jfieldID fid = env->GetStaticFieldID(cls, name, signature);
     if (!fid)
         RAWLOG_ERROR3("Can not get static field %s of signature %s for class %p", name, signature, cls);
     return fid;
 }
 
-jmethodID getJNIClassMethod(jclass cls, const char *name, const char *signature)
+jmethodID getJNIClassMethod(JNIEnv *env, jclass cls, const char *name, const char *signature)
 {
-    JNIEnv *env = jnienv();
     jmethodID mid = env->GetMethodID(cls, name, signature);
     if (!mid)
         RAWLOG_ERROR3("Can not get method %s of signature %s for class %p", name, signature, cls);
     return mid;
 }
 
-jmethodID getJNIClassStaticMethod(jclass cls, const char *name, const char *signature)
+jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, const char *signature)
 {
-    JNIEnv *env = jnienv();
     jmethodID mid = env->GetStaticMethodID(cls, name, signature);
     if (!mid)
         RAWLOG_ERROR3("Can not get static method %s of signature %s for class %p", name, signature, cls);
@@ -199,11 +194,15 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 #ifdef GOOGLE_API_KEY
         RHODES_JAVA_CLASS_MAPVIEW,
 #endif
+        RHODES_JAVA_CLASS_INTEGER,
+        RHODES_JAVA_CLASS_BOOLEAN,
         RHODES_JAVA_CLASS_ITERATOR,
         RHODES_JAVA_CLASS_SET,
         RHODES_JAVA_CLASS_MAP,
         RHODES_JAVA_CLASS_HASHMAP,
         RHODES_JAVA_CLASS_VECTOR,
+        RHODES_JAVA_CLASS_INET4ADDRESS,
+        RHODES_JAVA_CLASS_FILEDESCRIPTOR,
         RHODES_JAVA_CLASS_RHODES,
         RHODES_JAVA_CLASS_WEB_VIEW,
         RHODES_JAVA_CLASS_GEO_LOCATION,
@@ -214,7 +213,8 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         RHODES_JAVA_CLASS_CONTACT_FIELD,
         RHODES_JAVA_CLASS_ALERT,
         RHODES_JAVA_CLASS_RINGTONE_MANAGER,
-        RHODES_JAVA_CLASS_NATIVEBAR
+        RHODES_JAVA_CLASS_NATIVEBAR,
+        RHODES_JAVA_CLASS_SSLIMPL
     };
 
     for(size_t i = 0, lim = sizeof(classes)/sizeof(classes[0]); i != lim; ++i)
@@ -239,18 +239,19 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     jclass clsIterator = getJNIClass(RHODES_JAVA_CLASS_ITERATOR);
     if (!clsIterator) return Qnil;
 
-    jmethodID midGet = getJNIClassMethod(clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    JNIEnv *env = jnienv();
+
+    jmethodID midGet = getJNIClassMethod(env, clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
     if (!midGet) return Qnil;
-    jmethodID midKeySet = getJNIClassMethod(clsMap, "keySet", "()Ljava/util/Set;");
+    jmethodID midKeySet = getJNIClassMethod(env, clsMap, "keySet", "()Ljava/util/Set;");
     if (!midKeySet) return Qnil;
-    jmethodID midIterator = getJNIClassMethod(clsSet, "iterator", "()Ljava/util/Iterator;");
+    jmethodID midIterator = getJNIClassMethod(env, clsSet, "iterator", "()Ljava/util/Iterator;");
     if (!midIterator) return Qnil;
-    jmethodID midHasNext = getJNIClassMethod(clsIterator, "hasNext", "()Z");
+    jmethodID midHasNext = getJNIClassMethod(env, clsIterator, "hasNext", "()Z");
     if (!midHasNext) return Qnil;
-    jmethodID midNext = getJNIClassMethod(clsIterator, "next", "()Ljava/lang/Object;");
+    jmethodID midNext = getJNIClassMethod(env, clsIterator, "next", "()Ljava/lang/Object;");
     if (!midNext) return Qnil;
 
-    JNIEnv *env = jnienv();
     jobject objSet = env->CallObjectMethod(objMap, midKeySet);
     if (!objSet) return Qnil;
     jobject objIterator = env->CallObjectMethod(objSet, midIterator);
