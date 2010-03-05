@@ -47,6 +47,7 @@ platform/shared/curl/lib/nwos.c
 platform/shared/curl/lib/parsedate.c
 platform/shared/curl/lib/progress.c
 platform/shared/curl/lib/rawstr.c
+platform/shared/curl/lib/rhossl.c
 platform/shared/curl/lib/security.c
 platform/shared/curl/lib/select.c
 platform/shared/curl/lib/sendf.c
@@ -59,7 +60,6 @@ platform/shared/curl/lib/speedcheck.c
 platform/shared/curl/lib/splay.c
 platform/shared/curl/lib/ssh.c
 platform/shared/curl/lib/sslgen.c
-platform/shared/curl/lib/ssluse.c
 platform/shared/curl/lib/strdup.c
 platform/shared/curl/lib/strequal.c
 platform/shared/curl/lib/strerror.c

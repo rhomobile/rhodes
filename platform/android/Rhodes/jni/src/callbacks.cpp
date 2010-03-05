@@ -39,20 +39,21 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
 
 RHO_GLOBAL VALUE rho_sys_has_network()
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return rho_ruby_create_boolean(0);
-    jmethodID mid = getJNIClassStaticMethod(cls, "hasNetwork", "()Z");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "hasNetwork", "()Z");
     if (!mid) return rho_ruby_create_boolean(0);
-    return rho_ruby_create_boolean(jnienv()->CallStaticBooleanMethod(cls, mid));
+    return rho_ruby_create_boolean(env->CallStaticBooleanMethod(cls, mid));
 }
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
-    JNIEnv *env = jnienv();
     jstring objFolderPath = env->NewStringUTF(szFolderPath);
     env->CallStaticVoidMethod(cls, mid, objFolderPath);
     env->DeleteLocalRef(objFolderPath);
@@ -67,11 +68,12 @@ RHO_GLOBAL VALUE rho_sys_makephonecall(const char* callname, int nparams, char**
 
 RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 {
+    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(cls, "showNetworkIndicator", "(Z)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "showNetworkIndicator", "(Z)V");
     if (!mid) return;
-    jnienv()->CallStaticVoidMethod(cls, mid, enable);
+    env->CallStaticVoidMethod(cls, mid, enable);
 }
 
 RHO_GLOBAL void *rho_nativethread_start()
@@ -89,46 +91,48 @@ RHO_GLOBAL void rho_nativethread_end(void *)
 
 RHO_GLOBAL VALUE rho_sys_get_locale()
 {
-	if (g_currentLocale.empty())
-	{
-		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-		if (!cls) return rho_ruby_create_string("");
-		jmethodID mid = getJNIClassStaticMethod(cls, "getCurrentLocale", "()Ljava/lang/String;");
-		if (!mid) return rho_ruby_create_string("");
-		JNIEnv *env = jnienv();
-		jstring objLocale = (jstring)env->CallStaticObjectMethod(cls, mid);
-		if (!objLocale) return rho_ruby_create_string("");
-		const char *s = env->GetStringUTFChars(objLocale, JNI_FALSE);
-		g_currentLocale = s;
-		env->ReleaseStringUTFChars(objLocale, s);
-	}
-	return rho_ruby_create_string(g_currentLocale.c_str());
+    if (g_currentLocale.empty())
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+        if (!cls) return rho_ruby_create_string("");
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "getCurrentLocale", "()Ljava/lang/String;");
+        if (!mid) return rho_ruby_create_string("");
+        jstring objLocale = (jstring)env->CallStaticObjectMethod(cls, mid);
+        if (!objLocale) return rho_ruby_create_string("");
+        const char *s = env->GetStringUTFChars(objLocale, JNI_FALSE);
+        g_currentLocale = s;
+        env->ReleaseStringUTFChars(objLocale, s);
+    }
+    return rho_ruby_create_string(g_currentLocale.c_str());
 }
 
 RHO_GLOBAL int rho_sys_get_screen_width()
 {
-	if (g_screenWidth == 0)
-	{
-		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-		if (!cls) return 0;
-		jmethodID mid = getJNIClassStaticMethod(cls, "getScreenWidth", "()I");
-		if (!mid) return 0;
-		g_screenWidth = jnienv()->CallStaticIntMethod(cls, mid);
-	}
-	return g_screenWidth;
+    if (g_screenWidth == 0)
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+        if (!cls) return 0;
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "getScreenWidth", "()I");
+        if (!mid) return 0;
+        g_screenWidth = env->CallStaticIntMethod(cls, mid);
+    }
+    return g_screenWidth;
 }
 
 RHO_GLOBAL int rho_sys_get_screen_height()
 {
-	if (g_screenHeight == 0)
-	{
-		jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-		if (!cls) return 0;
-		jmethodID mid = getJNIClassStaticMethod(cls, "getScreenHeight", "()I");
-		if (!mid) return 0;
-		g_screenHeight = jnienv()->CallStaticIntMethod(cls, mid);
-	}
-	return g_screenHeight;
+    if (g_screenHeight == 0)
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+        if (!cls) return 0;
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "getScreenHeight", "()I");
+        if (!mid) return 0;
+        g_screenHeight = env->CallStaticIntMethod(cls, mid);
+    }
+    return g_screenHeight;
 }
 
 RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
@@ -140,7 +144,7 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return nil;
     if (strcasecmp("has_camera", szPropName) == 0) {
-        jmethodID mid = getJNIClassStaticMethod(cls, "hasCamera", "()Z");
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "hasCamera", "()Z");
         if (!mid) return nil;
         jboolean result = env->CallStaticBooleanMethod(cls, mid);
         return rho_ruby_create_boolean((int)result);
