@@ -36,6 +36,8 @@
 		BDB15ED410B2EC7500003DFA /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C7162970F8B7EEC0096B6AA /* librholib.a */; };
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
 		BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
+		BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373651144220F006EA6DA /* SimpleMainView.m */; };
+		BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373C411444A8F006EA6DA /* Rhodes.m */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
@@ -195,6 +197,11 @@
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		BDB37363114420DE006EA6DA /* RhoMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoMainView.h; sourceTree = "<group>"; };
+		BDB373641144220F006EA6DA /* SimpleMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleMainView.h; sourceTree = "<group>"; };
+		BDB373651144220F006EA6DA /* SimpleMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleMainView.m; sourceTree = "<group>"; };
+		BDB373C3114449B6006EA6DA /* Rhodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rhodes.h; sourceTree = "<group>"; };
+		BDB373C411444A8F006EA6DA /* Rhodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rhodes.m; sourceTree = "<group>"; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -274,27 +281,30 @@
 			isa = PBXGroup;
 			children = (
 				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
+				F579170F0E8AB2A200BBC54D /* AppManager */,
+				F5B8FAD10F44E95F00C9AF85 /* Camera */,
+				46056CEE1031CFB700C21967 /* DateTimePicker */,
+				F563D0310EA5408C0062DA57 /* GeoLocation */,
+				F547F3D10F9CEB05007C2CD2 /* Log */,
+				BDB3735D11441FE0006EA6DA /* MainView */,
 				F5425BCD1060539A000CCA8C /* MapView */,
 				468E573F1035DBA600A2293C /* NativeBar */,
-				46056CEE1031CFB700C21967 /* DateTimePicker */,
-				5C5332610FBD6AC700F268F0 /* rho */,
-				F547F3D10F9CEB05007C2CD2 /* Log */,
-				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
-				F563D0310EA5408C0062DA57 /* GeoLocation */,
-				F579170F0E8AB2A200BBC54D /* AppManager */,
+				5C5332610FBD6AC700F268F0 /* rho */,
 				5C4775EC113082290092D21E /* Server */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
-				05377B3E0E709170003B8BD1 /* WebViewController.h */,
-				05377B3D0E709170003B8BD1 /* WebViewController.m */,
-				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
-				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
-				46C25E39103240A400A26428 /* RhoDelegate.h */,
-				46C25E3A103240A400A26428 /* RhoDelegate.m */,
 				5C477602113083F10092D21E /* JSString.h */,
 				5C477603113083F10092D21E /* JSString.m */,
+				46C25E39103240A400A26428 /* RhoDelegate.h */,
+				46C25E3A103240A400A26428 /* RhoDelegate.m */,
+				BDB373C3114449B6006EA6DA /* Rhodes.h */,
+				BDB373C411444A8F006EA6DA /* Rhodes.m */,
+				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
+				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
 				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
 				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
+				05377B3E0E709170003B8BD1 /* WebViewController.h */,
+				05377B3D0E709170003B8BD1 /* WebViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -455,6 +465,16 @@
 				BD2C94DF10AE0A8C008D4692 /* libcurl.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BDB3735D11441FE0006EA6DA /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				BDB37363114420DE006EA6DA /* RhoMainView.h */,
+				BDB373641144220F006EA6DA /* SimpleMainView.h */,
+				BDB373651144220F006EA6DA /* SimpleMainView.m */,
+			);
+			name = MainView;
 			sourceTree = "<group>";
 		};
 		F5425BCD1060539A000CCA8C /* MapView */ = {
@@ -780,6 +800,8 @@
 				5C477604113083F10092D21E /* JSString.m in Sources */,
 				5C477608113084290092D21E /* WebViewUrl.m in Sources */,
 				BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */,
+				BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */,
+				BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
