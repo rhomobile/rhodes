@@ -2,6 +2,7 @@ require 'find'
 require 'erb'
 require 'rake/rdoctask'
 require 'digest/sha2'
+require 'rexml/document'
 
 #Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
 module Rake
