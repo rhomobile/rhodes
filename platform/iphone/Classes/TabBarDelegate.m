@@ -114,6 +114,13 @@
 	self.tabBarController.viewControllers = tabs;
 	self.tabBarController.customizableViewControllers = nil;
 	self.tabBarController.view.hidden = NO;
+    CGRect frame = window.frame;
+    self.tabBarController.view.frame = frame;
+    
+    CGRect tbFrame = tabBarController.tabBar.frame;
+    tbFrame.origin.y = frame.size.height - tbFrame.size.height - frame.origin.y;
+    tabBarController.tabBar.frame = tbFrame;
+    
 	[self.mainWindow addSubview:tabBarController.view];
 }
 
