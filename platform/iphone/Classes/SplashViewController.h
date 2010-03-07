@@ -13,9 +13,10 @@
     IBOutlet UIImageView *splashView;
     
 @public
-    UIView *superView;
+    UIView *parentView;
 }
 
+- (id)initWithParentView:(UIView*)v;
 - (void)showSplash:(NSString *)imagePath;
 - (void)hideSplash;
 

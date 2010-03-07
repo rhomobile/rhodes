@@ -11,7 +11,8 @@ module Rho
   	TABBAR_TYPE = 1
   	NOBAR_TYPE = 2
   	
-  	@@toolbar = []
+  	@@toolbar = [{:action => :back}, {:action => :forward}, {:action => :flexible},
+      {:action => :home}, {:action => :refresh}, {:action => :options} ]
     	
     def initialize
       LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
