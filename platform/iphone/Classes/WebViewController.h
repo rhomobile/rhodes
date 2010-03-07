@@ -4,21 +4,21 @@
 //#include "SyncEngine.h"
 
 @interface WebViewController : UIViewController <UIActionSheetDelegate, UIWebViewDelegate> {
-	IBOutlet UINavigationBar* navBar;
-	IBOutlet UIToolbar* toolbar;
-	IBOutlet UIBarButtonItem* homeBtn;
-	IBOutlet UIBarButtonItem* optionsBtn;
-	IBOutlet UIBarButtonItem* backBtn;
-	//IBOutlet UIBarButtonItem* syncBtn;
-	IBOutlet UIBarButtonItem* forwardBtn;
-	IBOutlet UILabel* activityInfo;
-	IBOutlet UIWebView *webView;
-	IBOutlet UIActivityIndicatorView *activity;
-	//NSString *viewHomeUrl,*viewOptionsUrl;
-	
+    UINavigationBar* navBar;
+    UIToolbar* toolbar;
+    UIBarButtonItem* backBtn;
+    UIBarButtonItem* forwardBtn;
+    UIBarButtonItem* homeBtn;
+    UIBarButtonItem* refreshBtn;
+    UIBarButtonItem* optionsBtn;
+    UILabel* activityInfo;
+    UIWebView *webView;
+    UIActivityIndicatorView *activity;
+    //NSString *viewHomeUrl,*viewOptionsUrl;
+
 @public
-	id   actionTarget;
-	SEL  onShowLog;
+    id   actionTarget;
+    SEL  onShowLog;
     UIWindow *window;
 }
 
@@ -30,7 +30,8 @@
 @property (assign) UIWebView* webView;
 @property (assign) SEL  onShowLog;
 
--(void)initDelegate;
+-(id)initWithParentWindow:(UIWindow*)w;
+
 -(void)loadData:(NSData*)data mimeType:(NSString*)type;
 
 -(void)showToolbar:(BOOL)show;
@@ -40,15 +41,11 @@
 
 -(void)setActivityInfo:(NSString *)labelText;
 
--(IBAction)goBack;
-
--(IBAction)goForward;
-
--(IBAction)goHome;
-
--(IBAction)goOptions;
-
--(IBAction)refresh;
+-(void)goBack:(id)sender;
+-(void)goForward:(id)sender;
+-(void)goHome:(id)sender;
+-(void)goOptions:(id)sender;
+-(void)refresh;
 
 -(void)executeJs:(JSString *)js;
 
