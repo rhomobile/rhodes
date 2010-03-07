@@ -236,6 +236,7 @@
         [self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
 	}
     else if (type == TOOLBAR_TYPE) {
+        [webViewController createNewToolbar:bar.barItemDataArray];
         [webViewController showToolbar:YES];
 	}
     else if (type == NOBAR_TYPE) {

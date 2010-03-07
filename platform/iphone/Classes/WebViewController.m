@@ -1,4 +1,5 @@
 #import "WebViewController.h"
+#import "AppManager.h"
 //#import "ruby/ext/rho/rhoruby.h"
 //#import "UniversalLock.h"
 #import "common/RhoConf.h"
@@ -34,6 +35,36 @@ char* get_current_location() {
 	//UNLOCK(current_location);
 }*/
 
+@interface UIBarButtonItemAction : NSObject
+{
+    WebViewController *wc;
+    NSString *url;
+}
+
+@property (nonatomic,copy) NSString *url;
+
+- (id)init:(WebViewController*)w url:(NSString*)u;
+- (void)onAction:(id)sender;
+
+@end
+
+@implementation UIBarButtonItemAction
+
+@synthesize url;
+
+- (id)init:(WebViewController *)w url:(NSString*)u {
+    self->wc = w;
+    self.url = u;
+    return self;
+}
+
+- (void)onAction:(id)sender {
+    [wc navigate:url];
+}
+
+@end
+
+
 @implementation WebViewController
 
 //@synthesize viewHomeUrl, viewOptionsUrl;
@@ -50,7 +81,111 @@ char* get_current_location() {
     [super dealloc];
 }
 
-- (UIToolbar*)createToolbar:(CGRect)mainFrame {
+- (void)createNewToolbar:(NSArray*)items {
+    if ([items count] % 4 != 0) {
+        RAWLOG_ERROR("Illegal arguments for createNewToolbar");
+        return;
+    }
+    
+    UIToolbar *tb = [UIToolbar new];
+    tb.barStyle = UIBarStyleBlackOpaque;
+    
+    [tb sizeToFit];
+    
+    CGRect mainFrame = window.frame;
+    
+    CGFloat tbHeight = [tb frame].size.height;
+    CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
+                                CGRectGetHeight(mainFrame) - tbHeight,
+                                CGRectGetWidth(mainFrame),
+                                tbHeight);
+    [tb setFrame:tbFrame];
+    
+    UIBarButtonItem *fixed = [[UIBarButtonItem alloc]
+                              initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                              target:nil action:nil];
+
+    NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]/4];
+    for(int i = 0, lim = [items count]/4; i < lim; i++) {
+        int index = i*4;
+        NSString *label = (NSString*)[items objectAtIndex:index++];
+        NSString *url = (NSString*)[items objectAtIndex:index++];
+        NSString *icon = (NSString*)[items objectAtIndex:index++];
+        //NSString *reload = (NSString*)[items objectAtIndex:index++];
+        
+        if ([url length] == 0) {
+            RAWLOG_ERROR("Illegal arguments for createNewToolbar");
+            return;
+        }
+        
+        UIBarButtonItem *btn = nil;
+        if ([url compare:@"back"] == NSOrderedSame) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithImage:[UIImage imageNamed:@"back_btn.png"]
+                   style:UIBarButtonItemStylePlain target:self
+                   action:@selector(goBack:)];
+        }
+        else if ([url compare:@"forward"] == NSOrderedSame) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithImage:[UIImage imageNamed:@"forward_btn.png"]
+                   style:UIBarButtonItemStylePlain target:self
+                   action:@selector(goForward:)];
+        }
+        else if ([url compare:@"home"] == NSOrderedSame) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithImage:[UIImage imageNamed:@"home_btn.png"]
+                   style:UIBarButtonItemStylePlain target:self
+                   action:@selector(goHome:)];
+        }
+        else if ([url compare:@"options"] == NSOrderedSame) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithImage:[UIImage imageNamed:@"gears.png"]
+                   style:UIBarButtonItemStylePlain target:self
+                   action:@selector(goOptions:)];
+        }
+        else if ([url compare:@"refresh"] == NSOrderedSame) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+                   target:self action:@selector(onRefresh:)];
+        }
+        else if ([url compare:@"flexible"] == NSOrderedSame) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                   target:nil action:nil];
+        }
+        else {
+            NSString *u = [NSString stringWithUTF8String:rho_http_normalizeurl([url UTF8String])];
+            UIBarButtonItemAction *action = [[UIBarButtonItemAction alloc] init:self url:u];
+            if ([icon length] > 0) {
+                NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
+                btn = [[UIBarButtonItem alloc]
+                       initWithImage:[UIImage imageNamed:imagePath] style:UIBarButtonItemStylePlain
+                       target:action action:@selector(onAction:)];
+            }
+            else if ([label length] > 0) {
+                btn = [[UIBarButtonItem alloc]
+                       initWithTitle:label style:UIBarButtonItemStylePlain
+                       target:action action:@selector(onAction:)];
+            }
+        }
+        
+        if (btn) {
+            [btns addObject:fixed];
+            [btns addObject:btn];
+        }
+    }
+    
+    [tb setItems:btns];
+    
+    [fixed release];
+    
+    [toolbar removeFromSuperview];
+    toolbar = tb;
+    toolbar.hidden = [btns count] == 0;
+    [window addSubview:toolbar];
+}
+
+- (UIToolbar*)newToolbar:(CGRect)mainFrame {
     UIToolbar *tb = [UIToolbar new];
     tb.barStyle = UIBarStyleBlackOpaque;
     
@@ -114,7 +249,7 @@ char* get_current_location() {
     
     CGRect mainFrame = window.frame;
     
-    toolbar = [self createToolbar:window.frame];
+    toolbar = [self newToolbar:window.frame];
     toolbar.hidden = YES;
     [window addSubview:toolbar];
     
