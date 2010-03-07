@@ -417,19 +417,30 @@
 - (void) doStartUp {
 	appStarted = false;
     
-    webViewController->window = window;
-	webViewController->actionTarget = self;
-	webViewController->onShowLog = @selector(onShowLog);
-    [webViewController initDelegate];
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+    //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
-    // Create View
-	webViewController.toolbar.hidden = YES;
-	[window addSubview:webViewController.view];
+    //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
+    
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    //int newY = sbFrame.size.height;
+    int newY = 10;
+    frame.size.height += frame.origin.y - newY;
+    frame.origin.y = newY;
+    
+    //[[UIApplication sharedApplication]
+    //    setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
+    
+    window = [[UIWindow alloc] initWithFrame:frame];
+    window.contentMode = UIViewContentModeScaleToFill;
+    window.autoresizesSubviews = YES;
     [window makeKeyAndVisible];
     
-    splashViewController = [[SplashViewController alloc] init];
-    splashViewController->superView = webViewController.view;
-    [splashViewController loadView];
+    webViewController = [[WebViewController alloc] initWithParentWindow:window];
+    webViewController->actionTarget = self;
+    webViewController->onShowLog = @selector(onShowLog);
+    
+    splashViewController = [[SplashViewController alloc] initWithParentView:window];
     
     [self showLoadingPage];
     

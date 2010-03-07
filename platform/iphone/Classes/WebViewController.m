@@ -39,8 +39,100 @@ char* get_current_location() {
 //@synthesize viewHomeUrl, viewOptionsUrl;
 @synthesize actionTarget, onShowLog, toolbar, webView;
 
-- (void)initDelegate {
+- (void)dealloc {
+    [backBtn release];
+    [forwardBtn release];
+    [homeBtn release];
+    [refreshBtn release];
+    [optionsBtn release];
+    [activity release];
+    [toolbar release];
+    [super dealloc];
+}
+
+- (UIToolbar*)createToolbar:(CGRect)mainFrame {
+    UIToolbar *tb = [UIToolbar new];
+    tb.barStyle = UIBarStyleBlackOpaque;
+    
+    [tb sizeToFit];
+    
+    CGFloat tbHeight = [tb frame].size.height;
+    CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
+                                CGRectGetHeight(mainFrame) - tbHeight,
+                                CGRectGetWidth(mainFrame),
+                                tbHeight);
+    [tb setFrame:tbFrame];
+    
+    backBtn = [[UIBarButtonItem alloc]
+               initWithImage:[UIImage imageNamed:@"back_btn.png"]
+               style:UIBarButtonItemStylePlain target:self
+               action:@selector(goBack:)];
+    
+    forwardBtn = [[UIBarButtonItem alloc]
+                  initWithImage:[UIImage imageNamed:@"forward_btn.png"]
+                  style:UIBarButtonItemStylePlain target:self
+                  action:@selector(goForward:)];
+    
+    homeBtn = [[UIBarButtonItem alloc]
+               initWithImage:[UIImage imageNamed:@"home_btn.png"]
+               style:UIBarButtonItemStylePlain target:self
+               action:@selector(goHome:)];
+    
+    refreshBtn = [[UIBarButtonItem alloc]
+                  initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+                  target:self action:@selector(onRefresh:)];
+    
+    optionsBtn = [[UIBarButtonItem alloc]
+                  initWithImage:[UIImage imageNamed:@"gears.png"]
+                  style:UIBarButtonItemStylePlain target:self
+                  action:@selector(goOptions:)];
+    
+    activity = [[UIActivityIndicatorView alloc]
+                initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    activity.hidesWhenStopped = YES;
+    
+    UIBarButtonItem *fixedSpace = [[UIBarButtonItem alloc]
+                                   initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                   target:nil action:nil];
+    
+    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc]
+                                  initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                  target:nil action:nil];
+    
+    NSArray *items = [NSArray arrayWithObjects:backBtn, fixedSpace, forwardBtn, flexSpace,
+                      homeBtn, fixedSpace, refreshBtn, fixedSpace, optionsBtn, nil];
+    [tb setItems:items];
+    
+    [fixedSpace release];
+    [flexSpace release];
+    
+    return tb;
+}
+
+- (id)initWithParentWindow:(UIWindow*)w {
+    window = w;
+    
+    CGRect mainFrame = window.frame;
+    
+    toolbar = [self createToolbar:window.frame];
+    toolbar.hidden = YES;
+    [window addSubview:toolbar];
+    
+    CGRect tbFrame = toolbar.frame;
+    
+    CGRect wvFrame = CGRectMake(CGRectGetMinX(mainFrame), CGRectGetMinY(mainFrame),
+                                CGRectGetWidth(mainFrame),
+                                CGRectGetHeight(mainFrame) - CGRectGetHeight(tbFrame));
+    webView = [[UIWebView alloc] initWithFrame:wvFrame];
+    webView.scalesPageToFit = YES;
+    webView.userInteractionEnabled = YES;
+    webView.detectsPhoneNumbers = YES;
+    webView.multipleTouchEnabled = YES;
+    webView.autoresizesSubviews = YES;
     webView.delegate = self;
+    [window addSubview:webView];
+    
+    return self;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -107,8 +199,7 @@ char* get_current_location() {
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
 }
 
--(IBAction)goBack 
-{
+-(void)goBack:(id)sender {
     const char* szBackUrl = rho_rhodesapp_getappbackurl();
     if ( szBackUrl && *szBackUrl )
         [self navigateRedirect:[NSString stringWithCString:szBackUrl encoding:[NSString defaultCStringEncoding]]];    
@@ -116,11 +207,11 @@ char* get_current_location() {
 	    [webView goBack];
 }
 
--(IBAction)goForward {
+-(void)goForward:(id)sender {
 	[webView goForward];
 }
 
--(IBAction)goHome {
+-(void)goHome:(id)sender {
 	const char* url = rho_rhodesapp_getstarturl();
 	[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
 	//if (viewHomeUrl != NULL) {
@@ -128,7 +219,7 @@ char* get_current_location() {
 	//}
 }
 
--(IBAction)goOptions {
+-(void)goOptions:(id)sender {
 	const char* url = rho_rhodesapp_getoptionsurl();
 	[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
 	
@@ -137,10 +228,14 @@ char* get_current_location() {
 	//}
 }
 
--(IBAction)refresh {
+-(void)refresh {
 	[webView reload];
 	//const char* url = rho_rhodesapp_getcurrenturl();
 	//[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
+}
+
+-(void)onRefresh:(id)sender {
+    [self refresh];
 }
 
 -(void)setActivityInfo:(NSString *)labelText {

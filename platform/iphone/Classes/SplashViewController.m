@@ -12,10 +12,12 @@
 @implementation SplashViewController
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+- (id)initWithParentView:(UIView*)v {
+    parentView = v;
+    CGRect frame = [[UIScreen mainScreen] bounds];
     splashView = [[UIImageView alloc] initWithFrame:frame];
-    [superView addSubview:splashView];
+    [parentView addSubview:splashView];
+    return self;
 }
 
 - (void)showSplash:(NSString *)imagePath {
