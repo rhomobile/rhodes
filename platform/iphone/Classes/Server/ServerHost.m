@@ -542,6 +542,9 @@ void create_nativebar(int bar_type, rho_param *p)
                 reload = value->v.string;
         }
         
+        if (label == NULL && bar_type == TOOLBAR_TYPE)
+            label = "";
+        
         if (label == NULL || action == NULL) {
             RAWLOG_ERROR("Illegal argument for create_nativebar");
             return;
