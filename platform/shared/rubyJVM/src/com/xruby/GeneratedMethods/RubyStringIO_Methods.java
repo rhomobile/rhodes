@@ -19,6 +19,10 @@ klass.defineMethod( "read", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyStringIO)receiver).read(args);}
 });
+klass.defineMethod( "readline", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return ((RubyStringIO)receiver).readLine(args);}
+});
 klass.defineMethod( "eof?", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyStringIO)receiver).isEOF();}
