@@ -28,60 +28,7 @@
 		5C477608113084290092D21E /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477607113084290092D21E /* WebViewUrl.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
-		BD5B744A113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
-		BD666DED112D5EA300948654 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
-		BD666DEE112D5EA300948654 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
-		BD666DEF112D5EA300948654 /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
-		BD666DF0112D5EA300948654 /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A010B1B9CD00BAAFAB /* back_btn.png */; };
-		BD666DF1112D5EA300948654 /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */; };
-		BD666DF2112D5EA300948654 /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A310B1B9E500BAAFAB /* home_btn.png */; };
-		BD666DF3112D5EA300948654 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A610B1BA2000BAAFAB /* icon.png */; };
-		BD666DF6112D5EA300948654 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
-		BD666DF7112D5EA300948654 /* RhoRunnerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */; };
-		BD666DF8112D5EA300948654 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05377B3D0E709170003B8BD1 /* WebViewController.m */; };
-		BD666DFD112D5EA300948654 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
-		BD666DFE112D5EA300948654 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
-		BD666DFF112D5EA300948654 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
-		BD666E01112D5EA300948654 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F563D38E0EA6BC2E0062DA57 /* LocationController.m */; };
-		BD666E02112D5EA300948654 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
-		BD666E03112D5EA300948654 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
-		BD666E04112D5EA300948654 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F52181120F96B13500B7F974 /* LogViewController.m */; };
-		BD666E05112D5EA300948654 /* LogOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = F547F2870F9945D2007C2CD2 /* LogOptionsController.m */; };
-		BD666E06112D5EA300948654 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
-		BD666E07112D5EA300948654 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
-		BD666E08112D5EA300948654 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F06667102CB134006CFD39 /* ParamsWrapper.m */; };
-		BD666E09112D5EA300948654 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
-		BD666E0A112D5EA300948654 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
-		BD666E0B112D5EA300948654 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
-		BD666E0C112D5EA300948654 /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
-		BD666E0D112D5EA300948654 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AF5162103F150D006E02E1 /* NativeBar.m */; };
-		BD666E0E112D5EA300948654 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
-		BD666E0F112D5EA300948654 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
-		BD666E10112D5EA300948654 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
-		BD666E11112D5EA300948654 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
-		BD666E14112D5EA300948654 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
-		BD666E16112D5EA300948654 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
-		BD666E17112D5EA300948654 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
-		BD666E18112D5EA300948654 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C7162970F8B7EEC0096B6AA /* librholib.a */; };
-		BD666E19112D5EA300948654 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD2C94DF10AE0A8C008D4692 /* libcurl.a */; };
-		BD666E1A112D5EA300948654 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D5450EA8240E0062DA57 /* librhosynclib.a */; };
-		BD666E1B112D5EA300948654 /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5F06496102B946F006CFD39 /* librhoextlib.a */; };
-		BD666E1C112D5EA300948654 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		BD666E1D112D5EA300948654 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		BD666E1E112D5EA300948654 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */; };
-		BD666E1F112D5EA300948654 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
-		BD666E20112D5EA300948654 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
-		BD666E21112D5EA300948654 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
-		BD666E22112D5EA300948654 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
-		BD666E23112D5EA300948654 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
-		BD666E24112D5EA300948654 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F516695F0FFD78770079F023 /* AVFoundation.framework */; };
-		BD666E25112D5EA300948654 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
-		BD666E26112D5EA300948654 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
-		BD666E27112D5EA300948654 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB21117AFB9009A974A /* MapKit.framework */; };
-		BD666E28112D5EA300948654 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB61117AFBF009A974A /* CFNetwork.framework */; };
-		BD72CCF4112D6348003B7D27 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD72CCE7112D62F2003B7D27 /* MainWindow.xib */; };
-		BD72CCF6112D635F003B7D27 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD72CCE9112D630E003B7D27 /* MainWindow.xib */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDB15ED110B2EBC200003DFA /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5F06496102B946F006CFD39 /* librhoextlib.a */; };
 		BDB15ED210B2EC6600003DFA /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D5450EA8240E0062DA57 /* librhosynclib.a */; };
@@ -90,10 +37,6 @@
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
 		BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
-		BDF33C23113463B900169E20 /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB155112EE65900AE3724 /* sslimpl.cpp */; };
-		BDF33C24113463BD00169E20 /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C4775F61130832B0092D21E /* ServerHost.m */; };
-		BDF33C25113463C300169E20 /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477603113083F10092D21E /* JSString.m */; };
-		BDF33C26113463C700169E20 /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477607113084290092D21E /* WebViewUrl.m */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
@@ -164,48 +107,6 @@
 			remoteGlobalIDString = D2AAC045055464E500DB518D;
 			remoteInfo = curl;
 		};
-		BD666DDE112D5EA300948654 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhorubylib;
-		};
-		BD666DE0112D5EA300948654 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhosynclib;
-		};
-		BD666DE2112D5EA300948654 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = tcmalloc;
-		};
-		BD666DE4112D5EA300948654 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = RhoLib;
-		};
-		BD666DE6112D5EA300948654 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F5F0648C102B946F006CFD39 /* rhoextlib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = rhoextlib;
-		};
-		BD666DE8112D5EA300948654 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD2C94A610AE052A008D4692 /* curl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = curl;
-		};
 		F563D5440EA8240E0062DA57 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
@@ -257,7 +158,7 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoRunnerAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoRunnerAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* rhorunner-iPhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rhorunner-iPhone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* rhorunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rhorunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rhorunner_Prefix.pch; sourceTree = "<group>"; };
@@ -292,10 +193,7 @@
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
-		BD666E2E112D5EA300948654 /* rhorunner-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rhorunner-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BD72CCE7112D62F2003B7D27 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = ui/iPhone/MainWindow.xib; sourceTree = "<group>"; };
-		BD72CCE9112D630E003B7D27 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = ui/iPad/MainWindow.xib; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
@@ -369,32 +267,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BD666E15112D5EA300948654 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD666E16112D5EA300948654 /* libtcmalloc.a in Frameworks */,
-				BD666E17112D5EA300948654 /* librhorubylib.a in Frameworks */,
-				BD666E18112D5EA300948654 /* librholib.a in Frameworks */,
-				BD666E19112D5EA300948654 /* libcurl.a in Frameworks */,
-				BD666E1A112D5EA300948654 /* librhosynclib.a in Frameworks */,
-				BD666E1B112D5EA300948654 /* librhoextlib.a in Frameworks */,
-				BD666E1C112D5EA300948654 /* Foundation.framework in Frameworks */,
-				BD666E1D112D5EA300948654 /* UIKit.framework in Frameworks */,
-				BD666E1E112D5EA300948654 /* CoreFoundation.framework in Frameworks */,
-				BD666E1F112D5EA300948654 /* CoreLocation.framework in Frameworks */,
-				BD666E20112D5EA300948654 /* libsqlite3.0.dylib in Frameworks */,
-				BD666E21112D5EA300948654 /* AddressBook.framework in Frameworks */,
-				BD666E22112D5EA300948654 /* SystemConfiguration.framework in Frameworks */,
-				BD666E23112D5EA300948654 /* AudioToolbox.framework in Frameworks */,
-				BD666E24112D5EA300948654 /* AVFoundation.framework in Frameworks */,
-				BD666E25112D5EA300948654 /* CoreGraphics.framework in Frameworks */,
-				BD666E26112D5EA300948654 /* libz.dylib in Frameworks */,
-				BD666E27112D5EA300948654 /* MapKit.framework in Frameworks */,
-				BD666E28112D5EA300948654 /* CFNetwork.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -430,8 +302,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* rhorunner-iPhone.app */,
-				BD666E2E112D5EA300948654 /* rhorunner-iPad.app */,
+				1D6058910D05DD3D006BFB54 /* rhorunner.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -451,8 +322,6 @@
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				BD72CCE4112D629F003B7D27 /* Info.plist */,
-				29B97317FDCFA39411CA2CEA /* Resources-iPhone */,
-				BD666E30112D5EA300948654 /* Resources-iPad */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
@@ -468,14 +337,6 @@
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		29B97317FDCFA39411CA2CEA /* Resources-iPhone */ = {
-			isa = PBXGroup;
-			children = (
-				BD72CCE7112D62F2003B7D27 /* MainWindow.xib */,
-			);
-			name = "Resources-iPhone";
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
@@ -596,14 +457,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BD666E30112D5EA300948654 /* Resources-iPad */ = {
-			isa = PBXGroup;
-			children = (
-				BD72CCE9112D630E003B7D27 /* MainWindow.xib */,
-			);
-			name = "Resources-iPad";
-			sourceTree = "<group>";
-		};
 		F5425BCD1060539A000CCA8C /* MapView */ = {
 			isa = PBXGroup;
 			children = (
@@ -705,9 +558,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* rhorunner-iPhone */ = {
+		1D6058900D05DD3D006BFB54 /* rhorunner */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner-iPhone" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */;
 			buildPhases = (
 				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
 				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
@@ -727,36 +580,9 @@
 				F5F0652F102B9CA0006CFD39 /* PBXTargetDependency */,
 				BD2C94F310AE0BC3008D4692 /* PBXTargetDependency */,
 			);
-			name = "rhorunner-iPhone";
+			name = rhorunner;
 			productName = rhorunner;
-			productReference = 1D6058910D05DD3D006BFB54 /* rhorunner-iPhone.app */;
-			productType = "com.apple.product-type.application";
-		};
-		BD666DDC112D5EA300948654 /* rhorunner-iPad */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = BD666E2A112D5EA300948654 /* Build configuration list for PBXNativeTarget "rhorunner-iPad" */;
-			buildPhases = (
-				BD666DE9112D5EA300948654 /* Create RhoBundle */,
-				BD666DEA112D5EA300948654 /* Copy RhoBundle */,
-				BD666DEB112D5EA300948654 /* Resources */,
-				BD666DF4112D5EA300948654 /* Move alerts to root of app */,
-				BD666DF5112D5EA300948654 /* Sources */,
-				BD666E15112D5EA300948654 /* Frameworks */,
-				BD666E29112D5EA300948654 /* Rez */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				BD666DDD112D5EA300948654 /* PBXTargetDependency */,
-				BD666DDF112D5EA300948654 /* PBXTargetDependency */,
-				BD666DE1112D5EA300948654 /* PBXTargetDependency */,
-				BD666DE3112D5EA300948654 /* PBXTargetDependency */,
-				BD666DE5112D5EA300948654 /* PBXTargetDependency */,
-				BD666DE7112D5EA300948654 /* PBXTargetDependency */,
-			);
-			name = "rhorunner-iPad";
-			productName = rhorunner;
-			productReference = BD666E2E112D5EA300948654 /* rhorunner-iPad.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* rhorunner.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -797,8 +623,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* rhorunner-iPhone */,
-				BD666DDC112D5EA300948654 /* rhorunner-iPad */,
+				1D6058900D05DD3D006BFB54 /* rhorunner */,
 			);
 		};
 /* End PBXProject section */
@@ -849,21 +674,6 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BD666DEB112D5EA300948654 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD666DED112D5EA300948654 /* Entitlements.plist in Resources */,
-				BD666DEE112D5EA300948654 /* Settings.bundle in Resources */,
-				BD666DEF112D5EA300948654 /* gears.png in Resources */,
-				BD666DF0112D5EA300948654 /* back_btn.png in Resources */,
-				BD666DF1112D5EA300948654 /* forward_btn.png in Resources */,
-				BD666DF2112D5EA300948654 /* home_btn.png in Resources */,
-				BD666DF3112D5EA300948654 /* icon.png in Resources */,
-				BD72CCF6112D635F003B7D27 /* MainWindow.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BDFBD98F10B1B98100BAAFAB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -875,7 +685,6 @@
 				BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */,
 				BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */,
 				BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */,
-				BD72CCF4112D6348003B7D27 /* MainWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -883,13 +692,6 @@
 
 /* Begin PBXRezBuildPhase section */
 		BD4D7DB210AE2A45003DCE59 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BD666E29112D5EA300948654 /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -942,49 +744,6 @@
 			shellPath = /bin/sh;
 			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\nmkdir -p ${RHO_TARGET_DIR}\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
 		};
-		BD666DE9112D5EA300948654 /* Create RhoBundle */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			comments = "Compile ruby sources";
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Create RhoBundle";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "source ~/.profile\ncd ../../\nrake build:iphone:rhobundle";
-		};
-		BD666DEA112D5EA300948654 /* Copy RhoBundle */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy RhoBundle";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\nmkdir -p ${RHO_TARGET_DIR}\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
-		};
-		BD666DF4112D5EA300948654 /* Move alerts to root of app */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Move alerts to root of app";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ -d ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts ]; then\n\tnf=$(ls ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts | wc -l)\n\tif [ \"$nf\" -eq \"0\" ];  then \n\t\techo 'Alerts folder is empty...' \n\telse\n\t\techo Moving $nf alert\\(s\\)...\n\t\tmv ${TARGET_BUILD_DIR}/${TARGET_NAME}.app/apps/public/alerts/*.* ${TARGET_BUILD_DIR}/${TARGET_NAME}.app\n\tfi\nelse\n\techo 'Alerts folder is not found...'\nfi\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1024,42 +783,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BD666DF5112D5EA300948654 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD666DF6112D5EA300948654 /* main.m in Sources */,
-				BD666DF7112D5EA300948654 /* RhoRunnerAppDelegate.m in Sources */,
-				BD666DF8112D5EA300948654 /* WebViewController.m in Sources */,
-				BD666DFD112D5EA300948654 /* AppManager.m in Sources */,
-				BD666DFE112D5EA300948654 /* AppLoader.m in Sources */,
-				BD666DFF112D5EA300948654 /* unzip.cpp in Sources */,
-				BD666E01112D5EA300948654 /* LocationController.m in Sources */,
-				BD666E02112D5EA300948654 /* phonebook.m in Sources */,
-				BD666E03112D5EA300948654 /* PickImageDelegate.m in Sources */,
-				BD666E04112D5EA300948654 /* LogViewController.m in Sources */,
-				BD666E05112D5EA300948654 /* LogOptionsController.m in Sources */,
-				BD666E06112D5EA300948654 /* NetRequestImpl.m in Sources */,
-				BD666E07112D5EA300948654 /* RhoClassFactory.cpp in Sources */,
-				BD666E08112D5EA300948654 /* ParamsWrapper.m in Sources */,
-				BD666E09112D5EA300948654 /* DateTimePickerDelegate.m in Sources */,
-				BD666E0A112D5EA300948654 /* RhoDelegate.m in Sources */,
-				BD666E0B112D5EA300948654 /* DateTime.m in Sources */,
-				BD666E0C112D5EA300948654 /* TabBarDelegate.m in Sources */,
-				BD666E0D112D5EA300948654 /* NativeBar.m in Sources */,
-				BD666E0E112D5EA300948654 /* BarItem.m in Sources */,
-				BD666E0F112D5EA300948654 /* MapViewController.m in Sources */,
-				BD666E10112D5EA300948654 /* MapAnnotation.m in Sources */,
-				BD666E11112D5EA300948654 /* GoogleGeocoder.m in Sources */,
-				BD666E14112D5EA300948654 /* RhoFileImpl.m in Sources */,
-				BDF33C23113463B900169E20 /* sslimpl.cpp in Sources */,
-				BDF33C24113463BD00169E20 /* ServerHost.m in Sources */,
-				BDF33C25113463C300169E20 /* JSString.m in Sources */,
-				BDF33C26113463C700169E20 /* WebViewUrl.m in Sources */,
-				BD5B744A113BE2DB00C6070A /* SplashViewController.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1077,36 +800,6 @@
 			isa = PBXTargetDependency;
 			name = curl;
 			targetProxy = BD2C94F210AE0BC3008D4692 /* PBXContainerItemProxy */;
-		};
-		BD666DDD112D5EA300948654 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = rhorubylib;
-			targetProxy = BD666DDE112D5EA300948654 /* PBXContainerItemProxy */;
-		};
-		BD666DDF112D5EA300948654 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = rhosynclib;
-			targetProxy = BD666DE0112D5EA300948654 /* PBXContainerItemProxy */;
-		};
-		BD666DE1112D5EA300948654 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = tcmalloc;
-			targetProxy = BD666DE2112D5EA300948654 /* PBXContainerItemProxy */;
-		};
-		BD666DE3112D5EA300948654 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RhoLib;
-			targetProxy = BD666DE4112D5EA300948654 /* PBXContainerItemProxy */;
-		};
-		BD666DE5112D5EA300948654 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = rhoextlib;
-			targetProxy = BD666DE6112D5EA300948654 /* PBXContainerItemProxy */;
-		};
-		BD666DE7112D5EA300948654 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = curl;
-			targetProxy = BD666DE8112D5EA300948654 /* PBXContainerItemProxy */;
 		};
 		F563D5610EA8257A0062DA57 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1141,6 +834,7 @@
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -1148,12 +842,12 @@
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				PRODUCT_NAME = "rhorunner-iPhone";
+				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Debug;
@@ -1170,6 +864,7 @@
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -1190,11 +885,11 @@
 					CFNetwork,
 					"$(EXTENSIONS_LDFLAGS)",
 				);
-				PRODUCT_NAME = "rhorunner-iPhone";
+				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Release;
@@ -1289,6 +984,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -1336,152 +1032,11 @@
 					CFNetwork,
 					"$(EXTENSIONS_LDFLAGS)",
 				);
-				PRODUCT_NAME = "rhorunner-iPhone";
+				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
-				TARGETED_DEVICE_FAMILY = 1;
-				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
-			};
-			name = Distribution;
-		};
-		BD666E2B112D5EA300948654 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
-				COPY_PHASE_STRIP = NO;
-				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-					"$(SRCROOT)/build/Debug-iphonesimulator",
-				);
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				PRODUCT_NAME = "rhorunner-iPad";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.2;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = 2;
-				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
-			};
-			name = Debug;
-		};
-		BD666E2C112D5EA300948654 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
-				COPY_PHASE_STRIP = YES;
-				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-					"$(SRCROOT)/build/Debug-iphonesimulator",
-				);
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreGraphics,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				PRODUCT_NAME = "rhorunner-iPad";
-				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				SDKROOT = iphoneos3.2;
-				TARGETED_DEVICE_FAMILY = 2;
-				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
-			};
-			name = Release;
-		};
-		BD666E2D112D5EA300948654 /* Distribution */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
-				COPY_PHASE_STRIP = YES;
-				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-					"$(SRCROOT)/build/Debug-iphonesimulator",
-					"$(SRCROOT)/openssl/build",
-				);
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				PRODUCT_NAME = "rhorunner-iPad";
-				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				SDKROOT = iphoneos3.2;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Distribution;
@@ -1559,22 +1114,12 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner-iPhone" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
 				46B0041D10332DA700D0C2F4 /* Distribution */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		BD666E2A112D5EA300948654 /* Build configuration list for PBXNativeTarget "rhorunner-iPad" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BD666E2B112D5EA300948654 /* Debug */,
-				BD666E2C112D5EA300948654 /* Release */,
-				BD666E2D112D5EA300948654 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -20,18 +20,18 @@
 @class WebViewController;
 
 @interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate, AVAudioPlayerDelegate> {
-	IBOutlet UIWindow *window;
-    IBOutlet SplashViewController *splashViewController;
-	IBOutlet WebViewController *webViewController;
-	LogViewController* logViewController;
-	LogOptionsController* logOptionsController;
+    UIWindow *window;
+    SplashViewController *splashViewController;
+    WebViewController *webViewController;
+    LogViewController* logViewController;
+    LogOptionsController* logOptionsController;
     ServerHost * serverHost;
-	PickImageDelegate* pickImageDelegate;
-	DateTimePickerDelegate* dateTimePickerDelegate;
-	TabBarDelegate* tabBarDelegate;
-	NativeBar* nativeBar;
-	AVAudioPlayer *player;
-	bool appStarted;
+    PickImageDelegate* pickImageDelegate;
+    DateTimePickerDelegate* dateTimePickerDelegate;
+    TabBarDelegate* tabBarDelegate;
+    NativeBar* nativeBar;
+    AVAudioPlayer *player;
+    bool appStarted;
 }
 
 @property (nonatomic, retain) UIWindow *window;
