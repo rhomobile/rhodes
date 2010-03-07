@@ -46,7 +46,7 @@ public class DateTimePicker {
 			intent.putExtra(INTENT_EXTRA_PREFIX + "fmt", v);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "opaque", opaque);
 			
-			RhodesInstance.getInstance().startActivityForResult(intent, 5);
+			RhodesInstance.getInstance().startActivity(intent);
 		}
 		catch (Exception e) {
 			reportFail("choose", e);
