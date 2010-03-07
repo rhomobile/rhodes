@@ -13,14 +13,10 @@
 #define DEFAULT_LOGCATEGORY "main"
 
 int main(int argc, char *argv[]) {
-
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-
-    int retVal = UIApplicationMain(argc, argv, nil, nil);
-    
-	[pool release];
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    int retVal = UIApplicationMain(argc, argv, nil, @"RhoRunnerAppDelegate");
+    [pool release];
 
     RAWLOG_INFO("Exiting the Runner");
-
-	return retVal;
+    return retVal;
 }
