@@ -42,8 +42,16 @@ def set_app_name_android(newname)
 
   lowname = newname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
-  buf = File.new($rhomanifest,"r").read.gsub(/package=".*"/,"package=\"com.rhomobile.#{lowname}\"")
-  File.open($appmanifest,"w") { |f| f.write(buf) }
+  File.open($appmanifest, "w") do |fw|
+    File.open($rhomanifest, "r") do |fr|
+      while line = fr.gets
+        line.chomp!
+        line.gsub!(/package=".*"/, "package=\"com.rhomobile.#{lowname}\"")
+        line.gsub!(/^.*com\.google\.android\.maps.*$/, '') unless $use_geomapping
+        fw.puts line
+      end
+    end
+  end
 
   buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
   File.open($app_android_r,"w") { |f| f.write(buf) }
