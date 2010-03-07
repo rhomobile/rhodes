@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "ServerHost.h"
 #import "SplashViewController.h"
+#import "RhoMainView.h"
 #import "PickImageDelegate.h"
 #import "DateTimePickerDelegate.h"
 #import "TabBarDelegate.h"
@@ -21,25 +22,23 @@
 
 @interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate, AVAudioPlayerDelegate> {
     UIWindow *window;
-    SplashViewController *splashViewController;
-    WebViewController *webViewController;
-    LogViewController* logViewController;
-    LogOptionsController* logOptionsController;
+    //SplashViewController *splashViewController;
+    id<RhoMainView> mainView;
+    //LogViewController* logViewController;
+    //LogOptionsController* logOptionsController;
     ServerHost * serverHost;
-    PickImageDelegate* pickImageDelegate;
-    DateTimePickerDelegate* dateTimePickerDelegate;
-    TabBarDelegate* tabBarDelegate;
-    NativeBar* nativeBar;
+    //PickImageDelegate* pickImageDelegate;
+    //DateTimePickerDelegate* dateTimePickerDelegate;
+    //TabBarDelegate* tabBarDelegate;
+    //NativeBar* nativeBar;
     AVAudioPlayer *player;
     bool appStarted;
 }
 
 @property (nonatomic, retain) UIWindow *window;
-@property (nonatomic, retain) SplashViewController *splashViewController;
-@property (nonatomic, retain) WebViewController *webViewController;
+//@property (nonatomic, retain) SplashViewController *splashViewController;
+@property (nonatomic, retain) id<RhoMainView> mainView;
 @property (nonatomic, retain) AVAudioPlayer *player;
-@property (nonatomic, retain) NativeBar* nativeBar;
-
+//@property (nonatomic, retain) NativeBar* nativeBar;
 
 @end
-

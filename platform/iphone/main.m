@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    int retVal = UIApplicationMain(argc, argv, nil, @"RhoRunnerAppDelegate");
+    int retVal = UIApplicationMain(argc, argv, nil, @"Rhodes");
     [pool release];
 
     RAWLOG_INFO("Exiting the Runner");
