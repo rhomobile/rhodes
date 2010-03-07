@@ -9,9 +9,8 @@
 
 #include "common/RhoPort.h"
 #import "RhoRunnerAppDelegate.h"
-#import "WebViewController.h"
-//#import "AppManager.h"
-//#import "common/RhoConf.h"
+#import "SimpleMainView.h"
+
 #import "logging/RhoLog.h"
 #include "sync/ClientRegister.h"
 #include "sync/syncthread.h"
@@ -32,33 +31,22 @@
 @implementation RhoRunnerAppDelegate
 
 @synthesize window;
-@synthesize splashViewController;
-@synthesize webViewController;
+//@synthesize splashViewController;
+@synthesize mainView;
 @synthesize player; 
-@synthesize nativeBar;
-/*
-- (NSString*)normalizeUrl:(NSString*)url 
-{
-//	if([url hasPrefix:@"http://"]) {
-//		return url;
-//	}
-//	NSString* location = [@"http://localhost:8080" stringByAppendingString:[@"/" stringByAppendingPathComponent:url]];
-//	return location;
-	char* szNormUrl = rho_http_normalizeurl([url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	NSString* strRes = [NSString stringWithCString:szNormUrl encoding:[NSString defaultCStringEncoding]];
-	rho_http_free(szNormUrl);
-	
-	return strRes;
-}*/
+//@synthesize nativeBar;
 
 - (void)loadStartPath:(NSString*)location {
+    /*
 	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
 	} else {
 		// Load tab #0 on app load
         BarItem *item = (BarItem*)[tabBarDelegate.barItems objectAtIndex:0];
 		[tabBarDelegate loadTabBarItemFirstPage:item];
-	}	
+	}
+    */
+    [mainView navigate:location tab:[mainView activeTab]];
 }
 
 - (void)onServerStarted:(NSString*)data {
@@ -81,11 +69,12 @@
 	}*/
 	
 	appStarted = true;
-    [splashViewController hideSplash];
+    //[splashViewController hideSplash];
 	[self loadStartPath:location];
 }
 
 - (void)onRefreshView:(int)index {
+    /*
     if (self.nativeBar.barType == TABBAR_TYPE) {
         BarItem *item = (BarItem*)[tabBarDelegate.barItems objectAtIndex:index];
         [tabBarDelegate refresh:item];
@@ -93,9 +82,12 @@
     else {
         [webViewController refresh];
     }
+    */
+    [mainView reload:index];
 }
 
 - (void)onNavigateTo:(WebViewUrl*) wvUrl {
+    /*
 	if (self.nativeBar.barType == TABBAR_TYPE) {
         int size = [tabBarDelegate.barItems count];
         if (wvUrl.webViewIndex >= size) {
@@ -107,9 +99,12 @@
 	} else {
 		[webViewController navigateRedirect:wvUrl.url];
 	}
+    */
+    [mainView navigate:wvUrl.url tab:wvUrl.webViewIndex];
 }
 
 - (void)onExecuteJs:(JSString *)js {
+    /*
     if (self.nativeBar.barType == TABBAR_TYPE) {
         BarItem *item = (BarItem *)[tabBarDelegate.barItems objectAtIndex:js->index];
         [tabBarDelegate executeJs:item js:js];
@@ -117,6 +112,8 @@
     else {
         [webViewController executeJs:js];
     }
+    */
+    [mainView executeJs:js tab:[mainView activeTab]];
 }
 /*
 - (void)onSetViewHomeUrl:(NSString *)url {
@@ -189,27 +186,38 @@
 } 
 
 - (void)onTakePicture:(NSString*) url {
+    // TODO:
+    /*
 	[pickImageDelegate setPostUrl:url];//[self normalizeUrl:url]];
 	[self startCameraPickerFromViewController:webViewController 
 								usingDelegate:pickImageDelegate 
 								sourceType:UIImagePickerControllerSourceTypeCamera];
+    */
 }
 
 - (void)onChoosePicture:(NSString*) url {
+    // TODO:
+    /*
 	[pickImageDelegate setPostUrl:url];//[self normalizeUrl:url]];
 	[self startCameraPickerFromViewController:webViewController 
 								usingDelegate:pickImageDelegate 
 								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+    */
 }
 
 - (void)onChooseDateTime:(DateTime*)dateTime {
+    // TODO:
+    /*
 	dateTimePickerDelegate.dateTime = dateTime;
 	[dateTimePickerDelegate setPostUrl:dateTime.url];//[self normalizeUrl:dateTime.url]];
 	[self startDateTimePickerFromViewController:webViewController
 								  usingDelegate:dateTimePickerDelegate];
+    */
 }
 
 - (void)onRemoveNativeBar {
+    // TODO:
+    /*
     if (self.nativeBar == nil)
         return;
     
@@ -220,9 +228,12 @@
         [webViewController showToolbar:NO];
     }
     self.nativeBar = nil;
+    */
 }
 
 - (void)onCreateNativeBar:(NativeBar*)bar {
+    // TODO:
+    /*
     if (self.nativeBar != nil) {
         RAWLOG_INFO("Native bar already exists, remove it");
         [self onRemoveNativeBar];
@@ -242,16 +253,20 @@
         [webViewController showToolbar:NO];
 	}
     self.nativeBar = bar;
+    */
 }
 
 - (void)onSwitchTab:(NSValue*)value {
     int* pIndex = value.pointerValue;
+    /*
     if (self.nativeBar == nil)
         return;
     
     if (self.nativeBar.barType == TABBAR_TYPE) {
         [tabBarDelegate switchTab:*pIndex];
     }
+    */
+    [mainView switchTab:*pIndex];
 }
 
 /*
@@ -260,17 +275,21 @@
 }*/
 
 - (void)onShowLog {
+    /*
 	if (logViewController!=NULL) {
 		[window addSubview:logViewController.view];
 		logViewController.view.hidden = NO;
 	}
+     */
 }
 
 - (void)onShowLogOptions {
+    /*
 	if (logOptionsController!=NULL) {
 		[window addSubview:logOptionsController.view];
 		logOptionsController.view.hidden = NO;
 	}
+     */
 }
 
 - (void)onShowPopup:(NSString *)message {
@@ -337,6 +356,7 @@
 }
 
 - (void)onActiveTab:(NSValue*)val {
+    /*
 	//TODO: This is a bit weird, but saves us creating another wrapper class
 	int* res = val.pointerValue;
 	if (tabBarDelegate && tabBarDelegate.tabBar) {
@@ -344,6 +364,7 @@
 	} else {
 		*res = 0;
 	}
+     */
 }
 
 #ifdef __IPHONE_3_0
@@ -402,63 +423,65 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *pngPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
+    //NSString *pngPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
-    if ([fileManager fileExistsAtPath:pngPath]) {
+    /*if ([fileManager fileExistsAtPath:pngPath]) {
         [splashViewController showSplash:pngPath];
     }
-    else if ([fileManager fileExistsAtPath:htmPath]) {
-        NSData *data = [fileManager contentsAtPath:htmPath];
-        [webViewController loadData:data mimeType:@"text/html"];
+    else*/ if ([fileManager fileExistsAtPath:htmPath]) {
+        NSError *err;
+        NSString *data = [NSString stringWithContentsOfFile:htmPath encoding:NSUTF8StringEncoding error:&err];
+        [mainView loadHTMLString:data];
     }
 }
 
 - (void) doStartUp {
 	appStarted = false;
     
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
     //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
-    
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
     //int newY = sbFrame.size.height;
     int newY = 10;
+    
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
     frame.size.height += frame.origin.y - newY;
     frame.origin.y = newY;
-    
-    //[[UIApplication sharedApplication]
-    //    setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
     
     window = [[UIWindow alloc] initWithFrame:frame];
     window.contentMode = UIViewContentModeScaleToFill;
     window.autoresizesSubviews = YES;
     [window makeKeyAndVisible];
     
-    webViewController = [[WebViewController alloc] initWithParentWindow:window];
-    webViewController->actionTarget = self;
-    webViewController->onShowLog = @selector(onShowLog);
+    //webViewController = [[WebViewController alloc] initWithParentWindow:window];
+    //webViewController->actionTarget = self;
+    //webViewController->onShowLog = @selector(onShowLog);
     
-    splashViewController = [[SplashViewController alloc] initWithParentView:window];
+    mainView = [[SimpleMainView alloc] initWithParentWindow:window andDelegate:self];
+    
+    //splashViewController = [[SplashViewController alloc] initWithParentView:[mainView getView]];
     
     [self showLoadingPage];
     
     // Log View
+    /*
 	logViewController = [[LogViewController alloc] init];
 	logViewController->actionTarget = self;
 	logViewController->onShowLogOptions = @selector(onShowLogOptions);
+     */
 	
-	logOptionsController = [[LogOptionsController alloc] init];    
+	//logOptionsController = [[LogOptionsController alloc] init];    
 	
 	//TabBar delegate
-	tabBarDelegate = [[TabBarDelegate alloc] init];
+	//tabBarDelegate = [[TabBarDelegate alloc] init];
 	
 	//Camera delegate
-	pickImageDelegate = [[PickImageDelegate alloc] init];
+	//pickImageDelegate = [[PickImageDelegate alloc] init];
 	
 	//DateTime delegate
-	dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
+	//dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
 	
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
@@ -567,13 +590,13 @@
 }
 
 - (void)dealloc {
+    mainView = nil;
     [serverHost release];
-	[webViewController release];
 	[window release];
-	[pickImageDelegate release];
-	[dateTimePickerDelegate release];
-	[tabBarDelegate release];
-	[nativeBar release];
+	//[pickImageDelegate release];
+	//[dateTimePickerDelegate release];
+	//[tabBarDelegate release];
+	//[nativeBar release];
 	[super dealloc];
 }
 
