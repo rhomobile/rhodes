@@ -28,19 +28,29 @@ def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
 
-  fname = Jake.get_absolute File.join($androidpath, "Rhodes", "res", "values", "strings.xml")
-  buf = File.new(fname,"r").read.gsub(/"app_name">.*<\/string>/,"\"app_name\">#{newname}</string>")
-  File.open(fname,"w") { |f| f.write(buf) }
+  rm_rf $appres
+  cp_r $rhores, $appres
+
+  iconappname = File.join($app_path, "icon", "icon.png")
+  iconresname = File.join($appres, "drawable", "icon.png")
+  rm_f iconresname
+  cp iconappname, iconresname
+
+  rhostrings = File.join($rhores, "values", "strings.xml")
+  appstrings = File.join($appres, "values", "strings.xml")
+  doc = REXML::Document.new File.new rhostrings
+  doc.elements["resources/string[@name='app_name']"].text = newname
+  File.open(appstrings, "w") { |f| doc.write f }
 
   lowname = newname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
-  fname = Jake.get_absolute File.join($androidpath, "Rhodes", "AndroidManifest.xml")
-  buf = File.new(fname,"r").read.gsub(/package=".*"/,"package=\"com.rhomobile.#{lowname}\"")
-  File.open(fname,"w") { |f| f.write(buf) }
+  doc = REXML::Document.new File.new $rhomanifest
+  doc.root.attributes['package'] = "com.rhomobile.#{lowname}"
+  doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
+  File.open($appmanifest, "w") { |f| doc.write f }
 
-  fname = Jake.get_absolute File.join($androidpath, "Rhodes", "src", "com", "rhomobile", "rhodes", "AndroidR.java")
-  buf = File.new(fname,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
-  File.open(fname,"w") { |f| f.write(buf) }
+  buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
+  File.open($app_android_r,"w") { |f| f.write(buf) }
 end
 
 def generate_rjava
@@ -62,8 +72,8 @@ namespace "config" do
 
     $use_geomapping = $app_config["android"]["mapping"] unless $app_config["android"].nil?
     $use_geomapping = $config["android"]["mapping"] if $use_geomapping.nil? and not $config["android"].nil?
-    $use_geomapping = '' unless $use_geomapping.is_a? String
-    $use_geomapping = get_boolean($use_geomapping)
+    $use_geomapping = 'false' if $use_geomapping.nil?
+    $use_geomapping = get_boolean($use_geomapping.to_s)
 
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
@@ -104,6 +114,16 @@ namespace "config" do
     $libs = File.join($androidpath, "Rhodes", "libs")
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
+
+    $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
+    $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
+
+    $rhores = File.join $androidpath, "Rhodes", "res"
+    $appres = File.join $tmpdir, "res"
+
+    $rho_android_r = File.join $androidpath, "Rhodes", "src", "com", "rhomobile", "rhodes", "AndroidR.java"
+    $app_android_r = File.join $tmpdir, "AndroidR.java"
+    $app_rjava_dir = File.join $tmpdir
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
@@ -181,11 +201,15 @@ namespace "config" do
 
     # Detect Google API add-on path
     if $use_geomapping
+      puts "+++ Looking for Google APIs add-on..."
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         break unless $gapijar.nil?
 
         props = File.join(dir, 'manifest.ini')
-        next unless File.file? props
+        if !File.file? props
+          puts "+++ WARNING: no manifest.ini found in #{dir}"
+          next
+        end
 
         apilevel = -1
         File.open(props, 'r') do |f|
@@ -196,7 +220,14 @@ namespace "config" do
           end
         end
 
+        puts "+++ API LEVEL of #{dir}: #{apilevel}"
+
         $gapijar = File.join(dir, 'libs', 'maps.jar') if apilevel == ANDROID_API_LEVEL
+      end
+      if $gapijar.nil?
+        puts "+++ No Google APIs add-on found"
+      else
+        puts "+++ Google APIs add-on found: #{$gapijar}"
       end
     end
 
@@ -240,25 +271,16 @@ namespace "build" do
  #   desc "Generate R.java file"
     task :rjava => "config:android" do
 
-      manifest = File.join($androidpath, "Rhodes", "AndroidManifest.xml")
-      resource = Jake.get_absolute(File.join($androidpath, "Rhodes", "res"))
+      manifest = $appmanifest
+      resource = $appres
       assets = Jake.get_absolute(File.join($androidpath, "Rhodes", "assets"))
       nativelibs = Jake.get_absolute(File.join($androidpath, "Rhodes", "libs"))
-      rjava = Jake.get_absolute(File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes"))
+      #rjava = Jake.get_absolute(File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes"))
 
-      mkdir_p $tmpdir
-      iconbakname = $tmpdir + "/icon.png.bak"
-      iconappname = $app_path + "/icon/icon.png"
-      cp resource + "/drawable/icon.png",iconbakname
-      cp iconappname, resource + "/drawable" if File.exists?(iconappname)
-
-      args = ["package", "-f", "-M", '"'+manifest+'"', "-S", '"'+resource+'"', "-A", '"'+assets+'"', "-I", '"'+$androidjar+'"', "-J", '"'+rjava+'"']
+      args = ["package", "-f", "-M", '"'+manifest+'"', "-S", '"'+resource+'"', "-A", '"'+assets+'"', "-I", '"'+$androidjar+'"', "-J", '"'+$app_rjava_dir+'"']
       puts Jake.run('"' + $aapt + '"',args)
 
       exitstatus = $?
-
-      mv iconbakname,resource + "/drawable/icon.png" if File.exists?(iconbakname)
-
       unless exitstatus == 0
         puts "Error in AAPT"
         exit 1
@@ -608,29 +630,28 @@ namespace "build" do
       args << "-nowarn"
       args << "-encoding"
       args << "latin1"
-      args << "@#{$builddir}/RhodesGEN_build.files"
+      args << '"' + File.join($app_rjava_dir, "R.java") + '"'
       puts Jake.run('"'+javac+'"',args)
       unless $? == 0
-        set_app_name_android("Rhodes")
-        generate_rjava
         puts "Error compiling java code"
         exit 1
       end
 
       srclist = File.join($builddir, "RhodesSRC_build.files")
-      unless $use_geomapping
-        newsrclist = File.join($tmpdir, "RhodesSRC_build.files")
-        lines = []
-        File.open(srclist, "r") do |f|
-          while line = f.gets
-            line.chomp!
-            next if line =~ /\/mapview\//
-            lines << line
-          end
+      newsrclist = File.join($tmpdir, "RhodesSRC_build.files")
+      lines = []
+      File.open(srclist, "r") do |f|
+        while line = f.gets
+          line.chomp!
+          next if line =~ /\/AndroidR\.java\s*$/
+          next if !$use_geomapping and line =~ /\/mapview\//
+          lines << line
         end
-        File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
-        srclist = newsrclist
       end
+      lines << $app_android_r
+      File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
+      srclist = newsrclist
+
       args = []
       args << "-g"
       args << "-d"
@@ -648,14 +669,9 @@ namespace "build" do
       args << "@#{srclist}"
       puts Jake.run('"'+javac+'"',args)
       unless $? == 0
-        set_app_name_android("Rhodes")
-        generate_rjava
         puts "Error compiling java code"
         exit 1
       end
-
-      set_app_name_android("Rhodes")
-      generate_rjava
 
       args = ["cf","../../Rhodes.jar", "#{$all_files_mask}"]
       puts Jake.run('"'+$jarbin+'"', args, "#{$tmpdir}/Rhodes/")
@@ -678,34 +694,24 @@ namespace "package" do
     outfile = "#{$bindir}/classes.dex"
     args << "\"--output=#{outfile}\""
     args << "\"#{$bindir}/Rhodes.jar\""
-    #args << "#{$bindir}/RhoBundle.jar"
     puts Jake.run('"'+$dx+'"',args)
     unless $? == 0
       puts "Error running DX utility"
       exit 1
     end
 
-    manifest = Jake.get_absolute $androidpath + "/Rhodes/AndroidManifest.xml"
-    resource = Jake.get_absolute $androidpath + "/Rhodes/res"
+    manifest = $appmanifest
+    resource = $appres
     assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
     resourcepkg =  $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
 
-    iconbakname = $tmpdir + "/icon.png.bak"
-    iconappname = $app_path + "/icon/icon.png"
-    cp resource + "/drawable/icon.png",iconbakname
-    cp iconappname, resource + "/drawable" if File.exists?(iconappname)
     set_app_name_android($appname)
 
     args = ["package", "-f", "-M", '"'+manifest+'"', "-S", '"'+resource+'"', "-A", '"'+assets+'"', "-I", '"'+$androidjar+'"', "-F", '"'+resourcepkg+'"']
     puts Jake.run('"'+$aapt+'"', args)
-    returnval = $?
-
-    set_app_name_android("Rhodes")
-    mv iconbakname,resource + "/drawable/icon.png" if File.exists?(iconbakname)
-
-    unless returnval == 0
+    unless $? == 0
       puts "Error running AAPT"
       exit 1
     end
