@@ -36,22 +36,18 @@ def set_app_name_android(newname)
   rm_f iconresname
   cp iconappname, iconresname
 
-  fname = File.join($appres, "values", "strings.xml")
-  buf = File.new(fname,"r").read.gsub(/"app_name">.*<\/string>/,"\"app_name\">#{newname}</string>")
-  File.open(fname,"w") { |f| f.write(buf) }
+  rhostrings = File.join($rhores, "values", "strings.xml")
+  appstrings = File.join($appres, "values", "strings.xml")
+  doc = REXML::Document.new File.new rhostrings
+  doc.elements["resources/string[@name='app_name']"].text = newname
+  File.open(appstrings, "w") { |f| doc.write f }
 
   lowname = newname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
-  File.open($appmanifest, "w") do |fw|
-    File.open($rhomanifest, "r") do |fr|
-      while line = fr.gets
-        line.chomp!
-        line.gsub!(/package=".*"/, "package=\"com.rhomobile.#{lowname}\"")
-        line.gsub!(/^.*com\.google\.android\.maps.*$/, '') unless $use_geomapping
-        fw.puts line
-      end
-    end
-  end
+  doc = REXML::Document.new File.new $rhomanifest
+  doc.root.attributes['package'] = "com.rhomobile.#{lowname}"
+  doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
+  File.open($appmanifest, "w") { |f| doc.write f }
 
   buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
   File.open($app_android_r,"w") { |f| f.write(buf) }
