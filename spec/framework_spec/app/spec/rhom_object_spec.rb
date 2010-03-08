@@ -421,6 +421,50 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
+
+  it "should find with group of advanced conditions" do
+    query = '%IND%'    
+    cond1 = {
+       :conditions => { 
+            {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+            {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+       :op => 'OR'
+    }
+    cond2 = {
+        :conditions => { 
+            {:name=>'description', :op=>'LIKE'} => 'Hello%'}
+    }
+
+    @accts = Account.find( :all, 
+       :conditions => [cond1, cond2], 
+       :op => 'AND', 
+       :select => ['name','industry'])
+  
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+
+  it "should not find with group of advanced conditions" do
+    query = '%IND%'    
+    cond1 = {
+       :conditions => { 
+            {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+            {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+       :op => 'OR'
+    }
+    cond2 = {
+        :conditions => { 
+            {:name=>'description', :op=>'LIKE'} => 'Hellogg%'}
+    }
+
+    @accts = Account.find( :all, 
+       :conditions => [cond1, cond2], 
+       :op => 'AND', 
+       :select => ['name','industry'])
+  
+    @accts.length.should == 0
+  end
   
   it "should find first with conditions" do
     @mobio_ind_acct = Account.find(:first, :conditions => {'name' => 'Mobio India'})
