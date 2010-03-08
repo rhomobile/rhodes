@@ -150,5 +150,5 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
         return rho_ruby_create_boolean((int)result);
     }
 
-    return nil;
+    return 0;
 }
