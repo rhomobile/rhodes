@@ -117,6 +117,8 @@ public class TabbedMainView implements MainView {
 		
 		TabHost.TabSpec spec;
 		
+		String rootPath = RhodesInstance.getInstance().getRootPath() + "/apps/";
+
 		for (int i = 0; i < size; ++i) {
 			Object param = params.elementAt(i);
 			if (!(param instanceof Map<?,?>))
@@ -139,7 +141,7 @@ public class TabbedMainView implements MainView {
 			
 			Object iconObj = hash.get("icon");
 			if (iconObj != null && (iconObj instanceof String))
-				icon = (String)iconObj;
+				icon = rootPath + (String)iconObj;
 			
 			Object reloadObj = hash.get("reload");
 			if (reloadObj != null && (reloadObj instanceof String))
