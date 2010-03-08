@@ -385,19 +385,19 @@ module REXML
               @nsstack.unshift(curr_ns=Set.new)
               if md[4].size > 0
                 attrs = md[4].scan( ATTRIBUTE_PATTERN )
-                raise REXML::ParseException.new( "error parsing attributes: [#{attrs.join ', '}], excess = \"#$'\"", @source) if $' and $'.strip.size > 0
+                raise ::REXML::ParseException.new( "error parsing attributes: [#{attrs.join ', '}], excess = \"#$'\"", @source) if $' and $'.strip.size > 0
                 attrs.each { |a,b,c,d,e| 
                   if b == "xmlns"
                     if c == "xml"
                       if d != "http://www.w3.org/XML/1998/namespace"
                         msg = "The 'xml' prefix must not be bound to any other namespace "+
                         "(http://www.w3.org/TR/REC-xml-names/#ns-decl)"
-                        raise REXML::ParseException.new( msg, @source, self )
+                        raise ::REXML::ParseException.new( msg, @source, self )
                       end
                     elsif c == "xmlns"
                       msg = "The 'xmlns' prefix must not be declared "+
                       "(http://www.w3.org/TR/REC-xml-names/#ns-decl)"
-                      raise REXML::ParseException.new( msg, @source, self)
+                      raise ::REXML::ParseException.new( msg, @source, self)
                     end
                     curr_ns << c
                   elsif b
@@ -406,7 +406,7 @@ module REXML
 
                   if attributes.has_key? a
                     msg = "Duplicate attribute #{a.inspect}"
-                    raise REXML::ParseException.new( msg, @source, self)
+                    raise ::REXML::ParseException.new( msg, @source, self)
                   end
 
                   attributes[a] = e 
@@ -414,9 +414,10 @@ module REXML
               end
         
               # Verify that all of the prefixes have been defined
-              for prefix in prefixes
+              #for prefix in prefixes
+              prefixes.each do |prefix|
                 unless @nsstack.find{|k| k.member?(prefix)}
-                  raise UndefinedNamespaceException.new(prefix,@source,self)
+                  raise ::REXML::UndefinedNamespaceException.new(prefix,@source,self)
                 end
               end
 
