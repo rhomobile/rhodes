@@ -5,6 +5,8 @@
 
 package com.xruby.runtime.stdlib;
 
+import java.io.IOException;
+
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyString;
@@ -83,5 +85,46 @@ public class RubyStringIO extends RubyBasic {
     		throw new RubyException(RubyRuntime.ArgumentErrorClass, "in 'StringIO.read': wrong number of arguments : " + args.size() );
     	}
     }
+    
+	public RubyValue readLine(RubyArray args) 
+	{
+		String chSep;
+    	switch ( args.size() )
+    	{
+    	case 0:
+        	RubyValue valSep = GlobalVariables.get("$/");
+        	chSep = valSep.toStr();
+        	break;
+    	case 1:
+    		if ( !(args.get(0) instanceof RubyString) )
+    			throw new RuntimeException("readLine with limit not implemented.");
+
+        	chSep = args.get(0).toStr();
+        	break;
+    	case 2:
+    		throw new RuntimeException("readLine with 2 parameters not implemented.");
+    	default:
+    		throw new RubyException(RubyRuntime.ArgumentErrorClass, "in 'StringIO.read': wrong number of arguments : " + args.size() );
+    	}
+
+		if ( nPos_>=value_.length() )
+			return RubyConstant.QNIL;
+
+		String strRes = value_.getChars(nPos_, value_.length() - nPos_);
+		String strLine = "";
+		
+		int nPos = strRes.indexOf(chSep, nPos_ );
+		if ( nPos > 0 )
+			strLine = strRes.substring(nPos_, nPos+chSep.length());
+		else
+			strLine = strRes;
+			
+		if ( nPos > 0 )
+			nPos_ = nPos + chSep.length(); 
+		else
+			nPos_ = value_.length();
+		
+		return ObjectFactory.createString(strLine);
+	}
     
 }
