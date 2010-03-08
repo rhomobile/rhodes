@@ -665,8 +665,14 @@ module Rhom
 	          # app client should check this method before update or delete
 	          # overwise all modifications of unconfirmed created item will be lost
 	          def can_modify
-                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE sent>1 LIMIT 1 OFFSET 0")
+   				obj = self.inst_strip_braces(self.object)
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return !(result && result.length > 0) 
+	          end
+
+	          def self.changed?
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", get_source_id().to_i )
+                return result && result.length > 0
 	          end
 	            
               # deletes the record from the viewable list as well as
