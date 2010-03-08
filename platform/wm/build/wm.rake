@@ -54,13 +54,16 @@ namespace "build" do
     end
   end
 
-  desc "Build rhode for win32"
+  #desc "Build rhode for win32"
   task :win32 => ["config:wm", "build:win32:devrhobundle"] do
     chdir $config["build"]["wmpath"]
 
     args = ['/M4', 'rhodes.sln', '"debug|win32"']
     puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
     puts Jake.run($vcbuild,args)
+    
+    chdir $startdir
+    
     unless $? == 0
       puts "Error building"
       exit 1
@@ -118,11 +121,7 @@ namespace "clean" do
   namespace "wm" do
     task :rhodes => ["config:wm"] do
       rm_rf $vcbindir + "/#{$sdk}"
-
-      #rm_rf $tmpdir
-      #rm_rf $targetdir +"/../"
-      rm_rf $bindir
-      rm_rf $rhobundledir
+      rm_rf $targetdir
     end
     task :all => "clean:wm:rhodes"
   end
@@ -130,6 +129,7 @@ namespace "clean" do
   desc "Clean win32"
   task :win32 => [ "config:wm" ]do
     rm_rf $vcbindir + "/win32"
+    #rm_rf $targetdir
   end
 end
 
@@ -137,7 +137,11 @@ namespace "run" do
   desc "Run win32" 
   task :win32 => ["build:win32"] do
     args = [' ']
-    puts Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args)
+    chdir $config["build"]["wmpath"]
+    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
+    $stdout.flush
+    chdir $startdir
+    
     unless $? == 0
       puts "Error to run rhodes for win32"
       exit 1
