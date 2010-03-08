@@ -37,7 +37,7 @@ VALUE rho_sysimpl_get_property(char* szPropName)
 	if (strcasecmp("has_camera",szPropName) == 0) 
         return rho_ruby_create_boolean(has_camera());
 
-    return rho_ruby_get_NIL();
+    return 0;
 }
 
 VALUE rho_sys_get_locale()
