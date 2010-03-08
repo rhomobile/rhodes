@@ -117,7 +117,7 @@ public class MapView extends MapActivity {
 				}
 			}
 			
-			RhodesInstance.getInstance().startActivityForResult(intent, 5);
+			RhodesInstance.getInstance().startActivity(intent);
 		}
 		catch (Exception e) {
 			reportFail("create", e);

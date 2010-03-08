@@ -116,6 +116,97 @@ module Rhom
                     
                     sql
                 end
+
+                def find_objects(condition_hash, op, limit, offset, order_attr)
+                    nulls_cond = {}
+                    if op == 'AND'
+                        condition_hash.each do |key,value|
+                            if !value
+                                nulls_cond[key] = value
+                                condition_hash.delete(key)
+                            end
+                        end
+                    end
+                    
+                    srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                    strLimit = nil
+                    if !order_attr 
+                        strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
+                    end
+                    
+                    puts "non-null select start"
+                    listObjs = []
+                    if op == 'OR' && condition_hash.length > 1
+                        mapObjs = {}
+                        bStop = false 
+                        condition_hash.each do |key,value|
+                            sql = ""
+                            sql << "SELECT object,attrib,value FROM object_values WHERE \n"
+                            sql << makeCondWhere(key,value,srcid_value)
+                            
+                            resObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                            resObjs.each do |rec|
+                                next if mapObjs[ rec['object'] ] 
+                                
+                                mapObjs[ rec['object'] ] = 1
+                                listObjs << rec
+                                
+                                bStop = !order_attr && limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
+                                break if bStop
+                            end
+                            
+                            break if bStop
+                        end
+                        
+                    else
+                        sql = ""
+                        if condition_hash.length > 0
+                            condition_hash.each do |key,value|
+                                sql << "\nINTERSECT\n" if sql.length > 0 
+                                sql << "SELECT object FROM object_values WHERE \n"
+                                sql << makeCondWhere(key,value,srcid_value)
+                                sql << strLimit if strLimit
+                            end
+                        else
+                            sql << "SELECT distinct object FROM object_values WHERE \n"
+                            sql << "source_id=" + srcid_value 
+                            sql << strLimit if strLimit
+                        end
+                                            
+                        listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                    end
+                    puts "non-null select end : #{listObjs.length}"
+                    
+                    nIndex = -1
+                    res = []
+                    listObjs.each do |obj|
+                        nIndex += 1
+                        next if !order_attr && offset && nIndex < offset && !strLimit
+                        
+                        bSkip = false
+                        #obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
+                        nulls_cond.each do |key,value|
+                            sql = ""
+                            sql << "SELECT value FROM object_values WHERE \n"
+                            sql << "object=?" # + obj_value
+                            sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
+                            sql << " AND source_id=?" # + srcid_value
+
+                            attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql, 
+                                obj['object'], key, get_source_id)
+                            #puts 'attrVal: ' + attrVal.inspect  if attrVal
+                            if attrVal && attrVal.length>0 && attrVal[0]['value']
+                                bSkip = true
+                                break
+                            end    
+                        end
+                        
+                        next if bSkip
+                        res << obj
+                    end
+                    
+                    res
+                end
                 
                 def find_bycondhash(args, &block)                
                     puts 'find_bycondhash start'
@@ -147,7 +238,8 @@ module Rhom
                         limit = 1                    
                         offset = 0 unless offset
                     end
-                    
+
+                    attribs = nil
                     if select_arr
                       attribs = select_arr
                       if order_attr 
@@ -156,169 +248,139 @@ module Rhom
                         attribs = attribs | order_attr_arr
                       end  
                     else
-                      attribs = SyncEngine.get_src_attrs(nSrcID)
+                      #attribs = SyncEngine.get_src_attrs(nSrcID)
                     end
-                    
-                    nulls_cond = {}
-                    if op == 'AND'
-                        condition_hash.each do |key,value|
-                            if !value
-                                nulls_cond[key] = value
-                                condition_hash.delete(key)
-                            end
-                        end
-                    end
-                    
+
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
-                    strLimit = nil
-                    if !order_attr 
-                        strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
-                    end
-                    
+
                     ::Rhom::RhomDbAdapter.start_transaction
                     begin
-                        puts "non-null select start"
                         listObjs = []
-                        if op == 'OR' && condition_hash.length > 1
+                        if condition_hash.is_a?(Hash)
+                            listObjs = find_objects(condition_hash, op, limit, offset, order_attr)
+                        elsif condition_hash.is_a?(Array) && condition_hash.length == 1
+                            cond = condition_hash[0]
+                            listObjs = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
+                        elsif condition_hash.is_a?(Array)
                             mapObjs = {}
-                            bStop = false 
-                            condition_hash.each do |key,value|
-                                sql = ""
-                                sql << "SELECT object,attrib,value FROM object_values WHERE \n"
-                                sql << makeCondWhere(key,value,srcid_value)
+                            condition_hash.each do |cond|
+                                res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
                                 
-                                resObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                                resObjs.each do |rec|
-                                    next if mapObjs[ rec['object'] ] 
+                                if listObjs.length() == 0
+                                    res.each do |hash_attrs|
+                                        mapObjs[ hash_attrs['object'] ] = 1
+                                    end
                                     
-                                    mapObjs[ rec['object'] ] = 1
-                                    listObjs << rec
-                                    
-                                    bStop = !order_attr && limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
-                                    break if bStop
-                                end
-                                
-                                break if bStop
-                            end
-                            
-                        else
-                            sql = ""
-                            if condition_hash.length > 0
-                                condition_hash.each do |key,value|
-                                    sql << "\nINTERSECT\n" if sql.length > 0 
-                                    sql << "SELECT object FROM object_values WHERE \n"
-                                    sql << makeCondWhere(key,value,srcid_value)
-                                    sql << strLimit if strLimit
-                                end
-                            else
-                                sql << "SELECT distinct object FROM object_values WHERE \n"
-                                sql << "source_id=" + srcid_value 
-                                sql << strLimit if strLimit
-                            end
-                                                
-                            listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
-                        end
-                        puts "non-null select end : #{listObjs.length}"
-                        
-                        nIndex = -1
-                        nCount = 0;
-                        listObjs.each do |obj|
-                            nIndex += 1
-                            next if !order_attr && offset && nIndex < offset && !strLimit
-                            
-                            bSkip = false
-                            #obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
-                            nulls_cond.each do |key,value|
-                                sql = ""
-                                sql << "SELECT value FROM object_values WHERE \n"
-                                sql << "object=?" # + obj_value
-                                sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
-                                sql << " AND source_id=?" # + srcid_value
-
-                                attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql, 
-                                    obj['object'], key, get_source_id)
-                                #puts 'attrVal: ' + attrVal.inspect  if attrVal
-                                if attrVal && attrVal.length>0 && attrVal[0]['value']
-                                    bSkip = true
-                                    break
+                                    listObjs = res
+                                else
+                                    if op == 'OR'
+                                        res.each do |hash_attrs|
+                                            obj = hash_attrs['object']
+                                            if !mapObjs.has_key?(obj)
+                                                listObjs << hash_attrs
+                                                mapObjs[ obj ] = 1
+                                            end    
+                                        end
+                                    else
+                                        andRes = []
+                                        res.each do |hash_attrs|
+                                            obj = hash_attrs['object']
+                                            if mapObjs.has_key?(obj)
+                                                andRes << hash_attrs
+                                            end    
+                                        end
+                                        listObjs = andRes
+                                    end
                                 end    
                             end
-                            
-                            next if bSkip
-                            
-                            nCount += 1
-                            next if args.first == :count
-                            
-                            sql = ""                        
-                            nonExistAttrs = attribs.dup
-                            nonExistAttrs.delete(obj['attrib']) if obj['attrib']
-                            
-                            values = []
-                            nonExistAttrs.each do |attr|
-                                sql << "\nUNION ALL\n" if sql.length > 0
-                                sql << "SELECT attrib,value FROM object_values WHERE \n"
-                                sql << "object=?" #+ obj_value
-                                sql << " AND attrib=?" #+ ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
-                                sql << " AND source_id=?" #+ srcid_value 
+                        end
+
+                        nCount = 0;
+                        if args.first == :count
+                            nCount = listObjs.length
+                        else                                
+                            listObjs.each do |obj|
+                                sql = ""
+                                values = []
                                 
-                                values << obj['object']
-                                values << attr
-                                values << get_source_id
+                                if attribs
+                                    nonExistAttrs = attribs.dup
+                                    nonExistAttrs.delete(obj['attrib']) if obj['attrib']
+                                    
+                                    nonExistAttrs.each do |attr|
+                                        sql << "\nUNION ALL\n" if sql.length > 0
+                                        sql << "SELECT attrib,value FROM object_values WHERE \n"
+                                        sql << "object=?" #+ obj_value
+                                        sql << " AND attrib=?" #+ ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
+                                        sql << " AND source_id=?" #+ srcid_value 
+                                        
+                                        values << obj['object']
+                                        values << attr
+                                        values << get_source_id
+                                    end
+                                else
+                                    sql << "SELECT attrib,value FROM object_values WHERE \n"
+                                    sql << "object=?"
+                                    sql << " AND source_id=?"
+                                    
+                                    values << obj['object']
+                                    values << get_source_id
+                                end
+                                
+                                listAttrs = sql.length > 0 ? ::Rhom::RhomDbAdapter.execute_sql(sql,values) : []
+                                
+                                new_obj = self.new
+                                new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
+                                
+                                if attribs && obj['attrib']
+                                    new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
+                                end
+                                
+                                listAttrs.each do |attrValHash|
+                                  attrName = attrValHash['attrib']
+                                  attrVal = attrValHash['value']
+                                  new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
+                                  
+                                  #nonExistAttrs.delete(attrName) if nonExistAttrs
+                                end
+                                
+                                #if nonExistAttrs
+                                #   nonExistAttrs.each do |attrName|
+                                #       new_obj.vars.merge!( { attrName.to_sym()=>nil } )
+                                #   end
+                                #end
+                                
+                                ret_list << new_obj
+                                break if !order_attr && limit && ret_list.length >= limit
                             end
-                            
-                            listAttrs = sql.length > 0 ? ::Rhom::RhomDbAdapter.execute_sql(sql,values) : []
-                            
-                            new_obj = self.new
-                            # always return object field with surrounding '{}'
-                            new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
-                            #new_obj.vars.merge!({:source_id=>nSrcID})
-                            
-                            if obj['attrib']
-                                new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
-                            end
-                            
-                            listAttrs.each do |attrValHash|
-                              attrName = attrValHash['attrib']
-                              attrVal = attrValHash['value']
-                              new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
-                              
-                              nonExistAttrs.delete(attrName)
-                            end
-                            
-                            nonExistAttrs.each do |attrName|
-                              new_obj.vars.merge!( { attrName.to_sym()=>nil } )
-                            end
-                            
-                            ret_list << new_obj
-                            break if !order_attr && limit && ret_list.length >= limit
-                      end
-                  ensure
-                    ::Rhom::RhomDbAdapter.commit
-                  end
+                        end    
+                    ensure
+                      ::Rhom::RhomDbAdapter.commit
+                    end
                   
-                  if order_attr
-                    ret_list.sort! { |x,y| 
-                       vx = x.vars[order_attr.to_sym()]
-                       vy = y.vars[order_attr.to_sym()]
-                       res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
-                       res *= -1 if order_dir && order_dir == 'DESC'
-                       res
-                    }
-                  end
-                  
-                  if order_attr && limit
-                    ret_list = ret_list.slice(offset,limit)
-                  end
+                    if order_attr
+                        ret_list.sort! { |x,y| 
+                           vx = x.vars[order_attr.to_sym()]
+                           vy = y.vars[order_attr.to_sym()]
+                           res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+                           res *= -1 if order_dir && order_dir == 'DESC'
+                           res
+                        }
+                    end
 
-                  puts "find_bycondhash end: #{ret_list.length} objects"
-                  
-                  return nCount if args.first == :count
-                  
-                  if args.first == :first
-                    return ret_list.length > 0 ? ret_list[0] : nil
-                  end 
+                    if order_attr && limit
+                        ret_list = ret_list.slice(offset,limit)
+                    end
 
-                  ret_list
+                    puts "find_bycondhash end: #{ret_list.length} objects"
+
+                    return nCount if args.first == :count
+
+                    if args.first == :first
+                        return ret_list.length > 0 ? ret_list[0] : nil
+                    end 
+
+                    ret_list
                 end
                 
                 # retrieve a single record if object id provided, otherwise return
@@ -337,6 +399,10 @@ module Rhom
                   
                     #!args[1] || !args[1][:conditions] || 
                     if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
+                        return find_bycondhash(args,&block)
+                    end
+
+                    if args[1] && args[1][:op] && args[1][:conditions] && args[1][:conditions].is_a?(Array)
                         return find_bycondhash(args,&block)
                     end
                   
