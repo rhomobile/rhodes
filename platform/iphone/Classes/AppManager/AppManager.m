@@ -204,7 +204,7 @@ VALUE rho_sysimpl_get_property(char* szPropName)
         return rho_ruby_create_boolean(has_camera);
     }
 
-    return rho_ruby_get_NIL();
+    return 0;
 }
 
 const char* GetApplicationsRootPath() {
