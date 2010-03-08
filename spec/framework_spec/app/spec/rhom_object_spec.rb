@@ -94,9 +94,12 @@ describe "Rhom::RhomObject" do
   
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
+    Account.changed?.should == false
     account = Account.new(vars)
     obj = account.object
     account.save
+    Account.changed?.should == true
+    
     acct = Account.find(obj)
     acct.name.should == 'foobarthree'
     acct.industry.should == 'entertainment'
