@@ -524,7 +524,7 @@ static void Init_RhoJSON()
     rb_RhoModule = rb_define_module("Rho");
     rb_RhoJSON = rb_define_class_under(rb_RhoModule, "JSON", rb_cObject);
 
-    rb_define_method(rb_RhoJSON, "parse", rho_json_parse, 1);
+    rb_define_singleton_method(rb_RhoJSON, "parse", rho_json_parse, 1);
 }
 
 const char* rho_ruby_internal_getMessageText(const char* szName)
