@@ -674,6 +674,12 @@ module Rhom
                 result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", get_source_id().to_i )
                 return result && result.length > 0
 	          end
+
+	          def changed?
+	            obj = self.inst_strip_braces(self.object)
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=?  and object=? LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
+                return result && result.length > 0
+	          end
 	            
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
