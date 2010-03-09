@@ -99,6 +99,7 @@ describe "Rhom::RhomObject" do
     obj = account.object
     account.save
     Account.changed?.should == true
+    account.changed?.should == true
     
     acct = Account.find(obj)
     acct.name.should == 'foobarthree'
