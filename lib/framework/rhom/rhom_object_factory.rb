@@ -258,17 +258,16 @@ module Rhom
                         listObjs = []
                         if condition_hash.is_a?(Hash)
                             listObjs = find_objects(condition_hash, op, limit, offset, order_attr)
-                        elsif condition_hash.is_a?(Array) && condition_hash.length == 1
-                            cond = condition_hash[0]
-                            listObjs = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
-                        elsif condition_hash.is_a?(Array)
+                        else
                             mapObjs = {}
                             condition_hash.each do |cond|
                                 res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
                                 
                                 if listObjs.length() == 0
-                                    res.each do |hash_attrs|
-                                        mapObjs[ hash_attrs['object'] ] = 1
+                                    if condition_hash.length() > 1
+                                        res.each do |hash_attrs|
+                                            mapObjs[ hash_attrs['object'] ] = 1
+                                        end
                                     end
                                     
                                     listObjs = res
