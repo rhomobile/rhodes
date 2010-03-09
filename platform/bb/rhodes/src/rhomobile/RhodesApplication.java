@@ -50,6 +50,7 @@ import javax.microedition.media.*;
 import com.rho.*;
 //import com.rho.db.DBAdapter;
 import com.rho.rubyext.GeoLocation;
+import com.rho.net.NetResponse;
 import com.rho.net.RhoConnection;
 import com.rho.net.URI;
 import com.rho.sync.SyncThread;
@@ -57,6 +58,7 @@ import com.rho.sync.ISyncStatusListener;
 import com.rho.Jsr75File;
 import com.rho.RhodesApp;
 import com.xruby.runtime.lang.RubyProgram;
+import com.rho.net.NetResponse;
 /**
  *
  */
@@ -228,13 +230,41 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	postUrl(url, body, headers, null);
     }
     
-    public void postUrl(String url, String body, HttpHeaders headers, Callback callback){
+    public void postUrl(String url, String body, HttpHeaders headers, Runnable callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), headers, body.getBytes(), null, callback);
         thread.setInternalRequest(true);
         thread.start();                       
     }
 
+	public static class NetCallback
+	{
+		public NetResponse m_response;
+		
+		public void waitForResponse()
+		{
+			synchronized(this)
+			{
+				try{ this.wait(); }catch(InterruptedException exc){}
+			}
+		}
+		
+		public void setResponse(NetResponse resp)
+		{
+			synchronized(this)
+			{
+				m_response = resp;
+				this.notify();
+			}
+		}
+	}
+    public void postUrlWithCallback(String url, String body, HttpHeaders headers, NetCallback netCallback){
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+        		canonicalizeURL(url), headers, body.getBytes(), null);
+        thread.setNetCallback(netCallback);
+        thread.start();                       
+    }
+    
     void saveCurrentLocation(String url) {
     	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
 			RhoConf.getInstance().setString("LastVisitedPage",url);
@@ -1437,7 +1467,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	        } else 
 	        {
-	    		if ( URI.isLocalHost(url) )
+	    		if ( URI.isLocalHost(url) || URI.isLocalData(url))
 	    		{
 	                HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
 	                return connection;
@@ -1538,7 +1568,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	private static HttpServerThread m_oFetchThread;
     	
         private static RhodesApplication _application;
-        private static Callback _callback;
+        private static Runnable _callback;
 
         private Event _event;
 
@@ -1549,6 +1579,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         private String _url;
         private boolean m_bInternalRequest = false;
         private boolean m_bActivateApp = false;
+        NetCallback m_netCallback;
         
         public void setInternalRequest(boolean b)
         {
@@ -1566,7 +1597,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      	Event event, Callback callback) 
+                                      	Event event, Runnable callback) 
         {
             _url = url;
             _requestHeaders = requestHeaders;
@@ -1576,6 +1607,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             	_callback = callback;
         }
 
+        public void setNetCallback(NetCallback netCallback) 
+		{
+			m_netCallback = netCallback;
+			m_bInternalRequest = true;
+		}
+        
         public PrimaryResourceFetchThread(boolean bActivateApp) {
         	m_bActivateApp = bActivateApp; 
         }
@@ -1615,7 +1652,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		if ( m_bInternalRequest )
     		{
     			try{
-    				connection.getResponseCode();
+    				
+    				int nRespCode = connection.getResponseCode();
+    				
+    				if ( m_netCallback != null )
+    				{
+    					InputStream is = connection.openInputStream();
+    					byte[] buffer = new byte[is.available()];
+    					is.read(buffer);
+    					
+    					String strRespBody = new String(buffer);
+    					m_netCallback.setResponse( new NetResponse(strRespBody, nRespCode) );
+    				}
     			}catch(IOException exc)
     			{
     				LOG.ERROR("Callback failed: " + _url, exc);

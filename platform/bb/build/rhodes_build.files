@@ -13,7 +13,6 @@ platform\bb\rhodes\src\rhomobile\camera\Camera.java
 platform\bb\rhodes\src\rhomobile\camera\CameraScreen.java
 platform\bb\rhodes\src\rhomobile\camera\CameraFilesListener.java
 platform\bb\rhodes\src\rhomobile\camera\ImageBrowserScreen.java
-platform\bb\rhodes\src\rhomobile\Callback.java
 platform\bb\rhodes\src\rhomobile\LogOptionsScreen.java
 platform\bb\rhodes\src\rhomobile\LogScreen.java
 platform\bb\rhodes\src\rhomobile\PushListeningThread.java
