@@ -408,7 +408,7 @@ public class Rhodes extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			mainView.navigate(getAppBackUrl(), mainView.activeTab());
+			goBack();
 			return true;
 		case KeyEvent.KEYCODE_HOME:
 			stopSelf();
@@ -430,11 +430,11 @@ public class Rhodes extends Activity {
 			return true;
 			
 		case AndroidR.id.navigation_back:
-			mainView.navigate(getAppBackUrl(), mainView.activeTab());
+			goBack();
 			return true;
 			
 		case AndroidR.id.navigation_forward:
-			mainView.forward(mainView.activeTab());
+			goForward();
 			return true;
 
 		case AndroidR.id.navigation_home:
@@ -468,6 +468,19 @@ public class Rhodes extends Activity {
 		}
 
 		return false;
+	}
+	
+	private void goBack() {
+		String backUrl = getAppBackUrl();
+		int activeTab = mainView.activeTab();
+		if (backUrl == null || backUrl.length() == 0)
+			mainView.back(activeTab);
+		else
+			mainView.navigate(backUrl, activeTab);
+	}
+	
+	private void goForward() {
+		mainView.forward(mainView.activeTab());
 	}
 	
 	public static void showLogView() {
