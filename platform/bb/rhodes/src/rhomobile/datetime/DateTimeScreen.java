@@ -3,7 +3,6 @@ package rhomobile.datetime;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
-import rhomobile.Callback;
 import rhomobile.RhodesApplication;
 import net.rim.device.api.i18n.DateFormat;
 import net.rim.device.api.io.http.HttpHeaders;
@@ -88,7 +87,7 @@ public class DateTimeScreen extends MainScreen {
 		return handled;
 	}
 	
-	private class RemoveScreen implements Callback
+	private class RemoveScreen implements Runnable
 	{
 		private RhodesApplication _app = null;
 		private DateTimeScreen _screen = null;
