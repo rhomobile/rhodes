@@ -38,13 +38,13 @@ def set_app_name_android(newname)
 
   rhostrings = File.join($rhores, "values", "strings.xml")
   appstrings = File.join($appres, "values", "strings.xml")
-  doc = REXML::Document.new File.new rhostrings
+  doc = REXML::Document.new(File.new(rhostrings))
   doc.elements["resources/string[@name='app_name']"].text = newname
   File.open(appstrings, "w") { |f| doc.write f }
 
   lowname = newname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
-  doc = REXML::Document.new File.new $rhomanifest
+  doc = REXML::Document.new(File.new($rhomanifest))
   doc.root.attributes['package'] = "com.rhomobile.#{lowname}"
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
   File.open($appmanifest, "w") { |f| doc.write f }
@@ -151,7 +151,34 @@ namespace "config" do
       end
     end
 
-    $androidplatform = "android-" + get_market_version(ANDROID_API_LEVEL)
+    puts "+++ Looking for platform..."
+    Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
+      props = File.join(platform, "source.properties")
+      unless File.file? props
+        puts "+++ WARNING! No source.properties found in #{platform}"
+        next
+      end
+
+      apilevel = -1
+      marketversion = nil
+      File.open(props, "r") do |f|
+        while line = f.gets
+          apilevel = $1.to_i if line =~ /^\s*AndroidVersion\.ApiLevel\s*=\s*([0-9]+)\s*$/
+          marketversion = $1 if line =~ /^\s*Platform\.Version\s*=\s*([^\s]*)\s*$/
+        end
+      end
+
+      puts "+++ API LEVEL of #{platform}: #{apilevel}"
+
+      $androidplatform = File.basename(platform) if apilevel == ANDROID_API_LEVEL
+    end
+
+    if $androidplatform.nil?
+      puts "+++ No required platform found"
+    else
+      puts "+++ Platform found: #{$androidplatform}"
+    end
+    $stdout.flush
     
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
     $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
