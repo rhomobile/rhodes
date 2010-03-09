@@ -39,7 +39,6 @@ src\com\rho\RhoMainScreen.java
 src\com\rho\RhoRubyHelper.java
 src\com\rho\Version.java
 src\rhomobile\Alert.java
-src\rhomobile\Callback.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraFilesListener.java
 src\rhomobile\camera\CameraScreen.java

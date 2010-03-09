@@ -27,6 +27,7 @@ import com.rho.net.TCPSocket;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
+import com.rho.net.NetResponse;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
@@ -97,12 +98,17 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		}
 	}
 	
-	public void postUrl(String url, String body)
+	public NetResponse postUrl(String url, String body)
 	{
+		RhodesApplication.NetCallback netCallback = new RhodesApplication.NetCallback();
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 		
-		RhodesApplication.getInstance().postUrl(url, body, headers);
+		RhodesApplication.getInstance().postUrlWithCallback(url, body, headers, netCallback);
+		netCallback.waitForResponse();
+		
+		return netCallback.m_response;
 	}
 	
 	static Hashtable m_appProperties = new Hashtable(); 
