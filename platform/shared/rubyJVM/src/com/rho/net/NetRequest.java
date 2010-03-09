@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import com.rho.RhoClassFactory;
 //import com.rho.RhoConf;
 import com.rho.FilePath;
-//import com.rho.IRhoRubyHelper;
+import com.rho.IRhoRubyHelper;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -203,13 +203,12 @@ public class NetRequest
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-/*		if ( URI.isLocalHost(strUrl) )
+		if ( URI.isLocalHost(strUrl) )
 		{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			helper.postUrl(strUrl,strBody);
-			return new NetResponse("", IHttpConnection.HTTP_OK );
+			return helper.postUrl(strUrl,strBody);
 		}
-*/		
+		
 		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	

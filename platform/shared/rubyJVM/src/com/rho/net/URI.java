@@ -1205,7 +1205,11 @@ package com.rho.net;
 	  return strUrl.startsWith("http://localhost") ||
 	  	strUrl.startsWith("http://127.0.0.1");
   }
-  
+
+  public static boolean isLocalData(String strUrl)
+  {
+	  return strUrl.startsWith("data:");
+  }
   /*
   public String getEscapedURL(){
 	  String fullPath = m_scheme + "://" + m_host + ":" + m_port + m_path;
