@@ -11,6 +11,7 @@ namespace std
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 namespace rho {
 
