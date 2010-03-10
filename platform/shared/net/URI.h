@@ -13,6 +13,7 @@ public:
     URI(const String& strUrl);
 
     static void urlEncode(const String& fullPath, String& strRes);
+    static String urlEncode(const String& fullPath);
     String getPath();
     String getQueryString();
     String getScheme();
