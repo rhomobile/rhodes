@@ -24,9 +24,10 @@ long CSplashScreen::howLongWaitMs()
 
 void CSplashScreen::hide()
 {
-	if (m_nDelay<=0)
+	if (m_nDelay<=0 || m_startTime.toULong() == 0)
 		return;
 	long nWaitMs = howLongWaitMs();
+    m_startTime = CTimeInterval();
 	if ( nWaitMs <= 0 )
 		return;
 
