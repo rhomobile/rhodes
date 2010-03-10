@@ -145,13 +145,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"
-  args << "\"#{$ndksysroot}/usr/lib/libc.so\""
-  args << "\"#{$ndksysroot}/usr/lib/libstdc++.so\""
-  args << "\"#{$ndksysroot}/usr/lib/libsupc++.so\"" unless USE_STLPORT
-  args << "\"#{$ndksysroot}/usr/lib/libm.so\""
-  args << "\"-L#{$ndksysroot}/usr/lib\""
-  args << "\"-Wl,-rpath-link=#{$ndksysroot}/usr/lib\""
-  args << "\"#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a\""
   args << "-shared"
   args << "-fPIC"
   args << "-Wl,-soname,#{outname}"
@@ -159,6 +152,13 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << outname
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
+  args << "\"#{$ndksysroot}/usr/lib/libstdc++.so\""
+  args << "\"#{$ndksysroot}/usr/lib/libsupc++.so\"" unless USE_STLPORT
+  args << "\"#{$ndksysroot}/usr/lib/libc.so\""
+  args << "\"#{$ndksysroot}/usr/lib/libm.so\""
+  args << "\"-L#{$ndksysroot}/usr/lib\""
+  args << "\"-Wl,-rpath-link=#{$ndksysroot}/usr/lib\""
+  args << "\"#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a\""
   cc_run($gccbin, args)
 end
 
