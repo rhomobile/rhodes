@@ -26,6 +26,7 @@ import net.rim.device.api.system.Application;
 import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Characters;
+import net.rim.device.api.system.Display;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.system.SystemListener;
@@ -43,6 +44,7 @@ import net.rim.device.api.ui.container.VerticalFieldManager;
 import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
+import net.rim.device.api.math.Fixed32;
 
 import javax.microedition.media.*;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
@@ -59,6 +61,9 @@ import com.rho.Jsr75File;
 import com.rho.RhodesApp;
 import com.xruby.runtime.lang.RubyProgram;
 import com.rho.net.NetResponse;
+
+import net.rim.device.api.xml.parsers.SAXParser;
+
 /**
  *
  */
@@ -522,6 +527,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private static RhodesApplication _instance;
     
     public static RhodesApplication getInstance(){ return _instance; }
+    private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
+    
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -646,6 +653,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		    	
 				RhoRuby.rho_ruby_activateApp();
 		
+				RHODESAPP().getSplashScreen().hide();
+				
 		        if(!restoreLocation()) {
 		        	navigateHome();
 		        }    
@@ -1024,11 +1033,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     public void showSplashScreen()
     {
+    	SplashScreen splash = RHODESAPP().getSplashScreen();
+    	
     	InputStream is = null;
     	try {
     		RubyProgram obj = new xruby.version.main();
 	    	String pngname = "/apps/app/loading.png";
-    		//String pngname = "/resources/icon.png";
 	    	is = obj.getClass().getResourceAsStream(pngname);
 	    	if ( is != null )
 	    	{
@@ -1041,8 +1051,31 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		    		offset += n;
 		    	}
 		    	EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
-		    	Bitmap bitmap = img.getBitmap();
-		    	BitmapField imageField = new BitmapField(bitmap, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
+		    	long nFlags = 0;
+		    	if (splash.isFlag(SplashScreen.HCENTER) )
+		    		nFlags |= Field.FIELD_HCENTER;
+		    	if (splash.isFlag(SplashScreen.VCENTER) )
+		    		nFlags |= Field.FIELD_VCENTER;
+
+		    	int scaleX = 1, scaleY = 1;
+				int currentWidthFixed32 = Fixed32.toFP(img.getWidth());
+				int currentHeightFixed32 = Fixed32.toFP(img.getHeight());
+				int screenWidthFixed32 = Fixed32.toFP(Display.getWidth());
+				int screenHeightFixed32 = Fixed32.toFP(Display.getHeight());
+				
+		    	if (splash.isFlag(SplashScreen.VZOOM) )
+		    		scaleY = Fixed32.div(currentHeightFixed32, screenHeightFixed32);
+		    	if (splash.isFlag(SplashScreen.HZOOM) )
+		    		scaleX = Fixed32.div(currentWidthFixed32, screenWidthFixed32);
+		    	
+		    	EncodedImage img2 = img;
+		    	if ( scaleX != 1 || scaleY != 1)
+		    		img2 = img.scaleImage32(scaleX, scaleY);
+		    	Bitmap bitmap = img2.getBitmap();
+		    	
+		    	splash.start();
+		    	BitmapField imageField = new BitmapField(bitmap, nFlags);
+		    	_mainScreen.deleteAll();
 		    	_mainScreen.add(imageField);
 	    	}
     	}

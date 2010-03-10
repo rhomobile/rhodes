@@ -75,6 +75,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     //rho_logconf_Init(m_strRhoRootPath.c_str());	
     initAppUrls();
     //start(epNormal);
+
+    getSplashScreen().init();
 }
 
 void CRhodesApp::startApp()
@@ -95,6 +97,8 @@ void CRhodesApp::run()
 
     LOG(INFO) + "activate app";
     rho_ruby_activateApp();
+
+    getSplashScreen().hide();
 
     LOG(INFO) + "navigate to first start url";
     navigateToUrl(getFirstStartUrl());
