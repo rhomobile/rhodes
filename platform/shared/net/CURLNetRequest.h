@@ -33,6 +33,7 @@ public:
 private:
 	int getResponseCode(CURLMcode err, const String& strRespBody, IRhoSession* oSession);
 	String makeCookies();
+    INetResponse *makeResponse(String strBody, int nErrorCode);
 	
     boolean m_bCancel;
 	CURLM *curlm;
