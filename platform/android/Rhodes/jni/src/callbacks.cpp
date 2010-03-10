@@ -8,10 +8,6 @@
 
 extern "C" void webview_navigate(char* url, int index);
 
-static rho::String g_currentLocale;
-static int g_screenWidth;
-static int g_screenHeight;
-
 namespace rho
 {
 namespace common
@@ -89,66 +85,70 @@ RHO_GLOBAL void rho_nativethread_end(void *)
     jvm()->DetachCurrentThread();
 }
 
-RHO_GLOBAL VALUE rho_sys_get_locale()
-{
-    if (g_currentLocale.empty())
-    {
-        JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-        if (!cls) return rho_ruby_create_string("");
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "getCurrentLocale", "()Ljava/lang/String;");
-        if (!mid) return rho_ruby_create_string("");
-        jstring objLocale = (jstring)env->CallStaticObjectMethod(cls, mid);
-        if (!objLocale) return rho_ruby_create_string("");
-        const char *s = env->GetStringUTFChars(objLocale, JNI_FALSE);
-        g_currentLocale = s;
-        env->ReleaseStringUTFChars(objLocale, s);
-    }
-    return rho_ruby_create_string(g_currentLocale.c_str());
-}
-
-RHO_GLOBAL int rho_sys_get_screen_width()
-{
-    if (g_screenWidth == 0)
-    {
-        JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-        if (!cls) return 0;
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "getScreenWidth", "()I");
-        if (!mid) return 0;
-        g_screenWidth = env->CallStaticIntMethod(cls, mid);
-    }
-    return g_screenWidth;
-}
-
-RHO_GLOBAL int rho_sys_get_screen_height()
-{
-    if (g_screenHeight == 0)
-    {
-        JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-        if (!cls) return 0;
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "getScreenHeight", "()I");
-        if (!mid) return 0;
-        g_screenHeight = env->CallStaticIntMethod(cls, mid);
-    }
-    return g_screenHeight;
-}
-
 RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
 {
     VALUE nil = rho_ruby_get_NIL();
 
     JNIEnv *env = jnienv();
 
+    RAWLOG_INFO("get_property (1)");
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return nil;
-    if (strcasecmp("has_camera", szPropName) == 0) {
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "hasCamera", "()Z");
-        if (!mid) return nil;
-        jboolean result = env->CallStaticBooleanMethod(cls, mid);
-        return rho_ruby_create_boolean((int)result);
+    RAWLOG_INFO("get_property (2)");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
+    if (!mid) return nil;
+
+    RAWLOG_INFO("get_property (3)");
+    jobject result = env->CallStaticObjectMethod(cls, mid, env->NewStringUTF(szPropName));
+    if (!result) return nil;
+
+    RAWLOG_INFO("get_property (4)");
+    jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
+    jclass clsInteger = getJNIClass(RHODES_JAVA_CLASS_INTEGER);
+    jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
+
+    RAWLOG_INFO("get_property (5)");
+    if (env->IsInstanceOf(result, clsBoolean)) {
+        RAWLOG_INFO("get_property (6.1)");
+        jmethodID midValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
+        RAWLOG_INFO("get_property (6.2)");
+        return rho_ruby_create_boolean((int)env->CallBooleanMethod(result, midValue));
+    }
+    else if (env->IsInstanceOf(result, clsInteger)) {
+        RAWLOG_INFO("get_property (7.1)");
+        jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
+        RAWLOG_INFO("get_property (7.2)");
+        return rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
+    }
+    else if (env->IsInstanceOf(result, clsString)) {
+        RAWLOG_INFO("get_property (8.1)");
+        jstring resStrObj = (jstring)result;
+        RAWLOG_INFO("get_property (8.2)");
+        const char *s = env->GetStringUTFChars(resStrObj, JNI_FALSE);
+        RAWLOG_INFO("get_property (8.3)");
+        VALUE ret = rho_ruby_create_string(s);
+        RAWLOG_INFO("get_property (8.4)");
+        env->ReleaseStringUTFChars(resStrObj, s);
+        RAWLOG_INFO("get_property (8.5)");
+        return ret;
     }
 
-    return 0;
+    RAWLOG_INFO("get_property (exit");
+    return nil;
 }
+
+RHO_GLOBAL VALUE rho_sys_get_locale()
+{
+    return rho_sysimpl_get_property((char*)"locale");
+}
+
+RHO_GLOBAL int rho_sys_get_screen_width()
+{
+    return NUM2INT(rho_sysimpl_get_property((char*)"screen_width"));
+}
+
+RHO_GLOBAL int rho_sys_get_screen_height()
+{
+    return NUM2INT(rho_sysimpl_get_property((char*)"screen_height"));
+}
+
