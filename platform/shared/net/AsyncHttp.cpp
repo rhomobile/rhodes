@@ -144,7 +144,7 @@ void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
 {
     if (resp.isOK())
     {
-        String strContType = m_mapHeaders.get("Content-Type");
+        String strContType = m_mapHeaders.get("content-type");
         if ( strContType.find("application/json") != String::npos )
         {
             char* szError = 0;

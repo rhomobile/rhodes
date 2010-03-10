@@ -187,6 +187,7 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
 
         CAtlStringW strName = strHeader.Mid(0, nSep);
         strName.Trim();
+        strName.MakeLower();
         CAtlStringW strValue = strHeader.Mid(nSep+1);
         strValue.Trim();
 

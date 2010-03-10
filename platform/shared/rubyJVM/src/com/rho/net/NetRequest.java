@@ -81,7 +81,7 @@ public class NetRequest
 			{
 				String strName = (String)keysHeaders.nextElement();
 				String strValue = (String)valsHeaders.nextElement();
-				m_connection.setRequestProperty(strName,strValue);
+				m_connection.setRequestProperty(strName.toLowerCase(),strValue);
 		    }
 			
 		}
