@@ -2,6 +2,7 @@ platform/shared/common/PosixThreadImpl.cpp
 platform/shared/common/RhoConf.cpp
 platform/shared/common/RhoFile.cpp
 platform/shared/common/RhoThread.cpp
+platform/shared/common/SplashScreen.cpp
 platform/shared/common/Tokenizer.cpp
 platform/shared/common/rhoparams.c
 platform/shared/net/AsyncHttp.cpp
@@ -9,6 +10,6 @@ platform/shared/net/CURLNetRequest.cpp
 platform/shared/net/HttpServer.cpp
 platform/shared/net/URI.cpp
 platform/shared/net/ssl.cpp
-platform/shared/statistic/RhoProfiler.cpp
 platform/shared/rubyext/GeoLocation.cpp
 platform/shared/rubyext/System.cpp
+platform/shared/statistic/RhoProfiler.cpp
