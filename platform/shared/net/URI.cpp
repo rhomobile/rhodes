@@ -93,6 +93,13 @@ static void toHexString(int i, String& strRes, int radix)
     strRes += (buf+f+1);
 }
 
+String URI::urlEncode(const String& fullPath)
+{
+    String res;
+    urlEncode(fullPath, res);
+    return res;
+}
+
 /*static*/ void URI::urlEncode(const String& fullPath, String& strRes)
 {
     int len = fullPath.length();

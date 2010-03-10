@@ -30,7 +30,7 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
     m_strCallbackParams = callback_params != null ? callback_params : "";
     m_eCmd = eCmd;
 
-    rho_ruby_enum_strhash(headers, header_iter, &m_mapHeaders);
+    rho_ruby_enum_strhash(headers, &header_iter, &m_mapHeaders);
 
     {
 	    synchronized(m_mxInstances);
@@ -186,6 +186,9 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
 	            strBody += "&http_error=" + convertToStringA(resp.getRespCode());
         }
 
+        String const &cookies = resp.getCookies();
+        if (!cookies.empty())
+            strBody += "&cookies=" + URI::urlEncode(cookies);
         strBody += "&" + makeHeadersString();
         strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
     }
