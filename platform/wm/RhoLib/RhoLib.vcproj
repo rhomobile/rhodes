@@ -854,6 +854,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\SplashScreen.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\SplashScreen.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\StringConverter.h"
 				>
 			</File>
