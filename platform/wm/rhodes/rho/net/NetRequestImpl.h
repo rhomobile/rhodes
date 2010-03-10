@@ -48,6 +48,7 @@ public:
         return m_nRespCode == 401;
     }
 
+    String getCookies();
 };
 
 class CNetRequest;
