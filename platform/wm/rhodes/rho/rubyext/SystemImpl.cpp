@@ -18,6 +18,7 @@ extern "C"
 
 static int PHONE_NUMBER_BUFFER_SIZE = 512;
 
+#ifdef OS_WINCE
 // szNumber - Out Buffer for the phone number
 // cchNumber - size of sznumber in characters
 // nLineNumber - which phone line (1 or 2) to get the number for
@@ -139,13 +140,16 @@ FuncExit:
 #undef MAX
 
 }
+#endif //OS_WINCE
 
 VALUE phone_number()
 {
 	TCHAR number[512];
 
+#ifdef OS_WINCE
 	if (SHReadLineAddressCaps(number, sizeof(number), NULL, 1) == S_OK)
 		return rho_ruby_create_string(convertToStringA(number).c_str());
+#endif
 
 	return rho_ruby_get_NIL();
 }
