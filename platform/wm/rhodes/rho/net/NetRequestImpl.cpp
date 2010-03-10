@@ -611,5 +611,12 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 #endif //_WIN32_WCE
 }
 
+
+String CNetResponseImpl::getCookies()
+{
+    //TODO: CNetResponseImpl::getCookies
+    return "";
+}
+
 }
 }
