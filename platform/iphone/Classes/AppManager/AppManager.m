@@ -197,14 +197,34 @@ int rho_sys_get_screen_height()
     return rect.size.height;
 }
 
+extern VALUE rho_sys_has_network();
+
 VALUE rho_sysimpl_get_property(char* szPropName)
 {
-    if (strcasecmp("has_camera",szPropName) == 0) {
+    VALUE rnil = rho_ruby_get_NIL();
+    
+    if (strcasecmp("platform", szPropName) == 0)
+        return rho_ruby_create_string("APPLE");
+    else if (strcasecmp("locale", szPropName) == 0)
+        return rho_sys_get_locale();
+    else if (strcasecmp("screen_width", szPropName) == 0)
+        return rho_ruby_create_integer(rho_sys_get_screen_width());
+    else if (strcasecmp("screen_height", szPropName) == 0)
+        return rho_ruby_create_integer(rho_sys_get_screen_height());
+    else if (strcasecmp("has_network", szPropName) == 0)
+        return rho_sys_has_network();
+    else if (strcasecmp("has_camera", szPropName) == 0) {
         int has_camera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
         return rho_ruby_create_boolean(has_camera);
     }
+    else if (strcasecmp("phone_number", szPropName) == 0) {
+        NSString *num = [[NSUserDefaults standardUserDefaults] stringForKey:@"SBFormattedPhoneNumber"];
+        if (!num)
+            return rnil;
+        return rho_ruby_create_string([num UTF8String]);
+    }
 
-    return 0;
+    return rnil;
 }
 
 const char* GetApplicationsRootPath() {
