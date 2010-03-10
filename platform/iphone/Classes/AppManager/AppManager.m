@@ -217,12 +217,16 @@ VALUE rho_sysimpl_get_property(char* szPropName)
         int has_camera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
         return rho_ruby_create_boolean(has_camera);
     }
+    /*
+    // Removed because it's possibly dangerous: Apple could reject application
+    // used such approach from its AppStore
     else if (strcasecmp("phone_number", szPropName) == 0) {
         NSString *num = [[NSUserDefaults standardUserDefaults] stringForKey:@"SBFormattedPhoneNumber"];
         if (!num)
             return rnil;
         return rho_ruby_create_string([num UTF8String]);
     }
+    */
 
     return rnil;
 }
