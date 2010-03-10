@@ -4,6 +4,7 @@
 #include "common/StringConverter.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
+
 #ifdef OS_WINCE
 #include "tapi.h"
 #include "tsp.h"
