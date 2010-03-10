@@ -13,6 +13,7 @@ platform\shared\rubyJVM\src\com\rho\IRhoLogSink.java
 platform\shared\rubyJVM\src\com\rho\IRhoRubyHelper.java
 platform\shared\rubyJVM\src\com\rho\Mutex.java
 platform\shared\rubyJVM\src\com\rho\RhodesApp.java
+platform\shared\rubyJVM\src\com\rho\SplashScreen.java
 platform\shared\rubyJVM\src\com\rho\net\IHttpConnection.java
 platform\shared\rubyJVM\src\com\rho\net\INetworkAccess.java
 platform\shared\rubyJVM\src\com\rho\net\NetRequest.java
