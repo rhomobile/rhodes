@@ -653,8 +653,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		    	
 				RhoRuby.rho_ruby_activateApp();
 		
-				RHODESAPP().getSplashScreen().hide();
-				
 		        if(!restoreLocation()) {
 		        	navigateHome();
 		        }    
@@ -1290,6 +1288,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 
                 Field field = browserContent.getDisplayableContent();
                 if (field != null) {
+                	
+    				RHODESAPP().getSplashScreen().hide();
+    				
                     synchronized (Application.getEventLock()) {
                         _mainScreen.deleteAll();
                         _mainScreen.add(field);

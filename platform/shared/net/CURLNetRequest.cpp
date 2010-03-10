@@ -372,7 +372,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
 
         String strValue = trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
     
-        pHeaders->put(strName, strValue);
+        pHeaders->put(lName, strValue);
     }
     
     return nBytes;
