@@ -413,6 +413,12 @@ describe "Rhom::RhomObject" do
     @accts[0].industry.should == "Technology"
   end
 
+  it "should find with SQL multiple conditions" do
+    @acct = Account.find(:first, :conditions => [ "name = ? AND industry = ?", "'Mobio India'", "'Technology'" ])
+    @acct.name.should == "Mobio India"
+    @acct.industry.should == "Technology"
+  end
+
   it "should find with advanced conditions" do
     query = '%IND%'    
     @accts = Account.find( :all, 
