@@ -10,6 +10,7 @@
 #include "net/HttpServer.h"
 #endif
 #include "rubyext/GeoLocation.h"
+#include "SplashScreen.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -50,6 +51,7 @@ private:
     String m_strAppBackUrl;
     Vector<unsigned long> m_arCallbackObjects;
     rubyext::CGeoLocation m_oGeoLocation;
+    CSplashScreen m_oSplashScreen;
 
 public:
     ~CRhodesApp(void);
@@ -94,6 +96,8 @@ public:
     const String& getRhoMessage(int nError, const char* szName);
 
     rubyext::CGeoLocation& getGeo(){ return m_oGeoLocation;}
+    CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
+
 private:
     virtual void run();
 
