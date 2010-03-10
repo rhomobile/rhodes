@@ -4,14 +4,17 @@
 #include "common/StringConverter.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
+#ifdef OS_WINCE
 #include "tapi.h"
 #include "tsp.h"
+#endif
 
 using namespace rho;
 using namespace rho::common;
 
 extern "C"
 {
+#ifdef OS_WINCE
 
 static int PHONE_NUMBER_BUFFER_SIZE = 512;
 
@@ -146,6 +149,12 @@ VALUE phone_number()
 
 	return rho_ruby_get_NIL();
 }
+#else
+VALUE phone_number()
+{
+	return rho_ruby_get_NIL();
+}
+#endif
 
 static int has_camera()
 {
@@ -191,7 +200,7 @@ VALUE rho_sys_get_locale()
 
 int rho_sys_get_screen_width()
 {
-#ifdef _WIN32_WCE
+#ifdef OS_WINCE
 	return GetSystemMetrics(SM_CXSCREEN);
 #else
 	return CMainWindow::getScreenWidth();
@@ -200,7 +209,7 @@ int rho_sys_get_screen_width()
 
 int rho_sys_get_screen_height()
 {
-#ifdef _WIN32_WCE
+#ifdef OS_WINCE
 	return GetSystemMetrics(SM_CYSCREEN);
 #else
 	return CMainWindow::getScreenHeight();
