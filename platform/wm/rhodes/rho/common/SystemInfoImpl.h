@@ -4,7 +4,7 @@
 
 extern "C" int rho_sys_get_screen_width();
 extern "C" int rho_sys_get_screen_height();
-extern VALUE rho_sys_get_property(char* property);
+//extern VALUE rho_sys_get_property(char* property);
 
 namespace rho{
 namespace common{
