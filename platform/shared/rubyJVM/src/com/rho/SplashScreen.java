@@ -10,7 +10,7 @@ public class SplashScreen
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
 	private long m_nDelay = 0;
-	private TimeInterval m_startTime;
+	private TimeInterval m_startTime = new TimeInterval();
    	public final static int NONE = 0, VZOOM = 1, HZOOM = 2, VCENTER = 4, HCENTER = 8;
    	private int m_nFlags = NONE;
    	
@@ -21,7 +21,7 @@ public class SplashScreen
 	
    	public void start()
    	{
-   		if (m_nDelay>0)
+   		if (m_nDelay>0 && m_startTime.toULong() == 0)
    		    m_startTime = TimeInterval.getCurrentTime();
    	}
    	
@@ -35,9 +35,11 @@ public class SplashScreen
    	
    	public void hide()
    	{
-   		if (m_nDelay<=0)
+   		if (m_nDelay<=0 || m_startTime.toULong() == 0)
    			return;
+   		
    		long nWaitMs = howLongWaitMs();
+   		m_startTime = new TimeInterval();
    		if ( nWaitMs <= 0 )
    			return;
    			
