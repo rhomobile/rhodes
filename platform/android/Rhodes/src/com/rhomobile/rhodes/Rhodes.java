@@ -49,6 +49,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -511,8 +512,12 @@ public class Rhodes extends Activity {
 		for (int i = 0; i != children.length; ++i)
 			Utils.deleteRecursively(new File(folder, children[i]));
 	}
-		
-	public static boolean hasNetwork() {
+	
+	public static void showNetworkIndicator(boolean v) {
+		// No GUI indicator
+	}
+	
+	private static boolean hasNetwork() {
 		Context ctx = RhodesInstance.getInstance().getApplicationContext();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
@@ -530,27 +535,34 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
-	public static void showNetworkIndicator(boolean v) {
-		// No GUI indicator
-	}
-	
-	public static String getCurrentLocale() {
+	private static String getCurrentLocale() {
 		String locale = Locale.getDefault().getLanguage();
 		if (locale.length() == 0)
 			locale = "en";
 		return locale;
 	}
 	
-	public static int getScreenWidth() {
-		return screenWidth;
-	}
-	
-	public static int getScreenHeight() {
-		return screenHeight;
-	}
-	
-	public static boolean hasCamera() {
-		return isCameraAvailable;
+	public static Object getProperty(String name) {
+		if (name.equalsIgnoreCase("platform"))
+			return "ANDROID";
+		else if (name.equalsIgnoreCase("locale"))
+			return getCurrentLocale();
+		else if (name.equalsIgnoreCase("screen_width"))
+			return new Integer(screenWidth);
+		else if (name.equalsIgnoreCase("screen_height"))
+			return new Integer(screenHeight);
+		else if (name.equalsIgnoreCase("has_camera"))
+			return new Boolean(isCameraAvailable);
+		else if (name.equalsIgnoreCase("has_network"))
+			return hasNetwork();
+		else if (name.equalsIgnoreCase("phone_number")) {
+			TelephonyManager manager = (TelephonyManager)RhodesInstance.getInstance().
+				getSystemService(Context.TELEPHONY_SERVICE);
+			String number = manager.getLine1Number();
+			return number;
+		}
+		
+		return null;
 	}
 	
 	public void stopSelf() {
