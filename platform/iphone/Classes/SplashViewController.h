@@ -19,5 +19,6 @@
 - (id)initWithParentView:(UIView*)v;
 - (void)showSplash:(NSString *)imagePath;
 - (void)hideSplash;
+- (void)bringToFront;
 
 @end

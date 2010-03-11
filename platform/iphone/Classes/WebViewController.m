@@ -181,7 +181,7 @@ char* get_current_location() {
     
     [toolbar removeFromSuperview];
     toolbar = tb;
-    toolbar.hidden = [btns count] == 0;
+    toolbar.hidden = YES;
     [window addSubview:toolbar];
 }
 
@@ -419,6 +419,9 @@ char* get_current_location() {
     
 	//NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
 	//rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
+    
+    if ([actionTarget respondsToSelector:@selector(hideSplash)])
+        [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
 }
 /*
 - (void)runSync

@@ -35,6 +35,7 @@
 -(void)loadData:(NSData*)data mimeType:(NSString*)type;
 
 -(void)showToolbar:(BOOL)show;
+-(void)createNewToolbar:(NSArray*)items;
 
 -(void)navigate:(NSString*)url;
 -(void)navigateRedirect:(NSString*)url;
