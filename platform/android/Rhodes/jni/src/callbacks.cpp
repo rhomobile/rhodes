@@ -50,7 +50,7 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objFolderPath = env->NewStringUTF(szFolderPath);
+    jstring objFolderPath = rho_cast<jstring>(szFolderPath);
     env->CallStaticVoidMethod(cls, mid, objFolderPath);
     env->DeleteLocalRef(objFolderPath);
 }
@@ -96,7 +96,7 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return nil;
 
-    jobject result = env->CallStaticObjectMethod(cls, mid, env->NewStringUTF(szPropName));
+    jobject result = env->CallStaticObjectMethod(cls, mid, rho_cast<jstring>(szPropName));
     if (!result) return nil;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
@@ -113,10 +113,7 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
     }
     else if (env->IsInstanceOf(result, clsString)) {
         jstring resStrObj = (jstring)result;
-        const char *s = env->GetStringUTFChars(resStrObj, JNI_FALSE);
-        VALUE ret = rho_ruby_create_string(s);
-        env->ReleaseStringUTFChars(resStrObj, s);
-        return ret;
+        return rho_ruby_create_string(rho_cast<std::string>(resStrObj).c_str());
     }
 
     return nil;
