@@ -7,33 +7,29 @@
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jobject)
 {
-    return env->NewStringUTF(LOGCONF().getEnabledCategories().c_str());
+    return rho_cast<jstring>(LOGCONF().getEnabledCategories().c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
   (JNIEnv *env, jobject, jstring value)
 {
-    const char *str = env->GetStringUTFChars(value, JNI_FALSE);
-    if (str == NULL)
+    if (value == NULL)
         return;
-    LOGCONF().setEnabledCategories(str);
-    env->ReleaseStringUTFChars(value, str);
+    LOGCONF().setEnabledCategories(rho_cast<std::string>(value).c_str());
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
   (JNIEnv *env, jobject)
 {
-    return env->NewStringUTF(LOGCONF().getDisabledCategories().c_str());
+    return rho_cast<jstring>(LOGCONF().getDisabledCategories().c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
   (JNIEnv *env, jobject, jstring value)
 {
-    const char *str = env->GetStringUTFChars(value, JNI_FALSE);
-    if (str == NULL)
+    if (value == NULL)
         return;
-    LOGCONF().setDisabledCategories(str);
-    env->ReleaseStringUTFChars(value, str);
+    LOGCONF().setDisabledCategories(rho_cast<std::string>(value).c_str());
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
@@ -65,7 +61,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
 {
     rho::String logText;
     LOGCONF().getLogText(logText);
-    return env->NewStringUTF(logText.c_str());
+    return rho_cast<jstring>(logText.c_str());
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos

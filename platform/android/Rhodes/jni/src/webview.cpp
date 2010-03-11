@@ -14,7 +14,7 @@ RHO_GLOBAL void webview_navigate(char* url, int index)
     if (!mid) return;
 
     char *normUrl = rho_http_normalizeurl(url);
-    jstring objNormUrl = env->NewStringUTF(normUrl);
+    jstring objNormUrl = rho_cast<jstring>(normUrl);
     env->CallStaticVoidMethod(cls, mid, objNormUrl, index);
     env->DeleteLocalRef(objNormUrl);
 }
@@ -31,7 +31,7 @@ RHO_GLOBAL void webview_refresh(int index)
 
 RHO_GLOBAL char* webview_current_location(int index)
 {
-    static rho::String curLoc;
+    static std::string curLoc;
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
@@ -40,9 +40,7 @@ RHO_GLOBAL char* webview_current_location(int index)
     if (!mid) return NULL;
 
     jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, index);
-    const char *s = env->GetStringUTFChars(str, JNI_FALSE);
-    curLoc = s;
-    env->ReleaseStringUTFChars(str, s);
+    curLoc = rho_cast<std::string>(str);
     return (char*)curLoc.c_str();
 }
 
@@ -64,7 +62,7 @@ RHO_GLOBAL int webview_active_tab()
 
 RHO_GLOBAL char* webview_execute_js(char* js, int index)
 {
-    static rho::String result;
+    static std::string result;
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
@@ -72,12 +70,10 @@ RHO_GLOBAL char* webview_execute_js(char* js, int index)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "executeJs", "(Ljava/lang/String;I)Ljava/lang/String;");
     if (!mid) return NULL;
 
-    jstring objJs = env->NewStringUTF(js);
+    jstring objJs = rho_cast<jstring>(js);
     jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, objJs, index);
     env->DeleteLocalRef(objJs);
-    const char *s = env->GetStringUTFChars(str, JNI_FALSE);
-    result = s;
-    env->ReleaseStringUTFChars(str, s);
+    result = rho_cast<std::string>(str);
     return (char*)result.c_str();
 }
 

@@ -36,6 +36,48 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 
 VALUE convertJavaMapToRubyHash(jobject objMap);
 
+namespace details
+{
+
+template <typename T, typename U>
+struct rho_cast_helper;
+
+template <>
+struct rho_cast_helper<std::string, jstring>
+{
+    std::string operator()(jstring );
+};
+
+template <>
+struct rho_cast_helper<jstring, char const *>
+{
+    jstring operator()(char const *);
+};
+
+template <>
+struct rho_cast_helper<jstring, char *>
+{
+    jstring operator()(char *s) {return rho_cast_helper<jstring, char const *>()(s);}
+};
+
+template <int N>
+struct rho_cast_helper<jstring, char [N]>
+{
+    jstring operator()(char (&s)[N]) {return rho_cast_helper<jstring, char const *>()(&s[0]);}
+};
+
+template <>
+struct rho_cast_helper<jstring, std::string>
+{
+    jstring operator()(std::string const &s) {return rho_cast_helper<jstring, char const *>()(s.c_str());}
+};
+
+} // namespace details
+template <typename T, typename U>
+T rho_cast(U u)
+{
+    return details::rho_cast_helper<T, U>()(u);
+}
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 

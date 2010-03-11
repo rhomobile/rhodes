@@ -5,6 +5,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/MainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
