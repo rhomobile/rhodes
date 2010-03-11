@@ -32,6 +32,7 @@
     NativeBar* nativeBar;
     AVAudioPlayer *player;
     bool appStarted;
+    bool splashDisplayed;
 }
 
 @property (nonatomic, retain) UIWindow *window;
