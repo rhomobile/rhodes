@@ -1,3 +1,7 @@
+if defined? RHO_ME
+
+else
+
 require 'rexml/parseexception'
 require 'rexml/undefinednamespaceexception'
 require 'rexml/source'
@@ -61,7 +65,7 @@ module REXML
       XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>/um
       INSTRUCTION_START = /\A<\?/u
       INSTRUCTION_PATTERN = /<\?(.*?)(\s+.*?)?\?>/um
-      TAG_MATCH = /^<((?:#{NAME_STR}))\s*((?:\s+#{UNAME_STR}\s*=\s*(["']).*?\5)*)\s*(\/)?>/um
+      TAG_MATCH = /^<((?>#{NAME_STR}))\s*((?>\s+#{UNAME_STR}\s*=\s*(["']).*?\5)*)\s*(\/)?>/um
       CLOSE_MATCH = /^\s*<\/(#{NAME_STR})\s*>/um
 
       VERSION = /\bversion\s*=\s*["'](.*?)['"]/um
@@ -529,3 +533,5 @@ end
   when :end_doctype
   end
 =end
+
+end

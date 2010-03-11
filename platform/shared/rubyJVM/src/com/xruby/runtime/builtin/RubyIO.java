@@ -60,6 +60,14 @@ public class RubyIO extends RubyBasic {
     	return cl;
     }
     
+    public InputStream getInputStream()
+    {
+    	if ( executor == null )
+    		return null;
+    	
+    	return executor.getInputStream();
+    }
+    
     public void print(String s) {
         executor.print(s);
     }
