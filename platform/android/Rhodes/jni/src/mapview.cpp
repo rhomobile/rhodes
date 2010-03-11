@@ -24,7 +24,7 @@ RHO_GLOBAL void mapview_create(rho_param *p)
     }
 
     jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(clsMapView, midCreate, env->NewStringUTF(GOOGLE_API_KEY), paramsObj);
+    env->CallStaticVoidMethod(clsMapView, midCreate, rho_cast<jstring>(GOOGLE_API_KEY), paramsObj);
 #else
     const char *message = "MapView disabled";
     alert_show_popup((char*)message);
