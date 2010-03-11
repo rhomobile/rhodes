@@ -11,9 +11,6 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.*;
 
 import java.io.IOException;
-//import net.rim.device.api.xml.parsers.SAXParser;
-//import net.rim.device.api.xml.parsers.SAXParserFactory;
-//import java.io.*;
 
 public class AsyncHttp extends RhoThread
 {
@@ -161,78 +158,6 @@ public class AsyncHttp extends RhoThread
 
 	    return strRes;
 	}
-/*
-	class XmlSAXHandler extends org.xml.sax.helpers.DefaultHandler 
-	{
-		  public void startDocument() {
-		    System.out.println("Start document: ");
-		  }    
-		    public void endDocument()  {
-		    System.out.println("End document: ");
-		  }
-		  
-		  public void startElement(String uri, String localName, String qname,  org.xml.sax.Attributes attr)
-		  {
-		    System.out.println("Start element: local name: " + localName + " qname: " 
-		                                                        + qname + " uri: "+uri);
-		    int attrCount = attr.getLength();
-		    if(attrCount>0) {
-		      System.out.println("Attributes:"); 
-		      for(int i = 0 ; i<attrCount ; i++) {
-		        System.out.println("  Name : " + attr.getQName(i)); 
-		        System.out.println("  Type : " + attr.getType(i)); 
-		        System.out.println("  Value: " + attr.getValue(i)); 
-		      }
-		    } 
-		  }
-		  
-		  public void endElement(String uri, String localName, String qname) {
-		    System.out.println("End element: local name: " + localName + " qname: "
-		                                                         + qname + " uri: "+uri);
-		  }
-		  
-		  public void characters(char[] ch, int start, int length) {
-		    System.out.println("Characters: " + new String(ch, start, length));
-		  }
-
-		  public void ignorableWhitespace(char[] ch, int start, int length) {
-		    System.out.println("Ignorable whitespace: " + new String(ch, start, length));
-		  }
-
-		  public void startPrefixMapping(String prefix, String uri) {
-		    System.out.println("Start \"" + prefix + "\" namespace scope. URI: " + uri); 
-		  }
-
-		  public void endPrefixMapping(String prefix) {
-		    System.out.println("End \"" + prefix + "\" namespace scope."); 
-		  }
-
-		  public void warning(org.xml.sax.SAXParseException spe) {
-		    System.out.println("Warning at line "+spe.getLineNumber());
-		    System.out.println(spe.getMessage());
-		  }
-
-		  public void fatalError(org.xml.sax.SAXParseException spe) throws org.xml.sax.SAXException {
-		    System.out.println("Fatal error at line "+spe.getLineNumber());
-		    System.out.println(spe.getMessage());
-		    throw spe;
-		  }
-	}
-	
-	RubyValue parseXML(String str)
-	{
-		try{
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			InputStream in = new ByteArrayInputStream(str.getBytes());
-			
-			parser.parse(in, new XmlSAXHandler());
-		}catch(Exception exc)
-		{
-			LOG.ERROR("Parse xml failed.", exc);
-		}
-		return RubyConstant.QNIL;
-	}*/
 	
 	void processResponse(NetResponse resp )
 	{
@@ -251,12 +176,7 @@ public class AsyncHttp extends RhoThread
 	    		{
 	    			LOG.ERROR("Incorrect json body.", exc);
 	    		}
-	    	}/*else if (strContType != null && strContType.indexOf("text/xml") >=0)
-	    	{
-	    		m_valBody = parseXML(resp.getCharData());
-	    		
-	    		return;
-	    	}*/
+	    	}
 	    }
 
 	    m_valBody = RhoRuby.create_string(resp.getCharData());

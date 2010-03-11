@@ -52,6 +52,8 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         MapView.initMethods(RubyRuntime.MapViewClass);
         GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
         com.rho.rubyext.System.initMethods(RubyRuntime.SystemClass);
+        com.rho.rubyext.XMLParser.initMethods(RubyRuntime.XMLParserClass);
+
 	}
 	
 	public RubyProgram createMainObject() throws Exception
