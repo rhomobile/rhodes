@@ -5,6 +5,8 @@
 #include "common/RhoConf.h"
 #include "net/URI.h"
 
+#include <algorithm>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
 

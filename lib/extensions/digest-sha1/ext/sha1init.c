@@ -2,11 +2,7 @@
 /* $Id: sha1init.c 19020 2008-09-01 07:48:53Z nobu $ */
 
 #include "digest.h"
-#if defined(HAVE_OPENSSL_SHA_H)
-#include "sha1ossl.h"
-#else
 #include "sha1.h"
-#endif
 
 static const rb_digest_metadata_t sha1 = {
     RUBY_DIGEST_API_VERSION,
