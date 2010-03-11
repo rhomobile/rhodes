@@ -51,6 +51,11 @@
 	return strRes;
 }*/
 
+- (void)hideSplash {
+    [splashViewController hideSplash];
+    splashDisplayed = false;
+}
+
 - (void)loadStartPath:(NSString*)location {
 	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
 		[webViewController navigateRedirect:location];
@@ -81,7 +86,6 @@
 	}*/
 	
 	appStarted = true;
-    [splashViewController hideSplash];
 	[self loadStartPath:location];
 }
 
@@ -243,6 +247,8 @@
         [webViewController showToolbar:NO];
 	}
     self.nativeBar = bar;
+    if (splashDisplayed)
+        [splashViewController bringToFront];
 }
 
 - (void)onSwitchTab:(NSValue*)value {
@@ -408,6 +414,7 @@
     
     if ([fileManager fileExistsAtPath:pngPath]) {
         [splashViewController showSplash:pngPath];
+        splashDisplayed = true;
     }
     else if ([fileManager fileExistsAtPath:htmPath]) {
         NSData *data = [fileManager contentsAtPath:htmPath];
@@ -417,7 +424,12 @@
 
 - (void) doStartUp {
 	appStarted = false;
+    splashDisplayed = false;
     
+    //Create local server and start it
+    //serverHost = [[ServerHost alloc] init];
+	serverHost = [ServerHost sharedInstance];
+    [serverHost create];
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
@@ -461,9 +473,6 @@
 	//DateTime delegate
 	dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
 	
-    //Create local server and start it
-    //serverHost = [[ServerHost alloc] init];
-	serverHost = [ServerHost sharedInstance];
 	serverHost->actionTarget = self;
 	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);
