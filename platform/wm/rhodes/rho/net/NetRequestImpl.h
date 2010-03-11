@@ -15,6 +15,7 @@ class CNetResponseImpl : public INetResponse
     bool   m_bValid;
     String m_data;
     int    m_nRespCode;
+    String m_cookies;
 public:
     CNetResponseImpl() : m_bValid(false),m_nRespCode(-1){}
 
@@ -48,7 +49,15 @@ public:
         return m_nRespCode == 401;
     }
 
-    String getCookies();
+    void setCookies(String s)
+    {
+        m_cookies = s;
+    }
+    
+    String getCookies()
+    {
+        return m_cookies;
+    }
 };
 
 class CNetRequest;
@@ -77,9 +86,9 @@ public :
     CNetResponseImpl* sendStream(common::InputStream* body);
     CNetResponseImpl* downloadFile(common::CRhoFile& oFile);
 
-    String makeRhoCookie();
-
 private:
+    String makeClientCookie();
+
     void ErrorMessage(LPCTSTR pszFunction);
     void readInetFile( void* hRequest, CNetResponseImpl* pNetData, common::CRhoFile* pFile = NULL );
     void alloc_url_components(URL_COMPONENTS *uri, const wchar_t *url);
