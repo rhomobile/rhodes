@@ -141,10 +141,12 @@ String URI::urlEncode(const String& fullPath)
         strRes += fullPath;
 }
 
-/*static*/ void URI::parseCookie(const char* szCookie, CParsedCookie& cookie) 
+//"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly");
+//"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
+//"rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
+
+/*static*/ void URI::parseCookie(const char* szCookie, String& strRes) 
 {
-	boolean bAuth = false;
-	boolean bSession = false;
     common::CTokenizer stringtokenizer(szCookie, ";");
 	while (stringtokenizer.hasMoreTokens()) 
     {
@@ -154,6 +156,30 @@ String URI::urlEncode(const String& fullPath)
 			continue;
 		}
 		
+		//expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=
+		int nExp = tok.find("expires=");
+		if ( nExp >= 0 )
+		{
+			int nEnd = tok.find(',', nExp);
+			if ( nEnd >= 0 )
+			{
+				int nEnd1 = tok.find(',', nEnd+1);
+				if ( nEnd1 >= 0 )
+					nEnd = nEnd1;
+				else
+					nEnd = tok.length()-1;
+			}
+			
+			tok = tok.substr(0,nExp) + tok.substr(nEnd+1);
+			tok = trim(tok);
+		}
+		
+		int nEq = tok.find('=');
+		if ( nEq < 0 )
+			continue;
+		
+		strRes += tok + ";";  
+/*
 		int i = 0;
 		if ( (i=tok.find("auth_token=")) >= 0 )
 		{
@@ -181,7 +207,7 @@ String URI::urlEncode(const String& fullPath)
 				cookie.strSession = "rhosync_session=" + val;
 				bSession = true;
 			}
-		}
+		} */
 	}
 }
 	
