@@ -91,49 +91,34 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
 
     JNIEnv *env = jnienv();
 
-    RAWLOG_INFO("get_property (1)");
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
     if (!cls) return nil;
-    RAWLOG_INFO("get_property (2)");
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return nil;
 
-    RAWLOG_INFO("get_property (3)");
     jobject result = env->CallStaticObjectMethod(cls, mid, env->NewStringUTF(szPropName));
     if (!result) return nil;
 
-    RAWLOG_INFO("get_property (4)");
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
     jclass clsInteger = getJNIClass(RHODES_JAVA_CLASS_INTEGER);
     jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
 
-    RAWLOG_INFO("get_property (5)");
     if (env->IsInstanceOf(result, clsBoolean)) {
-        RAWLOG_INFO("get_property (6.1)");
         jmethodID midValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
-        RAWLOG_INFO("get_property (6.2)");
         return rho_ruby_create_boolean((int)env->CallBooleanMethod(result, midValue));
     }
     else if (env->IsInstanceOf(result, clsInteger)) {
-        RAWLOG_INFO("get_property (7.1)");
         jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
-        RAWLOG_INFO("get_property (7.2)");
         return rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
     }
     else if (env->IsInstanceOf(result, clsString)) {
-        RAWLOG_INFO("get_property (8.1)");
         jstring resStrObj = (jstring)result;
-        RAWLOG_INFO("get_property (8.2)");
         const char *s = env->GetStringUTFChars(resStrObj, JNI_FALSE);
-        RAWLOG_INFO("get_property (8.3)");
         VALUE ret = rho_ruby_create_string(s);
-        RAWLOG_INFO("get_property (8.4)");
         env->ReleaseStringUTFChars(resStrObj, s);
-        RAWLOG_INFO("get_property (8.5)");
         return ret;
     }
 
-    RAWLOG_INFO("get_property (exit");
     return nil;
 }
 

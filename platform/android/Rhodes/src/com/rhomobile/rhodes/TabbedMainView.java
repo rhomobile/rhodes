@@ -80,6 +80,8 @@ public class TabbedMainView implements MainView {
 		int size = params.size();
 		
 		host = new TabHost(ctx);
+		host.setId(Rhodes.RHO_MAIN_VIEW);
+		
 		tabs = new Vector<TabData>(size);
 		
 		TabWidget tabWidget = new TabWidget(ctx);

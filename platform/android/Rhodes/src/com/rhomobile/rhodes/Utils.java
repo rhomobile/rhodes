@@ -102,6 +102,7 @@ public class Utils {
 			OutputStream out = null;
 			try {
 				in = fs.open(source);
+				target.getParentFile().mkdirs();
 				out = new FileOutputStream(target);
 				
 				byte[] buf = new byte[1024];
