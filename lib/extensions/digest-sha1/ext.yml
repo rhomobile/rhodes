@@ -1,2 +1,0 @@
-entry: Init_sha1
-libraries: [ "libdigest-sha1.a" ]
