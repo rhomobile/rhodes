@@ -6,8 +6,9 @@
 #include "MainWindow.h"
 
 #ifdef OS_WINCE
-#include "tapi.h"
-#include "tsp.h"
+#include <tapi.h>
+#include <tsp.h>
+#include <sms.h>
 #endif
 
 using namespace rho;
@@ -19,10 +20,7 @@ extern "C"
 
 static int PHONE_NUMBER_BUFFER_SIZE = 512;
 
-// szNumber - Out Buffer for the phone number
-// cchNumber - size of sznumber in characters
-// nLineNumber - which phone line (1 or 2) to get the number for
-HRESULT SHReadLineAddressCaps(LPTSTR szNumber, UINT cchNumber, PDWORD pdwCallFwdModes, UINT nLineNumber)
+bool getPhoneNumFromSIMCard (String &number) 
 {
 
 #define EXIT_ON_NULL(_p) if (_p == NULL){ hr = E_OUTOFMEMORY; goto FuncExit; }
@@ -31,6 +29,7 @@ HRESULT SHReadLineAddressCaps(LPTSTR szNumber, UINT cchNumber, PDWORD pdwCallFwd
 
 	const int TAPI_API_LOW_VERSION  = 0x00020000;
 	const int TAPI_API_HIGH_VERSION = 0x00020000;
+	const int LINE_NUMBER = 1;
 
     HRESULT  hr = E_FAIL;
     LRESULT  lResult = 0;
@@ -40,7 +39,7 @@ HRESULT SHReadLineAddressCaps(LPTSTR szNumber, UINT cchNumber, PDWORD pdwCallFwd
     LINEINITIALIZEEXPARAMS liep;
 
     DWORD dwTAPILineDeviceID;
-    const DWORD dwAddressID = nLineNumber - 1;
+    const DWORD dwAddressID = LINE_NUMBER - 1;
 
     liep.dwTotalSize = sizeof(liep);
     liep.dwOptions   = LINEINITIALIZEEXOPTION_USEEVENT;
@@ -103,22 +102,12 @@ HRESULT SHReadLineAddressCaps(LPTSTR szNumber, UINT cchNumber, PDWORD pdwCallFwd
         }
 
         if (0 == lResult) {
-            if (szNumber) {
-                szNumber[0] = _T('\0');
+			EXIT_ON_FALSE(0 != placAddressCaps->dwAddressSize);
 
-                EXIT_ON_FALSE(0 != placAddressCaps->dwAddressSize);
-
-                // A non-zero dwAddressSize means a phone number was found
-                ASSERT(0 != placAddressCaps->dwAddressOffset);
-                PWCHAR tsAddress = (WCHAR*)(((BYTE*)placAddressCaps)+placAddressCaps->dwAddressOffset);
-
-                StringCchCopy(szNumber, cchNumber, tsAddress);
-            }
-
-            // Record the allowed forwarding modes
-            if (pdwCallFwdModes) {
-                *pdwCallFwdModes = placAddressCaps->dwForwardModes;
-            }
+			// A non-zero dwAddressSize means a phone number was found
+			ASSERT(0 != placAddressCaps->dwAddressOffset);    
+			PWCHAR tsAddress = (WCHAR*)(((BYTE*)placAddressCaps)+placAddressCaps->dwAddressOffset);
+			number = convertToStringA (tsAddress);
 
             hr = S_OK;
         }
@@ -130,10 +119,12 @@ FuncExit:
     lineShutdown(hLineApp);
 	
 	//TODO: log extended error
-	if (hr != S_OK)
+	if (hr != S_OK) {
 		LOG(ERROR) + "failed to get phone number";
+		return false;
+	}
 
-    return hr;
+    return true;
 
 #undef EXIT_ON_NULL
 #undef EXIT_ON_FALSE 
@@ -141,12 +132,38 @@ FuncExit:
 
 }
 
+bool getPhoneNumFromSMSBearer (String &number)
+{
+	SMS_ADDRESS psmsaAddress;
+	
+	//TODO: log extended error
+	if (SmsGetPhoneNumber (&psmsaAddress) != S_OK) {
+		LOG(ERROR) + "failed to get phone number";
+		return false;
+	}
+
+	number = convertToStringA(psmsaAddress.ptsAddress);
+	return true;
+}
+
+bool getPhoneNumFromOwnerInfo (String &number)
+{
+	//FIXME: just a stub currently
+	return false;
+}
+
 VALUE phone_number()
 {
-	TCHAR number[512];
+	String number;
 
-	if (SHReadLineAddressCaps(number, sizeof(number), NULL, 1) == S_OK)
-		return rho_ruby_create_string(convertToStringA(number).c_str());
+	if (getPhoneNumFromSIMCard(number))
+		return rho_ruby_create_string(number.c_str());
+	
+	if (getPhoneNumFromSMSBearer(number))
+		return rho_ruby_create_string(number.c_str());
+
+	if (getPhoneNumFromOwnerInfo(number))
+		return rho_ruby_create_string(number.c_str());
 
 	return rho_ruby_get_NIL();
 }

@@ -186,9 +186,10 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
 	            strBody += "&http_error=" + convertToStringA(resp.getRespCode());
         }
 
-        String const &cookies = resp.getCookies();
-        if (!cookies.empty())
+        String cookies = resp.getCookies();
+        if (cookies.length()>0)
             strBody += "&cookies=" + URI::urlEncode(cookies);
+
         strBody += "&" + makeHeadersString();
         strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
     }
