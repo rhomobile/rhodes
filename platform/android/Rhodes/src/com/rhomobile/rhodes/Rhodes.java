@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
 
+import org.omg.CORBA.INV_IDENT;
+
 import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.ui.AboutDialog;
@@ -56,6 +58,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
@@ -71,6 +74,9 @@ public class Rhodes extends Activity {
 	private static final String TAG = "Rhodes";
 	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
+	
+	public static final int RHO_SPLASH_VIEW = 1;
+	public static final int RHO_MAIN_VIEW = 2;
 	
 	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -90,14 +96,15 @@ public class Rhodes extends Activity {
 	private FrameLayout outerFrame;
 	private MainView mainView;
 	
+	private SplashScreen splashScreen = null;
+	
 	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 		
 	private String rootPath = null;
 	
-	private native void setRootPath(String path);
-	
+	public native void createRhodesApp(String path);
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
@@ -114,7 +121,6 @@ public class Rhodes extends Activity {
 	
 	private void initRootPath() {
 		rootPath = phoneMemoryRootPath();
-		setRootPath(rootPath);
 	}
 	
 	public String getRootPath() {
@@ -155,6 +161,21 @@ public class Rhodes extends Activity {
 		}
 		Log.d(TAG, "SD card check passed, going on");
 		return true;
+	}
+	
+	private void copyFromBundle(String file) throws IOException {
+		File target = new File(sdcardRootPath(), file);
+		if (target.exists())
+			return;
+		FileSource as = new AssetsSource(getResources().getAssets());
+		FileSource fs = new FileSource();
+		Utils.copyRecursively(as, file, target, true);
+		
+		int idx = file.indexOf('/');
+		String dir = idx == -1 ? file : file.substring(0, idx);
+		String sdPath = new File(sdcardRootPath(), dir).getAbsolutePath();
+		String phPath = new File(phoneMemoryRootPath(), dir).getAbsolutePath();
+		makeLink(sdPath, phPath);
 	}
 	
 	private void copyFilesFromBundle() {
@@ -248,6 +269,12 @@ public class Rhodes extends Activity {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				return handleUrlLoading(url);
 			}
+			
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				if (url.startsWith("http://"))
+					hideSplashScreen();
+			}
 
 		});
 
@@ -255,9 +282,14 @@ public class Rhodes extends Activity {
 	}
 	
 	public void setMainView(MainView v) {
-		outerFrame.removeAllViews();
+		View main = outerFrame.findViewById(RHO_MAIN_VIEW);
+		if (main != null)
+			outerFrame.removeView(main);
 		mainView = v;
-		outerFrame.addView(mainView.getView());
+		main = mainView.getView();
+		if (outerFrame.findViewById(RHO_SPLASH_VIEW) != null)
+			main.setVisibility(View.INVISIBLE);
+		outerFrame.addView(main);
 	}
 	
 	public MainView getMainView() {
@@ -288,6 +320,10 @@ public class Rhodes extends Activity {
 	};
 	
 	public static void performOnUiThread(Runnable r) {
+		performOnUiThread(r, true);
+	}
+	
+	public static void performOnUiThread(Runnable r, boolean wait) {
 		try {
 			long thrId = Thread.currentThread().getId();
 			Rhodes rhodes = RhodesInstance.getInstance();
@@ -296,10 +332,15 @@ public class Rhodes extends Activity {
 				r.run();
 			}
 			else {
-				// Post request to UI thread and wait while it would be done
-				synchronized (r) {
-					rhodes.uiHandler.post(new PerformOnUiThread(r));
-					r.wait();
+				if (wait) {
+					// Post request to UI thread and wait while it would be done
+					synchronized (r) {
+						rhodes.uiHandler.post(new PerformOnUiThread(r));
+						r.wait();
+					}
+				}
+				else {
+					rhodes.uiHandler.post(r);
 				}
 			}
 		}
@@ -308,13 +349,17 @@ public class Rhodes extends Activity {
 		}
 	}
 	
-	private void showSplashScreen() throws IOException {
-		ImageView view = new ImageView(this);
-		AssetManager am = getResources().getAssets();
-		InputStream is = am.open("apps/app/loading.png");
-		Bitmap bitmap = BitmapFactory.decodeStream(is);
-		view.setImageBitmap(bitmap);
-		outerFrame.addView(view);
+	private void showSplashScreen(String file) throws IOException {
+		splashScreen = new SplashScreen(this, file);
+		splashScreen.start(outerFrame);
+	}
+	
+	public void hideSplashScreen() {
+		if (splashScreen != null) {
+			splashScreen.hide(outerFrame);
+			splashScreen = null;
+		}
+		mainView.getView().setVisibility(View.VISIBLE);
 	}
 	
 	/** Called when the activity is first created. */
@@ -325,6 +370,16 @@ public class Rhodes extends Activity {
 		uiThreadId = Thread.currentThread().getId();
 		RhodesInstance.setInstance(this);
 		
+		initRootPath();
+		try {
+			copyFromBundle("apps/rhoconfig.txt");
+		} catch (IOException e1) {
+			Log.e("Rhodes", "Copy rhoconfig.txt failed", e1);
+			finish();
+			return;
+		}
+		createRhodesApp(rootPath);
+		
 		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
 
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -333,9 +388,10 @@ public class Rhodes extends Activity {
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		try {
-			showSplashScreen();
+			showSplashScreen("apps/app/loading.png");
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			setMainView(new SimpleMainView());
 		}
 		
@@ -356,11 +412,6 @@ public class Rhodes extends Activity {
 		};
 		for (int i = 0; i < handlers.length; ++i)
 			uriHandlers.put(handlers[i].scheme(), handlers[i]);
-		
-		// WARNING!!! This function MUST be called in context of UI thread
-		// to be correctly initialized
-		// Do not remove this line!!!
-		initRootPath();
 		
 		Thread init = new Thread(new Runnable() {
 

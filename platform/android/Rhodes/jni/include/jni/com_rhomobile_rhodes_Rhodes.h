@@ -13,10 +13,10 @@ extern "C" {
 #define com_rhomobile_rhodes_Rhodes_WINDOW_MASK 1024L
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    setRootPath
+ * Method:    createRhodesApp
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
   (JNIEnv *, jobject, jstring);
 
 /*
