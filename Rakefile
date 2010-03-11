@@ -272,6 +272,7 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/*.iphone.*").each { |f| rm f }
   Dir.glob("**/*.bb.*").each { |f| rm f }
   Dir.glob("**/*.android.*").each { |f| rm f }
+  Dir.glob("**/.svn").each { |f| rm_rf f }
 
 end
 

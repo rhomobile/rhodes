@@ -197,10 +197,10 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
     return true;
 }
 
-String CNetRequestImpl::makeRhoCookie()
+String CNetRequestImpl::makeClientCookie()
 {
     DWORD nIndex = 0;
-    URI::CParsedCookie cookie;
+    String cookie;
     while(true)
     {
         CAtlStringW strCookie;
@@ -229,10 +229,10 @@ String CNetRequestImpl::makeRhoCookie()
     if (pszErrFunction)
         return "";
 
-    if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
-        return cookie.strAuth + ";" + cookie.strSession + ";";
+//    if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
+//        return cookie.strAuth + ";" + cookie.strSession + ";";
 
-    return "";
+    return cookie;
 }
 
 void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
@@ -266,6 +266,9 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
             m_pSession->logout();
         }
 	}
+
+    if (pNetResp->isOK())
+        pNetResp->setCookies(makeClientCookie());
 }
 
 CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
@@ -611,13 +614,5 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 	return true;
 #endif //_WIN32_WCE
 }
-
-
-String CNetResponseImpl::getCookies()
-{
-    //TODO: CNetResponseImpl::getCookies
-    return "";
-}
-
 }
 }
