@@ -253,14 +253,6 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     return retval;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
-  (JNIEnv *env, jobject, jstring path)
-{
-    const char *s = env->GetStringUTFChars(path, JNI_FALSE);
-    g_rootPath = s;
-    env->ReleaseStringUTFChars(path, s);
-}
-
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
   (JNIEnv *env, jclass, jstring src, jstring dst)
 {
@@ -274,9 +266,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
         env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Can not create symlink");
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
-  (JNIEnv *env, jobject obj)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
+  (JNIEnv *env, jobject, jstring path)
 {
+    const char *s = env->GetStringUTFChars(path, JNI_FALSE);
+    g_rootPath = s;
+    env->ReleaseStringUTFChars(path, s);
+
     // Init SQLite temp directory
     sqlite3_temp_directory = (char*)"/sqlite_stmt_journals";
 
@@ -294,6 +290,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
 
     // Start Rhodes application
     rho_rhodesapp_create(szRootPath);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
+  (JNIEnv *env, jobject obj)
+{
     rho_rhodesapp_start();
 }
 
