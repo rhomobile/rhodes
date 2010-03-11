@@ -38,7 +38,8 @@ public class WebView {
 		}
 		
 		public void run() {
-			RhodesInstance.getInstance().getMainView().navigate(url, index);
+			Rhodes r = RhodesInstance.getInstance();
+			r.getMainView().navigate(url, index);
 		}
 	};
 	
