@@ -1,0 +1,108 @@
+require 'fileutils'
+
+def build_extension(name, arch)
+  objects = []
+  mkdir_p $tempdir unless File.exist? $tempdir
+  Dir.glob("*.c").each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+    objects << objname
+
+      args = []
+      args << "-I."
+      args << "-I../../digest/ext"
+      args << "-I../../openssl/ext/openssl/include"
+      args << "-I../../../../platform/shared/ruby/include"
+      args << "-I../../../../platform/shared"
+
+    if $android
+      args << "-I../../../../platform/shared/ruby/linux"
+      args << "-I../../../../platform/shared/ruby/generated"
+      cc_compile f, $tempdir, args or exit 1
+
+    else
+      args << "-I../../../../platform/shared/ruby/iphone"
+      args << "-D_XOPEN_SOURCE"
+      args << "-D_DARWIN_C_SOURCE"
+      args << "-isysroot #{$sdkroot}"
+      args << "-fno-common"
+      args << "-arch #{arch}"
+      args << "-O2"
+      args << "-o #{objname}"
+      args << "-c"
+      args << f
+      cmdline = $gccbin + ' ' + args.join(' ')
+      puts cmdline
+      puts `#{cmdline}`
+      exit unless $? == 0
+
+    end
+  end
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  if $android
+    cc_ar File.join( $targetdir, 'lib' + name + '.a' ), Dir.glob($tempdir + "/**/*.o") or exit 1
+
+  else
+    args = []
+    args << 'rcs'
+    args << File.join( $targetdir, 'lib' + name + '.a' )
+    args += objects
+    cmdline = $arbin + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    exit unless $? == 0
+
+  end
+end
+
+def build_fat_file(name, archs)
+  archs.each do |arch|
+    build_extension(name, arch)
+  end
+  
+  args = []
+  args << "-create"
+  args << "-output lib#{name}.a"
+  archs.each do |arch|
+    args << "lib#{name}-#{arch}.a"
+  end
+  cmdline = $lipobin + ' ' + args.join(' ')
+  puts `#{cmdline}`
+  exit unless $? == 0
+end
+
+namespace "build" do
+  task :config do
+    if ENV['ANDROID_API_LEVEL'] != nil
+      $targetdir = ENV['TARGET_TEMP_DIR']
+      $tempdir = ENV['TEMP_FILES_DIR']
+      require File.dirname(__FILE__) + '/../../../../platform/android/build/androidcommon.rb'
+
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+      $android = true
+    else
+      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+      $sdkroot = ENV['SDKROOT']
+      raise "SDKROOT is not set" if $sdkroot.nil?
+      $targetdir = ENV['TARGET_TEMP_DIR']
+      raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+      $tempdir = ENV['TEMP_FILES_DIR']
+      raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+      $arch = ENV['ARCHS']
+      raise "ARCHS is not set" if $arch.nil?
+      $gccbin = $bindir + '/gcc-4.0'
+      $arbin = $bindir + '/ar'
+      $lipobin = 'lipo'
+
+    end
+  end
+
+  task :all => :config do
+    build_extension('digest-md5', $arch)
+  end
+end
+
+task :default => "build:all"

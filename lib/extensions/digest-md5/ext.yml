@@ -1,0 +1,2 @@
+entry: Init_md5
+libraries: [ "libdigest-md5.a" ]
