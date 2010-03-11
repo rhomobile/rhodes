@@ -212,7 +212,9 @@ public class Rhodes extends Activity {
 					Utils.copyRecursively(as, item, sdf, nameChanged);
 					Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
 							phf.getAbsolutePath() + "'");
-					makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
+					String src = sdf.getAbsolutePath();
+					String dst = phf.getAbsolutePath();
+					makeLink(src, dst);
 				}
 				
 				File dbfiles = new File(rootPath + "apps/public/db-files");
@@ -387,20 +389,19 @@ public class Rhodes extends Activity {
 		outerFrame = new FrameLayout(this);
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
-		try {
-			showSplashScreen("apps/app/loading.png");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			setMainView(new SimpleMainView());
-		}
-		
 		Log.i("Rhodes", "Loading...");
 		
 		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 		Display d = wm.getDefaultDisplay();
 		screenHeight = d.getHeight();
 		screenWidth = d.getWidth();
+		
+		try {
+			showSplashScreen("apps/app/loading.png");
+		}
+		catch (Exception e) {
+			setMainView(new SimpleMainView());
+		}
 		
 		// TODO: detect camera availability
 		isCameraAvailable = true;
@@ -593,15 +594,23 @@ public class Rhodes extends Activity {
 		return locale;
 	}
 	
+	public static int getScreenWidth() {
+		return screenWidth;
+	}
+	
+	public static int getScreenHeight() {
+		return screenHeight;
+	}
+	
 	public static Object getProperty(String name) {
 		if (name.equalsIgnoreCase("platform"))
 			return "ANDROID";
 		else if (name.equalsIgnoreCase("locale"))
 			return getCurrentLocale();
 		else if (name.equalsIgnoreCase("screen_width"))
-			return new Integer(screenWidth);
+			return new Integer(getScreenWidth());
 		else if (name.equalsIgnoreCase("screen_height"))
-			return new Integer(screenHeight);
+			return new Integer(getScreenHeight());
 		else if (name.equalsIgnoreCase("has_camera"))
 			return new Boolean(isCameraAvailable);
 		else if (name.equalsIgnoreCase("has_network"))

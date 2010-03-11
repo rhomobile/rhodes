@@ -67,11 +67,7 @@ static VALUE createHashFromContact(jobject contactObj)
         jstring valueObj = (jstring)env->CallObjectMethod(entryObj, getValueMID);
         if (!valueObj) return Qnil;
 
-        const char *keyStr = env->GetStringUTFChars(keyObj, JNI_FALSE);
-        const char *valueStr = env->GetStringUTFChars(valueObj, JNI_FALSE);
-        addStrToHash(contactHash, keyStr, valueStr);
-        env->ReleaseStringUTFChars(keyObj, keyStr);
-        env->ReleaseStringUTFChars(valueObj, valueStr);
+        addStrToHash(contactHash, rho_cast<std::string>(keyObj).c_str(), rho_cast<std::string>(valueObj).c_str());
 
         env->DeleteLocalRef(valueObj);
         env->DeleteLocalRef(keyObj);
@@ -114,11 +110,9 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
         // String id = contact.id();
         jstring idObj = (jstring)env->CallObjectMethod(contactObj, contactIdMID);
         if (!idObj) return Qnil;
-        const char *idStr = env->GetStringUTFChars(idObj, JNI_FALSE);
 
-        addHashToHash(hash, idStr, createHashFromContact(contactObj));
+        addHashToHash(hash, rho_cast<std::string>(idObj).c_str(), createHashFromContact(contactObj));
 
-        env->ReleaseStringUTFChars(idObj, idStr);
         env->DeleteLocalRef(idObj);
         env->DeleteLocalRef(contactObj);
     }
@@ -135,7 +129,7 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     jmethodID mid = getJNIClassMethod(env, cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return NULL;
 
-    jstring objId = env->NewStringUTF(id);
+    jstring objId = rho_cast<jstring>(id);
     jobject recordObj = env->CallObjectMethod(obj, mid, objId);
     env->DeleteLocalRef(objId);
     if (!recordObj) return NULL;
@@ -203,8 +197,8 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
     jmethodID mid = getJNIClassMethod(env, contactCls, "setField", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return 0;
 
-    jstring objProperty = env->NewStringUTF(property);
-    jstring objValue = env->NewStringUTF(value);
+    jstring objProperty = rho_cast<jstring>(property);
+    jstring objValue = rho_cast<jstring>(value);
     env->CallVoidMethod(contactObj, mid, objProperty, objValue);
     env->DeleteLocalRef(objProperty);
     env->DeleteLocalRef(objValue);
