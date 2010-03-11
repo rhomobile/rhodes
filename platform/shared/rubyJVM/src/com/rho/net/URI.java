@@ -1202,6 +1202,24 @@ import com.rho.net.NetRequest.ParsedCookie;
 	  }
 	  return sb.toString();
   }
+
+  static public String ampEncode(String fullPath)
+  {
+	  StringBuffer sb = new StringBuffer();
+	  int len = fullPath.length();
+	  
+	  char c;
+	  for( int index=0; index < len ; index++ )
+	  {
+		  c = fullPath.charAt(index);
+		  if ( c == '&' )
+			  sb.append("&amp;");
+		  else
+			  sb.append(c);
+	  }
+	  
+	  return sb.toString();
+  }
   
   public static boolean isLocalHost(String strUrl)
   {

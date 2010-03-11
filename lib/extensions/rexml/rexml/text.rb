@@ -107,13 +107,15 @@ module REXML
       if arg.kind_of? String
         @string = arg.clone
         @string.squeeze!(" \n\t") unless respect_whitespace
-      elsif arg.kind_of? Text
-        @string = arg.to_s
-        @raw = arg.raw
-      elsif
-        raise "Illegal argument of type #{arg.type} for Text constructor (#{arg})"
+      else  
+          if arg.kind_of? Text
+            @string = arg.to_s
+            @raw = arg.raw
+          else
+            raise "Illegal argument of type #{arg.type} for Text constructor (#{arg})"
+          end
       end
-
+      
       @string.gsub!( /\r\n?/, "\n" )
 
       Text.check(@string, NEEDS_A_SECOND_CHECK, doctype) if @raw and @parent
@@ -126,7 +128,7 @@ module REXML
 
     # check for illegal characters
     def Text.check string, pattern, doctype
-
+=begin
       # illegal anywhere
       if string !~ VALID_XML_CHARS
         if String.method_defined? :encode
@@ -166,6 +168,7 @@ module REXML
           end
         end
       end
+=end      
     end
 
     def node_type
