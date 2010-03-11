@@ -6,6 +6,8 @@
 package com.xruby.runtime.builtin;
 
 import java.io.IOException;
+import java.io.InputStream;
+
 import j2me.nio.ByteBuffer;
 import j2me.nio.channels.Pipe.SinkChannel;
 
@@ -29,6 +31,11 @@ public class RubyIOPipeSinkExecutor implements RubyIOExecutor {
         }
     }
 
+    public InputStream getInputStream()
+    {
+    	return null;
+    }
+    
     public boolean eof() {
         throw notAllowed();
     }

@@ -7,6 +7,8 @@ package com.xruby.runtime.builtin;
 
 import j2me.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+
 import j2me.io.File;
 import j2me.io.RandomAccessFile;
 
@@ -39,6 +41,11 @@ class RubyIOFileExecutor implements RubyIOExecutor {
         }
     }
 
+    public InputStream getInputStream()
+    {
+    	return null;
+    }
+    
     private boolean open(String filename, String mode) {
         AssertMe.rho_assert (null == file_);
 		File f = new File(filename);
