@@ -71,7 +71,7 @@ module Rho
           begin
               Rhom::RhomDbAdapter.execute_sql query, parts
           rescue Exception => e
-            puts "load_offline_data : exception insert data: #{e}; data : #{parts}; line : #{row_index}"
+            #puts "load_offline_data : exception insert data: #{e}; data : #{parts}; line : #{row_index}"
           end
           
           if row_index%commit_count == 0          
