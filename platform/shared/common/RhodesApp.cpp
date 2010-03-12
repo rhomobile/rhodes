@@ -592,6 +592,7 @@ String CRhodesApp::addCallbackObject(unsigned long valObject, String strName)
         if ( m_arCallbackObjects.elementAt(i) == 0 )
             nIndex = i;
     }
+    rho_ruby_holdValue(valObject);
     if ( nIndex  == -1 )
     {
         m_arCallbackObjects.addElement(valObject);
@@ -609,7 +610,10 @@ void CRhodesApp::delCallbackObject(unsigned long valObject)
     for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
     {
         if ( m_arCallbackObjects.elementAt(i) == valObject )
+        {
             m_arCallbackObjects.setElementAt(0,i);
+            rho_ruby_releaseValue(valObject);
+        }
     }
 }
 
