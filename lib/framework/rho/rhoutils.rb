@@ -42,7 +42,7 @@ module Rho
       end
     end
     
-    def self.load_offline_data_ex(tables=[], dir_prefix=nil, commit_count=10000)
+    def self.load_offline_data_ex(tables=[], dir_prefix=nil, commit_count=100000)
       columns = []
       tables.each do |filename|
     
