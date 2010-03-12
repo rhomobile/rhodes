@@ -38,8 +38,7 @@ public class DateTimePicker {
 
 	public static void choose(String callback, String title, long init, int v, byte[] opaque) {
 		try {
-			Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(),
-					DateTimePickerScreen.class);
+			Intent intent = new Intent(RhodesInstance.getInstance(), DateTimePickerScreen.class);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", callback);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "title", title);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "init", init);
