@@ -78,8 +78,8 @@ public class Rhodes extends Activity {
 	public static final int RHO_SPLASH_VIEW = 1;
 	public static final int RHO_MAIN_VIEW = 2;
 	
-	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
 	private long uiThreadId;
 	public long getUiThreadId() {
@@ -382,6 +382,13 @@ public class Rhodes extends Activity {
 		}
 		createRhodesApp(rootPath);
 		
+		boolean fullScreen = true;
+		if (RhoConf.isExist("full_screen"))
+			fullScreen = RhoConf.getBool("full_screen");
+		if (!fullScreen) {
+			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+		}
 		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
 
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
