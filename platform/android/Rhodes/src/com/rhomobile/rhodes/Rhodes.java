@@ -238,7 +238,7 @@ public class Rhodes extends Activity {
 	}
 	
 	public WebView createWebView() {
-		WebView w = new WebView(getApplicationContext());
+		WebView w = new WebView(this);
 		
 		try {
 			w.loadUrl("file:///android_asset/apps/app/loading.html");
@@ -578,7 +578,7 @@ public class Rhodes extends Activity {
 	}
 	
 	private static boolean hasNetwork() {
-		Context ctx = RhodesInstance.getInstance().getApplicationContext();
+		Context ctx = RhodesInstance.getInstance();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
 			return false;
