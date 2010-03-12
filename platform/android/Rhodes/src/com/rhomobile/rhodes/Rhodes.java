@@ -22,11 +22,8 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
-
-import org.omg.CORBA.INV_IDENT;
 
 import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
@@ -41,10 +38,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -66,7 +60,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.os.Process;
 
 public class Rhodes extends Activity {
@@ -78,8 +71,8 @@ public class Rhodes extends Activity {
 	public static final int RHO_SPLASH_VIEW = 1;
 	public static final int RHO_MAIN_VIEW = 2;
 	
-	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
 	private long uiThreadId;
 	public long getUiThreadId() {
@@ -168,14 +161,15 @@ public class Rhodes extends Activity {
 		if (target.exists())
 			return;
 		FileSource as = new AssetsSource(getResources().getAssets());
-		FileSource fs = new FileSource();
 		Utils.copyRecursively(as, file, target, true);
 		
 		int idx = file.indexOf('/');
 		String dir = idx == -1 ? file : file.substring(0, idx);
-		String sdPath = new File(sdcardRootPath(), dir).getAbsolutePath();
-		String phPath = new File(phoneMemoryRootPath(), dir).getAbsolutePath();
-		makeLink(sdPath, phPath);
+		
+		File sdPath = new File(sdcardRootPath(), dir);
+		File phPath = new File(phoneMemoryRootPath(), dir);
+		phPath.getParentFile().mkdirs();
+		makeLink(sdPath.getAbsolutePath(), phPath.getAbsolutePath());
 	}
 	
 	private void copyFilesFromBundle() {
@@ -382,6 +376,13 @@ public class Rhodes extends Activity {
 		}
 		createRhodesApp(rootPath);
 		
+		boolean fullScreen = true;
+		if (RhoConf.isExist("full_screen"))
+			fullScreen = RhoConf.getBool("full_screen");
+		if (!fullScreen) {
+			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+		}
 		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
 
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
