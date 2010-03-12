@@ -151,6 +151,8 @@ public class XMLParser extends RubyBasic {
 		
 		m_nCurPos = 0;
 		parser.parse(in, new XmlSAXHandler(this));
+		
+		LOG.INFO("Parse finished");
     }
     
     private RubyValue pull() 
