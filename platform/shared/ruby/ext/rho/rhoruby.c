@@ -373,7 +373,13 @@ struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val)
     return oRes;
 }
 
-void  releaseValue(VALUE val){
+void rho_ruby_holdValue(VALUE val)
+{
+    rb_gc_register_mark_object(val);
+}
+
+void rho_ruby_releaseValue(VALUE val)
+{
     VALUE ary = GET_THREAD()->vm->mark_object_ary;
     int i = RARRAY_LEN(ary)-1;
     for ( ; i >= 0; i-- ) {
