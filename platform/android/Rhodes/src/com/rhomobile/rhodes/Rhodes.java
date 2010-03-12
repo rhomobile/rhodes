@@ -38,6 +38,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -387,6 +388,10 @@ public class Rhodes extends Activity {
 		}
 		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
 
+		boolean disableScreenRotation = RhoConf.getBool("disable_screen_rotation");
+		this.setRequestedOrientation(disableScreenRotation ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
+			ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+		
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
 		outerFrame = new FrameLayout(this);
