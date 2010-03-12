@@ -18,7 +18,7 @@ extern "C"
 {
 #ifdef OS_WINCE
 
-static int PHONE_NUMBER_BUFFER_SIZE = 512;
+static const int PHONE_NUMBER_BUFFER_SIZE = 512;
 
 bool getPhoneNumFromSIMCard (String &number) 
 {
@@ -118,9 +118,8 @@ bool getPhoneNumFromSIMCard (String &number)
 FuncExit:
     lineShutdown(hLineApp);
 	
-	//TODO: log extended error
 	if (hr != S_OK) {
-		LOG(ERROR) + "failed to get phone number";
+		LOG(ERROR) + "failed to get phone number from SIM";
 		return false;
 	}
 
@@ -136,9 +135,8 @@ bool getPhoneNumFromSMSBearer (String &number)
 {
 	SMS_ADDRESS psmsaAddress;
 	
-	//TODO: log extended error
 	if (SmsGetPhoneNumber (&psmsaAddress) != S_OK) {
-		LOG(ERROR) + "failed to get phone number";
+		LOG(ERROR) + "failed to get phone number using SMS bearer";
 		return false;
 	}
 
@@ -148,7 +146,47 @@ bool getPhoneNumFromSMSBearer (String &number)
 
 bool getPhoneNumFromOwnerInfo (String &number)
 {
-	//FIXME: just a stub currently
+	HKEY	hKey;
+	DWORD	dwType, dwCount = PHONE_NUMBER_BUFFER_SIZE;
+	TCHAR   strValue [PHONE_NUMBER_BUFFER_SIZE];
+	LONG    res;
+	TCHAR   errMsg[1024];
+
+	if ((res = RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("ControlPanel\\Owner"),  NULL, KEY_EXECUTE , &hKey)) == 0) 
+	{
+		if ((res = RegQueryValueEx (hKey, TEXT("Telephone"), NULL,  &dwType, (LPBYTE )strValue, &dwCount)) == 0) 
+		{
+			if (dwType != REG_SZ) 
+			{
+				LOG(ERROR) + "Settings/Owner Information/Telephone has invalid type";
+				RegCloseKey(hKey);
+				return false;
+			}
+
+			if (dwCount > 0) 
+			{
+				strValue[dwCount + 1] = '\0';
+
+				if (_tcslen((strValue))  == 0) 
+				{
+					LOG(INFO) + "Settings/Owner Information/Telephone is empty";
+
+					RegCloseKey(hKey);
+					return false;
+				}
+
+				number = convertToStringA(strValue);
+
+				RegCloseKey(hKey);
+				return true;
+			}
+		}
+	}
+
+	RegCloseKey(hKey);
+	FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, 0, GetLastError(), 0, errMsg, sizeof(errMsg), NULL);
+	LOG(ERROR) + errMsg;
+
 	return false;
 }
 
