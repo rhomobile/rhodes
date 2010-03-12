@@ -15,15 +15,19 @@ module Rho
             end
         end
                 
-        Rhom::RhomDbAdapter.delete_all_from_table(filename)
+        Rhom::RhomDbAdapter.destroy_table(filename)
         Rhom::RhomDbAdapter.start_transaction
-
-        first_row=true
+        commitRecCount = 10000
+        
+        row_index=0
         prefix = dir_prefix.nil? ? "" : dir_prefix
         File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',prefix,'fixtures',filename+'.txt')).each do |line|
-          if first_row
-            columns = line.chomp.split('|'); first_row = false; next;
+          if row_index == 0
+            columns = line.chomp.split('|')
+            row_index += 1
+            next
           end
+          
           parts = line.chomp.split('|')
 
           row = {}
@@ -35,9 +39,18 @@ module Rho
             end
           end
           Rhom::RhomDbAdapter.insert_into_table(filename,row)
+
+          if row_index%commitRecCount == 0          
+            Rhom::RhomDbAdapter.commit
+            Rhom::RhomDbAdapter.start_transaction
+            puts "commit : #{row_index}"
+          end  
+          
+          row_index += 1
         end
 
         Rhom::RhomDbAdapter.commit
+        puts "commit : #{row_index}"
         columns = []
       end
     end
