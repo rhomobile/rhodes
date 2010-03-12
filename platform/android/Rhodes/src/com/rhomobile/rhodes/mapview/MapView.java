@@ -41,8 +41,7 @@ public class MapView extends MapActivity {
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
 		try {
-			Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(),
-					MapView.class);
+			Intent intent = new Intent(RhodesInstance.getInstance(), MapView.class);
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
