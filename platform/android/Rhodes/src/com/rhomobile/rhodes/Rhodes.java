@@ -355,7 +355,9 @@ public class Rhodes extends Activity {
 			splashScreen.hide(outerFrame);
 			splashScreen = null;
 		}
-		mainView.getView().setVisibility(View.VISIBLE);
+		View view = mainView.getView();
+		view.setVisibility(View.VISIBLE);
+		view.requestFocus();
 	}
 	
 	/** Called when the activity is first created. */
