@@ -394,7 +394,7 @@ namespace "build" do
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
 
-      File.read(File.join($builddir, "libcurl_build.files")).each do |f|
+      File.read(File.join($builddir, "libcurl_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -412,7 +412,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
 
-      File.read(File.join($builddir, "libruby_build.files")).each do |f|
+      File.read(File.join($builddir, "libruby_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
 
@@ -430,7 +430,7 @@ namespace "build" do
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
       objects = []
-      File.read(File.join($builddir, "libjson_build.files")).each do |f|
+      File.read(File.join($builddir, "libjson_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -458,7 +458,7 @@ namespace "build" do
           args << "-fno-rtti"
           args << "-fno-exceptions"
 
-          File.read(File.join($builddir, "libstlport_build.files")).each do |f|
+          File.read(File.join($builddir, "libstlport_build.files")).split("\n").each do |f|
             cc_compile f, objdir, args or exit 1
           end
           cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -475,7 +475,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librholog_build.files")).each do |f|
+      File.read(File.join($builddir, "librholog_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -490,7 +490,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhomain_build.files")).each do |f|
+      File.read(File.join($builddir, "librhomain_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -506,7 +506,7 @@ namespace "build" do
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
       objects = []
-      File.read(File.join($builddir, "librhocommon_build.files")).each do |f|
+      File.read(File.join($builddir, "librhocommon_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -523,7 +523,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhodb_build.files")).each do |f|
+      File.read(File.join($builddir, "librhodb_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -540,7 +540,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhosync_build.files")).each do |f|
+      File.read(File.join($builddir, "librhosync_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -586,7 +586,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhodes_build.files")).each do |f|
+      File.read(File.join($builddir, "librhodes_build.files")).split("\n").each do |f|
         cc_compile f, objdir, args or exit 1
       end
 
