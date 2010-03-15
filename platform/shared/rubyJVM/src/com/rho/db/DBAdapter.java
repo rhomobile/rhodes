@@ -203,6 +203,10 @@ public class DBAdapter extends RubyBasic {
     	}
     };
     
+    /*private void testError()throws Exception
+    {
+    	throw new net.rim.device.api.io.file.FileIOException(net.rim.device.api.io.file.FileIOException.FILESYSTEM_FULL);
+    }*/
     DBVersion readDBVersion()throws Exception
 	{
     	String strFullVer = "";
@@ -211,6 +215,7 @@ public class DBAdapter extends RubyBasic {
 	    	file = RhoClassFactory.createRAFile();
 	    	file.open(m_strDBVerPath);
 	        byte buf[] = new byte[20];
+//	        testError();
 	        int len = file.read(buf, 0, buf.length);
 			if ( len > 0 )
 				strFullVer = new String(buf,0,len);
