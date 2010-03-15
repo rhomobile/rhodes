@@ -111,6 +111,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
     if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (strRhoDBVer.find("1.5")==0||strRhoDBVer.find("1.4")==0) )
     {
         LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
+        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
         return true;
     }
 
