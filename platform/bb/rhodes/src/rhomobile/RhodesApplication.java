@@ -641,8 +641,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		    	
 		    	if ( !RhoRuby.rho_ruby_isValid() )
 		    	{
-		    		LOG.ERROR("Cannot initialize Ruby framework. Application will exit.");
-		        	Dialog.alert("Cannot initialize Ruby framework. Application will exit. Log will send to log server.");
+		    		LOG.ERROR("Cannot initialize Rho framework. Application will exit.");
+		        	Dialog.alert("Cannot initialize Rho framework. Application will exit. Log will send to log server.");
 		        	
 		        	RhoConf.sendLog();
 		        	
@@ -665,26 +665,32 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		super.activate();
 	}
 
-    void initRuby()
+    void initRuby()throws Exception
     {
-        RhoRuby.RhoRubyStart("");
-        SyncThread sync = null;
-        try{
-        	sync = SyncThread.Create( new RhoClassFactory() );
-        	
-        }catch(Exception exc){
-        	LOG.ERROR("Create sync failed.", exc);
-        }
-        if (sync != null) {
-        	sync.setStatusListener(this);
-        }
-        
-        RhoRuby.RhoRubyInitApp();
-        
-        m_bRubyInit = true;
-		synchronized (m_eventRubyInit) {
-			m_eventRubyInit.notifyAll();
-		}
+    	try
+    	{
+	        RhoRuby.RhoRubyStart("");
+	        
+	        SyncThread sync = null;
+	        
+	        try{
+	        	sync = SyncThread.Create( new RhoClassFactory() );
+	        	
+	        }catch(Exception exc){
+	        	LOG.ERROR("Create sync failed.", exc);
+	        }
+	        if (sync != null) {
+	        	sync.setStatusListener(this);
+	        }
+	        
+	        RhoRuby.RhoRubyInitApp();
+    	}finally
+    	{
+	        m_bRubyInit = true;
+			synchronized (m_eventRubyInit) {
+				m_eventRubyInit.notifyAll();
+			}
+    	}
     }
 
 	public void deactivate() {
@@ -1550,16 +1556,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         		
 	        		_application.initRuby();
 	        		
-	    	    	_pushListeningThread = new PushListeningThread();
-	    	    	_pushListeningThread.start();
     	    	}catch(Exception e)
     	    	{
-    	    		LOG.ERROR("HttpServerThread failed.", e);
+    	    		LOG.ERROR("initRuby failed.", e);
+    	    		return;
     	    	}catch(Throwable exc)
     	    	{
-    	    		LOG.ERROR("HttpServerThread crashed.", exc);
+    	    		LOG.ERROR("initRuby crashed.", exc);
+    	    		return;
     	    	}
-        		
+
+    	    	_pushListeningThread = new PushListeningThread();
+    	    	_pushListeningThread.start();
+    	    	
         		while( !m_bExit )
         		{
 	        		while(!m_stackCommands.isEmpty())
