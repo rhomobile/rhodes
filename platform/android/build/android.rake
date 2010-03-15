@@ -130,7 +130,8 @@ namespace "config" do
     $app_rjava_dir = File.join $tmpdir
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $emulator = "cmd /c " + File.join( $androidsdkpath, "tools", "emulator.exe" )
+      $emulator = #"cmd /c " + 
+        File.join( $androidsdkpath, "tools", "emulator.exe" )
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
