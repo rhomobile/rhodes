@@ -24,6 +24,10 @@ end
 # command "android list targets"
 ANDROID_API_LEVEL = 3
 
+def get_sources(name)
+  File.read(File.join($builddir, name + '_build.files')).split("\n")
+end
+
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -394,7 +398,7 @@ namespace "build" do
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
 
-      File.read(File.join($builddir, "libcurl_build.files")).split("\n").each do |f|
+      get_sources('libcurl').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -412,7 +416,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
 
-      File.read(File.join($builddir, "libruby_build.files")).split("\n").each do |f|
+      get_sources('libruby').each do |f|
         cc_compile f, objdir, args or exit 1
       end
 
@@ -430,7 +434,7 @@ namespace "build" do
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
       objects = []
-      File.read(File.join($builddir, "libjson_build.files")).split("\n").each do |f|
+      get_sources('libjson').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -458,7 +462,7 @@ namespace "build" do
           args << "-fno-rtti"
           args << "-fno-exceptions"
 
-          File.read(File.join($builddir, "libstlport_build.files")).split("\n").each do |f|
+          get_sources('libstlport').each do |f|
             cc_compile f, objdir, args or exit 1
           end
           cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -475,7 +479,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librholog_build.files")).split("\n").each do |f|
+      get_sources('librholog').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -490,7 +494,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhomain_build.files")).split("\n").each do |f|
+      get_sources('librhomain').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -506,7 +510,7 @@ namespace "build" do
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
       objects = []
-      File.read(File.join($builddir, "librhocommon_build.files")).split("\n").each do |f|
+      get_sources('librhocommon').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -523,7 +527,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhodb_build.files")).split("\n").each do |f|
+      get_sources('librhodb').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -540,7 +544,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhosync_build.files")).split("\n").each do |f|
+      get_sources('librhosync').each do |f|
         cc_compile f, objdir, args or exit 1
       end
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -586,7 +590,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      File.read(File.join($builddir, "librhodes_build.files")).split("\n").each do |f|
+      get_sources('librhodes').each do |f|
         cc_compile f, objdir, args or exit 1
       end
 
