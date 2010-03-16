@@ -334,8 +334,7 @@ namespace "build" do
       end
       File.open(File.join(assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
 
-    File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
-
+      File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
     end
 
     task :extensions => "config:android" do
@@ -766,8 +765,8 @@ end
 def get_app_log(appname, device)
   pkgname = 'com.rhomobile.' + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/sdcard/rhomobile', pkgname, 'RhoLog.txt')
-  cc_run($adb, [device ? '-d' : '-e', 'pull', path, '.']) or return false
-  puts "RhoLog.txt stored to current directory"
+  cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
+  puts "RhoLog.txt stored to " + $app_path
   return true
 end
 
