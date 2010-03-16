@@ -45,38 +45,45 @@ struct rho_cast_helper;
 template <>
 struct rho_cast_helper<std::string, jstring>
 {
-    std::string operator()(jstring );
+    std::string operator()(JNIEnv *env, jstring );
 };
 
 template <>
 struct rho_cast_helper<jstring, char const *>
 {
-    jstring operator()(char const *);
+    jstring operator()(JNIEnv *env, char const *);
 };
 
 template <>
 struct rho_cast_helper<jstring, char *>
 {
-    jstring operator()(char *s) {return rho_cast_helper<jstring, char const *>()(s);}
+    jstring operator()(JNIEnv *env, char *s) {return rho_cast_helper<jstring, char const *>()(env, s);}
 };
 
 template <int N>
 struct rho_cast_helper<jstring, char [N]>
 {
-    jstring operator()(char (&s)[N]) {return rho_cast_helper<jstring, char const *>()(&s[0]);}
+    jstring operator()(JNIEnv *env, char (&s)[N]) {return rho_cast_helper<jstring, char const *>()(env, &s[0]);}
 };
 
 template <>
 struct rho_cast_helper<jstring, std::string>
 {
-    jstring operator()(std::string const &s) {return rho_cast_helper<jstring, char const *>()(s.c_str());}
+    jstring operator()(JNIEnv *env, std::string const &s) {return rho_cast_helper<jstring, char const *>()(env, s.c_str());}
 };
 
 } // namespace details
+
+template <typename T, typename U>
+T rho_cast(JNIEnv *env, U u)
+{
+    return details::rho_cast_helper<T, U>()(env, u);
+}
+
 template <typename T, typename U>
 T rho_cast(U u)
 {
-    return details::rho_cast_helper<T, U>()(u);
+    return details::rho_cast_helper<T, U>()(jnienv(), u);
 }
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)

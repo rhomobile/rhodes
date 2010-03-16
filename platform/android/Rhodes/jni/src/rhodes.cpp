@@ -254,18 +254,17 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
 namespace details
 {
 
-std::string rho_cast_helper<std::string, jstring>::operator()(jstring s)
+std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstring s)
 {
-    JNIEnv *env = jnienv();
     const char *ts = env->GetStringUTFChars(s, JNI_FALSE);
     std::string ret(ts);
     env->ReleaseStringUTFChars(s, ts);
     return ret;
 }
 
-jstring rho_cast_helper<jstring, char const *>::operator()(char const *s)
+jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
-    return jnienv()->NewStringUTF(s);
+    return env->NewStringUTF(s);
 }
 
 } // namespace details
