@@ -3,7 +3,7 @@ package com.rho.net;
 public class NetResponse {
 	private String m_strData = null;
 	private int    m_nRespCode;
-	private String m_strCookies;
+	private String m_strCookies = "";
 	
 //	public NetResponse( String strData ){ m_strData = strData; m_nRespCode = -1; }
 	public NetResponse( String strData, int nRespCode ){ m_strData = strData; m_nRespCode = nRespCode; }
