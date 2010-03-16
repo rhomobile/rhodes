@@ -105,6 +105,9 @@ public :
 			return S_FALSE;
 		}
 
+        rho_logconf_Init(m_strRootPath.c_str());
+        LOG(INFO) + "Rhodes started";
+
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
@@ -112,8 +115,6 @@ public :
             return S_FALSE;
         }
 
-        rho_logconf_Init(m_strRootPath.c_str());
-        LOG(INFO) + "Rhodes started";
         rho::common::CRhodesApp::Create(m_strRootPath );
         RHODESAPP().startApp();
 
