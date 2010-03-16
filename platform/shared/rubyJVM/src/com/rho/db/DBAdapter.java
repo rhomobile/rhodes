@@ -213,7 +213,14 @@ public class DBAdapter extends RubyBasic {
     	IRAFile file = null;
     	try {
 	    	file = RhoClassFactory.createRAFile();
-	    	file.open(m_strDBVerPath);
+	    	try{
+	    		file.open(m_strDBVerPath);
+	    	}catch(j2me.io.FileNotFoundException exc)
+	    	{
+	    		//file not exist
+	    		return new DBVersion();
+	    	}
+	    	
 	        byte buf[] = new byte[20];
 //	        testError();
 	        int len = file.read(buf, 0, buf.length);
