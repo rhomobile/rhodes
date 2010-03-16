@@ -37,6 +37,7 @@ def cc_def_args
     args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"
+    args << "-DRHO_DEBUG"
     args << "-g"
     if $build_release
       args << "-O2"
