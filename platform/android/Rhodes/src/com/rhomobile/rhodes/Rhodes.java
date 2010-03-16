@@ -114,16 +114,19 @@ public class Rhodes extends Activity {
 	public native static void makeLink(String src, String dst);
 	
 	private void initRootPath() {
-		rootPath = phoneMemoryRootPath();
+		//rootPath = phoneMemoryRootPath();
+		rootPath = sdcardRootPath();
 	}
 	
 	public String getRootPath() {
 		return rootPath;
 	}
 	
+	/*
 	private String phoneMemoryRootPath() {
 		return "/data/data/" + getPackageName() + "/data/";
 	}
+	*/
 	
 	private String sdcardRootPath() {
 		return Environment.getExternalStorageDirectory() + "/rhomobile/" + getPackageName() + "/";
@@ -164,6 +167,7 @@ public class Rhodes extends Activity {
 		FileSource as = new AssetsSource(getResources().getAssets());
 		Utils.copyRecursively(as, file, target, true);
 		
+		/*
 		int idx = file.indexOf('/');
 		String dir = idx == -1 ? file : file.substring(0, idx);
 		
@@ -171,11 +175,12 @@ public class Rhodes extends Activity {
 		File phPath = new File(phoneMemoryRootPath(), dir);
 		phPath.getParentFile().mkdirs();
 		makeLink(sdPath.getAbsolutePath(), phPath.getAbsolutePath());
+		*/
 	}
 	
 	private void copyFilesFromBundle() {
 		try {
-			String phRootPath = phoneMemoryRootPath();
+			//String phRootPath = phoneMemoryRootPath();
 			String sdRootPath = sdcardRootPath();
 			
 			boolean nameChanged = false;
@@ -191,25 +196,28 @@ public class Rhodes extends Activity {
 				contentChanged = !Utils.isContentsEquals(as, "hash", fs, new File(sdRootPath, "hash").getPath());
 			
 			if (contentChanged) {
-				Log.d(TAG, "Copying required files from bundle to sdcard");
+				Logger.D(TAG, "Copying required files from bundle to sdcard");
 				
+				/*
 				File phrf = new File(phRootPath);
 				if (!phrf.exists())
 					phrf.mkdirs();
 				phrf = null;
-				
-				String items[] = {"apps", "lib", "db", "RhoLog.txt", "RhoLog.txt_pos", "hash", "name"};
+				*/
+
+				String items[] = {"apps", "lib", "db", "hash", "name"};
 				for (int i = 0; i != items.length; ++i) {
 					String item = items[i];
-					File phf = new File(phRootPath, item);
+					//File phf = new File(phRootPath, item);
 					File sdf = new File(sdRootPath, item);
-					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
+					Logger.D(TAG, "Copy '" + item + "' to '" + sdf + "'");
 					Utils.copyRecursively(as, item, sdf, nameChanged);
-					Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
-							phf.getAbsolutePath() + "'");
+					/*
 					String src = sdf.getAbsolutePath();
 					String dst = phf.getAbsolutePath();
+					Logger.D(TAG, "Make symlink from '" + src + "' to '" + dst + "'");
 					makeLink(src, dst);
+					*/
 				}
 				
 				File dbfiles = new File(rootPath + "apps/public/db-files");
@@ -217,12 +225,12 @@ public class Rhodes extends Activity {
 					dbfiles.mkdirs();
 				dbfiles = null;
 				
-				Log.d(TAG, "All files copied");
+				Logger.D(TAG, "All files copied");
 			}
 			else
-				Log.d(TAG, "No need to copy files to SD card");
+				Logger.D(TAG, "No need to copy files to SD card");
 		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
+			Logger.E(TAG, e);
 			return;
 		}
 	}
@@ -366,6 +374,11 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		if (!checkSDCard()) {
+			finish();
+			return;
+		}
+		
 		uiThreadId = Thread.currentThread().getId();
 		RhodesInstance.setInstance(this);
 		
@@ -373,7 +386,7 @@ public class Rhodes extends Activity {
 		try {
 			copyFromBundle("apps/rhoconfig.txt");
 		} catch (IOException e1) {
-			Log.e("Rhodes", "Copy rhoconfig.txt failed", e1);
+			Logger.E("Rhodes", e1);
 			finish();
 			return;
 		}
@@ -397,7 +410,7 @@ public class Rhodes extends Activity {
 		outerFrame = new FrameLayout(this);
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
-		Log.i("Rhodes", "Loading...");
+		Logger.I("Rhodes", "Loading...");
 		
 		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 		Display d = wm.getDefaultDisplay();
@@ -425,8 +438,6 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				if (!checkSDCard())
-					return;
 				copyFilesFromBundle();
 				startRhodesApp();
 			}
