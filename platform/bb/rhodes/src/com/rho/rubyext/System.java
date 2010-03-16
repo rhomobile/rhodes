@@ -94,6 +94,8 @@ public class System {
     		return ObjectFactory.createBoolean(hasCamera()); 
     	if ( strPropName.equalsIgnoreCase("phone_number") )
     		return ObjectFactory.createString(Phone.getDevicePhoneNumber(true)); 
+    	if ( strPropName.equalsIgnoreCase("device_id") )
+    		return ObjectFactory.createString(new Integer( DeviceInfo.getDeviceId() ).toString()); 
     	
     	return RubyConstant.QNIL;
     }
