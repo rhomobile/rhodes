@@ -3,7 +3,7 @@
 
 #include "RhoClassFactory.h"
 #include "SystemInfoImpl.h"
-#include "SSLImpl.h"
+#include "sslimpl.h"
 
 namespace rho
 {
