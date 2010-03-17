@@ -309,8 +309,8 @@ namespace "build" do
       nativelibs = Jake.get_absolute(File.join($androidpath, "Rhodes", "libs"))
       #rjava = Jake.get_absolute(File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes"))
 
-      args = ["package", "-f", "-M", '"'+manifest+'"', "-S", '"'+resource+'"', "-A", '"'+assets+'"', "-I", '"'+$androidjar+'"', "-J", '"'+$app_rjava_dir+'"']
-      puts Jake.run('"' + $aapt + '"',args)
+      args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-J", $app_rjava_dir]
+      puts Jake.run($aapt, args)
 
       exitstatus = $?
       unless exitstatus == 0
@@ -653,7 +653,7 @@ namespace "build" do
       args = []
       args << "-g"
       args << "-d"
-      args << '"' +$tmpdir + '/Rhodes"'
+      args << $tmpdir + '/Rhodes'
       args << "-source"
       args << "1.6"
       args << "-target"
@@ -661,8 +661,8 @@ namespace "build" do
       args << "-nowarn"
       args << "-encoding"
       args << "latin1"
-      args << '"' + File.join($app_rjava_dir, "R.java") + '"'
-      puts Jake.run('"'+javac+'"',args)
+      args << File.join($app_rjava_dir, "R.java")
+      puts Jake.run(javac, args)
       unless $? == 0
         puts "Error compiling java code"
         exit 1
@@ -686,7 +686,7 @@ namespace "build" do
       args = []
       args << "-g"
       args << "-d"
-      args << '"' +$tmpdir + '/Rhodes"'
+      args << $tmpdir + '/Rhodes'
       args << "-source"
       args << "1.6"
       args << "-target"
@@ -696,16 +696,17 @@ namespace "build" do
       classpath = $androidjar
       classpath += $path_separator + $gapijar unless $gapijar.nil?
       classpath += $path_separator + "#{$tmpdir}/Rhodes"
-      args << '"' + classpath + '"'
+      args << classpath
       args << "@#{srclist}"
-      puts Jake.run('"'+javac+'"',args)
+      puts Jake.run(javac, args)
       unless $? == 0
         puts "Error compiling java code"
         exit 1
       end
 
-      args = ["cf","../../Rhodes.jar", "#{$all_files_mask}"]
-      puts Jake.run('"'+$jarbin+'"', args, "#{$tmpdir}/Rhodes/")
+      puts "all_files_mask: #{$all_files_mask}"
+      args = ["cf","../../Rhodes.jar", $all_files_mask]
+      puts Jake.run($jarbin, args, "#{$tmpdir}/Rhodes/")
       unless $? == 0
         puts "Error running jar"
         exit 1
@@ -722,10 +723,9 @@ namespace "package" do
     puts "Running dx utility"
     args = []
     args << "--dex"
-    outfile = "#{$bindir}/classes.dex"
-    args << "\"--output=#{outfile}\""
-    args << "\"#{$bindir}/Rhodes.jar\""
-    puts Jake.run('"'+$dx+'"',args)
+    args << "--output=#{$bindir}/classes.dex"
+    args << "#{$bindir}/Rhodes.jar"
+    puts Jake.run($dx, args)
     unless $? == 0
       puts "Error running DX utility"
       exit 1
@@ -740,8 +740,8 @@ namespace "package" do
 
     set_app_name_android($appname)
 
-    args = ["package", "-f", "-M", '"'+manifest+'"', "-S", '"'+resource+'"', "-A", '"'+assets+'"', "-I", '"'+$androidjar+'"', "-F", '"'+resourcepkg+'"']
-    puts Jake.run('"'+$aapt+'"', args)
+    args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
+    puts Jake.run($aapt, args)
     unless $? == 0
       puts "Error running AAPT"
       exit 1
@@ -751,8 +751,8 @@ namespace "package" do
     mkdir_p $bindir + "/lib/armeabi"
     cp_r $bindir + "/libs/" + $confdir + "/librhodes.so", $bindir + "/lib/armeabi"
     cc_run($stripbin, [$bindir + "/lib/armeabi/librhodes.so"])
-    args = ["add", '"'+resourcepkg+'"', "lib/armeabi/librhodes.so"]
-    puts Jake.run('"'+$aapt+'"', args, $bindir)
+    args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
+    puts Jake.run($aapt, args, $bindir)
     err = $?
     rm_rf $bindir + "/lib"
     unless err == 0
@@ -780,7 +780,7 @@ namespace "device" do
       resourcepkg =  $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
-      puts `"#{$apkbuilder}" "#{apkfile}" -z "#{resourcepkg}" -f "#{dexfile}"`
+      Jake.run($apkbuilder, [apkfile, "-z", resourcepkg, "-f", dexfile])
       unless $? == 0
         puts "Error building APK file"
         exit 1
@@ -790,9 +790,9 @@ namespace "device" do
     task :install => :debug do
       apkfile = $targetdir + "/" + $appname + "-debug.apk"
       puts "Install APK file"
-      puts `"#{$adb}" -d install -r "#{apkfile}"`
+      Jake.run($adb, ["-d", "install", "-r", apkfile])
       unless $? == 0
-        puts "Error building APK file"
+        puts "Error installing APK file"
         exit 1
       end
       puts "Install complete"
@@ -806,7 +806,7 @@ namespace "device" do
       resourcepkg =  $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
-      puts `"#{$apkbuilder}" "#{apkfile}" -u -z "#{resourcepkg}" -f "#{dexfile}"`
+      Jake.run($apkbuilder, [apkfile, "-u", "-z", resourcepkg, "-f", dexfile])
       unless $? == 0
         puts "Error building APK file"
         exit 1
@@ -825,12 +825,12 @@ namespace "device" do
         args << "-validity"
         args << "20000"
         args << "-keystore"
-        args << '"' + $keystore + '"'
+        args << $keystore
         args << "-storepass"
         args << $storepass
         args << "-keypass"
         args << $keypass
-        puts Jake.run('"'+$keytool+'"', args)
+        puts Jake.run($keytool, args)
         unless $? == 0
           puts "Error generating keystore file"
           exit 1
@@ -841,14 +841,14 @@ namespace "device" do
       args = []
       args << "-verbose"
       args << "-keystore"
-      args << '"' + $keystore + '"'
+      args << $keystore
       args << "-storepass"
       args << $storepass
       args << "-signedjar"
-      args << '"' + signedapkfile + '"'
-      args << '"' + apkfile + '"'
+      args << signedapkfile
+      args << apkfile
       args << "rhomobile.keystore"
-      puts Jake.run('"'+$jarsigner+'"', args)
+      puts Jake.run($jarsigner, args)
       unless $? == 0
         puts "Error running jarsigner"
         exit 1

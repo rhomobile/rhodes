@@ -95,45 +95,43 @@ class Jake
   end
   
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
-    argstr = " "
+    argv = []
     currentdir = ""
     retval = ""
-    args.each do |x|
-      x = x.to_s
-      #x.gsub!(/^"/,"")
-      #x.gsub!(/"$/,"")
-      argstr +=  x + " "
-      #argstr += '"' + x + '" '
-    end
+    argv << command
+    argv += args
+    argv.map! { |x| x.to_s }.map! { |x| x =~ /^".*"$/ ? x[1..-2] : x }
 
     if not wd.nil?
       currentdir = pwd()
       chdir wd  
     end
     
+    cmdstr = argv.map { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+
     puts "PWD: " + pwd
-    puts "CMD: " + command
-    puts "ARGS: " + argstr
+    puts "CMD: " + cmdstr
+    $stdout.flush
     
-    command = command + " " + argstr
     if hideerrors
       if RUBY_PLATFORM =~ /(win|w)32$/
         nul = "nul"
       else
         nul = "/dev/null"
       end
-      command = command + " 2>" + nul
+      argv << "2>" + nul
     end
     #retval =  `#{command} #{argstr}`
     #retval = %x[#{command}]
     if system
-      system(command)
+      system(cmdstr)
       retval = ""
     else
-      bb = IO.popen(command) { |bb|
-        b = bb.readlines
-        retval = b.join
-        #puts "exitstatus is #{Process.waitpid(bb.pid)}"
+      argv = cmdstr if RUBY_VERSION =~ /^1\.8/
+      IO.popen(argv) { |f|
+        while line = f.gets
+          puts line
+        end
       }
     end
     if not wd.nil?
@@ -159,7 +157,7 @@ class Jake
     args = Array.new
   
     args << "xf"
-    args << '"' + src.to_s + '"'
+    args << src.to_s
   
     chdir targetdir
     puts run(cmd,args)
@@ -175,7 +173,7 @@ class Jake
 
     args = []
     args << "tf"
-    args << '"' + target +'"'
+    args << target
 
     filelist = []
     run(cmd,args).each { |file| filelist << file if not file =~ /\/$/ }
@@ -193,11 +191,11 @@ class Jake
     
     args = []
     args << "cfm"
-    args << '"' + target +'"'
+    args << target
     args << manifest
     if isfolder
       args << "-C"
-      args << '"' + files +'"'
+      args << files
       args << "."
     else
       args << files
@@ -244,21 +242,20 @@ class Jake
     args = []
     #args << "-classpath"
   #  args << "-jar"
-    #args << '"' + jdehome + "/bin/rapc.jar\""
+    #args << jdehome + "/bin/rapc.jar"
     #args << "net.rim.tools.compiler.Compiler"
     
-    args << "\"-javacompiler=" + javabin + "/javac.exe\""
+    args << "-javacompiler=" + javabin + "/javac.exe"
     args << "-quiet" if quiet
     args << "-nowarn" if nowarn
-    args << '"import=' + imports + '"'
+    args << 'import=' + imports
     args << 'codename=' + output
     args << 'library=' + output if library
     args << output + '.rapc'
     args << files
-    args << "2>&1"
   
     cmd.gsub!(/\//,"\\")
-    outputstring = run( '"' + cmd + '"',args)
+    outputstring = run(cmd, args)
     puts outputstring unless $? == 0
     chdir currentdir
   
@@ -276,12 +273,12 @@ class Jake
     args = []
     args << "-buildfile"
     args << dir + "/build.xml"
-    args << '"-Dsrc.dir=' + get_absolute(srcdir) + '"'
-#    args << '"-Druby.path=' + get_absolute(rubypath) + '"'
-    args << '"-Dexclude.lib=' + excludelib + '"'
-    args << '"-Dexclude.apps=' + excludeapps + '"'
-    args << '"-DcompileERB.path=' + get_absolute(compileERB) + '"'
-    args << '"-Dsrclib.dir=' + get_absolute(srcdir) + '"'
+    args << '-Dsrc.dir=' + get_absolute(srcdir)
+#    args << '-Druby.path=' + get_absolute(rubypath)
+    args << '-Dexclude.lib=' + excludelib
+    args << '-Dexclude.apps=' + excludeapps
+    args << '-DcompileERB.path=' + get_absolute(compileERB)
+    args << '-Dsrclib.dir=' + get_absolute(srcdir)
   
   
     args << target
