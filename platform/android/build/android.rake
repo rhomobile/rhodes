@@ -2,6 +2,7 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 
 USE_STLPORT = true
+USE_TRACES = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
@@ -46,14 +47,12 @@ def set_app_name_android(newname)
   doc.elements["resources/string[@name='app_name']"].text = newname
   File.open(appstrings, "w") { |f| doc.write f }
 
-  lowname = newname.downcase.gsub(/[^A-Za-z_0-9]/, '')
-
   doc = REXML::Document.new(File.new($rhomanifest))
-  doc.root.attributes['package'] = "com.rhomobile.#{lowname}"
+  doc.root.attributes['package'] = $app_package_name
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
   File.open($appmanifest, "w") { |f| doc.write f }
 
-  buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport com.rhomobile.#{lowname}.R;\n")
+  buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport #{$app_package_name}.R;\n")
   File.open($app_android_r,"w") { |f| f.write(buf) }
 end
 
@@ -118,6 +117,7 @@ namespace "config" do
     $libs = File.join($androidpath, "Rhodes", "libs")
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
+    $app_package_name = "com.rhomobile." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
@@ -156,11 +156,11 @@ namespace "config" do
       end
     end
 
-    puts "+++ Looking for platform..."
+    puts "+++ Looking for platform..." if USE_TRACES
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
-        puts "+++ WARNING! No source.properties found in #{platform}"
+        puts "+++ WARNING! No source.properties found in #{platform}" if USE_TRACES
         next
       end
 
@@ -173,7 +173,7 @@ namespace "config" do
         end
       end
 
-      puts "+++ API LEVEL of #{platform}: #{apilevel}"
+      puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
 
       $androidplatform = File.basename(platform) if apilevel == ANDROID_API_LEVEL
     end
@@ -181,7 +181,7 @@ namespace "config" do
     if $androidplatform.nil?
       puts "+++ No required platform found"
     else
-      puts "+++ Platform found: #{$androidplatform}"
+      puts "+++ Platform found: #{$androidplatform}" if USE_TRACES
     end
     $stdout.flush
     
@@ -233,13 +233,13 @@ namespace "config" do
 
     # Detect Google API add-on path
     if $use_geomapping
-      puts "+++ Looking for Google APIs add-on..."
+      puts "+++ Looking for Google APIs add-on..." if USE_TRACES
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         break unless $gapijar.nil?
 
         props = File.join(dir, 'manifest.ini')
         if !File.file? props
-          puts "+++ WARNING: no manifest.ini found in #{dir}"
+          puts "+++ WARNING: no manifest.ini found in #{dir}" if USE_TRACES
           next
         end
 
@@ -252,14 +252,14 @@ namespace "config" do
           end
         end
 
-        puts "+++ API LEVEL of #{dir}: #{apilevel}"
+        puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
         $gapijar = File.join(dir, 'libs', 'maps.jar') if apilevel == ANDROID_API_LEVEL
       end
       if $gapijar.nil?
         puts "+++ No Google APIs add-on found"
       else
-        puts "+++ Google APIs add-on found: #{$gapijar}"
+        puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
       end
     end
 
@@ -795,6 +795,7 @@ namespace "device" do
         puts "Error building APK file"
         exit 1
       end
+      puts "Install complete"
     end
 
     desc "Build production signed for device"
@@ -880,62 +881,132 @@ namespace "emulator" do
   end
 end
 
+
+def is_emulator_running
+  `#{$adb} devices`.split("\n")[1..-1].each do |line|
+    return true if line =~ /^emulator/
+  end
+  return false
+end
+
+def is_device_running
+  `#{$adb} devices`.split("\n")[1..-1].each do |line|
+    return true if line !~ /^emulator/
+  end
+  return false
+end
+
 namespace "run" do
+  namespace "android" do
+    task :emulator => "device:android:debug" do
+      apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
+      puts `"#{$adb}" start-server`
+
+      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
+      system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+
+      if $use_geomapping
+        avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
+        avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
+        unless avd_using_gapi
+          puts "Can not use specified AVD (#{$avdname}) because of incompatibility with Google APIs. Delete it and try again."
+          exit 1
+        end
+      end
+
+      running = is_emulator_running
+      Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") } unless running
+
+      puts "Waiting for emulator to get started" unless running
+      puts "Emulator is up and running" if running
+      $stdout.flush
+      puts `"#{$adb}" -e wait-for-device`
+
+      puts "Loading package into emulator"
+      theoutput = `"#{$adb}" -e install -r "#{apkfile}"`
+      count = 0
+      done = false
+      while count < 15
+        theoutput = `"#{$adb}" -e install -r "#{apkfile}"`
+        puts theoutput.to_s
+        $stdout.flush
+
+        if theoutput.to_s.match(/Success/)
+          done = true
+          break
+        end
+
+        if theoutput.to_s.match(/Failure/)
+          done = false
+          break
+        end
+
+        puts "Failed to load (possibly because emulator not done launching)- retrying"
+        $stdout.flush
+        sleep 5
+        count += 1
+      end
+      puts "Loading complete, you may now run the application" if done
+    end
+
+    desc "build and install on device"
+    task :device => "device:android:install" do
+    end
+  end
+
   desc "build and launch emulator"
-  task :android => "device:android:debug" do
-    apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
-    puts `"#{$adb}" start-server`
+  task :android => "run:android:emulator" do
+  end
+end
 
-    createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
-    system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+namespace "uninstall" do
+  def do_uninstall(flag)
+    args = []
+    args << flag
+    args << "uninstall"
+    args << $app_package_name
+    Jake.run($adb, args)
+    unless $? == 0
+      puts "Error uninstalling application"
+      exit 1
+    end
 
-    if $use_geomapping
-      avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
-      avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
-      unless avd_using_gapi
-        puts "Can not use specified AVD (#{$avdname}) because of incompatibility with Google APIs. Delete it and try again."
+    args = []
+    args << flag
+    args << "shell"
+    args << "rm"
+    args << "-r"
+    args << "/sdcard/rhomobile/#{$app_package_name}"
+    Jake.run($adb, args)
+    unless $? == 0
+      puts "Error removing files from SD card"
+      exit 1
+    end
+
+    puts "Application uninstalled successfully"
+  end
+
+  namespace "android" do
+    task :emulator => "config:android" do
+      unless is_emulator_running
+        puts "WARNING!!! Emulator is not up and running"
         exit 1
       end
+      do_uninstall('-e')
     end
 
-    running = false
-    `adb devices`.split("\n").each do |line|
-      next unless line =~ /^emulator/
-      running = true
-      break
-    end
-    Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") } unless running
-
-    puts "Waiting for emulator to get started" unless running
-    puts "Emulator is up and running" if running
-    $stdout.flush
-    puts `"#{$adb}" -e wait-for-device`
-
-    puts "Loading package into emulator"
-    theoutput = `"#{$adb}" -e install -r "#{apkfile}"`
-    count = 0
-    done = false
-    while count < 15
-      theoutput = `"#{$adb}" -e install -r "#{apkfile}"`
-      puts theoutput.to_s
-      $stdout.flush
-
-      if theoutput.to_s.match(/Success/)
-        done = true
-        break
+    desc "uninstall from device"
+    task :device => "config:android" do
+      unless is_device_running
+        puts "WARNING!!! Device is not connected"
+        exit 1
       end
-
-      if theoutput.to_s.match(/Failure/)
-        done = false
-        break
-      end
-
-      puts "Failed to load (possibly because emulator not done launching)- retrying"
-      $stdout.flush
-      sleep 5
-      count += 1
+      do_uninstall('-d')
     end
-    puts "Loading complete, you may now run the application" if done
+  end
+
+  desc "uninstall from emulator"
+  task :android => "uninstall:android:emulator" do
   end
 end
 
