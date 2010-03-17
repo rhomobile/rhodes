@@ -11,7 +11,7 @@ class SettingsController < Rho::RhoController
 
   def login
     @msg = @params['msg']
-    render :action => :login
+    render :action => :login, :back => '/app'
   end
 
   def login_callback

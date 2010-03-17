@@ -7,10 +7,12 @@ public class RhodesApp
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApp");
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
 	static RhodesApp m_pInstance;
 	private String m_strRhoRootPath;
     Vector/*<unsigned long>*/ m_arCallbackObjects = new Vector();
+    private SplashScreen m_oSplashScreen = new SplashScreen();
     
     public static RhodesApp Create(String strRootPath)
     {
@@ -27,10 +29,13 @@ public class RhodesApp
     }
     
     public static RhodesApp getInstance(){ return m_pInstance; }
+    public SplashScreen getSplashScreen(){return m_oSplashScreen;}
 	
     RhodesApp(String strRootPath)
     {
         m_strRhoRootPath = strRootPath;
+        
+        getSplashScreen().init();
     }
 
     

@@ -94,9 +94,13 @@ describe "Rhom::RhomObject" do
   
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
+    Account.changed?.should == false
     account = Account.new(vars)
     obj = account.object
     account.save
+    Account.changed?.should == true
+    account.changed?.should == true
+    
     acct = Account.find(obj)
     acct.name.should == 'foobarthree'
     acct.industry.should == 'entertainment'
@@ -407,6 +411,12 @@ describe "Rhom::RhomObject" do
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
+  end
+
+  it "should find with SQL multiple conditions" do
+    @acct = Account.find(:first, :conditions => [ "name = ? AND industry = ?", "'Mobio India'", "'Technology'" ])
+    @acct.name.should == "Mobio India"
+    @acct.industry.should == "Technology"
   end
 
   it "should find with advanced conditions" do

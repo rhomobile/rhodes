@@ -33,6 +33,7 @@ public class SimpleMainView implements MainView {
 	
 	public SimpleMainView() {
 		webView = RhodesInstance.getInstance().createWebView();
+		webView.setId(Rhodes.RHO_MAIN_VIEW);
 	}
 	
 	public void back(int index) {

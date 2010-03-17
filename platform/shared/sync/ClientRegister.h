@@ -26,7 +26,7 @@ class CClientRegister : public common::CRhoThread
 	String                                 m_strDevicePin;
 public:
     static CClientRegister* Create(common::IRhoClassFactory* factory,const char* device_pin);
-    static void Destroy();
+    //static void Destroy();
 	static CClientRegister* getInstance() { return m_pInstance; }
 	
 	virtual void run();	

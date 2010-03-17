@@ -26,6 +26,7 @@ import net.rim.device.api.system.Application;
 import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Characters;
+import net.rim.device.api.system.Display;
 import net.rim.device.api.system.EncodedImage;
 import net.rim.device.api.system.KeyListener;
 import net.rim.device.api.system.SystemListener;
@@ -43,6 +44,7 @@ import net.rim.device.api.ui.container.VerticalFieldManager;
 import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
+import net.rim.device.api.math.Fixed32;
 
 import javax.microedition.media.*;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
@@ -50,6 +52,7 @@ import javax.microedition.media.*;
 import com.rho.*;
 //import com.rho.db.DBAdapter;
 import com.rho.rubyext.GeoLocation;
+import com.rho.net.NetResponse;
 import com.rho.net.RhoConnection;
 import com.rho.net.URI;
 import com.rho.sync.SyncThread;
@@ -57,6 +60,10 @@ import com.rho.sync.ISyncStatusListener;
 import com.rho.Jsr75File;
 import com.rho.RhodesApp;
 import com.xruby.runtime.lang.RubyProgram;
+import com.rho.net.NetResponse;
+
+import net.rim.device.api.xml.parsers.SAXParser;
+
 /**
  *
  */
@@ -228,13 +235,41 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	postUrl(url, body, headers, null);
     }
     
-    public void postUrl(String url, String body, HttpHeaders headers, Callback callback){
+    public void postUrl(String url, String body, HttpHeaders headers, Runnable callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), headers, body.getBytes(), null, callback);
         thread.setInternalRequest(true);
         thread.start();                       
     }
 
+	public static class NetCallback
+	{
+		public NetResponse m_response;
+		
+		public void waitForResponse()
+		{
+			synchronized(this)
+			{
+				try{ this.wait(); }catch(InterruptedException exc){}
+			}
+		}
+		
+		public void setResponse(NetResponse resp)
+		{
+			synchronized(this)
+			{
+				m_response = resp;
+				this.notify();
+			}
+		}
+	}
+    public void postUrlWithCallback(String url, String body, HttpHeaders headers, NetCallback netCallback){
+        PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+        		canonicalizeURL(url), headers, body.getBytes(), null);
+        thread.setNetCallback(netCallback);
+        thread.start();                       
+    }
+    
     void saveCurrentLocation(String url) {
     	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
 			RhoConf.getInstance().setString("LastVisitedPage",url);
@@ -492,6 +527,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     private static RhodesApplication _instance;
     
     public static RhodesApplication getInstance(){ return _instance; }
+    private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
+    
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -604,8 +641,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		    	
 		    	if ( !RhoRuby.rho_ruby_isValid() )
 		    	{
-		    		LOG.ERROR("Cannot initialize Ruby framework. Application will exit.");
-		        	Dialog.alert("Cannot initialize Ruby framework. Application will exit. Log will send to log server.");
+		    		LOG.ERROR("Cannot initialize Rho framework. Application will exit.");
+		        	Dialog.alert("Cannot initialize Rho framework. Application will exit. Log will send to log server.");
 		        	
 		        	RhoConf.sendLog();
 		        	
@@ -628,26 +665,32 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		super.activate();
 	}
 
-    void initRuby()
+    void initRuby()throws Exception
     {
-        RhoRuby.RhoRubyStart("");
-        SyncThread sync = null;
-        try{
-        	sync = SyncThread.Create( new RhoClassFactory() );
-        	
-        }catch(Exception exc){
-        	LOG.ERROR("Create sync failed.", exc);
-        }
-        if (sync != null) {
-        	sync.setStatusListener(this);
-        }
-        
-        RhoRuby.RhoRubyInitApp();
-        
-        m_bRubyInit = true;
-		synchronized (m_eventRubyInit) {
-			m_eventRubyInit.notifyAll();
-		}
+    	try
+    	{
+	        RhoRuby.RhoRubyStart("");
+	        
+	        SyncThread sync = null;
+	        
+	        try{
+	        	sync = SyncThread.Create( new RhoClassFactory() );
+	        	
+	        }catch(Exception exc){
+	        	LOG.ERROR("Create sync failed.", exc);
+	        }
+	        if (sync != null) {
+	        	sync.setStatusListener(this);
+	        }
+	        
+	        RhoRuby.RhoRubyInitApp();
+    	}finally
+    	{
+	        m_bRubyInit = true;
+			synchronized (m_eventRubyInit) {
+				m_eventRubyInit.notifyAll();
+			}
+    	}
     }
 
 	public void deactivate() {
@@ -994,11 +1037,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     public void showSplashScreen()
     {
+    	SplashScreen splash = RHODESAPP().getSplashScreen();
+    	
     	InputStream is = null;
     	try {
     		RubyProgram obj = new xruby.version.main();
 	    	String pngname = "/apps/app/loading.png";
-    		//String pngname = "/resources/icon.png";
 	    	is = obj.getClass().getResourceAsStream(pngname);
 	    	if ( is != null )
 	    	{
@@ -1011,8 +1055,31 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		    		offset += n;
 		    	}
 		    	EncodedImage img = EncodedImage.createEncodedImage(data, 0, size);
-		    	Bitmap bitmap = img.getBitmap();
-		    	BitmapField imageField = new BitmapField(bitmap, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
+		    	long nFlags = 0;
+		    	if (splash.isFlag(SplashScreen.HCENTER) )
+		    		nFlags |= Field.FIELD_HCENTER;
+		    	if (splash.isFlag(SplashScreen.VCENTER) )
+		    		nFlags |= Field.FIELD_VCENTER;
+
+		    	int scaleX = 1, scaleY = 1;
+				int currentWidthFixed32 = Fixed32.toFP(img.getWidth());
+				int currentHeightFixed32 = Fixed32.toFP(img.getHeight());
+				int screenWidthFixed32 = Fixed32.toFP(Display.getWidth());
+				int screenHeightFixed32 = Fixed32.toFP(Display.getHeight());
+				
+		    	if (splash.isFlag(SplashScreen.VZOOM) )
+		    		scaleY = Fixed32.div(currentHeightFixed32, screenHeightFixed32);
+		    	if (splash.isFlag(SplashScreen.HZOOM) )
+		    		scaleX = Fixed32.div(currentWidthFixed32, screenWidthFixed32);
+		    	
+		    	EncodedImage img2 = img;
+		    	if ( scaleX != 1 || scaleY != 1)
+		    		img2 = img.scaleImage32(scaleX, scaleY);
+		    	Bitmap bitmap = img2.getBitmap();
+		    	
+		    	splash.start();
+		    	BitmapField imageField = new BitmapField(bitmap, nFlags);
+		    	_mainScreen.deleteAll();
 		    	_mainScreen.add(imageField);
 	    	}
     	}
@@ -1227,6 +1294,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
                 
                 Field field = browserContent.getDisplayableContent();
                 if (field != null) {
+                	
+    				RHODESAPP().getSplashScreen().hide();
+    				
                     synchronized (Application.getEventLock()) {
                         _mainScreen.deleteAll();
                         _mainScreen.add(field);
@@ -1437,7 +1507,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	        } else 
 	        {
-	    		if ( URI.isLocalHost(url) )
+	    		if ( URI.isLocalHost(url) || URI.isLocalData(url))
 	    		{
 	                HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
 	                return connection;
@@ -1486,16 +1556,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         		
 	        		_application.initRuby();
 	        		
-	    	    	_pushListeningThread = new PushListeningThread();
-	    	    	_pushListeningThread.start();
     	    	}catch(Exception e)
     	    	{
-    	    		LOG.ERROR("HttpServerThread failed.", e);
+    	    		LOG.ERROR("initRuby failed.", e);
+    	    		return;
     	    	}catch(Throwable exc)
     	    	{
-    	    		LOG.ERROR("HttpServerThread crashed.", exc);
+    	    		LOG.ERROR("initRuby crashed.", exc);
+    	    		return;
     	    	}
-        		
+
+    	    	_pushListeningThread = new PushListeningThread();
+    	    	_pushListeningThread.start();
+    	    	
         		while( !m_bExit )
         		{
 	        		while(!m_stackCommands.isEmpty())
@@ -1538,7 +1611,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	private static HttpServerThread m_oFetchThread;
     	
         private static RhodesApplication _application;
-        private static Callback _callback;
+        private static Runnable _callback;
 
         private Event _event;
 
@@ -1549,6 +1622,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         private String _url;
         private boolean m_bInternalRequest = false;
         private boolean m_bActivateApp = false;
+        NetCallback m_netCallback;
         
         public void setInternalRequest(boolean b)
         {
@@ -1566,7 +1640,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      	Event event, Callback callback) 
+                                      	Event event, Runnable callback) 
         {
             _url = url;
             _requestHeaders = requestHeaders;
@@ -1576,6 +1650,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
             	_callback = callback;
         }
 
+        public void setNetCallback(NetCallback netCallback) 
+		{
+			m_netCallback = netCallback;
+			m_bInternalRequest = true;
+		}
+        
         public PrimaryResourceFetchThread(boolean bActivateApp) {
         	m_bActivateApp = bActivateApp; 
         }
@@ -1615,7 +1695,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		if ( m_bInternalRequest )
     		{
     			try{
-    				connection.getResponseCode();
+    				
+    				int nRespCode = connection.getResponseCode();
+    				
+    				if ( m_netCallback != null )
+    				{
+    					InputStream is = connection.openInputStream();
+    					byte[] buffer = new byte[is.available()];
+    					is.read(buffer);
+    					
+    					String strRespBody = new String(buffer);
+    					m_netCallback.setResponse( new NetResponse(strRespBody, nRespCode) );
+    				}
     			}catch(IOException exc)
     			{
     				LOG.ERROR("Callback failed: " + _url, exc);

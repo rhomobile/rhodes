@@ -114,10 +114,12 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
 	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
 	int width = RHOCONF().getInt("client_area_width");
-	if (width <= 0) width = 320;
+    if (width <= 0) 
+        width = rcMainWindow.right;
 	rcMainWindow.right = rcMainWindow.left+width;
 	int height = RHOCONF().getInt("client_area_height");
-	if (height <= 0) height = 470;
+	if (height <= 0) 
+        height = rcMainWindow.bottom;
 	rcMainWindow.bottom = rcMainWindow.top+height;
 
 	m_browser.Create(m_hWnd,
@@ -239,6 +241,9 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
 	PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(&ps);
+
+  	CSplashScreen& splash = RHODESAPP().getSplashScreen();
+    splash.start();
 #ifdef _WIN32_WCE	
     StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
     HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
@@ -250,8 +255,17 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	HDC hdcMem = CreateCompatibleDC(hDC);
 	SelectObject(hdcMem, hbitmap);
+    int nLeft =0, nTop=0, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight;
+    if (splash.isFlag(CSplashScreen::HCENTER) )
+		nLeft = (GetSystemMetrics(SM_CXSCREEN)-nWidth)/2;
+	if (splash.isFlag(CSplashScreen::VCENTER) )
+		nTop = (GetSystemMetrics(SM_CYSCREEN)-nHeight)/2;
+	if (splash.isFlag(CSplashScreen::VZOOM) )
+		nHeight = GetSystemMetrics(SM_CYSCREEN);
+	if (splash.isFlag(CSplashScreen::HZOOM) )
+		nWidth = GetSystemMetrics(SM_CXSCREEN);
 
-	StretchBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+	StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
 		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
 

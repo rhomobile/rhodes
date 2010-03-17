@@ -62,6 +62,7 @@ ABLD.BAT
 *.hrh
 nbproject
 rholog.txt
+RhoLog.txt
 LogFile.txt
 
 platform/android/.metadata/*

@@ -66,6 +66,7 @@
 @property (assign) SEL onActiveTab;
 @property (assign) SEL onShowLog;
 
+- (void) create;
 - (void) start;
 //TODO - implement pause and stop operations and graceful termination of the thread...
 - (void) stop;

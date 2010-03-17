@@ -168,99 +168,7 @@ public class DBAdapter extends RubyBasic {
     private String getSqlScript()
     {
     	return RhoConf.getInstance().loadFileFromJar("apps/db/syncdb.schema");
-/*		return "CREATE TABLE client_info ("+
-		"client_id VARCHAR(255) PRIMARY KEY,"+
-		"token VARCHAR(255) default NULL,"+
-		"token_sent int default 0,"+
-		"reset int default 0,"+
-		"port VARCHAR(10) default NULL,"+
-		"last_sync_success VARCHAR(100) default NULL);"+
-		"CREATE TABLE object_values ("+
-		" id INTEGER PRIMARY KEY,"+
-		" source_id int default NULL,"+
-		" attrib varchar(255) default NULL,"+
-		" object varchar(255) default NULL,"+
-		" value varchar default NULL,"+
-		" attrib_type varchar(255) default NULL);"+
-		"CREATE TABLE changed_values ("+
-		" id INTEGER default NULL,"+
-		" source_id int default NULL,"+
-		" attrib varchar(255) default NULL,"+
-		" object varchar(255) default NULL,"+
-		" value varchar default NULL,"+
-		" attrib_type varchar(255) default NULL," +
-		" update_type varchar(255) default NULL, " +
-		" sent int default 0," +
-		" main_id INTEGER default 0 );"+
-		"CREATE TABLE sources ("+
-		//"id INTEGER PRIMARY KEY,"+
-        "source_url VARCHAR(255) PRIMARY KEY," +
-		"source_id int,"+
-		"name varchar(255) default NULL,"+
-		"token varchar(30) default NULL,"+
-        "priority INTEGER," +
-		"session VARCHAR(255) default NULL,"+
-		"last_updated int default 0,"+
-		"last_inserted_size int default 0,"+
-		"last_deleted_size int default 0,"+
-		"last_sync_duration int default 0,"+
-		"last_sync_success int default 0," +
-		"backend_refresh_time int default 0," +
-		"source_attribs varchar default NULL);"+
-		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
-		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
-		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
-		"CREATE INDEX by_src_id ON object_values (source_id);"+
-		"CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);"+
-		"CREATE INDEX by_src_value ON object_values (attrib, source_id, value);";//+
-		//"CREATE INDEX by_id ON object_values (id);"; //for delete operation
-		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
-		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
-		//"CREATE INDEX by_type ON object_values (attrib_type)";
-		 */
     }
-
-    /*private String getSqlScript(){
-    	//TODO: read script from jar
-		return "CREATE TABLE client_info ("+
-		"client_id VARCHAR(255) PRIMARY KEY,"+
-		"token VARCHAR(255) default NULL,"+
-		"token_sent int default 0,"+
-		"reset int default 0,"+
-		"port VARCHAR(10) default NULL,"+
-		"last_sync_success VARCHAR(100) default NULL);"+
-		"CREATE TABLE object_values ("+
-		" id INTEGER PRIMARY KEY,"+
-		" source_id int default NULL,"+
-		" attrib varchar(255) default NULL,"+
-		" object varchar(255) default NULL,"+
-		" value varchar default NULL,"+
-		" attrib_type varchar(32) default NULL);"+
-		"CREATE TABLE changed_values ("+
-		" id INTEGER PRIMARY KEY,"+
-		" update_type varchar(255) default NULL);"+
-		"CREATE TABLE sources ("+
-		//"id INTEGER PRIMARY KEY,"+
-		"source_id int PRIMARY KEY,"+
-		"name varchar(255) default NULL,"+
-		"token varchar(32) default NULL,"+
-		"source_url VARCHAR(255) default NULL,"+
-		"session VARCHAR(255) default NULL,"+
-		"last_updated int default 0,"+
-		"last_inserted_size int default 0,"+
-		"last_deleted_size int default 0,"+
-		"last_sync_duration int default 0,"+
-		"last_sync_success int default 0," +
-		"source_attribs varchar default NULL);"+
-		//"CREATE INDEX by_attrib_obj_utype on object_values (attrib,object,update_type);"+
-		//"CREATE INDEX by_attrib_utype on object_values (attrib,update_type);"+
-		//"CREATE INDEX by_src_type ON object_values (source_id, attrib_type, object);"+
-		"CREATE INDEX by_src_update ON object_values (source_id, update_type);"+
-		"CREATE INDEX by_id ON object_values (id);"; //for delete operation
-		//"CREATE INDEX by_src_object ON object_values (source_id, object);"+
-		//"CREATE INDEX by_src_up_value ON object_values (source_id, update_type, value);";
-		//"CREATE INDEX by_type ON object_values (attrib_type)";
-    }*/
     
     public void startTransaction()throws DBException
     {
@@ -295,40 +203,66 @@ public class DBAdapter extends RubyBasic {
     	}
     };
     
+    /*private void testError()throws Exception
+    {
+    	throw new net.rim.device.api.io.file.FileIOException(net.rim.device.api.io.file.FileIOException.FILESYSTEM_FULL);
+    }*/
     DBVersion readDBVersion()throws Exception
 	{
     	String strFullVer = "";
+    	IRAFile file = null;
     	try {
-	    	IRAFile file = RhoClassFactory.createRAFile();
-	    	file.open(m_strDBVerPath);
+	    	file = RhoClassFactory.createRAFile();
+	    	try{
+	    		file.open(m_strDBVerPath);
+	    	}catch(j2me.io.FileNotFoundException exc)
+	    	{
+	    		//file not exist
+	    		return new DBVersion();
+	    	}
+	    	
 	        byte buf[] = new byte[20];
+//	        testError();
 	        int len = file.read(buf, 0, buf.length);
-			file.close();
 			if ( len > 0 )
 				strFullVer = new String(buf,0,len);
+			
+			if ( strFullVer.length() == 0 )
+				return new DBVersion();
+			
+			int nSep = strFullVer.indexOf(';');
+			if ( nSep == -1 )
+				return new DBVersion(strFullVer, "");
+			
+			return new DBVersion(strFullVer.substring(0,nSep), strFullVer.substring(nSep+1) );
     	}
     	catch (Exception e) {
-    		LOG.TRACE("readDBVersion: Exception: " + e.getMessage());
+    		LOG.ERROR("readDBVersion failed.", e);
+    		throw e;
+    	}finally
+    	{
+    		if (file!=null)
+    			try{ file.close(); }catch(Exception exc){}
     	}
-    	
-		if ( strFullVer.length() == 0 )
-			return new DBVersion();
-		
-		int nSep = strFullVer.indexOf(';');
-		if ( nSep == -1 )
-			return new DBVersion(strFullVer, "");
-		
-		return new DBVersion(strFullVer.substring(0,nSep), strFullVer.substring(nSep+1) );
 	}
 	
 	void writeDBVersion(DBVersion ver)throws Exception
 	{
-		IRAFile file = RhoClassFactory.createRAFile();
-		file.open(m_strDBVerPath, "rw");
-        String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
-        byte[] buf = strFullVer.getBytes();
-        file.write(buf, 0, buf.length);
-        file.close();
+		IRAFile file = null;
+		try{
+			file = RhoClassFactory.createRAFile();
+			file.open(m_strDBVerPath, "rw");
+	        String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
+	        byte[] buf = strFullVer.getBytes();
+	        file.write(buf, 0, buf.length);
+		}catch (Exception e) {
+	    	LOG.ERROR("writeDBVersion failed.", e);
+	    	throw e;
+	    }finally
+	    {
+	    	if (file!=null)
+	    		try{ file.close(); }catch(Exception exc){}
+	    }
 	}
     
 	boolean migrateDB(DBVersion dbVer, String strRhoDBVer, String strAppDBVer )
@@ -337,7 +271,16 @@ public class DBAdapter extends RubyBasic {
 	    if ( dbVer != null && strRhoDBVer != null &&
 	    	 (dbVer.m_strRhoVer.startsWith("1.4")||dbVer.m_strRhoVer.startsWith("1.4")) && (strRhoDBVer.startsWith("1.5")||strRhoDBVer.startsWith("1.4")) )
 		{
-            LOG.INFO( "No migration required from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (strRhoDBVer !=null ? strRhoDBVer:"") );		    
+            LOG.INFO( "No migration required from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (strRhoDBVer !=null ? strRhoDBVer:"") );
+            
+            try{
+	        	writeDBVersion( new DBVersion(strRhoDBVer, strAppDBVer) );
+			}catch(Exception e)
+			{
+	    		LOG.ERROR("migrateDB failed.", e);
+			}
+			
+            
 		    return true;
 		}
 		

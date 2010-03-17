@@ -102,48 +102,40 @@ public class RhoRuby {
 		return res.toStr();
 	}
 	
-	public static void RhoRubyStart(String szAppPath){
+	public static void RhoRubyStart(String szAppPath)throws Exception
+	{
 		String[] args = new String[0];
 
 		IRhoRubyHelper helper = null;
-        try{
+		RubyRuntime.init(args);
 
-			RubyRuntime.init(args);
-	
-	        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
-	        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
-	        AsyncHttp.initMethods(RubyRuntime.AsyncHttpModule);
-	        RJSONTokener.initMethods(RubyRuntime.JSONClass);
-	        
-	        helper = RhoClassFactory.createRhoRubyHelper();
-	        helper.initRubyExtensions();
-	        
-    		//TODO: implement recursive dir creation
-    		RhoClassFactory.createFile().getDirPath("apps");
-    		RhoClassFactory.createFile().getDirPath("apps/public");
-    		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
-	        
-        }catch(Exception exc){
-        	LOG.ERROR("Cannot init ruby", exc);
-        }
+        DBAdapter.initMethods(RubyRuntime.DatabaseClass);
+        SyncThread.initMethods(RubyRuntime.SyncEngineClass);
+        AsyncHttp.initMethods(RubyRuntime.AsyncHttpModule);
+        RJSONTokener.initMethods(RubyRuntime.JSONClass);
         
-        try{
-        	//Class mainRuby = Class.forName("xruby.ServeME.main");
-        	if ( helper != null )
-        	{
-        		DBAdapter.getInstance().startTransaction();
-	    		mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
-	    		receiver = mainObj.invoke();
-        		DBAdapter.getInstance().commit();
-        		
-        		RubyModule modRhom = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rhom");
-        	}
-        	
-        /*}catch(ClassNotFoundException exc){
-        	LOG.ERROR("Cannot create ServeME object", exc);*/
-        }catch(Exception exc){
-        	LOG.ERROR("Cannot create ServeME object", exc);
-        }
+        helper = RhoClassFactory.createRhoRubyHelper();
+        helper.initRubyExtensions();
+        
+		//TODO: implement recursive dir creation
+		RhoClassFactory.createFile().getDirPath("apps");
+		RhoClassFactory.createFile().getDirPath("apps/public");
+		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
+		
+    	//Class mainRuby = Class.forName("xruby.ServeME.main");
+		DBAdapter.getInstance().startTransaction();
+		try{
+			mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
+			receiver = mainObj.invoke();
+			
+			if ( !rho_ruby_isValid() )
+				throw new RuntimeException("Initialize Rho framework failed.");
+		}finally
+		{
+			DBAdapter.getInstance().commit();
+		}
+		
+//		RubyModule modRhom = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rhom");
 	}
 	
 	public static void RhoRubyInitApp(){
@@ -155,7 +147,7 @@ public class RhoRuby {
 	}
 
 	public static boolean rho_ruby_isValid(){
-		return receiver!= null;
+		return receiver!= null && receiver != RubyConstant.QNIL;
 	}
 	
 	public static void RhoRubyStop(){

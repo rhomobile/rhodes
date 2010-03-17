@@ -75,20 +75,21 @@ public class TabbedMainView implements MainView {
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Vector<Object> params) {
 		Rhodes r = RhodesInstance.getInstance();
-		Context ctx = r.getApplicationContext();
 		
 		int size = params.size();
 		
-		host = new TabHost(ctx);
+		host = new TabHost(r);
+		host.setId(Rhodes.RHO_MAIN_VIEW);
+		
 		tabs = new Vector<TabData>(size);
 		
-		TabWidget tabWidget = new TabWidget(ctx);
+		TabWidget tabWidget = new TabWidget(r);
 		tabWidget.setId(android.R.id.tabs);
 		TabHost.LayoutParams lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT, Gravity.TOP);
 		host.addView(tabWidget, lpt);
 		
-		FrameLayout frame = new FrameLayout(ctx);
+		FrameLayout frame = new FrameLayout(r);
 		frame.setId(android.R.id.tabcontent);
 		FrameLayout.LayoutParams lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT, Gravity.BOTTOM);

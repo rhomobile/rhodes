@@ -36,6 +36,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\IRhoRubyHelper.java
 ..\..\shared\rubyJVM\src\com\rho\Mutex.java
 ..\..\shared\rubyJVM\src\com\rho\RhodesApp.java
+..\..\shared\rubyJVM\src\com\rho\SplashScreen.java
 ..\..\shared\rubyJVM\src\com\rho\net\IHttpConnection.java
 ..\..\shared\rubyJVM\src\com\rho\net\INetworkAccess.java
 ..\..\shared\rubyJVM\src\com\rho\net\NetRequest.java
