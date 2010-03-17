@@ -324,28 +324,24 @@ public class Rhodes extends Activity {
 		}
 	};
 	
-	public static void performOnUiThread(Runnable r) {
-		performOnUiThread(r, true);
-	}
-	
 	public static void performOnUiThread(Runnable r, boolean wait) {
 		try {
-			long thrId = Thread.currentThread().getId();
 			Rhodes rhodes = RhodesInstance.getInstance();
-			if (rhodes.getUiThreadId() == thrId) {
-				// We are already in UI thread
-				r.run();
+			if (!wait) {
+				rhodes.uiHandler.post(r);
 			}
 			else {
-				if (wait) {
-					// Post request to UI thread and wait while it would be done
+				long thrId = Thread.currentThread().getId();
+				if (rhodes.getUiThreadId() == thrId) {
+					// We are already in UI thread
+					r.run();
+				}
+				else {
+					// Post request to UI thread and wait when it would be done
 					synchronized (r) {
 						rhodes.uiHandler.post(new PerformOnUiThread(r));
 						r.wait();
 					}
-				}
-				else {
-					rhodes.uiHandler.post(r);
 				}
 			}
 		}
@@ -563,7 +559,7 @@ public class Rhodes extends Activity {
 				logViewDialog.setCancelable(true);
 				logViewDialog.show();
 			}
-		});
+		}, false);
 	}
 	
 	public static void showLogOptions() {
@@ -574,7 +570,7 @@ public class Rhodes extends Activity {
 				logOptionsDialog.setCancelable(true);
 				logOptionsDialog.show();
 			}
-		});
+		}, false);
 	}
 	
 	// Called from native code
