@@ -1,5 +1,9 @@
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "sync/ClientRegister.h"
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoSystem"
 
 extern "C"
 {
@@ -31,6 +35,10 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (!szPropName || !*szPropName) 
         return rho_ruby_get_NIL();
     
+    VALUE res = rho_sysimpl_get_property(szPropName);
+    if (res)
+        return res;
+
 	if (strcasecmp("platform",szPropName) == 0) 
         return rho_ruby_create_string(getPlatformProp());
 
@@ -46,7 +54,18 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (strcasecmp("screen_height",szPropName) == 0) 
         return rho_ruby_create_integer(rho_sys_get_screen_height());
 
-    return rho_sysimpl_get_property(szPropName);
+	if (strcasecmp("device_id",szPropName) == 0) 
+    {
+        rho::String strDeviceID = "";
+        if ( rho::sync::CClientRegister::getInstance() )
+            strDeviceID = rho::sync::CClientRegister::getInstance()->getDevicePin();
+
+        return rho_ruby_create_string(strDeviceID.c_str());
+    }
+
+    RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
+
+    return rho_ruby_get_NIL();
 }
 
 }

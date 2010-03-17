@@ -87,7 +87,10 @@ public class Utilities {
 
 			}
 
-		//} catch (IOException e1) {
+		} catch (IOException e) {
+			if ( conn != null )
+				try{ conn.close(); }catch(Exception e1){}
+			throw e;
 		} finally {
 			if (out != null) {
 				try {

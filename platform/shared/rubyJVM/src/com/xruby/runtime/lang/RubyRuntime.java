@@ -102,6 +102,7 @@ public class RubyRuntime {
     public static RubyClass SSLSocketClass;
     public static RubyClass TopSelfClass;
     public static RubyClass MapViewClass;
+    public static RubyClass XMLParserClass;
     //RHO
 
     public static final RubyValue TOP_LEVEL_SELF_VALUE;
@@ -274,7 +275,12 @@ public class RubyRuntime {
         TCPSocketClass = RubyAPI.defineClass("TCPSocket", RubyRuntime.ObjectClass);
         SSLSocketClass = RubyAPI.defineClass("SSLSocket", RubyRuntime.ObjectClass);
         MapViewClass = RubyAPI.defineClass("MapView", RubyRuntime.ObjectClass);
-        RubyMutex.initMethods(MutexClass);        
+        RubyMutex.initMethods(MutexClass);
+
+        RubyModule rexmlModule = RubyAPI.defineModule("REXML"); 
+        RubyModule parsersModule = rexmlModule.defineModule("Parsers");
+        XMLParserClass = parsersModule.defineClass("BaseParser", RubyRuntime.ObjectClass);
+                
 //      RhoPhonebook.initMethods(PhonebookClass);
         
 //

@@ -2,11 +2,7 @@
 /* $Id: md5init.c 19020 2008-09-01 07:48:53Z nobu $ */
 
 #include "digest.h"
-#if defined(HAVE_OPENSSL_MD5_H)
-#include "md5ossl.h"
-#else
 #include "md5.h"
-#endif
 
 static const rb_digest_metadata_t md5 = {
     RUBY_DIGEST_API_VERSION,

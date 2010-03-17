@@ -79,7 +79,7 @@ jobject RhoValueConverter::createObject(rho_param *p)
     if (!init || !p) return NULL;
     switch (p->type) {
     case RHO_PARAM_STRING:
-        return env->NewStringUTF(p->v.string);
+        return rho_cast<jstring>(p->v.string);
         break;
     case RHO_PARAM_ARRAY:
         {
@@ -100,7 +100,7 @@ jobject RhoValueConverter::createObject(rho_param *p)
             if (!v) return NULL;
 
             for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
-                jstring key = env->NewStringUTF(p->v.hash->name[i]);
+                jstring key = rho_cast<jstring>(p->v.hash->name[i]);
                 jobject value = createObject(p->v.hash->value[i]);
                 env->CallObjectMethod(v, midPut, key, value);
                 env->DeleteLocalRef(key);
@@ -241,11 +241,9 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
         jstring objValue = (jstring)env->CallObjectMethod(objMap, midGet, objKey);
         if (!objValue) return Qnil;
 
-        const char *strKey = env->GetStringUTFChars(objKey, JNI_FALSE);
-        const char *strValue = env->GetStringUTFChars(objValue, JNI_FALSE);
-        addStrToHash(retval, strKey, strValue);
-        env->ReleaseStringUTFChars(objKey, strKey);
-        env->ReleaseStringUTFChars(objValue, strValue);
+        std::string const &strKey = rho_cast<std::string>(objKey);
+        std::string const &strValue = rho_cast<std::string>(objValue);
+        addStrToHash(retval, strKey.c_str(), strValue.c_str());
 
         env->DeleteLocalRef(objKey);
         env->DeleteLocalRef(objValue);
@@ -253,17 +251,29 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     return retval;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_setRootPath
-  (JNIEnv *env, jobject, jstring path)
+namespace details
 {
-    const char *s = env->GetStringUTFChars(path, JNI_FALSE);
-    g_rootPath = s;
-    env->ReleaseStringUTFChars(path, s);
+
+std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstring s)
+{
+    const char *ts = env->GetStringUTFChars(s, JNI_FALSE);
+    std::string ret(ts);
+    env->ReleaseStringUTFChars(s, ts);
+    return ret;
 }
+
+jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
+{
+    return env->NewStringUTF(s);
+}
+
+} // namespace details
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
   (JNIEnv *env, jclass, jstring src, jstring dst)
 {
+    // We should not use rho_cast functions here because this function
+    // called very early when jnienv() is not yet initialized
     const char *strSrc = env->GetStringUTFChars(src, JNI_FALSE);
     const char *strDst = env->GetStringUTFChars(dst, JNI_FALSE);
     ::unlink(strDst);
@@ -274,9 +284,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
         env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Can not create symlink");
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
-  (JNIEnv *env, jobject obj)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
+  (JNIEnv *env, jobject, jstring path)
 {
+    g_rootPath = rho_cast<std::string>(path);
+
     // Init SQLite temp directory
     sqlite3_temp_directory = (char*)"/sqlite_stmt_journals";
 
@@ -294,6 +306,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
 
     // Start Rhodes application
     rho_rhodesapp_create(szRootPath);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
+  (JNIEnv *env, jobject obj)
+{
     rho_rhodesapp_start();
 }
 
@@ -313,38 +330,36 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
-    return env->NewStringUTF(s);
+    return rho_cast<jstring>(s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
-    return env->NewStringUTF(s);
+    return rho_cast<jstring>(s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
-    return env->NewStringUTF(s);
+    return rho_cast<jstring>(s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
-    return env->NewStringUTF(s);
+    return rho_cast<jstring>(s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
   (JNIEnv *, jobject, jstring strUrl)
 {
-    JNIEnv *env = jnienv();
-    const char *s = env->GetStringUTFChars(strUrl, JNI_FALSE);
-    char *normalized = rho_http_normalizeurl(s);
-    env->ReleaseStringUTFChars(strUrl, s);
-    jstring newStr = env->NewStringUTF(normalized);
+    std::string const &s = rho_cast<std::string>(strUrl);
+    char *normalized = rho_http_normalizeurl(s.c_str());
+    jstring newStr = rho_cast<jstring>(normalized);
     free(normalized);
     return newStr;
 }

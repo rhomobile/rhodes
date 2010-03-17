@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import com.rho.RhoClassFactory;
 //import com.rho.RhoConf;
 import com.rho.FilePath;
-//import com.rho.IRhoRubyHelper;
+import com.rho.IRhoRubyHelper;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -100,7 +100,7 @@ public class NetRequest
 				if (strField != null ) 
 				{
 					String header_field = m_connection.getHeaderField(i);
-					m_OutHeaders.put(strField, header_field);
+					m_OutHeaders.put(strField.toLowerCase(), header_field);
 				}
 			}
 		}
@@ -198,18 +198,26 @@ public class NetRequest
 			m_bIgnoreSuffixOnSim = true;
 		}
 		
-		return new NetResponse(strRespBody != null ? strRespBody : "", code );
+		return makeResponse(strRespBody, code );
     }
+	
+	private NetResponse makeResponse(String strRespBody, int nErrorCode)throws Exception
+	{
+		NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
+		if (pResp.isOK())
+			pResp.setCookies(makeClientCookie(m_OutHeaders));
+		
+		return pResp;
+	}
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
-/*		if ( URI.isLocalHost(strUrl) )
+		if ( URI.isLocalHost(strUrl) )
 		{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			helper.postUrl(strUrl,strBody);
-			return new NetResponse("", IHttpConnection.HTTP_OK );
+			return helper.postUrl(strUrl,strBody);
 		}
-*/		
+		
 		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	
@@ -225,12 +233,13 @@ public class NetRequest
 		NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
 		if ( resp.isOK() )
 		{
-			ParsedCookie cookie = makeCookie(headers);
+			//ParsedCookie cookie = makeCookie(headers);
 			//if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
-				resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
+				//resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
 			//else
 			//	resp.setCharData("");
 			
+			resp.setCharData(resp.getCookies());
 			LOG.INFO("pullCookies: " + resp.getCharData() );
 		}
 		
@@ -365,7 +374,7 @@ public class NetRequest
 			}catch(IOException exc2){}
 		}
 		
-		return new NetResponse(strRespBody != null ? strRespBody : "", code );
+		return makeResponse(strRespBody, code );
     }
 	
 	long m_nMaxPacketSize = 0;
@@ -419,7 +428,7 @@ public class NetRequest
 		
 		copyHashtable(m_OutHeaders, headers);
 		
-		return resp != null && !m_bCancel ? resp : new NetResponse("", IHttpConnection.HTTP_INTERNAL_ERROR );
+		return resp != null && !m_bCancel ? resp : makeResponse("", IHttpConnection.HTTP_INTERNAL_ERROR );
 	}
 	
 	static byte[]  m_byteDownloadBuffer = new byte[1024*20]; 
@@ -508,7 +517,7 @@ public class NetRequest
 			closeConnection();
 		}
 		
-		return new NetResponse(strRespBody != null ? strRespBody : "", code );
+		return makeResponse(strRespBody != null ? strRespBody : "", code );
 	}
 	
 	private boolean isFinishDownload()throws IOException
@@ -554,7 +563,7 @@ public class NetRequest
 		m_bCancel = true;
 		closeConnection();
     }
-
+/*
 	private static void parseCookie(String value, ParsedCookie cookie) {
 		boolean bAuth = false;
 		boolean bSession = false;
@@ -598,8 +607,8 @@ public class NetRequest
 				}
 			}
 		}
-	}
-
+	}*/
+/*
 	private static String extractToc(String toc_name, String data) {
 		int start = data.indexOf(toc_name);
 		if (start != -1) {
@@ -609,22 +618,28 @@ public class NetRequest
 			}
 		}
 		return null;
-	}
+	}*/
 
-	/*public static void TEST()
+	/*static{
+		TEST();
+	}
+	public static void TEST()
 	{
-		ParsedCookie cookie = new ParsedCookie();
-		//parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly", cookie);
-		parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT", cookie);
-		parseCookie("rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly", cookie);
-		
+		//ParsedCookie cookie = new ParsedCookie();
+		String strClientCookie = "";
+		strClientCookie = URI.parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly");
+		strClientCookie = URI.parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
+		strClientCookie = URI.parseCookie("rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
 	}*/
 	
-	private static ParsedCookie makeCookie(Hashtable headers)
+	private static String makeClientCookie(Hashtable headers)
 			throws IOException 
 	{
-		ParsedCookie cookie = new ParsedCookie();
-
+		if ( headers == null )
+			return "";
+		
+		//ParsedCookie cookie = new ParsedCookie();
+		String strRes = "";
     	Enumeration valsHeaders = headers.elements();
     	Enumeration keysHeaders = headers.keys();
 		while (valsHeaders.hasMoreElements()) 
@@ -635,7 +650,9 @@ public class NetRequest
 			if (strName.equalsIgnoreCase("Set-Cookie")) 
 			{
 				LOG.INFO("Set-Cookie: " + strValue);
-				parseCookie(strValue, cookie);
+				
+				strRes += URI.parseCookie(strValue);
+				//parseCookie(strValue, cookie);
 				// Hack to make it work on 4.6 device which doesn't parse
 				// cookies correctly
 				// if (cookie.strAuth==null) {
@@ -643,15 +660,15 @@ public class NetRequest
 				// cookie.strAuth = auth;
 				// System.out.println("Extracted auth_token: " + auth);
 				// }
-				if (cookie.strSession == null) {
+				/*if (cookie.strSession == null) {
 					String rhosync_session = extractToc("rhosync_session", strValue);
 					cookie.strSession = rhosync_session;
 					LOG.INFO("Extracted rhosync_session: " + rhosync_session);
-				}
+				}*/
 			}
 		}
 
-		return cookie;
+		return strRes;
 	}
 /*	
 	private final StringBuffer readFully(InputStream in) throws Exception 

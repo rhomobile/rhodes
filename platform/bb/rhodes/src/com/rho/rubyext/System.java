@@ -1,5 +1,6 @@
 package com.rho.rubyext;
 
+import net.rim.blackberry.api.phone.Phone;
 import net.rim.device.api.i18n.Locale;
 import net.rim.device.api.system.Display;
 
@@ -83,14 +84,18 @@ public class System {
     	}
     	if ( strPropName.equalsIgnoreCase("has_network") )
     		return ObjectFactory.createBoolean(hasNetwork()); 
-    	if ( strPropName.equalsIgnoreCase("get_locale") )
+    	if ( strPropName.equalsIgnoreCase("locale") )
     		return ObjectFactory.createString(getLocale()); 
-    	if ( strPropName.equalsIgnoreCase("get_screen_width") )
+    	if ( strPropName.equalsIgnoreCase("screen_width") )
     		return ObjectFactory.createInteger(getScreenWidth()); 
-    	if ( strPropName.equalsIgnoreCase("get_screen_height") )
+    	if ( strPropName.equalsIgnoreCase("screen_height") )
     		return ObjectFactory.createInteger(getScreenHeight()); 
     	if ( strPropName.equalsIgnoreCase("has_camera") )
     		return ObjectFactory.createBoolean(hasCamera()); 
+    	if ( strPropName.equalsIgnoreCase("phone_number") )
+    		return ObjectFactory.createString(Phone.getDevicePhoneNumber(true)); 
+    	if ( strPropName.equalsIgnoreCase("device_id") )
+    		return ObjectFactory.createString(new Integer( DeviceInfo.getDeviceId() ).toString()); 
     	
     	return RubyConstant.QNIL;
     }

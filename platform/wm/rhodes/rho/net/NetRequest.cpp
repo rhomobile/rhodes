@@ -22,17 +22,19 @@ INetResponse* CNetRequest::pushData(const String& strUrl, const String& strBody,
 
 INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,null);
-    CNetResponseImpl* resp = oImpl.sendString(strBody);
-
-    if ( resp && resp->isOK() )
-    {
-        ((CNetResponseImpl*)resp)->getRawData() = oImpl.makeRhoCookie();
-        //((CNetResponseImpl*)resp)->getRawData() = "exists";
-    }
-
-    return resp;
+	INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
+	if ( pResp->isOK() )
+        ((CNetResponseImpl*)pResp)->getRawData() = pResp->getCookies();
+		
+	return pResp;
 }
+
+INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
+{
+    CNetRequestImpl oImpl(this, method,strUrl,oSession,pHeaders);
+    return oImpl.sendString(strBody);
+}
+
 
 String CNetRequest::resolveUrl(const String& strUrl)
 {
@@ -91,25 +93,6 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
 
         CNetRequestImpl oImpl(this, "GET",strUrl,oSession,pHeaders);
         pResp = oImpl.downloadFile(oFile);
-        nTry++;
-
-    }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
-
-    return pResp;
-}
-
-INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
-{
-    int nTry = 0;
-    m_bCancel = false;
-    CNetResponseImpl* pResp = 0;
-    do
-    {
-        if ( pResp )
-            delete pResp;
-
-        CNetRequestImpl oImpl(this, method,strUrl,oSession,pHeaders);
-        pResp = oImpl.sendString(strBody);
         nTry++;
 
     }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );

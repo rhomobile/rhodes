@@ -158,12 +158,12 @@ public class AsyncHttp extends RhoThread
 
 	    return strRes;
 	}
-
+	
 	void processResponse(NetResponse resp )
 	{
 	    if (resp.isOK() && m_mapHeaders != null)
 	    {
-	    	String strContType = (String)m_mapHeaders.get("Content-Type");
+	    	String strContType = (String)m_mapHeaders.get("content-type");
 	    	if ( strContType != null && strContType.indexOf("application/json") >=0 )
 	    	{
 	    		RJSONTokener json = new RJSONTokener(resp.getCharData());
@@ -207,6 +207,10 @@ public class AsyncHttp extends RhoThread
 			        strBody += "&http_error=" + resp.getRespCode();
 		    }
 
+	        String cookies = resp.getCookies();
+	        if (cookies.length()>0)
+	            strBody += "&cookies=" + URI.urlEncode(cookies);
+	    	
 	    	strBody += "&" + makeHeadersString();
 	    	strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
 	    }

@@ -6,6 +6,8 @@
 package com.xruby.runtime.builtin;
 
 import java.io.IOException;
+import java.io.InputStream;
+
 import j2me.nio.ByteBuffer;
 import j2me.nio.channels.Pipe.SourceChannel;
 
@@ -34,6 +36,11 @@ public class RubyIOPipeSourceExecutor implements RubyIOExecutor {
         }
     }
 
+    public InputStream getInputStream()
+    {
+    	return null;
+    }
+    
     public boolean eof() {
         return !this.avaliable;
     }

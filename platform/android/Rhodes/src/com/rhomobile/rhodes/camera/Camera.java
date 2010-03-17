@@ -41,7 +41,7 @@ public class Camera {
 	public static void takePicture(String sourceUrl) {
 		try {
 			callbackUrl = sourceUrl;
-			Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(), ImageCapture.class);
+			Intent intent = new Intent(RhodesInstance.getInstance(), ImageCapture.class);
 			RhodesInstance.getInstance().startActivity(intent);
 		}
 		catch (Exception e) {
@@ -52,7 +52,7 @@ public class Camera {
 	public static void choosePicture(String sourceUrl) {
 		try {
 			callbackUrl = sourceUrl;
-			Intent intent = new Intent(RhodesInstance.getInstance().getApplicationContext(), FileList.class);
+			Intent intent = new Intent(RhodesInstance.getInstance(), FileList.class);
 			RhodesInstance.getInstance().startActivity(intent);
 		}
 		catch (Exception e) {
