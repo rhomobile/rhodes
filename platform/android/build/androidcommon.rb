@@ -20,18 +20,18 @@ def setup_ndk(ndkpath,apilevel)
   $ndktools = ndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"
   $ndksysroot = ndkpath + "/build/platforms/android-#{apilevel}/arch-arm"
 
-  $gccbin = '"' + $ndktools + "/bin/arm-eabi-gcc" + $exe_ext + '"'
-  $gppbin = '"' + $ndktools + "/bin/arm-eabi-g++" + $exe_ext + '"'
-  $arbin = '"' + $ndktools + "/bin/arm-eabi-ar" + $exe_ext + '"'
-  $ranlib = '"' + $ndktools + "/bin/arm-eabi-ranlib" + $exe_ext + '"'
-  $stripbin = '"' + $ndktools + "/bin/arm-eabi-strip" + $exe_ext + '"'
+  $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
+  $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
+  $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
+  $ranlib = $ndktools + "/bin/arm-eabi-ranlib" + $exe_ext
+  $stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
 end
 
 def cc_def_args
   if $cc_def_args_val.nil?
     args = []
     args << "--sysroot"
-    args << '"' + $ndksysroot + '"'
+    args << $ndksysroot
     #args << "-fvisibility=hidden"
     args << "-fPIC"
     args << "-mandroid"
@@ -61,11 +61,19 @@ def cpp_def_args
   $cpp_def_args_val.dup
 end
 
+def get_def_args(filename)
+  if filename =~ /\.[cC]$/
+    cc_def_args
+  elsif filename =~ /\.[cC]([cC]|[xXpP][xXpP])$/
+    cpp_def_args + cc_def_args
+  end
+end
+
 def cc_get_ccbin(filename)
   if filename =~ /\.[cC]$/
     $gccbin
   elsif filename =~ /\.[cC]([cC]|[xXpP][xXpP])$/
-    $gppbin + ' ' + cpp_def_args.join(' ')
+    $gppbin
   end
 end
 
@@ -78,7 +86,7 @@ def cc_deps(filename, objdir, additional)
     end
   end
   ccbin = cc_get_ccbin(filename)
-  args = cc_def_args
+  args = get_def_args(filename)
   args += additional unless additional.nil?
   out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`
   out.gsub!(/^[^:]*:\s*/, '') unless out.nil?
@@ -95,11 +103,13 @@ end
 def cc_run(command, args, chdir = nil)
   save_cwd = FileUtils.pwd
   FileUtils.cd chdir unless chdir.nil?
-  cmdline = command + ' ' + args.join(' ')
-  puts cmdline
+  argv = [command]
+  argv += args
+  puts argv.map { |x| '"' + x + '"' }.join(' ')
   $stdout.flush
   #puts `#{cmdline}`
-  IO.popen(cmdline) do |f|
+  argv = argv.map { |x| '"' + x + '"' }.join(' ') if RUBY_VERSION =~ /^1\.8/
+  IO.popen(argv) do |f|
     while data = f.gets
       puts data
       $stdout.flush
@@ -120,7 +130,7 @@ def cc_compile(filename, objdir, additional = nil)
 
   ccbin = cc_get_ccbin(filename)
 
-  args = cc_def_args
+  args = get_def_args(filename)
   args << "-Wall"
   args += additional if additional.is_a? Array and not additional.empty?
   args << "-c"
@@ -153,13 +163,13 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << outname
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "\"#{$ndksysroot}/usr/lib/libstdc++.so\""
-  args << "\"#{$ndksysroot}/usr/lib/libsupc++.so\"" unless USE_STLPORT
-  args << "\"#{$ndksysroot}/usr/lib/libc.so\""
-  args << "\"#{$ndksysroot}/usr/lib/libm.so\""
-  args << "\"-L#{$ndksysroot}/usr/lib\""
-  args << "\"-Wl,-rpath-link=#{$ndksysroot}/usr/lib\""
-  args << "\"#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a\""
+  args << "#{$ndksysroot}/usr/lib/libstdc++.so"
+  args << "#{$ndksysroot}/usr/lib/libsupc++.so" unless USE_STLPORT
+  args << "#{$ndksysroot}/usr/lib/libc.so"
+  args << "#{$ndksysroot}/usr/lib/libm.so"
+  args << "-L#{$ndksysroot}/usr/lib"
+  args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
+  args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a"
   cc_run($gccbin, args)
 end
 
