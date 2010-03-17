@@ -1,6 +1,6 @@
 #include "SplashScreen.h"
 #include "RhoThread.h"
-#include "IRhoClassfactory.h"
+#include "IRhoClassFactory.h"
 #include "RhoConf.h"
 #include "Tokenizer.h"
 
