@@ -292,7 +292,7 @@ public class MapView extends MapActivity {
 				public void run() {
 					view.invalidate();
 				}
-			});
+			}, false);
 		}
 	}
 
