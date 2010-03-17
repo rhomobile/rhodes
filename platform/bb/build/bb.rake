@@ -34,7 +34,7 @@ def startsim
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
     
-  command =  '"' + jde + "/simulator/fledge.exe\""
+  command =  jde + "/simulator/fledge.exe"
   args = []
   args << "/app=Jvm.dll"
   args << "/handheld=" + sim
@@ -55,7 +55,7 @@ def startsim
     args << "/no-guibacklight"
   end
         
-  args << "\"/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"]) +'"'
+  args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"])
 
   Thread.new { Jake.run(command,args,jde + "/simulator",true) }
   $stdout.flush
@@ -65,7 +65,7 @@ def stopsim
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
     
-  command =  '"' + jde + "/simulator/fledgecontroller.exe\""
+  command = jde + "/simulator/fledgecontroller.exe"
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
@@ -79,7 +79,7 @@ def manualsign
 
   args = []
   args << "-jar"
-  args << '"' + jde + "/bin/SignatureTool.jar\""
+  args << jde + "/bin/SignatureTool.jar"
   args << "-r"
   args << $targetdir
 
@@ -94,11 +94,11 @@ def autosign
 
   args = []
   args << "-jar"
-  args << '"' + jde + "/bin/SignatureTool.jar\""
+  args << jde + "/bin/SignatureTool.jar"
   args << "-c"
   args << "-a"
   args << "-p"
-  args << '"' + $config["build"]["bbsignpwd"] +'"'
+  args << $config["build"]["bbsignpwd"]
   args << "-r"
   args << $targetdir
 
@@ -191,10 +191,10 @@ namespace "build" do
       args = []
       #args << "-verbose"
       args << "-classpath"
-      args << '"' + jdehome + "/lib/net_rim_api.jar;"+$preverified+"/RubyVM.jar\""
+      args << jdehome + "/lib/net_rim_api.jar;"+$preverified+"/RubyVM.jar"
       args << "-d"
-      args << '"' + $preverified + '"'
-      args << '"' + $bindir + "/RhoBundle.jar\""
+      args << $preverified
+      args << $bindir + "/RhoBundle.jar"
       runPreverify(args)
 
       mkdir_p $rhobundledir unless File.exists? $rhobundledir
@@ -229,15 +229,15 @@ namespace "build" do
         args = []
         args << "-g"
         args << "-d"
-        args << '"' +$tmpdir + '/RubyVM"'
+        args << $tmpdir + '/RubyVM'
         args << "-bootclasspath"
-        args << '"' + $config["env"]["paths"][$bbver]["jde"] + '/lib/net_rim_api.jar"'
+        args << $config["env"]["paths"][$bbver]["jde"] + '/lib/net_rim_api.jar'
         args << "-source"
         args << "1.3"
         args << "-target"
         args << "1.3"
         args << "-nowarn"
-        args << "\"@#{$builddir}/RubyVM_build.files\""
+        args << "@#{$builddir}/RubyVM_build.files"
         puts Jake.run(javac,args)
         unless $? == 0
           puts "Error compiling java code"
@@ -247,10 +247,10 @@ namespace "build" do
         #XXX Move to task/function
         args = []
         args << "-classpath"
-        args << '"' + jdehome + "/lib/net_rim_api.jar\""
+        args << jdehome + "/lib/net_rim_api.jar"
         args << "-d"
-        args << '"' + $tmpdir + "/RubyVM.preverify\""
-        args << '"' + $tmpdir + "/RubyVM\""
+        args << $tmpdir + "/RubyVM.preverify"
+        args << $tmpdir + "/RubyVM"
         runPreverify(args)
 
         Jake.jar($preverified+"/RubyVM.jar", $builddir + "/RubyVM_manifest.mf", $tmpdir + "/RubyVM.preverify",true)
@@ -311,18 +311,18 @@ namespace "build" do
         args << "-d"
         args << $tmpdir
         args << "-classpath"
-        args << '"' + $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar\""
+        args << $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar"
         args << "-bootclasspath"
-        args << '"' + jde + "/lib/net_rim_api.jar\""
+        args << jde + "/lib/net_rim_api.jar"
         args << "-source"
         args << "1.3"
         args << "-target"
         args << "1.3"
         args << "-nowarn"
-        args << "\"@#{vsrclist}\""
+        args << "@#{vsrclist}"
         #args << "@RubyVM_build.files"
-        args << "\"@#{$builddir}/hsqldb_build.files\""
-        args << "\"@#{$builddir}/rhodes_build.files\""
+        args << "@#{$builddir}/hsqldb_build.files"
+        args << "@#{$builddir}/rhodes_build.files"
         puts "\texecuting javac"
         puts Jake.run(javac,args)
         unless $? == 0
@@ -340,10 +340,10 @@ namespace "build" do
         $stdout.flush
         args = []
         args << "-classpath"
-        args << '"' + $rhodesimplib + '"'
+        args << $rhodesimplib
         args << "-d"
-        args << '"' + $preverified + '"'
-        args << '"' + $bindir + "/rhodes.jar\""
+        args << $preverified
+        args << $bindir + "/rhodes.jar"
         runPreverify(args)
       else
         puts "rhodes up to date"
@@ -360,7 +360,7 @@ namespace "package" do
       Jake.rapc("RhoBundle",
         $targetdir,
         $rhobundleimplib ,
-        '"' + $preverified + "/RhoBundle.jar" + '"',
+        $preverified + "/RhoBundle.jar",
         "RhoBundle",
         $app_config["vendor"],
         $app_config["version"]
@@ -381,7 +381,7 @@ namespace "package" do
         Jake.rapc("RubyVM",
           $targetdir,
           jdehome + "/lib/net_rim_api.jar",
-          '"' + $preverified + "/RubyVM.jar" +'"',
+          $preverified + "/RubyVM.jar",
           "RubyVM",
           $app_config["vendor"],
           $app_config["version"]
@@ -404,7 +404,7 @@ namespace "package" do
         Jake.rapc($outfilebase,
           $targetdir,
           $rhodesimplib,
-          '"' +  $preverified + "/rhodes.jar" +'"',
+          $preverified + "/rhodes.jar",
           $appname,
           $app_config["vendor"],
           $app_config["version"],
@@ -457,7 +457,7 @@ namespace "package" do
       Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
-        '"' +  $bindir + "/" + $outfilebase + ".jar" +'"',
+        $bindir + "/" + $outfilebase + ".jar",
         $appname,
         $app_config["vendor"],
         $app_config["version"],
