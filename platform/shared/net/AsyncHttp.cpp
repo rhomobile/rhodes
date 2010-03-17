@@ -30,7 +30,7 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
     m_strCallbackParams = callback_params != null ? callback_params : "";
     m_eCmd = eCmd;
 
-    rho_ruby_enum_strhash(headers, header_iter, &m_mapHeaders);
+    rho_ruby_enum_strhash(headers, &header_iter, &m_mapHeaders);
 
     {
 	    synchronized(m_mxInstances);
@@ -144,7 +144,7 @@ void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
 {
     if (resp.isOK())
     {
-        String strContType = m_mapHeaders.get("Content-Type");
+        String strContType = m_mapHeaders.get("content-type");
         if ( strContType.find("application/json") != String::npos )
         {
             char* szError = 0;
@@ -185,6 +185,10 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
             if ( resp.isResponseRecieved())
 	            strBody += "&http_error=" + convertToStringA(resp.getRespCode());
         }
+
+        String cookies = resp.getCookies();
+        if (cookies.length()>0)
+            strBody += "&cookies=" + URI::urlEncode(cookies);
 
         strBody += "&" + makeHeadersString();
         strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");

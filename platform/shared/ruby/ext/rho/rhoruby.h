@@ -48,7 +48,9 @@ rho_param *valueToRhoParam(VALUE v);
 
 char* getStringFromValue(VALUE val);
 int getStringLenFromValue(VALUE val);
-void  releaseValue(VALUE val);
+
+void rho_ruby_holdValue(VALUE val);
+void  rho_ruby_releaseValue(VALUE val);
 
 VALUE callFramework(VALUE hashReq);
 VALUE callServeIndex(char* index_name);

@@ -3,6 +3,7 @@ package com.rho;
 import com.rho.db.IDBStorage;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
+import com.rho.net.NetResponse;
 
 public interface IRhoRubyHelper {
 	public abstract void initRubyExtensions();
@@ -25,5 +26,5 @@ public interface IRhoRubyHelper {
 	public String getGeoLocationText();
 	public void wakeUpGeoLocation();
 	
-	public void postUrl(String url, String body);
+	public NetResponse postUrl(String url, String body);
 }

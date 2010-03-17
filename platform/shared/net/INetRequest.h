@@ -18,6 +18,7 @@ struct INetResponse
     virtual boolean isOK() = 0;
     virtual boolean isResponseRecieved() = 0;
     virtual boolean isUnathorized() = 0;
+    virtual String getCookies() = 0;
 };
 
 struct IRhoSession

@@ -56,9 +56,27 @@ if ENV['ANDROID_HOME']
 end
 
 android = android.gsub(/\\/,"/")
-android = "" unless File.exists? android  + "/platforms/android-1.5"
+apilevel = -1
+android_platform_dir = "/platforms/android-1.5"
+Dir.glob(File.join(android, 'platforms', '*')).each do |dir|
+  props = File.join(dir, 'source.properties')
+  next unless File.file? props
+  File.open(props, 'r') do |f|
+    while line = f.gets
+      next if line !~ /^\s*AndroidVersion\.ApiLevel\s*=\s*([0-9]+)\s*$/
+      apilevel = $1.to_i
+      break
+    end
+  end
 
-android = prompt_for("Android 1.5 SDK path", android, false, "/platforms/android-1.5")
+  if apilevel == 3
+    android_platform_dir = dir[android.length..-1]
+    break
+  end
+end
+android = "" if apilevel == -1
+
+android = prompt_for("Android 1.5 SDK path", android, false, android_platform_dir)
 
 androidndk = prompt_for("Android NDK path", "",false)
 
@@ -108,6 +126,8 @@ config["env"]["paths"]["java"] = java
 config["env"]["paths"]["android"] = android
 config["env"]["paths"]["android-ndk"] = androidndk
 config["env"]["paths"]["cabwiz"] = cabwiz
+config["env"]["paths"][4.2] = {} if config["env"]["paths"][4.2].nil?
+config["env"]["paths"][4.6] = {} if config["env"]["paths"][4.6].nil?
 config["env"]["paths"][4.6]["jde"] = jde46
 config["env"]["paths"][4.6]["mds"] = jde46mds
 config["env"]["paths"][4.2]["jde"] = jde42

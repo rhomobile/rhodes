@@ -82,7 +82,7 @@ public class NativeBar {
 
 	public static void create(int type, Vector<Object> params) {
 		try {
-			Rhodes.performOnUiThread(new CreateTask(type, params));
+			Rhodes.performOnUiThread(new CreateTask(type, params), false);
 		}
 		catch (Exception e) {
 			reportFail("create", e);
@@ -91,7 +91,7 @@ public class NativeBar {
 	
 	public static void remove() {
 		try {
-			Rhodes.performOnUiThread(new CreateTask(NOBAR_TYPE, null));
+			Rhodes.performOnUiThread(new CreateTask(NOBAR_TYPE, null), false);
 		}
 		catch (Exception e) {
 			reportFail("remove", e);
@@ -100,7 +100,7 @@ public class NativeBar {
 	
 	public static void switchTab(int index) {
 		try {
-			Rhodes.performOnUiThread(new SwitchTabTask(index));
+			Rhodes.performOnUiThread(new SwitchTabTask(index), false);
 		}
 		catch (Exception e) {
 			reportFail("switchTab", e);

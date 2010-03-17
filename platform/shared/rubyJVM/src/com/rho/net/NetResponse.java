@@ -3,8 +3,9 @@ package com.rho.net;
 public class NetResponse {
 	private String m_strData = null;
 	private int    m_nRespCode;
+	private String m_strCookies = "";
 	
-	public NetResponse( String strData ){ m_strData = strData; m_nRespCode = -1; }
+//	public NetResponse( String strData ){ m_strData = strData; m_nRespCode = -1; }
 	public NetResponse( String strData, int nRespCode ){ m_strData = strData; m_nRespCode = nRespCode; }
 	
 	public String getCharData()
@@ -36,4 +37,13 @@ public class NetResponse {
 		return m_nRespCode == IHttpConnection.HTTP_UNAUTHORIZED;
 	}
 	
+	public void setCookies(String s)
+    {
+        m_strCookies = s;
+    }
+    
+	public String getCookies()
+    {
+        return m_strCookies;
+    }
 }

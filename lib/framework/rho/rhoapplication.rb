@@ -29,6 +29,7 @@ module Rho
   	    @tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
   	    puts "Initializing application with tabs: #{@tabs.inspect}" 
   	    NativeBar.create(TABBAR_TYPE, @tabs)
+        NativeBar.switch_tab(0)
 	    elsif @@toolbar
 	      NativeBar.create(TOOLBAR_TYPE, @@toolbar)
       else

@@ -207,7 +207,46 @@ module Rhom
                     
                     res
                 end
-                
+
+                def find_objects_ex(condition_ar, op, limit, offset, order_attr)
+                    mapObjs = {}
+                    listObjs = []
+                    condition_ar.each do |cond|
+                        res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
+                        
+                        if listObjs.length() == 0
+                            if condition_ar.length() > 1
+                                res.each do |hash_attrs|
+                                    mapObjs[ hash_attrs['object'] ] = 1
+                                end
+                            end
+                            
+                            listObjs = res
+                        else
+                            if op == 'OR'
+                                res.each do |hash_attrs|
+                                    obj = hash_attrs['object']
+                                    if !mapObjs.has_key?(obj)
+                                        listObjs << hash_attrs
+                                        mapObjs[ obj ] = 1
+                                    end    
+                                end
+                            else
+                                andRes = []
+                                res.each do |hash_attrs|
+                                    obj = hash_attrs['object']
+                                    if mapObjs.has_key?(obj)
+                                        andRes << hash_attrs
+                                    end    
+                                end
+                                listObjs = andRes
+                            end
+                        end    
+                    end
+                    
+                    listObjs
+                end
+                                
                 def find_bycondhash(args, &block)                
                     puts 'find_bycondhash start'
                     
@@ -258,41 +297,8 @@ module Rhom
                         listObjs = []
                         if condition_hash.is_a?(Hash)
                             listObjs = find_objects(condition_hash, op, limit, offset, order_attr)
-                        elsif condition_hash.is_a?(Array) && condition_hash.length == 1
-                            cond = condition_hash[0]
-                            listObjs = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
-                        elsif condition_hash.is_a?(Array)
-                            mapObjs = {}
-                            condition_hash.each do |cond|
-                                res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
-                                
-                                if listObjs.length() == 0
-                                    res.each do |hash_attrs|
-                                        mapObjs[ hash_attrs['object'] ] = 1
-                                    end
-                                    
-                                    listObjs = res
-                                else
-                                    if op == 'OR'
-                                        res.each do |hash_attrs|
-                                            obj = hash_attrs['object']
-                                            if !mapObjs.has_key?(obj)
-                                                listObjs << hash_attrs
-                                                mapObjs[ obj ] = 1
-                                            end    
-                                        end
-                                    else
-                                        andRes = []
-                                        res.each do |hash_attrs|
-                                            obj = hash_attrs['object']
-                                            if mapObjs.has_key?(obj)
-                                                andRes << hash_attrs
-                                            end    
-                                        end
-                                        listObjs = andRes
-                                    end
-                                end    
-                            end
+                        else
+                            listObjs = find_objects_ex(condition_hash, op, limit, offset, order_attr)
                         end
 
                         nCount = 0;
@@ -665,8 +671,20 @@ module Rhom
 	          # app client should check this method before update or delete
 	          # overwise all modifications of unconfirmed created item will be lost
 	          def can_modify
-                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE sent>1 LIMIT 1 OFFSET 0")
+   				obj = self.inst_strip_braces(self.object)
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return !(result && result.length > 0) 
+	          end
+
+	          def self.changed?
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", get_source_id().to_i )
+                return result && result.length > 0
+	          end
+
+	          def changed?
+	            obj = self.inst_strip_braces(self.object)
+                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=?  and object=? LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
+                return result && result.length > 0
 	          end
 	            
               # deletes the record from the viewable list as well as
