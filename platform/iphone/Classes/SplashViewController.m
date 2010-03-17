@@ -8,6 +8,7 @@
 
 #import "SplashViewController.h"
 
+#import "rho/common/SplashScreenImpl.h"
 
 @implementation SplashViewController
 
@@ -27,10 +28,17 @@
     
     UIImage *img = [[UIImage alloc] initWithContentsOfFile:imagePath];
     splashView.image = img;
+    [parentView bringSubviewToFront:splashView];
+    rho_splash_screen_start();
 }
 
 - (void)hideSplash {
+    rho_splash_screen_hide();
     [splashView removeFromSuperview];
+}
+
+- (void)bringToFront {
+    [parentView bringSubviewToFront:splashView];
 }
 
 - (void)viewDidUnload {

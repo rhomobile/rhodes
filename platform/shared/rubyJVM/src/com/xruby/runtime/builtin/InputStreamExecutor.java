@@ -40,6 +40,11 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		}
 	}
 
+    public InputStream getInputStream()
+    {
+    	return m_is;
+    }
+    
 	public boolean eof() {
 		if ( m_strInput == null )
 			return false;

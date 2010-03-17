@@ -22,7 +22,6 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -39,22 +38,22 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.AssetManager;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
@@ -62,7 +61,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.os.Process;
 
 public class Rhodes extends Activity {
@@ -71,8 +69,11 @@ public class Rhodes extends Activity {
 	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
 	
-	public static final int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-	public static final int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static final int RHO_SPLASH_VIEW = 1;
+	public static final int RHO_MAIN_VIEW = 2;
+	
+	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
 	private long uiThreadId;
 	public long getUiThreadId() {
@@ -89,14 +90,15 @@ public class Rhodes extends Activity {
 	private FrameLayout outerFrame;
 	private MainView mainView;
 	
+	private SplashScreen splashScreen = null;
+	
 	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 		
 	private String rootPath = null;
 	
-	private native void setRootPath(String path);
-	
+	public native void createRhodesApp(String path);
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
@@ -112,17 +114,19 @@ public class Rhodes extends Activity {
 	public native static void makeLink(String src, String dst);
 	
 	private void initRootPath() {
-		rootPath = phoneMemoryRootPath();
-		setRootPath(rootPath);
+		//rootPath = phoneMemoryRootPath();
+		rootPath = sdcardRootPath();
 	}
 	
 	public String getRootPath() {
 		return rootPath;
 	}
 	
+	/*
 	private String phoneMemoryRootPath() {
 		return "/data/data/" + getPackageName() + "/data/";
 	}
+	*/
 	
 	private String sdcardRootPath() {
 		return Environment.getExternalStorageDirectory() + "/rhomobile/" + getPackageName() + "/";
@@ -156,9 +160,27 @@ public class Rhodes extends Activity {
 		return true;
 	}
 	
+	private void copyFromBundle(String file) throws IOException {
+		File target = new File(sdcardRootPath(), file);
+		if (target.exists())
+			return;
+		FileSource as = new AssetsSource(getResources().getAssets());
+		Utils.copyRecursively(as, file, target, true);
+		
+		/*
+		int idx = file.indexOf('/');
+		String dir = idx == -1 ? file : file.substring(0, idx);
+		
+		File sdPath = new File(sdcardRootPath(), dir);
+		File phPath = new File(phoneMemoryRootPath(), dir);
+		phPath.getParentFile().mkdirs();
+		makeLink(sdPath.getAbsolutePath(), phPath.getAbsolutePath());
+		*/
+	}
+	
 	private void copyFilesFromBundle() {
 		try {
-			String phRootPath = phoneMemoryRootPath();
+			//String phRootPath = phoneMemoryRootPath();
 			String sdRootPath = sdcardRootPath();
 			
 			boolean nameChanged = false;
@@ -174,23 +196,28 @@ public class Rhodes extends Activity {
 				contentChanged = !Utils.isContentsEquals(as, "hash", fs, new File(sdRootPath, "hash").getPath());
 			
 			if (contentChanged) {
-				Log.d(TAG, "Copying required files from bundle to sdcard");
+				Logger.D(TAG, "Copying required files from bundle to sdcard");
 				
+				/*
 				File phrf = new File(phRootPath);
 				if (!phrf.exists())
 					phrf.mkdirs();
 				phrf = null;
-				
-				String items[] = {"apps", "lib", "db", "RhoLog.txt", "RhoLog.txt_pos", "hash", "name"};
+				*/
+
+				String items[] = {"apps", "lib", "db", "hash", "name"};
 				for (int i = 0; i != items.length; ++i) {
 					String item = items[i];
-					File phf = new File(phRootPath, item);
+					//File phf = new File(phRootPath, item);
 					File sdf = new File(sdRootPath, item);
-					Log.d(TAG, "Copy '" + item + "' to '" + sdRootPath + "'");
+					Logger.D(TAG, "Copy '" + item + "' to '" + sdf + "'");
 					Utils.copyRecursively(as, item, sdf, nameChanged);
-					Log.d(TAG, "Make symlink from '" + sdf.getAbsolutePath() + "' to '" +
-							phf.getAbsolutePath() + "'");
-					makeLink(sdf.getAbsolutePath(), phf.getAbsolutePath());
+					/*
+					String src = sdf.getAbsolutePath();
+					String dst = phf.getAbsolutePath();
+					Logger.D(TAG, "Make symlink from '" + src + "' to '" + dst + "'");
+					makeLink(src, dst);
+					*/
 				}
 				
 				File dbfiles = new File(rootPath + "apps/public/db-files");
@@ -198,12 +225,12 @@ public class Rhodes extends Activity {
 					dbfiles.mkdirs();
 				dbfiles = null;
 				
-				Log.d(TAG, "All files copied");
+				Logger.D(TAG, "All files copied");
 			}
 			else
-				Log.d(TAG, "No need to copy files to SD card");
+				Logger.D(TAG, "No need to copy files to SD card");
 		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
+			Logger.E(TAG, e);
 			return;
 		}
 	}
@@ -219,7 +246,7 @@ public class Rhodes extends Activity {
 	}
 	
 	public WebView createWebView() {
-		WebView w = new WebView(getApplicationContext());
+		WebView w = new WebView(this);
 		
 		try {
 			w.loadUrl("file:///android_asset/apps/app/loading.html");
@@ -247,6 +274,12 @@ public class Rhodes extends Activity {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				return handleUrlLoading(url);
 			}
+			
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				if (url.startsWith("http://"))
+					hideSplashScreen();
+			}
 
 		});
 
@@ -254,9 +287,14 @@ public class Rhodes extends Activity {
 	}
 	
 	public void setMainView(MainView v) {
-		outerFrame.removeAllViews();
+		View main = outerFrame.findViewById(RHO_MAIN_VIEW);
+		if (main != null)
+			outerFrame.removeView(main);
 		mainView = v;
-		outerFrame.addView(mainView.getView());
+		main = mainView.getView();
+		if (outerFrame.findViewById(RHO_SPLASH_VIEW) != null)
+			main.setVisibility(View.INVISIBLE);
+		outerFrame.addView(main);
 	}
 	
 	public MainView getMainView() {
@@ -286,19 +324,24 @@ public class Rhodes extends Activity {
 		}
 	};
 	
-	public static void performOnUiThread(Runnable r) {
+	public static void performOnUiThread(Runnable r, boolean wait) {
 		try {
-			long thrId = Thread.currentThread().getId();
 			Rhodes rhodes = RhodesInstance.getInstance();
-			if (rhodes.getUiThreadId() == thrId) {
-				// We are already in UI thread
-				r.run();
+			if (!wait) {
+				rhodes.uiHandler.post(r);
 			}
 			else {
-				// Post request to UI thread and wait while it would be done
-				synchronized (r) {
-					rhodes.uiHandler.post(new PerformOnUiThread(r));
-					r.wait();
+				long thrId = Thread.currentThread().getId();
+				if (rhodes.getUiThreadId() == thrId) {
+					// We are already in UI thread
+					r.run();
+				}
+				else {
+					// Post request to UI thread and wait when it would be done
+					synchronized (r) {
+						rhodes.uiHandler.post(new PerformOnUiThread(r));
+						r.wait();
+					}
 				}
 			}
 		}
@@ -307,13 +350,19 @@ public class Rhodes extends Activity {
 		}
 	}
 	
-	private void showSplashScreen() throws IOException {
-		ImageView view = new ImageView(this);
-		AssetManager am = getResources().getAssets();
-		InputStream is = am.open("apps/app/loading.png");
-		Bitmap bitmap = BitmapFactory.decodeStream(is);
-		view.setImageBitmap(bitmap);
-		outerFrame.addView(view);
+	private void showSplashScreen(String file) throws IOException {
+		splashScreen = new SplashScreen(this, file);
+		splashScreen.start(outerFrame);
+	}
+	
+	public void hideSplashScreen() {
+		if (splashScreen != null) {
+			splashScreen.hide(outerFrame);
+			splashScreen = null;
+		}
+		View view = mainView.getView();
+		view.setVisibility(View.VISIBLE);
+		view.requestFocus();
 	}
 	
 	/** Called when the activity is first created. */
@@ -321,29 +370,55 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		if (!checkSDCard()) {
+			finish();
+			return;
+		}
+		
 		uiThreadId = Thread.currentThread().getId();
 		RhodesInstance.setInstance(this);
 		
+		initRootPath();
+		try {
+			copyFromBundle("apps/rhoconfig.txt");
+		} catch (IOException e1) {
+			Logger.E("Rhodes", e1);
+			finish();
+			return;
+		}
+		createRhodesApp(rootPath);
+		
+		boolean fullScreen = true;
+		if (RhoConf.isExist("full_screen"))
+			fullScreen = RhoConf.getBool("full_screen");
+		if (!fullScreen) {
+			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+		}
 		getWindow().setFlags(WINDOW_FLAGS, WINDOW_MASK);
 
+		boolean disableScreenRotation = RhoConf.getBool("disable_screen_rotation");
+		this.setRequestedOrientation(disableScreenRotation ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
+			ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+		
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
 		outerFrame = new FrameLayout(this);
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
-		try {
-			showSplashScreen();
-		}
-		catch (Exception e) {
-			setMainView(new SimpleMainView());
-		}
-		
-		Log.i("Rhodes", "Loading...");
+		Logger.I("Rhodes", "Loading...");
 		
 		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 		Display d = wm.getDefaultDisplay();
 		screenHeight = d.getHeight();
 		screenWidth = d.getWidth();
+		
+		try {
+			showSplashScreen("apps/app/loading.png");
+		}
+		catch (Exception e) {
+			setMainView(new SimpleMainView());
+		}
 		
 		// TODO: detect camera availability
 		isCameraAvailable = true;
@@ -356,16 +431,9 @@ public class Rhodes extends Activity {
 		for (int i = 0; i < handlers.length; ++i)
 			uriHandlers.put(handlers[i].scheme(), handlers[i]);
 		
-		// WARNING!!! This function MUST be called in context of UI thread
-		// to be correctly initialized
-		// Do not remove this line!!!
-		initRootPath();
-		
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				if (!checkSDCard())
-					return;
 				copyFilesFromBundle();
 				startRhodesApp();
 			}
@@ -408,7 +476,7 @@ public class Rhodes extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			mainView.navigate(getAppBackUrl(), mainView.activeTab());
+			goBack();
 			return true;
 		case KeyEvent.KEYCODE_HOME:
 			stopSelf();
@@ -430,11 +498,11 @@ public class Rhodes extends Activity {
 			return true;
 			
 		case AndroidR.id.navigation_back:
-			mainView.navigate(getAppBackUrl(), mainView.activeTab());
+			goBack();
 			return true;
 			
 		case AndroidR.id.navigation_forward:
-			mainView.forward(mainView.activeTab());
+			goForward();
 			return true;
 
 		case AndroidR.id.navigation_home:
@@ -470,6 +538,19 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
+	private void goBack() {
+		String backUrl = getAppBackUrl();
+		int activeTab = mainView.activeTab();
+		if (backUrl == null || backUrl.length() == 0)
+			mainView.back(activeTab);
+		else
+			mainView.navigate(backUrl, activeTab);
+	}
+	
+	private void goForward() {
+		mainView.forward(mainView.activeTab());
+	}
+	
 	public static void showLogView() {
 		performOnUiThread(new Runnable() {
 			public void run() {
@@ -478,7 +559,7 @@ public class Rhodes extends Activity {
 				logViewDialog.setCancelable(true);
 				logViewDialog.show();
 			}
-		});
+		}, false);
 	}
 	
 	public static void showLogOptions() {
@@ -489,7 +570,7 @@ public class Rhodes extends Activity {
 				logOptionsDialog.setCancelable(true);
 				logOptionsDialog.show();
 			}
-		});
+		}, false);
 	}
 	
 	// Called from native code
@@ -498,9 +579,13 @@ public class Rhodes extends Activity {
 		for (int i = 0; i != children.length; ++i)
 			Utils.deleteRecursively(new File(folder, children[i]));
 	}
-		
-	public static boolean hasNetwork() {
-		Context ctx = RhodesInstance.getInstance().getApplicationContext();
+	
+	public static void showNetworkIndicator(boolean v) {
+		// No GUI indicator
+	}
+	
+	private static boolean hasNetwork() {
+		Context ctx = RhodesInstance.getInstance();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
 			return false;
@@ -517,11 +602,7 @@ public class Rhodes extends Activity {
 		return false;
 	}
 	
-	public static void showNetworkIndicator(boolean v) {
-		// No GUI indicator
-	}
-	
-	public static String getCurrentLocale() {
+	private static String getCurrentLocale() {
 		String locale = Locale.getDefault().getLanguage();
 		if (locale.length() == 0)
 			locale = "en";
@@ -536,8 +617,27 @@ public class Rhodes extends Activity {
 		return screenHeight;
 	}
 	
-	public static boolean hasCamera() {
-		return isCameraAvailable;
+	public static Object getProperty(String name) {
+		if (name.equalsIgnoreCase("platform"))
+			return "ANDROID";
+		else if (name.equalsIgnoreCase("locale"))
+			return getCurrentLocale();
+		else if (name.equalsIgnoreCase("screen_width"))
+			return new Integer(getScreenWidth());
+		else if (name.equalsIgnoreCase("screen_height"))
+			return new Integer(getScreenHeight());
+		else if (name.equalsIgnoreCase("has_camera"))
+			return new Boolean(isCameraAvailable);
+		else if (name.equalsIgnoreCase("has_network"))
+			return hasNetwork();
+		else if (name.equalsIgnoreCase("phone_number")) {
+			TelephonyManager manager = (TelephonyManager)RhodesInstance.getInstance().
+				getSystemService(Context.TELEPHONY_SERVICE);
+			String number = manager.getLine1Number();
+			return number;
+		}
+		
+		return null;
 	}
 	
 	public void stopSelf() {

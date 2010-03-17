@@ -306,7 +306,7 @@ static ServerHost* sharedSH = nil;
 
 //extern const char* RhoGetRootPath();
 
--(void) start {
+-(void) create {
 	//Create 
 	appManager = [AppManager instance]; 
 	//Configure AppManager
@@ -322,6 +322,9 @@ static ServerHost* sharedSH = nil;
     [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
                              toTarget:self withObject:nil];
 	rho_rhodesapp_create(rho_native_rhopath());	
+}
+
+-(void)start {
 #if !defined(RHO_USE_OWN_HTTPD) || defined(RHO_HTTPD_COMMON_IMPL)
 	rho_rhodesapp_start();
 #endif

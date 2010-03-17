@@ -23,6 +23,7 @@ typedef unsigned __int64 uint64;
 // Needed for va_list on Android
 #    include <stdarg.h>
 #    include <sys/select.h>
+#    include <stdio.h>
 #  else
 #    include <wchar.h>
 #  endif // OS_ANDROID

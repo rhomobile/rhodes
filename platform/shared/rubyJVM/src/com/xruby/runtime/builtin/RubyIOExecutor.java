@@ -5,6 +5,8 @@
 
 package com.xruby.runtime.builtin;
 
+import java.io.InputStream;
+
 import com.xruby.runtime.lang.RubyValue;
 
 interface RubyIOExecutor {
@@ -30,5 +32,7 @@ interface RubyIOExecutor {
     void truncate(int length);
 
     void seek(long pos);
+    
+    InputStream getInputStream();
 
 }

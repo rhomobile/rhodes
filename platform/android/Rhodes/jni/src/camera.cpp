@@ -8,15 +8,10 @@
 #define DEFAULT_LOGCATEGORY "Camera"
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
-  (JNIEnv *env, jclass, jstring callbackObj, jstring filePathObj, jstring errorObj, jboolean cancelled)
+  (JNIEnv *env, jclass, jstring callback, jstring filePath, jstring error, jboolean cancelled)
 {
-    const char *callbackStr = env->GetStringUTFChars(callbackObj, JNI_FALSE);
-    const char *filePathStr = env->GetStringUTFChars(filePathObj, JNI_FALSE);
-    const char *errorStr = env->GetStringUTFChars(errorObj, JNI_FALSE);
-    rho_rhodesapp_callCameraCallback(callbackStr, filePathStr, errorStr, cancelled);
-    env->ReleaseStringUTFChars(callbackObj, callbackStr);
-    env->ReleaseStringUTFChars(filePathObj, filePathStr);
-    env->ReleaseStringUTFChars(errorObj, errorStr);
+    rho_rhodesapp_callCameraCallback(rho_cast<std::string>(callback).c_str(),
+        rho_cast<std::string>(filePath).c_str(), rho_cast<std::string>(error).c_str(), cancelled);
 }
 
 RHO_GLOBAL void take_picture(char* callback_url)
@@ -26,7 +21,7 @@ RHO_GLOBAL void take_picture(char* callback_url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "takePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objCallback = env->NewStringUTF(callback_url);
+    jstring objCallback = rho_cast<jstring>(callback_url);
     env->CallStaticVoidMethod(cls, mid, objCallback);
     env->DeleteLocalRef(objCallback);
 }
@@ -38,7 +33,7 @@ RHO_GLOBAL void choose_picture(char* callback_url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "choosePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objCallback = env->NewStringUTF(callback_url);
+    jstring objCallback = rho_cast<jstring>(callback_url);
     env->CallStaticVoidMethod(cls, mid, objCallback);
     env->DeleteLocalRef(objCallback);
 }

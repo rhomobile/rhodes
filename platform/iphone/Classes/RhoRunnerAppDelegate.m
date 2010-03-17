@@ -36,6 +36,11 @@
 @synthesize player; 
 //@synthesize nativeBar;
 
+- (void)hideSplash {
+    [splashViewController hideSplash];
+    splashDisplayed = false;
+}
+
 - (void)loadStartPath:(NSString*)location {
     /*
 	if (nativeBar.barType == TOOLBAR_TYPE || nativeBar.barType == NOBAR_TYPE) {
@@ -69,7 +74,6 @@
 	}*/
 	
 	appStarted = true;
-    //[splashViewController hideSplash];
 	[self loadStartPath:location];
 }
 
@@ -429,6 +433,7 @@
     
     /*if ([fileManager fileExistsAtPath:pngPath]) {
         [splashViewController showSplash:pngPath];
+        splashDisplayed = true;
     }
     else*/ if ([fileManager fileExistsAtPath:htmPath]) {
         NSError *err;
@@ -439,8 +444,14 @@
 
 - (void) doStartUp {
 	appStarted = false;
+    splashDisplayed = false;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+    //Create local server and start it
+    //serverHost = [[ServerHost alloc] init];
+    serverHost = [ServerHost sharedInstance];
+    [serverHost create];
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
     //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
@@ -484,9 +495,6 @@
 	//DateTime delegate
 	//dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
 	
-    //Create local server and start it
-    //serverHost = [[ServerHost alloc] init];
-	serverHost = [ServerHost sharedInstance];
 	serverHost->actionTarget = self;
 	serverHost->onStartSuccess = @selector(onServerStarted:);
 	serverHost->onRefreshView = @selector(onRefreshView);

@@ -1,5 +1,7 @@
 package com.xruby.runtime.builtin;
 
+import java.io.InputStream;
+
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.lang.RubyValue;
@@ -20,6 +22,11 @@ public class OutputStreamExecutor implements RubyIOExecutor {
 		}*/
 	}
 
+    public InputStream getInputStream()
+    {
+    	return null;
+    }
+	
 	public int write(String s) {
 //		this.ps.print(s);
 		if ( m_bError )

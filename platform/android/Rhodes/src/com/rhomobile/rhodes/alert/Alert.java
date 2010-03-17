@@ -64,7 +64,7 @@ public class Alert {
 	public static void showPopup(String message) {
 		try {
 			Logger.T(TAG, "showPopup");
-			Rhodes.performOnUiThread(new ShowDialog(message));
+			Rhodes.performOnUiThread(new ShowDialog(message), false);
 		}
 		catch (Exception e) {
 			reportFail("showPopup", e);

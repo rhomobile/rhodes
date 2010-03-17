@@ -11,7 +11,7 @@ RHO_GLOBAL void alert_show_popup(char* message)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "showPopup", "(Ljava/lang/String;)V");
     if (!mid) return;
 
-    jstring msgObj = env->NewStringUTF(message);
+    jstring msgObj = rho_cast<jstring>(message);
     env->CallStaticVoidMethod(cls, mid, msgObj);
     env->DeleteLocalRef(msgObj);
 }
@@ -38,8 +38,8 @@ RHO_GLOBAL void alert_play_file(char* file_name, char *media_type)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "playFile", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
-    jstring objFileName = env->NewStringUTF(file_name);
-    jstring objMediaType = media_type ? env->NewStringUTF(media_type) : NULL;
+    jstring objFileName = rho_cast<jstring>(file_name);
+    jstring objMediaType = media_type ? rho_cast<jstring>(media_type) : NULL;
     env->CallStaticVoidMethod(cls, mid, objFileName, objMediaType);
     env->DeleteLocalRef(objFileName);
     if (objMediaType) env->DeleteLocalRef(objMediaType);
