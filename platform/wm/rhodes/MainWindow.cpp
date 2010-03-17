@@ -111,8 +111,16 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #else
 	LOGCONF().setLogView(&m_logView);
 
+    int xScreenSize = GetSystemMetrics(SM_CXSCREEN);
+    int yScreenSize = GetSystemMetrics(SM_CYSCREEN);
+
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
 	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
+    if ( rcMainWindow.left < 0 || rcMainWindow.left > xScreenSize )
+        rcMainWindow.left = 0;
+    if ( rcMainWindow.top < 0 || rcMainWindow.top > yScreenSize )
+        rcMainWindow.top = 0;
+
 	int width = RHOCONF().getInt("client_area_width");
     if (width <= 0) 
         width = rcMainWindow.right;
