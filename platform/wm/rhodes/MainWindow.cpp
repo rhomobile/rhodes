@@ -114,10 +114,12 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
 	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
 	int width = RHOCONF().getInt("client_area_width");
-	if (width <= 0) width = 320;
+    if (width <= 0) 
+        width = rcMainWindow.right;
 	rcMainWindow.right = rcMainWindow.left+width;
 	int height = RHOCONF().getInt("client_area_height");
-	if (height <= 0) height = 470;
+	if (height <= 0) 
+        height = rcMainWindow.bottom;
 	rcMainWindow.bottom = rcMainWindow.top+height;
 
 	m_browser.Create(m_hWnd,
