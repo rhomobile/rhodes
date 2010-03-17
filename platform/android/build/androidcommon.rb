@@ -105,10 +105,10 @@ def cc_run(command, args, chdir = nil)
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
   argv += args
-  puts argv.map { |x| '"' + x + '"' }.join(' ')
+  cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+  puts cmdstr
   $stdout.flush
-  #puts `#{cmdline}`
-  argv = argv.map { |x| '"' + x + '"' }.join(' ') if RUBY_VERSION =~ /^1\.8/
+  argv = cmdstr if RUBY_VERSION =~ /^1\.8/
   IO.popen(argv) do |f|
     while data = f.gets
       puts data
