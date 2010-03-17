@@ -88,7 +88,7 @@ public class WebView {
 
 	public static void navigate(String url, int index) {
 		try {
-			Rhodes.performOnUiThread(new NavigateTask(url, index));
+			Rhodes.performOnUiThread(new NavigateTask(url, index), false);
 		}
 		catch (Exception e) {
 			reportFail("navigate", e);
@@ -97,7 +97,7 @@ public class WebView {
 	
 	public static void refresh(int index) {
 		try {
-			Rhodes.performOnUiThread(new RefreshTask(index));
+			Rhodes.performOnUiThread(new RefreshTask(index), false);
 		}
 		catch (Exception e) {
 			reportFail("refresh", e);
@@ -107,7 +107,7 @@ public class WebView {
 	public static String currentLocation(int index) {
 		try {
 			StringBuffer loc = new StringBuffer();
-			Rhodes.performOnUiThread(new LocationTask(index, loc));
+			Rhodes.performOnUiThread(new LocationTask(index, loc), true);
 			return loc.toString();
 		}
 		catch (Exception e) {
@@ -120,7 +120,7 @@ public class WebView {
 	public static int activeTab() {
 		try {
 			IntHolder v = new IntHolder();
-			Rhodes.performOnUiThread(new ActiveTabTask(v));
+			Rhodes.performOnUiThread(new ActiveTabTask(v), true);
 			return v.value;
 		}
 		catch (Exception e) {
@@ -132,7 +132,7 @@ public class WebView {
 	
 	public static String executeJs(String js, int index) {
 		try {
-			Rhodes.performOnUiThread(new NavigateTask("javascript:" + js, index));
+			Rhodes.performOnUiThread(new NavigateTask("javascript:" + js, index), false);
 		}
 		catch (Exception e) {
 			reportFail("executeJs", e);
