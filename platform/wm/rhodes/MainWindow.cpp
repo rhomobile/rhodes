@@ -301,8 +301,9 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     else
         CHttpServer::Instance()->FreezeThread();
 */
-    if ( rho::common::CRhodesApp::getInstance() != null )
-        RHODESAPP().callAppActiveCallback(fActive!=0);
+    //activate calls after javascript alerts, so we have viciouse cycle if alert is display in home page
+    //if ( rho::common::CRhodesApp::getInstance() != null )
+    //    RHODESAPP().callAppActiveCallback(fActive!=0);
 
 #endif
 
