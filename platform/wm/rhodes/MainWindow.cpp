@@ -53,7 +53,6 @@ int CMainWindow::m_screenHeight;
 
 CMainWindow::CMainWindow()
 {
-    m_bCreated = false;
 	m_bLoading = true;
 	m_bRhobundleReloadEnabled = true;
 #if defined(_WIN32_WCE)
@@ -203,7 +202,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     RHO_ASSERT(SUCCEEDED(hr));
 Error:
 
-    m_bCreated = true;
     return SUCCEEDED(hr) ? 0 : -1;
 }
 
@@ -303,7 +301,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     else
         CHttpServer::Instance()->FreezeThread();
 */
-    if ( m_bCreated )
+    if ( rho::common::CRhodesApp::getInstance() != null )
         RHODESAPP().callAppActiveCallback(fActive!=0);
 
 #endif
