@@ -21,6 +21,7 @@
 package com.rhomobile.rhodes.camera;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,10 +45,10 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	
 	private static final String TAG = "ImageCapture";
 	
+	private String callbackUrl;
 	private Camera camera;
 	private boolean isPreviewRunning = false;
-	private SimpleDateFormat timeStampFormat = new SimpleDateFormat(
-			"yyyyMMddHHmmssSS");
+	private SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
 
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
@@ -61,6 +62,10 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.camera);
+		
+		Bundle extras = getIntent().getExtras();
+		callbackUrl = extras.getString(com.rhomobile.rhodes.camera.Camera.INTENT_EXTRA_PREFIX + "callback");
+		
 		surfaceView = (SurfaceView) findViewById(AndroidR.id.surface);
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
@@ -74,14 +79,8 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 
 	PictureCallback mPictureCallbackRaw = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera c) {
-			Logger.D(TAG, "PICTURE CALLBACK RAW: " + data);
+			Logger.D(TAG, "PICTURE CALLBACK RAW");
 			camera.startPreview();
-		}
-	};
-
-	Camera.PictureCallback mPictureCallbackJpeg = new Camera.PictureCallback() {
-		public void onPictureTaken(byte[] data, Camera c) {
-			Logger.D(TAG, "PICTURE CALLBACK JPEG: data.length = " + data);
 		}
 	};
 
@@ -105,13 +104,15 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 				values.put(Media.MIME_TYPE, "image/jpeg");
 				values.put(Media.DESCRIPTION, "Image capture by camera");
 
-				Uri uri = getContentResolver().insert(
-						Media.EXTERNAL_CONTENT_URI, values);
+				Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
 				// String filename = timeStampFormat.format(new Date());
 				String dir = com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR;
-				(new File(dir)).mkdirs();
-				iccb = new ImageCaptureCallback(getContentResolver().openOutputStream(uri),
-						dir + "/" + filename + ".jpg");
+				File fdir = new File(dir);
+				if (!fdir.exists())
+					fdir.mkdirs();
+				
+				OutputStream osCommon = getContentResolver().openOutputStream(uri);
+				iccb = new ImageCaptureCallback(callbackUrl, osCommon, dir + "/" + filename + ".jpg");
 			} catch (Exception ex) {
 				Logger.E(TAG, ex.getMessage());
 			}
