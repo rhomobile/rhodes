@@ -125,5 +125,29 @@ public class Utils {
 			}
 		}
 	}
+	
+	public static void copy(String src, String dst) throws IOException {
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+			is = new FileInputStream(src);
+			os = new FileOutputStream(dst);
+			
+			byte[] buf = new byte[1024];
+			for(;;) {
+				int n = is.read(buf);
+				if (n <= 0)
+					break;
+				os.write(buf, 0, n);
+			}
+			os.flush();
+		}
+		finally {
+			if (is != null)
+				is.close();
+			if (os != null)
+				os.close();
+		}
+	}
 
 }
