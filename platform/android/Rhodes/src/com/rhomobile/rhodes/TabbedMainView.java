@@ -23,7 +23,6 @@ package com.rhomobile.rhodes;
 import java.util.Map;
 import java.util.Vector;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
