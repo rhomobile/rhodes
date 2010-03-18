@@ -8,7 +8,7 @@
 #ifdef OS_WINCE
 #include <tapi.h>
 #include <tsp.h>
-#include <sms.h>
+//#include <sms.h>
 #endif
 
 using namespace rho;
@@ -130,7 +130,7 @@ FuncExit:
 #undef MAX
 
 }
-
+/*
 bool getPhoneNumFromSMSBearer (String &number)
 {
 	SMS_ADDRESS psmsaAddress;
@@ -142,7 +142,7 @@ bool getPhoneNumFromSMSBearer (String &number)
 
 	number = convertToStringA(psmsaAddress.ptsAddress);
 	return true;
-}
+} */
 
 bool getPhoneNumFromOwnerInfo (String &number)
 {
@@ -197,8 +197,8 @@ VALUE phone_number()
 	if (getPhoneNumFromSIMCard(number))
 		return rho_ruby_create_string(number.c_str());
 	
-	if (getPhoneNumFromSMSBearer(number))
-		return rho_ruby_create_string(number.c_str());
+//	if (getPhoneNumFromSMSBearer(number))
+//		return rho_ruby_create_string(number.c_str());
 
 	if (getPhoneNumFromOwnerInfo(number))
 		return rho_ruby_create_string(number.c_str());
