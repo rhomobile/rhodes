@@ -191,7 +191,8 @@ public class GeoLocation extends RhoThread{
 							m_lp.setLocationListener( m_locListener, 
 									m_nDeterminedTime == 0 ? 1 : getPingTimeoutSec(), -1, -1);
 							m_nDeterminedTime = nNow;
-						}
+						}else
+							onLocationError();
 					}
 				}catch(Exception exc)
 				{
