@@ -38,14 +38,15 @@ public class DateTimePicker {
 
 	public static void choose(String callback, String title, long init, int v, byte[] opaque) {
 		try {
-			Intent intent = new Intent(RhodesInstance.getInstance(), DateTimePickerScreen.class);
+			Rhodes r = RhodesInstance.getInstance();
+			Intent intent = new Intent(r, DateTimePickerScreen.class);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", callback);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "title", title);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "init", init);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "fmt", v);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "opaque", opaque);
 			
-			RhodesInstance.getInstance().startActivity(intent);
+			r.startActivity(intent);
 		}
 		catch (Exception e) {
 			reportFail("choose", e);
