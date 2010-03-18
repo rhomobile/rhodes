@@ -176,7 +176,6 @@ private:
 #endif
 
 	bool m_bLoading;
-    bool m_bCreated; 
 	bool m_bRhobundleReloadEnabled;
 	//char* m_current_url;
     //char* m_szStartPage;
