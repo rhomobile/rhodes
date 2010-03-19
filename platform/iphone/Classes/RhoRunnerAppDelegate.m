@@ -134,6 +134,7 @@
 	map.actionTarget = self;
 	map.onNavigate = @selector(onNavigateTo:);
 	[window addSubview:map.view];
+    [map.view setFrame:[window frame]];
 }
 #endif
 
@@ -150,18 +151,16 @@
 #endif
 	
 	@try {
+        [[UIApplication sharedApplication] setStatusBarHidden:YES];
 		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
 		picker.sourceType = type;
 		picker.delegate = delegateObject; 
 		picker.allowsImageEditing = YES; 
-		if ( type == UIImagePickerControllerSourceTypePhotoLibrary ) {
-			[window addSubview:picker.view];
-		} else {
-			[controller presentModalViewController:picker animated:YES]; 
-		}
+		[window addSubview:picker.view];
 	} @catch(NSException* theException) {
 		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
 		//NSLog(@"%@", theException);
+        [[UIApplication sharedApplication] setStatusBarHidden:NO];
 		return NO;
 	}
 	
@@ -430,10 +429,10 @@
     //serverHost = [[ServerHost alloc] init];
 	serverHost = [ServerHost sharedInstance];
     [serverHost create];
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
-    //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
-    //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
+    //UIApplication *app = [UIApplication sharedApplication];
+    //[app setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+    //[app setStatusBarHidden:YES];
     
     CGRect frame = [[UIScreen mainScreen] applicationFrame];
     //int newY = sbFrame.size.height;
@@ -447,6 +446,7 @@
     window = [[UIWindow alloc] initWithFrame:frame];
     window.contentMode = UIViewContentModeScaleToFill;
     window.autoresizesSubviews = YES;
+    window.userInteractionEnabled = YES;
     [window makeKeyAndVisible];
     
     webViewController = [[WebViewController alloc] initWithParentWindow:window];
