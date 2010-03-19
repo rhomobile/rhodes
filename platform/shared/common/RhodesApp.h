@@ -98,6 +98,7 @@ public:
     rubyext::CGeoLocation& getGeo(){ return m_oGeoLocation;}
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
 
+    void runCallbackInThread(const String& strCallback, const String& strBody);
 private:
     virtual void run();
 
