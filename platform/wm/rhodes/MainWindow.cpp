@@ -97,7 +97,12 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
 	int nSpiBorder = 0;
 #endif
-	RECT rcMainWindow = { 0,0,320,470 };
+    int xScreenSize = GetSystemMetrics(SM_CXSCREEN);
+    int yScreenSize = GetSystemMetrics(SM_CYSCREEN);
+
+    LOG(INFO)  + "Screen size: x=" + xScreenSize + ";y=" + yScreenSize;
+
+	RECT rcMainWindow = { 0,0,xScreenSize,yScreenSize };
 
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
@@ -110,9 +115,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
                      ID_BROWSER);
 #else
 	LOGCONF().setLogView(&m_logView);
-
-    int xScreenSize = GetSystemMetrics(SM_CXSCREEN);
-    int yScreenSize = GetSystemMetrics(SM_CYSCREEN);
 
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
 	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
@@ -179,6 +181,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // (rcMainWindow was initialized above)
     RHO_ASSERT(SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0));
 
+    LOG(INFO)  + "SPI_GETWORKAREA: x=" + rcMainWindow.right + ";y=" + rcMainWindow.bottom;
+
     // (rcMenuBar was initialized above)
     m_menuBar.GetWindowRect(&rcMenuBar);
     rcMainWindow.bottom = rcMenuBar.top;
@@ -240,6 +244,9 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
 	}
 #else
+
+    LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+
 	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
 #endif
 
