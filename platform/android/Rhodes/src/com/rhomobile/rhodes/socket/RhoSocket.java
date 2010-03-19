@@ -6,10 +6,10 @@ import java.net.Socket;
 
 public class RhoSocket extends Socket {
 	
-	public RhoSocket(int sockfd) throws IOException {
-		super(new RhoSocketImpl(sockfd));
-		// Dummy string, just to set 'connected' state
-		connect(new InetSocketAddress("localhost", 0));
+	public RhoSocket(int sockfd, RhoSockAddr remote) throws IOException {
+		super(new RhoSocketImpl(sockfd, remote));
+		// Dummy line, need to get correctly initialized internal states ('created', 'bound', 'connected')
+		connect(new InetSocketAddress(remote.host, remote.port));
 	}
 	
 }
