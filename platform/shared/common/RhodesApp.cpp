@@ -162,19 +162,25 @@ void CRhodesApp::stopApp()
 class CRhoCallbackCall :  public common::CRhoThread
 {
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
-	String m_strCallback;
+	String m_strCallback, m_strBody;
 public:
-    CRhoCallbackCall(const String& strCallback, common::IRhoClassFactory* factory) : CRhoThread(factory), m_ptrFactory(factory), m_strCallback(strCallback)
+    CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory) : CRhoThread(factory), 
+        m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
     { start(epNormal); }
 
 private:
     virtual void run()
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-		common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, "", null );
+		common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
         delete this;
     }
 };
+
+void CRhodesApp::runCallbackInThread(const String& strCallback, const String& strBody)
+{
+    new CRhoCallbackCall(strCallback, strBody, createClassFactory() );
+}
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
