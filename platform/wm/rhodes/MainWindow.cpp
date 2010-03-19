@@ -102,7 +102,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     LOG(INFO)  + "Screen size: x=" + xScreenSize + ";y=" + yScreenSize;
 
-	RECT rcMainWindow = { 0,0,xScreenSize,yScreenSize };
+	RECT rcMainWindow = { 0,0,320,470 };
 
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
