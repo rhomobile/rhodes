@@ -5,7 +5,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
 
-#ifdef OS_WINCE
+#ifdef OS_WINCE__
 #include <tapi.h>
 #include <tsp.h>
 //#include <sms.h>
@@ -16,7 +16,7 @@ using namespace rho::common;
 
 extern "C"
 {
-#ifdef OS_WINCE
+#ifdef OS_WINCE__
 
 static const int PHONE_NUMBER_BUFFER_SIZE = 512;
 
@@ -215,7 +215,7 @@ VALUE phone_number()
 static int has_camera()
 {
 #ifdef OS_WINCE
-    DEVMGR_DEVICE_INFORMATION devInfo = {0};
+/*    DEVMGR_DEVICE_INFORMATION devInfo = {0};
     GUID guidCamera = { 0xCB998A05, 0x122C, 0x4166, 0x84, 0x6A, 0x93,
                         0x3E, 0x4D, 0x7E, 0x3C, 0x86 };
     devInfo.dwSize = sizeof(devInfo);
@@ -227,7 +227,9 @@ static int has_camera()
         return 1;
     }
 
-    return 0;
+    return 0;*/
+
+    return 1;
 #else
     return 0;
 #endif
