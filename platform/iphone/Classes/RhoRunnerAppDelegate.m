@@ -154,11 +154,7 @@
 		picker.sourceType = type;
 		picker.delegate = delegateObject; 
 		picker.allowsImageEditing = YES; 
-		if ( type == UIImagePickerControllerSourceTypePhotoLibrary ) {
-			[window addSubview:picker.view];
-		} else {
-			[window addSubview:picker.view];
-		}
+		[window addSubview:picker.view];
 	} @catch(NSException* theException) {
 		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
 		//NSLog(@"%@", theException);
