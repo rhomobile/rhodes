@@ -30,7 +30,7 @@ void CGeoLocation::init(common::IRhoClassFactory* pFactory)
     m_NetRequest = pFactory->createNetRequest();
 }
 
-void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bError)
+void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bError, boolean bRunInThread)
 {
 	if (oNotify.m_strUrl.length() == 0)
 		return;
@@ -42,20 +42,29 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bErr
 	else	
 		strBody += "&status=ok";
 
+	strBody += "&available=" + convertToStringA( (rho_geo_is_available() ? 1 : 0) );
 	strBody += "&known_position=" + convertToStringA(rho_geo_known_position());
 	strBody += "&latitude=" + convertToStringA(rho_geo_latitude());
 	strBody += "&longitude=" + convertToStringA(rho_geo_longitude());
 
-    NetRequest( getNet().pushData( strFullUrl, strBody, null ) );
+    if ( oNotify.m_strParams.length() > 0 )
+        strBody += "&" + oNotify.m_strParams;
+
+    if ( bRunInThread )
+        RHODESAPP().runCallbackInThread(strFullUrl, strBody);
+    else
+    {
+        NetRequest( getNet().pushData( strFullUrl, strBody, null ) );
+    }
 }
 
-void CGeoLocation::callGeoCallback(boolean bError)
+void CGeoLocation::callGeoCallback(boolean bError, boolean bRunInThread)
 {
     synchronized(m_mxNotify)
     {
-        callGeoCallback(m_Notify, bError);
+        callGeoCallback(m_Notify, bError, bRunInThread);
         m_Notify = CGeoNotification();
-        callGeoCallback(m_ViewNotify, bError);
+        callGeoCallback(m_ViewNotify, bError, bRunInThread);
         if ( bError )
             m_ViewNotify = CGeoNotification();
     }
@@ -69,6 +78,9 @@ void CGeoLocation::setGeoCallback(const char *url, char* params, int timeout_sec
         m_Notify = CGeoNotification(url?url:"",params?params:"");
 
     setPingTimeoutSec(timeout_sec);
+
+    if ( !rho_geo_is_available() )
+        callGeoCallback(true, true);
 }
 
 int CGeoLocation::getDefaultPingTimeoutSec()
