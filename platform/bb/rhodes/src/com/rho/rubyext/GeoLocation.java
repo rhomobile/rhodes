@@ -209,7 +209,7 @@ public class GeoLocation extends RhoThread{
 	
     private static class GeoNotification
     {
-        String m_strUrl, m_strParams;
+        String m_strUrl = "", m_strParams = "";
         
         GeoNotification(String strUrl, String strParams)
         { 
@@ -219,7 +219,7 @@ public class GeoLocation extends RhoThread{
         
         void fire(boolean bError)
         {
-        	if (m_strUrl.length() == 0)
+        	if (m_strUrl != null && m_strUrl.length() == 0)
         		return;
         	
         	NetRequest netRequest = RhoClassFactory.createNetRequest();
@@ -236,6 +236,9 @@ public class GeoLocation extends RhoThread{
 	        	strBody += "&known_position=" + (isKnownPosition() ? 1 : 0);
 	        	strBody += "&latitude=" + GetLatitude();
 	        	strBody += "&longitude=" + GetLongitude();
+	        	
+	            if ( m_strParams != null && m_strParams.length() > 0 )
+	                strBody += "&" + m_strParams;
 	        	
 			    NetResponse resp = netRequest.pushData( strFullUrl, strBody, null );
 			    if ( !resp.isOK() )
