@@ -2,7 +2,6 @@ package com.rhomobile.rhodes.socket;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
@@ -12,13 +11,15 @@ import com.rhomobile.rhodes.Logger;
 
 public class SSLImpl {
 	
-	private static final String TAG = "SSLImpl";
+	private static final String TAG = "SSLImplJava";
 	
 	private SSLSocket sock;
 	private int sockfd;
 	
 	private InputStream is;
 	private OutputStream os;
+	
+	public native RhoSockAddr getRemoteSockAddr(int sockfd);
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
@@ -28,13 +29,12 @@ public class SSLImpl {
 		try {
 			sockfd = fd;
 			SSLSocketFactory factory = (SSLSocketFactory)SSLSocketFactory.getDefault();
-			Socket s = new RhoSocket(sockfd);
-			InetSocketAddress rem = (InetSocketAddress)s.getRemoteSocketAddress();
-			String remHost = rem.getAddress().getHostAddress();
-			int remPort = rem.getPort();
-			sock = (SSLSocket)factory.createSocket(s, remHost, remPort, true);
-			is = sock.getInputStream();
+			RhoSockAddr remote = getRemoteSockAddr(sockfd);
+			Socket s = new RhoSocket(sockfd, remote);
+			sock = (SSLSocket)factory.createSocket(s, remote.host.toString(), remote.port, true);
+			sock.setUseClientMode(true);
 			os = sock.getOutputStream();
+			is = sock.getInputStream();
 			return true;
 		}
 		catch (Exception e) {
