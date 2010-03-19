@@ -158,8 +158,9 @@ char* get_current_location() {
             UIBarButtonItemAction *action = [[UIBarButtonItemAction alloc] init:self url:u];
             if ([icon length] > 0) {
                 NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
+                UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
                 btn = [[UIBarButtonItem alloc]
-                       initWithImage:[UIImage imageNamed:imagePath] style:UIBarButtonItemStylePlain
+                       initWithImage:img style:UIBarButtonItemStylePlain
                        target:action action:@selector(onAction:)];
             }
             else if ([label length] > 0) {
