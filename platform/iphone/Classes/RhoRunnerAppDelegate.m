@@ -158,7 +158,6 @@
 			[window addSubview:picker.view];
 		} else {
 			[window addSubview:picker.view];
-			//[controller presentModalViewController:picker animated:YES]; 
 		}
 	} @catch(NSException* theException) {
 		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
