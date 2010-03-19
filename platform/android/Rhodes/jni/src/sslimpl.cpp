@@ -1,6 +1,63 @@
 #include "sslimpl.h"
 #include "JNIRhodes.h"
 
+#include <jni/com_rhomobile_rhodes_socket_SSLImpl.h>
+
+#include <arpa/inet.h>
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SSLImpl"
+
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSockAddr
+  (JNIEnv *env, jobject, jint sock)
+{
+    jclass clsSockAddr = getJNIClass(RHODES_JAVA_CLASS_RHOSOCKADDR);
+    if (!clsSockAddr) return NULL;
+    jclass clsInetAddr = getJNIClass(RHODES_JAVA_CLASS_INET4ADDRESS);
+    if (!clsInetAddr) return NULL;
+    jmethodID midSockAddr = getJNIClassMethod(env, clsSockAddr, "<init>", "()V");
+    if (!midSockAddr) return NULL;
+    jmethodID midInetAddr = getJNIClassMethod(env, clsInetAddr, "<init>", "([BLjava/lang/String;)V");
+    if (!midInetAddr) return NULL;
+    jfieldID fidInetAddr = getJNIClassField(env, clsSockAddr, "host", "Ljava/net/InetAddress;");
+    if (!fidInetAddr) return NULL;
+    jfieldID fidPort = getJNIClassField(env, clsSockAddr, "port", "I");
+    if (!fidPort) return NULL;
+
+    jbyteArray array = env->NewByteArray(4);
+    if (!array) return NULL;
+    jbyte *arr = env->GetByteArrayElements(array, NULL);
+    if (!arr) return NULL;
+
+    sockaddr_in sa;
+    socklen_t salen = sizeof(sa);
+    int e = ::getpeername(sock, (sockaddr*)&sa, &salen);
+    if (e == -1) {
+      RAWLOG_ERROR1("getpeername failed: %d", errno);
+      return NULL;
+    }
+    uint32_t addr = ntohl(sa.sin_addr.s_addr);
+    arr[3] = (jbyte)(addr & 0xFF);
+    addr >>= 8;
+    arr[2] = (jbyte)(addr & 0xFF);
+    addr >>= 8;
+    arr[1] = (jbyte)(addr & 0xFF);
+    addr >>= 8;
+    arr[0] = (jbyte)(addr & 0xFF);
+    env->ReleaseByteArrayElements(array, arr, 0);
+
+    jobject inetaddrObj = env->NewObject(clsInetAddr, midInetAddr, array, rho_cast<jstring>(::inet_ntoa(sa.sin_addr)));
+    if (!inetaddrObj) return NULL;
+
+    jobject sockaddrObj = env->NewObject(clsSockAddr, midSockAddr);
+    if (!sockaddrObj) return NULL;
+
+    env->SetObjectField(sockaddrObj, fidInetAddr, inetaddrObj);
+    env->SetIntField(sockaddrObj, fidPort, ntohs(sa.sin_port));
+
+    return sockaddrObj;
+}
+
 namespace rho
 {
 namespace net
