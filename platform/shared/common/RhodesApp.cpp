@@ -590,7 +590,7 @@ boolean CRhodesApp::sendLog()
     return true;
 }
 
-String CRhodesApp::addCallbackObject(unsigned long valObject, String strName)
+String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String strName)
 {
     int nIndex = -1;
     for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
@@ -598,27 +598,27 @@ String CRhodesApp::addCallbackObject(unsigned long valObject, String strName)
         if ( m_arCallbackObjects.elementAt(i) == 0 )
             nIndex = i;
     }
-    rho_ruby_holdValue(valObject);
+//    rho_ruby_holdValue(valObject);
     if ( nIndex  == -1 )
     {
-        m_arCallbackObjects.addElement(valObject);
+        m_arCallbackObjects.addElement(pCallbackObject);
         nIndex = m_arCallbackObjects.size()-1;
     }else
-        m_arCallbackObjects.setElementAt(valObject,nIndex);
+        m_arCallbackObjects.setElementAt(pCallbackObject,nIndex);
 
     String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
 
     return strRes;
 }
 
-void CRhodesApp::delCallbackObject(unsigned long valObject)
+void CRhodesApp::delCallbackObject(ICallbackObject* pCallbackObject)
 {
     for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
     {
-        if ( m_arCallbackObjects.elementAt(i) == valObject )
+        if ( m_arCallbackObjects.elementAt(i) == pCallbackObject )
         {
             m_arCallbackObjects.setElementAt(0,i);
-            rho_ruby_releaseValue(valObject);
+//            rho_ruby_releaseValue(valObject);
         }
     }
 }
@@ -626,9 +626,13 @@ void CRhodesApp::delCallbackObject(unsigned long valObject)
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
     if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
-        return 0;
+        return rho_ruby_get_NIL();
 
-    return m_arCallbackObjects.elementAt(nIndex);
+    ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
+    if ( !pCallbackObject )
+        return rho_ruby_get_NIL();
+
+    return pCallbackObject->getObjectValue();
 }
 
 }
