@@ -61,8 +61,8 @@ public:
     {
         String path = path1;
         rho::String::size_type pos = 0;
-        while ( (pos = path.find('/', pos)) != rho::String::npos ) {
-            path.replace( pos, 1, "\\");
+        while ( (pos = path.find('\\', pos)) != rho::String::npos ) {
+            path.replace( pos, 1, "/");
             pos++;
         }
 
