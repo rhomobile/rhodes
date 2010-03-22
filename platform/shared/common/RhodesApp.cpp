@@ -73,10 +73,6 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
 #endif
 
     //rho_logconf_Init(m_strRhoRootPath.c_str());
-#ifdef OS_WINCE
-	rho_logconf_Init(m_strRhoRootPath.c_str());
-#endif 
-
     initAppUrls();
     //start(epNormal);
 
