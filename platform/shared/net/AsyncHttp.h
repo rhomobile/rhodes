@@ -12,7 +12,7 @@ namespace rho
 namespace net
 {
 
-class CAsyncHttp : public common::CRhoThread
+class CAsyncHttp : public common::CRhoThread, rho::ICallbackObject
 {
     DEFINE_LOGCLASS;
 
@@ -25,7 +25,6 @@ class CAsyncHttp : public common::CRhoThread
     Hashtable<String,String> m_mapHeaders;
 
     String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
-    unsigned long m_valBody;
 public:
     enum EHttpCommands{ hcGet = 0, hcPost, hcDownload, hcUpload };
 private:
@@ -42,13 +41,16 @@ public:
 
     static void cancelRequest(const char* szCallback);
 
+    //rho::ICallbackObject
+    virtual unsigned long getObjectValue();
+
 private:
     virtual void run();
 
-    void processResponse(INetResponse& resp );
     void callNotify(INetResponse& resp, int nError );
 
     String makeHeadersString();
+
 };
 
 } // namespace net
