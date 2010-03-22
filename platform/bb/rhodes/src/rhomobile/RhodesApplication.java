@@ -520,7 +520,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private final String _httpRoot = "http://localhost:8080/";
 
-    private boolean _isFullBrowser = false;
+    private static boolean _isFullBrowser = false;
     
     private static PushListeningThread _pushListeningThread = null;
     
@@ -528,6 +528,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     
     public static RhodesApplication getInstance(){ return _instance; }
     private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
+    
+    public static boolean isFullBrowser(){ return _isFullBrowser; }
     
     /***************************************************************************
      * Main.
@@ -1171,16 +1173,19 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 //	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
 //	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
 	        
-	        	        	        
-	        if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
+	        if ( RhoConf.getInstance().getString("use_bb_full_browser").equalsIgnoreCase("touch") )
+	        	_isFullBrowser = _mainScreen.isTouchScreen();
+	        else  if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
 	        {
 		        Version.SoftVersion ver = Version.getSoftVersion();
 		        if ( ver.nMajor > 4 || ( ver.nMajor == 4 && ver.nMinor >= 6 ) )
-		        {
-			        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-			        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
 		        	_isFullBrowser = true;
-		        }
+	        }
+
+	        if (_isFullBrowser)
+	        {
+		        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
+		        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
 	        }
 	        
 //	    	_pushListeningThread = new PushListeningThread();
