@@ -105,8 +105,8 @@ public :
 			return S_FALSE;
 		}
 
-        rho_logconf_Init(m_strRootPath.c_str());
-        LOG(INFO) + "Rhodes started";
+		//rho_logconf_Init(m_strRootPath.c_str());
+		LOG(INFO) + "Rhodes started";
 
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
