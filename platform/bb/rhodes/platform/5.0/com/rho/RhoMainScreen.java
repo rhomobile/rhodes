@@ -19,4 +19,10 @@ public abstract class RhoMainScreen extends MainScreen {
 		return super.touchEvent(message);
 	}
 	
+	public boolean isTouchScreen()
+	{
+	    //DeviceInfo.getDevicename()
+	    return net.rim.device.api.ui.Touchscreen.isSupported();
+	}
+	
 };
