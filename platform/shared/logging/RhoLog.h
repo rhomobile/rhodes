@@ -10,7 +10,7 @@
 
 namespace rho {
 
-#if defined (RHO_DEBUG) && RHO_STRIP_LOG <= L_TRACE
+#if /*defined (RHO_DEBUG) &&*/ RHO_STRIP_LOG <= L_TRACE
 #define COMPACT_RHO_LOGC_TRACE(category) rho::LogMessage(__FILE__, __LINE__, L_TRACE, LOGCONF(), category )
 
 //#define TRACEC_IF(exp,category) !(exp) ? (void) 0 : rho::LogMessageVoidify() & TRACEC(category)
