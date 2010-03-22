@@ -743,6 +743,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 //        if ( m_current_url && strcmp(m_current_url,"about:blank") ==0 )
 //            m_szStartPage = wce_wctomb(url);
     }
+    m_bLoading = false;
 
 	/*if (m_current_url) {
 		free(m_current_url);
