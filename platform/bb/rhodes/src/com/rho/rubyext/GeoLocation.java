@@ -27,6 +27,7 @@ public class GeoLocation extends RhoThread{
 	private long m_nDeterminedTime = 0;
 	private LocationListenerImpl m_locListener;
 	static private Object sync = new Object();
+	static private Object syncLP = new Object();
 	private boolean m_bInCallback = false;
 	private int m_nPingTimeoutSec = 0;
 	
@@ -150,7 +151,10 @@ public class GeoLocation extends RhoThread{
 					sync.wait(100);
 			}catch(InterruptedException exc)
 			{}
-			
+		}
+		
+		synchronized(syncLP)
+		{
 			if ( m_lp != null ){
 				m_lp.setLocationListener(null, 0, 0, 0);
 				m_lp.reset();
@@ -163,13 +167,14 @@ public class GeoLocation extends RhoThread{
 	private void checkAlive(){
 		java.util.Date now = new java.util.Date();
 		long nNow = now.getTime();
-		synchronized(sync)
-		{
-			boolean bReset = !m_bInCallback;//m_nDeterminedTime == 0 || ((nNow - m_nDeterminedTime)>1000*m_nResetTimeoutSec);
+		boolean bErrorNotify = false;
+		boolean bReset = !m_bInCallback;//m_nDeterminedTime == 0 || ((nNow - m_nDeterminedTime)>1000*m_nResetTimeoutSec);
+		
+		if ( bReset ){
 			
-			if ( bReset ){
-				
-				try {
+			try {
+				synchronized(syncLP)
+				{
 					if ( m_lp != null ){
 						if ( m_locListener != null )
 						{
@@ -192,17 +197,21 @@ public class GeoLocation extends RhoThread{
 									m_nDeterminedTime == 0 ? 1 : getPingTimeoutSec(), -1, -1);
 							m_nDeterminedTime = nNow;
 						}else
-							onLocationError();
+							bErrorNotify = true;
 					}
-				}catch(Exception exc)
-				{
-					if ( m_lp != null )
-						LOG.INFO(errorStrLocationException + " : " + exc.getMessage());
-					else	
-						LOG.INFO(errorStrDontSupport + " : " + exc.getMessage());
-					
-					onLocationError();
 				}
+			}catch(Exception exc)
+			{
+				if ( m_lp != null )
+					LOG.INFO(errorStrLocationException + " : " + exc.getMessage());
+				else	
+					LOG.INFO(errorStrDontSupport + " : " + exc.getMessage());
+				
+				bErrorNotify = true;
+			}finally
+			{
+				if (bErrorNotify)
+					onLocationError();
 			}
 		}
 	}
