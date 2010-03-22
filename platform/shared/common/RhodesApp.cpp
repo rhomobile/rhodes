@@ -72,7 +72,11 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
 #endif
 
-    //rho_logconf_Init(m_strRhoRootPath.c_str());	
+    //rho_logconf_Init(m_strRhoRootPath.c_str());
+#ifdef OS_WINCE
+	rho_logconf_Init(m_strRhoRootPath.c_str());
+#endif 
+
     initAppUrls();
     //start(epNormal);
 
