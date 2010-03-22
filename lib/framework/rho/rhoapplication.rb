@@ -11,7 +11,7 @@ module Rho
   	TABBAR_TYPE = 1
   	NOBAR_TYPE = 2
   	
-  	@@toolbar = [{:action => :back}, {:action => :forward}, {:action => :flexible},
+  	@@toolbar = [{:action => :back}, {:action => :forward}, {:action => :separator},
       {:action => :home}, {:action => :refresh}, {:action => :options} ]
     	
     def initialize

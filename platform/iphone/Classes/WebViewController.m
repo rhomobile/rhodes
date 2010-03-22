@@ -118,37 +118,49 @@ char* get_current_location() {
             return;
         }
         
+        UIImage *img = nil;
+        if ([icon length] > 0) {
+            NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
+            img = [UIImage imageWithContentsOfFile:imagePath];
+        }
+        
         UIBarButtonItem *btn = nil;
         if ([url compare:@"back"] == NSOrderedSame) {
             btn = [[UIBarButtonItem alloc]
-                   initWithImage:[UIImage imageNamed:@"back_btn.png"]
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goBack:)];
+                    initWithImage:(img ? img : [UIImage imageNamed:@"back_btn.png"])
+                    style:UIBarButtonItemStylePlain target:self
+                    action:@selector(goBack:)];
         }
         else if ([url compare:@"forward"] == NSOrderedSame) {
             btn = [[UIBarButtonItem alloc]
-                   initWithImage:[UIImage imageNamed:@"forward_btn.png"]
+                   initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
                    style:UIBarButtonItemStylePlain target:self
                    action:@selector(goForward:)];
         }
         else if ([url compare:@"home"] == NSOrderedSame) {
             btn = [[UIBarButtonItem alloc]
-                   initWithImage:[UIImage imageNamed:@"home_btn.png"]
+                   initWithImage:(img ? img : [UIImage imageNamed:@"home_btn.png"])
                    style:UIBarButtonItemStylePlain target:self
                    action:@selector(goHome:)];
         }
         else if ([url compare:@"options"] == NSOrderedSame) {
             btn = [[UIBarButtonItem alloc]
-                   initWithImage:[UIImage imageNamed:@"gears.png"]
+                   initWithImage:(img ? img : [UIImage imageNamed:@"gears.png"])
                    style:UIBarButtonItemStylePlain target:self
                    action:@selector(goOptions:)];
         }
         else if ([url compare:@"refresh"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
-                   target:self action:@selector(onRefresh:)];
+            if (img)
+                btn = [[UIBarButtonItem alloc]
+                       initWithImage:img
+                       style:UIBarButtonItemStylePlain target:self
+                       action:@selector(onRefresh:)];
+            else
+                btn = [[UIBarButtonItem alloc]
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+                       target:self action:@selector(onRefresh:)];
         }
-        else if ([url compare:@"flexible"] == NSOrderedSame) {
+        else if ([url compare:@"separator"] == NSOrderedSame) {
             btn = [[UIBarButtonItem alloc]
                    initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                    target:nil action:nil];
@@ -156,9 +168,7 @@ char* get_current_location() {
         else {
             NSString *u = [NSString stringWithUTF8String:rho_http_normalizeurl([url UTF8String])];
             UIBarButtonItemAction *action = [[UIBarButtonItemAction alloc] init:self url:u];
-            if ([icon length] > 0) {
-                NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
-                UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
+            if (!img) {
                 btn = [[UIBarButtonItem alloc]
                        initWithImage:img style:UIBarButtonItemStylePlain
                        target:action action:@selector(onAction:)];
@@ -304,15 +314,19 @@ char* get_current_location() {
 
 -(void)showToolbar:(BOOL)show {
     toolbar.hidden = !show;
+    CGRect frame = window.frame;
     if (show) {
         [window sendSubviewToBack:webView];
         [window bringSubviewToFront:toolbar];
+        CGRect tbFrame = toolbar.frame;
+        frame.size.height -= tbFrame.size.height;
     }
     else {
         [window sendSubviewToBack:toolbar];
         [window bringSubviewToFront:webView];
     }
     [webView sizeToFit];
+    [webView setFrame:frame];
 }
 
 -(void)navigate:(NSString*)url {
