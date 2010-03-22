@@ -263,10 +263,11 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_exit(false), m_port(port), m_root(root), verbose(true)
+    :m_exit(false), m_port(port), verbose(true)
 {
     RAWTRACE("Open listening socket...");
-    
+
+    m_root = CFilePath::normalizePath(root);
     m_bPause = false;
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     if (m_listener == SOCKET_ERROR) {
@@ -809,8 +810,8 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
 
 bool CHttpServer::send_file(String const &path)
 {
-    String fullPath = path;
-	if (path.find(m_root) != 0)
+    String fullPath = CFilePath::normalizePath(path);
+	if (fullPath.find(m_root) != 0)
         fullPath = CFilePath::join( m_root, path );
 	
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());

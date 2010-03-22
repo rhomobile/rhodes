@@ -57,6 +57,18 @@ public:
         return res;
     }
 
+    static String normalizePath(const String& path1)
+    {
+        String path = path1;
+        rho::String::size_type pos = 0;
+        while ( (pos = path.find('/', pos)) != rho::String::npos ) {
+            path.replace( pos, 1, "\\");
+            pos++;
+        }
+
+        return path;
+    }
+
 private:
 
     const char* findLastSlash(){
