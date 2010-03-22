@@ -105,7 +105,7 @@ public :
 			return S_FALSE;
 		}
 
-		//rho_logconf_Init(m_strRootPath.c_str());
+		rho_logconf_Init(m_strRootPath.c_str());
 		LOG(INFO) + "Rhodes started";
 
         // Create the main application window

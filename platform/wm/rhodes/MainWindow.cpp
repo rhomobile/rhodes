@@ -102,7 +102,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     LOG(INFO)  + "Screen size: x=" + xScreenSize + ";y=" + yScreenSize;
 
-	RECT rcMainWindow = { 0,0,xScreenSize,yScreenSize };
+	RECT rcMainWindow = { 0,0,320,470 };
 
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
@@ -599,17 +599,23 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	return 0;
 }
 
-LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+/*static*/ StringW CMainWindow::getRhodesAppName()
 {
-    rho::String path = RHODESAPP().getRhoRootPath();
+    String path = rho_native_rhopath();
     int last, pre_last;
 
     last = path.find_last_of('\\');
     pre_last = path.substr(0, last).find_last_of('\\');
+    return convertToStringW( path.substr(pre_last + 1, last - pre_last - 1) );
+}
+
+LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    StringW strAppName = getRhodesAppName();
 
     USES_CONVERSION;
     MessageBox(A2T((const char*)lParam),
-               A2T((path.substr(pre_last + 1, last - pre_last - 1)).c_str()),
+               strAppName.c_str(),
                MB_ICONWARNING | MB_OK);
     free ((void *)lParam);
     return 0;
