@@ -102,9 +102,11 @@ public class AsyncHttp extends RhoThread
 		    switch( m_eCmd )
 		    {
 		    case hcGet:
+		    	m_pNetRequest.setIgnoreSuffixOnSim(false);
 		        m_pNetResponse = m_pNetRequest.doRequest("GET", m_strUrl, m_strBody, null, m_mapHeaders);
 		        break;
 		    case hcPost:
+		    	m_pNetRequest.setIgnoreSuffixOnSim(false);
 		        m_pNetResponse = m_pNetRequest.doRequest("POST", m_strUrl, m_strBody, null, m_mapHeaders);
 		        break;
 	
