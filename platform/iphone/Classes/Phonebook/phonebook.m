@@ -549,17 +549,19 @@ CFStringRef getAddressPartValue(ABRecordRef record, const char* property) {
 			int addresses = ABMultiValueGetCount(mv);
 			for (int n = 0; n < addresses; n++) {
 				CFStringRef lbl = ABMultiValueCopyLabelAtIndex(mv,n);
-				if (CFStringCompare(lbl,label,0)==kCFCompareEqualTo) {
-					NSMutableDictionary *addressDictionary = 
-						(NSMutableDictionary *)ABMultiValueCopyValueAtIndex(mv,n);
-					if (addressDictionary) {
-						v = (CFStringRef)[addressDictionary objectForKey:(NSString*)key];
-						//[addressDictionary release];
-						CFRelease(lbl);
-						break;
-					}
-				}
-				CFRelease(lbl);
+                if (lbl) {
+                    if (CFStringCompare(lbl,label,0)==kCFCompareEqualTo) {
+                        NSMutableDictionary *addressDictionary = 
+                            (NSMutableDictionary *)ABMultiValueCopyValueAtIndex(mv,n);
+                        if (addressDictionary) {
+                            v = (CFStringRef)[addressDictionary objectForKey:(NSString*)key];
+                            //[addressDictionary release];
+                            CFRelease(lbl);
+                            break;
+                        }
+                    }
+                    CFRelease(lbl);
+                }
 			}
 			CFRelease(mv);
 		}
