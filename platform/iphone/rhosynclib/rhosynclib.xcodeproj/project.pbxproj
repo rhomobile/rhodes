@@ -304,6 +304,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = ../../shared;
 				INSTALL_PATH = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
 				PRODUCT_NAME = rhosynclib;
 			};
 			name = Debug;
@@ -317,6 +321,10 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
 				PRODUCT_NAME = rhosynclib;
 				SDKROOT = iphoneos2.2.1;
 			};
@@ -374,6 +382,10 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
 				PRODUCT_NAME = rhosynclib;
 				SDKROOT = iphoneos2.2.1;
 			};
