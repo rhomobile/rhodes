@@ -51,6 +51,22 @@
 	return strRes;
 }*/
 
++ (RhoRunnerAppDelegate*)sharedDelegate {
+    UIApplication *app = [UIApplication sharedApplication];
+    return (RhoRunnerAppDelegate*)app.delegate;
+}
+
+- (void)fixFrame {
+    UIApplication *app = [UIApplication sharedApplication];
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    if (!app.statusBarHidden) {
+        int newY = 10;
+        frame.size.height += frame.origin.y - newY;
+        frame.origin.y = newY;
+    }
+    [window setFrame:frame];
+}
+
 - (void)hideSplash {
     [splashViewController hideSplash];
     splashDisplayed = false;
@@ -152,15 +168,19 @@
 	
 	@try {
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
+        [self fixFrame];
 		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
 		picker.sourceType = type;
 		picker.delegate = delegateObject; 
-		picker.allowsImageEditing = YES; 
+		picker.allowsImageEditing = YES;
+        
+        //[picker.view setFrame:frame];
 		[window addSubview:picker.view];
 	} @catch(NSException* theException) {
 		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
 		//NSLog(@"%@", theException);
         [[UIApplication sharedApplication] setStatusBarHidden:NO];
+        [self fixFrame];
 		return NO;
 	}
 	
@@ -434,20 +454,16 @@
     //[app setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
     //[app setStatusBarHidden:YES];
     
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    //int newY = sbFrame.size.height;
-    int newY = 10;
-    frame.size.height += frame.origin.y - newY;
-    frame.origin.y = newY;
-    
     //[[UIApplication sharedApplication]
     //    setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
     
-    window = [[UIWindow alloc] initWithFrame:frame];
+    window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
     window.contentMode = UIViewContentModeScaleToFill;
     window.autoresizesSubviews = YES;
     window.userInteractionEnabled = YES;
     [window makeKeyAndVisible];
+    
+    [self fixFrame];
     
     webViewController = [[WebViewController alloc] initWithParentWindow:window];
     webViewController->actionTarget = self;
