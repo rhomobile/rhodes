@@ -104,3 +104,5 @@ Manifest.txt
 spec/framework_spec/faillog.txt
 
 platform/shared/curl/lib/rhoconf.h
+.idea
+*.plist
