@@ -58,8 +58,15 @@ def startsim
         
   args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"])
 
-  Thread.new { Jake.run(command,args,jde + "/simulator",true) }
-  $stdout.flush
+  # Wait until thread will start
+  rd, wr = IO.pipe
+  Thread.new {
+    wr.putc 0
+  	Jake.run(command,args,jde + "/simulator",true)
+  	$stdout.flush
+  }
+  rd.getc
+  sleep 1
 end
 
 def stopsim
