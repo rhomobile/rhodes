@@ -30,6 +30,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Contact.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactField.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/SSLImpl.java

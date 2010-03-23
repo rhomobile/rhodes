@@ -6,6 +6,11 @@ namespace net{
     struct ISSL;
 }
 
+struct ICallbackObject
+{
+    virtual unsigned long getObjectValue() = 0;
+};
+
 namespace common {
 struct IRhoThreadImpl;
 struct ISystemInfo;

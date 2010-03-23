@@ -111,7 +111,7 @@ void CAsyncHttp::run()
 
     if ( !m_pNetRequest->isCancelled() && m_strCallback.length() > 0)
     {
-        processResponse(*m_pNetResponse);
+        //processResponse(*m_pNetResponse);
         callNotify(*m_pNetResponse,0);
     }
 
@@ -140,17 +140,18 @@ String CAsyncHttp::makeHeadersString()
 }
 
 extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
-void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
-{
+unsigned long CAsyncHttp::getObjectValue()
+{ 
+    rho::net::INetResponse& resp = *m_pNetResponse;
     if (resp.isOK())
     {
         String strContType = m_mapHeaders.get("content-type");
         if ( strContType.find("application/json") != String::npos )
         {
             char* szError = 0;
-            m_valBody = rjson_tokener_parse(resp.getCharData(), &szError);
-            if ( m_valBody != 0 )
-                return;
+            unsigned long valBody = rjson_tokener_parse(resp.getCharData(), &szError);
+            if ( valBody != 0 )
+                return valBody;
 
             LOG(ERROR) + "Incorrect json body.Error:" + (szError ? szError : "");
             if ( szError )
@@ -158,7 +159,7 @@ void CAsyncHttp::processResponse(rho::net::INetResponse& resp )
         }
     }
 
-    m_valBody = rho_ruby_create_string(resp.getCharData());
+    return rho_ruby_create_string(resp.getCharData()); 
 }
 
 void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
@@ -191,7 +192,7 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
             strBody += "&cookies=" + URI::urlEncode(cookies);
 
         strBody += "&" + makeHeadersString();
-        strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
+        strBody += "&" + RHODESAPP().addCallbackObject(this, "body");
     }
 
     if ( m_strCallbackParams.length() > 0 )
@@ -210,15 +211,15 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
         rho_ruby_set_const( strName.c_str(), strBody.c_str());
     }else
     {
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        m_pNetRequest = m_ptrFactory->createNetRequest();
 
-        String strFullUrl = pNetRequest->resolveUrl(m_strCallback);
-        NetResponse(resp1,pNetRequest->pushData( strFullUrl, strBody, null ));
+        String strFullUrl = m_pNetRequest->resolveUrl(m_strCallback);
+        NetResponse(resp1,m_pNetRequest->pushData( strFullUrl, strBody, null ));
         if ( !resp1.isOK() )
             LOG(ERROR) + "AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData();
     }
 
-    RHODESAPP().delCallbackObject(m_valBody);
+    RHODESAPP().delCallbackObject(this);
 }
 
 } // namespace net

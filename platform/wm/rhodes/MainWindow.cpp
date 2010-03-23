@@ -97,6 +97,11 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
 	int nSpiBorder = 0;
 #endif
+    int xScreenSize = GetSystemMetrics(SM_CXSCREEN);
+    int yScreenSize = GetSystemMetrics(SM_CYSCREEN);
+
+    LOG(INFO)  + "Screen size: x=" + xScreenSize + ";y=" + yScreenSize;
+
 	RECT rcMainWindow = { 0,0,320,470 };
 
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
@@ -113,6 +118,11 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
 	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
+    if ( rcMainWindow.left < 0 || rcMainWindow.left > xScreenSize )
+        rcMainWindow.left = 0;
+    if ( rcMainWindow.top < 0 || rcMainWindow.top > yScreenSize )
+        rcMainWindow.top = 0;
+
 	int width = RHOCONF().getInt("client_area_width");
     if (width <= 0) 
         width = rcMainWindow.right;
@@ -171,6 +181,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // (rcMainWindow was initialized above)
     RHO_ASSERT(SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0));
 
+    LOG(INFO)  + "SPI_GETWORKAREA: x=" + rcMainWindow.right + ";y=" + rcMainWindow.bottom;
+
     // (rcMenuBar was initialized above)
     m_menuBar.GetWindowRect(&rcMenuBar);
     rcMainWindow.bottom = rcMenuBar.top;
@@ -193,6 +205,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     RHO_ASSERT(SUCCEEDED(hr));
 Error:
+
     return SUCCEEDED(hr) ? 0 : -1;
 }
 
@@ -231,6 +244,9 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
 	}
 #else
+
+    LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+
 	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
 #endif
 
@@ -292,7 +308,9 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     else
         CHttpServer::Instance()->FreezeThread();
 */
-    RHODESAPP().callAppActiveCallback(fActive!=0);
+    //activate calls after javascript alerts, so we have viciouse cycle if alert is display in home page
+    //if ( rho::common::CRhodesApp::getInstance() != null )
+    //    RHODESAPP().callAppActiveCallback(fActive!=0);
 
 #endif
 
@@ -581,17 +599,23 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	return 0;
 }
 
-LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+/*static*/ StringW CMainWindow::getRhodesAppName()
 {
-    rho::String path = RHODESAPP().getRhoRootPath();
+    String path = rho_native_rhopath();
     int last, pre_last;
 
     last = path.find_last_of('\\');
     pre_last = path.substr(0, last).find_last_of('\\');
+    return convertToStringW( path.substr(pre_last + 1, last - pre_last - 1) );
+}
+
+LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    StringW strAppName = getRhodesAppName();
 
     USES_CONVERSION;
     MessageBox(A2T((const char*)lParam),
-               A2T((path.substr(pre_last + 1, last - pre_last - 1)).c_str()),
+               strAppName.c_str(),
                MB_ICONWARNING | MB_OK);
     free ((void *)lParam);
     return 0;
@@ -719,6 +743,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 //        if ( m_current_url && strcmp(m_current_url,"about:blank") ==0 )
 //            m_szStartPage = wce_wctomb(url);
     }
+    m_bLoading = false;
 
 	/*if (m_current_url) {
 		free(m_current_url);

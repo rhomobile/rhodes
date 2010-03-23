@@ -17,22 +17,6 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_socket_RhoSocketImpl_initImpl
 
 /*
  * Class:     com_rhomobile_rhodes_socket_RhoSocketImpl
- * Method:    getRemoteHostImpl
- * Signature: (I)Ljava/net/InetAddress;
- */
-JNIEXPORT jobject JNICALL Java_com_rhomobile_rhodes_socket_RhoSocketImpl_getRemoteHostImpl
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     com_rhomobile_rhodes_socket_RhoSocketImpl
- * Method:    getRemotePortImpl
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_socket_RhoSocketImpl_getRemotePortImpl
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     com_rhomobile_rhodes_socket_RhoSocketImpl
  * Method:    closeImpl
  * Signature: (I)V
  */

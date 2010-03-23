@@ -23,3 +23,4 @@ RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_NATIVEBAR, "com/rhomobile/rhodes/Nati
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_MAPVIEW, "com/rhomobile/rhodes/mapview/MapView")
 #endif
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_SSLIMPL, "com/rhomobile/rhodes/socket/SSLImpl")
+RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_RHOSOCKADDR, "com/rhomobile/rhodes/socket/RhoSockAddr")
