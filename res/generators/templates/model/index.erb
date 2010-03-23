@@ -1,16 +1,38 @@
-<div class="toolbar">
-	<h1 id="pageTitle">
-		<%= class_name.camelize.pluralize %>
-	</h1>
+<div id="pageTitle">
+	<h1><%= class_name.camelize.pluralize %></h1>
 </div>
 
-<ul id="<%= name.downcase.pluralize %>" title="<%= class_name.pluralize %>" selected="true">
-  	<a class="button right_button" href="<%= class_name%>/new" target="_self">New</a>
-	<%%@<%=name.downcase.pluralize%>.each do |x|%>
-	<%if self.attributes?%>
-	<li><%%=link_to "#{x.<%=attributes[0]%>}", :action => :show, :id => x.object%></li>
-	<%else%>
-	<li>Some list entry...</li>
-	<%end%>
-	<%%end%>
-</ul>
+<div id="toolbar">
+    <div id="row">
+        <div id="leftItem" class="backButton">
+          <a href="/app/" target="_self">Home</a>
+        </div>
+        <div id="rightItem" class="regularButton">
+          <a href="<%= class_name%>/new" target="_self">New</a>
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="list">
+        <ul class="simple_list">
+            <%%@<%=name.downcase.pluralize%>.each do |obj|%>
+                <%if self.attributes?%>
+                <li>
+                    <a href="<%%= url_for(:action => :show, :id => obj.object) %>">
+                        <span class="title"><%%= obj.<%=attributes[0]%> %></span>
+                        <span class="discloser_indicator"></span>
+                    </a>
+                </li>
+                <%else%>
+                <li>
+                    <a href="#">
+                        <span class="title">Some list entry...</span>
+                        <span class="discloser_indicator"></span>
+                    </a>
+                </li>
+                <%end%>
+            <%%end%>
+        </ul>
+    </div>
+</div>
