@@ -6,6 +6,7 @@
 //  Copyright 2009 __MyCompanyName__. All rights reserved.
 //
 
+#import "RhoRunnerAppDelegate.h"
 #import "PickImageDelegate.h"
 #import "AppManager.h"
 #import "common/RhodesApp.h"
@@ -61,6 +62,7 @@
 	picker.view.hidden = YES;
     //[picker release]; 
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [[RhoRunnerAppDelegate sharedDelegate] fixFrame];
 } 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
@@ -76,6 +78,7 @@
 	picker.view.hidden = YES;
     //[picker release]; 
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [[RhoRunnerAppDelegate sharedDelegate] fixFrame];
 } 
 
 @end
