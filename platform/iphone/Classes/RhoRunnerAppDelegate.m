@@ -52,10 +52,12 @@
     [window setFrame:frame];
 }
 
+/*
 - (void)hideSplash {
     [splashViewController hideSplash];
     splashDisplayed = false;
 }
+*/
 
 - (void)loadStartPath:(NSString*)location {
     /*
