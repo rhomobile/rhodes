@@ -42,4 +42,7 @@
 @property (nonatomic, retain) AVAudioPlayer *player;
 //@property (nonatomic, retain) NativeBar* nativeBar;
 
++ (RhoRunnerAppDelegate*)sharedDelegate;
+- (void)fixFrame;
+
 @end
