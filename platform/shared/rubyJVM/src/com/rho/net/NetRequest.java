@@ -46,6 +46,11 @@ public class NetRequest
 		return doRequestTry(strUrl, "", oSession);
     }
 
+	public void setIgnoreSuffixOnSim(boolean bset)
+	{
+		m_bIgnoreSuffixOnSim = bset;
+	}
+	
 	private NetResponse doRequestTry(String strUrl, String strBody, IRhoSession oSession ) throws Exception
     {
 		NetResponse resp = null;

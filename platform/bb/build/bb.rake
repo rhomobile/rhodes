@@ -45,7 +45,8 @@ def startsim
   args << "/data-port=0x4d4e"
   args << "/pin=0x2100000A"
   args << "/no-compact-filesystem"
-  args << "/keep-lcd-on"
+  args << "/JvmDisableBacklightTimeout"
+  #args << "/keep-lcd-on"
     
   if $bbver !~ /^4\.[012](\..*)?$/
     args << "/sdcard-inserted=true"
@@ -57,8 +58,15 @@ def startsim
         
   args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"])
 
-  Thread.new { Jake.run(command,args,jde + "/simulator",true) }
-  $stdout.flush
+  # Wait until thread will start
+  rd, wr = IO.pipe
+  Thread.new {
+    wr.putc 0
+  	Jake.run(command,args,jde + "/simulator",true)
+  	$stdout.flush
+  }
+  rd.getc
+  sleep 1
 end
 
 def stopsim
@@ -146,7 +154,8 @@ namespace "config" do
     mkdir_p $bindir unless File.exists? $bindir
     rm_rf $tmpdir
     mkdir_p $tmpdir unless File.exists? $tmpdir
-    
+
+    mkdir_p  $targetdir if not FileTest.exists?  $targetdir    
   end
 end
 
@@ -179,7 +188,7 @@ namespace "build" do
       java = $config["env"]["paths"]["java"] + "/java.exe"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
       jarexe =  $config["env"]["paths"]["java"] + "/jar.exe"
-
+      
       #common bundle task goes here#
       Rake::Task["build:bundle:xruby"].execute
 
@@ -196,7 +205,7 @@ namespace "build" do
       args << $preverified
       args << $bindir + "/RhoBundle.jar"
       runPreverify(args)
-
+      
       mkdir_p $rhobundledir unless File.exists? $rhobundledir
       cp $preverified + "/RhoBundle.jar", $rhobundledir + "/RhoBundle.jar"
       

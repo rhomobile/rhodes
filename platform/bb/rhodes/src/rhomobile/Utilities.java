@@ -33,7 +33,7 @@ public class Utilities {
 				conn = new NativeBBHttpConnection( new RhoConnection(uri) );
 			} else {
 				// conn = (HttpConnection) Connector.open(url);
-				IHttpConnection httpconn = RhoClassFactory.getNetworkAccess().connect(url,false);
+				IHttpConnection httpconn = RhoClassFactory.getNetworkAccess().connect(url,true);
 				conn = (HttpConnection)(httpconn!=null?httpconn.getNativeConnection() : null);
 				// conn = NetworkAccess.connect(url);
 			}

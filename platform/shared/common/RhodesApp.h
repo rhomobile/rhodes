@@ -24,6 +24,7 @@ class CRhodesApp : public common::CRhoThread
 {
 public:
     DEFINE_LOGCLASS;
+
 private:
 
     static CRhodesApp* m_pInstance;
@@ -49,7 +50,7 @@ private:
     common::CMutex m_mxViewMenuItems;
     Hashtable<String,String> m_hashViewMenuItems;
     String m_strAppBackUrl;
-    Vector<unsigned long> m_arCallbackObjects;
+    Vector<ICallbackObject*> m_arCallbackObjects;
     rubyext::CGeoLocation m_oGeoLocation;
     CSplashScreen m_oSplashScreen;
 
@@ -89,8 +90,8 @@ public:
 
     boolean sendLog();
 
-    String addCallbackObject(unsigned long valObject, String strName);
-    void delCallbackObject(unsigned long valObject);
+    String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
+    void delCallbackObject(ICallbackObject* pCallbackObject);
     unsigned long getCallbackObject(int nIndex);
 
     const String& getRhoMessage(int nError, const char* szName);
@@ -98,6 +99,7 @@ public:
     rubyext::CGeoLocation& getGeo(){ return m_oGeoLocation;}
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
 
+    void runCallbackInThread(const String& strCallback, const String& strBody);
 private:
     virtual void run();
 

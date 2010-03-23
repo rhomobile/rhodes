@@ -72,7 +72,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
 #endif
 
-    //rho_logconf_Init(m_strRhoRootPath.c_str());	
+    //rho_logconf_Init(m_strRhoRootPath.c_str());
     initAppUrls();
     //start(epNormal);
 
@@ -162,19 +162,25 @@ void CRhodesApp::stopApp()
 class CRhoCallbackCall :  public common::CRhoThread
 {
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
-	String m_strCallback;
+	String m_strCallback, m_strBody;
 public:
-    CRhoCallbackCall(const String& strCallback, common::IRhoClassFactory* factory) : CRhoThread(factory), m_ptrFactory(factory), m_strCallback(strCallback)
+    CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory) : CRhoThread(factory), 
+        m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
     { start(epNormal); }
 
 private:
     virtual void run()
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-		common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, "", null );
+		common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
         delete this;
     }
 };
+
+void CRhodesApp::runCallbackInThread(const String& strCallback, const String& strBody)
+{
+    new CRhoCallbackCall(strCallback, strBody, createClassFactory() );
+}
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
@@ -584,7 +590,7 @@ boolean CRhodesApp::sendLog()
     return true;
 }
 
-String CRhodesApp::addCallbackObject(unsigned long valObject, String strName)
+String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String strName)
 {
     int nIndex = -1;
     for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
@@ -592,27 +598,27 @@ String CRhodesApp::addCallbackObject(unsigned long valObject, String strName)
         if ( m_arCallbackObjects.elementAt(i) == 0 )
             nIndex = i;
     }
-    rho_ruby_holdValue(valObject);
+//    rho_ruby_holdValue(valObject);
     if ( nIndex  == -1 )
     {
-        m_arCallbackObjects.addElement(valObject);
+        m_arCallbackObjects.addElement(pCallbackObject);
         nIndex = m_arCallbackObjects.size()-1;
     }else
-        m_arCallbackObjects.setElementAt(valObject,nIndex);
+        m_arCallbackObjects.setElementAt(pCallbackObject,nIndex);
 
     String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
 
     return strRes;
 }
 
-void CRhodesApp::delCallbackObject(unsigned long valObject)
+void CRhodesApp::delCallbackObject(ICallbackObject* pCallbackObject)
 {
     for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
     {
-        if ( m_arCallbackObjects.elementAt(i) == valObject )
+        if ( m_arCallbackObjects.elementAt(i) == pCallbackObject )
         {
             m_arCallbackObjects.setElementAt(0,i);
-            rho_ruby_releaseValue(valObject);
+//            rho_ruby_releaseValue(valObject);
         }
     }
 }
@@ -620,9 +626,13 @@ void CRhodesApp::delCallbackObject(unsigned long valObject)
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
     if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
-        return 0;
+        return rho_ruby_get_NIL();
 
-    return m_arCallbackObjects.elementAt(nIndex);
+    ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
+    if ( !pCallbackObject )
+        return rho_ruby_get_NIL();
+
+    return pCallbackObject->getObjectValue();
 }
 
 }
