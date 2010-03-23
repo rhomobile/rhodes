@@ -2,6 +2,7 @@
 body {
     margin: 0;
     font-family: Helvetica;
+    height: 480px;
 }
 
 h1 {
@@ -86,9 +87,9 @@ div#row .blueButton {
     border: #1a49b3 1px solid;
 }
 
-div#content form {
+div#content {
+    background: url(/public/images/pinstripes.png);
     height: 100%;
-    background: url(/public/images/pinstripes.png);    
 }
 
 div#content form button{
@@ -118,6 +119,8 @@ div#pageTitle h1 {
 
 div#content .list {
     border-top: 1px solid #848284;
+    background-color: white;
+    height: 100%;
 }
 
 div#content .list ul {
@@ -180,6 +183,9 @@ div#content form button {
 }
 
 /* Forms */
+div#content .form_list {
+    padding-top: 5px;
+}
 
 div#content .form_list ul {
     -webkit-border-bottom-left-radius: 8px;
@@ -204,7 +210,7 @@ div#content .form_list ul {
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
-    margin: 3px 9px 17px 9px;
+    margin: 0 9px 17px 9px;
     overflow-x: hidden;
     overflow-y: hidden;
     padding: 0;
