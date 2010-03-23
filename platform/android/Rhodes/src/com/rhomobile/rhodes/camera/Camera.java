@@ -20,29 +20,53 @@
  */
 package com.rhomobile.rhodes.camera;
 
-import android.content.Intent;
+import java.io.File;
 
+import android.content.Intent;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
 
 public class Camera {
 
 	private static final String TAG = "Camera";
 	
-	//private static CameraListener cameraListener = new CameraListener();
-	private static String callbackUrl = "";
+	public static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "camera.";
 	
 	public static String BASE_CAMERA_DIR = RhodesInstance.getInstance().getRootPath() + "apps/public/db-files";
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
+	
+	private static void init() {
+		File f = new File(BASE_CAMERA_DIR);
+		if (!f.exists())
+			f.mkdirs();
+	}
+	
+	private static class Runner implements Runnable {
+		
+		private String url;
+		private Class<?> cls;
+		
+		public Runner(String u, Class<?> c) {
+			url = u;
+			cls = c;
+		}
+		
+		public void run() {
+			init();
+			Rhodes r = RhodesInstance.getInstance();
+			Intent intent = new Intent(r, cls);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
+			r.startActivity(intent);
+		}
+	};
 
 	public static void takePicture(String sourceUrl) {
 		try {
-			callbackUrl = sourceUrl;
-			Intent intent = new Intent(RhodesInstance.getInstance(), ImageCapture.class);
-			RhodesInstance.getInstance().startActivity(intent);
+			Rhodes.performOnUiThread(new Runner(sourceUrl, ImageCapture.class), false);
 		}
 		catch (Exception e) {
 			reportFail("takePicture", e);
@@ -51,16 +75,14 @@ public class Camera {
 
 	public static void choosePicture(String sourceUrl) {
 		try {
-			callbackUrl = sourceUrl;
-			Intent intent = new Intent(RhodesInstance.getInstance(), FileList.class);
-			RhodesInstance.getInstance().startActivity(intent);
+			Rhodes.performOnUiThread(new Runner(sourceUrl, FileList.class), false);
 		}
 		catch (Exception e) {
 			reportFail("choosePicture", e);
 		}
 	}
 	
-	public static void doCallback(String filePath) {
+	public static void doCallback(String callbackUrl, String filePath) {
 		String fp = filePath == null ? "" : filePath;
 		int idx = fp.lastIndexOf('/');
 		if (idx != -1)

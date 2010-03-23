@@ -179,6 +179,11 @@ namespace "config" do
     end
 
     if $androidplatform.nil?
+      ajar = File.join($androidsdkpath, 'platforms', 'android-' + ANDROID_API_LEVEL_TO_MARKET_VERSION[ANDROID_API_LEVEL], 'android.jar')
+      $androidplatform = 'android-' + ANDROID_API_LEVEL_TO_MARKET_VERSION[ANDROID_API_LEVEL] if File.file?(ajar)
+    end
+
+    if $androidplatform.nil?
       puts "+++ No required platform found"
     else
       puts "+++ Platform found: #{$androidplatform}" if USE_TRACES

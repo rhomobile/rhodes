@@ -29,33 +29,37 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 
 public class ImageCaptureCallback implements PictureCallback {
+	
+	private static final String TAG = "ImageCapture";
 
+	private String callbackUrl;
+	private OutputStream osCommon;
 	private String filePath;
-	private OutputStream filoutputStream;
 
-	public ImageCaptureCallback(OutputStream filoutputStream, String filePath) {
-		this.filoutputStream = filoutputStream;
-		this.filePath = filePath;
+	public ImageCaptureCallback(String u, OutputStream o, String f) {
+		callbackUrl = u;
+		osCommon = o;
+		filePath = f;
 	}
 
 	public void onPictureTaken(byte[] data, Camera camera) {
 		try {
-			Logger.T("ImageCapture", "onPictureTaken=" + data
-					+ " length = " + data.length);
+			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
+
+			osCommon.write(data);
+			osCommon.flush();
+			osCommon.close();
 			
-			FileOutputStream buf = new FileOutputStream(filePath);
-            buf.write(data);
-            buf.flush();
-            buf.close();
-            
-			//filoutputStream.write(data);
-			filoutputStream.flush();
-			filoutputStream.close();
-			
-			com.rhomobile.rhodes.camera.Camera.doCallback(filePath);
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			OutputStream osOwn = new FileOutputStream(filePath);
+			osOwn.write(data);
+			osOwn.flush();
+			osOwn.close();
+
+			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, filePath);
+
+		} catch (Exception e) {
+			Logger.E(TAG, e);
+			e.printStackTrace();
 		}
 	}
 	

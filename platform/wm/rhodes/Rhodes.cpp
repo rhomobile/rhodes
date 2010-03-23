@@ -105,8 +105,8 @@ public :
 			return S_FALSE;
 		}
 
-        rho_logconf_Init(m_strRootPath.c_str());
-        LOG(INFO) + "Rhodes started";
+		rho_logconf_Init(m_strRootPath.c_str());
+		LOG(INFO) + "Rhodes started";
 
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
@@ -224,6 +224,13 @@ bool g_restartOnExit = false;
 extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
+	INITCOMMONCONTROLSEX ctrl;
+	
+	//Required to use datetime picker controls.
+	ctrl.dwSize = sizeof(ctrl);
+	ctrl.dwICC = ICC_DATE_CLASSES;
+	InitCommonControlsEx(&ctrl);
+
 	return _AtlModule.WinMain(nShowCmd);
 }
 

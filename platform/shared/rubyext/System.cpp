@@ -63,6 +63,9 @@ VALUE rho_sys_get_property(char* szPropName)
         return rho_ruby_create_string(strDeviceID.c_str());
     }
 
+	if (strcasecmp("full_browser",szPropName) == 0) 
+        return rho_ruby_create_boolean(1);
+
     RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
 
     return rho_ruby_get_NIL();

@@ -48,13 +48,11 @@ public:
 #else
 	static ATL::CWndClassInfo& GetWndClassInfo() 
 	{ 
-		CString tmp;
-		tmp.LoadString(IDS_WND_CLASS);
-
+        static rho::StringW strAppName = getRhodesAppName() + L".MainWindow";
 		static ATL::CWndClassInfo wc = 
 		{ 
 			{ CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, StartWindowProc, 
-			0, 0, NULL, NULL, NULL, (HBRUSH)(COLOR_WINDOW + 1), NULL, tmp.GetString() }, 
+			0, 0, NULL, NULL, NULL, (HBRUSH)(COLOR_WINDOW + 1), NULL, strAppName.c_str() }, 
 			NULL, NULL, IDC_ARROW, TRUE, 0, _T("") 
 		}; 
 		return wc; 
@@ -150,6 +148,8 @@ private:
     // utility functions
     BOOL SetEnabledState(UINT uMenuItemID, BOOL bEnable);
 	void ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL);
+
+    static rho::StringW getRhodesAppName();
 
 private:
     // Represents the PIEWebBrowser control contained in the main application.
