@@ -224,6 +224,13 @@ bool g_restartOnExit = false;
 extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
+	INITCOMMONCONTROLSEX ctrl;
+	
+	//Required to use datetime picker controls.
+	ctrl.dwSize = sizeof(ctrl);
+	ctrl.dwICC = ICC_DATE_CLASSES;
+	InitCommonControlsEx(&ctrl);
+
 	return _AtlModule.WinMain(nShowCmd);
 }
 
