@@ -96,6 +96,8 @@ public class System {
     		return ObjectFactory.createString(Phone.getDevicePhoneNumber(true)); 
     	if ( strPropName.equalsIgnoreCase("device_id") )
     		return ObjectFactory.createString(new Integer( DeviceInfo.getDeviceId() ).toString()); 
+    	if ( strPropName.equalsIgnoreCase("full_browser") )
+    		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.isFullBrowser()); 
     	
     	return RubyConstant.QNIL;
     }

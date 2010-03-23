@@ -107,7 +107,7 @@ class Jake
       chdir wd  
     end
     
-    cmdstr = argv.map { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+    cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
     puts "PWD: " + pwd
     puts "CMD: " + cmdstr
