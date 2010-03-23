@@ -272,7 +272,6 @@ char* get_current_location() {
     webView = [[UIWebView alloc] initWithFrame:wvFrame];
     webView.scalesPageToFit = YES;
     webView.userInteractionEnabled = YES;
-    webView.detectsPhoneNumbers = YES;
     webView.multipleTouchEnabled = YES;
     webView.autoresizesSubviews = YES;
     webView.delegate = self;
