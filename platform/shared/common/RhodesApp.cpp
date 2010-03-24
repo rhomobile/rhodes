@@ -878,7 +878,7 @@ const char* rho_ruby_getMessageText(const char* szName)
 
 int rho_rhodesapp_isrubycompiler()
 {
-    return 1;
+    return 0;
 }
 
 int rho_conf_send_log()

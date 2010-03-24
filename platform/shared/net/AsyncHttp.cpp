@@ -13,7 +13,7 @@ namespace net
 IMPLEMENT_LOGCLASS(CAsyncHttp, "AsyncHttp");
 boolean CAsyncHttp::m_bNoThreaded = false;
 common::CMutex CAsyncHttp::m_mxInstances;
-Vector<CAsyncHttp*> CAsyncHttp::m_arInstances;
+VectorPtr<CAsyncHttp*> CAsyncHttp::m_arInstances;
 
 extern "C" void header_iter(const char* szName, const char* szValue, void* pHash)
 {
@@ -23,6 +23,7 @@ extern "C" void header_iter(const char* szName, const char* szValue, void* pHash
 CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
     const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params) :  CRhoThread(factory)
 {
+    m_bFinished = false;
     m_ptrFactory = factory;
     m_strUrl = url != null ? url : "";
     m_strBody = body != null ? body : "";
@@ -32,10 +33,7 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
 
     rho_ruby_enum_strhash(headers, &header_iter, &m_mapHeaders);
 
-    {
-	    synchronized(m_mxInstances);
-        m_arInstances.addElement(this);
-    }
+    addNewObject(this);
 
     if (m_bNoThreaded)
         run();
@@ -43,21 +41,38 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         start(epLow);
 }
 
-CAsyncHttp::~CAsyncHttp()
-{
-	synchronized(m_mxInstances)
-    {		
-        m_arInstances.removeElement(this);
-    }
-}
-
 void CAsyncHttp::cancel()
 {
-    if (m_pNetRequest!=null)
+    if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
         m_pNetRequest->cancel();
 
-    stop(1000);
-    delete this;
+    stop(-1);
+}
+
+/*static*/ void CAsyncHttp::addNewObject(CAsyncHttp* pObj)
+{
+	synchronized(m_mxInstances)
+    {
+        while(1)
+        {
+            int nToDelete = -1;
+            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+            {
+                if ( m_arInstances.elementAt(i)->m_bFinished )
+                {
+                    nToDelete = i;
+                    break;
+                }
+            }
+
+            if (nToDelete==-1)
+                break;
+
+            m_arInstances.removeElementAt(nToDelete);
+        }
+
+        m_arInstances.addElement(pObj);
+    }
 }
 
 /*static*/ void CAsyncHttp::cancelRequest(const char* szCallback)
@@ -117,8 +132,7 @@ void CAsyncHttp::run()
 
 	LOG(INFO) + "RhoHttp thread end.";
 
-    if ( !m_pNetRequest->isCancelled() )
-        delete this;
+    m_bFinished = true;
 }
 
 String CAsyncHttp::makeHeadersString()

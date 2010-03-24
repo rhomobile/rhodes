@@ -17,7 +17,7 @@ class CAsyncHttp : public common::CRhoThread, rho::ICallbackObject
     DEFINE_LOGCLASS;
 
     static common::CMutex m_mxInstances;
-    static Vector<CAsyncHttp*> m_arInstances;
+    static VectorPtr<CAsyncHttp*> m_arInstances;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
 
     common::CAutoPtr<INetRequest> m_pNetRequest;
@@ -25,6 +25,7 @@ class CAsyncHttp : public common::CRhoThread, rho::ICallbackObject
     Hashtable<String,String> m_mapHeaders;
 
     String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
+    boolean m_bFinished;
 public:
     enum EHttpCommands{ hcGet = 0, hcPost, hcDownload, hcUpload };
 private:
@@ -35,7 +36,6 @@ public:
 
     CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
-    ~CAsyncHttp();
 
     void cancel();
 
@@ -50,7 +50,7 @@ private:
     void callNotify(INetResponse& resp, int nError );
 
     String makeHeadersString();
-
+    static void addNewObject(CAsyncHttp* pObj);
 };
 
 } // namespace net
