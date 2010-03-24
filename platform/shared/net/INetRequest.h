@@ -25,6 +25,7 @@ struct IRhoSession
 {
 	virtual void logout()=0;
 	virtual const String& getSession()=0;
+    virtual const String& getContentType()=0;
 };
 
 struct INetRequest

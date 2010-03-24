@@ -27,10 +27,10 @@ describe "Rhom::RhomObject" do
     SyncEngine.stub!(:dosync).and_return(true)
   end
   
-  #it "should set source_id attributes" do
-    #Account.get_source_id.should == "2"
-    #Case.get_source_id.should == "1"
-  #end
+  it "should set source_id attributes" do
+    Account.get_source_id.should == "2"
+    Case.get_source_id.should == "1"
+  end
   
   it "should dynamically assign values" do
     account = Account.new
@@ -126,8 +126,8 @@ describe "Rhom::RhomObject" do
   end
   
   it "should create records with no attribs in database" do
-    ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-    res = ::Rhom::RhomDbAdapter.select_from_table('object_values',"*")
+    ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
+    res = ::Rho::RHO.get_user_db().select_from_table('object_values',"*")
     res.length.should == 0
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = Account.new(vars)
@@ -235,8 +235,8 @@ describe "Rhom::RhomObject" do
     @new_acct.acct_object.should == "same object"
   end
   
-  it "should _NOT_ set 'type' field for a record" do
-    new_attributes = {"type"=>"Partner"}
+  it "should _NOT_ set 'attrib_type' field for a record" do
+    new_attributes = {"attrib_type"=>"Partner"}
     @account = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
     @account.update_attributes(new_attributes)
   
@@ -303,7 +303,7 @@ describe "Rhom::RhomObject" do
     @new_acct.name.should == "Mobio India"
     @new_acct.industry.should == "Technology"
     
-    records = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'update')
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 1
   end
   
@@ -323,80 +323,7 @@ describe "Rhom::RhomObject" do
     
     @acct.foobar.should be_nil
   end
-=begin  
-  it "should respond to ask" do
-    question = 'Rhodes'
-    Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    res.length.should == 1
-    
-    res[0]['attrib'].should == 'question'
-    res[0]['value'].should == question
-  end
   
-  it "should respond to ask with last question only" do
-    question = 'Rhodes'
-    Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    res.length.should == 1
-    
-    res[0]['attrib'].should == 'question'
-    res[0]['value'].should == question
-    
-    question = 'Ruby on Rails'
-    question_encoded = 'Ruby%20on%20Rails'
-    Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    res.length.should == 1
-    
-    res[0]['attrib'].should == 'question'
-    res[0]['value'].should == question_encoded
-  end
-  
-  it "should encode ask params" do
-    question = 'where am i?'
-    question_encoded = 'where%20am%20i%3F'
-    Account.ask(question)
-    @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    @res.length.should == 1
-    
-    @res[0]['attrib'].should == 'question'
-    @res[0]['value'].should == question_encoded
-  end
-  
-  it "should store all ask db operations as query" do
-    question = 'where am i?'
-    question_encoded = 'where%20am%20i%3F'
-    Question.ask(question) 
-   
-    @question = Question.find(:first)
-    @question.update_attributes({"question"=>"i am here"})
-
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'source_id' => @question.get_source_id.to_i()})
-    @res.length.should == 1
-    @res[0]['attrib'].should == 'question'
-    @res[0]['value'].should == 'i am here'
-    
-    ['create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => @question.get_source_id.to_i()})
-      @res.length.should == 0
-    end
-  end
-  
-  it "should delete ask records without delete sync operation" do
-    question = 'where am i?'
-    question_encoded = 'where%20am%20i%3F'
-    Question.ask(question) 
-   
-    @question = Question.find(:first)
-    @question.destroy
-    
-    ['query','create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => 400})
-      @res.length.should == 0
-    end
-  end
-=end  
   it "should find with conditions" do
     @accts = Account.find(:all, :conditions => {'industry' => 'Technology'})
     @accts.length.should == 2
@@ -534,7 +461,7 @@ describe "Rhom::RhomObject" do
     @acct = Account.new({'image_uri'=>"/db/images/mynewimage.png"})
     @acct.name = "my new acct"
     @acct.save
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', 'attrib_type' => "blob.file")
+    @res = ::Rho::RHO.get_user_db().select_from_table('object_values','*', 'attrib_type' => "blob.file")
     @res.length.should == 1
   end
   
@@ -614,12 +541,12 @@ describe "Rhom::RhomObject" do
     end
 
     after(:each) do
-      Rhom::RhomDbAdapter.start_transaction
+      ::Rho::RHO.get_user_db().start_transaction
       #Rhom::RhomAttribManager.reset_all
-      Rhom::RhomDbAdapter.delete_all_from_table('client_info')
-      Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-      Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
-      Rhom::RhomDbAdapter.commit
+      ::Rho::RHO.get_user_db().delete_all_from_table('client_info')
+      ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
+      ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
+      ::Rho::RHO.get_user_db().commit
     end
     
     @expected = [{:object => '3788304956', :name => 'c2z5izd8w9', :address => '6rd9nv8dml', :industry => 'hxua4d6ttl'},

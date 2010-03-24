@@ -5,6 +5,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho{
 namespace db{
@@ -32,7 +33,7 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         CRhoFile::deleteFile(strFilePath.c_str());
     }
 
-    sync::CSyncThread::getDBAdapter().getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
+    sync::CSyncThread::getDBAdapter(sqlite3_context_db_handle(dbContext)).getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
 }
 
 void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
@@ -40,7 +41,7 @@ void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     if ( nArgs < 2 )
         return;
 
-    sync::CSyncThread::getDBAdapter().getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
+    sync::CSyncThread::getDBAdapter(sqlite3_context_db_handle(dbContext)).getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
 }
 
 boolean CDBAdapter::checkDbError(int rc)
@@ -286,7 +287,25 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const S
 	return stInsert;
 }
 
-void CDBAdapter::destroy_table(String strTable)
+static boolean destroyTableName(String tableName, const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables )
+{
+    int i;
+    for (i = 0; i < (int)arExcludeTables.size(); i++ )
+    {
+        if ( arExcludeTables.elementAt(i).compare(tableName) == 0 )
+            return false;
+    }
+
+    for (i = 0; i < (int)arIncludeTables.size(); i++ )
+    {
+        if ( arIncludeTables.elementAt(i).compare(tableName) == 0 )
+            return true;
+    }
+
+    return arIncludeTables.size()==0;
+}
+
+void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
 {
     getAttrMgr().reset(*this);
     CFilePath oFilePath(m_strDbPath);
@@ -310,7 +329,7 @@ void CDBAdapter::destroy_table(String strTable)
     for ( int i = 0; i < (int)vecTables.size(); i++ )
     {
         String tableName = vecTables.elementAt(i);
-        if ( tableName.compare(strTable)==0 )
+        if (destroyTableName(tableName, arIncludeTables, arExcludeTables)  )
             continue;
 
         String strSelect = "SELECT * from " + tableName;
@@ -343,10 +362,11 @@ void CDBAdapter::destroy_table(String strTable)
     open( dbOldName, m_strDbVer, false );
 }
 
-void CDBAdapter::setInitialSyncDB(String fDataName)
+void CDBAdapter::setBulkSyncDB(String fDataName)
 {
     CDBAdapter db;
     db.open( fDataName, m_strDbVer, true );
+    db.createTriggers();
 
     db.startTransaction();
 
@@ -369,13 +389,26 @@ void CDBAdapter::setInitialSyncDB(String fDataName)
 	}
     //copy sources
 	{
-		DBResult( res, executeSQL("SELECT name, source_url,priority,session from sources") );
+        String tableName = "sources";
+        String strSelect = "SELECT * from " + tableName;
+        DBResult( res , executeSQL( strSelect.c_str() ) );
+		String strInsert = "";
+        int rc = 0;
 	    for ( ; !res.isEnd(); res.next() )
 	    {
-	    	String strName = res.getStringByIdx(0);
-	    	
-            db.executeSQL("UPDATE sources SET source_url=?,priority=?,session=? where name=?", 
-                res.getStringByIdx(1), res.getIntByIdx(2), res.getStringByIdx(3), strName ); 
+            String strName = res.getStringByIdx(1);
+            DBResult( res2, db.executeSQL("SELECT name from sources where name=?", strName) );
+            if (!res2.isEnd())
+                continue;
+
+	    	sqlite3_stmt* stInsert = createInsertStatement(res, tableName, db, strInsert);
+
+            if (stInsert)
+            {
+                rc = sqlite3_step(stInsert);
+                checkDbError(rc);
+                sqlite3_finalize(stInsert);
+            }
 	    }
 	}
 
@@ -457,25 +490,45 @@ void CDBAdapter::createSchema()
     char* errmsg = 0;
     CFilePath oPath(m_strDbPath);
 
-    String strSqlScript, strSqlTriggers;
+    String strSqlScript;
     CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.schema").c_str(), strSqlScript);
-    CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.triggers").c_str(), strSqlTriggers);
 
     if ( strSqlScript.length() == 0 )
     {
         LOG(ERROR)+"createSchema failed. Cannot read schema file: " + strSqlScript;
         return;
     }
+
+    int rc = sqlite3_exec(m_dbHandle, strSqlScript.c_str(),  NULL, NULL, &errmsg);
+
+    if ( rc != SQLITE_OK )
+        LOG(ERROR)+"createSchema failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
+
+    if ( errmsg )
+        sqlite3_free(errmsg);
+
+    if ( rc == SQLITE_OK )
+        createTriggers();
+}
+
+void CDBAdapter::createTriggers()
+{
+    char* errmsg = 0;
+    CFilePath oPath(m_strDbPath);
+
+    String strSqlTriggers;
+    CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.triggers").c_str(), strSqlTriggers);
+
     if ( strSqlTriggers.length() == 0 )
     {
         LOG(ERROR)+"createSchema failed. Cannot read triggers file: " + strSqlTriggers;
         return;
     }
 
-    int rc = sqlite3_exec(m_dbHandle, (strSqlScript+strSqlTriggers).c_str(),  NULL, NULL, &errmsg);
+    int rc = sqlite3_exec(m_dbHandle, strSqlTriggers.c_str(),  NULL, NULL, &errmsg);
 
     if ( rc != SQLITE_OK )
-        LOG(ERROR)+"createSchema failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
+        LOG(ERROR)+"createTriggers failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
 
     if ( errmsg )
         sqlite3_free(errmsg);
@@ -591,4 +644,74 @@ void CDBAdapter::rollback()
 }
 
 }
+}
+
+extern "C" {
+
+int rho_db_startUITransaction(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    db.setUnlockDB(true);
+    db.startTransaction();
+
+    //TODO: get error code from DBException
+    return 0;
+}
+
+int rho_db_commitUITransaction(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    db.endTransaction();
+    //TODO: get error code from DBException
+    return 0;
+}
+
+int rho_db_rollbackUITransaction(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    db.rollback();
+    //TODO: get error code from DBException
+    return 0;
+}
+
+extern "C" void
+string_iter(const char* szVal, void* par)
+{
+    rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
+    ar.addElement(szVal);
+}
+
+int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned long arExclude)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+
+    rho::Vector<rho::String> arIncludeTables;
+    rho_ruby_enum_strary(arInclude, string_iter, &arIncludeTables);
+
+    rho::Vector<rho::String> arExcludeTables;
+    rho_ruby_enum_strary(arExclude, string_iter, &arExcludeTables);
+
+    db.destroy_tables(arIncludeTables,arExcludeTables);
+    return 0;
+}
+
+void* rho_db_get_handle(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    return db.getDbHandle();
+}
+
+void rho_db_lock(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    db.setUnlockDB(true);
+    db.Lock();
+}
+
+void rho_db_unlock(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    db.Unlock();
+}
+
 }

@@ -205,7 +205,7 @@ char* makeControllerCall(char* classname, char* methodname);
 struct CHashEnumData
 {
     void* data;
-    rho_eachstr_func *func;
+    rho_hash_eachstr_func *func;
 };
 
 static int
@@ -229,7 +229,7 @@ hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
     return ST_CONTINUE;
 }
 
-void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
+void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func * func, void* data)
 {
     struct CHashEnumData enumData;
 
@@ -240,6 +240,27 @@ void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func * func, void* data)
     enumData.func = func;
 
     rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
+}
+
+void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
+{
+    int i = 0;
+
+    if ( ary ==0 || ary == Qnil )
+        return;
+
+    for (i=0; i<RARRAY_LEN(ary); i++) 
+    {
+        VALUE value = RARRAY_PTR(ary)[i];
+        const char* szValue = "";
+        if ( value != 0 && value != Qnil )
+        {
+            VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            szValue = RSTRING_PTR(strVal);
+        }
+
+        (*func)(szValue, data );
+    }
 }
 
 VALUE rho_ruby_get_NIL()

@@ -57,46 +57,22 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
         return new CNetResponseImpl();
     }
 
-    int nTry = 0;
-    m_bCancel = false;
-    CNetResponseImpl* pResp = 0;
-    do
-    {
-        if ( pResp )
-            delete pResp;
-
-        CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders);
-        pResp = oImpl.sendStream(oFile.getInputStream());
-        nTry++;
-
-    }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
-
+    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders);
+    CNetResponseImpl* pResp = oImpl.sendStream(oFile.getInputStream());
     return pResp;
 }
 
 INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
+    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
     {
         LOG(ERROR) + "pullFile: cannot create file :" + strFilePath;
         return new CNetResponseImpl();
     }
 
-    int nTry = 0;
-    m_bCancel = false;
-    CNetResponseImpl* pResp = 0;
-    do
-    {
-        if ( pResp )
-            delete pResp;
-
-        CNetRequestImpl oImpl(this, "GET",strUrl,oSession,pHeaders);
-        pResp = oImpl.downloadFile(oFile);
-        nTry++;
-
-    }while( !m_bCancel && !pResp->isResponseRecieved() && nTry < MAX_NETREQUEST_RETRY );
-
+    CNetRequestImpl oImpl(this, "GET",strUrl,oSession,pHeaders);
+    CNetResponseImpl* pResp = oImpl.downloadFile(oFile);
     return pResp;
 }
 
