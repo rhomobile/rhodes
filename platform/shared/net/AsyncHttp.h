@@ -25,6 +25,7 @@ class CAsyncHttp : public common::CRhoThread, rho::ICallbackObject
     Hashtable<String,String> m_mapHeaders;
 
     String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
+    boolean m_sslVerifyPeer;
 public:
     enum EHttpCommands{ hcGet = 0, hcPost, hcDownload, hcUpload };
 private:
@@ -34,7 +35,8 @@ public:
     static boolean m_bNoThreaded;
 
     CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
-        const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
+        const char* url, unsigned long headers, const char* body,
+        const char* callback, const char* callback_params, boolean ssl_verify_peer = true);
     ~CAsyncHttp();
 
     void cancel();
@@ -62,10 +64,10 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params);
-void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
-void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
-void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
+void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params, int ssl_verify_peer);
+void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params, int ssl_verify_peer);
+void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
+void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
 void rho_asynchttp_cancel(const char* cancel_callback);
 void rho_asynchttp_set_threaded_mode(int b);
 
