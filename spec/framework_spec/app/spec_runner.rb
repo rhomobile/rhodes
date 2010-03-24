@@ -22,11 +22,11 @@ class SpecRunner < MSpecScript
       config[:files] << 'spec/rho_spec'
       config[:files] << 'spec/spec_helper'
       config[:files] << 'spec/webview_spec'
-      config[:files] << 'spec/syncengine_spec'
+      #config[:files] << 'spec/syncengine_spec'
       config[:files] << 'spec/rhom_db_adapter_spec'
       config[:files] << 'spec/rhoerror_spec'
       config[:files] << 'spec/bsearch_spec'
-  
+=begin  
       # CORE, not including thread or fiber
       [
         "argf","class","exception","float","marshal","numeric","range","systemexit",
@@ -52,8 +52,9 @@ class SpecRunner < MSpecScript
           file.gsub!(/\.iseq/,"")
           config[:files] << file
         }
+=end        
     end
-  
+=begin  
     #    config[:files] << 'spec/find_spec'  # find not available on the device
 
     #LIBRARIES
@@ -63,7 +64,7 @@ class SpecRunner < MSpecScript
       file.gsub!(/\.iseq/,"")
       config[:files] << file
     }
-
+=end
   end
 
   def run

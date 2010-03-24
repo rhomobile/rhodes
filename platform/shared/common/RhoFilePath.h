@@ -29,6 +29,11 @@ public:
         return res;
     }
 
+    String changeBaseName( const String& strFileName )
+    {
+        return changeBaseName(strFileName.c_str());
+    }
+
     String changeBaseName( const char* szFileName )
     {
         const char* base = findLastSlash();

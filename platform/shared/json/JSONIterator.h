@@ -4,6 +4,8 @@
 
 struct json_object;
 struct array_list;
+struct lh_entry;
+struct lh_table;
 
 namespace rho {
 namespace json {
@@ -24,10 +26,11 @@ public:
     int getInt(const char* name);
     uint64 getUInt64(const char* name);
     const char* getString(const char* name);
+    const char* getString();
 
-    CJSONEntry getEntry(const char* name);
+    CJSONEntry getEntry(const char* name)const;
 
-    struct json_object* getObject(){ return m_object; }
+    struct json_object* getObject()const{ return m_object; }
 };
 
 class CJSONArrayIterator
@@ -38,7 +41,8 @@ class CJSONArrayIterator
 
 public:
     CJSONArrayIterator(const char* szData);
-	CJSONArrayIterator(CJSONEntry& oEntry, const char* strName);
+	CJSONArrayIterator(const CJSONEntry& oEntry, const char* strName);
+    CJSONArrayIterator(const CJSONEntry& oEntry);
     ~CJSONArrayIterator(void);
 
     boolean isEnd();
@@ -47,6 +51,25 @@ public:
     int     getCurPos(){ return m_nCurItem; }
 
     CJSONEntry getCurItem();
+};
+
+class CJSONStructIterator
+{
+    struct json_object* m_rootObject;
+    struct lh_table*    m_struct;
+    struct lh_entry*    m_curEntry;
+public:
+    CJSONStructIterator(const char* szData);
+	CJSONStructIterator(const CJSONEntry& oEntry, const char* strName);
+    CJSONStructIterator(const CJSONEntry& oEntry);
+    ~CJSONStructIterator(void);
+
+    boolean isEnd();
+    void    next();
+    void    reset();
+
+    String     getCurKey();
+    CJSONEntry getCurValue();
 };
 
 }

@@ -21,6 +21,11 @@ public:
     String getPath(const char* szName);
     int    getInt(const char* szName);
     bool   getBool(const char* szName);
+
+    void   setString(const char* szName, const String& str, boolean bSaveToFile);
+    void   setInt(const char* szName, int nVal, boolean bSaveToFile);
+    void   setBool(const char* szName, bool bVal, boolean bSaveToFile);
+
     void   setString(const char* szName, const String& str);
     void   setInt(const char* szName, int nVal);
     void   setBool(const char* szName, bool bVal);

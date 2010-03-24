@@ -1,7 +1,6 @@
 #include "ClientRegister.h"
 #include "sync/SyncThread.h"
 #include "common/RhoConf.h"
-#include "common/StringConverter.h"
 
 namespace rho{
 namespace sync{
@@ -71,11 +70,8 @@ String CClientRegister::getRegisterBody()
 {
 	int port = RHOCONF().getInt("push_port");
 
-    String strBody = "device_pin=" + m_strDevicePin + 
-        "&device_port=" + convertToStringA(port > 0 ? port : DEFAULT_PUSH_PORT) +
-        "&device_type=" + m_sysInfo->getPlatform();
-
-    return strBody;
+    return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( m_strDevicePin, 
+        port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo->getPlatform());
 }
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync) 
@@ -99,28 +95,21 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 			return true; 
 		}
     }
+	String strBody = getRegisterBody();
+	strBody += "&client_id=" + client_id;
 
-	String serverUrl = RHOCONF().getPath("syncserver");
-	if (serverUrl.length()>0) 
+    NetResponse(resp, getNet().pushData( oSync.getProtocol().getClientRegisterUrl(), strBody, &oSync ));
+	if( resp.isOK() )
     {
-		String strBody = getRegisterBody();
-    	strBody += "&client_id=" + client_id;
-
-        NetResponse(resp, getNet().pushData(serverUrl+"clientregister", strBody, &oSync ));
-		if( resp.isOK() )
-        {
 //				try {
-				oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", 1, m_strDevicePin );
+			oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", 1, m_strDevicePin );
 //				} catch(Exception ex) {
 //					LOG.ERROR("Error saving token_sent to the DB...");
 //				}	
-			LOG(INFO)+"Registered client sucessfully...";
-			return true;
-		} else {
-			LOG(INFO)+"Network error POST-ing device pin to the server...";
-		}
+		LOG(INFO)+"Registered client sucessfully...";
+		return true;
 	} else {
-		LOG(INFO)+"Can't register client because syncserver url is not configured...";
+		LOG(INFO)+"Network error POST-ing device pin to the server...";
 	}
 	
 	return false;
