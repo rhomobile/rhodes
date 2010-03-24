@@ -114,6 +114,11 @@ public:
         }
     }
 
+    void removeElementAt(int nItem)
+    {
+        delete at(nItem);
+        erase( begin() + nItem );
+    }
 };
 
 template<class Type>
