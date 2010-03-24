@@ -10,10 +10,11 @@ class CNetRequest : public INetRequest
 {
     DEFINE_LOGCLASS;
     boolean m_bCancel;
+    boolean m_sslVerifyPeer;
 public:
     CNetRequestImpl* m_pCurNetRequestImpl;
 
-    CNetRequest(void) : m_pCurNetRequestImpl(null), m_bCancel(false){}
+    CNetRequest(void) : m_pCurNetRequestImpl(null), m_bCancel(false), m_sslVerifyPeer(true) {}
     virtual ~CNetRequest(void){}
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
@@ -23,6 +24,9 @@ public:
     virtual INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
 
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
+
+    virtual boolean sslVerifyPeer() {return m_sslVerifyPeer;}
+    virtual void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
 
     virtual String resolveUrl(const String& strUrl);
 
