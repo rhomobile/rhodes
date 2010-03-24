@@ -15,7 +15,7 @@ public:
     void* createStorage();
     void freeStorage(void *ptr);
 
-    CURLcode connect(int sockfd, int nonblocking, int *done, void *storage);
+    CURLcode connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage);
     void shutdown(void *storage);
     ssize_t send(const void *mem, size_t len, void *storage);
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);

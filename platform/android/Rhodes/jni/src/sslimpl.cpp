@@ -70,7 +70,7 @@ SSLImpl::SSLImpl()
     if (!cls) return;
     midConstructor = getJNIClassMethod(env, cls, "<init>", "()V");
     if (!midConstructor) return;
-    midConnect = getJNIClassMethod(env, cls, "connect", "(I)Z");
+    midConnect = getJNIClassMethod(env, cls, "connect", "(IZ)Z");
     if (!midConnect) return;
     midShutdown = getJNIClassMethod(env, cls, "shutdown", "()V");
     if (!midShutdown) return;
@@ -95,12 +95,12 @@ void SSLImpl::freeStorage(void *ptr)
     jnienv()->DeleteGlobalRef(obj);
 }
 
-CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, void *storage)
+CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
 {
     if (!storage) return CURLE_SSL_CONNECT_ERROR;
 
     jobject obj = (jobject)storage;
-    jboolean result = jnienv()->CallBooleanMethod(obj, midConnect, sockfd);
+    jboolean result = jnienv()->CallBooleanMethod(obj, midConnect, sockfd, (jboolean)ssl_verify_peer);
     if (!result)
         return CURLE_SSL_CONNECT_ERROR;
 
