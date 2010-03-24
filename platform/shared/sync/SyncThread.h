@@ -18,7 +18,7 @@ namespace sync {
 class CSyncThread : public common::CRhoThread
 {
 public:
-    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scSyncOneByUrl, scChangePollInterval, scExit, scLogin, scSearchOne};
+    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit, scLogin, scSearchOne};
 
 private:
 
@@ -82,20 +82,22 @@ public:
     public:
 	    String m_strFrom;
         boolean m_bSyncChanges;
-        int     m_nProgressStep;
+        rho::Vector<rho::String> m_arSources;
 
-        CSyncSearchCommand(String from, String params, int source_id, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,source_id, false)
+        CSyncSearchCommand(String from, String params, rho::Vector<rho::String>& arSources, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,nProgressStep, false)
 	    {
 		    m_strFrom = from;
             m_bSyncChanges = sync_changes;
-            m_nProgressStep = nProgressStep;
+            m_arSources = arSources;
 	    }
     };
 
 private:
     static CSyncThread* m_pInstance;
 
-    static db::CDBAdapter  m_oDBAdapter;
+    static db::CDBAdapter  m_oDBUserAdapter;
+    static db::CDBAdapter  m_oDBAppAdapter;
+
     CSyncEngine     m_oSyncEngine;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
 	int           m_nPollInterval;
@@ -108,14 +110,18 @@ public:
     static void Destroy();
     static CSyncThread* getInstance(){ return m_pInstance; }
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
-    static db::CDBAdapter& getDBAdapter(){ return m_pInstance->m_oDBAdapter; }
+
+    static db::CDBAdapter& getDBUserAdapter(){ return m_oDBUserAdapter; }
+    static db::CDBAdapter& getDBAppAdapter(){ return m_oDBAppAdapter; }
+
+    static db::CDBAdapter& getDBAdapter(const char* szPartition=0){ return szPartition && strcmp(szPartition,"user") != 0 ? m_oDBAppAdapter : m_oDBUserAdapter; }
+    static db::CDBAdapter& getDBAdapter(sqlite3* db);
 
     void addSyncCommand(CSyncCommand* pSyncCmd);
 
 	virtual void run();
 
 	void setPollInterval(int nInterval);
-
 private:
     CSyncThread(common::IRhoClassFactory* factory);
     int getLastSyncInterval();
@@ -140,10 +146,8 @@ void rho_sync_destroy();
 
 void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup);
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
+void rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
-void rho_sync_lock();
-void rho_sync_unlock();
 void rho_sync_login(const char *login, const char *password, const char* callback);
 int rho_sync_logged_in();
 void rho_sync_logout();
@@ -156,19 +160,10 @@ void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
 void rho_sync_cleanobjectnotify();
 int rho_sync_get_pagesize();
 void rho_sync_set_pagesize(int nPageSize);
-void rho_sync_set_initial_notification(const char *url, char* params);
-void rho_sync_clear_initial_notification();
-void rho_sync_set_threaded_mode(int b);
+void rho_sync_set_bulk_notification(const char *url, char* params);
+void rho_sync_clear_bulk_notification();
 
-//struct sqlite3;
-int rho_sync_openDB(const char* szDBPath);
-int rho_sync_closeDB();
-int rho_db_startUITransaction();
-int rho_db_commitUITransaction();
-int rho_db_rollbackUITransaction();
-int rho_db_destroy_table(const char* szTableName);
-void* rho_db_get_handle();
-unsigned long rho_sync_get_attrs(int nSrcID);
+unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID);
 int rho_sync_get_lastsync_objectcount(int nSrcID);
 
 #ifdef __cplusplus

@@ -4,20 +4,10 @@
 /* Put header files here or function declarations like below */
 	#define dosync rho_sync_doSyncAllSources
 	extern void rho_sync_doSyncAllSources(int show_status_popup);
-	
 	#define dosync_source rho_sync_doSyncSource
 	extern void rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
-	
-	#define dosync_source_byurl rho_sync_doSyncSourceByUrl
-	extern void rho_sync_doSyncSourceByUrl(const char * source_url);
-	
-	#define dosearch_source rho_sync_doSearchSource
-	extern void rho_sync_doSearchSource(int source_id, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
-	
-	extern void rho_sync_lock();
-	#define lock_sync_mutex rho_sync_lock
-	extern void rho_sync_unlock();
-	#define unlock_sync_mutex rho_sync_unlock
+	#define dosearch rho_sync_doSearch
+	extern void rho_sync_doSearch(VALUE ar_sources, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	extern void rho_sync_login(const char *login, const char *password, const char* callback);
 	#define login rho_sync_login
 	extern int rho_sync_logged_in();
@@ -34,7 +24,7 @@
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
-	extern VALUE rho_sync_get_attrs(int source_id);
+	extern VALUE rho_sync_get_attrs(const char* szPartition, int source_id);
 	#define get_src_attrs rho_sync_get_attrs
 	
     extern void  rho_sync_setobjectnotify_url(const char* szUrl);
@@ -53,11 +43,10 @@
     extern void  rho_sync_set_pagesize(int pagesize);
     #define set_pagesize rho_sync_set_pagesize
 
-	extern void rho_sync_set_initial_notification(const char *url, char* params);
-	#define set_initial_notification rho_sync_set_initial_notification
-	extern void rho_sync_clear_initial_notification();
-	#define clear_initial_notification rho_sync_clear_initial_notification
-
+	extern void rho_sync_set_bulk_notification(const char *url, char* params);
+	#define set_bulk_notification rho_sync_set_bulk_notification
+	extern void rho_sync_clear_bulk_notification();
+	#define clear_bulk_notification rho_sync_clear_bulk_notification
 	extern void rho_sync_set_threaded_mode(int b);
 	#define set_threaded_mode rho_sync_set_threaded_mode
 	
@@ -73,10 +62,7 @@
 }
 extern void dosync(bool show_status_popup);
 extern void dosync_source(VALUE source_id, bool show_status_popup);
-extern void dosync_source_byurl(const char * source_url);
-extern void dosearch_source(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
-extern void lock_sync_mutex();
-extern void unlock_sync_mutex();
+extern void dosearch(VALUE ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 extern void login(const char *login, const char *password, const char* callback);
 extern int logged_in();
 extern void logout();
@@ -85,13 +71,13 @@ extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
 extern void set_pollinterval(int interval);
 extern void set_syncserver(char* syncserver);
-extern VALUE get_src_attrs(int source_id);
+extern VALUE get_src_attrs(const char* szPartition, int source_id);
 extern void  set_objectnotify_url(const char* szUrl);
 extern void  add_objectnotify(int nSrcID, const char* szObject);
 extern void  clean_objectnotify();
 extern int   get_lastsync_objectcount(int nSrcID);
 extern int   get_pagesize();
 extern void  set_pagesize(int pagesize);
-extern void  set_initial_notification(const char *url, char* params);
-extern void  clear_initial_notification();
+extern void  set_bulk_notification(const char *url, char* params);
+extern void  clear_bulk_notification();
 extern void  set_threaded_mode(bool b);

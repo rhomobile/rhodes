@@ -8,12 +8,12 @@ describe "rhom initializer", :shared => true do
   end
 
   after(:each) do
-    Rhom::RhomDbAdapter.start_transaction
+    ::Rho::RHO.get_user_db().start_transaction
     #Rhom::RhomAttribManager.reset_all
-    Rhom::RhomDbAdapter.delete_all_from_table('client_info')
-    Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-    Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
-    Rhom::RhomDbAdapter.commit
+    ::Rho::RHO.get_user_db().delete_all_from_table('client_info')
+    ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
+    ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
+    ::Rho::RHO.get_user_db().commit
   end
 end
 
