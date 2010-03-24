@@ -16,7 +16,8 @@ namespace rho
 {
 namespace net
 {
-curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl, IRhoSession* pSession, Hashtable<String,String>* pHeaders);
+curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
+                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer);
 CURLMcode do_curl_perform(CURLM *curlm, CURL *curl);
 	
 IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
@@ -81,6 +82,7 @@ public:
 CURLNetRequest::CURLNetRequest()
 {
     m_bTraceCalls = rho_conf_getBool("net_trace");
+    m_sslVerifyPeer = true;
 	curlm = curl_multi_init();
     curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &errbuf);
@@ -115,7 +117,7 @@ static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void 
     RAWTRACE1("Received %d bytes (string)", nBytes);
     pStr->append((const char *)ptr, nBytes);
     return nBytes;
-}    
+}
 
 INetResponse* CURLNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
@@ -147,7 +149,7 @@ INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUr
 	
     rho_net_impl_network_indicator(1);
 	
-    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, oSession, pHeaders );
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, oSession, pHeaders, m_sslVerifyPeer);
 	if (strcasecmp(method, "POST") == 0) {
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
@@ -188,7 +190,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
 	
     rho_net_impl_network_indicator(1);
 	
-    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, oSession, pHeaders );
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, oSession, pHeaders, m_sslVerifyPeer);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
 	
@@ -229,7 +231,7 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
 
     rho_net_impl_network_indicator(1);
     
-	curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "GET", strUrl, oSession, pHeaders);
+	curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "GET", strUrl, oSession, pHeaders, m_sslVerifyPeer);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oFile);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
 	
@@ -380,7 +382,8 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     return nBytes;
 }
 
-curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl, IRhoSession* pSession, Hashtable<String,String>* pHeaders)
+curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
+                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer)
 {
     curl_easy_reset(curl);
     if (strcasecmp(method, "GET") == 0)
@@ -404,6 +407,8 @@ curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const S
     
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 180);
     curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1);
+    
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)sslVerifyPeer);
     
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
