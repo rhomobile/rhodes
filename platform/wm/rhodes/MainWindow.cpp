@@ -638,7 +638,11 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
 
     LOG(TRACE) + "OnBeforeNavigate2: " + szURL ;
 
-    SetWindowText(TEXT("Untitled"));
+    String strTitle = RHOCONF().getString("title_text");
+    if ( strTitle.length() > 0 )
+        SetWindowText(convertToStringW(strTitle).c_str());
+    else
+        SetWindowText(TEXT("Untitled"));
 
     RHO_ASSERT(SetEnabledState(IDM_STOP, TRUE));
 }
@@ -648,7 +652,11 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
     USES_CONVERSION;
     LOG(TRACE) + "OnBrowserTitleChange: " + OLE2CT(bstrTitleText);
 
-    SetWindowText(OLE2CT(bstrTitleText));
+    String strTitle = RHOCONF().getString("title_text");
+    if ( strTitle.length() > 0 )
+        SetWindowText(convertToStringW(strTitle).c_str());
+    else
+        SetWindowText(OLE2CT(bstrTitleText));
 }
 
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
