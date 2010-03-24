@@ -40,7 +40,6 @@ module Rhom
                       "source_id" => "1",
                       "update_type" => "1",
                       "attrib_type" => "1",
-                      "type" => "1",
                       "set_notification" => "1",
                       "clear_notification" => "1" }
     

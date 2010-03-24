@@ -982,6 +982,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="unzip"
+			>
+			<File
+				RelativePath="..\..\shared\unzip\unzip.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\unzip\unzip.h"
+				>
+			</File>
+		</Filter>		
 	</Files>
 	<Globals>
 	</Globals>
