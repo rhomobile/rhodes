@@ -94,57 +94,61 @@ class Jake
     conf
   end
 
-  def self.run_in_thread(command, args, wd=nil,system = false, hideerrors = false)
-      Thread.new { run(command,args, wd, system,hideerrors) }  
-      sleep 1
-  end
-      
-  def self.run(command, args, wd=nil,system = false, hideerrors = false)
-    argv = []
-    currentdir = ""
-    retval = ""
-    argv << command
-    argv += args
-    argv.map! { |x| x.to_s }.map! { |x| x =~ /^".*"$/ ? x[1..-2] : x }
+  def self.run2(command, args, options = {})
+  	argv = []
+  	currentdir = ""
+  	retval = ""
+  	argv << command
+  	argv += args
+  	argv.map! { |x| x.to_s }.map! { |x| x =~ /^".*"$/ ? x[1..-2] : x }
 
-    if not wd.nil?
+  	wd = options[:directory]
+  	if not wd.nil?
       currentdir = pwd()
-      chdir wd  
+      chdir wd
     end
-    
+
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
     puts "PWD: " + pwd
     puts "CMD: " + cmdstr
     $stdout.flush
-    
+
+    hideerrors = options[:hideerrors]
     if hideerrors
       if RUBY_PLATFORM =~ /(win|w)32$/
         nul = "nul"
       else
         nul = "/dev/null"
       end
-      argv << "2>" + nul
     end
-    #retval =  `#{command} #{argstr}`
-    #retval = %x[#{command}]
-    if system
+
+    if options[:system]
       system(cmdstr)
       retval = ""
     else
       argv = cmdstr if RUBY_VERSION =~ /^1\.8/
-      IO.popen(argv) { |f|
-        while line = f.gets
-          puts line
+      if options[:nowait]
+        IO.popen(argv)
+      else
+        IO.popen(argv) do |f|
+          while line = f.gets
+            puts line
+            $stdout.flush
+          end
         end
-      }
+      end
     end
+
     if not wd.nil?
       chdir currentdir
     end
-    
-    return retval
+
+    retval
+  end
   
+  def self.run(command, args, wd=nil,system = false, hideerrors = false)
+    self.run2(command, args, {:directory => wd, :system => system, :hiderrors => hideerrors})
   end
   
   def self.unjar(src,targetdir)
