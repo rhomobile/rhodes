@@ -38,9 +38,9 @@ public:
     CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
 
-    void cancel();
+    void cancel(boolean bWait);
 
-    static void cancelRequest(const char* szCallback);
+    static void cancelRequest(const char* szCallback, boolean bWait);
 
     //rho::ICallbackObject
     virtual unsigned long getObjectValue();
@@ -68,6 +68,7 @@ void rho_asynchttp_post(const char* url, unsigned long headers, const char* body
 void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
 void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
 void rho_asynchttp_cancel(const char* cancel_callback);
+void rho_asynchttp_destroy();
 void rho_asynchttp_set_threaded_mode(int b);
 
 #ifdef __cplusplus

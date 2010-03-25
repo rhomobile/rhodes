@@ -58,7 +58,7 @@ public class AsyncHttp extends RhoThread
 	        start(epLow);
 	}
 
-	void cancel()
+	void cancel(boolean bWait)
 	{
 		synchronized(m_mxRequest)
 		{		
@@ -66,7 +66,8 @@ public class AsyncHttp extends RhoThread
 		        m_pNetRequest.cancel();
 		}
 		
-	    stop(10000);
+		if ( bWait )
+			stop(10000);
 	    //delete this;
 	}
 
@@ -96,7 +97,7 @@ public class AsyncHttp extends RhoThread
 	    }
 	}
 	
-	static void cancelRequest(String szCallback)
+	static void cancelRequest(String szCallback, boolean bWait)
 	{
 	    if (szCallback == null|| szCallback.length() ==0 )
 	    {
@@ -109,13 +110,13 @@ public class AsyncHttp extends RhoThread
 	        if ( szCallback.compareTo("*") ==0 )
 	        {
 	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
-	                ((AsyncHttp)m_arInstances.elementAt(i)).cancel();
+	                ((AsyncHttp)m_arInstances.elementAt(i)).cancel(bWait);
 	        }else
 	        {
 	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
 	            {
 	                if ( ((AsyncHttp)m_arInstances.elementAt(i)).m_strCallback.compareTo(szCallback) == 0 )
-	                	((AsyncHttp)m_arInstances.elementAt(i)).cancel();    
+	                	((AsyncHttp)m_arInstances.elementAt(i)).cancel(bWait);    
 	            }
 	        }
 	    }
@@ -265,13 +266,10 @@ public class AsyncHttp extends RhoThread
 	    }else
 	    {*/
 	    try{
-			synchronized(m_mxRequest)
-			{		
-				m_pNetRequest = m_ptrFactory.createNetRequest();
-			}
-			
-	        String strFullUrl = m_pNetRequest.resolveUrl(m_strCallback);
-	        NetResponse resp1 = m_pNetRequest.pushData( strFullUrl, strBody, null );
+	        NetRequest pNetRequest = m_ptrFactory.createNetRequest();
+
+	        String strFullUrl = pNetRequest.resolveUrl(m_strCallback);
+	        NetResponse resp1 = pNetRequest.pushData( strFullUrl, strBody, null );
 	        if ( !resp1.isOK() )
 	            LOG.ERROR("AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData() );
         }catch(Exception exc)
@@ -371,7 +369,7 @@ public class AsyncHttp extends RhoThread
 			{
 				try {
 					String cancel_callback = arg.toStr();
-					AsyncHttp.cancelRequest(cancel_callback);
+					AsyncHttp.cancelRequest(cancel_callback, false);
 				} catch(Exception e) {
 					LOG.ERROR("cancel failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
