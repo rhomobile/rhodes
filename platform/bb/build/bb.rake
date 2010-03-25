@@ -57,7 +57,8 @@ def startsim
   end
         
   args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"])
-  Jake.run_in_thread(command,args,jde + "/simulator",true)
+
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
 def stopsim
@@ -69,7 +70,7 @@ def stopsim
   args << "/session="+sim
   args << "/execute=Exit(true)"
   
-  Jake.run_in_thread(command,args, nil, true,true)
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
 def manualsign
