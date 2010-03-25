@@ -93,7 +93,12 @@ class Jake
 
     conf
   end
-  
+
+  def self.run_in_thread(command, args, wd=nil,system = false, hideerrors = false)
+      Thread.new { run(command,args, wd, system,hideerrors) }  
+      sleep 1
+  end
+      
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
     argv = []
     currentdir = ""
