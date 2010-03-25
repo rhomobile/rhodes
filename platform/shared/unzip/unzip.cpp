@@ -3,9 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#ifdef __SYMBIAN32__
-#define ZIP_STD
-#elif defined(WIN32) || defined(_WIN32_WCE)
+#if defined(WIN32) || defined(_WIN32_WCE)
 #else
 #define ZIP_STD
 #endif
