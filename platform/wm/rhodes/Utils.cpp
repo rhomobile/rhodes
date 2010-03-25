@@ -1,37 +1,37 @@
 #include "stdafx.h"
 
-time_t SystemTimeToUnixTime (const LPSYSTEMTIME sys_time)
+time_t SystemTimeToUnixTime (const LPSYSTEMTIME sysTime)
 {
-	if ( NULL == sys_time )
+	if ( NULL == sysTime )
 		return -1;
 	
-	bool is_valid = false; //flag for sys_time is valid
+	bool isValid = false;
 
-	if ((sys_time->wYear >= 1900) && 
-		((sys_time->wMonth >= 1)  && (sys_time->wMonth <= 12))  && 
-		((sys_time->wDay >= 1)    && (sys_time->wDay <= 31))    &&
-		((sys_time->wHour >= 0)   && (sys_time->wHour <= 23))   && 
-		((sys_time->wMinute >= 0) && (sys_time->wMinute <= 59)) &&
-		((sys_time->wSecond >= 0) && (sys_time->wSecond <= 59))
+	if ((sysTime->wYear >= 1900) && 
+		((sysTime->wMonth >= 1)  && (sysTime->wMonth <= 12))  && 
+		((sysTime->wDay >= 1)    && (sysTime->wDay <= 31))    &&
+		((sysTime->wHour >= 0)   && (sysTime->wHour <= 23))   && 
+		((sysTime->wMinute >= 0) && (sysTime->wMinute <= 59)) &&
+		((sysTime->wSecond >= 0) && (sysTime->wSecond <= 59))
 		)
 	{
-		is_valid = true;
+		isValid = true;
 	} 
 	
-	if (is_valid == true)
+	if (isValid == false)
 		return -1 ;
 	
 	struct tm atm;
-	atm.tm_sec = sys_time->wSecond;
-	atm.tm_min = sys_time->wMinute;
-	atm.tm_hour = sys_time->wHour;
-	atm.tm_mday = sys_time->wDay;
-	atm.tm_mon = sys_time->wMonth - 1;
-	atm.tm_year = sys_time->wYear - 1900;
+	atm.tm_sec = sysTime->wSecond;
+	atm.tm_min = sysTime->wMinute;
+	atm.tm_hour = sysTime->wHour;
+	atm.tm_mday = sysTime->wDay;
+	atm.tm_mon = sysTime->wMonth - 1;
+	atm.tm_year = sysTime->wYear - 1900;
 	atm.tm_isdst = -1; 
 	
-	time_t ret_val = -1 ;
-	ret_val = ::mktime (&atm);
+	time_t retVal = -1 ;
+	retVal = ::mktime (&atm);
 
-	return ( ret_val );
+	return retVal;
 }
