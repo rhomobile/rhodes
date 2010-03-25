@@ -316,9 +316,10 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
 	
     boolean bRemoveAfterFire = bFinish;
     String strBody = "", strUrl;
-	synchronized(m_mxSyncNotifications)
 	{
-        if ( m_bulkSyncNotify.m_strUrl.length() == 0 )
+    	synchronized(m_mxSyncNotifications)
+
+        if ( m_initialSyncNotify.m_strUrl.length() == 0 )
             return;
         
         strUrl = m_bulkSyncNotify.m_strUrl;
