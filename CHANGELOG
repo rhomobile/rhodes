@@ -1,6 +1,7 @@
 == 1.5.1
 * Fix issue #2924952 - BB Sim doesn't launch on windows 7
 * Fix issue #2902321 - iPhone: back issue
+* Fix AsyncHttp 'cancel request'
 
 == 1.5.0
 * native screen resolution for iPad
