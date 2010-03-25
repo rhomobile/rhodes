@@ -276,7 +276,7 @@ div#content .form_list select {
     border: 0px;
     width: 100%;
     height: 40px;
-    background: url('/public/images/downArrow.png') no-repeat center right;
+    background: url('/public/images/listArrowDown.png') no-repeat center right;
 }
 
 

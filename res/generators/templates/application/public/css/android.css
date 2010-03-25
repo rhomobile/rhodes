@@ -2,9 +2,10 @@
 html,body {
     margin: 0;
     height: 100%;
-    font-family: "Droid Serif",sans-serif;
-    background: black;
-    color: white;
+    width: 100%;
+    font-family: "Droid",sans-serif;
+    background: white;
+    color: black;
 }
 
 h1 {
@@ -21,10 +22,8 @@ div#content {
 #toolbar {
     width: 100%;
     height: 60px;
-    position: fixed;
-    bottom: 0px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #a5a6a5),color-stop(0.5, #949294), color-stop(1.0, #848284));}
-
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.6, #000000),color-stop(1.0, #2B2B2B));}
+}
 div#toolbar div {
 }
 
@@ -41,8 +40,7 @@ div#toolbar a {
 
 div#row .deleteButton, .regularButton, .blueButton, .backButton {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
-    -webkit-border-radius: 5px;
-    -webkit-box-shadow:3px 3px 3px #888;
+    -webkit-border-radius: 1px;
     font-size: .9em;
     border: 1px solid white;
 }
@@ -76,9 +74,12 @@ div#pageTitle h1 {
 }
 
 /* lists */
+div#content {
+    width: 100%;
+}
 
 div#content .list {
-    border-top: 1px solid #848284;
+    border-top: 1px solid #000;
 }
 
 div#content .list ul {
@@ -90,14 +91,14 @@ div#content .list li {
     width: 100%;
     height: 54px;
     list-style-type: none;
-    border-bottom: 1px solid #848284;
+    border-bottom: 1px solid #000;
 }
 
 div#content .list a {
     display: block;
     text-decoration: none;
-    color: white;
-    font-size: 20px;
+    color: black;
+    font-size: 25px;
     height: 100%;
     width: 100%;
 }
@@ -122,6 +123,7 @@ div#content div.list ul.simple_list li a span.discloser_indicator {
     background: url(/public/images/listArrow.png) no-repeat;
     position: relative;
     top: 35%;
+    display: none;
 }
 
 div#content ul.simple_list li a img {
@@ -147,7 +149,7 @@ div#content form button {
 
 div#content .form_list ul {
     display: block;
-    font-size: 16px;
+    font-size: 25px;
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
@@ -158,11 +160,11 @@ div#content .form_list ul {
 }
 
 div#content .form_list li:first-child {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid black;
 }
 
 div#content .form_list li {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid black;
     display: block;
     height: auto;
     list-style-type: none;
@@ -177,38 +179,57 @@ div#content .form_list span.label {
     line-height: 30px;
     padding: 5px 10px 5px 5px;
     margin: 10px 20px 10px 10px;
-    width: 100px;
-    border: 1px solid white;
+    width: 105px;
     overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #fbfbfb),color-stop(0.5, #fffeff),color-stop(1.0, #f1ecf1));
-    -webkit-border-bottom-left-radius: 3px;
-    -webkit-border-bottom-right-radius: 3px;
-    -webkit-border-top-left-radius: 3px;
-    -webkit-border-top-right-radius: 3px;
 }
 
-div#content .form_list input.checkbox {
-    -webkit-appearance:checkbox;
+div#content .form_list input[type="checkbox"] {
+    -webkit-appearance: none;
+    background: url(/public/images/android/btn_check_off.png) no-repeat;
+    float: right;
+    height: 31px;
+    width: 31px;
+    margin-top:15px;
+    margin-right: 20px;
+}
+
+div#content .form_list input[type="checkbox"]:checked {
+    background: url(/public/images/android/btn_check_on.png) no-repeat;
+    float: right;
+    height: 31px;
+    width: 31px;
+    margin-top:15px;
+    margin-right: 20px;
+}
+
+div#content .form_list input[type="radio"] {
+    background: url(/public/images/android/btn_radio_off.png) no-repeat;
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    border: none;
+    height: 32px;
+    margin: 0px;
+    width: 32px;
     float: right;
     margin-right: 20px;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
-div#content .form_list input.radioButton {
-    -webkit-appearance:radio;
-    margin-top: 20px;
-    float: right;
+div#content .form_list input[type="radio"]:checked {
+ background: url(/public/images/android/btn_radio_on.png) no-repeat;
+     margin-top:15px;
     margin-right: 20px;
 }
 
 div#content .form_list select {
-    width: 100px;
-    float: right;
-    margin-right: 10px;
-    margin-top: 20px;
-    -webkit-appearance:menulist;
+    -webkit-appearance: none;
+    border: 0px;
+    width: 100%;
+    padding-left: 20px;
+    height: 60px;
+    background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
 }
 
 
