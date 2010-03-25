@@ -20,7 +20,8 @@ public class AsyncHttp extends RhoThread
 	private static Object m_mxInstances = new Object();
 	private static Vector/*<CAsyncHttp*>*/ m_arInstances = new Vector();
 	private RhoClassFactory m_ptrFactory;
-
+	private Object m_mxRequest = new Object();
+	
 	private NetRequest m_pNetRequest;
 	private NetResponse m_pNetResponse;
 	private Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
@@ -59,9 +60,12 @@ public class AsyncHttp extends RhoThread
 
 	void cancel()
 	{
-	    if (m_pNetRequest!=null && !m_pNetRequest.isCancelled())
-	        m_pNetRequest.cancel();
-
+		synchronized(m_mxRequest)
+		{		
+		    if (m_pNetRequest!=null && !m_pNetRequest.isCancelled())
+		        m_pNetRequest.cancel();
+		}
+		
 	    stop(10000);
 	    //delete this;
 	}
@@ -121,8 +125,11 @@ public class AsyncHttp extends RhoThread
 	{
 		LOG.INFO("RhoHttp thread start.");
 
-	    m_pNetRequest = m_ptrFactory.createNetRequest();
-
+		synchronized(m_mxRequest)
+		{		
+			m_pNetRequest = m_ptrFactory.createNetRequest();
+		}
+		
 	    try{
 		    switch( m_eCmd )
 		    {
@@ -258,10 +265,13 @@ public class AsyncHttp extends RhoThread
 	    }else
 	    {*/
 	    try{
-	        NetRequest pNetRequest = m_ptrFactory.createNetRequest();
-
-	        String strFullUrl = pNetRequest.resolveUrl(m_strCallback);
-	        NetResponse resp1 = pNetRequest.pushData( strFullUrl, strBody, null );
+			synchronized(m_mxRequest)
+			{		
+				m_pNetRequest = m_ptrFactory.createNetRequest();
+			}
+			
+	        String strFullUrl = m_pNetRequest.resolveUrl(m_strCallback);
+	        NetResponse resp1 = m_pNetRequest.pushData( strFullUrl, strBody, null );
 	        if ( !resp1.isOK() )
 	            LOG.ERROR("AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData() );
         }catch(Exception exc)
