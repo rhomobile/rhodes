@@ -26,6 +26,8 @@ public class AsyncHttp extends RhoThread
 	private Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
 
 	private String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
+    boolean m_bFinished = false;
+    
 	private RubyValue m_valBody;
 	public final static int  hcGet = 0, hcPost=1, hcDownload=2, hcUpload =3;
 	private int m_eCmd;
@@ -47,10 +49,7 @@ public class AsyncHttp extends RhoThread
 
 	    m_mapHeaders = RhoRuby.enum_strhash(headers);
 
-	    synchronized(m_mxInstances)
-	    {
-	        m_arInstances.addElement(this);
-	    }
+	    addNewObject(this);	    
 
 	    if (m_bNoThreaded)
 	        run();
@@ -60,13 +59,39 @@ public class AsyncHttp extends RhoThread
 
 	void cancel()
 	{
-	    if (m_pNetRequest!=null)
+	    if (m_pNetRequest!=null && !m_pNetRequest.isCancelled())
 	        m_pNetRequest.cancel();
 
-	    stop(1000);
+	    stop(10000);
 	    //delete this;
 	}
 
+	static void addNewObject(AsyncHttp pObj)
+	{
+	    synchronized(m_mxInstances)
+	    {
+	        while(true)
+	        {
+	            int nToDelete = -1;
+	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+	            {
+	                if ( ((AsyncHttp)m_arInstances.elementAt(i)).m_bFinished )
+	                {
+	                    nToDelete = i;
+	                    break;
+	                }
+	            }
+
+	            if (nToDelete==-1)
+	                break;
+
+	            m_arInstances.removeElementAt(nToDelete);
+	        }
+	    	
+	        m_arInstances.addElement(pObj);
+	    }
+	}
+	
 	static void cancelRequest(String szCallback)
 	{
 	    if (szCallback == null|| szCallback.length() ==0 )
@@ -135,10 +160,8 @@ public class AsyncHttp extends RhoThread
 	    }finally
 	    {
 			LOG.INFO("RhoHttp thread end.");
+			m_bFinished = true;			
 	    }
-
-	    //if ( !m_pNetRequest.isCancelled() )
-	    //    delete this;
 	}
 
 	String makeHeadersString()
