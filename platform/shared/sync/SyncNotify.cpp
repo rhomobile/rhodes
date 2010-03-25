@@ -319,7 +319,7 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
 	{
     	synchronized(m_mxSyncNotifications)
 
-        if ( m_initialSyncNotify.m_strUrl.length() == 0 )
+        if ( m_bulkSyncNotify.m_strUrl.length() == 0 )
             return;
         
         strUrl = m_bulkSyncNotify.m_strUrl;
