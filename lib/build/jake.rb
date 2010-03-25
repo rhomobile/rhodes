@@ -148,7 +148,7 @@ class Jake
   end
   
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
-    self.run2(command, args, {:wd => wd, :system => system, :hiderrors => hideerrors})
+    self.run2(command, args, {:directory => wd, :system => system, :hiderrors => hideerrors})
   end
   
   def self.unjar(src,targetdir)
