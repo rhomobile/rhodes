@@ -10,6 +10,8 @@
 		5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */; };
 		5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335510FC2977600F268F0 /* RhoThread.cpp */; };
 		5C5335550FC2977600F268F0 /* RhoThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335520FC2977600F268F0 /* RhoThread.h */; };
+		5C59BF4D115B4BC300E96ADE /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C59BF4B115B4BC300E96ADE /* unzip.cpp */; };
+		5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59BF4C115B4BC300E96ADE /* unzip.h */; };
 		5C6855E910A02EAA008DA047 /* RhodesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6855E610A02EAA008DA047 /* RhodesApp.cpp */; };
 		5C6855EA10A02EAA008DA047 /* RhodesApp.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6855E710A02EAA008DA047 /* RhodesApp.h */; };
 		5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B448A0F946589003CB43A /* RhoConf.cpp */; };
@@ -67,6 +69,8 @@
 		5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoThreadImpl.h; path = ../../shared/common/IRhoThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		5C5335510FC2977600F268F0 /* RhoThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThread.cpp; path = ../../shared/common/RhoThread.cpp; sourceTree = SOURCE_ROOT; };
 		5C5335520FC2977600F268F0 /* RhoThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThread.h; path = ../../shared/common/RhoThread.h; sourceTree = SOURCE_ROOT; };
+		5C59BF4B115B4BC300E96ADE /* unzip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = unzip.cpp; path = ../../shared/unzip/unzip.cpp; sourceTree = SOURCE_ROOT; };
+		5C59BF4C115B4BC300E96ADE /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = ../../shared/unzip/unzip.h; sourceTree = SOURCE_ROOT; };
 		5C6855E610A02EAA008DA047 /* RhodesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesApp.cpp; path = ../../shared/common/RhodesApp.cpp; sourceTree = SOURCE_ROOT; };
 		5C6855E710A02EAA008DA047 /* RhodesApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesApp.h; path = ../../shared/common/RhodesApp.h; sourceTree = SOURCE_ROOT; };
 		5C6B448A0F946589003CB43A /* RhoConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConf.cpp; path = ../../shared/common/RhoConf.cpp; sourceTree = SOURCE_ROOT; };
@@ -145,6 +149,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				5C59BF4A115B4BA300E96ADE /* unzip */,
 				5C798931113BD10C005F8736 /* rubyext */,
 				5CBD46251087397B00107D0D /* net */,
 				5C6B45280F9468C5003CB43A /* statistic */,
@@ -160,6 +165,15 @@
 				D2AAC046055464E500DB518D /* librholib.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5C59BF4A115B4BA300E96ADE /* unzip */ = {
+			isa = PBXGroup;
+			children = (
+				5C59BF4B115B4BC300E96ADE /* unzip.cpp */,
+				5C59BF4C115B4BC300E96ADE /* unzip.h */,
+			);
+			name = unzip;
 			sourceTree = "<group>";
 		};
 		5C6B45280F9468C5003CB43A /* statistic */ = {
@@ -299,6 +313,7 @@
 				BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */,
 				5C798935113BD148005F8736 /* GeoLocation.h in Headers */,
 				BD8DF8891147C8090041A968 /* SplashScreen.h in Headers */,
+				5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +379,7 @@
 				5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */,
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
 				BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */,
+				5C59BF4D115B4BC300E96ADE /* unzip.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

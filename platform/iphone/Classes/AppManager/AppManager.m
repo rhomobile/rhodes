@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #include "common/RhoPort.h"
-#import "unzip.h"
+#include "unzip/unzip.h"
 #import "AppManager.h"
 //#import "HttpContext.h"
 //#import "HttpMessage.h"
