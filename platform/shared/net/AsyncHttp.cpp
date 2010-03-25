@@ -43,7 +43,7 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         start(epLow);
 }
 
-void CAsyncHttp::cancel()
+void CAsyncHttp::cancel(boolean bWait)
 {
     {		
     	synchronized(m_mxRequest)
@@ -52,7 +52,8 @@ void CAsyncHttp::cancel()
             m_pNetRequest->cancel();
     }
 
-    stop(-1);
+    if ( bWait )
+        stop(-1);
 }
 
 /*static*/ void CAsyncHttp::addNewObject(CAsyncHttp* pObj)
@@ -81,7 +82,7 @@ void CAsyncHttp::cancel()
     }
 }
 
-/*static*/ void CAsyncHttp::cancelRequest(const char* szCallback)
+/*static*/ void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
 {
     if (!szCallback || !*szCallback )
     {
@@ -94,13 +95,13 @@ void CAsyncHttp::cancel()
         if ( *szCallback == '*')
         {
             for (int i = 0; i < (int)m_arInstances.size(); i++ )
-                m_arInstances.elementAt(i)->cancel();
+                m_arInstances.elementAt(i)->cancel(bWait);
         }else
         {
             for (int i = 0; i < (int)m_arInstances.size(); i++ )
             {
                 if ( m_arInstances.elementAt(i)->m_strCallback.compare(szCallback) == 0 )
-                    m_arInstances.elementAt(i)->cancel();    
+                    m_arInstances.elementAt(i)->cancel(bWait);    
             }
         }
     }
@@ -235,13 +236,13 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
         rho_ruby_set_const( strName.c_str(), strBody.c_str());
     }else
     {
-        {
-            synchronized(m_mxRequest)
-            m_pNetRequest = m_ptrFactory->createNetRequest();
-        }
-
-        String strFullUrl = m_pNetRequest->resolveUrl(m_strCallback);
-        NetResponse(resp1,m_pNetRequest->pushData( strFullUrl, strBody, null ));
+//        {
+//            synchronized(m_mxRequest)
+//            m_pNetRequest = m_ptrFactory->createNetRequest();
+//        }
+        common::CAutoPtr<INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        String strFullUrl = pNetRequest->resolveUrl(m_strCallback);
+        NetResponse(resp1,pNetRequest->pushData( strFullUrl, strBody, null ));
         if ( !resp1.isOK() )
             LOG(ERROR) + "AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData();
     }
@@ -278,7 +279,12 @@ void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char
 
 void rho_asynchttp_cancel(const char* cancel_callback)
 {
-    CAsyncHttp::cancelRequest(cancel_callback);
+    CAsyncHttp::cancelRequest(cancel_callback, false);
+}
+
+void rho_asynchttp_destroy()
+{
+    CAsyncHttp::cancelRequest("*", true);
 }
 
 void rho_asynchttp_set_threaded_mode(int b)
