@@ -19,6 +19,7 @@ class CAsyncHttp : public common::CRhoThread, rho::ICallbackObject
     static common::CMutex m_mxInstances;
     static VectorPtr<CAsyncHttp*> m_arInstances;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
+    common::CMutex m_mxRequest;
 
     common::CAutoPtr<INetRequest> m_pNetRequest;
     common::CAutoPtr<INetResponse> m_pNetResponse;
