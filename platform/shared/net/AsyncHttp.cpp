@@ -45,8 +45,12 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
 
 void CAsyncHttp::cancel()
 {
-    if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
-        m_pNetRequest->cancel();
+    {		
+    	synchronized(m_mxRequest)
+
+        if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
+            m_pNetRequest->cancel();
+    }
 
     stop(-1);
 }
@@ -104,10 +108,13 @@ void CAsyncHttp::cancel()
 
 void CAsyncHttp::run()
 {
-	LOG(INFO) + "RhoHttp thread start.";
+    LOG(INFO) + "RhoHttp thread start.";
 
-    m_pNetRequest = m_ptrFactory->createNetRequest();
-    m_pNetRequest->sslVerifyPeer(m_sslVerifyPeer);
+    {		
+        synchronized(m_mxRequest)
+        m_pNetRequest = m_ptrFactory->createNetRequest();
+        m_pNetRequest->sslVerifyPeer(m_sslVerifyPeer);
+    }
 
     switch( m_eCmd )
     {
@@ -228,7 +235,10 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
         rho_ruby_set_const( strName.c_str(), strBody.c_str());
     }else
     {
-        m_pNetRequest = m_ptrFactory->createNetRequest();
+        {
+            synchronized(m_mxRequest)
+            m_pNetRequest = m_ptrFactory->createNetRequest();
+        }
 
         String strFullUrl = m_pNetRequest->resolveUrl(m_strCallback);
         NetResponse(resp1,m_pNetRequest->pushData( strFullUrl, strBody, null ));
