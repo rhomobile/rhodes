@@ -35,6 +35,8 @@ char* get_current_location() {
 	//UNLOCK(current_location);
 }*/
 
+extern int webview_active_tab();
+
 @interface UIBarButtonItemAction : NSObject
 {
     WebViewController *wc;
@@ -379,9 +381,9 @@ char* get_current_location() {
 }
 
 -(void)refresh {
-	[webView reload];
-	//const char* url = rho_rhodesapp_getcurrenturl();
-	//[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
+    //[webView reload];
+    const char *appUrl = rho_rhodesapp_getcurrenturl(webview_active_tab());
+    [self navigate:[NSString stringWithUTF8String:appUrl]];
 }
 
 -(void)onRefresh:(id)sender {
