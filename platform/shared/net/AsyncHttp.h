@@ -41,9 +41,9 @@ public:
         const char* callback, const char* callback_params, boolean ssl_verify_peer = true);
     ~CAsyncHttp();
 
-    void cancel();
+    void cancel(boolean bWait);
 
-    static void cancelRequest(const char* szCallback);
+    static void cancelRequest(const char* szCallback, boolean bWait);
 
     //rho::ICallbackObject
     virtual unsigned long getObjectValue();
@@ -71,6 +71,7 @@ void rho_asynchttp_post(const char* url, unsigned long headers, const char* body
 void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
 void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
 void rho_asynchttp_cancel(const char* cancel_callback);
+void rho_asynchttp_destroy();
 void rho_asynchttp_set_threaded_mode(int b);
 
 #ifdef __cplusplus
