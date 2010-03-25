@@ -39,7 +39,6 @@ public:
     CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         const char* url, unsigned long headers, const char* body,
         const char* callback, const char* callback_params, boolean ssl_verify_peer = true);
-    ~CAsyncHttp();
 
     void cancel(boolean bWait);
 
