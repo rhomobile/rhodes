@@ -156,7 +156,7 @@ void CRhodesApp::stopApp()
         stop(2000);
     }
 
-    rho_asynchttp_cancel("*");
+    rho_asynchttp_destroy();
 }
 
 class CRhoCallbackCall :  public common::CRhoThread

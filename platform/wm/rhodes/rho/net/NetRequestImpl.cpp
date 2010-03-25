@@ -398,8 +398,8 @@ void CNetRequestImpl::cancel()
 /*	if ( hConnection ) 
         InternetCloseHandle(hConnection);
 	if ( hInet ) 
-        InternetCloseHandle(hInet);
-
+        InternetCloseHandle(hInet); */
+/*
     hRequest = 0;
     hConnection = 0;
     hInet = 0;*/
