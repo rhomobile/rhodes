@@ -1,8 +1,4 @@
 // WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!
-// Generated 2010-03-24 19:19:22 +0300
-extern void Init_digest(void);
-extern void Init_fcntl(void);
+// Generated Thu Mar 25 14:18:38 +0300 2010
 void Init_Extensions(void) {
-    Init_digest();
-    Init_fcntl();
 }
