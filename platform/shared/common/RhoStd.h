@@ -116,8 +116,8 @@ public:
 
     void removeElementAt(int nItem)
     {
-        delete at(nItem);
-        erase( begin() + nItem );
+        delete Vector<Type>::at(nItem);
+        Vector<Type>::erase( Vector<Type>::begin() + nItem );
     }
 };
 
