@@ -319,8 +319,9 @@ void CSyncNotify::fireInitialSyncNotification( boolean bFinish, int nErrCode )
 	
     boolean bRemoveAfterFire = bFinish;
     String strBody = "", strUrl;
-	synchronized(m_mxSyncNotifications)
 	{
+    	synchronized(m_mxSyncNotifications)
+
         if ( m_initialSyncNotify.m_strUrl.length() == 0 )
             return;
         

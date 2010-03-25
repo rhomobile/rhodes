@@ -559,8 +559,9 @@ menu_iter(const char* szLabel, const char* szLink, void* pThis)
 
 void CRhodesApp::setViewMenu(unsigned long valMenu)
 {
-    synchronized(m_mxViewMenuItems)
     {
+        synchronized(m_mxViewMenuItems)
+
         m_hashViewMenuItems.clear();
         m_strAppBackUrl="";
     }

@@ -392,6 +392,17 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
 void CNetRequestImpl::cancel()
 {
     m_bCancel = true;
+
+	if ( hRequest ) 
+        InternetCloseHandle(hRequest);
+/*	if ( hConnection ) 
+        InternetCloseHandle(hConnection);
+	if ( hInet ) 
+        InternetCloseHandle(hInet);
+
+    hRequest = 0;
+    hConnection = 0;
+    hInet = 0;*/
 }
 
 void CNetRequestImpl::close()
