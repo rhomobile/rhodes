@@ -16,7 +16,7 @@ namespace rho
 {
 namespace net
 {
-curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
+curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl, const String& strBody,
                              IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer);
 CURLMcode do_curl_perform(CURLM *curlm, CURL *curl);
 	
@@ -149,11 +149,7 @@ INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUr
 	
     rho_net_impl_network_indicator(1);
 	
-    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, oSession, pHeaders, m_sslVerifyPeer);
-	if (strcasecmp(method, "POST") == 0) {
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
-	}
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, strBody, oSession, pHeaders, m_sslVerifyPeer);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
 	
@@ -190,7 +186,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
 	
     rho_net_impl_network_indicator(1);
 	
-    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, oSession, pHeaders, m_sslVerifyPeer);
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, String(), oSession, pHeaders, m_sslVerifyPeer);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
 	
@@ -231,7 +227,7 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
 
     rho_net_impl_network_indicator(1);
     
-	curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "GET", strUrl, oSession, pHeaders, m_sslVerifyPeer);
+	curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "GET", strUrl, String(), oSession, pHeaders, m_sslVerifyPeer);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oFile);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
 	
@@ -382,7 +378,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     return nBytes;
 }
 
-curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl,
+curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl, const String& strBody,
                              IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer)
 {
     curl_easy_reset(curl);
@@ -421,13 +417,32 @@ curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const S
     hdrs = curl_slist_append(hdrs, "Expect:");
     // Add Keep-Alive header
     hdrs = curl_slist_append(hdrs, "Connection: Keep-Alive");
+
+    if (strcasecmp(method, "POST") == 0 )
+    {
+	    if (strcasecmp(method, "POST") == 0) {
+		    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
+		    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
+	    }
+
+        if ( strBody.length() > 0 )
+        {
+            String strHeader = "Content-Type: ";
+            if ( pSession )
+                strHeader += pSession->getContentType().c_str();
+            else
+                strHeader += "application/x-www-form-urlencoded";
+            hdrs = curl_slist_append(hdrs, strHeader.c_str());
+        }
+    }
+
     if (pHeaders)
     {
         for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
         {
             String strHeader = it->first + ":" + it->second;
             hdrs = curl_slist_append(hdrs, strHeader.c_str());
-            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+//            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
         }
         
         //set header callback
