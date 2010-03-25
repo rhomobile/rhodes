@@ -835,6 +835,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DateTimePicker.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -958,6 +966,14 @@
 			</File>
 			<File
 				RelativePath=".\Vibrate.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DateTimePicker.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils.h"
 				>
 			</File>
 		</Filter>
