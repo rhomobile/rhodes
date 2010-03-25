@@ -77,17 +77,17 @@ def stopsim
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
-  #Jake.run(command,args, jde + "/simulator")
-  #Thread.new { Jake.run(command,args, nil, true,true) }  
+  Jake.run(command,args, jde + "/simulator")
+  Thread.new { Jake.run(command,args, nil, true,true) }  
   
   # Wait until thread will start
-  rd, wr = IO.pipe
-  Thread.new {
-    wr.putc 0
-  	Jake.run(command,args, nil, true,true)
-  	$stdout.flush
-  }
-  rd.getc
+  #rd, wr = IO.pipe
+  #Thread.new {
+  #  wr.putc 0
+ # 	Jake.run(command,args, nil, true,true)
+ # 	$stdout.flush
+ # }
+ # rd.getc
   sleep 1
   
 end
