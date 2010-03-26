@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "JSString.h"
 //#include "SyncEngine.h"
 
 @interface WebViewController : UIViewController <UIActionSheetDelegate, UIWebViewDelegate> {
@@ -41,14 +40,6 @@
 -(void)navigateRedirect:(NSString*)url;
 
 -(void)setActivityInfo:(NSString *)labelText;
-
--(void)goBack:(id)sender;
--(void)goForward:(id)sender;
--(void)goHome:(id)sender;
--(void)goOptions:(id)sender;
--(void)refresh;
-
--(void)executeJs:(JSString *)js;
 
 -(void)active;
 

@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "JSString.h"
 
 @protocol RhoMainView
 
@@ -20,7 +19,7 @@
 - (void)navigate:(NSString*)url tab:(int)index;
 - (void)reload:(int)index;
 
-- (void)executeJs:(JSString*)js tab:(int)index;
+- (void)executeJs:(NSString*)js tab:(int)index;
 
 - (NSString*)currentLocation:(int)index;
 

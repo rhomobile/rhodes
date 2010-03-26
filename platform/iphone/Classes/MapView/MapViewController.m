@@ -8,7 +8,6 @@
 
 #import "MapAnnotation.h"
 #import "MapViewController.h"
-#import "WebViewUrl.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -225,10 +224,12 @@
 	NSString* url = [ann url];
 	NSLog(@"Callout tapped... Url = %@\n", url);
 	if(actionTarget && [actionTarget respondsToSelector:onNavigate]) {
+        /*
 		WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
 		webViewUrl.url = url;
 		webViewUrl.webViewIndex = 0;				
 		[actionTarget performSelector:onNavigate withObject:webViewUrl];
+        */
 		[self dismissModalViewControllerAnimated:YES]; 
 		self.view.hidden = YES;
 	}

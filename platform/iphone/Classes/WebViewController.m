@@ -37,36 +37,6 @@ char* get_current_location() {
 
 extern int webview_active_tab();
 
-@interface UIBarButtonItemAction : NSObject
-{
-    WebViewController *wc;
-    NSString *url;
-}
-
-@property (nonatomic,copy) NSString *url;
-
-- (id)init:(WebViewController*)w url:(NSString*)u;
-- (void)onAction:(id)sender;
-
-@end
-
-@implementation UIBarButtonItemAction
-
-@synthesize url;
-
-- (id)init:(WebViewController *)w url:(NSString*)u {
-    self->wc = w;
-    self.url = u;
-    return self;
-}
-
-- (void)onAction:(id)sender {
-    [wc navigate:url];
-}
-
-@end
-
-
 @implementation WebViewController
 
 //@synthesize viewHomeUrl, viewOptionsUrl;
@@ -84,118 +54,7 @@ extern int webview_active_tab();
 }
 
 - (void)createNewToolbar:(NSArray*)items {
-    if ([items count] % 4 != 0) {
-        RAWLOG_ERROR("Illegal arguments for createNewToolbar");
-        return;
-    }
     
-    UIToolbar *tb = [UIToolbar new];
-    tb.barStyle = UIBarStyleBlackOpaque;
-    
-    [tb sizeToFit];
-    
-    CGRect mainFrame = window.frame;
-    
-    CGFloat tbHeight = [tb frame].size.height;
-    CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
-                                CGRectGetHeight(mainFrame) - tbHeight,
-                                CGRectGetWidth(mainFrame),
-                                tbHeight);
-    [tb setFrame:tbFrame];
-    
-    UIBarButtonItem *fixed = [[UIBarButtonItem alloc]
-                              initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                              target:nil action:nil];
-
-    NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]/4];
-    for(int i = 0, lim = [items count]/4; i < lim; i++) {
-        int index = i*4;
-        NSString *label = (NSString*)[items objectAtIndex:index++];
-        NSString *url = (NSString*)[items objectAtIndex:index++];
-        NSString *icon = (NSString*)[items objectAtIndex:index++];
-        //NSString *reload = (NSString*)[items objectAtIndex:index++];
-        
-        if ([url length] == 0) {
-            RAWLOG_ERROR("Illegal arguments for createNewToolbar");
-            return;
-        }
-        
-        UIImage *img = nil;
-        if ([icon length] > 0) {
-            NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
-            img = [UIImage imageWithContentsOfFile:imagePath];
-        }
-        
-        UIBarButtonItem *btn = nil;
-        if ([url compare:@"back"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                    initWithImage:(img ? img : [UIImage imageNamed:@"back_btn.png"])
-                    style:UIBarButtonItemStylePlain target:self
-                    action:@selector(goBack:)];
-        }
-        else if ([url compare:@"forward"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goForward:)];
-        }
-        else if ([url compare:@"home"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"home_btn.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goHome:)];
-        }
-        else if ([url compare:@"options"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"gears.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goOptions:)];
-        }
-        else if ([url compare:@"refresh"] == NSOrderedSame) {
-            if (img)
-                btn = [[UIBarButtonItem alloc]
-                       initWithImage:img
-                       style:UIBarButtonItemStylePlain target:self
-                       action:@selector(onRefresh:)];
-            else
-                btn = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
-                       target:self action:@selector(onRefresh:)];
-        }
-        else if ([url compare:@"separator"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                   target:nil action:nil];
-        }
-        else {
-            NSString *u = [NSString stringWithUTF8String:rho_http_normalizeurl([url UTF8String])];
-            UIBarButtonItemAction *action = [[UIBarButtonItemAction alloc] init:self url:u];
-            if (!img) {
-                btn = [[UIBarButtonItem alloc]
-                       initWithImage:img style:UIBarButtonItemStylePlain
-                       target:action action:@selector(onAction:)];
-            }
-            else if ([label length] > 0) {
-                btn = [[UIBarButtonItem alloc]
-                       initWithTitle:label style:UIBarButtonItemStylePlain
-                       target:action action:@selector(onAction:)];
-            }
-        }
-        
-        if (btn) {
-            [btns addObject:fixed];
-            [btns addObject:btn];
-        }
-    }
-    
-    [tb setItems:btns];
-    
-    [fixed release];
-    
-    [toolbar removeFromSuperview];
-    toolbar = tb;
-    toolbar.hidden = YES;
-    [window addSubview:toolbar];
 }
 
 - (UIToolbar*)newToolbar:(CGRect)mainFrame {
@@ -336,11 +195,6 @@ extern int webview_active_tab();
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:escapedUrl]]];
 }
 
--(void)executeJs:(JSString*)js {
-	RAWLOG_INFO1("Executing JS: %s", [js.inputJs UTF8String] );
-	js.outputJs = [webView stringByEvaluatingJavaScriptFromString:js.inputJs];
-}
-
 -(void)navigateRedirect:(NSString*)url {
     //RAWLOG_INFO1("Navigate (redirect) to: %s", [url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -348,45 +202,6 @@ extern int webview_active_tab();
 	NSString* redirector1 = [@"/system/redirect_to?url=" stringByAppendingString:escapedUrl];
 	NSString* redirector = [homeurl stringByAppendingString:redirector1];
 	[webView loadRequest:[NSURLRequest requestWithURL: [NSURL URLWithString:redirector]]];
-}
-
--(void)goBack:(id)sender {
-    const char* szBackUrl = rho_rhodesapp_getappbackurl();
-    if ( szBackUrl && *szBackUrl )
-        [self navigateRedirect:[NSString stringWithCString:szBackUrl encoding:[NSString defaultCStringEncoding]]];    
-    else
-	    [webView goBack];
-}
-
--(void)goForward:(id)sender {
-	[webView goForward];
-}
-
--(void)goHome:(id)sender {
-	const char* url = rho_rhodesapp_getstarturl();
-	[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
-	//if (viewHomeUrl != NULL) {
-	//	[self navigateRedirect:viewHomeUrl];
-	//}
-}
-
--(void)goOptions:(id)sender {
-	const char* url = rho_rhodesapp_getoptionsurl();
-	[self navigateRedirect:[NSString stringWithCString:url encoding:[NSString defaultCStringEncoding]]];
-	
-	//if (viewOptionsUrl != NULL) {
-	//	[self navigateRedirect:viewOptionsUrl];
-	//}
-}
-
--(void)refresh {
-    //[webView reload];
-    const char *appUrl = rho_rhodesapp_getcurrenturl(webview_active_tab());
-    [self navigate:[NSString stringWithUTF8String:appUrl]];
-}
-
--(void)onRefresh:(id)sender {
-    [self refresh];
 }
 
 -(void)setActivityInfo:(NSString *)labelText {
