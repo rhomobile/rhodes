@@ -1546,24 +1546,21 @@ static VALUE mAsyncHttp;
 
 
 /* Put header files here or function declarations like below */
-	extern void rho_asynchttp_get(const char* url, VALUE headers, const char* callback, const char* callback_params);
+	extern VALUE rho_asynchttp_get(const char* url, VALUE headers, const char* callback, const char* callback_params);
 	#define do_get rho_asynchttp_get
 	
-	extern void rho_asynchttp_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
+	extern VALUE rho_asynchttp_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params);
 	#define do_post rho_asynchttp_post
 
-	extern void rho_asynchttp_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+	extern VALUE rho_asynchttp_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
 	#define do_downloadfile rho_asynchttp_downloadfile
 
-	extern void rho_asynchttp_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
+	extern VALUE rho_asynchttp_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params);
 	#define do_uploadfile rho_asynchttp_uploadfile
 
 	extern void rho_asynchttp_cancel(const char* cancel_callback);
 	#define cancel rho_asynchttp_cancel
 
-	extern void rho_asynchttp_set_threaded_mode(int b);
-	#define set_threaded_mode rho_asynchttp_set_threaded_mode
-	
 
 
 SWIGINTERN swig_type_info*
@@ -1619,76 +1616,13 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
-
-#include <limits.h>
-#ifndef LLONG_MIN
-# define LLONG_MIN	LONG_LONG_MIN
-#endif
-#ifndef LLONG_MAX
-# define LLONG_MAX	LONG_LONG_MAX
-#endif
-#ifndef ULLONG_MAX
-# define ULLONG_MAX	ULONG_LONG_MAX
-#endif
-
-
-SWIGINTERN VALUE
-SWIG_ruby_failed(void)
-{
-  return Qnil;
-} 
-
-
-/*@SWIG:%ruby_aux_method@*/
-SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
-{
-  VALUE obj = args[0];
-  VALUE type = TYPE(obj);
-  long *res = (long *)(args[1]);
-  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
-  return obj;
-}
-/*@SWIG@*/
-
-SWIGINTERN int
-SWIG_AsVal_long (VALUE obj, long* val)
-{
-  VALUE type = TYPE(obj);
-  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
-    long v;
-    VALUE a[2];
-    a[0] = obj;
-    a[1] = (VALUE)(&v);
-    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
-      if (val) *val = v;
-      return SWIG_OK;
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_int (VALUE obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (int)(v);
-    }
-  }  
-  return res;
-}
-
 SWIGINTERN VALUE
 _wrap_do_get(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   VALUE arg2 = (VALUE) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -1698,6 +1632,7 @@ _wrap_do_get(int argc, VALUE *argv, VALUE self) {
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 4) || (argc > 4)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
@@ -1718,11 +1653,12 @@ _wrap_do_get(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "do_get" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  do_get((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4);
+  result = (VALUE)do_get((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  return Qnil;
+  return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -1738,6 +1674,7 @@ _wrap_do_post(int argc, VALUE *argv, VALUE self) {
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -1750,6 +1687,7 @@ _wrap_do_post(int argc, VALUE *argv, VALUE self) {
   int res5 ;
   char *buf5 = 0 ;
   int alloc5 = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 5) || (argc > 5)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
@@ -1775,12 +1713,13 @@ _wrap_do_post(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "do_post" "', argument " "5"" of type '" "char const *""'");
   }
   arg5 = (char *)(buf5);
-  do_post((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  result = (VALUE)do_post((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
-  return Qnil;
+  return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -1797,6 +1736,7 @@ _wrap_do_downloadfile(int argc, VALUE *argv, VALUE self) {
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -1809,6 +1749,7 @@ _wrap_do_downloadfile(int argc, VALUE *argv, VALUE self) {
   int res5 ;
   char *buf5 = 0 ;
   int alloc5 = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 5) || (argc > 5)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
@@ -1834,12 +1775,13 @@ _wrap_do_downloadfile(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "do_downloadfile" "', argument " "5"" of type '" "char const *""'");
   }
   arg5 = (char *)(buf5);
-  do_downloadfile((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  result = (VALUE)do_downloadfile((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
-  return Qnil;
+  return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -1856,6 +1798,7 @@ _wrap_do_uploadfile(int argc, VALUE *argv, VALUE self) {
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
   char *arg5 = (char *) 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -1868,6 +1811,7 @@ _wrap_do_uploadfile(int argc, VALUE *argv, VALUE self) {
   int res5 ;
   char *buf5 = 0 ;
   int alloc5 = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 5) || (argc > 5)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
@@ -1893,12 +1837,13 @@ _wrap_do_uploadfile(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "do_uploadfile" "', argument " "5"" of type '" "char const *""'");
   }
   arg5 = (char *)(buf5);
-  do_uploadfile((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  result = (VALUE)do_uploadfile((char const *)arg1,arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
-  return Qnil;
+  return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -1933,27 +1878,6 @@ _wrap_cancel(int argc, VALUE *argv, VALUE self) {
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_set_threaded_mode(int argc, VALUE *argv, VALUE self) {
-  int arg1 ;
-  int val1 ;
-  int ecode1 = 0 ;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  ecode1 = SWIG_AsVal_int(argv[0], &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_threaded_mode" "', argument " "1"" of type '" "int""'");
-  } 
-  arg1 = (int)(val1);
-  set_threaded_mode(arg1);
-  return Qnil;
-fail:
   return Qnil;
 }
 
@@ -2226,6 +2150,5 @@ SWIGEXPORT void Init_AsyncHttp(void) {
   rb_define_module_function(mAsyncHttp, "do_downloadfile", _wrap_do_downloadfile, -1);
   rb_define_module_function(mAsyncHttp, "do_uploadfile", _wrap_do_uploadfile, -1);
   rb_define_module_function(mAsyncHttp, "cancel", _wrap_cancel, -1);
-  rb_define_module_function(mAsyncHttp, "set_threaded_mode", _wrap_set_threaded_mode, -1);
 }
 

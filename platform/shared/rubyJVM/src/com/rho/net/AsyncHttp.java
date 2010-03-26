@@ -27,12 +27,12 @@ public class AsyncHttp extends RhoThread
 	private Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
 
 	private String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
+    private String m_strResBody = "";
     boolean m_bFinished = false;
     
 	private RubyValue m_valBody;
 	public final static int  hcGet = 0, hcPost=1, hcDownload=2, hcUpload =3;
 	private int m_eCmd;
-	public  static boolean m_bNoThreaded;
 	
 	private RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
@@ -52,7 +52,7 @@ public class AsyncHttp extends RhoThread
 
 	    addNewObject(this);	    
 
-	    if (m_bNoThreaded)
+	    if (m_strCallback.length()==0)
 	        run();
 	    else
 	        start(epLow);
@@ -152,7 +152,7 @@ public class AsyncHttp extends RhoThread
 		        break;
 		    }
 		    
-		    if ( !m_pNetRequest.isCancelled() && m_strCallback.length() > 0)
+		    if ( !m_pNetRequest.isCancelled() )
 		    {
 			    processResponse(m_pNetResponse);
 		        callNotify(m_pNetResponse, 0);
@@ -215,69 +215,65 @@ public class AsyncHttp extends RhoThread
 	    m_valBody = RhoRuby.create_string(resp.getCharData());
 	}
 
+	RubyValue getRetValue()
+	{
+	    if ( m_strCallback.length() == 0 )
+	        return RhoRuby.create_string(m_strResBody); 
+
+	    return RubyConstant.QNIL;
+	}
+	
 	void callNotify(NetResponse resp, int nError )
 	{
-	    String strBody = "rho_callback=1";
-	    strBody += "&status=";
+		m_strResBody = "rho_callback=1";
+		m_strResBody += "&status=";
 	    if ( nError > 0 )
 	    {
-	    	strBody += "error&error_code=" + nError;
+	    	m_strResBody += "error&error_code=" + nError;
 	    }else
 	    {
 	    	if ( resp.isOK() )
-	    		strBody += "ok";
+	    		m_strResBody += "ok";
 		    else
 		    {
-		    	strBody += "error&error_code=";
+		    	m_strResBody += "error&error_code=";
 		        /*if ( !resp.isResponseRecieved())
 		            strBody += RhoRuby.ERR_NETWORK;
 		        else */if ( resp.isUnathorized() )
-		            strBody += RhoRuby.ERR_UNATHORIZED;
+		        	m_strResBody += RhoRuby.ERR_UNATHORIZED;
 		        else
-			        strBody += RhoRuby.ERR_REMOTESERVER;
+		        	m_strResBody += RhoRuby.ERR_REMOTESERVER;
 	
 		        //if ( resp.isResponseRecieved())
-			        strBody += "&http_error=" + resp.getRespCode();
+		        m_strResBody += "&http_error=" + resp.getRespCode();
 		    }
 
 	        String cookies = resp.getCookies();
 	        if (cookies.length()>0)
-	            strBody += "&cookies=" + URI.urlEncode(cookies);
+	        	m_strResBody += "&cookies=" + URI.urlEncode(cookies);
 	    	
-	    	strBody += "&" + makeHeadersString();
-	    	strBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
+	        m_strResBody += "&" + makeHeadersString();
+	        m_strResBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
 	    }
 	    
 	    if ( m_strCallbackParams.length() > 0 )
-	        strBody += "&" + m_strCallbackParams;
+	    	m_strResBody += "&" + m_strCallbackParams;
 	    	
-/*
-	    if ( m_bNoThreaded )
+
+	    if ( m_strCallback.length() > 0 )
 	    {
-	        const char* szName = strrchr(m_strCallback.c_str(), '/');
-	        if (!szName)
-	            szName = m_strCallback.c_str();
-	        else
-	            szName++;
-
-	        String strName = "C_";
-	        strName += szName;
-	        rho_ruby_set_const( strName.c_str(), strBody.c_str());
-	    }else
-	    {*/
-	    try{
-	        NetRequest pNetRequest = m_ptrFactory.createNetRequest();
-
-	        String strFullUrl = pNetRequest.resolveUrl(m_strCallback);
-	        NetResponse resp1 = pNetRequest.pushData( strFullUrl, strBody, null );
-	        if ( !resp1.isOK() )
-	            LOG.ERROR("AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData() );
-        }catch(Exception exc)
-        {
-        	LOG.ERROR("Async http callback failed.", exc);
-        }
-
-	    RHODESAPP().delCallbackObject(m_valBody);
+		    try{
+		        NetRequest pNetRequest = m_ptrFactory.createNetRequest();
+	
+		        String strFullUrl = pNetRequest.resolveUrl(m_strCallback);
+		        NetResponse resp1 = pNetRequest.pushData( strFullUrl, m_strResBody, null );
+		        if ( !resp1.isOK() )
+		            LOG.ERROR("AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData() );
+	        }catch(Exception exc)
+	        {
+	        	LOG.ERROR("Async http callback failed.", exc);
+	        }
+	    }
 	}
 	
 	public static void initMethods(RubyModule klass) {
@@ -292,12 +288,12 @@ public class AsyncHttp extends RhoThread
 					String url = args.get(0).toStr();
 					String callback = args.get(2).toStr();
 					String callback_params = args.get(3).toStr();
-					new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcGet, url, args.get(1), null, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcGet, url, args.get(1), null, callback, callback_params );
+					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_get failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
 			}
 		});
 		
@@ -313,12 +309,12 @@ public class AsyncHttp extends RhoThread
 					String body = args.get(2).toStr();
 					String callback = args.get(3).toStr();
 					String callback_params = args.get(4).toStr();
-					new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcPost, url, args.get(1), body, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcPost, url, args.get(1), body, callback, callback_params );
+					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_post failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
 			}
 		});		
 
@@ -334,12 +330,12 @@ public class AsyncHttp extends RhoThread
 					String filepath = args.get(2).toStr();
 					String callback = args.get(3).toStr();
 					String callback_params = args.get(4).toStr();
-					new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcDownload, url, args.get(1), filepath, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcDownload, url, args.get(1), filepath, callback, callback_params );
+					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_downloadfile failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
 			}
 		});		
 
@@ -355,12 +351,12 @@ public class AsyncHttp extends RhoThread
 					String filepath = args.get(2).toStr();
 					String callback = args.get(3).toStr();
 					String callback_params = args.get(4).toStr();
-					new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcUpload, url, args.get(1), filepath, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcUpload, url, args.get(1), filepath, callback, callback_params );
+					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_uploadfile failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
 			}
 		});		
 
@@ -378,20 +374,6 @@ public class AsyncHttp extends RhoThread
 			}
 		});		
 
-		klass.getSingletonClass().defineMethod("set_threaded_mode", new RubyOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
-			{
-				try {
-					int b = arg.toInt();
-					AsyncHttp.m_bNoThreaded = (b==0);
-				} catch(Exception e) {
-					LOG.ERROR("set_threaded_mode failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-				return RubyConstant.QNIL;
-			}
-		});		
-		
 	}
 	
 }

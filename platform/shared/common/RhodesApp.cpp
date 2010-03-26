@@ -612,24 +612,14 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
     return strRes;
 }
 
-void CRhodesApp::delCallbackObject(ICallbackObject* pCallbackObject)
-{
-    for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
-    {
-        if ( m_arCallbackObjects.elementAt(i) == pCallbackObject )
-        {
-            m_arCallbackObjects.setElementAt(0,i);
-//            rho_ruby_releaseValue(valObject);
-        }
-    }
-}
-
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
     if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
         return rho_ruby_get_NIL();
 
     ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
+    m_arCallbackObjects.setElementAt(0,nIndex);
+
     if ( !pCallbackObject )
         return rho_ruby_get_NIL();
 
