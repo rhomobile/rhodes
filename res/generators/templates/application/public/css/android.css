@@ -22,7 +22,7 @@ div#content {
 #toolbar {
     width: 100%;
     height: 60px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.6, #000000),color-stop(1.0, #2B2B2B));}
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));}
 }
 div#toolbar div {
 }
@@ -58,6 +58,7 @@ div#row {
 
 div#pageTitle {
     height: 25px;
+    width: 100%;
 }
 
 div#pageTitle h1 {
@@ -70,7 +71,7 @@ div#pageTitle h1 {
     text-shadow: 1px 1px 1px #000;
     line-height: 25px;
     top: 0;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999),color-stop(0.5, #848284));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999),color-stop(0.5, #848684));
 }
 
 /* lists */
@@ -234,13 +235,16 @@ div#content .form_list select {
 
 
 div#content .form_list textarea {
-    float: right;
-    margin-right: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    -webkit-appearance: none;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    -webkit-border-radius: 4px;
+    margin: 5px 2px 5px 2px;
+    font-size: 0.9em;
+    padding: 2px 0 2px 2px;
 }
 
-div#content .form_list input.textInput {
+div#content .form_list input[type="text"] {
     float: right;
     height: 40px;
     margin: 10px 10px 10px 0;
@@ -248,12 +252,9 @@ div#content .form_list input.textInput {
     font-size:medium;
     width: 150px;
     -webkit-appearance: none;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #a5a9ac),color-stop(0.5, #dcdedd),color-stop(1.0, #dae6f0));
-    border: none;
-    -webkit-border-bottom-left-radius: 2px;
-    -webkit-border-bottom-right-radius: 2px;
-    -webkit-border-top-left-radius: 2px;
-    -webkit-border-top-right-radius: 2px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    -webkit-border-radius: 4px;
 }
 
 div#content .form_list span.gridItem {
