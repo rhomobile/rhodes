@@ -178,9 +178,23 @@ int rho_geo_gettimeout_sec()
 
 double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2)
 {
-	//TODO:
-	return 0;
+	const double RAD_PER_DEG = 0.017453293; //PI/180
+	const int Rmiles = 3956;                //radius of the great circle in miles
+
+	double dlon = lon2 - lon1;
+	double dlat = lat2 - lat1;
+	double dlon_rad = dlon * RAD_PER_DEG;
+	double dlat_rad = dlat * RAD_PER_DEG;
+	double lat1_rad = lat1 * RAD_PER_DEG;
+	double lon1_rad = lon1 * RAD_PER_DEG;
+	double lat2_rad = lat2 * RAD_PER_DEG;
+	double lon2_rad = lon2 * RAD_PER_DEG;
+
+	double a = pow((sin(dlat_rad/2)), 2) + cos(lat1_rad) * cos(lat2_rad) * pow(sin(dlon_rad/2), 2);
+	double c = 2 * atan2(sqrt(a), sqrt(1-a));
+	double dMi = Rmiles * c; //delta between the two points in mile
+
+	return dMi;
 }
 
-}
-
+} //extern "C"
