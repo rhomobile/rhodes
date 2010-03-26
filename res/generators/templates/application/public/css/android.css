@@ -99,7 +99,7 @@ div#content .list a {
     display: block;
     text-decoration: none;
     color: black;
-    font-size: 25px;
+    font-size: 20px;
     height: 100%;
     width: 100%;
 }
@@ -150,7 +150,7 @@ div#content form button {
 
 div#content .form_list ul {
     display: block;
-    font-size: 25px;
+    font-size: 20px;
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
@@ -180,7 +180,7 @@ div#content .form_list span.label {
     line-height: 30px;
     padding: 5px 10px 5px 5px;
     margin: 10px 20px 10px 10px;
-    width: 105px;
+    width: 100px;
     overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -239,9 +239,10 @@ div#content .form_list textarea {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
     border: 1px solid #d6d7d6;
     -webkit-border-radius: 4px;
-    margin: 5px 2px 5px 2px;
+    margin: 10px 0 2px 10px;
     font-size: 0.9em;
-    padding: 2px 0 2px 2px;
+    padding: 5px 0 2px 2px;
+    box-shadow:0 -1px 3px #000000;
 }
 
 div#content .form_list input[type="text"] {
@@ -255,6 +256,7 @@ div#content .form_list input[type="text"] {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
     border: 1px solid #d6d7d6;
     -webkit-border-radius: 4px;
+    box-shadow:0 -1px 3px #000000;
 }
 
 div#content .form_list span.gridItem {
