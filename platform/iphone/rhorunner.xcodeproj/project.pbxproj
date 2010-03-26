@@ -24,10 +24,10 @@
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
 		5C4775F71130832B0092D21E /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C4775F61130832B0092D21E /* ServerHost.m */; };
-		5C477604113083F10092D21E /* JSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477603113083F10092D21E /* JSString.m */; };
-		5C477608113084290092D21E /* WebViewUrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C477607113084290092D21E /* WebViewUrl.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
+		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
+		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BDA401BD11495BBD00C5D4BD /* SplashScreenImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA401BC11495BBD00C5D4BD /* SplashScreenImpl.cpp */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
@@ -183,16 +183,15 @@
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C4775F51130832B0092D21E /* ServerHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerHost.h; path = Server/ServerHost.h; sourceTree = "<group>"; };
 		5C4775F61130832B0092D21E /* ServerHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerHost.m; path = Server/ServerHost.m; sourceTree = "<group>"; };
-		5C477602113083F10092D21E /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSString.h; sourceTree = "<group>"; };
-		5C477603113083F10092D21E /* JSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSString.m; sourceTree = "<group>"; };
-		5C477606113084290092D21E /* WebViewUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewUrl.h; path = Server/WebViewUrl.h; sourceTree = "<group>"; };
-		5C477607113084290092D21E /* WebViewUrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewUrl.m; path = Server/WebViewUrl.m; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = rho/common/RhoClassFactory.cpp; sourceTree = "<group>"; };
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		5CE293FF1009D74F009A75F6 /* SystemInfoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemInfoImpl.h; path = rho/common/SystemInfoImpl.h; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		BD38E6DB115CFF14001CE05C /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
+		BD38E753115D1AAC001CE05C /* TabbedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabbedMainView.h; sourceTree = "<group>"; };
+		BD38E754115D1AAC001CE05C /* TabbedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabbedMainView.m; sourceTree = "<group>"; };
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -293,8 +292,7 @@
 				5C5332610FBD6AC700F268F0 /* rho */,
 				5C4775EC113082290092D21E /* Server */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
-				5C477602113083F10092D21E /* JSString.h */,
-				5C477603113083F10092D21E /* JSString.m */,
+				BD38E76D115D1C3C001CE05C /* WebView */,
 				46C25E39103240A400A26428 /* RhoDelegate.h */,
 				46C25E3A103240A400A26428 /* RhoDelegate.m */,
 				BDB373C3114449B6006EA6DA /* Rhodes.h */,
@@ -413,8 +411,6 @@
 		5C4775EC113082290092D21E /* Server */ = {
 			isa = PBXGroup;
 			children = (
-				5C477606113084290092D21E /* WebViewUrl.h */,
-				5C477607113084290092D21E /* WebViewUrl.m */,
 				5C4775F51130832B0092D21E /* ServerHost.h */,
 				5C4775F61130832B0092D21E /* ServerHost.m */,
 			);
@@ -469,12 +465,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		BD38E76D115D1C3C001CE05C /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				BD38E6DB115CFF14001CE05C /* WebView.m */,
+			);
+			name = WebView;
+			sourceTree = "<group>";
+		};
 		BDB3735D11441FE0006EA6DA /* MainView */ = {
 			isa = PBXGroup;
 			children = (
 				BDB37363114420DE006EA6DA /* RhoMainView.h */,
 				BDB373641144220F006EA6DA /* SimpleMainView.h */,
 				BDB373651144220F006EA6DA /* SimpleMainView.m */,
+				BD38E753115D1AAC001CE05C /* TabbedMainView.h */,
+				BD38E754115D1AAC001CE05C /* TabbedMainView.m */,
 			);
 			name = MainView;
 			sourceTree = "<group>";
@@ -796,12 +802,12 @@
 				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
 				BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */,
 				5C4775F71130832B0092D21E /* ServerHost.m in Sources */,
-				5C477604113083F10092D21E /* JSString.m in Sources */,
-				5C477608113084290092D21E /* WebViewUrl.m in Sources */,
 				BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */,
 				BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */,
 				BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */,
 				BDA401BD11495BBD00C5D4BD /* SplashScreenImpl.cpp in Sources */,
+				BD38E6DC115CFF14001CE05C /* WebView.m in Sources */,
+				BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

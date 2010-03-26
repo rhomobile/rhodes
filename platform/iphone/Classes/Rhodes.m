@@ -18,20 +18,19 @@ static Rhodes *instance = NULL;
     return [Rhodes sharedInstance]->application;
 }
 
-+ (void)performOnUiThread:(SEL)selector target:(id)target {
-    [Rhodes performOnUiThread:selector target:target wait:YES];
+- (void)runRunnable:(id)runnable {
+    if ([runnable conformsToProtocol:@protocol(RhoRunnable)])
+        [runnable run];
+    [runnable release];
 }
 
-+ (void)performOnUiThread:(SEL)selector target:(id)target wait:(BOOL)wait {
-    [Rhodes performOnUiThread:selector target:target withObject:nil wait:wait];
++ (void)performOnUiThread:(id)runnable wait:(BOOL)wait {
+    [runnable retain];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:runnable waitUntilDone:wait];
 }
 
-+ (void)performOnUiThread:(SEL)selector target:(id)target withObject:(id)object {
-    [Rhodes performOnUiThread:selector target:target withObject:object wait:YES];
-}
-
-+ (void)performOnUiThread:(SEL)selector target:(id)target withObject:(id)object wait:(BOOL)wait {
-    [target performSelectorOnMainThread:selector withObject:object waitUntilDone:wait];
+- (UIWindow*)rootWindow {
+    return window;
 }
 
 - (void)doStartUp {
