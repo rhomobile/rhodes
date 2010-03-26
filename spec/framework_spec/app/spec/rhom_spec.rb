@@ -41,18 +41,18 @@ describe "Rhom" do
   
   it "should call select_from_table with select array" do
     sel_arr = ['name','industry']
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values', '*', {'object' => '44e804f2-4933-4e20-271c-48fcecd9450d'}, nil, sel_arr)
+    @res = ::Rho::RHO.get_user_db().select_from_table('object_values', '*', {'object' => '44e804f2-4933-4e20-271c-48fcecd9450d'}, nil, sel_arr)
     @res.length.should == 2
   end
   
   def verify_reset
-    Rhom::RhomDbAdapter::select_from_table('object_values','*').length.should == 0
-    res = Rhom::RhomDbAdapter::select_from_table('client_info','*')
+    ::Rho::RHO.get_user_db().select_from_table('object_values','*').length.should == 0
+    res = ::Rho::RHO.get_user_db().select_from_table('client_info','*')
     res.length.should == 1
     res[0]['reset'].should == 1
     res[0]['client_id'].should == CLIENT_ID
     
-    Rhom::RhomDbAdapter::select_from_table('sources','*').each do |source|
+    ::Rho::RHO.get_user_db().select_from_table('sources','*').each do |source|
       source['token'].should == 0
     end
     Rhom::Rhom::client_id.should == CLIENT_ID

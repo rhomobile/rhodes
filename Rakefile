@@ -433,19 +433,19 @@ end
 #desc "Get versions"
 task :get_version do
 
-  genver = "unknown"
+  #genver = "unknown"
   iphonever = "unknown"
   #symver = "unknown"
   wmver = "unknown"
   androidver = "unknown"
   
 
-  File.open("res/generators/templates/application/build.yml","r") do |f|
-    file = f.read
-    if file.match(/version: (\d+\.\d+\.\d+)/)
-      genver = $1
-    end
-  end
+  # File.open("res/generators/templates/application/build.yml","r") do |f|
+  #     file = f.read
+  #     if file.match(/version: (\d+\.\d+\.\d+)/)
+  #       genver = $1
+  #     end
+  #   end
 
   File.open("platform/iphone/Info.plist","r") do |f|
     file = f.read
@@ -508,7 +508,7 @@ task :get_version do
   
 
   puts "Versions:"
-  puts "  Generator:        " + genver
+  #puts "  Generator:        " + genver
   puts "  iPhone:           " + iphonever
   #puts "  Symbian:          " + symver
   #puts "  WinMo:            " + wmver
@@ -531,15 +531,15 @@ task :set_version, [:version] do |t,args|
   verstring = major+"."+minor+"."+build
   origfile = ""
 
-  File.open("res/generators/templates/application/build.yml","r") { |f| origfile = f.read }
-  File.open("res/generators/templates/application/build.yml","w") do |f|
-    f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
-  end
+  # File.open("res/generators/templates/application/build.yml","r") { |f| origfile = f.read }
+  #   File.open("res/generators/templates/application/build.yml","w") do |f|
+  #     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
+  #   end
   
 
   File.open("platform/iphone/Info.plist","r") { |f| origfile = f.read }
   File.open("platform/iphone/Info.plist","w") do |f| 
-    f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n  <string>#{verstring}</string>")
+    f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n\t<string>#{verstring}</string>")
   end
 
   # File.open("platform/symbian/build/release.properties","r") { |f| origfile = f.read }

@@ -1,6 +1,7 @@
 #include "SyncThread.h"
 #include "common/RhoTime.h"
 #include "common/RhoConf.h"
+#include "common/RhoFilePath.h"
 
 #include "ruby/ext/rho/rhoruby.h"
 
@@ -11,7 +12,8 @@ using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CSyncThread,"Sync");
 CSyncThread* CSyncThread::m_pInstance = 0;
-db::CDBAdapter  CSyncThread::m_oDBAdapter;
+db::CDBAdapter  CSyncThread::m_oDBUserAdapter;
+db::CDBAdapter  CSyncThread::m_oDBAppAdapter;
 
 /*static*/ CSyncThread* CSyncThread::Create(common::IRhoClassFactory* factory)
 {
@@ -30,7 +32,7 @@ db::CDBAdapter  CSyncThread::m_oDBAdapter;
     m_pInstance = 0;
 }
 
-CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBAdapter)
+CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBUserAdapter, m_oDBAppAdapter)
 {
     m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
     if( RHOCONF().isExist("sync_poll_interval") )
@@ -48,9 +50,18 @@ CSyncThread::~CSyncThread(void)
     m_oSyncEngine.exitSync();
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 
-    getDBAdapter().close();
+    getInstance()->m_oDBAppAdapter.close();
+    getInstance()->m_oDBUserAdapter.close();
 
     LOG(INFO) + "Sync engine thread shutdown";
+}
+
+/*static*/ db::CDBAdapter& CSyncThread::getDBAdapter(sqlite3* db)
+{
+    if ( m_oDBAppAdapter.getDbHandle() == db )
+        return m_oDBAppAdapter;
+
+    return m_oDBUserAdapter;
 }
 
 void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
@@ -178,34 +189,18 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
         break;
     case scChangePollInterval:
         break;
-    case scSyncOneByUrl:
-        {
-            CSyncEngine::CSourceID oSrcID;
-            oSrcID.m_strUrl = oSyncCmd.m_strCmdParam;
-
-            checkShowStatus(oSyncCmd);
-            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
-        }
-        break;
     case scSyncOne:
         {
-            CSyncEngine::CSourceID oSrcID;
-            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
-            oSrcID.m_strName = oSyncCmd.m_strCmdParam;
-
-            checkShowStatus(oSyncCmd);
-            m_oSyncEngine.doSyncSource(oSrcID,"","",false, -1 );
+			checkShowStatus(oSyncCmd);
+            m_oSyncEngine.doSyncSource(CSyncEngine::CSourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam));
         }
         break;
     case scSearchOne:
         {
-            CSyncEngine::CSourceID oSrcID;
-            oSrcID.m_nID = oSyncCmd.m_nCmdParam;
-
-            checkShowStatus(oSyncCmd);
-            m_oSyncEngine.doSyncSource(oSrcID,oSyncCmd.m_strCmdParam, 
+			checkShowStatus(oSyncCmd);
+            m_oSyncEngine.doSearch( ((CSyncSearchCommand&)oSyncCmd).m_arSources, oSyncCmd.m_strCmdParam, 
                 ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges,
-                ((CSyncSearchCommand&)oSyncCmd).m_nProgressStep);
+                oSyncCmd.m_nCmdParam);
         }
         break;
     case scLogin:
@@ -256,25 +251,49 @@ void rho_sync_stop()
 	if (CSyncThread::getSyncEngine().isSyncing() )
 	{
 		CSyncThread::getSyncEngine().stopSyncByUser();
-//		while( CSyncThread::getSyncEngine().getState() != CSyncEngine::esNone )
-        while( CSyncThread::getDBAdapter().isInsideTransaction() )
+        CSyncThread::getInstance()->stopWait();
+
+        while( CSyncThread::getDBUserAdapter().isInsideTransaction() || CSyncThread::getDBAppAdapter().isInsideTransaction() )
 			CSyncThread::getInstance()->sleep(100);
 	}
 }
 
-void rho_sync_doSearchSource(int source_id, const char *from, const char *params, bool sync_changes, int nProgressStep, 
+extern "C" void
+source_iter(const char* szName, void* parSources)
+{
+    rho::Vector<rho::String>& arSources = *((rho::Vector<rho::String>*)(parSources));
+    arSources.addElement(szName);
+}
+
+void rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
     const char* callback, const char* callback_params)
 {
     rho_sync_stop();
     if ( callback && *callback )
-        CSyncThread::getSyncEngine().getNotify().setSearchNotification(source_id, callback, callback_params ? callback_params : "");
+        CSyncThread::getSyncEngine().getNotify().setSearchNotification( callback, callback_params ? callback_params : "");
 
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,source_id,sync_changes,nProgressStep) );
+    rho::Vector<rho::String> arSources;
+    rho_ruby_enum_strary(ar_sources, source_iter, &arSources);
+
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
 }	
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOneByUrl, szSrcUrl, false) );
+    const char* szLastSlash = strrchr(szSrcUrl, '\\');
+    if ( !szLastSlash )
+        szLastSlash = strrchr(szSrcUrl, '/');
+
+    const char* szQuest = strrchr(szSrcUrl, '?');
+
+    rho::String strName = "";
+    if (szQuest && szLastSlash)
+        strName = rho::String(szLastSlash+1, szQuest-szLastSlash-1);
+    else
+        strName = szLastSlash ? szLastSlash + 1 : szSrcUrl;
+
+    //TODO: save query params
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, strName, (int)0 ) );
 }	
 
 void rho_sync_set_pollinterval(int nInterval)
@@ -295,7 +314,7 @@ void rho_sync_login(const char *name, const char *password, const char* callback
 
 int rho_sync_logged_in()
 {
-	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
+	rho::db::CDBAdapter& db = CSyncThread::getDBUserAdapter();
 	db.setUnlockDB(true);
     int nRes = CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
     db.setUnlockDB(false);
@@ -306,7 +325,7 @@ void rho_sync_logout()
 {
     rho_sync_stop();
 
-	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
+	rho::db::CDBAdapter& db = CSyncThread::getDBUserAdapter();
 	db.setUnlockDB(true);
     CSyncThread::getSyncEngine().logout();
     db.setUnlockDB(false);
@@ -322,81 +341,39 @@ void rho_sync_clear_notification(int source_id)
     return CSyncThread::getSyncEngine().getNotify().clearSyncNotification(source_id);
 }
 
-void rho_sync_set_initial_notification(const char *url, char* params)
+void rho_sync_set_bulk_notification(const char *url, char* params)
 {
-    return CSyncThread::getSyncEngine().getNotify().setInitialSyncNotification(url, params ? params : "");
+    return CSyncThread::getSyncEngine().getNotify().setBulkSyncNotification(url, params ? params : "");
 }
 
-void rho_sync_clear_initial_notification()
+void rho_sync_clear_bulk_notification()
 {
-    return CSyncThread::getSyncEngine().getNotify().clearInitialSyncNotification();
+    return CSyncThread::getSyncEngine().getNotify().clearBulkSyncNotification();
 }
 
-int rho_sync_openDB(const char* szDBPath)
+int rho_sync_openDB(const char* szDBPath, void** ppDB)
 {
-    rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
+    rho::common::CFilePath oPath(szDBPath);
+
+    rho::db::CDBAdapter& db = strcmp( oPath.getBaseName(), "syncdb.sqlite") == 0 ? CSyncThread::getDBUserAdapter():CSyncThread::getDBAppAdapter();
+
     rho::String strVer = RhoRuby_getRhoDBVersion(); 
     db.open(szDBPath,strVer, false);
+
+    *ppDB = &db;
+
     return 0;
 }
 
-int rho_sync_closeDB()
+/*int rho_sync_closeDB()
 {
     CSyncThread::getDBAdapter().close();
     return 0;
-}
+}*/
 
-int rho_db_startUITransaction()
+unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID)
 {
-    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.setUnlockDB(true);
-    db.startTransaction();
-
-    //TODO: get error code from DBException
-    return 0;
-}
-
-int rho_db_commitUITransaction()
-{
-    CSyncThread::getDBAdapter().endTransaction();
-    //TODO: get error code from DBException
-    return 0;
-}
-
-int rho_db_rollbackUITransaction()
-{
-    CSyncThread::getDBAdapter().rollback();
-    //TODO: get error code from DBException
-    return 0;
-}
-
-int rho_db_destroy_table(const char* szTableName)
-{
-    CSyncThread::getDBAdapter().destroy_table(szTableName);
-    return 0;
-}
-
-void* rho_db_get_handle()
-{
-    return CSyncThread::getDBAdapter().getDbHandle();
-}
-
-unsigned long rho_sync_get_attrs(int nSrcID)
-{
-    return (VALUE)CSyncThread::getDBAdapter().getAttrMgr().getAttrsBySrc(nSrcID);
-}
-
-void rho_sync_lock()
-{
-    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.setUnlockDB(true);
-    db.Lock();
-}
-
-void rho_sync_unlock()
-{
-    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.Unlock();
+    return (VALUE)CSyncThread::getDBAdapter(szPartition).getAttrMgr().getAttrsBySrc(nSrcID);
 }
 
 void rho_sync_setobjectnotify_url(const char* szUrl)

@@ -14,9 +14,10 @@ module Rho
                 @@mapSrc[src.name()] = src.source_id()
             end
         end
-                
-        Rhom::RhomDbAdapter.delete_all_from_table(filename)
-        Rhom::RhomDbAdapter.start_transaction
+        
+        db = ::Rho::RHO.get_user_db()
+        db.delete_all_from_table(filename)
+        db.start_transaction
 
         first_row=true
         prefix = dir_prefix.nil? ? "" : dir_prefix
@@ -34,10 +35,10 @@ module Rho
               row[col] = parts[idx]
             end
           end
-          Rhom::RhomDbAdapter.insert_into_table(filename,row)
+          db.insert_into_table(filename,row)
         end
 
-        Rhom::RhomDbAdapter.commit
+        db.commit
         columns = []
       end
     end
@@ -45,9 +46,10 @@ module Rho
     def self.load_offline_data_ex(tables=[], dir_prefix=nil, commit_count=100000)
       columns = []
       tables.each do |filename|
-    
-        Rhom::RhomDbAdapter.destroy_table(filename)
-        Rhom::RhomDbAdapter.start_transaction
+
+        db = ::Rho::RHO.get_user_db()    
+        db.destroy_table(filename)
+        db.start_transaction
         
         row_index=0
         prefix = dir_prefix.nil? ? "" : dir_prefix
@@ -69,22 +71,22 @@ module Rho
           parts = line.chomp.split('|')
           
           begin
-              Rhom::RhomDbAdapter.execute_sql query, parts
+              db.execute_sql query, parts
           rescue Exception => e
             #puts "load_offline_data : exception insert data: #{e}; data : #{parts}; line : #{row_index}"
           end
           
           if row_index%commit_count == 0          
             puts "commit start"
-            Rhom::RhomDbAdapter.commit
-            Rhom::RhomDbAdapter.start_transaction
+            db.commit
+            db.start_transaction
             puts "commit : #{row_index}"
           end  
           
           row_index += 1
         end
 
-        Rhom::RhomDbAdapter.commit
+        db.commit
         puts "commit : #{row_index}"
         columns = []
       end
