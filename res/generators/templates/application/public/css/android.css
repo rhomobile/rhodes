@@ -275,14 +275,14 @@ div#content div#reset h3 {
     margin-right: 30px;
 }
 
-div#content div#reset div {
+div.button {
     margin: 10px 10px 10px 10px;
     height: 45px;
     line-height: 45px;
     -webkit-appearance:push-button;
 }
 
-div#content div#reset div a {
+div.button a {
     display: block;
     text-decoration:none;
     width: 100%;
