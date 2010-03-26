@@ -31,7 +31,7 @@ public class AsyncHttp extends RhoThread
 	public final static int  hcGet = 0, hcPost=1, hcDownload=2, hcUpload =3;
 	private int m_eCmd;
 	public  static boolean m_bNoThreaded;
-	
+	private boolean m_bFinished = false;
 	private RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
 	AsyncHttp(RhoClassFactory factory, int eCmd,

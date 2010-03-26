@@ -50,6 +50,7 @@ import javax.microedition.media.*;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
 
 import com.rho.*;
+import com.rho.file.SimpleFile;
 //import com.rho.db.DBAdapter;
 import com.rho.rubyext.GeoLocation;
 import com.rho.net.NetResponse;
@@ -57,7 +58,7 @@ import com.rho.net.RhoConnection;
 import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
-import com.rho.Jsr75File;
+import com.rho.file.Jsr75File;
 import com.rho.RhodesApp;
 import com.xruby.runtime.lang.RubyProgram;
 import com.rho.net.NetResponse;

@@ -334,7 +334,6 @@ String CSyncEngine::loadClientID()
         boolean bResetClient = false;
         int nBulkSyncState = RHOCONF().getInt("bulksync_state");
         {
-            //TODO: remove bulksync_state from schema
             DBResult( res, getDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
             if ( !res.isEnd() )
             {
@@ -368,21 +367,23 @@ String CSyncEngine::loadClientID()
 
 boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
-    String strQuery = "";
-    if ( CClientRegister::getInstance() != null )
-        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
+    //TODO: send client register info in client reset 
+    //String strBody = "";
+    //if ( CClientRegister::getInstance() != null )
+    //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID)+strQuery, this) );
+    NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
     return resp.isOK();
 }
 
 String CSyncEngine::requestClientIDByNet()
 {
-    String strQuery = "";
-    if ( CClientRegister::getInstance() != null )
-        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
+    //TODO: send client register info in client create 
+    //String strBody = "";
+    //if ( CClientRegister::getInstance() != null )
+    //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse(resp,getNet().pullData(getProtocol().getClientCreateUrl()+strQuery, this));
+    NetResponse(resp,getNet().pullData(getProtocol().getClientCreateUrl(), this));
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
