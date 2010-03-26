@@ -13,8 +13,7 @@ import com.rho.IRhoRubyHelper;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.SimpleFile;
-import com.rho.IRAFile;
+import com.rho.file.*;
 import com.rho.Tokenizer;
 
 import java.util.Enumeration;
@@ -33,6 +32,7 @@ public class NetRequest
 	{
 		public abstract void logout()throws Exception;
 		public abstract String getSession();
+		public abstract String getContentType();
 	}
 	
 	private IHttpConnection m_connection = null;
@@ -145,18 +145,26 @@ public class NetRequest
 					m_connection.setRequestProperty("Cookie", strSession );
 			}
 			
-			m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
-			writeHeaders(headers);
 			if ( strBody != null && strBody.length() > 0 )
 			{
-				m_connection.setRequestMethod(strMethod);
+				if ( oSession != null )
+					m_connection.setRequestProperty("Content-Type", oSession.getContentType());
+				else
+					m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+				writeHeaders(headers);
+				m_connection.setRequestMethod(IHttpConnection.POST);
+				
 				os = m_connection.openOutputStream();
 				os.write(strBody.getBytes(), 0, strBody.length());
 			}else
+			{
+				writeHeaders(headers);
 				m_connection.setRequestMethod(strMethod);
+			}
 			
 			is = m_connection.openInputStream();
 			code = m_connection.getResponseCode();
@@ -317,6 +325,7 @@ public class NetRequest
 					m_connection.setRequestProperty("Cookie", strSession );
 			}
 			
+			m_connection.setRequestProperty("Connection", "keep-alive");
 			m_connection.setRequestProperty("content-type", szMultipartContType);
 			writeHeaders(headers);
 			m_connection.setRequestMethod(IHttpConnection.POST);

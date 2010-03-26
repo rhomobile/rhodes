@@ -35,13 +35,13 @@ public class ClientRegister extends RhoThread
 	    return m_pInstance;
 	}
 
-	public void Destroy()
+/*	public void Destroy()
 	{
 		m_NetRequest.cancel();
 		
 	    stop(WAIT_BEFOREKILL_SECONDS);
 	    m_pInstance = null;
-	}
+	}*/
     
 	private ClientRegister(RhoClassFactory factory)throws Exception 
 	{
@@ -85,12 +85,9 @@ public class ClientRegister extends RhoThread
     public String getRegisterBody()throws Exception
     {
 		int port = RhoConf.getInstance().getInt("push_port");
-    	
-		String strBody = "device_pin=" + m_strDevicePin + 
-			"&device_port=" + (port > 0 ? port : DEFAULT_PUSH_PORT) +
-			"&device_type=" + m_sysInfo.getPlatform();
-    	
-		return strBody;
+
+        return SyncThread.getSyncEngine().getProtocol().getClientRegisterBody( m_strDevicePin, 
+            port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo.getPlatform());
     }
     
     private boolean doRegister(	SyncEngine oSync )throws Exception
@@ -114,28 +111,22 @@ public class ClientRegister extends RhoThread
 				return true; 
 			}
         }
-		
-		String serverUrl = RhoConf.getInstance().getPath("syncserver");
-		if (serverUrl != null && serverUrl.length()>0) 
+
+	    String strBody = getRegisterBody();
+	    strBody += "&client_id=" + client_id;
+
+        NetResponse resp = getNet().pushData( oSync.getProtocol().getClientRegisterUrl(), strBody, oSync );
+		if( resp.isOK() ) 
 		{
-			String strBody = getRegisterBody();
-	    	strBody += "&client_id=" + client_id;
-			
-			NetResponse resp = getNet().pushData(serverUrl+"clientregister", strBody, oSync);
-			if( resp.isOK() ) 
-			{
-				try {
-					oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", new Integer(1), m_strDevicePin );
-				} catch(Exception ex) {
-					LOG.ERROR("Error saving token_sent to the DB...");
-				}	
-				LOG.INFO("Registered client sucessfully...");
-				return true;
-			} else {
-				LOG.INFO("Network error POST-ing device pin to the server...");
-			}
+			try {
+				oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", new Integer(1), m_strDevicePin );
+			} catch(Exception ex) {
+				LOG.ERROR("Error saving token_sent to the DB...");
+			}	
+			LOG.INFO("Registered client sucessfully...");
+			return true;
 		} else {
-			LOG.INFO("Can't register client because syncserver url is not configured...");
+			LOG.INFO("Network error POST-ing device pin to the server...");
 		}
 		
 		return false;

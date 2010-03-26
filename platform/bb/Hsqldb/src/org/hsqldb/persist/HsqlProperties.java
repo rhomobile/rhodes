@@ -152,7 +152,8 @@ public class HsqlProperties {
         boolean badvalue = false;
 
         try {
-            defaultValue = Integer.parseInt(prop);
+        	if ( prop != null )
+        		defaultValue = Integer.parseInt(prop);
         } catch (NumberFormatException e) {}
 
         if (defaultValue < minimum) {
