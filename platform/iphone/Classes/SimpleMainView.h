@@ -12,10 +12,13 @@
 @interface SimpleMainView : UIViewController <RhoMainView> {
     UIWindow *window;
     UIWebView *webView;
+    UIToolbar *toolbar;
 }
 
 @property (retain) UIWebView *webView;
+@property (retain) UIToolbar *toolbar;
 
 - (id)initWithParentWindow:(UIWindow *)w andDelegate:(id)delegate;
+- (id)initWithParentWindow:(UIWindow *)w toolbar:(NSArray*)items andDelegate:(id)delegate;
 
 @end
