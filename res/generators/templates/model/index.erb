@@ -14,25 +14,23 @@
 </div>
 
 <div id="content">
-    <div class="list">
-        <ul class="simple_list">
-            <%%@<%=name.downcase.pluralize%>.each do |obj|%>
-                <%if self.attributes?%>
-                <li>
-                    <a href="<%%= url_for(:action => :show, :id => obj.object) %>">
-                        <span class="title"><%%= obj.<%=attributes[0]%> %></span>
-                        <span class="discloser_indicator"></span>
-                    </a>
-                </li>
-                <%else%>
-                <li>
-                    <a href="#">
-                        <span class="title">Some list entry...</span>
-                        <span class="discloser_indicator"></span>
-                    </a>
-                </li>
-                <%end%>
-            <%%end%>
-        </ul>
-    </div>
+    <ul>
+        <%%@<%=name.downcase.pluralize%>.each do |obj|%>
+            <%if self.attributes?%>
+            <li>
+                <a href="<%%= url_for(:action => :show, :id => obj.object) %>">
+                    <span class="title"><%%= obj.<%=attributes[0]%> %></span>
+                    <span class="discloser_indicator"></span>
+                </a>
+            </li>
+            <%else%>
+            <li>
+                <a href="#">
+                    <span class="title">Some list entry...</span>
+                    <span class="discloser_indicator"></span>
+                </a>
+            </li>
+            <%end%>
+        <%%end%>
+    </ul>
 </div>
