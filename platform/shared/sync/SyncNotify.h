@@ -2,6 +2,7 @@
 
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
+#include "common/AutoPointer.h"
 
 namespace rho {
 namespace db {
@@ -46,8 +47,8 @@ private:
     static common::CMutex m_mxObjectNotify;
 
     HashtablePtr<int,CSyncNotification*> m_mapSyncNotifications;
-    HashtablePtr<int,CSyncNotification*> m_mapSearchNotifications;
-    CSyncNotification m_initialSyncNotify;
+    common::CAutoPtr<CSyncNotification> m_pSearchNotification;
+	CSyncNotification m_bulkSyncNotify;
     common::CMutex m_mxSyncNotifications;
 
     net::INetRequest& getNet();
@@ -70,7 +71,7 @@ public:
 
     //Sync notifications
     void setSyncNotification(int source_id, String strUrl, String strParams );
-    void setSearchNotification(int source_id, String strUrl, String strParams );
+    void setSearchNotification(String strUrl, String strParams );
 
     void clearSyncNotification(int source_id);
     void clearNotification(CSyncSource& src);
@@ -78,9 +79,9 @@ public:
     void onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources );
     void fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
 
-    void setInitialSyncNotification(String strUrl, String strParams );//throws Exception
-    void fireInitialSyncNotification( boolean bFinish, int nErrCode );
-    void clearInitialSyncNotification();
+    void setBulkSyncNotification(String strUrl, String strParams );//throws Exception
+    void fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode );
+    void clearBulkSyncNotification();
 
     void cleanLastSyncObjectCount();
     int incLastSyncObjectCount(int nSrcID);

@@ -68,8 +68,12 @@ void rho_ruby_add_to_array(VALUE ar, VALUE val);
 
 char* RhoRuby_getRhoDBVersion();
 
-typedef void rho_eachstr_func(const char*, const char*, void*);
-void rho_ruby_enum_strhash(VALUE hash, rho_eachstr_func *, void* data);
+typedef void rho_hash_eachstr_func(const char*, const char*, void*);
+void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func *, void* data);
+
+typedef void rho_ary_eachstr_func(const char*, void*);
+void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func *, void* data);
+
 void rho_ruby_set_const(const char* szName, const char* szVal);
 
 struct CRhoRubyStringOrInt 

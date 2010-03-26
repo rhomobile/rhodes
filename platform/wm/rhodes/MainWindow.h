@@ -21,6 +21,7 @@ static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAK
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
 static UINT WM_ALERT_SHOWPOPUP         = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOWPOPUP");
+static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DATETIME_PICKER");
 
 class CMainWindow :
 #if defined(_WIN32_WCE)
@@ -79,6 +80,7 @@ public:
         COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptionsCommand)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
+		COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
 //		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
 #if defined(OS_WINDOWS)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
@@ -88,6 +90,7 @@ public:
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
 		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
         MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup);
+		MESSAGE_HANDLER(WM_DATETIME_PICKER, OnDateTimePicker);
     END_MSG_MAP()
 
 private:
@@ -112,6 +115,7 @@ private:
 	LRESULT OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 //	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 #if defined(OS_WINDOWS)
@@ -122,8 +126,8 @@ private:
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-
     LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 public:
     BEGIN_SINK_MAP(CMainWindow)
@@ -150,6 +154,8 @@ private:
 	void ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL);
 
     static rho::StringW getRhodesAppName();
+
+	void toggleFullScreen();
 
 private:
     // Represents the PIEWebBrowser control contained in the main application.
@@ -191,7 +197,8 @@ public:
 	static int getScreenWidth() {return m_screenWidth;}
 	static int getScreenHeight() {return m_screenHeight;}
 #endif
-
+	
+	bool m_bFullscreen;
 //private:
 //	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };

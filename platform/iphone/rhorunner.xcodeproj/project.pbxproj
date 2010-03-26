@@ -58,7 +58,6 @@
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
 		F563D58B0EA829C80062DA57 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */; };
 		F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F56DF7270E8C373800F6CBE8 /* AppLoader.m */; };
-		F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */; };
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
 		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
@@ -232,8 +231,6 @@
 		F563D58A0EA829C80062DA57 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		F56DF7260E8C373800F6CBE8 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
 		F56DF7270E8C373800F6CBE8 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
-		F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = unzip.cpp; sourceTree = "<group>"; };
-		F56DF8D60E8D81FD00F6CBE8 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		F57917130E8ACA9E00BBC54D /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManager.h; path = AppManager/AppManager.h; sourceTree = "<group>"; };
 		F57917140E8ACA9E00BBC54D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
 		F579171F0E8AE1DE00BBC54D /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
@@ -526,8 +523,6 @@
 		F56DF8D40E8D81FD00F6CBE8 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				F56DF8D50E8D81FD00F6CBE8 /* unzip.cpp */,
-				F56DF8D60E8D81FD00F6CBE8 /* unzip.h */,
 				F5F06666102CB134006CFD39 /* ParamsWrapper.h */,
 				F5F06667102CB134006CFD39 /* ParamsWrapper.m */,
 			);
@@ -781,7 +776,6 @@
 				05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */,
 				F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */,
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
-				F56DF8D70E8D81FD00F6CBE8 /* unzip.cpp in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
 				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,

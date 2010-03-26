@@ -110,9 +110,17 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
         if ( isError() )
             break;
 
-        if ( strBody.length() > 0 )
+        if ( strBody.length() > 0  )
         {
-            CAtlStringW strHeaders = L"Content-Type: application/x-www-form-urlencoded\r\n";
+            CAtlStringW strHeaders = L"Content-Type: ";
+
+            if ( m_pSession )
+                strHeaders += m_pSession->getContentType().c_str();
+            else
+                strHeaders += "application/x-www-form-urlencoded";
+
+            strHeaders += L"\r\n";
+
             if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
             {
                 pszErrFunction = L"HttpAddRequestHeaders";
@@ -255,7 +263,7 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
             return;
     }
 
-    if ( nCode != 200 )
+    if ( nCode != 200 && nCode != 206 && nCode != 416 )
     {
         LOG(ERROR) + "An error occured connecting to the sync source: " + szHttpRes + " returned.";
 
@@ -274,6 +282,8 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 {
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
+    const int nDownloadBufferSize = 1024*50;
+    char* pDownloadBuffer = 0;
 
     do
     {
@@ -281,6 +291,21 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 
         if ( isError() )
             break;
+
+        //if ( oFile.size() > 0 )
+        {
+            CAtlStringW strHeaders = L"Range: bytes=";
+            strHeaders += common::convertToStringW(oFile.size()).c_str();
+            strHeaders += L"-";
+            //strHeaders += common::convertToStringW(oFile.size()+30068032).c_str();
+            strHeaders += "\r\n";
+
+            if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+            {
+                pszErrFunction = L"HttpAddRequestHeaders";
+                break;
+            }
+        }
 
         if ( !HttpSendRequest( hRequest, NULL, 0, NULL, 0 ) )
         {
@@ -292,9 +317,21 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
         if ( isError() )
             break;
 
-        readInetFile(hRequest,pNetResp, &oFile);
+        if ( pNetResp->getRespCode() == 416 )
+        {
+            pNetResp->setResponseCode(206);
+            break;
+        }
+
+        if (!pDownloadBuffer)
+            pDownloadBuffer = new char[nDownloadBufferSize];
+
+        readInetFile(hRequest,pNetResp, &oFile, pDownloadBuffer, nDownloadBufferSize);
 
     }while(0);
+
+    if (pDownloadBuffer)
+        delete pDownloadBuffer;
 
     return pNetResp;
 }
@@ -344,24 +381,27 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
             break;
         }
 
-        DWORD dwBufSize = 4096;
-        char* pBuf = (char*)malloc(dwBufSize);
-        int nReaded = 0;
+        if ( bodyStream->available() > 0 )
+        {
+            DWORD dwBufSize = 4096;
+            char* pBuf = (char*)malloc(dwBufSize);
+            int nReaded = 0;
 
-	    do
-	    {
-            nReaded = bodyStream->read(pBuf,0,dwBufSize);
-            if ( nReaded > 0 )
-            {
-		        if ( !InternetWriteFile( hRequest, pBuf, nReaded, &dwBytesWritten) )
+	        do
+	        {
+                nReaded = bodyStream->read(pBuf,0,dwBufSize);
+                if ( nReaded > 0 )
                 {
-                    pszErrFunction = L"InternetWriteFile";
-                    break;
+		            if ( !InternetWriteFile( hRequest, pBuf, nReaded, &dwBytesWritten) )
+                    {
+                        pszErrFunction = L"InternetWriteFile";
+                        break;
+                    }
                 }
-            }
-	    }while(nReaded > 0);
+	        }while(nReaded > 0);
 
-        free(pBuf);
+            free(pBuf);
+        }
 
         if ( !InternetWriteFile( hRequest, szMultipartPostfix, strlen(szMultipartPostfix), &dwBytesWritten) )
         {
@@ -392,6 +432,17 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
 void CNetRequestImpl::cancel()
 {
     m_bCancel = true;
+
+	if ( hRequest ) 
+        InternetCloseHandle(hRequest);
+/*	if ( hConnection ) 
+        InternetCloseHandle(hConnection);
+	if ( hInet ) 
+        InternetCloseHandle(hInet); */
+/*
+    hRequest = 0;
+    hConnection = 0;
+    hInet = 0;*/
 }
 
 void CNetRequestImpl::close()
@@ -421,13 +472,24 @@ CNetRequestImpl::~CNetRequestImpl()
     m_pParent->m_pCurNetRequestImpl = null;
 }
 
-void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/ )
+void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/,
+    char* pBuf, DWORD dwBufSize )
 {
     //if ( pNetResp->getRespCode() == 500 || pNetResp->getRespCode() == 422 )
     //    return;
+    char* pBufToFree = 0;
+    if (!pBuf)
+    {
+        if ( dwBufSize==0)
+            dwBufSize=1024*4;
 
-    DWORD dwBufSize = 4096;
-    char* pBuf = (char*)malloc(dwBufSize);
+        pBuf = (char*)malloc(dwBufSize);
+        pBufToFree = pBuf;
+    }
+
+    //DWORD dwBufSize = 1024*100;
+    //char* pBuf = (char*)malloc(dwBufSize);
+    //char* pBufToFree = pBuf;
     DWORD dwBytesRead = 0;
     BOOL bRead = FALSE;
     do
@@ -436,6 +498,7 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
         if ( !bRead )
         {
             pszErrFunction = L"InternetReadFile";
+            pNetResp->setResponseCode(408);
             break;
         }
 
@@ -454,7 +517,8 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
     if ( !pNetResp->isOK() )
         LOG(TRACE) + "Server response: " + pNetResp->getCharData();
 
-    free(pBuf);
+    if ( pBufToFree )
+        free(pBufToFree);
 }
 
 void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
@@ -474,7 +538,7 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
         (LPTSTR)&pszMessage,
         0, NULL );
 
-    CAtlStringW strExtError = L"";
+    wchar_t* szExtError = 0;
     if ( dwLastError == ERROR_INTERNET_EXTENDED_ERROR )
     {
         DWORD  dwInetError =0, dwExtLength = 0;
@@ -482,8 +546,8 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
 
         if ( dwExtLength > 0 )
         {
-            InternetGetLastResponseInfo( &dwInetError, strExtError.GetBuffer(dwExtLength+1), &dwExtLength );
-            strExtError.ReleaseBuffer();
+            szExtError = (wchar_t*)malloc(sizeof(wchar_t)*(dwExtLength+1));
+            InternetGetLastResponseInfo( &dwInetError, szExtError, &dwExtLength );
         }
     }
 
@@ -492,9 +556,11 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
 
     if ( pszMessage ) 
         oLogMsg + ".Message: " + pszMessage;
-    if ( strExtError.GetLength() )
-        oLogMsg + ".Extended info: " + strExtError.GetString();
+    if ( szExtError && *szExtError )
+        oLogMsg + ".Extended info: " + szExtError;
 
+    if ( szExtError )
+        free(szExtError);
     if ( pszMessage )
         LocalFree(pszMessage);
 }

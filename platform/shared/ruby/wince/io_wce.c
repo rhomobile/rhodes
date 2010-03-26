@@ -202,7 +202,7 @@ int _open(const char *path, int oflag, va_list arg)
 
     fNumber = get_NewFileNumber();
     if ( fNumber == 0 )
-        return -6;
+        return -1;
 
     wfile = wce_mbtowc(path);
     if ( (osfh = CreateFileW( wfile,
@@ -235,7 +235,7 @@ int _open(const char *path, int oflag, va_list arg)
         return fNumber;
     }
 
-    return -6;
+    return -1;
 }
 /*
 	wchar_t *wfile;

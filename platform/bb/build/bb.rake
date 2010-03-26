@@ -58,15 +58,7 @@ def startsim
         
   args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"])
 
-  # Wait until thread will start
-  rd, wr = IO.pipe
-  Thread.new {
-    wr.putc 0
-  	Jake.run(command,args,jde + "/simulator",true)
-  	$stdout.flush
-  }
-  rd.getc
-  sleep 1
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
 def stopsim
@@ -77,8 +69,7 @@ def stopsim
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
-  #Jake.run(command,args, jde + "/simulator")
-  Thread.new { Jake.run(command,args, nil, true,true) }  
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
 def manualsign

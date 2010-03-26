@@ -3,15 +3,25 @@ package com.rhomobile.rhodes.socket;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.rhomobile.rhodes.Logger;
 
 public class SSLImpl {
 	
 	private static final String TAG = "SSLImplJava";
+	
+	private static SSLSocketFactory factory = null;
 	
 	private SSLSocket sock;
 	private int sockfd;
@@ -21,17 +31,51 @@ public class SSLImpl {
 	
 	public native RhoSockAddr getRemoteSockAddr(int sockfd);
 	
+	private static class MyTrustManager implements X509TrustManager {
+		
+		public void checkClientTrusted(X509Certificate[] chain, String authType)
+				throws CertificateException {
+			// Nothing
+			Logger.T(TAG, "checkClientTrusted");
+		}
+
+		public void checkServerTrusted(X509Certificate[] chain, String authType)
+				throws CertificateException {
+			// Nothing
+			Logger.T(TAG, "checkServerTrusted");
+		}
+
+		public X509Certificate[] getAcceptedIssuers() {
+			Logger.T(TAG, "getAcceptedIssuers");
+			return new X509Certificate[0];
+		}
+		
+	};
+	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
-	public boolean connect(int fd) {
+	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException {
+		if (verify)
+			return (SSLSocketFactory)SSLSocketFactory.getDefault();
+		
+		if (factory == null) {
+			SSLContext context = SSLContext.getInstance("TLS");
+			TrustManager[] managers = {new MyTrustManager()};
+			context.init(null, managers, new SecureRandom());
+			factory = context.getSocketFactory();
+		}
+		return factory;
+	}
+	
+	public boolean connect(int fd, boolean sslVerifyPeer) {
 		try {
 			sockfd = fd;
-			SSLSocketFactory factory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 			RhoSockAddr remote = getRemoteSockAddr(sockfd);
 			Socket s = new RhoSocket(sockfd, remote);
-			sock = (SSLSocket)factory.createSocket(s, remote.host.toString(), remote.port, true);
+			SSLSocketFactory f = getFactory(sslVerifyPeer);
+			sock = (SSLSocket)f.createSocket(s, remote.host.toString(), remote.port, true);
 			sock.setUseClientMode(true);
 			os = sock.getOutputStream();
 			is = sock.getInputStream();

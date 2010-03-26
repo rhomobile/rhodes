@@ -25,6 +25,9 @@ public:
     INetResponse *pullCookies(const String& strUrl, const String& strBody, IRhoSession *oSession);
     INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
 
+    boolean sslVerifyPeer() {return m_sslVerifyPeer;}
+    void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+    
     String resolveUrl(const String& strUrl);
 
     void cancel();
@@ -40,6 +43,7 @@ private:
     CURL *curl;
     char *errbuf[CURL_ERROR_SIZE];
     boolean m_bTraceCalls;
+    boolean m_sslVerifyPeer;
 };
 
 } // namespace net

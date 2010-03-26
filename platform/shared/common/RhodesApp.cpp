@@ -10,6 +10,7 @@
 #include "sync/ClientRegister.h"
 #include "sync/SyncThread.h"
 #include "net/AsyncHttp.h"
+#include "unzip/unzip.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -156,7 +157,7 @@ void CRhodesApp::stopApp()
         stop(2000);
     }
 
-    rho_asynchttp_cancel("*");
+    rho_asynchttp_destroy();
 }
 
 class CRhoCallbackCall :  public common::CRhoThread
@@ -459,6 +460,7 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl += getFreeListeningPort();
 
     m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
+	m_strDBDirPath = getRhoRootPath() + "db";
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
 }
@@ -559,8 +561,9 @@ menu_iter(const char* szLabel, const char* szLink, void* pThis)
 
 void CRhodesApp::setViewMenu(unsigned long valMenu)
 {
-    synchronized(m_mxViewMenuItems)
     {
+        synchronized(m_mxViewMenuItems)
+
         m_hashViewMenuItems.clear();
         m_strAppBackUrl="";
     }
@@ -625,7 +628,7 @@ void CRhodesApp::delCallbackObject(ICallbackObject* pCallbackObject)
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
-    if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
+    if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
         return rho_ruby_get_NIL();
 
     ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
@@ -878,7 +881,7 @@ const char* rho_ruby_getMessageText(const char* szName)
 
 int rho_rhodesapp_isrubycompiler()
 {
-    return 1;
+    return 0;
 }
 
 int rho_conf_send_log()
@@ -957,5 +960,45 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
     return out;
 }
 
+int rho_unzip_file(const char* szZipPath)
+{
+#ifdef  UNICODE
+    rho::StringW strZipPathW;
+    rho::common::convertToStringW(szZipPath, strZipPathW);
+    HZIP hz = OpenZipFile(strZipPathW.c_str(), "");
+    if ( !hz )
+        return 0;
+
+	// Set base for unziping
+    SetUnzipBaseDir(hz, rho::common::convertToStringW(RHODESAPP().getDBDirPath()).c_str() );
+#else
+    HZIP hz = OpenZipFile(szZipPath, "");
+    if ( !hz )
+        return 0;
+
+	// Set base for unziping
+    SetUnzipBaseDir(hz, RHODESAPP().getDBDirPath().c_str() );
+#endif
+
+    ZIPENTRY ze;
+    ZRESULT res = 0;
+	// Get info about the zip
+	// -1 gives overall information about the zipfile
+	res = GetZipItem(hz,-1,&ze);
+	int numitems = ze.index;
+
+	// Iterate through items and unzip them
+	for (int zi = 0; zi<numitems; zi++)
+	{ 
+		// fetch individual details, e.g. the item's name.
+		res = GetZipItem(hz,zi,&ze); 
+        if ( res == ZR_OK )
+    		res = UnzipItem(hz, zi, ze.name);         
+	}
+
+	CloseZip(hz);
+
+    return res == ZR_OK ? 1 : 0;
 }
 
+}
