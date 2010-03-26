@@ -3,7 +3,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#ifdef __SYMBIAN32__
+#if defined(WIN32) || defined(_WIN32_WCE)
+#else
 #define ZIP_STD
 #endif
 
@@ -4288,7 +4289,7 @@ HZIP OpenZipInternal(void *z,unsigned int len,DWORD flags, const char *password)
   han->flag=1; han->unz=unz; return (HZIP)han;
 }
 HZIP OpenZipHandle(HANDLE h, const char *password) {return OpenZipInternal((void*)h,0,ZIP_HANDLE,password);}
-HZIP OpenZip(const TCHAR *fn, const char *password) {return OpenZipInternal((void*)fn,0,ZIP_FILENAME,password);}
+HZIP OpenZipFile(const TCHAR *fn, const char *password) {return OpenZipInternal((void*)fn,0,ZIP_FILENAME,password);}
 HZIP OpenZip(void *z,unsigned int len, const char *password) {return OpenZipInternal(z,len,ZIP_MEMORY,password);}
 
 

@@ -10,10 +10,14 @@ module Rho
     APPLICATIONS = {}
     APPNAME = 'app'
     
+    @@rho_framework = nil
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
       RHO.process_rhoconfig
-      Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
+      #Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
+      @db_user = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname)
+      @db_application = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname('app'))      
+      
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
       else
@@ -21,10 +25,31 @@ module Rho
       end
       
       # Initialize application and sources
-      init_sources
+      init_sources(@db_user)
+      init_sources(@db_application)
       #get_app(APPNAME)
+      
+      @@rho_framework = self
     end
 
+    attr_reader :db_application, :db_user
+
+    def self.get_src_db(src_name=nil)
+        if src_name
+            Rho::RhoConfig.sources[src_name]['partition'] == 'user' ? @@rho_framework.db_user : @@rho_framework.db_application
+        else
+            @@rho_framework.db_user
+        end    
+    end
+
+    def self.get_user_db
+        @@rho_framework.db_user        
+    end
+    
+    def self.get_application_db
+        @@rho_framework.db_application
+    end
+    
     def init_app
       get_app(APPNAME)
     end
@@ -34,9 +59,16 @@ module Rho
     end
     
     # make sure we close the database file
-    def self.finalize
-      Rhom::RhomDbAdapter::close
-    end
+    #def self.finalize
+      #Rhom::RhomDbAdapter::close
+      #puts 'finalize'
+      #if @@rho_framework
+      #  @@rho_framework.db_application.close()
+      #  @@rho_framework.db_user.close()
+        
+      #  @@rho_framework = nil
+      #end
+    #end
     
     def raise_rhoerror(errCode)
         raise Rho::RhoError.new(errCode)
@@ -90,60 +122,45 @@ module Rho
     end
     
     # setup the sources table and model attributes for all applications
-    def init_sources
+    def init_sources(db)
       if defined? Rho::RhoConfig::sources
         
-        # quick and dirty way to get unique array of hashes
-        #uniq_sources = Rho::RhoConfig::sources.values.inject([]) { |result,h| 
-        #  result << h unless result.include?(h); result
-        #}
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_sources: ' + uniq_sources.inspect
 
-        result = ::Rhom::RhomDbAdapter.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
-        #puts 'result: ' + result.inspect
-        start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+1 : 0
+        #result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
+        #start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+1 : 0
         
         # generate unique source list in database for sync
         uniq_sources.each do |source|
           
-          url = source['url']
           name = source['name']
           priority = source['priority']
-          attribs = Rhom::RhomDbAdapter::select_from_table('sources','priority,source_id,source_url', 'name'=>name)
+          partition = source['partition']
+          sync_type = source['sync_type']
+          
+          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type', 'name'=>name)
 
           if attribs && attribs.size > 0 
             if attribs[0]['priority'].to_i != priority.to_i
-                Rhom::RhomDbAdapter::update_into_table('sources', {"priority"=>priority}, {"name"=>name})
+                db.update_into_table('sources', {"priority"=>priority},{"name"=>name})
             end
-            if attribs[0]['source_url'] != url
-                Rhom::RhomDbAdapter::update_into_table('sources', {"source_url"=>url}, {"name"=>name})
+            if attribs[0]['sync_type'] != sync_type
+                db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
             
-            Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
+            #Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
           else
-            if !source['source_id']
-                srcid = start_id
-                start_id += 1
-            else
-                srcid = source['source_id'].to_i
-            end
+            db.insert_into_table('sources',
+                {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition})
+            #Rho::RhoConfig::sources[name]['source_id'] = start_id
             
-            hash = {"source_id"=>srcid,"source_url"=>url,"name"=>name, "priority"=>priority}
-            puts "hash: #{hash}"
-            
-            Rhom::RhomDbAdapter::insert_into_table('sources', hash )
-            Rho::RhoConfig::sources[name]['source_id'] = srcid
-            
+            #start_id += 1
           end
         end
       end
     end
     
-#    def source_initialized?(source_id)
-#      Rhom::RhomDbAdapter::select_from_table('sources','*', 'source_id'=>source_id).size > 0 ? true : false
-#    end
-
     def serve(req)
       begin
         puts 'inside RHO.serve...'
@@ -369,14 +386,17 @@ module Rho
         @@sources[modelname] = new_source ? new_source : {}
         @@sources[modelname]['name'] ||= modelname
         @@sources[modelname]['priority'] ||= 1000
+        @@sources[modelname]['partition'] ||= 'user'
+        @@sources[modelname]['sync_type'] ||= 'incremental'
+        
+        if @@sources[modelname]['url'] && @@sources[modelname]['url'].length() == 0
+            @@sources[modelname]['sync'] = false
+        end
 
-#        if new_source
-#          unless @@sources[modelname]
-#            @@sources[modelname] = new_source
-#            @@sources[modelname]['name'] ||= modelname
-#            @@sources[modelname]['source_id'] = generate_id()
-#          end
-#        end
+        if @@sources[modelname]['sync'].nil?
+            @@sources[modelname]['sync'] = true
+        end
+        
       end
       
       @@g_base_temp_id = nil
@@ -391,19 +411,28 @@ module Rho
   end # RhoConfig
   
     module AsyncHttp
+        def self.ssl_verify_peer(args)
+            ret = args[:ssl_verify_peer]
+            ret = true if !ret.is_a? TrueClass and !ret.is_a? FalseClass
+            ret ? 1 : 0
+        end
+
         def self.get(args)
-            AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param] )
+            AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param], ssl_verify_peer(args))
         end
         def self.post(args)
-            AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param] )
+            AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param], ssl_verify_peer(args))
         end
         def self.download_file(args)
-            AsyncHttp.do_downloadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] )
+            AsyncHttp.do_downloadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param], ssl_verify_peer(args))
         end
         def self.upload_file(args)
-            AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] )
+            AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param], ssl_verify_peer(args))
         end
     end
   
 end # Rho
 
+#at_exit do
+	#::Rhom::RhomDbAdapter.close
+#end

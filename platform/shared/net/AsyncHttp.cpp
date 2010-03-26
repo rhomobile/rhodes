@@ -13,7 +13,7 @@ namespace net
 IMPLEMENT_LOGCLASS(CAsyncHttp, "AsyncHttp");
 boolean CAsyncHttp::m_bNoThreaded = false;
 common::CMutex CAsyncHttp::m_mxInstances;
-Vector<CAsyncHttp*> CAsyncHttp::m_arInstances;
+VectorPtr<CAsyncHttp*> CAsyncHttp::m_arInstances;
 
 extern "C" void header_iter(const char* szName, const char* szValue, void* pHash)
 {
@@ -21,21 +21,21 @@ extern "C" void header_iter(const char* szName, const char* szValue, void* pHash
 }
 
 CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
-    const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params) :  CRhoThread(factory)
+    const char* url, unsigned long headers, const char* body,
+    const char* callback, const char* callback_params, boolean ssl_verify_peer) :  CRhoThread(factory)
 {
+    m_bFinished = false;
     m_ptrFactory = factory;
     m_strUrl = url != null ? url : "";
     m_strBody = body != null ? body : "";
     m_strCallback = callback != null ? callback : "";
     m_strCallbackParams = callback_params != null ? callback_params : "";
     m_eCmd = eCmd;
+    m_sslVerifyPeer = ssl_verify_peer;
 
     rho_ruby_enum_strhash(headers, &header_iter, &m_mapHeaders);
 
-    {
-	    synchronized(m_mxInstances);
-        m_arInstances.addElement(this);
-    }
+    addNewObject(this);
 
     if (m_bNoThreaded)
         run();
@@ -43,24 +43,46 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         start(epLow);
 }
 
-CAsyncHttp::~CAsyncHttp()
+void CAsyncHttp::cancel(boolean bWait)
+{
+    {		
+    	synchronized(m_mxRequest)
+
+        if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
+            m_pNetRequest->cancel();
+    }
+
+    if ( bWait )
+        stop(-1);
+}
+
+/*static*/ void CAsyncHttp::addNewObject(CAsyncHttp* pObj)
 {
 	synchronized(m_mxInstances)
-    {		
-        m_arInstances.removeElement(this);
+    {
+        while(1)
+        {
+            int nToDelete = -1;
+            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+            {
+                if ( m_arInstances.elementAt(i)->m_bFinished )
+                {
+                    nToDelete = i;
+                    break;
+                }
+            }
+
+            if (nToDelete==-1)
+                break;
+
+            m_arInstances.removeElementAt(nToDelete);
+        }
+
+        m_arInstances.addElement(pObj);
     }
 }
 
-void CAsyncHttp::cancel()
-{
-    if (m_pNetRequest!=null)
-        m_pNetRequest->cancel();
-
-    stop(1000);
-    delete this;
-}
-
-/*static*/ void CAsyncHttp::cancelRequest(const char* szCallback)
+/*static*/ void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
 {
     if (!szCallback || !*szCallback )
     {
@@ -73,13 +95,13 @@ void CAsyncHttp::cancel()
         if ( *szCallback == '*')
         {
             for (int i = 0; i < (int)m_arInstances.size(); i++ )
-                m_arInstances.elementAt(i)->cancel();
+                m_arInstances.elementAt(i)->cancel(bWait);
         }else
         {
             for (int i = 0; i < (int)m_arInstances.size(); i++ )
             {
                 if ( m_arInstances.elementAt(i)->m_strCallback.compare(szCallback) == 0 )
-                    m_arInstances.elementAt(i)->cancel();    
+                    m_arInstances.elementAt(i)->cancel(bWait);    
             }
         }
     }
@@ -87,9 +109,13 @@ void CAsyncHttp::cancel()
 
 void CAsyncHttp::run()
 {
-	LOG(INFO) + "RhoHttp thread start.";
+    LOG(INFO) + "RhoHttp thread start.";
 
-    m_pNetRequest = m_ptrFactory->createNetRequest();
+    {		
+        synchronized(m_mxRequest)
+        m_pNetRequest = m_ptrFactory->createNetRequest();
+        m_pNetRequest->sslVerifyPeer(m_sslVerifyPeer);
+    }
 
     switch( m_eCmd )
     {
@@ -117,8 +143,7 @@ void CAsyncHttp::run()
 
 	LOG(INFO) + "RhoHttp thread end.";
 
-    if ( !m_pNetRequest->isCancelled() )
-        delete this;
+    m_bFinished = true;
 }
 
 String CAsyncHttp::makeHeadersString()
@@ -211,10 +236,13 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
         rho_ruby_set_const( strName.c_str(), strBody.c_str());
     }else
     {
-        m_pNetRequest = m_ptrFactory->createNetRequest();
-
-        String strFullUrl = m_pNetRequest->resolveUrl(m_strCallback);
-        NetResponse(resp1,m_pNetRequest->pushData( strFullUrl, strBody, null ));
+//        {
+//            synchronized(m_mxRequest)
+//            m_pNetRequest = m_ptrFactory->createNetRequest();
+//        }
+        common::CAutoPtr<INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        String strFullUrl = pNetRequest->resolveUrl(m_strCallback);
+        NetResponse(resp1,pNetRequest->pushData( strFullUrl, strBody, null ));
         if ( !resp1.isOK() )
             LOG(ERROR) + "AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData();
     }
@@ -229,29 +257,34 @@ extern "C" {
 
 using namespace rho::net;
 
-void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params)
+void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcGet, url, headers, null, callback, callback_params );
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcGet, url, headers, null, callback, callback_params, ssl_verify_peer);
 }
 
-void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params)
+void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcPost, url, headers, body!=null?body:"", callback, callback_params );
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcPost, url, headers, body!=null?body:"", callback, callback_params, ssl_verify_peer);
 }
 
-void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params)
+void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcDownload, url, headers, file_path, callback, callback_params );
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcDownload, url, headers, file_path, callback, callback_params, ssl_verify_peer);
 }
 
-void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params)
+void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcUpload, url, headers, file_path, callback, callback_params );
+    new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcUpload, url, headers, file_path, callback, callback_params, ssl_verify_peer);
 }
 
 void rho_asynchttp_cancel(const char* cancel_callback)
 {
-    CAsyncHttp::cancelRequest(cancel_callback);
+    CAsyncHttp::cancelRequest(cancel_callback, false);
+}
+
+void rho_asynchttp_destroy()
+{
+    CAsyncHttp::cancelRequest("*", true);
 }
 
 void rho_asynchttp_set_threaded_mode(int b)

@@ -22,33 +22,33 @@ require 'rhodes'
 module Rhom
   class RhomDbAdapter
     
-    @@database = nil
-    @@inside_transaction = false
+    @database = nil
+    @inside_transaction = false
     
-    class << self
+    #class << self
       
       # maintains a single database connection
-      def open(dbfile=nil)
-        unless @@database or dbfile.nil?
-          @@database = SQLite3::Database.new(dbfile)
+      def initialize(dbfile=nil)
+        unless @database or dbfile.nil?
+          @database = SQLite3::Database.new(dbfile)
         end
       end
     
       # closes the database if and only if it is open
-      def close
-        if @@database
-          @@database.close
-          @@database = nil
-        else
-          return false
-        end
-        return true
-      end   
+      #def close
+      #  if @database
+      #    @database.close
+      #    @database = nil
+      #  else
+      #    return false
+      #  end
+      #  return true
+      #end   
     
       def start_transaction
           begin
-            @@inside_transaction = true
-            @@database.start_transaction
+            @inside_transaction = true
+            @database.start_transaction
           rescue Exception => e
             puts "exception when start_transaction"
           end
@@ -56,8 +56,8 @@ module Rhom
 
       def commit
           begin
-            @@inside_transaction = false
-            @@database.commit
+            @inside_transaction = false
+            @database.commit
           rescue Exception => e
             puts "exception when commit transaction"
           end
@@ -65,8 +65,8 @@ module Rhom
 
       def rollback
           begin
-            @@inside_transaction = false
-            @@database.rollback
+            @inside_transaction = false
+            @database.rollback
           rescue Exception => e
             puts "exception when rollback transaction"
           end
@@ -83,16 +83,16 @@ module Rhom
           # before we perform a database transaction.
           # This prevents concurrency issues.
           begin
-            SyncEngine.lock_sync_mutex unless @@inside_transaction
-            result = @@database.execute( sql, args )
-            SyncEngine.unlock_sync_mutex unless @@inside_transaction
+            @database.lock_db unless @inside_transaction
+            result = @database.execute( sql, args )
+            @database.unlock_db unless @inside_transaction
           rescue Exception => e
             #puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
-            if @@inside_transaction
+            if @inside_transaction
               raise
             else
-              SyncEngine.unlock_sync_mutex
+              @database.unlock_db
             end    
           end
         end
@@ -100,33 +100,34 @@ module Rhom
         result
       end
 
-      # generates where clause based on hash
-      def where_str(condition,select_arr=nil)
-        where_str = ""
-        if condition
-          where_str += string_from_key_vals(condition,"and")
-          where_str = where_str[0..where_str.length - 5]
-        end
+      class << self
+          # generates where clause based on hash
+          def where_str(condition,select_arr=nil)
+            where_str = ""
+            if condition
+              where_str += string_from_key_vals(condition,"and")
+              where_str = where_str[0..where_str.length - 5]
+            end
+            
+            if select_arr and select_arr.length > 0
+              where_str += " and attrib in (#{select_str(select_arr)})"
+            end
+            where_str
+          end
+          
+          def select_str(select_arr)
+            select_str = ""
+            select_arr.each do |attrib|
+              select_str << "'#{attrib}'" + ","
+            end
+            select_str.length > 2 ? select_str[0..select_str.length-2] : select_str
+          end
         
-        if select_arr and select_arr.length > 0
-          where_str += " and attrib in (#{select_str(select_arr)})"
-        end
-        where_str
-      end
-      
-      def select_str(select_arr)
-        select_str = ""
-        select_arr.each do |attrib|
-          select_str << "'#{attrib}'" + ","
-        end
-        select_str.length > 2 ? select_str[0..select_str.length-2] : select_str
-      end
-    
-      # generates value clause based on hash
-      def vals_str(values)
-        vals = string_from_key_vals_set(values, ",")
-        vals[0..vals.length - 2]
-      end
+          # generates value clause based on hash
+          def vals_str(values)
+            vals = string_from_key_vals_set(values, ",")
+            vals[0..vals.length - 2]
+          end
 
       def string_from_key_vals_set(values, delim)
         vals = ""
@@ -159,6 +160,7 @@ module Rhom
           "'#{s}'"
         end
       end
+    end #self
     
       # support for select statements
       # this function takes table name, columns (as a comma-separated list),
@@ -172,11 +174,11 @@ module Rhom
         query = nil
         if table and columns and condition
           if params and params['distinct']
-            query = "select distinct #{columns} from #{table} where #{where_str(condition,select_arr)}"
+            query = "select distinct #{columns} from #{table} where #{RhomDbAdapter.where_str(condition,select_arr)}"
           elsif params and params['order by']
-            query = "select #{columns} from #{table} where #{where_str(condition,select_arr)} order by #{params['order by']}"
+            query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition,select_arr)} order by #{params['order by']}"
           else
-            query = "select #{columns} from #{table} where #{where_str(condition,select_arr)}"
+            query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition,select_arr)}"
           end
         elsif table and columns
           query = "select #{columns} from #{table}"                     
@@ -196,7 +198,7 @@ module Rhom
         vals = ""
         if table and values
           values.each do |key,val|
-            value = get_value_for_sql_stmt(val)+","
+            value = RhomDbAdapter.get_value_for_sql_stmt(val)+","
             cols << "#{key},"
             vals << value
           end
@@ -215,7 +217,7 @@ module Rhom
       def delete_from_table(table=nil,condition=nil)
         query = nil
         if table and condition
-          query = "delete from #{table} where #{where_str(condition)}"
+          query = "delete from #{table} where #{RhomDbAdapter.where_str(condition)}"
         end
         execute_sql query
       end
@@ -229,14 +231,14 @@ module Rhom
         execute_sql query
       end
 
-      # deletes all rows from a given table by recreating db-file and save all other tables
-      def destroy_table(table)
+      # deletes all rows from all tables, except list of given tables by recreating db-file and save all other tables
+      def destroy_tables(*args)
           begin
-            SyncEngine.lock_sync_mutex unless @@inside_transaction
-            @@database.destroy_table table
-            SyncEngine.unlock_sync_mutex unless @@inside_transaction
+            @database.lock_db unless @inside_transaction
+            @database.destroy_tables args.first[:include], args.first[:exclude]
+            @database.unlock_db unless @inside_transaction
           rescue Exception => e
-            SyncEngine.unlock_sync_mutex
+            @database.unlock_db
             raise
           end
       end
@@ -248,18 +250,14 @@ module Rhom
       # update table object_values set value='Electronics' where object='some-object' and attrib='industry';
       def update_into_table(table=nil,values=nil,condition=nil)
         query = nil
-        vals = values.nil? ? nil : vals_str(values)
+        vals = values.nil? ? nil : RhomDbAdapter.vals_str(values)
         if table and condition and vals
-          query = "update #{table} set #{vals} where #{where_str(condition)}"
+          query = "update #{table} set #{vals} where #{RhomDbAdapter.where_str(condition)}"
         elsif table and vals
           query = "update #{table} set #{vals}"          
         end
         execute_sql query
       end
-    end # class methods
+    #end # class methods
   end # RhomDbAdapter
 end # Rhom
-
-at_exit do
-	::Rhom::RhomDbAdapter.close
-end

@@ -59,7 +59,7 @@
 
 extern void * rho_ssl_create_storage();
 extern void rho_ssl_free_storage(void *);
-extern CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, void *storage);
+extern CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage);
 extern void rho_ssl_shutdown(void *storage);
 extern ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
 extern ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
@@ -84,6 +84,7 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
 {
     curl_socket_t sockfd = conn->sock[sockindex];
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    struct ssl_config_data *config = &conn->ssl_config;
     CURLcode retcode;
 
     if (connssl->state == ssl_connection_complete)
@@ -92,7 +93,7 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
     connssl->storage = rho_ssl_create_storage();
     
     int idone = *done;
-    retcode = rho_ssl_connect(sockfd, nonblocking, &idone, connssl->storage);
+    retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage);
     if (retcode)
         return retcode;
     

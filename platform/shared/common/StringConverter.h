@@ -11,10 +11,10 @@ namespace common{
 #define convertFromString convertFromStringA
 #define convertToString convertToStringA
 #endif
-
+*/
 template<typename T>  inline void convertFromStringW( const wchar_t* szValue, T& value ){ value = szValue; }
 template<typename T>  inline StringW convertToStringW( const T& value ){ return value; }
-*/
+
 
 template<typename T>  inline void convertFromStringA( const char* szValue, T& value ){ value = szValue; }
 template<typename T>  inline String convertToStringA( const T& value ){ return value; }
@@ -70,7 +70,7 @@ inline StringW convertToStringW( const String& str )
 
 /*template<>  inline void convertFromStringA<StringW>( const char* szValue, StringW& value ){ value = StringW(szValue); }
 template<>  inline String convertToStringA<StringW>( const StringW& value ){ return String(value); }
-
+*/
 #define CONVERT_TYPE_W( Type, Fmt ) \
 template<> inline void convertFromStringW<Type>( const wchar_t* szValue, Type& value )\
 { swscanf( szValue, Fmt, &value ); }\
@@ -80,7 +80,6 @@ template<> inline StringW convertToStringW<Type>( const Type& value )\
     swprintf( buf, Fmt, value );\
     return StringW(buf);\
 }
-*/
 
 #define CONVERT_TYPE_A( Type, Fmt ) \
 template<> inline void convertFromStringA<Type>( const char* szValue, Type& value )\
@@ -91,21 +90,21 @@ template<> inline String convertToStringA<Type>( const Type& value )\
     sprintf( buf, Fmt, value );\
     return String(buf);\
 }
-/*
+
+#if defined(OS_WINDOWS) || defined (OS_WINCE)
 CONVERT_TYPE_W( unsigned int, L"%u" );
 CONVERT_TYPE_W( int, L"%d" );
-CONVERT_TYPE_W( unsigned long, L"%u" );
+CONVERT_TYPE_W( unsigned long, L"%lu" );
 CONVERT_TYPE_W( long, L"%d" );
-CONVERT_TYPE_W( wchar_t, L"%c" );
+CONVERT_TYPE_W( wchar_t, L"%lc" );
 CONVERT_TYPE_W( char, L"%c" );
 CONVERT_TYPE_W( unsigned char, L"%c" );
-CONVERT_TYPE_W( short, L"%d" );
+CONVERT_TYPE_W( short, L"%hd" );
 //CONVERT_TYPE_W( unsigned short, _T("%u") );
 CONVERT_TYPE_W( bool, L"%d" );
 CONVERT_TYPE_W( float, L"%f" );
-CONVERT_TYPE_W( double, L"%f" );
-*/
-
+CONVERT_TYPE_W( double, L"%lf" );
+#endif
 CONVERT_TYPE_A( unsigned int, "%u" );
 CONVERT_TYPE_A( int, "%d" );
 CONVERT_TYPE_A( unsigned long, "%lu" );

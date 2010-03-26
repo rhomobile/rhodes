@@ -25,6 +25,7 @@ struct IRhoSession
 {
 	virtual void logout()=0;
 	virtual const String& getSession()=0;
+    virtual const String& getContentType()=0;
 };
 
 struct INetRequest
@@ -39,6 +40,9 @@ struct INetRequest
 
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )=0;
 
+    virtual boolean sslVerifyPeer() = 0;
+    virtual void sslVerifyPeer(boolean mode) = 0;
+    
     virtual String resolveUrl(const String& strUrl)=0;
 
     virtual void cancel() = 0;

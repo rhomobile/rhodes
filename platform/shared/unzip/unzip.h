@@ -5,7 +5,8 @@
 extern "C" {
 #endif
 
-#ifdef __SYMBIAN32__
+#if defined(WIN32) || defined(_WIN32_WCE)
+#else
 #define ZIP_STD
 #endif
 
@@ -51,6 +52,9 @@ typedef struct
 
 //HZIP OpenZip(const TCHAR *fn, const char *password);
 HZIP OpenZip(void *z,unsigned int len, const char *password);
+
+HZIP OpenZipFile(const TCHAR *fn, const char *password);
+
 HZIP OpenZipHandle(HANDLE h, const char *password);
 // OpenZip - opens a zip file and returns a handle with which you can
 // subsequently examine its contents. You can open a zip file from:

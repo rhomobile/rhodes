@@ -47,7 +47,7 @@ void SSLImpl::freeStorage(void *ptr)
     free(ptr);
 }
     
-CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, void *storage)
+CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
 {
     ssl_data_t *data = (ssl_data_t*)storage;
     
@@ -55,6 +55,18 @@ CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, void *storage)
     // Indicate that the connection needs to be done in secure manner
     CFReadStreamSetProperty(data->readStream, kCFStreamPropertySocketSecurityLevel, kCFStreamSocketSecurityLevelSSLv3);
     CFWriteStreamSetProperty(data->writeStream, kCFStreamPropertySocketSecurityLevel, kCFStreamSocketSecurityLevelSSLv3);
+    
+    CFMutableDictionaryRef dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    if (!dict) {
+        RAWLOG_ERROR("Can not allocate CFMutableDictionaryRef");
+        return CURLE_SSL_CONNECT_ERROR;
+    }
+    
+    CFDictionarySetValue(dict, kCFStreamSSLValidatesCertificateChain, ssl_verify_peer ? kCFBooleanTrue : kCFBooleanFalse);
+    CFReadStreamSetProperty(data->readStream, kCFStreamPropertySSLSettings, dict);
+    CFWriteStreamSetProperty(data->writeStream, kCFStreamPropertySSLSettings, dict);
+    CFRelease(dict);
     
     if (!CFReadStreamOpen(data->readStream) || !CFWriteStreamOpen(data->writeStream)) {
         RAWLOG_ERROR("SSL connection error");

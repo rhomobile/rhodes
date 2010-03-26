@@ -41,6 +41,8 @@ extern HREGNOTIFY g_hNotify;
 
 #endif
 
+#include "DateTimePicker.h"
+
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 
 using namespace rho::common;
@@ -59,6 +61,7 @@ CMainWindow::CMainWindow()
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
 #endif
+	m_bFullscreen = false;
 //	m_current_url = NULL;
 //    m_szStartPage = NULL;
 }
@@ -320,8 +323,8 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
-    // Notify shell of our WM_SETTINGCHANGE message
-    SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
+	// Notify shell of our WM_SETTINGCHANGE message
+	SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
 #endif
     return 0;
 }
@@ -499,6 +502,12 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	return 0;
 }
 
+LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
+{
+	toggleFullScreen();
+	return 0;
+};
+
 #if defined(OS_WINDOWS)
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CMenu menu;
@@ -609,6 +618,30 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
     return convertToStringW( path.substr(pre_last + 1, last - pre_last - 1) );
 }
 
+void CMainWindow::toggleFullScreen()
+{
+#if defined (_WIN32_WCE)
+	const int  menu_height = 26;
+
+	LOG(INFO) + __FUNCTION__;
+      
+	RECT rc;
+
+	GetWindowRect(&rc);
+	::SHFullScreen(m_hWnd, m_bFullscreen ? 
+								SHFS_SHOWTASKBAR | SHFS_SHOWSIPBUTTON :
+								SHFS_HIDETASKBAR | SHFS_HIDESIPBUTTON);
+
+	::ShowWindow(this->m_menuBar, m_bFullscreen ? SW_SHOW : SW_HIDE);
+
+	MoveWindow (rc.left,  m_bFullscreen ? rc.top + menu_height : rc.top - menu_height,
+				rc.right, m_bFullscreen ? rc.bottom - (2 * menu_height) : rc.bottom + menu_height,
+				TRUE);
+
+	m_bFullscreen =  !m_bFullscreen;
+#endif
+}
+
 LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     StringW strAppName = getRhodesAppName();
@@ -621,6 +654,21 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     return 0;
 }
 
+LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	CDateTimeMessage *msg = (CDateTimeMessage *)lParam;
+
+	CDateTimePickerDialog dateTimeDialog(msg->m_format);
+
+    int retCode = dateTimeDialog.DoModal(m_hWnd);
+	rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
+										retCode == IDOK ? dateTimeDialog.GetTime() : 0,
+										msg->m_data,
+										retCode == IDOK ? 0 : 1);
+	delete msg;
+
+	return 0;
+}
 
 // **************************************************************************
 //

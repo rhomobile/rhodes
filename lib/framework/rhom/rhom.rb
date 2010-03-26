@@ -24,11 +24,9 @@ require 'rhom/rhom_object'
 require 'rhom/rhom_db_adapter'
 
 module Rhom
-  UPDATE_TYPES = ["'create'","'query'","'ask'"]
-  
   class RecordNotFound < StandardError
   end
-  
+
   class Rhom
     attr_accessor :factory
   
@@ -38,31 +36,63 @@ module Rhom
     
     class << Rhom
       def client_id
-        c_id = ::Rhom::RhomDbAdapter.select_from_table('client_info','client_id')[0]
+        c_id = ::Rho::RHO.get_user_db().select_from_table('client_info','client_id')[0]
         c_id.nil? ? nil : c_id['client_id']
       end
       
       def database_full_reset
         SyncEngine.stop_sync
         
-        ::Rhom::RhomDbAdapter.execute_sql("UPDATE client_info SET reset=1")
-        ::Rhom::RhomDbAdapter.execute_sql("UPDATE sources SET token=0")
+        ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
+        #::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET bulksync_state=0")
+        Rho::RhoConfig.bulksync_state='0'
+        ::Rho::RHO.get_user_db().execute_sql("UPDATE sources SET token=0")
         
-        ::Rhom::RhomDbAdapter.delete_all_from_table('changed_values')
-#        if defined? RHO_DBME
-            #::Rhom::RhomAttribManager.reset_all
-            ::Rhom::RhomDbAdapter.destroy_table('object_values')
-            #::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-#        else
-#            ::Rhom::RhomDbAdapter.delete_all_from_table('object_values')
-#            ::Rhom::RhomDbAdapter.execute_sql("VACUUM")
-#        end    
+        #::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
+        #::Rho::RHO.get_application_db().delete_all_from_table('changed_values')
+        
+        #::Rho::RHO.get_user_db().destroy_table('object_values')
+        #::Rho::RHO.get_application_db().destroy_table('object_values')
+        
+        ::Rho::RHO.get_user_db().destroy_tables(:exclude => ['sources','client_info'])
+        ::Rho::RHO.get_application_db().destroy_tables(:exclude => ['sources','client_info'])
+        
       end
       
       def database_full_reset_and_logout
         database_full_reset
         SyncEngine.logout
       end
+      
+        def search(args)
+          searchParams = ""
+          
+          searchParams += '&offset=' + Rho::RhoSupport.url_encode(args[:offset]) if args[:offset]
+          searchParams += '&max_results=' + Rho::RhoSupport.url_encode(args[:max_results]) if args[:max_results]
+
+          callbackParams = args[:callback_param] ? args[:callback_param] : ""
+          
+          if args[:search_params]
+            args[:search_params].each do |key,value|
+              searchParams += '&' + "conditions[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
+              callbackParams += '&' + "search_params[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
+            end  
+          end
+            
+          #set_notification(args[:callback], args[:callback_param]) if args[:callback]
+          src_ar = args[:sources]
+          
+          #check sources
+          raise ArgumentError, "no sources on search" if src_ar.nil? or src_ar.length == 0
+          src_ar.each do |src_name|
+             raise ArgumentError, "no sources on search" if Rho::RhoConfig::sources[src_name].nil?
+          end
+          
+          SyncEngine.dosearch_source(src_ar, args[:from] ? args[:from] : 'search',
+            searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
+            args[:callback], callbackParams )
+        end
+      
     end #class methods
   end # Rhom
 end # Rhom

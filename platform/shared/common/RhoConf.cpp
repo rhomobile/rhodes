@@ -134,6 +134,27 @@ bool   RhoSettings::getBool(const char* szName){
     return getInt(szName) == 0 ? false : true;
 }
 
+void   RhoSettings::setString(const char* szName, const String& str, boolean bSaveToFile){
+    m_mapValues[szName] = str;
+
+    if ( bSaveToFile )
+        saveToFile();
+}
+
+void   RhoSettings::setInt(const char* szName, int nVal, boolean bSaveToFile){
+    m_mapValues[szName] = common::convertToStringA(nVal);
+
+    if ( bSaveToFile )
+        saveToFile();
+}
+
+void   RhoSettings::setBool(const char* szName, bool bVal, boolean bSaveToFile){
+    setInt(szName, bVal?1:0);
+
+    if ( bSaveToFile )
+        saveToFile();
+}
+
 void   RhoSettings::setString(const char* szName, const String& str){
     m_mapValues[szName] = str;
 }

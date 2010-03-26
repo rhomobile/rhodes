@@ -114,6 +114,11 @@ public:
         }
     }
 
+    void removeElementAt(int nItem)
+    {
+        delete Vector<Type>::at(nItem);
+        Vector<Type>::erase( Vector<Type>::begin() + nItem );
+    }
 };
 
 template<class Type>
