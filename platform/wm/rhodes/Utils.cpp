@@ -1,11 +1,20 @@
 #include "stdafx.h"
 
+void UnixTimeToFileTime (const time_t unixTime, LPFILETIME pFileTime)
+{
+	LONGLONG ll = 0;
+	ll = Int32x32To64 (unixTime, 10000000) + 116444736000000000;
+	pFileTime->dwLowDateTime  = (DWORD )(ll);
+	pFileTime->dwHighDateTime = (DWORD )(ll >> 32);
+} 
+
+
 time_t SystemTimeToUnixTime (const LPSYSTEMTIME sysTime)
 {
-	if ( NULL == sysTime )
+	if (NULL == sysTime)
 		return -1;
 	
-	bool isValid = false;
+	BOOL isValid = FALSE;
 
 	if ((sysTime->wYear >= 1900) && 
 		((sysTime->wMonth >= 1)  && (sysTime->wMonth <= 12))  && 
@@ -15,10 +24,10 @@ time_t SystemTimeToUnixTime (const LPSYSTEMTIME sysTime)
 		((sysTime->wSecond >= 0) && (sysTime->wSecond <= 59))
 		)
 	{
-		isValid = true;
+		isValid = TRUE;
 	} 
 	
-	if (isValid == false)
+	if (isValid == FALSE)
 		return -1 ;
 	
 	struct tm atm;
@@ -35,3 +44,22 @@ time_t SystemTimeToUnixTime (const LPSYSTEMTIME sysTime)
 
 	return retVal;
 }
+
+
+BOOL UnixTimeToSystemTime (const time_t unixTime, LPSYSTEMTIME pSysTime)
+{
+	ZeroMemory (pSysTime, sizeof(SYSTEMTIME)); 
+	
+	FILETIME fileTime = {0};
+	UnixTimeToFileTime (unixTime, &fileTime);
+
+	BOOL retVal  = FALSE; 
+	
+	FILETIME localFileTime = {0};
+	retVal = FileTimeToLocalFileTime (&fileTime, &localFileTime); 
+
+	if (retVal)
+		retVal = FileTimeToSystemTime (&localFileTime, pSysTime);
+
+	return retVal;
+} 
