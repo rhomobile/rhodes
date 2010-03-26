@@ -137,6 +137,8 @@ public class SyncEngine implements NetRequest.IRhoSession
         {
             m_clientID = loadClientID();
             getNotify().cleanLastSyncObjectCount();
+            
+            doBulkSync();
         }
         else
         {
@@ -426,7 +428,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 		synchronized( m_mxLoadClientID )
 		{
 		    boolean bResetClient = false;
-		    int nBulkSyncState = RhoConf.getInstance().getInt("bulksync_state");;
 		    {
 		        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
 		        if ( !res.isEnd() )
@@ -452,8 +453,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    	else
 		    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
 		    }
-		    
-	       	doBulkSync(clientID, nBulkSyncState);		    
 		}
 		
 		return clientID;
@@ -491,8 +490,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    return "";
 	}
 
-	void doBulkSync(String strClientID, int nBulkSyncState)throws Exception
+	void doBulkSync()throws Exception
 	{
+	    int nBulkSyncState = RhoConf.getInstance().getInt("bulksync_state");;
 	    if ( nBulkSyncState >= 2 || !isContinueSync() )
 	        return;
 
@@ -501,7 +501,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		
 	    if ( nBulkSyncState == 0 && m_bHasUserPartition )
 	    {
-	        loadBulkPartition(getDB(), "user", strClientID);
+	        loadBulkPartition(getDB(), "user");
 
 	        if ( !isContinueSync() )
 	            return;
@@ -510,7 +510,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 
 	    if ( m_bHasAppPartition )
-	        loadBulkPartition(getAppDB(), "app", strClientID);
+	        loadBulkPartition(getAppDB(), "app");
 
 	    if ( !isContinueSync() )
 	        return;
@@ -521,11 +521,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            
 	}
 
-	void loadBulkPartition(DBAdapter dbPartition, String strPartition, String strClientID )throws Exception
+	void loadBulkPartition(DBAdapter dbPartition, String strPartition )throws Exception
 	{
 	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "bulk_data";
-	    String strQuery = "?client_id=" + strClientID + "&partition=" + strPartition;
+	    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
 	    String strDataUrl = "", strCmd = "";
 
 	    getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoRuby.ERR_NONE);
