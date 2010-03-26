@@ -39,7 +39,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
 import com.rho.RhoProfiler;
-import com.rho.db.RandomAccessFile;
+import com.rho.file.RandomAccessFile;
 //import java.lang.reflect.Constructor;
 
 import org.hsqldb.Database;

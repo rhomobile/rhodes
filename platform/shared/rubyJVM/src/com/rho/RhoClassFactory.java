@@ -2,6 +2,7 @@ package com.rho;
 
 import com.rho.db.*;
 import com.rho.net.*;
+import com.rho.file.*;
 import java.io.IOException;
 
 public class RhoClassFactory 
@@ -15,7 +16,7 @@ public class RhoClassFactory
     	
         Class wrapperClass;
         try {
-            wrapperClass = Class.forName("com.rho.Jsr75File");
+            wrapperClass = Class.forName("com.rho.file.Jsr75File");
         } catch (ClassNotFoundException exc) {  
         	try {
                 wrapperClass = Class.forName("com.rhomobile.rhodes.AndroidFile"); //android

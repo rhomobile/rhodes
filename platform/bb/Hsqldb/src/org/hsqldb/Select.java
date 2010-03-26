@@ -445,6 +445,7 @@ class Select {
                 rmd.schemaNames[i]   = e.getTableSchemaName();
                 rmd.tableNames[i]    = e.getTableName();
                 rmd.colNames[i]      = e.getColumnName();
+                rmd.colOrigNames[i]  = e.columnNameOrig;
 
                 if (rmd.isTableColumn(i)) {
                     rmd.colNullable[i] = e.nullability;
@@ -637,12 +638,17 @@ class Select {
         int limitCount = 0;
 
         if (limitCondition != null) {
-            Integer limit =
-                (Integer) limitCondition.getArg2().getValue(session);
-
-            if (limit != null) {
-                limitCount = limit.intValue();
-            }
+        	Object obj = limitCondition.getArg2().getValue(session);
+        	if ( obj != null )
+        	if (obj instanceof Integer)
+        		limitCount = ((Integer) limitCondition.getArg2().getValue(session)).intValue();
+        	else if (obj instanceof Long)
+        		limitCount = (int)((Long) limitCondition.getArg2().getValue(session)).longValue();
+        	else 
+        	{
+        		String strVal = obj.toString();
+        		limitCount = Integer.parseInt(strVal);
+        	}
         }
 
         if (rowCount != 0 && (limitCount == 0 || rowCount < limitCount)) {

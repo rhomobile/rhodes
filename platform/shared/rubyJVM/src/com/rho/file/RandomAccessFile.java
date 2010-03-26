@@ -1,4 +1,4 @@
-package com.rho.db;
+package com.rho.file;
 
 import java.io.*;
 
@@ -9,7 +9,6 @@ import javax.microedition.io.Connector;
 import com.rho.RhoClassFactory;
 //import com.rho.RhoEmptyLogger;
 //import com.rho.RhoLogger;
-import com.rho.IRAFile;
 
 import j2me.nio.channels.*;
 
