@@ -16,7 +16,7 @@
 
 @implementation TabBarDelegate
 
-@synthesize tabBarController, mainWindow, tabBar, barItems, activeTab;
+@synthesize tabBarController, mainWindow, barItems, activeTab;
 
 - (id)init {
     [super init];
@@ -27,7 +27,7 @@
 - (void)dealloc {
 	[tabBarController release];
 	[barItems release];
-	[tabBar release];
+	//[tabBar release];
 	[super dealloc];
 }
 
@@ -65,9 +65,11 @@
         item.reload = YES;
 }
 
+/*
 - (void)executeJs:(BarItem*)item js:(JSString*)js {
     [item.viewController executeJs:js];
 }
+*/
 
 - (void)createTabBar:(UIWindow*)window {
 	self.mainWindow = window;
@@ -79,7 +81,8 @@
 	}
 	
 	tabBarController.moreNavigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
-	int barSize = [tabBar.barItemDataArray count] / 4;
+	//int barSize = [tabBar.barItemDataArray count] / 4;
+    int barSize = 0;
 	NSMutableArray *tabs = [NSMutableArray arrayWithCapacity:barSize];
 	
 	if(!self.barItems) {
@@ -91,10 +94,10 @@
 	for(int i=0; i < barSize; i++) {
 		BarItem* item = [[BarItem alloc] init];
         int index = i*4;
-		item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:index++];
-		item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:index++];
-		item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:index++];
-		item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:index++] isEqualToString:@"true"] ? YES : NO;
+		//item.label = (NSString*)[tabBar.barItemDataArray objectAtIndex:index++];
+		//item.location = (NSString*)[tabBar.barItemDataArray objectAtIndex:index++];
+		//item.icon = (NSString*)[tabBar.barItemDataArray objectAtIndex:index++];
+		//item.reload = [(NSString*)[tabBar.barItemDataArray objectAtIndex:index++] isEqualToString:@"true"] ? YES : NO;
 		if (item.label && item.location && item.icon) {
 			WebViewController *subController = [[WebViewController alloc] initWithNibName:nil bundle:nil];
 			UIWebView *wView = [[UIWebView alloc] init];

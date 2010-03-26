@@ -19,7 +19,6 @@
 #import "DateTime.h"
 #import "NativeBar.h"
 #import "BarItem.h"
-#import "WebViewUrl.h"
 #import "RhoDelegate.h"
 #ifdef __IPHONE_3_0
 #import "MapViewController.h"
@@ -95,48 +94,6 @@
 	[self loadStartPath:location];
 }
 
-- (void)onRefreshView:(int)index {
-    /*
-    if (self.nativeBar.barType == TABBAR_TYPE) {
-        BarItem *item = (BarItem*)[tabBarDelegate.barItems objectAtIndex:index];
-        [tabBarDelegate refresh:item];
-    }
-    else {
-        [webViewController refresh];
-    }
-    */
-    [mainView reload:index];
-}
-
-- (void)onNavigateTo:(WebViewUrl*) wvUrl {
-    /*
-	if (self.nativeBar.barType == TABBAR_TYPE) {
-        int size = [tabBarDelegate.barItems count];
-        if (wvUrl.webViewIndex >= size) {
-            RAWLOG_ERROR2("Web view index out of bound: %d (%d tabs)", wvUrl.webViewIndex, size);
-            return;
-        }
-		BarItem* bItem = (BarItem*)[tabBarDelegate.barItems objectAtIndex:wvUrl.webViewIndex];
-        [tabBarDelegate loadTabBarItemLocation:bItem url:wvUrl.url];
-	} else {
-		[webViewController navigateRedirect:wvUrl.url];
-	}
-    */
-    [mainView navigate:wvUrl.url tab:wvUrl.webViewIndex];
-}
-
-- (void)onExecuteJs:(JSString *)js {
-    /*
-    if (self.nativeBar.barType == TABBAR_TYPE) {
-        BarItem *item = (BarItem *)[tabBarDelegate.barItems objectAtIndex:js->index];
-        [tabBarDelegate executeJs:item js:js];
-    }
-    else {
-        [webViewController executeJs:js];
-    }
-    */
-    [mainView executeJs:js tab:[mainView activeTab]];
-}
 /*
 - (void)onSetViewHomeUrl:(NSString *)url {
 	[webViewController setViewHomeUrl:url];
@@ -238,61 +195,6 @@
 	[self startDateTimePickerFromViewController:webViewController
 								  usingDelegate:dateTimePickerDelegate];
     */
-}
-
-- (void)onRemoveNativeBar {
-    // TODO:
-    /*
-    if (self.nativeBar == nil)
-        return;
-    
-    if (self.nativeBar.barType == TABBAR_TYPE) {
-        [tabBarDelegate deleteTabBar];
-    }
-    else {
-        [webViewController showToolbar:NO];
-    }
-    self.nativeBar = nil;
-    */
-}
-
-- (void)onCreateNativeBar:(NativeBar*)bar {
-    // TODO:
-    /*
-    if (self.nativeBar != nil) {
-        RAWLOG_INFO("Native bar already exists, remove it");
-        [self onRemoveNativeBar];
-    }
-	
-    // retain the nativebar so it doesn't get deleted
-	[bar retain];
-    int type = bar.barType;
-    if (type == TABBAR_TYPE) {
-        tabBarDelegate.tabBar = bar;
-        [self startNativeBarFromViewController:webViewController usingDelegate:tabBarDelegate];
-	}
-    else if (type == TOOLBAR_TYPE) {
-        [webViewController createNewToolbar:bar.barItemDataArray];
-        [webViewController showToolbar:YES];
-	}
-    else if (type == NOBAR_TYPE) {
-        [webViewController showToolbar:NO];
-	}
-    self.nativeBar = bar;
-    */
-}
-
-- (void)onSwitchTab:(NSValue*)value {
-    int* pIndex = value.pointerValue;
-    /*
-    if (self.nativeBar == nil)
-        return;
-    
-    if (self.nativeBar.barType == TABBAR_TYPE) {
-        [tabBarDelegate switchTab:*pIndex];
-    }
-    */
-    [mainView switchTab:*pIndex];
 }
 
 /*

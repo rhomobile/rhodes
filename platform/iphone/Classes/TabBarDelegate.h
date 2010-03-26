@@ -15,13 +15,13 @@
 {
 @private
 	UITabBarController* tabBarController;
-	NativeBar* tabBar;
+	//NativeBar* tabBar;
 	UIWindow* mainWindow;
 	NSMutableArray* barItems;
 	int activeTab;
 }
 
-@property(nonatomic, assign) NativeBar* tabBar;
+//@property(nonatomic, assign) NativeBar* tabBar;
 @property(nonatomic, retain) UITabBarController* tabBarController;
 @property(nonatomic, retain) UIWindow* mainWindow;
 @property(nonatomic, retain) NSMutableArray* barItems;
@@ -33,7 +33,6 @@
 - (void)loadTabBarItemFirstPage:(BarItem*)item;
 - (void)loadTabBarItemLocation:(BarItem*)item url:(NSString*)url;
 - (void)refresh:(BarItem*)item;
-- (void)executeJs:(BarItem*)item js:(JSString*)js;
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
 - (void)switchTab:(int)index;
 @end

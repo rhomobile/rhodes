@@ -22,8 +22,6 @@
 #include "logging/RhoLogConf.h"
 //#include "sync/syncthread.h"
 #include "common/RhodesApp.h"
-#include "JSString.h"
-#import "WebViewUrl.h"
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
@@ -94,28 +92,6 @@ static ServerHost* sharedSH = nil;
 	}
 }*/
 
-- (void)refreshView:(int)index {
-	if(actionTarget && [actionTarget respondsToSelector:onRefreshView]) {
-		[actionTarget performSelectorOnMainThread:onRefreshView withObject:(void*)index waitUntilDone:NO];
-	}
-}
-
-- (void)navigateTo:(WebViewUrl*) wvUrl {
-	if(actionTarget && [actionTarget respondsToSelector:onNavigateTo]) {
-		[actionTarget performSelectorOnMainThread:onNavigateTo withObject:wvUrl waitUntilDone:NO];
-	}
-}
-
-- (void)executeJs:(JSString*) js {
-	if(actionTarget && [actionTarget respondsToSelector:onExecuteJs]) {
-		[actionTarget performSelectorOnMainThread:onExecuteJs withObject:js waitUntilDone:YES];
-	}
-}
-
-- (void)performRefreshView {
-	[self performSelectorOnMainThread:@selector(refreshView)
-						   withObject:NULL waitUntilDone:NO]; 
-}
 /*
 - (void)setViewHomeUrl:(NSString*)url {
 	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
@@ -148,6 +124,7 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
+/*
 - (void)createNativeBar:(int)barType dataArray:(NSArray*)dataArray {
 	if(actionTarget && [actionTarget respondsToSelector:onCreateNativeBar]) {
 		NativeBar* nativeBar = [[NativeBar alloc] init];
@@ -171,6 +148,7 @@ static ServerHost* sharedSH = nil;
         [value release];
     }
 }
+*/
 
 - (void)showLog {
     if (actionTarget && [actionTarget respondsToSelector:onShowLog]) {
@@ -409,45 +387,9 @@ void rho_nativethread_end(void* pData)
 @end
 
 //ruby extension hooks
-void webview_refresh(int index) {
-	[[ServerHost sharedInstance] refreshView:index];
-}
-
-void webview_navigate(char* url, int index) {
-	WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
-	//char* szNormUrl = rho_http_normalizeurl(url);
-	webViewUrl.url = [NSString stringWithUTF8String:url];
-	//rho_http_free(szNormUrl);
-	webViewUrl.webViewIndex = index;
-	[[ServerHost sharedInstance] navigateTo:webViewUrl];
-}
-
-char* webview_execute_js(char* js, int index) {
-	char * retval;
-	JSString *javascript = [[[JSString alloc] init] autorelease];
-	javascript.inputJs = [NSString stringWithUTF8String:js];
-    javascript->index = index;
-	[[ServerHost sharedInstance] executeJs:javascript];
-	// TBD: Does ruby GC pick this up?
-	retval = strdup([[javascript outputJs] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	return retval;
-}
-
-void perform_webview_refresh() {
-	[[ServerHost sharedInstance] performRefreshView];														
-}
 
 void rho_conf_show_log() {
     [[ServerHost sharedInstance] showLog];
-}
-
-char* webview_current_location(int index) {
-	return (char*)rho_rhodesapp_getcurrenturl(index);
-}
-
-void webview_set_menu_items(VALUE valMenu) {
-	//TODO: webview_set_menu_items
-	rho_rhodesapp_setViewMenu(valMenu);
 }
 
 void Init_RingtoneManager()
@@ -504,71 +446,4 @@ void mapview_create(rho_param *p) {
 
 void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 	[[ServerHost sharedInstance] doSysCall:params];
-}
-
-void create_nativebar(int bar_type, rho_param *p)
-{
-    if (p->type != RHO_PARAM_ARRAY) {
-        RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array");
-        return;
-    }
-    
-    int size = p->v.array->size;
-    NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
-    for (int i = 0; i < size; ++i) {
-        rho_param *hash = p->v.array->value[i];
-        if (hash->type != RHO_PARAM_HASH) {
-            RAWLOG_ERROR("Unexpected type of array item for create_nativebar, should be Hash");
-            return;
-        }
-        
-        const char *label = NULL;
-        const char *action = NULL;
-        const char *icon = NULL;
-        const char *reload = NULL;
-        
-        for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
-            const char *name = hash->v.hash->name[j];
-            rho_param *value = hash->v.hash->value[j];
-            if (value->type != RHO_PARAM_STRING) {
-                RAWLOG_ERROR1("Unexpected '%s' type, should be String", name);
-                return;
-            }
-            
-            if (strcasecmp(name, "label") == 0)
-                label = value->v.string;
-            else if (strcasecmp(name, "action") == 0)
-                action = value->v.string;
-            else if (strcasecmp(name, "icon") == 0)
-                icon = value->v.string;
-            else if (strcasecmp(name, "reload") == 0)
-                reload = value->v.string;
-        }
-        
-        if (label == NULL && bar_type == TOOLBAR_TYPE)
-            label = "";
-        
-        if (label == NULL || action == NULL) {
-            RAWLOG_ERROR("Illegal argument for create_nativebar");
-            return;
-        }
-        
-        [items addObject:[NSString stringWithUTF8String:label]];
-        [items addObject:[NSString stringWithUTF8String:action]];
-        [items addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
-        [items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
-    }
-    [[ServerHost sharedInstance] createNativeBar:bar_type dataArray:items];
-}
-
-void remove_nativebar() {
-    [[ServerHost sharedInstance] removeNativeBar];
-}
-
-void nativebar_switch_tab(int index) {
-    [[ServerHost sharedInstance] switchTab:index];
-}
-
-int webview_active_tab() {
-	return [[ServerHost sharedInstance] activeTab];
 }

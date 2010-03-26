@@ -10,10 +10,17 @@
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
 
+@protocol RhoRunnable
+
+- (void)run;
+
+@end
+
 @interface Rhodes : NSObject <UIApplicationDelegate>
 {
     UIApplication *application;
     UIWindow *window;
+@public
     id<RhoMainView> mainView;
 }
 
@@ -24,9 +31,8 @@
 
 + (UIApplication*)application;
 
-+ (void)performOnUiThread:(SEL)selector target:(id)target;
-+ (void)performOnUiThread:(SEL)selector target:(id)target wait:(BOOL)wait;
-+ (void)performOnUiThread:(SEL)selector target:(id)target withObject:(id)object;
-+ (void)performOnUiThread:(SEL)selector target:(id)target withObject:(id)object wait:(BOOL)wait;
++ (void)performOnUiThread:(id<RhoRunnable>)runnable wait:(BOOL)wait;
+
+- (UIWindow*)rootWindow;
 
 @end
