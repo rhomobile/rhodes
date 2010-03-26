@@ -178,6 +178,9 @@ int rho_geo_gettimeout_sec()
 
 double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2)
 {
+	if ((lat1 == lat2) && (lon1 == lon2))
+		return 0;
+
 	const double RAD_PER_DEG = 0.017453293; //PI/180
 	const int Rmiles = 3956;                //radius of the great circle in miles
 
