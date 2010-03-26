@@ -4,6 +4,7 @@
 #include "common/IRhoClassFactory.h"
 #include "common/RhoMutexLock.h"
 #include "net/INetRequest.h"
+#include "ISyncProtocol.h"
 
 #include "SyncSource.h"
 #include "SyncNotify.h"
@@ -37,19 +38,15 @@ class CSyncEngine : public net::IRhoSession
 {
     DEFINE_LOGCLASS;
 public:
-    enum ESyncState{ esNone, esSyncAllSources, esSyncSource, esStop, esExit };
-
-    static String SYNC_SOURCE_FORMAT() { return "?format=json"; }
-    static int SYNC_VERSION() { return 2; }
-
-    static String SYNC_ASK_ACTION() { return "/ask"; }
-//    static int MAX_SYNC_TRY_COUNT() { return 2; }
+    enum ESyncState{ esNone, esSyncAllSources, esSyncSource, esSearch, esStop, esExit };
 
     struct CSourceID
     {
         String m_strName;
-        String m_strUrl;
         int m_nID;
+
+        CSourceID(int id, const String& strName ){ m_nID = id; m_strName = strName; }
+        CSourceID(const String& strName ){ m_strName = strName; }
 
         String toString()const;
         boolean isEqual(CSyncSource& src)const;
@@ -57,8 +54,10 @@ public:
 
 private:
     VectorPtr<CSyncSource*> m_sources;
-    db::CDBAdapter& m_dbAdapter;
+    db::CDBAdapter& m_dbUserAdapter;
+    db::CDBAdapter& m_dbAppAdapter;
     common::CAutoPtr<net::INetRequest> m_NetRequest;
+    common::CAutoPtr<ISyncProtocol> m_SyncProtocol;
     ESyncState m_syncState;
     String     m_clientID;
     common::CMutex m_mxLoadClientID;
@@ -66,10 +65,12 @@ private:
     CSyncNotify m_oSyncNotify;
     boolean m_bStopByUser;
     int m_nSyncPageSize;
-    boolean m_bNoThreaded;
+	boolean m_bNoThreaded;
+    boolean m_bHasUserPartition;
+    boolean m_bHasAppPartition;
 
 public:
-    CSyncEngine(db::CDBAdapter& db);
+    CSyncEngine(db::CDBAdapter& dbUser, db::CDBAdapter& dbApp);
     ~CSyncEngine(void){}
 
     void setFactory(common::IRhoClassFactory* factory){ 
@@ -77,7 +78,9 @@ public:
     }
 
     void doSyncAllSources();
-    void doSyncSource(const CSourceID& oSrcID, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
+    void doSyncSource(const CSourceID& oSrcID);
+    void doSearch(rho::Vector<rho::String>& arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
+
     void login(String name, String password, String callback);
     boolean isLoggedIn();
     String loadSession();
@@ -95,26 +98,33 @@ public:
 //private:
     String getClientID()const{ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
-    const String& getSession(){ return m_strSession; }
     boolean isSessionExist(){ return m_strSession.length() > 0; }
+//IRhoSession
+    virtual const String& getSession(){ return m_strSession; }
+    virtual const String& getContentType(){ return getProtocol().getContentType();}
 
     //CSyncEngine(): m_dbAdapter(db::CDBAdapter()), m_NetRequest(0), m_isLoggedIn(true){}
 
     void loadAllSources();
     void syncAllSources();
+    void prepareSync(ESyncState eState);
+
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
     int getStartSource();
     String loadClientID();
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
+    void doBulkSync(String strClientID, int nBulkSyncState);//throws Exception
 
-    db::CDBAdapter& getDB(){ return m_dbAdapter; }
+    db::CDBAdapter& getDB(){ return m_dbUserAdapter; }
+    db::CDBAdapter& getAppDB(){ return m_dbAppAdapter; }
+
     CSyncNotify& getNotify(){ return m_oSyncNotify; }
     net::INetRequest& getNet(){ return *m_NetRequest; }
+    ISyncProtocol& getProtocol(){ return *m_SyncProtocol; }
 
     CSyncSource* findSourceByName(const String& strSrcName);
 
-    String SYNC_PAGE_SIZE();
     int getSyncPageSize() { return m_nSyncPageSize; }
     void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
 
@@ -124,7 +134,11 @@ private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);
 
-    boolean checkAllSourcesFromOneDomain();
+    void loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition, const String& strClientID );
+    String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt);
+
+    void initProtocol();
+
     friend class CSyncSource;
 };
 

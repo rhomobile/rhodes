@@ -16,6 +16,7 @@
 #define IDR_LOGVIEW_MENU                115
 #define IDD_SIMULATOR_LOGOPTIONS        116
 #define IDI_ICON                        117
+#define IDD_TIMEPICKER                  118
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
@@ -26,6 +27,9 @@
 #define IDC_EDIT2                       1007
 #define IDC_MSGEXCLUDE                  1007
 #define IDC_BUTTON2                     1010
+#define IDC_DATE_CTRL                   1012
+#define ID_TIME_CTRL                    1013
+#define IDC_TIME_CTRL                   1013
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -58,14 +62,16 @@
 #define ID_MENU_SELECTALL               40025
 #define ID_MENU_FIND                    40026
 #define IDM_SENDLOG                     40027
+#define ID_Menu                         40028
+#define ID_FULLSCREEN                   40029
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        118
-#define _APS_NEXT_COMMAND_VALUE         40028
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_RESOURCE_VALUE        119
+#define _APS_NEXT_COMMAND_VALUE         40030
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

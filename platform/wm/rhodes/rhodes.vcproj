@@ -835,6 +835,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DateTimePicker.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -958,6 +966,14 @@
 			</File>
 			<File
 				RelativePath=".\Vibrate.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DateTimePicker.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils.h"
 				>
 			</File>
 		</Filter>
@@ -1093,66 +1109,6 @@
 			</File>
 			<File
 				RelativePath=".\phonebook\phonebook.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="unzip"
-			>
-			<File
-				RelativePath="..\..\shared\unzip\unzip.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Windows Mobile 6 Standard SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6 Standard SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\shared\unzip\unzip.h"
 				>
 			</File>
 		</Filter>

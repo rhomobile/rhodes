@@ -698,12 +698,7 @@ CURLcode Curl_init_userdefined(struct UserDefined *set)
    * libcurl 7.10 introduced SSL verification *by default*! This needs to be
    * switched off unless wanted.
    */
-#ifdef OS_ANDROID
-  /* TODO: implement binding with system CA storage and rollback this setting to default */
-  set->ssl.verifypeer = FALSE;
-#else
   set->ssl.verifypeer = TRUE;
-#endif
   set->ssl.verifyhost = 2;
   set->ssh_auth_types = CURLSSH_AUTH_DEFAULT; /* defaults to any auth
                                                       type */

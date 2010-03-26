@@ -20,7 +20,8 @@ public class AsyncHttp extends RhoThread
 	private static Object m_mxInstances = new Object();
 	private static Vector/*<CAsyncHttp*>*/ m_arInstances = new Vector();
 	private RhoClassFactory m_ptrFactory;
-
+	private Object m_mxRequest = new Object();
+	
 	private NetRequest m_pNetRequest;
 	private NetResponse m_pNetResponse;
 	private Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
@@ -58,16 +59,46 @@ public class AsyncHttp extends RhoThread
 	        start(epLow);
 	}
 
-	void cancel()
+	void cancel(boolean bWait)
 	{
-	    if (m_pNetRequest!=null)
-	        m_pNetRequest.cancel();
-
-	    stop(1000);
+		synchronized(m_mxRequest)
+		{		
+		    if (m_pNetRequest!=null && !m_pNetRequest.isCancelled())
+		        m_pNetRequest.cancel();
+		}
+		
+		if ( bWait )
+			stop(10000);
 	    //delete this;
 	}
 
-	static void cancelRequest(String szCallback)
+	static void addNewObject(AsyncHttp pObj)
+	{
+	    synchronized(m_mxInstances)
+	    {
+	        while(true)
+	        {
+	            int nToDelete = -1;
+	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+	            {
+	                if ( ((AsyncHttp)m_arInstances.elementAt(i)).m_bFinished )
+	                {
+	                    nToDelete = i;
+	                    break;
+	                }
+	            }
+
+	            if (nToDelete==-1)
+	                break;
+
+	            m_arInstances.removeElementAt(nToDelete);
+	        }
+	    	
+	        m_arInstances.addElement(pObj);
+	    }
+	}
+	
+	static void cancelRequest(String szCallback, boolean bWait)
 	{
 	    if (szCallback == null|| szCallback.length() ==0 )
 	    {
@@ -80,13 +111,13 @@ public class AsyncHttp extends RhoThread
 	        if ( szCallback.compareTo("*") ==0 )
 	        {
 	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
-	                ((AsyncHttp)m_arInstances.elementAt(i)).cancel();
+	                ((AsyncHttp)m_arInstances.elementAt(i)).cancel(bWait);
 	        }else
 	        {
 	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
 	            {
 	                if ( ((AsyncHttp)m_arInstances.elementAt(i)).m_strCallback.compareTo(szCallback) == 0 )
-	                	((AsyncHttp)m_arInstances.elementAt(i)).cancel();    
+	                	((AsyncHttp)m_arInstances.elementAt(i)).cancel(bWait);    
 	            }
 	        }
 	    }
@@ -96,8 +127,11 @@ public class AsyncHttp extends RhoThread
 	{
 		LOG.INFO("RhoHttp thread start.");
 
-	    m_pNetRequest = m_ptrFactory.createNetRequest();
-
+		synchronized(m_mxRequest)
+		{		
+			m_pNetRequest = m_ptrFactory.createNetRequest();
+		}
+		
 	    try{
 		    switch( m_eCmd )
 		    {
@@ -338,7 +372,7 @@ public class AsyncHttp extends RhoThread
 			{
 				try {
 					String cancel_callback = arg.toStr();
-					AsyncHttp.cancelRequest(cancel_callback);
+					AsyncHttp.cancelRequest(cancel_callback, false);
 				} catch(Exception e) {
 					LOG.ERROR("cancel failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

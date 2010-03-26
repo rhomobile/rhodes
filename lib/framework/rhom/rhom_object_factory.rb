@@ -77,14 +77,14 @@ module Rhom
               class << self
               
                 def count
-                  #SyncEngine.lock_sync_mutex
-                  res = ::Rhom::RhomDbAdapter.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
-                  #SyncEngine.unlock_sync_mutex
+                  db = ::Rho::RHO.get_src_db(get_source_name)
+                  res = db.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
                   res
                 end
 
                 def backend_refresh_time
-                  result = ::Rhom::RhomDbAdapter::select_from_table('sources', 'backend_refresh_time', {"source_id"=>get_source_id} )
+                  db = ::Rho::RHO.get_src_db(get_source_name)
+                  result = db.select_from_table('sources', 'backend_refresh_time', {"source_id"=>get_source_id} )
                   nTime = 0
                   if result && result.length > 0 && result[0]['backend_refresh_time']
                     nTime = result[0]['backend_refresh_time'].to_i
@@ -92,9 +92,13 @@ module Rhom
                     
                   Time.at(nTime)
                 end
+
+                def get_source_name
+                  self.name.to_s
+                end
               
                 def get_source_id
-                  Rho::RhoConfig.sources[self.name.to_s]['source_id'].to_s
+                  Rho::RhoConfig.sources[get_source_name]['source_id'].to_s
                 end
 
                 def makeCondWhere(key,value,srcid_value)
@@ -135,6 +139,7 @@ module Rhom
                     end
                     
                     puts "non-null select start"
+                    db = ::Rho::RHO.get_src_db(get_source_name)
                     listObjs = []
                     if op == 'OR' && condition_hash.length > 1
                         mapObjs = {}
@@ -144,7 +149,7 @@ module Rhom
                             sql << "SELECT object,attrib,value FROM object_values WHERE \n"
                             sql << makeCondWhere(key,value,srcid_value)
                             
-                            resObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                            resObjs = db.execute_sql(sql)
                             resObjs.each do |rec|
                                 next if mapObjs[ rec['object'] ] 
                                 
@@ -173,7 +178,7 @@ module Rhom
                             sql << strLimit if strLimit
                         end
                                             
-                        listObjs = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                        listObjs = db.execute_sql(sql)
                     end
                     puts "non-null select end : #{listObjs.length}"
                     
@@ -192,7 +197,7 @@ module Rhom
                             sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
                             sql << " AND source_id=?" # + srcid_value
 
-                            attrVal = ::Rhom::RhomDbAdapter.execute_sql(sql, 
+                            attrVal = db.execute_sql(sql, 
                                 obj['object'], key, get_source_id)
                             #puts 'attrVal: ' + attrVal.inspect  if attrVal
                             if attrVal && attrVal.length>0 && attrVal[0]['value']
@@ -292,7 +297,8 @@ module Rhom
 
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
 
-                    ::Rhom::RhomDbAdapter.start_transaction
+                    db = ::Rho::RHO.get_src_db(get_source_name)
+                    db.start_transaction
                     begin
                         listObjs = []
                         if condition_hash.is_a?(Hash)
@@ -333,7 +339,7 @@ module Rhom
                                     values << get_source_id
                                 end
                                 
-                                listAttrs = sql.length > 0 ? ::Rhom::RhomDbAdapter.execute_sql(sql,values) : []
+                                listAttrs = sql.length > 0 ? db.execute_sql(sql,values) : []
                                 
                                 new_obj = self.new
                                 new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
@@ -361,7 +367,7 @@ module Rhom
                             end
                         end    
                     ensure
-                      ::Rhom::RhomDbAdapter.commit
+                      db.commit
                     end
                   
                     if order_attr
@@ -471,7 +477,7 @@ module Rhom
                     attribs = select_arr
                     attribs = attribs | condition_hash.keys if condition_hash
                   else
-                    attribs = SyncEngine.get_src_attrs(nSrcID)
+                    attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)
                   end
 
                   if attribs and attribs.length > 0
@@ -495,7 +501,9 @@ module Rhom
                     sql << strLimit if strLimit
 
                     puts "Database query start"
-                    list = ::Rhom::RhomDbAdapter.execute_sql(sql)
+                    
+                    db = ::Rho::RHO.get_src_db(get_source_name)
+                    list = db.execute_sql(sql)
                     puts "Database query end"
                     
                     if args.first != :count
@@ -557,7 +565,8 @@ module Rhom
                   end
                     
                   #set_notification(args[:callback], args[:callback_param]) if args[:callback]
-                  SyncEngine.dosearch_source(get_source_id.to_i(), args[:from] ? args[:from] : 'search',
+                  src_ar = [self.name.to_s]
+                  SyncEngine.dosearch(src_ar, args[:from] ? args[:from] : 'search',
                     searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
                     args[:callback], callbackParams )
                 end
@@ -596,57 +605,31 @@ module Rhom
                   SyncEngine.clear_notification(get_source_id.to_i)
                 end
                 
-                def ask(question)
-                  tmp_obj = self.new(:object =>djb_hash("#{question}#{rand.to_s}", 10).to_s)
-                  if question
-                      begin
-                          ::Rhom::RhomDbAdapter.start_transaction
-                          
-                          # We only support one ask at a time!
-                          result = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'object', {"source_id"=>get_source_id, "update_type"=>'ask'}) 
-                          if result && result.length > 0 
-                            ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>get_source_id, "update_type"=>'ask', "sent"=>0 })
-                            ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>result[0]['object'], "attrib"=>'question', "source_id"=>get_source_id} )
-                          end
-                          
-                          ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question), "update_type"=>'ask'} )
-                          ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"source_id"=>get_source_id, "object"=>tmp_obj.object, "attrib"=>'question', "value"=>Rho::RhoSupport.url_encode(question)} )
-                          
-                          ::Rhom::RhomDbAdapter.commit
-                          
-                      rescue Exception => e
-                          puts 'Ask Exception: ' + e.inspect
-                          ::Rhom::RhomDbAdapter.rollback    
-                      end    
-                          
-                    SyncEngine.dosync
-                  end
-                end
-                
                 # deletes all records matching conditions (optionally nil)
                 def delete_all(conditions=nil)
                 
+                  db = ::Rho::RHO.get_src_db(get_source_name)
                   begin
-                      ::Rhom::RhomDbAdapter.start_transaction
+                      db.start_transaction
                       if conditions
                         del_conditions = get_conditions_hash(conditions[:conditions])
                       
                         # find all relevant objects, then delete them
-                        del_objects = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
+                        del_objects = db.select_from_table('object_values', 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
                         del_objects.each do |obj|                                                       
-                          ::Rhom::RhomDbAdapter.delete_from_table('object_values', {'object'=>obj['object']})
-                          ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {'object'=>obj['object']})
+                          db.delete_from_table('object_values', {'object'=>obj['object']})
+                          db.delete_from_table('changed_values', {'object'=>obj['object']})
                         end
                       else
-                        ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"source_id"=>get_source_id})
-                        ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"source_id"=>get_source_id})
+                        db.delete_from_table('object_values', {"source_id"=>get_source_id})
+                        db.delete_from_table('changed_values', {"source_id"=>get_source_id})
                         #TODO: add delete all update_type
                       end
-                      ::Rhom::RhomDbAdapter.commit
+                      db.commit
  
                   rescue Exception => e
                       puts 'delete_all Exception: ' + e.inspect
-                      ::Rhom::RhomDbAdapter.rollback    
+                      db.rollback    
                   end    
                       
                 end
@@ -671,19 +654,22 @@ module Rhom
 	          # app client should check this method before update or delete
 	          # overwise all modifications of unconfirmed created item will be lost
 	          def can_modify
+		        db = ::Rho::RHO.get_src_db(get_inst_source_name)
    				obj = self.inst_strip_braces(self.object)
-                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
+                result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return !(result && result.length > 0) 
 	          end
 
 	          def self.changed?
-                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", get_source_id().to_i )
+	            db = ::Rho::RHO.get_src_db(get_source_name)
+                result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", get_source_id().to_i )
                 return result && result.length > 0
 	          end
 
 	          def changed?
+	            db = ::Rho::RHO.get_src_db(get_inst_source_name)
 	            obj = self.inst_strip_braces(self.object)
-                result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM changed_values WHERE source_id=?  and object=? LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
+                result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=?  and object=? LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return result && result.length > 0
 	          end
 	            
@@ -691,32 +677,40 @@ module Rhom
               # adding a delete record to the list of sync operations
               def destroy
                 obj = self.inst_strip_braces(self.object)
-                update_type=self.get_update_type_by_source('delete')
+                update_type='delete'
                 
                 if obj
+                    db = ::Rho::RHO.get_src_db(get_inst_source_name)
                     begin
-                      ::Rhom::RhomDbAdapter.start_transaction
+                      db.start_transaction
                 
-                      # first delete the record from viewable list
-                      result = ::Rhom::RhomDbAdapter.delete_from_table('object_values', {"object"=>obj})
+                      #save list of attrs
+                      attrsList = db.select_from_table('object_values', '*', {"object"=>obj}) 
                       
-                      resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) 
+                      # first delete the record from viewable list
+                      result = db.delete_from_table('object_values', {"object"=>obj})
+                      
+                      resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) 
                       if resUpdateType && resUpdateType.length > 0 
                         update_type = nil                              
                       end
                       
-                      ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "sent"=>0})
+                      db.delete_from_table('changed_values', {"object"=>obj, "sent"=>0})
                       
-                      if update_type
+                      if update_type and attrsList
                         # now add delete operation
-                        result = ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "update_type"=>update_type})
+                        attrsList.each do |attrName|
+                            db.insert_into_table('changed_values', 
+                              {"source_id"=>self.get_inst_source_id, "object"=>obj, 
+                                "attrib"=>attrName['attrib'], "value"=>attrName['value'], "update_type"=>update_type})
+                        end    
                       end
                       
-                      ::Rhom::RhomDbAdapter.commit
+                      db.commit
  
                     rescue Exception => e
                       puts 'destroy Exception: ' + e.inspect
-                      ::Rhom::RhomDbAdapter.rollback    
+                      db.rollback    
                     end    
                       
                 end
@@ -728,13 +722,14 @@ module Rhom
                 # iterate over each instance variable and insert create row to table
 				obj = self.inst_strip_braces(self.object)
 				nSrcID = self.get_inst_source_id
+                db = ::Rho::RHO.get_src_db(get_inst_source_name)
+				
                 begin
-                
-                    ::Rhom::RhomDbAdapter.start_transaction
+                    db.start_transaction
                     
-                    result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM object_values WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
+                    result = db.execute_sql("SELECT object FROM object_values WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
                     bUpdate = result && result.length > 0 
-    				update_type = bUpdate ? self.get_update_type_by_source('update') : self.get_update_type_by_source('create')
+    				update_type = bUpdate ? 'update' : 'create'
                     self.vars.each do |key_a,value|
                         key = key_a.to_s
                         next if ::Rhom::RhomObject.method_name_reserved?(key)
@@ -749,7 +744,7 @@ module Rhom
                                   "update_type"=>update_type}
                         fields = key == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
 
-                        resValue = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'value,id', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID}) 
+                        resValue = db.select_from_table('object_values', 'value', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID}) 
                         if resValue && resValue.length > 0 
                             oldValue = resValue[0]['value']
                             
@@ -763,32 +758,28 @@ module Rhom
                             
                             if isModified
                             
-                                resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
+                                resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
                                 if resUpdateType && resUpdateType.length > 0 
                                     fields['update_type'] = resUpdateType[0]['update_type'] 
-                                    ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
+                                    db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
                                 end
 
-                                fields['main_id'] = resValue[0]['id'] 
-                                ::Rhom::RhomDbAdapter.insert_into_table('changed_values', fields)
-                                result = ::Rhom::RhomDbAdapter.update_into_table('object_values', {"value"=>val}, {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID})
+                                db.insert_into_table('changed_values', fields)
+                                result = db.update_into_table('object_values', {"value"=>val}, {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID})
                             end    
                         else
                             tmp_id = generate_id()
-                            fields['main_id'] = tmp_id
-                            ::Rhom::RhomDbAdapter.insert_into_table('changed_values', fields)
+                            db.insert_into_table('changed_values', fields)
                             fields.delete("update_type")
-                            fields.delete("main_id")
-                            fields['id'] = tmp_id
-                            result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', fields)                                     
+                            result = db.insert_into_table('object_values', fields)                                     
                         end
                         
                     end
-                    ::Rhom::RhomDbAdapter.commit
+                    db.commit
 
                 rescue Exception => e
                     puts 'save Exception: ' + e.inspect
-                    ::Rhom::RhomDbAdapter.rollback    
+                    db.rollback    
                 end    
                 
                 true
@@ -798,10 +789,11 @@ module Rhom
               # a sync operation to update
               def update_attributes(attrs)
                 obj = self.inst_strip_braces(self.object)
-                update_type=self.get_update_type_by_source('update')
+                update_type='update'
                 nSrcID = self.get_inst_source_id
+                db = ::Rho::RHO.get_src_db(get_inst_source_name)
                 begin
-                    ::Rhom::RhomDbAdapter.start_transaction
+                    db.start_transaction
                     attrs.each do |attrib,val|
                       attrib = attrib.to_s.gsub(/@/,"")
                       next if ::Rhom::RhomObject.method_name_reserved?(attrib)
@@ -823,22 +815,21 @@ module Rhom
                       # then we procede with update
                       if isModified
                           # only one update at a time
-                          resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
+                          resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
                           if resUpdateType && resUpdateType.length > 0 
                               update_type = resUpdateType[0]['update_type'] 
-                              ::Rhom::RhomDbAdapter.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
+                              db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
                           end
                           
                           # add to syncengine queue
                           
-                          result = ::Rhom::RhomDbAdapter.select_from_table('object_values', 'id', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID}) 
+                          result = db.select_from_table('object_values', 'source_id', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID}) 
                           if result && result.length > 0 
-                            ::Rhom::RhomDbAdapter.update_into_table('object_values', {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID})
-                            ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"main_id"=>result[0]['id'], "source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                            db.update_into_table('object_values', {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID})
+                            db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                           else
-                            tmp_id = generate_id()
-                            result = ::Rhom::RhomDbAdapter.insert_into_table('object_values', {"id"=>tmp_id,"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
-                            ::Rhom::RhomDbAdapter.insert_into_table('changed_values', {"main_id"=>tmp_id, "source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                            db.insert_into_table('object_values', {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
+                            db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
                           end    
                           
                           # update in-memory object
@@ -846,31 +837,24 @@ module Rhom
                       end
                     end
                     
-                    ::Rhom::RhomDbAdapter.commit
+                    db.commit
 
                 rescue Exception => e
                     puts 'update_attributes Exception: ' + e.inspect
-                    ::Rhom::RhomDbAdapter.rollback    
+                    db.rollback    
                 end    
                     
                 true
               end
+
+              def get_inst_source_name
+                self.class.name.to_s
+              end
 	
               def get_inst_source_id
-                Rho::RhoConfig.sources[self.class.name.to_s]['source_id'].to_s
+                Rho::RhoConfig.sources[get_inst_source_name]['source_id'].to_s
               end
               
-              def get_update_type_by_source(update_type)
-                source_type = Rho::RhoConfig.sources[self.class.name.to_s]['type']
-                if source_type and source_type == "ask" and update_type == 'delete'
-                  nil
-                elsif source_type and source_type == "ask"
-                  "query"
-                else
-                  update_type
-                end
-              end
-
               def inst_strip_braces(str=nil)
                 str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
               end

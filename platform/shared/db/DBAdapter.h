@@ -145,8 +145,8 @@ public:
         return executeStatement(res);
     }
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-    DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6 )
+    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5 )
     {
         DBResultPtr res = prepareStatement(szSt);
         if ( res->getStatement() == null )
@@ -157,7 +157,6 @@ public:
         bind(res->getStatement(), 3, p3);
         bind(res->getStatement(), 4, p4);
         bind(res->getStatement(), 5, p5);
-        bind(res->getStatement(), 6, p6);
 
         res->setReportNonUnique(true);
         return executeStatement(res);
@@ -197,8 +196,8 @@ public:
     void startTransaction();
     void endTransaction();
     void rollback();
-    void destroy_table(String strTable);
-    void setInitialSyncDB(String fDataName);
+    void destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
+    void setBulkSyncDB(String fDataName);
 
 //private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
@@ -207,6 +206,7 @@ public:
     CDBVersion readDBVersion();//throws Exception
     void       writeDBVersion(const CDBVersion& ver);//throws Exception
     void createSchema();
+    void createTriggers();
     boolean checkDbError(int rc);
     boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);
     sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);

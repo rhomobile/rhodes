@@ -1156,6 +1156,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\sync\ISyncProtocol.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\sync\SyncEngine.cpp"
 				>
 			</File>
@@ -1169,6 +1173,10 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\sync\SyncNotify.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\sync\SyncProtocol_3.h"
 				>
 			</File>
 			<File
