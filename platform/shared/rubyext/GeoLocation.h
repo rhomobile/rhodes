@@ -68,6 +68,8 @@ void rho_geo_callcallback();
 void rho_geo_callcallback_error();
 int rho_geo_gettimeout_sec();
 
+double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2);
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus
