@@ -1,9 +1,11 @@
 package com.rho.rubyext;
 
+import rhomobile.RhodesApplication;
 import net.rim.blackberry.api.phone.Phone;
 import net.rim.device.api.i18n.Locale;
 import net.rim.device.api.system.Display;
 
+import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -126,7 +128,13 @@ public class System {
 		if (CoverageInfo.isOutOfCoverage())
 	        return false; 
 		*/
-		return true;
+		int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
+		boolean hasGPRS = ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) != 0;
+		
+		boolean hasWifi = BBVersionSpecific.isWifiActive();
+		LOG.INFO("hasGPRS : " + hasGPRS + "; Wifi: " + hasWifi);
+		boolean bRes = hasGPRS || hasWifi;
+		return bRes;
 	}
 
 	public static int getScreenHeight() {
