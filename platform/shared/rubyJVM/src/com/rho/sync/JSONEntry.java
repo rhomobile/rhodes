@@ -35,6 +35,11 @@ class JSONEntry
 	    return szRes;
 	}
 
+	String getString()
+	{
+		return m_object.toString();
+	}
+	
 	int getInt(String name)throws JSONException
 	{
 	    int nRes = 0;

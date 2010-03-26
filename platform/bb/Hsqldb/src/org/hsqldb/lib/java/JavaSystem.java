@@ -44,7 +44,7 @@ import j2me.math.BigInteger;
 //import java.util.Properties;
 import java.util.Hashtable;
 //import j2me.text.Collator;
-import com.rho.db.RandomAccessFile;
+import com.rho.file.RandomAccessFile;
 import java.io.InputStream;
 
 import org.hsqldb.lib.FileAccess;
