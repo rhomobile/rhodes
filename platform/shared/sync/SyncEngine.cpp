@@ -60,6 +60,8 @@ void CSyncEngine::prepareSync(ESyncState eState)
     {
         m_clientID = loadClientID();
         getNotify().cleanLastSyncObjectCount();
+
+   	    doBulkSync();
     }
     else
     {
@@ -332,9 +334,7 @@ String CSyncEngine::loadClientID()
     synchronized(m_mxLoadClientID)
     {
         boolean bResetClient = false;
-        int nBulkSyncState = RHOCONF().getInt("bulksync_state");
         {
-            //TODO: remove bulksync_state from schema
             DBResult( res, getDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
             if ( !res.isEnd() )
             {
@@ -360,29 +360,30 @@ String CSyncEngine::loadClientID()
     	    else
     		    getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
         }
-
-       	doBulkSync(clientID, nBulkSyncState);
     }
+
     return clientID;
 }
 
 boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
-    String strQuery = "";
-    if ( CClientRegister::getInstance() != null )
-        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
+    //TODO: send client register info in client reset 
+    //String strBody = "";
+    //if ( CClientRegister::getInstance() != null )
+    //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID)+strQuery, this) );
+    NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
     return resp.isOK();
 }
 
 String CSyncEngine::requestClientIDByNet()
 {
-    String strQuery = "";
-    if ( CClientRegister::getInstance() != null )
-        strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
+    //TODO: send client register info in client create 
+    //String strBody = "";
+    //if ( CClientRegister::getInstance() != null )
+    //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse(resp,getNet().pullData(getProtocol().getClientCreateUrl()+strQuery, this));
+    NetResponse(resp,getNet().pullData(getProtocol().getClientCreateUrl(), this));
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
@@ -396,8 +397,9 @@ String CSyncEngine::requestClientIDByNet()
     return "";
 }
 
-void CSyncEngine::doBulkSync(String strClientID, int nBulkSyncState)//throws Exception
+void CSyncEngine::doBulkSync()//throws Exception
 {
+    int nBulkSyncState = RHOCONF().getInt("bulksync_state");
     if ( nBulkSyncState >= 2 || !isContinueSync() )
         return;
 
@@ -406,7 +408,7 @@ void CSyncEngine::doBulkSync(String strClientID, int nBulkSyncState)//throws Exc
 
     if ( nBulkSyncState == 0 && m_bHasUserPartition )
     {
-        loadBulkPartition(getDB(), "user", strClientID);
+        loadBulkPartition(getDB(), "user");
 
         if ( !isContinueSync() )
             return;
@@ -415,7 +417,7 @@ void CSyncEngine::doBulkSync(String strClientID, int nBulkSyncState)//throws Exc
     }
 
     if ( m_bHasAppPartition )
-        loadBulkPartition(getAppDB(), "app", strClientID);
+        loadBulkPartition(getAppDB(), "app");
 
     if ( !isContinueSync() )
         return;
@@ -428,11 +430,11 @@ void CSyncEngine::doBulkSync(String strClientID, int nBulkSyncState)//throws Exc
 extern "C" int rho_unzip_file(const char* szZipPath);
 
 static String getHostFromUrl( const String& strUrl );
-void CSyncEngine::loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition, const String& strClientID )
+void CSyncEngine::loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition )
 {
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
-    String strQuery = "?client_id=" + strClientID + "&partition=" + strPartition;
+    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
     String strDataUrl = "", strCmd = "";
 
   	getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoRuby.ERR_NONE);

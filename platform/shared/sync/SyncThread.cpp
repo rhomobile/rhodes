@@ -293,7 +293,7 @@ void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
         strName = szLastSlash ? szLastSlash + 1 : szSrcUrl;
 
     //TODO: save query params
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, strName, (int)0 ) );
+    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, strName, (int)0, false ) );
 }	
 
 void rho_sync_set_pollinterval(int nInterval)

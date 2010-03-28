@@ -142,6 +142,7 @@ public class Result {
         public String[]  colLabels;
         public String[]  tableNames;
         public String[]  colNames;
+        public String[]  colOrigNames;
         public boolean[] isLabelQuoted;
         public int[]     colTypes;
         public int[]     colSizes;
@@ -179,6 +180,7 @@ public class Result {
             colLabels     = new String[columns];
             tableNames    = new String[columns];
             colNames      = new String[columns];
+            colOrigNames  = new String[columns];
             isLabelQuoted = new boolean[columns];
             colTypes      = new int[columns];
             colSizes      = new int[columns];

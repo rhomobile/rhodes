@@ -6,6 +6,7 @@ public interface IDBResult {
 	//public abstract int getCount();
 	public abstract int getColCount();
 	public abstract String getColName(int nCol);
+	public abstract String getOrigColName(int nCol);
 	/*
 	public abstract RubyValue getRubyValueByIdx(int nItem, int nCol);
 	public abstract long getLongByIdx(int nItem, int nCol);
