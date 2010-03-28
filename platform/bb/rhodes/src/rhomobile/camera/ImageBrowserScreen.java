@@ -24,7 +24,7 @@ import net.rim.device.api.i18n.SimpleDateFormat;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Bitmap;
 
-import com.rho.Jsr75File;
+import com.rho.file.Jsr75File;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;

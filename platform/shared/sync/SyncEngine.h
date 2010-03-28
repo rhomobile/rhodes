@@ -114,7 +114,7 @@ public:
     String loadClientID();
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
-    void doBulkSync(String strClientID, int nBulkSyncState);//throws Exception
+    void doBulkSync();//throws Exception
 
     db::CDBAdapter& getDB(){ return m_dbUserAdapter; }
     db::CDBAdapter& getAppDB(){ return m_dbAppAdapter; }
@@ -134,7 +134,7 @@ private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);
 
-    void loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition, const String& strClientID );
+    void loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition);
     String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt);
 
     void initProtocol();

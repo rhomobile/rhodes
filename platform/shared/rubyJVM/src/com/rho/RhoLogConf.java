@@ -1,6 +1,7 @@
 package com.rho;
 
 import java.io.IOException;
+import com.rho.file.SimpleFile;
 
 public class RhoLogConf {
     int         m_nMinSeverity = 0;

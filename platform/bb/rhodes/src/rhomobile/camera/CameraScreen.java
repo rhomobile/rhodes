@@ -31,7 +31,7 @@ import javax.microedition.media.Manager;
 import javax.microedition.media.Player;
 import javax.microedition.media.control.VideoControl;
 
-import com.rho.SimpleFile;
+import com.rho.file.SimpleFile;
 import com.rho.RhoClassFactory;
 
 import com.rho.RhoEmptyLogger;

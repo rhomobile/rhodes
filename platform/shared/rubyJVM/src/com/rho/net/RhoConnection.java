@@ -18,6 +18,7 @@ import com.xruby.runtime.lang.RhoSupport;
 import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.*;
+import com.rho.file.SimpleFile;
 
 public class RhoConnection implements IHttpConnection {
 

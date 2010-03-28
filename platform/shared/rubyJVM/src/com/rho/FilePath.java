@@ -22,12 +22,12 @@ public class FilePath
         return res;
     }
 
-    String changeBaseName( String szFileName )
+    public String changeBaseName( String szFileName )
     {
         int base = findLastSlash();
         if ( base >= 0 && base < m_szPath.length()-1 )
         {
-            String res = m_szPath.substring(0, base);
+            String res = m_szPath.substring(0, base+1);
             res += szFileName;
 
             return res;
