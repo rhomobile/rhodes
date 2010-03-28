@@ -12,6 +12,8 @@ import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
 
+import com.rho.file.SimpleFile;
+
 public class RhoConf {
     String      m_strConfFilePath = "";
     String      m_strRhoRootPath = "";
@@ -149,6 +151,27 @@ public class RhoConf {
         return getInt(szName) == 0 ? false : true;
     }
 
+    public void   setString(String szName, String str, boolean bSaveToFile){
+    	m_mapValues.put(szName,str);
+    	
+    	if ( bSaveToFile )
+    		saveToFile();    	
+    }
+
+    public void   setInt(String szName, int nVal, boolean bSaveToFile){
+    	m_mapValues.put(szName,Integer.toString(nVal));
+    	
+    	if ( bSaveToFile )
+    		saveToFile();    	
+    }
+
+    public void   setBool(String szName, boolean bVal, boolean bSaveToFile){
+        setInt(szName, bVal ? 1 : 0 );
+        
+    	if ( bSaveToFile )
+    		saveToFile();    	
+    }
+    
     public void   setString(String szName, String str){
     	m_mapValues.put(szName,str);
     }

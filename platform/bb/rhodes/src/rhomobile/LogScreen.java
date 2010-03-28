@@ -47,7 +47,7 @@ public class LogScreen extends MainScreen {
 	};
 	private MenuItem copyLogItem = new MenuItem("Copy to sdcard", 100000, 10) {
 		public void run() {
-			com.rho.Jsr75File.copyRhoFileFromDeviceMemory(RhoLogger.LOGFILENAME);
+			com.rho.file.Jsr75File.copyRhoFileFromDeviceMemory(RhoLogger.LOGFILENAME);
 		}
 	};
 		

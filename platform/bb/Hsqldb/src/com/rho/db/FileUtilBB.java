@@ -7,7 +7,7 @@ import java.util.Random;
 import org.hsqldb.lib.FileAccess;
 
 import com.rho.RhoClassFactory;
-import com.rho.IRAFile;
+import com.rho.file.IRAFile;
 
 /**
  * A collection of static file management methods.<p>

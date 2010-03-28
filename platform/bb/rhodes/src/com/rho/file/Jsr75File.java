@@ -1,4 +1,4 @@
-package com.rho;
+package com.rho.file;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,8 +6,9 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import javax.microedition.io.*;
 import javax.microedition.io.file.*;
-
 import java.util.Vector;
+
+import com.rho.*;
 
 public class Jsr75File implements SimpleFile 
 {
@@ -345,14 +346,6 @@ public class Jsr75File implements SimpleFile
 			    }
     	}
     }
-    
-    public OutputStream getOutStream(){ return out; }
-    public InputStream getInputStream()throws IOException{
-    	if ( in  == null )
-    		in = fconn.openInputStream();
-    	
-    	return in; 
-   }
    
     public boolean isOpened(){
     	return m_bOpened;
@@ -468,6 +461,37 @@ public class Jsr75File implements SimpleFile
     	}
     }
     
+    public OutputStream getOutStream(){ return out; }
+    
+    public OutputStream getOutStreamEx(long pos)throws IOException
+    { 
+        if (outPos != pos) {                         
+            out.close();
+            out = fconn.openOutputStream(pos);
+            if (pos > fileSize) { 
+                byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
+                do { 
+                    int size = pos - fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(pos - fileSize);
+                    out.write(zeroBuf, 0, size);
+                    fileSize += size;
+                    
+                    //BB
+                    //fconn.truncate(fileSize);
+                } while (pos != fileSize);
+            }
+            outPos = pos;
+        }
+    	
+    	return out; 
+    }
+    
+    public InputStream getInputStream()throws IOException{
+    	if ( in  == null )
+    		in = fconn.openInputStream();
+    	
+    	return in; 
+   }
+    
     public void write(long pos, byte[] b)throws IOException
     {
         int len = b.length;
@@ -475,24 +499,12 @@ public class Jsr75File implements SimpleFile
             throw new IOException("Illegal mode");
         }
         int nTry = 0;
-        while (nTry <= 1){
-	        try {
-	            if (outPos != pos) {                         
-	                out.close();
-	                out = fconn.openOutputStream(pos);
-	                if (pos > fileSize) { 
-	                    byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
-	                    do { 
-	                        int size = pos - fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(pos - fileSize);
-	                        out.write(zeroBuf, 0, size);
-	                        fileSize += size;
-	                        
-	                        //BB
-	                        //fconn.truncate(fileSize);
-	                    } while (pos != fileSize);
-	                }
-	                outPos = pos;
-	            }
+        while (nTry <= 1)
+        {
+	        try 
+	        {
+	        	getOutStreamEx(pos);
+	        	
 	            out.write(b, 0, len);
 	            outPos += len;
 	            if (outPos > fileSize) { 
@@ -511,13 +523,6 @@ public class Jsr75File implements SimpleFile
 	        		throw exc;
 	        	else{
 	                outPos = -pos;
-	        		
-/*	        		String name = fconn.getURL();
-	        		//boolean bRead = fconn.canRead();
-	        		boolean bWrite = fconn.canWrite();
-	        		
-	        		close();
-	        		open(name, !bWrite, noFlush);*/
 	        	}
 	        		
 	        }

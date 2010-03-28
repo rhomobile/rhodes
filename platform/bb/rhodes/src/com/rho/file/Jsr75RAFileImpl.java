@@ -9,7 +9,6 @@ import j2me.io.FileNotFoundException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
-import com.rho.IRAFile;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;

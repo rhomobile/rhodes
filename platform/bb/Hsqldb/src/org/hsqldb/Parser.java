@@ -2009,6 +2009,7 @@ class Parser {
 
         String     name = sToken;
         Expression r    = new Expression(sTable, name, wasQuoted);
+        r.columnNameOrig = tokenizer.sTokenOrig;
 
         read();
 

@@ -260,6 +260,7 @@ public class Expression {
     private String      schema;
     private String      tableName;
     private String      columnName;
+    public String       columnNameOrig;
     private TableFilter tableFilter;                // null if not yet resolved
     TableFilter         outerFilter;                // defined if this is part of an OUTER JOIN condition tree
 

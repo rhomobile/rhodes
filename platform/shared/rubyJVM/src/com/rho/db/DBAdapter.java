@@ -3,13 +3,14 @@ package com.rho.db;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
+import com.rho.file.*;
 import java.util.Vector;
 
 public class DBAdapter extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("DbAdapter");
 
-	private static DBAdapter m_Instance;
+	//private static DBAdapter m_Instance;
 	
 	private IDBStorage m_dbStorage;
 	private boolean m_bIsOpen = false;
@@ -30,13 +31,13 @@ public class DBAdapter extends RubyBasic {
     		LOG.ERROR("createDBStorage failed.", exc);
 		}
 	}
-	
+/*	
 	public static DBAdapter getInstance(){
 		if ( m_Instance == null )
 			m_Instance = new DBAdapter(RubyRuntime.DatabaseClass); 
 		
 		return m_Instance;
-	}
+	}*/
 
 	public void close()
 	{ 
@@ -98,10 +99,10 @@ public class DBAdapter extends RubyBasic {
 		return executeSQL(strStatement,values);
 	}
 	
-	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)throws DBException{
+	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)throws DBException{
 		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
-		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6};
+		Object[] values = {arg1,arg2,arg3,arg4,arg5};
 		return m_dbStorage.executeSQL(strStatement,values, true);
 	}
 	
@@ -116,20 +117,21 @@ public class DBAdapter extends RubyBasic {
 	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
     public boolean isInsideTransaction(){ return m_bInsideTransaction; }
 	
-	public static IDBResult createResult(){
-		return getInstance().m_dbStorage.createResult();
-	}
+	//public static IDBResult createResult(){
+	//	return getInstance().m_dbStorage.createResult();
+	//}
 	
 	public static String makeBlobFolderName()throws Exception{
 		String fName = RhoClassFactory.createFile().getDirPath("apps/public/db-files");
+		
 		return fName;
 	}
 	
-	RubyString[] getColNames(IDBResult rows)
+	RubyString[] getOrigColNames(IDBResult rows)
 	{
 		RubyString[] colNames = new RubyString[rows.getColCount()];
 		for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-			colNames[nCol] = ObjectFactory.createString(rows.getColName(nCol));
+			colNames[nCol] = ObjectFactory.createString(rows.getOrigColName(nCol));
 		
 		return colNames;
 	}
@@ -375,6 +377,39 @@ public class DBAdapter extends RubyBasic {
 		
 	}
 	
+	static Vector m_dbAdapters = new Vector();
+	
+	public static DBAdapter findDBAdapterByBaseName(String strBaseName)
+	{
+		for ( int i = 0; i < m_dbAdapters.size(); i++ )
+		{
+			DBAdapter item = (DBAdapter)m_dbAdapters.elementAt(i);
+			FilePath oPath = new FilePath(item.getDBPath());
+			
+			if ( oPath.getBaseName().compareTo(strBaseName) == 0 )
+				return item;
+		}
+		return null;
+	}
+	
+	public static void startAllDBTransaction()throws DBException
+	{
+		for ( int i = 0; i < m_dbAdapters.size(); i++ )
+		{
+			DBAdapter item = (DBAdapter)m_dbAdapters.elementAt(i);
+			item.startTransaction();
+		}
+	}
+
+	public static void commitAllDBTransaction()throws DBException
+	{
+		for ( int i = 0; i < m_dbAdapters.size(); i++ )
+		{
+			DBAdapter item = (DBAdapter)m_dbAdapters.elementAt(i);
+			item.commit();
+		}
+	}
+	
     private void openDB(String strDBName)throws Exception
     {
     	if ( m_bIsOpen )
@@ -390,6 +425,8 @@ public class DBAdapter extends RubyBasic {
 		getAttrMgr().load(this);
 		
 		m_dbStorage.setDbCallback(new DBCallback(this));
+		
+		m_dbAdapters.addElement(this);
     }
     
 	private String createInsertStatement(IDBResult res, String tableName)
@@ -415,7 +452,25 @@ public class DBAdapter extends RubyBasic {
 		return strInsert;
 	}
     
-    private RubyValue rb_destroy_table(RubyValue v) 
+	private boolean destroyTableName(String tableName, Vector arIncludeTables, Vector arExcludeTables )
+	{
+	    int i;
+	    for (i = 0; i < (int)arExcludeTables.size(); i++ )
+	    {
+	        if ( ((String)arExcludeTables.elementAt(i)).equalsIgnoreCase(tableName) )
+	            return false;
+	    }
+
+	    for (i = 0; i < (int)arIncludeTables.size(); i++ )
+	    {
+	        if ( ((String)arIncludeTables.elementAt(i)).equalsIgnoreCase(tableName) )
+	            return true;
+	    }
+
+	    return arIncludeTables.size()==0;
+	}
+	
+    private RubyValue rb_destroy_tables(RubyValue vInclude, RubyValue vExclude) 
     {
 		if ( !m_bIsOpen )
 			return RubyConstant.QNIL;
@@ -424,7 +479,8 @@ public class DBAdapter extends RubyBasic {
 		try{
 		    getAttrMgr().reset(this);
 			
-			String strTable = v.toStr();
+			Vector vecIncludes = RhoRuby.makeVectorStringFromArray(vInclude);
+			Vector vecExcludes = RhoRuby.makeVectorStringFromArray(vExclude);
 			
 			String dbName = getNameNoExt(m_strDBPath);
 			String dbNewName  = dbName + "new";
@@ -460,7 +516,7 @@ public class DBAdapter extends RubyBasic {
 			for ( int i = 0; i< vecTables.length; i++ )
 			{
 				String tableName = vecTables[i];
-				if ( tableName.equalsIgnoreCase(strTable) )
+				if ( destroyTableName( tableName, vecIncludes, vecExcludes ) )
 					continue;
 				
 				res = executeSQL("SELECT * from " + tableName, null);
@@ -540,7 +596,7 @@ public class DBAdapter extends RubyBasic {
     	Unlock();
     }
     
-    public void setInitialSyncDB(String fDbName, String fScriptName)
+    public void setBulkSyncDB(String fDbName, String fScriptName)
     {
 		IDBStorage db = null;
 		try{
@@ -564,14 +620,32 @@ public class DBAdapter extends RubyBasic {
 			}
 		    //copy sources
 			{
-				IDBResult res = executeSQL("SELECT name, source_url,priority,session from sources", null);
+		        String tableName = "sources";
+		        String strSelect = "SELECT * from " + tableName;
+		        IDBResult res = executeSQL( strSelect );
+				String strInsert = "";
+			    for ( ; !res.isEnd(); res.next() )
+			    {
+		            String strName = res.getStringByIdx(1);
+		            Object[] values = {strName};
+		            IDBResult res2 = db.executeSQL("SELECT name from sources where name=?", values, false);
+		            if (!res2.isEnd())
+		                continue;
+
+			    	if ( strInsert.length() == 0 )
+			    		strInsert = createInsertStatement(res, tableName);
+			    	
+			    	db.executeSQL(strInsert, res.getCurData(), false );
+			    }
+/*				
+				IDBResult res = executeSQL("SELECT name, sync_type, partition, priority from sources", null);
 			    for ( ; !res.isEnd(); res.next() )
 			    {
 			    	String strName = res.getStringByIdx(0);
-			    	Object[] values = {res.getStringByIdx(1), new Integer(res.getIntByIdx(2)),res.getStringByIdx(3),strName};
+			    	Object[] values = {res.getStringByIdx(1), new Integer(res.getIntByIdx(2)),new Integer(res.getIntByIdx(3)),strName};
 			    	
-		            db.executeSQL("UPDATE sources SET source_url=?,priority=?,session=? where name=?",values, false); 
-			    }
+		            db.executeSQL("UPDATE sources SET sync_type=?, partition=?, priority=? where name=?",values, false); 
+			    }*/
 			}
 			
 		    db.commit();
@@ -683,7 +757,7 @@ public class DBAdapter extends RubyBasic {
     		}
     		
     		IDBResult rows = executeSQL(v.toStr(), values);
-    		RubyString[] colNames = getColNames(rows);
+    		RubyString[] colNames = getOrigColNames(rows);
     		
     		for( ; !rows.isEnd(); rows.next() )
     		{
@@ -704,7 +778,7 @@ public class DBAdapter extends RubyBasic {
     
     //@RubyAllocMethod
     private static RubyValue alloc(RubyValue receiver) {
-    	return getInstance();
+    	return new DBAdapter(RubyRuntime.DatabaseClass);
     }
     
     private RubyValue rb_initialize(RubyValue v) 
@@ -782,10 +856,10 @@ public class DBAdapter extends RubyBasic {
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_initialize(arg);}
 		});
-		klass.defineMethod( "close", new RubyNoArgMethod(){ 
+		/*klass.defineMethod( "close", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_close();}
-		});
+		});*/
 		klass.defineMethod( "execute", new RubyVarArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_execute(args.get(0), 
@@ -804,10 +878,42 @@ public class DBAdapter extends RubyBasic {
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_rollback();}
 		});
-		klass.defineMethod( "destroy_table", new RubyOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_destroy_table(arg);}
+		klass.defineMethod( "destroy_tables", new RubyTwoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block ){
+				return ((DBAdapter)receiver).rb_destroy_tables(arg, arg1);}
 		});
+		
+		klass.defineMethod("lock_db",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					try{
+					    DBAdapter db = (DBAdapter)receiver;
+					    db.setUnlockDB(true);
+					    db.Lock();
+					}catch(Exception e)
+					{
+						LOG.ERROR("lock_db failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+				    
+				    return RubyConstant.QNIL;
+				}
+			});
+		klass.defineMethod("unlock_db",
+			new RubyNoArgMethod() {
+				protected RubyValue run(RubyValue receiver, RubyBlock block) {
+					try{
+						DBAdapter db = (DBAdapter)receiver;
+					    db.Unlock();
+					}catch(Exception e)
+					{
+						LOG.ERROR("unlock_db failed", e);
+						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+					}
+					
+				    return RubyConstant.QNIL;
+				}
+			});
 		
 	}
 	
@@ -839,8 +945,8 @@ public class DBAdapter extends RubyBasic {
 
 			for( ; !rows2Insert.isEnd(); rows2Insert.next() )
 			{
-				int nSrcID = rows2Insert.getIntByIdx(1);
-				String name = rows2Insert.getStringByIdx(2);
+				int nSrcID = rows2Insert.getIntByIdx(0);
+				String name = rows2Insert.getStringByIdx(1);
 				m_db.getAttrMgr().add(nSrcID, name);
 			}
 			
@@ -853,15 +959,15 @@ public class DBAdapter extends RubyBasic {
 			
 			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
 			{
-				int nSrcID = rows2Delete.getIntByIdx(1);
-				String attrib = rows2Delete.getStringByIdx(2);
+				int nSrcID = rows2Delete.getIntByIdx(0);
+				String attrib = rows2Delete.getStringByIdx(1);
 				m_db.getAttrMgr().remove(nSrcID, attrib);
 				
-				String attrib_type = rows2Delete.getStringByIdx(5);
+				String attrib_type = rows2Delete.getStringByIdx(4);
 				if ( !attrib_type.equals("blob.file") )
 					continue;
 
-				String url = rows2Delete.getStringByIdx(4);
+				String url = rows2Delete.getStringByIdx(3);
 				if ( url == null || url.length() == 0 )
 					continue;
 				
@@ -869,7 +975,7 @@ public class DBAdapter extends RubyBasic {
 				    SimpleFile oFile = RhoClassFactory.createFile();
 				    
 			        String strFilePath = oFile.getDirPath("");
-			        strFilePath += url.startsWith("/") ? url.substring(1) : url;
+			        strFilePath += url;
 				    
 				    oFile.delete(strFilePath);
 				}catch(Exception exc){
