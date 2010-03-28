@@ -1,4 +1,4 @@
-package com.rho;
+package com.rho.file;
 
 public interface IFileAccess {
 	public boolean exists(String name);

@@ -1,6 +1,5 @@
 package com.rho.file;
 
-import com.rho.IFileAccess;
 import com.rho.db.FileUtilBB;
 
 public class FileAccessBB implements IFileAccess {

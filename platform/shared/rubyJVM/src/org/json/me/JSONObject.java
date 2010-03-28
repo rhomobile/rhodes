@@ -398,6 +398,9 @@ public class JSONObject {
             return ((Double)o).doubleValue();
         } else if (o instanceof String) {
             try {
+            	if ( ((String)o).length() == 0 )
+            		return 0;
+            	
                 return Double.valueOf((String)o).doubleValue();
             } catch (Exception e) {
                 throw new JSONException("JSONObject[" + quote(key) +
