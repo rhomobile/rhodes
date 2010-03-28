@@ -658,7 +658,7 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 {
 	CDateTimeMessage *msg = (CDateTimeMessage *)lParam;
 
-	CDateTimePickerDialog dateTimeDialog(msg->m_format);
+	CDateTimePickerDialog dateTimeDialog(msg);
 
     int retCode = dateTimeDialog.DoModal(m_hWnd);
 	rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
