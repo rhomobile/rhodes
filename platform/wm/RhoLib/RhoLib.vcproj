@@ -978,6 +978,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\rubyext\RhoRuby.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\rubyext\RhoRuby.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\rubyext\System.cpp"
 				>
 			</File>
@@ -993,7 +1001,7 @@
 				RelativePath="..\..\shared\unzip\unzip.h"
 				>
 			</File>
-		</Filter>		
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

@@ -6,7 +6,7 @@
 #include "common/StringConverter.h"
 #include "common/RhodesApp.h"
 #include "json/JSONIterator.h"
-#include "ruby/ext/rho/rhoruby.h"
+#include "rubyext/RhoRuby.h"
 #include "statistic/RhoProfiler.h"
 
 namespace rho {
@@ -143,10 +143,7 @@ void CSyncSource::syncClientBlobs(const String& strBaseQuery)
         if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
-			if (resp.isResponseRecieved())
-				m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-			else
-				m_nErrCode = RhoRuby.ERR_NETWORK;
+			m_nErrCode = RhoRuby.getErrorFromResponse(resp);
             return;
         }
 
@@ -331,10 +328,7 @@ void CSyncSource::syncServerChanges()
         if ( !resp.isOK() )
         {
             getSync().stopSync();
-			if (resp.isResponseRecieved())
-				m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-			else
-				m_nErrCode = RhoRuby.ERR_NETWORK;
+			m_nErrCode = RhoRuby.getErrorFromResponse(resp);
             continue;
         }
 
@@ -594,12 +588,8 @@ boolean CSyncSource::downloadBlob(CValue& value)//throws Exception
     NetResponse(resp, getNet().pullFile(url, fName, &getSync(), null));
     if ( !resp.isOK() )
     {
-		if (resp.isResponseRecieved())
-			m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-		else
-			m_nErrCode = RhoRuby.ERR_NETWORK;
+		m_nErrCode = RhoRuby.getErrorFromResponse(resp);
         //m_strError = resp.getCharData();
-
         return false;
     }
 

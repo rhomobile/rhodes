@@ -237,13 +237,7 @@ public class AsyncHttp extends RhoThread
 		    else
 		    {
 		    	m_strResBody += "error&error_code=";
-		        /*if ( !resp.isResponseRecieved())
-		            strBody += RhoRuby.ERR_NETWORK;
-		        else */if ( resp.isUnathorized() )
-		        	m_strResBody += RhoRuby.ERR_UNATHORIZED;
-		        else
-		        	m_strResBody += RhoRuby.ERR_REMOTESERVER;
-	
+		    	m_strResBody += RhoRuby.getErrorFromResponse(resp);		    	
 		        //if ( resp.isResponseRecieved())
 		        m_strResBody += "&http_error=" + resp.getRespCode();
 		    }
