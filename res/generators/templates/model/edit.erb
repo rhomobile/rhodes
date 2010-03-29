@@ -4,7 +4,7 @@
 
 <div id="toolbar">
   <div id="row">
-    <div id="leftItem" class="backButton"><%%=link_to "Cancel", :action => :show%></div>
+    <div id="leftItem" class="backButton"><%%=link_to "Cancel", :action => :show, :id => @<%=name.downcase%>.object%></div>
     <div id="rightItem" class="regularButton"><%%=link_to "Delete", :action => :delete, :id => @<%=name.downcase%>.object%></div>
   </div>
 </div>
