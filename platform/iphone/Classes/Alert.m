@@ -16,35 +16,12 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
-@interface RhoAlertShowPopupTask : NSObject<RhoRunnable>
-{
-    NSString *message;
-}
-
-@property (nonatomic,copy) NSString *message;
-
-- (id)initWithMessage:(NSString*)s;
-- (void)dealloc;
-- (void)run;
-
+@interface RhoAlertShowPopupTask : NSObject {}
++ (void)run:(NSString*)message;
 @end
 
 @implementation RhoAlertShowPopupTask
-
-@synthesize message;
-
-- (id)initWithMessage:(NSString *)s {
-    message = nil;
-    self.message = s;
-    return self;
-}
-
-- (void)dealloc {
-    [message release];
-    [super dealloc];
-}
-
-- (void)run {
++ (void)run:(NSString*)message {
     UIAlertView *alert = [[UIAlertView alloc]
                           initWithTitle: @"Alert"
                           message: message
@@ -54,86 +31,43 @@
     [alert show];
     [alert release];
 }
-
 @end
 
-@interface RhoAlertVibrateTask : NSObject<RhoRunnable>
-{
-    int duration;
-}
-
-- (id)init:(int)d;
-- (void)run;
-
+@interface RhoAlertVibrateTask : NSObject {}
++ (void)run;
 @end
 
 @implementation RhoAlertVibrateTask
-
-- (id)init:(int)d {
-    duration = d;
-    return self;
-}
-
-- (void)run {
++ (void)run {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
-
 @end
 
-@interface RhoAlertPlayFileTask : NSObject<RhoRunnable>
-{
-    NSString *file;
-    NSString *type;
-}
-
-@property (nonatomic,copy) NSString *file;
-@property (nonatomic,copy) NSString *type;
-
-- (id)initWithFileName:(NSString*)f andType:(NSString*)t;
-- (void)dealloc;
-- (void)run;
-
+@interface RhoAlertPlayFileTask : NSObject {}
++ (void)run:(NSString*)file :(NSString*)type;
 @end
 
 @implementation RhoAlertPlayFileTask
-
-@synthesize file, type;
-
-- (id)initWithFileName:(NSString *)f andType:(NSString *)t {
-    file = nil;
-    self.file = f;
-    type = nil;
-    self.type = t;
-    return self;
-}
-
-- (void)dealloc {
-    [file release];
-    [type release];
-    [super dealloc];
-}
-
-- (void)run {
++ (void)run:(NSString*)file :(NSString*)type {
     [[Rhodes sharedInstance] playStart:file mediaType:type];
 }
-
 @end
 
 @implementation Alert
 
 + (void)showPopup:(NSString *)message {
-    id task = [[[RhoAlertShowPopupTask alloc] initWithMessage:message] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoAlertShowPopupTask class];
+    [Rhodes performOnUiThread:runnable arg:message wait:NO];
 }
 
 + (void)vibrate:(int)duration {
-    id task = [[[RhoAlertVibrateTask alloc] init:duration] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoAlertVibrateTask class];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 + (void)playFile:(NSString *)file mediaType:(NSString *)type {
-    id task = [[[RhoAlertPlayFileTask alloc] initWithFileName:file andType:type] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoAlertPlayFileTask class];
+    [Rhodes performOnUiThread:runnable arg:file arg:type wait:NO];
 }
 
 @end

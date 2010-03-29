@@ -17,12 +17,6 @@
 #import "DateTimePickerDelegate.h"
 #import "PickImageDelegate.h"
 
-@protocol RhoRunnable
-
-- (void)run;
-
-@end
-
 @interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate, UITabBarControllerDelegate, AVAudioPlayerDelegate>
 {
     AppManager *appManager;
@@ -46,7 +40,9 @@
 
 + (UIApplication*)application;
 
-+ (void)performOnUiThread:(id<RhoRunnable>)runnable wait:(BOOL)wait;
++ (void)performOnUiThread:(id)runnable wait:(BOOL)wait;
++ (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait;
++ (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait;
 
 - (UIWindow*)rootWindow;
 - (void)fixFrame;
