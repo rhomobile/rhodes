@@ -386,28 +386,6 @@ void rho_conf_show_log() {
     [[ServerHost sharedInstance] showLog];
 }
 
-VALUE rho_ringtone_manager_get_all()
-{
-    // No API to get ringtones
-    return rho_ruby_get_NIL();
-}
-
-void rho_ringtone_manager_play(char *file_name)
-{
-    if (file_name == NULL) {
-        RAWLOG_ERROR("RingtoneManager.play - please specify file name to play");
-        return;
-    }
-    
-    [[ServerHost sharedInstance] playFile:[NSString stringWithUTF8String:file_name]
-                                mediaType:NULL];
-}
-
-void rho_ringtone_manager_stop()
-{
-    [[ServerHost sharedInstance] stopPlaying];
-}
-
 void take_picture(char* callback_url) {
 	[[ServerHost sharedInstance] takePicture:[NSString stringWithUTF8String:callback_url]];		
 }
