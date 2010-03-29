@@ -5,7 +5,7 @@
 <div id="toolbar">
     <div id="row">
         <div id="leftItem" class="regularButton"><%%=link_to "Home", Rho::RhoConfig.start_path%></div>
-        <div id="rightItem" class="regularButton"><%%=link_to "New", :controller => :<%= name %>, :action => :new%></div>
+        <div id="rightItem" class="regularButton"><%%=link_to "New", :controller => :<%= name.camelize %>, :action => :new%></div>
     </div>
 </div>
 
