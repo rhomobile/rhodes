@@ -43,7 +43,11 @@
 }
 
 - (void)run {
-    [[[Rhodes sharedInstance] mainView] navigate:url tab:index];
+    NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString* redirector = [@"/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+    NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
+    NSString* redirector1 = [homeurl stringByAppendingString:redirector];
+    [[[Rhodes sharedInstance] mainView] navigate:redirector1 tab:index];
 }
 
 @end
