@@ -86,6 +86,9 @@
             
             [tabs addObject:td];
             [views addObject:subController];
+            
+            [td release];
+            [subController release];
         }
     }
     tabbar.viewControllers = views;
