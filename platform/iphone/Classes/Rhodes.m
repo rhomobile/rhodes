@@ -1,6 +1,7 @@
 #import "Rhodes.h"
 #import "SimpleMainView.h"
 #import "Alert.h"
+#import "ParamsWrapper.h"
 
 #include "sync/ClientRegister.h"
 #include "sync/syncthread.h"
@@ -34,6 +35,48 @@ static Rhodes *instance = NULL;
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait {
     [runnable retain];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:runnable waitUntilDone:wait];
+}
+
+- (void)openMapLocation:(NSString*)query {
+    NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
+	[[UIApplication sharedApplication] openURL:url];
+}
+
+- (void)mapLocation:(NSString *)query {
+    [self performSelectorOnMainThread:@selector(openMapLocation:) withObject:query waitUntilDone:NO];
+}
+
+- (void)doSysCall:(ParamsWrapper*)params {
+    PARAMS_WRAPPER pw;
+	do_syscall([params unwrap:&pw]);
+	[params release];
+}
+
+- (void)sysCall:(PARAMS_WRAPPER*)params {
+    ParamsWrapper* pw = [ParamsWrapper wrap:params]; 	
+    [self performSelectorOnMainThread:@selector(doSysCall:) withObject:pw waitUntilDone:NO];
+}
+
+- (void)doShowLogOptions {
+    if (logOptionsController!=NULL) {
+		[window addSubview:logOptionsController.view];
+		logOptionsController.view.hidden = NO;
+	}
+}
+
+- (void)showLogOptions {
+    [self performSelectorOnMainThread:@selector(doShowLogOptions) withObject:nil waitUntilDone:NO];
+}
+
+- (void)doShowLog {
+    if (logViewController!=NULL) {
+		[window addSubview:logViewController.view];
+		logViewController.view.hidden = NO;
+	}
+}
+
+- (void)showLog {
+    [self performSelectorOnMainThread:@selector(doShowLog) withObject:nil waitUntilDone:NO];
 }
 
 - (UIWindow*)rootWindow {
@@ -94,6 +137,10 @@ static Rhodes *instance = NULL;
     appManager = [AppManager instance]; 
 	//Configure AppManager
 	[appManager configure];
+    
+    // Init controllers
+    logOptionsController = [[LogOptionsController alloc] init];
+    logViewController = [[LogViewController alloc] init];
     
     rho_rhodesapp_start();
     
@@ -329,3 +376,26 @@ static Rhodes *instance = NULL;
 }
 
 @end
+
+void* rho_nativethread_start()
+{
+	return [[NSAutoreleasePool alloc] init];
+}
+
+void rho_nativethread_end(void* pData)
+{
+    NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
+    [pool release];	
+}
+
+void rho_map_location(char* query) {
+    [[Rhodes sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];
+}
+
+void _rho_ext_syscall(PARAMS_WRAPPER* params) {
+	[[Rhodes sharedInstance] sysCall:params];
+}
+
+void rho_conf_show_log() {
+    [[Rhodes sharedInstance] showLog];
+}

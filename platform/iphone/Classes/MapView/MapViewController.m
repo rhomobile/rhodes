@@ -8,14 +8,61 @@
 
 #import "MapAnnotation.h"
 #import "MapViewController.h"
+#import "Rhodes.h"
 
-#import "logging/RhoLog.h"
+#include "common/rhoparams.h"
+#include "logging/RhoLog.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
 
+@interface RhoCreateMapTask : NSObject<RhoRunnable>
+{
+    NSValue *value;
+}
+
+@property (retain) NSValue *value;
+
+- (id)initWithValue:(NSValue*)v;
+- (void)dealloc;
+- (void)run;
+
+@end
+
+@implementation RhoCreateMapTask
+
+@synthesize value;
+
+- (id)initWithValue:(NSValue *)v {
+    value = v;
+    return self;
+}
+
+- (void)dealloc {
+    [value release];
+    [super dealloc];
+}
+
+- (void)run {
+    MapViewController* map = [[MapViewController alloc] init];
+    [map setParams:[value pointerValue]];
+    UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+	[window addSubview:map.view];
+    [map.view setFrame:[window frame]];
+}
+
+@end
+
 @implementation MapViewController
 
-@synthesize actionTarget,onNavigate,gapikey;
+@synthesize gapikey;
+
++ (void)createMap:(rho_param *)params {
+    NSValue *value = [NSValue valueWithPointer:params];
+    if (!value) return;
+    id task = [[RhoCreateMapTask alloc] initWithValue:value];
+    [Rhodes performOnUiThread:task wait:NO];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
@@ -220,19 +267,13 @@
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view 
     calloutAccessoryControlTapped:(UIControl *)control
 {
-	MapAnnotation *ann = (MapAnnotation*)[view annotation];
-	NSString* url = [ann url];
-	NSLog(@"Callout tapped... Url = %@\n", url);
-	if(actionTarget && [actionTarget respondsToSelector:onNavigate]) {
-        /*
-		WebViewUrl *webViewUrl = [[[WebViewUrl alloc] init] autorelease];
-		webViewUrl.url = url;
-		webViewUrl.webViewIndex = 0;				
-		[actionTarget performSelector:onNavigate withObject:webViewUrl];
-        */
-		[self dismissModalViewControllerAnimated:YES]; 
-		self.view.hidden = YES;
-	}
+    MapAnnotation *ann = (MapAnnotation*)[view annotation];
+    NSString* url = [ann url];
+    NSLog(@"Callout tapped... Url = %@\n", url);
+    id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
+    [mainView navigateRedirect:url tab:[mainView activeTab]];
+    [self dismissModalViewControllerAnimated:YES]; 
+    self.view.hidden = YES;
 }
 
 - (void) close_clicked:(id)sender {
@@ -301,3 +342,9 @@
 @end
 
 #endif
+
+void mapview_create(rho_param *p) {
+#ifdef __IPHONE_3_0
+	[MapViewController createMap:rho_param_dup(p)];
+#endif	
+}
