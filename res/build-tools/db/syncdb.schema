@@ -5,7 +5,6 @@ CREATE TABLE client_info (
  token_sent BIGINT default 0,
  reset BIGINT default 0,
  port VARCHAR(10) default NULL,
- bulksync_state BIGINT default 0,
  last_sync_success VARCHAR(100) default NULL);
 CREATE TABLE object_values (
  source_id BIGINT default NULL,

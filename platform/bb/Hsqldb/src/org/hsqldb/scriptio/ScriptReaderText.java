@@ -32,7 +32,7 @@
 package org.hsqldb.scriptio;
 
 import java.io.IOException;
-import com.rho.db.RandomAccessFile;
+import com.rho.file.RandomAccessFile;
 
 import org.hsqldb.Database;
 import org.hsqldb.HsqlException;

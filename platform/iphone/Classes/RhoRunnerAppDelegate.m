@@ -261,6 +261,14 @@
 	[self.player play];
 }
 
+- (void)onStopPlaying {
+    if (!self.player)
+        return;
+    
+    [self.player stop];
+    self.player = nil;
+}
+
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *) player successfully: (BOOL) flag {
 	if (flag == YES) {
 		//[self.button setTitle: @"Play" forState: UIControlStateNormal];
@@ -435,6 +443,7 @@
 	serverHost->onShowPopup = @selector(onShowPopup:);
 	serverHost->onVibrate = @selector(onVibrate:);
 	serverHost->onPlayFile = @selector(onPlayFile:);
+    serverHost->onStopPlaying = @selector(onStopPlaying);
 	serverHost->onSysCall = @selector(onSysCall:);
 	serverHost->onMapLocation = @selector(onMapLocation:);
 	serverHost->onCreateMap = @selector(onCreateMap:);
