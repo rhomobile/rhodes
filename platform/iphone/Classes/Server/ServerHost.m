@@ -6,27 +6,10 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#pragma mark Includes
+//#include <assert.h>
+//#include <unistd.h>
 
-#include <assert.h>
-#include <unistd.h>
-
-#include "common/RhoPort.h"
-#include "common/rhoparams.h"
-//#include "Server.h"
-//#include "HttpContext.h"
 #include "ServerHost.h"
-//#include "Dispatcher.h"
-#include "AppManagerI.h"
-#include "common/RhoConf.h"
-#include "logging/RhoLogConf.h"
-//#include "sync/syncthread.h"
-#include "common/RhodesApp.h"
-#import "ParamsWrapper.h"
-#import "DateTime.h"
-#import "NativeBar.h"
-#import "MapViewController.h"
-#include "ruby/ext/rho/rhoruby.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -34,46 +17,9 @@
 
 extern void rho_geoimpl_init();
 
-#pragma mark -
-#pragma mark Constant Definitions
-
-#define kServiceType	CFSTR("_http._tcp.")
-
-
-#pragma mark -
-#pragma mark Static Function Declarations
-
-//static void AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info);
-
-
-/* static */ //void
-/*AcceptConnection(ServerRef server, CFSocketNativeHandle sock, CFStreamError* error, void* info) {
-    
-	if (sock == ((CFSocketNativeHandle)(-1))) {
-        
-		RAWLOG_INFO2("AcceptConnection - Received an error (%d, %d)", (int)error->domain, (int)error->error );
-		
-		ServerInvalidate(server);
-		ServerRelease(server);
-		
-		CFRunLoopStop(CFRunLoopGetCurrent());
-	}
-	else {
-        
-		HttpContextRef http = HttpContextCreate(NULL, sock);
-		
-		if ((http != NULL) && !HttpContextOpen(http))
-			HttpContextRelease(http);
-	}
-}*/
-
-#pragma mark -
-
 static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
-
-@synthesize actionTarget, onTakePicture, onChoosePicture, onChooseDateTime, onCreateMap;
 
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

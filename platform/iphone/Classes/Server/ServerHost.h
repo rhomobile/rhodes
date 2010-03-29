@@ -18,23 +18,7 @@
 @public
     CFRunLoopRef runLoop;
 	NSThread* m_geoThread;
-	id  actionTarget;
-	SEL onTakePicture;
-	SEL onChoosePicture;
-	SEL onChooseDateTime;
-	SEL onCreateMap;
 }
-
-// callbacks
-@property (assign) id  actionTarget;
-@property (assign) SEL onTakePicture;
-@property (assign) SEL onChoosePicture;
-@property (assign) SEL onChooseDateTime;
-@property (assign) SEL onCreateMap;
-
-//Sync all sources
-//- (void) doSync;
-//- (void) doSyncFor:(NSString*)url;
 
 + (ServerHost *)sharedInstance;
 
