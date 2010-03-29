@@ -14,6 +14,7 @@
 
 #import "LogOptionsController.h"
 #import "LogViewController.h"
+#import "DateTimePickerDelegate.h"
 
 @protocol RhoRunnable
 
@@ -30,6 +31,7 @@
     // Controllers
     LogOptionsController* logOptionsController;
     LogViewController* logViewController;
+    DateTimePickerDelegate* dateTimePickerDelegate;
 @public
     id<RhoMainView,NSObject> mainView;
 }
