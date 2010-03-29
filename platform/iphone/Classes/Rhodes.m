@@ -87,10 +87,31 @@ static Rhodes *instance = NULL;
 
 - (void)webViewDidStartLoad:(UIWebView *)webview {
 	// TODO
+    //[self active];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
 	// TODO
+    /*
+    [self inactive];
+	
+	if ([webView canGoBack]) {
+		backBtn.enabled = YES;
+	} else {
+		backBtn.enabled = NO;
+	}
+	if ([webView canGoForward]) {
+		forwardBtn.enabled = YES;
+	} else {
+		forwardBtn.enabled = NO;
+	}
+    
+	//NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+	//rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
+    
+    if ([actionTarget respondsToSelector:@selector(hideSplash)])
+        [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
+    */
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
