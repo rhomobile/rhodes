@@ -44,7 +44,7 @@
 }
 
 - (void)run {
-    MapViewController* map = [[MapViewController alloc] init];
+    MapViewController* map = [[[MapViewController alloc] init] autorelease];
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 	[window addSubview:map.view];
@@ -60,7 +60,7 @@
 + (void)createMap:(rho_param *)params {
     NSValue *value = [NSValue valueWithPointer:params];
     if (!value) return;
-    id task = [[RhoCreateMapTask alloc] initWithValue:value];
+    id task = [[[RhoCreateMapTask alloc] initWithValue:value] autorelease];
     [Rhodes performOnUiThread:task wait:NO];
 }
 
@@ -196,6 +196,7 @@
             if (subtitle) [annObj setSubtitle:subtitle];
             if (url) [annObj setUrl:url];
             [annotations addObject:annObj];
+            [annObj release];
         }
     }
     ggeoCoder = [[GoogleGeocoder alloc] initWithAnnotations:annotations apikey:gapikey];
@@ -236,6 +237,7 @@
 								   target:self action:@selector(close_clicked:)];
 	[toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
 	[self.view addSubview:toolbar];
+    [closeButton release];
 	
 	CGRect rectMapArea = CGRectMake(0, 0, rootViewWidth, rootViewHeight - toolbarHeight);
 	mapView=[[MKMapView alloc] initWithFrame:rectMapArea];

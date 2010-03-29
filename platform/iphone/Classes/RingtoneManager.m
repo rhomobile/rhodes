@@ -68,12 +68,12 @@
 @implementation RingtoneManager
 
 + (void)playStart:(NSString*)fileName {
-    id task = [[RhoRingtoneManagerPlayStartTask alloc] initWithFile:fileName];
+    id task = [[[RhoRingtoneManagerPlayStartTask alloc] initWithFile:fileName] autorelease];
     [Rhodes performOnUiThread:task wait:NO];
 }
 
 + (void)playStop {
-    id task = [RhoRingtoneManagerPlayStopTask alloc];
+    id task = [[RhoRingtoneManagerPlayStopTask alloc] autorelease];
     [Rhodes performOnUiThread:task wait:NO];
 }
 

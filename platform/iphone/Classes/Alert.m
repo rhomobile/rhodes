@@ -122,17 +122,17 @@
 @implementation Alert
 
 + (void)showPopup:(NSString *)message {
-    id task = [[RhoAlertShowPopupTask alloc] initWithMessage:message];
+    id task = [[[RhoAlertShowPopupTask alloc] initWithMessage:message] autorelease];
     [Rhodes performOnUiThread:task wait:NO];
 }
 
 + (void)vibrate:(int)duration {
-    id task = [[RhoAlertVibrateTask alloc] init:duration];
+    id task = [[[RhoAlertVibrateTask alloc] init:duration] autorelease];
     [Rhodes performOnUiThread:task wait:NO];
 }
 
 + (void)playFile:(NSString *)file mediaType:(NSString *)type {
-    id task = [[RhoAlertPlayFileTask alloc] initWithFileName:file andType:type];
+    id task = [[[RhoAlertPlayFileTask alloc] initWithFileName:file andType:type] autorelease];
     [Rhodes performOnUiThread:task wait:NO];
 }
 
