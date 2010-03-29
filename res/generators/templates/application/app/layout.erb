@@ -7,11 +7,13 @@
 		<%% if System::get_property('platform') == 'APPLE' %>
 			<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 
+            <link href="/public/css/webkit.css" type="text/css" rel="stylesheet"/>
 			<link href="/public/css/iphone.css" type="text/css" rel="stylesheet"/>
 		<%% else %>
 			<%% if System::get_property('platform') == 'Blackberry' %>
 				<link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>	
-			<%% else %>	
+			<%% else %>
+                <link href="/public/css/webkit.css" type="text/css" rel="stylesheet"/>
 				<link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
 			<%% end %>
 		<%% end %>	
