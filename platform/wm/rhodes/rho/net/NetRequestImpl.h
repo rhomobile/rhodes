@@ -74,9 +74,11 @@ class CNetRequestImpl
     Hashtable<String,String>* m_pHeaders;
     boolean m_bCancel;
     IRhoSession* m_pSession;
+    boolean m_sslVerifyPeer;
 
 public :
-    CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, 
+        IRhoSession* oSession, Hashtable<String,String>* pHeaders, boolean sslVerifyPeer);
     ~CNetRequestImpl();
 
     void close();
@@ -98,7 +100,7 @@ private:
 
     boolean readHeaders(Hashtable<String,String>& oHeaders);
     void    writeHeaders(Hashtable<String,String>* pHeaders);
-
+    boolean checkSslCertError();
 };
 
 }

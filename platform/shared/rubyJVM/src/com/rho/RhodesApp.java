@@ -59,21 +59,14 @@ public class RhodesApp
         return strRes;
     }
 
-    public void delCallbackObject(RubyValue valObject)
-    {
-        for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
-        {
-            if ( m_arCallbackObjects.elementAt(i) == valObject )
-                m_arCallbackObjects.setElementAt(null,i);
-        }
-    }
-
     public RubyValue getCallbackObject(int nIndex)
     {
         if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
             return null;
 
-        return (RubyValue)m_arCallbackObjects.elementAt(nIndex);
+        RubyValue res = (RubyValue)m_arCallbackObjects.elementAt(nIndex);
+        m_arCallbackObjects.setElementAt(null,nIndex);        
+        return res;
     }
     
 }
