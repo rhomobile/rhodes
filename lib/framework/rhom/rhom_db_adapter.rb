@@ -231,7 +231,13 @@ module Rhom
         execute_sql query
       end
 
+      #destroy one table  
+      def destroy_table(name)
+        destroy_tables(:include => [name])
+      end
+      
       # deletes all rows from all tables, except list of given tables by recreating db-file and save all other tables
+      # arguments - :include, :exclude
       def destroy_tables(*args)
           begin
             @database.lock_db unless @inside_transaction

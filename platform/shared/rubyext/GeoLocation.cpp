@@ -189,9 +189,9 @@ double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double 
 	double dlon_rad = dlon * RAD_PER_DEG;
 	double dlat_rad = dlat * RAD_PER_DEG;
 	double lat1_rad = lat1 * RAD_PER_DEG;
-	double lon1_rad = lon1 * RAD_PER_DEG;
+	//double lon1_rad = lon1 * RAD_PER_DEG;
 	double lat2_rad = lat2 * RAD_PER_DEG;
-	double lon2_rad = lon2 * RAD_PER_DEG;
+	//double lon2_rad = lon2 * RAD_PER_DEG;
 
 	double a = pow((sin(dlat_rad/2)), 2) + cos(lat1_rad) * cos(lat2_rad) * pow(sin(dlon_rad/2), 2);
 	double c = 2 * atan2(sqrt(a), sqrt(1-a));
