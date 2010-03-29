@@ -8,6 +8,7 @@
 
 #import "SimpleMainView.h"
 #import "AppManager.h"
+#import "Rhodes.h"
 #import "common/RhodesApp.h"
 #import "logging/RhoLog.h"
 
@@ -55,10 +56,10 @@
 
 @synthesize webView, toolbar;
 
-- (void)createToolbar:(NSArray*)items {
+- (UIToolbar*)newToolbar:(NSArray*)items {
     if ([items count] % 4 != 0) {
         RAWLOG_ERROR("Illegal arguments for createNewToolbar");
-        return;
+        return nil;
     }
     
     UIToolbar *tb = [UIToolbar new];
@@ -66,7 +67,7 @@
     
     [tb sizeToFit];
     
-    CGRect mainFrame = window.frame;
+    CGRect mainFrame = parent.frame;
     
     CGFloat tbHeight = [tb frame].size.height;
     CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
@@ -89,7 +90,7 @@
         
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
-            return;
+            return nil;
         }
         
         UIImage *img = nil;
@@ -164,37 +165,44 @@
     
     [fixed release];
     
-    toolbar = tb;
-    toolbar.hidden = NO;
-    [window addSubview:toolbar];
+    tb.hidden = NO;
+    tb.userInteractionEnabled = YES;
+    return tb;
 }
 
-- (id)initWithParentWindow:(UIWindow *)w andDelegate:(id)delegate {
-    return [self initWithParentWindow:w toolbar:nil andDelegate:delegate];
+- (id)initWithParentView:(UIView *)v {
+    return [self initWithParentView:v toolbar:nil];
 }
 
-- (id)initWithParentWindow:(UIWindow *)w toolbar:(NSArray*)items andDelegate:(id)delegate {
-    window = w;
+- (id)initWithParentView:(UIView *)v toolbar:(NSArray*)items {
+    parent = v;
     
-    webView = [[UIWebView alloc] initWithFrame:window.frame];
+    webView = [[UIWebView alloc] initWithFrame:parent.frame];
     webView.scalesPageToFit = YES;
     webView.userInteractionEnabled = YES;
     //webView.detectsPhoneNumbers = YES;
     webView.multipleTouchEnabled = YES;
     webView.autoresizesSubviews = YES;
-    webView.delegate = delegate;
-    [window addSubview:webView];
-    webView.frame = window.frame;
+    webView.clipsToBounds = NO;
+    webView.delegate = [Rhodes sharedInstance];
+    webView.frame = parent.frame;
+    self.view = webView;
     
-    if (items)
-        [self createToolbar:items];
+    if (items) {
+        UIToolbar *tb = [self newToolbar:items];
+        self.toolbar = tb;
+        [webView addSubview:toolbar];
+        [tb release];
+    }
     
+    /*
     if (toolbar) {
         CGFloat tbHeight = [toolbar frame].size.height;
         CGRect frame = webView.frame;
         frame.size.height -= tbHeight;
         webView.frame = frame;
     }
+    */
     
     return self;
 }
@@ -208,10 +216,13 @@
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    webView = nil;
+    self.toolbar = nil;
+    self.webView = nil;
 }
 
 - (void)dealloc {
+    [toolbar release];
+    [webView release];
     [super dealloc];
 }
 
@@ -241,7 +252,7 @@
 
 // RhoMainView implementation
 
-- (UIView*)getView {
+- (UIView*)view {
     return webView;
 }
 
@@ -265,6 +276,14 @@
     NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
     [webView loadRequest:request];
+}
+
+- (void)navigateRedirect:(NSString *)url tab:(int)index {
+    NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString* redirector = [@"/system/redirect_to?url=" stringByAppendingString:escapedUrl];
+    NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
+    NSString* redirector1 = [homeurl stringByAppendingString:redirector];
+    [self navigate:redirector1 tab:index];
 }
 
 - (void)reload:(int)index {
