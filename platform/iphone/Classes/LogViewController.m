@@ -39,7 +39,7 @@ extern void rho_conf_send_log();
 	return textView;
 }
 
-- (UIToolbar *)createToolbar:(CGRect) frame
+- (UIToolbar *)newToolbar:(CGRect) frame
 {
 	UIToolbar* toolbar = [UIToolbar new];
 	toolbar.barStyle = UIBarStyleBlackOpaque;
@@ -86,6 +86,8 @@ extern void rho_conf_send_log();
 	[refreshItem release];
 	[settingsItem release];
 	[flexItem release];
+    [sendItem release];
+    [clearItem release];
 	
 	return toolbar;	
 }
@@ -96,7 +98,7 @@ extern void rho_conf_send_log();
 	self.view = [[UIView alloc] initWithFrame:frame];
 	CGRect mainViewBounds = self.view.bounds;	
 	
-	UIToolbar* toolbar = [self createToolbar:mainViewBounds];
+	UIToolbar* toolbar = [[self newToolbar:mainViewBounds] autorelease];
 	[self.view addSubview:toolbar];
 	
 	CGFloat toolbarHeight = [toolbar frame].size.height;

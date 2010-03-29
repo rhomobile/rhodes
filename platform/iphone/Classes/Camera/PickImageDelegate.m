@@ -6,7 +6,7 @@
 //  Copyright 2009 __MyCompanyName__. All rights reserved.
 //
 
-#import "RhoRunnerAppDelegate.h"
+#import "Rhodes.h"
 #import "PickImageDelegate.h"
 #import "AppManager.h"
 #import "common/RhodesApp.h"
@@ -62,7 +62,7 @@
 	picker.view.hidden = YES;
     //[picker release]; 
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
-    [[RhoRunnerAppDelegate sharedDelegate] fixFrame];
+    [[Rhodes sharedInstance] fixFrame];
 } 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
@@ -78,7 +78,19 @@
 	picker.view.hidden = YES;
     //[picker release]; 
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
-    [[RhoRunnerAppDelegate sharedDelegate] fixFrame];
+    [[Rhodes sharedInstance] fixFrame];
 } 
 
 @end
+
+void take_picture(char* callback_url) {
+    NSString *url = [NSString stringWithUTF8String:callback_url];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takePicture:)
+                                              withObject:url waitUntilDone:NO];
+}
+
+void choose_picture(char* callback_url) {
+    NSString *url = [NSString stringWithUTF8String:callback_url];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(choosePicture:)
+                                              withObject:url waitUntilDone:NO];
+}
