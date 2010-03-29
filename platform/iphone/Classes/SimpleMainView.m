@@ -262,7 +262,8 @@
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
     [webView loadRequest:request];
 }
 
