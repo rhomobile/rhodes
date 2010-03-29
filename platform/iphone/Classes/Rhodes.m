@@ -79,6 +79,17 @@ static Rhodes *instance = NULL;
     [self performSelectorOnMainThread:@selector(doShowLog) withObject:nil waitUntilDone:NO];
 }
 
+- (void)chooseDateTime:(DateTime*)dateTime {
+    dateTimePickerDelegate.dateTime = dateTime;
+	[dateTimePickerDelegate setPostUrl:dateTime.url];
+    //[self normalizeUrl:dateTime.url]];
+    @try {
+		[dateTimePickerDelegate createPicker:window];
+	} @catch (NSException* theException) {
+		RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+	}
+}
+
 - (UIWindow*)rootWindow {
     return window;
 }
@@ -141,6 +152,8 @@ static Rhodes *instance = NULL;
     // Init controllers
     logOptionsController = [[LogOptionsController alloc] init];
     logViewController = [[LogViewController alloc] init];
+    
+    dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     
     rho_rhodesapp_start();
     
