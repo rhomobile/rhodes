@@ -14,6 +14,7 @@ import com.rho.net.AsyncHttp;
 import com.rho.Properties;
 //import net.rim.device.api.system.CodeModuleManager;
 import java.util.Hashtable;
+import java.util.Vector;
 import com.rho.rjson.RJSONTokener;
 
 public class RhoRuby {
@@ -123,7 +124,7 @@ public class RhoRuby {
 		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
 		
     	//Class mainRuby = Class.forName("xruby.ServeME.main");
-		DBAdapter.getInstance().startTransaction();
+		DBAdapter.startAllDBTransaction();
 		try{
 			mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
 			receiver = mainObj.invoke();
@@ -132,7 +133,7 @@ public class RhoRuby {
 				throw new RuntimeException("Initialize Rho framework failed.");
 		}finally
 		{
-			DBAdapter.getInstance().commit();
+			DBAdapter.commitAllDBTransaction();
 		}
 		
 //		RubyModule modRhom = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rhom");
@@ -249,6 +250,20 @@ public class RhoRuby {
 	public static void add_to_array(RubyValue ar, RubyValue val)
 	{
 		((RubyArray)ar).add(val);
+	}
+	
+	public static Vector makeVectorStringFromArray(RubyValue v)
+	{
+		Vector res = new Vector();
+
+		if ( v == RubyConstant.QNIL )
+			return res;
+		
+		RubyArray ar = (RubyArray)v;
+		for ( int i = 0; i < ar.size(); i++ )
+			res.addElement(ar.get(i).toStr());
+		
+		return res;
 	}
 	
 	public static RubyValue addTimeToHash(RubyHash hash, String key, long val) {

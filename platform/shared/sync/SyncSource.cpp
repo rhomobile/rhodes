@@ -446,7 +446,6 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
             for( ; !iterCmds.isEnd() && getSync().isContinueSync(); iterCmds.next() )
             {
                 String strCmd = iterCmds.getCurKey();
-
                 if ( strCmd.compare("metadata") == 0 )
                 {
                     String strMetadata = iterCmds.getCurValue().getString();

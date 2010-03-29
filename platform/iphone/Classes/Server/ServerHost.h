@@ -35,6 +35,7 @@
 	SEL onShowPopup;
 	SEL onVibrate;
 	SEL onPlayFile;
+    SEL onStopPlaying;
 	SEL onSysCall;
 	SEL onMapLocation;
 	SEL onCreateMap;
@@ -60,6 +61,7 @@
 @property (assign) SEL onShowPopup;
 @property (assign) SEL onVibrate;
 @property (assign) SEL onPlayFile;
+@property (assign) SEL onStopPlaying;
 @property (assign) SEL onSysCall;
 @property (assign) SEL onMapLocation;
 @property (assign) SEL onCreateMap;

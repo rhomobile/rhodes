@@ -128,6 +128,7 @@ public class Tokenizer {
     private int              beginIndex;
     private int              iType;
     private String           sToken;
+    public  String           sTokenOrig;
     private int              indexLongNameFirst = -1;
     private String           sLongNameFirst = null;
     private int              typeLongNameFirst;
@@ -955,9 +956,8 @@ public class Tokenizer {
                     }
 
                     // fredt - todo new char[] to back sToken
-                    sToken =
-                        sCommand.substring(start,
-                                           iIndex).toUpperCase();//Locale.ENGLISH);
+                    sTokenOrig = sCommand.substring(start, iIndex);
+                    sToken = sTokenOrig.toUpperCase();//Locale.ENGLISH);
 
                     // the following only for NAME, not for NAMED_PARAM
                     if (iType == NAMED_PARAM) {
