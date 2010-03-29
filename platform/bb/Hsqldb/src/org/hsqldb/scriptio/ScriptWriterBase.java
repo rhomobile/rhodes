@@ -32,7 +32,7 @@
 package org.hsqldb.scriptio;
 
 //import java.io.BufferedOutputStream;
-import com.rho.db.RandomAccessFile;
+import com.rho.file.RandomAccessFile;
 
 import java.io.IOException;
 //import java.io.OutputStream;

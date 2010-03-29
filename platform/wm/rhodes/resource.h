@@ -28,8 +28,9 @@
 #define IDC_MSGEXCLUDE                  1007
 #define IDC_BUTTON2                     1010
 #define IDC_DATE_CTRL                   1012
-#define ID_TIME_CTRL                    1013
 #define IDC_TIME_CTRL                   1013
+#define IDC_DTP_TIME_GROUP              1015
+#define IDC_DTP_DATE_GROUP              1016
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -71,7 +72,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        119
 #define _APS_NEXT_COMMAND_VALUE         40030
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

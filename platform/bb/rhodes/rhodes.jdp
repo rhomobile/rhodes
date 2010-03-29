@@ -26,7 +26,9 @@ ExcludeFromBuildAll=0
 [Files
 resources\icon.png
 src\com\rho\BBVersionSpecific.java
-src\com\rho\Jsr75File.java
+src\com\rho\file\Jsr75File.java
+src\com\rho\file\Jsr75RAFileImpl.java
+src\com\rho\file\PersistRAFileImpl.java
 src\com\rho\rubyext\GeoLocation.java
 src\com\rho\rubyext\System.java
 src\com\rho\rubyext\XMLParser.java
