@@ -59,6 +59,7 @@ div#row {
 div#pageTitle {
     height: 25px;
     width: 100%;
+    display:none;
 }
 
 div#pageTitle h1 {
