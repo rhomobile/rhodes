@@ -6,9 +6,7 @@
 #include "common/RhoThread.h"
 #include "net/INetRequest.h"
 #include "common/IRhoClassFactory.h"
-#if defined(RHO_HTTPD_COMMON_IMPL)
 #include "net/HttpServer.h"
-#endif
 #include "rubyext/GeoLocation.h"
 #include "SplashScreen.h"
 
@@ -35,11 +33,7 @@ private:
     common::CAutoPtr<net::INetRequest> m_NetRequest;
 
     String m_strListeningPorts;
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    struct shttpd_ctx * m_shttpdCtx;
-#else
     common::CAutoPtr<net::CHttpServer> m_httpServer;
-#endif
     String m_strRhoRootPath, m_strLoadingPagePath, m_strLoadingPngPath, m_strBlobsDirPath, m_strDBDirPath;
     String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
     String m_strRhoMessage;

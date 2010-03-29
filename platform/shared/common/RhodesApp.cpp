@@ -59,10 +59,6 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactor
     m_strRhoRootPath = strRootPath;
     m_bExit = false;
 
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    m_shttpdCtx = 0;
-#endif
-
     m_ptrFactory = createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
     m_oGeoLocation.init(m_ptrFactory);
@@ -104,34 +100,12 @@ void CRhodesApp::run()
     LOG(INFO) + "navigate to first start url";
     navigateToUrl(getFirstStartUrl());
 
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    while(!m_bExit)
-    {
-        shttpd_poll( m_shttpdCtx, 100000 );
-
-//#if defined(OS_WINCE)
-  //GPS
-  //CGPSController::CheckTimeout();
-//#endif
-    }
-#else
     m_httpServer->run();
-#endif
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
     RhoRubyStop();
     rho_sync_destroy();
-
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    shttpd_fini(m_shttpdCtx);
-#endif
-
-//#if defined(OS_WINCE)
-//    CGPSController* pGPS = CGPSController::Instance();
-//    pGPS->DeleteInstance();
-//#endif
-
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -149,11 +123,7 @@ void CRhodesApp::stopApp()
     if (!m_bExit)
     {
         m_bExit = true;
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-        shutdown_poll(m_shttpdCtx);
-#else
 		m_httpServer->stop();
-#endif //RHO_HTTPD_COMMON_IMPL
         stop(2000);
     }
 
@@ -242,25 +212,14 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
-static void callback_syncdb(void *arg
-#if defined(RHO_HTTPD_COMMON_IMPL)
-                            , String const &/*query*/
-#endif
-                           )
+static void callback_syncdb(void *arg, String const &/*query*/ )
 {
     rho_sync_doSyncAllSources(1);
     rho_http_sendresponse(arg, "");
 }
 
-static void callback_redirect_to(void *arg
-#if defined(RHO_HTTPD_COMMON_IMPL)
-                                 , String const &strQuery
-#endif
-                                )
+static void callback_redirect_to(void *arg, String const &strQuery )
 {
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    String strQuery = shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING");
-#endif
     size_t nUrl = strQuery.find("url=");
     String strUrl;
     if ( nUrl != String::npos )
@@ -272,37 +231,19 @@ static void callback_redirect_to(void *arg
     rho_http_redirect(arg, strUrl.c_str());
 }
 
-static void callback_map(void *arg
-#if defined(RHO_HTTPD_COMMON_IMPL)
-                         , String const &query
-#endif
-                        )
+static void callback_map(void *arg, String const &query )
 {
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    String query = shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING");
-#endif
     rho_map_location( const_cast<char*>(query.c_str()) );
     rho_http_sendresponse(arg, "");
 }
 
-static void callback_shared(void *arg
-#if defined(RHO_HTTPD_COMMON_IMPL)
-                            , String const &/*query*/
-#endif
-                           )
+static void callback_shared(void *arg, String const &/*query*/)
 {
     rho_http_senderror(arg, 404, "Not Found");
 }
 
-static void callback_AppManager_load(void *arg
-#if defined(RHO_HTTPD_COMMON_IMPL)
-                                     , String const &query
-#endif
-                                    )
+static void callback_AppManager_load(void *arg, String const &query )
 {
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    String query = shttpd_get_env((shttpd_arg *)arg,"QUERY_STRING");
-#endif
     rho_appmanager_load( arg, query.c_str() );
 }
 
@@ -348,22 +289,6 @@ void CRhodesApp::initHttpServer()
 {
     String strAppRootPath = getRhoRootPath() + "apps";
     
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    LOG(INFO) + "Init http server";
-    m_shttpdCtx = shttpd_init(0,NULL);
-
-    shttpd_set_option(m_shttpdCtx, "root", strAppRootPath.c_str());
-    shttpd_set_option(m_shttpdCtx, "ports", getFreeListeningPort());
-
-    //shttpd_register_uri(m_shttpdCtx, "/system/geolocation", &CGPSController::show_geolocation, NULL);
-    shttpd_register_uri(m_shttpdCtx, "/system/geolocation", callback_geolocation, this);
-    shttpd_register_uri(m_shttpdCtx, "/system/syncdb", callback_syncdb, this);
-    shttpd_register_uri(m_shttpdCtx, "/system/redirect_to", callback_redirect_to, this);
-    shttpd_register_uri(m_shttpdCtx, "/system/map", callback_map, this);
-    shttpd_register_uri(m_shttpdCtx, "/system/shared", callback_shared, this);
-    shttpd_register_uri(m_shttpdCtx, "/AppManager/loader/load", callback_AppManager_load, this);
-#else
-
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
@@ -373,7 +298,6 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);
-#endif
 }
 
 const char* CRhodesApp::getFreeListeningPort()
@@ -651,25 +575,6 @@ void rho_http_free(void* data)
     
 void rho_http_redirect( void* httpContext, const char* szUrl)
 {
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
-    
-    shttpd_printf(arg, "%s", "HTTP/1.1 301 Moved Permanently\r\n");
-    shttpd_printf(arg, "Location: %s\r\n", szUrl );
-    shttpd_printf(arg, "%s", "Content-Length: 0\r\n");
-    shttpd_printf(arg, "%s", "Connection: close\r\n");
-//#ifndef OS_MACOSX
-    shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-    shttpd_printf(arg, "%s", "Cache-Control: must-revalidate\r\n" );
-    shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-    shttpd_printf(arg, "%s", "Cache-Control: no-store\r\n" );	
-    shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-//#endif
-
-    shttpd_printf(arg, "%s", "Content-Type: text/plain\r\n\r\n");
-
-    arg->flags |= SHTTPD_END_OF_OUTPUT;
-#else
     HttpHeaderList headers;
     headers.push_back(HttpHeader("Location", szUrl));
     headers.push_back(HttpHeader("Content-Length", 0));
@@ -682,17 +587,10 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     
     CHttpServer *serv = (CHttpServer *)httpContext;
     serv->send_response(serv->create_response("301 Moved Permanently", headers));
-#endif
 }
 
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
 {
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
-
-    shttpd_printf(arg, "%s", "HTTP/1.1 %d %s\r\n", nError, szMsg);
-    arg->flags |= SHTTPD_END_OF_OUTPUT;
-#else
     char buf[30];
     snprintf(buf, sizeof(buf), "%d", nError);
     
@@ -702,39 +600,10 @@ void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
     
     CHttpServer *serv = (CHttpServer *)httpContext;
     serv->send_response(serv->create_response(reason));
-#endif
 }
 
 void rho_http_sendresponse(void* httpContext, const char* szBody)
 {
-#if !defined(RHO_HTTPD_COMMON_IMPL)
-    struct shttpd_arg *arg = (struct shttpd_arg *)httpContext;
-    unsigned long nBodySize = strlen(szBody);
-    
-    shttpd_printf(arg, "%s", "HTTP/1.1 200 OK\r\n");
-    shttpd_printf(arg, "Content-Length: %lu\r\n", nBodySize );
-    shttpd_printf(arg, "%s", "Connection: close\r\n");
-#ifndef OS_MACOSX
-    shttpd_printf(arg, "%s", "Pragma: no-cache\r\n" );
-    shttpd_printf(arg, "%s", "Cache-Control: no-cache\r\n" );
-    shttpd_printf(arg, "%s", "Expires: 0\r\n" );
-#else
-    const char *fmt = "%a, %d %b %Y %H:%M:%S GMT";
-    char date[64], lm[64];
-    time_t	_current_time = time(0);
-    strftime(date, sizeof(date), fmt, localtime(&_current_time));
-    strftime(lm, sizeof(lm), fmt, localtime(&_current_time));
-    
-    shttpd_printf(arg, "Date: %s\r\n", date);
-    shttpd_printf(arg, "Last-Modified: %s\r\n", lm);
-    shttpd_printf(arg, "Etag: \"%lx.%lx\"\r\n", (unsigned long) _current_time, nBodySize);
-#endif
-
-    shttpd_printf(arg, "%s", "Content-Type: text/html; charset=ISO-8859-4\r\n\r\n");
-    shttpd_printf(arg, "%s", szBody );
-
-    arg->flags |= SHTTPD_END_OF_OUTPUT;
-#else
     size_t nBodySize = strlen(szBody);
     
     HttpHeaderList headers;
@@ -756,7 +625,6 @@ void rho_http_sendresponse(void* httpContext, const char* szBody)
     
     CHttpServer *serv = (CHttpServer *)httpContext;
     serv->send_response(serv->create_response("200 OK", headers, szBody));
-#endif
 }
 
 int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
