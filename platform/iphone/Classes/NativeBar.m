@@ -152,15 +152,15 @@ void create_nativebar(int bar_type, rho_param *p)
     }
     
     id task = [[[RhoNativeBarCreateTask alloc] initWithType:bar_type andItems:items] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    [Rhodes performOnUiThread:task wait:YES];
 }
 
 void remove_nativebar() {
     id task = [[[RhoNativeBarCreateTask alloc] initWithType:NOBAR_TYPE andItems:nil] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    [Rhodes performOnUiThread:task wait:YES];
 }
 
 void nativebar_switch_tab(int index) {
     id task = [[[RhoNativeBarSwitchTabTask alloc] initWithIndex:index] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    [Rhodes performOnUiThread:task wait:YES];
 }
