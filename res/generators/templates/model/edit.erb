@@ -4,12 +4,8 @@
 
 <div id="toolbar">
   <div id="row">
-      <div id="leftItem" class="backButton">
-        <a href="<%%= url_for( :action => :index) %>">Cancel</a>
-      </div>
-      <div id="rightItem" class="regularButton">
-        <a href="<%%= url_for(:action => :delete, :id => @<%=name.downcase%>.object)%>">Delete</a>
-      </div>
+    <div id="leftItem" class="backButton"><%%=link_to "Cancel", :action => :show%></div>
+    <div id="rightItem" class="regularButton"><%%=link_to "Delete", :action => :delete, :id => @<%=name.downcase%>.object%></div>
   </div>
 </div>
 
@@ -25,7 +21,7 @@
                     <% attributes.each do |attribute| %>
                     <li>
                         <span class="label"><%=humanize(attribute)%></span>
-                        <input type="text" name="<%= name.downcase %>[<%= attribute %>]" class="textInput" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/>
+                        <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/>
                     </li>
                     <% end %>
                 </ul>
