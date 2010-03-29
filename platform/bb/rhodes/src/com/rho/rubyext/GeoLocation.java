@@ -13,6 +13,7 @@ import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.rho.net.NetRequest;
 import com.rho.RhoRuby;
+import j2me.lang.MathEx;
 
 public class GeoLocation extends RhoThread{
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -486,6 +487,44 @@ public class GeoLocation extends RhoThread{
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 				return RubyConstant.QNIL;
+			}
+		});
+		klass.getSingletonClass().defineMethod("haversine_distance", new RubyVarArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+				
+				if ( args.size() != 4 )
+					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+							"in GeoLocation.haversine_distance: wrong number of arguments ( " + args.size() + " for " + 4 + " )");			
+				
+				try{
+					double lat1 = args.get(0).toFloat();
+					double lon1 = args.get(1).toFloat();
+					double lat2 = args.get(2).toFloat();
+					double lon2 = args.get(3).toFloat();
+					
+					double RAD_PER_DEG = 0.017453293; //PI/180
+					int Rmiles = 3956;                //radius of the great circle in miles
+
+					double dlon = lon2 - lon1;
+					double dlat = lat2 - lat1;
+					double dlon_rad = dlon * RAD_PER_DEG;
+					double dlat_rad = dlat * RAD_PER_DEG;
+					double lat1_rad = lat1 * RAD_PER_DEG;
+					//double lon1_rad = lon1 * RAD_PER_DEG;
+					double lat2_rad = lat2 * RAD_PER_DEG;
+					//double lon2_rad = lon2 * RAD_PER_DEG;
+
+					double a = MathEx.pow((Math.sin(dlat_rad/2)), 2) + Math.cos(lat1_rad) * Math.cos(lat2_rad) * MathEx.pow(Math.sin(dlon_rad/2), 2);
+					double c = 2 * MathEx.atan2(Math.sqrt(a), Math.sqrt(1-a));
+					double dMi = Rmiles * c; //delta between the two points in mile
+
+					return ObjectFactory.createFloat(dMi);
+					
+				}catch(Exception e)
+				{
+					LOG.ERROR("haversine_distance failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
 			}
 		});
 	}
