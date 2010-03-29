@@ -79,5 +79,22 @@ static Rhodes *instance = NULL;
 	[self doStartUp];
 }
 
+// UIWebViewDelegate imlementation
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType {
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webview {
+	// TODO
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webview {
+	// TODO
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    // TODO
+}
 
 @end
