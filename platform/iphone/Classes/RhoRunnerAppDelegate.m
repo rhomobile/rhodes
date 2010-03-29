@@ -61,17 +61,6 @@
 }
 */
 
-#ifdef __IPHONE_3_0
--(void) onCreateMap:(NSValue*)value {
-	MapViewController* map = [[MapViewController alloc] init];
-    [map setParams:[value pointerValue]];
-	map.actionTarget = self;
-	map.onNavigate = @selector(onNavigateTo:);
-	[window addSubview:map.view];
-    [map.view setFrame:[window frame]];
-}
-#endif
-
 -(BOOL)startCameraPickerFromViewController:(UIViewController*)controller 
 							 usingDelegate:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
 							 sourceType:(UIImagePickerControllerSourceType)type
@@ -147,35 +136,6 @@
     */
 }
 
-- (void)onShowLog {
-    /*
-	if (logViewController!=NULL) {
-		[window addSubview:logViewController.view];
-		logViewController.view.hidden = NO;
-	}
-     */
-}
-
-- (void)onShowLogOptions {
-    /*
-	if (logOptionsController!=NULL) {
-		[window addSubview:logOptionsController.view];
-		logOptionsController.view.hidden = NO;
-	}
-     */
-}
-
-- (void)onSysCall:(ParamsWrapper*)params {
-	PARAMS_WRAPPER pw;
-	do_syscall([params unwrap:&pw]);
-	[params release];
-}
-
-- (void)onMapLocation:(NSString*)query {
-	NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
-	[[UIApplication sharedApplication] openURL:url];
-}
-
 - (void) doStartUp {
 	appStarted = false;
     splashDisplayed = false;
@@ -183,8 +143,8 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
-    serverHost = [ServerHost sharedInstance];
-    [serverHost create];
+    //serverHost = [ServerHost sharedInstance];
+    //[serverHost create];
     
     //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
     //UIApplication *app = [UIApplication sharedApplication];
@@ -231,22 +191,11 @@
 	//dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
 	
 	serverHost->actionTarget = self;
-	serverHost->onRefreshView = @selector(onRefreshView);
-	//serverHost->onSetViewHomeUrl = @selector(onSetViewHomeUrl:);
 	serverHost->onTakePicture = @selector(onTakePicture:);
 	serverHost->onChoosePicture = @selector(onChoosePicture:);
 	serverHost->onChooseDateTime = @selector(onChooseDateTime:);
-    serverHost->onRemoveNativeBar = @selector(onRemoveNativeBar);
-	//serverHost->onSetViewOptionsUrl = @selector(onSetViewOptionsUrl:);
-	serverHost->onShowPopup = @selector(onShowPopup:);
-	serverHost->onVibrate = @selector(onVibrate:);
-	serverHost->onPlayFile = @selector(onPlayFile:);
-    serverHost->onStopPlaying = @selector(onStopPlaying);
-	serverHost->onSysCall = @selector(onSysCall:);
-	serverHost->onMapLocation = @selector(onMapLocation:);
 	serverHost->onCreateMap = @selector(onCreateMap:);
-    serverHost->onShowLog = @selector(onShowLog);
-    [serverHost start];
+    //[serverHost start];
 		
 #ifdef __IPHONE_3_0
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge 
