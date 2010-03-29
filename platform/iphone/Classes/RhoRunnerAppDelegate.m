@@ -94,18 +94,6 @@
 	return YES;
 } 
 
--(BOOL)startDateTimePickerFromViewController:(UIViewController*)controller 
-							 usingDelegate:(DateTimePickerDelegate*)delegateObject
-{
-	@try {
-		[delegateObject createPicker:window];
-	} @catch (NSException* theException) {
-		RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
-		return NO;
-	}
-	return YES;
-} 
-
 - (void)onTakePicture:(NSString*) url {
     // TODO:
     /*
@@ -123,16 +111,6 @@
 	[self startCameraPickerFromViewController:webViewController 
 								usingDelegate:pickImageDelegate 
 								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-    */
-}
-
-- (void)onChooseDateTime:(DateTime*)dateTime {
-    // TODO:
-    /*
-	dateTimePickerDelegate.dateTime = dateTime;
-	[dateTimePickerDelegate setPostUrl:dateTime.url];//[self normalizeUrl:dateTime.url]];
-	[self startDateTimePickerFromViewController:webViewController
-								  usingDelegate:dateTimePickerDelegate];
     */
 }
 
