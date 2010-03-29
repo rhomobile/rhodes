@@ -43,11 +43,10 @@
 }
 
 - (void)run {
-    NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString* redirector = [@"/system/redirect_to?url=" stringByAppendingString:escapedUrl];
-    NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
-    NSString* redirector1 = [homeurl stringByAppendingString:redirector];
-    [[[Rhodes sharedInstance] mainView] navigate:redirector1 tab:index];
+    // Workaround:
+    // Navigation MUST be done through 'redirect_to' - otherwise WebView does not
+    // perform actual url loading from time to time
+    [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
 }
 
 @end

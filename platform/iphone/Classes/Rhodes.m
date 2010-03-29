@@ -33,6 +33,15 @@ static Rhodes *instance = NULL;
     return window;
 }
 
+- (void)setMainView:(id<RhoMainView,NSObject>)view {
+    if (mainView == view)
+        return;
+    [mainView.view removeFromSuperview];
+    [mainView release];
+    mainView = [view retain];
+    [window addSubview:mainView.view];
+}
+
 - (void)doStartUp {
     instance = self;
     application = [UIApplication sharedApplication];
@@ -53,10 +62,15 @@ static Rhodes *instance = NULL;
     window.autoresizesSubviews = YES;
     [window makeKeyAndVisible];
     
-    mainView = [[SimpleMainView alloc] initWithParentWindow:window andDelegate:self];
+    mainView = nil;
+    self.mainView = [[SimpleMainView alloc] initWithParentView:window];
     
     const char *szRootPath = rho_native_rhopath();
     rho_logconf_Init(szRootPath);
+    
+    appManager = [AppManager instance]; 
+	//Configure AppManager
+	[appManager configure];
     
     rho_rhodesapp_create(szRootPath);
     rho_rhodesapp_start();
@@ -67,6 +81,7 @@ static Rhodes *instance = NULL;
 }
 
 // UIApplicationDelegate implementation
+
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	[self doStartUp];
@@ -80,6 +95,7 @@ static Rhodes *instance = NULL;
 }
 
 // UIWebViewDelegate imlementation
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     return YES;
@@ -93,29 +109,38 @@ static Rhodes *instance = NULL;
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
 	// TODO
     /*
-    [self inactive];
-	
-	if ([webView canGoBack]) {
-		backBtn.enabled = YES;
-	} else {
-		backBtn.enabled = NO;
-	}
-	if ([webView canGoForward]) {
-		forwardBtn.enabled = YES;
-	} else {
-		forwardBtn.enabled = NO;
-	}
-    
-	//NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-	//rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
-    
-    if ([actionTarget respondsToSelector:@selector(hideSplash)])
-        [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
-    */
+     [self inactive];
+     
+     if ([webView canGoBack]) {
+     backBtn.enabled = YES;
+     } else {
+     backBtn.enabled = NO;
+     }
+     if ([webView canGoForward]) {
+     forwardBtn.enabled = YES;
+     } else {
+     forwardBtn.enabled = NO;
+     }
+     
+     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
+     
+     if ([actionTarget respondsToSelector:@selector(hideSplash)])
+     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
+     */
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     // TODO
+}
+
+// UITabBarControllerDelegate implementation
+
+- (void)tabBarController:(UITabBarController *)tabBarController
+ didSelectViewController:(UIViewController *)viewController {
+    SEL sel = @selector(onSwitchTab);
+    if ([mainView respondsToSelector:sel])
+        [mainView performSelector:sel];
 }
 
 @end

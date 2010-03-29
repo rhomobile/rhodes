@@ -10,9 +10,14 @@
 #import "RhoMainView.h"
 
 @interface TabbedMainView : UIViewController<RhoMainView> {
-
+    UIView *parent;
+    UITabBarController *tabbar;
+    NSArray *tabbarData;
 }
 
-- (id)initWithParentWindow:(UIWindow *)w items:(NSArray*)items andDelegate:(id)delegate;
+@property (nonatomic,retain) UITabBarController *tabbar;
+@property (nonatomic,retain) NSArray *tabbarData;
+
+- (id)initWithParentView:(UIView*)v items:(NSArray*)items;
 
 @end
