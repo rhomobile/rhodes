@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C2F10BB116146930054AC80 /* RhoRuby.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C2F10B9116146930054AC80 /* RhoRuby.cpp */; };
+		5C2F10BC116146930054AC80 /* RhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C2F10BA116146930054AC80 /* RhoRuby.h */; };
 		5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */; };
 		5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335510FC2977600F268F0 /* RhoThread.cpp */; };
 		5C5335550FC2977600F268F0 /* RhoThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335520FC2977600F268F0 /* RhoThread.h */; };
@@ -66,6 +68,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5C2F10B9116146930054AC80 /* RhoRuby.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoRuby.cpp; path = ../../shared/rubyext/RhoRuby.cpp; sourceTree = SOURCE_ROOT; };
+		5C2F10BA116146930054AC80 /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../../shared/rubyext/RhoRuby.h; sourceTree = SOURCE_ROOT; };
 		5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoThreadImpl.h; path = ../../shared/common/IRhoThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		5C5335510FC2977600F268F0 /* RhoThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThread.cpp; path = ../../shared/common/RhoThread.cpp; sourceTree = SOURCE_ROOT; };
 		5C5335520FC2977600F268F0 /* RhoThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThread.h; path = ../../shared/common/RhoThread.h; sourceTree = SOURCE_ROOT; };
@@ -240,6 +244,8 @@
 		5C798931113BD10C005F8736 /* rubyext */ = {
 			isa = PBXGroup;
 			children = (
+				5C2F10B9116146930054AC80 /* RhoRuby.cpp */,
+				5C2F10BA116146930054AC80 /* RhoRuby.h */,
 				5CECDBB2113FE3620084A75B /* System.cpp */,
 				5C798932113BD148005F8736 /* GeoLocation.cpp */,
 				5C798933113BD148005F8736 /* GeoLocation.h */,
@@ -314,6 +320,7 @@
 				5C798935113BD148005F8736 /* GeoLocation.h in Headers */,
 				BD8DF8891147C8090041A968 /* SplashScreen.h in Headers */,
 				5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */,
+				5C2F10BC116146930054AC80 /* RhoRuby.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,6 +387,7 @@
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
 				BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */,
 				5C59BF4D115B4BC300E96ADE /* unzip.cpp in Sources */,
+				5C2F10BB116146930054AC80 /* RhoRuby.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
