@@ -16,6 +16,7 @@ import com.rho.Properties;
 import java.util.Hashtable;
 import java.util.Vector;
 import com.rho.rjson.RJSONTokener;
+import com.rho.net.NetResponse;
 
 public class RhoRuby {
 
@@ -70,6 +71,17 @@ public class RhoRuby {
 	public static int getErrorCode(Exception exc)
 	{
 		return ERR_RUNTIME; 
+	}
+	
+	public static int  getErrorFromResponse(NetResponse resp)
+	{
+	    if ( resp.isUnathorized() )
+	    	return RhoRuby.ERR_UNATHORIZED;
+
+	    if ( !resp.isOK() )
+	    	return RhoRuby.ERR_REMOTESERVER;
+
+	    return RhoRuby.ERR_NONE;
 	}
 	
 	public static String getErrorText(int nError)

@@ -1,7 +1,7 @@
 #include "SyncNotify.h"
 #include "SyncEngine.h"
 #include "net/URI.h"
-#include "ruby/ext/rho/rhoruby.h"
+#include "rubyext/RhoRuby.h"
 
 namespace rho {
 namespace sync {

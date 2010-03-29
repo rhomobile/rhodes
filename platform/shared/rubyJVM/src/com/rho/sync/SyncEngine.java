@@ -80,6 +80,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean m_bNoThreaded = false;
     boolean m_bHasUserPartition;
     boolean m_bHasAppPartition;
+    int m_nErrCode = RhoRuby.ERR_NONE;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -130,30 +131,34 @@ public class SyncEngine implements NetRequest.IRhoSession
     {
         setState(eState);
         m_bStopByUser = false;
+        m_nErrCode = RhoRuby.ERR_NONE;
+        
         loadAllSources();
 
         m_strSession = loadSession();
         if ( isSessionExist()  )
         {
             m_clientID = loadClientID();
-            getNotify().cleanLastSyncObjectCount();
-            
-            doBulkSync();
-        }
-        else
-        {
-	    	if ( m_sources.size() > 0 )
-	        {		    	
-		    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-		    	//src.m_strError = "Client is not logged in. No sync will be performed.";
-		    	src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
-		    	
-		    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
-	        }else
-	        	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "");
+            if ( m_nErrCode == RhoRuby.ERR_NONE )
+            {
+                getNotify().cleanLastSyncObjectCount();
+       	        doBulkSync();
 
-            stopSync();
-        }
+                return;
+            }
+        }else
+            m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+        
+    	if ( m_sources.size() > 0 )
+        {		    	
+	    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+	    	src.m_nErrCode = m_nErrCode;
+	    	
+	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
+        }else
+        	getNotify().fireSyncNotification(null, true, m_nErrCode, "");
+
+        stopSync();
     }
     
     void doSyncAllSources()
@@ -244,10 +249,7 @@ public class SyncEngine implements NetRequest.IRhoSession
             if ( !resp.isOK() )
             {
                 stopSync();
-    			if (resp.isResponseRecieved())
-    				nErrCode = RhoRuby.ERR_REMOTESERVER;
-    			else
-    				nErrCode = RhoRuby.ERR_NETWORK;
+                nErrCode = RhoRuby.getErrorFromResponse(resp);
                 continue;
             }
 
@@ -466,6 +468,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 //            strBody += ClientRegister.getInstance().getRegisterBody();
 
 	    NetResponse resp = getNet().pullData(getProtocol().getClientResetUrl(strClientID), this);
+	    
+	    if ( !resp.isOK() )
+	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+	    
 	    return resp.isOK();
 	}
 	
@@ -485,6 +491,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
 	        if ( !oJsonObject.isEmpty() )
 	            return oJsonObject.getString("client_id");
+	    }else
+	    {
+	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+	    	if ( m_nErrCode == RhoRuby.ERR_NONE )
+	    		m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
 	    }
 	
 	    return "";
@@ -686,17 +697,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    try{
 				
 			    resp = getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this );
-			    
-			    if ( resp.isUnathorized() )
+			    int nErrCode = RhoRuby.getErrorFromResponse(resp);
+			    if ( nErrCode != RhoRuby.ERR_NONE )
 			    {
-			        getNotify().callLoginCallback(callback, RhoRuby.ERR_UNATHORIZED, resp.getCharData());
-			    	return;
-			    }
-			    
-			    if ( !resp.isOK() )
-			    {
-			    	getNotify().callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
-			    	return;
+			        getNotify().callLoginCallback(callback, nErrCode, resp.getCharData());
+			        return;
 			    }
 		    }catch(IOException exc)
 		    {
