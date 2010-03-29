@@ -73,31 +73,7 @@ static ServerHost* sharedSH = nil;
 
 @implementation ServerHost
 
-@synthesize actionTarget, /*onStartFailure,*/ onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
-@synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime;
-@synthesize onCreateNativeBar, onRemoveNativeBar, onSwitchTab;
-@synthesize onShowPopup, onVibrate, onPlayFile, onStopPlaying, onSysCall, onMapLocation, onCreateMap, onActiveTab, onShowLog;
-
-- (void)serverStarted:(NSString*)data {
-	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
-		[actionTarget performSelector:onStartSuccess withObject:data];
-	}
-	// Do sync w/ remote DB 
-	//wake_up_sync_engine();	
-}
-/*
-- (void)serverFailed:(void*)data {
-	if(actionTarget && [actionTarget respondsToSelector:onStartFailure]) {
-		[actionTarget performSelector:onStartFailure];
-	}
-}*/
-
-/*
-- (void)setViewHomeUrl:(NSString*)url {
-	if(actionTarget && [actionTarget respondsToSelector:onSetViewHomeUrl]) {
-		[actionTarget performSelector:onSetViewHomeUrl withObject:url];
-	}	
-}*/
+@synthesize actionTarget, onTakePicture, onChoosePicture, onChooseDateTime, onCreateMap;
 
 - (void)takePicture:(NSString*) url {
 	if(actionTarget && [actionTarget respondsToSelector:onTakePicture]) {
@@ -124,136 +100,6 @@ static ServerHost* sharedSH = nil;
 	}
 }
 
-/*
-- (void)createNativeBar:(int)barType dataArray:(NSArray*)dataArray {
-	if(actionTarget && [actionTarget respondsToSelector:onCreateNativeBar]) {
-		NativeBar* nativeBar = [[NativeBar alloc] init];
-		nativeBar.barType = barType;
-		nativeBar.barItemDataArray = dataArray;
-		[actionTarget performSelectorOnMainThread:onCreateNativeBar withObject:nativeBar waitUntilDone:YES];
-		[nativeBar release];
-	}
-}
-
-- (void)removeNativeBar {
-    if (actionTarget && [actionTarget respondsToSelector:onRemoveNativeBar]) {
-        [actionTarget performSelectorOnMainThread:onRemoveNativeBar withObject:nil waitUntilDone:YES];
-    }
-}
-
-- (void)switchTab:(int)index {
-    if (actionTarget && [actionTarget respondsToSelector:onSwitchTab]) {
-        NSValue* value = [NSValue valueWithPointer:&index];
-        [actionTarget performSelectorOnMainThread:onSwitchTab withObject:value waitUntilDone:YES];
-        [value release];
-    }
-}
-*/
-
-- (void)showLog {
-    if (actionTarget && [actionTarget respondsToSelector:onShowLog]) {
-        [actionTarget performSelectorOnMainThread:onShowLog withObject:nil waitUntilDone:NO];
-    }
-}
-
-/*
-- (void)setViewOptionsUrl:(NSString*)url {
-	if(actionTarget && [actionTarget respondsToSelector:onSetViewOptionsUrl]) {
-		[actionTarget performSelector:onSetViewOptionsUrl withObject:url];
-	}	
-}*/
-
-- (void)playFile:(NSString*) fileName mediaType:(NSString*) media_type {
-	if(actionTarget && [actionTarget respondsToSelector:onPlayFile]) {
-		[actionTarget performSelectorOnMainThread:onPlayFile withObject:fileName waitUntilDone:NO];
-	}
-}
-
-- (void)stopPlaying {
-    if (actionTarget && [actionTarget respondsToSelector:onStopPlaying]) {
-        [actionTarget performSelectorOnMainThread:onStopPlaying withObject:nil waitUntilDone:NO];
-    }
-}
-
-- (void)mapLocation:(NSString*) query {
-	if(actionTarget && [actionTarget respondsToSelector:onMapLocation]) {
-		[actionTarget performSelectorOnMainThread:onMapLocation withObject:query waitUntilDone:NO];
-	}
-}
-
-- (void)createMap:(rho_param*)p {
-	if(actionTarget && [actionTarget respondsToSelector:onCreateMap]) {
-        NSValue *value = [NSValue valueWithPointer:p];
-        if (!value) return;
-		[actionTarget performSelectorOnMainThread:onCreateMap withObject:value waitUntilDone:NO];
-	}
-}
-
-- (int)activeTab {
-	int retval = 0;
-	if(actionTarget && [actionTarget respondsToSelector:onActiveTab]) {
-		NSValue* result = [NSValue valueWithPointer: &retval];
-		if (!result) return 0;
-		[actionTarget performSelectorOnMainThread:onActiveTab withObject:result waitUntilDone:YES];
-	}
-	return retval;
-}
-
-- (void)sysCall:(PARAMS_WRAPPER*)params {
-}
-
-- (void)doSysCall:(PARAMS_WRAPPER*)params {
-	ParamsWrapper* pw = [ParamsWrapper wrap:params]; 	
-	if(actionTarget && [actionTarget respondsToSelector:onSysCall]) {
-		[actionTarget performSelectorOnMainThread:onSysCall withObject:pw waitUntilDone:NO];
-	}
-}
-
-#if defined(RHO_USE_OWN_HTTPD) && !defined(RHO_HTTPD_COMMON_IMPL)
-- (void)ServerHostThreadRoutine:(id)anObject {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	runLoop = CFRunLoopGetCurrent();
-	m_geoThread = [NSThread currentThread];
-	geo_init();
-	
-	RAWLOG_INFO("Initializing ruby");
-	RhoRubyStart();
-	
-    ServerContext c = {NULL, NULL, NULL, NULL};
-    ServerRef server = ServerCreate(NULL, AcceptConnection, &c);
-	if (server != NULL && ServerConnect(server, NULL, kServiceType, 8080)) {
-		RAWLOG_INFO("HTTP Server started and ready");
-		
-		RAWLOG_INFO("Create Sync");
-		rho_sync_create();
-		RhoRubyInitApp();
-		rho_ruby_activateApp();
-		
-		[self performSelectorOnMainThread:@selector(serverStarted:) 
-							   withObject:NULL waitUntilDone:NO];
-		
-        [[NSRunLoop currentRunLoop] run];
-	
-	
-	    RAWLOG_INFO("Invalidating local server");
-        ServerInvalidate(server);
-    } else {
-        RAWLOG_INFO("Failed to start HTTP Server");
-		[self performSelectorOnMainThread:@selector(serverFailed:) 
-							   withObject:NULL waitUntilDone:NO];
-    }
-	
-	RAWLOG_INFO("Destroy Sync");
-	rho_sync_destroy();
-	
-	RAWLOG_INFO("Stopping ruby");
-	RhoRubyStop();
-	
-    RAWLOG_INFO("Server host thread routine is completed");
-	[pool release];
-}
-#else // defined(RHO_USE_OWN_HTTPD) && !defined(RHO_HTTPD_COMMON_IMPL)
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -267,68 +113,6 @@ static ServerHost* sharedSH = nil;
     RAWLOG_INFO("Server host thread routine is completed");
 	[pool release];
 }
-#endif // defined(RHO_USE_OWN_HTTPD) && !defined(RHO_HTTPD_COMMON_IMPL)
-
-/*
-- (int)initializeDatabaseConn {
-    NSString *appRoot = [AppManager getApplicationsRootPath];
-    NSString *path = [appRoot stringByAppendingPathComponent:@"../db/syncdb.sqlite"];
-	return sqlite3_open([path UTF8String], &database);
-}*/
-
-//extern const char* RhoGetRootPath();
-
--(void) create {
-	//Create 
-	appManager = [AppManager instance]; 
-	//Configure AppManager
-	[appManager configure];
-	//Init log and settings
-	
-	//Start Sync engine
-	//[self initializeDatabaseConn];
-	// Startup the sync engine thread
-	//start_sync_engine(database);
-	
-	// Start server thread	
-    [NSThread detachNewThreadSelector:@selector(ServerHostThreadRoutine:)
-                             toTarget:self withObject:nil];
-	rho_rhodesapp_create(rho_native_rhopath());	
-}
-
--(void)start {
-#if !defined(RHO_USE_OWN_HTTPD) || defined(RHO_HTTPD_COMMON_IMPL)
-	rho_rhodesapp_start();
-#endif
-}
-
-void* rho_nativethread_start()
-{
-	return [[NSAutoreleasePool alloc] init];
-}
-
-void rho_nativethread_end(void* pData)
-{
-    NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
-    [pool release];	
-}
-
--(void) stop {
-	rho_rhodesapp_destroy();
-	CFRunLoopStop(runLoop);
-	// Stop the sync engine
-	//stop_sync_engine();
-	//shutdown_database();
-}
-/*
-//Sync all sources
-- (void) doSync {
-	rho_sync_doSyncAllSources(TRUE);
-}
-
-- (void) doSyncFor:(NSString*)url {
-	rho_sync_doSyncSourceByUrl([url cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-}*/
 
 - (void)dealloc 
 {
@@ -382,10 +166,6 @@ void rho_nativethread_end(void* pData)
 
 //ruby extension hooks
 
-void rho_conf_show_log() {
-    [[ServerHost sharedInstance] showLog];
-}
-
 void take_picture(char* callback_url) {
 	[[ServerHost sharedInstance] takePicture:[NSString stringWithUTF8String:callback_url]];		
 }
@@ -402,16 +182,4 @@ void choose_datetime(char* callback, char* title, long initial_time, int format,
 										   data:[NSString stringWithUTF8String:data]];
 }
 
-void rho_map_location(char* query) {
-	[[ServerHost sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];
-}
 
-void mapview_create(rho_param *p) {
-#ifdef __IPHONE_3_0
-	[[ServerHost sharedInstance] createMap:rho_param_dup(p)];
-#endif	
-}
-
-void _rho_ext_syscall(PARAMS_WRAPPER* params) {
-	[[ServerHost sharedInstance] doSysCall:params];
-}

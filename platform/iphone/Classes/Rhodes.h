@@ -12,6 +12,9 @@
 #import "AppManager.h"
 #import "RhoMainView.h"
 
+#import "LogOptionsController.h"
+#import "LogViewController.h"
+
 @protocol RhoRunnable
 
 - (void)run;
@@ -24,6 +27,9 @@
     UIApplication *application;
     UIWindow *window;
     AVAudioPlayer *player;
+    // Controllers
+    LogOptionsController* logOptionsController;
+    LogViewController* logViewController;
 @public
     id<RhoMainView,NSObject> mainView;
 }
