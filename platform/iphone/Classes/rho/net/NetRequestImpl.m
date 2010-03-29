@@ -72,13 +72,13 @@ int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)
 	BOOL isReachable = FALSE;
 	int reachable = 0;
 	SCNetworkReachabilityRef defaultRouteReachability;
-	NSString *hostNameOrAddress; 
+	//NSString *hostNameOrAddress; 
 	bzero(&zeroAddress, sizeof(zeroAddress));
 	zeroAddress.sin_len = sizeof(zeroAddress);
 	zeroAddress.sin_family = AF_INET;
 	
 	defaultRouteReachability = SCNetworkReachabilityCreateWithAddress(NULL, (struct sockaddr *)&zeroAddress);
-	hostNameOrAddress = @"0.0.0.0";
+	//hostNameOrAddress = @"0.0.0.0";
 	
 	SCNetworkReachabilityFlags flags;
 	BOOL gotFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
