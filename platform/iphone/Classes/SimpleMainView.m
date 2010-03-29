@@ -184,9 +184,17 @@
     webView.autoresizesSubviews = YES;
     webView.delegate = delegate;
     [window addSubview:webView];
+    webView.frame = window.frame;
     
     if (items)
         [self createToolbar:items];
+    
+    if (toolbar) {
+        CGFloat tbHeight = [toolbar frame].size.height;
+        CGRect frame = webView.frame;
+        frame.size.height -= tbHeight;
+        webView.frame = frame;
+    }
     
     return self;
 }
