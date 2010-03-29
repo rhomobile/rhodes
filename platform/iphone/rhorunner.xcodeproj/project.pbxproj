@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05377B3D0E709170003B8BD1 /* WebViewController.m */; };
 		05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */; };
-		1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -159,8 +158,6 @@
 		05377B3E0E709170003B8BD1 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoRunnerAppDelegate.h; sourceTree = "<group>"; };
-		1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoRunnerAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* rhorunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rhorunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -302,8 +299,6 @@
 				46C25E3A103240A400A26428 /* RhoDelegate.m */,
 				BDB373C3114449B6006EA6DA /* Rhodes.h */,
 				BDB373C411444A8F006EA6DA /* Rhodes.m */,
-				1D3623240D0F684500981E51 /* RhoRunnerAppDelegate.h */,
-				1D3623250D0F684500981E51 /* RhoRunnerAppDelegate.m */,
 				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
 				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
 				05377B3E0E709170003B8BD1 /* WebViewController.h */,
@@ -799,7 +794,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
-				1D3623260D0F684500981E51 /* RhoRunnerAppDelegate.m in Sources */,
 				05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */,
 				F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */,
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
