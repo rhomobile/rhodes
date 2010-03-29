@@ -20,6 +20,7 @@
 		5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC110B1D45C00247AB4 /* constants.h */; };
 		5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CF8DBC410B1D45C00247AB4 /* socket.c */; };
 		5CF8DBCB10B1D45C00247AB4 /* sockport.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC510B1D45C00247AB4 /* sockport.h */; };
+		BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD28516011608C9A003DE4E9 /* ringtones_wrap.c */; };
 		D38F7B5F110647510030B1F4 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = D38F7B5E110647510030B1F4 /* extensions.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F5177F180EE5B624000EA1A0 /* system_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5177F170EE5B624000EA1A0 /* system_wrap.c */; };
@@ -129,6 +130,7 @@
 		5CF8DBC110B1D45C00247AB4 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = ext/socket/constants.h; sourceTree = "<group>"; };
 		5CF8DBC410B1D45C00247AB4 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socket.c; path = ext/socket/socket.c; sourceTree = "<group>"; };
 		5CF8DBC510B1D45C00247AB4 /* sockport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sockport.h; path = ext/socket/sockport.h; sourceTree = "<group>"; };
+		BD28516011608C9A003DE4E9 /* ringtones_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ringtones_wrap.c; path = ext/ringtones/ringtones_wrap.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D38F7B5E110647510030B1F4 /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = ext/rho/extensions.c; sourceTree = "<group>"; };
 		F516687F0FFD39D80079F023 /* alert_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alert_wrap.c; path = ../../shared/ruby/ext/alert/alert_wrap.c; sourceTree = SOURCE_ROOT; };
@@ -319,6 +321,14 @@
 			name = socket;
 			sourceTree = "<group>";
 		};
+		BD28515B11608C73003DE4E9 /* ringtones */ = {
+			isa = PBXGroup;
+			children = (
+				BD28516011608C9A003DE4E9 /* ringtones_wrap.c */,
+			);
+			name = ringtones;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -468,6 +478,7 @@
 				F5B8FACD0F44E8F900C9AF85 /* camera */,
 				F5C61CA60F3CFE5700207621 /* webview */,
 				F58E7FE50F008A8500E46829 /* phonebook */,
+				BD28515B11608C73003DE4E9 /* ringtones */,
 				5C043EB60EF7B7CF0014E5C6 /* rho */,
 				F5177F150EE5B5D9000EA1A0 /* system */,
 				F5E360C30EB6A76500226287 /* syncengine */,
@@ -720,6 +731,7 @@
 				D38F7B5F110647510030B1F4 /* extensions.c in Sources */,
 				5C8EE86511220ED30005C20D /* asynchttp_wrap.c in Sources */,
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
+				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
