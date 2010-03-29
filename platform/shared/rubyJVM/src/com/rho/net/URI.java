@@ -1,7 +1,6 @@
 package com.rho.net;
 
 import com.rho.Tokenizer;
-import com.rho.net.NetRequest.ParsedCookie;
 
  public class URI {
 
