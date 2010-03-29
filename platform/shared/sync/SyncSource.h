@@ -41,8 +41,8 @@ public:
 	String m_strAttrType;
 	uint64 m_nID;
 	
-    CValue(json::CJSONEntry& oJsonEntry);//throws JSONException
-    CValue(json::CJSONEntry& oJsonEntry, int nVer);//throws JSONException
+    //CValue(json::CJSONEntry& oJsonEntry);//throws JSONException
+    //CValue(json::CJSONEntry& oJsonEntry, int nVer);//throws JSONException
 };
 
 

@@ -5,13 +5,18 @@
 #include "Utils.h"
 #include "DateTimePicker.h"
 
+/*
+ * TODO: title and initial time, flexible behavour f
+ */
 
 extern "C" HWND getMainWnd();
 
-CDateTimePickerDialog::CDateTimePickerDialog (int format)
+CDateTimePickerDialog::CDateTimePickerDialog (const CDateTimeMessage *msg)
 {
-	m_time = 0;
-	m_format = format;
+	m_returnTime  = 0;
+	m_format       = msg->m_format;
+	m_title        = msg->m_title;
+	m_initialTime  = msg->m_initialTime;
 }
 
 CDateTimePickerDialog::~CDateTimePickerDialog ()
@@ -21,6 +26,9 @@ CDateTimePickerDialog::~CDateTimePickerDialog ()
 LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
+	//USES_CONVERSION;
+	SetWindowText(_T("Date"));
+
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
 
@@ -31,12 +39,15 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
 	
-	if (m_format == FORMAT_TIME)
+	if (m_format == FORMAT_TIME) {
 		GetDlgItem(IDC_DATE_CTRL).ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_DTP_DATE_GROUP).ShowWindow(SW_HIDE);
+	}
 
-	if (m_format == FORMAT_DATE)
+	if (m_format == FORMAT_DATE) {
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
-
+		GetDlgItem(IDC_DTP_TIME_GROUP).ShowWindow(SW_HIDE);
+	}
 
 #endif
     return 1;
@@ -72,10 +83,10 @@ LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, B
 	else
 	{
 		LOG(ERROR) + "invalid format";
-		m_time = 0;
+		m_returnTime = 0;
 	}
 
-	m_time = SystemTimeToUnixTime (&sysTime);
+	m_returnTime = SystemTimeToUnixTime (&sysTime);
 
     EndDialog(wID);
     return 0;
@@ -83,7 +94,7 @@ LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, B
 
 time_t CDateTimePickerDialog::GetTime()
 {
-	return m_time;
+	return m_returnTime;
 }
 
 LRESULT CDateTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -100,20 +111,4 @@ void  choose_datetime(char* callback, char* title,
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd, WM_DATETIME_PICKER, 0, 
 					(LPARAM)new CDateTimeMessage(callback, title, initial_time, format, data));
-}
-
-LRESULT CDateTimePickerDialog::OnDtnDatetimechangeTimeCtrl(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
-{
-	LPNMDATETIMECHANGE pDTChange = reinterpret_cast<LPNMDATETIMECHANGE>(pNMHDR);
-	// TODO: Add your control notification handler code here
-
-	return 0;
-}
-
-LRESULT CDateTimePickerDialog::OnMcnSelchangeDateCtrl(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
-{
-	LPNMSELCHANGE pSelChange = reinterpret_cast<LPNMSELCHANGE>(pNMHDR);
-	// TODO: Add your control notification handler code here
-
-	return 0;
 }

@@ -38,9 +38,8 @@ public class SyncNotify {
     static Mutex m_mxObjectNotify = new Mutex();
 
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
-    Hashtable/*<int,SyncNotification>*/ m_mapSearchNotifications = new Hashtable();
-    
-    SyncNotification m_initialSyncNotify;
+    SyncNotification m_pSearchNotification;
+    SyncNotification m_bulkSyncNotify;
     
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
@@ -142,13 +141,15 @@ public class SyncNotify {
                     if (nNotifyType == enNone.intValue())
                         continue;
 
+                  //This is slow operation
+/*
                     if ( nNotifyType == enDelete.intValue() )
                     {
                         IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", strObject );
                         if ( !res.isEnd() )
                             nNotifyType = enUpdate.intValue();    
                     }
-
+*/
                     if ( strBody.length() > 0 )
                     	strBody += "&rho_callback=1&";
 
@@ -174,10 +175,7 @@ public class SyncNotify {
                 return;
         }
 
-        NetResponse resp = getNet().pushData( strUrl, strBody, null );
-        if ( !resp.isOK() )
-            LOG.ERROR( "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
-
+        callNotify(strUrl, strBody);
     }
 
     void onObjectChanged(Integer nSrcID, String strObject, Integer nType)
@@ -294,25 +292,25 @@ public class SyncNotify {
 		}
 	}
 
-	void setSearchNotification(int source_id, String strUrl, String strParams )throws Exception
+	void setSearchNotification(String strUrl, String strParams )throws Exception
 	{
-		LOG.INFO( "Set search notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );
+		LOG.INFO( "Set search notification. Url :" + strUrl + "; Params: " + strParams );
 	    String strFullUrl = getNet().resolveUrl(strUrl);
 		
 	    if ( strFullUrl.length() > 0 )
 	    {
 	        synchronized(m_mxSyncNotifications){
-	        	m_mapSearchNotifications.put(new Integer(source_id),new SyncNotification( strFullUrl, strParams, true ) );
+	        	m_pSearchNotification = new SyncNotification( strFullUrl, strParams, true );
 	        }
-			LOG.INFO( " Done Set search notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams );
+			LOG.INFO( " Done Set search notification. Url :" + strFullUrl + "; Params: " + strParams );
 	    }
 	}
 
-	void setInitialSyncNotification(String strUrl, String strParams )throws Exception
+	void setBulkSyncNotification(String strUrl, String strParams )throws Exception
 	{
 	    String strFullUrl = getNet().resolveUrl(strUrl);
 		
-		m_initialSyncNotify = new SyncNotification( strFullUrl, strParams, true );
+		m_bulkSyncNotify = new SyncNotification( strFullUrl, strParams, false );
 	}
 	
     public void setSyncStatusListener(ISyncStatusListener listener) 
@@ -357,7 +355,7 @@ public class SyncNotify {
 	    }
 	}
 
-	void fireInitialSyncNotification( boolean bFinish, int nErrCode )
+	void fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode )
 	{
 		if ( getSync().getState() == SyncEngine.esExit )
 			return;
@@ -365,7 +363,7 @@ public class SyncNotify {
 		//TODO: show report
 		if( nErrCode != RhoRuby.ERR_NONE)
 		{
-			String strMessage = RhoRuby.getMessageText("sync_failed_for") + "initial.";
+			String strMessage = RhoRuby.getMessageText("sync_failed_for") + "bulk.";
 			reportSyncStatus(strMessage,nErrCode,"");
 		}
 		
@@ -374,11 +372,13 @@ public class SyncNotify {
 		    String strBody = "", strUrl;
 			synchronized(m_mxSyncNotifications)
 			{
-		        if ( m_initialSyncNotify == null )
+		        if ( m_bulkSyncNotify == null )
 		            return;
 		        
-		        strUrl = m_initialSyncNotify.m_strUrl;
+		        strUrl = m_bulkSyncNotify.m_strUrl;
 		        strBody = "rho_callback=1";
+		        strBody += "&partition=" + partition;
+		        strBody += "&bulk_status="+status;
 		        strBody += "&status=";
 		        if ( bFinish )
 		        {
@@ -396,32 +396,22 @@ public class SyncNotify {
 		        else
 		        	strBody += "in_progress";
 		        
-		        if ( m_initialSyncNotify.m_strParams.length() > 0 )
-		            strBody += "&" + m_initialSyncNotify.m_strParams;
+		        if ( m_bulkSyncNotify.m_strParams.length() > 0 )
+		            strBody += "&" + m_bulkSyncNotify.m_strParams;
 		        
-		        bRemoveAfterFire = bRemoveAfterFire && m_initialSyncNotify.m_bRemoveAfterFire;
+		        bRemoveAfterFire = bRemoveAfterFire && m_bulkSyncNotify.m_bRemoveAfterFire;
 			}
 			
 		    if ( bRemoveAfterFire )
-		    	clearInitialSyncNotification();
+		    	clearBulkSyncNotification();
 		    
-			LOG.INFO( "Fire initial notification.Url :" + strUrl + "; Body: " + strBody );
-			
-		    NetResponse resp = getNet().pushData( strUrl, strBody, null );
-		    if ( !resp.isOK() )
-		        LOG.ERROR( "Fire intial notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
-		    else
-		    {
-		        String szData = resp.getCharData();
-		        if ( szData != null && szData.equals("stop") )
-		        {
-		        	clearInitialSyncNotification();
-		        }
-		    }
-	
+			LOG.INFO( "Fire bulk notification.Url :" + strUrl + "; Body: " + strBody );
+
+            if ( callNotify(strUrl, strBody) )
+    	        clearBulkSyncNotification();
 		}catch(Exception exc)
 		{
-			LOG.ERROR("Fire initial notification failed.", exc);
+			LOG.ERROR("Fire bulk notification failed.", exc);
 		}
     	
 	}
@@ -433,7 +423,7 @@ public class SyncNotify {
 		
 		if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 		{
-			if ( !( src != null && src.m_strParams.length()>0) )
+			if ( !( src != null && src.isSearch()) )
 			{
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
 					strMessage = RhoRuby.getMessageText("sync_failed_for") + src.getName() + ".";
@@ -455,7 +445,12 @@ public class SyncNotify {
 		    boolean bRemoveAfterFire = bFinish;
 		    {
 		    	synchronized(m_mxSyncNotifications){
-			        SyncNotification sn = (SyncNotification)(src.isSearch() ? m_mapSearchNotifications.get(src.getID()) : m_mapSyncNotifications.get(src.getID()));
+			        SyncNotification sn = null;
+					if ( src.isSearch() )
+						sn = m_pSearchNotification;
+					else
+						sn = (SyncNotification)m_mapSyncNotifications.get(src.getID());
+			        
 			        if ( sn == null )
 			            return;
 			
@@ -496,24 +491,42 @@ public class SyncNotify {
 		    	clearNotification(src);
 		    
 			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
-			
-		    NetResponse resp = getNet().pushData( strUrl, strBody, null );
-		    if ( !resp.isOK() )
-		        LOG.ERROR( "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
-		    else
-		    {
-		        String szData = resp.getCharData();
-		        if ( szData != null && szData.equals("stop") )
-		        {
-		            clearNotification(src);
-		        }
-		    }
-		
+
+            if ( callNotify(strUrl, strBody) )
+                clearNotification(src);
 		}catch(Exception exc)
 		{
 			LOG.ERROR("Fire notification failed.", exc);
 		}
 	}
+
+    boolean callNotify(String strUrl, String strBody )throws Exception
+    {
+/*        if ( getSync().isNoThreadedMode() )
+        {
+            const char* szName = strrchr(strUrl.c_str(), '/');
+            if (!szName)
+                szName = strUrl.c_str();
+            else
+                szName++;
+
+            String strName = "C_";
+            strName += szName;
+            rho_ruby_set_const( strName.c_str(), strBody.c_str());
+            return false;
+        }*/
+
+        NetResponse resp = getNet().pushData( strUrl, strBody, null );
+        if ( !resp.isOK() )
+            LOG.ERROR( "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
+        else
+        {
+            String szData = resp.getCharData();
+            return szData != null && szData.equals("stop");
+        }
+
+        return false;
+    }
 
 	void clearNotification(SyncSource src)
 	{
@@ -522,7 +535,7 @@ public class SyncNotify {
 	    synchronized(m_mxSyncNotifications)
 	    {
 	        if ( src.isSearch() )
-	            m_mapSearchNotifications.remove(src.getID());
+	            m_pSearchNotification = null;
 	        else
 	            m_mapSyncNotifications.remove(src.getID());
 	    }
@@ -540,12 +553,12 @@ public class SyncNotify {
 		}
 	}
 
-	void clearInitialSyncNotification() 
+	void clearBulkSyncNotification() 
 	{
-		LOG.INFO( "Clear initial notification." );
+		LOG.INFO( "Clear bulk notification." );
 		
 		synchronized(m_mxSyncNotifications){
-			m_initialSyncNotify = null;
+			m_bulkSyncNotify = null;
 		}
 	}
 	
@@ -586,5 +599,24 @@ public class SyncNotify {
 
 	    return nCount;
 	}
+
+	void callLoginCallback(String callback, int nErrCode, String strMessage)
+	{
+		try{
+		    String strBody = "error_code=" + nErrCode;
+	        strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
+	        strBody += "&rho_callback=1";
+	        
+	        String strUrl = getNet().resolveUrl(callback);
+	        
+			LOG.INFO( "Login callback: " + callback + ". Body: "+ strBody );
+
+            callNotify(strUrl, strBody);	
+		}catch(Exception exc)
+		{
+			LOG.ERROR("Call Login callback failed.", exc);
+		}
+	}
+	
 	
 }
