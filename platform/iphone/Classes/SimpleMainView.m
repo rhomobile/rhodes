@@ -90,6 +90,8 @@
         
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
+            [tb release];
+            [fixed release];
             return nil;
         }
         
@@ -158,6 +160,7 @@
         if (btn) {
             [btns addObject:fixed];
             [btns addObject:btn];
+            [btn release];
         }
     }
     
