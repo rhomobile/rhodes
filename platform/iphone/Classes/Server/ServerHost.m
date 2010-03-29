@@ -78,7 +78,7 @@ static ServerHost* sharedSH = nil;
 @synthesize actionTarget, /*onStartFailure,*/ onStartSuccess, onRefreshView, onNavigateTo, onExecuteJs; 
 @synthesize /*onSetViewHomeUrl, onSetViewOptionsUrl,*/ onTakePicture, onChoosePicture, onChooseDateTime;
 @synthesize onCreateNativeBar, onRemoveNativeBar, onSwitchTab;
-@synthesize onShowPopup, onVibrate, onPlayFile, onSysCall, onMapLocation, onCreateMap, onActiveTab, onShowLog;
+@synthesize onShowPopup, onVibrate, onPlayFile, onStopPlaying, onSysCall, onMapLocation, onCreateMap, onActiveTab, onShowLog;
 
 - (void)serverStarted:(NSString*)data {
 	if(actionTarget && [actionTarget respondsToSelector:onStartSuccess]) {
@@ -201,6 +201,12 @@ static ServerHost* sharedSH = nil;
 	if(actionTarget && [actionTarget respondsToSelector:onPlayFile]) {
 		[actionTarget performSelectorOnMainThread:onPlayFile withObject:fileName waitUntilDone:NO];
 	}
+}
+
+- (void)stopPlaying {
+    if (actionTarget && [actionTarget respondsToSelector:onStopPlaying]) {
+        [actionTarget performSelectorOnMainThread:onStopPlaying withObject:nil waitUntilDone:NO];
+    }
 }
 
 - (void)mapLocation:(NSString*) query {
@@ -450,11 +456,6 @@ void webview_set_menu_items(VALUE valMenu) {
 	rho_rhodesapp_setViewMenu(valMenu);
 }
 
-void Init_RingtoneManager()
-{
-	//TODO: implement Ringtone
-}
-
 void alert_show_popup(char* message) {
 	if (message==NULL) {
 		RAWLOG_ERROR("Alert.show_popup - wrong arguments");
@@ -474,6 +475,28 @@ void alert_play_file(char* file_name, char* media_type) {
 		[[ServerHost sharedInstance] playFile:[NSString stringWithUTF8String:file_name] 
 								mediaType:media_type?[NSString stringWithUTF8String:media_type]:NULL];
 	}
+}
+
+VALUE rho_ringtone_manager_get_all()
+{
+    // No API to get ringtones
+    return rho_ruby_get_NIL();
+}
+
+void rho_ringtone_manager_play(char *file_name)
+{
+    if (file_name == NULL) {
+        RAWLOG_ERROR("RingtoneManager.play - please specify file name to play");
+        return;
+    }
+    
+    [[ServerHost sharedInstance] playFile:[NSString stringWithUTF8String:file_name]
+                                mediaType:NULL];
+}
+
+void rho_ringtone_manager_stop()
+{
+    [[ServerHost sharedInstance] stopPlaying];
 }
 
 void take_picture(char* callback_url) {
