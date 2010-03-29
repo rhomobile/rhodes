@@ -17,37 +17,15 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NativeBar"
 
-@interface RhoNativeBarCreateTask : NSObject<RhoRunnable>
-{
-    int type;
-    NSArray *items;
-}
-
-@property (nonatomic, assign) int type;
-@property (nonatomic, copy) NSArray *items;
-
-- (id)initWithType:(int)type andItems:(NSArray*)items;
-- (void)dealloc;
-- (void)run;
-
+@interface RhoNativeBarCreateTask : NSObject {}
++ (void)run:(NSValue*)value :(NSArray*)items;
 @end
 
 @implementation RhoNativeBarCreateTask
-
-@synthesize type, items;
-
-- (id)initWithType:(int)t andItems:(NSArray*)its {
-    self.type = t;
-    self.items = its;
-    return self;
-}
-
-- (void)dealloc {
-    [items release];
-    [super dealloc];
-}
-
-- (void)run {
++ (void)run:(NSValue*)value :(NSArray*)items {
+    int type;
+    [value getValue:&type];
+    
     id view = nil;
     
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
@@ -70,30 +48,18 @@
     [Rhodes sharedInstance].mainView = view;
     [view release];
 }
-
 @end
 
-@interface RhoNativeBarSwitchTabTask : NSObject<RhoRunnable>
-{
-    int index;
-}
-
-- (id)initWithIndex:(int)idx;
-- (void)run;
-
+@interface RhoNativeBarSwitchTabTask : NSObject {}
++ (void)run:(NSValue*)value;
 @end
 
 @implementation RhoNativeBarSwitchTabTask
-
-- (id)initWithIndex:(int)idx {
-    index = idx;
-    return self;
-}
-
-- (void)run {
++ (void)run:(NSValue*)value {
+    int index;
+    [value getValue:&index];
     [[[Rhodes sharedInstance] mainView] switchTab:index];
 }
-
 @end
 
 void create_nativebar(int bar_type, rho_param *p)
@@ -149,16 +115,20 @@ void create_nativebar(int bar_type, rho_param *p)
         [items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
     }
     
-    id task = [[[RhoNativeBarCreateTask alloc] initWithType:bar_type andItems:items] autorelease];
-    [Rhodes performOnUiThread:task wait:YES];
+    id runnable = [RhoNativeBarCreateTask class];
+    id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:items wait:YES];
 }
 
 void remove_nativebar() {
-    id task = [[[RhoNativeBarCreateTask alloc] initWithType:NOBAR_TYPE andItems:nil] autorelease];
-    [Rhodes performOnUiThread:task wait:YES];
+    int bar_type = NOBAR_TYPE;
+    id runnable = [RhoNativeBarCreateTask class];
+    id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:nil wait:YES];
 }
 
 void nativebar_switch_tab(int index) {
-    id task = [[[RhoNativeBarSwitchTabTask alloc] initWithIndex:index] autorelease];
-    [Rhodes performOnUiThread:task wait:YES];
+    id runnable = [RhoNativeBarSwitchTabTask class];
+    id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg wait:YES];
 }

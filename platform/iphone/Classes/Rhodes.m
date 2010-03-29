@@ -37,15 +37,53 @@ static Rhodes *instance = NULL;
     [window setFrame:frame];
 }
 
-- (void)runRunnable:(id)runnable {
-    if ([runnable conformsToProtocol:@protocol(RhoRunnable)])
-        [runnable run];
-    [runnable release];
+- (void)runRunnable:(NSArray*)args {
+    id runnable = [args objectAtIndex:0];
+    if ([runnable respondsToSelector:@selector(run)])
+        [runnable performSelector:@selector(run)];
+    else if ([runnable respondsToSelector:@selector(run:)]) {
+        id arg = nil;
+        if ([args count] == 2)
+            arg = [args objectAtIndex:1];
+        [runnable performSelector:@selector(run:) withObject:arg];
+    }
+    else if ([runnable respondsToSelector:@selector(run::)]) {
+        id arg1 = nil;
+        if ([args count] > 1)
+            arg1 = [args objectAtIndex:1];
+        id arg2 = nil;
+        if ([args count] > 2)
+            arg2 = [args objectAtIndex:2];
+        [runnable performSelector:@selector(run::) withObject:arg1 withObject:arg2];
+    }
+    else {
+        RAWLOG_ERROR("runRunnable: unrecognized parameters");
+    }
+    [args release];
 }
 
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait {
-    [runnable retain];
-    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:runnable waitUntilDone:wait];
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:1];
+    [args addObject:runnable];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
+}
+
++ (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait {
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:2];
+    [args addObject:runnable];
+    if (arg)
+        [args addObject:arg];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
+}
+
++ (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait {
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:3];
+    [args addObject:runnable];
+    if (arg1)
+        [args addObject:arg1];
+    if (arg2)
+        [args addObject:arg2];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
 }
 
 - (void)openMapLocation:(NSString*)query {
