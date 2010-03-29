@@ -398,15 +398,6 @@ void rho_conf_show_log() {
     [[ServerHost sharedInstance] showLog];
 }
 
-char* webview_current_location(int index) {
-	return (char*)rho_rhodesapp_getcurrenturl(index);
-}
-
-void webview_set_menu_items(VALUE valMenu) {
-	//TODO: webview_set_menu_items
-	rho_rhodesapp_setViewMenu(valMenu);
-}
-
 void alert_show_popup(char* message) {
 	if (message==NULL) {
 		RAWLOG_ERROR("Alert.show_popup - wrong arguments");
