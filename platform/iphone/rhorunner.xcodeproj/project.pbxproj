@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05377B3D0E709170003B8BD1 /* WebViewController.m */; };
 		05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -154,8 +153,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		05377B3D0E709170003B8BD1 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
-		05377B3E0E709170003B8BD1 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* rhorunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rhorunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -301,8 +298,6 @@
 				BDB373C411444A8F006EA6DA /* Rhodes.m */,
 				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
 				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
-				05377B3E0E709170003B8BD1 /* WebViewController.h */,
-				05377B3D0E709170003B8BD1 /* WebViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -794,7 +789,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
-				05377B3F0E709170003B8BD1 /* WebViewController.m in Sources */,
 				F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */,
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
