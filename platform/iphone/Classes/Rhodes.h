@@ -16,7 +16,7 @@
 
 @end
 
-@interface Rhodes : NSObject <UIApplicationDelegate>
+@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate>
 {
     UIApplication *application;
     UIWindow *window;
