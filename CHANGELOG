@@ -1,5 +1,6 @@
 == 1.5.2
 * Fix AsyncHttp 'cancel request'
+* Implement #2948610 - enable AysyncHttp synchronous call
 * Implement #2950632 - BB: System.get_property('has_network')
 * Fix issue #2948834 - iPhone: ringtonemanager
 * Fix issue #2964439 - Android: build problems when no Google API add-ons installed
