@@ -7,8 +7,6 @@
 namespace rho {
 namespace net {
 
-#define MAX_NETREQUEST_RETRY 1
-
 struct INetResponse
 {
     virtual ~INetResponse(void){;}
