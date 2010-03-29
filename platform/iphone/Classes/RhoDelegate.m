@@ -11,6 +11,7 @@
 @implementation RhoDelegate
 
 @synthesize postUrl;
+
 /*
 - (void)doCallback:(NSString*)message {
 	// Create post body
