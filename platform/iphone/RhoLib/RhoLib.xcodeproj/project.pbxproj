@@ -398,6 +398,10 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphonesimulator2.2.1;
 				SYMROOT = ../build;
@@ -414,6 +418,10 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;
@@ -468,6 +476,10 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos2.2.1;
 				SYMROOT = ../build;

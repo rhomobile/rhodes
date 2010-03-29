@@ -18,63 +18,7 @@
 @public
     CFRunLoopRef runLoop;
 	NSThread* m_geoThread;
-	id  actionTarget;
-	SEL onStartSuccess;
-	//SEL onStartFailure;
-	SEL onRefreshView;
-	SEL onNavigateTo;
-	SEL onExecuteJs;
-	//SEL onSetViewHomeUrl;
-	SEL onTakePicture;
-	SEL onChoosePicture;
-	SEL onChooseDateTime;
-	SEL onCreateNativeBar;
-    SEL onRemoveNativeBar;
-    SEL onSwitchTab;
-	//SEL onSetViewOptionsUrl;
-	SEL onShowPopup;
-	SEL onVibrate;
-	SEL onPlayFile;
-    SEL onStopPlaying;
-	SEL onSysCall;
-	SEL onMapLocation;
-	SEL onCreateMap;
-	SEL onActiveTab;
-    SEL onShowLog;
 }
-
-// callbacks
-@property (assign) id  actionTarget;
-@property (assign) SEL onStartSuccess;
-//@property (assign) SEL onStartFailure;
-@property (assign) SEL onRefreshView;
-@property (assign) SEL onNavigateTo;
-@property (assign) SEL onExecuteJs;
-//@property (assign) SEL onSetViewHomeUrl;
-@property (assign) SEL onTakePicture;
-@property (assign) SEL onChoosePicture;
-@property (assign) SEL onChooseDateTime;
-@property (assign) SEL onCreateNativeBar;
-@property (assign) SEL onRemoveNativeBar;
-@property (assign) SEL onSwitchTab;
-//@property (assign) SEL onSetViewOptionsUrl;
-@property (assign) SEL onShowPopup;
-@property (assign) SEL onVibrate;
-@property (assign) SEL onPlayFile;
-@property (assign) SEL onStopPlaying;
-@property (assign) SEL onSysCall;
-@property (assign) SEL onMapLocation;
-@property (assign) SEL onCreateMap;
-@property (assign) SEL onActiveTab;
-@property (assign) SEL onShowLog;
-
-- (void) create;
-- (void) start;
-//TODO - implement pause and stop operations and graceful termination of the thread...
-- (void) stop;
-//Sync all sources
-//- (void) doSync;
-//- (void) doSyncFor:(NSString*)url;
 
 + (ServerHost *)sharedInstance;
 
