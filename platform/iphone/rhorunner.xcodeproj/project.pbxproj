@@ -15,8 +15,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46056D211031EDA900C21967 /* DateTimePickerDelegate.m */; };
 		4678FCA90F8185920054340C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4678FCA80F8185920054340C /* SystemConfiguration.framework */; };
-		4684391210445A810019C7F0 /* BarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4684391110445A810019C7F0 /* BarItem.m */; };
-		468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E57411035DBC100A2293C /* TabBarDelegate.m */; };
 		46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB21117AFB9009A974A /* MapKit.framework */; };
 		46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46AD7DB61117AFBF009A974A /* CFNetwork.framework */; };
 		46AF5163103F150D006E02E1 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AF5162103F150D006E02E1 /* NativeBar.m */; };
@@ -167,10 +165,6 @@
 		46056D201031EDA900C21967 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
 		46056D211031EDA900C21967 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
 		4678FCA80F8185920054340C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../../../../Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
-		4684391010445A810019C7F0 /* BarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarItem.h; sourceTree = "<group>"; };
-		4684391110445A810019C7F0 /* BarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarItem.m; sourceTree = "<group>"; };
-		468E57401035DBC100A2293C /* TabBarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarDelegate.h; sourceTree = "<group>"; };
-		468E57411035DBC100A2293C /* TabBarDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarDelegate.m; sourceTree = "<group>"; };
 		46AD7DB21117AFB9009A974A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		46AD7DB61117AFBF009A974A /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		46AF5161103F150D006E02E1 /* NativeBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeBar.h; sourceTree = "<group>"; };
@@ -390,12 +384,8 @@
 		468E573F1035DBA600A2293C /* NativeBar */ = {
 			isa = PBXGroup;
 			children = (
-				4684391010445A810019C7F0 /* BarItem.h */,
-				4684391110445A810019C7F0 /* BarItem.m */,
 				46AF5161103F150D006E02E1 /* NativeBar.h */,
 				46AF5162103F150D006E02E1 /* NativeBar.m */,
-				468E57401035DBC100A2293C /* TabBarDelegate.h */,
-				468E57411035DBC100A2293C /* TabBarDelegate.m */,
 			);
 			name = NativeBar;
 			sourceTree = "<group>";
@@ -793,9 +783,7 @@
 				46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */,
 				46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */,
 				46B005F71033690F00D0C2F4 /* DateTime.m in Sources */,
-				468E57421035DBC100A2293C /* TabBarDelegate.m in Sources */,
 				46AF5163103F150D006E02E1 /* NativeBar.m in Sources */,
-				4684391210445A810019C7F0 /* BarItem.m in Sources */,
 				F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */,
 				F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */,
 				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,

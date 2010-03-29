@@ -10,7 +10,7 @@
 #import "RhoMainView.h"
 
 @interface SimpleMainView : UIViewController <RhoMainView> {
-    UIWindow *window;
+    UIView *parent;
     UIWebView *webView;
     UIToolbar *toolbar;
 }
@@ -18,7 +18,7 @@
 @property (retain) UIWebView *webView;
 @property (retain) UIToolbar *toolbar;
 
-- (id)initWithParentWindow:(UIWindow *)w andDelegate:(id)delegate;
-- (id)initWithParentWindow:(UIWindow *)w toolbar:(NSArray*)items andDelegate:(id)delegate;
+- (id)initWithParentView:(UIView *)v;
+- (id)initWithParentView:(UIView *)v toolbar:(NSArray*)items;
 
 @end

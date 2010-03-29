@@ -18,7 +18,6 @@
 #import "ParamsWrapper.h"
 #import "DateTime.h"
 #import "NativeBar.h"
-#import "BarItem.h"
 #import "RhoDelegate.h"
 #ifdef __IPHONE_3_0
 #import "MapViewController.h"
@@ -150,18 +149,6 @@
 		[delegateObject createPicker:window];
 	} @catch (NSException* theException) {
 		RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
-		return NO;
-	}
-	return YES;
-} 
-
--(BOOL)startNativeBarFromViewController:(UIViewController*)controller 
-							   usingDelegate:(TabBarDelegate*)delegateObject
-{
-	@try {
-		[delegateObject createTabBar:window];
-	} @catch (NSException* theException) {
-		RAWLOG_ERROR2("startNativeBarFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
 		return NO;
 	}
 	return YES;
@@ -403,7 +390,7 @@
     //webViewController->actionTarget = self;
     //webViewController->onShowLog = @selector(onShowLog);
     
-    mainView = [[SimpleMainView alloc] initWithParentWindow:window andDelegate:self];
+    //mainView = [[SimpleMainView alloc] initWithParentWindow:window];
     
     //splashViewController = [[SplashViewController alloc] initWithParentView:[mainView getView]];
     
