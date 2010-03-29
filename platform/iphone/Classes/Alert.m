@@ -114,12 +114,10 @@
 }
 
 - (void)run {
-    
+    [[Rhodes sharedInstance] playStart:file mediaType:type];
 }
 
 @end
-
-
 
 @implementation Alert
 
@@ -134,7 +132,8 @@
 }
 
 + (void)playFile:(NSString *)file mediaType:(NSString *)type {
-    // TODO
+    id task = [[RhoAlertPlayFileTask alloc] initWithFileName:file andType:type];
+    [Rhodes performOnUiThread:task wait:NO];
 }
 
 @end

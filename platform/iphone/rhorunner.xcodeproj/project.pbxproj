@@ -28,6 +28,7 @@
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BD97AC211160EE8F006960F9 /* Alert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* Alert.m */; };
+		BD97AC3F1160F8A5006960F9 /* RingtoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */; };
 		BDA401BD11495BBD00C5D4BD /* SplashScreenImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA401BC11495BBD00C5D4BD /* SplashScreenImpl.cpp */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDB15ED110B2EBC200003DFA /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5F06496102B946F006CFD39 /* librhoextlib.a */; };
@@ -192,6 +193,8 @@
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BD97AC1F1160EE8F006960F9 /* Alert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Alert.h; sourceTree = "<group>"; };
 		BD97AC201160EE8F006960F9 /* Alert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Alert.m; sourceTree = "<group>"; };
+		BD97AC3D1160F8A5006960F9 /* RingtoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RingtoneManager.h; sourceTree = "<group>"; };
+		BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RingtoneManager.m; sourceTree = "<group>"; };
 		BDA401BB11495BBD00C5D4BD /* SplashScreenImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplashScreenImpl.h; path = rho/common/SplashScreenImpl.h; sourceTree = "<group>"; };
 		BDA401BC11495BBD00C5D4BD /* SplashScreenImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SplashScreenImpl.cpp; path = rho/common/SplashScreenImpl.cpp; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -288,6 +291,7 @@
 				468E573F1035DBA600A2293C /* NativeBar */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				5C5332610FBD6AC700F268F0 /* rho */,
+				BD97AC3C1160F87D006960F9 /* Ringtones */,
 				5C4775EC113082290092D21E /* Server */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 				BD38E76D115D1C3C001CE05C /* WebView */,
@@ -474,6 +478,15 @@
 				BD97AC201160EE8F006960F9 /* Alert.m */,
 			);
 			name = Alert;
+			sourceTree = "<group>";
+		};
+		BD97AC3C1160F87D006960F9 /* Ringtones */ = {
+			isa = PBXGroup;
+			children = (
+				BD97AC3D1160F8A5006960F9 /* RingtoneManager.h */,
+				BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */,
+			);
+			name = Ringtones;
 			sourceTree = "<group>";
 		};
 		BDB3735D11441FE0006EA6DA /* MainView */ = {
@@ -810,6 +823,7 @@
 				BD38E6DC115CFF14001CE05C /* WebView.m in Sources */,
 				BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */,
 				BD97AC211160EE8F006960F9 /* Alert.m in Sources */,
+				BD97AC3F1160F8A5006960F9 /* RingtoneManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
