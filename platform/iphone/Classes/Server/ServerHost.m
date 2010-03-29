@@ -163,18 +163,6 @@ static ServerHost* sharedSH = nil;
 	}	
 }*/
 
-- (void)showPopup:(NSString*) message {
-	if(actionTarget && [actionTarget respondsToSelector:onShowPopup]) {
-		[actionTarget performSelectorOnMainThread:onShowPopup withObject:message waitUntilDone:NO];
-	}
-}
-
-- (void)vibrate:(int) duration {
-	if(actionTarget && [actionTarget respondsToSelector:onVibrate]) {
-		[actionTarget performSelectorOnMainThread:onVibrate withObject:(void*)duration waitUntilDone:NO];
-	}
-}
-
 - (void)playFile:(NSString*) fileName mediaType:(NSString*) media_type {
 	if(actionTarget && [actionTarget respondsToSelector:onPlayFile]) {
 		[actionTarget performSelectorOnMainThread:onPlayFile withObject:fileName waitUntilDone:NO];
@@ -396,27 +384,6 @@ void rho_nativethread_end(void* pData)
 
 void rho_conf_show_log() {
     [[ServerHost sharedInstance] showLog];
-}
-
-void alert_show_popup(char* message) {
-	if (message==NULL) {
-		RAWLOG_ERROR("Alert.show_popup - wrong arguments");
-	} else {
-		[[ServerHost sharedInstance] showPopup:[NSString stringWithUTF8String:message]];
-	}
-}
-
-void alert_vibrate(int duration) {
-	[[ServerHost sharedInstance] vibrate:duration];
-}
-
-void alert_play_file(char* file_name, char* media_type) {
-	if (file_name==NULL) {
-		RAWLOG_ERROR("Alert.play_file - please specify file name to play");
-	} else {
-		[[ServerHost sharedInstance] playFile:[NSString stringWithUTF8String:file_name] 
-								mediaType:media_type?[NSString stringWithUTF8String:media_type]:NULL];
-	}
 }
 
 VALUE rho_ringtone_manager_get_all()
