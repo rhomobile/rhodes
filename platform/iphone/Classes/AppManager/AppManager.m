@@ -114,7 +114,10 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
                                                encoding:NSUTF8StringEncoding];
     NSString *content2 = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePath2]
                                                encoding:NSUTF8StringEncoding];
-    return [content1 isEqualToString:content2];
+    BOOL result = [content1 isEqualToString:content2];
+    [content1 release];
+    [content2 release];
+    return result;
 }
 
 /*

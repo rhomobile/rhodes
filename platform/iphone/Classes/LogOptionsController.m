@@ -23,7 +23,7 @@
 	[super dealloc];
 }
 
-- (UIToolbar *)createToolbar:(CGRect) frame
+- (UIToolbar *)newToolbar:(CGRect) frame
 {
 	UIToolbar* toolbar = [UIToolbar new];
 	toolbar.barStyle = UIBarStyleBlackOpaque;
@@ -59,6 +59,7 @@
 	[toolbar setItems:items animated:NO];
 	[saveItem release];
 	[cancelItem release];
+    [flexItem release];
 	
 	return toolbar;	
 }
@@ -136,7 +137,7 @@
 	[self.view setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
 	CGRect mainViewBounds = self.view.bounds;
 	
-	UIToolbar* toolbar = [self createToolbar:mainViewBounds];
+	UIToolbar* toolbar = [[self newToolbar:mainViewBounds] autorelease];
 	[self.view addSubview:toolbar];
 	
 	// create and configure the table view
