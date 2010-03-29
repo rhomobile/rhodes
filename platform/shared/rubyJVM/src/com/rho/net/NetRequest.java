@@ -14,7 +14,6 @@ import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.file.*;
-import com.rho.Tokenizer;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -25,7 +24,6 @@ public class NetRequest
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Net");
 	
-	static final int  MAX_NETREQUEST_RETRY  = 1;
 	boolean m_bCancel = false;
 	
 	public static interface IRhoSession
@@ -36,45 +34,19 @@ public class NetRequest
 	}
 	
 	private IHttpConnection m_connection = null;
-	//private char[] m_charBuffer = new char[1024];
-	public  byte[]  m_byteBuffer = new byte[4096];
+	
 	private boolean m_bIgnoreSuffixOnSim = true;
 	private Hashtable m_OutHeaders;
 	public boolean isCancelled(){ return m_bCancel;}
 	public NetResponse pullData(String strUrl, IRhoSession oSession ) throws Exception
     {
-		return doRequestTry(strUrl, "", oSession);
+		return doRequest("GET", strUrl, "", oSession, null);
     }
 
 	public void setIgnoreSuffixOnSim(boolean bset)
 	{
 		m_bIgnoreSuffixOnSim = bset;
 	}
-	
-	private NetResponse doRequestTry(String strUrl, String strBody, IRhoSession oSession ) throws Exception
-    {
-		NetResponse resp = null;
-		
-		int nTry = 0;
-		m_bCancel = false;
-	    do
-	    {
-	    	try{
-	    		resp = doRequest(strBody != null && strBody.length() > 0 ? "POST" : "GET", strUrl, strBody, oSession, null);
-	    		break;
-	    	}catch(IOException exc)
-	    	{
-	    		if ( m_bCancel )
-	    			break;
-	    		if ( nTry+1 >= MAX_NETREQUEST_RETRY )
-	    			throw exc;
-	    	}
-	        nTry++;
-
-	    }while( true );
-		
-		return resp;
-    }
 
 	private void writeHeaders(Hashtable headers) throws Exception
 	{
@@ -234,11 +206,6 @@ public class NetRequest
 		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	
-	static class ParsedCookie {
-		String strAuth = "";
-		String strSession = "";
-	};
-
 	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
 	{
 		Hashtable headers = new Hashtable();
@@ -246,12 +213,6 @@ public class NetRequest
 		NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
 		if ( resp.isOK() )
 		{
-			//ParsedCookie cookie = makeCookie(headers);
-			//if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
-				//resp.setCharData(cookie.strAuth + ";" + cookie.strSession + ";");
-			//else
-			//	resp.setCharData("");
-			
 			resp.setCharData(resp.getCookies());
 			LOG.INFO("pullCookies: " + resp.getCharData() );
 		}
@@ -283,19 +244,7 @@ public class NetRequest
 				throw new RuntimeException("File not found:" + strFileName);
 			}
 			
-			int nTry = 0;
-			do{
-				try{
-					resp = pushFile1(strUrl, file, oSession, headers );
-					break;
-				}catch(IOException e)
-				{
-		    		if ( nTry+1 >= MAX_NETREQUEST_RETRY )
-		    			throw e;
-		    	}
-		        nTry++;
-			}while( true );
-			
+			resp = pushFile1(strUrl, file, oSession, headers );
 		}finally{
 			if ( file != null )
 				try{ file.close(); }catch(IOException e){}
@@ -335,14 +284,13 @@ public class NetRequest
 			os.write(szMultipartPrefix.getBytes(), 0, szMultipartPrefix.length());
 
 			fis = file.getInputStream();
-			synchronized (m_byteBuffer) {			
-				int nRead = 0;
-	    		do{
-	    			nRead = fis.read(m_byteBuffer);	    			
-	    			if ( nRead > 0 )
-	    				os.write(m_byteBuffer, 0, nRead);
-	    		}while( nRead > 0 );
-			}
+			byte[]  byteBuffer = new byte[1024*4]; 
+			int nRead = 0;
+    		do{
+    			nRead = fis.read(byteBuffer);	    			
+    			if ( nRead > 0 )
+    				os.write(byteBuffer, 0, nRead);
+    		}while( nRead > 0 );
 			
 			os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
 			os.flush();
@@ -417,19 +365,8 @@ public class NetRequest
 			file.open(strFileName, "rw");
 			file.seek(file.size());
 			
-			int nFailTry = 0;
 			do{
-
-				try{
-					resp = pullFile1( strUrl, file, file.size(), oSession, headers );
-				}catch(IOException e)
-				{
-		    		if ( m_bCancel || nFailTry+1 >= MAX_NETREQUEST_RETRY )
-		    			throw e;
-		    		
-		    		nFailTry++;
-		    		m_nCurDownloadSize = 1;
-		    	}
+				resp = pullFile1( strUrl, file, file.size(), oSession, headers );
 			}while( !m_bCancel && (resp == null || resp.isOK()) && m_nCurDownloadSize > 0 && m_nMaxPacketSize > 0 );
 			
 		}finally{
@@ -445,7 +382,6 @@ public class NetRequest
 		return resp != null && !m_bCancel ? resp : makeResponse("", IHttpConnection.HTTP_INTERNAL_ERROR );
 	}
 	
-	static byte[]  m_byteDownloadBuffer = new byte[1024*20]; 
 	NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		String strRespBody = null;
@@ -502,12 +438,13 @@ public class NetRequest
 					int nRead = 0;
 					
 					is = m_connection.openInputStream();
-					
+					byte[]  byteBuffer = new byte[1024*20]; 
+
 		    		do{
-		    			nRead = /*bufferedReadByByte(m_byteBuffer, is);*/is.read(m_byteDownloadBuffer);
+		    			nRead = /*bufferedReadByByte(m_byteBuffer, is);*/is.read(byteBuffer);
 		    			if ( nRead > 0 )
 		    			{
-		    				file.write(m_byteDownloadBuffer, 0, nRead);
+		    				file.write(byteBuffer, 0, nRead);
 		    				
 		    				if (m_bFlushFileAfterWrite)
 		    					file.sync();
@@ -577,62 +514,6 @@ public class NetRequest
 		m_bCancel = true;
 		closeConnection();
     }
-/*
-	private static void parseCookie(String value, ParsedCookie cookie) {
-		boolean bAuth = false;
-		boolean bSession = false;
-		Tokenizer stringtokenizer = new Tokenizer(value, ";");
-		while (stringtokenizer.hasMoreTokens()) {
-			String tok = stringtokenizer.nextToken();
-			tok = tok.trim();
-			if (tok.length() == 0) {
-				continue;
-			}
-			
-			int i = 0;
-			if ( (i=tok.indexOf("auth_token=")) >= 0 )
-			{
-				String val = tok.substring(i+11);
-				val.trim();
-				if ( val.length() > 0 )
-				{
-					cookie.strAuth = "auth_token=" + val;
-					bAuth = true;
-				}
-			}else if ( (i=tok.indexOf("path=")) >= 0 )
-			{
-				String val = tok.substring(i+6);
-				val.trim();
-				if ( val.length() > 0 )
-				{
-					if (bAuth)
-						cookie.strAuth += ";path=" + val;
-					else if (bSession)
-						cookie.strSession += ";path=" + val;
-				}
-			}else if ( (i=tok.indexOf("rhosync_session=")) >= 0 )
-			{
-				String val = tok.substring(i+16);
-				val.trim();
-				if ( val.length() > 0 )
-				{
-					cookie.strSession = "rhosync_session=" + val;
-					bSession = true;
-				}
-			}
-		}
-	}*/
-/*
-	private static String extractToc(String toc_name, String data) {
-		int start = data.indexOf(toc_name);
-		if (start != -1) {
-			int end = data.indexOf(';', start);
-			if (end != -1) {
-				return data.substring(start, end);
-			}
-		}
-		return null;
-	}*/
 
 	/*static{
 		TEST();
@@ -666,88 +547,29 @@ public class NetRequest
 				LOG.INFO("Set-Cookie: " + strValue);
 				
 				strRes += URI.parseCookie(strValue);
-				//parseCookie(strValue, cookie);
-				// Hack to make it work on 4.6 device which doesn't parse
-				// cookies correctly
-				// if (cookie.strAuth==null) {
-				// String auth = extractToc("auth_token", header_field);
-				// cookie.strAuth = auth;
-				// System.out.println("Extracted auth_token: " + auth);
-				// }
-				/*if (cookie.strSession == null) {
-					String rhosync_session = extractToc("rhosync_session", strValue);
-					cookie.strSession = rhosync_session;
-					LOG.INFO("Extracted rhosync_session: " + rhosync_session);
-				}*/
 			}
 		}
 
 		return strRes;
 	}
-/*	
-	private final StringBuffer readFully(InputStream in) throws Exception 
-	{
-		boolean bReadByBytes = false;
-		if ( RhoConf.getInstance().getInt("bb_netreadbybytes") > 0 )
-			bReadByBytes = RhoClassFactory.createRhoRubyHelper().isSimulator();
-		
-		StringBuffer buffer = new StringBuffer();
-		UTF8StreamReader reader = new UTF8StreamReader(4096,bReadByBytes);
-		reader.setInput(in);
-		while (true) {
-			synchronized (m_charBuffer) {
-				int len = reader.read(m_charBuffer);
-				if (len < 0) {
-					break;
-				}
-				buffer.append(m_charBuffer, 0, len);
-			}
-		}
-		return buffer;
-	}*/
 
 	private final String readFully(InputStream in) throws Exception 
 	{
 		String strRes = "";
-		synchronized (m_byteBuffer) {			
-			int nRead = 0;
-			do{
-				nRead = in.read(m_byteBuffer);
-				if (nRead>0)
-				{
-					String strTemp = new String(m_byteBuffer,0,nRead);
-					strRes += strTemp;
-				}
-			}while( nRead > 0 );
-		}
+		byte[]  byteBuffer = new byte[1024*4];
+		
+		int nRead = 0;
+		do{
+			nRead = in.read(byteBuffer);
+			if (nRead>0)
+			{
+				String strTemp = new String(byteBuffer,0,nRead);
+				strRes += strTemp;
+			}
+		}while( nRead > 0 );
 		
 		return strRes;
 	}
-	/*
-	private final int bufferedRead(byte[] a, InputStream in) throws Exception {
-		int bytesRead = 0;
-		while (bytesRead < (a.length)) {
-			int read = in.read(a);//, bytesRead, (a.length - bytesRead));
-			if (read < 0) {
-				break;
-			}
-			bytesRead += read;
-		}
-		return bytesRead;
-	}
-	
-	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
-		int bytesRead = 0;
-		while (bytesRead < (a.length)) {
-			int read = in.read();// a, 0, a.length );
-			if (read < 0) {
-				return bytesRead > 0 ? bytesRead : -1;
-			}
-			a[bytesRead] = (byte)read;
-			bytesRead ++;
-		}
-		return bytesRead;
-	}*/
 	
 	public void closeConnection(){
 		if ( m_connection != null ){

@@ -18,13 +18,15 @@ namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
 
-CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, 
+    IRhoSession* oSession, Hashtable<String,String>* pHeaders, boolean sslVerifyPeer)
 {
     m_pParent = pParent;
     m_pParent->m_pCurNetRequestImpl = this;
     m_pHeaders = pHeaders;
     m_bCancel = false;
     m_pSession = oSession;
+    m_sslVerifyPeer = sslVerifyPeer;
 
     pszErrFunction = NULL;
     hInet = NULL, hConnection = NULL, hRequest = NULL;
@@ -78,6 +80,9 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
         if ( uri.lpszScheme && wcsicmp(uri.lpszScheme,L"https")==0)
             dwFlags |= INTERNET_FLAG_SECURE;
 
+        if ( !m_sslVerifyPeer )
+            dwFlags |= INTERNET_FLAG_IGNORE_CERT_CN_INVALID|INTERNET_FLAG_IGNORE_CERT_DATE_INVALID;
+
         hRequest = HttpOpenRequest( hConnection, CAtlStringW(method), strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
         if ( !hRequest ) 
         {
@@ -99,6 +104,38 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
         }
 
     }while(0);
+}
+
+boolean CNetRequestImpl::checkSslCertError()
+{
+    DWORD dwError = GetLastError ();
+    if (!m_sslVerifyPeer &&(
+        (dwError == ERROR_INTERNET_INVALID_CA) ||
+        (dwError == ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED) ||
+        (dwError == ERROR_INTERNET_SEC_CERT_DATE_INVALID) ||
+        (dwError == ERROR_INTERNET_SEC_CERT_CN_INVALID)))
+    {
+        DWORD dwFlag;
+        DWORD dwBuffLen = sizeof(dwFlag);
+        InternetQueryOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlag, &dwBuffLen);
+        dwFlag |= (SECURITY_FLAG_IGNORE_UNKNOWN_CA
+            | SECURITY_FLAG_IGNORE_CERT_CN_INVALID
+            | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID );
+        InternetSetOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS, &dwFlag, sizeof (dwFlag) );
+        /*
+        INTERNET_CERTIFICATE_INFO sInfo;
+        DWORD dwSize = sizeof(sInfo);
+        if(!InternetQueryOption(m_hSess,INTERNET_OPTION_SECURITY_CERTIFICATE_STRUCT,
+            &sInfo, &dwSize))
+        {
+            dwError = GetLastError();
+        }
+        */
+
+        return true;
+    }
+
+    return false;
 }
 
 CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
@@ -131,8 +168,18 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
 
         if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
         {
-            pszErrFunction = L"HttpSendRequest";
-            break;
+            if (checkSslCertError())
+            {
+                if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
+                {
+                    pszErrFunction = L"HttpSendRequest";
+                    break;
+                }
+            }else
+            {
+                pszErrFunction = L"HttpSendRequest";
+                break;
+            }
         }
 
         readResponse(pNetResp);
@@ -309,8 +356,18 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 
         if ( !HttpSendRequest( hRequest, NULL, 0, NULL, 0 ) )
         {
-            pszErrFunction = L"HttpSendRequest";
-            break;
+            if (checkSslCertError())
+            {
+                if ( !HttpSendRequest( hRequest, NULL, 0, NULL, 0 ) )
+                {
+                    pszErrFunction = L"HttpSendRequest";
+                    break;
+                }
+            }else
+            {
+                pszErrFunction = L"HttpSendRequest";
+                break;
+            }
         }
 
         readResponse(pNetResp);
@@ -370,8 +427,18 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
 
         if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
         {
-            pszErrFunction = L"HttpSendRequestEx";
-            break;
+            if (checkSslCertError())
+            {
+                if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
+                {
+                    pszErrFunction = L"HttpSendRequestEx";
+                    break;
+                }
+            }else
+            {
+                pszErrFunction = L"HttpSendRequestEx";
+                break;
+            }
         }
 
 	    DWORD dwBytesWritten = 0;

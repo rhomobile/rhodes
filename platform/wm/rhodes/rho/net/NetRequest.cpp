@@ -31,7 +31,7 @@ INetResponse* CNetRequest::pullCookies(const String& strUrl, const String& strBo
 
 INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
-    CNetRequestImpl oImpl(this, method,strUrl,oSession,pHeaders);
+    CNetRequestImpl oImpl(this, method,strUrl,oSession,pHeaders, m_sslVerifyPeer);
     return oImpl.sendString(strBody);
 }
 
@@ -57,7 +57,7 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
         return new CNetResponseImpl();
     }
 
-    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders);
+    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders,m_sslVerifyPeer);
     CNetResponseImpl* pResp = oImpl.sendStream(oFile.getInputStream());
     return pResp;
 }
@@ -71,7 +71,7 @@ INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFileP
         return new CNetResponseImpl();
     }
 
-    CNetRequestImpl oImpl(this, "GET",strUrl,oSession,pHeaders);
+    CNetRequestImpl oImpl(this, "GET",strUrl,oSession,pHeaders,m_sslVerifyPeer);
     CNetResponseImpl* pResp = oImpl.downloadFile(oFile);
     return pResp;
 }

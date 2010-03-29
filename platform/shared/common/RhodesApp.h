@@ -92,7 +92,6 @@ public:
     boolean sendLog();
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
-    void delCallbackObject(ICallbackObject* pCallbackObject);
     unsigned long getCallbackObject(int nIndex);
 
     const String& getRhoMessage(int nError, const char* szName);
