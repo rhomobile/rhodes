@@ -75,18 +75,6 @@ static ServerHost* sharedSH = nil;
 
 @synthesize actionTarget, onTakePicture, onChoosePicture, onChooseDateTime, onCreateMap;
 
-- (void)takePicture:(NSString*) url {
-	if(actionTarget && [actionTarget respondsToSelector:onTakePicture]) {
-		[actionTarget performSelectorOnMainThread:onTakePicture withObject:url waitUntilDone:NO];
-	}
-}
-
-- (void)choosePicture:(NSString*) url {
-	if(actionTarget && [actionTarget respondsToSelector:onChoosePicture]) {
-		[actionTarget performSelectorOnMainThread:onChoosePicture withObject:url waitUntilDone:NO];
-	}
-}
-
 - (void)ServerHostThreadRoutine:(id)anObject {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -150,13 +138,3 @@ static ServerHost* sharedSH = nil;
 }
 
 @end
-
-//ruby extension hooks
-
-void take_picture(char* callback_url) {
-	[[ServerHost sharedInstance] takePicture:[NSString stringWithUTF8String:callback_url]];		
-}
-
-void choose_picture(char* callback_url) {
-	[[ServerHost sharedInstance] choosePicture:[NSString stringWithUTF8String:callback_url]];		
-}

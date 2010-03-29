@@ -26,6 +26,17 @@ static Rhodes *instance = NULL;
     return [Rhodes sharedInstance]->application;
 }
 
+- (void)fixFrame {
+    UIApplication *app = [UIApplication sharedApplication];
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    if (!app.statusBarHidden) {
+        int newY = 10;
+        frame.size.height += frame.origin.y - newY;
+        frame.origin.y = newY;
+    }
+    [window setFrame:frame];
+}
+
 - (void)runRunnable:(id)runnable {
     if ([runnable conformsToProtocol:@protocol(RhoRunnable)])
         [runnable run];
@@ -90,6 +101,52 @@ static Rhodes *instance = NULL;
 	}
 }
 
+-(BOOL)startCameraPicker:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
+                                sourceType:(UIImagePickerControllerSourceType)type
+{ 
+#if !defined __IPHONE_3_0
+	if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
+        (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
+        (delegateObject == nil)) {
+		return NO; 
+	}
+#endif
+	
+	@try {
+        [[UIApplication sharedApplication] setStatusBarHidden:YES];
+        [self fixFrame];
+		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
+		picker.sourceType = type;
+		picker.delegate = delegateObject; 
+		picker.allowsImageEditing = YES;
+        
+        //[picker.view setFrame:frame];
+		[window addSubview:picker.view];
+	} @catch(NSException* theException) {
+		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+		//NSLog(@"%@", theException);
+        [[UIApplication sharedApplication] setStatusBarHidden:NO];
+        [self fixFrame];
+		return NO;
+	}
+	
+	return YES;
+}
+
+- (void)takePicture:(NSString*) url {
+    [pickImageDelegate setPostUrl:url];
+    //[self normalizeUrl:url]];
+    [self startCameraPicker:pickImageDelegate 
+                 sourceType:UIImagePickerControllerSourceTypeCamera];
+}
+
+- (void)choosePicture:(NSString*) url {
+    [pickImageDelegate setPostUrl:url];
+    //[self normalizeUrl:url]];
+    [self startCameraPicker:pickImageDelegate 
+                 sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+}
+
 - (UIWindow*)rootWindow {
     return window;
 }
@@ -124,18 +181,12 @@ static Rhodes *instance = NULL;
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
-    //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
-    //int newY = sbFrame.size.height;
-    int newY = 10;
-    
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    frame.size.height += frame.origin.y - newY;
-    frame.origin.y = newY;
-    
-    window = [[UIWindow alloc] initWithFrame:frame];
+    window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
     window.contentMode = UIViewContentModeScaleToFill;
     window.autoresizesSubviews = YES;
     [window makeKeyAndVisible];
+    
+    [self fixFrame];
     
     const char *szRootPath = rho_native_rhopath();
     rho_logconf_Init(szRootPath);
@@ -154,6 +205,7 @@ static Rhodes *instance = NULL;
     logViewController = [[LogViewController alloc] init];
     
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
+    pickImageDelegate = [[PickImageDelegate alloc] init];
     
     rho_rhodesapp_start();
     

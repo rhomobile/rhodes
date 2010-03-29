@@ -15,6 +15,7 @@
 #import "LogOptionsController.h"
 #import "LogViewController.h"
 #import "DateTimePickerDelegate.h"
+#import "PickImageDelegate.h"
 
 @protocol RhoRunnable
 
@@ -32,6 +33,7 @@
     LogOptionsController* logOptionsController;
     LogViewController* logViewController;
     DateTimePickerDelegate* dateTimePickerDelegate;
+    PickImageDelegate* pickImageDelegate;
 @public
     id<RhoMainView,NSObject> mainView;
 }
@@ -47,6 +49,7 @@
 + (void)performOnUiThread:(id<RhoRunnable>)runnable wait:(BOOL)wait;
 
 - (UIWindow*)rootWindow;
+- (void)fixFrame;
 
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
 - (void)playStop;
