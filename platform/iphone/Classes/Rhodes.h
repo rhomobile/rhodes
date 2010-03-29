@@ -8,6 +8,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "AppManager.h"
 #import "RhoMainView.h"
 
 @protocol RhoRunnable
@@ -16,16 +17,17 @@
 
 @end
 
-@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate>
+@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate, UITabBarControllerDelegate>
 {
+    AppManager *appManager;
     UIApplication *application;
     UIWindow *window;
 @public
-    id<RhoMainView> mainView;
+    id<RhoMainView,NSObject> mainView;
 }
 
 @property (nonatomic, retain) UIWindow *window;
-@property (nonatomic, retain) id<RhoMainView> mainView;
+@property (nonatomic, retain) id<RhoMainView,NSObject> mainView;
 
 + (Rhodes*)sharedInstance;
 

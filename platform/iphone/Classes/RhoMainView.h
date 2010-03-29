@@ -10,13 +10,14 @@
 
 @protocol RhoMainView
 
-- (UIView*)getView;
+- (UIView*)view;
 
 - (void)loadHTMLString:(NSString*)data;
 
 - (void)back:(int)index;
 - (void)forward:(int)index;
 - (void)navigate:(NSString*)url tab:(int)index;
+- (void)navigateRedirect:(NSString*)url tab:(int)index;
 - (void)reload:(int)index;
 
 - (void)executeJs:(NSString*)js tab:(int)index;

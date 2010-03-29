@@ -13,7 +13,6 @@
 #import "RhoMainView.h"
 #import "PickImageDelegate.h"
 #import "DateTimePickerDelegate.h"
-#import "TabBarDelegate.h"
 #import "LogViewController.h"
 #import "LogOptionsController.h"
 #import "NativeBar.h"
