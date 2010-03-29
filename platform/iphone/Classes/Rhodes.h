@@ -8,6 +8,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 #import "AppManager.h"
 #import "RhoMainView.h"
 
@@ -17,16 +18,18 @@
 
 @end
 
-@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate, UITabBarControllerDelegate>
+@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate, UITabBarControllerDelegate, AVAudioPlayerDelegate>
 {
     AppManager *appManager;
     UIApplication *application;
     UIWindow *window;
+    AVAudioPlayer *player;
 @public
     id<RhoMainView,NSObject> mainView;
 }
 
 @property (nonatomic, retain) UIWindow *window;
+@property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) id<RhoMainView,NSObject> mainView;
 
 + (Rhodes*)sharedInstance;
@@ -36,5 +39,8 @@
 + (void)performOnUiThread:(id<RhoRunnable>)runnable wait:(BOOL)wait;
 
 - (UIWindow*)rootWindow;
+
+- (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
+- (void)playStop;
 
 @end
