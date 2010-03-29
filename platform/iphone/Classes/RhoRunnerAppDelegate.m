@@ -61,59 +61,6 @@
 }
 */
 
--(BOOL)startCameraPickerFromViewController:(UIViewController*)controller 
-							 usingDelegate:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
-							 sourceType:(UIImagePickerControllerSourceType)type
-{ 
-#if !defined __IPHONE_3_0
-	if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
-		 (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
-		 (delegateObject == nil) || (controller == nil)) {
-		return NO; 
-	}
-#endif
-	
-	@try {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES];
-        [self fixFrame];
-		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
-		picker.sourceType = type;
-		picker.delegate = delegateObject; 
-		picker.allowsImageEditing = YES;
-        
-        //[picker.view setFrame:frame];
-		[window addSubview:picker.view];
-	} @catch(NSException* theException) {
-		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
-		//NSLog(@"%@", theException);
-        [[UIApplication sharedApplication] setStatusBarHidden:NO];
-        [self fixFrame];
-		return NO;
-	}
-	
-	return YES;
-} 
-
-- (void)onTakePicture:(NSString*) url {
-    // TODO:
-    /*
-	[pickImageDelegate setPostUrl:url];//[self normalizeUrl:url]];
-	[self startCameraPickerFromViewController:webViewController 
-								usingDelegate:pickImageDelegate 
-								sourceType:UIImagePickerControllerSourceTypeCamera];
-    */
-}
-
-- (void)onChoosePicture:(NSString*) url {
-    // TODO:
-    /*
-	[pickImageDelegate setPostUrl:url];//[self normalizeUrl:url]];
-	[self startCameraPickerFromViewController:webViewController 
-								usingDelegate:pickImageDelegate 
-								sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-    */
-}
-
 - (void) doStartUp {
 	appStarted = false;
     splashDisplayed = false;
@@ -138,7 +85,7 @@
     window.userInteractionEnabled = YES;
     [window makeKeyAndVisible];
 
-    [self fixFrame];
+    //[self fixFrame];
     
     //webViewController = [[WebViewController alloc] initWithParentWindow:window];
     //webViewController->actionTarget = self;
