@@ -26,18 +26,12 @@
 	MKCoordinateRegion region;
 	NSString *gapikey;  
 	//IBOutlet UISegmentedControl *mapType;
-@public
-	id  actionTarget;
-	SEL onNavigate;
-
 }
 
 // 
-@property (assign) id  actionTarget;
-@property (assign) SEL onNavigate;
 @property (copy) NSString* gapikey; 
 
-//- (IBAction)changeType:(id) sender;
++ (void)createMap:(rho_param*)params;
 - (void)setParams:(rho_param*)params;
 
 @end
