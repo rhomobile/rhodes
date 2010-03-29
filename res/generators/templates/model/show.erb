@@ -4,12 +4,8 @@
 
 <div id="toolbar">
     <div id="row">
-        <div id="leftItem" class="backButton">
-            <a href="<%%= url_for( :action => :index) %>">Back</a>
-        </div>
-        <div id="rightItem" class="regularButton">
-            <a href="<%%=url_for(:action => :edit, :id => @<%=name.downcase%>.object)%>">Edit</a>
-        </div>
+      <div id="leftItem" class="backButton"><%%=link_to "Back", :action => :index%></div>
+      <div id="rightItem" class="regularButton"><%%=link_to "Edit", :action => :edit, :id => @<%=name.downcase%>.object%></div>
     </div>
 </div>
 
