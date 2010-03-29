@@ -19,10 +19,10 @@
 
 @class WebViewController;
 
-@interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate, AVAudioPlayerDelegate> {
+@interface RhoRunnerAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
     //SplashViewController *splashViewController;
-    id<RhoMainView> mainView;
+    //id<RhoMainView> mainView;
     //LogViewController* logViewController;
     //LogOptionsController* logOptionsController;
     ServerHost * serverHost;
@@ -30,18 +30,18 @@
     //DateTimePickerDelegate* dateTimePickerDelegate;
     //TabBarDelegate* tabBarDelegate;
     //NativeBar* nativeBar;
-    AVAudioPlayer *player;
+    //AVAudioPlayer *player;
     bool appStarted;
     bool splashDisplayed;
 }
 
 @property (nonatomic, retain) UIWindow *window;
 //@property (nonatomic, retain) SplashViewController *splashViewController;
-@property (nonatomic, retain) id<RhoMainView> mainView;
-@property (nonatomic, retain) AVAudioPlayer *player;
+//@property (nonatomic, retain) id<RhoMainView> mainView;
+//@property (nonatomic, retain) AVAudioPlayer *player;
 //@property (nonatomic, retain) NativeBar* nativeBar;
 
-+ (RhoRunnerAppDelegate*)sharedDelegate;
-- (void)fixFrame;
+//+ (RhoRunnerAppDelegate*)sharedDelegate;
+//- (void)fixFrame;
 
 @end
