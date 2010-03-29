@@ -8,7 +8,7 @@
 #include "sync/ClientRegister.h"
 #include "net/URI.h"
 #include "statistic/RhoProfiler.h"
-#include "ruby/ext/rho/rhoruby.h"
+#include "rubyext/RhoRuby.h"
 #include "common/RhoTime.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
@@ -16,18 +16,6 @@
 #include "net/URI.h"
 
 namespace rho {
-const _CRhoRuby& RhoRuby = _CRhoRuby();
-
-/*static*/ String _CRhoRuby::getMessageText(const char* szName)
-{
-    return rho_ruby_getMessageText(szName);
-}
-
-/*static*/ String _CRhoRuby::getErrorText(int nError)
-{
-    return rho_ruby_getErrorText(nError);
-}
-
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
 
@@ -53,30 +41,33 @@ void CSyncEngine::prepareSync(ESyncState eState)
 {
     setState(eState);
     m_bStopByUser = false;
+    m_nErrCode = RhoRuby.ERR_NONE;
+
     loadAllSources();
 
     m_strSession = loadSession();
     if ( isSessionExist()  )
     {
         m_clientID = loadClientID();
-        getNotify().cleanLastSyncObjectCount();
-
-   	    doBulkSync();
-    }
-    else
-    {
-        if ( m_sources.size() > 0 )
+        if ( m_nErrCode == RhoRuby.ERR_NONE )
         {
-            CSyncSource& src = *m_sources.elementAt(getStartSource());
-    	    //src.m_strError = "Client is not logged in. No sync will be performed.";
-            src.m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+            getNotify().cleanLastSyncObjectCount();
+   	        doBulkSync();
 
-            getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
-        }else
-            getNotify().fireSyncNotification(null, true, RhoRuby.ERR_CLIENTISNOTLOGGEDIN, "");
+            return;
+        }
+    }else
+        m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 
-        stopSync();
-    }
+    if ( m_sources.size() > 0 )
+    {
+        CSyncSource& src = *m_sources.elementAt(getStartSource());
+        src.m_nErrCode = m_nErrCode;
+        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
+    }else
+        getNotify().fireSyncNotification(null, true, m_nErrCode, "");
+
+    stopSync();
 }
 
 void CSyncEngine::doSyncAllSources()
@@ -162,10 +153,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         if ( !resp.isOK() )
         {
             stopSync();
-			if (resp.isResponseRecieved())
-				nErrCode = RhoRuby.ERR_REMOTESERVER;
-			else
-				nErrCode = RhoRuby.ERR_NETWORK;
+            nErrCode = RhoRuby.getErrorFromResponse(resp);
             continue;
         }
 
@@ -373,6 +361,10 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
     NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
+
+    if ( !resp.isOK() )
+        m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+
     return resp.isOK();
 }
 
@@ -392,6 +384,11 @@ String CSyncEngine::requestClientIDByNet()
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");
         if ( !oJsonObject.isEmpty() )
             return oJsonObject.getString("client_id");
+    }else
+    {
+        m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+        if ( m_nErrCode == RhoRuby.ERR_NONE )
+            m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
     }
 
     return "";
@@ -580,23 +577,11 @@ void CSyncEngine::login(String name, String password, String callback)
 	//try {
 
     NetResponse( resp, getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this ) );
-    
-    if ( !resp.isResponseRecieved())
+    int nErrCode = RhoRuby.getErrorFromResponse(resp);
+    if ( nErrCode != RhoRuby.ERR_NONE )
     {
-        getNotify().callLoginCallback(callback, RhoRuby.ERR_NETWORK, resp.getCharData());
+        getNotify().callLoginCallback(callback, nErrCode, resp.getCharData());
         return;
-    }
-
-    if ( resp.isUnathorized() )
-    {
-        getNotify().callLoginCallback(callback, RhoRuby.ERR_UNATHORIZED, resp.getCharData());
-    	return;
-    }
-
-    if ( !resp.isOK() )
-    {
-        getNotify().callLoginCallback(callback, RhoRuby.ERR_REMOTESERVER, resp.getCharData());
-    	return;
     }
 
     String strSession = resp.getCharData();

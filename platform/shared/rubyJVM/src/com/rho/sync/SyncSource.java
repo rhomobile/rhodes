@@ -233,8 +233,7 @@ class SyncSource
 		        if ( !resp.isOK() )
 		        {
 		            getSync().setState(SyncEngine.esStop);
-		        	m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-		        	//m_strError = resp.getCharData();
+		            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
 		            return;
 		        }
 		    }catch(Exception exc)
@@ -429,7 +428,7 @@ class SyncSource
 		        if ( !resp.isOK() )
 		        {
 		            getSync().stopSync();
-					m_nErrCode = RhoRuby.ERR_NETWORK;
+		            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
 		            continue;
 		        }
 		    }catch(Exception exc)
@@ -696,8 +695,7 @@ class SyncSource
 			NetResponse resp = getNet().pullFile(url, fName, getSync(), null);
 	        if ( !resp.isOK() )
 	        {
-	        	m_nErrCode = RhoRuby.ERR_REMOTESERVER;
-	        	//m_strError = resp.getCharData();
+	        	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
 	        	return false;
 	        }
 	    }catch(Exception exc)
