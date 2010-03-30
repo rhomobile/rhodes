@@ -414,7 +414,7 @@ void CSyncEngine::doBulkSync()//throws Exception
     }
 
     if ( m_bHasAppPartition )
-        loadBulkPartition(getAppDB(), "app");
+        loadBulkPartition(getAppDB(), "application");
 
     if ( !isContinueSync() )
         return;
