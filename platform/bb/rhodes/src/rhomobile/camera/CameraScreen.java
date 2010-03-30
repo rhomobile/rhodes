@@ -186,11 +186,17 @@ public class CameraScreen extends MainScreen {
 		            }
 		            
 		            fname = makeFileName(ext);
+	        		LOG.TRACE("camera filename: " + fname);
 	        		
 		        	file.open(fname, false, false);
+
+	        		LOG.TRACE("camera file open. Encoding: " + encoding);
 		        	
 		            //Retrieve the raw image from the VideoControl
 		        	byte[] image = _videoControl.getSnapshot(encoding);
+		        	
+	        		LOG.TRACE("camera getSnapshot called.");
+		        	
 		        	//Write image data
 		        	file.getOutStream().write(image,0,image.length);
 		        	image = null;
@@ -201,7 +207,7 @@ public class CameraScreen extends MainScreen {
 	        	fname = Utilities.replaceAll(fname,"/","%2F");
 	        } catch(Exception e) {
 	        	error = true;
-	        	LOG.ERROR(e);
+	        	LOG.ERROR("Read camera image file failed.", e);
 	        	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
 	        } finally {
 				try{
@@ -278,6 +284,7 @@ public class CameraScreen extends MainScreen {
     	try
         {
     		if (player != null) {
+    			LOG.INFO("Use VideoControl");
 	            //Set the player to the REALIZED state (see Player docs.)
 	            player.realize();
 	
@@ -301,6 +308,8 @@ public class CameraScreen extends MainScreen {
 	            initializeEncodingList();
     		}
     		else {
+    			LOG.INFO("Use filesystem hook");
+    			
     			RhodesApplication app = RhodesApplication.getInstance();
     			_fileListener = new CameraFilesListener(this);
     			app.addFileSystemJournalListener(_fileListener);
