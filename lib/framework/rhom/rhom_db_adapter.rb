@@ -28,9 +28,9 @@ module Rhom
     #class << self
       
       # maintains a single database connection
-      def initialize(dbfile=nil)
-        unless @database or dbfile.nil?
-          @database = SQLite3::Database.new(dbfile)
+      def initialize(dbfile, partition)
+        unless @database
+          @database = SQLite3::Database.new(dbfile,partition)
         end
       end
     

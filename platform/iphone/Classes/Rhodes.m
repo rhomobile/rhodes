@@ -1,12 +1,13 @@
 #import "Rhodes.h"
 #import "SimpleMainView.h"
-#import "Alert.h"
+#import "RhoAlert.h"
 #import "ParamsWrapper.h"
 
 #include "sync/ClientRegister.h"
 #include "sync/syncthread.h"
 #include "logging/RhoLogConf.h"
 #include "logging/RhoLog.h"
+#include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -37,15 +38,53 @@ static Rhodes *instance = NULL;
     [window setFrame:frame];
 }
 
-- (void)runRunnable:(id)runnable {
-    if ([runnable conformsToProtocol:@protocol(RhoRunnable)])
-        [runnable run];
-    [runnable release];
+- (void)runRunnable:(NSArray*)args {
+    id runnable = [args objectAtIndex:0];
+    if ([runnable respondsToSelector:@selector(run)])
+        [runnable performSelector:@selector(run)];
+    else if ([runnable respondsToSelector:@selector(run:)]) {
+        id arg = nil;
+        if ([args count] == 2)
+            arg = [args objectAtIndex:1];
+        [runnable performSelector:@selector(run:) withObject:arg];
+    }
+    else if ([runnable respondsToSelector:@selector(run::)]) {
+        id arg1 = nil;
+        if ([args count] > 1)
+            arg1 = [args objectAtIndex:1];
+        id arg2 = nil;
+        if ([args count] > 2)
+            arg2 = [args objectAtIndex:2];
+        [runnable performSelector:@selector(run::) withObject:arg1 withObject:arg2];
+    }
+    else {
+        RAWLOG_ERROR("runRunnable: unrecognized parameters");
+    }
+    [args release];
 }
 
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait {
-    [runnable retain];
-    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:runnable waitUntilDone:wait];
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:1];
+    [args addObject:runnable];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
+}
+
++ (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait {
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:2];
+    [args addObject:runnable];
+    if (arg)
+        [args addObject:arg];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
+}
+
++ (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait {
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:3];
+    [args addObject:runnable];
+    if (arg1)
+        [args addObject:arg1];
+    if (arg2)
+        [args addObject:arg2];
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
 }
 
 - (void)openMapLocation:(NSString*)query {
@@ -178,6 +217,14 @@ static Rhodes *instance = NULL;
     instance = self;
     application = [UIApplication sharedApplication];
     
+    appManager = [AppManager instance]; 
+	//Configure AppManager
+	[appManager configure];
+    
+    const char *szRootPath = rho_native_rhopath();
+    rho_logconf_Init(szRootPath);
+    rho_rhodesapp_create(szRootPath);
+    
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
@@ -188,17 +235,9 @@ static Rhodes *instance = NULL;
     
     [self fixFrame];
     
-    const char *szRootPath = rho_native_rhopath();
-    rho_logconf_Init(szRootPath);
-    rho_rhodesapp_create(szRootPath);
-    
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window];
     [self showLoadingPage];
-    
-    appManager = [AppManager instance]; 
-	//Configure AppManager
-	[appManager configure];
     
     // Init controllers
     logOptionsController = [[LogOptionsController alloc] init];
@@ -249,17 +288,17 @@ static Rhodes *instance = NULL;
 		NSString *alert = [aps objectForKey:@"alert"];
 		if (alert && [alert length] > 0) {
 			NSLog(@"Push Alert: %@", alert);
-            [Alert showPopup:alert];
+            [RhoAlert showPopup:alert];
 		}
 		NSString *sound = [aps objectForKey:@"sound"];
 		if (sound && [sound length] > 0) {
 			NSLog(@"Sound file name: %@", sound);
-            [Alert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
+            [RhoAlert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
 		}
 		NSString *vibrate = [aps objectForKey:@"vibrate"];
 		if (vibrate && [vibrate length] > 0) {
 			NSLog(@"Do vibrate...");
-            [Alert vibrate:1];
+            [RhoAlert vibrate:1];
 		}
 	}
 	[self processDoSync:userInfo];
@@ -404,6 +443,8 @@ static Rhodes *instance = NULL;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
+    if (rho_conf_getBool("disable_context_menu"))
+        [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
 	// TODO
     /*
      [self inactive];
@@ -444,13 +485,13 @@ static Rhodes *instance = NULL;
 
 void* rho_nativethread_start()
 {
-	return [[NSAutoreleasePool alloc] init];
+	return 0;//[[NSAutoreleasePool alloc] init];
 }
 
 void rho_nativethread_end(void* pData)
 {
-    NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
-    [pool release];	
+    //NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
+    //[pool release];	
 }
 
 void rho_map_location(char* query) {

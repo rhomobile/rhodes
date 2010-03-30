@@ -66,8 +66,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     };
     
     Vector/*<SyncSource*>*/ m_sources = new Vector();
-    DBAdapter   m_dbUserAdapter;
-    DBAdapter   m_dbAppAdapter;
+    Vector/*<String>*/      m_arPartitions = new Vector();    
     NetRequest m_NetRequest;
     ISyncProtocol m_SyncProtocol;
     int         m_syncState;
@@ -78,8 +77,6 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean m_bStopByUser = false;
     int m_nSyncPageSize = 2000;
     boolean m_bNoThreaded = false;
-    boolean m_bHasUserPartition;
-    boolean m_bHasAppPartition;
     int m_nErrCode = RhoRuby.ERR_NONE;
     
     void setState(int eState){ m_syncState = eState; }
@@ -95,20 +92,18 @@ public class SyncEngine implements NetRequest.IRhoSession
     void setSession(String strSession){m_strSession=strSession;}
     boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
     
+    DBAdapter getUserDB(){ return DBAdapter.getUserDB(); }
+    DBAdapter getDB(String strPartition){ return DBAdapter.getDB(strPartition); }
+    
   //IRhoSession
     public String getSession(){ return m_strSession; }
     public String getContentType(){ return getProtocol().getContentType();}
     
-    DBAdapter getDB(){ return m_dbUserAdapter; }
-    DBAdapter getAppDB(){ return m_dbAppAdapter; }    
     SyncNotify getNotify(){ return m_oSyncNotify; }
     NetRequest getNet() { return m_NetRequest;}
     ISyncProtocol getProtocol(){ return m_SyncProtocol; }
     
-    SyncEngine(DBAdapter dbUser, DBAdapter dbApp){
-    	m_dbUserAdapter = dbUser;
-    	m_dbAppAdapter = dbApp;
-
+    SyncEngine(){
 		m_NetRequest = null;
     	m_syncState = esNone;
     	
@@ -361,7 +356,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            {
 //                    LOG.ERROR( "Sync one source : Unknown Source " + oSrcID.toString() );
 	            
-		        	src = new SyncSource(this, getDB());
+		        	src = new SyncSource(this, getUserDB());
 			    	//src.m_strError = "Unknown sync source.";
 			    	src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 		        	
@@ -403,10 +398,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
-	    m_bHasUserPartition = false;
-	    m_bHasAppPartition = false;
 	    
-	    IDBResult res = getDB().executeSQL("SELECT source_id,sync_type,token,name, partition from sources ORDER BY priority");
+	    IDBResult res = getUserDB().executeSQL("SELECT source_id,sync_type,token,name, partition from sources ORDER BY priority");
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
 	        String strShouldSync = res.getStringByIdx(1);
@@ -415,11 +408,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	        String strName = res.getStringByIdx(3);
 	        String strPartition = res.getStringByIdx(4);
-	        m_bHasUserPartition = m_bHasUserPartition || strPartition.compareTo("user") == 0;
-	        m_bHasAppPartition = m_bHasAppPartition || strPartition.compareTo("application") == 0;
-
+	        
+	        if ( m_arPartitions.indexOf(strPartition) < 0 )
+	        	m_arPartitions.addElement(strPartition);
+	        
 	        m_sources.addElement( new SyncSource( res.getIntByIdx(0), strName, res.getLongByIdx(2), strShouldSync, 
-	            (strPartition.compareTo("user") == 0 ? getDB() : getAppDB()), this) );
+	        		getDB(strPartition), this) );
 	    }
 	}
 
@@ -431,7 +425,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		{
 		    boolean bResetClient = false;
 		    {
-		        IDBResult res = getDB().executeSQL("SELECT client_id,reset from client_info");
+		        IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info");
 		        if ( !res.isEnd() )
 		        {
 		            clientID = res.getStringByIdx(0);
@@ -443,17 +437,17 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    {
 		        clientID = requestClientIDByNet();
 		
-	            IDBResult res = getDB().executeSQL("SELECT * FROM client_info");
+	            IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
 	            if ( !res.isEnd() )
-	                getDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
+	            	getUserDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
 	            else
-	                getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
+	            	getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 		    }else if ( bResetClient )
 		    {
 		    	if ( !resetClientIDByNet(clientID) )
 		    		stopSync();
 		    	else
-		    		getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
+		    		getUserDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", new Integer(0), clientID );	    	
 		    }
 		}
 		
@@ -504,36 +498,25 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void doBulkSync()throws Exception
 	{
 	    int nBulkSyncState = RhoConf.getInstance().getInt("bulksync_state");;
-	    if ( nBulkSyncState >= 2 || !isContinueSync() )
+	    if ( nBulkSyncState >= 1 || !isContinueSync() )
 	        return;
 
 		LOG.INFO("Bulk sync: start");
 		getNotify().fireBulkSyncNotification(false, "start", "", RhoRuby.ERR_NONE);
 		
-	    if ( nBulkSyncState == 0 && m_bHasUserPartition )
+	    for (int i = 0; i < (int)m_arPartitions.size() && isContinueSync(); i++)
+	        loadBulkPartition( (String)m_arPartitions.elementAt(i));
+
+	    if (isContinueSync())
 	    {
-	        loadBulkPartition(getDB(), "user");
-
-	        if ( !isContinueSync() )
-	            return;
-
-			RhoConf.getInstance().setInt("bulksync_state", 1, true);
+	    	RhoConf.getInstance().setInt("bulksync_state", 1, true);
+	        getNotify().fireBulkSyncNotification(true, "", "", RhoRuby.ERR_NONE);
 	    }
-
-	    if ( m_bHasAppPartition )
-	        loadBulkPartition(getAppDB(), "app");
-
-	    if ( !isContinueSync() )
-	        return;
-
-		RhoConf.getInstance().setInt("bulksync_state", 2, true);
-
-	    getNotify().fireBulkSyncNotification(true, "", "", RhoRuby.ERR_NONE);
-	            
 	}
 
-	void loadBulkPartition(DBAdapter dbPartition, String strPartition )throws Exception
+	void loadBulkPartition(String strPartition )throws Exception
 	{
+		DBAdapter dbPartition = getDB(strPartition); 		
 	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "bulk_data";
 	    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
@@ -718,11 +701,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        return;
 		    }
 		    
-		    IDBResult res = getDB().executeSQL("SELECT * FROM client_info");
+		    IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
 		    if ( !res.isEnd() )
-		        getDB().executeSQL( "UPDATE client_info SET session=?", strSession );
+		    	getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
 		    else
-		        getDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
+		    	getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 		
 		    //if ( ClientRegister.getInstance() != null )
 		    //	ClientRegister.getInstance().stopWait();
@@ -739,7 +722,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	boolean isLoggedIn()throws DBException
 	{
 	    int nCount = 0;
-	    IDBResult res = getDB().executeSQL("SELECT count(session) FROM client_info WHERE session IS NOT NULL");
+	    IDBResult res = getUserDB().executeSQL("SELECT count(session) FROM client_info WHERE session IS NOT NULL");
 	    
 	    if ( !res.isEnd() )
 	        nCount = res.getIntByIdx(0);
@@ -750,7 +733,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	String loadSession()throws DBException
 	{
 	    String strRes = "";
-	    IDBResult res = getDB().executeSQL("SELECT session FROM client_info WHERE session IS NOT NULL");
+	    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info WHERE session IS NOT NULL");
 	    
 	    if ( !res.isEnd() )
 	    	strRes = res.getStringByIdx(0);
@@ -760,7 +743,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	public void logout()throws Exception
 	{
-	    getDB().executeSQL( "UPDATE client_info SET session = NULL");
+		getUserDB().executeSQL( "UPDATE client_info SET session = NULL");
 	    m_strSession = "";
 	
 	    loadAllSources();
@@ -772,7 +755,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		RhoConf.getInstance().saveToFile();
 		RhoConf.getInstance().loadConf();
 		
-		getDB().executeSQL("DELETE FROM client_info");
+		getUserDB().executeSQL("DELETE FROM client_info");
 		
 		logout();
 	}

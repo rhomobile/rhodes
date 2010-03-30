@@ -2,7 +2,6 @@
 #define RHO_HTTP_SERVER_F5FFD21AD3EE463E850C5E2C789397BD
 
 #include "common/RhoStd.h"
-#include "common/RhoPort.h"
 #include "logging/RhoLog.h"
 
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE)

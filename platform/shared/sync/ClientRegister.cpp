@@ -6,6 +6,7 @@ namespace rho{
 namespace sync{
 
 using namespace rho::common;
+using namespace rho::db;
 
 #define THREAD_WAIT_TIMEOUT 10
 
@@ -84,7 +85,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 	if ( client_id.length() == 0 )
 		return false;
 
-	DBResult( res, oSync.getDB().executeSQL("SELECT token,token_sent from client_info") );
+    DBResult( res, CDBAdapter::getUserDB().executeSQL("SELECT token,token_sent from client_info") );
     if ( !res.isEnd() ) {
 		String token = res.getStringByIdx(0); 
 		int token_sent = res.getIntByIdx(1);
@@ -102,7 +103,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 	if( resp.isOK() )
     {
 //				try {
-			oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", 1, m_strDevicePin );
+			CDBAdapter::getUserDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", 1, m_strDevicePin );
 //				} catch(Exception ex) {
 //					LOG.ERROR("Error saving token_sent to the DB...");
 //				}	
