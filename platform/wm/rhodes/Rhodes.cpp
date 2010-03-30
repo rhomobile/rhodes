@@ -264,8 +264,8 @@ extern "C" void webview_navigate(char* url, int index) {
 }
 
 extern "C" char* webview_execute_js(char* js, int index) {
-//TODO: webview_execute_js
-    return "";
+	_AtlModule.DoViewNavigate(url);
+	return "";
 }
 
 extern "C" void webview_set_menu_items(VALUE valMenu) 
