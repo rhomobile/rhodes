@@ -672,7 +672,7 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	}
 
 	rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
-										retCode == IDOK ? ret_time : 0,
+										retCode == IDOK ? (long )ret_time : 0,
 										msg->m_data,
 										retCode == IDOK ? 0 : 1);
 	delete msg;
@@ -683,14 +683,24 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	Hashtable<String, String> *menuList = (Hashtable <String, String>*)lParam;
+
+#if defined (_WIN32_WCE)
 	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
 
 	m_bCustomMenu = true;
 
+	const int ID_NEW_ITEM = WM_APP+3;
 	
 	int num = GetMenuItemCount (hMenu);
 	for (int i = 0; i < (num - 1); i++)	//delete all except exit item
 		DeleteMenu(hMenu, 0,MF_BYPOSITION);
+
+	USES_CONVERSION;
+	for (Hashtable<String, String>::iterator itr = menuList->begin(); itr != menuList->end(); ++itr) {
+        //addStrToHash( retval, itr->first.c_str(), itr->second.c_str() );
+		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_NEW_ITEM, A2T(itr->first.c_str()));
+    }
+#endif
 
 	if (menuList != NULL)
 		delete menuList;
