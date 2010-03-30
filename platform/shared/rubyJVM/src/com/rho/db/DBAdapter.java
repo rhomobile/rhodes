@@ -4,7 +4,10 @@ import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.*;
 import com.rho.file.*;
+
+import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Hashtable;
 
 public class DBAdapter extends RubyBasic {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -17,11 +20,14 @@ public class DBAdapter extends RubyBasic {
 	private String  m_strDBPath;
 	private String  m_strDBVerPath;
 	private DBAttrManager m_attrMgr = new DBAttrManager();
+	static Hashtable/*Ptr<String,CDBAdapter*>*/ m_mapDBPartitions = new Hashtable();
 	
     Mutex m_mxDB = new Mutex();
     boolean m_bInsideTransaction=false;
     boolean m_bUnlockDB = false;
 	
+    static Hashtable/*Ptr<String,CDBAdapter*>&*/ getDBPartitions(){ return  m_mapDBPartitions; }
+    
 	DBAdapter(RubyClass c) {
 		super(c);
 		
@@ -781,19 +787,6 @@ public class DBAdapter extends RubyBasic {
     	return new DBAdapter(RubyRuntime.DatabaseClass);
     }
     
-    private RubyValue rb_initialize(RubyValue v) 
-    {
-    	try{
-    		openDB(v !=null && v != RubyConstant.QNIL ? v.toString() : "");
-		}catch(Exception e)
-		{
-			LOG.ERROR("initialize failed.", e);
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-		}
-    	
-        return this;
-    }
-    
     private RubyValue rb_start_transaction() {
     	try{
     		setUnlockDB(true);
@@ -828,21 +821,38 @@ public class DBAdapter extends RubyBasic {
         return ObjectFactory.createInteger(0);
     }
     
-    private RubyValue rb_close() {
-    	try{
-    		
-    		//do not close sync db, close it at exit
-    		/*if ( m_dbStorage != null ){
-		    	m_dbStorage.close();
-		    	m_dbStorage = null;
-    		}*/
-    		
-    	}catch( Exception e ){
-    		LOG.ERROR("close failed.", e);
-    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
+    public static void closeAll()
+    {
+    	Enumeration enumDBs = m_mapDBPartitions.elements();
+		while (enumDBs.hasMoreElements()) 
+		{
+			DBAdapter db = (DBAdapter)enumDBs.nextElement();
+			db.close();
+		}
+    }
+
+    public static DBAdapter getUserDB()
+    {
+        return (DBAdapter)getDBPartitions().get("user");
+    }
+
+    public static DBAdapter getDB(String szPartition)
+    {
+        return (DBAdapter)getDBPartitions().get(szPartition);
+    }
+
+    public static boolean isAnyInsideTransaction()
+    {
+    	Enumeration enumDBs = m_mapDBPartitions.elements();
+		while (enumDBs.hasMoreElements()) 
+		{
+			DBAdapter db = (DBAdapter)enumDBs.nextElement();
+			
+			if ( db.isInsideTransaction() )
+				return true;
+		}
+
+        return false;
     }
     
 	public static void initMethods(RubyClass klass) {
@@ -852,9 +862,26 @@ public class DBAdapter extends RubyBasic {
 				return DBAdapter.alloc(receiver);}
 		});
 		
-		klass.defineMethod( "initialize", new RubyOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_initialize(arg);}
+		klass.defineMethod( "initialize", new RubyTwoArgMethod()
+		{ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block )
+			{
+		    	try
+		    	{
+		    		String szDbName = arg1.toStr();
+		    		String szDbPartition = arg2.toStr();
+		    		((DBAdapter)receiver).openDB(szDbName);
+		    		
+		    		DBAdapter.getDBPartitions().put(szDbPartition, receiver);
+		    		
+			        return receiver;
+				}catch(Exception e)
+				{
+					LOG.ERROR("initialize failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+		    	
+			}
 		});
 		/*klass.defineMethod( "close", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
