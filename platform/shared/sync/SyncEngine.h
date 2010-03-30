@@ -34,8 +34,7 @@ public:
 
 private:
     VectorPtr<CSyncSource*> m_sources;
-    db::CDBAdapter& m_dbUserAdapter;
-    db::CDBAdapter& m_dbAppAdapter;
+    Vector<String>          m_arPartitions;
     common::CAutoPtr<net::INetRequest> m_NetRequest;
     common::CAutoPtr<ISyncProtocol> m_SyncProtocol;
     ESyncState m_syncState;
@@ -46,12 +45,10 @@ private:
     boolean m_bStopByUser;
     int m_nSyncPageSize;
 	boolean m_bNoThreaded;
-    boolean m_bHasUserPartition;
-    boolean m_bHasAppPartition;
     int m_nErrCode;
 
 public:
-    CSyncEngine(db::CDBAdapter& dbUser, db::CDBAdapter& dbApp);
+    CSyncEngine();
     ~CSyncEngine(void){}
 
     void setFactory(common::IRhoClassFactory* factory){ 
@@ -84,8 +81,6 @@ public:
     virtual const String& getSession(){ return m_strSession; }
     virtual const String& getContentType(){ return getProtocol().getContentType();}
 
-    //CSyncEngine(): m_dbAdapter(db::CDBAdapter()), m_NetRequest(0), m_isLoggedIn(true){}
-
     void loadAllSources();
     void syncAllSources();
     void prepareSync(ESyncState eState);
@@ -96,9 +91,6 @@ public:
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
     void doBulkSync();//throws Exception
-
-    db::CDBAdapter& getDB(){ return m_dbUserAdapter; }
-    db::CDBAdapter& getAppDB(){ return m_dbAppAdapter; }
 
     CSyncNotify& getNotify(){ return m_oSyncNotify; }
     net::INetRequest& getNet(){ return *m_NetRequest; }
@@ -115,8 +107,10 @@ private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);
 
-    void loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition);
+    void loadBulkPartition(const String& strPartition);
     String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt);
+    db::CDBAdapter& getUserDB(){ return db::CDBAdapter::getUserDB(); }
+    db::CDBAdapter& getDB(const String& strPartition){ return db::CDBAdapter::getDB(strPartition.c_str()); }
 
     void initProtocol();
 

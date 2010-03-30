@@ -83,6 +83,17 @@ public:
         }
     }
 
+    int indexOf(const Type& item)
+    {
+        for (int i = 0; i < (int)size(); i++)
+        {
+            if ( at(i) == item )
+                return i;
+        }
+
+        return -1;
+    }
+
     typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
     typename std::vector<Type>::const_reference elementAt(typename std::vector<Type>::size_type i) const{ return at(i); }
 };
