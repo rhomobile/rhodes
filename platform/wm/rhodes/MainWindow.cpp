@@ -62,6 +62,7 @@ CMainWindow::CMainWindow()
     m_sai.cbSize = sizeof(m_sai);
 #endif
 	m_bFullscreen = false;
+	m_bCustomMenu = false;
 //	m_current_url = NULL;
 //    m_szStartPage = NULL;
 }
@@ -679,6 +680,24 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
+LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	Hashtable<String, String> *menuList = (Hashtable <String, String>*)lParam;
+	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+
+	m_bCustomMenu = true;
+
+	
+	int num = GetMenuItemCount (hMenu);
+	for (int i = 0; i < (num - 1); i++)	//delete all except exit item
+		DeleteMenu(hMenu, 0,MF_BYPOSITION);
+
+	if (menuList != NULL)
+		delete menuList;
+
+	return 0;
+}
+
 // **************************************************************************
 //
 // event handlers
@@ -836,8 +855,12 @@ void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
 {
 #if defined(_WIN32_WCE)
+	if (true == m_bCustomMenu)
+		return TRUE;
+
     HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
     BOOL bRetVal = EnableMenuItem(hMenu, uMenuItemID, bEnable ? MF_ENABLED : MF_GRAYED);
+
     return (bRetVal != 0xFFFFFFFF);
 #else
 	return TRUE;
