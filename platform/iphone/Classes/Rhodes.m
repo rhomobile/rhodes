@@ -1,12 +1,13 @@
 #import "Rhodes.h"
 #import "SimpleMainView.h"
-#import "Alert.h"
+#import "RhoAlert.h"
 #import "ParamsWrapper.h"
 
 #include "sync/ClientRegister.h"
 #include "sync/syncthread.h"
 #include "logging/RhoLogConf.h"
 #include "logging/RhoLog.h"
+#include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -216,6 +217,14 @@ static Rhodes *instance = NULL;
     instance = self;
     application = [UIApplication sharedApplication];
     
+    appManager = [AppManager instance]; 
+	//Configure AppManager
+	[appManager configure];
+    
+    const char *szRootPath = rho_native_rhopath();
+    rho_logconf_Init(szRootPath);
+    rho_rhodesapp_create(szRootPath);
+    
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     
@@ -226,17 +235,9 @@ static Rhodes *instance = NULL;
     
     [self fixFrame];
     
-    const char *szRootPath = rho_native_rhopath();
-    rho_logconf_Init(szRootPath);
-    rho_rhodesapp_create(szRootPath);
-    
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window];
     [self showLoadingPage];
-    
-    appManager = [AppManager instance]; 
-	//Configure AppManager
-	[appManager configure];
     
     // Init controllers
     logOptionsController = [[LogOptionsController alloc] init];
@@ -287,17 +288,17 @@ static Rhodes *instance = NULL;
 		NSString *alert = [aps objectForKey:@"alert"];
 		if (alert && [alert length] > 0) {
 			NSLog(@"Push Alert: %@", alert);
-            [Alert showPopup:alert];
+            [RhoAlert showPopup:alert];
 		}
 		NSString *sound = [aps objectForKey:@"sound"];
 		if (sound && [sound length] > 0) {
 			NSLog(@"Sound file name: %@", sound);
-            [Alert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
+            [RhoAlert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
 		}
 		NSString *vibrate = [aps objectForKey:@"vibrate"];
 		if (vibrate && [vibrate length] > 0) {
 			NSLog(@"Do vibrate...");
-            [Alert vibrate:1];
+            [RhoAlert vibrate:1];
 		}
 	}
 	[self processDoSync:userInfo];
@@ -442,6 +443,8 @@ static Rhodes *instance = NULL;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
+    if (rho_conf_getBool("disable_context_menu"))
+        [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
 	// TODO
     /*
      [self inactive];
