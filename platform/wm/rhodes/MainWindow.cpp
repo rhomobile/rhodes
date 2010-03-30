@@ -657,12 +657,21 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	CDateTimeMessage *msg = (CDateTimeMessage *)lParam;
+	int retCode	= -1;
+	time_t ret_time = 0;
 
-	CDateTimePickerDialog dateTimeDialog(msg);
+	if (msg->m_format == CDateTimeMessage::FORMAT_DATE) {
+		CDatePickerDialog dateDialog(msg);
+		retCode = dateDialog.DoModal(m_hWnd);
+		ret_time = dateDialog.GetTime();
+	} else {
+		CDateTimePickerDialog dateTimeDialog(msg);
+		retCode = dateTimeDialog.DoModal(m_hWnd);
+		ret_time = dateTimeDialog.GetTime();
+	}
 
-    int retCode = dateTimeDialog.DoModal(m_hWnd);
 	rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
-										retCode == IDOK ? dateTimeDialog.GetTime() : 0,
+										retCode == IDOK ? ret_time : 0,
 										msg->m_data,
 										retCode == IDOK ? 0 : 1);
 	delete msg;
