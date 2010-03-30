@@ -9,11 +9,10 @@ namespace rho {
 namespace sync {
 
 using namespace rho::common;
+using namespace rho::db;
 
 IMPLEMENT_LOGCLASS(CSyncThread,"Sync");
 CSyncThread* CSyncThread::m_pInstance = 0;
-db::CDBAdapter  CSyncThread::m_oDBUserAdapter;
-db::CDBAdapter  CSyncThread::m_oDBAppAdapter;
 
 /*static*/ CSyncThread* CSyncThread::Create(common::IRhoClassFactory* factory)
 {
@@ -32,7 +31,7 @@ db::CDBAdapter  CSyncThread::m_oDBAppAdapter;
     m_pInstance = 0;
 }
 
-CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory), m_oSyncEngine(m_oDBUserAdapter, m_oDBAppAdapter)
+CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory)
 {
     m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
     if( RHOCONF().isExist("sync_poll_interval") )
@@ -50,18 +49,9 @@ CSyncThread::~CSyncThread(void)
     m_oSyncEngine.exitSync();
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 
-    getInstance()->m_oDBAppAdapter.close();
-    getInstance()->m_oDBUserAdapter.close();
+    db::CDBAdapter::closeAll();
 
     LOG(INFO) + "Sync engine thread shutdown";
-}
-
-/*static*/ db::CDBAdapter& CSyncThread::getDBAdapter(sqlite3* db)
-{
-    if ( m_oDBAppAdapter.getDbHandle() == db )
-        return m_oDBAppAdapter;
-
-    return m_oDBUserAdapter;
 }
 
 void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
@@ -93,7 +83,7 @@ int CSyncThread::getLastSyncInterval()
 {
     uint64 nowTime = CLocalTime().toULong();
 	
-    DBResult( res, m_oSyncEngine.getDB().executeSQL("SELECT last_updated from sources") );
+    DBResult( res, CDBAdapter::getUserDB().executeSQL("SELECT last_updated from sources") );
     uint64 latestTimeUpdated = 0;
     for ( ; !res.isEnd(); res.next() )
     { 
@@ -229,6 +219,7 @@ void CSyncThread::setPollInterval(int nInterval)
 extern "C" {
 
 using namespace rho::sync;
+using namespace rho::db;
 void rho_sync_destroy()
 {
 	CSyncThread::Destroy();
@@ -253,7 +244,7 @@ void rho_sync_stop()
 		CSyncThread::getSyncEngine().stopSyncByUser();
         CSyncThread::getInstance()->stopWait();
 
-        while( CSyncThread::getDBUserAdapter().isInsideTransaction() || CSyncThread::getDBAppAdapter().isInsideTransaction() )
+        while( CDBAdapter::isAnyInsideTransaction() )
 			CSyncThread::getInstance()->sleep(100);
 	}
 }
@@ -314,7 +305,7 @@ void rho_sync_login(const char *name, const char *password, const char* callback
 
 int rho_sync_logged_in()
 {
-	rho::db::CDBAdapter& db = CSyncThread::getDBUserAdapter();
+	CDBAdapter& db = CDBAdapter::getUserDB();
 	db.setUnlockDB(true);
     int nRes = CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
     db.setUnlockDB(false);
@@ -325,7 +316,7 @@ void rho_sync_logout()
 {
     rho_sync_stop();
 
-	rho::db::CDBAdapter& db = CSyncThread::getDBUserAdapter();
+	CDBAdapter& db = CDBAdapter::getUserDB();
 	db.setUnlockDB(true);
     CSyncThread::getSyncEngine().logout();
     db.setUnlockDB(false);
@@ -351,29 +342,9 @@ void rho_sync_clear_bulk_notification()
     return CSyncThread::getSyncEngine().getNotify().clearBulkSyncNotification();
 }
 
-int rho_sync_openDB(const char* szDBPath, void** ppDB)
-{
-    rho::common::CFilePath oPath(szDBPath);
-
-    rho::db::CDBAdapter& db = strcmp( oPath.getBaseName(), "syncdb.sqlite") == 0 ? CSyncThread::getDBUserAdapter():CSyncThread::getDBAppAdapter();
-
-    rho::String strVer = RhoRuby_getRhoDBVersion(); 
-    db.open(szDBPath,strVer, false);
-
-    *ppDB = &db;
-
-    return 0;
-}
-
-/*int rho_sync_closeDB()
-{
-    CSyncThread::getDBAdapter().close();
-    return 0;
-}*/
-
 unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID)
 {
-    return (VALUE)CSyncThread::getDBAdapter(szPartition).getAttrMgr().getAttrsBySrc(nSrcID);
+    return (VALUE)CDBAdapter::getDB(szPartition).getAttrMgr().getAttrsBySrc(nSrcID);
 }
 
 void rho_sync_setobjectnotify_url(const char* szUrl)

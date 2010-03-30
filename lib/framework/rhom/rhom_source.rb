@@ -6,7 +6,8 @@ module Rhom
     include ::Rhom::RhomObject
     attr_reader   :source_id, :name, :last_updated, :last_inserted_size, 
                   :last_deleted_size, :last_sync_duration,
-                  :last_sync_success, :distinct_objects, :backend_refresh_time
+                  :last_sync_success, :distinct_objects, :backend_refresh_time,
+                  :partition
                   
     def initialize(args,count=0)
       # setup the name
@@ -23,6 +24,7 @@ module Rhom
       @last_sync_duration = args['last_sync_duration'].to_i
       @last_sync_success = args['last_sync_success'].to_i == 1 ? true : false
       @backend_refresh_time = Time.at(args['backend_refresh_time'].to_i)
+      @partition =  args['partition']
       
       #VERY SLOW OPERATION!
       #@distinct_objects = ::Rhom::RhomDbAdapter::select_from_table(

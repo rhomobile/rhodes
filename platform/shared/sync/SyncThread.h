@@ -95,9 +95,6 @@ public:
 private:
     static CSyncThread* m_pInstance;
 
-    static db::CDBAdapter  m_oDBUserAdapter;
-    static db::CDBAdapter  m_oDBAppAdapter;
-
     CSyncEngine     m_oSyncEngine;
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
 	int           m_nPollInterval;
@@ -110,12 +107,6 @@ public:
     static void Destroy();
     static CSyncThread* getInstance(){ return m_pInstance; }
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
-
-    static db::CDBAdapter& getDBUserAdapter(){ return m_oDBUserAdapter; }
-    static db::CDBAdapter& getDBAppAdapter(){ return m_oDBAppAdapter; }
-
-    static db::CDBAdapter& getDBAdapter(const char* szPartition=0){ return szPartition && strcmp(szPartition,"user") != 0 ? m_oDBAppAdapter : m_oDBUserAdapter; }
-    static db::CDBAdapter& getDBAdapter(sqlite3* db);
 
     void addSyncCommand(CSyncCommand* pSyncCmd);
 

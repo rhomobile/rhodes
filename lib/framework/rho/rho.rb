@@ -14,9 +14,6 @@ module Rho
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
       RHO.process_rhoconfig
-      #Rhom::RhomDbAdapter::open(Rho::RhoFSConnector::get_db_fullpathname)
-      @db_user = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname)
-      @db_application = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname('app'))      
       
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
@@ -25,30 +22,32 @@ module Rho
       end
       
       # Initialize application and sources
-      init_sources(@db_user)
-      init_sources(@db_application)
-      #get_app(APPNAME)
-      
+      init_sources()
       @@rho_framework = self
     end
 
-    attr_reader :db_application, :db_user
-
+    attr_reader :db_partitions
+    
     def self.get_src_db(src_name=nil)
         if src_name
-            Rho::RhoConfig.sources[src_name]['partition'] == 'user' ? @@rho_framework.db_user : @@rho_framework.db_application
+            src_partition = Rho::RhoConfig.sources[src_name]['partition']
+            @@rho_framework.db_partitions[src_partition]
         else
-            @@rho_framework.db_user
+            @@rho_framework.db_partitions['user']
         end    
     end
 
     def self.get_user_db
-        @@rho_framework.db_user        
+        @@rho_framework.db_partitions['user']
+    end
+
+    def self.get_db_partitions
+        @@rho_framework.db_partitions
     end
     
-    def self.get_application_db
-        @@rho_framework.db_application
-    end
+    #def self.get_application_db
+    #    @@rho_framework.db_application
+    #end
     
     def init_app
       get_app(APPNAME)
@@ -122,18 +121,30 @@ module Rho
     end
     
     # setup the sources table and model attributes for all applications
-    def init_sources(db)
-      if defined? Rho::RhoConfig::sources
-        
+    def init_sources()
+        return unless defined? Rho::RhoConfig::sources
+    
+        @db_partitions = {}
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_sources: ' + uniq_sources.inspect
-
-        #result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
-        #start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+1 : 0
         
-        # generate unique source list in database for sync
         uniq_sources.each do |source|
-          
+          partition = source['partition']
+          @db_partitions[partition] = nil
+        end
+        
+        #user partition should alwayse exist
+        @db_partitions['user'] = nil
+        
+        @db_partitions.each_key do |partition|
+            db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
+            init_db_sources(db, uniq_sources)
+            @db_partitions[partition] = db
+        end
+    end
+    
+    def init_db_sources(db, uniq_sources)
+        uniq_sources.each do |source|
           name = source['name']
           priority = source['priority']
           partition = source['partition']
@@ -148,17 +159,11 @@ module Rho
             if attribs[0]['sync_type'] != sync_type
                 db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
-            
-            #Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
           else
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition})
-            #Rho::RhoConfig::sources[name]['source_id'] = start_id
-            
-            #start_id += 1
           end
         end
-      end
     end
     
     def serve(req)
