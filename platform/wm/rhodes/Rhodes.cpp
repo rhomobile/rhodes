@@ -6,6 +6,10 @@
 #include "common/StringConverter.h"
 #include "common/rhoparams.h"
 #include "rho/rubyext/GeoLocationImpl.h"
+#include "ruby/ext/rho/rhoruby.h"
+
+using namespace rho;
+using namespace rho::common;
 
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
@@ -234,6 +238,14 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
 	return _AtlModule.WinMain(nShowCmd);
 }
 
+static void menu_iter(const char* szLabel, const char* szLink, void* pThis)
+{
+	LOG(INFO) + __FUNCTION__  + ": " + szLabel + " " + szLink;
+	Hashtable<String, String> *menuList;
+	menuList = (Hashtable <String, String>*)pThis;
+	menuList->put(szLabel, szLink);
+}
+
 extern "C" HWND getMainWnd() {
 	return _AtlModule.GetManWindow();
 }
@@ -264,13 +276,19 @@ extern "C" void webview_navigate(char* url, int index) {
 }
 
 extern "C" char* webview_execute_js(char* js, int index) {
-//TODO: webview_execute_js
-    return "";
+	_AtlModule.DoViewNavigate(js);
+	return "";
 }
 
 extern "C" void webview_set_menu_items(VALUE valMenu) 
 {
     RHODESAPP().setViewMenu(valMenu);
+
+	Hashtable<String, String> *menuList = new Hashtable<String, String>;
+	rho_ruby_enum_strhash(valMenu, menu_iter, menuList);
+
+	HWND main_wnd = getMainWnd();
+	::PostMessage(main_wnd, WM_SET_CUSTOM_MENU, 0, (LPARAM )menuList);
 }
 
 extern "C" int webview_active_tab() {
