@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface Alert : NSObject {}
+@interface RhoAlert : NSObject {}
 
 + (void)showPopup:(NSString*)message;
 + (void)vibrate:(int)duration;
