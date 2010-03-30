@@ -24,12 +24,8 @@ module Rho
         File.join(__rhoGetCurrentDir(), 'apps/'+appname+'/'+modelname+'/')
       end
 
-      def get_db_fullpathname(postfix=nil)
-          if postfix
-            File.join(__rhoGetCurrentDir(), 'db/syncdb' + postfix + '.sqlite')
-          else
-            File.join(__rhoGetCurrentDir(), 'db/syncdb.sqlite')
-          end  
+      def get_db_fullpathname(postfix)
+          File.join(__rhoGetCurrentDir(), 'db/syncdb' + postfix + '.sqlite')
       end
     end
   end # RhoApplication

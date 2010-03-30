@@ -39,14 +39,14 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
 	
-	if (m_format == FORMAT_TIME) {
+	if (m_format == CDateTimeMessage::FORMAT_TIME) {
 		GetDlgItem(IDC_DATE_CTRL).ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_DTP_DATE_GROUP).ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_DATE_STATIC).ShowWindow(SW_HIDE);
 	}
 
-	if (m_format == FORMAT_DATE) {
+	if (m_format == CDateTimeMessage::FORMAT_DATE) {
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_DTP_TIME_GROUP).ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_TIME_STATIC).ShowWindow(SW_HIDE);
 	}
 
 #endif
@@ -57,15 +57,15 @@ LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, B
 {
 	SYSTEMTIME sysTime;
 
-	if (m_format == FORMAT_TIME)
+	if (m_format == CDateTimeMessage::FORMAT_TIME)
 	{
 		DateTime_GetSystemtime (GetDlgItem(IDC_TIME_CTRL), &sysTime);
 	} 
-	else if (m_format == FORMAT_DATE)
+	else if (m_format == CDateTimeMessage::FORMAT_DATE)
 	{
 		DateTime_GetSystemtime (GetDlgItem(IDC_DATE_CTRL), &sysTime);
 	} 
-	else if (m_format == FORMAT_DATE_TIME)
+	else if (m_format == CDateTimeMessage::FORMAT_DATE_TIME)
 	{
 		SYSTEMTIME time, date;
 
@@ -98,6 +98,60 @@ time_t CDateTimePickerDialog::GetTime()
 }
 
 LRESULT CDateTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    EndDialog(wID);
+    return 0;
+}
+
+
+CDatePickerDialog::CDatePickerDialog (const CDateTimeMessage *msg)
+{
+	m_returnTime  = 0;
+	m_format       = msg->m_format;
+	m_title        = msg->m_title;
+	m_initialTime  = msg->m_initialTime;
+}
+
+CDatePickerDialog::~CDatePickerDialog ()
+{
+}
+
+LRESULT CDatePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+#if defined(_WIN32_WCE)
+	//USES_CONVERSION;
+	SetWindowText(_T("Date"));
+
+    SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
+    RHO_ASSERT(SHInitDialog(&shidi));
+
+
+    SHMENUBARINFO mbi = { sizeof(mbi), 0 };
+    mbi.hwndParent = m_hWnd;
+    mbi.nToolBarId = IDR_GETURL_MENUBAR;
+    mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
+    RHO_ASSERT(SHCreateMenuBar(&mbi));
+#endif
+
+    return 1;
+}
+
+LRESULT CDatePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
+{
+	SYSTEMTIME sysTime;
+	DateTime_GetSystemtime (GetDlgItem(IDC_DATE_CTRL), &sysTime);
+	m_returnTime = SystemTimeToUnixTime (&sysTime);
+
+    EndDialog(wID);
+    return 0;
+}
+
+time_t CDatePickerDialog::GetTime()
+{
+	return m_returnTime;
+}
+
+LRESULT CDatePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     EndDialog(wID);
     return 0;

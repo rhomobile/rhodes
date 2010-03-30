@@ -16,41 +16,18 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
 
-@interface RhoCreateMapTask : NSObject<RhoRunnable>
-{
-    NSValue *value;
-}
-
-@property (retain) NSValue *value;
-
-- (id)initWithValue:(NSValue*)v;
-- (void)dealloc;
-- (void)run;
-
+@interface RhoCreateMapTask : NSObject {}
++ (void)run:(NSValue*)value;
 @end
 
 @implementation RhoCreateMapTask
-
-@synthesize value;
-
-- (id)initWithValue:(NSValue *)v {
-    value = v;
-    return self;
-}
-
-- (void)dealloc {
-    [value release];
-    [super dealloc];
-}
-
-- (void)run {
-    MapViewController* map = [[[MapViewController alloc] init] autorelease];
++ (void)run:(NSValue*)value {
+    MapViewController* map = [[MapViewController alloc] init];
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 	[window addSubview:map.view];
     [map.view setFrame:[window frame]];
 }
-
 @end
 
 @implementation MapViewController
@@ -58,10 +35,9 @@
 @synthesize gapikey;
 
 + (void)createMap:(rho_param *)params {
-    NSValue *value = [NSValue valueWithPointer:params];
-    if (!value) return;
-    id task = [[[RhoCreateMapTask alloc] initWithValue:value] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoCreateMapTask class];
+    id arg = [NSValue valueWithPointer:params];
+    [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {

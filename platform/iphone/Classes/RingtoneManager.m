@@ -16,65 +16,37 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RingtoneManager"
 
-@interface RhoRingtoneManagerPlayStartTask : NSObject<RhoRunnable>
-{
-    NSString *file;
-}
-
-@property (nonatomic,copy) NSString *file;
-
-- (id)initWithFile:(NSString*)f;
-- (void)dealloc;
-- (void)run;
-
+@interface RhoRingtoneManagerPlayStartTask : NSObject {}
++ (void)run:(NSString*)file;
 @end
 
 @implementation RhoRingtoneManagerPlayStartTask
-
-@synthesize file;
-
-- (id)initWithFile:(NSString *)f {
-    file = nil;
-    self.file = f;
-    return self;
-}
-
-- (void)dealloc {
-    [file release];
-    [super dealloc];
-}
-
-- (void)run {
++ (void)run:(NSString*)file {
     [[Rhodes sharedInstance] playStart:file mediaType:NULL];
 }
-
 @end
 
-@interface RhoRingtoneManagerPlayStopTask : NSObject<RhoRunnable> {}
-
-- (void)run;
-
+@interface RhoRingtoneManagerPlayStopTask : NSObject {}
++ (void)run;
 @end
 
 @implementation RhoRingtoneManagerPlayStopTask
-
-- (void)run {
++ (void)run {
     [[Rhodes sharedInstance] playStop];
 }
-
 @end
 
 
 @implementation RingtoneManager
 
 + (void)playStart:(NSString*)fileName {
-    id task = [[[RhoRingtoneManagerPlayStartTask alloc] initWithFile:fileName] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoRingtoneManagerPlayStartTask class];
+    [Rhodes performOnUiThread:runnable arg:fileName wait:NO];
 }
 
 + (void)playStop {
-    id task = [[RhoRingtoneManagerPlayStopTask alloc] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoRingtoneManagerPlayStopTask class];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 @end
