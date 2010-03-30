@@ -39,12 +39,12 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
 	
-	if (m_format == FORMAT_TIME) {
+	if (m_format == CDateTimeMessage::FORMAT_TIME) {
 		GetDlgItem(IDC_DATE_CTRL).ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_DATE_STATIC).ShowWindow(SW_HIDE);
 	}
 
-	if (m_format == FORMAT_DATE) {
+	if (m_format == CDateTimeMessage::FORMAT_DATE) {
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_TIME_STATIC).ShowWindow(SW_HIDE);
 	}
@@ -57,15 +57,15 @@ LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, B
 {
 	SYSTEMTIME sysTime;
 
-	if (m_format == FORMAT_TIME)
+	if (m_format == CDateTimeMessage::FORMAT_TIME)
 	{
 		DateTime_GetSystemtime (GetDlgItem(IDC_TIME_CTRL), &sysTime);
 	} 
-	else if (m_format == FORMAT_DATE)
+	else if (m_format == CDateTimeMessage::FORMAT_DATE)
 	{
 		DateTime_GetSystemtime (GetDlgItem(IDC_DATE_CTRL), &sysTime);
 	} 
-	else if (m_format == FORMAT_DATE_TIME)
+	else if (m_format == CDateTimeMessage::FORMAT_DATE_TIME)
 	{
 		SYSTEMTIME time, date;
 
