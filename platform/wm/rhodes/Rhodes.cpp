@@ -264,7 +264,7 @@ extern "C" void webview_navigate(char* url, int index) {
 }
 
 extern "C" char* webview_execute_js(char* js, int index) {
-	_AtlModule.DoViewNavigate(url);
+	_AtlModule.DoViewNavigate(js);
 	return "";
 }
 
