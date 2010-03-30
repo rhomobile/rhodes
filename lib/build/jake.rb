@@ -129,7 +129,7 @@ class Jake
     else
       argv = cmdstr if RUBY_VERSION =~ /^1\.8/
       if options[:nowait]
-        IO.popen(argv)
+        retval = IO.popen(argv)
       else
         IO.popen(argv) do |f|
           while line = f.gets
