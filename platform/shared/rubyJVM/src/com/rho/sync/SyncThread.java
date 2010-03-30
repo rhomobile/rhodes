@@ -43,8 +43,6 @@ public class SyncThread extends RhoThread
 	private static final int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
 	
 	static SyncThread m_pInstance;
-    static DBAdapter  m_oDBUserAdapter;
-    static DBAdapter  m_oDBAppAdapter;
 
    	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scSyncOneByUrl = 4, scChangePollInterval=5, scExit=6, scLogin = 7, scSearchOne=8; 
     
@@ -137,8 +135,7 @@ public class SyncThread extends RhoThread
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 	    LOG.INFO( "Sync engine thread shutdown" );
 		
-	    m_oDBUserAdapter.close();
-	    m_oDBAppAdapter.close();
+	    DBAdapter.closeAll();
 	    
 	    m_pInstance = null;
 	}
@@ -147,10 +144,7 @@ public class SyncThread extends RhoThread
 	{
 		super(factory);
 		
-		m_oDBUserAdapter = DBAdapter.findDBAdapterByBaseName("syncdb");
-		m_oDBAppAdapter = DBAdapter.findDBAdapterByBaseName("syncdbapp");
-		
-		m_oSyncEngine = new SyncEngine(m_oDBUserAdapter, m_oDBAppAdapter);
+		m_oSyncEngine = new SyncEngine();
 		m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
 		if( RhoConf.getInstance().isExist("sync_poll_interval") )
 			m_nPollInterval = RhoConf.getInstance().getInt("sync_poll_interval");
@@ -167,11 +161,6 @@ public class SyncThread extends RhoThread
 
     public static SyncThread getInstance(){ return m_pInstance; }
     public static SyncEngine getSyncEngine(){ return m_pInstance!= null ? m_pInstance.m_oSyncEngine : null; }
-    public static DBAdapter getDBUserAdapter(){ return m_oDBUserAdapter; }
-    public static DBAdapter getDBAppAdapter(){ return m_oDBAppAdapter; }
-
-    public static DBAdapter getDBAdapter(String szPartition){ return szPartition != null && szPartition.equals("user") ? m_oDBUserAdapter : m_oDBAppAdapter; }
-    //public static DBAdapter getDBAdapter(sqlite3* db);
 
     void addSyncCommand(SyncCommand oSyncCmd)
     { 
@@ -200,7 +189,7 @@ public class SyncThread extends RhoThread
     	try{
 	    	long nowTime = (TimeInterval.getCurrentTime().toULong())/1000;
 	    	
-		    IDBResult res = m_oSyncEngine.getDB().executeSQL("SELECT last_updated from sources");
+		    IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT last_updated from sources");
 		    long latestTimeUpdated = 0;
 		    for ( ; !res.isEnd(); res.next() )
 		    { 
@@ -386,11 +375,11 @@ public class SyncThread extends RhoThread
 			
 			int nWait = 0;
 			//while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
-			while( nWait < 30000 && getSyncEngine().getDB().isInsideTransaction() )
+			while( nWait < 30000 && DBAdapter.isAnyInsideTransaction() )
 				try{ Thread.sleep(100); nWait += 100; }catch(Exception e){}
 				
 			//if (getSyncEngine().getState() != SyncEngine.esNone)
-			if ( getDBUserAdapter().isInsideTransaction() && getDBAppAdapter().isInsideTransaction() )	
+			if ( DBAdapter.isAnyInsideTransaction() )
 			{
 				getSyncEngine().exitSync();
 				getInstance().stop(0);
@@ -551,7 +540,7 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("logged_in",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
-					DBAdapter db = getDBUserAdapter();
+					DBAdapter db = DBAdapter.getUserDB();
 
 					try{
 						db.setUnlockDB(true);
@@ -572,7 +561,7 @@ public class SyncThread extends RhoThread
 		klass.getSingletonClass().defineMethod("logout",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
-					DBAdapter db = getDBUserAdapter();
+					DBAdapter db = DBAdapter.getUserDB();
 
 					try{
 						stopSync();
@@ -695,7 +684,7 @@ public class SyncThread extends RhoThread
 						try{
 							String strPartition = arg0.toStr(); 
 							int nSrcID = arg1.toInt();
-							return getDBAdapter(strPartition).getAttrMgr().getAttrsBySrc(nSrcID);
+							return DBAdapter.getDB(strPartition).getAttrMgr().getAttrsBySrc(nSrcID);
 						}catch(Exception e)
 						{
 							LOG.ERROR("get_src_attrs failed", e);

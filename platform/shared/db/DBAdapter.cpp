@@ -10,6 +10,7 @@
 namespace rho{
 namespace db{
 IMPLEMENT_LOGCLASS(CDBAdapter,"DB");
+HashtablePtr<String,CDBAdapter*> CDBAdapter::m_mapDBPartitions;
 
 using namespace rho::common;
 
@@ -33,7 +34,7 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         CRhoFile::deleteFile(strFilePath.c_str());
     }
 
-    sync::CSyncThread::getDBAdapter(sqlite3_context_db_handle(dbContext)).getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
+    CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
 }
 
 void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
@@ -41,7 +42,7 @@ void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     if ( nArgs < 2 )
         return;
 
-    sync::CSyncThread::getDBAdapter(sqlite3_context_db_handle(dbContext)).getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
+    CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
 }
 
 boolean CDBAdapter::checkDbError(int rc)
@@ -643,10 +644,67 @@ void CDBAdapter::rollback()
     Unlock();
 }
 
+/*static*/ void CDBAdapter::closeAll()
+{
+    for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
+        it->second->close();
+}
+
+/*static*/ CDBAdapter& CDBAdapter::getUserDB()
+{
+    return *getDBPartitions().get("user");
+}
+
+/*static*/ CDBAdapter& CDBAdapter::getDB(const char* szPartition)
+{
+    return *getDBPartitions().get(szPartition);
+}
+
+/*static*/ boolean CDBAdapter::isAnyInsideTransaction()
+{
+    for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
+    {
+        if ( it->second->isInsideTransaction() )
+            return true;
+    }
+
+    return false;
+}
+
+/*static*/ db::CDBAdapter& CDBAdapter::getDBByHandle(sqlite3* db)
+{
+    for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
+    {
+        if ( it->second->getDbHandle() == db )
+            return *(it->second);
+    }
+
+    return *getDBPartitions().get("user");
+}
+
 }
 }
 
 extern "C" {
+using namespace rho::db;
+
+int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
+{
+    CFilePath oPath(szDBPath);
+
+    CDBAdapter* pDB = CDBAdapter::getDBPartitions().get(szDBPartition);
+    if ( !pDB )
+    {
+        pDB = new CDBAdapter();
+        CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
+    }
+
+    rho::String strVer = RhoRuby_getRhoDBVersion(); 
+    pDB->open(szDBPath,strVer, false);
+
+    *ppDB = pDB;
+    return 0;
+}
 
 int rho_db_startUITransaction(void* pDB)
 {

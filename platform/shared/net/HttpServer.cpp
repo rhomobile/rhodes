@@ -1,9 +1,9 @@
-#include <algorithm>
-
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
+
+#include <algorithm>
 
 #if !defined(OS_WINCE)
 #include <sys/stat.h>
