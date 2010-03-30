@@ -930,27 +930,26 @@ namespace "run" do
       puts `"#{$adb}" -e wait-for-device`
 
       puts "Loading package into emulator"
-      theoutput = `"#{$adb}" -e install -r "#{apkfile}"`
       count = 0
       done = false
-      while count < 15
-        theoutput = `"#{$adb}" -e install -r "#{apkfile}"`
-        puts theoutput.to_s
-        $stdout.flush
+      while count < 20
+        f = Jake.run2($adb, ["-e", "install", "-r", apkfile], {:nowait => true})
+        theoutput = ""
+        while c = f.getc
+          $stdout.putc c
+          $stdout.flush
+          theoutput << c
+        end
+        f.close
 
         if theoutput.to_s.match(/Success/)
           done = true
           break
         end
 
-        if theoutput.to_s.match(/Failure/)
-          done = false
-          break
-        end
-
         puts "Failed to load (possibly because emulator not done launching)- retrying"
         $stdout.flush
-        sleep 5
+        sleep 1
         count += 1
       end
       puts "Loading complete, you may now run the application" if done
