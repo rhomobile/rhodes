@@ -85,9 +85,9 @@ public:
 
     int indexOf(const Type& item)
     {
-        for (int i = 0; i < (int)size(); i++)
+        for (int i = 0; i < (int)std::vector<Type>::size(); i++)
         {
-            if ( at(i) == item )
+            if ( std::vector<Type>::at(i) == item )
                 return i;
         }
 
