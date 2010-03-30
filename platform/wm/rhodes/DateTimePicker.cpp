@@ -131,9 +131,9 @@ LRESULT CDatePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
+#endif
 
     return 1;
-#endif
 }
 
 LRESULT CDatePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
