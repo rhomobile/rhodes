@@ -28,7 +28,7 @@ describe "Rhom::RhomObject" do
   end
   
   it "should set source_id attributes" do
-    Account.get_source_id.should == "2"
+    Account.get_source_id.should == "23"
     Case.get_source_id.should == "1"
   end
   
