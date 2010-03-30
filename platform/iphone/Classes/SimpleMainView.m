@@ -9,8 +9,10 @@
 #import "SimpleMainView.h"
 #import "AppManager.h"
 #import "Rhodes.h"
-#import "common/RhodesApp.h"
-#import "logging/RhoLog.h"
+
+#include "common/RhoConf.h"
+#include "common/RhodesApp.h"
+#include "logging/RhoLog.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
