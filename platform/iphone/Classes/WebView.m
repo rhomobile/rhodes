@@ -11,151 +11,86 @@
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 
-@interface RhoWebViewNavigateTask : NSObject<RhoRunnable>
-{
-    NSString *url;
-    int index;
-}
-
-@property (nonatomic, copy) NSString *url;
-@property (nonatomic, assign) int index;
-
-- (id)initWithUrl:(NSString*)url andIndex:(int)index;
-- (void)dealloc;
-
-- (void)run;
-
+@interface RhoWebViewNavigateTask : NSObject {}
++ (void)run:(NSString*)url :(NSValue*)index;
 @end
 
 @implementation RhoWebViewNavigateTask
 
-@synthesize url, index;
-
-- (id)initWithUrl:(NSString*)u andIndex:(int)idx {
-    self.url = u;
-    self.index = idx;
-    return self;
-}
-
-- (void)dealloc {
-    [url release];
-    [super dealloc];
-}
-
-- (void)run {
++ (void)run:(NSString*)url :(NSValue*)value {
     // Workaround:
     // Navigation MUST be done through 'redirect_to' - otherwise WebView does not
     // perform actual url loading from time to time
+    int index;
+    [value getValue:&index];
     [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
 }
 
 @end
 
-@interface RhoWebViewActiveTabTask : NSObject<RhoRunnable>
-{
-    int *pIndex;
-}
-
-- (id)init:(int*)p;
-- (void)run;
-
+@interface RhoWebViewActiveTabTask : NSObject {}
++ (void)run:(NSValue*)value;
 @end
 
 @implementation RhoWebViewActiveTabTask
-
-- (id)init:(int*)p {
-    pIndex = p;
-    return self;
-}
-
-- (void)run {
++ (void)run:(NSValue*)value {
+    int *pIndex = [value pointerValue];
     *pIndex = [[[Rhodes sharedInstance] mainView] activeTab];
 }
-
 @end
 
-@interface RhoWebViewReloadTask : NSObject<RhoRunnable>
-{
-    int index;
-}
-
-- (id)initWithIndex:(int)index;
-- (void)run;
-
+@interface RhoWebViewReloadTask : NSObject {}
++ (void)run:(NSValue*)value;
 @end
 
 @implementation RhoWebViewReloadTask
-
-- (id)initWithIndex:(int)idx {
-    index = idx;
-    return self;
-}
-
-- (void)run {
++ (void)run:(NSValue*)value {
+    int index;
+    [value getValue:&index];
     [[[Rhodes sharedInstance] mainView] reload:index];
 }
-
 @end
 
-@interface RhoWebViewExecuteJsTask : NSObject<RhoRunnable>
-{
-    NSString *js;
-    int index;
-}
-
-@property (nonatomic, copy) NSString *js;
-@property (nonatomic, assign) int index;
-
-- (id)initWithJs:(NSString*)s andIndex:(int)index;
-- (void)dealloc;
-- (void)run;
-
+@interface RhoWebViewExecuteJsTask : NSObject {}
++ (void)run:(NSString*)js :(NSValue*)value;
 @end
 
 @implementation RhoWebViewExecuteJsTask
-
-@synthesize js,index;
-
-- (id)initWithJs:(NSString*)s andIndex:(int)idx {
-    self.js = s;
-    self.index = idx;
-    return self;
-}
-
-- (void)dealloc {
-    [js release];
-    [super dealloc];
-}
-
-- (void)run {
++ (void)run:(NSString*)js :(NSValue*)value {
+    int index;
+    [value getValue:&index];
     [[[Rhodes sharedInstance] mainView] executeJs:js tab:index];
 }
-
 @end
 
 
 void webview_navigate(char* url, int index) {
-    id task = [[[RhoWebViewNavigateTask alloc]
-            initWithUrl:[NSString stringWithUTF8String:url] andIndex:index] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoWebViewNavigateTask class];
+    id arg1 = [NSString stringWithUTF8String:url];
+    id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:NO];
 }
 
 int webview_active_tab() {
     int index;
-    id task = [[RhoWebViewActiveTabTask alloc] init:&index];
-    [Rhodes performOnUiThread:task wait:YES];
-    [task release];
+    id runnable = [RhoWebViewActiveTabTask class];
+    id arg = [NSValue valueWithPointer:&index];
+    [Rhodes performOnUiThread:runnable arg:arg wait:YES];
+    [runnable release];
     return index;
 }
 
 void webview_refresh(int index) {
-    id task = [[[RhoWebViewReloadTask alloc] initWithIndex:index] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoWebViewReloadTask class];
+    id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
 
 char* webview_execute_js(char* js, int index) {
-    id task = [[[RhoWebViewExecuteJsTask alloc] initWithJs:[NSString stringWithUTF8String:js] andIndex:index] autorelease];
-    [Rhodes performOnUiThread:task wait:NO];
+    id runnable = [RhoWebViewExecuteJsTask class];
+    id arg1 = [NSString stringWithUTF8String:js];
+    id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:NO];
     return "";
 }
 

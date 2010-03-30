@@ -23,7 +23,7 @@ using namespace rho::net;
 using namespace rho::common;
 using namespace rho::json;
 
-CSyncEngine::CSyncEngine(db::CDBAdapter& dbUser, db::CDBAdapter& dbApp): m_dbUserAdapter(dbUser), m_dbAppAdapter(dbApp), m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this)
+CSyncEngine::CSyncEngine():m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this)
 {
     m_bNoThreaded = false;
     m_bStopByUser = false;
@@ -262,7 +262,7 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID)
         {
             LOG(ERROR) + "Sync one source : Unknown Source " + oSrcID.toString();
 
-            CSyncSource src(*this, getDB() );
+            CSyncSource src(*this, getUserDB() );
     	    //src.m_strError = "Unknown sync source.";
             src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 
@@ -296,10 +296,9 @@ CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
 void CSyncEngine::loadAllSources()
 {
     m_sources.clear();
-    m_bHasUserPartition = false;
-    m_bHasAppPartition = false;
+    m_arPartitions.clear();
 
-    DBResult( res, getDB().executeSQL("SELECT source_id,sync_type,token,name, partition from sources ORDER BY priority") );
+    DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,token,name, partition from sources ORDER BY priority") );
     for ( ; !res.isEnd(); res.next() )
     { 
         String strShouldSync = res.getStringByIdx(1);
@@ -308,11 +307,12 @@ void CSyncEngine::loadAllSources()
 
         String strName = res.getStringByIdx(3);
         String strPartition = res.getStringByIdx(4);
-        m_bHasUserPartition = m_bHasUserPartition || strPartition.compare("user") == 0;
-        m_bHasAppPartition = m_bHasAppPartition || strPartition.compare("application") == 0;
+
+        if ( m_arPartitions.indexOf(strPartition) < 0 )
+            m_arPartitions.addElement(strPartition);
 
         m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strName, res.getUInt64ByIdx(2), strShouldSync, 
-            (strPartition.compare("user") == 0 ? getDB() : getAppDB()), *this) );
+            getDB(strPartition), *this) );
     }
 }
 
@@ -323,7 +323,7 @@ String CSyncEngine::loadClientID()
     {
         boolean bResetClient = false;
         {
-            DBResult( res, getDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
+            DBResult( res, getUserDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
             if ( !res.isEnd() )
             {
                 clientID = res.getStringByIdx(0);
@@ -335,18 +335,18 @@ String CSyncEngine::loadClientID()
         {
             clientID = requestClientIDByNet();
 
-            DBResult( res , getDB().executeSQL("SELECT * FROM client_info") );
+            DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
             if ( !res.isEnd() )
-                getDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
+                getUserDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
             else
-                getDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
+                getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 
         }else if ( bResetClient )
         {
     	    if ( !resetClientIDByNet(clientID) )
     		    stopSync();
     	    else
-    		    getDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
+    		    getUserDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
         }
     }
 
@@ -397,38 +397,28 @@ String CSyncEngine::requestClientIDByNet()
 void CSyncEngine::doBulkSync()//throws Exception
 {
     int nBulkSyncState = RHOCONF().getInt("bulksync_state");
-    if ( nBulkSyncState >= 2 || !isContinueSync() )
+    if ( nBulkSyncState >= 1 || !isContinueSync() )
         return;
 
 	LOG(INFO) + "Bulk sync: start";
     getNotify().fireBulkSyncNotification(false, "start", "", RhoRuby.ERR_NONE);        
 
-    if ( nBulkSyncState == 0 && m_bHasUserPartition )
+    for (int i = 0; i < (int)m_arPartitions.size() && isContinueSync(); i++)
+        loadBulkPartition(m_arPartitions.elementAt(i));
+
+    if (isContinueSync())
     {
-        loadBulkPartition(getDB(), "user");
-
-        if ( !isContinueSync() )
-            return;
-
-	    RHOCONF().setInt("bulksync_state", 1, true);
+        RHOCONF().setInt("bulksync_state", 1, true);
+        getNotify().fireBulkSyncNotification(true, "", "", RhoRuby.ERR_NONE);
     }
-
-    if ( m_bHasAppPartition )
-        loadBulkPartition(getAppDB(), "app");
-
-    if ( !isContinueSync() )
-        return;
-
-    RHOCONF().setInt("bulksync_state", 2, true);
-
-    getNotify().fireBulkSyncNotification(true, "", "", RhoRuby.ERR_NONE);        
 }
 
 extern "C" int rho_unzip_file(const char* szZipPath);
 
 static String getHostFromUrl( const String& strUrl );
-void CSyncEngine::loadBulkPartition(db::CDBAdapter& dbPartition, const String& strPartition )
+void CSyncEngine::loadBulkPartition(const String& strPartition )
 {
+    db::CDBAdapter& dbPartition = getDB(strPartition); 
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
     String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
@@ -592,11 +582,11 @@ void CSyncEngine::login(String name, String password, String callback)
         return;
     }
 
-    DBResult( res , getDB().executeSQL("SELECT * FROM client_info") );
+    DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
     if ( !res.isEnd() )
-        getDB().executeSQL( "UPDATE client_info SET session=?", strSession );
+        getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
     else
-        getDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
+        getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 
 
     if ( CClientRegister::getInstance() != null )
@@ -615,7 +605,7 @@ void CSyncEngine::login(String name, String password, String callback)
 boolean CSyncEngine::isLoggedIn()
  {
     int nCount = 0;
-    DBResult( res , getDB().executeSQL("SELECT count(session) FROM client_info WHERE session IS NOT NULL") );
+    DBResult( res , getUserDB().executeSQL("SELECT count(session) FROM client_info WHERE session IS NOT NULL") );
     if ( !res.isEnd() )
         nCount = res.getIntByIdx(0);
 
@@ -625,7 +615,7 @@ boolean CSyncEngine::isLoggedIn()
 String CSyncEngine::loadSession()
 {
     String strRes = "";
-    DBResult( res , getDB().executeSQL("SELECT session FROM client_info WHERE session IS NOT NULL") );
+    DBResult( res , getUserDB().executeSQL("SELECT session FROM client_info WHERE session IS NOT NULL") );
     
     if ( !res.isEnd() )
     	strRes = res.getStringByIdx(0);
@@ -635,7 +625,7 @@ String CSyncEngine::loadSession()
 
 void CSyncEngine::logout()
 {
-    getDB().executeSQL( "UPDATE client_info SET session=NULL" );
+    getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";
 
     loadAllSources();
@@ -646,7 +636,7 @@ void CSyncEngine::setSyncServer(char* syncserver)
 	rho_conf_setString("syncserver", syncserver);
 	rho_conf_save();
 
-    getDB().executeSQL("DELETE FROM client_info");
+    getUserDB().executeSQL("DELETE FROM client_info");
 
 	logout();
 }

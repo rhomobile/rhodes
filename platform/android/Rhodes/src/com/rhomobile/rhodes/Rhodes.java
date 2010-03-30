@@ -265,8 +265,10 @@ public class Rhodes extends Activity {
 		webSettings.setSupportMultipleWindows(false);
 		// webSettings.setLoadsImagesAutomatically(true);
 
-		w.setVerticalScrollBarEnabled(true);
-		w.setHorizontalScrollBarEnabled(true);
+		w.setVerticalScrollBarEnabled(false);
+		w.setHorizontalScrollBarEnabled(false);
+		w.setVerticalScrollbarOverlay(true);
+		w.setHorizontalScrollbarOverlay(true);
 
 		w.setWebViewClient(new WebViewClient() {
 
@@ -277,6 +279,11 @@ public class Rhodes extends Activity {
 			
 			@Override
 			public void onPageFinished(WebView view, String url) {
+				// Set title
+				Rhodes r = RhodesInstance.getInstance();
+				String title = view.getTitle();
+				r.setTitle(title);
+				// Hide splash screen
 				if (url.startsWith("http://"))
 					hideSplashScreen();
 			}

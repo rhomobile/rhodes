@@ -53,7 +53,6 @@ private:
 
     net::INetRequest& getNet();
     CSyncEngine& getSync(){ return m_syncEngine; }
-    db::CDBAdapter& getDB();
 public:
     CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false){}
 

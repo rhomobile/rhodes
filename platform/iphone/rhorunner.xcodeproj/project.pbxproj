@@ -25,7 +25,7 @@
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
-		BD97AC211160EE8F006960F9 /* Alert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* Alert.m */; };
+		BD97AC211160EE8F006960F9 /* RhoAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* RhoAlert.m */; };
 		BD97AC3F1160F8A5006960F9 /* RingtoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */; };
 		BD97ACA711610666006960F9 /* DateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97ACA611610666006960F9 /* DateTimePicker.m */; };
 		BDA401BD11495BBD00C5D4BD /* SplashScreenImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA401BC11495BBD00C5D4BD /* SplashScreenImpl.cpp */; };
@@ -186,8 +186,8 @@
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BD97AC1F1160EE8F006960F9 /* Alert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Alert.h; sourceTree = "<group>"; };
-		BD97AC201160EE8F006960F9 /* Alert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Alert.m; sourceTree = "<group>"; };
+		BD97AC1F1160EE8F006960F9 /* RhoAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoAlert.h; sourceTree = "<group>"; };
+		BD97AC201160EE8F006960F9 /* RhoAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoAlert.m; sourceTree = "<group>"; };
 		BD97AC3D1160F8A5006960F9 /* RingtoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RingtoneManager.h; sourceTree = "<group>"; };
 		BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RingtoneManager.m; sourceTree = "<group>"; };
 		BD97ACA511610666006960F9 /* DateTimePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePicker.h; sourceTree = "<group>"; };
@@ -469,8 +469,8 @@
 		BD97AC1E1160EE7A006960F9 /* Alert */ = {
 			isa = PBXGroup;
 			children = (
-				BD97AC1F1160EE8F006960F9 /* Alert.h */,
-				BD97AC201160EE8F006960F9 /* Alert.m */,
+				BD97AC1F1160EE8F006960F9 /* RhoAlert.h */,
+				BD97AC201160EE8F006960F9 /* RhoAlert.m */,
 			);
 			name = Alert;
 			sourceTree = "<group>";
@@ -815,7 +815,7 @@
 				BDA401BD11495BBD00C5D4BD /* SplashScreenImpl.cpp in Sources */,
 				BD38E6DC115CFF14001CE05C /* WebView.m in Sources */,
 				BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */,
-				BD97AC211160EE8F006960F9 /* Alert.m in Sources */,
+				BD97AC211160EE8F006960F9 /* RhoAlert.m in Sources */,
 				BD97AC3F1160F8A5006960F9 /* RingtoneManager.m in Sources */,
 				BD97ACA711610666006960F9 /* DateTimePicker.m in Sources */,
 			);
