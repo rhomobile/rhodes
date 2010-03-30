@@ -277,6 +277,11 @@ public class Rhodes extends Activity {
 			
 			@Override
 			public void onPageFinished(WebView view, String url) {
+				// Set title
+				Rhodes r = RhodesInstance.getInstance();
+				String title = view.getTitle();
+				r.setTitle(title);
+				// Hide splash screen
 				if (url.startsWith("http://"))
 					hideSplashScreen();
 			}
