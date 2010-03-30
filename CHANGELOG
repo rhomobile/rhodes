@@ -1,3 +1,6 @@
+== 1.5.3
+* Fix issue #2980590 - iphone: call NetRequest from toolbar
+
 == 1.5.2
 * Fix AsyncHttp 'cancel request'
 * Implement #2948610 - enable AysyncHttp synchronous call
