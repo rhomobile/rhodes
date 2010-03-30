@@ -17,6 +17,7 @@
 #define IDD_SIMULATOR_LOGOPTIONS        116
 #define IDI_ICON                        117
 #define IDD_TIMEPICKER                  118
+#define IDD_DATEPICKER                  119
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
@@ -29,8 +30,8 @@
 #define IDC_BUTTON2                     1010
 #define IDC_DATE_CTRL                   1012
 #define IDC_TIME_CTRL                   1013
-#define IDC_DTP_TIME_GROUP              1015
-#define IDC_DTP_DATE_GROUP              1016
+#define IDC_DATE_STATIC                 1017
+#define IDC_TIME_STATIC                 1019
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -70,9 +71,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        119
+#define _APS_NEXT_RESOURCE_VALUE        120
 #define _APS_NEXT_COMMAND_VALUE         40030
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif
