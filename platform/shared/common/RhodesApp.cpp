@@ -948,5 +948,12 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
     return out;
 }
 
+void rho_net_request(const char *url)
+{
+    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho::common::createClassFactory();
+    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
+    request->pullData(url, null);
+}
+
 }
 

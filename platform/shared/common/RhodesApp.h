@@ -157,6 +157,7 @@ int rho_conf_send_log();
 int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);
 
+void rho_net_request(const char *url);
 
 #ifdef __cplusplus
 };

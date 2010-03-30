@@ -41,11 +41,12 @@ extern int webview_active_tab();
 {
     WebViewController *wc;
     NSString *url;
+    bool callback;
 }
 
 @property (nonatomic,copy) NSString *url;
 
-- (id)init:(WebViewController*)w url:(NSString*)u;
+- (id)init:(WebViewController*)w url:(NSString*)u callback:(bool)c;
 - (void)onAction:(id)sender;
 
 @end
@@ -54,14 +55,22 @@ extern int webview_active_tab();
 
 @synthesize url;
 
-- (id)init:(WebViewController *)w url:(NSString*)u {
-    self->wc = w;
+- (id)init:(WebViewController *)w url:(NSString*)u callback:(bool)c {
+    wc = w;
     self.url = u;
+    callback = c;
     return self;
 }
 
+- (void)doAction {
+    if (callback)
+        rho_net_request([url UTF8String]);
+    else
+        [wc navigate:url];
+}
+
 - (void)onAction:(id)sender {
-    [wc navigate:url];
+    [self performSelectorOnMainThread:@selector(doAction) withObject:nil waitUntilDone:NO];
 }
 
 @end
@@ -168,9 +177,14 @@ extern int webview_active_tab();
                    target:nil action:nil];
         }
         else {
+            bool callback = false;
+            if ([url length] > 9 && [[url substringToIndex:9] isEqual:@"callback:"]) {
+                callback = true;
+                url = [url substringFromIndex:9];
+            }
             NSString *u = [NSString stringWithUTF8String:rho_http_normalizeurl([url UTF8String])];
-            UIBarButtonItemAction *action = [[UIBarButtonItemAction alloc] init:self url:u];
-            if (!img) {
+            UIBarButtonItemAction *action = [[UIBarButtonItemAction alloc] init:self url:u callback:callback];
+            if (img) {
                 btn = [[UIBarButtonItem alloc]
                        initWithImage:img style:UIBarButtonItemStylePlain
                        target:action action:@selector(onAction:)];
