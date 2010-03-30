@@ -8,7 +8,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import "Alert.h"
+#import "RhoAlert.h"
 #import "Rhodes.h"
 
 #include "logging/RhoLog.h"
@@ -53,7 +53,7 @@
 }
 @end
 
-@implementation Alert
+@implementation RhoAlert
 
 + (void)showPopup:(NSString *)message {
     id runnable = [RhoAlertShowPopupTask class];
@@ -78,11 +78,11 @@ void alert_show_popup(char* message) {
         return;
 	}
     
-    [Alert showPopup:[NSString stringWithUTF8String:message]];
+    [RhoAlert showPopup:[NSString stringWithUTF8String:message]];
 }
 
 void alert_vibrate(int duration) {
-    [Alert vibrate:duration];
+    [RhoAlert vibrate:duration];
 }
 
 void alert_play_file(char* file_name, char* media_type) {
@@ -91,6 +91,6 @@ void alert_play_file(char* file_name, char* media_type) {
         return;
     }
     
-    [Alert playFile:[NSString stringWithUTF8String:file_name]
+    [RhoAlert playFile:[NSString stringWithUTF8String:file_name]
             mediaType:media_type?[NSString stringWithUTF8String:media_type]:NULL];
 }
