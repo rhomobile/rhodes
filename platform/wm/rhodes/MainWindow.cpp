@@ -23,6 +23,7 @@
 #endif
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
+#include <hash_map>
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 //char* canonicalizeURL(const char* path);
@@ -47,6 +48,7 @@ extern "C" void rho_sysimpl_sethas_network(int nValue);
 
 using namespace rho::common;
 using namespace rho;
+using namespace stdext;
 
 #if !defined(_WIN32_WCE)
 int CMainWindow::m_screenWidth;
@@ -661,10 +663,10 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	int retCode	= -1;
 	time_t ret_time = 0;
 
-	if (msg->m_format == CDateTimeMessage::FORMAT_DATE) {
-		CDatePickerDialog dateDialog(msg);
-		retCode = dateDialog.DoModal(m_hWnd);
-		ret_time = dateDialog.GetTime();
+	if (msg->m_format == CDateTimeMessage::FORMAT_TIME) {
+		CTimePickerDialog timeDialog(msg);
+		retCode = timeDialog.DoModal(m_hWnd);
+		ret_time = timeDialog.GetTime();
 	} else {
 		CDateTimePickerDialog dateTimeDialog(msg);
 		retCode = dateTimeDialog.DoModal(m_hWnd);
@@ -682,7 +684,7 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	Hashtable<String, String> *menuList = (Hashtable <String, String>*)lParam;
+	hash_map<String, String> *menuList = (hash_map <String, String>*)lParam;
 
 #if defined (_WIN32_WCE)
 	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
@@ -696,8 +698,9 @@ LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 		DeleteMenu(hMenu, 0,MF_BYPOSITION);
 
 	USES_CONVERSION;
-	for (Hashtable<String, String>::iterator itr = menuList->begin(); itr != menuList->end(); ++itr) {
+	for (hash_map<String, String>::iterator itr = menuList->begin(); itr != menuList->end(); ++itr) {
         //addStrToHash( retval, itr->first.c_str(), itr->second.c_str() );
+		LOG(INFO) + __FUNCTION__ + ": " + itr->first.c_str() + itr->second.c_str();
 		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_NEW_ITEM, A2T(itr->first.c_str()));
     }
 #endif
