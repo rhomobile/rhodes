@@ -461,8 +461,7 @@ static Rhodes *instance = NULL;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
-    if (rho_conf_getBool("disable_context_menu"))
-        [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+    [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
 	// TODO
     /*
      [self inactive];
