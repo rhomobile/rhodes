@@ -47,6 +47,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -84,6 +85,9 @@ public class Rhodes extends Activity {
 	
 	private static int screenWidth;
 	private static int screenHeight;
+	
+	private static float screenPpiX;
+	private static float screenPpiY;
 	
 	private static boolean isCameraAvailable;
 
@@ -420,6 +424,11 @@ public class Rhodes extends Activity {
 		screenHeight = d.getHeight();
 		screenWidth = d.getWidth();
 		
+		DisplayMetrics metrics = new DisplayMetrics();
+		d.getMetrics(metrics);
+		screenPpiX = metrics.xdpi;
+		screenPpiY = metrics.ydpi;
+		
 		try {
 			showSplashScreen("apps/app/loading.png");
 		}
@@ -637,6 +646,10 @@ public class Rhodes extends Activity {
 			return new Boolean(isCameraAvailable);
 		else if (name.equalsIgnoreCase("has_network"))
 			return hasNetwork();
+		else if (name.equalsIgnoreCase("ppi_x"))
+			return new Float(screenPpiX);
+		else if (name.equalsIgnoreCase("ppi_y"))
+			return new Float(screenPpiY);
 		else if (name.equalsIgnoreCase("phone_number")) {
 			TelephonyManager manager = (TelephonyManager)RhodesInstance.getInstance().
 				getSystemService(Context.TELEPHONY_SERVICE);
