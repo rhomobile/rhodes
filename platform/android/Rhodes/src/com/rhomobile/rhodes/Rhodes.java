@@ -76,6 +76,8 @@ public class Rhodes extends Activity {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
+	private static final String LOADING_PAGE = "file:///android_asset/apps/app/loading.html";
+	
 	private long uiThreadId;
 	public long getUiThreadId() {
 		return uiThreadId;
@@ -253,7 +255,7 @@ public class Rhodes extends Activity {
 		WebView w = new WebView(this);
 		
 		try {
-			w.loadUrl("file:///android_asset/apps/app/loading.html");
+			w.loadUrl(LOADING_PAGE);
 		}
 		catch (Exception e) {
 			// Ignore
@@ -276,6 +278,8 @@ public class Rhodes extends Activity {
 
 		w.setWebViewClient(new WebViewClient() {
 
+			private boolean realPageLoaded = false;
+			
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				return handleUrlLoading(url);
@@ -283,6 +287,11 @@ public class Rhodes extends Activity {
 			
 			@Override
 			public void onPageFinished(WebView view, String url) {
+				// Clear page until we get real page loaded
+				if (!(realPageLoaded || url.equals(LOADING_PAGE)))
+					realPageLoaded = true;
+				if (!realPageLoaded)
+					view.clearHistory();
 				// Set title
 				Rhodes r = RhodesInstance.getInstance();
 				String title = view.getTitle();
