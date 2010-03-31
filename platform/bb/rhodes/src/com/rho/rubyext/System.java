@@ -91,7 +91,11 @@ public class System {
     	if ( strPropName.equalsIgnoreCase("screen_width") )
     		return ObjectFactory.createInteger(getScreenWidth()); 
     	if ( strPropName.equalsIgnoreCase("screen_height") )
-    		return ObjectFactory.createInteger(getScreenHeight()); 
+    		return ObjectFactory.createInteger(getScreenHeight());
+    	if ( strPropName.equalsIgnoreCase("ppi_x"))
+    		return ObjectFactory.createFloat(getScreebPpiX());
+    	if ( strPropName.equalsIgnoreCase("ppi_y"))
+    		return ObjectFactory.createFloat(getScreenPpiY());
     	if ( strPropName.equalsIgnoreCase("has_camera") )
     		return ObjectFactory.createBoolean(hasCamera()); 
     	if ( strPropName.equalsIgnoreCase("phone_number") )
@@ -143,6 +147,16 @@ public class System {
 
 	public static int getScreenWidth() {
 		return Display.getWidth();
+	}
+	
+	public static double getScreenPpiX() {
+		// Convert PPM (Pixels Per Meter) to PPI (Pixels Per Inch)
+		return ((double)Display.getHorizontalResolution()*254)/1000;
+	}
+	
+	public static double getScreenPpiY() {
+		// Convert PPM (Pixels Per Meter) to PPI (Pixels Per Inch)
+		return ((double)Display.getVerticalResolution()*254)/1000;
 	}
 	
 	
