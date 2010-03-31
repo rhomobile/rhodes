@@ -269,8 +269,8 @@ public class Rhodes extends Activity {
 		webSettings.setSupportMultipleWindows(false);
 		// webSettings.setLoadsImagesAutomatically(true);
 
-		w.setVerticalScrollBarEnabled(false);
-		w.setHorizontalScrollBarEnabled(false);
+		w.setVerticalScrollBarEnabled(true);
+		w.setHorizontalScrollBarEnabled(true);
 		w.setVerticalScrollbarOverlay(true);
 		w.setHorizontalScrollbarOverlay(true);
 
