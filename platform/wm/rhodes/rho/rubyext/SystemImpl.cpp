@@ -235,6 +235,26 @@ static int has_camera()
 #endif
 }
 
+static double get_screen_ppi_x()
+{
+	HWND hWndDesktop = GetDesktopWindow();
+	HDC hdcDesktop = GetDC(hWndDesktop);
+	int mms = GetDeviceCaps(hdcDesktop, HORZSIZE);
+	int pixels = GetDeviceCaps(hdcDesktop, HORZRES);
+	double ret = (pixels*25.4)/mms;
+	return ret;
+}
+
+static double get_screen_ppi_y()
+{
+	HWND hWndDesktop = GetDesktopWindow();
+	HDC hdcDesktop = GetDC(hWndDesktop);
+	int mms = GetDeviceCaps(hdcDesktop, VERTSIZE);
+	int pixels = GetDeviceCaps(hdcDesktop, VERTRES);
+	double ret = (pixels*25.4)/mms;
+	return ret;
+}
+
 VALUE rho_sysimpl_get_property(char* szPropName)
 {
 	if (strcasecmp("has_camera",szPropName) == 0) 
@@ -242,6 +262,12 @@ VALUE rho_sysimpl_get_property(char* szPropName)
 
 	if (strcasecmp("phone_number",szPropName) == 0)
 		return phone_number();
+
+	if (strcasecmp("ppi_x",szPropName) == 0)
+		return rho_ruby_create_double(get_screen_ppi_x());
+
+	if (strcasecmp("ppi_y",szPropName) == 0)
+		return rho_ruby_create_double(get_screen_ppi_y());
 
     return 0;
 }
