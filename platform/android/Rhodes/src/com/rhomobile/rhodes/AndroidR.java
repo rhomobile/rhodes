@@ -27,6 +27,7 @@ public final class AndroidR {
     }
     public static final class drawable {
         public static final int back=R.drawable.back;
+        public static final int camera=R.drawable.camera;
         public static final int exit=R.drawable.exit;
         public static final int home=R.drawable.home;
         public static final int icon=R.drawable.icon;
@@ -40,6 +41,7 @@ public final class AndroidR {
     public static final class id {
         public static final int about=R.id.about;
         public static final int buttonLayout=R.id.buttonLayout;
+        public static final int cameraButton=R.id.cameraButton;
         public static final int cancelButton=R.id.cancelButton;
         public static final int excludeClasses=R.id.excludeClasses;
         public static final int exit=R.id.exit;
