@@ -648,7 +648,7 @@ public class Rhodes extends Activity {
 	}
 	
 	public void stopSelf() {
-		stopRhodesApp();
+		//stopRhodesApp();
 		Process.killProcess(Process.myPid());
 	}
 	
