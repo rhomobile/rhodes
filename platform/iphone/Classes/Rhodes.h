@@ -45,7 +45,7 @@
 + (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait;
 
 - (UIWindow*)rootWindow;
-- (void)fixFrame;
+- (void)setStatusBarHidden:(BOOL)hidden;
 
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
 - (void)playStop;

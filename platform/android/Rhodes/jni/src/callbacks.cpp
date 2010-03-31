@@ -101,6 +101,8 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
     jclass clsInteger = getJNIClass(RHODES_JAVA_CLASS_INTEGER);
+    jclass clsFloat = getJNIClass(RHODES_JAVA_CLASS_FLOAT);
+    jclass clsDouble = getJNIClass(RHODES_JAVA_CLASS_DOUBLE);
     jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
 
     if (env->IsInstanceOf(result, clsBoolean)) {
@@ -110,6 +112,14 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
     else if (env->IsInstanceOf(result, clsInteger)) {
         jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
         return rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
+    }
+    else if (env->IsInstanceOf(result, clsFloat)) {
+        jmethodID midValue = getJNIClassMethod(env, clsFloat, "floatValue", "()F");
+        return rho_ruby_create_double((double)env->CallFloatMethod(result, midValue));
+    }
+    else if (env->IsInstanceOf(result, clsDouble)) {
+        jmethodID midValue = getJNIClassMethod(env, clsDouble, "doubleValue", "()D");
+        return rho_ruby_create_double((double)env->CallDoubleMethod(result, midValue));
     }
     else if (env->IsInstanceOf(result, clsString)) {
         jstring resStrObj = (jstring)result;
