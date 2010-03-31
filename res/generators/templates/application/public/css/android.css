@@ -1,0 +1,292 @@
+/* Common css */
+body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Droid",sans-serif;
+    background: white;
+    color: black;
+}
+
+h1 {
+    font-size: 1em;
+}
+
+div#content {
+    margin-bottom: 55px;
+}
+
+
+/* Toolbar */
+
+#toolbar {
+    width: 100%;
+    height: 60px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));}
+}
+div#toolbar div {
+}
+
+div#toolbar div#leftItem, div#toolbar div#centerItem, div#toolbar div#rightItem {
+    display: table-cell;
+}
+
+div#toolbar a {
+    line-height: 40px;
+    text-decoration:none;
+    color: black;
+    display: block;
+}
+
+div#row .deleteButton, .regularButton, .blueButton, .backButton {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+    -webkit-border-radius: 1px;
+    font-size: .9em;
+    border: 1px solid white;
+}
+
+div#row {
+    display: table;
+    width: 100%;
+    text-align: center;
+    height: 40px;
+    border-spacing: 10px;
+}
+
+
+/* Header */
+
+div#pageTitle {
+    height: 25px;
+    width: 100%;
+    display:none;
+}
+
+div#pageTitle h1 {
+    position: absolute;
+    text-align: left;
+    width: 100%;
+    margin: 0;
+    padding-left: 5px;
+    color: white;
+    text-shadow: 1px 1px 1px #000;
+    line-height: 25px;
+    top: 0;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999),color-stop(0.5, #848684));
+}
+
+/* lists */
+div#content {
+    width: 100%;
+}
+
+div#content ul {
+    margin: 0;
+    -webkit-padding-start: 0;
+}
+
+div#content ul li {
+    width: 100%;
+    height: 54px;
+    list-style-type: none;
+    border-bottom: 1px solid #000;
+    font-size: 20px;
+    line-height: 54px;
+}
+
+div#content ul li a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+    height: 100%;
+    width: 100%;
+    line-height: 54px;
+}
+
+div#content span.title {
+    margin-left:30px;
+}
+
+div#content span.discloser_indicator {
+    float: right;
+    margin: 0px 10px 0px 0px;
+    height: 16px;
+    width: 10px;
+    background: url(/public/images/listArrow.png) no-repeat;
+    position: relative;
+    top: 35%;
+    display: none;
+}
+
+div#content ul li a img {
+    float: left;
+    height: 100%;
+    max-width: 100px;
+}
+
+/* Forms */
+
+div#content form fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+div#content form button {
+    -webkit-appearance:push-button;
+    width: 300px;
+    height: 40px;
+    margin-left: 10px;
+}
+
+div#content .form_list ul {
+    display: block;
+    font-size: 20px;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 0 0 17px 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0;
+}
+
+div#content .form_list li:first-child {
+    border-bottom: 1px solid black;
+}
+
+div#content .form_list li {
+    border-bottom: 1px solid black;
+    display: block;
+    height: auto;
+    list-style-type: none;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+div#content .form_list span.label {
+    float: left;
+    display:block;
+    color: black;
+    line-height: 30px;
+    padding: 5px 10px 5px 5px;
+    margin: 10px 20px 10px 10px;
+    width: 100px;
+    overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+div#content .form_list input[type="checkbox"] {
+    -webkit-appearance: none;
+    background: url(/public/images/android/btn_check_off.png) no-repeat;
+    float: right;
+    height: 31px;
+    width: 31px;
+    margin-top:15px;
+    margin-right: 20px;
+}
+
+div#content .form_list input[type="checkbox"]:checked {
+    background: url(/public/images/android/btn_check_on.png) no-repeat;
+    float: right;
+    height: 31px;
+    width: 31px;
+    margin-top:15px;
+    margin-right: 20px;
+}
+
+div#content .form_list input[type="radio"] {
+    background: url(/public/images/android/btn_radio_off.png) no-repeat;
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    border: none;
+    height: 32px;
+    margin: 0px;
+    width: 32px;
+    float: right;
+    margin-right: 20px;
+    margin-top: 15px;
+}
+
+div#content .form_list input[type="radio"]:checked {
+ background: url(/public/images/android/btn_radio_on.png) no-repeat;
+     margin-top:15px;
+    margin-right: 20px;
+}
+
+div#content .form_list select {
+    -webkit-appearance: none;
+    border: 0px;
+    width: 100%;
+    padding-left: 20px;
+    height: 60px;
+    background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
+}
+
+
+div#content .form_list textarea {
+    -webkit-appearance: none;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    -webkit-border-radius: 4px;
+    margin: 10px 0 2px 10px;
+    font-size: 0.9em;
+    padding: 5px 0 2px 2px;
+    box-shadow:0 -1px 3px #000000;
+}
+
+input[type="text"], input[type="password"] {
+    float: right;
+    height: 40px;
+    margin: 10px 10px 10px 0;
+    padding-left: 3px;
+    font-size:medium;
+    width: 150px;
+    -webkit-appearance: none;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    -webkit-border-radius: 4px;
+    box-shadow:0 -1px 3px #000000;
+}
+
+span.gridItem {
+    float: right;
+    text-align: left;
+    width: 145px;
+}
+
+button.updateButton {
+    height: 45px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    -webkit-border: 2px;
+}
+
+/* Settings */
+
+div#content ul#settings {
+    padding: 0;
+    margin: 0;
+}
+
+div#content div#reset h3 {
+    margin-left:30px;
+    margin-right: 30px;
+}
+
+div.button {
+    margin: 10px 10px 10px 10px;
+    height: 45px;
+    line-height: 45px;
+    -webkit-appearance:push-button;
+}
+
+div.button a {
+    display: block;
+    text-decoration:none;
+    width: 100%;
+    color: black;
+    text-align: center;
+}

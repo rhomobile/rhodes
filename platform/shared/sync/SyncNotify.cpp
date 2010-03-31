@@ -14,7 +14,6 @@ String CSyncNotify::m_strObjectNotifyUrl;
 common::CMutex CSyncNotify::m_mxObjectNotify;
 
 INetRequest& CSyncNotify::getNet(){ return getSync().getNet(); }
-CDBAdapter& CSyncNotify::getDB(){ return getSync().getDB(); }
 
 void CSyncNotify::addObjectNotify(int nSrcID, const String& strObject)
 {
@@ -232,7 +231,7 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
     		
 		    if ( strFullUrl.length() > 0 )
 		    {
-                DBResult( res, getDB().executeSQL("SELECT source_id from sources order by source_id") );
+                DBResult( res, CDBAdapter::getUserDB().executeSQL("SELECT source_id from sources order by source_id") );
                 for ( ; !res.isEnd(); res.next() )
 		    	    m_mapSyncNotifications.put( res.getIntByIdx(0),new CSyncNotification( strFullUrl, strParams, false ) );
 		    }
