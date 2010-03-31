@@ -61,8 +61,7 @@
     [picker dismissModalViewControllerAnimated:YES];
 	picker.view.hidden = YES;
     //[picker release]; 
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
-    [[Rhodes sharedInstance] fixFrame];
+    [[Rhodes sharedInstance] setStatusBarHidden:NO];
 } 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
@@ -77,8 +76,7 @@
     [picker dismissModalViewControllerAnimated:YES]; 
 	picker.view.hidden = YES;
     //[picker release]; 
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
-    [[Rhodes sharedInstance] fixFrame];
+    [[Rhodes sharedInstance] setStatusBarHidden:NO];
 } 
 
 @end

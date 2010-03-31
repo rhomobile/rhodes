@@ -40,8 +40,12 @@ import android.provider.MediaStore.Images.Media;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 
-public class ImageCapture extends Activity implements SurfaceHolder.Callback {
+public class ImageCapture extends Activity implements SurfaceHolder.Callback, OnClickListener {
 	
 	private static final String TAG = "ImageCapture";
 	
@@ -52,6 +56,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
+	private ImageButton cameraButton;
 
 	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
@@ -59,6 +64,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.camera);
@@ -70,6 +76,9 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		
+		cameraButton = (ImageButton)findViewById(AndroidR.id.cameraButton);
+		cameraButton.setOnClickListener(this);
 	}
 
 	@Override
@@ -91,33 +100,10 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 	};
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		ImageCaptureCallback iccb = null;
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_CENTER:
 		case KeyEvent.KEYCODE_CAMERA:
-			try {
-				String filename = "Image_" + timeStampFormat.format(new Date());
-				ContentValues values = new ContentValues(5);
-				values.put(Media.TITLE, filename);
-				values.put(Media.DISPLAY_NAME, filename);
-				values.put(Media.DATE_TAKEN, new Date().getTime());
-				values.put(Media.MIME_TYPE, "image/jpeg");
-				values.put(Media.DESCRIPTION, "Image capture by camera");
-
-				Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-				// String filename = timeStampFormat.format(new Date());
-				String dir = com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR;
-				File fdir = new File(dir);
-				if (!fdir.exists())
-					fdir.mkdirs();
-				
-				OutputStream osCommon = getContentResolver().openOutputStream(uri);
-				iccb = new ImageCaptureCallback(callbackUrl, osCommon, dir + "/" + filename + ".jpg");
-			} catch (Exception ex) {
-				Logger.E(TAG, ex.getMessage());
-			}
-			
-			camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
+			takePicture();
 			return true;
 		case KeyEvent.KEYCODE_BACK:
 			return super.onKeyDown(keyCode, event);
@@ -168,5 +154,38 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback {
 		camera.stopPreview();
 		isPreviewRunning = false;
 		camera.release();
+	}
+
+	public void onClick(View v) {
+		if (v.getId() == AndroidR.id.cameraButton) {
+			takePicture();
+		}
+	}
+	
+	private void takePicture() {
+		ImageCaptureCallback iccb = null;
+		try {
+			String filename = "Image_" + timeStampFormat.format(new Date());
+			ContentValues values = new ContentValues(5);
+			values.put(Media.TITLE, filename);
+			values.put(Media.DISPLAY_NAME, filename);
+			values.put(Media.DATE_TAKEN, new Date().getTime());
+			values.put(Media.MIME_TYPE, "image/jpeg");
+			values.put(Media.DESCRIPTION, "Image capture by camera");
+
+			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
+			// String filename = timeStampFormat.format(new Date());
+			String dir = com.rhomobile.rhodes.camera.Camera.BASE_CAMERA_DIR;
+			File fdir = new File(dir);
+			if (!fdir.exists())
+				fdir.mkdirs();
+			
+			OutputStream osCommon = getContentResolver().openOutputStream(uri);
+			iccb = new ImageCaptureCallback(callbackUrl, osCommon, dir + "/" + filename + ".jpg");
+		} catch (Exception ex) {
+			Logger.E(TAG, ex.getMessage());
+		}
+		
+		camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
 	}
 }
