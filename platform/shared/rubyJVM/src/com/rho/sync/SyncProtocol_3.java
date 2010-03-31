@@ -1,6 +1,7 @@
 package com.rho.sync;
 
 import com.rho.RhoConf;
+import com.rho.FilePath;
 
 public class SyncProtocol_3 implements ISyncProtocol
 {
@@ -56,7 +57,7 @@ public class SyncProtocol_3 implements ISyncProtocol
     {
         String strUrl = RhoConf.getInstance().getPath("syncserver");
         if ( strAction.length() > 0 )
-            strUrl += strAction;
+            strUrl = FilePath.join(strUrl, strAction);
         else
             strUrl = strUrl.substring(0,strUrl.length()-1);
 
