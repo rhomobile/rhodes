@@ -75,7 +75,25 @@ module Rhom
               end
 		  
               class << self
-              
+
+                def metadata
+                  begin
+                    require 'json'
+                  rescue
+                    return nil
+                  end
+
+                  return nil unless $".include? 'json'
+                  db = ::Rho::RHO.get_src_db(get_source_name)
+                  result = db.select_from_table('sources', 'metadata', {"name"=>get_source_name} )
+                  if result && result.length > 0 && result[0]['metadata']
+                    return JSON.parse(result[0]['metadata'])
+                  else
+                    return nil
+                  end
+
+                end
+
                 def count
                   db = ::Rho::RHO.get_src_db(get_source_name)
                   res = db.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
