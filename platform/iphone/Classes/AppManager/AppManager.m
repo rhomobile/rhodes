@@ -203,9 +203,9 @@ int rho_sys_get_screen_height()
 extern VALUE rho_sys_has_network();
 
 // http://www.apple.com/iphone/specs.html
-static const int RHO_IPHONE_PPI = 163;
+static const double RHO_IPHONE_PPI = 163.0;
 // http://www.apple.com/ipad/specs/
-static const int RHO_IPAD_PPI = 132;
+static const double RHO_IPAD_PPI = 132.0;
 
 VALUE rho_sysimpl_get_property(char* szPropName)
 {
@@ -228,19 +228,19 @@ VALUE rho_sysimpl_get_property(char* szPropName)
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
-        return rho_ruby_create_integer(RHO_IPHONE_PPI);
+        return rho_ruby_create_double(RHO_IPHONE_PPI);
 #else
         UIDevice *device = [UIDevice currentDevice];
         UIUserInterfaceIdiom uiIdiom = [device respondsToSelector:@selector(userInterfaceIdiom)] ?
             [device userInterfaceIdiom] : UIUserInterfaceIdiomPhone;
         switch (uiIdiom) {
             case UIUserInterfaceIdiomPhone:
-                return rho_ruby_create_integer(RHO_IPHONE_PPI);
+                return rho_ruby_create_double(RHO_IPHONE_PPI);
             case UIUserInterfaceIdiomPad:
-                return rho_ruby_create_integer(RHO_IPAD_PPI);
+                return rho_ruby_create_double(RHO_IPAD_PPI);
             default:
                 RAWLOG_ERROR("Unknown device type");
-                return rho_ruby_create_integer(-1);
+                return rho_ruby_create_double(0.0);
         }
 #endif
     }
