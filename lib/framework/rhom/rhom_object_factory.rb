@@ -529,10 +529,6 @@ module Rhom
                     }
                   end
                   
-                  if order_attr && limit
-                    ret_list = ret_list.slice(offset,limit)
-                  end
-                  
                   return list.length if args.first == :count
                   if args.first == :first || args.first.is_a?(String) 
                     return ret_list.length > 0 ? ret_list[0] : nil
