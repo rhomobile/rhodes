@@ -1,27 +1,33 @@
-<div class="toolbar">
-	<h1 id="pageTitle">
-		Edit <%%=@<%=name.downcase%>.<%=attributes[0]%>%>
-	</h1>
+<div id="pageTitle">
+	<h1>Edit <%%=@<%=name.downcase%>.<%=attributes[0]%>%></h1>
 </div>
 
-<form title="Edit <%= class_name %>" 
-	  class="panel" 
-	  id="<%= name.downcase %>_edit_form" 
-	  method="POST" 
-	  action="<%%=url_for(:action => :update)%>" selected="true">
-	<fieldset>
-		<input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
-		<% attributes.each do |attribute| %>
-		  <div class="row">
-			  <label><%=humanize(attribute)%>: </label>
-			  <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/>
-		  </div>
-		<% end %>
-	</fieldset>
-	<input type="submit" value="Update"/>
-	<p align="center">
-		<a href="<%%=url_for(:action => :delete, :id => @<%= name.downcase %>.object)%>">
-			<font color="#990000">Delete</font>
-		</a>
-	</p>
-</form>
+<div id="toolbar">
+  <div id="row">
+    <div id="leftItem" class="backButton"><%%=link_to "Cancel", :action => :show, :id => @<%=name.downcase%>.object%></div>
+    <div id="rightItem" class="regularButton"><%%=link_to "Delete", :action => :delete, :id => @<%=name.downcase%>.object%></div>
+  </div>
+</div>
+
+<div id="content">
+    <form title="Edit <%= class_name %>"
+          id="<%= name.downcase %>_edit_form"
+          method="POST"
+          action="<%%=url_for(:action => :update)%>">
+        <fieldset>
+            <input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
+            <div class="form_list">
+                <ul>
+                    <% attributes.each do |attribute| %>
+                    <li>
+                        <span class="label"><%=humanize(attribute)%></span>
+                        <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/>
+                    </li>
+                    <% end %>
+                </ul>
+            </div>
+        </fieldset>
+
+        <button class="updateButton" type="submit">Update</button>
+    </form>
+</div>

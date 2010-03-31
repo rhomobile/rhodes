@@ -9,6 +9,7 @@ import com.rho.RhoThread;
 import com.rho.db.IDBResult;
 import com.rho.net.NetRequest;
 import com.rho.net.NetResponse;
+import com.rho.db.DBAdapter;
 
 public class ClientRegister extends RhoThread 
 {
@@ -100,7 +101,7 @@ public class ClientRegister extends RhoThread
 		if ( client_id == null || client_id.length() == 0 )
 			return false;
     	
-		IDBResult res = oSync.getDB().executeSQL("SELECT token,token_sent from client_info");
+		IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT token,token_sent from client_info");
         if ( !res.isEnd() ) {
 			String token = res.getStringByIdx(0); 
 			int token_sent = res.getIntByIdx(1);
@@ -119,7 +120,7 @@ public class ClientRegister extends RhoThread
 		if( resp.isOK() ) 
 		{
 			try {
-				oSync.getDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", new Integer(1), m_strDevicePin );
+				DBAdapter.getUserDB().executeSQL("UPDATE client_info SET token_sent=?, token=?", new Integer(1), m_strDevicePin );
 			} catch(Exception ex) {
 				LOG.ERROR("Error saving token_sent to the DB...");
 			}	

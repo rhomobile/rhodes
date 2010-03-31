@@ -27,13 +27,34 @@ static Rhodes *instance = NULL;
     return [Rhodes sharedInstance]->application;
 }
 
+- (void)fixFrameFor:(UIView*)view delta:(int)delta {
+    CGRect frame = view.frame;
+    frame.origin.y -= delta;
+    view.frame = frame;
+    
+    NSArray *subviews = view.subviews;
+    for (int i = 0, lim = [subviews count]; i < lim; ++i) {
+        UIView *subview = [subviews objectAtIndex:i];
+        [self fixFrameFor:subview delta:delta];
+    }
+}
+
 - (void)fixFrame {
     UIApplication *app = [UIApplication sharedApplication];
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
     if (!app.statusBarHidden) {
-        int newY = 10;
-        frame.size.height += frame.origin.y - newY;
-        frame.origin.y = newY;
+        CGRect frame = [[UIScreen mainScreen] applicationFrame];
+        [window setFrame:frame];
+        [self fixFrameFor:window delta:10];
+    }
+}
+
+- (void)setStatusBarHidden:(BOOL)hidden {
+    UIApplication *app = [Rhodes application];
+    [app setStatusBarHidden:hidden];
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    if (!hidden) {
+        frame.origin.y -= 10;
+        frame.size.height += 10;
     }
     [window setFrame:frame];
 }
@@ -152,14 +173,11 @@ static Rhodes *instance = NULL;
 #endif
 	
 	@try {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES];
-        [self fixFrame];
+        [self setStatusBarHidden:YES];
 		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
 		picker.sourceType = type;
 		picker.delegate = delegateObject; 
 		picker.allowsImageEditing = YES;
-        
-        //[picker.view setFrame:frame];
 		[window addSubview:picker.view];
 	} @catch(NSException* theException) {
 		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );

@@ -61,7 +61,7 @@ struct CSyncProtocol_3 : public ISyncProtocol
     {
         String strUrl = RHOCONF().getPath("syncserver");
         if ( strAction.length() > 0 )
-            strUrl += common::CFilePath::join(strUrl, strAction);
+            strUrl = common::CFilePath::join(strUrl, strAction);
         else
             strUrl = strUrl.substr(0,strUrl.length()-1);
 
