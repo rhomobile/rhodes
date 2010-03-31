@@ -6,4 +6,8 @@ public abstract class RhoMainScreen extends MainScreen {
 	
 	protected abstract void onTouchUnclick();
 	
+	public boolean isTouchScreen()
+	{
+		return false;
+	}	
 };

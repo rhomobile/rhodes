@@ -17,6 +17,7 @@ class CDBAdapter
     boolean m_bUnlockDB;
     boolean m_bInsideTransaction;
     CDBAttrManager m_attrMgr;
+    static HashtablePtr<String,CDBAdapter*> m_mapDBPartitions;
 
     struct CDBVersion
     {
@@ -48,6 +49,13 @@ public:
     void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
     boolean isInsideTransaction(){ return m_bInsideTransaction; }
     const String& getDBPath(){ return m_strDbPath; }
+
+    static HashtablePtr<String,CDBAdapter*>& getDBPartitions(){ return  m_mapDBPartitions; }
+    static void closeAll();
+    static boolean isAnyInsideTransaction();
+    static CDBAdapter& getUserDB();
+    static CDBAdapter& getDBByHandle(sqlite3* db);
+    static CDBAdapter& getDB(const char* szPartition);
 
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
@@ -199,7 +207,7 @@ public:
     void destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
     void setBulkSyncDB(String fDataName);
 
-//private:
+private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
 
     void checkDBVersion(String& strVer);
@@ -214,6 +222,7 @@ public:
     virtual DBResultPtr prepareStatement( const char* szSt );
 
     boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
+
 };
 
 }

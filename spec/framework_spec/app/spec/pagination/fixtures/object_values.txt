@@ -80,12 +80,12 @@ source_id|attrib|object|value|attrib_type
 23|name|5736612273|7t7yepm6wb|
 23|address|5736612273|pm6ybo5eoh|
 23|industry|5736612273|xj3y2udqqd|
-23|name|7529312408|1fgbzmyf9k|
+23|name|7529312408|test|
 23|address|7529312408|8mr6hhd4ep|
 23|industry|7529312408|7r56i8dkqd|
-23|name|1553806230|j5sc8ii27l|
+23|name|1553806230|test|
 23|address|1553806230|n2jovgvmw9|
 23|industry|1553806230|xusnhhgrgz|
-23|name|527579259|dgx6foa3bw|
+23|name|527579259|test|
 23|address|527579259|bcgi7t4e3e|
 23|industry|527579259|ozjdrljgm2|
