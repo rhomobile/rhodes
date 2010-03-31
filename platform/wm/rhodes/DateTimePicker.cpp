@@ -5,8 +5,19 @@
 #include "Utils.h"
 #include "DateTimePicker.h"
 
+#define DLG_ITEM_SET_FONT_BOLD(ITEM_ID)							\
+{																\
+	HFONT hFont = GetDlgItem((ITEM_ID)).GetFont();				\
+	LOGFONT fontAttributes = { 0 };								\
+    ::GetObject(hFont, sizeof(fontAttributes), &fontAttributes);\
+    fontAttributes.lfWeight = FW_BOLD;							\
+	hFont = CreateFontIndirect(&fontAttributes);				\
+	GetDlgItem((ITEM_ID)).SetFont(hFont);						\
+}
+
+
 /*
- * TODO: title and initial time, flexible behavour f
+ * TODO: title and initial time, flexible behavour 
  */
 
 extern "C" HWND getMainWnd();
@@ -38,18 +49,16 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
-	
-	if (m_format == CDateTimeMessage::FORMAT_TIME) {
-		GetDlgItem(IDC_DATE_CTRL).ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_DATE_STATIC).ShowWindow(SW_HIDE);
-	}
+
+	DLG_ITEM_SET_FONT_BOLD (IDC_DATE_STATIC);
+	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);
 
 	if (m_format == CDateTimeMessage::FORMAT_DATE) {
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_TIME_STATIC).ShowWindow(SW_HIDE);
 	}
-
 #endif
+
     return 1;
 }
 
@@ -104,7 +113,7 @@ LRESULT CDateTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*h
 }
 
 
-CDatePickerDialog::CDatePickerDialog (const CDateTimeMessage *msg)
+CTimePickerDialog::CTimePickerDialog (const CDateTimeMessage *msg)
 {
 	m_returnTime  = 0;
 	m_format       = msg->m_format;
@@ -112,11 +121,11 @@ CDatePickerDialog::CDatePickerDialog (const CDateTimeMessage *msg)
 	m_initialTime  = msg->m_initialTime;
 }
 
-CDatePickerDialog::~CDatePickerDialog ()
+CTimePickerDialog::~CTimePickerDialog ()
 {
 }
 
-LRESULT CDatePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
 	//USES_CONVERSION;
@@ -131,27 +140,29 @@ LRESULT CDatePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
+
+	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);
 #endif
 
     return 1;
 }
 
-LRESULT CDatePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
+LRESULT CTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
 {
 	SYSTEMTIME sysTime;
-	DateTime_GetSystemtime (GetDlgItem(IDC_DATE_CTRL), &sysTime);
+	DateTime_GetSystemtime (GetDlgItem(IDC_TIME_CTRL), &sysTime);
 	m_returnTime = SystemTimeToUnixTime (&sysTime);
 
     EndDialog(wID);
     return 0;
 }
 
-time_t CDatePickerDialog::GetTime()
+time_t CTimePickerDialog::GetTime()
 {
 	return m_returnTime;
 }
 
-LRESULT CDatePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     EndDialog(wID);
     return 0;

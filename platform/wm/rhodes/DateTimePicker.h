@@ -45,7 +45,7 @@ public:
 
 	time_t GetTime();
 
-	enum { IDD = IDD_TIMEPICKER };
+	enum { IDD = IDD_DATETIME_PICKER };
 	
 	BEGIN_MSG_MAP(CDateTimePickerDialog)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -65,17 +65,17 @@ private:
 	const char *m_title;
 };
 
-class CDatePickerDialog : public CDialogImpl<CDatePickerDialog>
+class CTimePickerDialog : public CDialogImpl<CTimePickerDialog>
 {
 public:
-	CDatePickerDialog  (const CDateTimeMessage *msg);
-	~CDatePickerDialog ();
+	CTimePickerDialog  (const CDateTimeMessage *msg);
+	~CTimePickerDialog ();
 
 	time_t GetTime();
 
-	enum { IDD = IDD_DATEPICKER };
+	enum { IDD = IDD_TIME_PICKER };
 	
-	BEGIN_MSG_MAP(CDateTimePickerDialog)
+	BEGIN_MSG_MAP(CTimePickerDialog)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnOK)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
