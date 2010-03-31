@@ -534,7 +534,7 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
-  
+
   describe "Rhom#paginate" do
     before(:each) do
       Rho::RhoUtils.load_offline_data(['object_values'], 'spec/pagination')
@@ -552,7 +552,7 @@ describe "Rhom::RhomObject" do
     @expected = [{:object => '3788304956', :name => 'c2z5izd8w9', :address => '6rd9nv8dml', :industry => 'hxua4d6ttl'},
                 {:object => '7480317731', :name => '79nqr7ekzr', :address => 'emv1tezmdf', :industry => '1zg7f7q6ib'},
                 {:object => '9897778878', :name => 'n5qx54qcye', :address => 'stzc1x7upn', :industry => '9kdinrjlcx'}]
-  
+
     it "should support paginate with no options" do
       3.times do |x|
         @accts = Account.paginate(:page => x)
@@ -585,5 +585,31 @@ describe "Rhom::RhomObject" do
       @accts[0].address.should == @expected[0][:address]
       @accts[0].industry.should == @expected[0][:industry]
     end
+
+    it "should support paginate with options, conditions and order" do
+      @accts = Account.paginate(:page => 0, :per_page => 1, :conditions => {'name' => 'test'}, :order=> 'name')
+      @accts.length.should == 1
+
+      @accts = Account.paginate(:page => 1, :per_page => 1, :conditions => {'name' => 'test'}, :order=> 'name')
+      @accts.length.should == 1
+
+      @accts = Account.paginate(:page => 2, :per_page => 1, :conditions => {'name' => 'test'}, :order=> 'name')
+      @accts.length.should == 1
+
+      @accts = Account.paginate(:page => 3, :per_page => 1, :conditions => {'name' => 'test'}, :order=> 'name')
+      @accts.length.should == 0
+    end
+    
+    it "should support paginate with options and order" do
+      @accts = Account.paginate(:per_page => 20, :order=> 'name')
+      @accts.length.should == 20
+
+      @accts2 = Account.paginate(:per_page => 20, :order=> 'name', :page => 1)
+      @accts2.length.should == 10
+      
+      @accts3 = Account.paginate(:per_page => 20, :order=> 'name', :page => 2)
+      @accts3.length.should == 0
+    end
+    
   end
 end
