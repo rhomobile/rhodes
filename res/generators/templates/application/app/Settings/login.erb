@@ -1,32 +1,35 @@
-<div class="toolbar">
-  <h1 id="pageTitle">
-    Login
-  </h1>
+<div id="pageTitle">
+  <h1>Login</h1>
 </div>
 
-<form title="Login to Rhodes"
-      class="panel" 
-     id="user_edit_form" 
-   method="POST" 
-   action="<%=url_for(:action => 'do_login')%>" selected="true">  
-      
-  <% if @msg %>
-    <p style="color:#ff0000"><%= @msg %></p>
-  <% end %>
-  
-  <table class="grid">
-    <tr>
-      <td class="gridleft" style="color:#000000">Login</td>
-      <td class="gridright"><input type="text" maxlength="100" name="login"/></td>
-    </tr>
-    <tr>
-      <td class="gridleft" style="color:#000000">Password</td>
-      <td class="gridright"><input type="password" maxlength="100" name="password"/></td>
-    </tr>
-  </table>
- 
-  <p align="center">
-    <input type="submit" value="Login"/><br/>
-  </p>
- 
-</form>
+<div id="toolbar"></div>
+
+<div id="content">
+    <form title="Login to Rhodes"
+       method="POST"
+       action="<%=url_for(:action => 'do_login')%>">
+
+        <% if @msg %>
+            <p style="color:#ff0000"><%= @msg %></p>
+        <% end %>
+        <fieldset>
+            <div class="form_list">
+                <ul>
+                    <li>
+                        <span class="label">Login</span>
+                        <input type="text" name="login"/>
+                    </li>
+
+                    <li>
+                        <span class="label">Password</span>
+                        <input type="password" name="password"/>
+                    </li>
+                </ul>
+            </div>
+            <button class="updateButton" type="submit">Login</button>
+        </fieldset>
+    </form>
+    <div class="button">
+        <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
+    </div>
+</div>

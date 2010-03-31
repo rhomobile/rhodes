@@ -8,7 +8,7 @@
 static VALUE mSqlite3;
 static VALUE mDatabase;
 
-extern int rho_sync_openDB(const char* szDBPath, void** ppDB);
+extern int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB);
 //extern int rho_sync_closeDB();
 extern int rho_db_startUITransaction(void* pDB);
 extern int rho_db_commitUITransaction(void* pDB);
@@ -28,16 +28,18 @@ static VALUE db_allocate(VALUE klass)
 static VALUE db_init(int argc, VALUE *argv, VALUE self)
 {
 	const char *szDbName = NULL;
+    const char *szDbPartition = NULL;
 	void **ppDB = NULL;
 	int result;
 	
-	if ((argc < 1) || (argc > 1))
-		rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc);
+	if ((argc < 2) || (argc > 2))
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc);
 	
 	Data_Get_Struct(self, void *, ppDB);
 	szDbName = STR2CSTR(argv[0]);
+    szDbPartition = STR2CSTR(argv[1]);
 	
-	result = (int)rho_sync_openDB(szDbName, ppDB);//sqlite3_open(szDbName,ppDB);
+	result = (int)rho_db_open(szDbName, szDbPartition, ppDB);//sqlite3_open(szDbName,ppDB);
 	if ( result != SQLITE_OK )
 		rb_raise(rb_eArgError, "could open database:%d",result);
 	

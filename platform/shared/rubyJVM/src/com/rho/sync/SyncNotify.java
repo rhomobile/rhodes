@@ -46,7 +46,6 @@ public class SyncNotify {
     boolean m_bEnableReporting = false;
     
     SyncEngine getSync(){ return m_syncEngine; }
-	DBAdapter getDB(){ return getSync().getDB(); }
 	NetRequest getNet(){ return getSync().getNet(); }
 
     SyncNotify( SyncEngine syncEngine ) 
@@ -273,7 +272,7 @@ public class SyncNotify {
 				
 				if ( strFullUrl.length() > 0 )
 				{
-	                IDBResult res = getDB().executeSQL("SELECT source_id from sources order by source_id");
+	                IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT source_id from sources order by source_id");
 	                for ( ; !res.isEnd(); res.next() )
 			    	    m_mapSyncNotifications.put( new Integer(res.getIntByIdx(0)), new SyncNotification( strFullUrl, strParams, false ) );
 				}
