@@ -93,7 +93,7 @@ public class System {
     	if ( strPropName.equalsIgnoreCase("screen_height") )
     		return ObjectFactory.createInteger(getScreenHeight());
     	if ( strPropName.equalsIgnoreCase("ppi_x"))
-    		return ObjectFactory.createFloat(getScreebPpiX());
+    		return ObjectFactory.createFloat(getScreenPpiX());
     	if ( strPropName.equalsIgnoreCase("ppi_y"))
     		return ObjectFactory.createFloat(getScreenPpiY());
     	if ( strPropName.equalsIgnoreCase("has_camera") )
@@ -151,12 +151,16 @@ public class System {
 	
 	public static double getScreenPpiX() {
 		// Convert PPM (Pixels Per Meter) to PPI (Pixels Per Inch)
-		return ((double)Display.getHorizontalResolution()*254)/1000;
+		int ppm = Display.getHorizontalResolution();
+		double retval = (ppm*25.4)/1000;
+		return retval;
 	}
 	
 	public static double getScreenPpiY() {
 		// Convert PPM (Pixels Per Meter) to PPI (Pixels Per Inch)
-		return ((double)Display.getVerticalResolution()*254)/1000;
+		int ppm = Display.getVerticalResolution();
+		double retval = (ppm*25.4)/1000;
+		return retval;
 	}
 	
 	
