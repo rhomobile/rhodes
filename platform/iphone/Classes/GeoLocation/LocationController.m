@@ -11,7 +11,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import "LocationController.h"
 #import "logging/RhoLog.h"
-#import "../Server/ServerHost.h"
 #include "rubyext/GeoLocation.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -201,8 +200,8 @@ _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
 }
 
 void geo_update() {
-	[ [LocationController sharedInstance] performSelector:[[LocationController sharedInstance] onUpdateLocation] 
-        onThread:[ServerHost sharedInstance]->m_geoThread withObject:NULL waitUntilDone:NO];
+    LocationController *loc = [LocationController sharedInstance];
+    [loc performSelectorOnMainThread:[loc onUpdateLocation] withObject:nil waitUntilDone:NO];
 }
 
 double rho_geo_latitude() {

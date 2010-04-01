@@ -272,11 +272,6 @@ extern "C" void webview_refresh(int index) {
 	_AtlModule.DoViewRefresh();
 }
 
-//Sync hook to refresh the web view
-extern "C" void perform_webview_refresh() {
-	webview_refresh(0);
-}
-
 extern "C" void webview_navigate(char* url, int index) {
 	_AtlModule.DoViewNavigate(url);
 }
@@ -286,29 +281,9 @@ extern "C" char* webview_execute_js(char* js, int index) {
 	return "";
 }
 
-extern "C" void webview_set_menu_items(VALUE valMenu) 
-{
-    RHODESAPP().setViewMenu(valMenu);
-/*
-	hash_map<String, String> *menuList = new hash_map<String, String>;
-	rho_ruby_enum_strhash(valMenu, menu_iter, menuList);
-
-	HWND main_wnd = getMainWnd();
-	::PostMessage(main_wnd, WM_SET_CUSTOM_MENU, 0, (LPARAM )menuList);
-*/
-}
-
-extern "C" int webview_active_tab() {
-	return 0;
-}
-
 //extern "C" char* get_current_location() {
 //	return _AtlModule.GetCurrentLocation();
 //}
-
-extern "C" char* webview_current_location(int index) {
-    return const_cast<char*>(RHODESAPP().getCurrentUrl(index).c_str());
-}
 
 extern "C" void rho_net_impl_network_indicator(int active)
 {
