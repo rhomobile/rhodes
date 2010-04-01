@@ -57,9 +57,11 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_TIME_STATIC).ShowWindow(SW_HIDE);
 	}
+	
+	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 #endif
 
-    return 1;
+    return FALSE;
 }
 
 LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
@@ -142,9 +144,11 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     RHO_ASSERT(SHCreateMenuBar(&mbi));
 
 	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);
+
+	GotoDlgCtrl(GetDlgItem(IDC_TIME_CTRL));
 #endif
 
-    return 1;
+    return FALSE;
 }
 
 LRESULT CTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
