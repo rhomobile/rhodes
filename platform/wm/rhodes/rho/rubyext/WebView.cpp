@@ -2,7 +2,6 @@
 
 #include "common/RhodesApp.h"
 #include "MainWindow.h"
-#include "Rhodes.h"
 
 #include "WebView.h"
 
@@ -42,9 +41,11 @@ void perform_webview_refresh() {
 
 void webview_set_menu_items(VALUE valMenu) 
 {
+	/*
     RHODESAPP().setViewMenu(valMenu);
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd, WM_SET_CUSTOM_MENU, 0, (LPARAM )new Hashtable <String, String> (RHODESAPP().getViewMenu()));
+	*/
 }
 
  int webview_active_tab() {
