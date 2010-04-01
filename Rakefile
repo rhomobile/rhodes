@@ -11,7 +11,7 @@ module Rake
   end
 end
 
-
+$app_basedir = pwd
 chdir File.dirname(__FILE__)
 
 require 'lib/build/jake.rb'
@@ -22,6 +22,7 @@ load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
 
+load 'lib/build/tasks/rhosync.rake'
 def get_dir_hash(dir, init = nil)
   hash = init
   hash = Digest::SHA2.new if hash.nil?
@@ -54,6 +55,7 @@ end
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
+    $binextensions = []
     buildyml = 'rhobuild.yml'
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
