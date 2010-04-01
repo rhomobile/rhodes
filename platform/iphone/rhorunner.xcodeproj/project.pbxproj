@@ -19,7 +19,6 @@
 		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
-		5C4775F71130832B0092D21E /* ServerHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C4775F61130832B0092D21E /* ServerHost.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
@@ -172,8 +171,6 @@
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
 		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
-		5C4775F51130832B0092D21E /* ServerHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerHost.h; path = Server/ServerHost.h; sourceTree = "<group>"; };
-		5C4775F61130832B0092D21E /* ServerHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerHost.m; path = Server/ServerHost.m; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = rho/common/RhoClassFactory.cpp; sourceTree = "<group>"; };
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
@@ -289,7 +286,6 @@
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				5C5332610FBD6AC700F268F0 /* rho */,
 				BD97AC3C1160F87D006960F9 /* Ringtones */,
-				5C4775EC113082290092D21E /* Server */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 				BD38E76D115D1C3C001CE05C /* WebView */,
 				46C25E39103240A400A26428 /* RhoDelegate.h */,
@@ -399,15 +395,6 @@
 				5C12568C0F7CEA9200C87274 /* libtcmalloc.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5C4775EC113082290092D21E /* Server */ = {
-			isa = PBXGroup;
-			children = (
-				5C4775F51130832B0092D21E /* ServerHost.h */,
-				5C4775F61130832B0092D21E /* ServerHost.m */,
-			);
-			name = Server;
 			sourceTree = "<group>";
 		};
 		5C5332610FBD6AC700F268F0 /* rho */ = {
@@ -808,7 +795,6 @@
 				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,
 				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
 				BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */,
-				5C4775F71130832B0092D21E /* ServerHost.m in Sources */,
 				BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */,
 				BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */,
 				BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */,
