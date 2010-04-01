@@ -1058,6 +1058,14 @@
 					RelativePath=".\rho\rubyext\SystemImpl.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\rho\rubyext\WebView.h"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\rubyext\WebView.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

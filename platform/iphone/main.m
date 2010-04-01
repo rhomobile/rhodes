@@ -9,7 +9,6 @@
 #include <signal.h>
 
 #import <UIKit/UIKit.h>
-#import "ServerHost.h"
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "main"
