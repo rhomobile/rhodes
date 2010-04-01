@@ -205,16 +205,34 @@ public class NetworkAccess implements INetworkAccess {
 				String url = strUrl;
 				if (!ignoreSuffix)
 					url += URLsuffix;
+				
+				if (url.startsWith("https"))
+					url += ";EndToEndDesired;RdHTTPS";
+				
 				LOG.INFO(url);
-				conn = Connector.open(url);
+				conn = Connector.open(url, Connector.READ_WRITE, true);
+			} catch (java.io.InterruptedIOException ioe) {
+				LOG.ERROR("Connector.open InterruptedIOException", ioe );
+				if (conn != null)
+					conn.close();
+				conn = null;
+				throw ioe;
 			} catch (IOException ioe) {
-				if ( URLsuffix.length() > 0 )
+				String strMsg = ioe.getMessage(); 
+				
+		    	boolean bTimeout = strMsg != null && (strMsg.indexOf("timed out") >= 0 || strMsg.indexOf("Timed out") >= 0);
+				
+				if ( !bTimeout && URLsuffix.length() > 0 )
 				{
 					LOG.ERROR("Connector.open exception", ioe );
 					
 					try{
-						LOG.INFO(strUrl);
-						conn = Connector.open(strUrl);
+						String url = strUrl;
+						if (url.startsWith("https"))
+							url += ";EndToEndDesired;RdHTTPS";
+						
+						LOG.INFO(url);
+						conn = Connector.open(url, Connector.READ_WRITE, true);
 					} catch (IOException ioe2) {
 						LOG.ERROR("Connector.open exception", ioe2 );
 						if (conn != null)
