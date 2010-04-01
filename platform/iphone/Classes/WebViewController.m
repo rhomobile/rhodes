@@ -288,7 +288,7 @@ extern int webview_active_tab();
     webView = [[UIWebView alloc] initWithFrame:wvFrame];
     webView.scalesPageToFit = YES;
     webView.userInteractionEnabled = YES;
-    webView.detectsPhoneNumbers = YES;
+    //webView.detectsPhoneNumbers = YES;
     webView.multipleTouchEnabled = YES;
     webView.autoresizesSubviews = YES;
     webView.delegate = self;
