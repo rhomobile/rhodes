@@ -10,10 +10,15 @@
 #include "GetURLDialog.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
+#include "rho/rubyext/WebView.h"
+
 #if defined(OS_WINDOWS)
 #include "menubar.h"
 #endif
 #include "LogView.h"
+
+#define ID_CUSTOM_MENU_ITEM_FIRST  WM_APP+3
+#define ID_CUSTOM_MENU_ITEM_LAST   ID_CUSTOM_MENU_ITEM_FIRST + 20
 
 static const UINT ID_BROWSER = 1;
 
@@ -22,7 +27,6 @@ static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SEL
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
 static UINT WM_ALERT_SHOWPOPUP         = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOWPOPUP");
 static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DATETIME_PICKER");
-static UINT WM_SET_CUSTOM_MENU         = ::RegisterWindowMessage(L"RHODES_WM_SET_CUSTOM_MENU");
 
 class CMainWindow :
 #if defined(_WIN32_WCE)
@@ -83,6 +87,7 @@ public:
 		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
 		COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
 //		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
+		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 #if defined(OS_WINDOWS)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
@@ -92,7 +97,6 @@ public:
 		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
         MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup);
 		MESSAGE_HANDLER(WM_DATETIME_PICKER, OnDateTimePicker);
-		MESSAGE_HANDLER(WM_SET_CUSTOM_MENU, OnSetCustomMenu);
     END_MSG_MAP()
 
 private:
@@ -119,6 +123,7 @@ private:
 	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 //	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 #if defined(OS_WINDOWS)
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -130,7 +135,6 @@ private:
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 public:
     BEGIN_SINK_MAP(CMainWindow)
@@ -201,8 +205,7 @@ public:
 	static int getScreenHeight() {return m_screenHeight;}
 #endif
 	
-	bool m_bFullscreen;
-	bool m_bCustomMenu;
+	bool m_bFullscreen;	
 //private:
 //	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
 };
