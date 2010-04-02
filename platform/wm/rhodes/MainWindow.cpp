@@ -18,12 +18,14 @@
 #include "common/StringConverter.h"
 #include "AppManager.h"
 #include "ext/rho/rhoruby.h"
+#include "rho/rubyext/WebView.h"
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include <hash_map>
+
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 //char* canonicalizeURL(const char* path);
@@ -64,7 +66,6 @@ CMainWindow::CMainWindow()
     m_sai.cbSize = sizeof(m_sai);
 #endif
 	m_bFullscreen = false;
-	m_bCustomMenu = false;
 //	m_current_url = NULL;
 //    m_szStartPage = NULL;
 }
@@ -511,6 +512,37 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 };
 
+extern wchar_t* wce_mbtowc(const char* a);
+
+LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	LOG(INFO) + __FUNCTION__ + " ID = " + (int )wID;
+	
+	CWebView::MenuItem *item = NULL;
+	if (CWebView::getCWebView().getMenuItem(wID, &item))
+	{
+		int type = item->getType();
+		
+		if (type == CWebView::MenuItem::URL) {
+			webview_navigate(strdup(item->getLink().c_str()), 0);
+		}
+		
+		if (type == CWebView::MenuItem::COMMAND_REFRESH)
+			;
+		if (type == CWebView::MenuItem::COMMAND_HOME)
+			;
+		if (type == CWebView::MenuItem::COMMAND_BACK)
+			;
+		if (type == CWebView::MenuItem::COMMAND_OPTIONS)
+			;
+		if (type == CWebView::MenuItem::COMMAND_LOG)
+			;
+	}
+	delete (item);
+	
+	return 0;
+}
+
 #if defined(OS_WINDOWS)
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CMenu menu;
@@ -682,11 +714,9 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
-LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+/*
+LRESULT CMainWindow::OnSetCustomMenu (UINT uint, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	hash_map<String, String> *menuList = (hash_map <String, String>*)lParam;
-
-#if defined (_WIN32_WCE)
 	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
 
 	m_bCustomMenu = true;
@@ -694,22 +724,17 @@ LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 	const int ID_NEW_ITEM = WM_APP+3;
 	
 	int num = GetMenuItemCount (hMenu);
-	for (int i = 0; i < (num - 1); i++)	//delete all except exit item
+	for (int i = 0; i < (num - 1); i++)
 		DeleteMenu(hMenu, 0,MF_BYPOSITION);
 
 	USES_CONVERSION;
 	for (hash_map<String, String>::iterator itr = menuList->begin(); itr != menuList->end(); ++itr) {
-        //addStrToHash( retval, itr->first.c_str(), itr->second.c_str() );
 		LOG(INFO) + __FUNCTION__ + ": " + itr->first.c_str() + itr->second.c_str();
 		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_NEW_ITEM, A2T(itr->first.c_str()));
     }
-#endif
-
-	if (menuList != NULL)
-		delete menuList;
-
 	return 0;
 }
+*/
 
 // **************************************************************************
 //
@@ -733,6 +758,33 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
     else
         SetWindowText(TEXT("Untitled"));
 
+	if (CWebView::MENU_TYPE_CUSTOM == CWebView::getCWebView().getMenuType())
+	{
+		HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+		
+		//delete all except exit item
+		int num = GetMenuItemCount (hMenu);
+		for (int i = 0; i < (num - 1); i++)	
+			DeleteMenu(hMenu, 0,MF_BYPOSITION);
+		
+		Vector<CWebView::MenuItem> items;
+		CWebView::getCWebView().getMenuItems(items);
+	 	
+		USES_CONVERSION; 
+		int i = 0;
+		for (Vector<CWebView::MenuItem>::iterator itr = items.begin(); itr != items.end(); ++itr, ++i) 
+		{
+			LOG(INFO) + (itr)->getLabel();
+			if (itr->getType() == CWebView::MenuItem::SEPARATOR)
+				InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
+			else
+				InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, A2T((itr)->getLabel().c_str()));
+			(itr)->setId(ID_CUSTOM_MENU_ITEM_FIRST + i);
+		}
+		
+		CWebView::getCWebView().setMenuItems(items); //update items with IDs
+	}
+	
     RHO_ASSERT(SetEnabledState(IDM_STOP, TRUE));
 }
 
@@ -876,7 +928,7 @@ void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
 {
 #if defined(_WIN32_WCE)
-	if (true == m_bCustomMenu)
+	if (CWebView::MENU_TYPE_CUSTOM == CWebView::getCWebView().getMenuType())
 		return TRUE;
 
     HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);

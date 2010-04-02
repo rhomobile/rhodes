@@ -477,6 +477,11 @@ void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink 
     }
 }
 
+void CRhodesApp::getViewMenu (Hashtable<String,String>& hash)
+{
+	hash = m_hashViewMenuItems;
+}
+
 extern "C" void
 menu_iter(const char* szLabel, const char* szLink, void* pThis)
 {
