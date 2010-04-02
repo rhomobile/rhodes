@@ -39,9 +39,10 @@ struct CSyncProtocol_3 : public ISyncProtocol
         return RHOCONF().getPath("syncserver") + "clientregister";
     }
 
-    String getClientRegisterBody( const String& strPin, int nPort, const String& strType )
+    String getClientRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType )
     {
-        return "{\"device_pin\":\"" + strPin + 
+        return "{\"client_id\":\"" + strClientID + 
+            "\",\"device_pin\":\"" + strPin +
             "\",\"device_port\":\"" + common::convertToStringA(nPort) +
             "\",\"device_type\":\"" + strType + "\"}";
     }
