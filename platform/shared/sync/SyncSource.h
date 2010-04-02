@@ -74,7 +74,7 @@ private:
     VectorPtr<CSyncBlob*> m_arSyncBlobs;
 
 public:
-    CSyncSource(int id, const String& strName, uint64 token, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );
+    CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );
     virtual void sync();
     virtual boolean syncClientChanges();
 

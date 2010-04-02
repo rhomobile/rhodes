@@ -67,11 +67,11 @@ void CClientRegister::run()
     LOG(INFO)+"ClientRegister thread shutdown";
 }
 
-String CClientRegister::getRegisterBody()
+String CClientRegister::getRegisterBody(const String& strClientID)
 {
 	int port = RHOCONF().getInt("push_port");
 
-    return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( m_strDevicePin, 
+    return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
         port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo->getPlatform());
 }
 
@@ -96,9 +96,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 			return true; 
 		}
     }
-	String strBody = getRegisterBody();
-	strBody += "&client_id=" + client_id;
-
+	String strBody = getRegisterBody(client_id);
     NetResponse(resp, getNet().pushData( oSync.getProtocol().getClientRegisterUrl(), strBody, &oSync ));
 	if( resp.isOK() )
     {

@@ -35,9 +35,10 @@ public class SyncProtocol_3 implements ISyncProtocol
         return RhoConf.getInstance().getPath("syncserver") + "clientregister";
     }
 
-    public String getClientRegisterBody( String strPin, int nPort, String strType )
+    public String getClientRegisterBody( String strClientID, String strPin, int nPort, String strType )
     {
-        return "{\"device_pin\":\"" + strPin + 
+        return "{\"client_id\":\"" + strClientID +
+        	"\",\"device_pin\":\"" + strPin +
             "\",\"device_port\":\"" + nPort +
             "\",\"device_type\":\"" + strType + "\"}";
     }
