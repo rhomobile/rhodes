@@ -33,7 +33,7 @@ public:
 
     const String& getDevicePin(){return m_strDevicePin;}
 
-    String getRegisterBody();
+    String getRegisterBody(const String& strClientID);
 
 private:
 	CClientRegister(common::IRhoClassFactory* factory,const char* device_pin);

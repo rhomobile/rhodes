@@ -298,21 +298,20 @@ void CSyncEngine::loadAllSources()
     m_sources.clear();
     m_arPartitions.clear();
 
-    DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,token,name, partition from sources ORDER BY priority") );
+    DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY priority") );
     for ( ; !res.isEnd(); res.next() )
     { 
         String strShouldSync = res.getStringByIdx(1);
         if ( strShouldSync.compare("none") == 0 )
             continue;
 
-        String strName = res.getStringByIdx(3);
-        String strPartition = res.getStringByIdx(4);
+        String strName = res.getStringByIdx(2);
+        String strPartition = res.getStringByIdx(3);
 
         if ( m_arPartitions.indexOf(strPartition) < 0 )
             m_arPartitions.addElement(strPartition);
 
-        m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strName, res.getUInt64ByIdx(2), strShouldSync, 
-            getDB(strPartition), *this) );
+        m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strName, strShouldSync, getDB(strPartition), *this) );
     }
 }
 

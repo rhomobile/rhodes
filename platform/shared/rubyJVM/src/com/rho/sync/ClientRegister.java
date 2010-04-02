@@ -83,11 +83,11 @@ public class ClientRegister extends RhoThread
     	
     }
 
-    public String getRegisterBody()throws Exception
+    public String getRegisterBody(String strClientID)throws Exception
     {
 		int port = RhoConf.getInstance().getInt("push_port");
 
-        return SyncThread.getSyncEngine().getProtocol().getClientRegisterBody( m_strDevicePin, 
+        return SyncThread.getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
             port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo.getPlatform());
     }
     
@@ -113,9 +113,7 @@ public class ClientRegister extends RhoThread
 			}
         }
 
-	    String strBody = getRegisterBody();
-	    strBody += "&client_id=" + client_id;
-
+	    String strBody = getRegisterBody(client_id);
         NetResponse resp = getNet().pushData( oSync.getProtocol().getClientRegisterUrl(), strBody, oSync );
 		if( resp.isOK() ) 
 		{

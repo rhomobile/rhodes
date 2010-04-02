@@ -128,15 +128,13 @@ class SyncSource
         m_bIsSearch = false;
     }
 	
-    SyncSource(int id, String name, long token, String strSyncType, DBAdapter db, SyncEngine syncEngine )
+    SyncSource(int id, String name, String strSyncType, DBAdapter db, SyncEngine syncEngine )throws DBException
     {
     	m_syncEngine = syncEngine;
     	m_dbAdapter = db;
         m_nID = new Integer(id);
         m_strName = name;
-        m_token = token;
         m_strSyncType = strSyncType;
-        m_bTokenFromDB = true;
         
         m_nCurPageCount = 0;
         m_nInserted = 0;
@@ -146,6 +144,17 @@ class SyncSource
 
         m_nErrCode = RhoRuby.ERR_NONE;
         m_bIsSearch = false;
+
+        IDBResult res = db.executeSQL("SELECT token from sources WHERE source_id=?", m_nID);
+        if ( !res.isEnd() )
+        {
+        	m_token = res.getLongByIdx(0);
+            m_bTokenFromDB = true;
+        }else
+        {
+        	m_token = 0;
+            m_bTokenFromDB = true;
+        }        
     }
 	
 	void sync() throws Exception
