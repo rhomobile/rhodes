@@ -10,9 +10,21 @@ import com.xruby.runtime.builtin.RubyFixnum;
 import com.xruby.runtime.builtin.RubyString;
 
 //@RubyLevelClass(name="Symbol")
-public class RubySymbol extends RubySpecialValue {
+public class RubySymbol extends RubyValue {
     private RubyID id;
 
+	public void setRubyClass(RubyClass klass) {
+		throw new RubyException(RubyRuntime.TypeErrorClass, this.getRubyClass().getName() + " can't be set class");
+	}
+	
+	public RubyClass getSingletonClass() {
+    	throw new RubyException(RubyRuntime.TypeErrorClass, this.getRubyClass().getName() + " can't define singleton");
+    }
+
+	public RubyValue clone() {
+		throw new RubyException(RubyRuntime.TypeErrorClass, "can't clone " + this.getRubyClass().getName());
+	}
+    
     public RubySymbol(RubyID id) {
         this.id = id;
     }
@@ -46,6 +58,10 @@ public class RubySymbol extends RubySpecialValue {
         return this.id.toFixnum();
     }
 
+    public boolean respondTo(RubyID id) {
+    	return super.respondTo(id);
+    }
+    
     //@RubyLevelMethod(name="to_s", alias="id2name")
     public RubyString to_s() {
         return ObjectFactory.createString(id.toString());

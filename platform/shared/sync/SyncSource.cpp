@@ -47,13 +47,11 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
     m_bIsSearch = false;
 }
 
-CSyncSource::CSyncSource(int id, const String& strName, uint64 token, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_dbAdapter(db)
+CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_dbAdapter(db)
 {
     m_nID = id;
     m_strName = strName;
-    m_token = token;
     m_strSyncType = strSyncType;
-    m_bTokenFromDB = true;
 
     m_nCurPageCount = 0;
     m_nInserted = 0;
@@ -63,6 +61,17 @@ CSyncSource::CSyncSource(int id, const String& strName, uint64 token, const Stri
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;
+
+    DBResult( res, db.executeSQL("SELECT token from sources WHERE source_id=?", m_nID) );
+    if ( !res.isEnd() )
+    {
+        m_token = res.getUInt64ByIdx(0);
+        m_bTokenFromDB = true;
+    }else
+    {
+        m_token = 0;
+        m_bTokenFromDB = true;
+    }
 }
 
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
