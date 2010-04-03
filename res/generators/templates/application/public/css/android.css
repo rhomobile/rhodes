@@ -109,13 +109,6 @@ div#content span.title {
 }
 
 div#content span.discloser_indicator {
-    float: right;
-    margin: 0px 10px 0px 0px;
-    height: 16px;
-    width: 10px;
-    background: url(/public/images/listArrow.png) no-repeat;
-    position: relative;
-    top: 35%;
     display: none;
 }
 
@@ -257,7 +250,7 @@ span.gridItem {
     width: 145px;
 }
 
-button.updateButton {
+div#content form button.standardButton {
     height: 45px;
     margin-top: 2px;
     margin-bottom: 2px;
@@ -276,14 +269,15 @@ div#content div#reset h3 {
     margin-right: 30px;
 }
 
-div.button {
+div#content div.standardButton {
     margin: 10px 10px 10px 10px;
     height: 45px;
+    width: 284px;
     line-height: 45px;
     -webkit-appearance:push-button;
 }
 
-div.button a {
+div#content div.standardButton a {
     display: block;
     text-decoration:none;
     width: 100%;
