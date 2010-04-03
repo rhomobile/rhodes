@@ -26,10 +26,10 @@
                     </li>
                 </ul>
             </div>
-            <button class="updateButton" type="submit">Login</button>
+            <button class="standardButton" type="submit">Login</button>
+            <div class="standardButton">
+                <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
+            </div>
         </fieldset>
     </form>
-    <div class="button">
-        <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
-    </div>
 </div>
