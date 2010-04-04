@@ -14,6 +14,7 @@ class CSyncEngine;
 
 #define WAIT_BEFOREKILL_SECONDS  3
 #define POLL_INTERVAL_SECONDS  60
+#define POLL_INTERVAL_INFINITE (unsigned int)(-1)
 #define DEFAULT_PUSH_PORT 100
 
 class CClientRegister : public common::CRhoThread
@@ -24,6 +25,7 @@ class CClientRegister : public common::CRhoThread
     common::CAutoPtr<common::ISystemInfo>  m_sysInfo;
 	common::CAutoPtr<net::INetRequest>     m_NetRequest;
 	String                                 m_strDevicePin;
+    unsigned int                           m_nPollInterval;
 public:
     static CClientRegister* Create(common::IRhoClassFactory* factory,const char* device_pin);
     //static void Destroy();

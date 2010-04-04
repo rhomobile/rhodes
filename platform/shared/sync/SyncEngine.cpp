@@ -603,18 +603,18 @@ void CSyncEngine::login(String name, String password, String callback)
 
 boolean CSyncEngine::isLoggedIn()
  {
-    int nCount = 0;
-    DBResult( res , getUserDB().executeSQL("SELECT count(session) FROM client_info WHERE session IS NOT NULL") );
+    String strRes = "";
+    DBResult( res , getUserDB().executeSQL("SELECT session FROM client_info") );
     if ( !res.isEnd() )
-        nCount = res.getIntByIdx(0);
-
-    return nCount > 0;
+    	strRes = res.getStringByIdx(0);
+    
+    return strRes.length() > 0;
 }
 
 String CSyncEngine::loadSession()
 {
     String strRes = "";
-    DBResult( res , getUserDB().executeSQL("SELECT session FROM client_info WHERE session IS NOT NULL") );
+    DBResult( res , getUserDB().executeSQL("SELECT session FROM client_info") );
     
     if ( !res.isEnd() )
     	strRes = res.getStringByIdx(0);
