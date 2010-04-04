@@ -259,7 +259,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			synchronized(this)
 			{
 				m_response = resp;
-				this.notify();
+				this.notifyAll();
 			}
 		}
 	}
