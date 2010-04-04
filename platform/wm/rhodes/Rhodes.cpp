@@ -42,6 +42,7 @@ HREGNOTIFY g_hNotify = NULL;
 #endif
 
 //BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
+extern "C" void rho_clientregister_create(const char* szDevicePin);
 
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
@@ -144,6 +145,8 @@ public :
 			0, 
 			NULL, 
 			&g_hNotify);
+#else
+        rho_clientregister_create("win32_client");
 #endif
         return S_OK;
     }

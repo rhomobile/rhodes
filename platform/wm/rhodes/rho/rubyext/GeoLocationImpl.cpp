@@ -38,7 +38,7 @@ CGPSDevice * CGPSDevice::Instance()
     return CGPSDevice::s_pInstance;
 }
 
-/*static*/ boolean CGPSDevice::isAvailable()
+/*static*/ bool CGPSDevice::isAvailable()
 {
     return s_pInstance && s_pInstance->m_hGPS_Device;
 }
