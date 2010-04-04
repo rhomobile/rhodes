@@ -41,7 +41,8 @@ CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory
 
     m_oSyncEngine.setFactory(factory);
 
-    start(epLow);
+    if ( RHOCONF().getString("syncserver").length() > 0 )
+        start(epLow);
 }
 
 CSyncThread::~CSyncThread(void)
@@ -56,6 +57,10 @@ CSyncThread::~CSyncThread(void)
 
 void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
 { 
+    if ( RHOCONF().getString("syncserver").length() == 0 )
+        return;
+
+   	LOG(INFO) + "addSyncCommand: " + (*pSyncCmd).m_nCmdCode;
 	{
         synchronized(m_mxStackCommands);
 
