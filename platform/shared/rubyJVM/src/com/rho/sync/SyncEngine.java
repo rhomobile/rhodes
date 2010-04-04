@@ -706,8 +706,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    else
 		    	getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 		
-		    //if ( ClientRegister.getInstance() != null )
-		    //	ClientRegister.getInstance().stopWait();
+		    if ( ClientRegister.getInstance() != null )
+		    	ClientRegister.getInstance().stopWait();
 		    
 	    	getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 		    
@@ -720,19 +720,19 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	boolean isLoggedIn()throws DBException
 	{
-	    int nCount = 0;
-	    IDBResult res = getUserDB().executeSQL("SELECT count(session) FROM client_info WHERE session IS NOT NULL");
+	    String strRes = "";
+	    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
 	    
 	    if ( !res.isEnd() )
-	        nCount = res.getIntByIdx(0);
+	    	strRes = res.getStringByIdx(0);
 	    
-	    return nCount > 0;
+	    return strRes.length() > 0;
 	}
 
 	String loadSession()throws DBException
 	{
 	    String strRes = "";
-	    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info WHERE session IS NOT NULL");
+	    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
 	    
 	    if ( !res.isEnd() )
 	    	strRes = res.getStringByIdx(0);

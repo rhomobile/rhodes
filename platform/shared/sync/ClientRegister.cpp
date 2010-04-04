@@ -37,9 +37,12 @@ CClientRegister::CClientRegister(common::IRhoClassFactory* factory,const char* d
 
 	m_strDevicePin = device_pin;
 	m_NetRequest = factory->createNetRequest();
+    m_nPollInterval = POLL_INTERVAL_SECONDS;
 
     delete factory;
-	start(epLow);
+
+    if ( RHOCONF().getString("syncserver").length() > 0 )
+    	start(epLow);
 }
 
 CClientRegister::~CClientRegister()
@@ -61,8 +64,8 @@ void CClientRegister::run()
 				break;
 		}
 		
-		LOG(INFO)+"Waiting for "+ POLL_INTERVAL_SECONDS+ " sec to try again to register client";
-		wait(POLL_INTERVAL_SECONDS);
+		LOG(INFO)+"Waiting for "+ m_nPollInterval+ " sec to try again to register client";
+		wait(m_nPollInterval);
 	}
     LOG(INFO)+"ClientRegister thread shutdown";
 }
@@ -79,8 +82,12 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 {
 	String session = oSync.loadSession();
 	if ( session.length() == 0 )
+    {
+        m_nPollInterval = POLL_INTERVAL_INFINITE;
 		return false;
-	
+    }
+    m_nPollInterval = POLL_INTERVAL_SECONDS;    		
+
 	String client_id = oSync.loadClientID();
 	if ( client_id.length() == 0 )
 		return false;
