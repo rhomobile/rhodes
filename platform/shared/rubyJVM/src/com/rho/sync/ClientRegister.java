@@ -17,13 +17,15 @@ public class ClientRegister extends RhoThread
 		new RhoLogger("ClientRegister");
 	
 	private static final int WAIT_BEFOREKILL_SECONDS  = 3;
-	private static final int POLL_INTERVAL_SECONDS = 30*60;
+	private static final int POLL_INTERVAL_SECONDS = 60;
+	private static final int POLL_INTERVAL_INFINITE = Integer.MAX_VALUE/1000;	
     public static final int DEFAULT_PUSH_PORT = 100;
 
 	static ClientRegister m_pInstance;
 	IRhoRubyHelper 	m_sysInfo;
 	NetRequest      m_NetRequest;
     String          m_strDevicePin;
+    int             m_nPollInterval;
     
     private NetRequest getNet() { return m_NetRequest;}
     
@@ -36,13 +38,13 @@ public class ClientRegister extends RhoThread
 	    return m_pInstance;
 	}
 
-/*	public void Destroy()
+	public void Destroy()
 	{
 		m_NetRequest.cancel();
 		
 	    stop(WAIT_BEFOREKILL_SECONDS);
 	    m_pInstance = null;
-	}*/
+	}
     
 	private ClientRegister(RhoClassFactory factory)throws Exception 
 	{
@@ -51,9 +53,10 @@ public class ClientRegister extends RhoThread
 		m_sysInfo = RhoClassFactory.createRhoRubyHelper();
 		m_strDevicePin = m_sysInfo.getDeviceId();
 		m_NetRequest = RhoClassFactory.createNetRequest();
+		m_nPollInterval = POLL_INTERVAL_SECONDS;
 		
-		//send client register request in login
-		//start(epLow);
+		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
+			start(epLow);	
 	}
 	
 	public static ClientRegister getInstance(){ return m_pInstance; }
@@ -76,8 +79,8 @@ public class ClientRegister extends RhoThread
     			LOG.ERROR("doRegister failed", exc);
     		}
     		
-			LOG.INFO("Waiting for "+ POLL_INTERVAL_SECONDS+ " sec to try again to register client");
-			wait(POLL_INTERVAL_SECONDS);
+			LOG.INFO("Waiting for "+ m_nPollInterval+ " sec to try again to register client");
+			wait(m_nPollInterval);
 		}
         LOG.INFO( "ClientRegister thread shutdown" );
     	
@@ -95,7 +98,11 @@ public class ClientRegister extends RhoThread
     {
     	String session = oSync.loadSession();
     	if ( session == null || session.length() == 0 )
+    	{
+    		m_nPollInterval = POLL_INTERVAL_INFINITE;    		
     		return false;
+    	}
+		m_nPollInterval = POLL_INTERVAL_SECONDS;    		
     	
 		String client_id = oSync.loadClientID();
 		if ( client_id == null || client_id.length() == 0 )

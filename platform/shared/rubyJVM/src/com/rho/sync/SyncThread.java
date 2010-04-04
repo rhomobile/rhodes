@@ -135,6 +135,9 @@ public class SyncThread extends RhoThread
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 	    LOG.INFO( "Sync engine thread shutdown" );
 		
+	    if ( ClientRegister.getInstance() != null )
+	    	ClientRegister.getInstance().Destroy();
+	    
 	    DBAdapter.closeAll();
 	    
 	    m_pInstance = null;
@@ -155,8 +158,9 @@ public class SyncThread extends RhoThread
 	    m_mxStackCommands = getSyncObject();
 	    	
 	    ClientRegister.Create(factory);
-	    	    
-	    start(epLow);
+	    
+		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
+			start(epLow);
 	}
 
     public static SyncThread getInstance(){ return m_pInstance; }
@@ -164,6 +168,9 @@ public class SyncThread extends RhoThread
 
     void addSyncCommand(SyncCommand oSyncCmd)
     { 
+		if ( RhoConf.getInstance().getString("syncserver").length() == 0 )
+			return;
+		
     	LOG.INFO( "addSyncCommand: " + oSyncCmd.m_nCmdCode );
     	synchronized(m_mxStackCommands)
     	{
