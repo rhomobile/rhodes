@@ -757,7 +757,7 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
         SetWindowText(convertToStringW(strTitle).c_str());
     else
         SetWindowText(TEXT("Untitled"));
-
+#ifdef OS_WINCE
 	if (CWebView::MENU_TYPE_CUSTOM == CWebView::getCWebView().getMenuType())
 	{
 		HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
@@ -784,7 +784,8 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
 		
 		CWebView::getCWebView().setMenuItems(items); //update items with IDs
 	}
-	
+#endif //OS_WINCE
+
     RHO_ASSERT(SetEnabledState(IDM_STOP, TRUE));
 }
 

@@ -53,7 +53,7 @@ public:
     static HRESULT TurnOn(IGPSController * pController);
     static HRESULT TurnOff();
 
-    static boolean isAvailable();
+    static bool isAvailable();
 };
 
 class CGPSController : public IGPSController {
