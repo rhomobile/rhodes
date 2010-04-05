@@ -19,22 +19,23 @@ CWebView::MenuItem::MenuItem (String label, String link)
 	m_id    = -1;
 	
 	//TODO: table
-	if (label == "separator")
+	if (label == "separator") {
 		m_type = TYPE_SEPARATOR;
-	else if (link == "home")
+	} else if (link == "home") {
 		m_type = TYPE_CMD_HOME;
-	else if (link == "refresh")
+	} else if (link == "refresh") {
 		m_type = TYPE_CMD_REFRESH;
-	else if (link == "options")
+	} else if (link == "options") {
 		m_type = TYPE_CMD_OPTIONS;
-	else if (link == "log")
+	} else if (link == "log") {
 		m_type = TYPE_CMD_LOG;
-	else if (link == "sync")
+	} else if (link == "sync") {
 		m_type = TYPE_CMD_SYNC;
-	else if (link == "close")
+	} else if (link == "close") {
 		m_type = TYPE_CMD_CLOSE;
-	else
+	} else {
 		m_type = TYPE_URL;
+	}
 }
 
 CWebView::MenuItem::MenuItem (String label, String link, int id)
@@ -44,22 +45,23 @@ CWebView::MenuItem::MenuItem (String label, String link, int id)
 	m_id    = id;
 	
 	//TODO: table
-	if (label == "separator")
+	if (label == "separator") {
 		m_type = TYPE_SEPARATOR;
-	else if (link == "home")
+	} else if (link == "home") {
 		m_type = TYPE_CMD_HOME;
-	else if (link == "refresh")
+	} else if (link == "refresh") {
 		m_type = TYPE_CMD_REFRESH;
-	else if (link == "options")
+	} else if (link == "options") {
 		m_type = TYPE_CMD_OPTIONS;
-	else if (link == "log")
+	} else if (link == "log") {
 		m_type = TYPE_CMD_LOG;
-	else if (link == "sync")
+	} else if (link == "sync") {
 		m_type = TYPE_CMD_SYNC;
-	else if (link == "close")
+	} else if (link == "close") {
 		m_type = TYPE_CMD_CLOSE;
-	else
+	} else {
 		m_type = TYPE_URL;
+	}
 }
 
 const String& CWebView::MenuItem::getLabel () 

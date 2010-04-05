@@ -71,7 +71,7 @@ public:
 	void getMenuItems (vector<MenuItem> &items);
 	void setMenuItems (vector<MenuItem> &items);
 	
-	bool getMenuItem (int id, MenuItem &tem);
+	bool getMenuItem (int id, MenuItem &item);
 	
 private:
 	CWebView();
