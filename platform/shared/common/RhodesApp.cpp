@@ -471,14 +471,14 @@ void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink 
 
     synchronized(m_mxViewMenuItems)
     {
-        m_hashViewMenuItems.put(strLabel, strLink);
-
+		CMenuItem item(strLabel, strLink);
+        m_hashViewMenuItems.addElement(item);
         if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
             m_strAppBackUrl = canonicalizeRhoUrl(strLink);
     }
 }
 
-Hashtable<String,String>& CRhodesApp::getViewMenu (void)
+const Vector<CMenuItem>& CRhodesApp::getViewMenu (void)
 {
 	return m_hashViewMenuItems;
 }
@@ -491,9 +491,8 @@ menu_iter(const char* szLabel, const char* szLink, void* pThis)
 
 void CRhodesApp::setViewMenu(unsigned long valMenu)
 {
-    {
-        synchronized(m_mxViewMenuItems)
-
+    synchronized(m_mxViewMenuItems) 
+	{
         m_hashViewMenuItems.clear();
         m_strAppBackUrl="";
     }
