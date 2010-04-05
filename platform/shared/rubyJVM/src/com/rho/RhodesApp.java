@@ -1,5 +1,6 @@
 package com.rho;
 
+import com.rho.net.*;
 import com.xruby.runtime.lang.RubyValue;
 import java.util.Vector;
 
@@ -10,9 +11,15 @@ public class RhodesApp
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
 	static RhodesApp m_pInstance;
+	
 	private String m_strRhoRootPath;
     Vector/*<unsigned long>*/ m_arCallbackObjects = new Vector();
     private SplashScreen m_oSplashScreen = new SplashScreen();
+    
+    Mutex m_mxPushCallback = new Mutex();
+    String m_strPushCallback = "", m_strPushCallbackParams = "";
+    
+    NetRequest getNet() { return RhoClassFactory.createNetRequest();}
     
     public static RhodesApp Create(String strRootPath)
     {
@@ -67,6 +74,46 @@ public class RhodesApp
         RubyValue res = (RubyValue)m_arCallbackObjects.elementAt(nIndex);
         m_arCallbackObjects.setElementAt(null,nIndex);        
         return res;
+    }
+    
+    String canonicalizeRhoUrl(String strUrl)throws Exception 
+    {
+    	return getNet().resolveUrl(strUrl);    	
+    }
+    
+    public void setPushNotification(String strUrl, String strParams )throws Exception
+    {
+        synchronized(m_mxPushCallback)
+        {
+            m_strPushCallback = canonicalizeRhoUrl(strUrl);
+            m_strPushCallbackParams = strParams;
+        }
+    }
+
+    public boolean callPushCallback(String strData)throws Exception
+    {
+        synchronized(m_mxPushCallback)
+        {
+            if ( m_strPushCallback.length() == 0 )
+                return false;
+        	
+            String strBody = "status=ok&message=";
+            strBody += URI.urlEncode(strData);
+            strBody += "&rho_callback=1";
+            if ( m_strPushCallbackParams.length() > 0 )
+                strBody += "&" + m_strPushCallbackParams;
+
+            NetResponse resp = getNet().pushData( m_strPushCallback, strBody, null );
+            if (!resp.isOK())
+                LOG.ERROR("Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
+            else
+            {
+                String szData = resp.getCharData();
+                return !(szData != null && szData.equals("rho_push"));
+            }
+        }
+
+        return true;
     }
     
 }
