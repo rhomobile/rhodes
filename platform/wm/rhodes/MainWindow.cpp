@@ -746,20 +746,19 @@ LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 		for (vector<CWebView::MenuItem>::iterator itr = items.begin(); itr != items.end(); ++itr, ++i) {
 			type = itr->getType();
 			
-			//just skip exit or close items
 			if (type == CWebView::MenuItem::TYPE_CMD_EXIT || type == CWebView::MenuItem::TYPE_CMD_CLOSE) {
-			}
-			//insert items
-			if (type == CWebView::MenuItem::TYPE_SEPARATOR)
+				//just skip
+			} else if (type == CWebView::MenuItem::TYPE_SEPARATOR) {
 				InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
-			else
+			} else {
 				InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, A2T((itr)->getLabel().c_str()));
+			}
 			//set items ID
 			itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + i);
 		}
 		CWebView::getCWebView().setMenuItems(items); //update items with IDs
 	}
-#endif
+#endif //_WIN32_WCE
 	return 0;
 }
 
