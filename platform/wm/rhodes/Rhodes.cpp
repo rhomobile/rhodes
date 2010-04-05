@@ -246,16 +246,6 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
 	return _AtlModule.WinMain(nShowCmd);
 }
 
-static void menu_iter(const char* szLabel, const char* szLink, void* pThis)
-{
-	typedef pair <String, String> str_pair;
-	
-	LOG(INFO) + __FUNCTION__  + ": " + szLabel + " " + szLink;
-
-	hash_map<String, String> *menu_list = (hash_map <String, String>*)pThis;
-	menu_list->insert(str_pair(szLabel, szLink));
-}
-
 extern "C" HWND getMainWnd() {
 	return _AtlModule.GetManWindow();
 }
