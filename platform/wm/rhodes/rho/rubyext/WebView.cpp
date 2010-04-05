@@ -5,6 +5,8 @@
 
 #include "WebView.h"
 
+extern "C" HWND getMainWnd();
+
 IMPLEMENT_LOGCLASS(CWebView, "WebView");
 
 CWebView *CWebView::m_pInstance = NULL;
@@ -16,18 +18,23 @@ CWebView::MenuItem::MenuItem (String label, String link)
 	m_link  = link;
 	m_id    = -1;
 	
+	//TODO: table
 	if (label == "separator")
-		m_type = SEPARATOR;
+		m_type = TYPE_SEPARATOR;
 	else if (link == "home")
-		m_type = COMMAND_HOME;
+		m_type = TYPE_CMD_HOME;
 	else if (link == "refresh")
-		m_type = COMMAND_REFRESH;
+		m_type = TYPE_CMD_REFRESH;
 	else if (link == "options")
-		m_type = COMMAND_OPTIONS;
+		m_type = TYPE_CMD_OPTIONS;
 	else if (link == "log")
-		m_type = COMMAND_LOG;
+		m_type = TYPE_CMD_LOG;
+	else if (link == "sync")
+		m_type = TYPE_CMD_SYNC;
+	else if (link == "close")
+		m_type = TYPE_CMD_CLOSE;
 	else
-		m_type = URL;
+		m_type = TYPE_URL;
 }
 
 CWebView::MenuItem::MenuItem (String label, String link, int id)
@@ -35,19 +42,24 @@ CWebView::MenuItem::MenuItem (String label, String link, int id)
 	m_label = label;
 	m_link  = link;
 	m_id    = id;
-
+	
+	//TODO: table
 	if (label == "separator")
-		m_type = SEPARATOR;
+		m_type = TYPE_SEPARATOR;
 	else if (link == "home")
-		m_type = COMMAND_HOME;
+		m_type = TYPE_CMD_HOME;
 	else if (link == "refresh")
-		m_type = COMMAND_REFRESH;
+		m_type = TYPE_CMD_REFRESH;
 	else if (link == "options")
-		m_type = COMMAND_OPTIONS;
+		m_type = TYPE_CMD_OPTIONS;
 	else if (link == "log")
-		m_type = COMMAND_LOG;
+		m_type = TYPE_CMD_LOG;
+	else if (link == "sync")
+		m_type = TYPE_CMD_SYNC;
+	else if (link == "close")
+		m_type = TYPE_CMD_CLOSE;
 	else
-		m_type = URL;
+		m_type = TYPE_URL;
 }
 
 const String& CWebView::MenuItem::getLabel () 
@@ -58,7 +70,6 @@ const String& CWebView::MenuItem::getLabel ()
 CWebView::CWebView() 
 {
 	m_menuType = MENU_TYPE_DEFAULT;
-	calls = 0;
 }
 
 CWebView::~CWebView () {}
@@ -87,9 +98,7 @@ int  CWebView::getMenuType (void)
 }
 
 bool CWebView::setMenuType (int type)
-{
-	LOG(INFO) + __FUNCTION__;
-	
+{	
 	bool ret = false;
 
 	if (type == MENU_TYPE_DEFAULT){
@@ -97,6 +106,7 @@ bool CWebView::setMenuType (int type)
 		unloadMenu();
 		ret = true;
 	} else if (type == MENU_TYPE_CUSTOM) {
+		unloadMenu();
 		if (loadMenu() == 0) {
 			ret = false;
 		} else {
@@ -111,16 +121,11 @@ bool CWebView::setMenuType (int type)
 }	
 
 int  CWebView::loadMenu (void)
-{
-	LOG(INFO) + __FUNCTION__;
+{	
+	Hashtable<String, String> hash = RHODESAPP().getViewMenu();
 	
-	Hashtable<String, String> hash;
-	RHODESAPP().getViewMenu(hash);
-
-	int i = 0;
-	for (Hashtable<String, String>::iterator itr = hash.begin(); itr != hash.end(); ++itr, i++) {
+	for (Hashtable<String, String>::iterator itr = hash.begin(); itr != hash.end(); ++itr) {
 		MenuItem menuItem = MenuItem(itr->first.c_str(), itr->second.c_str());
-		LOG(INFO) + __FUNCTION__ + " " + menuItem.getLabel() + " " + menuItem.getLink();
 		m_customMenuMenuItems.push_back(menuItem) ;
 	}
 	
@@ -130,11 +135,6 @@ int  CWebView::loadMenu (void)
 void CWebView::unloadMenu (void)
 {
 	m_customMenuMenuItems.clear();
-}
-
-int  CWebView::getMenuItemsNumber (void)
-{
-	return m_customMenuMenuItems.size();
 }
 
 void CWebView::getMenuItems (vector<MenuItem> &items)
@@ -147,17 +147,13 @@ void CWebView::setMenuItems (vector<MenuItem> &items)
 	m_customMenuMenuItems = items;
 }
 
-bool CWebView::getMenuItem (int id, MenuItem **item) 
+bool CWebView::getMenuItem (int id, MenuItem &item) 
 {
-	LOG(INFO) + __FUNCTION__;
 	for (vector<CWebView::MenuItem>::iterator itr = m_customMenuMenuItems.begin(); 
 		itr != m_customMenuMenuItems.end(); ++itr) 
 	{
-		LOG(INFO) + __FUNCTION__ + " label == " + itr->getLabel() + " link == " + itr->getLink() + " id == "+ itr->getId();
-		if ((itr)->getId() == id) 
-		{
-			LOG(INFO) + __FUNCTION__ + " found";
-			*item = new MenuItem(itr->getLabel(), itr->getLink(), itr->getId());
+		if ((itr)->getId() == id) {
+			item = *itr;
 			return true;
 		}
 	}
@@ -177,10 +173,9 @@ void perform_webview_refresh() {
 void webview_set_menu_items(VALUE valMenu) 
 {
 	LOG(INFO) + __FUNCTION__;
-    RHODESAPP().setViewMenu(valMenu);
-	/*
+    RHODESAPP().setViewMenu(valMenu); 
 	CWebView::getCWebView().setMenuType(CWebView::MENU_TYPE_CUSTOM);
-	*/
+	::PostMessage(getMainWnd(), WM_SET_CUSTOM_MENU, 0, 0);
 }
 
  int webview_active_tab() {
