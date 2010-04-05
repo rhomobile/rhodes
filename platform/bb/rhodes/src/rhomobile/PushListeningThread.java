@@ -7,6 +7,7 @@ import javax.microedition.io.*;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhodesApp;
 import com.rho.sync.SyncThread;
 import com.rho.RhoConf;
 
@@ -55,7 +56,6 @@ public class PushListeningThread extends Thread {
         {
         try 
             {
-                
                 // Synchronize here so that we don't end up creating a connection that is never closed.
                 synchronized(this)  
                 {
@@ -228,6 +228,18 @@ public class PushListeningThread extends Thread {
             	String msg = new String(data, 0, nLen);
             	LOG.INFO("Triger sync on PUSH message [" + msg + " ]");
 
+            	if ( RhodesApp.getInstance() != null )
+            	{
+            		try{
+	            		if ( RhodesApp.getInstance().callPushCallback(msg) )
+	            			return;
+            		}catch(Exception exc)
+            		{
+            			LOG.ERROR("callPushCallback failed", exc);
+            			return;
+            		}
+            	}
+            	
             	String[] op;
             	String[] ops = split(msg,"\n");
             	for (int loop = 0; loop < ops.length; loop++) {

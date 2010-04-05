@@ -1,6 +1,7 @@
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "sync/ClientRegister.h"
+#include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSystem"
@@ -69,6 +70,11 @@ VALUE rho_sys_get_property(char* szPropName)
     RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
 
     return rho_ruby_get_NIL();
+}
+
+void rho_sys_set_push_notification(const char *url, const char* params)
+{
+    RHODESAPP().setPushNotification(url, params);
 }
 
 }

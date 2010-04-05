@@ -48,6 +48,9 @@ private:
     rubyext::CGeoLocation m_oGeoLocation;
     CSplashScreen m_oSplashScreen;
 
+    common::CMutex m_mxPushCallback;
+    String m_strPushCallback, m_strPushCallbackParams;
+
 public:
     ~CRhodesApp(void);
 
@@ -95,6 +98,10 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
 
     void runCallbackInThread(const String& strCallback, const String& strBody);
+
+    void setPushNotification(String strUrl, String strParams );
+    boolean callPushCallback(String strData);
+
 private:
     virtual void run();
 
@@ -148,6 +155,9 @@ unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();
+
+int rho_rhodesapp_callPushCallback(const char* szData);
+
 int rho_conf_send_log();
 
 int rho_base64_encode(const char *src, int srclen, char *dst);
