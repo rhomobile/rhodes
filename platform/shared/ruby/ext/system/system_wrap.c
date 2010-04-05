@@ -1563,6 +1563,9 @@ extern int rho_sys_get_screen_width();
 extern int rho_sys_get_screen_height();
 #define get_screen_height rho_sys_get_screen_height
 
+#define set_push_notification rho_sys_set_push_notification
+extern void rho_sys_set_push_notification( const char *url, const char* params);
+
 
 
 SWIGINTERN swig_type_info*
@@ -1844,6 +1847,41 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_push_notification(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_push_notification" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "set_push_notification" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  set_push_notification((char const *)arg1,(char const *)arg2);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2116,5 +2154,6 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "get_locale", _wrap_get_locale, -1);
   rb_define_module_function(mSystem, "get_screen_width", _wrap_get_screen_width, -1);
   rb_define_module_function(mSystem, "get_screen_height", _wrap_get_screen_height, -1);
+  rb_define_module_function(mSystem, "set_push_notification", _wrap_set_push_notification, -1);
 }
 
