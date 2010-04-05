@@ -11,6 +11,7 @@
 #include "sync/SyncThread.h"
 #include "net/AsyncHttp.h"
 #include "unzip/unzip.h"
+#include "net/URI.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -557,6 +558,42 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
     return pCallbackObject->getObjectValue();
 }
 
+void CRhodesApp::setPushNotification(String strUrl, String strParams )
+{
+    synchronized(m_mxPushCallback)
+    {
+        m_strPushCallback = canonicalizeRhoUrl(strUrl);
+        m_strPushCallbackParams = strParams;
+    }
+}
+
+boolean CRhodesApp::callPushCallback(String strData)
+{
+    synchronized(m_mxPushCallback)
+    {
+        if ( m_strPushCallback.length() == 0 )
+            return false;
+
+        String strBody = "status=ok&message=";
+        net::URI::urlEncode(strData, strBody);
+        strBody += "&rho_callback=1";
+        if ( m_strPushCallbackParams.length() > 0 )
+            strBody += "&" + m_strPushCallbackParams;
+
+        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        NetResponse(resp,pNetRequest->pushData( m_strPushCallback, strBody, null ));
+        if (!resp.isOK())
+            LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        else
+        {
+            const char* szData = resp.getCharData();
+            return !(szData && strcmp(szData,"rho_push") == 0);
+        }
+    }
+
+    return true;
+}
+
 }
 }
 
@@ -730,6 +767,14 @@ void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 const char* rho_rhodesapp_getappbackurl()
 {
     return RHODESAPP().getAppBackUrl().c_str();
+}
+
+int rho_rhodesapp_callPushCallback(const char* szData)
+{
+    if ( !rho::common::CRhodesApp::getInstance() )
+        return 1;
+
+    return RHODESAPP().callPushCallback(szData?szData:"") ? 1 : 0;
 }
 
 const char* rho_ruby_getErrorText(int nError)

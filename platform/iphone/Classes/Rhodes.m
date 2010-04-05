@@ -304,6 +304,14 @@ static Rhodes *instance = NULL;
 - (void)processPushMessage:(NSDictionary *)userInfo
 {
 	RAWLOG_INFO("Processing PUSH message...");
+	
+	{
+	    NSString* strData = [userInfo description];
+	    const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	    if ( rho_rhodesapp_callPushCallback(szData) )
+	        return;
+    }
+	    
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
 	if (aps) {
 		NSString *alert = [aps objectForKey:@"alert"];
@@ -505,13 +513,13 @@ static Rhodes *instance = NULL;
 
 void* rho_nativethread_start()
 {
-	return 0;//[[NSAutoreleasePool alloc] init];
+	return [[NSAutoreleasePool alloc] init];
 }
 
 void rho_nativethread_end(void* pData)
 {
-    //NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
-    //[pool release];	
+    NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
+    [pool release];	
 }
 
 void rho_map_location(char* query) {
