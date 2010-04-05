@@ -85,7 +85,7 @@ public:
 
     void setViewMenu(unsigned long valMenu);
     void addViewMenuItem( const String& strLabel, const String& strLink );
-	void getViewMenu (Hashtable<String,String>& hash);
+	Hashtable<String,String>& getViewMenu (void);
 
     boolean sendLog();
 
