@@ -146,8 +146,9 @@ public :
 			NULL, 
 			&g_hNotify);
 #else
-        rho_clientregister_create("win32_client");
+		rho_clientregister_create("win32_client");
 #endif
+
         return S_OK;
     }
 
