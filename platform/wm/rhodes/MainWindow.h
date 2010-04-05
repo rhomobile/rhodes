@@ -165,7 +165,8 @@ private:
 
     static rho::StringW getRhodesAppName();
 
-	void toggleFullScreen();
+	void toggleFullScreen(void);
+	void setCustomMenu(void);
 
 private:
     // Represents the PIEWebBrowser control contained in the main application.
