@@ -307,7 +307,7 @@ static Rhodes *instance = NULL;
 	
 	{
 	    NSString* strData = [userInfo description];
-	    char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]]
+	    const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	    if ( rho_rhodesapp_callPushCallback(szData) )
 	        return;
     }
