@@ -18,6 +18,19 @@ struct shttpd_ctx;
 namespace rho {
 namespace common {
 
+class CMenuItem 
+{
+public:
+	CMenuItem (const String &label, const String &link) : m_label (label), m_link (link) {}
+	
+	const String& getLabel () { return m_label; }
+	const String& getLink  () { return m_link; }
+	
+private:
+	String m_label;
+	String m_link;
+};
+
 class CRhodesApp : public common::CRhoThread
 {
 public:
@@ -42,7 +55,7 @@ private:
     String m_currentUrls[5];
 
     common::CMutex m_mxViewMenuItems;
-    Hashtable<String,String> m_hashViewMenuItems;
+    Vector<CMenuItem> m_hashViewMenuItems;
     String m_strAppBackUrl;
     Vector<ICallbackObject*> m_arCallbackObjects;
     rubyext::CGeoLocation m_oGeoLocation;
@@ -85,7 +98,7 @@ public:
 
     void setViewMenu(unsigned long valMenu);
     void addViewMenuItem( const String& strLabel, const String& strLink );
-	Hashtable<String,String>& getViewMenu (void);
+	const Vector<CMenuItem>& getViewMenu (void);
 
     boolean sendLog();
 

@@ -12,7 +12,7 @@ IMPLEMENT_LOGCLASS(CWebView, "WebView");
 CWebView *CWebView::m_pInstance = NULL;
 CMutex CWebView::m_mxLocker;
 
-CWebView::MenuItem::MenuItem (String label, String link)
+CWebView::MenuItem::MenuItem (const String &label, const String &link)
 {
 	m_label = label;
 	m_link  = link;
@@ -38,7 +38,7 @@ CWebView::MenuItem::MenuItem (String label, String link)
 	}
 }
 
-CWebView::MenuItem::MenuItem (String label, String link, int id)
+CWebView::MenuItem::MenuItem (const String &label, const String &link, int id)
 {
 	m_label = label;
 	m_link  = link;
@@ -124,10 +124,10 @@ bool CWebView::setMenuType (int type)
 
 int  CWebView::loadMenu (void)
 {	
-	Hashtable<String, String> hash = RHODESAPP().getViewMenu();
+	Vector <CMenuItem> hash = RHODESAPP().getViewMenu();
 	
-	for (Hashtable<String, String>::iterator itr = hash.begin(); itr != hash.end(); ++itr) {
-		MenuItem menuItem = MenuItem(itr->first.c_str(), itr->second.c_str());
+	for (VectorPtr<CMenuItem>::iterator itr = hash.begin(); itr != hash.end(); ++itr) {
+		MenuItem menuItem = MenuItem(itr->getLabel(), itr->getLink());
 		m_customMenuMenuItems.push_back(menuItem) ;
 	}
 	
