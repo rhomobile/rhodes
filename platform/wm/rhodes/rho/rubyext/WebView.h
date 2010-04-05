@@ -42,8 +42,8 @@ public:
 		};
 
 		MenuItem () {};
-		MenuItem (String label, String link);
-		MenuItem (String label, String link, int id);
+		MenuItem (const String &label, const String &link);
+		MenuItem (const String &label, const String &link, int id);
 		MenuItem (const MenuItem &i) : m_label(i.m_label),  m_link(i.m_link), 
 										m_type(i.m_type), m_id(i.m_id) {}
 		
@@ -53,6 +53,7 @@ public:
 		const String& getLink  () { return m_link;  }
 		int           getType  () { return m_type;  }
 		int   		  getId    () { return m_id;    }
+		
 		void setId (int id) {m_id = id;}
 				
 	private:
