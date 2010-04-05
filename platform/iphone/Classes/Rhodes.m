@@ -304,6 +304,14 @@ static Rhodes *instance = NULL;
 - (void)processPushMessage:(NSDictionary *)userInfo
 {
 	RAWLOG_INFO("Processing PUSH message...");
+	
+	{
+	    NSString* strData = [userInfo description];
+	    char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]]
+	    if ( rho_rhodesapp_callPushCallback(szData) )
+	        return;
+    }
+	    
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
 	if (aps) {
 		NSString *alert = [aps objectForKey:@"alert"];
