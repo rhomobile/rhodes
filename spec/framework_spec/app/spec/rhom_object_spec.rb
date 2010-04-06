@@ -26,7 +26,7 @@ describe "Rhom::RhomObject" do
   before do
     SyncEngine.stub!(:dosync).and_return(true)
   end
-  
+
   #it "should set source_id attributes" do
     #Account.get_source_id.should == "2"
     #Case.get_source_id.should == "1"
@@ -71,7 +71,7 @@ describe "Rhom::RhomObject" do
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
   
-    @account.vars.size.should == 38
+    @account.vars.size.should == 17
   end
   
   it "should get count of objects" do
@@ -183,6 +183,57 @@ describe "Rhom::RhomObject" do
       @acct.industry.should == vars['industry']
     end
     ids.uniq.length.should == 10
+  end
+
+  it "should create a record, then update" do
+    vars = {"name"=>"some new record", "industry"=>"electronics"}
+    @account1 = Account.new(vars)
+    new_id = @account1.object
+    @account1.save
+    @account2 = Account.find(new_id)
+    @account2.object.should =="{#{@account1.object}}"
+    @account2.name.should == vars['name']
+    @account2.industry.should == vars['industry']
+    
+    update_attributes = {"industry"=>"electronics2"}
+    @account2.update_attributes(update_attributes)
+
+    @account3 = Account.find(new_id)    
+    @account3.object.should =="{#{@account1.object}}"
+    @account3.name.should == vars['name']
+    @account3.industry.should == update_attributes['industry']
+
+    records = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 2
+    
+    records = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+  end
+  
+  it "should create a record, then update 2" do
+    vars = {"name"=>"some new record"}
+    @account1 = Account.new(vars)
+    new_id = @account1.object
+    @account1.save
+    
+    @account2 = Account.find(new_id)
+    @account2.object.should =="{#{@account1.object}}"
+    @account2.name.should == vars['name']
+    
+    update_attributes = {"industry"=>"electronics2"}
+    @account2.industry = update_attributes['industry']
+    @account2.save
+    
+    @account3 = Account.find(new_id)    
+    @account3.object.should =="{#{@account1.object}}"
+    @account3.name.should == vars['name']
+    @account3.industry.should == update_attributes['industry']
+
+    records = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 2
+    
+    records = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
   end
   
   it "should destroy a record" do
@@ -323,80 +374,7 @@ describe "Rhom::RhomObject" do
     
     @acct.foobar.should be_nil
   end
-=begin  
-  it "should respond to ask" do
-    question = 'Rhodes'
-    Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    res.length.should == 1
-    
-    res[0]['attrib'].should == 'question'
-    res[0]['value'].should == question
-  end
   
-  it "should respond to ask with last question only" do
-    question = 'Rhodes'
-    Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    res.length.should == 1
-    
-    res[0]['attrib'].should == 'question'
-    res[0]['value'].should == question
-    
-    question = 'Ruby on Rails'
-    question_encoded = 'Ruby%20on%20Rails'
-    Account.ask(question)
-    res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    res.length.should == 1
-    
-    res[0]['attrib'].should == 'question'
-    res[0]['value'].should == question_encoded
-  end
-  
-  it "should encode ask params" do
-    question = 'where am i?'
-    question_encoded = 'where%20am%20i%3F'
-    Account.ask(question)
-    @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', 'update_type' => 'ask')
-    @res.length.should == 1
-    
-    @res[0]['attrib'].should == 'question'
-    @res[0]['value'].should == question_encoded
-  end
-  
-  it "should store all ask db operations as query" do
-    question = 'where am i?'
-    question_encoded = 'where%20am%20i%3F'
-    Question.ask(question) 
-   
-    @question = Question.find(:first)
-    @question.update_attributes({"question"=>"i am here"})
-
-    @res = Rhom::RhomDbAdapter::select_from_table('object_values','*', {'source_id' => @question.get_source_id.to_i()})
-    @res.length.should == 1
-    @res[0]['attrib'].should == 'question'
-    @res[0]['value'].should == 'i am here'
-    
-    ['create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => @question.get_source_id.to_i()})
-      @res.length.should == 0
-    end
-  end
-  
-  it "should delete ask records without delete sync operation" do
-    question = 'where am i?'
-    question_encoded = 'where%20am%20i%3F'
-    Question.ask(question) 
-   
-    @question = Question.find(:first)
-    @question.destroy
-    
-    ['query','create','update','delete'].each do |u_type|
-      @res = Rhom::RhomDbAdapter::select_from_table('changed_values','*', {'update_type' =>u_type, 'source_id' => 400})
-      @res.length.should == 0
-    end
-  end
-=end  
   it "should find with conditions" do
     @accts = Account.find(:all, :conditions => {'industry' => 'Technology'})
     @accts.length.should == 2
@@ -659,4 +637,5 @@ describe "Rhom::RhomObject" do
       @accts[0].industry.should == @expected[0][:industry]
     end
   end
+
 end
