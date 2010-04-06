@@ -27,7 +27,7 @@ static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SEL
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
 static UINT WM_ALERT_SHOWPOPUP         = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOWPOPUP");
 static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DATETIME_PICKER");
-static UINT WM_SET_CUSTOM_MENU         = ::RegisterWindowMessage(L"RHODES_WM_SET_CUSTOM_MENU");
+
 
 class CMainWindow :
 #if defined(_WIN32_WCE)
@@ -98,7 +98,6 @@ public:
 		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
         MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup);
 		MESSAGE_HANDLER(WM_DATETIME_PICKER, OnDateTimePicker);
-		MESSAGE_HANDLER(WM_SET_CUSTOM_MENU, OnSetCustomMenu);
     END_MSG_MAP()
 
 private:
@@ -137,7 +136,6 @@ private:
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 public:
     BEGIN_SINK_MAP(CMainWindow)
