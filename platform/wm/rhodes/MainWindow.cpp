@@ -27,7 +27,9 @@
 #include <hash_map>
 
 /**
- * TODO: dymanic menu - revert back default menu
+ * TODO: 
+ *   - dymanic menu - revert back system menu;
+ *   - refactor dynamic menu for win32;
  */
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -551,6 +553,10 @@ LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, H
 		if (type == CWebView::MenuItem::TYPE_CMD_LOG) {
 			OnLogCommand (0, 0, 0, val);
 		}
+		
+		if (type == CWebView::MenuItem::TYPE_CMD_EXIT || type == CWebView::MenuItem::TYPE_CMD_CLOSE) {
+			OnExitCommand (0, 0, 0, val);
+		}
 	}
 	
 	return 0;
@@ -563,16 +569,54 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	RECT  rect;
 
 	m_browser.GetWindowRect(&rect);
-
-	VERIFY(menu.LoadMenu(IDR_MAIN_MENU));
-	sub.Attach(menu.GetSubMenu(0));
-    sub.TrackPopupMenu(
-            TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
-			rect.right-1, 
-			rect.bottom-1,
-			m_hWnd);
-	sub.Detach();
-
+	
+	if (CWebView::MENU_TYPE_CUSTOM == CWebView::getCWebView().getMenuType()) {
+		CMenu popup;
+		
+		VERIFY(menu.CreateMenu());
+		VERIFY(popup.CreatePopupMenu());
+		menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
+		
+		vector<CWebView::MenuItem> items;
+		CWebView::getCWebView().getMenuItems(items);
+	 	
+		USES_CONVERSION; 
+		int item_num = 0, type = CWebView::MenuItem::TYPE_UNKNOWN;
+		for (vector<CWebView::MenuItem>::reverse_iterator itr = items.rbegin(); 
+			itr != items.rend(); itr++, item_num++) 
+		{
+			type = itr->getType();
+			
+			if (type == CWebView::MenuItem::TYPE_SEPARATOR) {
+				int id = 0;
+				popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, id, (LPCTSTR )0);
+			} else {
+				popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, A2T((itr)->getLabel().c_str()));
+			}
+			//set items ID
+			itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + item_num);
+		}
+		CWebView::getCWebView().setMenuItems(items); //update items with IDs
+		
+		sub.Attach(menu.GetSubMenu(0));
+		sub.TrackPopupMenu(
+				TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+				rect.right-1, 
+				rect.bottom-1,
+				m_hWnd);
+		sub.Detach();
+	} else {
+	
+		VERIFY(menu.LoadMenu(IDR_MAIN_MENU));
+		sub.Attach(menu.GetSubMenu(0));
+		sub.TrackPopupMenu(
+				TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+				rect.right-1, 
+				rect.bottom-1,
+				m_hWnd);
+		sub.Detach();
+	}
+	
 	return 0;
 }
 

@@ -33,6 +33,8 @@ CWebView::MenuItem::MenuItem (const String &label, const String &link)
 		m_type = TYPE_CMD_SYNC;
 	} else if (link == "close") {
 		m_type = TYPE_CMD_CLOSE;
+	} else if (link == "exit") {
+		m_type = TYPE_CMD_EXIT;
 	} else {
 		m_type = TYPE_URL;
 	}
@@ -59,6 +61,8 @@ CWebView::MenuItem::MenuItem (const String &label, const String &link, int id)
 		m_type = TYPE_CMD_SYNC;
 	} else if (link == "close") {
 		m_type = TYPE_CMD_CLOSE;
+	} else if (link == "exit") {
+		m_type = TYPE_CMD_EXIT;
 	} else {
 		m_type = TYPE_URL;
 	}
