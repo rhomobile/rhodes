@@ -24,7 +24,6 @@ div#content {
     height: 60px;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));}
 }
-
 div#toolbar div {
 }
 
@@ -76,7 +75,6 @@ div#pageTitle h1 {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999),color-stop(0.5, #848684));
 }
 
-
 /* lists */
 div#content {
     width: 100%;
@@ -106,26 +104,19 @@ div#content ul li a {
     line-height: 54px;
 }
 
+div#content span.title {
+    margin-left:30px;
+}
+
+div#content span.disclosure_indicator {
+    display: none;
+}
+
 div#content ul li a img {
     float: left;
     height: 100%;
     max-width: 100px;
 }
-
-div#content ul li span.title {
-    margin-left:30px;
-}
-
-div#content ul li span.disclosure_indicator {
-    display: none;
-}
-
-div#content ul li span.gridItem {
-    float: right;
-    text-align: left;
-    width: 145px;
-}
-
 
 /* Forms */
 
@@ -142,7 +133,7 @@ div#content form button {
     margin-left: 10px;
 }
 
-div#content form ul {
+div#content .form_list ul {
     display: block;
     font-size: 20px;
     list-style-image: none;
@@ -154,7 +145,11 @@ div#content form ul {
     padding: 0;
 }
 
-div#content form ul li {
+div#content .form_list li:first-child {
+    border-bottom: 1px solid black;
+}
+
+div#content .form_list li {
     border-bottom: 1px solid black;
     display: block;
     height: auto;
@@ -163,7 +158,7 @@ div#content form ul li {
     overflow-y: hidden;
 }
 
-div#content form span.fieldLabel {
+div#content .form_list span.label {
     float: left;
     display:block;
     color: black;
@@ -176,7 +171,7 @@ div#content form span.fieldLabel {
 	white-space: nowrap;
 }
 
-div#content form input[type="checkbox"] {
+div#content .form_list input[type="checkbox"] {
     -webkit-appearance: none;
     background: url(/public/images/android/btn_check_off.png) no-repeat;
     float: right;
@@ -186,7 +181,7 @@ div#content form input[type="checkbox"] {
     margin-right: 20px;
 }
 
-div#content form input[type="checkbox"]:checked {
+div#content .form_list input[type="checkbox"]:checked {
     background: url(/public/images/android/btn_check_on.png) no-repeat;
     float: right;
     height: 31px;
@@ -195,7 +190,7 @@ div#content form input[type="checkbox"]:checked {
     margin-right: 20px;
 }
 
-div#content form input[type="radio"] {
+div#content .form_list input[type="radio"] {
     background: url(/public/images/android/btn_radio_off.png) no-repeat;
     -webkit-appearance: none;
     -webkit-box-sizing: border-box;
@@ -208,13 +203,13 @@ div#content form input[type="radio"] {
     margin-top: 15px;
 }
 
-div#content form input[type="radio"]:checked {
+div#content .form_list input[type="radio"]:checked {
  background: url(/public/images/android/btn_radio_on.png) no-repeat;
      margin-top:15px;
     margin-right: 20px;
 }
 
-div#content form select {
+div#content .form_list select {
     -webkit-appearance: none;
     border: 0px;
     width: 100%;
@@ -223,7 +218,8 @@ div#content form select {
     background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
 }
 
-div#content form textarea {
+
+div#content .form_list textarea {
     -webkit-appearance: none;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
     border: 1px solid #d6d7d6;
@@ -234,12 +230,12 @@ div#content form textarea {
     box-shadow:0 -1px 3px #000000;
 }
 
-div#content form input[type="text"], div#content form input[type="password"] {
+input[type="text"], input[type="password"] {
     float: right;
     height: 40px;
     margin: 10px 10px 10px 0;
-    padding-left: 5px;
-    font-size:26px;
+    padding-left: 3px;
+    font-size:medium;
     width: 150px;
     -webkit-appearance: none;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
@@ -248,13 +244,18 @@ div#content form input[type="text"], div#content form input[type="password"] {
     box-shadow:0 -1px 3px #000000;
 }
 
+span.gridItem {
+    float: right;
+    text-align: left;
+    width: 145px;
+}
+
 div#content form button.standardButton {
     height: 45px;
     margin-top: 2px;
     margin-bottom: 2px;
     -webkit-border: 2px;
 }
-
 
 /* Settings */
 
@@ -283,12 +284,3 @@ div#content div.standardButton a {
     color: black;
     text-align: center;
 }
-
-div#content ul#settings li.alertMessage{
-    text-align: center;
-}
-
-div#content ul#settings li.alertMessage span.message{
-    color: red;
-}
-
