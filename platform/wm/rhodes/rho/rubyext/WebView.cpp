@@ -177,7 +177,6 @@ void webview_set_menu_items(VALUE valMenu)
 	LOG(INFO) + __FUNCTION__;
     RHODESAPP().setViewMenu(valMenu); 
 	CWebView::getCWebView().setMenuType(CWebView::MENU_TYPE_CUSTOM);
-	::PostMessage(getMainWnd(), WM_SET_CUSTOM_MENU, 0, 0);
 }
 
  int webview_active_tab() {

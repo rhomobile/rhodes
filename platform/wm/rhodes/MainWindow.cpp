@@ -727,13 +727,6 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
-LRESULT CMainWindow::OnSetCustomMenu (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	setCustomMenu();
-	return 0;
-}
-
-
 // **************************************************************************
 //
 // event handlers
@@ -876,7 +869,9 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
     //    RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
-
+	
+	setCustomMenu();
+	
     RHO_ASSERT(SetEnabledState(IDM_STOP, FALSE));
 }
 
