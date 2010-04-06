@@ -147,10 +147,9 @@ div#content ul li span.title {
 }
 
 
-/* FIXME: move image to /public/images/iphone.
-   Also 'Disclosure' is spelled incorrectly.*/
-div#content ul li a span.discloser_indicator {
-    background: url('/public/images/listArrow.png') no-repeat center right;
+
+div#content ul li a span.disclosure_indicator {
+    background: url('/public/images/iphone/listArrow.png') no-repeat center right;
     height: 100%;
     width: 25px;
     float: right;
