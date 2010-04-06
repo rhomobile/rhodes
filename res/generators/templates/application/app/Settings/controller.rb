@@ -18,7 +18,7 @@ class SettingsController < Rho::RhoController
     errCode = @params['error_code'].to_i
     if errCode == 0
       # run sync if we were successful
-      WebView.navigate Rho::RhoConfig.start_path
+      WebView.navigate Rho::RhoConfig.options_path
       SyncEngine.dosync
     else
       if errCode == Rho::RhoError::ERR_CUSTOMSYNCSERVER

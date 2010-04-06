@@ -16,14 +16,14 @@
             <li>
                 <a href="<%%= url_for(:action => :show, :id => obj.object) %>">
                     <span class="title"><%%= obj.<%=attributes[0]%> %></span>
-                    <span class="discloser_indicator"></span>
+                    <span class="disclosure_indicator"></span>
                 </a>
             </li>
             <%else%>
             <li>
                 <a href="#">
                     <span class="title">Some list entry...</span>
-                    <span class="discloser_indicator"></span>
+                    <span class="disclosure_indicator"></span>
                 </a>
             </li>
             <%end%>
