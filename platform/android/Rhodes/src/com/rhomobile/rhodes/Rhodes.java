@@ -27,6 +27,8 @@ import java.util.Locale;
 
 import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
+import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
@@ -71,6 +73,7 @@ public class Rhodes extends Activity {
 	
 	public static final int RHO_SPLASH_VIEW = 1;
 	public static final int RHO_MAIN_VIEW = 2;
+	public static final int RHO_TOOLBAR_VIEW = 3;
 	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -110,6 +113,8 @@ public class Rhodes extends Activity {
 	public native String getAppBackUrl();
 	
 	public native String normalizeUrl(String url);
+	
+	public native void doRequest(String url);
 	
 	public native static void makeLink(String src, String dst);
 	

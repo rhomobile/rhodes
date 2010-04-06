@@ -18,7 +18,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ============================================================================
  */
-package com.rhomobile.rhodes;
+package com.rhomobile.rhodes.mainview;
 
 import android.view.View;
 
