@@ -392,13 +392,13 @@ boolean CSyncEngine::isLoggedIn()
 
 String CSyncEngine::loadSession()
 {
-    String strRes = "";
+    m_strSession = "";
     DBResult( res , getDB().executeSQL("SELECT session FROM sources WHERE session IS NOT NULL") );
     
     if ( !res.isEnd() )
-    	strRes = res.getStringByIdx(0);
+    	m_strSession = res.getStringByIdx(0);
     
-    return strRes;
+    return m_strSession;
 }
 
 void CSyncEngine::logout()

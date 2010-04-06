@@ -530,13 +530,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	String loadSession()throws DBException
 	{
-	    String strRes = "";
+	    m_strSession = "";
 	    IDBResult res = getDB().executeSQL("SELECT session FROM sources WHERE session IS NOT NULL");
 	    
 	    if ( !res.isEnd() )
-	    	strRes = res.getStringByIdx(0);
+	    	m_strSession = res.getStringByIdx(0);
 	    
-	    return strRes;
+	    return m_strSession;
 	}
 	
 	public void logout()throws Exception
