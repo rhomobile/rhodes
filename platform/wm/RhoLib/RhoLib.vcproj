@@ -873,6 +873,14 @@
 				RelativePath="..\..\shared\common\Tokenizer.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\common\AppMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\AppMenu.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="logging"
