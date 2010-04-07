@@ -29,7 +29,6 @@
 /**
  * TODO: 
  *   - dymanic menu - revert back system menu;
- *   - refactor dynamic menu for win32;
  */
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -571,42 +570,8 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	m_browser.GetWindowRect(&rect);
 	
 	if (CWebView::MENU_TYPE_CUSTOM == CWebView::getCWebView().getMenuType()) {
-		CMenu popup;
-		
-		VERIFY(menu.CreateMenu());
-		VERIFY(popup.CreatePopupMenu());
-		menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
-		
-		vector<CWebView::MenuItem> items;
-		CWebView::getCWebView().getMenuItems(items);
-	 	
-		USES_CONVERSION; 
-		int item_num = 0, type = CWebView::MenuItem::TYPE_UNKNOWN;
-		for (vector<CWebView::MenuItem>::reverse_iterator itr = items.rbegin(); 
-			itr != items.rend(); itr++, item_num++) 
-		{
-			type = itr->getType();
-			
-			if (type == CWebView::MenuItem::TYPE_SEPARATOR) {
-				int id = 0;
-				popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, id, (LPCTSTR )0);
-			} else {
-				popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, A2T((itr)->getLabel().c_str()));
-			}
-			//set items ID
-			itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + item_num);
-		}
-		CWebView::getCWebView().setMenuItems(items); //update items with IDs
-		
-		sub.Attach(menu.GetSubMenu(0));
-		sub.TrackPopupMenu(
-				TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
-				rect.right-1, 
-				rect.bottom-1,
-				m_hWnd);
-		sub.Detach();
+		createCustomMenu();
 	} else {
-	
 		VERIFY(menu.LoadMenu(IDR_MAIN_MENU));
 		sub.Attach(menu.GetSubMenu(0));
 		sub.TrackPopupMenu(
@@ -913,9 +878,11 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
     //    RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
-	
-	setCustomMenu();
-	
+
+#if defined (_WIN32_WCE)
+	createCustomMenu();
+#endif	
+
     RHO_ASSERT(SetEnabledState(IDM_STOP, FALSE));
 }
 
@@ -1013,21 +980,31 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     return FALSE;
 }
 
-void CMainWindow::setCustomMenu()
+void CMainWindow::createCustomMenu()
 {
-#if defined (_WIN32_WCE)
-	LOG(INFO) + "setting up custom menu";
+#if defined (OS_WINDOWS) //win32: create popup menu 
+	CMenu menu;
+	CMenu sub;
+	CMenu popup;
+	
+	VERIFY(menu.CreateMenu());
+	VERIFY(popup.CreatePopupMenu());
+	menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
+#endif
+
 	if (CWebView::MENU_TYPE_CUSTOM == CWebView::getCWebView().getMenuType()) {
+#if defined (OS_WINCE) //wm: delete existing items in main menu
 		HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
 		
-		//delete all except exit item
+		//except exit item
 		int num = GetMenuItemCount (hMenu);
 		for (int i = 0; i < (num - 1); i++)	
 			DeleteMenu(hMenu, 0, MF_BYPOSITION);
-		
+#endif
 		vector<CWebView::MenuItem> items;
 		CWebView::getCWebView().getMenuItems(items);
 	 	
+		//update UI with cusom menu items
 		USES_CONVERSION; 
 		int item_num = 0, type = CWebView::MenuItem::TYPE_UNKNOWN;
 		for (vector<CWebView::MenuItem>::reverse_iterator itr = items.rbegin(); 
@@ -1035,17 +1012,37 @@ void CMainWindow::setCustomMenu()
 		{
 			type = itr->getType();
 			
-			if (type == CWebView::MenuItem::TYPE_CMD_EXIT || type == CWebView::MenuItem::TYPE_CMD_CLOSE) {
-				//just skip
-			} else if (type == CWebView::MenuItem::TYPE_SEPARATOR) {
+			if (type == CWebView::MenuItem::TYPE_SEPARATOR) {
+#if defined (OS_WINCE)
 				InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
+#else 
+				int id = 0;
+				popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, id, (LPCTSTR )0);
+#endif
+#if defined (OS_WINCE) //wm: skip Exit and Close  items
+			} else if (type == CWebView::MenuItem::TYPE_CMD_EXIT || type == CWebView::MenuItem::TYPE_CMD_CLOSE) {
+#endif
 			} else {
+#if defined (OS_WINCE)
 				InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, A2T((itr)->getLabel().c_str()));
+#else
+				popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, 
+								 type == CWebView::MenuItem::TYPE_CMD_CLOSE ? _T("Exit") : A2T((itr)->getLabel().c_str()));
+#endif
 			}
 			//set items ID
 			itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + item_num);
 		}
 		CWebView::getCWebView().setMenuItems(items); //update items with IDs
 	}
-#endif //_WIN32_WCE
+#if defined (OS_WINDOWS) //win32: detach popup
+	RECT  rect; 
+	m_browser.GetWindowRect(&rect);
+	sub.Attach(menu.GetSubMenu(0));
+	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+						rect.right-1, 
+						rect.bottom-1,
+						m_hWnd);
+	sub.Detach();
+#endif	
 }
