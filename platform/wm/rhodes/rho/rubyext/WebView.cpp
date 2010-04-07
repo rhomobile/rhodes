@@ -15,8 +15,7 @@ void perform_webview_refresh() {
 
 void webview_set_menu_items(VALUE valMenu) 
 {
-	
-    RHODESAPP().setViewMenu(valMenu); 
+    rho_rhodesapp_setViewMenu(valMenu); 
 }
 
 int webview_active_tab() {
