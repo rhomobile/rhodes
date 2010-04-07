@@ -115,6 +115,7 @@ namespace "build" do
     end
 
     task :extensions => "config:iphone" do
+      ENV['RHO_PLATFORM'] = 'iphone'
       simulator = $sdk =~ /iphonesimulator/
       ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= "/Developer/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
         ".platform/Developer/usr/bin"
