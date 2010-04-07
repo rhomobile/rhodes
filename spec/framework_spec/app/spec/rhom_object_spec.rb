@@ -71,7 +71,7 @@ describe "Rhom::RhomObject" do
   it "should have correct number of attributes" do
     @account = Account.find(:all).first
   
-    @account.vars.size.should == 38
+    @account.vars.size.should == 17
   end
   
   it "should get count of objects" do
@@ -183,6 +183,57 @@ describe "Rhom::RhomObject" do
       @acct.industry.should == vars['industry']
     end
     ids.uniq.length.should == 10
+  end
+
+  it "should create a record, then update" do
+    vars = {"name"=>"some new record", "industry"=>"electronics"}
+    @account1 = Account.new(vars)
+    new_id = @account1.object
+    @account1.save
+    @account2 = Account.find(new_id)
+    @account2.object.should =="{#{@account1.object}}"
+    @account2.name.should == vars['name']
+    @account2.industry.should == vars['industry']
+    
+    update_attributes = {"industry"=>"electronics2"}
+    @account2.update_attributes(update_attributes)
+
+    @account3 = Account.find(new_id)    
+    @account3.object.should =="{#{@account1.object}}"
+    @account3.name.should == vars['name']
+    @account3.industry.should == update_attributes['industry']
+
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 2
+    
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+  end
+  
+  it "should create a record, then update 2" do
+    vars = {"name"=>"some new record"}
+    @account1 = Account.new(vars)
+    new_id = @account1.object
+    @account1.save
+    
+    @account2 = Account.find(new_id)
+    @account2.object.should =="{#{@account1.object}}"
+    @account2.name.should == vars['name']
+    
+    update_attributes = {"industry"=>"electronics2"}
+    @account2.industry = update_attributes['industry']
+    @account2.save
+    
+    @account3 = Account.find(new_id)    
+    @account3.object.should =="{#{@account1.object}}"
+    @account3.name.should == vars['name']
+    @account3.industry.should == update_attributes['industry']
+
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 2
+    
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
   end
   
   it "should destroy a record" do
@@ -375,7 +426,7 @@ describe "Rhom::RhomObject" do
     @accts = Account.find( :all, 
        :conditions => [cond1, cond2], 
        :op => 'AND', 
-       :select => ['name','industry'])
+       :select => ['name','industry','description'])
   
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
@@ -540,16 +591,9 @@ describe "Rhom::RhomObject" do
       Rho::RhoUtils.load_offline_data(['object_values'], 'spec/pagination')
     end
 
-    after(:each) do
-      ::Rho::RHO.get_user_db().start_transaction
-      #Rhom::RhomAttribManager.reset_all
-      ::Rho::RHO.get_user_db().delete_all_from_table('client_info')
-      ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
-      ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
-      ::Rho::RHO.get_user_db().commit
-    end
-    
-    @expected = [{:object => '3788304956', :name => 'c2z5izd8w9', :address => '6rd9nv8dml', :industry => 'hxua4d6ttl'},
+    @expected = [
+                {:object => '3788304956', :name => 'c2z5izd8w9', :address => '6rd9nv8dml', :industry => 'hxua4d6ttl'},
+                #{:object => '8763523348', :name => '39afj8vbj6', :address => 'x7jincp3xj', :industry => 'sge128jo9o'},    
                 {:object => '7480317731', :name => '79nqr7ekzr', :address => 'emv1tezmdf', :industry => '1zg7f7q6ib'},
                 {:object => '9897778878', :name => 'n5qx54qcye', :address => 'stzc1x7upn', :industry => '9kdinrjlcx'}]
 
@@ -612,4 +656,5 @@ describe "Rhom::RhomObject" do
     end
     
   end
+
 end

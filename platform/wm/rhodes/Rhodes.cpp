@@ -7,8 +7,6 @@
 #include "common/rhoparams.h"
 #include "rho/rubyext/GeoLocationImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
-#include <hash_map>
-
 
 using namespace rho;
 using namespace rho::common;

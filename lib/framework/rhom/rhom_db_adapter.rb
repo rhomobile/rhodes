@@ -102,16 +102,13 @@ module Rhom
 
       class << self
           # generates where clause based on hash
-          def where_str(condition,select_arr=nil)
+          def where_str(condition)
             where_str = ""
             if condition
               where_str += string_from_key_vals(condition,"and")
               where_str = where_str[0..where_str.length - 5]
             end
             
-            if select_arr and select_arr.length > 0
-              where_str += " and attrib in (#{select_str(select_arr)})"
-            end
             where_str
           end
           
@@ -170,19 +167,20 @@ module Rhom
       #                   {"order by"=>'object'})
       # this would return all columns where source_id = 2 and update_type = 'query' ordered
       # by the "object" column
-      def select_from_table(table=nil,columns=nil,condition=nil,params=nil,select_arr=nil)
+      def select_from_table(table=nil,columns=nil,condition=nil,params=nil)
         query = nil
         if table and columns and condition
           if params and params['distinct']
-            query = "select distinct #{columns} from #{table} where #{RhomDbAdapter.where_str(condition,select_arr)}"
+            query = "select distinct #{columns} from #{table} where #{RhomDbAdapter.where_str(condition)}"
           elsif params and params['order by']
-            query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition,select_arr)} order by #{params['order by']}"
+            query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition)} order by #{params['order by']}"
           else
-            query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition,select_arr)}"
+            query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition)}"
           end
         elsif table and columns
           query = "select #{columns} from #{table}"                     
         end
+        
         execute_sql query
       end
     
@@ -214,23 +212,19 @@ module Rhom
       # delete_from_table('object_values',{"object"=>"some-object"})
       # this would execute the following sql:
       # delete from object_values where object="some-object"
-      def delete_from_table(table=nil,condition=nil)
-        query = nil
-        if table and condition
-          query = "delete from #{table} where #{RhomDbAdapter.where_str(condition)}"
-        end
-        execute_sql query
+      def delete_from_table(table,condition)
+        execute_sql "delete from #{table} where #{RhomDbAdapter.where_str(condition)}"
       end
     
       # deletes all rows from a given table
-      def delete_all_from_table(table=nil)
-        query = nil
-        if table
-          query = "delete from #{table}"
-        end
-        execute_sql query
+      def delete_all_from_table(table)
+        execute_sql "delete from #{table}"
       end
 
+      def table_exist?(table_name)
+        @database.table_exist?(table_name)
+      end
+      
       #destroy one table  
       def destroy_table(name)
         destroy_tables(:include => [name])

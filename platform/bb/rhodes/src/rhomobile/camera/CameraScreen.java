@@ -201,7 +201,7 @@ public class CameraScreen extends MainScreen {
 	        	fname = Utilities.replaceAll(fname,"/","%2F");
 	        } catch(Exception e) {
 	        	error = true;
-	        	LOG.ERROR(e);
+	        	LOG.ERROR("Read camera image file failed.", e);
 	        	Dialog.alert( "Error " + e.getClass() + ":  " + e.getMessage() );
 	        } finally {
 				try{
@@ -266,8 +266,11 @@ public class CameraScreen extends MainScreen {
 	    		// First of all, attempting to capture picture using MM API
 	    		
 	            //Create a player for the Blackberry's camera.
-	            player = Manager.createPlayer( "capture://video" ); 
-	            LOG.TRACE("Recording using MM API");
+                // do not use it:
+	        	//http://supportforums.blackberry.com/t5/Java-Development/ControlledAccessException-from-getSnapshot/m-p/284997;jsessionid=59C552A3EC61C282E67BDF229DDD2701
+	        		            
+	            //player = Manager.createPlayer( "capture://video" ); 
+	            //LOG.TRACE("Recording using MM API");
 	        }
     	}
     	catch(Exception e) {
