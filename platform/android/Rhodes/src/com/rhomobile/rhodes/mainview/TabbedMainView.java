@@ -18,10 +18,14 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ============================================================================
  */
-package com.rhomobile.rhodes;
+package com.rhomobile.rhodes.mainview;
 
 import java.util.Map;
 import java.util.Vector;
+
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.Rhodes;
+import com.rhomobile.rhodes.RhodesInstance;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

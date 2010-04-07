@@ -1,7 +1,6 @@
 platform/android/Rhodes/src/com/rhomobile/rhodes/AndroidR.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/MainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
@@ -10,9 +9,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/SimpleMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/SplashScreen.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/TabbedMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Utils.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/Alert.java
@@ -24,6 +21,9 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/MainView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SimpleMainView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/TabbedMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/Annotation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapView.java
