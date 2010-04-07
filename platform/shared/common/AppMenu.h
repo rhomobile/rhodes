@@ -15,7 +15,7 @@ class CAppMenu
 	DEFINE_LOGCLASS;
 
 public:
-	static enum 
+	enum 
 	{
 		MENU_TYPE_SYSTEM,
 		MENU_TYPE_CUSTOM
@@ -23,7 +23,7 @@ public:
 	
 	class Item {
 	public:
-		static enum 
+		enum 
 		{
 			TYPE_UNKNOWN          = 0,
 			TYPE_SEPARATOR,
