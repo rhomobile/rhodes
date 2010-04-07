@@ -7,10 +7,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS
-#define com_rhomobile_rhodes_Rhodes_WINDOW_FLAGS 1024L
-#undef com_rhomobile_rhodes_Rhodes_WINDOW_MASK
-#define com_rhomobile_rhodes_Rhodes_WINDOW_MASK 1024L
+#undef com_rhomobile_rhodes_Rhodes_RHO_SPLASH_VIEW
+#define com_rhomobile_rhodes_Rhodes_RHO_SPLASH_VIEW 1L
+#undef com_rhomobile_rhodes_Rhodes_RHO_MAIN_VIEW
+#define com_rhomobile_rhodes_Rhodes_RHO_MAIN_VIEW 2L
+#undef com_rhomobile_rhodes_Rhodes_RHO_TOOLBAR_VIEW
+#define com_rhomobile_rhodes_Rhodes_RHO_TOOLBAR_VIEW 3L
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    createRhodesApp
@@ -81,6 +83,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    doRequest
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doRequest
   (JNIEnv *, jobject, jstring);
 
 /*
