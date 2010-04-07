@@ -12,8 +12,6 @@ namespace common {
 
 class CAppMenu
 {
-friend class CRhodesApp;
-
 	DEFINE_LOGCLASS;
 
 public:
@@ -75,7 +73,7 @@ public:
 	bool getItem (int id, Item &item);
 	bool getItem (String &label, Item &item);
 	
-private:
+	
 	void addItem (const String &label, const String &link);
 	void removeAllItems (void);
 		
