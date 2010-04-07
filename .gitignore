@@ -107,3 +107,8 @@ platform/shared/curl/lib/rhoconf.h
 .idea
 *.plist
 Info.plist
+
+platform/bb/Hsqldb/Hsqldb.jar
+platform/bb/RhoBundle/RhoBundle.jar
+platform/bb/RubyVM/RubyVM.jar
+platform/bb/rhodes/rhodes.jar

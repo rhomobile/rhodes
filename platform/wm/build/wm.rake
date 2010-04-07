@@ -1,3 +1,4 @@
+#
 namespace "config" do
   task :wm => ["config:common"] do
     $config["platform"] = "wm"
@@ -10,18 +11,55 @@ namespace "config" do
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = $bindir + "/target/wm6p"
     $tmpdir =  $bindir +"/tmp"
-    $vcbuild = "vcbuild"
+    $vcbuild = $config["env"]["paths"]["vcbuild"]
+    $vcbuild = "vcbuild" if $vcbuild.nil?
     $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
     $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+
+    $app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
+    if $app_config["wm"] and $app_config["wm"]["extensions"]
+      $app_config["extensions"] += $app_config["wm"]["extensions"]
+      $app_config["wm"]["extensions"] = nil
+    end
   end
 end
 
 namespace "build" do
   namespace "wm" do
+    task :extensions => "config:wm" do
+      $app_config["extensions"].each do |ext|
+        appextpath = File.join($app_path, "extensions", ext, "ext")
+        rhoextpath = File.join("lib/extensions", ext, "ext")
+
+        puts appextpath
+        puts rhoextpath
+
+        extpath = ""
+
+        if File.exists? appextpath
+          extpath = appextpath
+        elsif File.exists? rhoextpath
+          extpath = rhoextpath
+        end
+
+        outdir = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions")
+        mkdir_p outdir unless File.directory? outdir
+
+        ENV['RHO_PLATFORM'] = 'wm'
+        ENV['RHO_ROOT'] = ENV['PWD']
+        ENV['TARGET_TEMP_DIR'] = outdir
+        ENV['TEMP_FILES_DIR'] = File.join(outdir, ext)
+        ENV['VCBUILD'] = $vcbuild
+        ENV['SDK'] = $sdk
+
+        puts Jake.run("build.bat", [], extpath) if File.exists? File.join(extpath, "build.bat")
+      end
+    end
+
 #    desc "Build wm rhobundle"
-    task :rhobundle => ["config:wm"] do
+    task :rhobundle => ["config:wm", :extensions] do
       Rake::Task["build:bundle:noxruby"].execute
     end
 
