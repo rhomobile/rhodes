@@ -18,19 +18,6 @@ struct shttpd_ctx;
 namespace rho {
 namespace common {
 
-class CMenuItem 
-{
-public:
-	CMenuItem (const String &label, const String &link) : m_label (label), m_link (link) {}
-	
-	const String& getLabel () { return m_label; }
-	const String& getLink  () { return m_link; }
-	
-private:
-	String m_label;
-	String m_link;
-};
-
 class CRhodesApp : public common::CRhoThread
 {
 public:
@@ -54,8 +41,6 @@ private:
     int m_currentTabIndex;
     String m_currentUrls[5];
 
-    common::CMutex m_mxViewMenuItems;
-    Vector<CMenuItem> m_hashViewMenuItems;
     String m_strAppBackUrl;
     Vector<ICallbackObject*> m_arCallbackObjects;
     rubyext::CGeoLocation m_oGeoLocation;
@@ -63,6 +48,8 @@ private:
 
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
+	
+	common::CMutex m_mxAppMenu;
 	CAppMenu m_oAppMenu;
 	
 public:
@@ -96,10 +83,6 @@ public:
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
-
-    void setViewMenu(unsigned long valMenu);
-    void addViewMenuItem( const String& strLabel, const String& strLink );
-	const Vector<CMenuItem>& getViewMenu (void);
 
 	void setAppMenu(unsigned long valMenu);
     void addAppMenuItem( const String& strLabel, const String& strLink );
