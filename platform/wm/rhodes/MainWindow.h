@@ -10,7 +10,7 @@
 #include "GetURLDialog.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
-#include "rho/rubyext/WebView.h"
+#include "common/RhodesApp.h"
 
 #if defined(OS_WINDOWS)
 #include "menubar.h"
@@ -18,7 +18,7 @@
 #include "LogView.h"
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
-#define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (CUSTOM_MENU_ITEMS_MAX) - 1)
+#define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
 
 static const UINT ID_BROWSER = 1;
 
