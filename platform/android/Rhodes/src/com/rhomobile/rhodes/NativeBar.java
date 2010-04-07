@@ -22,6 +22,10 @@ package com.rhomobile.rhodes;
 
 import java.util.Vector;
 
+import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.mainview.SimpleMainView;
+import com.rhomobile.rhodes.mainview.TabbedMainView;
+
 public class NativeBar {
 	
 	private static final String TAG = "NativeBar";
@@ -46,9 +50,10 @@ public class NativeBar {
 			
 			switch (type) {
 			case NOBAR_TYPE:
-			case TOOLBAR_TYPE:
-				// There is no toolbar on android so TOOLBAR_TYPE means exactly NOBAR_TYPE
 				v = new SimpleMainView();
+				break;
+			case TOOLBAR_TYPE:
+				v = new SimpleMainView(params);
 				break;
 			case TABBAR_TYPE:
 				v = new TabbedMainView(params);

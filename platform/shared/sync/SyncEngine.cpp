@@ -238,7 +238,8 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
         strQuery += "&" + CClientRegister::getInstance()->getRegisterBody();
     
     NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
-    if ( resp.isOK() )
+    return resp.isOK();
+/*    if ( resp.isOK() )
     {
         if ( CClientRegister::getInstance() != null )
             return CClientRegister::getInstance()->doRegister(*this);
@@ -246,7 +247,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
         return true;
     }
 
-    return false;
+    return false;*/
 }
 
 String CSyncEngine::requestClientIDByNet()
@@ -391,13 +392,13 @@ boolean CSyncEngine::isLoggedIn()
 
 String CSyncEngine::loadSession()
 {
-    String strRes = "";
+    m_strSession = "";
     DBResult( res , getDB().executeSQL("SELECT session FROM sources WHERE session IS NOT NULL") );
     
     if ( !res.isEnd() )
-    	strRes = res.getStringByIdx(0);
+    	m_strSession = res.getStringByIdx(0);
     
-    return strRes;
+    return m_strSession;
 }
 
 void CSyncEngine::logout()

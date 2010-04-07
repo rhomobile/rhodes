@@ -1,3 +1,17 @@
+== 1.5.3
+* Fix issue #2980590 - iphone: call NetRequest from toolbar
+
+== 1.5.2
+* Fix AsyncHttp 'cancel request'
+* Implement #2948610 - enable AysyncHttp synchronous call
+* Implement #2950632 - BB: System.get_property('has_network')
+* Fix issue #2948834 - iPhone: ringtonemanager
+* Fix issue #2964439 - Android: build problems when no Google API add-ons installed
+
+== 1.5.1
+* Fix issue #2924952 - BB Sim doesn't launch on windows 7
+* Fix issue #2931788 - iPhone: wrong refresh
+
 == 1.5.0
 * native screen resolution for iPad
 * native tab bar for android

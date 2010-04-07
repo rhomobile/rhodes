@@ -117,7 +117,8 @@ def cc_run(command, args, chdir = nil)
   end
   ret = $?
   FileUtils.cd save_cwd
-  ret == 0
+  puts "FAIL: #{command} failed with status #{ret.inspect.to_s}" unless ret.success?
+  ret.success?
 end
 
 def cc_compile(filename, objdir, additional = nil)

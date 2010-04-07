@@ -62,6 +62,10 @@ module Rhom
                 end
               end
               
+              def to_s
+                @vars.to_s if @vars
+              end
+              
               def method_missing(name, *args)
                 unless name == Fixnum
                   varname = name.to_s.gsub(/\=/,"")
@@ -507,7 +511,7 @@ module Rhom
                           #new_obj.vars.merge!(rowhash)
                           
                           rowhash.each do |attrName, attrVal|
-                            new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
+                            new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
                           end
                             
                           ret_list << new_obj
@@ -527,10 +531,6 @@ module Rhom
                        res *= -1 if order_dir && order_dir == 'DESC'
                        res
                     }
-                  end
-                  
-                  if order_attr && limit
-                    ret_list = ret_list.slice(offset,limit)
                   end
                   
                   return list.length if args.first == :count
@@ -733,8 +733,17 @@ module Rhom
                     ::Rhom::RhomDbAdapter.start_transaction
                     
                     result = ::Rhom::RhomDbAdapter.execute_sql("SELECT object FROM object_values WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
-                    bUpdate = result && result.length > 0 
-    				update_type = bUpdate ? self.get_update_type_by_source('update') : self.get_update_type_by_source('create')
+                    if result && result.length > 0                     
+                        resUpdateType = ::Rhom::RhomDbAdapter.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
+                        if resUpdateType && resUpdateType.length > 0 
+                            update_type = resUpdateType[0]['update_type'] 
+                        else
+        				    update_type = self.get_update_type_by_source('update')
+        				end    
+    				else
+    				    update_type = self.get_update_type_by_source('create')
+    				end
+    				
                     self.vars.each do |key_a,value|
                         key = key_a.to_s
                         next if ::Rhom::RhomObject.method_name_reserved?(key)

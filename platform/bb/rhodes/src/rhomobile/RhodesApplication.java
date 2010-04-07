@@ -259,7 +259,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			synchronized(this)
 			{
 				m_response = resp;
-				this.notify();
+				this.notifyAll();
 			}
 		}
 	}
@@ -1715,6 +1715,9 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     			}catch(IOException exc)
     			{
     				LOG.ERROR("Callback failed: " + _url, exc);
+    				
+    				if ( m_netCallback != null )
+    					m_netCallback.setResponse( new NetResponse("", 500) );
     			}
     		}
     		else

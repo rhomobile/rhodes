@@ -30,6 +30,18 @@ module Rho
       return Hash['GET','index','POST','create'][@request['request-method']]
     end
 
+    def self.process_rho_object(params)
+      if params['rho_callback'] && params['__rho_object']
+        hashObjs = params['__rho_object']
+        
+        hashObjs.each do |name,index|
+            params[name] = __rhoGetCallbackObject(index.to_i())
+        end
+        
+        params.delete('__rho_object')
+      end
+    end
+    
     def serve(application,object_mapping,req,res)
       @request, @response = req, res
       @object_mapping = object_mapping
@@ -37,15 +49,7 @@ module Rho
       @rendered = false
       @redirected = false
 
-      if @params['rho_callback'] && @params['__rho_object']
-        hashObjs = @params['__rho_object']
-        
-        hashObjs.each do |name,index|
-            @params[name] = __rhoGetCallbackObject(index.to_i())
-        end
-        
-        @params.delete('__rho_object')
-      end
+      RhoController.process_rho_object(@params)
       
       act = req['action'].nil? ? default_action : req['action']
       if self.respond_to?(act)

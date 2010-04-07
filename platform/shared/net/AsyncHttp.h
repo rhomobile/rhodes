@@ -26,6 +26,7 @@ class CAsyncHttp : public common::CRhoThread, rho::ICallbackObject
     Hashtable<String,String> m_mapHeaders;
 
     String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
+    String m_strResBody;
     boolean m_bFinished;
 public:
     enum EHttpCommands{ hcGet = 0, hcPost, hcDownload, hcUpload };
@@ -33,18 +34,17 @@ private:
     EHttpCommands m_eCmd;
 public:
 
-    static boolean m_bNoThreaded;
-
     CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
         const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
 
-    void cancel();
+    void cancel(boolean bWait);
 
-    static void cancelRequest(const char* szCallback);
+    static void cancelRequest(const char* szCallback, boolean bWait);
 
     //rho::ICallbackObject
     virtual unsigned long getObjectValue();
 
+    unsigned long getRetValue();
 private:
     virtual void run();
 
@@ -63,12 +63,12 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-void rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params);
-void rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
-void rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
-void rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
+unsigned long rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params);
+unsigned long rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params);
+unsigned long rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
+unsigned long rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params);
 void rho_asynchttp_cancel(const char* cancel_callback);
-void rho_asynchttp_set_threaded_mode(int b);
+void rho_asynchttp_destroy();
 
 #ifdef __cplusplus
 };

@@ -60,7 +60,8 @@ public class RhoRuby {
 		{
 			String strMsg = exc.getMessage(); 
 			
-	    	return strMsg != null && strMsg.indexOf("timed out") >= 0 ? RhoRuby.ERR_NOSERVERRESPONSE : RhoRuby.ERR_NETWORK;
+	    	return strMsg != null && (strMsg.indexOf("timed out") >= 0 || strMsg.indexOf("Timed out") >= 0)
+	    		? RhoRuby.ERR_NOSERVERRESPONSE : RhoRuby.ERR_NETWORK;
 		}
 		
 		return ERR_NONE;
@@ -100,6 +101,11 @@ public class RhoRuby {
 		RubyValue res = m_RhoMessages_get_message.invoke( m_classRhoMessages, ObjectFactory.createString(strName), null );
 		
 		return res.toStr();
+	}
+	
+	public static void set_const(String name, String value)
+	{
+		RubyRuntime.ObjectClass.setConstant(name, ObjectFactory.createString(value) );
 	}
 	
 	public static void RhoRubyStart(String szAppPath)throws Exception

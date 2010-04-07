@@ -185,7 +185,8 @@ namespace "config" do
     end
 
     if $androidplatform.nil?
-      puts "+++ No required platform found"
+      puts "+++ No required platform (API level #{ANDROID_API_LEVEL}) found, can't proceed"
+      exit 1
     else
       puts "+++ Platform found: #{$androidplatform}" if USE_TRACES
     end
@@ -263,7 +264,8 @@ namespace "config" do
         $gapijar = File.join(dir, 'libs', 'maps.jar') if apilevel == ANDROID_API_LEVEL
       end
       if $gapijar.nil?
-        puts "+++ No Google APIs add-on found"
+        puts "+++ No Google APIs add-on found (which is required because 'mapping' enabled in build.yml)"
+        exit 1
       else
         puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
       end

@@ -354,6 +354,13 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
     return rho_cast<jstring>(s);
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_doRequest
+  (JNIEnv *env, jobject, jstring strUrl)
+{
+    std::string const &url = rho_cast<std::string>(strUrl);
+    rho_net_request(url.c_str());
+}
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
   (JNIEnv *, jobject, jstring strUrl)
 {

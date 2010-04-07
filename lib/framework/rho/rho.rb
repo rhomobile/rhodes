@@ -391,17 +391,33 @@ module Rho
   end # RhoConfig
   
     module AsyncHttp
+        def self.process_result(res, callback)
+            return res if callback && callback.length() > 0
+            
+            _params = ::Rho::RhoSupport::parse_query_parameters res
+            ::Rho::RhoController.process_rho_object(_params)
+            _params
+        end
+        
         def self.get(args)
-            AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param] )
+            process_result( 
+                AsyncHttp.do_get(args[:url], args[:headers], args[:callback], args[:callback_param] ),
+                args[:callback] )
         end
         def self.post(args)
-            AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param] )
+            process_result( 
+                AsyncHttp.do_post(args[:url], args[:headers], args[:body], args[:callback], args[:callback_param] ),
+                args[:callback] )
         end
         def self.download_file(args)
-            AsyncHttp.do_downloadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] )
+            process_result( 
+                AsyncHttp.do_downloadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] ),
+                args[:callback] )
         end
         def self.upload_file(args)
-            AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] )
+            process_result( 
+                AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:filename], args[:callback], args[:callback_param] ),
+                args[:callback] )
         end
     end
   

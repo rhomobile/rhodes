@@ -91,7 +91,6 @@ public:
     boolean sendLog();
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
-    void delCallbackObject(ICallbackObject* pCallbackObject);
     unsigned long getCallbackObject(int nIndex);
 
     const String& getRhoMessage(int nError, const char* szName);
@@ -158,6 +157,7 @@ int rho_conf_send_log();
 int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);
 
+void rho_net_request(const char *url);
 
 #ifdef __cplusplus
 };

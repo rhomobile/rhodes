@@ -156,7 +156,7 @@ void CRhodesApp::stopApp()
         stop(2000);
     }
 
-    rho_asynchttp_cancel("*");
+    rho_asynchttp_destroy();
 }
 
 class CRhoCallbackCall :  public common::CRhoThread
@@ -612,24 +612,14 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
     return strRes;
 }
 
-void CRhodesApp::delCallbackObject(ICallbackObject* pCallbackObject)
-{
-    for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
-    {
-        if ( m_arCallbackObjects.elementAt(i) == pCallbackObject )
-        {
-            m_arCallbackObjects.setElementAt(0,i);
-//            rho_ruby_releaseValue(valObject);
-        }
-    }
-}
-
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
     if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
         return rho_ruby_get_NIL();
 
     ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
+    m_arCallbackObjects.setElementAt(0,nIndex);
+
     if ( !pCallbackObject )
         return rho_ruby_get_NIL();
 
@@ -956,6 +946,13 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
     }
     dst[out++] = '\0';
     return out;
+}
+
+void rho_net_request(const char *url)
+{
+    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho::common::createClassFactory();
+    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
+    request->pullData(url, null);
 }
 
 }
