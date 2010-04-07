@@ -346,6 +346,7 @@ namespace "build" do
 
     task :extensions => "config:android" do
 
+      ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = ANDROID_API_LEVEL.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
