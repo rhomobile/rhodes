@@ -20,6 +20,8 @@ div#pageTitle h1 {
     color: white;
     text-shadow: 1px 1px 1px #000;
 }
+
+
 /* toolbar */
 
 #toolbar {
@@ -42,7 +44,7 @@ div#row div#leftItem {
 
 div#row div#centerItem {
     bottom: 20px;
-    width: 300px;
+		width:100%;
     margin-left: 10px;
     height: 30px;
 }
@@ -108,7 +110,27 @@ div#content form button.createButton {
     height: 35px;
 }
 
+div#content .standardButton {
+    -webkit-appearance: none;
+    -webkit-border-radius: 8px;
+    background: white;
+    color: #436395;
+    font-size: 15px;
+    font-weight: bold;
+		width:100%;
+    height: 40px;
+    border: 1px solid black;
+    margin-top:10px;
+}
 
+div#content .standardButton a {
+    display: block;
+    text-decoration:none;
+    width: 100%;
+    color: #436395;
+    text-align: center;
+    line-height: 40px;
+}
 
 /* lists */
 
@@ -138,15 +160,18 @@ div#content ul li a:hover {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(5, 140, 245)), to(rgb(1, 95, 230)));
 }
 
-div#content ul li span.title {
-    margin-left: 30px;
-    font-weight: bold;
-    float: left;
-    width:auto;
-    line-height: 75px;
+div#content ul li span{
+	line-height: 75px;
 }
 
+div#content ul li span.title {
+    margin-left: 30px;
+    font-size: 20px;
+		font-weight: bold;
+		float: left;
+    width:auto;
 
+}
 
 div#content ul li a span.disclosure_indicator {
     background: url('/public/images/iphone/listArrow.png') no-repeat center right;
@@ -162,52 +187,24 @@ div#content ul li a img {
     max-width: 100px;
 }
 
-/* Forms */
-
-div#content form fieldset {
-    border: none;
+div#content ul li span.gridItem {
+    float: right;
+    margin-right: 5px;
+    text-align: left;
+    width: 145px;
 }
 
-div#content .standardButton {
-    -webkit-appearance: none;
-    -webkit-border-radius: 8px;
-    background: white;
-    color: #436395;
-    font-size: 15px;
-    font-weight: bold;
-    width:300px;
-    height: 40px;
-    border: 1px solid black;
-    margin-top:10px;
-}
-
-div#content .standardButton a {
-    display: block;
-    text-decoration:none;
-    width: 100%;
-    color: #436395;
-    text-align: center;
-    line-height: 40px;
-}
 
 /* Forms */
 
-/* TODO: form elements in the content div should be
-   styled without the use of a form_list class. Also
-   the fieldset tag should be removed and the form
-   should be responsible for its margin, padding and
-   interior dimensions */
-
-/* FIXME: standardButtons should be centered on the page
-   but currently have excess margin on the left.
-   This also causes a problem for the <ul> tag as it is
-   also not centered... */
-
-div#content .form_list {
-    padding-top: 5px;
+div#content form {
+  padding-top: 25px;
+	border: none;
+	width:300px;
+	margin:0 auto;
 }
 
-div#content .form_list ul {
+div#content form ul {
     -webkit-border-radius: 8px;
     background-color: white;
     border: 1px solid #878787;
@@ -216,34 +213,30 @@ div#content .form_list ul {
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
-    margin: 0 9px 17px 9px;
+    margin: 0 auto 15px auto;
     overflow-x: hidden;
     overflow-y: hidden;
     padding: 0;
 }
 
-div#content .form_list li:last-child {
-    border:none;
-}
-
-div#content .form_list li {
+div#content form ul li {
     display: block;
     height: auto;
     list-style-type: none;
     overflow-x: hidden;
     overflow-y: hidden;
+    border-bottom: 1px solid #848284;
 }
 
-div#content .form_list span.label {
-    float: left;
-    display:block;
-    line-height: 43px;
-    padding-left: 5px;
-    width: auto;
-    overflow:hidden;
+div#content form ul li:last-child {
+    border:none;
 }
 
-div#content .form_list input[type="checkbox"] {
+div#content form ul li span.fieldLabel {
+	display:none;
+}
+
+div#content form input[type="checkbox"] {
     -webkit-appearance: none;
     background: url(/public/images/checkbox.png);
     float: right;
@@ -253,12 +246,12 @@ div#content .form_list input[type="checkbox"] {
     width: 94px;
 }
 
-div#content .form_list input[type="checkbox"]:checked {
+div#content form input[type="checkbox"]:checked {
     background-position-x: 0px;
     background-position-y: 27px;
 }
 
-div#content .form_list input[type="radio"] {
+div#content form input[type="radio"] {
     -webkit-appearance: none;
     -webkit-box-sizing: border-box;
     border: none;
@@ -270,13 +263,13 @@ div#content .form_list input[type="radio"] {
     z-index:2000;
 }
 
-div#content .form_list input[type="radio"]:checked {
+div#content form input[type="radio"]:checked {
  background: url(/public/images/radiobutton.png) no-repeat;
  background-position-x: 100%;
  background-position-y: 50%;
 }
 
-div#content .form_list select {
+div#content form select {
     -webkit-appearance: none;
     border: 0px;
     width: 100%;
@@ -284,37 +277,20 @@ div#content .form_list select {
     background: url('/public/images/listArrowDown.png') no-repeat center right;
 }
 
-
-div#content .form_list textarea {
+div#content form textarea {
     -webkit-appearance: none;
     border:none;
     width: 100%;
     height: 100%;
 }
 
-div#content .form_list input[type="text"], input[type="password"] {
-    float: right;
+div#content form input[type="text"], div#content form input[type="password"] {
     height: 43px;
     font-size:medium;
-    width: 145px;
+    width: 100%;
     -webkit-appearance: none;
     background: transparent;
-    -webkit-border-bottom-left-radius: 0px 0px;
-    -webkit-border-bottom-right-radius: 0px 0px;
-    -webkit-border-top-left-radius: 0px 0px;
     border: none;
-}
-
-div#content .form_list input:first-child {
-    -webkit-border-top-right-radius: 8px 8px;
-}
-
-div#content ul li span.gridItem {
-    float: right;
-    line-height: 75px;
-    margin-right: 5px;
-    text-align: left;
-    width: 145px;
 }
 
 /* Settings */
@@ -324,15 +300,23 @@ div#content ul#settings {
     margin: 0;
 }
 
-div#content ul#settings li.message {
-    line-height: 75px;
-    color: red;
+div#content ul#settings li.alertMessage{
     text-align: center;
+}
+
+div#content ul#settings li.alertMessage span.message{
+		color: red;
+}
+
+div#content ul#settings li span.clientID{
+	margin-left:4px;
+	font-size:10px;
 }
 
 div#content div#reset {
     background-color: white;
     height: 100%;
+		width:300px;
     padding-left:10px;
     padding-right:10px;
 }
