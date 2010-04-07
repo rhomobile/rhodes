@@ -9,7 +9,7 @@
 #include "net/HttpServer.h"
 #include "rubyext/GeoLocation.h"
 #include "SplashScreen.h"
-
+#include "AppMenu.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -63,7 +63,8 @@ private:
 
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
-
+	CAppMenu m_oAppMenu;
+	
 public:
     ~CRhodesApp(void);
 
@@ -100,6 +101,10 @@ public:
     void addViewMenuItem( const String& strLabel, const String& strLink );
 	const Vector<CMenuItem>& getViewMenu (void);
 
+	void setAppMenu(unsigned long valMenu);
+    void addAppMenuItem( const String& strLabel, const String& strLink );
+	CAppMenu& getAppMenu (void) { return m_oAppMenu; }
+	
     boolean sendLog();
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
