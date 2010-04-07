@@ -50,7 +50,8 @@ module Rhom
         ::Rho::RHO.get_db_partitions().each_value do |db|
             db.destroy_tables(:exclude => ['sources','client_info'])
         end
-        
+      
+        ::Rho::RHO.init_schema_sources  
       end
       
       def database_full_reset_and_logout
