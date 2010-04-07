@@ -51,6 +51,22 @@ public:
     {
         return sqlite3_column_int64(m_dbStatement, nCol);
     }
+
+    int getColCount()
+    {
+        return sqlite3_data_count(m_dbStatement);
+    }
+
+    boolean isNullByIdx(int nCol)
+    {
+        return sqlite3_column_type(m_dbStatement,nCol) == SQLITE_NULL;
+    }
+
+    String getColName(int nCol)
+    {
+        return sqlite3_column_name(m_dbStatement,nCol);;
+    }
+
 //private:
     CDBResult() : m_lockDB(*new common::CMutex() ){} //TEST ONLY
 
