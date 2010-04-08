@@ -138,6 +138,7 @@ namespace "config" do
       $rubypath = "res/build-tools/RhoRuby.exe"
 
       # Add PATH to cygwin1.dll
+      ENV['CYGWIN'] = 'nodosfilewarning'
       if $path_cygwin_modified.nil?
         ENV['PATH'] = Jake.get_absolute("res/build-tools") + ";" + ENV['PATH']
         path_cygwin_modified = true
@@ -346,6 +347,7 @@ namespace "build" do
 
     task :extensions => "config:android" do
 
+      ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = ANDROID_API_LEVEL.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir

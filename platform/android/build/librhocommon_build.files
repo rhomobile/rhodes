@@ -1,3 +1,4 @@
+platform/shared/common/AppMenu.cpp
 platform/shared/common/PosixThreadImpl.cpp
 platform/shared/common/RhoConf.cpp
 platform/shared/common/RhoFile.cpp

@@ -9,7 +9,7 @@
 #include "net/HttpServer.h"
 #include "rubyext/GeoLocation.h"
 #include "SplashScreen.h"
-
+#include "AppMenu.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -17,19 +17,6 @@ struct shttpd_ctx;
 
 namespace rho {
 namespace common {
-
-class CMenuItem 
-{
-public:
-	CMenuItem (const String &label, const String &link) : m_label (label), m_link (link) {}
-	
-	const String& getLabel () { return m_label; }
-	const String& getLink  () { return m_link; }
-	
-private:
-	String m_label;
-	String m_link;
-};
 
 class CRhodesApp : public common::CRhoThread
 {
@@ -54,8 +41,6 @@ private:
     int m_currentTabIndex;
     String m_currentUrls[5];
 
-    common::CMutex m_mxViewMenuItems;
-    Vector<CMenuItem> m_hashViewMenuItems;
     String m_strAppBackUrl;
     Vector<ICallbackObject*> m_arCallbackObjects;
     rubyext::CGeoLocation m_oGeoLocation;
@@ -63,7 +48,10 @@ private:
 
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
-
+	
+	common::CMutex m_mxAppMenu;
+	CAppMenu m_oAppMenu;
+	
 public:
     ~CRhodesApp(void);
 
@@ -96,10 +84,10 @@ public:
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
 
-    void setViewMenu(unsigned long valMenu);
-    void addViewMenuItem( const String& strLabel, const String& strLink );
-	const Vector<CMenuItem>& getViewMenu (void);
-
+	void setAppMenu(unsigned long valMenu);
+    void addAppMenuItem( const String& strLabel, const String& strLink );
+	CAppMenu& getAppMenu (void) { return m_oAppMenu; }
+	
     boolean sendLog();
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
@@ -176,6 +164,7 @@ int rho_conf_send_log();
 int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);
 
+void rho_net_request(const char *url);
 
 #ifdef __cplusplus
 };
