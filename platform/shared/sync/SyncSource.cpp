@@ -45,6 +45,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;
+    m_bSchemaSource = db.isTableExist(m_strName);
 }
 
 CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_dbAdapter(db)
@@ -453,7 +454,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
                 String strCmd = iterCmds.getCurKey();
                 if ( strCmd.compare("metadata") == 0 )
                 {
-                    String strMetadata = iterCmds.getCurValue().getString();
+                    String strMetadata = iterCmds.getCurString();
                     getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
                 }else if ( strCmd.compare("links") == 0 || strCmd.compare("delete") == 0 || strCmd.compare("insert") == 0)
                 {
@@ -470,7 +471,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
                             for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
                             {
                                 String strAttrib = attrIter.getCurKey();
-                                String strValue = attrIter.getCurValue().getString();
+                                String strValue = attrIter.getCurString();
 
                                 processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
                             }
@@ -516,7 +517,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
             strCols += attrIter.getCurKey();
             strQuest += "?";
             strSet += attrIter.getCurKey() + "=?";
-            vecValues.addElement(attrIter.getCurValue().getString());
+            vecValues.addElement(attrIter.getCurString());
         }
         vecValues.addElement(strObject);
         strCols += ",object";
@@ -574,7 +575,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         m_nDeleted++;
     }else if ( strCmd.compare("links") == 0 )
     {
-        String strValue = attrIter.getCurValue().getString();
+        String strValue = attrIter.getCurString();
 
         String strSelect = "SELECT * FROM ";
         strSelect += getName() + " WHERE object=?";

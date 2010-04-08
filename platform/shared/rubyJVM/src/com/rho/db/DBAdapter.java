@@ -111,6 +111,16 @@ public class DBAdapter extends RubyBasic {
 		Object[] values = {arg1,arg2,arg3,arg4,arg5};
 		return m_dbStorage.executeSQL(strStatement,values, true);
 	}
+
+	public IDBResult executeSQLReportNonUnique(String strStatement, Vector vecValues)throws DBException{
+		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
+		
+		Object[] values = new Object[vecValues.size()];
+		for (int i = 0; i < vecValues.size(); i++ )
+			values[i] = vecValues.elementAt(i);
+		
+		return m_dbStorage.executeSQL(strStatement,values, true);
+	}
 	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
 		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6,arg7};
@@ -474,6 +484,19 @@ public class DBAdapter extends RubyBasic {
 	    }
 
 	    return arIncludeTables.size()==0;
+	}
+	
+	public boolean isTableExist(String strTableName)throws DBException
+	{
+		String[] vecTables = m_dbStorage.getAllTableNames();
+		for ( int i = 0; i< vecTables.length; i++ )
+		{
+			String tableName = vecTables[i];
+			if ( tableName.equalsIgnoreCase(strTableName) )
+				return true;
+		}
+		
+		return false;
 	}
 	
     private RubyValue rb_destroy_tables(RubyValue vInclude, RubyValue vExclude) 
@@ -941,6 +964,21 @@ public class DBAdapter extends RubyBasic {
 				    return RubyConstant.QNIL;
 				}
 			});
+		klass.defineMethod( "table_exist?", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+			{
+				try{
+					DBAdapter db = (DBAdapter)receiver;
+				    boolean bExists = db.isTableExist(arg.toStr());
+				    
+				    return ObjectFactory.createBoolean(bExists);
+				}catch(Exception e)
+				{
+					LOG.ERROR("unlock_db failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
 		
 	}
 	
