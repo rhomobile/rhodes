@@ -13,6 +13,8 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = $config["env"]["paths"]["vcbuild"]
     $vcbuild = "vcbuild" if $vcbuild.nil?
+    $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
+    $cabwiz = "cabwiz" if $cabwiz.nil?
     $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
     $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
 
@@ -44,13 +46,10 @@ namespace "build" do
           extpath = rhoextpath
         end
 
-        outdir = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions")
-        mkdir_p outdir unless File.directory? outdir
-
         ENV['RHO_PLATFORM'] = 'wm'
         ENV['RHO_ROOT'] = ENV['PWD']
-        ENV['TARGET_TEMP_DIR'] = outdir
-        ENV['TEMP_FILES_DIR'] = File.join(outdir, ext)
+        ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
+        ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
         ENV['VCBUILD'] = $vcbuild
         ENV['SDK'] = $sdk
 
@@ -126,7 +125,7 @@ namespace "device" do
       end        
       
       args = ['rhodes.inf']
-      puts Jake.run($config["env"]["paths"]["cabwiz"] + "/cabwiz.exe",args)
+      puts Jake.run($cabwiz, args)
       unless $? == 0
         puts "Error running cabwiz"
         exit 1
