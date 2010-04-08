@@ -12,24 +12,20 @@
         <% if @msg %>
             <p style="color:#ff0000"><%= @msg %></p>
         <% end %>
-        <fieldset>
-            <div class="form_list">
-                <ul>
-                    <li>
-                        <span class="label">Login</span>
-                        <input type="text" name="login"/>
-                    </li>
+        <ul>
+            <li>
+                <span class="fieldLabel">Login</span>
+                <input type="text" name="login" <%= placeholder( "Login" )%> />
+            </li>
 
-                    <li>
-                        <span class="label">Password</span>
-                        <input type="password" name="password"/>
-                    </li>
-                </ul>
-            </div>
-            <button class="updateButton" type="submit">Login</button>
-        </fieldset>
+            <li>
+                <span class="fieldLabel">Password</span>
+                <input type="password" name="password" <%= placeholder( "Password" )%> />
+            </li>
+        </ul>
+        <button class="standardButton" type="submit">Login</button>
+        <div class="standardButton">
+            <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
+        </div>
     </form>
-    <div class="button">
-        <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
-    </div>
 </div>

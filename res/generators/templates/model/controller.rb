@@ -1,6 +1,8 @@
 require 'rho/rhocontroller'
+require 'helpers/browser_helper'
 
 class <%= class_name %>Controller < Rho::RhoController
+  include BrowserHelper
 
   #GET /<%= class_name %>
   def index
