@@ -108,6 +108,7 @@ public class NetRequest
 		try{
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
+			LOG.INFO("connection done");
 			
 			if ( oSession != null )
 			{
@@ -117,7 +118,7 @@ public class NetRequest
 					m_connection.setRequestProperty("Cookie", strSession );
 			}
 			
-			m_connection.setRequestProperty("Connection", "keep-alive");
+			//m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
 			if ( strBody != null && strBody.length() > 0 )
@@ -128,20 +129,23 @@ public class NetRequest
 					m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
 				writeHeaders(headers);
+				LOG.INFO("writeHeaders done");
 				m_connection.setRequestMethod(IHttpConnection.POST);
 				
 				os = m_connection.openOutputStream();
 				os.write(strBody.getBytes(), 0, strBody.length());
+				LOG.INFO("write body done");
 			}else
 			{
 				writeHeaders(headers);
 				m_connection.setRequestMethod(strMethod);
 			}
 			
-			is = m_connection.openInputStream();
 			code = m_connection.getResponseCode();
-			
 			LOG.INFO("getResponseCode : " + code);
+			
+			is = m_connection.openInputStream();
+			LOG.INFO("openInputStream done");
 			
 			if (code != IHttpConnection.HTTP_OK) 
 			{
