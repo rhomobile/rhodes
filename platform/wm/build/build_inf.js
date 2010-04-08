@@ -2,6 +2,8 @@ var fso,output_file;
 
 //TBD need to move sources and settings to a separate config files
 
+var stdout = WScript.StdOut;
+
 var settings = new Object();
 settings['wm6'] = ['Windows Mobile 6 Professional SDK (ARMV4I)','VersionMin=5.02','VersionMax=6.99'];
 
@@ -150,7 +152,39 @@ function fill_copyfiles_sections(es,f) {
 	}
 }
 
-function pinf(platform,es,name,vendor) {
+function expand_extensions(platform) {
+	var ret = new Array();
+	var folder = fso.GetFolder("..\\bin\\" + settings[platform][0] + "\\rhodes\\Release\\");
+	var fc = new Enumerator(folder.files);
+   	for (; !fc.atEnd(); fc.moveNext()) {
+   		var name = fc.item().Name;
+   		if (name.indexOf(".dll") != -1) {
+   			stdout.WriteLine("name: " + name);
+   			var f = new Object();
+   			f.name = name;
+			ret.push(f);
+		}
+   	}
+	return ret;
+}
+
+function fill_extensions_source_disk_files(exts) {
+	for (var i in exts) {
+		var line = "\"" + exts[i].name + "\"=1";
+		stdout.WriteLine("Add ext source disk file: " + line);
+		p(line);
+	}
+}
+
+function fill_extensions_files(exts) {
+	for (var i in exts) {
+		var line = "\"" + exts[i].name + "\",\"" + exts[i].name + "\",,0";
+		stdout.WriteLine("Add ext file: " + line);
+		p(line);
+	}
+}
+
+function pinf(platform,es,exts,name,vendor) {
 
 	p("[Version]");
 	p("Signature=\"$Windows NT$\"");
@@ -180,6 +214,7 @@ function pinf(platform,es,name,vendor) {
 	p("");
 	p("[SourceDisksFiles]");
 	p("\"rhodes.exe\"=1");
+	fill_extensions_source_disk_files(exts);
 	var f = get_source_disks_files(es);
 	p("");
 	p("[DestinationDirs]");
@@ -189,6 +224,7 @@ function pinf(platform,es,name,vendor) {
 	p("");
 	p("[CopyToInstallDir]");
 	p("\"rhodes.exe\",\"rhodes.exe\",,0");
+	fill_extensions_files(exts);
 	p("");
 	fill_copyfiles_sections(es,f);
 	p("");
@@ -211,7 +247,8 @@ function main() {
     sources['apps']= ["apps",args(4)+"/apps"];
 
 	var es = expand_sources(sources);
-	pinf(args(1),es,args(2),args(3));
+	var exts = expand_extensions(args(1));
+	pinf(args(1),es,exts,args(2),args(3));
 
 	output_file.Close();
 }
