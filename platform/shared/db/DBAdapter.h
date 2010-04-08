@@ -57,6 +57,8 @@ public:
     static CDBAdapter& getDBByHandle(sqlite3* db);
     static CDBAdapter& getDB(const char* szPartition);
 
+    boolean isTableExist(String strTableName);
+
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
         sqlite3_bind_int(st, nPos, val);
@@ -153,6 +155,8 @@ public:
         return executeStatement(res);
     }
 
+    DBResultPtr executeSQLReportNonUnique( const char* szSt, Vector<String>& arValues );
+
     template<typename T1, typename T2, typename T3, typename T4, typename T5>
     DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5 )
     {
@@ -199,6 +203,7 @@ public:
         return executeStatement(res);
     }
 
+    DBResultPtr executeSQL( const char* szSt, Vector<String>& arValues);
     DBResultPtr executeSQL( const char* szSt);
 
     void startTransaction();

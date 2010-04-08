@@ -65,6 +65,7 @@ class CSyncSource
     boolean m_bGetAtLeastOnePage;
     int m_nRefreshTime;
     int m_nProgressStep;
+    boolean m_bSchemaSource;
 
 public:
     int m_nErrCode;
@@ -132,6 +133,7 @@ public:
 
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
 
+    void processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, json::CJSONStructIterator& attrIter);//throws Exception
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();

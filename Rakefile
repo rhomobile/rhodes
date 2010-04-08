@@ -211,7 +211,13 @@ def common_bundle_start(startdir, dest)
         entry = extconf["entry"]
         extentries << entry unless entry.nil?
         libs = extconf["libraries"]
-        extlibs += libs if !libs.nil? and libs.is_a? Array
+        libs = [] unless libs.is_a? Array
+        if $config["platform"] == "wm"
+          libs.map! { |lib| lib + ".lib" }
+        else
+          libs.map! { |lib| "lib" + lib + ".a" }
+        end
+        extlibs += libs
       end
     end
 
@@ -228,6 +234,12 @@ def common_bundle_start(startdir, dest)
     File.open(exts, "w") do |f|
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
       f.puts "// Generated #{Time.now.to_s}"
+      if $config["platform"] == "wm"
+        # Add libraries through pragma
+        extlibs.each do |lib|
+          f.puts "#pragma comment(lib, \"#{lib}\")"
+        end
+      end
       extentries.each do |entry|
         f.puts "extern void #{entry}(void);"
       end

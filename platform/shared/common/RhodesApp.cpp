@@ -464,36 +464,30 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
     return CFilePath::join(m_strHomeUrl,strUrl);
 }
 
-void CRhodesApp::addViewMenuItem( const String& strLabel, const String& strLink )
+void CRhodesApp::addAppMenuItem( const String& strLabel, const String& strLink )
 {
     if ( strLabel.length() == 0 )
         return;
 
-    synchronized(m_mxViewMenuItems)
+    synchronized(m_mxAppMenu)
     {
-		CMenuItem item(strLabel, strLink);
-        m_hashViewMenuItems.addElement(item);
+		m_oAppMenu.addItem(strLabel, strLink);
         if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
             m_strAppBackUrl = canonicalizeRhoUrl(strLink);
     }
 }
 
-const Vector<CMenuItem>& CRhodesApp::getViewMenu (void)
-{
-	return m_hashViewMenuItems;
-}
-
 extern "C" void
 menu_iter(const char* szLabel, const char* szLink, void* pThis)
 {
-    ((CRhodesApp*)pThis)->addViewMenuItem(szLabel, szLink );
+	((CRhodesApp*)pThis)->addAppMenuItem(szLabel, szLink );
 }
 
-void CRhodesApp::setViewMenu(unsigned long valMenu)
+void CRhodesApp::setAppMenu(unsigned long valMenu)
 {
-    synchronized(m_mxViewMenuItems) 
+    synchronized(m_mxAppMenu) 
 	{
-        m_hashViewMenuItems.clear();
+		m_oAppMenu.removeAllItems();
         m_strAppBackUrl="";
     }
 
@@ -760,7 +754,7 @@ void rho_rhodesapp_callAppActiveCallback(int nActive)
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 {
-    RHODESAPP().setViewMenu(valMenu);
+    RHODESAPP().setAppMenu(valMenu);
 }
 
 const char* rho_rhodesapp_getappbackurl()
@@ -865,6 +859,13 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
     }
     dst[out++] = '\0';
     return out;
+}
+
+void rho_net_request(const char *url)
+{
+    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho::common::createClassFactory();
+    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
+    request->pullData(url, null);
 }
 
 int rho_unzip_file(const char* szZipPath)
