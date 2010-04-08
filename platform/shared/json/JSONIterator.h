@@ -70,6 +70,8 @@ public:
 
     String     getCurKey();
     CJSONEntry getCurValue();
+    String     getCurString();
+    
 };
 
 }
