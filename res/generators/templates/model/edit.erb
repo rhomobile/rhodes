@@ -14,19 +14,15 @@
           id="<%= name.downcase %>_edit_form"
           method="POST"
           action="<%%=url_for(:action => :update)%>">
-        <fieldset>
             <input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
-            <div class="form_list">
-                <ul>
-                    <% attributes.each do |attribute| %>
-                    <li>
-                        <span class="label"><%=humanize(attribute)%></span>
-                        <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/>
-                    </li>
-                    <% end %>
-                </ul>
-            </div>
+            <ul>
+                <% attributes.each do |attribute| %>
+                <li>
+                    <span class="fieldLabel"><%=humanize(attribute)%></span>
+                    <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>" <%%= placeholder( "<%=humanize(attribute)%>" )%> />
+                </li>
+                <% end %>
+            </ul>
             <button class="standardButton" type="submit">Update</button>
-        </fieldset>
     </form>
 </div>
