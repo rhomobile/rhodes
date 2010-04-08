@@ -296,7 +296,7 @@ namespace "build" do
         # class names which implements Persistable interface. See details here -
         # http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=11152
         mkdir_p vsrcdir + "/com/rho/file"
-        cp_r $builddir + "/../hsqldb/src/com/rho/file/PersistRAFileImpl.java", vsrcdir + "/com/rho/file"
+        cp_r $builddir + "/../rhodes/src/com/rho/file/PersistRAFileImpl.java", vsrcdir + "/com/rho/file"
         freplace( vsrcdir + "/com/rho/file/PersistRAFileImpl.java", /FileInfoWrapper/, $outfilebase + "_FileInfoWrapper" )
         freplace( vsrcdir + "/com/rho/file/PersistRAFileImpl.java", /PageWrapper/, $outfilebase + "_PageWrapper" )
 
