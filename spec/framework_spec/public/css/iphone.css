@@ -261,7 +261,6 @@ body > .panel {
     position: relative;
     min-height: 42px;
     border-bottom: 1px solid #999999;
-    -webkit-border-radius: 0;
     text-align: right;
 }
 
