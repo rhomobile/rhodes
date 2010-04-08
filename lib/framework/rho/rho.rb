@@ -152,17 +152,21 @@ module Rho
         uniq_sources.each do |source|
           db = get_src_db(source['name'])
           
-          if  source['schema'] && source['schema'][:columns] && !db.table_exist?(source['name'])
-            arCols = source['schema'][:columns]
-            arCols = arCols
-            strCols = ""
-            arCols.each do |col|
-                strCols += ',' if strCols.length() > 0
-                strCols += "'#{col}' varchar default NULL"
-            end
+          if  source['schema'] && !db.table_exist?(source['name'])
+          
+            strCreate = source['schema'][:sql]
+            if source['schema'][:columns]
+                arCols = source['schema'][:columns]
+                arCols = arCols
+                strCols = ""
+                arCols.each do |col|
+                    strCols += ',' if strCols.length() > 0
+                    strCols += "'#{col}' varchar default NULL"
+                end
 
-            strCols += ",object varchar(255) PRIMARY KEY"
-            strCreate = "CREATE TABLE '#{source['name']}' ( #{strCols} )"
+                strCols += ",object varchar(255) PRIMARY KEY"
+                strCreate = "CREATE TABLE '#{source['name']}' ( #{strCols} )"
+            end
             
             db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
             
