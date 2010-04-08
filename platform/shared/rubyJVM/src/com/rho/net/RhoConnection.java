@@ -505,7 +505,7 @@ public class RhoConnection implements IHttpConnection {
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
 
-		LOG.INFO("httpServeFile: " + strPath);
+		LOG.TRACE("httpServeFile: " + strPath);
 		if ( strContType.equals("application/javascript")){
 			responseData = RhoRuby.loadFile(strPath);
 			if ( responseData == null ){
@@ -701,7 +701,7 @@ public class RhoConnection implements IHttpConnection {
 		if (!requestProcessed) {
 			String strErr = "";
 			
-			LOG.INFO("processRequest: " + getURL() );
+			LOG.TRACE("processRequest: " + getURL() );
 			
 			String strContType = getContentType();
 			if ( this.method.equals("POST") || strContType.length() == 0 )
