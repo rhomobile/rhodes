@@ -1,0 +1,62 @@
+require 'fileutils'
+
+$stdout.sync = true
+
+def cmd_run(argv)
+  cmdline = argv.join(' ')
+  puts cmdline
+  IO.popen(argv.join(' ')) do |f|
+    while c = f.getc
+      putc c
+    end
+  end
+end
+
+namespace "build" do
+  task :config do
+    $rhoroot = ENV['RHO_ROOT']
+
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+
+    $vcbuild = ENV['VCBUILD']
+    raise "VCBUILD is not set" if $vcbuild.nil?
+    $sdk = ENV['SDK']
+    raise "SDK is not set" if $sdk.nil?
+  end
+
+  task :all => :config do
+    mkdir_p $tempdir unless File.exists? $tempdir
+    mkdir_p $targetdir unless File.exist? $targetdir
+
+    projects = []
+    projects << "zmtel/zmtel.vcproj"
+    projects << "rubyext/zmtel_ruby.vcproj"
+    projects.each do |proj|
+      args = []
+      args << $vcbuild
+      args << "/M4"
+      args << proj
+      args << "\"Release|#{$sdk}\""
+      cmd_run(args)
+      exit unless $? == 0
+
+      srcs = []
+      srcs << File.join($tempdir, "Release")
+      srcs << File.join("bin", $sdk, "rhodes", "Release")
+
+      srcs.each do |src|
+        Dir.glob(File.join(src, "**/*.lib")).each do |f|
+          cp_r f, $targetdir
+        end
+        Dir.glob(File.join(src, "**/*.dll")).each do |f|
+          cp_r f, $targetdir
+        end
+      end
+    end
+  end
+end
+
+task :default => "build:all"
