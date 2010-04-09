@@ -12,8 +12,6 @@ public class RhoClassFactory
 	
     public static SimpleFile createFile() throws Exception 
     {
-    	LOG.INFO_OUT("createFile");    	
-    	
         Class wrapperClass;
         try {
             wrapperClass = Class.forName("com.rho.file.Jsr75File");

@@ -134,25 +134,16 @@ namespace "build" do
 
       ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
 
-
+      puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
+      $stdout.flush
       $app_config["extensions"].each do |ext|
-        rhoextpath = "lib/extensions/" + ext + "/ext"
-        appextpath = $app_path + "/extensions/" + ext + "/ext"
-        extpath = ""
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          next unless File.executable? File.join(extpath, 'build')
 
-        puts appextpath
-        puts rhoextpath
-
-        if File.exists? appextpath
-          extpath = appextpath
-        elsif File.exists? rhoextpath
-          extpath = rhoextpath
+          puts Jake.run('./build', [], extpath)
+          exit 1 unless $? == 0
         end
-
-
-        puts Jake.run('./build', [], extpath) if File.executable? File.join(extpath, 'build')
-        exit 1 unless $? == 0
-        
       end
     end
     

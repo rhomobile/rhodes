@@ -29,6 +29,7 @@ public interface IDBResult {
 	public abstract String getUInt64ByIdx(int nCol);
 
 	public abstract RubyValue getRubyValueByIdx(int nCol);
+	public abstract boolean isNullByIdx(int nCol);
 	
 	public abstract RubyValue getRubyValue(String colname);
 	public abstract int getInt(String colname);
