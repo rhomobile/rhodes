@@ -317,4 +317,4 @@ VALUE rho_sys_has_network()
 	return rho_ruby_create_boolean(g_rho_has_network!=0);
 }
 
-}
+} //extern "C"
