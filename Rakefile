@@ -194,9 +194,8 @@ def common_bundle_start(startdir, dest)
 
   extpaths = []
 
-  customextpath = $app_config["paths"]["extensions"] if $app_config["paths"]
-  customextpath = $config["env"]["paths"]["extensions"] if customextpath.nil?
-  extpaths << customextpath unless customextpath.nil?
+  extpaths << $app_config["paths"]["extensions"] if $app_config["paths"] and $app_config["paths"]["extensions"]
+  extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
   extpaths << File.join($app_path, "extensions")
   extpaths << "lib/extensions"
   $app_config["extpaths"] = extpaths
