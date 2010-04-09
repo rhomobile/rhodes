@@ -356,26 +356,15 @@ namespace "build" do
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
 
       $app_config["extensions"].each do |ext|
-        ENV['TEMP_FILES_DIR'] = ENV["TARGET_TEMP_DIR"] + "/#{ext}"
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          next unless File.executable? File.join(extpath, 'build')
 
-        rhoextpath = "lib/extensions/" + ext + "/ext"
-        appextpath = $app_path + "/extensions/" + ext + "/ext"
-        extpath = ""
+          ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
 
-        puts appextpath
-        puts rhoextpath
-
-        if File.exists? appextpath
-          extpath = appextpath
-        elsif File.exists? rhoextpath
-          extpath = rhoextpath
+          puts Jake.run('./build', [], extpath)
+          exit 1 unless $? == 0
         end
-        
-     
-
-        puts Jake.run('./build', [], extpath) if File.executable? File.join(extpath, 'build')
-        exit 1 unless $? == 0
-        
       end
 
     end

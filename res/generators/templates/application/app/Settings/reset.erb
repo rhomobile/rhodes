@@ -7,10 +7,10 @@
 <div id="content">
     <div id="reset">
           <h3>Are you sure (Resetting removes all objects from your device)?</h3>
-          <div class="button">
+          <div class="standardButton">
             <%= link_to "Confirm", {:action => :do_reset}, "target=\"_self\""%>
           </div>
-          <div class="button">
+          <div class="standardButton">
             <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
           </div>
     </div>

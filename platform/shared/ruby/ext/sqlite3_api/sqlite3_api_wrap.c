@@ -17,6 +17,7 @@ extern int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned lo
 extern void* rho_db_get_handle(void* pDB);
 extern void rho_db_lock(void* pDB);
 extern void rho_db_unlock(void* pDB);
+extern int  rho_db_is_table_exist(void* pDB, const char* szTableName);
 
 static VALUE db_allocate(VALUE klass)
 {
@@ -166,6 +167,23 @@ static VALUE db_destroy_tables(int argc, VALUE *argv, VALUE self)
     return INT2NUM(rc);
 }
 
+static VALUE db_is_table_exist(int argc, VALUE *argv, VALUE self)
+{
+	void **ppDB = NULL;		
+    int rc = 0;
+    const char * szTableName = 0;
+
+	if ((argc < 1) || (argc > 1))
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc);
+
+	Data_Get_Struct(self, void *, ppDB);
+    szTableName = RSTRING_PTR(argv[0]);
+
+    rc = rho_db_is_table_exist(*ppDB, szTableName);
+
+    return rc ? Qtrue : Qfalse;
+}
+
 static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 {
 	sqlite3 * db = NULL;
@@ -292,5 +310,6 @@ void Init_sqlite3_api(void)
     rb_define_method(mDatabase, "lock_db", db_lock, -1);	
     rb_define_method(mDatabase, "unlock_db", db_unlock, -1);	
     rb_define_method(mDatabase, "destroy_tables", db_destroy_tables, -1);	
+    rb_define_method(mDatabase, "table_exist?", db_is_table_exist, -1);	
 }
 
