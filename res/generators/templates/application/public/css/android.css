@@ -2,7 +2,7 @@
 body {
     margin: 0;
     height: 100%;
-    width: 100%;
+    width: inherit;
     font-family: "Droid",sans-serif;
     background: white;
     color: black;
@@ -182,16 +182,16 @@ div#content h4 {
 }
 
 div#content h4.groupTitle{
-	width:100%;
+	width:inherit;
 	margin: 0;
-	padding: 8px;
+	padding: 8px 0 8px 8px;
 	font-size:10px;
 	color:#ffffff;
 	background-color:#000000;
 }
 
 
-div#content form span.fieldLabel {
+div#content form .fieldLabel {
     float: left;
     display:block;
     color: black;
