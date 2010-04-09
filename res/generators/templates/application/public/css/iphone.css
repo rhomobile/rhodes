@@ -194,9 +194,17 @@ div#content ul li span.title {
 }
 
 div#content ul li a span.disclosure_indicator {
-    background: url('/public/images/iphone/listArrow.png') no-repeat center right;
+    background: url('/public/images/iphone/disclosure.png') no-repeat center right;
     height: 100%;
-    width: 25px;
+    width: 35px;
+    float: right;
+    margin-right: 10px;
+}
+
+div#content ul li a span.detail_disclosure {
+    background: url('/public/images/iphone/disclosure_detail.png') no-repeat center right;
+    height: 100%;
+    width: 35px;
     float: right;
     margin-right: 10px;
 }
@@ -309,7 +317,7 @@ div#content form input[type="password"] {
 }
 
 div#content form select {
-  	background: url('/public/images/listArrowDown.png') no-repeat right;
+  	background: url('/public/images/iphone/select.png') no-repeat right;
     border: 0px;
 		width:100%;
 }
