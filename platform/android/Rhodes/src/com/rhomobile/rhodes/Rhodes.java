@@ -544,12 +544,7 @@ public class Rhodes extends Activity {
 	}
 	
 	private void goBack() {
-		String backUrl = getAppBackUrl();
-		int activeTab = mainView.activeTab();
-		if (backUrl == null || backUrl.length() == 0)
-			mainView.back(activeTab);
-		else
-			mainView.navigate(backUrl, activeTab);
+		mainView.back(mainView.activeTab());
 	}
 	
 	private void goForward() {
