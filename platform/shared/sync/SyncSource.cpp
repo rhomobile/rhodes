@@ -45,6 +45,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;
+    m_bSchemaSource = db.isTableExist(m_strName);
 }
 
 CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_dbAdapter(db)
@@ -72,6 +73,8 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
         m_token = 0;
         m_bTokenFromDB = true;
     }
+
+    m_bSchemaSource = db.isTableExist(m_strName);
 }
 
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
@@ -451,7 +454,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
                 String strCmd = iterCmds.getCurKey();
                 if ( strCmd.compare("metadata") == 0 )
                 {
-                    String strMetadata = iterCmds.getCurValue().getString();
+                    String strMetadata = iterCmds.getCurString();
                     getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
                 }else if ( strCmd.compare("links") == 0 || strCmd.compare("delete") == 0 || strCmd.compare("insert") == 0)
                 {
@@ -461,12 +464,17 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
                     {
                         String strObject = objIter.getCurKey();
                         CJSONStructIterator attrIter( objIter.getCurValue() );
-                        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+                        if ( m_bSchemaSource )
+                            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
+                        else
                         {
-                            String strAttrib = attrIter.getCurKey();
-                            String strValue = attrIter.getCurValue().getString();
+                            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+                            {
+                                String strAttrib = attrIter.getCurKey();
+                                String strValue = attrIter.getCurString();
 
-                            processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+                                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+                            }
                         }
 
                         int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
@@ -489,6 +497,135 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
     if ( getCurPageCount() > 0 )
         getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 	PROF_STOP("Data1");
+}
+
+void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, CJSONStructIterator& attrIter)//throws Exception
+{
+    if ( strCmd.compare("insert") == 0 )
+    {
+        Vector<String> vecValues;
+        String strCols = "", strQuest = "", strSet = "";
+        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+        {
+            if ( strCols.length() > 0 )
+                strCols += ",";
+            if ( strQuest.length() > 0)
+                strQuest += ",";
+            if ( strSet.length() > 0)
+                strSet += ",";
+
+            strCols += attrIter.getCurKey();
+            strQuest += "?";
+            strSet += attrIter.getCurKey() + "=?";
+            vecValues.addElement(attrIter.getCurString());
+        }
+        vecValues.addElement(strObject);
+        strCols += ",object";
+        strQuest += ",?";
+
+        String strSqlInsert = "INSERT INTO ";
+        strSqlInsert += getName() + " (";
+        strSqlInsert += strCols + ") VALUES(" + strQuest + ")";
+
+        DBResult(resInsert, getDB().executeSQLReportNonUnique(strSqlInsert.c_str(), vecValues ) );
+        if ( resInsert.isNonUnique() )
+        {
+            String strSqlUpdate = "UPDATE ";
+            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
+            getDB().executeSQL(strSqlUpdate.c_str(), vecValues);
+
+            // oo conflicts
+            attrIter.reset();
+            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+            {
+                String strAttrib = attrIter.getCurKey();
+                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, getID() );
+            }
+            //
+
+        }
+
+        getNotify().onObjectChanged(getID(),strObject, CSyncNotify::enUpdate);
+        m_nInserted++;
+    }else if (strCmd.compare("delete") == 0)
+    {
+        String strSet = "";
+        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+        {
+            if ( strSet.length() > 0 )
+                strSet += ",";
+
+            strSet += attrIter.getCurKey() + "=NULL";
+        }
+
+        String strSqlUpdate = "UPDATE ";
+        strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
+        getDB().executeSQL(strSqlUpdate.c_str(), strObject);
+
+        getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
+        // oo conflicts
+        attrIter.reset();
+        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+        {
+            String strAttrib = attrIter.getCurKey();
+            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, strAttrib, getID() );
+        }
+        //
+
+        m_nDeleted++;
+    }else if ( strCmd.compare("links") == 0 )
+    {
+        String strValue = attrIter.getCurString();
+
+        String strSelect = "SELECT * FROM ";
+        strSelect += getName() + " WHERE object=?";
+        boolean bOldExist = false;
+        {
+            DBResult( res , getDB().executeSQL(strSelect.c_str(), strObject) );
+            bOldExist = !res.isEnd();
+        }
+
+        if (bOldExist)
+        {
+            DBResult( res , getDB().executeSQL(strSelect.c_str(), strValue) );
+
+            String strSet = "";
+            Vector<String> vecValues;
+            if ( !res.isEnd() )
+            {
+                for ( int i = 0; i < res.getColCount(); i++ )
+                {
+                    if ( res.isNullByIdx(i) || res.getColName(i).compare("object") == 0)
+                        continue;
+
+                    if ( strSet.length() > 0 )
+                        strSet += ",";
+
+                    strSet += res.getColName(i) + "=?";
+                    vecValues.addElement(res.getStringByIdx(i));
+                }
+
+                String strDelete = "DELETE FROM ";
+                strDelete += getName() + " WHERE object=?";
+                getDB().executeSQL(strDelete.c_str(), strValue);
+            }
+
+            if ( strSet.length() > 0 )
+                strSet += ",";
+            strSet += "object=?";
+
+            vecValues.addElement(strValue);
+            vecValues.addElement(strObject);
+
+            String strSqlUpdate = "UPDATE ";
+            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
+            getDB().executeSQL(strSqlUpdate.c_str(), vecValues);
+        }
+
+        getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", strValue, strObject, getID() );
+        getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enCreate);
+    }
+
 }
 
 void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttrib, const String& strValue)//throws Exception

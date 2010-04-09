@@ -306,6 +306,14 @@ static boolean destroyTableName(String tableName, const rho::Vector<rho::String>
     return arIncludeTables.size()==0;
 }
 
+boolean CDBAdapter::isTableExist(String strTableName)
+{
+    Vector<String> vecTables;
+
+    DBResult( res , executeSQL( "SELECT name FROM sqlite_master WHERE type='table' AND name=?", strTableName.c_str() ) );
+    return !res.isEnd();
+}
+
 void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
 {
     getAttrMgr().reset(*this);
@@ -515,6 +523,31 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
     return res;
 }
 
+DBResultPtr CDBAdapter::executeSQLReportNonUnique( const char* szSt, Vector<String>& arValues )
+{
+    DBResultPtr res = prepareStatement(szSt);
+    if ( res->getStatement() == null )
+        return res;
+
+    for (int i = 0; i < arValues.size(); i++ )
+        bind(res->getStatement(), i+1, arValues.elementAt(i));
+
+    res->setReportNonUnique(true);
+    return executeStatement(res);
+}
+
+DBResultPtr CDBAdapter::executeSQL( const char* szSt, Vector<String>& arValues)
+{
+    DBResultPtr res = prepareStatement(szSt);
+    if ( res->getStatement() == null )
+        return res;
+
+    for (int i = 0; i < arValues.size(); i++ )
+        bind(res->getStatement(), i+1, arValues.elementAt(i));
+
+    return executeStatement(res);
+}
+
 DBResultPtr CDBAdapter::executeSQL( const char* szSt)
 {
     DBResultPtr res = prepareStatement(szSt);
@@ -710,6 +743,12 @@ void rho_db_unlock(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     db.Unlock();
+}
+
+int rho_db_is_table_exist(void* pDB, const char* szTableName)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    return db.isTableExist(szTableName) ? 1 : 0;
 }
 
 }

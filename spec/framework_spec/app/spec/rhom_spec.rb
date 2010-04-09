@@ -39,11 +39,11 @@ describe "Rhom" do
 #    verify_reset
 #  end
   
-  it "should call select_from_table with select array" do
-    sel_arr = ['name','industry']
-    @res = ::Rho::RHO.get_user_db().select_from_table('object_values', '*', {'object' => '44e804f2-4933-4e20-271c-48fcecd9450d'}, nil, sel_arr)
-    @res.length.should == 2
-  end
+#  it "should call select_from_table with select array" do
+#    sel_arr = ['name','industry']
+#    @res = ::Rho::RHO.get_user_db().select_from_table(Account.get_values_table_name(), '*', {'object' => '44e804f2-4933-4e20-271c-48fcecd9450d'}, nil, sel_arr)
+#    @res.length.should == 2
+#  end
   
   def verify_reset
     ::Rho::RHO.get_user_db().select_from_table('object_values','*').length.should == 0

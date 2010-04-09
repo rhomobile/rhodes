@@ -22,8 +22,8 @@ module Rho
       end
       
       # Initialize application and sources
-      init_sources()
       @@rho_framework = self
+      init_sources()
     end
 
     attr_reader :db_partitions
@@ -138,12 +138,45 @@ module Rho
         
         @db_partitions.each_key do |partition|
             db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
-            init_db_sources(db, uniq_sources)
+            init_db_sources(db, uniq_sources, partition)
             @db_partitions[partition] = db
+        end
+        
+        ::Rho::RHO.init_schema_sources
+    end
+    
+    def self.init_schema_sources
+        uniq_sources = Rho::RhoConfig::sources.values
+        puts 'init_schema_sources'
+        
+        uniq_sources.each do |source|
+          db = get_src_db(source['name'])
+          
+          if  source['schema'] && !db.table_exist?(source['name'])
+          
+            strCreate = source['schema'][:sql]
+            if source['schema'][:columns]
+                arCols = source['schema'][:columns]
+                arCols = arCols
+                strCols = ""
+                arCols.each do |col|
+                    strCols += ',' if strCols.length() > 0
+                    strCols += "'#{col}' varchar default NULL"
+                end
+
+                strCols += ",object varchar(255) PRIMARY KEY"
+                strCreate = "CREATE TABLE '#{source['name']}' ( #{strCols} )"
+            end
+            
+            db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
+            
+            db.execute_sql(strCreate)
+          end
+          
         end
     end
     
-    def init_db_sources(db, uniq_sources)
+    def init_db_sources(db, uniq_sources, db_partition)
         uniq_sources.each do |source|
           name = source['name']
           priority = source['priority']
@@ -163,6 +196,7 @@ module Rho
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition})
           end
+          
         end
     end
     
