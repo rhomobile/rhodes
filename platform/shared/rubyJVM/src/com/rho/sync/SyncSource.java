@@ -74,6 +74,7 @@ class SyncSource
     
     int m_nRefreshTime = 0;
     int m_nProgressStep = -1;
+    boolean m_bSchemaSource;
     
     Integer getID() { return m_nID; }
     String getName() { return m_strName; }
@@ -109,7 +110,7 @@ class SyncSource
 	void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
 	DBAdapter getDB(){ return m_dbAdapter; }
 
-    SyncSource(SyncEngine syncEngine, DBAdapter db)
+    SyncSource(SyncEngine syncEngine, DBAdapter db)throws DBException
     {
     	m_syncEngine = syncEngine;
     	m_dbAdapter = db;
@@ -126,6 +127,7 @@ class SyncSource
 
         m_nErrCode = RhoRuby.ERR_NONE;
         m_bIsSearch = false;
+        m_bSchemaSource = db.isTableExist(m_strName);
     }
 	
     SyncSource(int id, String name, String strSyncType, DBAdapter db, SyncEngine syncEngine )throws DBException
@@ -154,7 +156,9 @@ class SyncSource
         {
         	m_token = 0;
             m_bTokenFromDB = true;
-        }        
+        }
+        
+        m_bSchemaSource = db.isTableExist(m_strName);        
     }
 	
 	void sync() throws Exception
@@ -553,7 +557,7 @@ class SyncSource
 	                String strCmd = iterCmds.getCurKey();
 	                if ( strCmd.compareTo("metadata") == 0 )
                     {
-                        String strMetadata = iterCmds.getCurValue().getString();
+                        String strMetadata = iterCmds.getCurString();
                         getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
                     }else if ( strCmd.compareTo("links") == 0 || strCmd.compareTo("delete") == 0 || strCmd.compareTo("insert") == 0)
 	                {
@@ -563,12 +567,18 @@ class SyncSource
 	                    {
 	                        String strObject = objIter.getCurKey();
 	                        JSONStructIterator attrIter = new JSONStructIterator( objIter.getCurValue() );
-	                        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	                        
+	                        if ( m_bSchemaSource )
+	                            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
+	                        else
 	                        {
-	                            String strAttrib = attrIter.getCurKey();
-	                            String strValue = attrIter.getCurString();
+	                            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	                            {
+	                                String strAttrib = attrIter.getCurKey();
+	                                String strValue = attrIter.getCurString();
 
-	                            processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+	                                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+	                            }
 	                        }
 
 	                        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
@@ -591,6 +601,135 @@ class SyncSource
 	    if ( getCurPageCount() > 0 )
 	        getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 		PROF.STOP("Data1");
+	}
+	
+	void processServerCmd_Ver3_Schema(String strCmd, String strObject, JSONStructIterator attrIter)throws Exception
+	{
+	    if ( strCmd.compareTo("insert") == 0 )
+	    {
+	        Vector/*<String>*/ vecValues = new Vector();
+	        String strCols = "", strQuest = "", strSet = "";
+	        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	        {
+	            if ( strCols.length() > 0 )
+	                strCols += ",";
+	            if ( strQuest.length() > 0)
+	                strQuest += ",";
+	            if ( strSet.length() > 0)
+	                strSet += ",";
+
+	            strCols += attrIter.getCurKey();
+	            strQuest += "?";
+	            strSet += attrIter.getCurKey() + "=?";
+	            vecValues.addElement(attrIter.getCurString());
+	        }
+	        vecValues.addElement(strObject);
+	        strCols += ",object";
+	        strQuest += ",?";
+
+	        String strSqlInsert = "INSERT INTO ";
+	        strSqlInsert += getName() + " (";
+	        strSqlInsert += strCols + ") VALUES(" + strQuest + ")";
+
+	        IDBResult resInsert = getDB().executeSQLReportNonUnique(strSqlInsert, vecValues );
+	        if ( resInsert.isNonUnique() )
+	        {
+	            String strSqlUpdate = "UPDATE ";
+	            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
+	            getDB().executeSQL(strSqlUpdate, vecValues);
+
+	            // oo conflicts
+	            attrIter.reset();
+	            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	            {
+	                String strAttrib = attrIter.getCurKey();
+	                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", strObject, strAttrib, getID() );
+	            }
+	            //
+
+	        }
+
+	        getNotify().onObjectChanged(getID(),strObject, SyncNotify.enUpdate);
+	        m_nInserted++;
+	    }else if (strCmd.compareTo("delete") == 0)
+	    {
+	        String strSet = "";
+	        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	        {
+	            if ( strSet.length() > 0 )
+	                strSet += ",";
+
+	            strSet += attrIter.getCurKey() + "=NULL";
+	        }
+
+	        String strSqlUpdate = "UPDATE ";
+	        strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
+	        getDB().executeSQL(strSqlUpdate, strObject);
+
+	        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enDelete);
+	        // oo conflicts
+	        attrIter.reset();
+	        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	        {
+	            String strAttrib = attrIter.getCurKey();
+	            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, strAttrib, getID() );
+	        }
+	        //
+
+	        m_nDeleted++;
+	    }else if ( strCmd.compareTo("links") == 0 )
+	    {
+	        String strValue = attrIter.getCurString();
+
+	        String strSelect = "SELECT * FROM ";
+	        strSelect += getName() + " WHERE object=?";
+	        boolean bOldExist = false;
+	        {
+	            IDBResult res = getDB().executeSQL(strSelect, strObject);
+	            bOldExist = !res.isEnd();
+	        }
+
+	        if (bOldExist)
+	        {
+	            IDBResult res = getDB().executeSQL(strSelect, strValue);
+
+	            String strSet = "";
+	            Vector/*<String>*/ vecValues = new Vector();
+	            if ( !res.isEnd() )
+	            {
+	                for ( int i = 0; i < res.getColCount(); i++ )
+	                {
+	                    if ( res.isNullByIdx(i) || res.getColName(i).compareTo("object") == 0)
+	                        continue;
+
+	                    if ( strSet.length() > 0 )
+	                        strSet += ",";
+
+	                    strSet += res.getColName(i) + "=?";
+	                    vecValues.addElement(res.getStringByIdx(i));
+	                }
+
+	                String strDelete = "DELETE FROM ";
+	                strDelete += getName() + " WHERE object=?";
+	                getDB().executeSQL(strDelete, strValue);
+	            }
+
+	            if ( strSet.length() > 0 )
+	                strSet += ",";
+	            strSet += "object=?";
+
+	            vecValues.addElement(strValue);
+	            vecValues.addElement(strObject);
+
+	            String strSqlUpdate = "UPDATE ";
+	            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
+	            getDB().executeSQL(strSqlUpdate, vecValues);
+	        }
+
+	        getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", strValue, strObject, getID() );
+	        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enCreate);
+	    }
+
 	}
 	
 	void processServerCmd_Ver3(String strCmd, String strObject, String strAttrib, String strValue)throws Exception

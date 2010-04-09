@@ -154,6 +154,11 @@ CJSONEntry CJSONStructIterator::getCurValue()
         ( struct json_object *) m_curEntry->v );
 }
 
+String CJSONStructIterator::getCurString()
+{
+    return getCurValue().getString();
+}
+
 /////////////////////////////////////////////////////////////////////
 //CJSONEntry
 
