@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'fileutils'
+require 'yaml'
 include FileUtils
 puts File.dirname(__FILE__)
 
