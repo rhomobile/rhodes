@@ -32,28 +32,20 @@ namespace "build" do
   namespace "wm" do
     task :extensions => "config:wm" do
       $app_config["extensions"].each do |ext|
-        appextpath = File.join($app_path, "extensions", ext, "ext")
-        rhoextpath = File.join("lib/extensions", ext, "ext")
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          next unless File.exists? File.join(extpath, "build.bat")
 
-        puts appextpath
-        puts rhoextpath
+          ENV['RHO_PLATFORM'] = 'wm'
+          ENV['RHO_ROOT'] = ENV['PWD']
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
+          ENV['VCBUILD'] = $vcbuild
+          ENV['SDK'] = $sdk
 
-        extpath = ""
-
-        if File.exists? appextpath
-          extpath = appextpath
-        elsif File.exists? rhoextpath
-          extpath = rhoextpath
+          puts Jake.run("build.bat", [], extpath)
+          break
         end
-
-        ENV['RHO_PLATFORM'] = 'wm'
-        ENV['RHO_ROOT'] = ENV['PWD']
-        ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
-        ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
-        ENV['VCBUILD'] = $vcbuild
-        ENV['SDK'] = $sdk
-
-        puts Jake.run("build.bat", [], extpath) if File.exists? File.join(extpath, "build.bat")
       end
     end
 
