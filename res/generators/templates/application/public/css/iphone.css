@@ -263,7 +263,7 @@ div#content form ul li:last-child {
     border:none;
 }
 
-div#content form ul li span.fieldLabel {
+div#content form ul li label.fieldLabel {
 	display:none;
 }
 
@@ -323,6 +323,7 @@ div#content form select {
 }
 
 div#content form textarea {
+  	-webkit-appearance: none;
     border: none;
 		font-size: medium;
 		width:280px;
