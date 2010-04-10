@@ -1,7 +1,7 @@
 /* Common CSS */
 
 div#content {
-    width: 100%;
+    width: inherit;
     height: 100%;
 }
 
