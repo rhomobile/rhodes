@@ -161,6 +161,13 @@ static void callback_activateapp(void *arg, String const &strQuery)
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
+static void callback_loadserversources(void *arg, String const &strQuery)
+{
+    rho_ruby_loadserversources(strQuery.c_str());
+    String strMsg;
+    rho_http_sendresponse(arg, strMsg.c_str());
+}
+
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
     m_httpServer->pause(!bActive);
@@ -299,6 +306,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);
+    m_httpServer->register_uri("/system/loadserversources", callback_loadserversources);
 }
 
 const char* CRhodesApp::getFreeListeningPort()
