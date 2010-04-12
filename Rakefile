@@ -22,7 +22,6 @@ load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
 
-load 'lib/build/tasks/rhosync.rake'
 def get_dir_hash(dir, init = nil)
   hash = init
   hash = Digest::SHA2.new if hash.nil?

@@ -66,6 +66,7 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = 'wm'
+          ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
