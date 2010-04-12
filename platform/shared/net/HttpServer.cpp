@@ -875,7 +875,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     callback_t callback = registered(uri);
     if (callback) {
         RAWTRACE1("Uri %s is registered callback, so handle it appropriately", uri.c_str());
-        callback(this, query);
+        callback(this, query.length() ? query : body);
         return true;
     }
     

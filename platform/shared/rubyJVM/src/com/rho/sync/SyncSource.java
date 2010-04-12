@@ -559,6 +559,10 @@ class SyncSource
                     {
                         String strMetadata = iterCmds.getCurString();
                         getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
+                    }else if ( strCmd.compareTo("server_sources") == 0 )
+                    {
+	                    String strData = iterCmds.getCurString();
+	                    getSync().processServerSources(strData);
                     }else if ( strCmd.compareTo("links") == 0 || strCmd.compareTo("delete") == 0 || strCmd.compareTo("insert") == 0)
 	                {
 	                    JSONStructIterator objIter = new JSONStructIterator(iterCmds.getCurValue());
