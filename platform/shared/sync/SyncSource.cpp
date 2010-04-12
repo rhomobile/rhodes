@@ -456,6 +456,10 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
                 {
                     String strMetadata = iterCmds.getCurString();
                     getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
+                }else if ( strCmd.compare("server_sources") == 0 )
+                {
+                    String strData = iterCmds.getCurString();
+                    getSync().processServerSources(strData);
                 }else if ( strCmd.compare("links") == 0 || strCmd.compare("delete") == 0 || strCmd.compare("insert") == 0)
                 {
                     CJSONStructIterator objIter(iterCmds.getCurValue());
