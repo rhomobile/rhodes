@@ -146,6 +146,8 @@ int _open(const char *path, int oflag, va_list arg)
 
         case _O_RDONLY:         /* read access */
                 fileaccess = GENERIC_READ;
+                fileshare = FILE_SHARE_READ;
+
                 break;
         case _O_WRONLY:         /* write access */
                 /* giving it read access as well
