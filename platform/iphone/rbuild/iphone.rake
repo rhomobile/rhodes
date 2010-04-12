@@ -57,8 +57,7 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
 
     $homedir = `echo ~`.to_s.strip
-    $simapp="#{$homedir}/Library/Application Support/iPhone Simulator/User/Applications"
-    $simlink="#{$homedir}/Library/Application Support/iPhone Simulator/User/Library/Preferences"
+    $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
     $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
@@ -189,37 +188,46 @@ namespace "run" do
      
      rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
 
-     Find.find($simapp) do |path| 
+  
+     Find.find($simdir) do |path|
        if File.basename(path) == "rhorunner.app"
          $guid = File.basename(File.dirname(path))
        end
      end
-    
-     $simrhodes = File.join($simapp,$guid)
-   
-     mkdir_p File.join($simrhodes,"Documents")
-     mkdir_p File.join($simrhodes,"Library","Preferences")
+
+     Dir.glob($simdir + '*').each do |sdk|
+       simapp = sdk + "/Applications"
+       simlink = sdk + "/Library/Preferences"
+
+       simrhodes = File.join(simapp,$guid)
+
+       mkdir_p File.join(simrhodes,"Documents")
+       mkdir_p File.join(simrhodes,"Library","Preferences")
+
+       `cp -R -p "#{rhorunner}" "#{simrhodes}"`
+       `ln -f -s "#{simlink}/com.apple.PeoplePicker.plist" "#{simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
+       `ln -f -s "#{simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
+
+       `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
+       rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+
+
+       simpublic = simapp + "/" + $guid + "/Documents/apps/public"
+       apppublic = $app_path + "/sim-public-#{File.basename(sdk)}"
+
+       apprholog = $app_path + "/rholog-#{File.basename(sdk)}.txt"
+       rm_f apprholog
+       rm_f apppublic
+       `ln -f -s "#{simpublic}" "#{apppublic}"`
+       `ln -f -s "#{rholog}" "#{apprholog}"`
+       `echo > "#{rholog}"`
+       f = File.new("#{simapp}/#{$guid}.sb","w")
+       f << "(version 1)\n(debug deny)\n(allow default)\n"
+       f.close
+
+
+     end
      
-     puts `cp -R -p "#{rhorunner}" "#{$simrhodes}"`
-     puts `ln -f -s "#{$simlink}/com.apple.PeoplePicker.plist" "#{$simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
-     puts `ln -f -s "#{$simlink}/.GlobalPreferences.plist" "#{$simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
-
-     puts `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
-     rholog = $simapp + "/" + $guid + "/Documents/RhoLog.txt"
-
-
-     simpublic = $simapp + "/" + $guid + "/Documents/apps/public"
-     apppublic = $app_path + "/sim-public"
-
-     apprholog = $app_path + "/rholog.txt"
-     rm_f apprholog
-     rm_f apppublic
-     puts `ln -f -s "#{simpublic}" "#{apppublic}"`
-     puts `ln -f -s "#{rholog}" "#{apprholog}"`
-     puts `echo > "#{rholog}"`
-     f = File.new("#{$simapp}/#{$guid}.sb","w")
-     f << "(version 1)\n(debug deny)\n(allow default)\n"
-     f.close
      
   end
 
