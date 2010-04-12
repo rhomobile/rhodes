@@ -1,10 +1,12 @@
-    require 'Find'
+    require 'find'
     require 'fileutils'
     include FileUtils
 
     chdir File.dirname(__FILE__)
 
     $homedir = `echo ~`.to_s.strip
+    $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
+
     $simapp="#{$homedir}/Library/Application Support/iPhone Simulator/User/Applications"
     $simlink="#{$homedir}/Library/Application Support/iPhone Simulator/User/Library/Preferences"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
@@ -14,26 +16,31 @@
      `killall "iPhone Simulator"`
 
 
-     Find.find($simapp) do |path|
+     Find.find($simdir) do |path|
        if File.basename(path) == "rhorunner.app"
          $guid = File.basename(File.dirname(path))
        end
      end
 
-     simrhodes = File.join($simapp,$guid)
-     rm_rf simrhodes
+    Dir.glob($simdir + '*').each do |sdk|
+       simapp = sdk + "/Applications"
+       simlink = sdk + "/Library/Preferences"
 
-     mkdir_p File.join(simrhodes,"Documents")
-     mkdir_p File.join(simrhodes,"Library","Preferences")
+       simrhodes = File.join(simapp,$guid)
+       rm_rf simrhodes
 
-     puts `cp -R -p "rhorunner.app" "#{simrhodes}"`
-     puts `ln -f -s "#{$simlink}/com.apple.PeoplePicker.plist" "#{simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
-     puts `ln -f -s "#{$simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
+       mkdir_p File.join(simrhodes,"Documents")
+       mkdir_p File.join(simrhodes,"Library","Preferences")
 
-     puts `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
+       puts `cp -R -p "rhorunner.app" "#{simrhodes}"`
+       puts `ln -f -s "#{simlink}/com.apple.PeoplePicker.plist" "#{simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
+       puts `ln -f -s "#{simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
+ 
+       puts `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
 
-     f = File.new("#{$simapp}/#{$guid}.sb","w")
-     f << "(version 1)\n(debug deny)\n(allow default)\n"
-     f.close
-
+       f = File.new("#{simapp}/#{$guid}.sb","w")
+       f << "(version 1)\n(debug deny)\n(allow default)\n"
+       f.close
+     end
      system("open \"#{$sim}/iPhone Simulator.app\"")
+
