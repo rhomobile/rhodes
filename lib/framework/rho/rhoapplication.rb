@@ -39,6 +39,15 @@ module Rho
     
     def on_activate_app
     end
+
+    # works for schema sources    
+    def on_migrate_source(old_version, new_src)
+        puts "on_migrate_source; old_version :#{old_version}; new_src : #{new_src}"
+        db = ::Rho::RHO.get_src_db(new_src['name'])
+        if new_src['schema']
+            db.delete_table(new_src['name'])
+        end    
+    end
     
     def set_menu(menu=nil,back_action=nil)
       disp_menu = menu ? menu.dup : @default_menu.dup

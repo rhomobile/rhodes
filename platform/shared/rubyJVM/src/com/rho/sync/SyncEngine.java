@@ -453,6 +453,15 @@ public class SyncEngine implements NetRequest.IRhoSession
 		return clientID;
 	}
 
+	void processServerSources(String strSources)throws Exception
+	{
+	    if ( strSources.length() > 0 )
+	    {
+	        NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
+	        loadAllSources();
+	    }
+	}
+	
 	boolean resetClientIDByNet(String strClientID)throws Exception
 	{
         String strBody = "";
@@ -461,13 +470,23 @@ public class SyncEngine implements NetRequest.IRhoSession
 //            strBody += ClientRegister.getInstance().getRegisterBody();
 
 	    NetResponse resp = getNet().pullData(getProtocol().getClientResetUrl(strClientID), this);
+/*	    
+	    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","+
+	    	    "\"schema_version\":\"7.0\",\"schema\":{"+
+	    	    "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"+
+	    	    "}}]}"); 
+*/	    				
 	    
 	    if ( !resp.isOK() )
 	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+	    else
+    	{
+    		processServerSources(resp.getCharData());
+    	}
 	    
 	    return resp.isOK();
 	}
-	
+
 	String requestClientIDByNet()throws Exception
 	{
         String strBody = "";
@@ -479,6 +498,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if ( resp.isOK() && resp.getCharData() != null )
 	    {
 	    	String szData = resp.getCharData();
+	    	processServerSources(szData);
+	    	
 	        JSONEntry oJsonEntry = new JSONEntry(szData);
 	
 	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
@@ -675,7 +696,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 		try {
 		    NetResponse resp = null;
-			
+		    
 		    try{
 				
 			    resp = getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this );

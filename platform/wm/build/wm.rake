@@ -1,4 +1,33 @@
 #
+
+def sign (cabfile)	
+	puts "Singing .cab file"
+	
+	cabsigntool = $cabwiz[0, $cabwiz.index("CabWiz")] + "Security\\CabSignTool\\cabsigntool" if $config["env"]["paths"]["cabwiz"]
+    cabsigntool = "cabsigntool" if cabsigntool.nil?
+	
+	signature = $config["build"]["wmsign"]
+	cab_in  = cabfile
+	cab_out = cabfile
+	
+	#TODO: need better solution, maybe just let know users on wiki to add bin dir of MS SDKs to PATH variable
+	#Assuming that MS SDKs intalled to default path on c: or d: disk
+	if Dir.exists?("C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
+		ENV['PATH'] = ENV['PATH'] + "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
+	end
+	if Dir.exists?("D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
+		ENV['PATH'] = ENV['PATH'] + "D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
+	end
+	
+	if system(cabsigntool + " "  + cab_in + " " + cab_out + " -F " + signature)
+		puts "\nSigned successfully.\n\n"
+	else
+		puts "\nFailed to sign .cab file!\n\n"
+	end
+	
+	$stdout.flush
+end
+
 namespace "config" do
   task :wm => ["config:common"] do
     $config["platform"] = "wm"
@@ -37,6 +66,7 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = 'wm'
+          ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
@@ -104,7 +134,7 @@ namespace "device" do
   namespace "wm" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
-      
+	
       chdir $builddir
       
       cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
@@ -135,6 +165,10 @@ namespace "device" do
       mv "rhodes.inf", $targetdir
       mv "rhodes.cab", $targetdir
 
+	  if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
+       	sign $targetdir + '/' + "rhodes.cab";
+	  end
+	  
       rm_f "cleanup.js"
 
       chdir $startdir
