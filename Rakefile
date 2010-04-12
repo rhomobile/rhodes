@@ -22,7 +22,6 @@ load 'platform/iphone/rbuild/iphone.rake'
 load 'platform/wm/build/wm.rake'
 load 'platform/linux/tasks/linux.rake'
 
-load 'lib/build/tasks/rhosync.rake'
 def get_dir_hash(dir, init = nil)
   hash = init
   hash = Digest::SHA2.new if hash.nil?
@@ -191,15 +190,23 @@ def common_bundle_start(startdir, dest)
 
   extentries = []
   extlibs = [] 
-  $app_config["extensions"].each do |extname|
-    rhoextpath = "lib/extensions/" + extname
-    appextpath = $app_path + "/extensions/" + extname
-    extpath = nil
 
-    if File.exists? appextpath
-      extpath = appextpath
-    elsif File.exists? rhoextpath
-      extpath = rhoextpath
+  extpaths = []
+
+  extpaths << $app_config["paths"]["extensions"] if $app_config["paths"] and $app_config["paths"]["extensions"]
+  extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
+  extpaths << File.join($app_path, "extensions")
+  extpaths << "lib/extensions"
+  $app_config["extpaths"] = extpaths
+
+  $app_config["extensions"].each do |extname|
+    extpath = nil
+    extpaths.each do |p|
+      ep = File.join(p, extname)
+      if File.exists? ep
+        extpath = ep
+        break
+      end
     end
 
     unless extpath.nil?

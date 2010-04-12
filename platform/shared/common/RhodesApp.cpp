@@ -595,8 +595,42 @@ boolean CRhodesApp::callPushCallback(String strData)
     return true;
 }
 
+void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
+{
+    synchronized(m_mxScreenRotationCallback)
+    {
+        m_strScreenRotationCallback = canonicalizeRhoUrl(strUrl);
+        m_strScreenRotationCallbackParams = strParams;
+    }
 }
+
+void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
+{
+	synchronized(m_mxScreenRotationCallback) 
+	{
+		if (m_strScreenRotationCallback.length() == 0)
+			return;
+		
+		String strBody = "rho_callback=1";
+		
+        strBody += "&width=";   strBody += convertToStringA(width);
+		strBody += "&heigth=";  strBody += convertToStringA(height);
+		strBody += "&degrees="; strBody += convertToStringA(degrees);
+		
+        if ( m_strScreenRotationCallbackParams.length() > 0 )
+            strBody += "&" + m_strPushCallbackParams;
+			
+		common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+		NetResponse(resp, pNetRequest->pushData( m_strScreenRotationCallback, strBody, null));
+		
+        if (!resp.isOK()) {
+            LOG(ERROR) + "Screen rotation notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        }
+    }
 }
+
+} //namespace common
+} //namespace rho
 
 extern "C" {
 
@@ -778,6 +812,13 @@ int rho_rhodesapp_callPushCallback(const char* szData)
     return RHODESAPP().callPushCallback(szData?szData:"") ? 1 : 0;
 }
 
+void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees)
+{
+    if ( !rho::common::CRhodesApp::getInstance() )
+        return;
+	RHODESAPP().callScreenRotationCallback(width, height, degrees);
+}
+
 const char* rho_ruby_getErrorText(int nError)
 {
     return RHODESAPP().getRhoMessage( nError, "").c_str();
@@ -917,4 +958,4 @@ int rho_unzip_file(const char* szZipPath)
     return res == ZR_OK ? 1 : 0;
 }
 
-}
+} //extern "C"
