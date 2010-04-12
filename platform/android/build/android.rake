@@ -47,8 +47,28 @@ def set_app_name_android(newname)
   doc.elements["resources/string[@name='app_name']"].text = newname
   File.open(appstrings, "w") { |f| doc.write f }
 
+  version = {'major' => 0, 'minor' => 0, 'patch' => 0}
+  if $app_config["version"]
+    if $app_config["version"] =~ /^(\d+)$/
+      version["major"] = $1.to_i
+    elsif $app_config["version"] =~ /^(\d+)\.(\d+)$/
+      version["major"] = $1.to_i
+      version["minor"] = $2.to_i
+    elsif $app_config["version"] =~ /^(\d+)\.(\d+)\.(\d+)$/
+      version["major"] = $1.to_i
+      version["minor"] = $2.to_i
+      version["patch"] = $3.to_i
+    end
+  end
+  
+  version = version["major"]*10000 + version["minor"]*100 + version["patch"]
+
   doc = REXML::Document.new(File.new($rhomanifest))
   doc.root.attributes['package'] = $app_package_name
+  if version > 0
+    doc.root.attributes['android:versionCode'] = version
+    doc.root.attributes['android:versionName'] = $app_config["version"]
+  end
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
   File.open($appmanifest, "w") { |f| doc.write f }
 
@@ -356,26 +376,15 @@ namespace "build" do
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
 
       $app_config["extensions"].each do |ext|
-        ENV['TEMP_FILES_DIR'] = ENV["TARGET_TEMP_DIR"] + "/#{ext}"
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          next unless File.executable? File.join(extpath, 'build')
 
-        rhoextpath = "lib/extensions/" + ext + "/ext"
-        appextpath = $app_path + "/extensions/" + ext + "/ext"
-        extpath = ""
+          ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
 
-        puts appextpath
-        puts rhoextpath
-
-        if File.exists? appextpath
-          extpath = appextpath
-        elsif File.exists? rhoextpath
-          extpath = rhoextpath
+          puts Jake.run('./build', [], extpath)
+          exit 1 unless $? == 0
         end
-        
-     
-
-        puts Jake.run('./build', [], extpath) if File.executable? File.join(extpath, 'build')
-        exit 1 unless $? == 0
-        
       end
 
     end
