@@ -1,19 +1,26 @@
 #include "JNIRhodes.h"
 
+#include <common/rhoparams.h>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
-RHO_GLOBAL void alert_show_popup(char* message)
+RHO_GLOBAL void alert_show_popup(rho_param *p)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_ALERT);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "showPopup", "(Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "showPopup", "(Ljava/lang/Object;)V");
     if (!mid) return;
 
-    jstring msgObj = rho_cast<jstring>(message);
-    env->CallStaticVoidMethod(cls, mid, msgObj);
-    env->DeleteLocalRef(msgObj);
+    if (p->type != RHO_PARAM_STRING && p->type != RHO_PARAM_HASH) {
+        RAWLOG_ERROR("show_popup: wrong input parameter (expect String or Hash)");
+        return;
+    }
+
+    jobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, paramsObj);
+    env->DeleteLocalRef(paramsObj);
 }
 
 RHO_GLOBAL void alert_vibrate(void *arg)
