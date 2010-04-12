@@ -352,6 +352,15 @@ String CSyncEngine::loadClientID()
     return clientID;
 }
 
+void CSyncEngine::processServerSources(String strSources)
+{
+    if ( strSources.length() > 0 )
+    {
+        NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
+        loadAllSources();
+    }
+}
+
 boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
     //TODO: send client register info in client reset 
@@ -361,8 +370,27 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
 
     NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
 
+/*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","
+        "\"schema_version\":\"7.0\",\"schema\":{"
+        "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"*/
+/*        "\"sql\":\"CREATE TABLE Product ( "
+        "brand varchar default NULL,"
+        "created_at varchar default NULL,"
+        "name varchar default NULL,"
+        "price varchar default NULL,"
+        "quantity int default NULL,"
+        "sku varchar default NULL,"
+        "updated_at varchar default NULL,"
+        "test varchar default NULL,"
+        "object varchar(255) PRIMARY KEY )\"*/
+        //"}}]}"); 
+
     if ( !resp.isOK() )
         m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+    else
+    {
+        processServerSources(resp.getCharData());
+    }
 
     return resp.isOK();
 }
@@ -378,8 +406,23 @@ String CSyncEngine::requestClientIDByNet()
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
-        CJSONEntry oJsonEntry(szData);
 
+        processServerSources(szData);
+/*
+        processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","
+        "\"schema\":{\"version\":\"1.0\","
+        "\"sql\":\"CREATE TABLE Product ( "
+        "brand varchar default NULL,"
+        "created_at varchar default NULL,"
+        "name varchar default NULL,"
+        "price varchar default NULL,"
+        "quantity int default NULL,"
+        "sku varchar default NULL,"
+        "updated_at varchar default NULL,"
+        "object varchar(255) PRIMARY KEY )\"}}]}"); 
+*/
+
+        CJSONEntry oJsonEntry(szData);
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");
         if ( !oJsonObject.isEmpty() )
             return oJsonObject.getString("client_id");
@@ -590,7 +633,7 @@ void CSyncEngine::login(String name, String password, String callback)
 
     if ( CClientRegister::getInstance() != null )
         CClientRegister::getInstance()->stopWait();
-    
+
     getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 	
     PROF_STOP("Login");

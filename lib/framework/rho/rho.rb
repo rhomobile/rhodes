@@ -56,7 +56,7 @@ module Rho
     def activate_app
       get_app(APPNAME).on_activate_app
     end
-    
+
     # make sure we close the database file
     #def self.finalize
       #Rhom::RhomDbAdapter::close
@@ -119,6 +119,33 @@ module Rho
         puts "Error opening rhoconfig.txt: #{e}, using defaults."
       end
     end
+
+    def load_server_sources(data)
+        puts "load_server_sources : #{data}"
+        
+        res = Rho::JSON.parse(data)
+        arSrc = res['server_sources']
+        puts "arSrc: #{arSrc}"
+        return unless arSrc
+
+        hashSrcs = Rhom::RhomSource::find_all_ashash
+        puts "hashSrcs : #{hashSrcs}"
+        arSrc.each do |src|
+            oldSrc = hashSrcs[src['name']]
+            puts "oldSrc: #{oldSrc}"
+            if oldSrc
+                oldVer = oldSrc.schema_version
+                newVer = src['schema_version']
+                if ( oldVer != newVer )    
+                    get_app(APPNAME).on_migrate_source(oldSrc.schema_version, src)
+                end
+            end
+            
+            Rho::RhoConfig::add_source(src['name'], src)
+        end
+        
+        init_sources()
+    end
     
     # setup the sources table and model attributes for all applications
     def init_sources()
@@ -150,13 +177,14 @@ module Rho
         puts 'init_schema_sources'
         
         uniq_sources.each do |source|
+          puts "source : #{source}"
           db = get_src_db(source['name'])
           
           if  source['schema'] && !db.table_exist?(source['name'])
           
-            strCreate = source['schema'][:sql]
-            if source['schema'][:columns]
-                arCols = source['schema'][:columns]
+            strCreate = source['schema']['sql']
+            if source['schema']['columns']
+                arCols = source['schema']['columns']
                 arCols = arCols
                 strCols = ""
                 arCols.each do |col|
@@ -168,7 +196,7 @@ module Rho
                 strCreate = "CREATE TABLE '#{source['name']}' ( #{strCols} )"
             end
             
-            db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
+            db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
             
             db.execute_sql(strCreate)
           end
@@ -178,12 +206,14 @@ module Rho
     
     def init_db_sources(db, uniq_sources, db_partition)
         uniq_sources.each do |source|
+          puts "init_db_sources : #{source}"
           name = source['name']
           priority = source['priority']
           partition = source['partition']
           sync_type = source['sync_type']
+          schema_version = source['schema_version']
           
-          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type', 'name'=>name)
+          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type, schema_version', 'name'=>name)
 
           if attribs && attribs.size > 0 
             if attribs[0]['priority'].to_i != priority.to_i
@@ -192,9 +222,17 @@ module Rho
             if attribs[0]['sync_type'] != sync_type
                 db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
+            if attribs[0]['schema_version'] != schema_version
+                db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
+            end
+            if attribs[0]['partition'] != partition
+                db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
+            end
+            
           else
             db.insert_into_table('sources',
-                {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition})
+                {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition,
+                "schema_version"=>source['schema_version'] })
           end
           
         end
@@ -420,7 +458,7 @@ module Rho
       end
       
       def add_source(modelname, new_source=nil)
-        return if !modelname || modelname.length() == 0 || @@sources[modelname]
+        return if !modelname || modelname.length() == 0# || @@sources[modelname]
         
         @@sources[modelname] = new_source ? new_source : {}
         @@sources[modelname]['name'] ||= modelname
