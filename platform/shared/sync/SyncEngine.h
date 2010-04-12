@@ -113,6 +113,7 @@ private:
     db::CDBAdapter& getDB(const String& strPartition){ return db::CDBAdapter::getDB(strPartition.c_str()); }
 
     void initProtocol();
+    void processServerSources(String strSources);
 
     friend class CSyncSource;
 };

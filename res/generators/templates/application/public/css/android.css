@@ -2,7 +2,7 @@
 body {
     margin: 0;
     height: 100%;
-    width: 100%;
+    width: inherit;
     font-family: "Droid",sans-serif;
     background: white;
     color: black;
@@ -14,6 +14,7 @@ h1 {
 
 div#content {
     margin-bottom: 55px;
+		background-color:#ffffff;
 }
 
 
@@ -59,6 +60,7 @@ div#row {
 
 div#pageTitle {
     height: 25px;
+		margin:0;
     width: 100%;
     display:none;
 }
@@ -80,11 +82,15 @@ div#pageTitle h1 {
 /* lists */
 div#content {
     width: 100%;
+		padding:0;
+		margin:0;
 }
 
 div#content ul {
-    margin: 0;
+		background: white;
     -webkit-padding-start: 0;
+    margin: 0;
+		padding:0;
 }
 
 div#content ul li {
@@ -129,11 +135,7 @@ div#content ul li span.gridItem {
 
 /* Forms */
 
-div#content form fieldset {
-    border: none;
-    margin: 0;
-    padding: 0;
-}
+
 
 div#content form button {
     -webkit-appearance:push-button;
@@ -143,15 +145,14 @@ div#content form button {
 }
 
 div#content form ul {
-    display: block;
     font-size: 20px;
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
-    margin: 0 0 17px 0;
     overflow-x: hidden;
     overflow-y: hidden;
     padding: 0;
+    margin: 0;
 }
 
 div#content form ul li {
@@ -163,7 +164,7 @@ div#content form ul li {
     overflow-y: hidden;
 }
 
-div#content form span.fieldLabel {
+div#content form label {
     float: left;
     display:block;
     color: black;
@@ -172,8 +173,35 @@ div#content form span.fieldLabel {
     margin: 10px 20px 10px 10px;
     width: 100px;
     overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+div#content h4 {
+	 margin: 0;
+}
+
+div#content h4.groupTitle{
+	width:inherit;
+	margin: 0;
+	padding: 8px 0 8px 8px;
+	font-size:10px;
+	color:#ffffff;
+	background-color:#000000;
+}
+
+
+div#content form .fieldLabel {
+    float: left;
+    display:block;
+    color: black;
+    line-height: 30px;
+    padding: 5px 10px 5px 5px;
+    margin: 10px 20px 10px 10px;
+    width: 100px;
+    overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 }
 
 div#content form input[type="checkbox"] {
@@ -263,9 +291,8 @@ div#content ul#settings {
     margin: 0;
 }
 
-div#content div#reset h3 {
-    margin-left:30px;
-    margin-right: 30px;
+div#content div#reset h4 {
+    margin:20px;
 }
 
 div#content div.standardButton {
