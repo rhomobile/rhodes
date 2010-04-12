@@ -1706,11 +1706,16 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     				
     				if ( m_netCallback != null )
     				{
+    					String strRespBody = "";
     					InputStream is = connection.openInputStream();
-    					byte[] buffer = new byte[is.available()];
-    					is.read(buffer);
     					
-    					String strRespBody = new String(buffer);
+    					if ( is != null )
+    					{
+	    					byte[] buffer = new byte[is.available()];
+	    					is.read(buffer);
+	    					strRespBody = new String(buffer);
+    					}
+    					
     					m_netCallback.setResponse( new NetResponse(strRespBody, nRespCode) );
     				}
     			}catch(IOException exc)
