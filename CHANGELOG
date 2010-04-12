@@ -1,5 +1,6 @@
 == 1.5.3
 * Fix issue #2980590 - iphone: call NetRequest from toolbar
+* Fix issue #3104338 - rake run:iphone doesn't install into iphone sdk 3.2
 
 == 1.5.2
 * Fix AsyncHttp 'cancel request'
