@@ -215,7 +215,7 @@ module Rhom
       def delete_from_table(table,condition)
         execute_sql "delete from #{table} where #{RhomDbAdapter.where_str(condition)}"
       end
-    
+
       # deletes all rows from a given table
       def delete_all_from_table(table)
         execute_sql "delete from #{table}"
@@ -223,6 +223,10 @@ module Rhom
 
       def table_exist?(table_name)
         @database.table_exist?(table_name)
+      end
+
+      def delete_table(table)
+        execute_sql "DROP TABLE IF EXISTS #{table}"
       end
       
       #destroy one table  
