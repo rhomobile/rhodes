@@ -77,4 +77,9 @@ void rho_sys_set_push_notification(const char *url, const char* params)
     RHODESAPP().setPushNotification(url, params);
 }
 
+void rho_sys_set_screen_rotation_notification(const char *url, const char* params)
+{
+	RHODESAPP().setScreenRotationNotification(url, params);
 }
+
+} //extern "C"
