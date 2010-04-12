@@ -317,7 +317,9 @@ static Rhodes *instance = NULL;
 		NSString *alert = [aps objectForKey:@"alert"];
 		if (alert && [alert length] > 0) {
 			NSLog(@"Push Alert: %@", alert);
-            [RhoAlert showPopup:alert];
+            rho_param *p = rho_param_str((char*)[alert UTF8String]);
+            [RhoAlert showPopup:p];
+            rho_param_free(p);
 		}
 		NSString *sound = [aps objectForKey:@"sound"];
 		if (sound && [sound length] > 0) {

@@ -11,26 +11,163 @@
 #import "RhoAlert.h"
 #import "Rhodes.h"
 
+#include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
-@interface RhoAlertShowPopupTask : NSObject {}
-+ (void)run:(NSString*)message;
+@interface RhoAlertShowPopupTask : NSObject<UIAlertViewDelegate> {
+    NSString *callback;
+    NSMutableArray *buttons;
+}
+
+@property (nonatomic,retain) NSString *callback;
+@property (nonatomic,retain) NSArray *buttons;
+
+- (id)init;
+- (void)dealloc;
+- (void)run:(NSValue*)v;
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex;
+    
 @end
 
 @implementation RhoAlertShowPopupTask
-+ (void)run:(NSString*)message {
-    UIAlertView *alert = [[UIAlertView alloc]
-                          initWithTitle: @"Alert"
-                          message: message
-                          delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil];
-    [alert show];
-    [alert release];
+
+@synthesize callback, buttons;
+
+- (id)init {
+    callback = nil;
+    buttons = nil;
+    return self;
 }
+
+- (void)dealloc {
+    self.callback = nil;
+    self.buttons = nil;
+    [super dealloc];
+}
+
+- (void)run:(NSValue*)v {
+    NSString *title = @"Alert";
+    NSString *message = nil;
+    
+    self.buttons = [NSMutableArray arrayWithCapacity:1];
+    rho_param *p = [v pointerValue];
+    if (p->type == RHO_PARAM_STRING) {
+        message = [NSString stringWithUTF8String:p->v.string];
+        [buttons addObject:[NSMutableArray arrayWithObjects:@"OK", @"OK", nil]];
+    }
+    else if (p->type == RHO_PARAM_HASH) {
+        for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+            char *name = p->v.hash->name[i];
+            rho_param *value = p->v.hash->value[i];
+            
+            if (strcasecmp(name, "title") == 0) {
+                if (value->type != RHO_PARAM_STRING) {
+                    RAWLOG_ERROR("'title' should be string");
+                    continue;
+                }
+                title = [NSString stringWithUTF8String:value->v.string];
+            }
+            else if (strcasecmp(name, "message") == 0) {
+                if (value->type != RHO_PARAM_STRING) {
+                    RAWLOG_ERROR("'message' should be string");
+                    continue;
+                }
+                message = [NSString stringWithUTF8String:value->v.string];
+            }
+            else if (strcasecmp(name, "callback") == 0) {
+                if (value->type != RHO_PARAM_STRING) {
+                    RAWLOG_ERROR("'callback' should be string");
+                    continue;
+                }
+                self.callback = [NSString stringWithUTF8String:value->v.string];
+            }
+            else if (strcasecmp(name, "buttons") == 0) {
+                if (value->type != RHO_PARAM_ARRAY) {
+                    RAWLOG_ERROR("'buttons' should be array");
+                    continue;
+                }
+                for (int j = 0, limj = value->v.array->size; j < limj; ++j) {
+                    rho_param *arrValue = value->v.array->value[j];
+                    
+                    NSString *itemId = nil;
+                    NSString *itemTitle = nil;
+                    switch (arrValue->type) {
+                        case RHO_PARAM_STRING:
+                            itemId = [NSString stringWithUTF8String:arrValue->v.string];
+                            itemTitle = [NSString stringWithUTF8String:arrValue->v.string];
+                            break;
+                        case RHO_PARAM_HASH:
+                            for (int k = 0, limk = arrValue->v.hash->size; k < limk; ++k) {
+                                char *sName = arrValue->v.hash->name[k];
+                                rho_param *sValue = arrValue->v.hash->value[k];
+                                if (sValue->type != RHO_PARAM_STRING) {
+                                    RAWLOG_ERROR("Illegal type of button item's value");
+                                    continue;
+                                }
+                                if (strcasecmp(sName, "id") == 0)
+                                    itemId = [NSString stringWithUTF8String:sValue->v.string];
+                                else if (strcasecmp(sName, "title") == 0)
+                                    itemTitle = [NSString stringWithUTF8String:sValue->v.string];
+                            }
+                            break;
+                        default:
+                            RAWLOG_ERROR("Illegal type of button item");
+                            continue;
+                    }
+                    
+                    if (!itemId || !itemTitle) {
+                        RAWLOG_ERROR("Incomplete button item");
+                        continue;
+                    }
+                    
+                    NSMutableArray *btn = [NSMutableArray arrayWithCapacity:2];
+                    [btn addObject:itemId];
+                    [btn addObject:itemTitle];
+                    [buttons addObject:btn];
+                }
+            }
+
+        }
+    }
+    rho_param_free(p);
+    
+    UIAlertView *alert = [[[UIAlertView alloc]
+                  initWithTitle:title
+                  message:message
+                  delegate:self
+                  cancelButtonTitle:nil
+                  otherButtonTitles:nil] autorelease];
+    
+    for (int i = 0, lim = [buttons count]; i < lim; ++i) {
+        NSArray *btn = [buttons objectAtIndex:i];
+        NSString *title = [btn objectAtIndex:1];
+        [alert addButtonWithTitle:title];
+    }
+    
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (!callback)
+        return;
+    
+    if (buttonIndex >= [buttons count])
+        return;
+    
+    NSArray *btn = [buttons objectAtIndex:buttonIndex];
+    NSString *itemId = [[btn objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *itemTitle = [[btn objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    NSString *url = [NSString stringWithFormat:@"%@?button_id=%@&button_title=%@&button_index=%d", callback, itemId, itemTitle, buttonIndex];
+    
+    char *s = rho_http_normalizeurl([url UTF8String]);
+    rho_net_request(s);
+    free(s);
+}
+
 @end
 
 @interface RhoAlertVibrateTask : NSObject {}
@@ -55,9 +192,10 @@
 
 @implementation RhoAlert
 
-+ (void)showPopup:(NSString *)message {
-    id runnable = [RhoAlertShowPopupTask class];
-    [Rhodes performOnUiThread:runnable arg:message wait:NO];
++ (void)showPopup:(rho_param*)p {
+    id runnable = [[[RhoAlertShowPopupTask alloc] init] autorelease];
+    NSValue *value = [NSValue valueWithPointer:rho_param_dup(p)];
+    [Rhodes performOnUiThread:runnable arg:value wait:NO];
 }
 
 + (void)vibrate:(int)duration {
@@ -72,13 +210,13 @@
 
 @end
 
-void alert_show_popup(char* message) {
-    if (!message) {
+void alert_show_popup(rho_param *p) {
+    if (!p || (p->type != RHO_PARAM_STRING && p->type != RHO_PARAM_HASH)) {
         RAWLOG_ERROR("Alert.show_popup - wrong arguments");
         return;
 	}
     
-    [RhoAlert showPopup:[NSString stringWithUTF8String:message]];
+    [RhoAlert showPopup:p];
 }
 
 void alert_vibrate(int duration) {

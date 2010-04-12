@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#include "common/rhoparams.h"
 
 @interface RhoAlert : NSObject {}
 
-+ (void)showPopup:(NSString*)message;
++ (void)showPopup:(rho_param*)p;
 + (void)vibrate:(int)duration;
 + (void)playFile:(NSString*)file mediaType:(NSString*)type;
 
