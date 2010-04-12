@@ -330,6 +330,15 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
+	
+	//handle sreen rotation
+	int width  = GetSystemMetrics(SM_CXSCREEN);	
+	int height = GetSystemMetrics(SM_CYSCREEN);
+	
+	if (wParam == SETTINGCHANGE_RESET) {
+		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
+	}
+	
 	// Notify shell of our WM_SETTINGCHANGE message
 	SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
 #endif

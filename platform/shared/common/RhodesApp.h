@@ -49,6 +49,9 @@ private:
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
 	
+	common::CMutex m_mxScreenRotationCallback;
+    String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
+
 	common::CMutex m_mxAppMenu;
 	CAppMenu m_oAppMenu;
 	
@@ -102,6 +105,9 @@ public:
 
     void setPushNotification(String strUrl, String strParams );
     boolean callPushCallback(String strData);
+	
+	void setScreenRotationNotification(String strUrl, String strParams);
+	void callScreenRotationCallback(int width, int height, int degrees);
 
 private:
     virtual void run();
@@ -158,6 +164,8 @@ void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();
 
 int rho_rhodesapp_callPushCallback(const char* szData);
+
+void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees);
 
 int rho_conf_send_log();
 
