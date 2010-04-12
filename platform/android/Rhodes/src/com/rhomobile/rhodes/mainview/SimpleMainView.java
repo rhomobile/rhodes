@@ -252,7 +252,11 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		webView.goBack();
+		String backUrl = RhodesInstance.getInstance().getAppBackUrl();
+		if (backUrl == null || backUrl.length() == 0)
+			webView.goBack();
+		else
+			navigate(backUrl, index);
 	}
 
 	public void forward(int index) {

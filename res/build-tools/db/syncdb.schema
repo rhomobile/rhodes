@@ -35,7 +35,8 @@ CREATE TABLE sources (
  last_sync_success BIGINT default 0,
  backend_refresh_time BIGINT default 0,
  source_attribs varchar default NULL,
- schema varchar default NULL);
+ schema varchar default NULL,
+ schema_version varchar default NULL);
 CREATE INDEX by_src_id on object_values (source_id);
 CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);
 CREATE INDEX by_src_value ON object_values (attrib, source_id, value);
