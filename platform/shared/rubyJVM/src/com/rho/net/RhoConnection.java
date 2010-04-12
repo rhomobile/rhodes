@@ -589,7 +589,11 @@ public class RhoConnection implements IHttpConnection {
 			if ( model.equalsIgnoreCase("geolocation") ){
 				showGeoLocation();
 				return true;
+			}else if ( model.equalsIgnoreCase("loadserversources") ){
+				RhoRuby.loadserversources(postData.toString());
+				return true;
 			}
+
 		}else if ( application.equalsIgnoreCase("shared") )
 			return false;
 		
