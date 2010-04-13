@@ -339,7 +339,7 @@ namespace "clean" do
 
       while found do
         found = false
-        Find.find($simapp) do |path|
+        Find.find($simdir) do |path|
           if File.basename(path) == "rhorunner.app"
             $guid = File.basename(File.dirname(path))
             found = true
@@ -347,9 +347,12 @@ namespace "clean" do
         end
 
         if found
-          $simrhodes = File.join($simapp,$guid)
-          rm_rf $simrhodes
-          rm_rf $simrhodes + ".sb"
+         Dir.glob($simdir + '*').each do |sdk|
+          simapp = sdk + "/Applications"
+          simrhodes = File.join(simapp,$guid)
+          rm_rf simrhodes
+          rm_rf simrhodes + ".sb"
+         end
         end
       end
     end
