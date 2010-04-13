@@ -18,6 +18,9 @@ public class RhodesApp
     
     Mutex m_mxPushCallback = new Mutex();
     String m_strPushCallback = "", m_strPushCallbackParams = "";
+
+	Mutex m_mxScreenRotationCallback = new Mutex();
+    String m_strScreenRotationCallback = "", m_strScreenRotationCallbackParams = "";
     
     NetRequest getNet() { return RhoClassFactory.createNetRequest();}
     
@@ -114,6 +117,38 @@ public class RhodesApp
         }
 
         return true;
+    }
+ 
+    public void setScreenRotationNotification(String strUrl, String strParams)throws Exception
+    {
+        synchronized(m_mxScreenRotationCallback)
+        {
+            m_strScreenRotationCallback = canonicalizeRhoUrl(strUrl);
+            m_strScreenRotationCallbackParams = strParams;
+        }
+    }
+
+    public void callScreenRotationCallback(int width, int height, int degrees)throws Exception
+    {
+    	synchronized(m_mxScreenRotationCallback) 
+    	{
+    		if (m_strScreenRotationCallback.length() == 0)
+    			return;
+    		
+    		String strBody = "rho_callback=1";
+    		
+            strBody += "&width=";   strBody += width;
+    		strBody += "&heigth=";  strBody += height;
+    		strBody += "&degrees="; strBody += degrees;
+    		
+            if ( m_strScreenRotationCallbackParams.length() > 0 )
+                strBody += "&" + m_strPushCallbackParams;
+    			
+            NetResponse resp = getNet().pushData( m_strScreenRotationCallback, strBody, null );
+            if (!resp.isOK()) {
+                LOG.ERROR("Screen rotation notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData());
+            }
+        }
     }
     
 }

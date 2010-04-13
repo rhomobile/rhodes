@@ -91,6 +91,22 @@ public class System {
 				}
 			}
 		});
+		klass.getSingletonClass().defineMethod( "set_screen_rotation_notification", new RubyTwoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block )
+			{
+				try {
+					String url = arg1 != RubyConstant.QNIL ? arg1.toStr() : "";
+					String params = arg2 != RubyConstant.QNIL ? arg2.toStr() : "";
+					
+					RhodesApp.getInstance().setScreenRotationNotification(url, params);
+					
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("set_screen_rotation_notification failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
 		
 	}
     

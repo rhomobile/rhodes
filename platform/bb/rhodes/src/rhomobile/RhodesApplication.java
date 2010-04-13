@@ -813,7 +813,29 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
     class CMainScreen extends RhoMainScreen{
     	
-    	protected boolean navigationClick(int status, int time) {
+    	int m_nOrientation = -1;
+    	protected void onChangeOrientation(int x, int y, int nOrientation)
+    	{
+    		if ( m_nOrientation == -1 )
+    		{
+    			m_nOrientation = nOrientation;
+    			return;
+    		}
+    		
+    		if ( m_nOrientation != nOrientation )
+    		{
+    			try{
+    				RhodesApp.getInstance().callScreenRotationCallback(x, y, m_nOrientation==1 ? 90 : -90);
+    			}catch(Exception exc)
+    			{
+    				LOG.ERROR("Screen rotation callback failed.", exc);
+    			}
+    		}
+    		
+    		m_nOrientation = nOrientation;
+    	}
+    	
+		protected boolean navigationClick(int status, int time) {
 			//LOG.INFO("navigationClick: " + status);
 			return super.navigationClick(status, time);
 		}
