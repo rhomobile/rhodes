@@ -23,11 +23,13 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
 import com.rho.RhoProfiler;
+import com.rho.Tokenizer;
 import com.rho.net.*;
 import com.rho.db.*;
-import java.util.Vector;
 
-import org.json.me.JSONException;
+import java.util.Enumeration;
+import java.util.Vector;
+import java.util.Hashtable;
 
 import com.rho.FilePath;
 import com.rho.TimeInterval;
@@ -75,6 +77,7 @@ class SyncSource
     int m_nRefreshTime = 0;
     int m_nProgressStep = -1;
     boolean m_bSchemaSource;
+    Hashtable/*<String,String>*/ m_hashLinks = new Hashtable();
     
     Integer getID() { return m_nID; }
     String getName() { return m_strName; }
@@ -147,7 +150,7 @@ class SyncSource
         m_nErrCode = RhoRuby.ERR_NONE;
         m_bIsSearch = false;
 
-        IDBResult res = db.executeSQL("SELECT token from sources WHERE source_id=?", m_nID);
+        IDBResult res = db.executeSQL("SELECT token,links from sources WHERE source_id=?", m_nID);
         if ( !res.isEnd() )
         {
         	m_token = res.getLongByIdx(0);
@@ -158,9 +161,33 @@ class SyncSource
             m_bTokenFromDB = true;
         }
         
-        m_bSchemaSource = db.isTableExist(m_strName);        
+        m_bSchemaSource = db.isTableExist(m_strName);
+        parseLinks(res.getStringByIdx(1));
     }
 	
+    void parseLinks(String strLinks)
+    {
+        if (strLinks.length() == 0 )
+            return;
+
+        Tokenizer oTokenizer = new Tokenizer( strLinks, "," );
+
+        String strSrcName = "";
+        while (oTokenizer.hasMoreTokens()) 
+        {
+    	    String tok = oTokenizer.nextToken();
+    	    if (tok.length() == 0)
+    		    continue;
+            
+            if ( strSrcName.length() > 0 )
+            {
+                m_hashLinks.put(strSrcName, tok);
+                strSrcName = "";
+            }else
+                strSrcName = tok;
+        }
+    }
+    
 	void sync() throws Exception
 	{
     	getNotify().fireSyncNotification(null, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
@@ -607,6 +634,35 @@ class SyncSource
 		PROF.STOP("Data1");
 	}
 	
+	void processLinks(String strOldObject, String strNewObject)throws Exception
+	{
+    	Enumeration vals = m_hashLinks.elements();
+    	Enumeration keys = m_hashLinks.keys();
+		while (vals.hasMoreElements()) 
+		{
+	        SyncSource pSrc = getSync().findSourceByName((String)keys.nextElement());
+	        if ( pSrc != null )
+	            pSrc.updateLink(strOldObject, strNewObject, (String)vals.nextElement());
+	    }
+	}
+
+	void updateLink(String strOldObject, String strNewObject, String strAttrib)throws Exception
+	{
+	    if ( m_bSchemaSource )
+	    {
+	        String strSqlUpdate = "UPDATE ";
+	        strSqlUpdate += getName() + " SET " + strAttrib + "=? where " + strAttrib + "=?";
+
+	        getDB().executeSQL(strSqlUpdate, strNewObject, strOldObject );
+	    }
+	    else
+	        getDB().executeSQL("UPDATE object_values SET value=? where attrib=? and source_id=? and value=?", 
+	            strNewObject, strAttrib, getID(), strOldObject );
+
+	    getDB().executeSQL("UPDATE changed_values SET value=? where attrib=? and source_id=? and value=?", 
+	        strNewObject, strAttrib, getID(), strOldObject );
+	}
+	
 	void processServerCmd_Ver3_Schema(String strCmd, String strObject, JSONStructIterator attrIter)throws Exception
 	{
 	    if ( strCmd.compareTo("insert") == 0 )
@@ -684,7 +740,8 @@ class SyncSource
 	    }else if ( strCmd.compareTo("links") == 0 )
 	    {
 	        String strValue = attrIter.getCurString();
-
+	        processLinks(strObject, strValue);
+	        
 	        String strSelect = "SELECT * FROM ";
 	        strSelect += getName() + " WHERE object=?";
 	        boolean bOldExist = false;
@@ -772,6 +829,8 @@ class SyncSource
 	        m_nDeleted++;
 	    }else if ( strCmd.compareTo("links") == 0 )
 	    {
+	    	processLinks(strObject, strValue);
+	    	
 	        getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", strValue, strObject, getID() );
 	        getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", strValue, strObject, getID() );
 
