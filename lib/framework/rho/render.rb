@@ -180,14 +180,21 @@ module Rho
         end
       end
 
-      partial_name = options[:partial].split('/')[-1]
+      splitpartial = options[:partial].split('/')
+      partial_name = splitpartial[-1]
+      model = nil
+      if splitpartial.length > 1
+        model = splitpartial[-2]
+      end
 
       options[:locals] = {} if options[:locals].nil? or !options[:locals].is_a?(Hash)
        
       content = ""
       if options[:collection].nil?
         locals = localclass.new(options[:locals])
-        content = eval_compiled_file(@request[:modelpath]+'_' + options[:partial].to_s+'_erb.iseq', locals.get_binding )
+        modelpath = @request[:modelpath]
+        modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
+        content = eval_compiled_file(modelpath+'_' + partial_name.to_s+'_erb.iseq', locals.get_binding )
       else
         i = 0
         options[:collection].each do |x|
