@@ -24,6 +24,7 @@ module Rhom
     
     @@database = nil
     @@inside_transaction = false
+    @@ruby_mutex = Mutex.new
     
     class << self
       
@@ -46,6 +47,8 @@ module Rhom
       end   
     
       def start_transaction
+          @@ruby_mutex.lock
+      
           begin
             @@inside_transaction = true
             @@database.start_transaction
@@ -61,6 +64,8 @@ module Rhom
           rescue Exception => e
             puts "exception when commit transaction"
           end
+          
+          @@ruby_mutex.unlock
       end
 
       def rollback
@@ -70,6 +75,9 @@ module Rhom
           rescue Exception => e
             puts "exception when rollback transaction"
           end
+          
+          @@ruby_mutex.unlock
+          
       end
     
       # execute a sql statement
@@ -83,9 +91,18 @@ module Rhom
           # before we perform a database transaction.
           # This prevents concurrency issues.
           begin
-            SyncEngine.lock_sync_mutex unless @@inside_transaction
+            if !@@inside_transaction
+                @@ruby_mutex.lock
+                SyncEngine.lock_sync_mutex 
+            end
+                
             result = @@database.execute( sql, args )
-            SyncEngine.unlock_sync_mutex unless @@inside_transaction
+
+            if !@@inside_transaction
+                SyncEngine.unlock_sync_mutex
+                @@ruby_mutex.unlock
+            end
+            
           rescue Exception => e
             #puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
@@ -93,6 +110,7 @@ module Rhom
               raise
             else
               SyncEngine.unlock_sync_mutex
+              @@ruby_mutex.unlock
             end    
           end
         end
