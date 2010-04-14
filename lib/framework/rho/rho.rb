@@ -146,6 +146,14 @@ module Rho
         
         init_sources()
     end
+
+    def find_src_byname(uniq_sources, src_name)
+        uniq_sources.each do |source|        
+            return source if src_name == source['name']
+        end
+        
+        nil
+    end
     
     # setup the sources table and model attributes for all applications
     def init_sources()
@@ -158,6 +166,24 @@ module Rho
         uniq_sources.each do |source|
           partition = source['partition']
           @db_partitions[partition] = nil
+          
+          if source['links']
+            source['links'].each do |src_name, attrib|    
+                linkSrc = find_src_byname(uniq_sources, src_name)
+                if !linkSrc
+                    rho_error( "links from '#{source['name']}' : source name '#{src_name}' does not exist."  )
+                    next
+                end
+                
+                str_links = linkSrc['str_links']
+                str_links = "" unless str_links
+                str_links += ',' if str_links.length() > 0
+                
+                str_links += source['name'] + ',' + attrib
+                linkSrc['str_links'] = str_links
+            end
+          end
+          
         end
         
         #user partition should alwayse exist
@@ -212,8 +238,9 @@ module Rho
           partition = source['partition']
           sync_type = source['sync_type']
           schema_version = source['schema_version']
+          links = source['str_links']
           
-          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type, schema_version', 'name'=>name)
+          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type, schema_version, links', 'name'=>name)
 
           if attribs && attribs.size > 0 
             if attribs[0]['priority'].to_i != priority.to_i
@@ -228,11 +255,14 @@ module Rho
             if attribs[0]['partition'] != partition
                 db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
             end
+            if attribs[0]['links'] != links
+                db.update_into_table('sources', {"links"=>links},{"name"=>name})
+            end
             
           else
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition,
-                "schema_version"=>source['schema_version'] })
+                "schema_version"=>source['schema_version'], 'links'=>links })
           end
           
         end

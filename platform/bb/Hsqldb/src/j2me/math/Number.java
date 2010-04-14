@@ -21,7 +21,8 @@ public class Number{
     	else if ( obj instanceof Byte )
     		return ((Byte)obj).byteValue();
     	
-    	return Integer.parseInt(obj.toString());
+    	String strRes = obj.toString();
+    	return strRes==null || strRes.length() == 0 ? 0 : Integer.parseInt(strRes);
     }
 	
     public static long longValue(Object obj){
@@ -34,7 +35,8 @@ public class Number{
     	else if ( obj instanceof Byte )
     		return ((Byte)obj).byteValue();
     	
-    	return Long.parseLong(obj.toString());
+    	String strRes = obj.toString();
+    	return strRes==null || strRes.length() == 0 ? 0 : Long.parseLong(strRes);
     }
     
     public static double doubleValue(Object obj){
@@ -51,7 +53,8 @@ public class Number{
     	else if ( obj instanceof Byte )
     		return ((Byte)obj).byteValue();
     	
-    	return Double.parseDouble(obj.toString());
+    	String strRes = obj.toString();
+    	return strRes==null || strRes.length() == 0 ? 0 : Double.parseDouble(strRes);
     }
     
     /*
