@@ -25,6 +25,15 @@ end
 # command "android list targets"
 ANDROID_API_LEVEL = 3
 
+ANDROID_PERMISSIONS = {
+  'camera' => 'CAMERA',
+  'gps' => 'ACCESS_FINE_LOCATION',
+  'network_state' => 'ACCESS_NETWORK_STATE',
+  'phone' => ['CALL_PHONE', 'READ_PHONE_STATE'],
+  'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS'],
+  'vibrate' => 'VIBRATE'
+}
+
 def get_sources(name)
   File.read(File.join($builddir, name + '_build.files')).split("\n")
 end
@@ -70,7 +79,26 @@ def set_app_name_android(newname)
     doc.root.attributes['android:versionName'] = $app_config["version"]
   end
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
-  File.open($appmanifest, "w") { |f| doc.write f }
+
+  caps = ['INTERNET']
+  $app_config["capabilities"].each do |cap|
+    cap = ANDROID_PERMISSIONS[cap]
+    next if cap.nil?
+    cap = [cap] if cap.is_a? String
+    cap = [] unless cap.is_a? Array
+    caps += cap
+  end
+  caps.uniq!
+
+  manifest = doc.elements["manifest"]
+  manifest.elements.each('uses-permission') { |e| manifest.delete e }
+  caps.each do |cap|
+    element = REXML::Element.new('uses-permission')
+    element.add_attribute('android:name', "android.permission.#{cap}")
+    manifest.add element
+  end
+
+  File.open($appmanifest, "w") { |f| doc.write f, 2 }
 
   buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport #{$app_package_name}.R;\n")
   File.open($app_android_r,"w") { |f| f.write(buf) }
@@ -311,10 +339,20 @@ namespace "config" do
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
 
+    $app_config["extensions"] = [] if $app_config["extensions"].nil?
+    $app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
     if $app_config["android"] and $app_config["android"]["extensions"]
-      $app_config["extensions"] += $app_config["android"]["extensions"] if $app_config["extensions"]
+      $app_config["extensions"] += $app_config["android"]["extensions"]
       $app_config["android"]["extensions"] = nil
     end
+
+    $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
+    $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
+    if $app_config["android"] and $app_config["android"]["capabilities"]
+      $app_config["capabilities"] += $app_config["android"]["capabilities"]
+      $app_config["android"]["capabilities"] = nil
+    end
+    $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
@@ -570,32 +608,90 @@ namespace "build" do
 
     task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
-    task :librhodes => :libs do
-      srcdir = File.join $androidpath, "Rhodes", "jni", "src"
+    task :genconfig => "config:android" do
       incdir = File.join $androidpath, "Rhodes", "jni", "include"
-      objdir = File.join $rhobindir, $confdir, "librhodes"
-      libname = File.join $bindir, "libs", $confdir, "librhodes.so"
+      
+      # Generate genconfig.h
+      genconfig_h = File.join(incdir, 'genconfig.h')
 
-      # Generate gapikey.h
-      gapikey_h = File.join(incdir, 'gapikey.h')
-      gapi_defined = false
-      if File.file? gapikey_h
-        File.open(gapikey_h, 'r') do |f|
+      gapi_already_enabled = false
+      caps_already_enabled = {}
+      ANDROID_PERMISSIONS.keys.each do |k|
+        caps_already_enabled[k] = false
+      end
+      if File.file? genconfig_h
+        File.open(genconfig_h, 'r') do |f|
           while line = f.gets
-            gapi_defined = true if line =~ /GOOGLE_API_KEY/
-            break if gapi_defined
+            if line =~ /^\s*#\s*define\s+RHO_GOOGLE_API_KEY\s+"[^"]*"\s*$/
+              gapi_already_enabled = true
+            else
+              ANDROID_PERMISSIONS.keys.each do |k|
+                re = /^\s*#\s*define\s+RHO_CAP_#{k.upcase}_ENABLED\s+true\s*$/
+                caps_already_enabled[k] = true if line =~ re
+              end
+            end
           end
         end
       end
 
-      if $use_geomapping != gapi_defined or not File.file? gapikey_h
-        File.open(gapikey_h, 'w') do |f|
-          f.puts "#ifndef RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
-          f.puts "#define RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
-          f.puts "#define GOOGLE_API_KEY \"#{$gapikey}\"" if $use_geomapping and !$gapikey.nil?
-          f.puts "#endif /* RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F */"
+      regenerate = false
+      regenerate = true unless File.file? genconfig_h
+      regenerate = $use_geomapping != gapi_already_enabled unless regenerate
+
+      caps_enabled = {}
+      ANDROID_PERMISSIONS.keys.each do |k|
+        caps_enabled[k] = $app_config["capabilities"].index(k) != nil
+        regenerate = true if caps_enabled[k] != caps_already_enabled[k]
+      end
+
+      if regenerate
+        puts "Need to regenerate genconfig.h"
+        $stdout.flush
+        File.open(genconfig_h, 'w') do |f|
+          f.puts "#ifndef RHO_GENCONFIG_H_411BFA4742CF4F2AAA3F6B411ED7514F"
+          f.puts "#define RHO_GENCONFIG_H_411BFA4742CF4F2AAA3F6B411ED7514F"
+          f.puts ""
+          f.puts "#define RHO_GOOGLE_API_KEY \"#{$gapikey}\"" if $use_geomapping and !$gapikey.nil?
+          caps_enabled.each do |k,v|
+            f.puts "#define RHO_CAP_#{k.upcase}_ENABLED #{v ? "true" : "false"}"
+          end
+          f.puts ""
+          f.puts "#endif /* RHO_GENCONFIG_H_411BFA4742CF4F2AAA3F6B411ED7514F */"
+        end
+      else
+        puts "No need to regenerate genconfig.h"
+        $stdout.flush
+      end
+
+      rhocaps_h = File.join(incdir, 'details', 'rhocaps.inc')
+      caps_already_defined = []
+      if File.exists? rhocaps_h
+        File.open(rhocaps_h, 'r') do |f|
+          while line = f.gets
+            next unless line =~ /^\s*RHO_DEFINE_CAP\s*\(\s*([A-Z_]*)\s*\)\s*\s*$/
+            caps_already_defined << $1.downcase
+          end
         end
       end
+
+      if caps_already_defined.sort.uniq != ANDROID_PERMISSIONS.keys.sort.uniq
+        puts "Need to regenerate rhocaps.inc"
+        $stdout.flush
+        File.open(rhocaps_h, 'w') do |f|
+          ANDROID_PERMISSIONS.keys.each do |k|
+            f.puts "RHO_DEFINE_CAP(#{k.upcase})"
+          end
+        end
+      else
+        puts "No need to regenerate rhocaps.inc"
+        $stdout.flush
+      end
+   end
+
+    task :librhodes => [:libs, :genconfig] do
+      srcdir = File.join $androidpath, "Rhodes", "jni", "src"
+      objdir = File.join $rhobindir, $confdir, "librhodes"
+      libname = File.join $bindir, "libs", $confdir, "librhodes.so"
 
       args = []
       args << "-I#{srcdir}/../include"

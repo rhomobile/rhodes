@@ -284,9 +284,34 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
         env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Can not create symlink");
 }
 
+static void set_capabilities(JNIEnv *env)
+{
+    char const *caps[] = {
+#define RHO_DEFINE_CAP(x) #x,
+#include <details/rhocaps.inc>
+#undef RHO_DEFINE_CAP
+    };
+    std::map<std::string, bool> actual_caps;
+#define RHO_DEFINE_CAP(x) actual_caps[#x] = RHO_CAP_ ## x ## _ENABLED;
+#include <details/rhocaps.inc>
+#undef RHO_DEFINE_CAP
+
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_CAPABILITIES);
+    if (!cls) return;
+    for (size_t i = 0, lim = sizeof(caps)/sizeof(caps[0]); i < lim; ++i)
+    {
+        std::string field_name = std::string(caps[i]) + "_ENABLED";
+        jfieldID fid = getJNIClassStaticField(env, cls, field_name.c_str(), "Z");
+        if (!fid) return;
+        env->SetStaticBooleanField(cls, fid, actual_caps[caps[i]]);
+    }
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
   (JNIEnv *env, jobject, jstring path)
 {
+    set_capabilities(env);
+
     g_rootPath = rho_cast<std::string>(path);
 
     // Init SQLite temp directory

@@ -37,11 +37,15 @@ import android.provider.Contacts.Organizations;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
 
+import com.rhomobile.rhodes.Capabilities;
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesInstance;
 
 //@RubyLevelClass(name="Phonebook")
 public class Phonebook {
 
+	private static final String TAG = "Phonebook";
+	
 	private Map<String, Contact> contactList = new HashMap<String, Contact>();
 	private Activity activity;
 	private ContentResolver cr;
@@ -63,7 +67,20 @@ public class Phonebook {
 		return m.find() ? m.group(1) : "";
 	}
 	
+	private boolean checkState() {
+		if (!Capabilities.PIM_ENABLED)
+			Logger.E(TAG, "Can not execute: PIM disabled");
+		return Capabilities.PIM_ENABLED;
+	}
+	
 	public Phonebook() {
+		if (!checkState())
+			return;
+		
+		fill();
+	}
+	
+	private void fill() {
 
 		idPattern = Pattern.compile("\\{([0-9]+)\\}");
 		activity = RhodesInstance.getInstance(); 
@@ -194,22 +211,37 @@ public class Phonebook {
 	}
 
 	public void close() {
+		if (!checkState())
+			return;
+		
 		this.contactList.clear();
 	}
 	
 	public void moveToBegin() {
+		if (!checkState())
+			return;
+		
 		iter = contactList.values().iterator();
 	}
 	
 	public boolean hasNext() {
+		if (!checkState())
+			return false;
+		
 		return iter.hasNext();
 	}
 	
 	public Object next() {
+		if (!checkState())
+			return null;
+		
 		return iter.next();
 	}
 	
 	public Contact getFirstRecord() {
+		if (!checkState())
+			return null;
+		
 		moveToBegin();
 		if (!iter.hasNext())
 			return null;
@@ -217,14 +249,23 @@ public class Phonebook {
 	}
 	
 	public Contact getNextRecord() {
+		if (!checkState())
+			return null;
+		
 		return iter.next();
 	}
 	
 	public Contact getRecord(String id) {
+		if (!checkState())
+			return null;
+		
 		return contactList.get(id);
 	}
 
 	public void removeContact(Contact contact) throws Exception {
+		if (!checkState())
+			return;
+		
 		Uri uri = People.CONTENT_URI;
 
 		String id = getId(contact);
@@ -232,6 +273,9 @@ public class Phonebook {
 	}
 
 	public void saveContact(Contact contact) throws Exception {
+		if (!checkState())
+			return;
+		
 		String rbID = getId(contact);
 		Uri uri = null;
 

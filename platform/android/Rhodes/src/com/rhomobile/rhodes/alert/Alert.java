@@ -43,6 +43,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
@@ -252,6 +253,8 @@ public class Alert {
 	
 	public static void vibrate(int duration) {
 		try {
+			if (!Capabilities.VIBRATE_ENABLED)
+				throw new IllegalAccessException("VIBRATE disabled");
 			Logger.T(TAG, "vibrate: " + duration);
 			Rhodes instance = RhodesInstance.getInstance();
 			Vibrator vibrator = (Vibrator)instance.getSystemService(Context.VIBRATOR_SERVICE);

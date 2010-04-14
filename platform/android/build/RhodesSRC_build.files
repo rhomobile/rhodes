@@ -1,4 +1,5 @@
 platform/android/Rhodes/src/com/rhomobile/rhodes/AndroidR.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/Capabilities.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java

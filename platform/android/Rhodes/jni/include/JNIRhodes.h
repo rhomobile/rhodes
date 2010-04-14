@@ -13,7 +13,7 @@
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
 
-#include "gapikey.h"
+#include "genconfig.h"
 
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
