@@ -819,9 +819,17 @@ public class Token {
             Token.T_EXTRACT, Token.T_FOR, Token.T_FROM, Token.T_GROUP,
             Token.T_HAVING, Token.T_IF, Token.T_INTO, Token.T_IFNULL,
             Token.T_IS, Token.T_IN, Token.T_INTERSECT, Token.T_JOIN,
-            Token.T_INNER, Token.T_LEADING, Token.T_LIKE, Token.T_MAX,
+            Token.T_INNER, Token.T_LEADING, Token.T_LIKE,
+            //RHO
+            Token.T_LIMIT,
+            //RHO
+            Token.T_MAX,
             Token.T_MIN, Token.T_NEXT, Token.T_NULLIF, Token.T_NOT,
-            Token.T_NVL, Token.T_MINUS, Token.T_ON, Token.T_ORDER, Token.T_OR,
+            Token.T_NVL, Token.T_MINUS,
+            //RHO
+            Token.T_OFFSET,
+            //RHO
+            Token.T_ON, Token.T_ORDER, Token.T_OR,
             Token.T_OUTER, Token.T_POSITION, Token.T_PRIMARY, Token.T_SELECT,
             Token.T_SET, Token.T_SOME, Token.T_STDDEV_POP, Token.T_STDDEV_SAMP,
             Token.T_SUBSTRING, Token.T_SUM, Token.T_THEN, Token.T_TO,
