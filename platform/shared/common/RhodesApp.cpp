@@ -224,6 +224,7 @@ void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, cons
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody = "button_id=" + id + "&button_title=" + title;
+    strBody += "&rho_callback=1";
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
