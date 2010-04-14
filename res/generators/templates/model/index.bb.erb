@@ -1,16 +1,21 @@
-<div class="toolbar">
-	<h1 id="pageTitle">
-		<%= class_name.camelize.pluralize %>
-	</h1>
+<div id="pageTitle">
+	<h1><%= class_name.camelize.pluralize %></h1>
 </div>
 
-<ul id="<%= name.downcase.pluralize %>" title="<%= class_name.pluralize %>" selected="true">
-  	<a class="button right_button" href="<%= class_name%>/new" target="_self">New</a>
-	<%%@<%=name.downcase.pluralize%>.each do |x|%>
-	<%if self.attributes?%>
-	<li><%%=link_to "#{x.<%=attributes[0]%>}", :action => :show, :id => x.object%></li>
-	<%else%>
-	<li>Some list entry...</li>
-	<%end%>
-	<%%end%>
-</ul>
+
+<div id="toolbar">
+    <%%=link_to "New", :action => :new %>
+    <%%=link_to "Home", RhoConfig::start_path %>
+</div>
+
+<div id="content">
+    <ul>
+    <%%@<%=name.downcase.pluralize%>.each do |obj|%>
+    	<% if self.attributes? %>
+    	    <li><%%=link_to "#{obj.<%=attributes[0]%>}", :action => :show, :id => obj.object%></li>
+    	<%else%>
+    	    <li>Some list entry...</li>
+    	<%end%>
+    <%%end%>
+    </ul>
+</div>
