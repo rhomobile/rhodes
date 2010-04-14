@@ -161,11 +161,7 @@
     NSString *itemId = [[btn objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *itemTitle = [[btn objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
-    NSString *url = [NSString stringWithFormat:@"%@?button_id=%@&button_title=%@&button_index=%d", callback, itemId, itemTitle, buttonIndex];
-    
-    char *s = rho_http_normalizeurl([url UTF8String]);
-    rho_net_request(s);
-    free(s);
+    rho_rhodesapp_callPopupCallback([callback UTF8String], [itemId UTF8String], [itemTitle UTF8String]);
 }
 
 @end
