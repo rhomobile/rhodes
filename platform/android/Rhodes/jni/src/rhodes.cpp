@@ -288,12 +288,12 @@ static void set_capabilities(JNIEnv *env)
 {
     char const *caps[] = {
 #define RHO_DEFINE_CAP(x) #x,
-#include <details/rhocaps.inc>
+#include <rhocaps.inc>
 #undef RHO_DEFINE_CAP
     };
     std::map<std::string, bool> actual_caps;
 #define RHO_DEFINE_CAP(x) actual_caps[#x] = RHO_CAP_ ## x ## _ENABLED;
-#include <details/rhocaps.inc>
+#include <rhocaps.inc>
 #undef RHO_DEFINE_CAP
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CAPABILITIES);
