@@ -5,6 +5,7 @@
 #include "common/RhoTime.h"
 #include "common/StringConverter.h"
 #include "common/RhodesApp.h"
+#include "common/Tokenizer.h"
 #include "json/JSONIterator.h"
 #include "rubyext/RhoRuby.h"
 #include "statistic/RhoProfiler.h"
@@ -63,7 +64,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;
 
-    DBResult( res, db.executeSQL("SELECT token from sources WHERE source_id=?", m_nID) );
+    DBResult( res, db.executeSQL("SELECT token,links from sources WHERE source_id=?", m_nID) );
     if ( !res.isEnd() )
     {
         m_token = res.getUInt64ByIdx(0);
@@ -75,6 +76,30 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     }
 
     m_bSchemaSource = db.isTableExist(m_strName);
+    parseLinks(res.getStringByIdx(1));
+}
+
+void CSyncSource::parseLinks(const String& strLinks)
+{
+    if (strLinks.length() == 0 )
+        return;
+
+    CTokenizer oTokenizer( strLinks, "," );
+
+    String strSrcName = "";
+    while (oTokenizer.hasMoreTokens()) 
+    {
+	    String tok = oTokenizer.nextToken();
+	    if (tok.length() == 0)
+		    continue;
+        
+        if ( strSrcName.length() > 0 )
+        {
+            m_hashLinks.put(strSrcName, tok);
+            strSrcName = "";
+        }else
+            strSrcName = tok;
+    }
 }
 
 INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
@@ -503,6 +528,33 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 	PROF_STOP("Data1");
 }
 
+void CSyncSource::processLinks(const String& strOldObject, const String& strNewObject)
+{
+    for ( Hashtable<String,String>::iterator it = m_hashLinks.begin();  it != m_hashLinks.end(); ++it )
+    {
+        CSyncSource* pSrc = getSync().findSourceByName(it->first);
+        if ( pSrc != null )
+            pSrc->updateLink(strOldObject, strNewObject, it->second);
+    }
+}
+
+void CSyncSource::updateLink(const String& strOldObject, const String& strNewObject, const String& strAttrib)
+{
+    if ( m_bSchemaSource )
+    {
+        String strSqlUpdate = "UPDATE ";
+        strSqlUpdate += getName() + " SET " + strAttrib + "=? where " + strAttrib + "=?";
+
+        getDB().executeSQL(strSqlUpdate.c_str(), strNewObject, strOldObject );
+    }
+    else
+        getDB().executeSQL("UPDATE object_values SET value=? where attrib=? and source_id=? and value=?", 
+            strNewObject, strAttrib, getID(), strOldObject );
+
+    getDB().executeSQL("UPDATE changed_values SET value=? where attrib=? and source_id=? and value=?", 
+        strNewObject, strAttrib, getID(), strOldObject );
+}
+
 void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, CJSONStructIterator& attrIter)//throws Exception
 {
     if ( strCmd.compare("insert") == 0 )
@@ -580,6 +632,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
     }else if ( strCmd.compare("links") == 0 )
     {
         String strValue = attrIter.getCurString();
+        processLinks(strObject, strValue);
 
         String strSelect = "SELECT * FROM ";
         strSelect += getName() + " WHERE object=?";
@@ -668,6 +721,8 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
         m_nDeleted++;
     }else if ( strCmd.compare("links") == 0 )
     {
+        processLinks(strObject, strValue);
+
         getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", strValue, strObject, getID() );
         getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", strValue, strObject, getID() );
 
