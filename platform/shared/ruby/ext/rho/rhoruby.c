@@ -99,6 +99,27 @@ void RhoRubyThreadStop()
     //native_mutex_destroy(&th->interrupt_lock);
 } */
 
+extern int native_mutex_lock(rb_thread_lock_t *);
+extern int native_mutex_unlock(rb_thread_lock_t *);
+
+rb_thread_t * g_th_stored = 0;
+void rho_ruby_start_threadidle()
+{
+    g_th_stored = GET_THREAD();
+    rb_gc_save_machine_context(g_th_stored);
+    native_mutex_unlock(&g_th_stored->vm->global_vm_lock);
+}
+
+void rho_ruby_stop_threadidle()
+{                                              
+    if ( g_th_stored )
+    {
+        native_mutex_lock(&g_th_stored->vm->global_vm_lock);
+        rb_thread_set_current(g_th_stored);
+        g_th_stored = 0;
+    }
+}
+
 void RhoRubyStart()
 {
     //VALUE moduleRhom;

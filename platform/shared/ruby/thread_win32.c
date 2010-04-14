@@ -22,8 +22,8 @@
 
 static volatile DWORD ruby_native_thread_key = TLS_OUT_OF_INDEXES;
 
-static int native_mutex_lock(rb_thread_lock_t *);
-static int native_mutex_unlock(rb_thread_lock_t *);
+int native_mutex_lock(rb_thread_lock_t *);
+int native_mutex_unlock(rb_thread_lock_t *);
 static int native_mutex_trylock(rb_thread_lock_t *);
 void native_mutex_initialize(rb_thread_lock_t *);
 
@@ -251,7 +251,7 @@ native_sleep(rb_thread_t *th, struct timeval *tv)
     GVL_UNLOCK_END();
 }
 
-static int
+int
 native_mutex_lock(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
@@ -287,7 +287,7 @@ native_mutex_lock(rb_thread_lock_t *lock)
 #endif
 }
 
-static int
+int
 native_mutex_unlock(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
