@@ -20,6 +20,7 @@
  */
 package com.rhomobile.rhodes.geolocation;
 
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 
 public class GeoLocation {
@@ -29,6 +30,11 @@ public class GeoLocation {
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+	}
+	
+	private static void checkState() throws IllegalAccessException {
+		if (!Capabilities.GPS_ENABLED)
+			throw new IllegalAccessException("GPS disabled");
 	}
 	
 	private static void init() {
@@ -43,6 +49,7 @@ public class GeoLocation {
 	
 	public static boolean isAvailable() {
 		try {
+			checkState();
 			Logger.T(TAG, "isAvailable");
 			init();
 			return locImpl.isAvailable();
@@ -56,6 +63,7 @@ public class GeoLocation {
 	
 	public static double getLatitude() {
 		try {
+			checkState();
 			Logger.T(TAG, "getLatitude");
 			init();
 			return locImpl.GetLatitude();
@@ -69,6 +77,7 @@ public class GeoLocation {
 
 	public static double getLongitude() {
 		try {
+			checkState();
 			Logger.T(TAG, "getLongitude");
 			init();
 			return locImpl.GetLongitude();
@@ -82,6 +91,7 @@ public class GeoLocation {
 
 	public static boolean isKnownPosition() {
 		try {
+			checkState();
 			Logger.T(TAG, "isKnownPosition");
 			init();
 			return locImpl.isKnownPosition();

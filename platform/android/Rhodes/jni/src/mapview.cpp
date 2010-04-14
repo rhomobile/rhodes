@@ -1,17 +1,13 @@
 #include "JNIRhodes.h"
 
-#include "gapikey.h"
-
 #include <common/rhoparams.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
 
-extern "C" void alert_show_popup(char *);
-
 RHO_GLOBAL void mapview_create(rho_param *p)
 {
-#ifdef GOOGLE_API_KEY
+#ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
     jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!clsMapView) return;
@@ -24,10 +20,9 @@ RHO_GLOBAL void mapview_create(rho_param *p)
     }
 
     jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(clsMapView, midCreate, rho_cast<jstring>(GOOGLE_API_KEY), paramsObj);
+    env->CallStaticVoidMethod(clsMapView, midCreate, rho_cast<jstring>(RHO_GOOGLE_API_KEY), paramsObj);
 #else
-    const char *message = "MapView disabled";
-    alert_show_popup((char*)message);
+    RAWLOG_ERROR("MapView disabled at build time");
 #endif
 }
 

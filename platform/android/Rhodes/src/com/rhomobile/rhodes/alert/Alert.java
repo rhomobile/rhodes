@@ -26,6 +26,10 @@ import java.util.Vector;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Vibrator;
@@ -34,9 +38,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
@@ -100,8 +107,11 @@ public class Alert {
 		public void run() {
 			String title = "Alert";
 			String message = null;
+			Drawable icon = null;
 			String callback = null;
 			Vector<CustomButton> buttons = new Vector<CustomButton>();
+			
+			Rhodes r = RhodesInstance.getInstance();
 			
 			if (params instanceof String) {
 				message = (String)params;
@@ -117,6 +127,23 @@ public class Alert {
 				Object messageObj = hash.get("message");
 				if (messageObj != null && (messageObj instanceof String))
 					message = (String)messageObj;
+				
+				Object iconObj = hash.get("icon");
+				if (iconObj != null && (iconObj instanceof String)) {
+					String iconName = (String)iconObj;
+					if (iconName.equalsIgnoreCase("alert"))
+						icon = r.getResources().getDrawable(AndroidR.drawable.alert_alert);
+					else if (iconName.equalsIgnoreCase("question"))
+						icon = r.getResources().getDrawable(AndroidR.drawable.alert_question);
+					else if (iconName.equalsIgnoreCase("info"))
+						icon = r.getResources().getDrawable(AndroidR.drawable.alert_info);
+					else {
+						iconName = r.getRootPath() + "/apps/" + iconName;
+						Bitmap bitmap = BitmapFactory.decodeFile(iconName);
+						if (bitmap != null)
+							icon = new BitmapDrawable(bitmap);
+					}
+				}
 				
 				Object callbackObj = hash.get("callback");
 				if (callbackObj != null && (callbackObj instanceof String))
@@ -157,7 +184,6 @@ public class Alert {
 			if (message == null)
 				return;
 			
-			Rhodes r = RhodesInstance.getInstance();
 			Dialog dialog = new Dialog(r);
 			dialog.setTitle(title);
 			dialog.setCancelable(false);
@@ -168,12 +194,26 @@ public class Alert {
 			main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			main.setPadding(10, 10, 10, 10);
 			
+			LinearLayout top = new LinearLayout(r);
+			top.setOrientation(LinearLayout.HORIZONTAL);
+			top.setGravity(Gravity.CENTER);
+			top.setPadding(10, 10, 10, 10);
+			top.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+			main.addView(top);
+			
+			if (icon != null) {
+				ImageView imgView = new ImageView(r);
+				imgView.setImageDrawable(icon);
+				imgView.setScaleType(ImageView.ScaleType.CENTER);
+				imgView.setPadding(10, 10, 10, 10);
+				top.addView(imgView);
+			}
+			
 			TextView textView = new TextView(r);
 			textView.setText(message);
 			textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-			textView.setPadding(10, 10, 10, 10);
 			textView.setGravity(Gravity.CENTER);
-			main.addView(textView);
+			top.addView(textView);
 			
 			LinearLayout bottom = new LinearLayout(r);
 			bottom.setOrientation(buttons.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
@@ -213,6 +253,8 @@ public class Alert {
 	
 	public static void vibrate(int duration) {
 		try {
+			if (!Capabilities.VIBRATE_ENABLED)
+				throw new IllegalAccessException("VIBRATE disabled");
 			Logger.T(TAG, "vibrate: " + duration);
 			Rhodes instance = RhodesInstance.getInstance();
 			Vibrator vibrator = (Vibrator)instance.getSystemService(Context.VIBRATOR_SERVICE);
