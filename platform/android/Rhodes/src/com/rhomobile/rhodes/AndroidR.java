@@ -26,6 +26,9 @@ public final class AndroidR {
     public static final class attr {
     }
     public static final class drawable {
+    	public static final int alert_alert=R.drawable.alert_alert;
+    	public static final int alert_info=R.drawable.alert_info;
+    	public static final int alert_question=R.drawable.alert_question;
         public static final int back=R.drawable.back;
         public static final int camera=R.drawable.camera;
         public static final int exit=R.drawable.exit;
