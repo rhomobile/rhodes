@@ -74,7 +74,8 @@ platform/android/bin
 platform/android/target
 platform/shared/*/bin
 platform/android/**/default.properties
-gapikey.h
+genconfig.h
+rhocaps.inc
 
 #*.jar
 *.cod
