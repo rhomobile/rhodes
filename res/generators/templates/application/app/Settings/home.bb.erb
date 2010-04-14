@@ -1,14 +1,17 @@
-<div class="toolbar">
-	<h1 id="pageTitle">
-		Home
-	</h1>
+<div id="pageTitle">
+	<h1>Home</h1>
 </div>
 
-<ul id="home" selected="true" title="Home">
-	<li>Add links here...</li>
-	<% if SyncEngine::logged_in > 0 %>
-	<li><%=  link_to "Logout", :action => :logout %></li>
+<div id="toolbar">
+    <% if SyncEngine::logged_in > 0 %>
+	    <%=  link_to "Logout", :action => :logout %>
 	<% else %>
-	<li><%=  link_to "Login", :action => :login %></li>
+	    <%=  link_to "Login", :action => :login %>
 	<% end %>
-</ul>
+</div>
+
+<div id="content">
+    <ul>
+    	<li>Add links here...</li>
+    </ul>
+</div>
