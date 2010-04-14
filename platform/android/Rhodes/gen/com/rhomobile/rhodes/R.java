@@ -11,17 +11,20 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int back=0x7f020000;
-        public static final int camera=0x7f020001;
-        public static final int exit=0x7f020002;
-        public static final int home=0x7f020003;
-        public static final int icon=0x7f020004;
-        public static final int info=0x7f020005;
-        public static final int marker=0x7f020006;
-        public static final int next=0x7f020007;
-        public static final int options=0x7f020008;
-        public static final int refresh=0x7f020009;
-        public static final int sync=0x7f02000a;
+        public static final int alert_alert=0x7f020000;
+        public static final int alert_info=0x7f020001;
+        public static final int alert_question=0x7f020002;
+        public static final int back=0x7f020003;
+        public static final int camera=0x7f020004;
+        public static final int exit=0x7f020005;
+        public static final int home=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int info=0x7f020008;
+        public static final int marker=0x7f020009;
+        public static final int next=0x7f02000a;
+        public static final int options=0x7f02000b;
+        public static final int refresh=0x7f02000c;
+        public static final int sync=0x7f02000d;
     }
     public static final class id {
         public static final int LinearLayout01=0x7f060005;

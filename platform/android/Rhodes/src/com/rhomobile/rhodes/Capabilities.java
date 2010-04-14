@@ -1,0 +1,12 @@
+package com.rhomobile.rhodes;
+
+public class Capabilities {
+	
+	public static boolean CAMERA_ENABLED = true;
+	public static boolean GPS_ENABLED = true;
+	public static boolean NETWORK_STATE_ENABLED = true;
+	public static boolean PHONE_ENABLED = true;
+	public static boolean PIM_ENABLED = true;
+	public static boolean VIBRATE_ENABLED = true;
+	
+}
