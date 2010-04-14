@@ -86,6 +86,7 @@ public:
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
+    void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
 
 	void setAppMenu(unsigned long valMenu);
     void addAppMenuItem( const String& strLabel, const String& strLink );
@@ -166,6 +167,7 @@ const char* rho_rhodesapp_getappbackurl();
 int rho_rhodesapp_callPushCallback(const char* szData);
 
 void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees);
+void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id, const char *title);
 
 int rho_conf_send_log();
 
