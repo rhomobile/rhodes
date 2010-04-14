@@ -173,6 +173,8 @@ namespace "config" do
     $rhores = File.join $androidpath, "Rhodes", "res"
     $appres = File.join $tmpdir, "res"
 
+    $appincdir = File.join $tmpdir, "include"
+
     $rho_android_r = File.join $androidpath, "Rhodes", "src", "com", "rhomobile", "rhodes", "AndroidR.java"
     $app_android_r = File.join $tmpdir, "AndroidR.java"
     $app_rjava_dir = File.join $tmpdir
@@ -609,10 +611,10 @@ namespace "build" do
     task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
     task :genconfig => "config:android" do
-      incdir = File.join $androidpath, "Rhodes", "jni", "include"
-      
+      mkdir_p $appincdir unless File.directory? $appincdir
+
       # Generate genconfig.h
-      genconfig_h = File.join(incdir, 'genconfig.h')
+      genconfig_h = File.join($appincdir, 'genconfig.h')
 
       gapi_already_enabled = false
       caps_already_enabled = {}
@@ -663,10 +665,11 @@ namespace "build" do
         $stdout.flush
       end
 
-      rhocaps_h = File.join(incdir, 'details', 'rhocaps.inc')
+      # Generate rhocaps.inc
+      rhocaps_inc = File.join($appincdir, 'rhocaps.inc')
       caps_already_defined = []
-      if File.exists? rhocaps_h
-        File.open(rhocaps_h, 'r') do |f|
+      if File.exists? rhocaps_inc
+        File.open(rhocaps_inc, 'r') do |f|
           while line = f.gets
             next unless line =~ /^\s*RHO_DEFINE_CAP\s*\(\s*([A-Z_]*)\s*\)\s*\s*$/
             caps_already_defined << $1.downcase
@@ -677,7 +680,7 @@ namespace "build" do
       if caps_already_defined.sort.uniq != ANDROID_PERMISSIONS.keys.sort.uniq
         puts "Need to regenerate rhocaps.inc"
         $stdout.flush
-        File.open(rhocaps_h, 'w') do |f|
+        File.open(rhocaps_inc, 'w') do |f|
           ANDROID_PERMISSIONS.keys.each do |k|
             f.puts "RHO_DEFINE_CAP(#{k.upcase})"
           end
@@ -690,10 +693,11 @@ namespace "build" do
 
     task :librhodes => [:libs, :genconfig] do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
-      objdir = File.join $rhobindir, $confdir, "librhodes"
+      objdir = File.join $bindir, "libs", $confdir, "librhodes"
       libname = File.join $bindir, "libs", $confdir, "librhodes.so"
 
       args = []
+      args << "-I#{$appincdir}"
       args << "-I#{srcdir}/../include"
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/sqlite"
