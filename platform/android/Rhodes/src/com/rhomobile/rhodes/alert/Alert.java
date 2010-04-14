@@ -52,6 +52,8 @@ public class Alert {
 	
 	private static final String TAG = "Alert";
 	
+	private static native void doCallback(String url, String id, String title);
+	
 	private static class CustomButton {
 		
 		public String id;
@@ -73,23 +75,18 @@ public class Alert {
 		private String callback;
 		private String id;
 		private String title;
-		private int index;
 		private Dialog dialog;
 		
-		public ShowDialogListener(String c, String i, String t, int idx, Dialog d) {
+		public ShowDialogListener(String c, String i, String t, Dialog d) {
 			callback = c;
 			id = i;
 			title = t;
-			index = idx;
 			dialog = d;
 		}
 		
 		public void onClick(View arg0) {
 			if (callback != null) {
-				Rhodes r = RhodesInstance.getInstance();
-				String url = r.normalizeUrl(callback) + "?button_id=" + Uri.encode(id) + "&button_title=" +
-					Uri.encode(title) + "&button_index=" + index;
-				r.doRequest(url);
+				doCallback(callback, Uri.encode(id), Uri.encode(title));
 			}
 			dialog.dismiss();
 		}
@@ -225,7 +222,7 @@ public class Alert {
 				CustomButton btn = buttons.elementAt(i);
 				Button button = new Button(r);
 				button.setText(btn.title);
-				button.setOnClickListener(new ShowDialogListener(callback, btn.id, btn.title, i, dialog));
+				button.setOnClickListener(new ShowDialogListener(callback, btn.id, btn.title, dialog));
 				button.setLayoutParams(new LinearLayout.LayoutParams(
 						lim > 3 ? LayoutParams.FILL_PARENT : LayoutParams.WRAP_CONTENT,
 						LayoutParams.WRAP_CONTENT, 1));

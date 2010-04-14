@@ -220,6 +220,13 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
+void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, const String &title)
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody = "button_id=" + id + "&button_title=" + title;
+    NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+}
+
 static void callback_syncdb(void *arg, String const &/*query*/ )
 {
     rho_sync_doSyncAllSources(1);
@@ -787,6 +794,11 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
+}
+
+void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id, const char *title)
+{
+    RHODESAPP().callPopupCallback(strCallbackUrl, id, title);
 }
 
 void rho_rhodesapp_callAppActiveCallback(int nActive)
