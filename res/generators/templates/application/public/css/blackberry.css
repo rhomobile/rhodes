@@ -1,99 +1,100 @@
+/* bb main containers */
 body {
     margin: 0;
-    font-family: Helvetica, Arial;
-    background: #ffffff;
-    color: #000000;
+    font-family: Arial, Helvetica;
+    font-size:16px;
+		background: white;
+    color: black;
     overflow-x: hidden;
 }
-.toolbar {
-    border-bottom: 1px solid #2d3642;
-    border-top: 1px solid #6d84a2;
-    padding: 10px;
-		background: #000000;
+
+div#pageTitle {
+		background: black;
     width: auto;
 }
-.toolbar > h1 {
+
+div#pageTitle h1 {
+		margin: 0;
+		padding: 4px;
     width: auto;
-    font-size: 25px;
-    max-height: 40px;
-    font-weight: bold;
-    text-align: center;
+    font-size: 16px;
+    max-height: 16px;
+    font-weight: normal;
+    text-align: left;
     white-space: nowrap;
-    color: #ffffff;
+    color: white;
 }
-.button {
-    position: absolute;
-    overflow: hidden;
-    top: 8px;
-    right: 6px;
-    margin: 3px;
-    border-width: 0 5px;
-    padding: 3px;
-    width: auto;
-    height: auto;
-    line-height: 30px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: bold;
-    color: #ffffff;
-    text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
-    text-decoration: none;
-    white-space: nowrap;
-    background-color: #555555;
+
+/*toolbar */
+div#toolbar{
+	border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height: 25px;
+	padding-left: 4px;
 }
-ul {
-	margin: 0 0 0 5px;
+
+/*content div styling*/
+div#content h3 {
+	font-size:15px;
+	display:block;
+	margin:4px;
+}
+
+div#content h3.groupTitle{
+	border-bottom:1px solid lightgray;
+}
+
+div#content div.alert{
+	color:red;
+}
+
+div#content div.warning{
+	margin-left:4px;
+}
+
+div#content p{
+	font-size:14px; 
+}
+
+/* bb list styles */
+div#content ul {
+	margin: 0;
 	padding: 0;
 }
-li {list-style-type :none;}
-a:link, a:visited, a:unvisited, a:hover {
-	color:#000000;
+
+div#content ul li {
+	list-style-type :none;
+	border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height:25px;
+	padding:0 5px 0 5px;
+}
+
+div#content ul li a {
 	text-decoration: none;
 	font-weight:bold;
-	font-family: Arial;
+	color:black;
+	display:block;
+	overflow: hidden; 
 }
-a {
-	color:#000000;
-	text-decoration: none;
-	font-weight:bold;
-	font-family: Arial;
-}
-li > a {
-	text-decoration: underline;
-}
-img {border-width: 0;}
-table > tr {
-	line-height: normal;
-}
-fieldset {margin:5px;padding:5px}
-fieldset > div > label {margin: 0 3px 0 3px;vertical-align:top}
-/* BB and WM do not like table-layout:fixed, but iPhone does */
-table.grid {
-  width: 100%;
-  margin: 10px;
-  padding: 5px;
-  border: 3px solid #999999;
-  background: #ffffff;
+
+/* bb table styles */
+
+div#content table {
+  display:block;
+	border:none;
+	border-spacing:0;
   font-size: 80%;
+	margin:4px;
 }
-table.grid td {
-	border-bottom: 1px solid #BBBBBB;
-	padding:10px;
+
+div#content table th {
+	width:100%;
+	display: block;
+	border-bottom:1px solid #BBBBBB;
+}
+
+div#content table tr td {
+	padding:5px;
 	margin:0;
-}
-table.grid tr:last-of-type td {border-bottom: none;}
-/* BB and WM want a width of 25% vs. 33% for iPhone */
-.gridleft {
-	text-align: right;
-	width: 25%;
-	color: #4183C4;
-}
-.gridright {
-	text-align: left;
-	font-weight:bold;
-}
-.menu_icon {
-    border:none;
-    vertical-align: middle;
-    padding-right: 4px;
 }

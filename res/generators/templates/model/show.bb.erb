@@ -1,19 +1,21 @@
-<div class="toolbar">
-	<h1 id="pageTitle">
-		<%%=@<%=name.downcase%>.<%=attributes[0]%>%>
-	</h1>
+<div id="pageTitle">
+	<h1><%%=@<%=name.downcase%>.<%=attributes[0]%>%></h1>
 </div>
 
-<div class="panel" selected="true">
+<div id="toolbar">
+        <%%=link_to "Back", :action => :index %>
+        <%%=link_to "Edit", :action => :edit, :id => @<%=name.downcase%>.object %>
+</div>
 
-<a class="button right_button" href="<%%=url_for(:action => :edit, :id => @<%=name.downcase%>.object)%>" target="_self">Edit</a>
 
-<table class="grid">
-  <% attributes.each do |attribute| %>
-  <tr>
-	<td class="gridleft"><%=attribute.camelize%></td>
-    <td class="gridright"><%%=@<%=name.downcase%>.<%=attribute%>%></td>
-  </tr>
-  <% end %>
-</table>
+<div id="content">
+
+    <table>
+      <% attributes.each do |attribute| %>
+      <tr>
+    	<td><%=attribute.camelize%></td>
+        <td><%%=@<%=name.downcase%>.<%=attribute%>%></td>
+      </tr>
+      <% end %>
+    </table>
 </div>
