@@ -151,4 +151,15 @@ public class RhodesApp
         }
     }
     
+    public void callPopupCallback(String strCallbackUrl, String id, String title)throws Exception
+    {
+        if ( strCallbackUrl == null || strCallbackUrl.length() == 0 )
+            return;
+    	
+        strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+        String strBody = "button_id=" + id + "&button_title=" + title;
+        strBody += "&rho_callback=1";
+        getNet().pushData( strCallbackUrl, strBody, null );
+    }
+    
 }
