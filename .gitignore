@@ -74,8 +74,6 @@ platform/android/bin
 platform/android/target
 platform/shared/*/bin
 platform/android/**/default.properties
-genconfig.h
-rhocaps.inc
 
 #*.jar
 *.cod
