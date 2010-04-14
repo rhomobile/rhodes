@@ -23,6 +23,8 @@ package com.rhomobile.rhodes.camera;
 import java.io.File;
 
 import android.content.Intent;
+
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
@@ -45,6 +47,20 @@ public class Camera {
 			f.mkdirs();
 	}
 	
+	private static class CameraDisabled implements Runnable {
+		
+		private String url;
+		
+		public CameraDisabled(String u) {
+			url = u;
+		}
+		
+		public void run() {
+			callback(url, "", "Camera disabled", false);
+		}
+		
+	};
+	
 	private static class Runner implements Runnable {
 		
 		private String url;
@@ -64,18 +80,20 @@ public class Camera {
 		}
 	};
 
-	public static void takePicture(String sourceUrl) {
+	public static void takePicture(String url) {
 		try {
-			Rhodes.performOnUiThread(new Runner(sourceUrl, ImageCapture.class), false);
+			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Runner(url, ImageCapture.class) :
+				new CameraDisabled(url);
+			Rhodes.performOnUiThread(runnable, false);
 		}
 		catch (Exception e) {
 			reportFail("takePicture", e);
 		}
 	}
 
-	public static void choosePicture(String sourceUrl) {
+	public static void choosePicture(String url) {
 		try {
-			Rhodes.performOnUiThread(new Runner(sourceUrl, FileList.class), false);
+			Rhodes.performOnUiThread(new Runner(url, FileList.class), false);
 		}
 		catch (Exception e) {
 			reportFail("choosePicture", e);

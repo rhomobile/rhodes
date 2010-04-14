@@ -610,6 +610,11 @@ public class Rhodes extends Activity {
 	}
 	
 	private static boolean hasNetwork() {
+		if (!Capabilities.NETWORK_STATE_ENABLED) {
+			Logger.E(TAG, "Capability NETWORK_STATE disabled");
+			return false;
+		}
+		
 		Context ctx = RhodesInstance.getInstance();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
