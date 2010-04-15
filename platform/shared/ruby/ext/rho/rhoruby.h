@@ -37,6 +37,8 @@ void RhoRubyInitApp();
 //void RhoRubyThreadStop();
 void rho_ruby_activateApp();
 void rho_ruby_loadserversources(const char* szData);
+void rho_ruby_start_threadidle();
+void rho_ruby_stop_threadidle();
 
 VALUE createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
