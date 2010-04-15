@@ -13,5 +13,5 @@ product_schema = {
         object varchar(255) PRIMARY KEY )"
 }
 
-Rho::RhoConfig::add_source("Product", {"source_id"=>2, "url"=>"Product", "priority"=>0, "partition"=>'application',
+Rho::RhoConfig::add_source("Product", {"priority"=>0, "partition"=>'application',
   "schema" => nil }) #product_schema })
