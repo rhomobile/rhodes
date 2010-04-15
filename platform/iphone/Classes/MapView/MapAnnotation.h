@@ -13,22 +13,18 @@
 
 
 @interface MapAnnotation : NSObject<MKAnnotation> {
-	NSString *_title, *_subtitle, *_street_address, *_url;
-	NSMutableString *_coordinate_string,*_resolved_address; 
+	NSString *title, *subtitle, *address, *url;
+	NSString *coordinateString,*resolvedAddress; 
 	CLLocationCoordinate2D coordinate;
 }
 
-- (void)setCoordinate:(CLLocationCoordinate2D)coordinate;
-- (void)setTitle:(NSString*)title;
-- (void)setSubtitle:(NSString*)subtitle;
-- (void)setAddress:(NSString*)street_address;
-- (NSString*)street_address;
-- (void)setCoordinateString:(NSString*)coordinate_string;
-- (NSString*)coordinate_string;
-- (void)setResolvedAddress:(NSString*)resolved_address;
-- (NSString*)resolved_address;
-- (void)setUrl:(NSString*)url;
-- (NSString*)url;
+@property (nonatomic,copy) NSString *title;
+@property (nonatomic,copy) NSString *subtitle;
+@property (nonatomic,copy) NSString *address;
+@property (nonatomic,copy) NSString *url;
+@property (nonatomic,copy) NSString *coordinateString;
+@property (nonatomic,copy) NSString *resolvedAddress;
+@property (nonatomic,assign) CLLocationCoordinate2D coordinate;
 
 @end
 

@@ -19,7 +19,7 @@
 		annotation = nil;
 		if ( (element.coordinate.latitude==10000) ||
 			(element.coordinate.longitude==10000) ) {
-			NSString* address = [element street_address];
+			NSString* address = [element address];
 			if ( ([address length] > 0) && [self geocode:element]) {
 				annotation = element;
 			}
@@ -53,7 +53,7 @@
 	BOOL retvar = TRUE;
 	currentAnnotation = annotation;
 	NSMutableString *url = [[NSMutableString alloc] initWithString:kGeoCodeURL];
-	[url appendString:[annotation street_address]];
+	[url appendString:[annotation address]];
 	[url appendFormat:@"&output=xml"];
 	[url replaceOccurrencesOfString:@"ä" withString:@"ae" options:1 range:(NSRange){0,[url length]}];
 	[url replaceOccurrencesOfString:@"ö" withString:@"oe" options:1 range:(NSRange){0,[url length]}];
@@ -87,7 +87,7 @@
 }
 
 -(CLLocation *)stringCooridinatesToCLLocation{
-	NSArray *array = [[currentAnnotation coordinate_string] componentsSeparatedByString:@","];
+	NSArray *array = [[currentAnnotation coordinateString] componentsSeparatedByString:@","];
 	double longitude = [[array objectAtIndex:0] doubleValue];
 	double lattitude = [[array objectAtIndex:1] doubleValue];
 	CLLocation *location = [[CLLocation alloc] initWithLatitude:lattitude longitude:longitude];
@@ -106,24 +106,16 @@
 }
 
 -(void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
+    string = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    string = [string stringByReplacingOccurrencesOfString:@"\\n" withString:@""];
+    if ([string length] == 0)
+        return;
+    
 	if([theElement isEqualToString:@"address"])
-		if([string isEqualToString:@"\n"]){
-		}
-		else if([string isEqualToString:@"\t"]){
-		}
-		else{
-			[currentAnnotation setResolvedAddress:string];
-		}
+        [currentAnnotation setResolvedAddress:string];
 	
-	if([theElement isEqualToString:@"coordinates"]){
-		if([string isEqualToString:@"\n"]){
-		}
-		else if([string isEqualToString:@"\t"]){
-		}
-		else{
-			[currentAnnotation setCoordinateString:string];
-		}
-	}
+	if([theElement isEqualToString:@"coordinates"])
+        [currentAnnotation setCoordinateString:string];
 }
 
 -(void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName
