@@ -7,7 +7,7 @@
 </div>
 
 <div id="content">
-    <form method="POST" action="<%=url_for(:action => 'do_login')%>">  
+    <form method="POST" action="<%= url_for :action => :do_login %>">  
 
         <% if @msg %>
           <div class="alert" align="center"><%= @msg %></div>
