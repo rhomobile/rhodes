@@ -12,82 +12,34 @@
 
 @implementation MapAnnotation
 
-@synthesize coordinate;
+@synthesize title, subtitle, address, url, coordinateString, resolvedAddress, coordinate;
 
 -(id) init {
 	[super init];
-	_title = [[NSString alloc] initWithFormat:@""];
-	_subtitle = [[NSString alloc] initWithFormat:@""];
-	_street_address = [[NSString alloc] initWithFormat:@""];
-	_coordinate_string = [[NSMutableString alloc] initWithFormat:@""]; 
-	_resolved_address = [[NSMutableString alloc] initWithFormat:@""];
-	_url = [[NSString alloc] initWithFormat:@""];
+	title = [[NSString alloc] initWithFormat:@""];
+	subtitle = [[NSString alloc] initWithFormat:@""];
+    address = [[NSString alloc] initWithFormat:@""];
+	coordinateString = [[NSMutableString alloc] initWithFormat:@""]; 
+	resolvedAddress = [[NSMutableString alloc] initWithFormat:@""];
+	url = [[NSString alloc] initWithFormat:@""];
 	return self;
 }
 
 -(void) dealloc {
-    [_title dealloc];
-    [_subtitle dealloc];
-    [_street_address dealloc];
-    [_coordinate_string dealloc];
-    [_resolved_address dealloc];
-    [_url dealloc];
+    [title release];
+    [subtitle release];
+    [address release];
+    [coordinateString release];
+    [resolvedAddress release];
+    [url release];
     [super dealloc];
 }
 
-- (void)setCoordinate:(CLLocationCoordinate2D)c {
-	coordinate = c;
-}
-
-- (void)setTitle:(NSString*)title {
-	_title = [title copy];
-}
-
-- (NSString *)title {
-	return _title;
-}
-
-- (void)setSubtitle:(NSString*)subtitle {
-	_subtitle = [subtitle copy];
-}
-
-- (NSString *)subtitle {
-	return _subtitle;
-}
-
-- (void)setAddress:(NSString*)street_address {
-	_street_address = [street_address copy];
-}
-
-- (NSString*)street_address {
-	return _street_address;
-}
-
-- (void)setCoordinateString:(NSString*)coordinate_string {
-	[_coordinate_string appendString:coordinate_string];
-}
-
-- (NSString*)coordinate_string {
-	return _coordinate_string;
-}
-
-- (void)setResolvedAddress:(NSString*)resolved_address {
-	[_resolved_address appendString:resolved_address];
-}
-
-
-- (NSString*)resolved_address {
-	return _resolved_address;
-}
-
-- (void)setUrl:(NSString*)url {
-    const char *surl = [url UTF8String];
+- (void)setUrl:(NSString*)u {
+    const char *surl = [u UTF8String];
     const char *norm_url = rho_http_normalizeurl(surl);
-    _url = [[NSString stringWithUTF8String:norm_url] copy];
-}
-
-- (NSString*)url {
-	return _url;
+    [url release];
+    url = [[NSString stringWithUTF8String:norm_url] copy];
 }
 
 @end
