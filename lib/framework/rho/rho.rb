@@ -192,7 +192,15 @@ module Rho
         
         @db_partitions.each_key do |partition|
             db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
-            init_db_sources(db, uniq_sources, partition)
+            db.start_transaction
+            begin
+                init_db_sources(db, uniq_sources, partition)
+                db.commit
+            rescue Exception => e
+                puts "exception when init_db_sources: #{e}"    
+                db.rollback
+            end
+                
             @db_partitions[partition] = db
         end
         
