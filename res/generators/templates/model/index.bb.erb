@@ -4,18 +4,18 @@
 
 
 <div id="toolbar">
-    <%%=link_to "New", :action => :new %>
-    <%%=link_to "Home", RhoConfig::start_path %>
+    <%%= link_to "New", :action => :new %>
+    <%%= link_to "Home", RhoConfig::start_path %>
 </div>
 
 <div id="content">
     <ul>
-    <%%@<%=name.downcase.pluralize%>.each do |obj|%>
+    <%% @<%= name.downcase.pluralize %>.each do |obj| %>
     	<% if self.attributes? %>
-    	    <li><%%=link_to "#{obj.<%=attributes[0]%>}", :action => :show, :id => obj.object%></li>
-    	<%else%>
+    	    <li><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></li>
+    	<% else %>
     	    <li>Some list entry...</li>
-    	<%end%>
-    <%%end%>
+    	<% end %>
+    <%% end %>
     </ul>
 </div>
