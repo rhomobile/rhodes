@@ -2,17 +2,19 @@
 	<h1>Reset Database</h1>
 </div>
 
-<div id="toolbar"></div>
+
+
+<div id="toolbar">
+  <div id="row">
+    <div id="leftItem" class="regularButton"><%=link_to "Cancel", :action => :index %></div>
+    <div id="rightItem" class="blueButton"><%=link_to "Confirm", :action => :do_reset %></div>
+  </div>
+</div>
+
 
 <div id="content">
     <div id="reset">
           <h4>Are you sure?<br/>
               Resetting removes all objects from your device.</h4>
-          <div class="standardButton">
-            <%= link_to "Confirm", {:action => :do_reset}, "target=\"_self\""%>
-          </div>
-          <div class="standardButton">
-            <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
-          </div>
     </div>
 </div>

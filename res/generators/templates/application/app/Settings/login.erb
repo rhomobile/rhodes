@@ -2,7 +2,14 @@
   <h1>Login</h1>
 </div>
 
-<div id="toolbar"></div>
+
+<div id="toolbar">
+  <div id="row">
+    <div id="leftItem" class="regularButton"><%=link_to "Cancel", :action => :index %></div>
+  </div>
+</div>
+
+
 
 <div id="content">
     <form title="Login to Rhodes"
@@ -24,8 +31,5 @@
             </li>
         </ul>
         <button class="standardButton" type="submit">Login</button>
-        <div class="standardButton">
-            <a href="<%=url_for(:controller => :Settings, :action => :index)%>" target="_self">Cancel</a>
-        </div>
     </form>
 </div>
