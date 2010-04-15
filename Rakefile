@@ -76,6 +76,15 @@ namespace "config" do
 
     end
     Jake.set_bbver($app_config["bbver"].to_s)
+    
+    extpaths = []
+
+    extpaths << $app_config["paths"]["extensions"] if $app_config["paths"] and $app_config["paths"]["extensions"]
+    extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
+    extpaths << File.join($app_path, "extensions")
+    extpaths << "lib/extensions"
+    $app_config["extpaths"] = extpaths
+    
   end
 
   out = `javac -version 2>&1`
@@ -190,15 +199,8 @@ def common_bundle_start(startdir, dest)
 
   extentries = []
   extlibs = [] 
-
-  extpaths = []
-
-  extpaths << $app_config["paths"]["extensions"] if $app_config["paths"] and $app_config["paths"]["extensions"]
-  extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
-  extpaths << File.join($app_path, "extensions")
-  extpaths << "lib/extensions"
-  $app_config["extpaths"] = extpaths
-
+  extpaths = $app_config["extpaths"]
+  
   $app_config["extensions"].each do |extname|
     extpath = nil
     extpaths.each do |p|

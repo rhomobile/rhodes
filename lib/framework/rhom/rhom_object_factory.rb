@@ -81,17 +81,10 @@ module Rhom
               class << self
 
                 def metadata
-                  begin
-                    require 'json'
-                  rescue
-                    return nil
-                  end
-
-                  return nil unless $".include? 'json'
                   db = ::Rho::RHO.get_src_db(get_source_name)
                   result = db.select_from_table('sources', 'metadata', {"name"=>get_source_name} )
                   if result && result.length > 0 && result[0]['metadata']
-                    return JSON.parse(result[0]['metadata'])
+                    return Rho::JSON.parse(result[0]['metadata'])
                   else
                     return nil
                   end
