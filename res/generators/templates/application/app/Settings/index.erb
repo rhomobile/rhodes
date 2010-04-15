@@ -12,27 +12,27 @@
         </li>
         <% end %>
         <li>
-            <span class="title">Client ID:</span><span class="clientID"><%=Rhom::Rhom::client_id%></span>
+            <span class="title">Client ID:</span><span class="clientID"><%= Rhom::Rhom::client_id %></span>
         </li>
         <li>
-          <a href="<%= url_for(:action => :reset)%>">
+          <a href="<%= url_for :action => :reset %>">
               <span class="title">Reset Database</span>
           </a>
         </li>
         <li>
-          <a href="<%= url_for(:action => :do_sync)%>">
+          <a href="<%= url_for :action => :do_sync %>">
               <span class="title">Perform Sync</span>
           </a>
         </li>
         <% if SyncEngine::logged_in > 0 %>
         <li>
-            <a href="<%= url_for(:action => :logout)%>">
+            <a href="<%= url_for :action => :logout %>">
               <span class="title">Logout</span>
             </a>
         </li>
         <% else %>
         <li>
-          <a href="<%= url_for(:action => :login)%>">
+          <a href="<%= url_for :action => :login %>">
                <span class="title">Login</span>
           </a>
         </li>

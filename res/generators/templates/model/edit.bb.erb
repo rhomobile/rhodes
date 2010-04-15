@@ -1,21 +1,21 @@
 <div id="pageTitle">
-		<h1>Edit <%%=@<%=name.downcase%>.<%=attributes[0]%>%></h1>
+		<h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %>%></h1>
 </div>
 
 <div id="toolbar">
-    <%%=link_to "Back", :action => :show, :id => @<%=name.downcase%>.object %>
-    <%%=link_to "Delete", :action => :delete, :id => @<%=name.downcase%>.object %>
+    <%%= link_to "Back", :action => :show, :id => @<%= name.downcase %>.object %>
+    <%%= link_to "Delete", :action => :delete, :id => @<%= name.downcase %>.object %>
 </div>
 
 
 <div id="content">
-    <form method="POST" action="<%%=url_for(:action => :update)%>">
-    	<input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
+    <form method="POST" action="<%%= url_for :action => :update %>">
+    	<input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
             <table>
         		<% attributes.each do |attribute| %>
                     <tr>
-        			    <td width="125" class="fieldLabel"><%=humanize(attribute)%>: </td>
-          			    <td><input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/></td>
+            			<td width="125" class="fieldLabel"><%= humanize(attribute) %>: </td>
+              			<td><input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>"/></td>
           		    </tr>
         		<% end %>
             </table>

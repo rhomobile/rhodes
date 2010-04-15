@@ -4,11 +4,11 @@
 
 <div id="toolbar">
     <div id="row">
-        <div id="leftItem" class="blueButton"><a href="#">Sync</a></div>
+        <div id="leftItem" class="blueButton"><%%= link_to "Sync", :action => :do_sync %></div>
         <%% if SyncEngine::logged_in > 0 %>
-          <div id="rightItem" class="regularButton"><%%=link_to "Logout", :controller => :Settings, :action => :logout%></div>
+          <div id="rightItem" class="regularButton"><%%= link_to "Logout", :action => :logout %></div>
         <%% else %>
-          <div id="rightItem" class="regularButton"><%%=link_to "Login", :controller => :Settings, :action => :login%></div>
+          <div id="rightItem" class="regularButton"><%%= link_to "Login", :action => :login %></div>
         <%% end %>
     </div>
 </div>
