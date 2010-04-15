@@ -4,6 +4,7 @@ require 'rho/rhoapplication'
 require 'rhom'
 require 'rhofsconnector'
 require 'rho/rhoerror'
+require 'rhom/rhom_source'
 
 module Rho
   class RHO
