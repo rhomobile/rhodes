@@ -6,7 +6,7 @@ import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.io.http.HttpHeaders;
-import rhomobile.Alert;
+import com.rho.rubyext.Alert;
 import rhomobile.NativeBar;
 import rhomobile.RhoPhonebook;
 import rhomobile.RhodesApplication;
