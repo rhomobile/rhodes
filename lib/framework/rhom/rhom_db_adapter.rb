@@ -29,6 +29,8 @@ module Rhom
       
       # maintains a single database connection
       def initialize(dbfile, partition)
+        @ruby_mutex = Mutex.new
+
         unless @database
           @database = SQLite3::Database.new(dbfile,partition)
         end
@@ -46,6 +48,7 @@ module Rhom
       #end   
     
       def start_transaction
+          @ruby_mutex.lock
           begin
             @inside_transaction = true
             @database.start_transaction
@@ -61,6 +64,7 @@ module Rhom
           rescue Exception => e
             puts "exception when commit transaction"
           end
+          @ruby_mutex.unlock
       end
 
       def rollback
@@ -70,6 +74,7 @@ module Rhom
           rescue Exception => e
             puts "exception when rollback transaction"
           end
+          @ruby_mutex.unlock
       end
     
       # execute a sql statement
@@ -83,9 +88,19 @@ module Rhom
           # before we perform a database transaction.
           # This prevents concurrency issues.
           begin
-            @database.lock_db unless @inside_transaction
+            #@database.lock_db unless @inside_transaction
+            if !@inside_transaction
+                @ruby_mutex.lock
+                @database.lock_db 
+            end
+            
             result = @database.execute( sql, args )
-            @database.unlock_db unless @inside_transaction
+            
+            if !@inside_transaction
+                @database.unlock_db
+                @ruby_mutex.unlock
+            end            
+            #@database.unlock_db unless @inside_transaction
           rescue Exception => e
             #puts "exception when running query: #{e}"
             # make sure we unlock even if there's an error!
@@ -93,6 +108,7 @@ module Rhom
               raise
             else
               @database.unlock_db
+              @ruby_mutex.unlock
             end    
           end
         end
