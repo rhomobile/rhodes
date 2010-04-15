@@ -498,10 +498,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if ( resp.isOK() && resp.getCharData() != null )
 	    {
 	    	String szData = resp.getCharData();
-	    	processServerSources(szData);
 	    	
 	        JSONEntry oJsonEntry = new JSONEntry(szData);
 	
+	        if (oJsonEntry.hasName("server_sources") )
+	            processServerSources(szData);
+	        
 	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
 	        if ( !oJsonObject.isEmpty() )
 	            return oJsonObject.getString("client_id");
