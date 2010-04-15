@@ -14,11 +14,11 @@
             <table>
         		<% attributes.each do |attribute| %>
                     <tr>
-        			    <td width="100px" class="fieldLabel"><%=humanize(attribute)%>: </td>
+        			    <td width="125" class="fieldLabel"><%=humanize(attribute)%>: </td>
           			    <td><input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%=@<%=name.downcase%>.<%=attribute%>%>"/></td>
           		    </tr>
         		<% end %>
             </table>
-            <button class="standardButton" type="submit">Update</button>
+            <input type="submit" value="Update"/>
     </form>
 </div>
