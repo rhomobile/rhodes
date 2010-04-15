@@ -222,8 +222,12 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
 
 void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, const String &title)
 {
+    if ( strCallbackUrl.length() == 0 )
+        return;
+
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody = "button_id=" + id + "&button_title=" + title;
+    strBody += "&rho_callback=1";
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
