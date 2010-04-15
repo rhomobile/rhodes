@@ -406,10 +406,8 @@ String CSyncEngine::requestClientIDByNet()
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
-
-        processServerSources(szData);
-/*
-        processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","
+        /*
+        "{\"client\":{\"client_id\":\"vasy\"},\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","
         "\"schema\":{\"version\":\"1.0\","
         "\"sql\":\"CREATE TABLE Product ( "
         "brand varchar default NULL,"
@@ -419,10 +417,13 @@ String CSyncEngine::requestClientIDByNet()
         "quantity int default NULL,"
         "sku varchar default NULL,"
         "updated_at varchar default NULL,"
-        "object varchar(255) PRIMARY KEY )\"}}]}"); 
-*/
+        "object varchar(255) PRIMARY KEY )\"}}]}";*/
 
         CJSONEntry oJsonEntry(szData);
+
+        if (oJsonEntry.hasName("server_sources") )
+            processServerSources(szData);
+
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");
         if ( !oJsonObject.isEmpty() )
             return oJsonObject.getString("client_id");
