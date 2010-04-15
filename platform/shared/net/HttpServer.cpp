@@ -340,7 +340,9 @@ bool CHttpServer::run()
     
     for(;;) {
         RAWTRACE("Waiting for connections...");
+        rho_ruby_start_threadidle();
         SOCKET conn = accept(m_listener, NULL, NULL);
+        rho_ruby_stop_threadidle();
 		if (m_exit) {
 			RAWTRACE("Stop HTTP server");
 			return true;
