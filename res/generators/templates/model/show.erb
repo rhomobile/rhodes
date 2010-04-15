@@ -1,11 +1,11 @@
 <div id="pageTitle">
-	<h1><%%=@<%=name.downcase%>.<%=attributes[0]%>%></h1>
+	<h1><%%= @<%= name.downcase %>.<%= attributes[0] %>%></h1>
 </div>
 
 <div id="toolbar">
     <div id="row">
-      <div id="leftItem" class="backButton"><%%=link_to "Back", :action => :index%></div>
-      <div id="rightItem" class="regularButton"><%%=link_to "Edit", :action => :edit, :id => @<%=name.downcase%>.object%></div>
+      <div id="leftItem" class="backButton"><%%= link_to "Back", :action => :index %></div>
+      <div id="rightItem" class="regularButton"><%%= link_to "Edit", :action => :edit, :id => @<%= name.downcase %>.object %></div>
     </div>
 </div>
 
@@ -13,8 +13,8 @@
     <ul>
         <% attributes.each do |attribute| %>
         <li>
-            <span class="title"><%=attribute.camelize%></span>
-            <span class="gridItem"><%%=@<%=name.downcase%>.<%=attribute%>%></span>
+            <span class="title"><%= attribute.camelize %></span>
+            <span class="gridItem"><%%= @<%= name.downcase %>.<%= attribute %>%></span>
         </li>
         <% end %>
     </ul>
