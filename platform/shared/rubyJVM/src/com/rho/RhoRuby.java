@@ -143,7 +143,7 @@ public class RhoRuby {
 		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
 		
     	//Class mainRuby = Class.forName("xruby.ServeME.main");
-		DBAdapter.startAllDBTransaction();
+		//DBAdapter.startAllDBTransaction();
 		try{
 			mainObj = helper.createMainObject();//new xruby.ServeME.main();//(RubyProgram)mainRuby.newInstance();
 			receiver = mainObj.invoke();
@@ -152,7 +152,7 @@ public class RhoRuby {
 				throw new RuntimeException("Initialize Rho framework failed.");
 		}finally
 		{
-			DBAdapter.commitAllDBTransaction();
+			//DBAdapter.commitAllDBTransaction();
 		}
 		
 //		RubyModule modRhom = (RubyModule)RubyRuntime.ObjectClass.getConstant("Rhom");

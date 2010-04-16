@@ -3,18 +3,18 @@
 </div>
 
 <div id="toolbar">
-    <%%=link_to "Back", :action => :index %>
+    <%%= link_to "Back", :action => :index %>
 </div>
 
 
 <div id="content">
 
-    <form method="POST" action="<%%=url_for(:action => :create)%>">
-	    <input type="hidden" name="id" value="<%%=@<%= name.downcase %>.object%>"/>
+    <form method="POST" action="<%%= url_for :action => :create %>">
+	    <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
         <table>
     		<% attributes.each do |attribute| %>
     		  <tr>
-    			  <td width="125"><%=humanize(attribute)%>: </td>
+    			  <td width="125"><%= humanize(attribute) %>: </td>
     			  <td><input type="text" name="<%= name.downcase %>[<%= attribute %>]"/></td>
     		  </tr>
     		<% end %>
