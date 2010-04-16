@@ -7,6 +7,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.jav
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoMenu.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
