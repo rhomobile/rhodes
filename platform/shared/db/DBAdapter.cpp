@@ -529,7 +529,7 @@ DBResultPtr CDBAdapter::executeSQLReportNonUnique( const char* szSt, Vector<Stri
     if ( res->getStatement() == null )
         return res;
 
-    for (int i = 0; i < arValues.size(); i++ )
+    for (int i = 0; i < (int)arValues.size(); i++ )
         bind(res->getStatement(), i+1, arValues.elementAt(i));
 
     res->setReportNonUnique(true);
@@ -542,7 +542,7 @@ DBResultPtr CDBAdapter::executeSQL( const char* szSt, Vector<String>& arValues)
     if ( res->getStatement() == null )
         return res;
 
-    for (int i = 0; i < arValues.size(); i++ )
+    for (int i = 0; i < (int)arValues.size(); i++ )
         bind(res->getStatement(), i+1, arValues.elementAt(i));
 
     return executeStatement(res);

@@ -4,29 +4,29 @@
 
 <div id="toolbar">
     <div id="row">
-        <div id="leftItem" class="regularButton"><%%=link_to "Home", Rho::RhoConfig.start_path%></div>
-        <div id="rightItem" class="regularButton"><%%=link_to "New", :controller => :<%= name.camelize %>, :action => :new%></div>
+        <div id="leftItem" class="regularButton"><%%= link_to "Home", Rho::RhoConfig.start_path %></div>
+        <div id="rightItem" class="regularButton"><%%= link_to "New", :controller => :<%= name.camelize %>, :action => :new %></div>
     </div>
 </div>
 
 <div id="content">
     <ul>
-        <%%@<%=name.downcase.pluralize%>.each do |obj|%>
-            <%if self.attributes?%>
+        <%% @<%= name.downcase.pluralize %>.each do |obj| %>
+            <% if self.attributes? %>
             <li>
-                <a href="<%%= url_for(:action => :show, :id => obj.object) %>">
-                    <span class="title"><%%= obj.<%=attributes[0]%> %></span>
+                <a href="<%%= url_for :action => :show, :id => obj.object %>">
+                    <span class="title"><%%= obj.<%= attributes[0] %> %></span>
                     <span class="disclosure_indicator"></span>
                 </a>
             </li>
-            <%else%>
+            <% else %>
             <li>
                 <a href="#">
                     <span class="title">Some list entry...</span>
                     <span class="disclosure_indicator"></span>
                 </a>
             </li>
-            <%end%>
-        <%%end%>
+            <% end %>
+        <%% end %>
     </ul>
 </div>

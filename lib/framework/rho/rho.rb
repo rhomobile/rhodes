@@ -4,6 +4,7 @@ require 'rho/rhoapplication'
 require 'rhom'
 require 'rhofsconnector'
 require 'rho/rhoerror'
+require 'rhom/rhom_source'
 
 module Rho
   class RHO
@@ -162,7 +163,7 @@ module Rho
         @db_partitions = {}
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_sources: ' + uniq_sources.inspect
-        
+
         uniq_sources.each do |source|
           partition = source['partition']
           @db_partitions[partition] = nil
@@ -191,7 +192,15 @@ module Rho
         
         @db_partitions.each_key do |partition|
             db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
-            init_db_sources(db, uniq_sources, partition)
+            db.start_transaction
+            begin
+                init_db_sources(db, uniq_sources, partition)
+                db.commit
+            rescue Exception => e
+                puts "exception when init_db_sources: #{e}"    
+                db.rollback
+            end
+                
             @db_partitions[partition] = db
         end
         
@@ -231,6 +240,11 @@ module Rho
     end
     
     def init_db_sources(db, uniq_sources, db_partition)
+    
+        result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
+        #puts 'result: ' + result.inspect
+        start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+1 : 0
+    
         uniq_sources.each do |source|
           puts "init_db_sources : #{source}"
           name = source['name']
@@ -260,9 +274,17 @@ module Rho
             end
             
           else
+            if !source['source_id']
+                source['source_id'] = start_id
+                Rho::RhoConfig::sources[name]['source_id'] = start_id
+                
+                start_id += 1
+            end
+          
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition,
                 "schema_version"=>source['schema_version'], 'links'=>links })
+                
           end
           
         end
