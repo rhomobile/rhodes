@@ -495,7 +495,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 	PROF_STOP("Data1");
 }
 
-void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry& oCmdEntry)
+void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
 {
     CJSONStructIterator objIter(oCmdEntry);
 
