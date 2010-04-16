@@ -49,24 +49,24 @@ public class GeoLocation extends RhoThread{
 			try{
 				if ( location == null )
 				{
-					LOG.TRACE("GetLocation - locationUpdated: location is null.");
+					LOG.TRACE("locationUpdated: location is null.");
 					return;
 				}
 				
 				if( !location.isValid() )
 				{
-                    String strExtraInfo = location.getExtraInfo("text/plain");
-					LOG.TRACE("GetLocation - locationUpdated: location invalid.Extra info: " + (strExtraInfo!=null ? strExtraInfo :""));
- 					return;
+					String strExtraInfo = location.getExtraInfo("text/plain");
+					LOG.TRACE("locationUpdated: location invalid.Extra info: " + (strExtraInfo!=null ? strExtraInfo :"") );
+					return;
 				}
 				
 				coord = location.getQualifiedCoordinates();
 				if(coord != null ) 
 				{
-					LOG.TRACE("GetLocation - latitude: " + Double.toString(m_parent.m_lat));
-					LOG.TRACE("GetLocation - longitude: " + Double.toString(m_parent.m_lon));
+					LOG.TRACE("locationUpdated - latitude: " + Double.toString(coord.getLatitude()));
+					LOG.TRACE("locationUpdated - longitude: " + Double.toString(coord.getLongitude()));
 				}else
-					LOG.TRACE("GetLocation - getQualifiedCoordinates: return null.");
+					LOG.TRACE("locationUpdated - getQualifiedCoordinates: return null.");
 				
 			}catch(Exception exc)
 			{
@@ -213,6 +213,8 @@ public class GeoLocation extends RhoThread{
 			{
 				if (bErrorNotify)
 					onLocationError();
+				else
+					checkKnownPosition();
 			}
 		}
 	}
@@ -294,6 +296,40 @@ public class GeoLocation extends RhoThread{
 			m_ViewNotify.fire(true);
 			m_ViewNotify = null;
 		}
+    }
+    
+    void checkKnownPosition()
+    {
+		synchronized(sync)
+		{
+			if ( m_bDetermined )
+				return;
+
+			try{
+				Location location = LocationProvider.getLastKnownLocation();
+				if ( location != null && location.isValid() )
+				{
+					long locTime = location.getTimestamp();
+					long curTime = java.lang.System.currentTimeMillis();
+					long ageInMitutes = (curTime - locTime)/60000;  
+					LOG.TRACE("getLastKnownLocation return valid location. Age in minutes from now: " + ageInMitutes);
+					Coordinates coord = location.getQualifiedCoordinates();
+					if(coord != null ) 
+					{
+						LOG.TRACE("getLastKnownLocation - latitude: " + Double.toString(coord.getLatitude()));
+						LOG.TRACE("getLastKnownLocation - longitude: " + Double.toString(coord.getLongitude()));
+						
+						if ( ageInMitutes <= 10 )
+							updateLocation(coord.getLatitude(), coord.getLongitude());
+					}else
+						LOG.TRACE("getLastKnownLocation - getQualifiedCoordinates: return null.");
+				}
+			}catch(Exception exc)
+			{
+				LOG.ERROR("getLastKnownLocation failed.", exc);
+			}
+		}
+		
     }
     
 	private void updateLocation( double dLatitude, double dLongitude )
