@@ -1,4 +1,5 @@
 /* Common css */
+
 body {
     margin: 0;
     font-family: Helvetica;
@@ -7,6 +8,7 @@ body {
 h1 {
     font-size: 1.4em;
 }
+
 
 /* header */
 
@@ -100,7 +102,7 @@ div#row .blueButton {
 }
 
 div#content {
-    background: url(/public/images/pinstripes.png);
+    background: url('/public/images/pinstripes.png');
 		min-height:480px;
 }
 
@@ -133,37 +135,27 @@ div#content .standardButton a {
 }
 
 
-
-
-
 /*  text styles  */
 
 .darkBlue {
 	color:#7287A4;
 }
+
 div#content .groupTitle{
 	margin: 8px;
 	color:#565E70;
 }
 
 
-
-
-
 /* lists */
-
 
 div#content ul {
     border-top: 1px solid #848284;
     background-color: white;
-    height: 100%;
-		margin-bottom:50px;
+	margin-bottom:50px;
 }
 
 div#content ul li {
-    width: 100%;
-    height: 75px;
-    list-style-type: none;
     border-bottom: 1px solid #848284;
 }
 
@@ -174,23 +166,29 @@ div#content ul li a {
     font-size: 20px;
     height: 100%;
     width: 100%;
+    padding: 15px 0 15px 0;
 }
 
 div#content ul li a:hover {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(5, 140, 245)), to(rgb(1, 95, 230)));
 }
 
-div#content ul li span{
-	line-height: 75px;
+div#content ul li span.title {
+    padding: 0 10px 0 10px;
+    font-size: 20px;
+	font-weight: bold;
 }
 
-div#content ul li span.title {
-    margin-left: 30px;
-    font-size: 20px;
-		font-weight: bold;
-		float: left;
-    width:auto;
+div#content ul li span.itemLabel {
+    float: left;
+    width: 45%;
+    padding: 15px 0 15px 10px;
+}
 
+div#content ul li span.itemValue {
+    float: right;
+    width: 45%;
+    padding: 15px 10px 15px 0;
 }
 
 div#content ul li a span.disclosure_indicator {
@@ -215,18 +213,11 @@ div#content ul li a img {
     max-width: 100px;
 }
 
-div#content ul li span.gridItem {
-    float: right;
-    margin-right: 5px;
-    text-align: left;
-    width: 145px;
-}
-
 
 /* Forms */
 
 div#content form {
-  padding: 5px 0 75px 0;
+    padding: 5px 0 75px 0;
 	border: none;
 	width:300px;
 	margin:0 auto;
@@ -239,95 +230,102 @@ div#content form ul {
     border: 1px solid #878787;
     display: block;
     font-size: 16px;
-    list-style-image: none;
-    list-style-position: outside;
     list-style-type: none;
     margin: 0 auto 15px auto;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
     padding: 0;
 }
 
 div#content form ul li {
     display: block;
-    height: auto;
-		min-height:40px;
-		line-height:40px;
-    list-style-type: none;
-    overflow-x: hidden;
-    overflow-y: hidden;
     border-bottom: 1px solid #848284;
+    line-height: 42px;
+    min-height: 40px;
+    width: 300px;
+    overflow:hidden;
 }
 
 div#content form ul li:last-child {
     border:none;
 }
 
+
+div#content form ul li label {
+    float: left;
+    display:block;
+    color: black;
+    line-height: 54px;
+    padding: 0;
+    margin: 0 20px 0 10px;
+    width: 40%;
+    overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight:bold;
+}
+
 div#content form ul li label.fieldLabel {
 	display:none;
 }
 
-div#content form input, 
-div#content form select{
+div#content form input {
+	-webkit-appearance: none;
+	width: 45%;
+    border: 0;
+}
+
+div#content form input, div#content form select{
 	height:40px;
-	line-height:40px;
 	font-size: medium;
 	font-weight: bold;
 }
 
-label{
-	margin-left:10px;
-	font-weight:bold;
-}
-
-input {
-	-webkit-appearance: none;
-	border:0;
-	height:40px;
-	width: 300px;
+div#content form input[type="text"], div#content form input[type="password"] {
+    width:289px;
+    background: transparent;
+    padding: 0 5px 0 10px;
 }
 
 div#content form input[type="checkbox"] {
-    background: url(/public/images/iphone/switch.png) no-repeat;
+    background: url('/public/images/iphone/switch.png') no-repeat;
     float: right;
-    margin: 10px 15px;
+    display:block;
+    margin:15px;
+    line-height:40px;
     height: 27px;
     width: 94px;
 }
+
 div#content form input[type="checkbox"]:checked {
     background-position-y: -27px;
 }
 
 div#content form input[type="radio"] {
-    width:290px;
-		position: absolute;
-		margin-right:12px;
-		padding:15px;
-}
-div#content form input[type="radio"]:checked {
- background: url(/public/images/iphone/radiobutton.png) no-repeat;
- background-position-x: 100%;
- background-position-y: 50%;
+	position: relative;
+	display:block;
+	width:290px;
+	height: 54px;
+	-webkit-border-radius: 8px;
 }
 
-div#content form input[type="text"], 
-div#content form input[type="password"] {
-    width: 100%;
-    background: transparent;
+div#content form input[type="radio"]:checked {
+ background: url('/public/images/iphone/radiobutton.png') no-repeat;
+ background-position-x: 100%;
+ background-position-y: 50%;
 }
 
 div#content form select {
   	background: url('/public/images/iphone/select.png') no-repeat right;
     border: 0px;
-		width:100%;
+	width:100%;
 }
 
 div#content form textarea {
   	-webkit-appearance: none;
     border: none;
-		font-size: medium;
-		width:280px;
-		line-height:20px;
+	font-size: medium;
+	width:280px;
+	line-height:20px;
 }
 
 
