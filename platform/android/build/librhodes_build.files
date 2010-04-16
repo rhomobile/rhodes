@@ -7,6 +7,7 @@ platform/android/Rhodes/jni/src/geolocation.cpp
 platform/android/Rhodes/jni/src/logconf.cpp
 platform/android/Rhodes/jni/src/logger.cpp
 platform/android/Rhodes/jni/src/mapview.cpp
+platform/android/Rhodes/jni/src/menu.cpp
 platform/android/Rhodes/jni/src/nativebar.cpp
 platform/android/Rhodes/jni/src/phonebook.cpp
 platform/android/Rhodes/jni/src/rhoconf.cpp
