@@ -21,10 +21,10 @@ class String
     return self
   end
   def encoding
-    if Encoding.responds_to?('new')
-      Encoding.new()
+    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
+      Encoding.new
     else
-      Encoding.default_external()
+      Encoding.default_external
     end
   end
 end
