@@ -64,12 +64,7 @@ RHO_GLOBAL VALUE rho_sys_makephonecall(const char* callname, int nparams, char**
 
 RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 {
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-    if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "showNetworkIndicator", "(Z)V");
-    if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, enable);
+    // No GUI indicator on Android
 }
 
 RHO_GLOBAL void *rho_nativethread_start()
