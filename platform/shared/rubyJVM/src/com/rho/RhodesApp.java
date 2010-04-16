@@ -1,5 +1,6 @@
 package com.rho;
 
+import com.rho.net.*;
 import com.xruby.runtime.lang.RubyValue;
 import java.util.Vector;
 
@@ -13,6 +14,8 @@ public class RhodesApp
 	private String m_strRhoRootPath;
     Vector/*<unsigned long>*/ m_arCallbackObjects = new Vector();
     private SplashScreen m_oSplashScreen = new SplashScreen();
+
+    NetRequest getNet() { return RhoClassFactory.createNetRequest();}
     
     public static RhodesApp Create(String strRootPath)
     {
@@ -68,5 +71,20 @@ public class RhodesApp
         m_arCallbackObjects.setElementAt(null,nIndex);        
         return res;
     }
-    
+
+    String canonicalizeRhoUrl(String strUrl)throws Exception 
+    {
+    	return getNet().resolveUrl(strUrl);    	
+    }
+ 
+    public void callPopupCallback(String strCallbackUrl, String id, String title)throws Exception
+    {
+        if ( strCallbackUrl == null || strCallbackUrl.length() == 0 )
+            return;
+    	
+        strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+        String strBody = "button_id=" + id + "&button_title=" + title;
+        strBody += "&rho_callback=1";
+        getNet().pushData( strCallbackUrl, strBody, null );
+    }    
 }

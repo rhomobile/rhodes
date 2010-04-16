@@ -55,8 +55,9 @@ public class GeoLocation extends RhoThread{
 				
 				if( !location.isValid() )
 				{
-					LOG.TRACE("GetLocation - locationUpdated: location invalid.");
-					return;
+                    String strExtraInfo = location.getExtraInfo("text/plain");
+					LOG.TRACE("GetLocation - locationUpdated: location invalid.Extra info: " + (strExtraInfo!=null ? strExtraInfo :""));
+ 					return;
 				}
 				
 				coord = location.getQualifiedCoordinates();

@@ -136,6 +136,7 @@ public class NetRequest
 		try{
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
+			LOG.INFO("connection done");
 			
 			if ( oSession != null )
 			{
@@ -146,10 +147,11 @@ public class NetRequest
 			}
 			
 			m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			m_connection.setRequestProperty("Connection", "keep-alive");
+			//m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
 			writeHeaders(headers);
+			LOG.INFO("writeHeaders done");
 			if ( strBody != null && strBody.length() > 0 )
 			{
 				m_connection.setRequestMethod(strMethod);
@@ -158,7 +160,10 @@ public class NetRequest
 			}else
 				m_connection.setRequestMethod(strMethod);
 			
+			LOG.INFO("write body done");
+			
 			is = m_connection.openInputStream();
+			LOG.INFO("openInputStream done");
 			code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);

@@ -10,7 +10,6 @@ import com.rho.RhoLogger;
 import com.rho.sync.SyncThread;
 import com.rho.RhoConf;
 
-import net.rim.device.api.system.*;
 import net.rim.device.api.util.*;
 import net.rim.device.api.io.http.*;
 
@@ -208,15 +207,15 @@ public class PushListeningThread extends Thread {
     }
     
     private void showPopup(String message) {
-    	RhodesApplication.getInstance().showPopup(message);
+    	com.rho.rubyext.Alert.showPopup(message);
 	}
     
     private void vibrate(String duration) {
-    	RhodesApplication.getInstance().vibrate(duration);
+    	com.rho.rubyext.Alert.vibrate(duration);
     }
 
     private void play_file(String file_name, String media_type) {
-    	RhodesApplication.getInstance().play_file(file_name, media_type);
+    	com.rho.rubyext.Alert.play_file(file_name, media_type);
     }
    
     private void processPushMessage(final byte[] data, int nLen)
