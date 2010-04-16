@@ -18,7 +18,7 @@ struct ISyncProtocol
     virtual String getClientRegisterBody(const String& strClientID, const String& strPin, int nPort, const String& strType ) = 0;
 
     virtual String getClientResetUrl(const String& strClientID) = 0;
-    virtual String getClientChangesUrl(const String& strSrcName, const String& strUpdateType, const String& strClientID) = 0;
+    virtual String getClientChangesUrl() = 0;
 
     virtual String getServerQueryUrl(const String& strAction) = 0;
     virtual String getServerQueryBody(const String& strSrcName, const String& strClientID, int nPageSize )=0;
