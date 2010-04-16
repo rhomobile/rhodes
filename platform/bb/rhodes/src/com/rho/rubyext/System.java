@@ -1,6 +1,5 @@
 package com.rho.rubyext;
 
-import rhomobile.RhodesApplication;
 import net.rim.blackberry.api.phone.Phone;
 import net.rim.device.api.i18n.Locale;
 import net.rim.device.api.system.Display;
