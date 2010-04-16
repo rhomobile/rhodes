@@ -134,7 +134,7 @@ public:
 
     db::CDBAdapter& getDB(){ return m_dbAdapter; }
 
-    void processSyncCommand(const String& strCmd, json::CJSONEntry& oCmdEntry);
+    void processSyncCommand(const String& strCmd, json::CJSONEntry oCmdEntry);
 
     void processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, json::CJSONStructIterator& attrIter);//throws Exception
 
