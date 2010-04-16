@@ -519,6 +519,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	void doBulkSync()throws Exception
 	{
+	    if ( !RhoConf.getInstance().isExist("bulksync_state") )
+	        return;
+		
 	    int nBulkSyncState = RhoConf.getInstance().getInt("bulksync_state");;
 	    if ( nBulkSyncState >= 1 || !isContinueSync() )
 	        return;
