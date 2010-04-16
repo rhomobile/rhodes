@@ -49,11 +49,11 @@ private:
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
 	
-	common::CMutex m_mxScreenRotationCallback;
+    common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
 
-	common::CMutex m_mxAppMenu;
-	CAppMenu m_oAppMenu;
+    common::CMutex m_mxAppMenu;
+    CAppMenu m_oAppMenu;
 	
 public:
     ~CRhodesApp(void);
@@ -88,9 +88,9 @@ public:
     void callAppActiveCallback(boolean bActive);
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
 
-	void setAppMenu(unsigned long valMenu);
+    void setAppMenu(unsigned long valMenu);
     void addAppMenuItem( const String& strLabel, const String& strLink );
-	CAppMenu& getAppMenu (void) { return m_oAppMenu; }
+    CAppMenu& getAppMenu (void) { return m_oAppMenu; }
 	
     boolean sendLog();
 
@@ -107,8 +107,8 @@ public:
     void setPushNotification(String strUrl, String strParams );
     boolean callPushCallback(String strData);
 	
-	void setScreenRotationNotification(String strUrl, String strParams);
-	void callScreenRotationCallback(int width, int height, int degrees);
+    void setScreenRotationNotification(String strUrl, String strParams);
+    void callScreenRotationCallback(int width, int height, int degrees);
 
 private:
     virtual void run();

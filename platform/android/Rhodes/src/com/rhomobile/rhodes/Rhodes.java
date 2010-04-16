@@ -29,7 +29,6 @@ import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
-import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
 import com.rhomobile.rhodes.uri.MailUriHandler;
@@ -54,7 +53,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -104,6 +102,8 @@ public class Rhodes extends Activity {
 	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
+	
+	private RhoMenu appMenu = null;
 		
 	private String rootPath = null;
 	
@@ -111,7 +111,7 @@ public class Rhodes extends Activity {
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
-	private native void doSyncAllSources(boolean v);
+	public native void doSyncAllSources(boolean v);
 	
 	public native String getOptionsUrl();
 	public native String getStartUrl();
@@ -497,8 +497,9 @@ public class Rhodes extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater mi = new MenuInflater(getApplication());
-		mi.inflate(AndroidR.menu.options, menu);
+		//MenuInflater mi = new MenuInflater(getApplication());
+		//mi.inflate(AndroidR.menu.options, menu);
+		appMenu = new RhoMenu(menu);
 		return true;
 	}
 
@@ -506,7 +507,7 @@ public class Rhodes extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			goBack();
+			mainView.back(mainView.activeTab());
 			return true;
 		case KeyEvent.KEYCODE_HOME:
 			stopSelf();
@@ -518,6 +519,7 @@ public class Rhodes extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		/*
 		switch (item.getItemId()) {
 		case AndroidR.id.about:
 			AboutDialog aboutDialog = new AboutDialog(this);
@@ -527,53 +529,9 @@ public class Rhodes extends Activity {
 			aboutDialog.show();
 			return true;
 			
-		case AndroidR.id.navigation_back:
-			goBack();
-			return true;
-			
-		case AndroidR.id.navigation_forward:
-			goForward();
-			return true;
-
-		case AndroidR.id.navigation_home:
-			mainView.navigate(getStartUrl(), mainView.activeTab());
-			return true;
-
-		case AndroidR.id.options:
-			String curUrl = getOptionsUrl();
-			mainView.navigate(curUrl, mainView.activeTab());
-			return true;
-
-		case AndroidR.id.refresh:
-			mainView.reload(mainView.activeTab());
-			return true;
-			
-		case AndroidR.id.sync:
-			doSyncAllSources(true);
-			return true;
-			
-		case AndroidR.id.logview:
-			showLogView();
-			return true;
-			
-		case AndroidR.id.logoptions:
-			showLogOptions();
-			return true;	
-
-		case AndroidR.id.exit:
-			stopSelf();
-			return true;
-		}
-
 		return false;
-	}
-	
-	private void goBack() {
-		mainView.back(mainView.activeTab());
-	}
-	
-	private void goForward() {
-		mainView.forward(mainView.activeTab());
+		*/
+		return appMenu.onMenuItemSelected(item);
 	}
 	
 	public static void showLogView() {
@@ -603,10 +561,6 @@ public class Rhodes extends Activity {
 		String[] children = new File(folder).list();
 		for (int i = 0; i != children.length; ++i)
 			Utils.deleteRecursively(new File(folder, children[i]));
-	}
-	
-	public static void showNetworkIndicator(boolean v) {
-		// No GUI indicator
 	}
 	
 	private static boolean hasNetwork() {

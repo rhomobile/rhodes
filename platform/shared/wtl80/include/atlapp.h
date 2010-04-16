@@ -188,15 +188,6 @@ inline int WINAPI lstrlenA(LPCSTR lpszString)
   #define PtrToInt( p ) ((INT)(INT_PTR) (p) )
 #endif
 
-#else // !(_ATL_VER >= 0x0800)
-
-#ifdef lstrlenW
-  #undef lstrlenW
-  #define lstrlenW (int)::wcslen
-#endif // lstrlenW
-
-#define lstrlenA (int)strlen
-
 #ifndef lstrcpyn
   inline LPTSTR lstrcpyn(LPTSTR lpstrDest, LPCTSTR lpstrSrc, int nLength)
   {
@@ -227,6 +218,15 @@ inline int WINAPI lstrlenA(LPCSTR lpszString)
 	return lpstrRet;
   }
 #endif // !lstrcpyn
+
+#else // !(_ATL_VER >= 0x0800)
+
+#ifdef lstrlenW
+  #undef lstrlenW
+  #define lstrlenW (int)::wcslen
+#endif // lstrlenW
+
+#define lstrlenA (int)strlen
 
 #ifdef TrackPopupMenu
   #undef TrackPopupMenu
@@ -731,7 +731,7 @@ namespace SecureHelper
 		}
 		else if(cchCount == _TRUNCATE)
 		{
-			cchCount = min(cchDest - 1, size_t(lstrlenA(lpstrSrc)));
+			cchCount = min(cchDest - 1, size_t(::lstrlenA(lpstrSrc)));
 			nRet = STRUNCATE;
 		}
 		else if(cchDest <= cchCount)
