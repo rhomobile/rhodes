@@ -9,22 +9,22 @@
 
     <ul>
         <li>
-            <p>Client ID: <span class="cid"><%=Rhom::Rhom::client_id%></span></p>
+            <p>Client ID: <span class="cid"><%= Rhom::Rhom::client_id %></span></p>
         </li>
         <li>
-            <%=link_to "Reset Database", :action => :reset%>
+            <%= link_to "Reset Database", :action => :reset %>
         </li>
         <li>
-            <%=link_to "Sync", :action => :do_sync%>
+            <%= link_to "Sync", :action => :do_sync %>
         </li>
 
     	<% if SyncEngine::logged_in > 0 %>		
     	    <li>
-    	        <%=link_to "Logout", :action => :logout%>
+    	        <%= link_to "Logout", :action => :logout %>
     	    </li>
     	<% else %>
     	    <li>
-    	        <%=link_to "Login", :action => :login%>
+    	        <%= link_to "Login", :action => :login %>
     	    </li>
     	<% end %>
     </ul>

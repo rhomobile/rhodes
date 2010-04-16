@@ -73,7 +73,7 @@ module Rho
           model = Object.const_get(@request['model'].to_sym)
         rescue
         end
-        if model.respond_to? :metadata and model.metadata != nil and model.metadata[action.to_s] != nil
+        if model.respond_to?( :metadata ) and model.metadata != nil and model.metadata[action.to_s] != nil
           metaenabled = true
         end
       end
@@ -128,7 +128,7 @@ module Rho
           model = Object.const_get(@request['model'].to_sym)
         rescue
         end
-        if model.respond_to? :metadata and model.metadata != nil
+        if model.respond_to?( :metadata ) and model.metadata != nil
           metadata = model.metadata
         end
       end
