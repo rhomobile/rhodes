@@ -20,11 +20,8 @@
  */
 package com.rhomobile.rhodes.uri;
 
-import android.net.Uri;
-
 public interface UriHandler {
 
-	public String scheme();
-	public void handle(Uri uri);
+	public boolean handle(String uri);
 	
 }

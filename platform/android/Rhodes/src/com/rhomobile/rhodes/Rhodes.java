@@ -22,18 +22,21 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Vector;
 
 import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
+import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
 import com.rhomobile.rhodes.uri.MailUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
 import com.rhomobile.rhodes.uri.UriHandler;
+import com.rhomobile.rhodes.uri.VideoUriHandler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -43,7 +46,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -99,7 +101,7 @@ public class Rhodes extends Activity {
 	
 	private SplashScreen splashScreen = null;
 	
-	private Hashtable<String, UriHandler> uriHandlers = new Hashtable<String, UriHandler>();
+	private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
 
 	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 	
@@ -247,13 +249,19 @@ public class Rhodes extends Activity {
 	}
 	
 	private boolean handleUrlLoading(String url) {
-		Uri uri = Uri.parse(url);
-		UriHandler handler = uriHandlers.get(uri.getScheme());
-		if (handler == null)
-			return false;
+		Enumeration<UriHandler> e = uriHandlers.elements();
+		while (e.hasMoreElements()) {
+			UriHandler handler = e.nextElement();
+			try {
+				if (handler.handle(url))
+					return true;
+			}
+			catch (Exception ex) {
+				continue;
+			}
+		}
 		
-		handler.handle(uri);
-		return true;
+		return false;
 	}
 	
 	public WebView createWebView() {
@@ -454,12 +462,9 @@ public class Rhodes extends Activity {
 		isCameraAvailable = true;
 		
 		// Register custom uri handlers here
-		UriHandler[] handlers = {
-				new MailUriHandler(this),
-				new TelUriHandler(this)
-		};
-		for (int i = 0; i < handlers.length; ++i)
-			uriHandlers.put(handlers[i].scheme(), handlers[i]);
+		uriHandlers.addElement(new MailUriHandler(this));
+		uriHandlers.addElement(new TelUriHandler(this));
+		uriHandlers.addElement(new VideoUriHandler(this));
 		
 		Thread init = new Thread(new Runnable() {
 
@@ -495,15 +500,6 @@ public class Rhodes extends Activity {
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		//MenuInflater mi = new MenuInflater(getApplication());
-		//mi.inflate(AndroidR.menu.options, menu);
-		appMenu = new RhoMenu(menu);
-		return true;
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
@@ -516,22 +512,37 @@ public class Rhodes extends Activity {
 		
 		return super.onKeyDown(keyCode, event);
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		appMenu = new RhoMenu(menu);
+		return true;
+	}
+	
+	/*
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		appMenu = new RhoMenu(menu);
+		return true;
+	}
+	*/
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		/*
-		switch (item.getItemId()) {
-		case AndroidR.id.about:
-			AboutDialog aboutDialog = new AboutDialog(this);
-			aboutDialog.setTitle("About");
-			aboutDialog.setCanceledOnTouchOutside(true);
-			aboutDialog.setCancelable(true);
-			aboutDialog.show();
-			return true;
-			
-		return false;
-		*/
 		return appMenu.onMenuItemSelected(item);
+	}
+	
+	public static void showAboutDialog() {
+		performOnUiThread(new Runnable() {
+			public void run() {
+				final AboutDialog aboutDialog = new AboutDialog(RhodesInstance.getInstance());
+				aboutDialog.setTitle("About");
+				aboutDialog.setCanceledOnTouchOutside(true);
+				aboutDialog.setCancelable(true);
+				aboutDialog.show();
+			}
+		}, false);
 	}
 	
 	public static void showLogView() {

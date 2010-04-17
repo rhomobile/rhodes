@@ -42,35 +42,25 @@ public final class AndroidR {
         public static final int sync=R.drawable.sync;
     }
     public static final class id {
-        public static final int about=R.id.about;
         public static final int buttonLayout=R.id.buttonLayout;
         public static final int cameraButton=R.id.cameraButton;
         public static final int cancelButton=R.id.cancelButton;
         public static final int excludeClasses=R.id.excludeClasses;
-        public static final int exit=R.id.exit;
         public static final int filesList=R.id.filesList;
         public static final int includeClasses=R.id.includeClasses;
         public static final int logcontent=R.id.logcontent;
         public static final int loglevel=R.id.loglevel;
-        public static final int logoptions=R.id.logoptions;
         public static final int logoptsCloseButton=R.id.logoptsCloseButton;
         public static final int logoptsSaveButton=R.id.logoptsSaveButton;
-        public static final int logview=R.id.logview;
         public static final int logviewClearButton=R.id.logviewClearButton;
         public static final int logviewSendButton=R.id.logviewSendButton;
         public static final int logviewCloseButton=R.id.logviewCloseButton;
         public static final int logviewRefreshButton=R.id.logviewRefreshButton;
         public static final int lookIn=R.id.lookIn;
-        public static final int navigation_back=R.id.navigation_back;
-        public static final int navigation_forward=R.id.navigation_forward;
-        public static final int navigation_home=R.id.navigation_home;
         public static final int okButton=R.id.okButton;
-        public static final int options=R.id.options;
         public static final int preview=R.id.preview;
-        public static final int refresh=R.id.refresh;
         public static final int scrollview=R.id.scrollview;
         public static final int surface=R.id.surface;
-        public static final int sync=R.id.sync;
         public static final int text=R.id.text;
         public static final int text1=R.id.text1;
         public static final int widget28=R.id.widget28;
