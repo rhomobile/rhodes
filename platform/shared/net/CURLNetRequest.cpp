@@ -169,13 +169,13 @@ INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUr
     return makeResponse(strRespBody, nRespCode);
 }
 
-INetResponse* CNetRequest::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     //TODO: pushMultipartData
     return 0;
 }
 
-INetResponse* CNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     VectorPtr<CMultipartItem*> arItems;
     arItems.addElement(&oItem);
