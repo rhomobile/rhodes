@@ -75,7 +75,7 @@ def set_app_name_android(newname)
   doc = REXML::Document.new(File.new($rhomanifest))
   doc.root.attributes['package'] = $app_package_name
   if version > 0
-    doc.root.attributes['android:versionCode'] = version
+    doc.root.attributes['android:versionCode'] = version.to_s
     doc.root.attributes['android:versionName'] = $app_config["version"]
   end
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
