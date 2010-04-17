@@ -439,6 +439,9 @@ String CSyncEngine::requestClientIDByNet()
 
 void CSyncEngine::doBulkSync()//throws Exception
 {
+    if ( !RHOCONF().isExist("bulksync_state") )
+        return;
+
     int nBulkSyncState = RHOCONF().getInt("bulksync_state");
     if ( nBulkSyncState >= 1 || !isContinueSync() )
         return;
