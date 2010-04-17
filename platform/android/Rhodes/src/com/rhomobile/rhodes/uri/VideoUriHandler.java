@@ -1,7 +1,7 @@
 /*
  ============================================================================
  Author	    : Dmitry Moskalchuk
- Version	: 1.5
+ Version	: 2.0
  Copyright  : Copyright (C) 2008 Rhomobile. All rights reserved.
 
  This program is free software: you can redistribute it and/or modify
@@ -24,41 +24,37 @@ import com.rhomobile.rhodes.Logger;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.MailTo;
 import android.net.Uri;
+import android.webkit.MimeTypeMap;
 
-public class MailUriHandler implements UriHandler {
-	
-	private static final String TAG = "MailUriHandler";
+public class VideoUriHandler implements UriHandler {
+
+	private static final String TAG = "VideoUriHandler";
 	
 	private Context ctx;
 	
-	public MailUriHandler(Context c) {
+	public VideoUriHandler(Context c) {
 		ctx = c;
 	}
-	
+
 	public boolean handle(String url) {
-		Uri uri = Uri.parse(url);
-		if (!uri.getScheme().equals("mailto"))
+		String ext = MimeTypeMap.getFileExtensionFromUrl(url);
+		if (ext == null || ext.length() == 0)
 			return false;
-	
-		Logger.D(TAG, "This is 'mailto' uri, handle it");
 		
-		MailTo muri = MailTo.parse(url);
+		MimeTypeMap mt = MimeTypeMap.getSingleton();
+		String mimeType = mt.getMimeTypeFromExtension(ext);
+		if (mimeType == null)
+			return false;
 		
-		Intent intent = new Intent(Intent.ACTION_SEND);
-		intent.setType("message/rfc882");
+		if (!mimeType.startsWith("video/"))
+			return false;
 		
-		String s = muri.getTo();
-		if (s != null) intent.putExtra(Intent.EXTRA_EMAIL, new String[]{s});
+		Logger.D(TAG, "This is video url, handle it");
 		
-		s = muri.getSubject();
-		if (s != null) intent.putExtra(Intent.EXTRA_SUBJECT, s);
-		
-		s = muri.getBody();
-		if (s != null) intent.putExtra(Intent.EXTRA_TEXT, s);
-		
-		ctx.startActivity(Intent.createChooser(intent, "Send e-mail..."));
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.parse(url), mimeType);
+		ctx.startActivity(Intent.createChooser(intent, "Choose video player"));
 		return true;
 	}
 

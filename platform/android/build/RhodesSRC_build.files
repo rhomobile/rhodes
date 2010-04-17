@@ -42,3 +42,4 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/ui/LogViewDialog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/MailUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/TelUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/UriHandler.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/uri/VideoUriHandler.java
