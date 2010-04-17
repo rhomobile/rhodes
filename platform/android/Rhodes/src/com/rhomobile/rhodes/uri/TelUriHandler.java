@@ -20,27 +20,33 @@
  */
 package com.rhomobile.rhodes.uri;
 
+import com.rhomobile.rhodes.Logger;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 public class TelUriHandler implements UriHandler {
 	
+	private static final String TAG = "TelUriHandler";
 	private Context ctx;
 	
 	public TelUriHandler(Context c) {
 		ctx = c;
 	}
 	
-	public String scheme() {
-		return "tel";
-	}
-
-	public void handle(Uri uri) {
+	public boolean handle(String url) {
+		Uri uri = Uri.parse(url);
+		if (!uri.getScheme().equals("tel"))
+			return false;
+		
+		Logger.D(TAG, "This is 'tel' uri, handle it");
+		
 		Intent intent = new Intent(Intent.ACTION_DIAL);
 		intent.setData(uri);
 		
 		ctx.startActivity(Intent.createChooser(intent, "Dial..."));
+		return true;
 	}
 
 }
