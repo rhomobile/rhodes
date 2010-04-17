@@ -94,6 +94,11 @@ public:
         return -1;
     }
 
+    void removeAllElements()
+    {
+        Vector<Type>::clear();
+    }
+
     typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
     typename std::vector<Type>::const_reference elementAt(typename std::vector<Type>::size_type i) const{ return at(i); }
 };

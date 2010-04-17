@@ -2,6 +2,7 @@
 
 #include "NetRequestImpl.h"
 #include "common/RhoFile.h"
+#include "common/RhoFilePath.h"
 #include "NetRequest.h"
 #include "common/StringConverter.h"
 #include "net/URI.h"
@@ -138,6 +139,14 @@ boolean CNetRequestImpl::checkSslCertError()
     return false;
 }
 
+String CNetRequestImpl::getBodyContentType()
+{
+    if ( m_pSession )
+        return m_pSession->getContentType();
+    else
+        return "application/x-www-form-urlencoded";
+}
+
 CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
 {
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
@@ -150,12 +159,7 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
         if ( strBody.length() > 0  )
         {
             CAtlStringW strHeaders = L"Content-Type: ";
-
-            if ( m_pSession )
-                strHeaders += m_pSession->getContentType().c_str();
-            else
-                strHeaders += "application/x-www-form-urlencoded";
-
+            strHeaders += getBodyContentType().c_str();
             strHeaders += L"\r\n";
 
             if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
@@ -393,17 +397,69 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
     return pNetResp;
 }
 
-static const char* szMultipartPrefix = 
-   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
-   "Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"
-   "Content-Type: application/octet-stream\r\n\r\n";
+static const wchar_t* szMultipartContType = 
+    L"Content-Type: multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
 static const char* szMultipartPostfix = 
     "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
-static const wchar_t* szMultipartContType = 
-    L"Content-Type: multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
+static const char* szMultipartPrefix = 
+   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
+   "Content-Disposition: form-data; name=\"blob\"; filename=\"";
+static const char* szMultipartPrefixEnd = 
+   "\"\r\n"
+   "Content-Type: application/octet-stream\r\n\r\n";
 
-CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
+static const char* szBodyPrefix = 
+   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
+   "Content-Disposition: form-data; name=\"data\"\r\n"
+   "Content-Type: ";
+static const char* szBodyPrefixEnd = 
+   "\r\n\r\n";
+
+int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems )
+{
+    int nSize = 0;
+    for( int i = 0; i < (int)arItems.size(); i++ )
+    {
+        CMultipartItem& oItem = *arItems.elementAt(i); 
+
+        if ( oItem.m_strName.length() == 0 )
+            oItem.m_strName = "blob";
+
+        if ( oItem.m_strFileName.length() == 0 )
+        {
+            if ( oItem.m_strFilePath.length() > 0 )
+            {
+                common::CFilePath oPath(oItem.m_strFilePath);
+                oItem.m_strFileName = oPath.getBaseName();
+            }
+            else
+                oItem.m_strFileName = "doesnotmatter.txt";
+        }
+
+        oItem.m_strDataPrefix = 
+            "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
+            "Content-Disposition: form-data; name=\"";
+        oItem.m_strDataPrefix += oItem.m_strName + "\"; filename=\"" + oItem.m_strFileName + "\"\r\n";
+        oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n\r\n";
+
+        nSize += oItem.m_strDataPrefix.length();
+        if ( oItem.m_strFilePath.length() > 0 )
+        {
+            common::CRhoFile oFile;
+            if ( oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
+                nSize += oFile.size();
+        }
+        else
+            nSize += oItem.m_strBody.length();
+
+        nSize += strlen(szMultipartPostfix);
+    }
+
+    return nSize;
+}
+
+CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>& arItems)
 {
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
 
@@ -423,7 +479,7 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
 	    INTERNET_BUFFERS BufferIn;
         memset(&BufferIn, 0, sizeof(INTERNET_BUFFERS));
 	    BufferIn.dwStructSize = sizeof( INTERNET_BUFFERS ); // Must be set or error will occur
-        BufferIn.dwBufferTotal = bodyStream->available() + strlen(szMultipartPrefix) + strlen(szMultipartPostfix);
+        BufferIn.dwBufferTotal = processMultipartItems( arItems );
 
         if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
         {
@@ -441,13 +497,159 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
             }
         }
 
-	    DWORD dwBytesWritten = 0;
-        if ( !InternetWriteFile( hRequest, szMultipartPrefix, strlen(szMultipartPrefix), &dwBytesWritten) )
+        //write all items
+        for( int i = 0; i < (int)arItems.size(); i++ )
+        {
+            CMultipartItem& oItem = *arItems.elementAt(i); 
+
+            if ( oItem.m_strFilePath.length() > 0 )
+            {
+                common::CRhoFile oFile;
+                if ( !oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
+                {
+                    pszErrFunction = L"InternetWriteFile";
+                    return pNetResp;
+                }
+                common::InputStream* bodyStream = oFile.getInputStream();
+
+                if ( !internetWriteHeader( oItem.m_strDataPrefix.c_str(), "", "") )
+                {
+                    pszErrFunction = L"InternetWriteFile";
+                    return pNetResp;
+                }
+
+                DWORD dwBytesWritten = 0;
+                if ( bodyStream->available() > 0 )
+                {
+                    DWORD dwBufSize = 4096;
+                    char* pBuf = (char*)malloc(dwBufSize);
+                    int nReaded = 0;
+
+	                do
+	                {
+                        nReaded = bodyStream->read(pBuf,0,dwBufSize);
+                        if ( nReaded > 0 )
+                        {
+		                    if ( !InternetWriteFile( hRequest, pBuf, nReaded, &dwBytesWritten) )
+                            {
+                                pszErrFunction = L"InternetWriteFile";
+                                return pNetResp;
+                            }
+                        }
+	                }while(nReaded > 0);
+
+                    free(pBuf);
+                }
+
+                if ( !internetWriteHeader( "", "", szMultipartPostfix) )
+                {
+                    pszErrFunction = L"InternetWriteFile";
+                    return pNetResp;
+                }
+
+            }else
+            {
+                if ( !internetWriteHeader( oItem.m_strDataPrefix.c_str(), oItem.m_strBody.c_str(), szMultipartPostfix) )
+                {
+                    pszErrFunction = L"InternetWriteFile";
+                    return pNetResp;
+                }
+            }
+
+        }
+
+        if ( !HttpEndRequest(hRequest, NULL, 0, 0) )
+        {
+            pszErrFunction = L"HttpEndRequest";
+            break;
+        }
+
+        if ( isError() )
+            break;
+
+        readResponse(pNetResp);
+        if ( isError() )
+            break;
+
+        readInetFile(hRequest,pNetResp);
+
+    }while(0);
+
+    return pNetResp;
+}
+
+int CNetRequestImpl::calculateMultipartSize(common::InputStream* bodyStream, const String& strBody, const String& strFileName)
+{   
+    int nSize = bodyStream->available() + strlen(szMultipartPrefix) + strlen(szMultipartPrefixEnd) + strlen(szMultipartPostfix)+
+        strFileName.length();
+
+    if ( strBody.length() > 0 )
+        nSize += strBody.length() + strlen(szBodyPrefix) + strlen(szBodyPrefixEnd) + strlen(szMultipartPostfix) +
+            getBodyContentType().length();
+
+    return nSize;
+}
+
+bool CNetRequestImpl::internetWriteHeader( const char* szPrefix, const char* szBody, const char* szPrefixEnd)
+{
+    DWORD dwBytesWritten = 0;
+    if ( szPrefix && *szPrefix && !InternetWriteFile( hRequest, szPrefix, strlen(szPrefix), &dwBytesWritten) )
+        return false;
+
+    if ( szBody && *szBody && !InternetWriteFile( hRequest, szBody, strlen(szBody), &dwBytesWritten) )
+        return false;
+
+    if ( szPrefixEnd && *szPrefixEnd && !InternetWriteFile( hRequest, szPrefixEnd, strlen(szPrefixEnd), &dwBytesWritten) )
+        return false;
+
+    return true;
+}
+
+CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream, const String& strBody, const String& strFileName)
+{
+    CNetResponseImpl* pNetResp = new CNetResponseImpl;
+
+    do
+    {
+        writeHeaders(m_pHeaders);
+
+        if ( isError() )
+            break;
+
+        if ( !HttpAddRequestHeaders( hRequest, szMultipartContType, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+        {
+            pszErrFunction = L"HttpAddRequestHeaders";
+            break;
+        }
+
+	    INTERNET_BUFFERS BufferIn;
+        memset(&BufferIn, 0, sizeof(INTERNET_BUFFERS));
+	    BufferIn.dwStructSize = sizeof( INTERNET_BUFFERS ); // Must be set or error will occur
+        BufferIn.dwBufferTotal = calculateMultipartSize( bodyStream, strBody, strFileName);
+
+        if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
+        {
+            if (checkSslCertError())
+            {
+                if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
+                {
+                    pszErrFunction = L"HttpSendRequestEx";
+                    break;
+                }
+            }else
+            {
+                pszErrFunction = L"HttpSendRequestEx";
+                break;
+            }
+        }
+
+        if ( !internetWriteHeader( szMultipartPrefix, strFileName.c_str(), szMultipartPrefixEnd) )
         {
             pszErrFunction = L"InternetWriteFile";
             break;
         }
 
+        DWORD dwBytesWritten = 0;
         if ( bodyStream->available() > 0 )
         {
             DWORD dwBufSize = 4096;
@@ -474,6 +676,21 @@ CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream)
         {
             pszErrFunction = L"InternetWriteFile";
             break;
+        }
+
+        if ( strBody.length() > 0 )
+        {
+            if ( !internetWriteHeader( szBodyPrefix, getBodyContentType().c_str(), szBodyPrefixEnd) )
+            {
+                pszErrFunction = L"InternetWriteFile";
+                break;
+            }
+
+            if ( !internetWriteHeader( "", strBody.c_str(), szMultipartPostfix) )
+            {
+                pszErrFunction = L"InternetWriteFile";
+                break;
+            }
         }
 
         if ( !HttpEndRequest(hRequest, NULL, 0, 0) )
