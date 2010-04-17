@@ -20,6 +20,9 @@ public:
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
     virtual INetResponse* pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    virtual INetResponse* pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+
     virtual INetResponse* pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
     virtual INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
 
