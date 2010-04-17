@@ -1,7 +1,6 @@
 #include "SyncSource.h"
 #include "SyncEngine.h"
 
-#include "common/RhoFilePath.h"
 #include "common/RhoTime.h"
 #include "common/StringConverter.h"
 #include "common/RhodesApp.h"
@@ -167,6 +166,7 @@ boolean CSyncSource::isPendingClientChanges()
     return !res.isEnd();
 }
 
+/*
 void CSyncSource::syncClientBlobs(const String& strQuery)
 {
     for( int i = 0; i < (int)m_arSyncBlobs.size(); i ++)
@@ -175,27 +175,28 @@ void CSyncSource::syncClientBlobs(const String& strQuery)
 
         String strFilePath = blob.getFilePath().length() > 0 ? RHODESAPP().getRhoRootPath() + "apps" + blob.getFilePath() : "";
         //TODO: sync blobs
-/*
+
         NetResponse( resp, getNet().pushFile( strQuery, blob.getBody(), strFilePath, &getSync(), null) );
         if ( !resp.isOK() )
         {
             getSync().setState(CSyncEngine::esStop);
 			m_nErrCode = RhoRuby.getErrorFromResponse(resp);
             return;
-        }*/
+        }
 
         getDB().executeSQL("DELETE FROM object_values WHERE source_id=? and attrib_type=? and value=?", getID(), "blob.file", blob.getFilePath() );
     }
 
     m_arSyncBlobs.clear();
-}
+}*/
 
 void CSyncSource::doSyncClientChanges()
 {
     String arUpdateTypes[] = {"create", "update", "delete"};
     boolean arUpdateSent[] = {false, false, false};
 
-    m_arSyncBlobs.removeAllElements();
+    m_arMultipartItems.removeAllElements();
+    m_arBlobAttrs.removeAllElements();
     String strBody = "{\"source_name\":\"" + getName() + "\",\"client_id\":\"" + getSync().getClientID() + "\"";
     boolean bSend = false;
     for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
@@ -205,6 +206,19 @@ void CSyncSource::doSyncClientChanges()
         if (strBody1.length() > 0)
         {
             strBody += "," + strBody1;
+
+            String strBlobAttrs = "";
+            for ( int j = 0; j < (int)m_arBlobAttrs.size(); j++)
+            {
+                if ( strBlobAttrs.length() > 0 )   
+                    strBlobAttrs += ",";
+
+                strBlobAttrs += m_arBlobAttrs.elementAt(j);
+            }
+
+            if ( strBlobAttrs.length() > 0 )
+                strBody += ",\"blob_fields\":[" + strBlobAttrs + "]";
+
             arUpdateSent[i] = true;
             bSend = true;
         }
@@ -216,15 +230,36 @@ void CSyncSource::doSyncClientChanges()
         LOG(INFO) + "Push client changes to server. Source: " + getName() + "Size :" + strBody.length();
         LOG(TRACE) + "Push body: " + strBody;		
 
-        NetResponse( resp, getNet().pushData( getProtocol().getClientChangesUrl(), strBody, &getSync()) );
-        if ( !resp.isOK() )
+        if ( m_arMultipartItems.size() > 0 )
         {
-            getSync().setState(CSyncEngine::esStop);
-            m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            CMultipartItem* pItem = new CMultipartItem();
+            CMultipartItem& oItem = *pItem;
+            oItem.m_strBody = strBody;
+            oItem.m_strContentType = getProtocol().getContentType();
+            oItem.m_strName = "cud";
+            m_arMultipartItems.addElement(pItem);
+
+            NetResponse( resp, getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, &getSync(), null) );
+            if ( !resp.isOK() )
+            {
+                getSync().setState(CSyncEngine::esStop);
+                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            }
+        }else
+        {
+            NetResponse( resp, getNet().pushData( getProtocol().getClientChangesUrl(), strBody, &getSync()) );
+            if ( !resp.isOK() )
+            {
+                getSync().setState(CSyncEngine::esStop);
+                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+            }
         }
     }
 
     afterSyncClientChanges(arUpdateSent);
+
+    m_arMultipartItems.removeAllElements();
+    m_arBlobAttrs.removeAllElements();
 }
 
 void CSyncSource::afterSyncClientChanges(boolean arUpdateSent[])
@@ -232,7 +267,7 @@ void CSyncSource::afterSyncClientChanges(boolean arUpdateSent[])
     const char* arUpdateTypes[] = {"create", "update", "delete"};
     for( int i = 0; i < 3 && getSync().isContinueSync(); i++ )
     {
-        if ( m_arSyncBlobs.size() > 0 )
+        /*if ( m_arSyncBlobs.size() > 0 )
         {
 		    LOG(INFO) + "Push blobs to server. Source: " + getName() + "Count :" + m_arSyncBlobs.size();
             //oo conflicts
@@ -245,8 +280,8 @@ void CSyncSource::afterSyncClientChanges(boolean arUpdateSent[])
                     getID(), arUpdateTypes[i], "blob.file" );
 
             //TODO: sync blobs ver3
-            syncClientBlobs(getProtocol().getClientChangesUrl());
-        }else if ( arUpdateSent[i] )
+            //syncClientBlobs(getProtocol().getClientChangesUrl());
+        }else */if ( arUpdateSent[i] )
         {
             //oo conflicts
             if ( i < 1 ) //create
@@ -285,18 +320,25 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
 
         if ( attribType.compare("blob.file") == 0 )
         {
+/*
             common::CFilePath oBlobPath(value);
-
             String strBlobBody = "{\"source_name\":\"" + getName() + "\",\"client_id\":\"" + getSync().getClientID() + "\",";
             strBlobBody += "\"" + strUpdateType + "\":{";
             strBlobBody += "\"" + strObject + "\":{";
             strBlobBody += "\"" + strAttrib + "\":\"" + oBlobPath.getBaseName() + "\"";
             strBlobBody += "}},";
             strBlobBody += "\"blob_fields\":[\"" + strAttrib + "\"]}";
+*/
+            CMultipartItem* pItem = new CMultipartItem();
+            CMultipartItem& oItem = *pItem;
+            oItem.m_strFilePath = value;
+            oItem.m_strContentType = "application/octet-stream";
+            oItem.m_strName = strAttrib + "-" + strObject;
 
-            m_arSyncBlobs.addElement(new CSyncBlob(strBlobBody,value));
+            m_arBlobAttrs.addElement(strAttrib);
+            m_arMultipartItems.addElement(pItem);
 
-            continue;
+//            continue;
         }
 
         if ( strBody.length() == 0 )
