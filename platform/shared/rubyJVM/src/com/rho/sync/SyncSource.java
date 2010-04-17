@@ -314,7 +314,7 @@ class SyncSource
 	        LOG.TRACE("Push body: " + strBody);		
 
 	        NetResponse resp = getNet().pushData(
-	            getProtocol().getClientChangesUrl(getName(), "", getSync().getClientID()),strBody, getSync());
+	            getProtocol().getClientChangesUrl(),strBody, getSync());
 	        if ( !resp.isOK() )
 	        {
 	            getSync().setState(SyncEngine.esStop);
@@ -343,7 +343,7 @@ class SyncSource
 	                    getID(), arUpdateTypes[i], "blob.file" );
 
 	            //TODO: sync blobs ver3
-	            syncClientBlobs(getProtocol().getClientChangesUrl(getName(), arUpdateTypes[i], getSync().getClientID()));
+	            syncClientBlobs(getProtocol().getClientChangesUrl());
 	        }else if ( arUpdateSent[i] )
 	        {
 	            //oo conflicts
@@ -572,66 +572,62 @@ class SyncSource
 	    PROF.STOP("Data1");
 	    if ( !oJsonArr.isEnd() && getSync().isContinueSync() )
 	    {
-	        JSONStructIterator iterCmds = new JSONStructIterator(oJsonArr.getCurItem());
-	        if ( !iterCmds.isEnd() )
+	        JSONEntry oCmds = oJsonArr.getCurItem();
+	        PROF.START("Data");
+
+	        getDB().startTransaction();
+	        if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
 	        {
-	            PROF.START("Data");
-	            //TODO: support DBExceptions
-	            getDB().startTransaction();
-
-	            for( ; !iterCmds.isEnd() && getSync().isContinueSync(); iterCmds.next() )
-	            {
-	                String strCmd = iterCmds.getCurKey();
-	                if ( strCmd.compareTo("metadata") == 0 )
-                    {
-                        String strMetadata = iterCmds.getCurString();
-                        getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
-                    }else if ( strCmd.compareTo("server_sources") == 0 )
-                    {
-	                    String strData = iterCmds.getCurString();
-	                    getSync().processServerSources(strData);
-                    }else if ( strCmd.compareTo("links") == 0 || strCmd.compareTo("delete") == 0 || strCmd.compareTo("insert") == 0)
-	                {
-	                    JSONStructIterator objIter = new JSONStructIterator(iterCmds.getCurValue());
-
-	                    for( ; !objIter.isEnd() && getSync().isContinueSync(); objIter.next() )
-	                    {
-	                        String strObject = objIter.getCurKey();
-	                        JSONStructIterator attrIter = new JSONStructIterator( objIter.getCurValue() );
-	                        
-	                        if ( m_bSchemaSource )
-	                            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
-	                        else
-	                        {
-	                            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
-	                            {
-	                                String strAttrib = attrIter.getCurKey();
-	                                String strValue = attrIter.getCurString();
-
-	                                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
-	                            }
-	                        }
-
-	                        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
-	                        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-	                            getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
-	                    }
-	                }
-	            }
-
-		        PROF.STOP("Data");		    
-	    	    PROF.START("DB");
-	            getDB().endTransaction();
-		        PROF.STOP("DB");
-
-	            getNotify().fireObjectsNotification();
+	            String strMetadata = oCmds.getString("metadata");
+	            getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
 	        }
+	        if ( oCmds.hasName("links") && getSync().isContinueSync() )
+	            processSyncCommand("links", oCmds.getEntry("links") );
+	        if ( oCmds.hasName("delete") && getSync().isContinueSync() )
+	            processSyncCommand("delete", oCmds.getEntry("delete") );
+	        if ( oCmds.hasName("insert") && getSync().isContinueSync() )
+	            processSyncCommand("insert", oCmds.getEntry("insert") );
+
+	        PROF.STOP("Data");
+
+		    PROF.START("DB");
+	        getDB().endTransaction();
+	        PROF.STOP("DB");
+
+	        getNotify().fireObjectsNotification();
 	    }
 
 		PROF.START("Data1");
 	    if ( getCurPageCount() > 0 )
 	        getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
 		PROF.STOP("Data1");
+	}
+	
+	void processSyncCommand(String strCmd, JSONEntry oCmdEntry)throws Exception
+	{
+	    JSONStructIterator objIter = new JSONStructIterator(oCmdEntry);
+
+	    for( ; !objIter.isEnd() && getSync().isContinueSync(); objIter.next() )
+	    {
+	        String strObject = objIter.getCurKey();
+	        JSONStructIterator attrIter = new JSONStructIterator( objIter.getCurValue() );
+	        if ( m_bSchemaSource )
+	            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
+	        else
+	        {
+	            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	            {
+	                String strAttrib = attrIter.getCurKey();
+	                String strValue = attrIter.getCurString();
+
+	                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+	            }
+	        }
+
+	        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
+	        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+	            getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+	    }
 	}
 	
 	void processLinks(String strOldObject, String strNewObject)throws Exception
@@ -742,50 +738,9 @@ class SyncSource
 	        String strValue = attrIter.getCurString();
 	        processLinks(strObject, strValue);
 	        
-	        String strSelect = "SELECT * FROM ";
-	        strSelect += getName() + " WHERE object=?";
-	        boolean bOldExist = false;
-	        {
-	            IDBResult res = getDB().executeSQL(strSelect, strObject);
-	            bOldExist = !res.isEnd();
-	        }
-
-	        if (bOldExist)
-	        {
-	            IDBResult res = getDB().executeSQL(strSelect, strValue);
-
-	            String strSet = "";
-	            Vector/*<String>*/ vecValues = new Vector();
-	            if ( !res.isEnd() )
-	            {
-	                for ( int i = 0; i < res.getColCount(); i++ )
-	                {
-	                    if ( res.isNullByIdx(i) || res.getColName(i).compareTo("object") == 0)
-	                        continue;
-
-	                    if ( strSet.length() > 0 )
-	                        strSet += ",";
-
-	                    strSet += res.getColName(i) + "=?";
-	                    vecValues.addElement(res.getStringByIdx(i));
-	                }
-
-	                String strDelete = "DELETE FROM ";
-	                strDelete += getName() + " WHERE object=?";
-	                getDB().executeSQL(strDelete, strValue);
-	            }
-
-	            if ( strSet.length() > 0 )
-	                strSet += ",";
-	            strSet += "object=?";
-
-	            vecValues.addElement(strValue);
-	            vecValues.addElement(strObject);
-
-	            String strSqlUpdate = "UPDATE ";
-	            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
-	            getDB().executeSQL(strSqlUpdate, vecValues);
-	        }
+	        String strSqlUpdate = "UPDATE ";
+	        strSqlUpdate += getName() + " SET object=? WHERE object=?";
+	        getDB().executeSQL(strSqlUpdate, strValue, strObject);
 
 	        getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", strValue, strObject, getID() );
 	        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enCreate);
