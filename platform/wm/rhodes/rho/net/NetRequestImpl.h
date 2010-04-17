@@ -85,7 +85,10 @@ public :
     void cancel();
     bool isError(){ return pszErrFunction!= null; }
     CNetResponseImpl* sendString(const String& strBody);
-    CNetResponseImpl* sendStream(common::InputStream* body);
+
+    CNetResponseImpl* sendStream(common::InputStream* body, const String& strBody, const String& strFileName);
+    CNetResponseImpl* sendMultipartData(VectorPtr<CMultipartItem*>& arItems);
+
     CNetResponseImpl* downloadFile(common::CRhoFile& oFile);
 
 private:
@@ -101,6 +104,13 @@ private:
     boolean readHeaders(Hashtable<String,String>& oHeaders);
     void    writeHeaders(Hashtable<String,String>* pHeaders);
     boolean checkSslCertError();
+
+    String getBodyContentType();
+    int calculateMultipartSize(common::InputStream* bodyStream, const String& strBody, const String& strFileName);
+    bool internetWriteHeader( const char* szPrefix, const char* szBody, const char* szPrefixEnd);
+
+    int processMultipartItems( VectorPtr<CMultipartItem*>& arItems );
+
 };
 
 }

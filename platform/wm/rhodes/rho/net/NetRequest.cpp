@@ -3,6 +3,7 @@
 #include "NetRequest.h"
 #include "common/AutoPointer.h"
 #include "common/RhoFile.h"
+#include "common/RhoFilePath.h"
 #include "NetRequestImpl.h"
 #include "common/RhodesApp.h"
 
@@ -48,6 +49,24 @@ void CNetRequest::cancel()
         m_pCurNetRequestImpl->cancel();
 }
 
+INetResponse* CNetRequest::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+{
+    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders,m_sslVerifyPeer);
+    CNetResponseImpl* pResp = oImpl.sendMultipartData(arItems);
+    return pResp;
+}
+
+INetResponse* CNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+{
+    VectorPtr<CMultipartItem*> arItems;
+    arItems.addElement(&oItem);
+
+    INetResponse* pResp = pushMultipartData(strUrl, arItems, oSession, pHeaders);
+
+    arItems[0] = 0; //do not delete item
+    return pResp;
+}
+
 INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
@@ -56,9 +75,10 @@ INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFileP
         LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
         return new CNetResponseImpl();
     }
+    common::CFilePath oPath(strFilePath);
 
     CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders,m_sslVerifyPeer);
-    CNetResponseImpl* pResp = oImpl.sendStream(oFile.getInputStream());
+    CNetResponseImpl* pResp = oImpl.sendStream(oFile.getInputStream(), "", oPath.getBaseName());
     return pResp;
 }
 

@@ -11,6 +11,7 @@ namespace db {
 }
 namespace net {
     struct INetRequest;
+    struct CMultipartItem;
 }
 namespace json {
     class CJSONEntry;
@@ -20,7 +21,7 @@ namespace json {
 
 namespace sync {
 struct ISyncProtocol;
-
+/*
 class CSyncBlob
 {
    String m_strBody;
@@ -32,7 +33,7 @@ public:
 
     const String& getBody()const{ return m_strBody; }
     const String& getFilePath()const{ return m_strFilePath; }
-};
+};*/
 
 class CValue
 {
@@ -73,7 +74,8 @@ public:
     String m_strError;
     boolean m_bIsSearch;
 private:
-    VectorPtr<CSyncBlob*> m_arSyncBlobs;
+    VectorPtr<net::CMultipartItem*> m_arMultipartItems;
+    Vector<String>                  m_arBlobAttrs;
 
 public:
     CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );
@@ -124,8 +126,8 @@ public:
     void processServerResponse_ver3(json::CJSONArrayIterator& oJsonArr);
     void processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttrib, const String& strValue);//throws Exception
 
-    VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
-    void syncClientBlobs(const String& strBaseQuery);
+//    VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
+    //void syncClientBlobs(const String& strBaseQuery);
 
     String makeFileName(const CValue& value);//throws Exception
     boolean downloadBlob(CValue& value);//throws Exception
