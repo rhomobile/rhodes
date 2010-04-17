@@ -1,4 +1,5 @@
 /* Common css */
+
 body {
     margin: 0;
     height: 100%;
@@ -13,20 +14,18 @@ h1 {
 }
 
 div#content {
-    margin-bottom: 55px;
-		background-color:#ffffff;
+	background-color:#ffffff;
+	width: 100%;
+	padding:0;
+	margin:0;
 }
-
 
 /* Toolbar */
 
 #toolbar {
     width: 100%;
     height: 60px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));}
-}
-
-div#toolbar div {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));
 }
 
 div#toolbar div#leftItem, div#toolbar div#centerItem, div#toolbar div#rightItem {
@@ -60,13 +59,14 @@ div#row {
 
 div#pageTitle {
     height: 25px;
-		margin:0;
+	margin:0;
     width: 100%;
     display:none;
 }
 
 div#pageTitle h1 {
     position: absolute;
+    top: 0;
     text-align: left;
     width: 100%;
     margin: 0;
@@ -74,32 +74,19 @@ div#pageTitle h1 {
     color: white;
     text-shadow: 1px 1px 1px #000;
     line-height: 25px;
-    top: 0;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999),color-stop(0.5, #848684));
 }
 
 
 /* lists */
-div#content {
-    width: 100%;
-		padding:0;
-		margin:0;
-}
 
 div#content ul {
-		background: white;
-    -webkit-padding-start: 0;
-    margin: 0;
-		padding:0;
+	background: white;
 }
 
 div#content ul li {
-    width: 100%;
-    height: 54px;
-    list-style-type: none;
     border-bottom: 1px solid #000;
     font-size: 20px;
-    line-height: 54px;
 }
 
 div#content ul li a {
@@ -109,7 +96,7 @@ div#content ul li a {
     font-size: 20px;
     height: 100%;
     width: 100%;
-    line-height: 54px;
+    padding: 15px 0 15px 0;
 }
 
 div#content ul li a img {
@@ -119,23 +106,27 @@ div#content ul li a img {
 }
 
 div#content ul li span.title {
-    margin-left:30px;
+    padding: 0 10px 0 10px;
 }
 
 div#content ul li span.disclosure_indicator {
     display: none;
 }
 
-div#content ul li span.gridItem {
+div#content ul li span.itemLabel {
+    float: left;
+    width: 45%;
+    padding: 15px 0 15px 10px;
+}
+
+div#content ul li span.itemValue {
     float: right;
-    text-align: left;
-    width: 145px;
+    width: 45%;
+    padding: 15px 10px 15px 0;
 }
 
 
 /* Forms */
-
-
 
 div#content form button {
     -webkit-appearance:push-button;
@@ -146,11 +137,7 @@ div#content form button {
 
 div#content form ul {
     font-size: 20px;
-    list-style-image: none;
-    list-style-position: outside;
     list-style-type: none;
-    overflow-x: hidden;
-    overflow-y: hidden;
     padding: 0;
     margin: 0;
 }
@@ -158,23 +145,20 @@ div#content form ul {
 div#content form ul li {
     border-bottom: 1px solid black;
     display: block;
-    height: auto;
     list-style-type: none;
-    overflow-x: hidden;
-    overflow-y: hidden;
 }
 
 div#content form label {
     float: left;
     display:block;
     color: black;
-    line-height: 30px;
-    padding: 5px 10px 5px 5px;
-    margin: 10px 20px 10px 10px;
-    width: 100px;
+    line-height: 64px;
+    padding: 0 10px 0 5px;
+    margin: 0;
+    width: 40%;
     overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 div#content h4 {
@@ -188,20 +172,6 @@ div#content h4.groupTitle{
 	font-size:10px;
 	color:#ffffff;
 	background-color:#000000;
-}
-
-
-div#content form .fieldLabel {
-    float: left;
-    display:block;
-    color: black;
-    line-height: 30px;
-    padding: 5px 10px 5px 5px;
-    margin: 10px 20px 10px 10px;
-    width: 100px;
-    overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 }
 
 div#content form input[type="checkbox"] {
@@ -237,8 +207,8 @@ div#content form input[type="radio"] {
 }
 
 div#content form input[type="radio"]:checked {
- background: url(/public/images/android/btn_radio_on.png) no-repeat;
-     margin-top:15px;
+    background: url(/public/images/android/btn_radio_on.png) no-repeat;
+    margin-top:15px;
     margin-right: 20px;
 }
 
@@ -283,7 +253,6 @@ div#content form button.standardButton {
     -webkit-border: 2px;
 }
 
-
 /* Settings */
 
 div#content ul#settings {
@@ -318,4 +287,3 @@ div#content ul#settings li.alertMessage{
 div#content ul#settings li.alertMessage span.message{
     color: red;
 }
-
