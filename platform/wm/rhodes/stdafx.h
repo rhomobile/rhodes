@@ -85,6 +85,11 @@
 #endif
 
 #include <atlapp.h>
+#include <atlframe.h>
+#include <atlmisc.h>
+#include <atlctrls.h>
+#define _WTL_CE_NO_ZOOMSCROLL
+#include <atlwince.h>
 
 #undef max
 #undef min
