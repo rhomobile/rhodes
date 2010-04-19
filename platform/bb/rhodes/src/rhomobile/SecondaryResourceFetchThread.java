@@ -14,7 +14,7 @@ import net.rim.device.api.browser.field.RequestedResource;
 /**
  * 
  */
-class SecondaryResourceFetchThread extends Thread {
+public class SecondaryResourceFetchThread extends Thread {
 
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
