@@ -2,7 +2,6 @@ package com.rhomobile.rhodes;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import com.rhomobile.rhodes.mainview.MainView;
 
@@ -12,44 +11,59 @@ import android.view.MenuItem;
 public class RhoMenu {
 	
 	private static final String TAG = "Menu";
-
-	private Map<MenuItem, Integer> hash;
-	private Vector<String> types;
-	private Vector<String> urls;
 	
-	private native int getMenuSize();
-	private native String getMenuItemLabel(int index);
-	private native String getMenuItemType(int index);
-	private native String getMenuItemUrl(int index);
+	private static class Item
+	{
+		public String type;
+		public String url;
+		
+		public Item(String t, String u) {
+			type = t;
+			url = u;
+		}
+	};
+	
+	private Map<MenuItem, Item> items;
+
+	private native long allocMenu();
+	private native void deallocMenu(long menu);
+	
+	private native int getMenuSize(long menu);
+	private native String getMenuItemLabel(long menu, int index);
+	private native String getMenuItemType(long menu, int index);
+	private native String getMenuItemUrl(long menu, int index);
 	
 	public RhoMenu(Menu menu) {
-		hash = new HashMap<MenuItem, Integer>();
-		urls = new Vector<String>();
-		types = new Vector<String>();
-		for (int i = 0, lim = getMenuSize(); i < lim; ++i) {
-			String type = getMenuItemType(i);
-			String label = getMenuItemLabel(i);
-			String url = getMenuItemUrl(i);
-			if (!type.equalsIgnoreCase("unknown")) {
-				MenuItem item = menu.add(label);
-				hash.put(item, new Integer(i));
-			}
-			types.addElement(type);
-			urls.addElement(url);
+		menu.clear();
+		items = new HashMap<MenuItem, Item>();
+		
+		long m = allocMenu();
+		for (int i = 0, lim = getMenuSize(m); i < lim; ++i) {
+			String type = getMenuItemType(m, i);
+			String url = getMenuItemUrl(m, i);
+			String label = getMenuItemLabel(m, i);
+			if (type.equalsIgnoreCase("unknown"))
+				continue;
+			
+			MenuItem item = menu.add(label);
+			items.put(item, new Item(type, url));
 		}
+		deallocMenu(m);
 	}
 	
 	public boolean onMenuItemSelected(MenuItem item) {
-		Object obj = hash.get(item);
-		if (obj == null || !(obj instanceof Integer))
+		Object obj = items.get(item);
+		if (obj == null || !(obj instanceof Item)) {
+			Logger.E(TAG, "Unknown MenuItem");
 			return false;
-		
-		int index = ((Integer)obj).intValue();
+		}
 		
 		Rhodes r = RhodesInstance.getInstance();
 		MainView mainView = r.getMainView();
 		
-		String type = types.elementAt(index);
+		Item ri = (Item)obj;
+		
+		String type = ri.type;
 		if (type.equalsIgnoreCase("refresh")) {
 			mainView.reload(mainView.activeTab());
 		}
@@ -78,7 +92,7 @@ public class RhoMenu {
 			r.stopSelf();
 		}
 		else if (type.equalsIgnoreCase("url")) {
-			String url = urls.elementAt(index);
+			String url = ri.url;
 			mainView.navigate(r.normalizeUrl(url), mainView.activeTab());
 		}
 		else {
