@@ -31,7 +31,8 @@ static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DAT
 
 class CMainWindow :
 #if defined(_WIN32_WCE)
-	public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
+	public CFrameWindowImpl<CMainWindow>, 
+	public CFullScreenFrame<CMainWindow>,
 #else
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
 #endif

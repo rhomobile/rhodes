@@ -181,7 +181,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
     mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
     CBR(SHCreateMenuBar(&mbi));
-    m_menuBar = mbi.hwndMB; // save menu bar HWND
+	m_hWndCECommandBar = mbi.hwndMB;
+	m_menuBar = m_hWndCECommandBar;
 
 	// Compute RECT for initial size and position.
     // The following code should compute RECT appropriately
@@ -305,7 +306,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
-
+	toggleFullScreen();
 #if defined(_WIN32_WCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
@@ -520,7 +521,10 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
-	toggleFullScreen();
+	//toggleFullScreen();
+#if defined (_WIN32_WCE) 
+	SetFullScreen(!m_bFullScreen);
+#endif
 	return 0;
 };
 
@@ -888,7 +892,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
 #if defined (_WIN32_WCE)
-	createCustomMenu();
+	//createCustomMenu();
 #endif	
 
     RHO_ASSERT(SetEnabledState(IDM_STOP, FALSE));
@@ -936,6 +940,24 @@ BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
 // **************************************************************************
 BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
+#ifdef OS_WINCE
+	if (pMsg->message == WM_CONTEXTMENU){
+		//TODO: our menu
+		/*
+		CMenuHandle menu;
+		menu.LoadMenu(IDR_MAIN_MENU);
+		menu = menu.GetSubMenu(0);
+		return menu.TrackPopupMenu( TPM_CENTERALIGN | TPM_VERTICAL, LOWORD(pMsg->lParam), HIWORD(pMsg->lParam), m_hWnd);
+		*/
+		
+		return TRUE;
+	}
+
+	if (m_bFullScreen && pMsg->message == WM_KEYUP && 
+		(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
+	SetFullScreen(false);
+#endif
+
     // Accelerators are only keyboard or mouse messages
     UINT uMsg = pMsg->message;
     if (!(WM_KEYFIRST   <= uMsg && uMsg <= WM_KEYLAST) &&
@@ -943,6 +965,10 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     {
 
 #ifdef OS_WINCE
+		if (m_bFullScreen && pMsg->message == WM_KEYUP && 
+			(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
+		SetFullScreen(false);
+			
         if ( uMsg == WM_HOTKEY )
         {
             int idHotKey = (int) pMsg->wParam; 
