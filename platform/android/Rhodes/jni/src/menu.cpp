@@ -10,31 +10,44 @@
 
 typedef rho::Vector<rho::common::CAppMenu::Item> items_t;
 
-static items_t menu_items()
+static items_t &menu_items(jlong menu)
 {
-    items_t items;
-    if (!RHODESAPP().getAppMenu().getItems(items)) return items_t();
-    return items;
+    return *reinterpret_cast<items_t*>(menu);
+}
+
+RHO_GLOBAL jlong JNICALL Java_com_rhomobile_rhodes_RhoMenu_allocMenu
+  (JNIEnv *, jobject)
+{
+    std::auto_ptr<items_t> items(new items_t());
+    if (!RHODESAPP().getAppMenu().getItems(*items))
+        return 0;
+    return reinterpret_cast<jlong>(items.release());
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoMenu_deallocMenu
+  (JNIEnv *, jobject, jlong menu)
+{
+    delete &menu_items(menu);
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuSize
-  (JNIEnv *, jobject)
+  (JNIEnv *, jobject, jlong menu)
 {
-    return menu_items().size();
+    return menu_items(menu).size();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemLabel
-  (JNIEnv *env, jobject, jint idx)
+  (JNIEnv *env, jobject, jlong menu, jint idx)
 {
-    return rho_cast<jstring>(env, menu_items()[idx].getLabel().c_str());
+    return rho_cast<jstring>(env, menu_items(menu)[idx].getLabel().c_str());
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemType
-  (JNIEnv *env, jobject, jint idx)
+  (JNIEnv *env, jobject, jlong menu, jint idx)
 {
     const char *s = "unknown";
     namespace r = rho::common;
-    r::CAppMenu::Item &item = menu_items()[idx];
+    r::CAppMenu::Item &item = menu_items(menu)[idx];
     switch (item.getType())
     {
         case r::CAppMenu::Item::TYPE_URL: s = "url"; break;
@@ -51,7 +64,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemType
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemUrl
-  (JNIEnv *env, jobject, jint idx)
+  (JNIEnv *env, jobject, jlong menu, jint idx)
 {
-    return rho_cast<jstring>(env, menu_items()[idx].getLink().c_str());
+    return rho_cast<jstring>(env, menu_items(menu)[idx].getLink().c_str());
 }

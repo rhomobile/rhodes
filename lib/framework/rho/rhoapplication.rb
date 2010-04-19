@@ -50,6 +50,7 @@ module Rho
     end
     
     def set_menu(menu=nil,back_action=nil)
+      @default_menu = {} if @default_menu.nil?
       disp_menu = menu ? menu.dup : @default_menu.dup
       disp_menu['Back'] = back_action if back_action
       puts "RhoApplication: Using menu - #{disp_menu.inspect}"
