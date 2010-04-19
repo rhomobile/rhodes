@@ -433,28 +433,41 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
                 common::CFilePath oPath(oItem.m_strFilePath);
                 oItem.m_strFileName = oPath.getBaseName();
             }
-            else
-                oItem.m_strFileName = "doesnotmatter.txt";
+            //else
+            //    oItem.m_strFileName = "doesnotmatter.txt";
         }
 
-        oItem.m_strDataPrefix = 
+        oItem.m_strDataPrefix = i > 0 ? "\r\n" : "";
+        oItem.m_strDataPrefix += 
             "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
             "Content-Disposition: form-data; name=\"";
-        oItem.m_strDataPrefix += oItem.m_strName + "\"; filename=\"" + oItem.m_strFileName + "\"\r\n";
-        oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n\r\n";
+        oItem.m_strDataPrefix += oItem.m_strName + "\"";
+        if (oItem.m_strFileName.length()>0)
+            oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
+        oItem.m_strDataPrefix += "\r\n";
+        if ( oItem.m_strFilePath.length() > 0 )
+            oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
 
-        nSize += oItem.m_strDataPrefix.length();
+        int nContentSize = 0;
         if ( oItem.m_strFilePath.length() > 0 )
         {
             common::CRhoFile oFile;
             if ( oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
-                nSize += oFile.size();
+                nContentSize = oFile.size();
         }
         else
-            nSize += oItem.m_strBody.length();
+            nContentSize = oItem.m_strBody.length();
 
-        nSize += strlen(szMultipartPostfix);
+        if ( oItem.m_strFilePath.length() > 0 )
+            oItem.m_strDataPrefix += "Content-Length: " + common::convertToStringA(nContentSize) + "\r\n";
+
+        oItem.m_strDataPrefix += "\r\n";
+
+        nSize += oItem.m_strDataPrefix.length() + nContentSize;
+
     }
+
+    nSize += strlen(szMultipartPostfix);
 
     return nSize;
 }
@@ -541,21 +554,21 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
                     free(pBuf);
                 }
 
-                if ( !internetWriteHeader( "", "", szMultipartPostfix) )
-                {
-                    pszErrFunction = L"InternetWriteFile";
-                    return pNetResp;
-                }
-
             }else
             {
-                if ( !internetWriteHeader( oItem.m_strDataPrefix.c_str(), oItem.m_strBody.c_str(), szMultipartPostfix) )
+                if ( !internetWriteHeader( oItem.m_strDataPrefix.c_str(), oItem.m_strBody.c_str(), "") )
                 {
                     pszErrFunction = L"InternetWriteFile";
                     return pNetResp;
                 }
             }
 
+        }
+
+        if ( !internetWriteHeader( "", "", szMultipartPostfix) )
+        {
+            pszErrFunction = L"InternetWriteFile";
+            return pNetResp;
         }
 
         if ( !HttpEndRequest(hRequest, NULL, 0, 0) )
