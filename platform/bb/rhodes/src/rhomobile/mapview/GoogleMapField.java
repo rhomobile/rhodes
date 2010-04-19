@@ -16,7 +16,7 @@ import com.rho.net.URI;
 
 import com.xruby.runtime.builtin.ObjectFactory;
 
-import rhomobile.WebView;
+import com.rho.rubyext.WebView;
 import rhomobile.mapview.RhoMapField;
 
 import net.rim.device.api.math.Fixed32;
@@ -1019,7 +1019,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			return false;
 		
 		needToCloseMap = true;
-		WebView.navigate(ObjectFactory.createString(a.url));
+		WebView.navigate(a.url);
 		return true;
 	}
 
