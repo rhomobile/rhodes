@@ -10,18 +10,8 @@ import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
 
-import net.rim.device.api.browser.field.BrowserContent;
-import net.rim.device.api.browser.field.Event;
-import net.rim.device.api.browser.field.RedirectEvent;
-import net.rim.device.api.browser.field.RenderingApplication;
-import net.rim.device.api.browser.field.RenderingException;
 import net.rim.device.api.browser.field.RenderingOptions;
-import net.rim.device.api.browser.field.RenderingSession;
-import net.rim.device.api.browser.field.RequestedResource;
-import net.rim.device.api.browser.field.SetHttpCookieEvent;
-import net.rim.device.api.browser.field.UrlRequestedEvent;
 import net.rim.device.api.io.http.HttpHeaders;
-import net.rim.device.api.system.Alert;
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.system.Bitmap;
@@ -36,8 +26,6 @@ import net.rim.device.api.ui.*;
 import net.rim.device.api.ui.component.BitmapField;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.Menu;
-import net.rim.device.api.ui.component.Status;
-import net.rim.device.api.ui.container.FullScreen;
 import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
 //import net.rim.device.api.ui.container.HorizontalFieldManager;
@@ -46,29 +34,23 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
 import net.rim.device.api.math.Fixed32;
 
-import javax.microedition.media.*;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
 
 import com.rho.*;
-import com.rho.file.SimpleFile;
 //import com.rho.db.DBAdapter;
 import com.rho.rubyext.GeoLocation;
 import com.rho.net.NetResponse;
 import com.rho.net.RhoConnection;
-import com.rho.net.URI;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
 import com.rho.file.Jsr75File;
 import com.rho.RhodesApp;
 import com.xruby.runtime.lang.RubyProgram;
-import com.rho.net.NetResponse;
-
-import net.rim.device.api.xml.parsers.SAXParser;
 
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements RenderingApplication, SystemListener, ISyncStatusListener//, FileSystemListener
+final public class RhodesApplication extends UiApplication implements SystemListener, ISyncStatusListener//, FileSystemListener
 {
 	// Menu Labels
 	public static final String LABEL_HOME = "Home";
@@ -83,23 +65,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
-	
-	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
-		new RhoProfiler();
-	
-	private static final String RHODES_AJAX_PROTOCOL = "RhodesAjaxCall=";
-	
-	private Vector pendingResponses = new Vector();
-
-	/*boolean m_bSDCardAdded = false;
-	public void rootChanged(int arg0, String arg1)
-	{
-		LOG.INFO_OUT( "rootChanged. arg0 :" + arg0 + "arg1: " + arg1);
-		if ( arg0 == FileSystemListener.ROOT_ADDED && arg1 != null &&
-			  arg1.equals("SDCard/") )
-			m_bSDCardAdded = true;
-	}*/
-	//boolean m_bSkipKeyPress = false;
 	
 	class CKeyListener  implements KeyListener{
 
@@ -137,64 +102,18 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			return true;
 		}
 
-		public boolean trackwheelRoll(int amount, int status, int time) {return false;}
+		public boolean trackwheelRoll(int amount, int status, int time) 
+		{
+			return false;
+		}
 		public boolean trackwheelUnclick(int status, int time) {return false;}
     }
 
-    /*class SyncNotificationsImpl extends SyncNotifications{
-    	public void performNotification(String url, String body){
-
-    		HttpHeaders headers = new HttpHeaders();
-    		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-    		postUrl(url, body, headers);
-*/
-/*    		String curUrl = (String)_history.lastElement();
-    		curUrl.replace('\\', '/');
-    		if ( curUrl.equalsIgnoreCase(url) )
-    			navigateUrl(curUrl);*/
-
-  //  	}
-
-    //}
-/*    
-    private String processAjaxCall(String request) {
-    	if (!request.startsWith(RHODES_AJAX_PROTOCOL))
-    		return null;
-    	String command = request.substring(RHODES_AJAX_PROTOCOL.length()).trim();
-    	Hashtable params = new Hashtable();
-    	for (; command.length() > 0;) {
-    		int index = command.indexOf(';');
-    		String name = index == -1 ? command : command.substring(0, index);
-    		String value = "";
-    		command = index == -1 ? "" : command.substring(index + 1);
-    		
-    		index = name.indexOf('=');
-    		if (index != -1) {
-    			value = name.substring(index + 1);
-    			name = name.substring(0, index);
-    		}
-    		params.put(name, value);
-    	}
-    	String method = (String)params.get("method");
-    	if (method == null)
-    		return null;
-    	
-    	if (method.equals("GeoLocation"))
-    		return GeoLocation.GetLocation();
-    	
-    	if (method.equals("Log")) {
-    		String message = (String)params.get("message");
-    		if (message != null)
-    			LOG.INFO(message);
-    		return null;
-    	}
-    	
-    	return null;
-    }*/
-
     boolean isExternalUrl(String strUrl)
     {
-    	return strUrl.startsWith("http://") || strUrl.startsWith("https://");    
+    	return strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
+    		strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
+    		 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:");    
     }
     
     String canonicalizeURL( String url ){
@@ -208,7 +127,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		return url;
     }
 
-    void navigateUrl(String url){
+    public void navigateUrl(String url){
     	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
         		canonicalizeURL(url), null, null, null);
         thread.start();                       
@@ -220,14 +139,14 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		return url;
 	}
     
-    void addMenuItem(String label, String value){
+    public void addMenuItem(String label, String value){
     	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
     	_mainScreen.addCustomMenuItem(label, value);
     }
     
 	private String m_strAppBackUrl ="";
 	
-    void resetMenuItems() {
+    public void resetMenuItems() {
     	_mainScreen.setMenuItems(new Vector());
     	m_strAppBackUrl = "";
     }
@@ -306,6 +225,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	int nPos = _history.size()-2;
 	    	url = (String)_history.elementAt(nPos);
 	    	_history.removeElementAt(nPos+1);
+
+//    		this.m_oBrowserAdapter.goBack();
     	}else
     		addToHistory(url,null);
     	
@@ -325,7 +246,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	return str;
     }
     
-    void addToHistory(String strUrl, String refferer )
+    public void addToHistory(String strUrl, String refferer )
     {
     	strUrl = removeSemicolon(strUrl);
     	refferer = removeSemicolon(refferer);
@@ -411,10 +332,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         
         return false;
     }
-	private static final String REFERER = "referer";
-
-    private RenderingSession _renderingSession;
-
+    
+	private IBrowserAdapter m_oBrowserAdapter;
     private CMainScreen _mainScreen = null;
 
     private SyncStatusPopup _syncStatusPopup = null;
@@ -427,7 +346,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 
     private final String _httpRoot = "http://localhost:8080/";
 
-    private static boolean _isFullBrowser = false;
+    private static boolean m_isFullBrowser = false;
     
     private static PushListeningThread _pushListeningThread = null;
     
@@ -436,19 +355,13 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     public static RhodesApplication getInstance(){ return _instance; }
     private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
     
-    public static boolean isFullBrowser(){ return _isFullBrowser; }
+    public static boolean isFullBrowser(){ return m_isFullBrowser; }
     
     /***************************************************************************
      * Main.
      **************************************************************************/
     public static void main(String[] args)
     {
-    	//RhoLogger.InitRhoLog();
-    	//LOG.TRACE("Rhodes MAIN started ***--------------------------***");
-    	
-    	//_pushListeningThread = new PushListeningThread();
-    	//_pushListeningThread.start();
-    	
 		_instance = new RhodesApplication();
 		try{
 			_instance.enterEventDispatcher();
@@ -696,30 +609,20 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			}
 		}
 	}
-/*
-	static class WaitStatusPopup extends PopupScreen {
-	    public WaitStatusPopup(String status) 
-	    {
-	        super( new VerticalFieldManager( Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR) );
-			
-	        add(new LabelField(status != null ? status : "Please wait...", Field.FIELD_HCENTER));
-	    }
-	}
-	WaitStatusPopup m_waitPopup;
-	void showWaitPopup(String msg)
-	{
-		m_waitPopup = new WaitStatusPopup(msg);
-		pushScreen(m_waitPopup);
-	}
-	void hideWaitPopup()
-	{
-		this.popScreen(m_waitPopup);
-		m_waitPopup = null;
-	}*/
 	
     class CMainScreen extends RhoMainScreen{
     	
-    	int m_nOrientation = -1;
+    	protected boolean navigationMovement(int dx, int dy, int status, int time) 
+    	{
+    		if (m_oBrowserAdapter.navigationMovement(dx, dy, status, time))
+    		{
+    			updateLayout();
+    			return true;
+    		}
+   			return super.navigationMovement(dx, dy, status, time);
+		}
+
+		int m_nOrientation = -1;
     	protected void onChangeOrientation(int x, int y, int nOrientation)
     	{
     		if ( m_nOrientation == -1 )
@@ -808,36 +711,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 			}
 			
 			menu.deleteAll();
-/*			
-	        // TODO: This is really a hack, we should replicate the "Get Link" functionality
-			// Also, for some reason the menu size becomes 0 when there is 1 item left (page view)
-	    	for(int i=0; i < menu.getSize(); i++) {
-	    		//System.out.println("Getting menu item: " + i);
-	    	    MenuItem item = menu.getItem(i);
-	    	    String label = item.toString();
-	    	    // Save the get link menuitem
-	    	    if(!label.equalsIgnoreCase("Get Link")) {
-	    	    	//savedGetLinkItem = item;
-	    	    	menu.deleteItem(i);
-	                if ( i > 0 ) 
-	                	i = i - 1;
-	    	    } 
-	    	    
-	    	}
-			// Delete Page View
-	    	MenuItem pgview = null;
-	    	try {
-		    	// TODO: menu.getSize() above incorrectly reports size 0 when
-		    	// there is 1 item left! (Correct for BB 4.6 and less)
-		    	pgview = menu.getItem(0);
-	    	}
-	    	catch (Exception e) {
-	    		// This is ok. On BB 4.7 there is correct behavior so attempting to get
-	    		// item with index 0 cause exception - menu is actually empty!
-	    	}
-	    	if (pgview != null && pgview.getId() == 853)
-	    		menu.deleteItem(0);*/
-	    	
 			// Don't draw menu if menuItems is null
 			if (menuItems == null)
 				return;
@@ -856,14 +729,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				contextMenu.addItem(logItem);
 				contextMenu.addItem(separatorItem);
 				contextMenu.addItem(closeItem);
-/*				
-				setDefaultItemToMenu(RhodesApplication.LABEL_HOME, homeItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_REFRESH, refreshItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_OPTIONS, optionsItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_LOG, logItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_SEPARATOR, separatorItem, contextMenu);
-				setDefaultItemToMenu(RhodesApplication.LABEL_CLOSE, closeItem, contextMenu);*/
 			}
 
 			// Draw menu from rhodes framework
@@ -873,8 +738,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 				contextMenu.addItem(item);
 			}
 		
-			//setDefaultItemToMenu(RhodesApplication.LABEL_SYNC, syncItem, contextMenu);
-			
 			this.makeContextMenu(contextMenu);
 			menu.add(contextMenu);
 		}
@@ -931,11 +794,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	menuItems.addElement(item);
 		}
 		
-		/*private void setDefaultItemToMenu(String label, MenuItem item, ContextMenu menu) {
-			item.setText(label);
-	    	menu.addItem(item);
-		}*/
-
 		public void close() {
 			LOG.TRACE("Calling Screen.close");
 			Application.getApplication().requestBackground();
@@ -1030,17 +888,6 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    //Push this screen to display it to the user.
 	    UiApplication.getUiApplication().pushScreen(screen);
     }
-/*    
-    boolean isWaitForSDCardAtStartup()
-    {
-    	if ( Jsr75File.isRhoFolderExist() )
-    		return false;
-    	
-    	if ( Jsr75File.isSDCardExist() )
-    		return false;
-    	
-    	return !m_bActivated;
-    }*/
     
     private void doStartupWork() 
     {
@@ -1075,50 +922,12 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    	CTrackwheelListener wheel = new CTrackwheelListener();
 	    	this._history = new Vector();
 	
-	        //SyncEngine.setNotificationImpl( new SyncNotificationsImpl() );
-	
 	        _mainScreen = new CMainScreen();
 	        _mainScreen.addKeyListener(list);
 	        _mainScreen.addTrackwheelListener(wheel);
 	
 	        pushScreen(_mainScreen);
-	        _renderingSession = RenderingSession.getNewInstance();
-	        // enable javascript
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_CSS, true);
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.DEFAULT_CHARSET_VALUE, "utf-8");
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.OVERWRITE_CHARSET_MODE, true);
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ALLOW_POPUPS, true);
-	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
-	        
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.VALUE_THRESHOLD, 100000);
-	        
-	        
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.SHOW_IMAGE_PLACEHOLDERS, false);
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_WML, false);
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_EMBEDDED_RICH_CONTENT, false);
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
-//	        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
-	        
-	        if ( RhoConf.getInstance().getString("use_bb_full_browser").equalsIgnoreCase("touch") )
-	        	_isFullBrowser = _mainScreen.isTouchScreen();
-	        else  if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
-	        {
-		        Version.SoftVersion ver = Version.getSoftVersion();
-		        if ( ver.nMajor > 4 || ( ver.nMajor == 4 && ver.nMinor >= 6 ) )
-		        	_isFullBrowser = true;
-	        }
-
-	        if (_isFullBrowser)
-	        {
-		        //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
-		        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
-	        }
-	        
-//	    	_pushListeningThread = new PushListeningThread();
-//	    	_pushListeningThread.start();
+	        createBrowserControl();
 	        
 	    	try {
 	    		RhoClassFactory.getNetworkAccess().configure();
@@ -1126,14 +935,61 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    		LOG.ERROR(exc.getMessage());
 	    	}
 	    	
-	    	//initRuby();
-	    	
 	        PrimaryResourceFetchThread.Create(this);
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
     	}catch(Exception exc)
     	{
     		LOG.ERROR("doStartupWork failed", exc);
     	}
+    }
+    
+    public void executeJavascript(String strJavascript)
+    {
+    	final String url = strJavascript;
+        this.invokeLater( new Runnable() { 
+            public void run() 
+            {
+            	m_oBrowserAdapter.executeJavascript(url);
+            }
+        } );
+    }
+    
+    private void createBrowserControl()
+    {
+    	//touch;5
+    	String strFullBrowser = RhoConf.getInstance().getString("use_bb_full_browser");
+    	boolean bTouch = strFullBrowser.indexOf("touch") >= 0;
+    	boolean bBB5 = strFullBrowser.indexOf("5") >= 0;
+    	
+        if ( bTouch || bBB5 )
+        {
+        	if ( bTouch )
+        		m_isFullBrowser = _mainScreen.isTouchScreen();
+        	
+            if (!m_isFullBrowser && bBB5 )
+            {
+                Version.SoftVersion ver = Version.getSoftVersion();
+                m_isFullBrowser = ver.nMajor >= 5; 
+            }
+        }else if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
+        {
+	        Version.SoftVersion ver = Version.getSoftVersion();
+	        if ( ver.nMajor > 4 || ( ver.nMajor == 4 && ver.nMinor >= 6 ) )
+	        	m_isFullBrowser = true;
+        }
+
+        if ( m_isFullBrowser )
+        {
+	        Version.SoftVersion ver = Version.getSoftVersion();
+        	
+	        if ( ver.nMajor >= 5 )
+	        	m_oBrowserAdapter = new BrowserAdapter5(_mainScreen, this);
+	        else
+	        	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this);
+	        
+        	m_oBrowserAdapter.setFullBrowser();
+        }else
+        	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this);
     }
     
     private void invokeStartupWork() {
@@ -1206,8 +1062,8 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 	    navigateUrl(strStartPage);
     }
 
-    public void processConnection(HttpConnection connection, Event e) {
-
+    public void processConnection(HttpConnection connection, Object e) 
+    {
         // cancel previous request
         if (_currentConnection != null) {
             try {
@@ -1217,253 +1073,10 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
 
         _currentConnection = connection;
-
-        BrowserContent browserContent = null;
-
-        try {
-            browserContent = _renderingSession.getBrowserContent(connection, this, e);
-
-            if (browserContent != null) {
-       			browserContent.finishLoading();
-                
-                Field field = browserContent.getDisplayableContent();
-                if (field != null) {
-                	
-    				RHODESAPP().getSplashScreen().hide();
-    				
-                    synchronized (Application.getEventLock()) {
-                        _mainScreen.deleteAll();
-                        _mainScreen.add(field);
-/*                        
-                        _mainScreen.doPaint();
-                        if ( e == null )
-                        {//This should awake screen in case of long network response
-	                        KeyCodeEvent inject1 = 	new KeyCodeEvent( KeyCodeEvent.KEY_DOWN, (char)Keypad.KEY_ESCAPE, 0);
-	                        KeyCodeEvent inject2 =  new KeyCodeEvent( KeyCodeEvent.KEY_UP, (char)Keypad.KEY_ESCAPE, 0);
-	                        inject1.post();
-	                        inject2.post();
-	                        m_bSkipKeyPress = true;
-                        }*/
-                    }
-                }
-            }
-        } catch (RenderingException re) {
-
-        } finally {
-            SecondaryResourceFetchThread.doneAddingImages();
-        }
-
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#eventOccurred(net.rim.device.api.browser.Event)
-     */
-    public Object eventOccurred(Event event) {
-
-        int eventId = event.getUID();
-
-        switch (eventId) {
-
-            case Event.EVENT_URL_REQUESTED : {
-
-                UrlRequestedEvent urlRequestedEvent = (UrlRequestedEvent) event;
-                String absoluteUrl = urlRequestedEvent.getURL();
-                //if ( !absoluteUrl.startsWith(_httpRoot) )
-                //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
-
-                if ( urlRequestedEvent.getPostData() == null ||
-                	 urlRequestedEvent.getPostData().length == 0 )
-                	addToHistory(absoluteUrl, null );
-
-                PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl,
-                                                                                   urlRequestedEvent.getHeaders(),
-                                                                                   urlRequestedEvent.getPostData(),
-                                                                                   event);
-                thread.start();
-
-                break;
-
-            } case Event.EVENT_BROWSER_CONTENT_CHANGED: {
-
-                // browser field title might have changed update title
-                /*BrowserContentChangedEvent browserContentChangedEvent = (BrowserContentChangedEvent) event;
-
-                if (browserContentChangedEvent.getSource() instanceof BrowserContent) {
-                    BrowserContent browserField = (BrowserContent) browserContentChangedEvent.getSource();
-                    String newTitle = browserField.getTitle();
-                    if (newTitle != null) {
-                        synchronized (getAppEventLock())
-                    	//synchronized (Application.getEventLock())
-                        {
-                        	_mainScreen.setTitle(newTitle);
-                        }
-                    }
-                }*/
-
-                break;
-
-            } case Event.EVENT_REDIRECT : {
-
-                    RedirectEvent e = (RedirectEvent) event;
-                    String referrer = e.getSourceURL();
-                    String absoluteUrl = e.getLocation();
-
-                    switch (e.getType()) {
-
-                        case RedirectEvent.TYPE_SINGLE_FRAME_REDIRECT :
-                            // show redirect message
-                            Application.getApplication().invokeAndWait(new Runnable() {
-                                public void run() {
-                                    Status.show("You are being redirected to a different page...");
-                                }
-                            });
-
-                            break;
-
-                        case RedirectEvent.TYPE_JAVASCRIPT :
-                            break;
-                        case RedirectEvent.TYPE_META :
-                            // MSIE and Mozilla don't send a Referer for META Refresh.
-                            referrer = null;
-                            break;
-                        case RedirectEvent.TYPE_300_REDIRECT :
-                            // MSIE, Mozilla, and Opera all send the original
-                            // request's Referer as the Referer for the new
-                            // request.
-                            //if ( !absoluteUrl.startsWith(_httpRoot) )
-                            //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
-
-                        	addToHistory(absoluteUrl,referrer);
-                            Object eventSource = e.getSource();
-                            if (eventSource instanceof HttpConnection) {
-                                referrer = ((HttpConnection)eventSource).getRequestProperty(REFERER);
-                            }
-                            break;
-
-                    }
-
-                    HttpHeaders requestHeaders = new HttpHeaders();
-                    requestHeaders.setProperty(REFERER, referrer);
-                    PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(absoluteUrl, requestHeaders,null, event);
-                    thread.start();
-                    break;
-
-            } case Event.EVENT_CLOSE :
-                // TODO: close the application
-                break;
-
-            case Event.EVENT_SET_HEADER :
-            case Event.EVENT_SET_HTTP_COOKIE : {
-            	/*String cookie = ((SetHttpCookieEvent)event).getCookie();
-        		String response = processAjaxCall(cookie);
-        		if (response != null)
-        			synchronized (pendingResponses) {
-        				pendingResponses.addElement(response);
-        			}
-        		response = null;
-            	cookie = null;*/
-            	break;
-            }
-            case Event.EVENT_HISTORY :           // no history support
-            case Event.EVENT_EXECUTING_SCRIPT :  // no progress bar is supported
-            case Event.EVENT_FULL_WINDOW :       // no full window support
-            case Event.EVENT_STOP :              // no stop loading support
-            default :
-        }
-
-        return null;
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#getAvailableHeight(net.rim.device.api.browser.BrowserContent)
-     */
-    public int getAvailableHeight(BrowserContent browserField) {
-        // field has full screen
-        return Graphics.getScreenHeight();
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#getAvailableWidth(net.rim.device.api.browser.BrowserContent)
-     */
-    public int getAvailableWidth(BrowserContent browserField) {
-        // field has full screen
-        return Graphics.getScreenWidth();
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#getHistoryPosition(net.rim.device.api.browser.BrowserContent)
-     */
-    public int getHistoryPosition(BrowserContent browserField) {
-        // no history support
-        return 0;
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#getHTTPCookie(java.lang.String)
-     */
-    public String getHTTPCookie(String url) {
-    	StringBuffer responseCode = new StringBuffer();
-		synchronized (pendingResponses) {
-			for (int index = 0; index < pendingResponses.size(); index++)
-				responseCode.append(pendingResponses.elementAt(index));
-			pendingResponses.removeAllElements();
-		}
-		return responseCode.toString();
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#getResource(net.rim.device.api.browser.RequestedResource,
-     *      net.rim.device.api.browser.BrowserContent)
-     */
-    public HttpConnection getResource( RequestedResource resource, BrowserContent referrer) {
-
-        if (resource == null) {
-            return null;
-        }
-
-        // check if this is cache-only request
-        if (resource.isCacheOnly()) {
-            // no cache support
-            return null;
-        }
-
-        String url = resource.getUrl();
-
-        if (url == null) {
-            return null;
-        }
-
-        try{
-	        // if referrer is null we must return the connection
-	        if (referrer == null) {
-	            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
-	            return connection;
-	
-	        } else 
-	        {
-	    		if ( URI.isLocalHost(url) || URI.isLocalData(url))
-	    		{
-	                HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
-	                return connection;
-	   			}else
-	   			{
-		            // if referrer is provided we can set up the connection on a separate thread
-		            SecondaryResourceFetchThread.enqueue(resource, referrer);
-	   			}
-	        }
-        }catch(Exception exc)
-        {
-        	LOG.ERROR("getResource failed.", exc);
-        }
         
-        return null;
-    }
-
-    /**
-     * @see net.rim.device.api.browser.RenderingApplication#invokeRunnable(java.lang.Runnable)
-     */
-    public void invokeRunnable(Runnable runnable) {
-        (new Thread(runnable)).start();
+        RHODESAPP().getSplashScreen().hide();
+        
+        m_oBrowserAdapter.processConnection(connection, e);
     }
 
     public static class PrimaryResourceFetchThread {//extends Thread {
@@ -1547,7 +1160,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         private static RhodesApplication _application;
         private static Runnable _callback;
 
-        private Event _event;
+        private Object _event;
 
         private byte[] _postData;
 
@@ -1564,7 +1177,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
         }
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                						Event event) 
+                						Object event) 
         {
 			_url = url;
 			_requestHeaders = requestHeaders;
@@ -1574,7 +1187,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		}
         
         public PrimaryResourceFetchThread(String url, HttpHeaders requestHeaders, byte[] postData,
-                                      	Event event, Runnable callback) 
+                                      	Object event, Runnable callback) 
         {
             _url = url;
             _requestHeaders = requestHeaders;
@@ -1611,7 +1224,7 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     		m_oFetchThread = null;
     	}
         
-    	void start()
+    	public void start()
     	{
             m_oFetchThread.addCommand(this);
     	}
