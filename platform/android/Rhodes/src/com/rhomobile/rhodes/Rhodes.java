@@ -514,22 +514,16 @@ public class Rhodes extends Activity {
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		appMenu = new RhoMenu(menu);
-		return true;
-	}
-	
-	/*
-	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
 		appMenu = new RhoMenu(menu);
 		return true;
 	}
-	*/
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (appMenu == null)
+			return false;
 		return appMenu.onMenuItemSelected(item);
 	}
 	
