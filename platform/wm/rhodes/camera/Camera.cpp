@@ -130,8 +130,8 @@ bool copy_file(LPTSTR from, LPTSTR to) {
 	RHO_ASSERT(to);
 
 	SHFILEOPSTRUCT SHFileOp;
-	CString source(from);
-	CString destination(to);
+	ATL::CString source(from);
+	ATL::CString destination(to);
 
 	// add required string terminators
 	source+=_T("\0\0");
