@@ -75,6 +75,7 @@
 #include <atlstr.h>
 #include <atlcoll.h>
 
+#if defined (_WIN32_WCE) 
 //--- Define max and min macroses for WTL only ---
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -94,6 +95,7 @@
 #undef max
 #undef min
 //---   ---
+#endif
 
 #if defined (_WIN32_WCE) 
 #include <pvdispid.h>
