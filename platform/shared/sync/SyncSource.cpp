@@ -213,7 +213,7 @@ void CSyncSource::doSyncClientChanges()
                 if ( strBlobAttrs.length() > 0 )   
                     strBlobAttrs += ",";
 
-                strBlobAttrs += m_arBlobAttrs.elementAt(j);
+                strBlobAttrs += "\"" + m_arBlobAttrs.elementAt(j) + "\"";
             }
 
             if ( strBlobAttrs.length() > 0 )
@@ -331,7 +331,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
 */
             CMultipartItem* pItem = new CMultipartItem();
             CMultipartItem& oItem = *pItem;
-            oItem.m_strFilePath = value;
+            oItem.m_strFilePath = RHODESAPP().getRhoRootPath() + "apps" + value;
             oItem.m_strContentType = "application/octet-stream";
             oItem.m_strName = strAttrib + "-" + strObject;
 
