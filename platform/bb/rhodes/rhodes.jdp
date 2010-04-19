@@ -26,12 +26,13 @@ ExcludeFromBuildAll=0
 [Files
 resources\icon.png
 src\com\rho\BBVersionSpecific.java
+src\com\rho\BrowserAdapter.java
+src\com\rho\BrowserAdapter5.java
+src\com\rho\IBrowserAdapter.java
+src\com\rho\Version.java
 src\com\rho\file\Jsr75File.java
 src\com\rho\file\Jsr75RAFileImpl.java
 src\com\rho\file\PersistRAFileImpl.java
-src\com\rho\rubyext\GeoLocation.java
-src\com\rho\rubyext\System.java
-src\com\rho\rubyext\XMLParser.java
 src\com\rho\net\BaseSocket.java
 src\com\rho\net\bb\BBHttpConnection.java
 src\com\rho\net\bb\NativeBBHttpConnection.java
@@ -40,8 +41,11 @@ src\com\rho\net\SSLSocket.java
 src\com\rho\net\TCPSocket.java
 src\com\rho\RhoMainScreen.java
 src\com\rho\RhoRubyHelper.java
-src\com\rho\Version.java
 src\com\rho\rubyext\Alert.java
+src\com\rho\rubyext\GeoLocation.java
+src\com\rho\rubyext\System.java
+src\com\rho\rubyext\XMLParser.java
+src\com\rho\rubyext\WebView.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraFilesListener.java
 src\rhomobile\camera\CameraScreen.java
@@ -64,7 +68,6 @@ src\rhomobile\RhoPhonebook.java
 src\rhomobile\RingtoneManager.java
 src\rhomobile\SecondaryResourceFetchThread.java
 src\rhomobile\Utilities.java
-src\rhomobile\WebView.java
 ]
 HaveAlxImports=0
 HaveDefs=0

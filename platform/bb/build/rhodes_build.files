@@ -12,6 +12,8 @@ platform\bb\rhodes\src\com\rho\net\SSLSocket.java
 platform\bb\rhodes\src\com\rho\net\TCPSocket.java
 platform\bb\rhodes\src\com\rho\RhoRubyHelper.java
 platform\bb\rhodes\src\com\rho\Version.java
+platform\bb\rhodes\src\com\rho\BrowserAdapter.java
+platform\bb\rhodes\src\com\rho\IBrowserAdapter.java
 platform\bb\rhodes\src\rhomobile\camera\Camera.java
 platform\bb\rhodes\src\rhomobile\camera\CameraScreen.java
 platform\bb\rhodes\src\rhomobile\camera\CameraFilesListener.java
@@ -23,7 +25,7 @@ platform\bb\rhodes\src\rhomobile\RhodesApplication.java
 platform\bb\rhodes\src\rhomobile\RhoPhonebook.java
 platform\bb\rhodes\src\rhomobile\SecondaryResourceFetchThread.java
 platform\bb\rhodes\src\rhomobile\Utilities.java
-platform\bb\rhodes\src\rhomobile\WebView.java
+platform\bb\rhodes\src\com\rho\rubyext\WebView.java
 platform\bb\rhodes\src\rhomobile\datetime\DateTimePicker.java
 platform\bb\rhodes\src\rhomobile\datetime\DateTimeScreen.java
 platform\bb\rhodes\src\rhomobile\RingtoneManager.java
