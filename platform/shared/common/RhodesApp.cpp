@@ -476,8 +476,12 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
         return m_strHomeUrl;
 
     if ( strncmp("http://", strUrl.c_str(), 7 ) == 0 ||
+        strncmp("https://", strUrl.c_str(), 8 ) == 0 ||
+        strncmp("javascript:", strUrl.c_str(), 11 ) == 0 ||
         strncmp("mailto:", strUrl.c_str(), 7) == 0 ||
-        strncmp("tel:", strUrl.c_str(), 4) == 0)
+        strncmp("tel:", strUrl.c_str(), 4) == 0 ||
+        strncmp("wtai:", strUrl.c_str(), 5) == 0
+        )
         return strUrl;
 
     return CFilePath::join(m_strHomeUrl,strUrl);
