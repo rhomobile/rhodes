@@ -9,35 +9,51 @@ extern "C" {
 #endif
 /*
  * Class:     com_rhomobile_rhodes_RhoMenu
- * Method:    getMenuSize
- * Signature: ()I
+ * Method:    allocMenu
+ * Signature: ()J
  */
-JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuSize
+JNIEXPORT jlong JNICALL Java_com_rhomobile_rhodes_RhoMenu_allocMenu
   (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoMenu
+ * Method:    deallocMenu
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoMenu_deallocMenu
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhoMenu
+ * Method:    getMenuSize
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuSize
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhoMenu
  * Method:    getMenuItemLabel
- * Signature: (I)Ljava/lang/String;
+ * Signature: (JI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemLabel
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoMenu
  * Method:    getMenuItemType
- * Signature: (I)Ljava/lang/String;
+ * Signature: (JI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemType
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoMenu
  * Method:    getMenuItemUrl
- * Signature: (I)Ljava/lang/String;
+ * Signature: (JI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemUrl
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong, jint);
 
 #ifdef __cplusplus
 }
