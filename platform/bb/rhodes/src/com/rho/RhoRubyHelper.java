@@ -11,7 +11,7 @@ import rhomobile.NativeBar;
 import rhomobile.RhoPhonebook;
 import rhomobile.RhodesApplication;
 import rhomobile.RingtoneManager;
-import rhomobile.WebView;
+import com.rho.rubyext.WebView;
 import rhomobile.camera.Camera;
 import rhomobile.datetime.DateTimePicker;
 import rhomobile.mapview.MapView;
