@@ -1,2 +1,0 @@
-entry: Init_zmtel
-libraries: [ "zmtel", "zmtel_ruby" ]
