@@ -153,8 +153,8 @@ public :
 	void DoViewRefresh() {
 		::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_REFRESH,0);
 	}
-    
-	void DoViewNavigate(char* url) 
+
+	void DoViewNavigate(const char* url) 
     {
         rho::String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
         ::PostMessage( m_appWindow.m_hWnd, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(strUrl.c_str()) );
@@ -268,8 +268,11 @@ extern "C" void webview_navigate(char* url, int index) {
 	_AtlModule.DoViewNavigate(url);
 }
 
-extern "C" char* webview_execute_js(char* js, int index) {
-	_AtlModule.DoViewNavigate(js);
+extern "C" char* webview_execute_js(char* js, int index) 
+{
+    String strJS = "javascript:";
+    strJS += js;
+    _AtlModule.DoViewNavigate(strJS.c_str());
 	return "";
 }
 
