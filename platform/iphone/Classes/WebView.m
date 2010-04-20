@@ -76,7 +76,6 @@ int webview_active_tab() {
     id runnable = [RhoWebViewActiveTabTask class];
     id arg = [NSValue valueWithPointer:&index];
     [Rhodes performOnUiThread:runnable arg:arg wait:YES];
-    [runnable release];
     return index;
 }
 
