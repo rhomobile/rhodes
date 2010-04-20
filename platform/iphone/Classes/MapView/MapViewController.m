@@ -25,8 +25,9 @@
     MapViewController* map = [[MapViewController alloc] init];
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
-	[window addSubview:map.view];
+    [window addSubview:map.view];
     [map.view setFrame:[window frame]];
+    [map release];
 }
 @end
 
@@ -289,24 +290,24 @@
 }*/
 
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFailWithError:(NSError *)error{
-	NSLog(@"Reverse Geocoder Errored");
-	
+    NSLog(@"Reverse Geocoder Errored");
 }
 
 - (void)didFindAddress:(MapAnnotation*)annotation {
-	[mapView addAnnotation:annotation];
+    [mapView addAnnotation:annotation];
 }
 	
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)placemark{
-	NSLog(@"Reverse Geocoder completed");
-	//mPlacemark=placemark;
-	//[mapView addAnnotation:placemark];
+    NSLog(@"Reverse Geocoder completed");
+    //mPlacemark=placemark;
+    //[mapView addAnnotation:placemark];
 }
 
 - (MKAnnotationView *) mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>) annotation{
-	MKPinAnnotationView *annView=[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"currentloc"];
-	annView.animatesDrop = TRUE;
-	annView.canShowCallout = YES;
+    MKPinAnnotationView *annView = [[[MKPinAnnotationView alloc]
+                                     initWithAnnotation:annotation reuseIdentifier:@"currentloc"] autorelease];
+    annView.animatesDrop = TRUE;
+    annView.canShowCallout = YES;
     if ([annotation isKindOfClass:[MapAnnotation class]]) {
         MapAnnotation* ann = (MapAnnotation*)annotation;
         NSString* url = [ann url];
@@ -314,7 +315,7 @@
             [annView setRightCalloutAccessoryView:[UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
         }
     }
-	return annView;
+    return annView;
 }
 
 @end
