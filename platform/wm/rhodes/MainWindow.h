@@ -100,7 +100,7 @@ public:
         MESSAGE_HANDLER(WM_ALERT_SHOWPOPUP, OnAlertShowPopup);
 		MESSAGE_HANDLER(WM_DATETIME_PICKER, OnDateTimePicker);
     END_MSG_MAP()
-
+	
 private:
     // WM_xxx handlers
     LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -159,12 +159,12 @@ private:
     void __stdcall OnCommandStateChange(long lCommand, BOOL bEnable);
 
     // utility functions
-    BOOL SetEnabledState(UINT uMenuItemID, BOOL bEnable);
+    BOOL SetMenuItemEnabled      (UINT uMenuItemID, BOOL bEnable);
+	BOOL SetToolbarButtonEnabled (UINT uTbbID, BOOL bEnable);
+	
 	void ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL);
 
     static rho::StringW getRhodesAppName();
-
-	void toggleFullScreen(void);
 	void createCustomMenu(void);
 
 private:
@@ -202,13 +202,11 @@ private:
 private:
 	static int m_screenWidth;
 	static int m_screenHeight;
-
+	
 public:
 	static int getScreenWidth() {return m_screenWidth;}
 	static int getScreenHeight() {return m_screenHeight;}
 #endif
-	
-	bool m_bFullscreen;	
-//private:
-//	void SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url);
+private:
+	int m_pageCounter;
 };
