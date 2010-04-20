@@ -90,7 +90,7 @@
 	NSArray *array = [[currentAnnotation coordinateString] componentsSeparatedByString:@","];
 	double longitude = [[array objectAtIndex:0] doubleValue];
 	double lattitude = [[array objectAtIndex:1] doubleValue];
-	CLLocation *location = [[CLLocation alloc] initWithLatitude:lattitude longitude:longitude];
+	CLLocation *location = [[[CLLocation alloc] initWithLatitude:lattitude longitude:longitude] autorelease];
 	[currentAnnotation setCoordinate:location.coordinate];
 	return location;
 }

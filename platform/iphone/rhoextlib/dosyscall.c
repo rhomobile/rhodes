@@ -16,7 +16,7 @@ PARAMS_WRAPPER* do_syscall(PARAMS_WRAPPER* params) {
 	}
 	
 	//If synchronous call on ruby thread, generate return parameters 
-	if (!params->_call_on_ui_thread) {
+	if (params && !params->_call_on_ui_thread) {
 		PARAMS_WRAPPER* pw = malloc(sizeof(PARAMS_WRAPPER));
 		pw->_nparams = 2;
 		pw->_names = malloc(pw->_nparams*sizeof(char*));	

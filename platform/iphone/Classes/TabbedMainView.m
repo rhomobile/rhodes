@@ -67,11 +67,11 @@
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     for (int i = 0; i < count; ++i) {
-        int index = i*4;
-        NSString *label = [items objectAtIndex:index++];
-        NSString *url = [items objectAtIndex:index++];
-        NSString *icon = [items objectAtIndex:index++];
-        NSString *reload = [items objectAtIndex:index++];
+        int index = i*4 - 1;
+        NSString *label = [items objectAtIndex:++index];
+        NSString *url = [items objectAtIndex:++index];
+        NSString *icon = [items objectAtIndex:++index];
+        NSString *reload = [items objectAtIndex:++index];
         
         if (label && url && icon) {
             RhoTabBarData *td = [[RhoTabBarData alloc] init];

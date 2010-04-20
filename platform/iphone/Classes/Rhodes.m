@@ -83,7 +83,6 @@ static Rhodes *instance = NULL;
     else {
         RAWLOG_ERROR("runRunnable: unrecognized parameters");
     }
-    [args release];
 }
 
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait {
@@ -121,8 +120,8 @@ static Rhodes *instance = NULL;
 
 - (void)doSysCall:(ParamsWrapper*)params {
     PARAMS_WRAPPER pw;
-	do_syscall([params unwrap:&pw]);
-	[params release];
+    do_syscall([params unwrap:&pw]);
+    [params release];
 }
 
 - (void)sysCall:(PARAMS_WRAPPER*)params {
@@ -167,27 +166,26 @@ static Rhodes *instance = NULL;
                                 sourceType:(UIImagePickerControllerSourceType)type
 { 
 #if !defined __IPHONE_3_0
-	if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
+    if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
         (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
         (delegateObject == nil)) {
-		return NO; 
-	}
+        return NO; 
+    }
 #endif
 	
-	@try {
+    @try {
         [self setStatusBarHidden:YES];
-		UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
-		picker.sourceType = type;
-		picker.delegate = delegateObject; 
-		picker.allowsImageEditing = YES;
-		[window addSubview:picker.view];
-	} @catch(NSException* theException) {
-		RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
-		//NSLog(@"%@", theException);
+        UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
+        picker.sourceType = type;
+        picker.delegate = delegateObject; 
+        picker.allowsImageEditing = YES;
+        [window addSubview:picker.view];
+    } @catch(NSException* theException) {
+        RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
         [[UIApplication sharedApplication] setStatusBarHidden:NO];
         [self fixFrame];
-		return NO;
-	}
+        return NO;
+    }
 	
 	return YES;
 }
@@ -357,8 +355,7 @@ static Rhodes *instance = NULL;
 	
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath: soundFilePath];
 	NSError* err = nil;
-	AVAudioPlayer *newPlayer = [AVAudioPlayer alloc];
-	[newPlayer initWithContentsOfURL:fileURL error:&err];
+	AVAudioPlayer *newPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&err];
 	NSLog(@"Init media player returns: %@", err);
 	
 	[fileURL release];
