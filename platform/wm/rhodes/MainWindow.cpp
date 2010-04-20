@@ -25,11 +25,6 @@
 #include "sync/SyncThread.h"
 #include <hash_map>
 
-/**
- * TODO: 
- *   - dymanic menu - revert back system menu;
- */
-
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 //char* canonicalizeURL(const char* path);
 //const char* strip_local_domain(const char* url);
@@ -68,7 +63,7 @@ CMainWindow::CMainWindow()
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
 #endif
-	m_bFullscreen = false;
+	m_pageCounter = 0;
 //	m_current_url = NULL;
 //    m_szStartPage = NULL;
 }
@@ -205,6 +200,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     {
         rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
     }
+	
+	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
 #endif
 
 #if !defined(_WIN32_WCE)
@@ -306,7 +303,6 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
-	toggleFullScreen();
 #if defined(_WIN32_WCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
@@ -521,7 +517,6 @@ LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
-	//toggleFullScreen();
 #if defined (_WIN32_WCE) 
 	SetFullScreen(!m_bFullScreen);
 #endif
@@ -687,30 +682,6 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
     return convertToStringW( path.substr(pre_last + 1, last - pre_last - 1) );
 }
 
-void CMainWindow::toggleFullScreen()
-{
-#if defined (_WIN32_WCE)
-	const int  menu_height = 26;
-
-	LOG(INFO) + __FUNCTION__;
-      
-	RECT rc;
-
-	GetWindowRect(&rc);
-	::SHFullScreen(m_hWnd, m_bFullscreen ? 
-								SHFS_SHOWTASKBAR | SHFS_SHOWSIPBUTTON :
-								SHFS_HIDETASKBAR | SHFS_HIDESIPBUTTON);
-
-	::ShowWindow(this->m_menuBar, m_bFullscreen ? SW_SHOW : SW_HIDE);
-
-	MoveWindow (rc.left,  m_bFullscreen ? rc.top + menu_height : rc.top - menu_height,
-				rc.right, m_bFullscreen ? rc.bottom - (2 * menu_height) : rc.bottom + menu_height,
-				TRUE);
-
-	m_bFullscreen =  !m_bFullscreen;
-#endif
-}
-
 LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     StringW strAppName = getRhodesAppName();
@@ -770,7 +741,7 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
     else
         SetWindowText(TEXT("Untitled"));
 	
-    RHO_ASSERT(SetEnabledState(IDM_STOP, TRUE));
+    RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, TRUE));
 }
 
 void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
@@ -892,21 +863,26 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
 #if defined (_WIN32_WCE)
-	//createCustomMenu();
+	createCustomMenu();
+	
+	m_pageCounter++;
+	if (m_pageCounter > 2) //"loading" page + first page
+		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
-
-    RHO_ASSERT(SetEnabledState(IDM_STOP, FALSE));
+	
+	
+    RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 {
     /*if (CSC_NAVIGATEBACK == lCommand)
     {
-        RHO_ASSERT(SetEnabledState(IDM_BACK, bEnable));
+        RHO_ASSERT(SetMenuItemEnabled(IDM_BACK, bEnable));
     }
     else */if (CSC_NAVIGATEFORWARD == lCommand)
     {
-        RHO_ASSERT(SetEnabledState(IDM_FORWARD, bEnable));
+        RHO_ASSERT(SetMenuItemEnabled(IDM_FORWARD, bEnable));
     }
 }
 
@@ -915,9 +891,10 @@ void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 // utility function
 //
 // **************************************************************************
-BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
+BOOL CMainWindow::SetMenuItemEnabled(UINT uMenuItemID, BOOL bEnable)
 {
 #if defined(_WIN32_WCE)
+
 	if (CAppMenu::MENU_TYPE_CUSTOM == RHODESAPP().getAppMenu().getMenuType())
 		return TRUE;
 
@@ -928,6 +905,22 @@ BOOL CMainWindow::SetEnabledState(UINT uMenuItemID, BOOL bEnable)
 #else
 	return TRUE;
 #endif
+}
+
+BOOL CMainWindow::SetToolbarButtonEnabled(UINT uTbbID, BOOL bEnable)
+{
+
+#if defined(_WIN32_WCE)
+	TBBUTTONINFO tbbi;
+    tbbi.cbSize = sizeof(tbbi);
+    tbbi.dwMask = TBIF_STATE;
+    tbbi.fsState = bEnable ? TBSTATE_ENABLED : TBSTATE_INDETERMINATE;
+    ::SendMessage (m_menuBar, TB_SETBUTTONINFO, uTbbID, (LPARAM)&tbbi);
+	return TRUE;
+#else
+	return TRUE;
+#endif
+
 }
 
 // **************************************************************************
@@ -942,7 +935,6 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
 #ifdef OS_WINCE
 	if (pMsg->message == WM_CONTEXTMENU){
-		//TODO: our menu
 		/*
 		CMenuHandle menu;
 		menu.LoadMenu(IDR_MAIN_MENU);
@@ -964,11 +956,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
         !(WM_MOUSEFIRST <= uMsg && uMsg <= WM_MOUSELAST))
     {
 
-#ifdef OS_WINCE
-		if (m_bFullScreen && pMsg->message == WM_KEYUP && 
-			(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-		SetFullScreen(false);
-			
+#ifdef OS_WINCE			
         if ( uMsg == WM_HOTKEY )
         {
             int idHotKey = (int) pMsg->wParam; 
