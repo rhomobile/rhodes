@@ -84,11 +84,11 @@
     
     NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]/4];
     for(int i = 0, lim = [items count]/4; i < lim; i++) {
-        int index = i*4;
-        NSString *label = (NSString*)[items objectAtIndex:index++];
-        NSString *url = (NSString*)[items objectAtIndex:index++];
-        NSString *icon = (NSString*)[items objectAtIndex:index++];
-        //NSString *reload = (NSString*)[items objectAtIndex:index++];
+        int index = i*4 - 1;
+        NSString *label = (NSString*)[items objectAtIndex:++index];
+        NSString *url = (NSString*)[items objectAtIndex:++index];
+        NSString *icon = (NSString*)[items objectAtIndex:++index];
+        //NSString *reload = (NSString*)[items objectAtIndex:++index];
         
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
