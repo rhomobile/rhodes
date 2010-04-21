@@ -227,7 +227,7 @@ VALUE rho_sysimpl_get_property(char* szPropName)
     }
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
+#ifndef __IPHONE_3_2
         return rho_ruby_create_double(RHO_IPHONE_PPI);
 #else
         UIDevice *device = [UIDevice currentDevice];
