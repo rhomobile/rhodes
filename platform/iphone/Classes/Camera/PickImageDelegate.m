@@ -14,37 +14,23 @@
 @implementation PickImageDelegate
 
 - (void)useImage:(UIImage*)theImage { 
-	NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/public/db-files"];
-	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	if (![fileManager fileExistsAtPath:folder]) {
-		[fileManager createDirectoryAtPath:folder attributes:nil];
-	}
-	
-	NSString *now = [[[NSDate date] descriptionWithLocale:nil]
-					 stringByReplacingOccurrencesOfString: @":" withString: @"."];
-	now = [now stringByReplacingOccurrencesOfString: @" " withString: @"_"];
-	now = [now stringByReplacingOccurrencesOfString: @"+" withString: @"_"];
-	NSString *filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
-	NSString *fullname = [folder stringByAppendingPathComponent:filename];
-	NSData *pngImage = UIImagePNGRepresentation(theImage);
-	 
-	//NSString* message;
-	int isError = 0;
-	if([pngImage writeToFile:fullname atomically:YES]) {
-		// Send new image uri to the view
-		//message = [@"status=ok&image_uri=%2Fpublic%2Fdb-files%2F" stringByAppendingString:filename];
-	} else {
-		isError = 1;
-		// Notify view about error
-		//message = @"status=error&message=Can't write image to the storage.";
-	}
-	
-	rho_rhodesapp_callCameraCallback(
-	    [postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],
-		[filename cStringUsingEncoding:[NSString defaultCStringEncoding]],
-		isError ? "Can't write image to the storage." : "", 0 );
-	//[self doCallback:message];
+    NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/public/db-files"];
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:folder])
+        [fileManager createDirectoryAtPath:folder attributes:nil];
+
+    NSString *now = [[[NSDate date] descriptionWithLocale:nil]
+             stringByReplacingOccurrencesOfString: @":" withString: @"."];
+    now = [now stringByReplacingOccurrencesOfString: @" " withString: @"_"];
+    now = [now stringByReplacingOccurrencesOfString: @"+" withString: @"_"];
+    NSString *filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
+    NSString *fullname = [folder stringByAppendingPathComponent:filename];
+    NSData *pngImage = UIImagePNGRepresentation(theImage);
+
+    int isError = ![pngImage writeToFile:fullname atomically:YES];
+    rho_rhodesapp_callCameraCallback([postUrl UTF8String], [filename UTF8String],
+            isError ? "Can't write image to the storage." : "", 0 );
 } 
 
 - (void)imagePickerController:(UIImagePickerController *)picker 
@@ -57,25 +43,34 @@
     //it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
     [self useImage:image]; 
     // Remove the picker interface and release the picker object. 
-    //[[picker parentViewController] dismissModalViewControllerAnimated:YES]; 
     [picker dismissModalViewControllerAnimated:YES];
     picker.view.hidden = YES;
-    //[picker release]; 
+    //[picker release];
+#ifdef __IPHONE_3_2
+    [popover dismissPopoverAnimated:YES];
+#endif
 } 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
 { 
     // Notify view about cancel
-    //NSString* message = @"status=cancel&message=User canceled operation.";
-    //[self doCallback:message];
-    
-    rho_rhodesapp_callCameraCallback( [postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],"","", 1 );
+    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
     
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES]; 
     picker.view.hidden = YES;
     //[picker release]; 
+#ifdef __IPHONE_3_2
+    [popover dismissPopoverAnimated:YES];
+#endif
 } 
+
+#ifdef __IPHONE_3_2
+// UIPopoverControllerDelegate implementation
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+}
+#endif // __IPHONE_3_2
 
 @end
 

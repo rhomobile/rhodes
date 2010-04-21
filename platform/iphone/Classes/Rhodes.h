@@ -17,7 +17,8 @@
 #import "DateTimePickerDelegate.h"
 #import "PickImageDelegate.h"
 
-@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate, UITabBarControllerDelegate, AVAudioPlayerDelegate>
+@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate,
+    UITabBarControllerDelegate, AVAudioPlayerDelegate>
 {
     AppManager *appManager;
     UIApplication *application;
@@ -40,13 +41,13 @@
 
 + (UIApplication*)application;
 
++ (CGRect)applicationFrame;
+
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait;
 
-+ (CGRect)applicationFrame;
 - (UIWindow*)rootWindow;
-//- (void)setStatusBarHidden:(BOOL)hidden;
 
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
 - (void)playStop;
