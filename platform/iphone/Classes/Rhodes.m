@@ -159,32 +159,22 @@ static Rhodes *instance = NULL;
         picker.allowsEditing = YES;
 #endif
         // Show picker
-#ifndef __IPHONE_3_2
-        [window addSubview:picker.view];
-#else
-        UIDevice *device = [UIDevice currentDevice];
-        UIUserInterfaceIdiom idiom = device.userInterfaceIdiom;
-        switch (idiom) {
-            case UIUserInterfaceIdiomPhone:
-                [window addSubview:picker.view];
-                break;
-            case UIUserInterfaceIdiomPad: {
-                UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:picker];
-                popover.delegate = delegateObject;
-                delegateObject->popover = popover;
-                CGRect rect = [[[self mainView] view] frame];
-                rect.origin.x += rect.size.width/4;
-                rect.origin.y += rect.size.height/4;
-                rect.size.width /= 2;
-                rect.size.height /= 2;
-                popover.popoverContentSize = CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect));
-                [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-                }
-                break;
-            default:
-                RAWLOG_ERROR1("Unknown user interface idiom: %d", (int)idiom);
+#ifdef __IPHONE_3_2
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:picker];
+            popover.delegate = delegateObject;
+            delegateObject->popover = popover;
+            CGRect rect = [[[self mainView] view] frame];
+            rect.origin.x += rect.size.width/4;
+            rect.origin.y += rect.size.height/4;
+            rect.size.width /= 2;
+            rect.size.height /= 2;
+            popover.popoverContentSize = CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect));
+            [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         }
+        else
 #endif
+            [window addSubview:picker.view];
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
         return NO;
