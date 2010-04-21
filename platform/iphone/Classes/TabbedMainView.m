@@ -54,12 +54,16 @@
 
 @synthesize tabbar, tabbarData;
 
-- (id)initWithParentView:(UIView *)v items:(NSArray*)items {
+- (id)initWithParentView:(UIView *)v items:(NSArray *)items {
+    return [self initWithParentView:v frame:v.frame items:items];
+}
+
+- (id)initWithParentView:(UIView *)v frame:(CGRect)frame items:(NSArray*)items {
     parent = v;
     
     tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
     tabbar.delegate = [Rhodes sharedInstance];
-    tabbar.view.frame = parent.frame;
+    tabbar.view.frame = frame;
     tabbar.selectedIndex = 0;
     
     int count = [items count]/4;
@@ -98,9 +102,9 @@
     self.tabbarData = tabs;
     [tabs release];
     
-    CGRect frame = tabbar.view.frame;
+    CGRect vFrame = tabbar.view.frame;
     CGRect tbFrame = tabbar.tabBar.frame;
-    tbFrame.origin.y = frame.size.height - tbFrame.size.height - frame.origin.y;
+    tbFrame.origin.y = vFrame.size.height - tbFrame.size.height - vFrame.origin.y;
     tabbar.tabBar.frame = tbFrame;
     
     return self;
