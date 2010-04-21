@@ -383,11 +383,11 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     int nSep = strHeader.find(':');
     if (nSep > 0 )
     {		
-        String strName = trim(strHeader.substr(0, nSep));
+        String strName = String_trim(strHeader.substr(0, nSep));
         String lName;
         std::transform(strName.begin(), strName.end(), std::back_inserter(lName), &::tolower);
 
-        String strValue = trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
+        String strValue = String_trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
     
         pHeaders->put(lName, strValue);
     }
