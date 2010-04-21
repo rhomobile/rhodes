@@ -46,6 +46,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -628,6 +629,12 @@ public class Rhodes extends Activity {
 				getSystemService(Context.TELEPHONY_SERVICE);
 			String number = manager.getLine1Number();
 			return number;
+		}
+		else if (name.equalsIgnoreCase("device_name")) {
+			return Build.DEVICE;
+		}
+		else if (name.equalsIgnoreCase("os_version")) {
+			return Build.VERSION.RELEASE;
 		}
 		
 		return null;
