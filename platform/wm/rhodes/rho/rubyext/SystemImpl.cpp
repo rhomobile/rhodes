@@ -317,4 +317,9 @@ VALUE rho_sys_has_network()
 	return rho_ruby_create_boolean(g_rho_has_network!=0);
 }
 
+void rho_sys_app_exit()
+{
+	::exit(EXIT_SUCCESS);
+}
+
 } //extern "C"
