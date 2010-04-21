@@ -141,6 +141,8 @@ public class SimpleMainView implements MainView {
 			String rootPath = r.getRootPath() + "/apps/";
 			
 			LinearLayout group = null;
+			// First group should have gravity LEFT
+			int gravity = Gravity.LEFT;
 			for (int i = 0, lim = params.size(); i < lim; ++i) {
 				Object param = params.elementAt(i);
 				if (!(param instanceof Map<?,?>))
@@ -182,6 +184,7 @@ public class SimpleMainView implements MainView {
 				}
 				else if (action.equalsIgnoreCase("separator")) {
 					group = null;
+					gravity = Gravity.CENTER;
 					continue;
 				}
 				
@@ -228,13 +231,17 @@ public class SimpleMainView implements MainView {
 				button.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
 				if (group == null) {
 					group = new LinearLayout(r);
-					group.setGravity(Gravity.CENTER);
+					group.setGravity(gravity);
 					group.setOrientation(LinearLayout.HORIZONTAL);
 					group.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 1));
 					bottom.addView(group);
 				}
 				group.addView(button);
 			}
+			
+			// Last group should have gravity RIGHT
+			if (group != null)
+				group.setGravity(Gravity.RIGHT);
 		}
 	}
 	
