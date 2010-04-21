@@ -24,6 +24,9 @@ extern void rho_sys_set_push_notification( const char *url, const char* params);
 #define set_screen_rotation_notification rho_sys_set_screen_rotation_notification
 extern void rho_sys_set_screen_rotation_notification(const char *url, const char* params);
 
+#define exit rho_sys_app_exit
+extern void rho_sys_app_exit();
+
 %}
 
 %typemap(in) (int nparams, char** param_names, char** param_values)
@@ -58,3 +61,4 @@ extern int get_screen_width();
 extern int get_screen_height();
 extern void set_push_notification( const char *url, const char* params);
 extern void set_screen_rotation_notification(const char *url, const char* params);
+extern void exit();
