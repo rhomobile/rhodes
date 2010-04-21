@@ -26,8 +26,7 @@
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
     [window addSubview:map.view];
-    [map.view setFrame:[window frame]];
-    [map release];
+    //[map release];
 }
 @end
 

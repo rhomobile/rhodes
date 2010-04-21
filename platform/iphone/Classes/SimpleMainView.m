@@ -58,7 +58,7 @@
 
 @synthesize webView, toolbar;
 
-- (UIToolbar*)newToolbar:(NSArray*)items {
+- (UIToolbar*)newToolbar:(NSArray*)items frame:(CGRect)mainFrame {
     if ([items count] % 4 != 0) {
         RAWLOG_ERROR("Illegal arguments for createNewToolbar");
         return nil;
@@ -68,8 +68,6 @@
     tb.barStyle = UIBarStyleBlackOpaque;
     
     [tb sizeToFit];
-    
-    CGRect mainFrame = parent.frame;
     
     CGFloat tbHeight = [tb frame].size.height;
     CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
@@ -179,10 +177,18 @@
     return [self initWithParentView:v toolbar:nil];
 }
 
+- (id)initWithParentView:(UIView *)v frame:(CGRect)frame {
+    return [self initWithParentView:v frame:frame toolbar:nil];
+}
+
 - (id)initWithParentView:(UIView *)v toolbar:(NSArray*)items {
+    return [self initWithParentView:v frame:v.frame toolbar:items];
+}
+
+- (id)initWithParentView:(UIView *)v frame:(CGRect)frame toolbar:(NSArray*)items {
     parent = v;
     
-    webView = [[UIWebView alloc] initWithFrame:parent.frame];
+    webView = [[UIWebView alloc] initWithFrame:frame];
     webView.scalesPageToFit = YES;
     webView.userInteractionEnabled = YES;
     //webView.detectsPhoneNumbers = YES;
@@ -190,11 +196,11 @@
     webView.autoresizesSubviews = YES;
     webView.clipsToBounds = NO;
     webView.delegate = [Rhodes sharedInstance];
-    webView.frame = parent.frame;
+    webView.frame = frame;
     self.view = webView;
     
     if (items) {
-        UIToolbar *tb = [self newToolbar:items];
+        UIToolbar *tb = [self newToolbar:items frame:frame];
         self.toolbar = tb;
         [webView addSubview:toolbar];
         [tb release];
