@@ -79,6 +79,7 @@ public:
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getDBDirPath(){return m_strDBDirPath; }
+    String resolveDBFilesPath(const String& strFilePath);
     const String& getRhoRootPath(){return m_strRhoRootPath;}
 
     const String& getAppBackUrl(){return m_strAppBackUrl;}

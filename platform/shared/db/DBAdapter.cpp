@@ -22,19 +22,27 @@ static int onDBBusy(void* data,int nTry)
 
 void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
-    char* type = NULL;
-    if ( nArgs < 4 )
+    if ( nArgs < 3 )
         return;
 
-    type = (char*)sqlite3_value_text(*(ppArgs+1));
-    if ( type && strcmp(type,"blob.file") == 0 )
+    CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
+
+    char* szAttrName = (char*)sqlite3_value_text(*(ppArgs+2));
+    int nSrcID = sqlite3_value_int(*(ppArgs+1));
+    if ( attrMgr.isBlobAttr(nSrcID, szAttrName) )
     {
-        String strFilePath = RHODESAPP().getRhoRootPath()+ "apps";
-        strFilePath += (char*)sqlite3_value_text(*(ppArgs));
+        String strFilePath = RHODESAPP().resolveDBFilesPath((char*)sqlite3_value_text(*(ppArgs)));
         CRhoFile::deleteFile(strFilePath.c_str());
     }
 
-    CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr().remove( sqlite3_value_int(*(ppArgs+2)), (char*)sqlite3_value_text(*(ppArgs+3)) );
+    attrMgr.remove( nSrcID, szAttrName );
+}
+
+void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
+{
+    CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
+    //TODO: SyncBlob_DeleteSchemaCallback
+    //TODO: add to reset - set callback
 }
 
 void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
@@ -97,8 +105,11 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     if ( !bExist )
         createSchema();
 
-    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 4, SQLITE_ANY, 0,
+    sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
 	    SyncBlob_DeleteCallback, 0, 0 );
+    sqlite3_create_function( m_dbHandle, "rhoOnDeleteRecord", 1, SQLITE_ANY, 0,
+	    SyncBlob_DeleteSchemaCallback, 0, 0 );
+
     sqlite3_create_function( m_dbHandle, "rhoOnInsertObjectRecord", 2, SQLITE_ANY, 0,
 	    SyncBlob_InsertCallback, 0, 0 );
 
@@ -483,6 +494,22 @@ void CDBAdapter::createTriggers()
         sqlite3_free(errmsg);
 }
 
+void CDBAdapter::createDeleteTrigger(const String& strTable)
+{
+String strTrigger = String("CREATE TRIGGER rhodeleteSchemaTrigger BEFORE DELETE ON ") + strTable + " FOR EACH ROW "
+"   BEGIN "
+"       SELECT rhoOnDeleteRecord( OLD );"
+"   END;"
+";";
+    char* errmsg = 0;
+    //TODO: createDeleteTrigger
+/*    int rc = sqlite3_exec(m_dbHandle, strTrigger.c_str(),  NULL, NULL, &errmsg);
+
+    if ( rc != SQLITE_OK )
+        LOG(ERROR)+"createTriggers failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
+*/
+}
+
 void CDBAdapter::close()
 {
     for (Hashtable<String,sqlite3_stmt*>::iterator it = m_mapStatements.begin();  it != m_mapStatements.end(); ++it )
@@ -623,6 +650,12 @@ void CDBAdapter::rollback()
         it->second->close();
 }
 
+/*static*/ void CDBAdapter::initAttrManager()
+{
+    for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
+        it->second->getAttrMgr().loadBlobAttrs(*(it->second));
+}
+
 /*static*/ CDBAdapter& CDBAdapter::getUserDB()
 {
     return *getDBPartitions().get("user");
@@ -749,6 +782,11 @@ int rho_db_is_table_exist(void* pDB, const char* szTableName)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     return db.isTableExist(szTableName) ? 1 : 0;
+}
+
+void rho_db_init_attr_manager()
+{
+    rho::db::CDBAdapter::initAttrManager();
 }
 
 }

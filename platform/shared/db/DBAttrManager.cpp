@@ -77,36 +77,7 @@ void CDBAttrManager::load(CDBAdapter& db)
 {
     synchronized(m_mxSrcAttrs)
     {
-        DBResult( res, db.executeSQL("SELECT source_id,source_attribs from sources") );
-        for ( ; !res.isEnd(); res.next() )
-        { 
-            int nSrcID = res.getIntByIdx(0);
-            String strAttribs = res.getStringByIdx(1);
-            if ( strAttribs.length() == 0 )
-                continue;
-
-            CTokenizer oTokenizer( strAttribs, "," );
-
-            Hashtable<String,int>* pmapAttr = new Hashtable<String,int>();
-            String strAttr = "";
-		    while (oTokenizer.hasMoreTokens()) 
-            {
-			    String tok = oTokenizer.nextToken();
-			    if (tok.length() == 0)
-				    continue;
-                
-                if ( strAttr.length() > 0 )
-                {
-                    int nCounter = 0;
-                    convertFromStringA(tok.c_str(),nCounter);
-                    pmapAttr->put(strAttr, nCounter);
-                    strAttr = "";
-                }else
-                    strAttr = tok;
-            }
-
-            m_mapSrcAttrs.put(nSrcID,pmapAttr);
-        }
+        loadAttrs(db, m_mapSrcAttrs, "source_attribs");
     }
 }
 
@@ -138,6 +109,88 @@ unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
         }
 
         return arRes;
+    }
+}
+
+boolean CDBAttrManager::isBlobAttr(int nSrcID, const char* szAttr)
+{
+    Hashtable<String,int>* pmapAttr = m_mapBlobAttrs.get(nSrcID);
+    if ( pmapAttr != null )
+    {
+        Hashtable<String,int>& mapAttr = *pmapAttr;
+        return mapAttr.containsKey(szAttr);
+    }
+
+    return false;
+}
+
+boolean CDBAttrManager::isOverwriteBlobFromServer(int nSrcID, const String& strAttr)
+{
+    Hashtable<String,int>* pmapAttr = m_mapBlobAttrs.get(nSrcID);
+    if ( pmapAttr != null )
+    {
+        Hashtable<String,int>& mapAttr = *pmapAttr;
+        return mapAttr.get(strAttr) != 0;
+    }
+
+    return false;
+}
+
+void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
+{
+    loadAttrs(db, m_mapBlobAttrs, "blob_attribs");
+
+    for ( HashtablePtr< int, Hashtable<String,int>* >::iterator it = m_mapBlobAttrs.begin();  it != m_mapBlobAttrs.end(); ++it )
+    {
+        int nSrcID = it->first;
+
+        DBResult( res, db.executeSQL("SELECT name FROM sources WHERE source_id=?", nSrcID) );
+        if ( res.isEnd() )
+            continue;
+
+        String strName = res.getStringByIdx(0);
+        if ( !db.isTableExist(strName) )
+            continue;
+
+        db.createDeleteTrigger(strName);
+    }
+}
+
+/*static*/void CDBAttrManager::loadAttrs(CDBAdapter& db, HashtablePtr< int, Hashtable<String,int>* >& mapAttrs, String strDBAttr)
+{
+    mapAttrs.clear();
+    String strSql = "SELECT source_id,";
+    strSql += strDBAttr + " from sources";
+
+    DBResult( res, db.executeSQL(strSql.c_str()) );
+    for ( ; !res.isEnd(); res.next() )
+    { 
+        int nSrcID = res.getIntByIdx(0);
+        String strAttribs = res.getStringByIdx(1);
+        if ( strAttribs.length() == 0 )
+            continue;
+
+        CTokenizer oTokenizer( strAttribs, "," );
+
+        Hashtable<String,int>* pmapAttr = new Hashtable<String,int>();
+        String strAttr = "";
+	    while (oTokenizer.hasMoreTokens()) 
+        {
+		    String tok = oTokenizer.nextToken();
+		    if (tok.length() == 0)
+			    continue;
+            
+            if ( strAttr.length() > 0 )
+            {
+                int nCounter = 0;
+                convertFromStringA(tok.c_str(),nCounter);
+                pmapAttr->put(strAttr, nCounter);
+                strAttr = "";
+            }else
+                strAttr = tok;
+        }
+
+        mapAttrs.put(nSrcID,pmapAttr);
     }
 }
 

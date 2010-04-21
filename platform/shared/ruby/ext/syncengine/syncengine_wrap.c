@@ -1570,6 +1570,8 @@ static VALUE mSyncEngine;
 	#define set_syncserver rho_sync_set_syncserver
 	extern VALUE rho_sync_get_attrs(const char* szPartition, int source_id);
 	#define get_src_attrs rho_sync_get_attrs
+	extern VALUE rho_sync_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
+	#define is_blob_attr rho_sync_is_blob_attr
 	
     extern void  rho_sync_setobjectnotify_url(const char* szUrl);
     #define set_objectnotify_url rho_sync_setobjectnotify_url
@@ -2108,6 +2110,52 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_is_blob_attr(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
+  VALUE result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "is_blob_attr" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "is_blob_attr" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "is_blob_attr" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (VALUE)is_blob_attr((char const *)arg1,arg2,(char const *)arg3);
+  vresult = result;
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_set_objectnotify_url(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   int res1 ;
@@ -2578,6 +2626,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_set_pollinterval, -1);
   rb_define_module_function(mSyncEngine, "set_syncserver", _wrap_set_syncserver, -1);
   rb_define_module_function(mSyncEngine, "get_src_attrs", _wrap_get_src_attrs, -1);
+  rb_define_module_function(mSyncEngine, "is_blob_attr", _wrap_is_blob_attr, -1);
   rb_define_module_function(mSyncEngine, "set_objectnotify_url", _wrap_set_objectnotify_url, -1);
   rb_define_module_function(mSyncEngine, "add_objectnotify", _wrap_add_objectnotify, -1);
   rb_define_module_function(mSyncEngine, "clean_objectnotify", _wrap_clean_objectnotify, -1);

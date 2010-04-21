@@ -445,7 +445,7 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
         if (oItem.m_strFileName.length()>0)
             oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
         oItem.m_strDataPrefix += "\r\n";
-        if ( oItem.m_strFilePath.length() > 0 )
+        if ( oItem.m_strContentType.length() > 0 )
             oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
 
         int nContentSize = 0;
@@ -458,7 +458,7 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
         else
             nContentSize = oItem.m_strBody.length();
 
-        if ( oItem.m_strFilePath.length() > 0 )
+        if ( oItem.m_strContentType.length() > 0 )
             oItem.m_strDataPrefix += "Content-Length: " + common::convertToStringA(nContentSize) + "\r\n";
 
         oItem.m_strDataPrefix += "\r\n";

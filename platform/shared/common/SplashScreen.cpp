@@ -44,7 +44,7 @@ void CSplashScreen::init()
 	CTokenizer stringtokenizer(strSplash, ";");
 	while (stringtokenizer.hasMoreTokens()) {
 		String tok = stringtokenizer.nextToken();
-		tok = trim(tok);
+		tok = String_trim(tok);
 		if (tok.length() == 0) {
 			continue;
 		}
@@ -55,7 +55,7 @@ void CSplashScreen::init()
 			if (nEq>=0)
 			{
 				String val = tok.substr(nEq+1);
-				val = trim(val);
+				val = String_trim(val);
 				if ( val.length() > 0 )
                     convertFromStringA( val.c_str(), m_nDelay );
 			}

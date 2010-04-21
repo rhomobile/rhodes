@@ -21,29 +21,15 @@ namespace json {
 
 namespace sync {
 struct ISyncProtocol;
-/*
-class CSyncBlob
-{
-   String m_strBody;
-   String m_strFilePath;
 
-public:
-    CSyncBlob(const String& body, const String& filePath ) :
-      m_strBody(body), m_strFilePath(filePath){}
-
-    const String& getBody()const{ return m_strBody; }
-    const String& getFilePath()const{ return m_strFilePath; }
-};*/
-
-class CValue
+class CAttrValue
 {
 public:
+	String m_strAttrib;
     String m_strValue;
-	String m_strAttrType;
-	uint64 m_nID;
-	
-    //CValue(json::CJSONEntry& oJsonEntry);//throws JSONException
-    //CValue(json::CJSONEntry& oJsonEntry, int nVer);//throws JSONException
+    String m_strBlobSuffix;
+
+    CAttrValue(const String& strAttrib, const String& strValue);
 };
 
 
@@ -68,6 +54,8 @@ class CSyncSource
     int m_nProgressStep;
     boolean m_bSchemaSource;
     Hashtable<String,String> m_hashLinks;
+    HashtablePtr< String, Hashtable<String,String>* > m_hashCreatedBlobs;
+    boolean m_bBlobSyncStage;
 
 public:
     int m_nErrCode;
@@ -112,7 +100,6 @@ public:
 
     void syncServerChanges();
     void makePushBody_Ver3(String& strBody, const String& strUpdateType);
-    void afterSyncClientChanges(boolean arUpdateSent[]);
 
     void processToken(uint64 token);
 
@@ -126,11 +113,10 @@ public:
     void processServerResponse_ver3(json::CJSONArrayIterator& oJsonArr);
     void processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttrib, const String& strValue);//throws Exception
 
-//    VectorPtr<CSyncBlob*>& getSyncBlobs(){ return m_arSyncBlobs; }
-    //void syncClientBlobs(const String& strBaseQuery);
-
-    String makeFileName(const CValue& value);//throws Exception
-    boolean downloadBlob(CValue& value);//throws Exception
+    String makeFileName(const CAttrValue& value);//throws Exception
+    boolean downloadBlob(CAttrValue& value);//throws Exception
+    boolean processBlob( const String& strCmd, const String& strObject, CAttrValue& oAttrValue );
+    void processCreatedBlobs();
 
     void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
 
