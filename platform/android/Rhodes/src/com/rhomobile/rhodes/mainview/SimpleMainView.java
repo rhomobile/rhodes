@@ -138,22 +138,9 @@ public class SimpleMainView implements MainView {
 		view.addView(bottom);
 		
 		if (params != null) {
-			LinearLayout left = new LinearLayout(r);
-			left.setGravity(Gravity.LEFT);
-			left.setOrientation(LinearLayout.HORIZONTAL);
-			left.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 1));
-			bottom.addView(left);
-			
-			LinearLayout right = new LinearLayout(r);
-			right.setGravity(Gravity.RIGHT);
-			right.setOrientation(LinearLayout.HORIZONTAL);
-			right.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 1));
-			bottom.addView(right);
-			
-			LinearLayout current = left;
-			
 			String rootPath = r.getRootPath() + "/apps/";
 			
+			LinearLayout group = null;
 			for (int i = 0, lim = params.size(); i < lim; ++i) {
 				Object param = params.elementAt(i);
 				if (!(param instanceof Map<?,?>))
@@ -194,7 +181,7 @@ public class SimpleMainView implements MainView {
 					onClick = new ActionRefresh();
 				}
 				else if (action.equalsIgnoreCase("separator")) {
-					current = right;
+					group = null;
 					continue;
 				}
 				
@@ -204,8 +191,9 @@ public class SimpleMainView implements MainView {
 						throw new IllegalArgumentException("'icon' should be String");
 					String iconPath = rootPath + (String)iconObj;
 					Bitmap bitmap = BitmapFactory.decodeFile(iconPath);
-					if (bitmap != null)
-						icon = new BitmapDrawable(bitmap);
+					if (bitmap == null)
+						throw new IllegalArgumentException("Can't find icon: " + iconPath);
+					icon = new BitmapDrawable(bitmap);
 				}
 				
 				if (icon == null) {
@@ -238,7 +226,14 @@ public class SimpleMainView implements MainView {
 				
 				button.setOnClickListener(onClick);
 				button.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
-				current.addView(button);
+				if (group == null) {
+					group = new LinearLayout(r);
+					group.setGravity(Gravity.CENTER);
+					group.setOrientation(LinearLayout.HORIZONTAL);
+					group.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 1));
+					bottom.addView(group);
+				}
+				group.addView(button);
 			}
 		}
 	}
