@@ -74,7 +74,13 @@ public class SimpleMainView implements MainView {
 			reload(0);
 		}
 	};
-	
+
+	private class ActionExit implements View.OnClickListener {
+		public void onClick(View v) {
+			Rhodes.exit();
+		}
+	};
+
 	private class ActionCustomRunnable implements Runnable {
 		private boolean callback;
 		private String url;
@@ -181,6 +187,10 @@ public class SimpleMainView implements MainView {
 				else if (action.equalsIgnoreCase("refresh")) {
 					icon = r.getResources().getDrawable(AndroidR.drawable.refresh);
 					onClick = new ActionRefresh();
+				}
+				else if (action.equalsIgnoreCase("close") || action.equalsIgnoreCase("exit")) {
+					icon = r.getResources().getDrawable(AndroidR.drawable.exit);
+					onClick = new ActionExit();
 				}
 				else if (action.equalsIgnoreCase("separator")) {
 					group = null;
