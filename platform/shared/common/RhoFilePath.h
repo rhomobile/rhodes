@@ -74,6 +74,22 @@ public:
         return path;
     }
 
+    static boolean isEqualBaseNames(const String& path1, const String& path2)
+    {
+        CFilePath oPath1(path1);
+        CFilePath oPath2(path2);
+
+        return strcasecmp(oPath1.getBaseName(), oPath2.getBaseName()) == 0;
+    }
+
+    static String getRelativePath( const String& path1, const String& path2)
+    {
+        if ( !String_startsWith(path1, path2) )
+            return path1;
+
+        return path1.substr(path2.length());
+    }
+
 private:
 
     const char* findLastSlash(){

@@ -34,7 +34,7 @@ class CLocalTime : public CBaseTime{
 public:
     CLocalTime(){ setToCurTime(); }
 
-    String toString(boolean ms = false){ 
+    String toString(boolean ms = false, boolean inFileFormat = false){ 
         char timeBuf[40];
         int nSize = 0;
         if ( ms )
@@ -46,20 +46,33 @@ public:
             gettimeofday( &tv, &tz );
             locTime = localtime(&tv.tv_sec);
 
-            nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
-                    locTime->tm_hour, locTime->tm_min, locTime->tm_sec, (int)tv.tv_usec/1000 );
+            if (inFileFormat)
+                nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d%03d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                        locTime->tm_hour, locTime->tm_min, locTime->tm_sec, (int)tv.tv_usec/1000 );
+            else
+                nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                        locTime->tm_hour, locTime->tm_min, locTime->tm_sec, (int)tv.tv_usec/1000 );
 #else
             SYSTEMTIME st; 
             GetSystemTime( &st ); 
 
-            nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", st.wMonth, st.wDay, st.wYear,
-                st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
+            if (inFileFormat)
+                nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d%03d", st.wMonth, st.wDay, st.wYear,
+                    st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
+            else
+                nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", st.wMonth, st.wDay, st.wYear,
+                    st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
 #endif
         }else
         {
             struct tm* locTime = localtime(&m_nativeTime);
-            nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
-                    locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
+
+            if (inFileFormat)
+                nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                        locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
+            else
+                nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                        locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
         }
 
         timeBuf[nSize] = 0;

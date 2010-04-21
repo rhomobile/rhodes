@@ -151,7 +151,7 @@ String URI::urlEncode(const String& fullPath)
 	while (stringtokenizer.hasMoreTokens()) 
     {
 		String tok = stringtokenizer.nextToken();
-		tok = trim(tok);
+		tok = String_trim(tok);
 		if (tok.length() == 0) {
 			continue;
 		}
@@ -171,7 +171,7 @@ String URI::urlEncode(const String& fullPath)
 			}
 			
 			tok = tok.substr(0,nExp) + tok.substr(nEnd+1);
-			tok = trim(tok);
+			tok = String_trim(tok);
 		}
 		
 		int nEq = tok.find('=');
