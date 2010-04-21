@@ -29,16 +29,17 @@
     id view = nil;
     
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+    CGRect frame = [Rhodes applicationFrame];
     
     switch (type) {
     case NOBAR_TYPE:
-        view = [[SimpleMainView alloc] initWithParentView:window];
+        view = [[SimpleMainView alloc] initWithParentView:window frame:frame];
         break;
     case TOOLBAR_TYPE:
-        view = [[SimpleMainView alloc] initWithParentView:window toolbar:items];
+        view = [[SimpleMainView alloc] initWithParentView:window frame:frame toolbar:items];
         break;
     case TABBAR_TYPE:
-        view = [[TabbedMainView alloc] initWithParentView:window items:items];
+        view = [[TabbedMainView alloc] initWithParentView:window frame:frame items:items];
         break;
     default:
         RAWLOG_ERROR1("Unknown bar type passed: %d", type);

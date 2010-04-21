@@ -19,6 +19,8 @@
 @property (retain) UIToolbar *toolbar;
 
 - (id)initWithParentView:(UIView *)v;
+- (id)initWithParentView:(UIView *)v frame:(CGRect)frame;
 - (id)initWithParentView:(UIView *)v toolbar:(NSArray*)items;
+- (id)initWithParentView:(UIView *)v frame:(CGRect)frame toolbar:(NSArray*)items;
 
 @end
