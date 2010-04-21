@@ -29,39 +29,13 @@ static Rhodes *instance = NULL;
     return [Rhodes sharedInstance]->application;
 }
 
-/*
-- (void)fixFrameFor:(UIView*)view delta:(int)delta {
-    CGRect frame = view.frame;
-    frame.origin.y -= delta;
-    view.frame = frame;
-    
-    NSArray *subviews = view.subviews;
-    for (int i = 0, lim = [subviews count]; i < lim; ++i) {
-        UIView *subview = [subviews objectAtIndex:i];
-        [self fixFrameFor:subview delta:delta];
-    }
++ (CGRect)applicationFrame {
+    CGRect frame = [[UIScreen mainScreen] bounds];
+    CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
+    frame.origin.y += sbFrame.size.height;
+    frame.size.height -= sbFrame.size.height;
+    return frame;
 }
-
-- (void)fixFrame {
-    UIApplication *app = [UIApplication sharedApplication];
-    if (!app.statusBarHidden) {
-        CGRect frame = [[UIScreen mainScreen] applicationFrame];
-        [window setFrame:frame];
-        [self fixFrameFor:window delta:10];
-    }
-}
-
-- (void)setStatusBarHidden:(BOOL)hidden {
-    UIApplication *app = [Rhodes application];
-    [app setStatusBarHidden:hidden];
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    if (!hidden) {
-        frame.origin.y -= 10;
-        frame.size.height += 10;
-    }
-    [window setFrame:frame];
-}
-*/
 
 - (void)runRunnable:(NSArray*)args {
     id runnable = [args objectAtIndex:0];
@@ -113,7 +87,7 @@ static Rhodes *instance = NULL;
 
 - (void)openMapLocation:(NSString*)query {
     NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
-	[[UIApplication sharedApplication] openURL:url];
+    [[UIApplication sharedApplication] openURL:url];
 }
 
 - (void)mapLocation:(NSString *)query {
@@ -133,9 +107,9 @@ static Rhodes *instance = NULL;
 
 - (void)doShowLogOptions {
     if (logOptionsController!=NULL) {
-		[window addSubview:logOptionsController.view];
-		logOptionsController.view.hidden = NO;
-	}
+        [window addSubview:logOptionsController.view];
+        logOptionsController.view.hidden = NO;
+    }
 }
 
 - (void)showLogOptions {
@@ -144,9 +118,9 @@ static Rhodes *instance = NULL;
 
 - (void)doShowLog {
     if (logViewController!=NULL) {
-		[window addSubview:logViewController.view];
-		logViewController.view.hidden = NO;
-	}
+        [window addSubview:logViewController.view];
+        logViewController.view.hidden = NO;
+    }
 }
 
 - (void)showLog {
@@ -155,19 +129,19 @@ static Rhodes *instance = NULL;
 
 - (void)chooseDateTime:(DateTime*)dateTime {
     dateTimePickerDelegate.dateTime = dateTime;
-	[dateTimePickerDelegate setPostUrl:dateTime.url];
+    [dateTimePickerDelegate setPostUrl:dateTime.url];
     //[self normalizeUrl:dateTime.url]];
     @try {
-		[dateTimePickerDelegate createPicker:window];
-	} @catch (NSException* theException) {
-		RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
-	}
+        [dateTimePickerDelegate createPicker:window];
+    } @catch (NSException* theException) {
+        RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+    }
 }
 
--(BOOL)startCameraPicker:(id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)delegateObject 
+-(BOOL)startCameraPicker:(PickImageDelegate*)delegateObject 
                                 sourceType:(UIImagePickerControllerSourceType)type
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_3_0
+#ifndef __IPHONE_3_0
     if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
         (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
         (delegateObject == nil)) {
@@ -178,9 +152,39 @@ static Rhodes *instance = NULL;
     @try {
         UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
         picker.sourceType = type;
-        picker.delegate = delegateObject; 
+        picker.delegate = delegateObject;
+#ifndef __IPHONE_3_1
         picker.allowsImageEditing = YES;
+#else
+        picker.allowsEditing = YES;
+#endif
+        // Show picker
+#ifndef __IPHONE_3_2
         [window addSubview:picker.view];
+#else
+        UIDevice *device = [UIDevice currentDevice];
+        UIUserInterfaceIdiom idiom = device.userInterfaceIdiom;
+        switch (idiom) {
+            case UIUserInterfaceIdiomPhone:
+                [window addSubview:picker.view];
+                break;
+            case UIUserInterfaceIdiomPad: {
+                UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:picker];
+                popover.delegate = delegateObject;
+                delegateObject->popover = popover;
+                CGRect rect = [[[self mainView] view] frame];
+                rect.origin.x += rect.size.width/4;
+                rect.origin.y += rect.size.height/4;
+                rect.size.width /= 2;
+                rect.size.height /= 2;
+                popover.popoverContentSize = CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect));
+                [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+                }
+                break;
+            default:
+                RAWLOG_ERROR1("Unknown user interface idiom: %d", (int)idiom);
+        }
+#endif
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
         return NO;
@@ -199,14 +203,6 @@ static Rhodes *instance = NULL;
     [pickImageDelegate setPostUrl:url];
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-}
-
-+ (CGRect)applicationFrame {
-    CGRect frame = [[UIScreen mainScreen] bounds];
-    CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
-    frame.origin.y += sbFrame.size.height;
-    frame.size.height -= sbFrame.size.height;
-    return frame;
 }
 
 - (UIWindow*)rootWindow {
@@ -251,9 +247,6 @@ static Rhodes *instance = NULL;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    //window.contentMode = UIViewContentModeScaleToFill;
-    //window.autoresizesSubviews = YES;
-    //[window setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     [window makeKeyAndVisible];
     
     mainView = nil;
@@ -475,7 +468,7 @@ static Rhodes *instance = NULL;
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
     [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
-	// TODO
+    // TODO
     /*
      [self inactive];
      
@@ -512,6 +505,8 @@ static Rhodes *instance = NULL;
 }
 
 @end
+
+// Native functions
 
 void* rho_nativethread_start()
 {
