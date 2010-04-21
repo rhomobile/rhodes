@@ -139,3 +139,13 @@ RHO_GLOBAL int rho_sys_get_screen_height()
     return NUM2INT(rho_sysimpl_get_property((char*)"screen_height"));
 }
 
+RHO_GLOBAL void rho_sys_app_exit()
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
+}
+
