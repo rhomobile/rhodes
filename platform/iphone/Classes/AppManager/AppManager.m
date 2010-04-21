@@ -227,22 +227,12 @@ VALUE rho_sysimpl_get_property(char* szPropName)
     }
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
-#ifndef __IPHONE_3_2
-        return rho_ruby_create_double(RHO_IPHONE_PPI);
-#else
-        UIDevice *device = [UIDevice currentDevice];
-        UIUserInterfaceIdiom uiIdiom = [device respondsToSelector:@selector(userInterfaceIdiom)] ?
-            [device userInterfaceIdiom] : UIUserInterfaceIdiomPhone;
-        switch (uiIdiom) {
-            case UIUserInterfaceIdiomPhone:
-                return rho_ruby_create_double(RHO_IPHONE_PPI);
-            case UIUserInterfaceIdiomPad:
-                return rho_ruby_create_double(RHO_IPAD_PPI);
-            default:
-                RAWLOG_ERROR("Unknown device type");
-                return rho_ruby_create_double(0.0);
-        }
+#ifdef __IPHONE_3_2
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+            return rho_ruby_create_double(RHO_IPAD_PPI);
+        else
 #endif
+            return rho_ruby_create_double(RHO_IPHONE_PPI);
     }
     /*
     // Removed because it's possibly dangerous: Apple could reject application
