@@ -1061,6 +1061,10 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	    _history.addElement(strStartPage);
 	    navigateUrl(strStartPage);
     }
+    
+    public void close() {
+    	_mainScreen.close();
+    }
 
     public void processConnection(HttpConnection connection, Object e) 
     {
