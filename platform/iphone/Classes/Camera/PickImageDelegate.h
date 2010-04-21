@@ -10,13 +10,24 @@
 #import <Foundation/Foundation.h>
 #import "RhoDelegate.h"
 
-@interface PickImageDelegate : RhoDelegate <UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
+@interface PickImageDelegate : RhoDelegate <UINavigationControllerDelegate,
+    UIImagePickerControllerDelegate
+#ifdef __IPHONE_3_2
+    , UIPopoverControllerDelegate
+#endif
+> {
+#ifdef __IPHONE_3_2
+@public
+    UIPopoverController *popover;
+#endif
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
-		didFinishPickingImage:(UIImage *)image
-		editingInfo:(NSDictionary *)editingInfo;
+        didFinishPickingImage:(UIImage *)image
+                  editingInfo:(NSDictionary *)editingInfo;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
-
+#ifdef __IPHONE_3_2
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController;
+#endif
 
 @end
