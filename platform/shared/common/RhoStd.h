@@ -26,7 +26,7 @@ typedef bool boolean;
 
 #define null 0
 
-inline String trimRight(const String& str)
+inline String String_trimRight(const String& str)
 {
     // trim trailing spaces
     size_t endpos = str.find_last_not_of(" \t");
@@ -36,7 +36,7 @@ inline String trimRight(const String& str)
     return str;
 }
 
-inline String trimLeft(const String& str)
+inline String String_trimLeft(const String& str)
 {
     size_t startpos = str.find_first_not_of(" \t");
     if( String::npos != startpos )
@@ -45,10 +45,33 @@ inline String trimLeft(const String& str)
     return str;
 }
 
-inline String trim(const String& str)
+inline String String_trim(const String& str)
 {
-    String strRes = trimLeft(str);
-    return trimRight(strRes);
+    String strRes = String_trimLeft(str);
+    return String_trimRight(strRes);
+}
+
+inline boolean String_endsWith(const String& str, const char* szSuffix)
+{
+    if ( !szSuffix || !*szSuffix )
+        return false;
+
+    int nOff = str.length() - strlen(szSuffix);
+    if ( nOff < 0 )
+        return false;
+
+    return strcmp(str.c_str()+nOff, szSuffix) == 0;
+}
+
+inline boolean String_startsWith(const String& str, const String& strPrefix)
+{
+    if ( strPrefix.length() == 0 )
+        return false;
+
+    if ( (int)str.length() < strPrefix.length() )
+        return false;
+
+    return strncmp(str.c_str(), strPrefix.c_str(), strPrefix.length()) == 0;
 }
 
 template<class Type>

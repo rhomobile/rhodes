@@ -184,7 +184,6 @@ module Rho
                 linkSrc['str_links'] = str_links
             end
           end
-          
         end
         
         #user partition should alwayse exist
@@ -238,12 +237,33 @@ module Rho
           
         end
     end
+
+    def process_blob_attribs(source, db)
+      return source['str_blob_attribs'] if source['str_blob_attribs']
+      source['str_blob_attribs'] = ""
+      
+      if source['blob_attribs']
+        str = ""
+        source['blob_attribs'].each do |blobAttr|  
+            str += ',' if str.length()>0
+            if blobAttr.is_a?(Hash)    
+                str += blobAttr['name'].to_s() + ',' + blobAttr['server_overwrite'].to_i()
+            else
+                str += blobAttr.to_s() + ',0'
+            end
+        end
+        
+        source['str_blob_attribs'] = str
+      end
+      
+      source['str_blob_attribs']
+    end
     
     def init_db_sources(db, uniq_sources, db_partition)
     
         result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
         #puts 'result: ' + result.inspect
-        start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+1 : 0
+        start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+2 : 1
     
         uniq_sources.each do |source|
           puts "init_db_sources : #{source}"
@@ -253,8 +273,9 @@ module Rho
           sync_type = source['sync_type']
           schema_version = source['schema_version']
           links = source['str_links']
+          blob_attribs = process_blob_attribs(source, db)
           
-          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type, schema_version, links', 'name'=>name)
+          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type, schema_version, links, blob_attribs', 'name'=>name)
 
           if attribs && attribs.size > 0 
             if attribs[0]['priority'].to_i != priority.to_i
@@ -272,6 +293,9 @@ module Rho
             if attribs[0]['links'] != links
                 db.update_into_table('sources', {"links"=>links},{"name"=>name})
             end
+            if attribs[0]['blob_attribs'] != blob_attribs
+                db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
+            end
             
           else
             if !source['source_id']
@@ -283,7 +307,7 @@ module Rho
           
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition,
-                "schema_version"=>source['schema_version'], 'links'=>links })
+                "schema_version"=>source['schema_version'], 'links'=>links, 'blob_attribs'=>blob_attribs })
                 
           end
           

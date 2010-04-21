@@ -358,6 +358,8 @@ void CSyncEngine::processServerSources(String strSources)
     {
         NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
         loadAllSources();
+
+        rho_db_init_attr_manager();
     }
 }
 

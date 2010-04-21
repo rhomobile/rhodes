@@ -10,8 +10,7 @@ CREATE TABLE object_values (
  source_id BIGINT default NULL,
  attrib varchar(255) default NULL,
  object varchar(255) default NULL,
- value varchar default NULL,
- attrib_type varchar(255) default NULL);
+ value varchar default NULL);
 CREATE TABLE changed_values (
  source_id BIGINT default NULL,
  attrib varchar(255) default NULL,
@@ -37,7 +36,8 @@ CREATE TABLE sources (
  source_attribs varchar default NULL,
  schema varchar default NULL,
  schema_version varchar default NULL,
- links varchar default NULL);
+ links varchar default NULL,
+ blob_attribs varchar default NULL);
 CREATE INDEX by_src_id on object_values (source_id);
 CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);
 CREATE INDEX by_src_value ON object_values (attrib, source_id, value);

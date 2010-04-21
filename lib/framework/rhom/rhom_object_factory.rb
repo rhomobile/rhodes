@@ -843,12 +843,18 @@ module Rhom
                 true
               end
 		
+		      def is_blob_attrib(db_partition, nSrcID,attrib_name)  
+                SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
+		        #return attrib_name == "image_uri"
+		      end
+		      
               # saves the current object to the database as a create type
               def save
                 # iterate over each instance variable and insert create row to table
 				obj = self.inst_strip_braces(self.object)
 				nSrcID = self.get_inst_source_id
                 db = ::Rho::RHO.get_src_db(get_inst_source_name)
+                db_partition = Rho::RhoConfig.sources[get_inst_source_name]['partition'].to_s
 				tableName = is_inst_schema_source() ? get_inst_schema_table_name() : 'object_values'
 				isSchemaSrc = is_inst_schema_source()
                 begin
@@ -883,7 +889,7 @@ module Rhom
                                   "attrib"=>key,
                                   "value"=>val,
                                   "update_type"=>update_type}
-                        fields = key == "image_uri" ? fields.merge!({"attrib_type" => "blob.file"}) : fields
+                        fields = is_blob_attrib(db_partition, nSrcID, key) ? fields.merge!({"attrib_type" => "blob.file"}) : fields
                         resValue = nil
                         if isSchemaSrc
                             resValue = db.select_from_table(tableName, key, {"object"=>obj}) 
@@ -920,11 +926,11 @@ module Rhom
                         else
                             db.insert_into_table('changed_values', fields)
                             fields.delete("update_type")
+                            fields.delete("attrib_type")
                             
                             if isSchemaSrc
                                 db.insert_into_table(tableName, {key=>val, "object"=>obj})
                             else
-                                puts "#{tableName}; #{fields}"
                                 db.insert_into_table(tableName, fields)
                             end    
                         end
