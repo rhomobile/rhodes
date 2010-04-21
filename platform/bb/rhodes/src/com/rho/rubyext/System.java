@@ -142,7 +142,11 @@ public class System {
     	if ( strPropName.equalsIgnoreCase("device_id") )
     		return ObjectFactory.createString(new Integer( DeviceInfo.getDeviceId() ).toString()); 
     	if ( strPropName.equalsIgnoreCase("full_browser") )
-    		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.isFullBrowser()); 
+    		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.isFullBrowser());
+    	if ( strPropName.equalsIgnoreCase("device_name") )
+    		return ObjectFactory.createString(DeviceInfo.getDeviceName());
+    	if ( strPropName.equalsIgnoreCase("os_version") )
+    		return ObjectFactory.createString(DeviceInfo.getSoftwareVersion());
     	
     	return RubyConstant.QNIL;
     }
