@@ -234,6 +234,12 @@ VALUE rho_sysimpl_get_property(char* szPropName)
 #endif
             return rho_ruby_create_double(RHO_IPHONE_PPI);
     }
+    else if (strcasecmp("device_name", szPropName) == 0) {
+        return rho_ruby_create_string([[[UIDevice currentDevice] systemName] UTF8String]);
+    }
+    else if (strcasecmp("os_version", szPropName) == 0) {
+        return rho_ruby_create_string([[[UIDevice currentDevice] systemVersion] UTF8String]);
+    }
     /*
     // Removed because it's possibly dangerous: Apple could reject application
     // used such approach from its AppStore
