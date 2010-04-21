@@ -30,6 +30,7 @@ void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
 void webview_navigate(char* url, int index);
+void rho_db_init_attr_manager();
 }
 
 namespace rho {
@@ -87,6 +88,7 @@ void CRhodesApp::run()
     LOG(INFO) + "Starting RhodesApp main routine...";
     initHttpServer();
     RhoRubyStart();
+    rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
     rho_sync_create();
@@ -195,7 +197,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
         else
             strBody = "status=error&message=" + strError;
     }else
-        strBody = "status=ok&image_uri=%2Fpublic%2Fdb-files%2F" + strImagePath;
+        strBody = "status=ok&image_uri=db%2Fdb-files%2F" + strImagePath;
 
     strBody += "&rho_callback=1";
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
@@ -403,10 +405,18 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl = "http://localhost:";
     m_strHomeUrl += getFreeListeningPort();
 
-    m_strBlobsDirPath = getRhoRootPath() + "apps/public/db-files";
+    m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
 	m_strDBDirPath = getRhoRootPath() + "db";
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
+}
+
+String CRhodesApp::resolveDBFilesPath(const String& strFilePath)
+{
+    if ( String_startsWith(strFilePath, getRhoRootPath()) )
+        return strFilePath;
+
+    return CFilePath::join(getRhoRootPath(), strFilePath);
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)

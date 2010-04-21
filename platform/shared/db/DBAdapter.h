@@ -52,6 +52,7 @@ public:
 
     static HashtablePtr<String,CDBAdapter*>& getDBPartitions(){ return  m_mapDBPartitions; }
     static void closeAll();
+    static void initAttrManager();
     static boolean isAnyInsideTransaction();
     static CDBAdapter& getUserDB();
     static CDBAdapter& getDBByHandle(sqlite3* db);
@@ -157,8 +158,8 @@ public:
 
     DBResultPtr executeSQLReportNonUnique( const char* szSt, Vector<String>& arValues );
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5>
-    DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5 )
+    template<typename T1, typename T2, typename T3, typename T4>
+    DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4 )
     {
         DBResultPtr res = prepareStatement(szSt);
         if ( res->getStatement() == null )
@@ -168,7 +169,6 @@ public:
         bind(res->getStatement(), 2, p2);
         bind(res->getStatement(), 3, p3);
         bind(res->getStatement(), 4, p4);
-        bind(res->getStatement(), 5, p5);
 
         res->setReportNonUnique(true);
         return executeStatement(res);
@@ -212,6 +212,7 @@ public:
     void destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
     void setBulkSyncDB(String fDataName);
 
+    void createDeleteTrigger(const String& strTable);
 private:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
 
@@ -233,3 +234,4 @@ private:
 }
 }
 
+extern "C" void rho_db_init_attr_manager();

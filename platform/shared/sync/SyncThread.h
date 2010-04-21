@@ -155,6 +155,7 @@ void rho_sync_set_bulk_notification(const char *url, char* params);
 void rho_sync_clear_bulk_notification();
 
 unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID);
+unsigned long rho_sync_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
 int rho_sync_get_lastsync_objectcount(int nSrcID);
 
 #ifdef __cplusplus

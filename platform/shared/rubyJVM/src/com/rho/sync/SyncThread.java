@@ -700,6 +700,23 @@ public class SyncThread extends RhoThread
 					}
 			});
 
+		klass.getSingletonClass().defineMethod("is_blob_attr",
+				new RubyVarArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+						try{
+							String strPartition = args.get(0).toStr(); 
+							int nSrcID = args.get(1).toInt();
+							String strAttrName = args.get(2).toStr();
+							//TODO:is_blob_attr
+							return ObjectFactory.createBoolean(false);
+						}catch(Exception e)
+						{
+							LOG.ERROR("get_src_attrs failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
+		
 		klass.getSingletonClass().defineMethod("set_objectnotify_url",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
