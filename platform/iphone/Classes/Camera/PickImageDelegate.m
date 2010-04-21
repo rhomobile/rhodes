@@ -51,32 +51,30 @@
 		didFinishPickingImage:(UIImage *)image 
 		editingInfo:(NSDictionary *)editingInfo 
 { 
-	//If image editing is enabled and the user successfully picks an image, the image parameter of the 
-	//imagePickerController:didFinishPicking Image:editingInfo:method contains the edited image. 
-	//You should treat this image as the selected image, but if you want to store the original image, you can get 
-	//it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
+    //If image editing is enabled and the user successfully picks an image, the image parameter of the 
+    //imagePickerController:didFinishPicking Image:editingInfo:method contains the edited image. 
+    //You should treat this image as the selected image, but if you want to store the original image, you can get 
+    //it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
     [self useImage:image]; 
     // Remove the picker interface and release the picker object. 
     //[[picker parentViewController] dismissModalViewControllerAnimated:YES]; 
     [picker dismissModalViewControllerAnimated:YES];
-	picker.view.hidden = YES;
+    picker.view.hidden = YES;
     //[picker release]; 
-    [[Rhodes sharedInstance] setStatusBarHidden:NO];
 } 
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
 { 
-	// Notify view about cancel
-	//NSString* message = @"status=cancel&message=User canceled operation.";
-	//[self doCallback:message];
-	
-	rho_rhodesapp_callCameraCallback( [postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],"","", 1 );
-	
+    // Notify view about cancel
+    //NSString* message = @"status=cancel&message=User canceled operation.";
+    //[self doCallback:message];
+    
+    rho_rhodesapp_callCameraCallback( [postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],"","", 1 );
+    
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES]; 
-	picker.view.hidden = YES;
+    picker.view.hidden = YES;
     //[picker release]; 
-    [[Rhodes sharedInstance] setStatusBarHidden:NO];
 } 
 
 @end
