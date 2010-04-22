@@ -2,10 +2,9 @@
 #include "RhoFile.h"
 #include "RhoFilePath.h"
 #include "StringConverter.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 static const char* CONF_FILENAME = "apps/rhoconfig.txt";
-
-extern "C" void rho_conf_set_property_by_name(char* name, char* value);
 
 namespace rho{
 namespace common{
@@ -202,6 +201,11 @@ void rho_conf_setInt(const char* szName, int value) {
 	
 char* rho_conf_getString(const char* szName) {
 	return strdup(RHOCONF().getString(szName).c_str());
+}
+
+unsigned long rho_conf_is_property_exists(char* name)
+{
+    return rho_ruby_create_boolean(RHOCONF().isExist(name));
 }
 
 void rho_conf_freeString(char* str) {

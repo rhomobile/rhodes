@@ -44,7 +44,9 @@ module Rhom
         SyncEngine.stop_sync
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
-        Rho::RhoConfig.bulksync_state='0'
+        if ( Rho::RhoConfig.exists?('bulksync_state') )
+            Rho::RhoConfig.bulksync_state='0'
+        end    
         ::Rho::RHO.get_user_db().execute_sql("UPDATE sources SET token=0")
         
         ::Rho::RHO.get_db_partitions().each_value do |db|

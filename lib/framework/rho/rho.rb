@@ -264,7 +264,8 @@ module Rho
         result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
         #puts 'result: ' + result.inspect
         start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+2 : 1
-    
+        start_id = Rho::RhoConfig.max_config_srcid()+2 if start_id < Rho::RhoConfig.max_config_srcid
+        
         uniq_sources.each do |source|
           puts "init_db_sources : #{source}"
           name = source['name']
@@ -295,6 +296,11 @@ module Rho
             end
             if attribs[0]['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
+            end
+
+            if !source['source_id']
+                source['source_id'] = attribs[0]['source_id'].to_i
+                Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
             end
             
           else
@@ -492,6 +498,7 @@ module Rho
     
     @@sources = {}
     @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
+    @@max_config_srcid = 1
     
     class << self
       def method_missing(name, *args)
@@ -508,9 +515,17 @@ module Rho
         end
       end
       
+      def exists?(name)
+        RhoConf.is_property_exists(name)  
+      end
+      
       def reload
         @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
         Rho::RHO.process_rhoconfig
+      end
+      
+      def max_config_srcid
+        @@max_config_srcid
       end
         
       def show_log
@@ -550,6 +565,7 @@ module Rho
             @@sources[modelname]['sync'] = true
         end
         
+        @@max_config_srcid = new_source['source_id'] if new_source['source_id'] && @@max_config_srcid < new_source['source_id']
       end
       
       @@g_base_temp_id = nil

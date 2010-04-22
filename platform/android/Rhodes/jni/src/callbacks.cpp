@@ -80,19 +80,17 @@ RHO_GLOBAL void rho_nativethread_end(void *)
     jvm()->DetachCurrentThread();
 }
 
-RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
+RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
-    VALUE nil = rho_ruby_get_NIL();
-
     JNIEnv *env = jnienv();
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
-    if (!cls) return nil;
+    if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
-    if (!mid) return nil;
+    if (!mid) return 0;
 
     jobject result = env->CallStaticObjectMethod(cls, mid, rho_cast<jstring>(szPropName));
-    if (!result) return nil;
+    if (!result) return 0;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
     jclass clsInteger = getJNIClass(RHODES_JAVA_CLASS_INTEGER);
@@ -102,41 +100,58 @@ RHO_GLOBAL VALUE rho_sysimpl_get_property(char* szPropName)
 
     if (env->IsInstanceOf(result, clsBoolean)) {
         jmethodID midValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
-        return rho_ruby_create_boolean((int)env->CallBooleanMethod(result, midValue));
+        *resValue = rho_ruby_create_boolean((int)env->CallBooleanMethod(result, midValue));
+        return 1;
     }
     else if (env->IsInstanceOf(result, clsInteger)) {
         jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
-        return rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
+        *resValue = rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
+        return 1;
     }
     else if (env->IsInstanceOf(result, clsFloat)) {
         jmethodID midValue = getJNIClassMethod(env, clsFloat, "floatValue", "()F");
-        return rho_ruby_create_double((double)env->CallFloatMethod(result, midValue));
+        *resValue = rho_ruby_create_double((double)env->CallFloatMethod(result, midValue));
+        return 1;
     }
     else if (env->IsInstanceOf(result, clsDouble)) {
         jmethodID midValue = getJNIClassMethod(env, clsDouble, "doubleValue", "()D");
-        return rho_ruby_create_double((double)env->CallDoubleMethod(result, midValue));
+        *resValue = rho_ruby_create_double((double)env->CallDoubleMethod(result, midValue));
+        return 1;
     }
     else if (env->IsInstanceOf(result, clsString)) {
         jstring resStrObj = (jstring)result;
-        return rho_ruby_create_string(rho_cast<std::string>(resStrObj).c_str());
+        *resValue = rho_ruby_create_string(rho_cast<std::string>(resStrObj).c_str());
+        return 1;
     }
 
-    return nil;
+    return 0;
 }
 
 RHO_GLOBAL VALUE rho_sys_get_locale()
 {
-    return rho_sysimpl_get_property((char*)"locale");
+    VALUE res;
+    if ( rho_sysimpl_get_property((char*)"locale", &res) )
+        return res;
+
+    return rho_ruby_get_NIL();
 }
 
 RHO_GLOBAL int rho_sys_get_screen_width()
 {
-    return NUM2INT(rho_sysimpl_get_property((char*)"screen_width"));
+    VALUE res;
+    if ( rho_sysimpl_get_property((char*)"screen_width", &res) )
+        return NUM2INT(res);
+
+    return 0;
 }
 
 RHO_GLOBAL int rho_sys_get_screen_height()
 {
-    return NUM2INT(rho_sysimpl_get_property((char*)"screen_height"));
+    VALUE res;
+    if ( rho_sysimpl_get_property((char*)"screen_height", &res) )
+        return NUM2INT(res);
+
+    return 0;
 }
 
 RHO_GLOBAL void rho_sys_app_exit()
