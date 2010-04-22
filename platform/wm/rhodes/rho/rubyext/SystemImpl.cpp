@@ -14,6 +14,7 @@
 using namespace rho;
 using namespace rho::common;
 extern "C" HWND getMainWnd();
+extern "C" char* wce_wctomb(const wchar_t* w);
 
 extern "C"
 {
@@ -269,6 +270,46 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
 	if (strcasecmp("ppi_y",szPropName) == 0)
         {*resValue = rho_ruby_create_double(get_screen_ppi_y()); return 1; }
+
+	if (strcasecmp("device_name",szPropName) == 0)
+	{
+#ifdef OS_WINDOWS
+		*resValue = rho_ruby_create_string("Win32");
+#else
+		HKEY hKey;
+		if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Ident"),
+			0, KEY_READ, &hKey ) != ERROR_SUCCESS)
+			return 0;
+
+		DWORD dwType = REG_SZ;
+		DWORD dwDataSize = 0;
+		if ( RegQueryValueEx( hKey, _T("name"), 0, &dwType, (PBYTE)NULL,
+			&dwDataSize ) != ERROR_SUCCESS)
+			return 0;
+
+		std::vector<wchar_t> deviceName(dwDataSize + 1);
+		RegQueryValueEx( hKey, _T("name"), 0, &dwType, (PBYTE)&deviceName[0], &dwDataSize );
+		char *s = wce_wctomb(&deviceName[0]);
+		*resValue = rho_ruby_create_string(s);
+		::free(s);
+
+		RegCloseKey(hKey);
+		return 1;
+#endif
+	}
+
+	if (strcasecmp("os_version",szPropName) == 0)
+	{
+		OSVERSIONINFO osv;
+		osv.dwOSVersionInfoSize = sizeof(osv);
+		if (!GetVersionEx(&osv))
+			return 0;
+		char buf[50];
+		snprintf(buf, sizeof(buf), "%u.%u.%u", (unsigned)osv.dwMajorVersion,
+			(unsigned)osv.dwMinorVersion, (unsigned)osv.dwBuildNumber);
+		*resValue = rho_ruby_create_string(&buf[0]);
+		return 1;
+	}
 
     return 0;
 }
