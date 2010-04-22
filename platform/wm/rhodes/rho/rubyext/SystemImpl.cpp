@@ -13,6 +13,7 @@
 
 using namespace rho;
 using namespace rho::common;
+extern "C" HWND getMainWnd();
 
 extern "C"
 {
@@ -255,19 +256,19 @@ static double get_screen_ppi_y()
 	return ret;
 }
 
-VALUE rho_sysimpl_get_property(char* szPropName)
+int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("has_camera",szPropName) == 0) 
-        return rho_ruby_create_boolean(has_camera());
+        {*resValue = rho_ruby_create_boolean(has_camera()); return 1;}
 
 	if (strcasecmp("phone_number",szPropName) == 0)
-		return phone_number();
+        {*resValue = phone_number();return 1;}
 
 	if (strcasecmp("ppi_x",szPropName) == 0)
-		return rho_ruby_create_double(get_screen_ppi_x());
+        {*resValue = rho_ruby_create_double(get_screen_ppi_x()); return 1;}
 
 	if (strcasecmp("ppi_y",szPropName) == 0)
-		return rho_ruby_create_double(get_screen_ppi_y());
+        {*resValue = rho_ruby_create_double(get_screen_ppi_y()); return 1; }
 
     return 0;
 }
@@ -319,7 +320,7 @@ VALUE rho_sys_has_network()
 
 void rho_sys_app_exit()
 {
-	::exit(EXIT_SUCCESS);
+	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 }
 
 } //extern "C"

@@ -44,7 +44,6 @@ struct INetRequest
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession ) = 0;
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)=0;
-    virtual INetResponse* pushFile(const String& strUrl, const String& strFileName, IRhoSession* oSession, Hashtable<String,String>* pHeaders)=0;
     virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)=0;
     virtual INetResponse* pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)=0;
 

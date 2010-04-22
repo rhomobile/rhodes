@@ -207,51 +207,51 @@ static const double RHO_IPHONE_PPI = 163.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
 
-VALUE rho_sysimpl_get_property(char* szPropName)
+int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
 {
-    VALUE rnil = rho_ruby_get_NIL();
-    
     if (strcasecmp("platform", szPropName) == 0)
-        return rho_ruby_create_string("APPLE");
+        {*resValue = rho_ruby_create_string("APPLE"); return 1;}
     else if (strcasecmp("locale", szPropName) == 0)
-        return rho_sys_get_locale();
+        {*resValue = rho_sys_get_locale(); return 1; }
     else if (strcasecmp("screen_width", szPropName) == 0)
-        return rho_ruby_create_integer(rho_sys_get_screen_width());
+        {*resValue = rho_ruby_create_integer(rho_sys_get_screen_width()); return 1; }
     else if (strcasecmp("screen_height", szPropName) == 0)
-        return rho_ruby_create_integer(rho_sys_get_screen_height());
+        {*resValue = rho_ruby_create_integer(rho_sys_get_screen_height()); return 1; }
     else if (strcasecmp("has_network", szPropName) == 0)
-        return rho_sys_has_network();
+        {*resValue = rho_sys_has_network(); return 1; }
     else if (strcasecmp("has_camera", szPropName) == 0) {
         int has_camera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
-        return rho_ruby_create_boolean(has_camera);
+        *resValue = rho_ruby_create_boolean(has_camera);
+        return 1;
     }
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
 #ifdef __IPHONE_3_2
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-            return rho_ruby_create_double(RHO_IPAD_PPI);
+            *resValue = rho_ruby_create_double(RHO_IPAD_PPI);
         else
 #endif
-            return rho_ruby_create_double(RHO_IPHONE_PPI);
+            *resValue = rho_ruby_create_double(RHO_IPHONE_PPI);
+        
+        return 1;
     }
-    else if (strcasecmp("device_name", szPropName) == 0) {
-        return rho_ruby_create_string([[[UIDevice currentDevice] systemName] UTF8String]);
-    }
-    else if (strcasecmp("os_version", szPropName) == 0) {
-        return rho_ruby_create_string([[[UIDevice currentDevice] systemVersion] UTF8String]);
-    }
+    else if (strcasecmp("device_name", szPropName) == 0) 
+    { *resValue = rho_ruby_create_string([[[UIDevice currentDevice] systemName] UTF8String]);  return 1; }
+    else if (strcasecmp("os_version", szPropName) == 0) 
+    { *resValue = rho_ruby_create_string([[[UIDevice currentDevice] systemVersion] UTF8String]);  return 1; }
     /*
     // Removed because it's possibly dangerous: Apple could reject application
     // used such approach from its AppStore
     else if (strcasecmp("phone_number", szPropName) == 0) {
         NSString *num = [[NSUserDefaults standardUserDefaults] stringForKey:@"SBFormattedPhoneNumber"];
         if (!num)
-            return rnil;
-        return rho_ruby_create_string([num UTF8String]);
+            return 0;
+        *resValue =  rho_ruby_create_string([num UTF8String]);
+        return 1;
     }
     */
 
-    return rnil;
+    return 0;
 }
 
 const char* GetApplicationsRootPath() {

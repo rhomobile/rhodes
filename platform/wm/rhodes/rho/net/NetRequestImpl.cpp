@@ -402,20 +402,6 @@ static const wchar_t* szMultipartContType =
 static const char* szMultipartPostfix = 
     "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
-static const char* szMultipartPrefix = 
-   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
-   "Content-Disposition: form-data; name=\"blob\"; filename=\"";
-static const char* szMultipartPrefixEnd = 
-   "\"\r\n"
-   "Content-Type: application/octet-stream\r\n\r\n";
-
-static const char* szBodyPrefix = 
-   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
-   "Content-Disposition: form-data; name=\"data\"\r\n"
-   "Content-Type: ";
-static const char* szBodyPrefixEnd = 
-   "\r\n\r\n";
-
 int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems )
 {
     int nSize = 0;
@@ -591,18 +577,6 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
     return pNetResp;
 }
 
-int CNetRequestImpl::calculateMultipartSize(common::InputStream* bodyStream, const String& strBody, const String& strFileName)
-{   
-    int nSize = bodyStream->available() + strlen(szMultipartPrefix) + strlen(szMultipartPrefixEnd) + strlen(szMultipartPostfix)+
-        strFileName.length();
-
-    if ( strBody.length() > 0 )
-        nSize += strBody.length() + strlen(szBodyPrefix) + strlen(szBodyPrefixEnd) + strlen(szMultipartPostfix) +
-            getBodyContentType().length();
-
-    return nSize;
-}
-
 bool CNetRequestImpl::internetWriteHeader( const char* szPrefix, const char* szBody, const char* szPrefixEnd)
 {
     DWORD dwBytesWritten = 0;
@@ -616,114 +590,6 @@ bool CNetRequestImpl::internetWriteHeader( const char* szPrefix, const char* szB
         return false;
 
     return true;
-}
-
-CNetResponseImpl* CNetRequestImpl::sendStream(common::InputStream* bodyStream, const String& strBody, const String& strFileName)
-{
-    CNetResponseImpl* pNetResp = new CNetResponseImpl;
-
-    do
-    {
-        writeHeaders(m_pHeaders);
-
-        if ( isError() )
-            break;
-
-        if ( !HttpAddRequestHeaders( hRequest, szMultipartContType, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
-        {
-            pszErrFunction = L"HttpAddRequestHeaders";
-            break;
-        }
-
-	    INTERNET_BUFFERS BufferIn;
-        memset(&BufferIn, 0, sizeof(INTERNET_BUFFERS));
-	    BufferIn.dwStructSize = sizeof( INTERNET_BUFFERS ); // Must be set or error will occur
-        BufferIn.dwBufferTotal = calculateMultipartSize( bodyStream, strBody, strFileName);
-
-        if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
-        {
-            if (checkSslCertError())
-            {
-                if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
-                {
-                    pszErrFunction = L"HttpSendRequestEx";
-                    break;
-                }
-            }else
-            {
-                pszErrFunction = L"HttpSendRequestEx";
-                break;
-            }
-        }
-
-        if ( !internetWriteHeader( szMultipartPrefix, strFileName.c_str(), szMultipartPrefixEnd) )
-        {
-            pszErrFunction = L"InternetWriteFile";
-            break;
-        }
-
-        DWORD dwBytesWritten = 0;
-        if ( bodyStream->available() > 0 )
-        {
-            DWORD dwBufSize = 4096;
-            char* pBuf = (char*)malloc(dwBufSize);
-            int nReaded = 0;
-
-	        do
-	        {
-                nReaded = bodyStream->read(pBuf,0,dwBufSize);
-                if ( nReaded > 0 )
-                {
-		            if ( !InternetWriteFile( hRequest, pBuf, nReaded, &dwBytesWritten) )
-                    {
-                        pszErrFunction = L"InternetWriteFile";
-                        break;
-                    }
-                }
-	        }while(nReaded > 0);
-
-            free(pBuf);
-        }
-
-        if ( !InternetWriteFile( hRequest, szMultipartPostfix, strlen(szMultipartPostfix), &dwBytesWritten) )
-        {
-            pszErrFunction = L"InternetWriteFile";
-            break;
-        }
-
-        if ( strBody.length() > 0 )
-        {
-            if ( !internetWriteHeader( szBodyPrefix, getBodyContentType().c_str(), szBodyPrefixEnd) )
-            {
-                pszErrFunction = L"InternetWriteFile";
-                break;
-            }
-
-            if ( !internetWriteHeader( "", strBody.c_str(), szMultipartPostfix) )
-            {
-                pszErrFunction = L"InternetWriteFile";
-                break;
-            }
-        }
-
-        if ( !HttpEndRequest(hRequest, NULL, 0, 0) )
-        {
-            pszErrFunction = L"HttpEndRequest";
-            break;
-        }
-
-        if ( isError() )
-            break;
-
-        readResponse(pNetResp);
-        if ( isError() )
-            break;
-
-        readInetFile(hRequest,pNetResp);
-
-    }while(0);
-
-    return pNetResp;
 }
 
 void CNetRequestImpl::cancel()

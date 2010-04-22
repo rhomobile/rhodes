@@ -54,8 +54,6 @@ class CSyncSource
     int m_nProgressStep;
     boolean m_bSchemaSource;
     Hashtable<String,String> m_hashLinks;
-    HashtablePtr< String, Hashtable<String,String>* > m_hashCreatedBlobs;
-    boolean m_bBlobSyncStage;
 
 public:
     int m_nErrCode;
@@ -116,7 +114,6 @@ public:
     String makeFileName(const CAttrValue& value);//throws Exception
     boolean downloadBlob(CAttrValue& value);//throws Exception
     boolean processBlob( const String& strCmd, const String& strObject, CAttrValue& oAttrValue );
-    void processCreatedBlobs();
 
     void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
 
