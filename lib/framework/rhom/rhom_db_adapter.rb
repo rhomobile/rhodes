@@ -25,6 +25,8 @@ module Rhom
     @@database = nil
     @@inside_transaction = false
     @@ruby_mutex = Mutex.new
+    @@locked_thread = nil
+    @@lock_count = 0
     
     class << self
       
@@ -45,9 +47,27 @@ module Rhom
         end
         return true
       end   
+
+      def lock_ruby_mutex
+        if Thread.current != @@locked_thread
+            @@ruby_mutex.lock
+            @@locked_thread = Thread.current
+            @@lock_count = 1
+        else
+            @@lock_count += 1
+        end    
+      end
+
+      def unlock_ruby_mutex
+        @@lock_count -= 1
+        if @@lock_count == 0
+            @@locked_thread = nil
+            @@ruby_mutex.unlock
+        end    
+      end
     
       def start_transaction
-          @@ruby_mutex.lock
+          lock_ruby_mutex
       
           begin
             @@inside_transaction = true
@@ -65,7 +85,7 @@ module Rhom
             puts "exception when commit transaction"
           end
           
-          @@ruby_mutex.unlock
+          unlock_ruby_mutex
       end
 
       def rollback
@@ -76,7 +96,7 @@ module Rhom
             puts "exception when rollback transaction"
           end
           
-          @@ruby_mutex.unlock
+          unlock_ruby_mutex
           
       end
     
@@ -90,29 +110,22 @@ module Rhom
           # Make sure we lock the sync engine's mutex
           # before we perform a database transaction.
           # This prevents concurrency issues.
-          begin
+            lock_ruby_mutex
             if !@@inside_transaction
-                @@ruby_mutex.lock
                 SyncEngine.lock_sync_mutex 
             end
-                
-            result = @@database.execute( sql, args )
 
-            if !@@inside_transaction
-                SyncEngine.unlock_sync_mutex
-                @@ruby_mutex.unlock
+            begin
+                result = @@database.execute( sql, args )
+            rescue Exception => e
+                #puts "exception when running query: #{e}"
+                #raise
+            ensure
+                if !@@inside_transaction
+                    SyncEngine.unlock_sync_mutex
+                end
+                unlock_ruby_mutex
             end
-            
-          rescue Exception => e
-            #puts "exception when running query: #{e}"
-            # make sure we unlock even if there's an error!
-            if @@inside_transaction
-              raise
-            else
-              SyncEngine.unlock_sync_mutex
-              @@ruby_mutex.unlock
-            end    
-          end
         end
         #puts "result is: #{result.inspect}"
         result
@@ -249,13 +262,14 @@ module Rhom
 
       # deletes all rows from a given table by recreating db-file and save all other tables
       def destroy_table(table)
+          lock_ruby_mutex  
+          SyncEngine.lock_sync_mutex unless @@inside_transaction
+      
           begin
-            SyncEngine.lock_sync_mutex unless @@inside_transaction
             @@database.destroy_table table
+          ensure
             SyncEngine.unlock_sync_mutex unless @@inside_transaction
-          rescue Exception => e
-            SyncEngine.unlock_sync_mutex
-            raise
+            unlock_ruby_mutex
           end
       end
       
