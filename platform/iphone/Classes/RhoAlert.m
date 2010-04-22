@@ -189,7 +189,8 @@
 @implementation RhoAlert
 
 + (void)showPopup:(rho_param*)p {
-    id runnable = [[[RhoAlertShowPopupTask alloc] init] autorelease];
+//    id runnable = [[[RhoAlertShowPopupTask alloc] init] autorelease];
+	id runnable = [[RhoAlertShowPopupTask alloc] init];
     NSValue *value = [NSValue valueWithPointer:rho_param_dup(p)];
     [Rhodes performOnUiThread:runnable arg:value wait:NO];
 }
