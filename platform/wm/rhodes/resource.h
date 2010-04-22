@@ -54,7 +54,6 @@
 #define ID__OPTIONS                     40014
 #define IDM_OPTIONS                     40015
 #define ID_EXIT                         40016
-#define ID_MENU                         40017
 #define ID_MENU_HELLO                   40018
 #define IDM_EXIT                        40019
 #define IDM_LOG                         40020

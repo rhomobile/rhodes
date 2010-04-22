@@ -17,7 +17,7 @@
 #include "common/StringConverter.h"
 #include "AppManager.h"
 #include "ext/rho/rhoruby.h"
-#include "rho/rubyext/WebView.h"
+#include "rubyext/WebView.h"
 #if defined(_WIN32_WCE)
 #include "camera/Camera.h"
 #endif
@@ -525,70 +525,9 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 extern wchar_t* wce_mbtowc(const char* a);
 
-LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{	
-	CAppMenu::Item item;
-	
-	if (RHODESAPP().getAppMenu().getItem(wID, item)) {	
-		BOOL val = FALSE;
-		int type = item.getType();
-		
-		if (type == CAppMenu::Item::TYPE_URL) {
-			webview_navigate(strdup(item.getLink().c_str()), 0);
-		}
-		
-		if (type == CAppMenu::Item::TYPE_CMD_REFRESH) {
-			OnRefreshCommand (0, 0, 0, val);
-		}
-		if (type == CAppMenu::Item::TYPE_CMD_HOME) {
-			OnHomeCommand (0, 0, 0, val);
-		}
-		
-		if (type == CAppMenu::Item::TYPE_CMD_BACK) {
-			OnBackCommand (0, 0, 0, val);
-		}
-		
-		if (type == CAppMenu::Item::TYPE_CMD_SYNC) {
-			rho_sync_doSyncAllSources (TRUE);
-		}
-		
-		if (type == CAppMenu::Item::TYPE_CMD_OPTIONS) {
-			OnOptionsCommand (0, 0, 0, val);
-		}
-		
-		if (type == CAppMenu::Item::TYPE_CMD_LOG) {
-			OnLogCommand (0, 0, 0, val);
-		}
-		
-		if (type == CAppMenu::Item::TYPE_CMD_EXIT || type == CAppMenu::Item::TYPE_CMD_CLOSE) {
-			OnExitCommand (0, 0, 0, val);
-		}
-	}
-	
-	return 0;
-}
-
 #if defined(OS_WINDOWS)
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CMenu menu;
-	CMenu sub;
-	RECT  rect;
-
-	m_browser.GetWindowRect(&rect);
-	
-	if (CAppMenu::MENU_TYPE_CUSTOM == RHODESAPP().getAppMenu().getMenuType()) {
-		createCustomMenu();
-	} else {
-		VERIFY(menu.LoadMenu(IDR_MAIN_MENU));
-		sub.Attach(menu.GetSubMenu(0));
-		sub.TrackPopupMenu(
-				TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
-				rect.right-1, 
-				rect.bottom-1,
-				m_hWnd);
-		sub.Detach();
-	}
-	
+	createCustomMenu();
 	return 0;
 }
 
@@ -893,18 +832,7 @@ void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
 // **************************************************************************
 BOOL CMainWindow::SetMenuItemEnabled(UINT uMenuItemID, BOOL bEnable)
 {
-#if defined(_WIN32_WCE)
-
-	if (CAppMenu::MENU_TYPE_CUSTOM == RHODESAPP().getAppMenu().getMenuType())
-		return TRUE;
-
-    HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-    BOOL bRetVal = EnableMenuItem(hMenu, uMenuItemID, bEnable ? MF_ENABLED : MF_GRAYED);
-
-    return (bRetVal != 0xFFFFFFFF);
-#else
 	return TRUE;
-#endif
 }
 
 BOOL CMainWindow::SetToolbarButtonEnabled(UINT uTbbID, BOOL bEnable)
@@ -1002,6 +930,69 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     return FALSE;
 }
 
+#if defined (OS_WINDOWS)
+void CMainWindow::createCustomMenu()
+{
+	CMenu menu;
+	CMenu sub;
+	CMenu popup;
+	
+	VERIFY(menu.CreateMenu());
+	VERIFY(popup.CreatePopupMenu());
+	menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
+
+	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+ 	
+	//update UI with custom menu items
+	USES_CONVERSION; 
+    for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
+    {
+        CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
+        if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+			popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, (UINT_PTR)0, (LPCTSTR)0);
+		else 
+			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, 
+                oItem.m_eType == CAppMenuItem::emtClose ? _T("Exit") : A2T(oItem.m_strLabel.c_str()) );
+    }
+
+	RECT  rect; 
+	m_browser.GetWindowRect(&rect);
+	sub.Attach(menu.GetSubMenu(0));
+	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+						rect.right-1, 
+						rect.bottom-1,
+						m_hWnd);
+	sub.Detach();
+}
+
+#endif//OS_WINDOWS
+
+#if defined (OS_WINCE)
+
+void CMainWindow::createCustomMenu()
+{
+	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+	
+	//except exit item
+	int num = GetMenuItemCount (hMenu);
+	for (int i = 0; i < (num - 1); i++)	
+		DeleteMenu(hMenu, 0, MF_BYPOSITION);
+
+	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+ 	
+	//update UI with cusom menu items
+	USES_CONVERSION;
+    for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
+    {
+        CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
+		if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
+		else if (oItem.m_eType != CAppMenuItem::emtExit && oItem.m_eType != CAppMenuItem::emtClose)
+    		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, A2T(oItem.m_strLabel.c_str()));
+	}
+}
+#endif //OS_WINCE
+/*
 void CMainWindow::createCustomMenu()
 {
 #if defined (OS_WINDOWS) //win32: create popup menu 
@@ -1014,49 +1005,47 @@ void CMainWindow::createCustomMenu()
 	menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
 #endif
 
-	if (CAppMenu::MENU_TYPE_CUSTOM == RHODESAPP().getAppMenu().getMenuType()) {
 #if defined (OS_WINCE) //wm: delete existing items in main menu
-		HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-		
-		//except exit item
-		int num = GetMenuItemCount (hMenu);
-		for (int i = 0; i < (num - 1); i++)	
-			DeleteMenu(hMenu, 0, MF_BYPOSITION);
+	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+	
+	//except exit item
+	int num = GetMenuItemCount (hMenu);
+	for (int i = 0; i < (num - 1); i++)	
+		DeleteMenu(hMenu, 0, MF_BYPOSITION);
 #endif
-		Vector<CAppMenu::Item> items;
-		RHODESAPP().getAppMenu().getItems(items);
-	 	
-		//update UI with cusom menu items
-		USES_CONVERSION; 
-		int item_num = 0, item_type = CAppMenu::Item::TYPE_UNKNOWN;
-		for (Vector<CAppMenu::Item>::reverse_iterator itr = items.rbegin(); 
-			itr != items.rend(); itr++, item_num++) 
-		{
-			item_type = itr->getType();
-			
-			if (item_type == CAppMenu::Item::TYPE_SEPARATOR) {
+	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+ 	
+	//update UI with cusom menu items
+	USES_CONVERSION; 
+	int item_num = 0, item_type = CAppMenu::Item::TYPE_UNKNOWN;
+	for (Vector<CAppMenu::Item>::reverse_iterator itr = m_arMenuItems.rbegin(); 
+		itr != m_arMenuItems.rend(); itr++, item_num++) 
+	{
+		item_type = itr->getType();
+		
+		if (item_type == CAppMenu::Item::TYPE_SEPARATOR) {
 #if defined (OS_WINCE)
-				InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
+			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
 #else 
-				int id = 0;
-				popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, id, (LPCTSTR )0);
+			int id = 0;
+			popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, id, (LPCTSTR )0);
 #endif
 #if defined (OS_WINCE) //wm: skip Exit and Close  items
-			} else if (item_type == CAppMenu::Item::TYPE_CMD_EXIT || item_type == CAppMenu::Item::TYPE_CMD_CLOSE) {
+		} else if (item_type == CAppMenu::Item::TYPE_CMD_EXIT || item_type == CAppMenu::Item::TYPE_CMD_CLOSE) {
 #endif
-			} else {
+		} else {
 #if defined (OS_WINCE)
-				InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, A2T((itr)->getLabel().c_str()));
+    		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, A2T((itr)->getLabel().c_str()));
 #else
-				popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, 
-								 item_type == CAppMenu::Item::TYPE_CMD_CLOSE ? _T("Exit") : A2T((itr)->getLabel().c_str()));
+			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, 
+							 item_type == CAppMenu::Item::TYPE_CMD_CLOSE ? _T("Exit") : A2T((itr)->getLabel().c_str()));
 #endif
-			}
-			//set items ID
-			itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + item_num);
 		}
-		RHODESAPP().getAppMenu().setItems(items); //update items with IDs
+		//set items ID
+		itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + item_num);
 	}
+	//RHODESAPP().getAppMenu().setItems(items); //update items with IDs
+
 #if defined (OS_WINDOWS) //win32: detach popup
 	RECT  rect; 
 	m_browser.GetWindowRect(&rect);
@@ -1067,4 +1056,51 @@ void CMainWindow::createCustomMenu()
 						m_hWnd);
 	sub.Detach();
 #endif	
+}
+*/
+
+extern "C" void rho_conf_show_log();
+extern "C" void rho_sys_app_exit();
+LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{	
+    int nItemPos = wID-ID_CUSTOM_MENU_ITEM_FIRST;
+    if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
+        return 0;
+
+    //TODO: move it to CAppMenuItem::processItem
+    //TODO: remove OnHomeCommand etc
+    BOOL val = FALSE;
+	CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
+    switch(oMenuItem.m_eType)
+    {
+    case CAppMenuItem::emtUrl:
+        rho_webview_navigate(oMenuItem.m_strLink.c_str(), 0);
+        break;
+    case CAppMenuItem::emtRefresh:
+        rho_webview_refresh(0);
+        break;
+    case CAppMenuItem::emtSync:
+        rho_sync_doSyncAllSources (TRUE);
+        break;
+    case CAppMenuItem::emtLog:
+        rho_conf_show_log();
+        break;
+    case CAppMenuItem::emtExit:
+    case CAppMenuItem::emtClose:
+        rho_sys_app_exit();
+        break;
+
+    case CAppMenuItem::emtHome:
+        OnHomeCommand (0, 0, 0, val);
+        break;
+    case CAppMenuItem::emtBack:
+        OnBackCommand (0, 0, 0, val);
+        break;
+    case CAppMenuItem::emtOptions:
+        OnOptionsCommand (0, 0, 0, val);
+        break;
+
+    }
+
+    return 0;
 }

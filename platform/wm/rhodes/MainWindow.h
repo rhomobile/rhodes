@@ -209,4 +209,6 @@ public:
 #endif
 private:
 	int m_pageCounter;
+
+    rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
 };
