@@ -1,27 +1,52 @@
 #include "stdafx.h"
 
-#include "ext/rho/rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
+#include "rubyext/WebView.h"
 #include "common/RhodesApp.h"
-#include "WebView.h"
+#include "common/StringConverter.h"
+#include "MainWindow.h"
 
-/**
- * C interface
- */
+using namespace rho;
+using namespace rho::common;
+extern "C" {
+HWND getMainWnd();
 
- //Sync hook to refresh the web view
-void perform_webview_refresh() {
-	webview_refresh(0);
+void rho_webview_refresh(int index) 
+{
+	::PostMessage(getMainWnd(),WM_COMMAND,IDM_REFRESH,0);
 }
 
-void webview_set_menu_items(VALUE valMenu) 
+void rho_webview_navigate(const char* url, int index) 
+{
+    String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_tcsdup(convertToStringW(strUrl).c_str()) );
+}
+
+const char* rho_webview_execute_js(const char* js, int index) 
+{
+    String strJS = "javascript:";
+    strJS += js;
+
+    rho_webview_navigate(strJS.c_str(), index);
+	return "";
+}
+
+const char* rho_webview_current_location(int index) 
+{
+    return RHODESAPP().getCurrentUrl(index).c_str();
+}
+
+int rho_webview_active_tab() 
+{
+	return 0;
+}
+
+void rho_webview_set_menu_items(VALUE valMenu) 
 {
     rho_rhodesapp_setViewMenu(valMenu); 
 }
 
-int webview_active_tab() {
-	return 0;
 }
 
-char* webview_current_location(int index) {
-    return const_cast<char*>(RHODESAPP().getCurrentUrl(index).c_str());
-}
+
+

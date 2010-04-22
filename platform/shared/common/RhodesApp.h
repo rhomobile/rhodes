@@ -52,7 +52,6 @@ private:
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
 
-    common::CMutex m_mxAppMenu;
     CAppMenu m_oAppMenu;
 	
 public:
@@ -83,14 +82,13 @@ public:
     const String& getRhoRootPath(){return m_strRhoRootPath;}
 
     const String& getAppBackUrl(){return m_strAppBackUrl;}
+    void setAppBackUrl(const String& url);
 
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
 
-    void setAppMenu(unsigned long valMenu);
-    void addAppMenuItem( const String& strLabel, const String& strLink );
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
 	
     boolean sendLog();
