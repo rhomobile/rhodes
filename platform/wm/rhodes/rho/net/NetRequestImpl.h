@@ -86,7 +86,6 @@ public :
     bool isError(){ return pszErrFunction!= null; }
     CNetResponseImpl* sendString(const String& strBody);
 
-    CNetResponseImpl* sendStream(common::InputStream* body, const String& strBody, const String& strFileName);
     CNetResponseImpl* sendMultipartData(VectorPtr<CMultipartItem*>& arItems);
 
     CNetResponseImpl* downloadFile(common::CRhoFile& oFile);
@@ -106,7 +105,6 @@ private:
     boolean checkSslCertError();
 
     String getBodyContentType();
-    int calculateMultipartSize(common::InputStream* bodyStream, const String& strBody, const String& strFileName);
     bool internetWriteHeader( const char* szPrefix, const char* szBody, const char* szPrefixEnd);
 
     int processMultipartItems( VectorPtr<CMultipartItem*>& arItems );

@@ -8,7 +8,7 @@
 
 extern "C"
 {
-extern VALUE rho_sysimpl_get_property(char* szPropName);
+extern int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
 extern VALUE rho_sys_has_network();
 extern VALUE rho_sys_get_locale();
 extern int rho_sys_get_screen_width();
@@ -36,8 +36,8 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (!szPropName || !*szPropName) 
         return rho_ruby_get_NIL();
     
-    VALUE res = rho_sysimpl_get_property(szPropName);
-    if (res)
+    VALUE res;
+    if (rho_sysimpl_get_property(szPropName, &res))
         return res;
 
 	if (strcasecmp("platform",szPropName) == 0) 

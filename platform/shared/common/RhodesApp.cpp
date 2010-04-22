@@ -538,14 +538,16 @@ boolean CRhodesApp::sendLog()
 
 	String strQuery = strLogUrl + "client_log?" +
 	    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
-/*
+
     net::CMultipartItem oItem;
     oItem.m_strFilePath = LOGCONF().getLogFilePath();
     oItem.m_strContentType = "application/octet-stream";
 
+    boolean bOldSaveToFile = LOGCONF().isLogToFile();
+    LOGCONF().setLogToFile(false);
     NetResponse( resp, getNet().pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null ) );
-*/
-    NetResponse( resp, getNet().pushFile( strQuery, LOGCONF().getLogFilePath(), &(rho::sync::CSyncThread::getSyncEngine()), null ) );
+    LOGCONF().setLogToFile(bOldSaveToFile);
+
     if ( !resp.isOK() )
     {
         LOG(ERROR) + "send_log failed : network error";

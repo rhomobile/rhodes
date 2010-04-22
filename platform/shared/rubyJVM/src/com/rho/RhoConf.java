@@ -4,13 +4,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 
 import com.rho.net.NetResponse;
-import com.xruby.runtime.lang.RubyBlock;
-import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyConstant;
-import com.xruby.runtime.lang.RubyException;
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyTwoArgMethod;
-import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.lang.*;
 
 import com.rho.file.SimpleFile;
 
@@ -317,6 +312,19 @@ public class RhoConf {
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 				return RubyConstant.QNIL;
+			}
+		});
+
+	   klass.getSingletonClass().defineMethod("is_property_exists", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				try {
+					boolean bRes = RhoConf.getInstance().isExist(arg0.toString());
+					
+					return ObjectFactory.createBoolean(bRes);
+				} catch (Exception e) {
+					LOG.ERROR("is_property_exists failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
 			}
 		});
 	   
