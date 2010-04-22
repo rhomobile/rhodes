@@ -12,6 +12,7 @@
 #include "net/AsyncHttp.h"
 #include "unzip/unzip.h"
 #include "net/URI.h"
+#include "rubyext/WebView.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -29,7 +30,6 @@ void rho_sync_destroy();
 void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
-void webview_navigate(char* url, int index);
 void rho_db_init_attr_manager();
 }
 
@@ -421,7 +421,7 @@ String CRhodesApp::resolveDBFilesPath(const String& strFilePath)
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
-    LOG(INFO) + "Current URL: " + strUrl;
+    //LOG(INFO) + "Current URL: " + strUrl;
 
     m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
 
@@ -437,6 +437,14 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
         RHOCONF().setString("LastVisitedPage",strUrl);		
         RHOCONF().saveToFile();
     }
+}
+
+void CRhodesApp::setAppBackUrl(const String& url)
+{
+    if ( url.length() > 0 )
+        m_strAppBackUrl = canonicalizeRhoUrl(url);
+    else
+        m_strAppBackUrl = "";
 }
 
 const String& CRhodesApp::getStartUrl()
@@ -477,7 +485,7 @@ const String& CRhodesApp::getRhobundleReloadUrl()
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
 {
-    webview_navigate(const_cast<char*>(strUrl.c_str()), 0);
+    rho_webview_navigate(strUrl.c_str(), 0);
 }
 
 String CRhodesApp::canonicalizeRhoUrl(const String& strUrl) 
@@ -495,36 +503,6 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
         return strUrl;
 
     return CFilePath::join(m_strHomeUrl,strUrl);
-}
-
-void CRhodesApp::addAppMenuItem( const String& strLabel, const String& strLink )
-{
-    if ( strLabel.length() == 0 )
-        return;
-
-    synchronized(m_mxAppMenu)
-    {
-		m_oAppMenu.addItem(strLabel, strLink);
-        if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
-            m_strAppBackUrl = canonicalizeRhoUrl(strLink);
-    }
-}
-
-extern "C" void
-menu_iter(const char* szLabel, const char* szLink, void* pThis)
-{
-	((CRhodesApp*)pThis)->addAppMenuItem(szLabel, szLink );
-}
-
-void CRhodesApp::setAppMenu(unsigned long valMenu)
-{
-    synchronized(m_mxAppMenu) 
-	{
-		m_oAppMenu.removeAllItems();
-        m_strAppBackUrl="";
-    }
-
-    rho_ruby_enum_strhash(valMenu, menu_iter, this);
 }
 
 boolean CRhodesApp::sendLog() 
@@ -834,7 +812,7 @@ void rho_rhodesapp_callAppActiveCallback(int nActive)
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 {
-    RHODESAPP().setAppMenu(valMenu);
+    RHODESAPP().getAppMenu().setAppMenu(valMenu);
 }
 
 const char* rho_rhodesapp_getappbackurl()

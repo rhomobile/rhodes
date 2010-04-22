@@ -64,14 +64,14 @@
 @end
 
 
-void webview_navigate(char* url, int index) {
+void rho_webview_navigate(const char* url, int index) {
     id runnable = [RhoWebViewNavigateTask class];
     id arg1 = [NSString stringWithUTF8String:url];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:NO];
 }
 
-int webview_active_tab() {
+int rho_webview_active_tab() {
     int index;
     id runnable = [RhoWebViewActiveTabTask class];
     id arg = [NSValue valueWithPointer:&index];
@@ -79,13 +79,13 @@ int webview_active_tab() {
     return index;
 }
 
-void webview_refresh(int index) {
+void rho_webview_refresh(int index) {
     id runnable = [RhoWebViewReloadTask class];
     id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
 
-char* webview_execute_js(char* js, int index) {
+const char* rho_webview_execute_js(const char* js, int index) {
     id runnable = [RhoWebViewExecuteJsTask class];
     id arg1 = [NSString stringWithUTF8String:js];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
@@ -93,17 +93,11 @@ char* webview_execute_js(char* js, int index) {
     return "";
 }
 
-char* webview_current_location(int index) {
-	return (char*)rho_rhodesapp_getcurrenturl(index);
+const char* rho_webview_current_location(int index) {
+	return rho_rhodesapp_getcurrenturl(index);
 }
 
-void webview_set_menu_items(VALUE valMenu) {
-	//TODO: webview_set_menu_items
+void rho_webview_set_menu_items(VALUE valMenu) {
 	rho_rhodesapp_setViewMenu(valMenu);
 }
 
-/*
-void perform_webview_refresh() {
-	[[ServerHost sharedInstance] performRefreshView];														
-}
-*/
