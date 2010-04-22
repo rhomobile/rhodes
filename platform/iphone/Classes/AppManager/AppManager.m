@@ -207,7 +207,7 @@ static const double RHO_IPHONE_PPI = 163.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
 
-int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
+int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     if (strcasecmp("platform", szPropName) == 0)
         {*resValue = rho_ruby_create_string("APPLE"); return 1;}
