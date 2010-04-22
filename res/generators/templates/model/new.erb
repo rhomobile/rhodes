@@ -3,16 +3,11 @@
 </div>
 
 <div id="toolbar">
-  <div id="row">
-      <div id="leftItem" class="backButton"><%%= link_to "Cancel", :action => :index %></div>
-  </div>
+     <div id="leftItem" class="backButton"><%%= link_to "Cancel", :action => :index %></div>
 </div>
 
 <div id="content">
-    <form title="New <%= class_name %>"
-          id="<%= name.downcase %>_edit_form"
-          method="POST"
-          action="<%%= url_for :action => :create %>">
+    <form method="POST" action="<%%= url_for :action => :create %>">
             <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
             <ul>
                 <% attributes.each do |attribute| %>
@@ -22,6 +17,6 @@
                 </li>
                 <% end %>
             </ul>
-            <button class="standardButton" type="submit">Create</button>
+            <input type="submit" class="standardButton" value="Create" />
     </form>
 </div>
