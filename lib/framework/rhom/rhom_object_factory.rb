@@ -429,13 +429,13 @@ module Rhom
                                 new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
                                 
                                 if attribs && obj['attrib']
-                                    new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] })
+                                    new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
                                 end
                                 
                                 listAttrs.each do |attrValHash|
                                   attrName = attrValHash['attrib']
                                   attrVal = attrValHash['value']
-                                  new_obj.vars.merge!( { attrName.to_sym()=>attrVal } )
+                                  new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
                                   
                                   #nonExistAttrs.delete(attrName) if nonExistAttrs
                                 end
@@ -802,7 +802,7 @@ module Rhom
                       attrsList = db.select_from_table(tableName, '*', {"object"=>obj}) 
                       
                       # first delete the record from viewable list
-                      result = db.delete_from_table(tableName, {"object"=>obj})
+                      db.delete_from_table(tableName, {"object"=>obj})
                       
                       resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) 
                       if resUpdateType && resUpdateType.length > 0 

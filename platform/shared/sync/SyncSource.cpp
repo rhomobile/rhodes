@@ -456,8 +456,6 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
     {
         CJSONEntry oCmds = oJsonArr.getCurItem();
         PROF_START("Data");
-        m_bBlobSyncStage = false;
-        m_hashCreatedBlobs.clear();
         getDB().startTransaction();
         if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
         {
@@ -470,8 +468,6 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
             processSyncCommand("delete", oCmds.getEntry("delete") );
         if ( oCmds.hasName("insert") && getSync().isContinueSync() )
             processSyncCommand("insert", oCmds.getEntry("insert") );
-
-        processCreatedBlobs();
 
         PROF_STOP("Data");
 
@@ -608,8 +604,6 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
         {
             CAttrValue oAttrValue(attrIter.getCurKey(),attrIter.getCurString());
-            if ( !processBlob(strCmd,strObject,oAttrValue) )
-                continue;
 
             if ( strSet.length() > 0 )
                 strSet += ",";
@@ -625,6 +619,26 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
             return;
 
         getDB().executeSQL(strSqlUpdate.c_str(), strObject);
+        String strSelect = String("SELECT * FROM ") + getName() + " WHERE object=?";
+        DBResult(res, getDB().executeSQL( strSelect.c_str(), strObject ) );
+        if ( !res.isEnd() )
+        {
+            boolean bAllNulls = true;
+            for( int i = 0; i < res.getColCount(); i ++)
+            {
+                if ( !res.isNullByIdx(i) && res.getColName(i).compare("object")!=0 )
+                {
+                    bAllNulls = false;
+                    break;
+                }
+            }
+
+            if (bAllNulls)
+            {
+                String strDelete = String("DELETE FROM ") + getName() + " WHERE object=?";
+                getDB().executeSQL( strDelete.c_str(), strObject);
+            }
+        }
 
         getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
         // oo conflicts
@@ -651,64 +665,6 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
 
 }
 
-void CSyncSource::processCreatedBlobs()
-{
-    m_bBlobSyncStage = true;
-    for ( HashtablePtr< String, Hashtable<String,String>* >::iterator it = m_hashCreatedBlobs.begin();  it != m_hashCreatedBlobs.end(); ++it )
-    {
-        Hashtable<String,String>& hashAttrs = *(it->second);
-        String strObject = it->first;
-        for ( Hashtable<String,String>::iterator itAttr = hashAttrs.begin();  itAttr != hashAttrs.end(); ++itAttr )
-        {
-            if ( itAttr->second.length() == 0 )
-            {
-                if ( m_bSchemaSource)
-                {
-                    String strJson = String("{\"") + itAttr->first + "\":\"\"}";
-                    CJSONStructIterator oIter(strJson.c_str());
-                    processServerCmd_Ver3_Schema("delete",strObject,oIter);
-                }
-                else
-                    processServerCmd_Ver3("delete",strObject,itAttr->first,itAttr->second);
-            }
-            else
-            {
-                CAttrValue oAttrValue(itAttr->first,itAttr->second);
-
-                boolean bDownload = true;
-                String strDBValue = "";
-                DBResult(res, getDB().executeSQL(
-                    "SELECT value FROM changed_values WHERE object=? and attrib=? and source_id=? and sent>1",
-                    strObject, oAttrValue.m_strAttrib, getID() ) );
-                if ( !res.isEnd() )
-                {
-                    strDBValue = res.getStringByIdx(0);
-                    bDownload = !CFilePath::isEqualBaseNames(strDBValue, oAttrValue.m_strValue);
-                }
-
-                if ( bDownload )
-                    oAttrValue.m_strAttrib += "-rhoblob";
-                else
-                {
-                    String fName = makeFileName( oAttrValue );
-                    CRhoFile::renameFile(RHODESAPP().resolveDBFilesPath(strDBValue).c_str(),fName.c_str());
-                    oAttrValue.m_strValue = CFilePath::getRelativePath( fName, RHODESAPP().getRhoRootPath());
-                }
-
-                if ( m_bSchemaSource)
-                {
-                    String strJson = String("{\"") + oAttrValue.m_strAttrib + "\":\"" + oAttrValue.m_strValue + "\"}";
-                    CJSONStructIterator oIter(strJson.c_str());
-                    processServerCmd_Ver3_Schema("insert",strObject,oIter);
-                }else
-                    processServerCmd_Ver3("insert",strObject,oAttrValue.m_strAttrib, oAttrValue.m_strValue);
-            }
-        }
-    }
-    m_hashCreatedBlobs.clear();
-    m_bBlobSyncStage = false;
-}
-
 boolean CSyncSource::processBlob( const String& strCmd, const String& strObject, CAttrValue& oAttrValue )
 {
     //TODO: when server return delete with rhoblob postfix - delete isBlobAttr
@@ -716,51 +672,52 @@ boolean CSyncSource::processBlob( const String& strCmd, const String& strObject,
         return true;
 
     boolean bDownload = true;
-    if ( !m_bBlobSyncStage )
+    String strDbValue = "";
+    if ( !getDB().getAttrMgr().isOverwriteBlobFromServer(getID(), oAttrValue.m_strAttrib) )
     {
-        if ( !getDB().getAttrMgr().isOverwriteBlobFromServer(getID(), oAttrValue.m_strAttrib) )
+        if ( m_bSchemaSource )
+        {
+            String strSelect = String("SELECT ") + oAttrValue.m_strAttrib + " FROM " + getName() + " WHERE object=?";
+            DBResult(res, getDB().executeSQL( strSelect.c_str(), strObject));
+            if (!res.isEnd())
+            {
+                strDbValue = res.getStringByIdx(0);
+                bDownload = strDbValue.length() == 0;
+            }
+        }else
         {
             DBResult(res, getDB().executeSQL(
-                "SELECT value FROM changed_values WHERE object=? and attrib=? and source_id=? and sent>1",
+                "SELECT value FROM object_values WHERE object=? and attrib=? and source_id=?",
                 strObject, oAttrValue.m_strAttrib, getID() ) );
-            bDownload = res.isEnd();
+            if (!res.isEnd())
+            {
+                strDbValue = res.getStringByIdx(0);
+                bDownload = strDbValue.length() == 0;
+            }
         }
     }
 
-    if ( !bDownload )
-    {
-        Hashtable<String,String>* pHashAttr = m_hashCreatedBlobs.get(strObject);
-        if (!pHashAttr)
-        {
-            pHashAttr = new Hashtable<String,String>;
-            m_hashCreatedBlobs.put(strObject,pHashAttr);
-        }
-
-        if ( strCmd.compare("insert") == 0 )
-            pHashAttr->put( oAttrValue.m_strAttrib, oAttrValue.m_strValue );
-        else
-            pHashAttr->put( oAttrValue.m_strAttrib, "" );
-
-        return false;
-    }
-
-    if ( strCmd.compare("insert") == 0 )
+    if ( bDownload )
     {
         if ( !downloadBlob(oAttrValue) )
 	        return false;
+
+        return true;
     }
 
+    oAttrValue.m_strValue = strDbValue;
     return true;
 }
 
 void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttriba, const String& strValuea)//throws Exception
 {
     CAttrValue oAttrValue(strAttriba,strValuea);
-    if ( !processBlob(strCmd,strObject,oAttrValue) )
-        return;
 
     if ( strCmd.compare("insert") == 0 )
     {
+        if ( !processBlob(strCmd,strObject,oAttrValue) )
+            return;
+
         DBResult(resInsert, getDB().executeSQLReportNonUnique("INSERT INTO object_values \
             (attrib, source_id, object, value) VALUES(?,?,?,?)", 
             oAttrValue.m_strAttrib, getID(), strObject, oAttrValue.m_strValue ) );

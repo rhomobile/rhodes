@@ -130,8 +130,15 @@ void CAsyncHttp::run()
         break;
 
     case hcUpload:
-        m_pNetResponse = m_pNetRequest->pushFile(m_strUrl, m_strBody, null, &m_mapHeaders);
-        break;
+        {
+            net::CMultipartItem oItem;
+            oItem.m_strFilePath = m_strBody;
+            oItem.m_strContentType = "application/octet-stream";
+
+            m_pNetResponse = m_pNetRequest->pushMultipartData( m_strUrl, oItem, null, &m_mapHeaders );
+            //m_pNetResponse = m_pNetRequest->pushFile(m_strUrl, m_strBody, null, &m_mapHeaders);
+            break;
+        }
     }
 
     if ( !m_pNetRequest->isCancelled())

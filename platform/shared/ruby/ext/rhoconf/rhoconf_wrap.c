@@ -1553,6 +1553,9 @@ static VALUE mRhoConf;
 
 	extern int rho_conf_send_log();
 	#define send_log rho_conf_send_log
+
+	extern VALUE rho_conf_is_property_exists(char* name);
+	#define is_property_exists rho_conf_is_property_exists
 	
 
 
@@ -1690,6 +1693,33 @@ _wrap_send_log(int argc, VALUE *argv, VALUE self) {
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_is_property_exists(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  VALUE result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "is_property_exists" "', argument " "1"" of type '" "char *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (VALUE)is_property_exists(arg1);
+  vresult = result;
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -1959,5 +1989,6 @@ SWIGEXPORT void Init_RhoConf(void) {
   rb_define_module_function(mRhoConf, "set_property_by_name", _wrap_set_property_by_name, -1);
   rb_define_module_function(mRhoConf, "show_log", _wrap_show_log, -1);
   rb_define_module_function(mRhoConf, "send_log", _wrap_send_log, -1);
+  rb_define_module_function(mRhoConf, "is_property_exists", _wrap_is_property_exists, -1);
 }
 

@@ -67,21 +67,6 @@ INetResponse* CNetRequest::pushMultipartData(const String& strUrl, CMultipartIte
     return pResp;
 }
 
-INetResponse* CNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
-{
-    common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
-    {
-        LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
-        return new CNetResponseImpl();
-    }
-    common::CFilePath oPath(strFilePath);
-
-    CNetRequestImpl oImpl(this, "POST",strUrl,oSession,pHeaders,m_sslVerifyPeer);
-    CNetResponseImpl* pResp = oImpl.sendStream(oFile.getInputStream(), "", oPath.getBaseName());
-    return pResp;
-}
-
 INetResponse* CNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
