@@ -4,17 +4,13 @@
 
 
 <div id="toolbar">
-  <div id="row">
     <div id="leftItem" class="regularButton"><%= link_to "Cancel", :action => :index %></div>
-  </div>
 </div>
 
 
 
 <div id="content">
-    <form title="Login to Rhodes"
-       method="POST"
-       action="<%= url_for :action => :do_login %>">
+    <form method="POST" action="<%= url_for :action => :do_login %>">
 
         <% if @msg %>
             <p style="color:#ff0000"><%= @msg %></p>
@@ -30,6 +26,6 @@
                 <input type="password" name="password" <%= placeholder( "Password" ) %> />
             </li>
         </ul>
-        <button class="standardButton" type="submit">Login</button>
+        <input type="submit" class="standardButton" value="Login" />
     </form>
 </div>
