@@ -150,16 +150,6 @@ public :
         return S_OK;
     }
 
-	void DoViewRefresh() {
-		::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_REFRESH,0);
-	}
-
-	void DoViewNavigate(const char* url) 
-    {
-        rho::String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-        ::PostMessage( m_appWindow.m_hWnd, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(strUrl.c_str()) );
-    }
-
     void DoShowLog()
     {
         ::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_LOG,0);
@@ -259,26 +249,6 @@ extern "C" void rho_conf_show_log()
 }
 
 //Hook for ruby call to refresh web view
-
-extern "C" void webview_refresh(int index) {
-	_AtlModule.DoViewRefresh();
-}
-
-extern "C" void webview_navigate(char* url, int index) {
-	_AtlModule.DoViewNavigate(url);
-}
-
-extern "C" char* webview_execute_js(char* js, int index) 
-{
-    String strJS = "javascript:";
-    strJS += js;
-    _AtlModule.DoViewNavigate(strJS.c_str());
-	return "";
-}
-
-//extern "C" char* get_current_location() {
-//	return _AtlModule.GetCurrentLocation();
-//}
 
 extern "C" void rho_net_impl_network_indicator(int active)
 {
