@@ -116,7 +116,14 @@ module Rhom
                     
                     sql << "attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attrib_name)
                     sql << " AND source_id=" + srcid_value 
-                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' ' + val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+
+                    if val_op == 'IN' or val_op == 'in'
+                        svalue = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value)
+                        sql << val_op + ' ( ' + svalue[1,svalue.length()-2] + ' )'
+                    else
+                        sql << val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                    end
                     
                     sql
                 end
