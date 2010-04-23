@@ -162,6 +162,7 @@
     NSString *itemTitle = [[btn objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     rho_rhodesapp_callPopupCallback([callback UTF8String], [itemId UTF8String], [itemTitle UTF8String]);
+    [self release];
 }
 
 @end
@@ -189,8 +190,7 @@
 @implementation RhoAlert
 
 + (void)showPopup:(rho_param*)p {
-//    id runnable = [[[RhoAlertShowPopupTask alloc] init] autorelease];
-	id runnable = [[RhoAlertShowPopupTask alloc] init];
+    id runnable = [[RhoAlertShowPopupTask alloc] init];
     NSValue *value = [NSValue valueWithPointer:rho_param_dup(p)];
     [Rhodes performOnUiThread:runnable arg:value wait:NO];
 }
