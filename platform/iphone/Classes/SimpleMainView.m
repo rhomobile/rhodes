@@ -19,14 +19,12 @@
 
 @interface RhoToolbarButtonItemAction : NSObject
 {
-    id<RhoMainView> view;
     NSString *url;
 }
 
-@property (nonatomic,retain) id<RhoMainView> view;
 @property (nonatomic,copy) NSString *url;
 
-- (id)init:(id<RhoMainView>)v url:(NSString*)u;
+- (id)init:(NSString*)u;
 - (void)dealloc;
 - (void)onAction:(id)sender;
 
@@ -34,22 +32,20 @@
 
 @implementation RhoToolbarButtonItemAction
 
-@synthesize view,url;
+@synthesize url;
 
-- (id)init:(id<RhoMainView>)v url:(NSString*)u {
-    self.view = v;
+- (id)init:(NSString*)u {
     self.url = u;
     return self;
 }
 
 - (void)dealloc {
-    self.view = nil;
     self.url = nil;
     [super dealloc];
 }
 
 - (void)onAction:(id)sender {
-    [view navigate:url tab:[view activeTab]];
+    rho_rhodesapp_load_url([url UTF8String]);
 }
 
 @end
@@ -143,9 +139,8 @@
                    target:nil action:nil];
         }
         else {
-            NSString *u = [NSString stringWithUTF8String:rho_http_normalizeurl([url UTF8String])];
-            id action = [[RhoToolbarButtonItemAction alloc] init:self url:u];
-            if (!img) {
+            id action = [[RhoToolbarButtonItemAction alloc] init:url];
+            if (img) {
                 btn = [[UIBarButtonItem alloc]
                        initWithImage:img style:UIBarButtonItemStylePlain
                        target:action action:@selector(onAction:)];
@@ -240,7 +235,7 @@
 // Toolbar handlers
 
 - (void)goBack:(id)sender {
-    [self back:0];
+    rho_rhodesapp_navigate_back();
 }
 
 - (void)goForward:(id)sender {
@@ -272,11 +267,7 @@
 }
 
 - (void)back:(int)index {
-    const char* szBackUrl = rho_rhodesapp_getappbackurl();
-    if ( szBackUrl && *szBackUrl )
-        [self navigate:[NSString stringWithUTF8String:szBackUrl] tab:0];
-    else
-	    [webView goBack];
+    [webView goBack];
 }
 
 - (void)forward:(int)index {

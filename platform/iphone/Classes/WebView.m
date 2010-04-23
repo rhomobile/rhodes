@@ -16,7 +16,6 @@
 @end
 
 @implementation RhoWebViewNavigateTask
-
 + (void)run:(NSString*)url :(NSValue*)value {
     // Workaround:
     // Navigation MUST be done through 'redirect_to' - otherwise WebView does not
@@ -25,7 +24,17 @@
     [value getValue:&index];
     [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
 }
+@end
 
+@interface RhoWebViewNavigateBackTask : NSObject {}
++ (void)run;
+@end
+
+@implementation RhoWebViewNavigateBackTask
++ (void)run {
+    id mainView = [[Rhodes sharedInstance] mainView];
+    [mainView back:[mainView activeTab]];
+}
 @end
 
 @interface RhoWebViewActiveTabTask : NSObject {}
@@ -94,20 +103,21 @@ const char* rho_webview_execute_js(const char* js, int index) {
 }
 
 const char* rho_webview_current_location(int index) {
-	return rho_rhodesapp_getcurrenturl(index);
+    return rho_rhodesapp_getcurrenturl(index);
 }
 
 void rho_webview_set_menu_items(VALUE valMenu) {
-	rho_rhodesapp_setViewMenu(valMenu);
+    rho_rhodesapp_setViewMenu(valMenu);
 }
 
 void rho_webview_navigate_back()
 {
-    //TODO: rho_webview_navigate_back
+    id runnable = [RhoWebViewNavigateBackTask class];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 void rho_webview_full_screen_mode(int enable)
 {
-    //TODO: rho_webview_full_screen_mode
+    [Rhodes setStatusBarHidden:enable];
 }
 

@@ -650,6 +650,27 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
     }
 }
 
+void CRhodesApp::loadUrl(String url)
+{
+    boolean callback = false;
+    if (url.size() >= 9 && url.substr(0, 9) == "callback:")
+    {
+        callback = true;
+        url = url.substr(9);
+    }
+    char *s = rho_http_normalizeurl(url.c_str());
+    url = s;
+    free(s);
+    if (callback)
+    {
+        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        NetResponse(resp, pNetRequest->pullData( url, null ));
+        (void)resp;
+    }
+    else
+        navigateToUrl(url);
+}
+
 } //namespace common
 } //namespace rho
 
@@ -797,6 +818,11 @@ const char* rho_rhodesapp_getloadingpagepath()
 const char* rho_rhodesapp_getblobsdirpath()
 {
     return RHODESAPP().getBlobsDirPath().c_str();
+}
+
+void rho_rhodesapp_navigate_back()
+{
+    RHODESAPP().navigateBack();
 }
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
@@ -982,6 +1008,11 @@ int rho_unzip_file(const char* szZipPath)
 	CloseZip(hz);
 
     return res == ZR_OK ? 1 : 0;
+}
+
+void rho_rhodesapp_load_url(const char *url)
+{
+    RHODESAPP().loadUrl(url);
 }
 
 } //extern "C"

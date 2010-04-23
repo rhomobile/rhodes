@@ -110,6 +110,8 @@ public:
     void setScreenRotationNotification(String strUrl, String strParams);
     void callScreenRotationCallback(int width, int height, int degrees);
 
+    void loadUrl(String url);
+
 private:
     virtual void run();
 
@@ -151,6 +153,8 @@ void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
 void rho_http_sendresponse(void* httpContext, const char* szBody);
 int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...);
+
+void rho_rhodesapp_navigate_back();
 	
 char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
@@ -175,6 +179,8 @@ int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);
 
 void rho_net_request(const char *url);
+
+void rho_rhodesapp_load_url(const char *url);
 
 #ifdef __cplusplus
 };
