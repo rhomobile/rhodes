@@ -67,3 +67,4 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemUrl
 {
     return rho_cast<jstring>(env, menu_items(menu)[idx].m_strLink.c_str());
 }
+
