@@ -1,6 +1,11 @@
 #include "AppMenu.h"
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "rubyext/WebView.h"
+
+extern "C" void rho_sync_doSyncAllSources(int show_status_popup);
+extern "C" void rho_conf_show_log();
+extern "C" void rho_sys_app_exit();
 
 namespace rho {
 namespace common{
@@ -62,8 +67,53 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 		m_eType = emtClose;
 	else if (strLink == "exit")
 		m_eType = emtExit;
+	else if (strLink == "fullscreen")
+		m_eType = emtFullscreen;
 	else
 		m_eType = emtUrl;
+}
+
+boolean CAppMenuItem::processCommand()
+{
+    switch(m_eType)
+    {
+    case CAppMenuItem::emtUrl:
+        //TODO: check callback: prefix
+        rho_webview_navigate(m_strLink.c_str(), 0);
+        break;
+    case CAppMenuItem::emtRefresh:
+        rho_webview_refresh(0);
+        break;
+    case CAppMenuItem::emtSync:
+        rho_sync_doSyncAllSources(1);
+        break;
+    case CAppMenuItem::emtLog:
+        rho_conf_show_log();
+        break;
+    case CAppMenuItem::emtExit:
+    case CAppMenuItem::emtClose:
+        rho_sys_app_exit();
+        break;
+
+    case CAppMenuItem::emtHome:
+        rho_webview_navigate(RHODESAPP().getStartUrl().c_str(), 0);
+        break;
+    case CAppMenuItem::emtBack:
+        RHODESAPP().navigateBack();
+        break;
+    case CAppMenuItem::emtOptions:
+        rho_webview_navigate(RHODESAPP().getOptionsUrl().c_str(), 0);
+        break;
+
+    case CAppMenuItem::emtFullscreen:
+        rho_webview_full_screen_mode(1);
+        break;
+
+    default:
+        return false;
+    }
+
+    return true;
 }
 
 } //namespace common

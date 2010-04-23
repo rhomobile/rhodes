@@ -66,6 +66,7 @@ public:
     String canonicalizeRhoUrl(const String& strUrl) ;
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
+    void navigateBack();
 
     const String& getRhobundleReloadUrl();
     const String& getStartUrl();

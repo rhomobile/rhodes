@@ -150,15 +150,6 @@ public :
         return S_OK;
     }
 
-    void DoShowLog()
-    {
-        ::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_LOG,0);
-    }
-
-	//char* GetCurrentLocation() {
-	//	return m_appWindow.GetCurrentLocation();
-	//}
-
 	HWND GetManWindow() {
 		return m_appWindow.m_hWnd;
 	}
@@ -245,7 +236,7 @@ extern "C" const char* rho_native_rhopath()
 
 extern "C" void rho_conf_show_log()
 {
-    _AtlModule.DoShowLog();
+    ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
 
 //Hook for ruby call to refresh web view

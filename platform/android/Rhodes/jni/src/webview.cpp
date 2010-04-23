@@ -29,6 +29,11 @@ RHO_GLOBAL void rho_webview_refresh(int index)
     env->CallStaticVoidMethod(cls, mid, index);
 }
 
+RHO_GLOBAL void rho_webview_navigate_back()
+{
+    //TODO: rho_webview_navigate_back
+}
+
 RHO_GLOBAL const char* rho_webview_current_location(int index)
 {
     static std::string curLoc;
@@ -77,3 +82,7 @@ RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
     return (char*)result.c_str();
 }
 
+RHO_GLOBAL void rho_webview_full_screen_mode(int enable)
+{
+    //TODO: rho_webview_full_screen_mode
+}
