@@ -1,15 +1,9 @@
 #include "common/rhoparams.h"
-
 #include "common/RhoPort.h"
-
-#include "logging/RhoLog.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Alert"
 
 rho_param *rho_param_str(char *s)
 {
