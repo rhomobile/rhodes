@@ -184,18 +184,22 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
     for (size_t i = 0, lim = arItems.size(); i < lim; ++i) {
         CMultipartItem *mi = arItems[i];
-        if (!mi->m_strFilePath.empty()) {
+        
+        const char *name = mi->m_strName.c_str();
+        int opt = mi->m_strFilePath.empty() ? CURLFORM_COPYCONTENTS : CURLFORM_FILE;
+        const char *data = mi->m_strFilePath.empty() ? mi->m_strBody.c_str() : mi->m_strFilePath.c_str();
+        const char *ct = mi->m_strContentType.empty() ? NULL : mi->m_strContentType.c_str();
+        if (ct) {
             curl_formadd(&post, &last,
-                         CURLFORM_COPYNAME, mi->m_strName.c_str(),
-                         CURLFORM_FILE, mi->m_strFilePath.c_str(),
-                         CURLFORM_CONTENTTYPE, mi->m_strContentType.c_str(),
+                         CURLFORM_COPYNAME, name,
+                         opt, data,
+                         CURLFORM_CONTENTTYPE, ct,
                          CURLFORM_END);
         }
         else {
             curl_formadd(&post, &last,
-                         CURLFORM_COPYNAME, mi->m_strName.c_str(),
-                         CURLFORM_COPYCONTENTS, mi->m_strBody.c_str(),
-                         CURLFORM_CONTENTTYPE, mi->m_strContentType.c_str(),
+                         CURLFORM_COPYNAME, name,
+                         opt, data,
                          CURLFORM_END);
         }
     }
