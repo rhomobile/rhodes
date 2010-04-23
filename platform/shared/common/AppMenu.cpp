@@ -80,8 +80,7 @@ boolean CAppMenuItem::processCommand()
     switch(m_eType)
     {
     case CAppMenuItem::emtUrl:
-        //TODO: check callback: prefix
-        rho_webview_navigate(m_strLink.c_str(), 0);
+        rho_rhodesapp_load_url(m_strLink.c_str());
         break;
     case CAppMenuItem::emtRefresh:
         rho_webview_refresh(0);
