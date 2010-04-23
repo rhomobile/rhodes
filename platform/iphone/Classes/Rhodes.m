@@ -37,6 +37,11 @@ static Rhodes *instance = NULL;
     return frame;
 }
 
++ (void)setStatusBarHidden:(BOOL)v {
+    [[Rhodes application] setStatusBarHidden:v animated:YES];
+    [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
+}
+
 - (void)runRunnable:(NSArray*)args {
     id runnable = [args objectAtIndex:0];
     if ([runnable respondsToSelector:@selector(run)])
