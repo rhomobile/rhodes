@@ -1552,6 +1552,10 @@
 					Name="webview"
 					>
 					<File
+						RelativePath="..\..\shared\ruby\ext\webview\webview.i"
+						>
+					</File>
+					<File
 						RelativePath="..\..\shared\ruby\ext\webview\webview_wrap.c"
 						>
 					</File>
