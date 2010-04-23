@@ -295,17 +295,29 @@ final public class RhodesApplication extends UiApplication implements RenderingA
 		return false;
     }
    
-    void back(){
+    void back()
+    {
     	String url = m_strAppBackUrl;
     	if ( url.length() == 0)
     	{
 	    	if ( _history.size() <= 1 )
+	    	{
+	    		if ( RhoConf.getInstance().getBool("bb_disable_closebyback"))
+	    			return;
+
+	    		this._mainScreen.close();
 	    		return;
-	
+	    	}
+	    	
 	    	int nPos = _history.size()-2;
 	    	url = (String)_history.elementAt(nPos);
 	    	_history.removeElementAt(nPos+1);
-    	}else
+    	}else if ( url.equalsIgnoreCase("close"))
+    	{
+    		this._mainScreen.close();
+    		return;
+    	}
+    	else
     		addToHistory(url,null);
     	
     	saveCurrentLocation(url);
@@ -881,15 +893,17 @@ final public class RhodesApplication extends UiApplication implements RenderingA
     	    } else {
     	    	if ( label.equalsIgnoreCase("back") )
     	    		m_strAppBackUrl = value;
-    	    	
-				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
-					public void run() {
-				    	String val = getPathForMenuItem(value);
-						addToHistory(val, null );
-						navigateUrl(val);
-					}
-				};
-				menuItems.addElement(itemToAdd);
+    	    	else
+    	    	{
+					MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
+						public void run() {
+					    	String val = getPathForMenuItem(value);
+							addToHistory(val, null );
+							navigateUrl(val);
+						}
+					};
+					menuItems.addElement(itemToAdd);
+    	    	}
     	    }
 		}
 
