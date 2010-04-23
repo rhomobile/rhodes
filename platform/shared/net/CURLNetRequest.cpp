@@ -131,11 +131,11 @@ INetResponse* CURLNetRequest::pushData(const String& strUrl, const String& strBo
 
 INetResponse* CURLNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-	INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
-	if ( pResp->isOK() )
-		((CURLNetResponseImpl*)pResp)->setCharData(pResp->getCookies());
-		
-	return pResp;
+    INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
+    if ( pResp->isOK() )
+        ((CURLNetResponseImpl*)pResp)->setCharData(pResp->getCookies());
+
+    return pResp;
 }
 	
 INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
@@ -144,35 +144,77 @@ INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUr
     m_bCancel = false;
     int nRespCode = -1;
     String strRespBody;
-	
+
     RAWLOG_INFO1("Request url: %s", strUrl.c_str());
-	
+
     rho_net_impl_network_indicator(1);
-	
+
     curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, method, strUrl, strBody, oSession, pHeaders, m_sslVerifyPeer);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
-	
-	CURLMcode err = do_curl_perform(curlm, curl);
-	curl_slist_free_all(hdrs);
-	
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+
+    CURLMcode err = do_curl_perform(curlm, curl);
+    curl_slist_free_all(hdrs);
+
     rho_net_impl_network_indicator(0);
-	
-	nRespCode = getResponseCode(err, strRespBody, oSession);
-	if (nRespCode == 200)
-	{
+
+    nRespCode = getResponseCode(err, strRespBody, oSession);
+    if (nRespCode == 200)
+    {
         RAWTRACE("RESPONSE-----");
         RAWTRACE(strRespBody.c_str());
         RAWTRACE("END RESPONSE-----");
-	}
-	
+    }
+
     return makeResponse(strRespBody, nRespCode);
 }
 
 INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
-    //TODO: pushMultipartData
-    return 0;
+    int nRespCode = -1;
+    String strRespBody;
+    
+    rho_net_impl_network_indicator(1);
+    
+    curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, String(), oSession, pHeaders, m_sslVerifyPeer);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+	
+    curl_httppost *post = NULL, *last = NULL;
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+    for (size_t i = 0, lim = arItems.size(); i < lim; ++i) {
+        CMultipartItem *mi = arItems[i];
+        
+        const char *name = mi->m_strName.c_str();
+        int opt = mi->m_strFilePath.empty() ? CURLFORM_COPYCONTENTS : CURLFORM_FILE;
+        const char *data = mi->m_strFilePath.empty() ? mi->m_strBody.c_str() : mi->m_strFilePath.c_str();
+        const char *ct = mi->m_strContentType.empty() ? NULL : mi->m_strContentType.c_str();
+        if (ct) {
+            curl_formadd(&post, &last,
+                         CURLFORM_COPYNAME, name,
+                         opt, data,
+                         CURLFORM_CONTENTTYPE, ct,
+                         CURLFORM_END);
+        }
+        else {
+            curl_formadd(&post, &last,
+                         CURLFORM_COPYNAME, name,
+                         opt, data,
+                         CURLFORM_END);
+        }
+    }
+        
+    curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+    
+    CURLMcode err = do_curl_perform(curlm, curl);
+	
+    curl_slist_free_all(hdrs);
+    curl_formfree(post);
+    
+    rho_net_impl_network_indicator(0);
+    
+    nRespCode = getResponseCode(err, strRespBody, oSession);
+    return makeResponse(strRespBody, nRespCode);
 }
 
 INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
@@ -204,8 +246,8 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
     rho_net_impl_network_indicator(1);
 	
     curl_slist *hdrs = set_curl_options(m_bTraceCalls, curl, "POST", strUrl, String(), oSession, pHeaders, m_sslVerifyPeer);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
 	
     curl_httppost *post = NULL, *last = NULL;
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
@@ -223,7 +265,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
 	
     rho_net_impl_network_indicator(0);
     
-	nRespCode = getResponseCode(err, strRespBody, oSession);
+    nRespCode = getResponseCode(err, strRespBody, oSession);
     return makeResponse(strRespBody, nRespCode);
 }
 	
