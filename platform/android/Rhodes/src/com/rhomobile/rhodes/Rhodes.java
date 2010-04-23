@@ -78,6 +78,7 @@ public class Rhodes extends Activity {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
+	private static final String INSTALLING_PAGE = "file:///android_asset/apps/app/installing.html";
 	private static final String LOADING_PAGE = "file:///android_asset/apps/app/loading.html";
 	
 	private long uiThreadId;
@@ -99,6 +100,8 @@ public class Rhodes extends Activity {
 	private MainView mainView;
 	
 	private SplashScreen splashScreen = null;
+	
+	private Boolean contentChanged = null;
 	
 	private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
 
@@ -197,31 +200,47 @@ public class Rhodes extends Activity {
 		*/
 	}
 	
-	private void copyFilesFromBundle() {
+	private boolean isNameChanged() {
 		try {
-			String rp = getRootPath();
-			
-			boolean nameChanged = false;
-			boolean contentChanged = true;
-			
 			FileSource as = new AssetsSource(getResources().getAssets());
 			FileSource fs = new FileSource();
-			
-			nameChanged = !Utils.isContentsEquals(as, "name", fs, new File(rp, "name").getPath());
-			if (nameChanged)
-				contentChanged = true;
-			else
-				contentChanged = !Utils.isContentsEquals(as, "hash", fs, new File(rp, "hash").getPath());
-			
-			if (contentChanged) {
-				Logger.D(TAG, "Copying required files from bundle to sdcard");
+			return !Utils.isContentsEquals(as, "name", fs, new File(getRootPath(), "name").getPath());
+		}
+		catch (IOException e) {
+			return true;
+		}
+	}
+	
+	private boolean isBundleChanged() {
+		if (contentChanged == null) {
+			try {
+				String rp = getRootPath();
 				
-				/*
-				File phrf = new File(phRootPath);
-				if (!phrf.exists())
-					phrf.mkdirs();
-				phrf = null;
-				*/
+				FileSource as = new AssetsSource(getResources().getAssets());
+				FileSource fs = new FileSource();
+				
+				if (isNameChanged())
+					contentChanged = new Boolean(true);
+				else
+					contentChanged = new Boolean(!Utils.isContentsEquals(as, "hash", fs, new File(rp, "hash").getPath()));
+			}
+			catch (IOException e) {
+				contentChanged = new Boolean(true);
+			}
+		}
+		return contentChanged.booleanValue();
+	}
+	
+	private void copyFilesFromBundle() {
+		try {
+			if (isBundleChanged()) {
+				Logger.D(TAG, "Copying required files from bundle");
+				
+				boolean nameChanged = isNameChanged();
+				
+				String rp = getRootPath();
+				
+				FileSource as = new AssetsSource(getResources().getAssets());
 
 				String items[] = {"apps", "lib", "db", "hash", "name"};
 				for (int i = 0; i != items.length; ++i) {
@@ -237,6 +256,7 @@ public class Rhodes extends Activity {
 					*/
 				}
 				
+				contentChanged = new Boolean(true);
 				Logger.D(TAG, "All files copied");
 			}
 			else
@@ -266,11 +286,29 @@ public class Rhodes extends Activity {
 	public WebView createWebView() {
 		WebView w = new WebView(this);
 		
+		boolean bc = isBundleChanged();
+		String page = bc ? INSTALLING_PAGE : LOADING_PAGE;
+		
+		boolean hasNeededPage;
 		try {
-			w.loadUrl(LOADING_PAGE);
+			getResources().getAssets().open(page).close();
+			hasNeededPage = true;
 		}
-		catch (Exception e) {
-			// Ignore
+		catch (IOException e) {
+			hasNeededPage = false;
+		}
+		
+		if (hasNeededPage) {
+			w.loadUrl(page);
+		}
+		else {
+			StringBuffer d = new StringBuffer();
+			d.append("<html><title>");
+			d.append(bc ? "Installing" : "Loading");
+			d.append("</title><body>");
+			d.append(bc ? "Installing" : "Loading");
+			d.append("...</body></html>");
+			w.loadData(d.toString(), "text/html", "utf-8");
 		}
 		
 		WebSettings webSettings = w.getSettings();
