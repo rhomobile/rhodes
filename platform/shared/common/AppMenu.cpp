@@ -67,6 +67,8 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 		m_eType = emtClose;
 	else if (strLink == "exit")
 		m_eType = emtExit;
+	else if (strLink == "back")
+		m_eType = emtBack;
 	else if (strLink == "fullscreen")
 		m_eType = emtFullscreen;
 	else
