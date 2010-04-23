@@ -287,36 +287,36 @@ static Rhodes *instance = NULL;
 }
 - (void)processPushMessage:(NSDictionary *)userInfo
 {
-	RAWLOG_INFO("Processing PUSH message...");
+    RAWLOG_INFO("Processing PUSH message...");
 	
-	{
-	    NSString* strData = [userInfo description];
-	    const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	    if ( rho_rhodesapp_callPushCallback(szData) )
-	        return;
+    {
+        NSString* strData = [userInfo description];
+        const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
+        if ( rho_rhodesapp_callPushCallback(szData) )
+            return;
     }
-	    
-	NSDictionary *aps = [userInfo objectForKey:@"aps"];
-	if (aps) {
-		NSString *alert = [aps objectForKey:@"alert"];
-		if (alert && [alert length] > 0) {
-			NSLog(@"Push Alert: %@", alert);
+    
+    NSDictionary *aps = [userInfo objectForKey:@"aps"];
+    if (aps) {
+        NSString *alert = [aps objectForKey:@"alert"];
+        if (alert && [alert length] > 0) {
+            NSLog(@"Push Alert: %@", alert);
             rho_param *p = rho_param_str((char*)[alert UTF8String]);
             [RhoAlert showPopup:p];
             rho_param_free(p);
-		}
-		NSString *sound = [aps objectForKey:@"sound"];
-		if (sound && [sound length] > 0) {
-			NSLog(@"Sound file name: %@", sound);
+        }
+        NSString *sound = [aps objectForKey:@"sound"];
+        if (sound && [sound length] > 0) {
+            NSLog(@"Sound file name: %@", sound);
             [RhoAlert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
-		}
-		NSString *vibrate = [aps objectForKey:@"vibrate"];
-		if (vibrate && [vibrate length] > 0) {
-			NSLog(@"Do vibrate...");
+        }
+        NSString *vibrate = [aps objectForKey:@"vibrate"];
+        if (vibrate && [vibrate length] > 0) {
+            NSLog(@"Do vibrate...");
             [RhoAlert vibrate:1];
-		}
-	}
-	[self processDoSync:userInfo];
+        }
+    }
+    [self processDoSync:userInfo];
 }
 #endif
 
