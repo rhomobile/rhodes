@@ -87,6 +87,22 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    loadUrl
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_loadUrl
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    navigateBack
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_navigateBack
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    doRequest
  * Signature: (Ljava/lang/String;)V
  */

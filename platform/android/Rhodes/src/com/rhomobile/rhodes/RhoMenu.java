@@ -58,10 +58,10 @@ public class RhoMenu {
 			return false;
 		}
 		
+		Item ri = (Item)obj;
+		
 		Rhodes r = RhodesInstance.getInstance();
 		MainView mainView = r.getMainView();
-		
-		Item ri = (Item)obj;
 		
 		String type = ri.type;
 		if (type.equalsIgnoreCase("refresh")) {
