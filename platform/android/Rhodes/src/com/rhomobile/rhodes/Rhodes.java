@@ -123,6 +123,10 @@ public class Rhodes extends Activity {
 	
 	public native String normalizeUrl(String url);
 	
+	public static native void loadUrl(String url);
+	
+	public static native void navigateBack();
+	
 	public native void doRequest(String url);
 	
 	public native static void makeLink(String src, String dst);

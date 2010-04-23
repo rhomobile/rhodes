@@ -29,6 +29,9 @@ public interface MainView {
 	public void back(int index);
 	public void forward(int index);
 	
+	// Browser native 'back'
+	public void goBack();
+	
 	public void navigate(String url, int index);
 	public void reload(int index);
 	

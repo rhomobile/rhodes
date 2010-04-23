@@ -397,3 +397,14 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
     return newStr;
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_navigateBack
+  (JNIEnv *, jclass)
+{
+    rho_rhodesapp_navigate_back();
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_loadUrl
+  (JNIEnv *, jclass, jstring str)
+{
+    rho_rhodesapp_load_url(rho_cast<std::string>(str).c_str());
+}

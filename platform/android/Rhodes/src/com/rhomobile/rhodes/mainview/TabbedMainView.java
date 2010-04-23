@@ -33,7 +33,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -46,7 +45,7 @@ public class TabbedMainView implements MainView {
 	private Vector<TabData> tabs;
 	
 	private static class TabData {
-		public WebView view;
+		public MainView view;
 		public String url;
 		public boolean reload;
 		public boolean loaded;
@@ -65,12 +64,12 @@ public class TabbedMainView implements MainView {
 		}
 		
 		public View createTabContent(String tag) {
-			return data.view;
+			return data.view.getView();
 		}
 		
 	};
 	
-	private WebView getWebView(int index) {
+	private MainView getView(int index) {
 		TabData data = tabs.elementAt(index);
 		return data.view;
 	}
@@ -109,7 +108,7 @@ public class TabbedMainView implements MainView {
 					int index = Integer.parseInt(tabId);
 					TabData data = tabs.elementAt(index);
 					if (data.reload || !data.loaded) {
-						getWebView(index).loadUrl(data.url);
+						getView(index).navigate(data.url, index);
 						data.loaded = true;
 					}
 				}
@@ -166,7 +165,7 @@ public class TabbedMainView implements MainView {
 				spec.setIndicator(label, drawable);
 			
 			// Set view factory
-			WebView view = r.createWebView();
+			SimpleMainView view = new SimpleMainView();
 			TabData data = new TabData();
 			data.view = view;
 			data.url = action;
@@ -185,23 +184,23 @@ public class TabbedMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		getWebView(index).goBack();
+		getView(index).back(0);
 	}
 	
 	public void forward(int index) {
-		getWebView(index).goForward();
+		getView(index).forward(0);
 	}
 	
 	public void navigate(String url, int index) {
-		getWebView(index).loadUrl(url);
+		getView(index).navigate(url, 0);
 	}
 	
 	public void reload(int index) {
-		getWebView(index).reload();
+		getView(index).reload(0);
 	}
 	
 	public String currentLocation(int index) {
-		return getWebView(index).getUrl();
+		return getView(index).currentLocation(0);
 	}
 
 	public void switchTab(int index) {
@@ -210,6 +209,10 @@ public class TabbedMainView implements MainView {
 	
 	public int activeTab() {
 		return host.getCurrentTab();
+	}
+
+	public void goBack() {
+		getView(activeTab()).goBack();
 	}
 
 }
