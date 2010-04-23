@@ -23,16 +23,11 @@
 #endif
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
+#include "common/RhoFilePath.h"
+
 #include <hash_map>
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-//char* canonicalizeURL(const char* path);
-//const char* strip_local_domain(const char* url);
-
-//extern "C" wchar_t* wce_mbtowc(const char* a);
-//extern "C" char* wce_wctomb(const wchar_t* w);
-
-//extern "C" void pause_sync( int nPause );
 
 #if defined(_WIN32_WCE)
 #include <regext.h>
@@ -58,14 +53,11 @@ int CMainWindow::m_screenHeight;
 CMainWindow::CMainWindow()
 {
 	m_bLoading = true;
-	m_bRhobundleReloadEnabled = true;
 #if defined(_WIN32_WCE)
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
 #endif
 	m_pageCounter = 0;
-//	m_current_url = NULL;
-//    m_szStartPage = NULL;
 }
 
 CMainWindow::~CMainWindow()
@@ -202,6 +194,10 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     }
 	
 	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
+
+    if ( RHOCONF().getBool("full_screen"))
+   	    SetFullScreen(true);
+
 #endif
 
 #if !defined(_WIN32_WCE)
@@ -359,89 +355,15 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
+LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    m_spIWebBrowser2->GoBack();
+    return 0;
+}
+
 LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-//    if ( m_szStartPage && m_current_url && _stricmp(m_current_url,m_szStartPage) != 0 )
-    rho::String strAppUrl = RHODESAPP().getAppBackUrl();
-
-    if ( strAppUrl.length() > 0 )
-    	m_spIWebBrowser2->Navigate( const_cast<wchar_t*>(convertToStringW(strAppUrl).c_str()), NULL, NULL, NULL, NULL);
-    else if ( _stricmp(RHODESAPP().getCurrentUrl().c_str(),RHODESAPP().getStartUrl().c_str()) != 0 )
-        m_spIWebBrowser2->GoBack();
-
-    return 0;
-}
-
-LRESULT CMainWindow::OnForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    m_spIWebBrowser2->GoForward();
-    return 0;
-}
-
-void CMainWindow::SetRhobundleReloadMenu() {
-	if ( m_bRhobundleReloadEnabled )
-	{
-		m_bRhobundleReloadEnabled = false;
-
-		#if defined(ENABLE_DYNAMIC_RHOBUNDLE) && defined(_WIN32_WCE)
-		if ( !CHttpServer::Instance()->GetRhobundleReloadUrl() ) //disable RhoBundle reload url
-		{
-			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
-		}
-		#elif defined(_WIN32_WCE)			
-			HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-			RemoveMenu(hMenu, IDM_RELOADRHOBUNDLE, MF_BYCOMMAND);
-		#endif
-	}
-}
-
-LRESULT CMainWindow::OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    //TODO: show menu on navigate to start page
-	SetRhobundleReloadMenu();
-	m_spIWebBrowser2->Navigate( 
-        const_cast<wchar_t*>(convertToStringW(RHODESAPP().getStartUrl()).c_str()), NULL, NULL, NULL, NULL);
-	return 0;
-}
-#if 0
-LRESULT CMainWindow::OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	SetRhobundleReloadMenu();
-	
-	LPTSTR startPage = NULL;
-    LPTSTR lastPageW = NULL;
-
-	if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
-    {
-	    rho::String lastPage = RHOCONF().getString("LastVisitedPage");
-	    if (lastPage.length() > 0) {
-		    char* _page = canonicalizeURL(lastPage.c_str());
-		    startPage = lastPageW = wce_mbtowc(_page);
-		    free(_page);
-        }
-    }
-
-	if ( !startPage )
-		startPage = CHttpServer::Instance()->GetStartPage();
-
-	m_spIWebBrowser2->Navigate(startPage, NULL, NULL, NULL, NULL);
-	if (lastPageW) {
-		free(lastPageW);
-	}
-	
-	return 0;
-}
-#endif //0
-
-LRESULT CMainWindow::OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    CGetURLDialog getURLDialog;
-    int nRetCode = getURLDialog.DoModal(m_hWnd); // display the 'Get URL' dialog box
-    if (IDOK == nRetCode)
-    {
-        m_spIWebBrowser2->Navigate(getURLDialog.GetURL(), NULL, NULL, NULL, NULL);
-    }
+    RHODESAPP().navigateBack();
     return 0;
 }
 
@@ -461,60 +383,6 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
     return 0;
 }
 
-LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-//    m_spIWebBrowser2->Refresh();
-
-//	LPTSTR wcurl = wce_mbtowc(GetCurrentLocation());
-
-    rho::StringW strCurrentUrlW;
-    rho::common::convertToStringW(RHODESAPP().getCurrentUrl().c_str(), strCurrentUrlW);
-    Navigate2(const_cast<wchar_t*>(strCurrentUrlW.c_str()));
-
-//	free(wcurl);
-    return 0;
-}
-
-LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
-{
-	LPTSTR wcurl = (LPTSTR)hWndCtl;
-	if (wcurl) {
-		Navigate2(wcurl);
-		free(wcurl);
-	}
-    return 0;
-}
-
-LRESULT CMainWindow::OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    m_spIWebBrowser2->Stop();
-    return 0;
-}
-
-
-LRESULT CMainWindow::OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	rho_sync_doSyncAllSources(TRUE);
-    return 0;
-}
-
-LRESULT CMainWindow::OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	m_spIWebBrowser2->Navigate(const_cast<wchar_t*>(convertToStringW(RHODESAPP().getOptionsUrl()).c_str()), NULL, NULL, NULL, NULL);
-	return 0;
-}
-
-LRESULT CMainWindow::OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-#ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
-		CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
-	} else {
-		MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
-	}
-#endif
-	return 0;
-}
-
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
 #if defined (_WIN32_WCE) 
@@ -523,15 +391,26 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 };
 
-extern wchar_t* wce_mbtowc(const char* a);
+LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+	LPTSTR wcurl = (LPTSTR)hWndCtl;
+	if (wcurl) 
+    {
+		Navigate2(wcurl);
+		free(wcurl);
+	}
+    return 0;
+}
 
 #if defined(OS_WINDOWS)
-LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+{
 	createCustomMenu();
 	return 0;
 }
 
-LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) 
+{
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
 	setIniInt(_T("main_view_left"),lp->x);
 	setIniInt(_T("main_view_top"),lp->y);
@@ -539,37 +418,9 @@ LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	return 0;
 }
 #endif
-/*
-void CMainWindow::SendCameraCallbackRequest(HRESULT status, LPTSTR image_name, char* callback_url) {
 
-    rho::String callback = RHODESAPP().canonicalizeRhoUrl(callback_url);
-
-	char* imageuri = NULL, *message;
-	if (status==S_OK) {
-		imageuri = wce_wctomb(image_name);
-		int len = 256+strlen(imageuri);
-		message = (char*) malloc(len);
-		sprintf(message,"status=ok&image_uri=%s",imageuri);
-	} else {
-		char* status_message = (status==S_FALSE?"User canceled operation":"Error");
-		int len = 256+strlen(status_message);
-		message = (char*) malloc(len);
-		sprintf(message,"status=%s&message=%s",
-			(status==S_FALSE?"cancel":"error"),status_message);
-	}
-
-//	char* headers = "Content-Type: application/x-www-form-urlencoded\r\n";
-	//char* res = m_callbackRequest.doRequest(L"POST",callback,headers,strlen(headers),message,strlen(message));
-	//if ( res ) free(res);
-    rho::net::CNetRequest oNetReq;
-    oNetReq.pushData( callback, message, null );
-
-	free(message);
-	if (imageuri) 
-        free(imageuri);
-}*/
-
-LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+{
 #if defined (_WIN32_WCE)
 	Camera camera;
 	TCHAR image_uri[MAX_PATH];
@@ -583,7 +434,8 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return 0;
 }
 
-LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
+{
 #if defined (_WIN32_WCE)
 
 	rho_sysimpl_sethas_network( (int)wParam );
@@ -600,6 +452,7 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
 #else
+    //TODO: show browse file dialog
     wsprintf( image_uri, L"%s", L"dashboard.PNG");
 #endif
 
@@ -680,7 +533,7 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
     else
         SetWindowText(TEXT("Untitled"));
 	
-    RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, TRUE));
+    //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, TRUE));
 }
 
 void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
@@ -775,7 +628,6 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	LOG(INFO) + "Show loading page";
     USES_CONVERSION;
 	
-	//BOOL store_current_url = !m_bLoading;
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
@@ -785,19 +637,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		m_bLoading = false; //show loading page only once
     }else
     {
-//        if ( m_current_url && strcmp(m_current_url,"about:blank") ==0 )
-//            m_szStartPage = wce_wctomb(url);
     }
     m_bLoading = false;
-
-	/*if (m_current_url) {
-		free(m_current_url);
-	}
-
-	m_current_url = wce_wctomb(url);*/
-	
-	//if( store_current_url ) 
-    //    RHODESAPP().keepLastVisitedUrlW(url);
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
@@ -808,9 +649,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	if (m_pageCounter > 2) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
-	
-	
-    RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
+    //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
@@ -819,10 +658,11 @@ void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
     {
         RHO_ASSERT(SetMenuItemEnabled(IDM_BACK, bEnable));
     }
-    else */if (CSC_NAVIGATEFORWARD == lCommand)
+    else */
+    /*if (CSC_NAVIGATEFORWARD == lCommand)
     {
         RHO_ASSERT(SetMenuItemEnabled(IDM_FORWARD, bEnable));
-    }
+    }*/
 }
 
 // **************************************************************************
@@ -875,7 +715,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 
 	if (m_bFullScreen && pMsg->message == WM_KEYUP && 
 		(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-	SetFullScreen(false);
+	        SetFullScreen(false);
 #endif
 
     // Accelerators are only keyboard or mouse messages
@@ -893,7 +733,8 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 
             if ( uVirtKey == VK_ESCAPE ){
                 if ( fuModifiers&MOD_KEYUP )
-                    PostMessageW(WM_COMMAND,MAKEWPARAM(IDM_BACK,1),NULL);
+                    RHODESAPP().navigateBack();
+                    //PostMessageW(WM_COMMAND,MAKEWPARAM(IDM_BACK,1),NULL);
 
                 return TRUE;
             }
@@ -942,7 +783,14 @@ void CMainWindow::createCustomMenu()
 	menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
 
 	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
- 	
+
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+    String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index_erb.iseq");
+    if ( RHODESAPP().getCurrentUrl().compare(RHODESAPP().getStartUrl()) == 0 ||
+         RHODESAPP().getCurrentUrl().compare(strIndexPage) == 0 )
+        m_arAppMenuItems.addElement(CAppMenuItem("Reload RhoBundle","reload_rhobundle"));
+#endif //ENABLE_DYNAMIC_RHOBUNDLE
+
 	//update UI with custom menu items
 	USES_CONVERSION; 
     for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
@@ -992,115 +840,30 @@ void CMainWindow::createCustomMenu()
 	}
 }
 #endif //OS_WINCE
-/*
-void CMainWindow::createCustomMenu()
-{
-#if defined (OS_WINDOWS) //win32: create popup menu 
-	CMenu menu;
-	CMenu sub;
-	CMenu popup;
-	
-	VERIFY(menu.CreateMenu());
-	VERIFY(popup.CreatePopupMenu());
-	menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
-#endif
 
-#if defined (OS_WINCE) //wm: delete existing items in main menu
-	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-	
-	//except exit item
-	int num = GetMenuItemCount (hMenu);
-	for (int i = 0; i < (num - 1); i++)	
-		DeleteMenu(hMenu, 0, MF_BYPOSITION);
-#endif
-	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
- 	
-	//update UI with cusom menu items
-	USES_CONVERSION; 
-	int item_num = 0, item_type = CAppMenu::Item::TYPE_UNKNOWN;
-	for (Vector<CAppMenu::Item>::reverse_iterator itr = m_arMenuItems.rbegin(); 
-		itr != m_arMenuItems.rend(); itr++, item_num++) 
-	{
-		item_type = itr->getType();
-		
-		if (item_type == CAppMenu::Item::TYPE_SEPARATOR) {
-#if defined (OS_WINCE)
-			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
-#else 
-			int id = 0;
-			popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, id, (LPCTSTR )0);
-#endif
-#if defined (OS_WINCE) //wm: skip Exit and Close  items
-		} else if (item_type == CAppMenu::Item::TYPE_CMD_EXIT || item_type == CAppMenu::Item::TYPE_CMD_CLOSE) {
-#endif
-		} else {
-#if defined (OS_WINCE)
-    		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, A2T((itr)->getLabel().c_str()));
-#else
-			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + item_num, 
-							 item_type == CAppMenu::Item::TYPE_CMD_CLOSE ? _T("Exit") : A2T((itr)->getLabel().c_str()));
-#endif
-		}
-		//set items ID
-		itr->setId(ID_CUSTOM_MENU_ITEM_FIRST + item_num);
-	}
-	//RHODESAPP().getAppMenu().setItems(items); //update items with IDs
-
-#if defined (OS_WINDOWS) //win32: detach popup
-	RECT  rect; 
-	m_browser.GetWindowRect(&rect);
-	sub.Attach(menu.GetSubMenu(0));
-	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
-						rect.right-1, 
-						rect.bottom-1,
-						m_hWnd);
-	sub.Detach();
-#endif	
-}
-*/
-
-extern "C" void rho_conf_show_log();
-extern "C" void rho_sys_app_exit();
 LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {	
     int nItemPos = wID-ID_CUSTOM_MENU_ITEM_FIRST;
     if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
         return 0;
 
-    //TODO: move it to CAppMenuItem::processItem
-    //TODO: remove OnHomeCommand etc
-    BOOL val = FALSE;
 	CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
-    switch(oMenuItem.m_eType)
+    if ( oMenuItem.m_eType == CAppMenuItem::emtUrl )
     {
-    case CAppMenuItem::emtUrl:
-        rho_webview_navigate(oMenuItem.m_strLink.c_str(), 0);
-        break;
-    case CAppMenuItem::emtRefresh:
-        rho_webview_refresh(0);
-        break;
-    case CAppMenuItem::emtSync:
-        rho_sync_doSyncAllSources (TRUE);
-        break;
-    case CAppMenuItem::emtLog:
-        rho_conf_show_log();
-        break;
-    case CAppMenuItem::emtExit:
-    case CAppMenuItem::emtClose:
-        rho_sys_app_exit();
-        break;
-
-    case CAppMenuItem::emtHome:
-        OnHomeCommand (0, 0, 0, val);
-        break;
-    case CAppMenuItem::emtBack:
-        OnBackCommand (0, 0, 0, val);
-        break;
-    case CAppMenuItem::emtOptions:
-        OnOptionsCommand (0, 0, 0, val);
-        break;
-
+        if ( oMenuItem.m_strLink == "reload_rhobundle" )
+        {
+        #ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	        if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
+		        CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
+	        } else {
+		        MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
+	        }
+        #endif
+            return 0;
+        }
     }
+
+    oMenuItem.processCommand();
 
     return 0;
 }

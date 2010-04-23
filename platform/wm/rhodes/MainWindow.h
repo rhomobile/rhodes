@@ -7,7 +7,6 @@
 #include <exdisp.h>
 #endif
 #include "resource.h"
-#include "GetURLDialog.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
@@ -75,20 +74,11 @@ public:
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
         COMMAND_ID_HANDLER(IDM_EXIT, OnExitCommand)
+        COMMAND_ID_HANDLER(IDM_NAVIGATE_BACK, OnNavigateBackCommand)
         COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
-        COMMAND_ID_HANDLER(IDM_BACK, OnBackCommand)
-        COMMAND_ID_HANDLER(IDM_FORWARD, OnForwardCommand)
-        COMMAND_ID_HANDLER(IDM_HOME, OnHomeCommand)
-        COMMAND_ID_HANDLER(IDM_OPENURL, OnOpenURLCommand)
-        COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
 		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
-        COMMAND_ID_HANDLER(IDM_STOP, OnStopCommand)
-        COMMAND_ID_HANDLER(IDM_SYNC, OnSyncCommand)
-        COMMAND_ID_HANDLER(IDM_OPTIONS, OnOptionsCommand)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
-		COMMAND_ID_HANDLER(IDM_RELOADRHOBUNDLE, OnReloadRhobundleCommand)
 		COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
-//		COMMAND_ID_HANDLER(IDM_START_PAGE, OnLoadStartPageCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 #if defined(OS_WINDOWS)
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
@@ -113,18 +103,10 @@ private:
     // WM_COMMAND handlers
     LRESULT OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnHomeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnOpenURLCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnStopCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnSyncCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnOptionsCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnReloadRhobundleCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-//	LRESULT OnLoadStartPageCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 #if defined(OS_WINDOWS)
@@ -192,11 +174,6 @@ private:
 #endif
 
 	bool m_bLoading;
-	bool m_bRhobundleReloadEnabled;
-	//char* m_current_url;
-    //char* m_szStartPage;
-
-	void SetRhobundleReloadMenu();
 
 #if !defined(_WIN32_WCE)
 private:

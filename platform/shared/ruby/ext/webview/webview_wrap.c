@@ -1558,6 +1558,10 @@ extern void rho_webview_set_menu_items(VALUE argv);
 extern int rho_webview_active_tab();
 #define active_tab rho_webview_active_tab
 
+extern void rho_webview_full_screen_mode(int enable);
+#define full_screen_mode rho_webview_full_screen_mode
+
+
 
 #include <limits.h>
 #ifndef LLONG_MIN
@@ -1873,6 +1877,27 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_full_screen_mode(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "full_screen_mode" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  full_screen_mode(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2141,5 +2166,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "execute_js", _wrap_execute_js, -1);
   rb_define_module_function(mWebView, "set_menu_items", _wrap_set_menu_items, -1);
   rb_define_module_function(mWebView, "active_tab", _wrap_active_tab, -1);
+  rb_define_module_function(mWebView, "full_screen_mode", _wrap_full_screen_mode, -1);
 }
 

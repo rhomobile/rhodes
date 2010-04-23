@@ -74,15 +74,15 @@ IDR_MAIN_MENU MENU
 BEGIN
     POPUP ""
     BEGIN
-        MENUITEM "Forward",                     IDM_FORWARD
-        MENUITEM "Home",                        IDM_HOME
-        MENUITEM "Open URL...",                 IDM_OPENURL
+        //MENUITEM "Forward",                     IDM_FORWARD
+        //MENUITEM "Home",                        IDM_HOME
+        //MENUITEM "Open URL...",                 IDM_OPENURL
         MENUITEM "Refresh",                     IDM_REFRESH
-        MENUITEM "Stop",                        IDM_STOP
-        MENUITEM "Sync",                        IDM_SYNC
+        //MENUITEM "Stop",                        IDM_STOP
+        //MENUITEM "Sync",                        IDM_SYNC
         MENUITEM "Options",                     IDM_OPTIONS
         MENUITEM "Log...",                      IDM_LOG
-        MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
+        //MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
         MENUITEM "Fullscreen",                  ID_FULLSCREEN
         MENUITEM "Exit",                        IDM_EXIT
     END

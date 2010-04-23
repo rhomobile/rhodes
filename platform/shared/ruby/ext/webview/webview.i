@@ -13,6 +13,10 @@ extern void rho_webview_set_menu_items(VALUE argv);
 #define set_menu_items rho_webview_set_menu_items
 extern int rho_webview_active_tab();
 #define active_tab rho_webview_active_tab
+
+extern void rho_webview_full_screen_mode(int enable);
+#define full_screen_mode rho_webview_full_screen_mode
+
 %}
 
 %typemap(default) int index {
@@ -25,3 +29,4 @@ extern const char* current_location(int index);
 extern const char* execute_js(const char* js, int index);
 extern void set_menu_items(VALUE argv);
 extern int active_tab();
+extern void full_screen_mode(int enable);
