@@ -429,8 +429,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			_tprintf( TEXT("DONE\n"));
 			
-			_tprintf( TEXT("Loading cab file..."));
-			
+			_tprintf( TEXT("Loading cab file..."));		
 			USES_CONVERSION;
 			if (!wcePutFile (T2A(cab_file), "")) {
 				_tprintf( TEXT("FAILED\n"));
@@ -471,6 +470,52 @@ int _tmain(int argc, _TCHAR* argv[])
 	stop_emu_deploy:
 			ExitProcess(EXIT_FAILURE);
 		}
+	}
+
+	if (deploy_type == DEPLOY_DEV) {
+
+			HRESULT hRapiResult;
+			_tprintf( TEXT("Searching for Windows CE device..."));
+			hRapiResult = CeRapiInit();
+			if (FAILED(hRapiResult)) {
+					_tprintf( TEXT("FAILED\n"));
+					return false;
+			}
+			_tprintf( TEXT("DONE\n"));
+
+			_tprintf( TEXT("Loading cab file to..."));		
+			USES_CONVERSION;
+			if (!wcePutFile (T2A(cab_file), "")) {
+				_tprintf( TEXT("FAILED\n"));
+				goto stop_emu_deploy;
+			}
+			_tprintf( TEXT("DONE\n"));
+
+			_tprintf( TEXT("Loading utility dll..."));
+			if (!wcePutFile ("rhosetup.dll", "")) {
+				_tprintf( TEXT("FAILED\n"));
+				goto stop_emu_deploy;
+			}
+			_tprintf( TEXT("DONE\n"));
+			
+			_tprintf( TEXT("Setup application..."));
+			_tcscpy(params_buf, TEXT("/noui "));
+			_tcscat(params_buf, cab_file);
+			if(!wceInvokeCabSetup("/noui \\rhodes.cab")) {
+				_tprintf( TEXT("FAILED\n"));
+				goto stop_emu_deploy;
+			}
+			_tprintf( TEXT("DONE\n"));
+
+			_tprintf( TEXT("Starting application..."));
+			_tcscpy(params_buf, TEXT("\\Program Files\\"));
+			_tcscat(params_buf, app_name);
+			_tcscat(params_buf, TEXT("\\rhodes.exe"));
+			if(!wceRunProcess (T2A(params_buf), NULL)) {
+				_tprintf( TEXT("FAILED\n"));
+				goto stop_emu_deploy;
+			}
+			_tprintf( TEXT("DONE\n"));
 	}
 
 	return EXIT_SUCCESS;
