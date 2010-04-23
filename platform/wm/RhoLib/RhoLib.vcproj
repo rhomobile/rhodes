@@ -762,6 +762,14 @@
 			Name="common"
 			>
 			<File
+				RelativePath="..\..\shared\common\AppMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\AppMenu.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\AutoPointer.h"
 				>
 			</File>
@@ -871,14 +879,6 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\common\Tokenizer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\common\AppMenu.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\common\AppMenu.h"
 				>
 			</File>
 		</Filter>
@@ -995,6 +995,10 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\rubyext\System.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\rubyext\WebView.h"
 				>
 			</File>
 		</Filter>

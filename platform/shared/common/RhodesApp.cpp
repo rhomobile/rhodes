@@ -488,6 +488,16 @@ void CRhodesApp::navigateToUrl( const String& strUrl)
     rho_webview_navigate(strUrl.c_str(), 0);
 }
 
+void CRhodesApp::navigateBack()
+{
+    rho::String strAppUrl = getAppBackUrl();
+
+    if ( strAppUrl.length() > 0 )
+        rho_webview_navigate(strAppUrl.c_str(), 0);
+    else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
+        rho_webview_navigate_back();
+}
+
 String CRhodesApp::canonicalizeRhoUrl(const String& strUrl) 
 {
     if (strUrl.length() == 0 )
