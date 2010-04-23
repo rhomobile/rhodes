@@ -861,7 +861,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		    	if (splash.isFlag(SplashScreen.VCENTER) )
 		    		nFlags |= Field.FIELD_VCENTER;
 
-		    	int scaleX = 1, scaleY = 1;
+		    	int scaleX = 65536, scaleY = 65536;
 				int currentWidthFixed32 = Fixed32.toFP(img.getWidth());
 				int currentHeightFixed32 = Fixed32.toFP(img.getHeight());
 				int screenWidthFixed32 = Fixed32.toFP(Display.getWidth());
@@ -869,11 +869,16 @@ final public class RhodesApplication extends UiApplication implements SystemList
 				
 		    	if (splash.isFlag(SplashScreen.VZOOM) )
 		    		scaleY = Fixed32.div(currentHeightFixed32, screenHeightFixed32);
+		    	else
+		    		scaleY = Fixed32.div(currentHeightFixed32, currentHeightFixed32);
+		    	
 		    	if (splash.isFlag(SplashScreen.HZOOM) )
 		    		scaleX = Fixed32.div(currentWidthFixed32, screenWidthFixed32);
+		    	else
+		    		scaleX = Fixed32.div(currentWidthFixed32, currentWidthFixed32);
 		    	
 		    	EncodedImage img2 = img;
-		    	if ( scaleX != 1 || scaleY != 1)
+		    	if ( scaleX != 65536 || scaleY != 65536)
 		    		img2 = img.scaleImage32(scaleX, scaleY);
 		    	Bitmap bitmap = img2.getBitmap();
 		    	
