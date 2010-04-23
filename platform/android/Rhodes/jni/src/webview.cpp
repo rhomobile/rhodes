@@ -31,7 +31,12 @@ RHO_GLOBAL void rho_webview_refresh(int index)
 
 RHO_GLOBAL void rho_webview_navigate_back()
 {
-    //TODO: rho_webview_navigate_back
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
+    jmethodID mid =getJNIClassStaticMethod(env, cls, "navigateBack", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
 }
 
 RHO_GLOBAL const char* rho_webview_current_location(int index)
