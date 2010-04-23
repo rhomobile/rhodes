@@ -78,8 +78,8 @@ public class Rhodes extends Activity {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
-	private static final String INSTALLING_PAGE = "file:///android_asset/apps/app/installing.html";
-	private static final String LOADING_PAGE = "file:///android_asset/apps/app/loading.html";
+	private static final String INSTALLING_PAGE = "apps/app/installing.html";
+	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
 	private long uiThreadId;
 	public long getUiThreadId() {
@@ -286,7 +286,7 @@ public class Rhodes extends Activity {
 		}
 		
 		if (hasNeededPage) {
-			w.loadUrl(page);
+			w.loadUrl("file:///android_asset/" + page);
 		}
 		else {
 			StringBuffer d = new StringBuffer();
