@@ -220,13 +220,22 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	if ( url.length() == 0)
     	{
 	    	if ( _history.size() <= 1 )
+	    	{
+	    		if ( RhoConf.getInstance().getBool("bb_disable_closebyback"))
+	    			return;
+	    		
+	    		_mainScreen.close();
 	    		return;
-	
+	       	}	
 	    	int nPos = _history.size()-2;
 	    	url = (String)_history.elementAt(nPos);
 	    	_history.removeElementAt(nPos+1);
 
 //    		this.m_oBrowserAdapter.goBack();
+    	}else if ( url.equalsIgnoreCase("close"))
+    	{
+    		_mainScreen.close();
+    		return;
     	}else
     		addToHistory(url,null);
     	
@@ -766,15 +775,17 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    } else {
     	    	if ( label.equalsIgnoreCase("back") )
     	    		m_strAppBackUrl = value;
-    	    	
-				MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
-					public void run() {
-				    	String val = getPathForMenuItem(value);
-						addToHistory(val, null );
-						navigateUrl(val);
-					}
-				};
-				menuItems.addElement(itemToAdd);
+    	    	else
+    	    	{
+					MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
+						public void run() {
+					    	String val = getPathForMenuItem(value);
+							addToHistory(val, null );
+							navigateUrl(val);
+						}
+					};
+					menuItems.addElement(itemToAdd);
+    	    	}
     	    }
 		}
 
