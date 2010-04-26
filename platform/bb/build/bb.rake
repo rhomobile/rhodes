@@ -142,11 +142,22 @@ namespace "config" do
       $preverified+"/RubyVM.jar"
     $rhodesimplib = $rhobundleimplib + ";"+ $preverified+"/RhoBundle.jar"
     
+
+    needsclean = true
+    if File.exists? "#{$bindir}/lastver"
+      lastver = IO.read("#{$bindir}/lastver").strip
+      needsclean = false if $bbver == lastver
+    end
+
+    Rake::Task["clean:bb:all"].invoke if needsclean
+    
     mkdir_p $bindir unless File.exists? $bindir
     rm_rf $tmpdir
     mkdir_p $tmpdir unless File.exists? $tmpdir
+    mkdir_p  $targetdir if not FileTest.exists?  $targetdir
 
-    mkdir_p  $targetdir if not FileTest.exists?  $targetdir    
+    File.open("#{$bindir}/lastver", "w") {|f| f.write($bbver)}
+
   end
 end
 
