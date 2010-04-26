@@ -20,8 +20,15 @@ div#content ul {
 
 div#content ul li {
     overflow:hidden;
+		clear:both;
 }
 
 div#content ul li span {
     display:block;
+}
+
+
+div#content ul#settings li div.itemLabel span.title{
+  padding: 0;
+	margin:0;
 }
