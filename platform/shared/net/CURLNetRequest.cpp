@@ -477,29 +477,19 @@ curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const S
     // Add Keep-Alive header
     hdrs = curl_slist_append(hdrs, "Connection: Keep-Alive");
 
-    if (strcasecmp(method, "POST") == 0 )
-    {
-	    if (strcasecmp(method, "POST") == 0) {
-		    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
-		    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
-	    }
-
-        if ( strBody.length() > 0 )
-        {
-            String strHeader = "Content-Type: ";
-            if ( pSession )
-                strHeader += pSession->getContentType().c_str();
-            else
-                strHeader += "application/x-www-form-urlencoded";
-            hdrs = curl_slist_append(hdrs, strHeader.c_str());
-        }
+    if (strcasecmp(method, "POST") == 0) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strBody.size());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strBody.c_str());
     }
-
+    
+    bool hasContentType = false;
     if (pHeaders)
     {
         for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
         {
-            String strHeader = it->first + ":" + it->second;
+            if (!hasContentType && strcasecmp(it->first.c_str(), "content-type") == 0)
+                hasContentType = true;
+            String strHeader = it->first + ": " + it->second;
             hdrs = curl_slist_append(hdrs, strHeader.c_str());
 //            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
         }
@@ -508,6 +498,16 @@ curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const S
         curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
         curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
         
+    }
+    
+    if (!hasContentType && strcasecmp(method, "POST") == 0 && strBody.length() > 0)
+    {
+        String strHeader = "Content-Type: ";
+        if ( pSession )
+            strHeader += pSession->getContentType().c_str();
+        else
+            strHeader += "application/x-www-form-urlencoded";
+        hdrs = curl_slist_append(hdrs, strHeader.c_str());
     }
     
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
