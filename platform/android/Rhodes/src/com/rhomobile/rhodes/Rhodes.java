@@ -484,7 +484,13 @@ public class Rhodes extends Activity {
 		screenPpiY = metrics.ydpi;
 		
 		try {
-			showSplashScreen("apps/app/loading.png");
+			boolean hasInstalling = false;
+			try {
+				getResources().getAssets().open("apps/app/installing.png").close();
+				hasInstalling = true;
+			}
+			catch (IOException e) {}
+			showSplashScreen("apps/app/" + (hasInstalling && isBundleChanged() ? "installing.png" : "loading.png"));
 		}
 		catch (Exception e) {
 			setMainView(new SimpleMainView());
