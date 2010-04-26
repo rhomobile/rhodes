@@ -36,10 +36,13 @@ INT rhoCabSetup (DWORD inSize, BYTE *inBuf, DWORD *, BYTE **, PVOID)
 		
 		GetExitCodeProcess(pi.hProcess, &exit_code);
 		printf ("Done. Exit code == %d\n", exit_code);
-
+		
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
+
 		LocalFree(inBuf);
+		if(exit_code != EXIT_SUCCESS)
+			return -1;
 		return 1;
 	}
 

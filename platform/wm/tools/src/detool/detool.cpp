@@ -5,6 +5,9 @@
 
 #include "detool.h"
 
+#define RHOSETUP_DLL "rhosetup.dll"
+
+
 DWORD WINAPI startDEM(LPVOID lpParam)
 {
 	if (SUCCEEDED(CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
@@ -19,7 +22,7 @@ DWORD WINAPI startDEM(LPVOID lpParam)
 		
 		pDeviceEmulatorManager->ShowManagerUI(false);
 		while (1) {
-			Sleep(300 * 1000);
+			Sleep(600 * 1000);
 		}
 		return true;
         CoUninitialize();
@@ -213,7 +216,7 @@ bool wcePutFile(const char *host_file, const char *wce_file)
 {
 	TCHAR tszSrcFile[MAX_PATH];
 	WCHAR wszDestFile[MAX_PATH];
-	BYTE  buffer[4096];
+	BYTE  buffer[5120];
     WIN32_FIND_DATA wfd;
 	HRESULT hr;
 	DWORD dwAttr, dwNumRead, dwNumWritten;
@@ -365,7 +368,7 @@ bool wceInvokeCabSetup(const char *wceload_params)
 
 	hr = CeRapiInvoke(TEXT("\\rhosetup"), TEXT("rhoCabSetup"), dwInSize, pInBuff, &dwOutSize, NULL, NULL, 0);
 	if(FAILED(hr)) {
-		printf("Failed to setup cab!\r\n");
+		//printf("Failed to setup cab!\r\n");
 		return false;
 	}
 	wceDisconnect();
@@ -384,6 +387,12 @@ bool wceInvokeCabSetup(const char *wceload_params)
  */
 void usage(void)
 {
+printf 
+	("Rhodes deployment tool for Windows Mobile:               \n  \
+	  detool emu \"<emu_name|vmid>\" app.cab \"app-name\" \n  \
+	  or                                                       \n  \
+	  detool dev app.cab \"app-name\"                       \n"
+	 );
 }
 enum {
 	DEPLOY_EMU,
@@ -408,6 +417,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		app_name = argv[3];
 		deploy_type = DEPLOY_DEV;
 	} else {
+		usage();
 		return EXIT_FAILURE;
 	}
 
@@ -428,7 +438,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
-			
+
 			_tprintf( TEXT("Loading cab file..."));		
 			USES_CONVERSION;
 			if (!wcePutFile (T2A(cab_file), "")) {
@@ -438,26 +448,35 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("DONE\n"));
 
 			_tprintf( TEXT("Loading utility dll..."));
-			if (!wcePutFile ("rhosetup.dll", "")) {
+			if (!wcePutFile (RHOSETUP_DLL, "")) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
 			
 			_tprintf( TEXT("Setup application..."));
+
+			//FIXME: rake gives pathname with unix-like '/' file separators,
+			//so if we want to use this tool outside of rake, we should remember this
+			//or check and convert cab_file
+			TCHAR *p = _tcsrchr (cab_file, '/');
+			if (p) p++;
 			_tcscpy(params_buf, TEXT("/noui "));
-			_tcscat(params_buf, cab_file);
-			if(!wceInvokeCabSetup("/noui \\rhodes.cab")) {
+			_tcscat(params_buf, p != NULL ? p : cab_file);
+
+			if(!wceInvokeCabSetup(T2A(params_buf))) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
 
+			emuBringToFront(emu_name);
+
 			_tprintf( TEXT("Starting application..."));
 			_tcscpy(params_buf, TEXT("\\Program Files\\"));
 			_tcscat(params_buf, app_name);
 			_tcscat(params_buf, TEXT("\\rhodes.exe"));
-			if(!wceRunProcess (T2A(params_buf), NULL)) {
+			if(!wceRunProcess(T2A(params_buf), NULL)) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
@@ -473,9 +492,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	if (deploy_type == DEPLOY_DEV) {
+			_tprintf( TEXT("Searching for Windows CE device..."));
 
 			HRESULT hRapiResult;
-			_tprintf( TEXT("Searching for Windows CE device..."));
 			hRapiResult = CeRapiInit();
 			if (FAILED(hRapiResult)) {
 					_tprintf( TEXT("FAILED\n"));
@@ -483,7 +502,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			_tprintf( TEXT("DONE\n"));
 
-			_tprintf( TEXT("Loading cab file to..."));		
+			_tprintf( TEXT("Loading cab file to device..."));
 			USES_CONVERSION;
 			if (!wcePutFile (T2A(cab_file), "")) {
 				_tprintf( TEXT("FAILED\n"));
@@ -492,17 +511,35 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("DONE\n"));
 
 			_tprintf( TEXT("Loading utility dll..."));
-			if (!wcePutFile ("rhosetup.dll", "")) {
+			if (!wcePutFile (RHOSETUP_DLL, "")) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
 			
 			_tprintf( TEXT("Setup application..."));
-			_tcscpy(params_buf, TEXT("/noui "));
-			_tcscat(params_buf, cab_file);
-			if(!wceInvokeCabSetup("/noui \\rhodes.cab")) {
+
+			//FIXME: rake gives pathname with unix-like '/' file separators,
+			//so if we want to use this tool outside of rake, we should remember this
+			//or check and convert cab_file
+			TCHAR *p = _tcsrchr (cab_file, '/');
+			if (p) p++;
+			_tcscpy(params_buf, p != NULL ? p : cab_file);
+			//_tcscat(params_buf, p != NULL ? p : cab_file);
+
+			if(!wceInvokeCabSetup(T2A(params_buf))) {
 				_tprintf( TEXT("FAILED\n"));
+
+				_tprintf( TEXT("Starting installator GUI ..."));
+				if(!wceRunProcess ("\\windows\\wceload.exe", T2A(p != NULL ? p : cab_file))) {
+					_tprintf( TEXT("FAILED\n"));
+					ExitProcess(EXIT_FAILURE);
+				} else {
+					_tprintf( TEXT("DONE\n"));
+					_tprintf( TEXT("Please continue manually...\n"));
+					ExitProcess(EXIT_SUCCESS);
+				}
+
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
