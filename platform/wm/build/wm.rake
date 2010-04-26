@@ -4,7 +4,7 @@ def sign (cabfile)
 	puts "Singing .cab file"
 	
 	cabsigntool = $cabwiz[0, $cabwiz.index("CabWiz")] + "Security\\CabSignTool\\cabsigntool" if $config["env"]["paths"]["cabwiz"]
-    cabsigntool = "cabsigntool" if cabsigntool.nil?
+	cabsigntool = "cabsigntool" if cabsigntool.nil?
 	
 	signature = $config["build"]["wmsign"]
 	cab_in  = cabfile
@@ -34,7 +34,7 @@ namespace "config" do
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
-    
+    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
     $bindir = $app_path + "/bin"
     $rhobundledir =  $app_path + "/RhoBundle"
     $srcdir =  $bindir + "/RhoBundle"
@@ -139,14 +139,14 @@ namespace "device" do
       
       cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
-      args = ['build_inf.js', 'rhodes.inf', 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"']
+      args = ['build_inf.js', $appname + ".inf", 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"']
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
         exit 1
       end        
       
-      args = ['rhodes.inf']
+      args = [$appname + ".inf"]
       puts Jake.run($cabwiz, args)
       unless $? == 0
         puts "Error running cabwiz"
@@ -162,11 +162,11 @@ namespace "device" do
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
-      mv "rhodes.inf", $targetdir
-      mv "rhodes.cab", $targetdir
+      mv $appname + ".inf", $targetdir
+      mv $appname + ".cab", $targetdir
 
-	  if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
-       	sign $targetdir + '/' + "rhodes.cab";
+	if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
+       		sign $targetdir + '/' +  $appname + ".cab";
 	  end
 	  
       rm_f "cleanup.js"
@@ -197,6 +197,29 @@ namespace "clean" do
 end
 
 namespace "run" do
+
+  namespace "wm" do
+
+    desc "Build and run on the Windows Phone"
+    task :dev => ["device:wm:production"] do
+   	  cd $config["build"]["wmpath"] + "/tools/bin/"
+	  detool = "detool.exe"    
+	  args   = ['dev', $targetdir + '/' +  $appname + ".cab", $appname]
+	  puts "\nStarting application on the device"
+	  puts "Please, connect you device via ActiveSync.\n\n"
+	  puts Jake.run(detool,args)
+    end
+
+    desc "Build and run on WM6 emulator"
+    task :emu => ["device:wm:production"] do
+  	  cd $config["build"]["wmpath"] + "/tools/bin/"
+	  detool = "detool.exe"
+	  args   = ['emu', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname]
+	  puts "\nStarting application on the WM6 emulator\n\n"
+	  puts Jake.run(detool,args)
+    end
+  end
+	
   desc "Run win32" 
   task :win32 => ["build:win32"] do
     args = [' ']
