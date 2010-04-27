@@ -349,7 +349,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     
     private String _lastStatusMessage = null;
     
-    private HttpConnection  _currentConnection;
+    //private HttpConnection  _currentConnection;
 
     private Vector _history;
 
@@ -1086,14 +1086,14 @@ final public class RhodesApplication extends UiApplication implements SystemList
     public void processConnection(HttpConnection connection, Object e) 
     {
         // cancel previous request
-        if (_currentConnection != null) {
+        /*if (_currentConnection != null) {
             try {
                 _currentConnection.close();
             } catch (IOException e1) {
             }
         }
 
-        _currentConnection = connection;
+        _currentConnection = connection;*/
         
         RHODESAPP().getSplashScreen().hide();
         
@@ -1258,7 +1258,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
         		return;
         	}
         	
-    		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData);
+    		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData, null);
     		
     		if ( m_bInternalRequest )
     		{
