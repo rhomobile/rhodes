@@ -225,7 +225,7 @@ public class NetRequest
 		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	
-    NetResponse pushMultipartData(String strUrl, MultipartItem oItem, IRhoSession oSession, Hashtable/*<String,String>**/ pHeaders)throws Exception
+    public NetResponse pushMultipartData(String strUrl, MultipartItem oItem, IRhoSession oSession, Hashtable/*<String,String>**/ pHeaders)throws Exception
     {
         Vector arItems = new Vector();
         arItems.addElement(oItem);
@@ -249,11 +249,6 @@ public class NetRequest
 		return resp;
 	}
 	
-	static String szMultipartPrefix = 
-		   "------------A6174410D6AD474183FDE48F5662FCC5\r\n"+
-		   "Content-Disposition: form-data; name=\"blob\"; filename=\"doesnotmatter.png\"\r\n"+
-		   "Content-Type: application/octet-stream\r\n\r\n";
-		
 	static String szMultipartPostfix = 
 	    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
@@ -431,116 +426,6 @@ public class NetRequest
 		}
 		
 		copyHashtable(m_OutHeaders, headers);
-		return makeResponse(strRespBody, code );
-    }
-	
-	public NetResponse pushFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable headers)throws Exception
-	{
-		SimpleFile file = null;
-		NetResponse resp = null;
-		
-		m_bCancel = false;
-    	
-		try{
-			file = RhoClassFactory.createFile();
-			file.open(strFileName, true, true);
-			if ( !file.isOpened() ){
-				LOG.ERROR("File not found: " + strFileName);
-				throw new RuntimeException("File not found:" + strFileName);
-			}
-			
-			resp = pushFile1(strUrl, file, oSession, headers );
-		}finally{
-			if ( file != null )
-				try{ file.close(); }catch(IOException e){}
-		}
-		
-		copyHashtable(m_OutHeaders, headers);
-		
-		return resp;
-	}
-	
-	private NetResponse pushFile1( String strUrl, SimpleFile file, IRhoSession oSession, Hashtable headers)throws Exception
-    {
-		String strRespBody = null;
-		InputStream is = null;
-		OutputStream os = null;
-		InputStream fis = null;
-		int code  = -1;
-		
-		try{
-			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
-			
-			if ( oSession != null )
-			{
-				String strSession = oSession.getSession();
-				if ( strSession != null && strSession.length() > 0 )
-					m_connection.setRequestProperty("Cookie", strSession );
-			}
-			
-			m_connection.setRequestProperty("Connection", "keep-alive");
-			m_connection.setRequestProperty("content-type", szMultipartContType);
-			writeHeaders(headers);
-			m_connection.setRequestMethod(IHttpConnection.POST);
-			
-			//PUSH specific
-			os = m_connection.openOutputStream();
-			os.write(szMultipartPrefix.getBytes(), 0, szMultipartPrefix.length());
-
-			fis = file.getInputStream();
-			byte[]  byteBuffer = new byte[1024*4]; 
-			int nRead = 0;
-    		do{
-    			nRead = fis.read(byteBuffer);	    			
-    			if ( nRead > 0 )
-    				os.write(byteBuffer, 0, nRead);
-    		}while( nRead > 0 );
-			
-			os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
-			os.flush();
-			//PUSH specific
-			
-			is = m_connection.openInputStream();
-			code = m_connection.getResponseCode();
-		
-			LOG.INFO("getResponseCode : " + code);
-			
-			if (code != IHttpConnection.HTTP_OK) 
-			{
-				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
-					oSession.logout();
-				
-				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					strRespBody = readFully(is);
-				
-			}else
-			{
-				long len = m_connection.getLength();
-				LOG.INFO("fetchRemoteData data size:" + len );
-		
-				strRespBody = readFully(is);
-				
-				LOG.INFO("fetchRemoteData data readFully.");
-			}
-			
-			readHeaders(headers);			
-		}finally{
-			try{
-				if (fis != null)
-					fis.close();
-				
-				if ( is != null )
-					is.close();
-				if (os != null)
-					os.close();
-				
-				closeConnection();
-				
-			}catch(IOException exc2){}
-		}
-		
 		return makeResponse(strRespBody, code );
     }
 	
