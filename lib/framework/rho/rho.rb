@@ -223,11 +223,11 @@ module Rho
                 strCols = ""
                 arCols.each do |col|
                     strCols += ',' if strCols.length() > 0
-                    strCols += "'#{col}' varchar default NULL"
+                    strCols += "#{col} varchar default NULL"
                 end
 
                 strCols += ",object varchar(255) PRIMARY KEY"
-                strCreate = "CREATE TABLE '#{source['name']}' ( #{strCols} )"
+                strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
             end
             
             db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})

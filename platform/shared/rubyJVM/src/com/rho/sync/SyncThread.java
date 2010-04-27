@@ -705,10 +705,10 @@ public class SyncThread extends RhoThread
 					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 						try{
 							String strPartition = args.get(0).toStr(); 
-							int nSrcID = args.get(1).toInt();
+							Integer nSrcID = new Integer(args.get(1).toInt());
 							String strAttrName = args.get(2).toStr();
-							//TODO:is_blob_attr
-							return ObjectFactory.createBoolean(false);
+							boolean bExists = DBAdapter.getDB(strPartition).getAttrMgr().isBlobAttr(nSrcID, strAttrName);
+							return ObjectFactory.createBoolean(bExists);
 						}catch(Exception e)
 						{
 							LOG.ERROR("get_src_attrs failed", e);
