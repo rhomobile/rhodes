@@ -17,7 +17,7 @@ import com.rho.file.*;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-
+import java.util.Vector;
 
 public class NetRequest
 {
@@ -32,6 +32,18 @@ public class NetRequest
 		public abstract String getSession();
 		public abstract String getContentType();
 	}
+	
+	public static class MultipartItem
+	{
+	    //mutually exclusive
+	    public String m_strFilePath = "";
+	    public String m_strBody = "";
+	    //
+
+	    public String m_strName = "", m_strFileName = "", m_strContentType = "";
+
+	    public String m_strDataPrefix = "";
+	};
 	
 	private IHttpConnection m_connection = null;
 	
@@ -105,6 +117,7 @@ public class NetRequest
 		OutputStream os = null;
 		int code = -1;
 		
+		m_bCancel = false;
 		try{
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
@@ -201,6 +214,8 @@ public class NetRequest
 	
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
+		m_bCancel = false;
+		
 		if ( URI.isLocalHost(strUrl) )
 		{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
@@ -210,10 +225,20 @@ public class NetRequest
 		return doRequest("POST", strUrl, strBody, oSession, null);
     }
 	
+    NetResponse pushMultipartData(String strUrl, MultipartItem oItem, IRhoSession oSession, Hashtable/*<String,String>**/ pHeaders)throws Exception
+    {
+        Vector arItems = new Vector();
+        arItems.addElement(oItem);
+
+        return pushMultipartData(strUrl, arItems, oSession, pHeaders);
+    }
+	
 	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
 	{
 		Hashtable headers = new Hashtable();
 		m_bIgnoreSuffixOnSim = false;
+		m_bCancel = false;
+    	
 		NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
 		if ( resp.isOK() )
 		{
@@ -235,11 +260,187 @@ public class NetRequest
 	static String szMultipartContType = 
 	    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 
+	void processMultipartItems( Vector/*Ptr<CMultipartItem*>&*/ arItems )throws Exception
+	{
+	    for( int i = 0; i < (int)arItems.size(); i++ )
+	    {
+	        MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
+
+	        if ( oItem.m_strName.length() == 0 )
+	            oItem.m_strName = "blob";
+
+	        if ( oItem.m_strFileName.length() == 0 )
+	        {
+	            if ( oItem.m_strFilePath.length() > 0 )
+	            {
+	                FilePath oPath = new FilePath(oItem.m_strFilePath);
+	                oItem.m_strFileName = oPath.getBaseName();
+	            }
+	            //else
+	            //    oItem.m_strFileName = "doesnotmatter.txt";
+	        }
+
+	        oItem.m_strDataPrefix = i > 0 ? "\r\n" : "";
+	        oItem.m_strDataPrefix += 
+	            "------------A6174410D6AD474183FDE48F5662FCC5\r\n"+
+	            "Content-Disposition: form-data; name=\"";
+	        oItem.m_strDataPrefix += oItem.m_strName + "\"";
+	        if (oItem.m_strFileName.length()>0)
+	            oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
+	        oItem.m_strDataPrefix += "\r\n";
+	        if ( oItem.m_strContentType.length() > 0 )
+	            oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
+
+	        long nContentSize = 0;
+	        if ( oItem.m_strFilePath.length() > 0 )
+	        {
+	        	SimpleFile file = null;
+	    		try{
+	    			file = RhoClassFactory.createFile();
+	    			file.open(oItem.m_strFilePath, true, true);
+	    			nContentSize = file.length();
+	    			if ( !file.isOpened() ){
+	    				LOG.ERROR("File not found: " + oItem.m_strFilePath);
+	    				throw new RuntimeException("File not found:" + oItem.m_strFilePath);
+	    			}
+	    		}finally{
+	    			if ( file != null )
+	    				try{ file.close(); }catch(IOException e){}
+	    		}
+	        }
+	        else
+	            nContentSize = oItem.m_strBody.length();
+
+	        if ( oItem.m_strContentType.length() > 0 )
+	            oItem.m_strDataPrefix += "Content-Length: " + nContentSize + "\r\n";
+
+	        oItem.m_strDataPrefix += "\r\n";
+	    }
+
+	}
+	
+    public NetResponse pushMultipartData(String strUrl, Vector/*Ptr<CMultipartItem*>&*/ arItems, IRhoSession oSession, Hashtable/*<String,String>**/ headers)throws Exception
+    {
+		String strRespBody = null;
+		InputStream is = null;
+		OutputStream os = null;
+		int code  = -1;
+		
+		m_bCancel = false;
+    	
+		try{
+			closeConnection();
+			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
+			
+			if ( oSession != null )
+			{
+				String strSession = oSession.getSession();
+				if ( strSession != null && strSession.length() > 0 )
+					m_connection.setRequestProperty("Cookie", strSession );
+			}
+			
+			m_connection.setRequestProperty("Connection", "keep-alive");
+			m_connection.setRequestProperty("content-type", szMultipartContType);
+			writeHeaders(headers);
+			m_connection.setRequestMethod(IHttpConnection.POST);
+			
+			//PUSH specific
+			processMultipartItems( arItems );
+			os = m_connection.openOutputStream();
+	        //write all items
+	        for( int i = 0; i < (int)arItems.size(); i++ )
+	        {
+	            MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
+    			os.write(oItem.m_strDataPrefix.getBytes(), 0, oItem.m_strDataPrefix.length());
+
+	            if ( oItem.m_strFilePath.length() > 0 )
+	            {
+
+		        	SimpleFile file = null;
+		    		InputStream fis = null;
+		        	
+		    		try{
+		    			file = RhoClassFactory.createFile();
+		    			file.open(oItem.m_strFilePath, true, true);
+		        		
+		    			if ( !file.isOpened() ){
+		    				LOG.ERROR("File not found: " + oItem.m_strFilePath);
+		    				throw new RuntimeException("File not found:" + oItem.m_strFilePath);
+		    			}
+		    			
+		    			fis = file.getInputStream();
+		    			byte[]  byteBuffer = new byte[1024*4]; 
+		    			int nRead = 0;
+		        		do{
+		        			nRead = fis.read(byteBuffer);	    			
+		        			if ( nRead > 0 )
+		        				os.write(byteBuffer, 0, nRead);
+		        		}while( nRead > 0 );
+		    		}finally{
+						if (fis != null)
+							try{ fis.close(); }catch(IOException e){}
+		    			
+		    			if ( file != null )
+		    				try{ file.close(); }catch(IOException e){}
+		    		}
+	    			
+	            }else
+	            {
+	    			os.write(oItem.m_strBody.getBytes(), 0, oItem.m_strBody.length());
+	            }
+	        }
+			os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
+			//os.flush();
+			//PUSH specific
+			
+			is = m_connection.openInputStream();
+			code = m_connection.getResponseCode();
+		
+			LOG.INFO("getResponseCode : " + code);
+			
+			if (code != IHttpConnection.HTTP_OK) 
+			{
+				LOG.ERROR("Error retrieving data: " + code);
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
+					oSession.logout();
+				
+				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					strRespBody = readFully(is);
+				
+			}else
+			{
+				long len = m_connection.getLength();
+				LOG.INFO("fetchRemoteData data size:" + len );
+		
+				strRespBody = readFully(is);
+				
+				LOG.INFO("fetchRemoteData data readFully.");
+			}
+			
+			readHeaders(headers);			
+		}finally{
+			try{
+				if ( is != null )
+					is.close();
+				if (os != null)
+					os.close();
+				
+				closeConnection();
+				
+			}catch(IOException exc2){}
+		}
+		
+		copyHashtable(m_OutHeaders, headers);
+		return makeResponse(strRespBody, code );
+    }
+	
 	public NetResponse pushFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable headers)throws Exception
 	{
 		SimpleFile file = null;
 		NetResponse resp = null;
 		
+		m_bCancel = false;
+    	
 		try{
 			file = RhoClassFactory.createFile();
 			file.open(strFileName, true, true);
@@ -353,7 +554,8 @@ public class NetRequest
 		
 		m_nMaxPacketSize = RhoClassFactory.getNetworkAccess().getMaxPacketSize();
 		m_bFlushFileAfterWrite = RhoConf.getInstance().getBool("use_persistent_storage");
-			
+		m_bCancel = false;
+    	
 		try{
 
 	        if (!strFileName.startsWith("file:")) { 

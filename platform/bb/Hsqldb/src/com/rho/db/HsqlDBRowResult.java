@@ -46,6 +46,11 @@ public class HsqlDBRowResult extends HsqlDBResult {
     	m_row = null;
     }
     
+    public Object[] getCurData()
+    {
+    	return m_row.getData();
+    }
+    
     protected Object getCurValue(int nCol)
     {
     	return m_row.getData()[nCol];
