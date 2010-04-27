@@ -230,6 +230,8 @@ static Rhodes *instance = NULL;
 - (void)doStartUp {
     instance = self;
     application = [UIApplication sharedApplication];
+
+    [NSThread setThreadPriority:1.0];
     
     appManager = [AppManager instance]; 
     //Configure AppManager
