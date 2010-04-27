@@ -136,7 +136,6 @@ void CAsyncHttp::run()
             oItem.m_strContentType = "application/octet-stream";
 
             m_pNetResponse = m_pNetRequest->pushMultipartData( m_strUrl, oItem, null, &m_mapHeaders );
-            //m_pNetResponse = m_pNetRequest->pushFile(m_strUrl, m_strBody, null, &m_mapHeaders);
             break;
         }
     }

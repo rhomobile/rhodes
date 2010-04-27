@@ -6,7 +6,7 @@ import java.util.Enumeration;
 import com.rho.net.NetResponse;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
-
+import com.rho.net.NetRequest.MultipartItem;
 import com.rho.file.SimpleFile;
 
 public class RhoConf {
@@ -282,13 +282,21 @@ public class RhoConf {
 		String strQuery = strLogUrl + "client_log?" +
 		    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RhoConf.getInstance().getString("logname");
 		
+	    MultipartItem oItem = new MultipartItem();
+	    oItem.m_strFilePath = RhoLogger.getLogConf().getLogFilePath();
+	    oItem.m_strContentType = "application/octet-stream";
+		
+	    boolean bOldSaveToFile = RhoLogger.getLogConf().isLogToFile();
+	    RhoLogger.getLogConf().setLogToFile(false);
+		
 		NetResponse resp = null;
 		try{
-			resp = nq.pushFile(strQuery, RhoLogger.getLogConf().getLogFilePath(), com.rho.sync.SyncThread.getSyncEngine(), null );
+			resp = nq.pushMultipartData(strQuery, oItem, com.rho.sync.SyncThread.getSyncEngine(), null );
 		}catch(Exception exc)
 		{
 			LOG.ERROR("send_log failed.", exc);
 		}
+		RhoLogger.getLogConf().setLogToFile(bOldSaveToFile);
 		
 		if ( resp == null || !resp.isOK() )
 		{
