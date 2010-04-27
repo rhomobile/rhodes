@@ -33,7 +33,8 @@ public class HsqlDBResult implements IDBResult
 			 m_result.getException() instanceof HsqlException )
 		{
 			HsqlException e = (HsqlException)m_result.getException();
-			return e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX;
+			return e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX ||
+				e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_CONSTRAINT;
 		}
 		
 		return false;

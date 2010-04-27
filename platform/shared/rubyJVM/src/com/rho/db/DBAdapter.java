@@ -9,7 +9,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
 
-public class DBAdapter extends RubyBasic {
+public class DBAdapter extends RubyBasic 
+{
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("DbAdapter");
 
@@ -69,6 +70,7 @@ public class DBAdapter extends RubyBasic {
 	public IDBResult executeSQL(String strStatement)throws DBException{
 		return executeSQL(strStatement,null);
 	}
+	
 	public IDBResult executeSQL(String strStatement, Object arg1)throws DBException{
 		Object[] values = {arg1};
 		return executeSQL(strStatement,values);
@@ -105,14 +107,14 @@ public class DBAdapter extends RubyBasic {
 		return executeSQL(strStatement,values);
 	}
 	
-	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)throws DBException{
+	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4)throws DBException{
 		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
-		Object[] values = {arg1,arg2,arg3,arg4,arg5};
+		Object[] values = {arg1,arg2,arg3,arg4};
 		return m_dbStorage.executeSQL(strStatement,values, true);
 	}
 
-	public IDBResult executeSQLReportNonUnique(String strStatement, Vector vecValues)throws DBException{
+	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector vecValues)throws DBException{
 		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
 		Object[] values = new Object[vecValues.size()];
@@ -120,6 +122,14 @@ public class DBAdapter extends RubyBasic {
 			values[i] = vecValues.elementAt(i);
 		
 		return m_dbStorage.executeSQL(strStatement,values, true);
+	}
+	
+	public IDBResult executeSQLEx(String strStatement, Vector vecValues)throws DBException{
+		Object[] values = new Object[vecValues.size()];
+		for (int i = 0; i < vecValues.size(); i++ )
+			values[i] = vecValues.elementAt(i);
+		
+		return executeSQL(strStatement,values);
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
@@ -138,7 +148,7 @@ public class DBAdapter extends RubyBasic {
 	//}
 	
 	public static String makeBlobFolderName()throws Exception{
-		String fName = RhoClassFactory.createFile().getDirPath("apps/public/db-files");
+		String fName = RhoClassFactory.createFile().getDirPath("db/db-files");
 		
 		return fName;
 	}
@@ -854,6 +864,16 @@ public class DBAdapter extends RubyBasic {
 		}
     }
 
+    public static void initAttrManager()throws DBException
+    {
+    	Enumeration enumDBs = m_mapDBPartitions.elements();
+		while (enumDBs.hasMoreElements()) 
+		{
+			DBAdapter db = (DBAdapter)enumDBs.nextElement();
+			db.getAttrMgr().loadBlobAttrs(db);
+		}
+    }
+    
     public static DBAdapter getUserDB()
     {
         return (DBAdapter)getDBPartitions().get("user");
@@ -1003,53 +1023,116 @@ public class DBAdapter extends RubyBasic {
 			}
 		}*/
 
-		public void OnInsertIntoTable(String tableName, IDBResult rows2Insert)
+		public void onAfterInsert(String tableName, IDBResult rows2Insert)
 		{
 			if ( !tableName.equalsIgnoreCase("object_values") )
 				return;
 
 			for( ; !rows2Insert.isEnd(); rows2Insert.next() )
 			{
-				int nSrcID = rows2Insert.getIntByIdx(0);
-				String name = rows2Insert.getStringByIdx(1);
-				m_db.getAttrMgr().add(nSrcID, name);
+				Object[] data = rows2Insert.getCurData();
+				Integer nSrcID = new Integer(rows2Insert.getIntByIdx(0));
+				String attrib = (String)data[1];
+				m_db.getAttrMgr().add(nSrcID, attrib);
 			}
 			
 		}
 		
-		public void OnDeleteFromTable(String tableName, IDBResult rows2Delete) 
+		public void onBeforeUpdate(String tableName, IDBResult rows2Delete, int[] cols)
 		{
-			if ( !tableName.equalsIgnoreCase("object_values") )
+			processDelete(tableName, rows2Delete, cols);
+		}
+		
+		public void onBeforeDelete(String tableName, IDBResult rows2Delete) 
+		{
+			processDelete(tableName, rows2Delete, null);
+		}
+		
+		private boolean isChangedCol(int[] cols, int iCol)
+		{
+			if (cols==null)
+				return true;
+			
+			for ( int i = 0; i < cols.length; i++ )
+			{
+				if ( cols[i] == iCol )
+					return true;
+			}
+			return false;
+		}
+		
+		private void processDelete(String tableName, IDBResult rows2Delete, int[] cols)
+		{
+			if ( tableName.equalsIgnoreCase("changed_values") || tableName.equalsIgnoreCase("sources") ||
+			     tableName.equalsIgnoreCase("client_info"))
+				return;
+			
+			boolean bProcessTable = tableName.equalsIgnoreCase("object_values");
+			boolean bSchemaSrc = false;
+			Integer nSrcID = null;
+			if ( !bProcessTable )
+			{
+				nSrcID = m_db.getAttrMgr().getSrcIDHasBlobsByName(tableName);
+				bProcessTable = nSrcID != null; 
+				bSchemaSrc = bProcessTable;
+			}
+			
+			if ( !bProcessTable)
+				return;
+		
+			if ( !bSchemaSrc && !isChangedCol(cols, 3))//value
 				return;
 			
 			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
 			{
-				int nSrcID = rows2Delete.getIntByIdx(0);
-				String attrib = rows2Delete.getStringByIdx(1);
-				m_db.getAttrMgr().remove(nSrcID, attrib);
+				Object[] data = rows2Delete.getCurData();
 				
-				String attrib_type = rows2Delete.getStringByIdx(4);
-				if ( !attrib_type.equals("blob.file") )
-					continue;
+				if ( !bSchemaSrc )
+				{
+					if ( nSrcID == null )
+						nSrcID = new Integer(rows2Delete.getIntByIdx(0));
+					
+					String attrib = (String)data[1];
+					String value = (String)data[3];
 
-				String url = rows2Delete.getStringByIdx(3);
-				if ( url == null || url.length() == 0 )
-					continue;
-				
-				try{
-				    SimpleFile oFile = RhoClassFactory.createFile();
-				    
-			        String strFilePath = oFile.getDirPath("");
-			        strFilePath += url;
-				    
-				    oFile.delete(strFilePath);
-				}catch(Exception exc){
-					LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
+					if (cols == null) //delete
+						m_db.getAttrMgr().remove(nSrcID, attrib);
+					
+				    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
+				    	processBlobDelete(nSrcID, attrib, value);
+				}else
+				{
+					for ( int i = 0; i < rows2Delete.getColCount(); i++ )
+					{
+						if (!isChangedCol(cols, i))
+							continue;
+						
+						String attrib = rows2Delete.getColName(i);
+						if ( !(data[i] instanceof String) )
+							continue;
+						
+						String value = (String)data[i];
+					    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
+					    	processBlobDelete(nSrcID, attrib, value);
+					}
 				}
-				
+			}
+		}
+		
+		private void processBlobDelete(Integer nSrcID, String attrib, String value)
+		{
+			if ( value == null || value.length() == 0 )
+				return;
+			
+			try{
+		        String strFilePath = RhodesApp.getInstance().resolveDBFilesPath(value);
+		        
+			    SimpleFile oFile = RhoClassFactory.createFile();
+			    oFile.delete(strFilePath);
+			}catch(Exception exc){
+				LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + value, exc);				
 			}
 		}
 		
 	}
-	
 }

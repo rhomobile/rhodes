@@ -163,12 +163,29 @@ public class Session implements SessionInterface {
     //RHO
     private IDBCallback m_dbCallback;
     public interface IDBCallback {
-    	public void onDeleteRow(Table table, Row row);
-    	public void onInsertRow(Table table, Row row);
+    	public void onAfterInsert(Table table, Row row);
+    	public void onBeforeUpdate(Table table, Row row, int[] cols);
+    	public void onBeforeDelete(Table table, Row row);
     };
     
     public void setDBCallback(IDBCallback callback){
     	m_dbCallback = callback;
+    }
+    
+    public void onAfterInsert(Table table, Row row)
+    {
+    	if ( m_dbCallback != null )
+    		m_dbCallback.onAfterInsert(table, row);
+    }
+    public void onBeforeUpdate(Table table, Row row, int[] cols)
+    {
+    	if ( m_dbCallback != null )
+    		m_dbCallback.onBeforeUpdate(table, row, cols);
+    }
+    public void onBeforeDelete(Table table, Row row)
+    {
+    	if ( m_dbCallback != null )
+    		m_dbCallback.onBeforeDelete(table, row);
     }
     //RHO
     /**
@@ -419,8 +436,6 @@ public class Session implements SessionInterface {
      */
     public boolean addDeleteAction(Table table, Row row) throws HsqlException {
     	m_bNeedCommit = true;//!isNestedTransaction;
-    	if ( m_dbCallback != null )
-    		m_dbCallback.onDeleteRow(table, row);
     	
         if (!isAutoCommit || isNestedTransaction) {
             Transaction t = new Transaction(true, table, row, actionTimestamp);
@@ -457,18 +472,10 @@ public class Session implements SessionInterface {
 	            database.txManager.addTransaction(this, t);
         	}
 
-        	if ( m_dbCallback != null )
-        		m_dbCallback.onInsertRow(table, row);
-        	
             return true;
         } else {
             table.commitRowToStore(row);
-            
-        	if ( m_dbCallback != null )
-        		m_dbCallback.onInsertRow(table, row);
-            
         }
-
         
         return false;
     }

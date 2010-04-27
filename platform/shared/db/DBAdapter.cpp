@@ -550,7 +550,7 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
     return res;
 }
 
-DBResultPtr CDBAdapter::executeSQLReportNonUnique( const char* szSt, Vector<String>& arValues )
+DBResultPtr CDBAdapter::executeSQLReportNonUniqueEx( const char* szSt, Vector<String>& arValues )
 {
     DBResultPtr res = prepareStatement(szSt);
     if ( res->getStatement() == null )
@@ -563,7 +563,7 @@ DBResultPtr CDBAdapter::executeSQLReportNonUnique( const char* szSt, Vector<Stri
     return executeStatement(res);
 }
 
-DBResultPtr CDBAdapter::executeSQL( const char* szSt, Vector<String>& arValues)
+DBResultPtr CDBAdapter::executeSQLEx( const char* szSt, Vector<String>& arValues)
 {
     DBResultPtr res = prepareStatement(szSt);
     if ( res->getStatement() == null )
