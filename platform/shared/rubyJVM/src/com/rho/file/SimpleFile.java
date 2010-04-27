@@ -45,4 +45,6 @@ public interface SimpleFile extends IFile {
     public abstract InputStream getResourceAsStream(Class fromClass, String path);
     
     public abstract void renameOverwrite(String oldName, String newName);
+    
+    public abstract void copyJarFileToMemory(String strFileName, InputStream jarStream)throws IOException;
 }
