@@ -18,6 +18,15 @@ public class Properties {
     public Properties(String[] propertyStrings) {
         initProps = propertyStrings;
     }
+    
+    public void clear()
+    {
+    	keys.removeAllElements();
+    	vals.removeAllElements();
+    	
+    	initProps = null;
+    }
+    
     private void convertInitPropsToVectors() {
         int numberOfProps;
 
