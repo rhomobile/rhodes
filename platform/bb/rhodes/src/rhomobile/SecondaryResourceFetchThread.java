@@ -131,7 +131,7 @@ public class SecondaryResourceFetchThread extends Thread {
             if (resource != null) {
                 
             	try{
-	                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+	                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null, null);
 	                resource.setHttpConnection(connection);
 	                
 	                // signal to the browser field that resource is ready
