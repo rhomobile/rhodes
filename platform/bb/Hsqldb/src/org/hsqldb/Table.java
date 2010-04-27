@@ -1892,15 +1892,16 @@ public class Table extends BaseTable {
         if (triggerLists[Trigger.INSERT_BEFORE_ROW] != null) {
             fireAll(session, Trigger.INSERT_BEFORE_ROW, null, data);
         }
-
+        
         setIdentityColumn(session, data);
         checkRowDataInsert(session, data);
-        insertNoCheck(session, data);
+        Row row = insertNoCheck(session, data);
 
         if (triggerLists[Trigger.INSERT_AFTER_ROW] != null) {
             fireAll(session, Trigger.INSERT_AFTER_ROW, null, data);
             checkRowDataInsert(session, data);
         }
+        session.onAfterInsert(this, row);
     }
 
     /**
@@ -1932,7 +1933,7 @@ public class Table extends BaseTable {
      *  UNIQUE or PRIMARY constraints are enforced by attempting to
      *  add the row to the indexes.
      */
-    private void insertNoCheck(Session session,
+    private Row insertNoCheck(Session session,
                                Object[] data) throws HsqlException {
 
         Row row = newRow(data);
@@ -1947,6 +1948,8 @@ public class Table extends BaseTable {
         if (isLogged) {
             database.logger.writeInsertStatement(session, this, data);
         }
+        
+        return row;
     }
 
     /**
@@ -2795,6 +2798,8 @@ public class Table extends BaseTable {
         Object[] data = row.getData();
 
         fireAll(session, Trigger.DELETE_BEFORE_ROW, data, null);
+        session.onBeforeDelete(this, row);
+        
         deleteNoCheck(session, row, true);
 
         // fire the delete after statement trigger
@@ -3081,7 +3086,8 @@ public class Table extends BaseTable {
                         data);
                 checkRowDataUpdate(session, data, cols);
             }
-
+            session.onBeforeUpdate(this, row, cols);
+            
             insertNoCheck(session, data);
 
             if (triggerLists[Trigger.UPDATE_AFTER_ROW] != null) {

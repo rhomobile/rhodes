@@ -32,7 +32,6 @@ public:
     CAttrValue(const String& strAttrib, const String& strValue);
 };
 
-
 class CSyncEngine;
 class CSyncNotify;
 class CSyncSource
@@ -54,14 +53,13 @@ class CSyncSource
     int m_nProgressStep;
     boolean m_bSchemaSource;
     Hashtable<String,String> m_hashLinks;
+    VectorPtr<net::CMultipartItem*> m_arMultipartItems;
+    Vector<String>                  m_arBlobAttrs;
 
 public:
     int m_nErrCode;
     String m_strError;
     boolean m_bIsSearch;
-private:
-    VectorPtr<net::CMultipartItem*> m_arMultipartItems;
-    Vector<String>                  m_arBlobAttrs;
 
 public:
     CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );

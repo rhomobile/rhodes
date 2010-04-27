@@ -499,23 +499,38 @@ public class RhoConnection implements IHttpConnection {
 		return strTime;
 	}
 	
-	protected boolean httpServeFile(String strContType)throws IOException{
-		
+	protected boolean isDbFilesPath(String strPath)
+	{
+		return strPath.startsWith("/apps/app/db/db-files") || strPath.startsWith("/apps/db/db-files");
+	}
+	
+	protected boolean httpServeFile(String strContType)throws IOException
+	{
 		String strPath = uri.getPath();
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
 
 		LOG.TRACE("httpServeFile: " + strPath);
-		if ( strContType.equals("application/javascript")){
-			responseData = RhoRuby.loadFile(strPath);
-			if ( responseData == null ){
-				String str = "";
-				responseData = new ByteArrayInputStream(str.getBytes());
+		
+		if ( !isDbFilesPath(strPath) )
+		{
+			if ( strContType.equals("application/javascript")){
+				responseData = RhoRuby.loadFile(strPath);
+				if ( responseData == null ){
+					String str = "";
+					responseData = new ByteArrayInputStream(str.getBytes());
+				}
 			}
+			else	
+				responseData = RhoRuby.loadFile(strPath);
+		}else
+		{
+			if ( strPath.startsWith("/apps/app/db/db-files") )
+				strPath = strPath.substring(9);// remove /apps/app
+			else
+				strPath = strPath.substring(5);// remove /apps
 		}
-		else	
-			responseData = RhoRuby.loadFile(strPath);
-
+		
 		if (responseData == null){
 			  
 			SimpleFile file = null;
@@ -556,9 +571,9 @@ public class RhoConnection implements IHttpConnection {
 		return true;
 	}
 	
-	protected boolean httpGetFile(String strContType)throws IOException{
-		
-		if ( strContType.length() == 0 )
+	protected boolean httpGetFile(String strContType)throws IOException
+	{
+		if ( !isDbFilesPath(uri.getPath()) && strContType.length() == 0 )
 		{
 			String strTemp = FilePath.join(uri.getPath(), "/");
 	
