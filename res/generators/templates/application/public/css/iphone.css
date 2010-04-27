@@ -142,7 +142,8 @@ div#content .standardButton a {
 	color:#7287A4;
 }
 
-div#content .groupTitle{
+div#content h2.groupTitle{
+	font-size:16px;
 	margin: 8px;
 	color:#565E70;
 }
