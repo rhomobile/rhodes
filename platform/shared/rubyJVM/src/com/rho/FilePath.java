@@ -51,6 +51,22 @@ public class FilePath
         return res;
     }
     
+    static public boolean isEqualBaseNames(String path1, String path2)
+    {
+        FilePath oPath1 = new FilePath(path1);
+        FilePath oPath2 = new FilePath(path2);
+
+        return oPath1.getBaseName().equalsIgnoreCase(oPath2.getBaseName());
+    }
+
+    static public String getRelativePath( String path1, String path2)
+    {
+        if ( !path1.startsWith(path2) )
+            return path1;
+
+        return path1.substring(path2.length());
+    }
+    
     int findLastSlash()
     {
         int slash = m_szPath.lastIndexOf('/');
