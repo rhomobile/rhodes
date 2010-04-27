@@ -453,6 +453,8 @@
 	appStarted = false;
     splashDisplayed = false;
     
+    [NSThread setThreadPriority:1.0];
+    
     //Create local server and start it
     //serverHost = [[ServerHost alloc] init];
 	serverHost = [ServerHost sharedInstance];

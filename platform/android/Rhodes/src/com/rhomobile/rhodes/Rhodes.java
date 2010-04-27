@@ -418,7 +418,9 @@ public class Rhodes extends Activity {
 			return;
 		}
 		
-		uiThreadId = Thread.currentThread().getId();
+		Thread ct = Thread.currentThread();
+		ct.setPriority(Thread.MAX_PRIORITY);
+		uiThreadId = ct.getId();
 		RhodesInstance.setInstance(this);
 		
 		initRootPath();
