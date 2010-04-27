@@ -21,21 +21,25 @@ import com.rho.net.RhoConnection;
 public class Utilities {
 
 	public static HttpConnection makeConnection(String url,
-			HttpHeaders requestHeaders, byte[] postData)throws IOException {
+			HttpHeaders requestHeaders, byte[] postData, HttpConnection oldConn)throws IOException {
 
-		HttpConnection conn = null;
+		HttpConnection conn = oldConn;
 		OutputStream out = null;
 
 		try {
-			if ( URI.isLocalHost(url) )
+			
+			if ( conn == null )
 			{
-				URI uri = new URI(url);
-				conn = new NativeBBHttpConnection( new RhoConnection(uri) );
-			} else {
-				// conn = (HttpConnection) Connector.open(url);
-				IHttpConnection httpconn = RhoClassFactory.getNetworkAccess().connect(url,true);
-				conn = (HttpConnection)(httpconn!=null?httpconn.getNativeConnection() : null);
-				// conn = NetworkAccess.connect(url);
+				if ( URI.isLocalHost(url) )
+				{
+					URI uri = new URI(url);
+					conn = new NativeBBHttpConnection( new RhoConnection(uri) );
+				} else {
+					// conn = (HttpConnection) Connector.open(url);
+					IHttpConnection httpconn = RhoClassFactory.getNetworkAccess().connect(url,true);
+					conn = (HttpConnection)(httpconn!=null?httpconn.getNativeConnection() : null);
+					// conn = NetworkAccess.connect(url);
+				}
 			}
 				
 			if (requestHeaders != null) {
