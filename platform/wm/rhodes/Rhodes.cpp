@@ -34,6 +34,7 @@ HREGNOTIFY g_hNotify = NULL;
 #endif
 
 //BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
+extern "C" void rho_clientregister_create(const char* szDevicePin);
 
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
@@ -108,6 +109,7 @@ public :
 		rho_logconf_Init(m_strRootPath.c_str());
 		LOG(INFO) + "Rhodes started";
 
+        ::SetThreadPriority(GetCurrentThread(),10);
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
@@ -136,6 +138,8 @@ public :
 			0, 
 			NULL, 
 			&g_hNotify);
+#else
+//        rho_clientregister_create("win32_client");
 #endif
         return S_OK;
     }
