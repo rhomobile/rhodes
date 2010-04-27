@@ -159,17 +159,17 @@ div#content form label {
 	white-space: nowrap;
 }
 
-div#content h4 {
+div#content h2 {
 	 margin: 0;
 }
 
-div#content h4.groupTitle{
+div#content h2.groupTitle{
 	width:inherit;
 	margin: 0;
 	padding: 8px 0 8px 8px;
 	font-size:10px;
-	color:#ffffff;
-	background-color:#000000;
+	color:white;
+	background-color:black;
 }
 
 div#content form input[type="checkbox"] {
