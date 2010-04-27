@@ -86,7 +86,14 @@ private:
 static int __g_mutex_init_##name = 0;\
 pthread_mutex_t __g_mutex_##name = PTHREAD_MUTEX_INITIALIZER;
 
-#define RHO_LOCK(name) {if(!__g_mutex_init_##name){pthread_mutex_init(&__g_mutex_##name, NULL);__g_mutex_init_##name=1;} pthread_mutex_lock(&__g_mutex_##name);}
+#define RHO_LOCK(name) {if(!__g_mutex_init_##name){\
+  pthread_mutexattr_t attr;\
+  pthread_mutexattr_init(&attr);\
+  pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);\
+  pthread_mutex_init(&__g_mutex_##name, &attr);\
+  pthread_mutexattr_destroy(&attr);\
+  __g_mutex_init_##name=1;\
+} pthread_mutex_lock(&__g_mutex_##name);}
 #define RHO_UNLOCK(name) pthread_mutex_unlock(&__g_mutex_##name);
 
 #else
