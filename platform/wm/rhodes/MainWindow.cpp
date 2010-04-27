@@ -194,10 +194,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     }
 	
 	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
-
-    if ( RHOCONF().getBool("full_screen"))
-   	    SetFullScreen(true);
-
 #endif
 
 #if !defined(_WIN32_WCE)
@@ -207,7 +203,13 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     MoveWindow(&rcMainWindow);
 
-    RHO_ASSERT(SUCCEEDED(hr));
+#if defined(_WIN32_WCE)
+	//Set fullscreen after window resizing
+	if ( RHOCONF().getBool("full_screen"))
+   	    SetFullScreen(true);
+#endif
+
+	RHO_ASSERT(SUCCEEDED(hr));
 Error:
 
     return SUCCEEDED(hr) ? 0 : -1;
