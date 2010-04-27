@@ -440,7 +440,15 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		uiThreadId = Thread.currentThread().getId();
+		if (!checkSDCard()) {
+			finish();
+			return;
+		}
+		
+		Thread ct = Thread.currentThread();
+		ct.setPriority(Thread.MAX_PRIORITY);
+		uiThreadId = ct.getId();
+
 		RhodesInstance.setInstance(this);
 		
 		initRootPath();

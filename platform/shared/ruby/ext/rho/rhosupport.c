@@ -11,6 +11,7 @@
 #endif
 
 #include "common/RhodesApp.h"
+#include "common/RhoMutexLock.h"
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
@@ -266,11 +267,15 @@ VALUE isAlreadyLoaded(VALUE path)
     return Qfalse;
 }
 
+RHO_INIT_LOCK(require_lock);
+
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
     char* szName1 = 0;
+    VALUE retval = Qtrue;
 
+    RHO_LOCK(require_lock);
     rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
 
     szName1 = RSTRING_PTR(fname);
@@ -279,10 +284,10 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         strcmp("digest.so",szName1)==0 ||
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
         strcmp("digest/sha1",szName1)==0 )
-        return Qtrue;
+        goto RCompExit;
 
     if ( isAlreadyLoaded(fname) == Qtrue )
-        return Qtrue;
+        goto RCompExit;
 
     //RAWLOG_INFO1("find_file: %s", RSTRING_PTR(fname));
     path = find_file(fname);
@@ -307,11 +312,15 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
 
-        return Qtrue;
+        goto RCompExit;
     }
 
     RAWLOG_ERROR1("require_compiled: error: can not find %s", RSTRING_PTR(fname));
-    return Qnil;
+    retval = Qnil;
+
+RCompExit:
+    RHO_UNLOCK(require_lock);
+    return retval;
 }
 
 #ifndef CharNext		/* defined as CharNext[AW] on Windows. */
