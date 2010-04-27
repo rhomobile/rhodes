@@ -579,12 +579,12 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         if ( !getSync().isContinueSync() )
             return;
 
-        DBResult(resInsert, getDB().executeSQLReportNonUnique(strSqlInsert.c_str(), vecValues ) );
+        DBResult(resInsert, getDB().executeSQLReportNonUniqueEx(strSqlInsert.c_str(), vecValues ) );
         if ( resInsert.isNonUnique() )
         {
             String strSqlUpdate = "UPDATE ";
             strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
-            getDB().executeSQL(strSqlUpdate.c_str(), vecValues);
+            getDB().executeSQLEx(strSqlUpdate.c_str(), vecValues);
 
             // oo conflicts
             for( int i = 0; i < (int)vecAttrs.size(); i++ )
@@ -619,6 +619,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
             return;
 
         getDB().executeSQL(strSqlUpdate.c_str(), strObject);
+        //Remove item if all nulls
         String strSelect = String("SELECT * FROM ") + getName() + " WHERE object=?";
         DBResult(res, getDB().executeSQL( strSelect.c_str(), strObject ) );
         if ( !res.isEnd() )

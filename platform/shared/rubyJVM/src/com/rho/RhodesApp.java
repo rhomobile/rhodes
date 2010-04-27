@@ -12,7 +12,8 @@ public class RhodesApp
 	
 	static RhodesApp m_pInstance;
 	
-	private String m_strRhoRootPath;
+    private String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath;
+	
     Vector/*<unsigned long>*/ m_arCallbackObjects = new Vector();
     private SplashScreen m_oSplashScreen = new SplashScreen();
     
@@ -41,13 +42,32 @@ public class RhodesApp
     public static RhodesApp getInstance(){ return m_pInstance; }
     public SplashScreen getSplashScreen(){return m_oSplashScreen;}
 	
+    public String getBlobsDirPath(){return m_strBlobsDirPath; }
+    public String getDBDirPath(){return m_strDBDirPath; }
+    public String getRhoRootPath(){return m_strRhoRootPath;}
+    
     RhodesApp(String strRootPath)
     {
         m_strRhoRootPath = strRootPath;
         
         getSplashScreen().init();
+        
+        initAppUrls();        
     }
 
+    void initAppUrls() 
+    {
+        m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
+    	m_strDBDirPath = getRhoRootPath() + "db";
+    }
+    
+    public String resolveDBFilesPath(String strFilePath)
+    {
+        if ( strFilePath.startsWith(getRhoRootPath()) )
+            return strFilePath;
+
+        return FilePath.join(getRhoRootPath(), strFilePath);
+    }
     
     public String addCallbackObject(RubyValue valObject, String strName)
     {

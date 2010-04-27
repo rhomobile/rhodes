@@ -156,7 +156,7 @@ public:
         return executeStatement(res);
     }
 
-    DBResultPtr executeSQLReportNonUnique( const char* szSt, Vector<String>& arValues );
+    DBResultPtr executeSQLReportNonUniqueEx( const char* szSt, Vector<String>& arValues );
 
     template<typename T1, typename T2, typename T3, typename T4>
     DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4 )
@@ -203,7 +203,7 @@ public:
         return executeStatement(res);
     }
 
-    DBResultPtr executeSQL( const char* szSt, Vector<String>& arValues);
+    DBResultPtr executeSQLEx( const char* szSt, Vector<String>& arValues);
     DBResultPtr executeSQL( const char* szSt);
 
     void startTransaction();
