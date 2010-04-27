@@ -46,6 +46,17 @@ div#content {
 	margin:0;
 }
 
+div#content h4.groupTitle{
+	width:inherit;
+	margin: 0;
+	padding: 4px;
+	margin:0;
+	font-size:10px;
+	color:white;
+	background-color:black;
+}
+
+
 /* Lists */
 div#content ul {
     margin: 0;
@@ -107,17 +118,16 @@ div#content ul li div.itemValue {
 /* Settings */
 
 div#content ul#settings li {
-	height:50px;
+	height:60px;
 }
 div#content ul#settings li div {
-  line-height:50px;
+  line-height:60px;
 	margin:0;
 }
 
 div#content ul#settings li span.clientID {
     font-size:60%;    
     float:right;
-    width:45%;
 		display:block;
 		height:20px;
 }
@@ -126,11 +136,12 @@ div#content ul#settings li.alertMessage{
 }
 div#content ul#settings li.alertMessage span.message{
     color: red;
-    line-height: 30px;
+    line-height: 60px;
 }
 
-
-
+div#content ul#settings li div.itemLabel span.title {
+	padding-top:5px;
+}
 /* reset */
 div#content div#reset  {
     padding:10px;
@@ -160,7 +171,7 @@ div#content form ul li {
     height: 40px; 
 }
 div#content form ul li.textarea {
-		height:130px;
+		height:110px;
 }
 div#content form ul li label {
     float:left;
@@ -185,7 +196,8 @@ div#content form ul li input[type="radio"] {
    width: 15px;
 }
 
-div#content form select,div#content form textarea{
+div#content form select,
+div#content form textarea{
     float:right;
     margin:10px;
 }
