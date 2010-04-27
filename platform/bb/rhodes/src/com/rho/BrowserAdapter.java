@@ -30,6 +30,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
     private RhoMainScreen m_oMainScreen;
     
     private RhodesApplication m_app;
+	private HttpConnection m_connResource = null;
     
 	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app) 
 	{
@@ -54,6 +55,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_EMBEDDED_RICH_CONTENT, false);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
+        
 	}
 
 	public void setFullBrowser()
@@ -232,10 +234,37 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
     public HttpConnection getResource( RequestedResource resource, BrowserContent referrer) {
 
-        if (resource == null) {
+        if (resource == null)
             return null;
+        
+        String url = resource.getUrl();
+        if (url == null || url.endsWith("/favicon.ico"))
+        	return null;
+        
+        try
+        {
+        	boolean bLocalHost = URI.isLocalHost(url);
+        	if ( bLocalHost && m_connResource!= null)
+        	{
+        		com.rho.net.RhoConnection rhoConn = (com.rho.net.RhoConnection)((com.rho.net.bb.NativeBBHttpConnection)m_connResource).getNativeConnection(); 
+        		rhoConn.resetUrl(url);
+        		
+        		Utilities.makeConnection(url, resource.getRequestHeaders(), null, m_connResource);
+        		return m_connResource;
+        	}else
+        	{
+	            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null, null);
+	            if (bLocalHost)
+	            	m_connResource = connection;
+	            return connection;
+        	}
+        }catch(Exception exc)
+        {
+        	LOG.ERROR("getResource failed.", exc);
         }
-
+        
+        return null;
+/*
         // check if this is cache-only request
         if (resource.isCacheOnly()) {
             // no cache support
@@ -271,7 +300,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         	LOG.ERROR("getResource failed.", exc);
         }
         
-        return null;
+        return null;*/
     }
 
     public void invokeRunnable(Runnable runnable) {
