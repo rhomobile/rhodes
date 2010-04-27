@@ -162,7 +162,7 @@ div#content ul li {
 
 div#content ul li a {
     display: block;
-    color: #000;
+    color: black;
     font-size: 20px;
     height: 100%;
     width: 100%;
@@ -206,10 +206,11 @@ div#content ul li a span.disclosure_indicator {
 
 div#content ul li a span.detail_disclosure {
     background: url('/public/images/iphone/disclosure_detail.png') no-repeat center right;
-    height: 100%;
-    width: 35px;
+    height: 32px;
+    width: 34px;
     float: right;
     margin-right: 10px;
+		display: inline;
 }
 
 div#content ul li a img {
@@ -293,6 +294,7 @@ div#content form input[type="text"], div#content form input[type="password"] {
 
 div#content form input[type="checkbox"] {
     background: url('/public/images/iphone/switch.png') no-repeat;
+		background-position-y: -27px;
     float: right;
     display:block;
     margin:15px;
@@ -302,7 +304,7 @@ div#content form input[type="checkbox"] {
 }
 
 div#content form input[type="checkbox"]:checked {
-    background-position-y: -27px;
+    background-position-y: 0;
 }
 
 div#content form input[type="radio"] {
