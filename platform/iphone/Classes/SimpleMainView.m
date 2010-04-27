@@ -193,9 +193,10 @@
     
     root = [[UIView alloc] initWithFrame:frame];
     root.userInteractionEnabled = YES;
-    self.view = root;
     
-    webView = [[UIWebView alloc] initWithFrame:frame];
+    CGRect wFrame = frame;
+    wFrame.origin.y = 0;
+    webView = [[UIWebView alloc] initWithFrame:wFrame];
     webView.scalesPageToFit = YES;
     webView.userInteractionEnabled = YES;
     //webView.detectsPhoneNumbers = YES;
@@ -208,11 +209,11 @@
     [root addSubview:webView];
     
     if (items) {
-        UIToolbar *tb = [self newToolbar:items frame:frame];
+        UIToolbar *tb = [self newToolbar:items frame:wFrame];
         self.toolbar = tb;
         [root addSubview:toolbar];
         
-        CGRect newFrame = frame;
+        CGRect newFrame = wFrame;
         CGRect tbFrame = tb.frame;
         newFrame.size.height -= tbFrame.size.height;
         webView.frame = newFrame;
@@ -222,8 +223,7 @@
     
     navbar = nil;
     
-    [root bringSubviewToFront:webView];
-    [root bringSubviewToFront:toolbar];
+    self.view = root;
     
     return self;
 }
@@ -275,7 +275,7 @@
 // RhoMainView implementation
 
 - (UIView*)view {
-    return webView;
+    return root;
 }
 
 - (void)loadHTMLString:(NSString *)data {
@@ -356,9 +356,23 @@
     [nb release];
     
     [root addSubview:navbar];
+    
+    CGRect nFrame = navbar.frame;
+    CGRect wFrame = webView.frame;
+    wFrame.origin.y += nFrame.size.height;
+    wFrame.size.height -= nFrame.size.height;
+    webView.frame = wFrame;
 }
 
 - (void)removeNavBar {
+    if (navbar) {
+        CGRect nFrame = navbar.frame;
+        CGRect wFrame = webView.frame;
+        wFrame.origin.y -= nFrame.size.height;
+        wFrame.size.height += nFrame.size.height;
+        webView.frame = wFrame;
+    }
+    
     [navbar removeFromSuperview];
     self.navbar = nil;
 }
