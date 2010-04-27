@@ -87,6 +87,7 @@ div#toolbar .blueButton {
     border-right: #5e7088 1px solid;
     border-top: #34404e 1px solid;
     border-bottom: #34404e 1px solid;
+		padding: 0 2px 0 2px;
 }
 
 div#toolbar .deleteButton {
@@ -206,7 +207,7 @@ div#content ul li a span.disclosure_indicator {
 
 div#content ul li a span.detail_disclosure {
     background: url('/public/images/iphone/disclosure_detail.png') no-repeat center right;
-    height: 32px;
+    height: 27px;
     width: 34px;
     float: right;
     margin-right: 10px;
@@ -223,7 +224,7 @@ div#content ul li a img {
 /* Forms */
 
 div#content form {
-    padding: 5px 0 75px 0;
+   padding: 5px 0 75px 0;
 	border: none;
 	width:300px;
 	margin:0 auto;
@@ -245,7 +246,7 @@ div#content form ul {
 div#content form ul li {
     display: block;
     border-bottom: 1px solid #848284;
-    line-height: 42px;
+    line-height: 40px;
     min-height: 40px;
     width: 300px;
     overflow:hidden;
@@ -260,7 +261,7 @@ div#content form ul li label {
     float: left;
     display:block;
     color: black;
-    line-height: 54px;
+    line-height: 40px;
     padding: 0;
     margin: 0 20px 0 10px;
     width: 40%;
@@ -293,11 +294,11 @@ div#content form input[type="text"], div#content form input[type="password"] {
 }
 
 div#content form input[type="checkbox"] {
-    background: url('/public/images/iphone/switch.png') no-repeat;
+    background: url('/public/images/iphone/switch.png') no-repeat center;
 		background-position-y: -27px;
     float: right;
     display:block;
-    margin:15px;
+    margin:7px 10px 7px 10px;
     line-height:40px;
     height: 27px;
     width: 94px;
@@ -311,7 +312,9 @@ div#content form input[type="radio"] {
 	position: relative;
 	display:block;
 	width:290px;
-	height: 54px;
+	height: 40px;
+	line-height:40px;
+	margin:0;
 	-webkit-border-radius: 8px;
 }
 
@@ -324,7 +327,7 @@ div#content form input[type="radio"]:checked {
 div#content form select {
   	background: url('/public/images/iphone/select.png') no-repeat right;
     border: 0px;
-	width:100%;
+		width:100%;
 }
 
 div#content form textarea {
