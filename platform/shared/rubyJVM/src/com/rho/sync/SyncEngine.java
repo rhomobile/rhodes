@@ -459,6 +459,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    {
 	        NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
 	        loadAllSources();
+	        
+	        DBAdapter.initAttrManager();
 	    }
 	}
 	

@@ -501,6 +501,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	try
     	{
 	        RhoRuby.RhoRubyStart("");
+	        com.rho.db.DBAdapter.initAttrManager();
 	        
 	        SyncThread sync = null;
 	        
