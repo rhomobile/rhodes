@@ -59,6 +59,7 @@ public:
     static CDBAdapter& getDB(const char* szPartition);
 
     boolean isTableExist(String strTableName);
+    int prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt);
 
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
