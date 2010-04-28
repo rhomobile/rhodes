@@ -15,6 +15,7 @@ extern int rho_db_commitUITransaction(void* pDB);
 extern int rho_db_rollbackUITransaction(void* pDB);
 extern int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned long arExclude);
 extern void* rho_db_get_handle(void* pDB);
+extern int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_stmt **ppStmt);
 extern void rho_db_lock(void* pDB);
 extern void rho_db_unlock(void* pDB);
 extern int  rho_db_is_table_exist(void* pDB, const char* szTableName);
@@ -210,7 +211,9 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
         nRes = sqlite3_exec(db, sql,  NULL, NULL, &szErrMsg);
     else
     {
-	    if ( (nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL)) != SQLITE_OK)
+        //nRes = rho_db_prepare_statement(*ppDB, sql, -1, &statement);
+        nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL);
+        if ( nRes != SQLITE_OK)
         {
             szErrMsg = (char *)sqlite3_errmsg(db);
 
@@ -297,7 +300,8 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     }
 
     if ( statement )
-	    sqlite3_finalize(statement);
+        sqlite3_reset(statement);
+	    //sqlite3_finalize(statement);
 	
     if ( colNames )
         free(colNames);
