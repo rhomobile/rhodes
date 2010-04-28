@@ -411,6 +411,40 @@ void rho_ruby_releaseValue(VALUE val)
         rb_ary_delete_at(ary,i);
 }
 
+extern VALUE rb_cMutex;
+VALUE rho_ruby_create_mutex()
+{
+    VALUE val = rb_funcall(rb_cMutex, rb_intern("new"), 0 );
+    rho_ruby_holdValue(val);
+
+    return val;
+}
+
+void rho_ruby_destroy_mutex(VALUE val)
+{
+    rho_ruby_releaseValue(val);
+}
+
+void rho_ruby_lock_mutex(VALUE val)
+{
+    rb_mutex_lock(val);
+}
+
+void rho_ruby_unlock_mutex(VALUE val)
+{
+    rb_mutex_unlock(val);
+}
+
+VALUE rho_ruby_main_thread()
+{
+    return rb_thread_main();
+}
+
+VALUE rho_ruby_current_thread()
+{
+    return rb_thread_current();
+}
+
 VALUE callFramework(VALUE hashReq) {
     VALUE callres = rb_funcall(framework, framework_mid, 1, hashReq);
     

@@ -23,10 +23,6 @@ module Rhom
   class RhomDbAdapter
     
     @@database = nil
-    @@inside_transaction = false
-    @@ruby_mutex = Mutex.new
-    @@locked_thread = nil
-    @@lock_count = 0
     
     class << self
       
@@ -48,29 +44,12 @@ module Rhom
         return true
       end   
 
-      def lock_ruby_mutex
-        if Thread.current != @@locked_thread
-            @@ruby_mutex.lock
-            @@locked_thread = Thread.current
-            @@lock_count = 1
-        else
-            @@lock_count += 1
-        end    
+      def is_ui_waitfordb
+        @@database.is_ui_waitfordb
       end
-
-      def unlock_ruby_mutex
-        @@lock_count -= 1
-        if @@lock_count == 0
-            @@locked_thread = nil
-            @@ruby_mutex.unlock
-        end    
-      end
-    
-      def start_transaction
-          lock_ruby_mutex
       
+      def start_transaction
           begin
-            @@inside_transaction = true
             @@database.start_transaction
           rescue Exception => e
             puts "exception when start_transaction"
@@ -79,25 +58,18 @@ module Rhom
 
       def commit
           begin
-            @@inside_transaction = false
             @@database.commit
           rescue Exception => e
             puts "exception when commit transaction"
           end
-          
-          unlock_ruby_mutex
       end
 
       def rollback
           begin
-            @@inside_transaction = false
             @@database.rollback
           rescue Exception => e
             puts "exception when rollback transaction"
           end
-          
-          unlock_ruby_mutex
-          
       end
     
       # execute a sql statement
@@ -110,21 +82,11 @@ module Rhom
           # Make sure we lock the sync engine's mutex
           # before we perform a database transaction.
           # This prevents concurrency issues.
-            lock_ruby_mutex
-            if !@@inside_transaction
-                SyncEngine.lock_sync_mutex 
-            end
-
             begin
                 result = @@database.execute( sql, args )
             rescue Exception => e
                 #puts "exception when running query: #{e}"
                 #raise
-            ensure
-                if !@@inside_transaction
-                    SyncEngine.unlock_sync_mutex
-                end
-                unlock_ruby_mutex
             end
         end
         #puts "result is: #{result.inspect}"
@@ -262,15 +224,7 @@ module Rhom
 
       # deletes all rows from a given table by recreating db-file and save all other tables
       def destroy_table(table)
-          lock_ruby_mutex  
-          SyncEngine.lock_sync_mutex unless @@inside_transaction
-      
-          begin
-            @@database.destroy_table table
-          ensure
-            SyncEngine.unlock_sync_mutex unless @@inside_transaction
-            unlock_ruby_mutex
-          end
+          @@database.destroy_table table
       end
       
       # updates values (hash) in a given table which satisfy condition (hash)

@@ -86,6 +86,13 @@ const char* rho_ruby_getMessageText(const char* szName);
 const char* rho_ruby_getErrorText(int nError);
 const char* rho_ruby_internal_getErrorText(int nError);
 
+VALUE rho_ruby_create_mutex();
+void rho_ruby_destroy_mutex(VALUE val);
+VALUE rho_ruby_main_thread();
+VALUE rho_ruby_current_thread();
+void rho_ruby_lock_mutex(VALUE val);
+void rho_ruby_unlock_mutex(VALUE val);
+
 #if defined(__cplusplus)
 }
 #endif

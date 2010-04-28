@@ -614,7 +614,7 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
-    if ( nIndex < 0 || nIndex > m_arCallbackObjects.size() )
+    if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
         return rho_ruby_get_NIL();
 
     ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);

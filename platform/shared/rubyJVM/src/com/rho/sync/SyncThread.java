@@ -517,7 +517,7 @@ public class SyncThread extends RhoThread
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
 					try{
 					    DBAdapter db = getDBAdapter();
-					    db.setUnlockDB(true);
+					    db.setUIWaitDB(true);
 					    db.Lock();
 					}catch(Exception e)
 					{
@@ -575,7 +575,7 @@ public class SyncThread extends RhoThread
 					DBAdapter db = getDBAdapter();
 
 					try{
-						db.setUnlockDB(true);
+						db.setUIWaitDB(true);
 					    return getSyncEngine().isLoggedIn() ? 
 					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
 					}catch(Exception e)
@@ -584,7 +584,7 @@ public class SyncThread extends RhoThread
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}finally
 					{
-						db.setUnlockDB(false);
+						db.setUIWaitDB(false);
 					}
 				    
 				}
@@ -598,7 +598,7 @@ public class SyncThread extends RhoThread
 					try{
 						stopSync();
 						
-						db.setUnlockDB(true);
+						db.setUIWaitDB(true);
 					    getSyncEngine().logout();
 					}catch(Exception e)
 					{
@@ -606,7 +606,7 @@ public class SyncThread extends RhoThread
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}finally
 					{
-						db.setUnlockDB(false);
+						db.setUIWaitDB(false);
 					}
 					
 				    return RubyConstant.QNIL;

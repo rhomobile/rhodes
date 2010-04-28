@@ -677,9 +677,9 @@ class SyncSource
 	        m_nAttribCounter = 0;
 	        for( ; !oJsonObjList.isEnd() && getSync().isContinueSync(); oJsonObjList.next() )
 	        {
-		        if ( getDB().isUnlockDB() )//|| m_nAttribCounter >= 200 )
+		        if ( getDB().isUIWaitDB() )//|| m_nAttribCounter >= 200 )
 		        {
-		        	if ( getDB().isUnlockDB() )
+		        	if ( getDB().isUIWaitDB() )
 		        		LOG.INFO( "Commit transaction because of UI request." );
 		        	
 		            getDB().endTransaction();

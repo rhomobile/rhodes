@@ -295,21 +295,14 @@ void rho_sync_login(const char *name, const char *password, const char* callback
 
 int rho_sync_logged_in()
 {
-	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
-	db.setUnlockDB(true);
     int nRes = CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
-    db.setUnlockDB(false);
 	return nRes;
 }
 
 void rho_sync_logout()
 {
     rho_sync_stop();
-
-	rho::db::CDBAdapter& db = CSyncThread::getDBAdapter();
-	db.setUnlockDB(true);
     CSyncThread::getSyncEngine().logout();
-    db.setUnlockDB(false);
 }
 
 void rho_sync_set_notification(int source_id, const char *url, char* params)
@@ -349,11 +342,16 @@ int rho_sync_closeDB()
 int rho_db_startUITransaction()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.setUnlockDB(true);
     db.startTransaction();
 
     //TODO: get error code from DBException
     return 0;
+}
+
+int rho_db_is_ui_waitfordb()
+{
+    rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
+    return db.isUIWaitDB() ? 1 :0;
 }
 
 int rho_db_commitUITransaction()
@@ -389,7 +387,6 @@ unsigned long rho_sync_get_attrs(int nSrcID)
 void rho_sync_lock()
 {
     rho::db::CDBAdapter& db = rho::sync::CSyncThread::getDBAdapter();
-    db.setUnlockDB(true);
     db.Lock();
 }
 

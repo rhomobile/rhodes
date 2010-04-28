@@ -14,6 +14,7 @@ extern int rho_db_startUITransaction();
 extern int rho_db_commitUITransaction();
 extern int rho_db_rollbackUITransaction();
 extern int rho_db_destroy_table(const char* szTableName);
+extern int rho_db_is_ui_waitfordb();
 extern void* rho_db_get_handle();
 
 static VALUE db_allocate(VALUE klass)
@@ -134,6 +135,21 @@ static VALUE db_destroy_table(int argc, VALUE *argv, VALUE self)
     return INT2NUM(rc);
 }
 
+static VALUE db_is_ui_waitfordb(int argc, VALUE *argv, VALUE self)
+{
+	sqlite3 **ppDB = NULL;		
+    int rc = 0;
+
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+
+	Data_Get_Struct(self, sqlite3 *, ppDB);
+
+    rc = rho_db_is_ui_waitfordb();
+
+    return rc == 0 ? Qfalse : Qtrue;
+}
+
 static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 {
 	sqlite3 * db = NULL;
@@ -194,6 +210,8 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
         }
     }
 
+    rho_sync_lock();
+
 	while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
 		int nCount = sqlite3_data_count(statement);
 		int nCol = 0;
@@ -242,6 +260,8 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     if ( colNames )
         free(colNames);
 
+    rho_sync_unlock();
+
 	return arRes;
 }
 
@@ -258,6 +278,7 @@ void Init_sqlite3_api(void)
 	rb_define_method(mDatabase, "commit", db_commit, -1);	
     rb_define_method(mDatabase, "rollback", db_rollback, -1);	
     rb_define_method(mDatabase, "destroy_table", db_destroy_table, -1);	
+    rb_define_method(mDatabase, "is_ui_waitfordb", db_is_ui_waitfordb, -1);	
 }
 
 #if 0

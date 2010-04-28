@@ -5,6 +5,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho{
 namespace db{
@@ -498,9 +499,9 @@ void CDBAdapter::close()
 DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 {
     if ( m_dbHandle == null )
-        return new CDBResult(m_mxDB);
+        return new CDBResult();
 
-	DBResultPtr res = new CDBResult(0,m_bInsideTransaction ? m_mxTransDB : m_mxDB);
+	DBResultPtr res = new CDBResult(0,m_bInsideTransaction ? null : this);
     sqlite3_stmt* st = m_mapStatements.get(szSt);
     if ( st != null )
 	{
@@ -547,6 +548,20 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res)
     return res;
 }
 
+void CDBAdapter::Lock()
+{ 
+    m_bUIWaitDB = m_mxRuby.isMainRubyThread();
+    m_mxRuby.Lock();
+    m_mxDB.Lock(); 
+}
+
+void CDBAdapter::Unlock()
+{ 
+    m_bUIWaitDB = false;
+    m_mxDB.Unlock();
+    m_mxRuby.Unlock();
+}
+
 void CDBAdapter::startTransaction()
 {
     Lock();
@@ -588,6 +603,54 @@ void CDBAdapter::rollback()
 
 	m_bInsideTransaction=false;
     Unlock();
+}
+
+}
+}
+
+namespace rho{
+namespace common{
+
+CRubyMutex::CRubyMutex() : m_nLockCount(0), m_valThread(0), m_valMutex(null)
+{
+}
+
+CRubyMutex::~CRubyMutex()
+{
+    rho_ruby_destroy_mutex(m_valMutex);
+}
+
+boolean CRubyMutex::isMainRubyThread()
+{
+    return rho_ruby_main_thread() == rho_ruby_current_thread();
+}
+
+void CRubyMutex::Lock()
+{
+    unsigned long curThread = rho_ruby_current_thread();
+    if ( curThread == null )
+        return;
+
+    if ( m_valThread != curThread )
+    {
+        if ( m_valMutex == null )
+            m_valMutex = rho_ruby_create_mutex();
+
+        rho_ruby_lock_mutex(m_valMutex);
+        m_valThread = curThread;
+        m_nLockCount = 1;
+    }else
+        m_nLockCount += 1;
+}
+
+void CRubyMutex::Unlock()
+{
+    m_nLockCount--;
+    if ( m_nLockCount == 0 )
+    {
+        m_valThread = null;
+        rho_ruby_unlock_mutex(m_valMutex);
+    }
 }
 
 }

@@ -19,7 +19,7 @@ public class DBAdapter extends RubyBasic {
 	
     Mutex m_mxDB = new Mutex();
     boolean m_bInsideTransaction=false;
-    boolean m_bUnlockDB = false;
+    boolean m_bUIWaitDB = false;
 	
 	DBAdapter(RubyClass c) {
 		super(c);
@@ -110,10 +110,10 @@ public class DBAdapter extends RubyBasic {
 		return executeSQL(strStatement,values);
 	}
 
-	public boolean isUnlockDB(){ return m_bUnlockDB; }
-	public void setUnlockDB(boolean b){ m_bUnlockDB = b; }
+	public boolean isUIWaitDB(){ return m_bUIWaitDB; }
+	public void setUIWaitDB(boolean b){ m_bUIWaitDB = b; }
 	public void Lock(){ m_mxDB.Lock(); }
-	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
+	public void Unlock(){ setUIWaitDB(false); m_mxDB.Unlock(); }
     public boolean isInsideTransaction(){ return m_bInsideTransaction; }
 	
 	public static IDBResult createResult(){
@@ -682,17 +682,27 @@ public class DBAdapter extends RubyBasic {
 	    		}
     		}
     		
-    		IDBResult rows = executeSQL(v.toStr(), values);
-    		RubyString[] colNames = getColNames(rows);
+		    setUIWaitDB(true);
+		    Lock();
     		
-    		for( ; !rows.isEnd(); rows.next() )
-    		{
-    			RubyHash row = ObjectFactory.createHash();
-    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
-    			
-    			res.add( row );
-    		}
+    		try{
+    			IDBResult rows = executeSQL(v.toStr(), values);
+    		
+	    		RubyString[] colNames = getColNames(rows);
+	    		
+	    		for( ; !rows.isEnd(); rows.next() )
+	    		{
+	    			RubyHash row = ObjectFactory.createHash();
+	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+	    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+	    			
+	    			res.add( row );
+	    		}
+			}finally
+			{
+				Unlock();
+			}
+    		
 		}catch(Exception e)
 		{
     		LOG.ERROR("execute failed.", e);
@@ -722,7 +732,7 @@ public class DBAdapter extends RubyBasic {
     
     private RubyValue rb_start_transaction() {
     	try{
-    		setUnlockDB(true);
+    		setUIWaitDB(true);
     		startTransaction();
     	}catch( Exception e ){
     		LOG.ERROR("start_transaction failed.", e);
@@ -807,6 +817,19 @@ public class DBAdapter extends RubyBasic {
 		klass.defineMethod( "destroy_table", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_destroy_table(arg);}
+		});
+		klass.defineMethod( "is_ui_waitfordb", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+				try{
+					boolean bRes = ((DBAdapter)receiver).isUIWaitDB();
+					
+					return ObjectFactory.createBoolean(bRes);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("is_ui_waitfordb failed.", e);
+		    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		
 	}

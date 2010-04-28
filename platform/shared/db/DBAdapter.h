@@ -5,6 +5,22 @@
 #include "logging/RhoLog.h"
 
 namespace rho{
+namespace common{
+class CRubyMutex
+{
+    int m_nLockCount;
+    unsigned long m_valThread, m_valMutex;
+
+public:
+    CRubyMutex();
+    ~CRubyMutex();
+
+    boolean isMainRubyThread();
+    void Lock();
+    void Unlock();
+};
+}
+
 namespace db{
 
 class CDBAdapter
@@ -12,9 +28,9 @@ class CDBAdapter
     sqlite3* m_dbHandle;
     String   m_strDbPath, m_strDbVer, m_strDbVerPath;
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
+    common::CRubyMutex m_mxRuby;
     common::CMutex m_mxDB;
-    common::CMutex m_mxTransDB;
-    boolean m_bUnlockDB;
+    boolean m_bUIWaitDB;
     boolean m_bInsideTransaction;
     CDBAttrManager m_attrMgr;
 
@@ -34,7 +50,7 @@ class CDBAdapter
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUnlockDB(false), m_bInsideTransaction(false){}
+    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUIWaitDB(false), m_bInsideTransaction(false){}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
@@ -42,10 +58,9 @@ public:
     sqlite3* getDbHandle(){ return m_dbHandle; }
     CDBAttrManager& getAttrMgr(){ return m_attrMgr; }
 
-    boolean isUnlockDB()const{ return m_bUnlockDB; }
-    void setUnlockDB(boolean b){ m_bUnlockDB = b; }
-    void Lock(){ m_mxDB.Lock(); }
-    void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
+    boolean isUIWaitDB()const{ return m_bUIWaitDB; }
+    void Lock();
+    void Unlock();
     boolean isInsideTransaction(){ return m_bInsideTransaction; }
     const String& getDBPath(){ return m_strDbPath; }
 

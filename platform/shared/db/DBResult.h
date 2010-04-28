@@ -8,16 +8,18 @@
 namespace rho{
 namespace db{
 
+class CDBAdapter;
+
 class CDBResult
 {
-    common::CMutexLock m_lockDB;
+    //common::CMutexLock m_lockDB;
+    CDBAdapter* m_pDB;
     sqlite3_stmt* m_dbStatement;
     boolean m_bReportNonUnique;
     int     m_nErrorCode;
 public:
-    CDBResult(sqlite3_stmt* st,common::CMutex& mx) : m_lockDB(mx), m_dbStatement(st){m_bReportNonUnique=false;m_nErrorCode=0;}
-    CDBResult(common::CMutex& mx) : m_lockDB(mx), m_dbStatement(null){m_bReportNonUnique=false;m_nErrorCode=0;}
-
+    CDBResult(sqlite3_stmt* st,CDBAdapter* pDB);
+    CDBResult();
     ~CDBResult(void);
 
     void setStatement(sqlite3_stmt* st);
@@ -52,7 +54,7 @@ public:
         return sqlite3_column_int64(m_dbStatement, nCol);
     }
 //private:
-    CDBResult() : m_lockDB(*new common::CMutex() ){} //TEST ONLY
+    //CDBResult() : m_lockDB(*new common::CMutex() ){} //TEST ONLY
 
 };
 

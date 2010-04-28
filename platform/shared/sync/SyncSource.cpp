@@ -569,7 +569,7 @@ void CSyncSource::processServerData_Ver1(CJSONArrayIterator& oJsonArr)
         CJSONArrayIterator oJsonObjList(oJsonSource, "ol");
         for( ; !oJsonObjList.isEnd() && getSync().isContinueSync(); oJsonObjList.next() )
         {
-            if ( getDB().isUnlockDB() )
+            if ( getDB().isUIWaitDB() )
             {
 		        LOG(INFO) + "Commit transaction because of UI request.";
                 getDB().endTransaction();
