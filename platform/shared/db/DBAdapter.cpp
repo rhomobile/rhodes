@@ -524,6 +524,22 @@ void CDBAdapter::close()
     m_strDbPath = String();
 }
 
+int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt)
+{
+    int rc = SQLITE_OK;
+    sqlite3_stmt* st = m_mapStatements.get(szSql);
+    if ( st != null )
+        *ppStmt	 = st;
+    else
+    {
+        rc = sqlite3_prepare_v2(m_dbHandle, szSql, nByte, ppStmt, NULL);
+        if ( rc == SQLITE_OK )
+            m_mapStatements.put(szSql, st);
+    }
+
+    return rc;
+}
+
 DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 {
     if ( m_dbHandle == null )
@@ -763,6 +779,12 @@ void* rho_db_get_handle(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     return db.getDbHandle();
+}
+
+int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_stmt **ppStmt)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    return db.prepareSqlStatement(szSql, nByte, ppStmt);
 }
 
 void rho_db_lock(void* pDB)
