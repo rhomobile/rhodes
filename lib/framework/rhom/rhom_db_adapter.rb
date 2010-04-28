@@ -101,6 +101,13 @@ module Rhom
       # optionally, disable the factory processing 
       # which returns the result array directly
       def execute_sql(sql, *args)
+        _execute_sql(sql, false, args)
+      end
+      def execute_batch_sql(sql, *args)
+        _execute_sql(sql, true, args)
+      end
+
+      def _execute_sql(sql, is_batch, args)      
         result = []
         if sql
           #puts "RhomDbAdapter: Executing query - #{sql}"
@@ -116,7 +123,7 @@ module Rhom
           end
           
           begin
-            result = @database.execute( sql, args )
+            result = @database.execute( sql, is_batch, args )
           rescue Exception => e
             puts "exception when running query: #{e}"
             raise

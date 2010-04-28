@@ -194,100 +194,110 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     VALUE* colNames = NULL;
 	int nRes = 0;
     char * szErrMsg = 0;
-	
-	if ((argc < 1) || (argc > 2))
-		rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc);
+    int is_batch = 0;
+
+	if ((argc < 2) || (argc > 3))
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc);
 	
 	Data_Get_Struct(self, void *, ppDB);
 	db = (sqlite3 *)rho_db_get_handle(*ppDB);
 	sql = RSTRING_PTR(argv[0]);
-	
+    is_batch = argv[1] == Qtrue ? 1 : 0;
+
     RAWTRACE1("db_execute: %s", sql);
-	if ( (nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL)) != SQLITE_OK)
+
+    if ( is_batch )
+        nRes = sqlite3_exec(db, sql,  NULL, NULL, &szErrMsg);
+    else
     {
-        szErrMsg = (char *)sqlite3_errmsg(db);
-
-        rb_raise(rb_eArgError, "could not prepare statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
-    }
-
-    if ( argc > 1 )
-    {
-        int i = 0;
-        VALUE args = argv[1];
-        if ( RARRAY_LEN(args) > 0 && TYPE(RARRAY_PTR(args)[0]) == T_ARRAY )
-            args = RARRAY_PTR(args)[0];
-
-        for( ; i < RARRAY_LEN(args); i++ )
+	    if ( (nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL)) != SQLITE_OK)
         {
-            VALUE arg = RARRAY_PTR(args)[i];
-            if (NIL_P(arg))
-            {
-                sqlite3_bind_null(statement, i+1);
-                continue;
-            }
+            szErrMsg = (char *)sqlite3_errmsg(db);
 
-            switch( TYPE(arg) )
-            {
-            case T_STRING:
-                sqlite3_bind_text(statement, i+1, RSTRING_PTR(arg), -1, SQLITE_TRANSIENT);
-                break;
-            case T_FIXNUM:
-            case T_FLOAT:
-            case T_BIGNUM:
-                sqlite3_bind_int64(statement, i+1, NUM2LL(arg));
-                break;
-            default:
-                //TODO: convert value to string
-                rb_raise(rb_eArgError, "could not execute statement: not supported arg type.");
-                break;
-            }
+            rb_raise(rb_eArgError, "could not prepare statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
         }
-    }
 
-	while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
-		int nCount = sqlite3_data_count(statement);
-		int nCol = 0;
-		VALUE hashRec = rb_hash_new();
+        if ( argc > 2 )
+        {
+            int i = 0;
+            VALUE args = argv[2];
+            if ( RARRAY_LEN(args) > 0 && TYPE(RARRAY_PTR(args)[0]) == T_ARRAY )
+                args = RARRAY_PTR(args)[0];
 
-        //if ( !colNames )
-        //    colNames = getColNames(statement, nCount);
-
-		for(;nCol<nCount;nCol++){
-			int nColType = sqlite3_column_type(statement,nCol);
-			const char* szColName = sqlite3_column_name(statement,nCol);
-			VALUE colName = rb_str_new2(szColName);
-			VALUE colValue = Qnil;
-			
-			switch(nColType){
-				case SQLITE_NULL:
-					break;
-                case SQLITE_INTEGER:
+            for( ; i < RARRAY_LEN(args); i++ )
+            {
+                VALUE arg = RARRAY_PTR(args)[i];
+                if (NIL_P(arg))
                 {
-                    sqlite_int64 nVal = sqlite3_column_int64(statement, nCol);
-                    colValue = LL2NUM(nVal);
+                    sqlite3_bind_null(statement, i+1);
+                    continue;
+                }
+
+                switch( TYPE(arg) )
+                {
+                case T_STRING:
+                    sqlite3_bind_text(statement, i+1, RSTRING_PTR(arg), -1, SQLITE_TRANSIENT);
+                    break;
+                case T_FIXNUM:
+                case T_FLOAT:
+                case T_BIGNUM:
+                    sqlite3_bind_int64(statement, i+1, NUM2LL(arg));
+                    break;
+                default:
+                    //TODO: convert value to string
+                    rb_raise(rb_eArgError, "could not execute statement: not supported arg type.");
                     break;
                 }
-				default:{
-					char *text = (char *)sqlite3_column_text(statement, nCol);
-					colValue = rb_str_new2(text);
-					break;
-				}
-			}
-			
-			rb_hash_aset(hashRec, colName/*colNames[nCol]*/, colValue);
-		}
-		
-		rb_ary_push(arRes, hashRec);
-	}
-	
+            }
+        }
+
+	    while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
+		    int nCount = sqlite3_data_count(statement);
+		    int nCol = 0;
+		    VALUE hashRec = rb_hash_new();
+
+            //if ( !colNames )
+            //    colNames = getColNames(statement, nCount);
+
+		    for(;nCol<nCount;nCol++){
+			    int nColType = sqlite3_column_type(statement,nCol);
+			    const char* szColName = sqlite3_column_name(statement,nCol);
+			    VALUE colName = rb_str_new2(szColName);
+			    VALUE colValue = Qnil;
+    			
+			    switch(nColType){
+				    case SQLITE_NULL:
+					    break;
+                    case SQLITE_INTEGER:
+                    {
+                        sqlite_int64 nVal = sqlite3_column_int64(statement, nCol);
+                        colValue = LL2NUM(nVal);
+                        break;
+                    }
+				    default:{
+					    char *text = (char *)sqlite3_column_text(statement, nCol);
+					    colValue = rb_str_new2(text);
+					    break;
+				    }
+			    }
+    			
+			    rb_hash_aset(hashRec, colName/*colNames[nCol]*/, colValue);
+		    }
+    		
+		    rb_ary_push(arRes, hashRec);
+	    }
+    }
+
     if ( nRes != SQLITE_OK && nRes != SQLITE_ROW && nRes != SQLITE_DONE )
     {
-        szErrMsg = (char*)sqlite3_errmsg(db);
+        if ( !szErrMsg )
+            szErrMsg = (char*)sqlite3_errmsg(db);
 
         rb_raise(rb_eArgError, "could not execute statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
     }
 
-	sqlite3_finalize(statement);
+    if ( statement )
+	    sqlite3_finalize(statement);
 	
     if ( colNames )
         free(colNames);
