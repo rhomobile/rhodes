@@ -7,11 +7,20 @@ require 'rho/rhoerror'
 require 'rhom/rhom_source'
 
 module Rho
+  def self.get_app
+    RHO.get_instance().get_app('app')
+  end
+  
   class RHO
     APPLICATIONS = {}
     APPNAME = 'app'
     
     @@rho_framework = nil
+    
+    def self.get_instance
+        @@rho_framework
+    end
+    
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
       RHO.process_rhoconfig
@@ -229,7 +238,27 @@ module Rho
                 strCols += ",object varchar(255) PRIMARY KEY"
                 strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
             end
+            if source['schema']['indexes']
+                strCreate += ";\r\n" if strCreate && strCreate.length() > 0
             
+                if source['schema']['indexes'].is_a?( String )
+                    strCreate += source['schema']['indexes']
+                else
+                    nInd = 0
+                    source['schema']['indexes'].each do |index_cols|
+                        strCols = ""
+                        index_cols.each do |col|
+                            strCols += ',' if strCols.length() > 0
+                            strCols += col
+                        end
+
+                        strIndex = "CREATE INDEX rhoIndex_#{nInd} on #{source['name']} (#{strCols});\r\n"
+                        strCreate += strIndex
+                        nInd += 1
+                    end
+                end
+            end
+                        
             db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
             
             db.execute_sql(strCreate)
