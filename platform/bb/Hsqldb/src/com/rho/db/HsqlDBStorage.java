@@ -68,6 +68,18 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 		}
 	}
 
+	public void executeBatchSQL(String strSqlScript)throws DBException
+	{
+		if ( m_dbSess == null )
+			throw new RuntimeException("executeSQL: m_dbSess == null");
+		
+		Result res = m_dbSess.sqlExecuteDirectNoPreChecks(strSqlScript);
+		if ( res.getException() != null )
+			throw new DBException(res.getException());
+		
+		m_dbSess.commitSchema();
+	}
+	
 /*    static class HsqlDeleteTrigger implements org.hsqldb.Trigger {
 
         public void fire(int i, String name, String table, Object[] row1,

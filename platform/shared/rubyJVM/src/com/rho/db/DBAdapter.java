@@ -61,6 +61,12 @@ public class DBAdapter extends RubyBasic
 	{ 
 		return m_attrMgr; 
 	}
+
+	public void executeBatchSQL(String strStatement)throws DBException{
+		LOG.TRACE("executeBatchSQL: " + strStatement);
+		
+		m_dbStorage.executeBatchSQL(strStatement);
+	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
@@ -772,39 +778,49 @@ public class DBAdapter extends RubyBasic
         return res;
     }*/
 
-    public RubyValue rb_execute(RubyValue v, RubyValue arg) 
+    public RubyValue rb_execute(RubyValue v, RubyValue batch, RubyValue arg) 
     {
     	RubyArray res = new RubyArray(); 
     	try{
-    		Object[] values = null;
-    		if ( arg != null )
+    		String strSql = v.toStr();
+    		if ( batch == RubyConstant.QTRUE )
     		{
-	    		RubyArray args1 = arg.toAry();
-	    		RubyArray args = args1;
-	    		if ( args.size() > 0 && args.get(0) instanceof RubyArray )
-	    			args = (RubyArray)args.get(0);
-	    		
-	    		values = new Object[args.size()];
-	    		for ( int i = 0; i < args.size(); i++ )
-	    		{
-	    			RubyValue val = args.get(i);
-	    			if ( val instanceof RubyFixnum )
-	    				values[i] = new Long( ((RubyFixnum)val).toLong() );
-	    			else
-	    				values[i] = val.toString();
-	    		}
-    		}
-    		
-    		IDBResult rows = executeSQL(v.toStr(), values);
-    		RubyString[] colNames = getOrigColNames(rows);
-    		
-    		for( ; !rows.isEnd(); rows.next() )
-    		{
-    			RubyHash row = ObjectFactory.createHash();
-    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+    			LOG.INFO("batch execute:" + strSql);
     			
-    			res.add( row );
+    			executeBatchSQL( strSql );
+    		}
+    		else
+    		{
+	    		Object[] values = null;
+	    		if ( arg != null )
+	    		{
+		    		RubyArray args1 = arg.toAry();
+		    		RubyArray args = args1;
+		    		if ( args.size() > 0 && args.get(0) instanceof RubyArray )
+		    			args = (RubyArray)args.get(0);
+		    		
+		    		values = new Object[args.size()];
+		    		for ( int i = 0; i < args.size(); i++ )
+		    		{
+		    			RubyValue val = args.get(i);
+		    			if ( val instanceof RubyFixnum )
+		    				values[i] = new Long( ((RubyFixnum)val).toLong() );
+		    			else
+		    				values[i] = val.toString();
+		    		}
+	    		}
+	    		
+	    		IDBResult rows = executeSQL( strSql, values);
+	    		RubyString[] colNames = getOrigColNames(rows);
+	    		
+	    		for( ; !rows.isEnd(); rows.next() )
+	    		{
+	    			RubyHash row = ObjectFactory.createHash();
+	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+	    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+	    			
+	    			res.add( row );
+	    		}
     		}
 		}catch(Exception e)
 		{
@@ -932,8 +948,8 @@ public class DBAdapter extends RubyBasic
 		});*/
 		klass.defineMethod( "execute", new RubyVarArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_execute(args.get(0), 
-						(args.size() > 1 ? args.get(1):null));}
+				return ((DBAdapter)receiver).rb_execute(args.get(0), args.get(1), 
+						(args.size() > 2 ? args.get(2):null));}
 		});
 		
 		klass.defineMethod( "start_transaction", new RubyNoArgMethod(){ 

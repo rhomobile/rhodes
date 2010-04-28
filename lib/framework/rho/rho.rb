@@ -214,7 +214,33 @@ module Rho
         
         ::Rho::RHO.init_schema_sources
     end
-    
+
+    def self.processIndexes(index_param, src_name, is_unique)
+
+        return "" unless index_param
+        
+        strUnique = 'UNIQUE' if is_unique
+        strRes = ""
+        if index_param.is_a?( String )
+            strRes = index_param
+        else
+            nInd = 0
+            index_param.each do |index_cols|
+                strCols = ""
+                index_cols.each do |col|
+                    strCols += ',' if strCols.length() > 0
+                    strCols += "\"#{col}\""
+                end
+
+                strIndex = "CREATE #{strUnique} INDEX \"rhoIndex_#{nInd}\" on #{src_name} (#{strCols});\r\n"
+                strRes += strIndex
+                nInd += 1
+            end
+        end
+        
+        strRes
+    end
+        
     def self.init_schema_sources
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_schema_sources'
@@ -232,36 +258,21 @@ module Rho
                 strCols = ""
                 arCols.each do |col|
                     strCols += ',' if strCols.length() > 0
-                    strCols += "#{col} varchar default NULL"
+                    strCols += "\"#{col}\" varchar default NULL"
                 end
 
                 strCols += ",object varchar(255) PRIMARY KEY"
                 strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
             end
-            if source['schema']['indexes']
-                strCreate += ";\r\n" if strCreate && strCreate.length() > 0
-            
-                if source['schema']['indexes'].is_a?( String )
-                    strCreate += source['schema']['indexes']
-                else
-                    nInd = 0
-                    source['schema']['indexes'].each do |index_cols|
-                        strCols = ""
-                        index_cols.each do |col|
-                            strCols += ',' if strCols.length() > 0
-                            strCols += col
-                        end
 
-                        strIndex = "CREATE INDEX rhoIndex_#{nInd} on #{source['name']} (#{strCols});\r\n"
-                        strCreate += strIndex
-                        nInd += 1
-                    end
-                end
-            end
-                        
+            strCreate += ";\r\n" if strCreate && strCreate.length() > 0
+            strCreate += processIndexes(source['schema']['indexes'], source['name'], false)
+            strCreate += ";\r\n" if strCreate && strCreate.length() > 0
+            strCreate += processIndexes(source['schema']['unique_indexes'], source['name'], true)
+            
             db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
             
-            db.execute_sql(strCreate)
+            db.execute_batch_sql(strCreate)
           end
           
         end
