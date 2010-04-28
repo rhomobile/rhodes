@@ -47,9 +47,9 @@ class SyncSource
 
 	static class CAttrValue
 	{
-		String m_strAttrib;
-	    String m_strValue;
-	    String m_strBlobSuffix;
+		String m_strAttrib = "";
+	    String m_strValue = "";
+	    String m_strBlobSuffix = "";
 
 	    CAttrValue(String strAttrib, String strValue)
 	    {

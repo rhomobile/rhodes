@@ -104,7 +104,7 @@ public class RhoConnection implements IHttpConnection {
 	public void close() throws IOException 
 	{
 		clean();
-		LOG.INFO("Close browser connection.");
+		LOG.TRACE("Close browser connection.");
 	}
     
 	public Object getNativeConnection() {
@@ -547,7 +547,7 @@ public class RhoConnection implements IHttpConnection {
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
 
-		LOG.INFO("httpServeFile: " + strPath);
+		LOG.TRACE("httpServeFile: " + strPath);
 		
 		if ( !isDbFilesPath(strPath) )
 		{
