@@ -9,6 +9,7 @@ platform/android/Rhodes/jni/src/logger.cpp
 platform/android/Rhodes/jni/src/mapview.cpp
 platform/android/Rhodes/jni/src/menu.cpp
 platform/android/Rhodes/jni/src/nativebar.cpp
+platform/android/Rhodes/jni/src/navbar.cpp
 platform/android/Rhodes/jni/src/phonebook.cpp
 platform/android/Rhodes/jni/src/rhoconf.cpp
 platform/android/Rhodes/jni/src/rhodes.cpp
