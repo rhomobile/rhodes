@@ -456,6 +456,14 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
     {
         CJSONEntry oCmds = oJsonArr.getCurItem();
         PROF_START("Data");
+        //TODO: use isUIWaitDB inside processSyncCommand
+        //    if ( getDB().isUIWaitDB() )
+        //    {
+		//        LOG(INFO) + "Commit transaction because of UI request.";
+        //        getDB().endTransaction();
+        //        getDB().startTransaction();
+        //    }
+
         getDB().startTransaction();
         if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
         {
