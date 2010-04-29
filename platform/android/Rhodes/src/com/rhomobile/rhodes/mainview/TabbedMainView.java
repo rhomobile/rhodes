@@ -212,4 +212,8 @@ public class TabbedMainView implements MainView {
 		return host.getCurrentTab();
 	}
 
+	public void loadData(String data, int index) {
+		getWebView(index).loadData(data, "text/html", "utf-8");
+	}
+
 }
