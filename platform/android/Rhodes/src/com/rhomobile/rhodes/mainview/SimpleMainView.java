@@ -294,5 +294,9 @@ public class SimpleMainView implements MainView {
 	public int activeTab() {
 		return 0;
 	}
+	
+	public void loadData(String data, int index) {
+		webView.loadData(data, "text/html", "utf-8");
+	}
 
 }
