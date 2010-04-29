@@ -311,10 +311,7 @@ void rho_sync_login(const char *name, const char *password, const char* callback
 int rho_sync_logged_in()
 {
 	CDBAdapter& db = CDBAdapter::getUserDB();
-	db.setUnlockDB(true);
-    int nRes = CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
-    db.setUnlockDB(false);
-	return nRes;
+    return CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
 }
 
 void rho_sync_logout()
@@ -322,9 +319,7 @@ void rho_sync_logout()
     rho_sync_stop();
 
 	CDBAdapter& db = CDBAdapter::getUserDB();
-	db.setUnlockDB(true);
     CSyncThread::getSyncEngine().logout();
-    db.setUnlockDB(false);
 }
 
 void rho_sync_set_notification(int source_id, const char *url, char* params)

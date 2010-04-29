@@ -10,11 +10,12 @@ static VALUE mDatabase;
 
 extern int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB);
 //extern int rho_sync_closeDB();
-extern int rho_db_startUITransaction(void* pDB);
-extern int rho_db_commitUITransaction(void* pDB);
-extern int rho_db_rollbackUITransaction(void* pDB);
+extern int rho_db_startTransaction(void* pDB);
+extern int rho_db_commitTransaction(void* pDB);
+extern int rho_db_rollbackTransaction(void* pDB);
 extern int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned long arExclude);
 extern void* rho_db_get_handle(void* pDB);
+extern int rho_db_is_ui_waitfordb(void* pDB);
 extern int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_stmt **ppStmt);
 extern void rho_db_lock(void* pDB);
 extern void rho_db_unlock(void* pDB);
@@ -74,7 +75,7 @@ static VALUE db_start_transaction(int argc, VALUE *argv, VALUE self){
 	
 	Data_Get_Struct(self, void *, ppDB);
 	
-	rc = rho_db_startUITransaction(*ppDB);
+	rc = rho_db_startTransaction(*ppDB);
 	
 	return INT2NUM(rc);
 }
@@ -89,7 +90,7 @@ static VALUE db_commit(int argc, VALUE *argv, VALUE self){
 	
 	Data_Get_Struct(self, void *, ppDB);
 	
-	rc = rho_db_commitUITransaction(*ppDB);
+	rc = rho_db_commitTransaction(*ppDB);
 	
 	return INT2NUM(rc);
 }
@@ -104,11 +105,11 @@ static VALUE db_rollback(int argc, VALUE *argv, VALUE self){
 	
 	Data_Get_Struct(self, void *, ppDB);
 	
-	rc = rho_db_rollbackUITransaction(*ppDB);
+	rc = rho_db_rollbackTransaction(*ppDB);
 	
 	return INT2NUM(rc);
 }
-
+/*
 static VALUE db_lock(int argc, VALUE *argv, VALUE self){
 	//sqlite3 * db = NULL;
 	void **ppDB = NULL;		
@@ -138,6 +139,7 @@ static VALUE db_unlock(int argc, VALUE *argv, VALUE self){
 	
 	return INT2NUM(rc);
 }
+*/
 
 static VALUE* getColNames(sqlite3_stmt* statement, int nCount)
 {
@@ -185,6 +187,21 @@ static VALUE db_is_table_exist(int argc, VALUE *argv, VALUE self)
     return rc ? Qtrue : Qfalse;
 }
 
+static VALUE db_is_ui_waitfordb(int argc, VALUE *argv, VALUE self)
+{
+	void **ppDB = NULL;		
+    int rc = 0;
+
+	if (argc > 0)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
+
+	Data_Get_Struct(self, void *, ppDB);
+
+    rc = rho_db_is_ui_waitfordb(*ppDB);
+
+    return rc == 0 ? Qfalse : Qtrue;
+}
+
 static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 {
 	sqlite3 * db = NULL;
@@ -208,7 +225,11 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     RAWTRACE1("db_execute: %s", sql);
 
     if ( is_batch )
+    {
+        rho_db_lock(*ppDB);
         nRes = sqlite3_exec(db, sql,  NULL, NULL, &szErrMsg);
+        rho_db_unlock(*ppDB);
+    }
     else
     {
         //nRes = rho_db_prepare_statement(*ppDB, sql, -1, &statement);
@@ -254,6 +275,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
             }
         }
 
+        rho_db_lock(*ppDB);
 	    while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
 		    int nCount = sqlite3_data_count(statement);
 		    int nCol = 0;
@@ -289,7 +311,14 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     		
 		    rb_ary_push(arRes, hashRec);
 	    }
+
+        rho_db_unlock(*ppDB);
     }
+
+    if ( statement )
+        sqlite3_finalize(statement);
+    if ( colNames )
+        free(colNames);
 
     if ( nRes != SQLITE_OK && nRes != SQLITE_ROW && nRes != SQLITE_DONE )
     {
@@ -298,13 +327,6 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 
         rb_raise(rb_eArgError, "could not execute statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
     }
-
-    if ( statement )
-        sqlite3_reset(statement);
-	    //sqlite3_finalize(statement);
-	
-    if ( colNames )
-        free(colNames);
 
 	return arRes;
 }
@@ -321,9 +343,10 @@ void Init_sqlite3_api(void)
 	rb_define_method(mDatabase, "start_transaction", db_start_transaction, -1);	
 	rb_define_method(mDatabase, "commit", db_commit, -1);	
     rb_define_method(mDatabase, "rollback", db_rollback, -1);	
-    rb_define_method(mDatabase, "lock_db", db_lock, -1);	
-    rb_define_method(mDatabase, "unlock_db", db_unlock, -1);	
+//    rb_define_method(mDatabase, "lock_db", db_lock, -1);	
+//    rb_define_method(mDatabase, "unlock_db", db_unlock, -1);	
     rb_define_method(mDatabase, "destroy_tables", db_destroy_tables, -1);	
-    rb_define_method(mDatabase, "table_exist?", db_is_table_exist, -1);	
+    rb_define_method(mDatabase, "table_exist?", db_is_table_exist, -1);
+    rb_define_method(mDatabase, "is_ui_waitfordb", db_is_ui_waitfordb, -1);
 }
 

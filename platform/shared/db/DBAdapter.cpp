@@ -543,9 +543,9 @@ int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt *
 DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 {
     if ( m_dbHandle == null )
-        return new CDBResult(m_mxDB);
+        return new CDBResult();
 
-	DBResultPtr res = new CDBResult(0,m_bInsideTransaction ? m_mxTransDB : m_mxDB);
+	DBResultPtr res = new CDBResult(0,this);
     sqlite3_stmt* st = m_mapStatements.get(szSt);
     if ( st != null )
 	{
@@ -617,13 +617,32 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res)
     return res;
 }
 
+void CDBAdapter::Lock()
+{ 
+    if ( m_mxRuby.isMainRubyThread() )
+        m_bUIWaitDB = true;
+
+    m_mxRuby.Lock();
+    m_mxDB.Lock(); 
+
+    if ( m_mxRuby.isMainRubyThread() )
+        m_bUIWaitDB = false;
+}
+
+void CDBAdapter::Unlock()
+{ 
+    m_mxDB.Unlock();
+    m_mxRuby.Unlock();
+}
+
 void CDBAdapter::startTransaction()
 {
     Lock();
-	m_bInsideTransaction=true;
+	m_nTransactionCounter++;
+
     char *zErr = 0;
     int rc = 0;
-	if ( m_dbHandle )
+	if ( m_dbHandle && m_nTransactionCounter == 1)
     {
 		rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
         checkDbError(rc);
@@ -635,14 +654,14 @@ void CDBAdapter::endTransaction()
     char *zErr = 0;
     int rc = 0;
 
-	if (m_dbHandle)
+	m_nTransactionCounter--;
+	if (m_dbHandle && m_nTransactionCounter == 0)
     {
         getAttrMgr().save(*this);
 		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
         checkDbError(rc);
     }
 
-	m_bInsideTransaction=false;
     Unlock();
 }
 
@@ -650,13 +669,14 @@ void CDBAdapter::rollback()
 {
     char *zErr = 0;
     int rc = 0;
-	if (m_dbHandle)
+
+	m_nTransactionCounter--;
+	if (m_dbHandle && m_nTransactionCounter == 0)
     {
 		rc = sqlite3_exec(m_dbHandle, "ROLLBACK;",0,0,&zErr);
         checkDbError(rc);
     }
 
-	m_bInsideTransaction=false;
     Unlock();
 }
 
@@ -728,17 +748,16 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
     return 0;
 }
 
-int rho_db_startUITransaction(void* pDB)
+int rho_db_startTransaction(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
-    db.setUnlockDB(true);
     db.startTransaction();
 
     //TODO: get error code from DBException
     return 0;
 }
 
-int rho_db_commitUITransaction(void* pDB)
+int rho_db_commitTransaction(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     db.endTransaction();
@@ -746,12 +765,18 @@ int rho_db_commitUITransaction(void* pDB)
     return 0;
 }
 
-int rho_db_rollbackUITransaction(void* pDB)
+int rho_db_rollbackTransaction(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     db.rollback();
     //TODO: get error code from DBException
     return 0;
+}
+
+int rho_db_is_ui_waitfordb(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    return db.isUIWaitDB() ? 1 :0;
 }
 
 extern "C" void
@@ -790,7 +815,6 @@ int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_st
 void rho_db_lock(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
-    db.setUnlockDB(true);
     db.Lock();
 }
 
@@ -811,4 +835,52 @@ void rho_db_init_attr_manager()
     rho::db::CDBAdapter::initAttrManager();
 }
 
+}
+
+namespace rho{
+namespace common{
+
+CRubyMutex::CRubyMutex() : m_nLockCount(0), m_valThread(0), m_valMutex(null)
+{
+}
+
+CRubyMutex::~CRubyMutex()
+{
+    rho_ruby_destroy_mutex(m_valMutex);
+}
+
+boolean CRubyMutex::isMainRubyThread()
+{
+    return rho_ruby_main_thread() == rho_ruby_current_thread();
+}
+
+void CRubyMutex::Lock()
+{
+    unsigned long curThread = rho_ruby_current_thread();
+    if ( curThread == null )
+        return;
+
+    if ( m_valThread != curThread )
+    {
+        if ( m_valMutex == null )
+            m_valMutex = rho_ruby_create_mutex();
+
+        rho_ruby_lock_mutex(m_valMutex);
+        m_valThread = curThread;
+        m_nLockCount = 1;
+    }else
+        m_nLockCount += 1;
+}
+
+void CRubyMutex::Unlock()
+{
+    m_nLockCount--;
+    if ( m_nLockCount == 0 )
+    {
+        m_valThread = null;
+        rho_ruby_unlock_mutex(m_valMutex);
+    }
+}
+
+}
 }
