@@ -175,6 +175,11 @@ public class RhoRuby {
 		return receiver!= null && receiver != RubyConstant.QNIL;
 	}
 	
+	public static boolean isMainRubyThread()
+	{
+		return RubyThread.isMainThread();
+	}
+	
 	public static void RhoRubyStop(){
 		
 		receiver = null;
