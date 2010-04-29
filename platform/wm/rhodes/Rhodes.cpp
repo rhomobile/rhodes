@@ -115,6 +115,8 @@ public :
 		rho_logconf_Init(m_strRootPath.c_str());
 		LOG(INFO) + "Rhodes started";
 
+        ::SetThreadPriority(GetCurrentThread(),10);
+
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
