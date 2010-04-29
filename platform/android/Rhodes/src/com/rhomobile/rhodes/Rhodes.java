@@ -42,6 +42,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -59,6 +60,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -77,6 +79,8 @@ public class Rhodes extends Activity {
 	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	
+	private static int MAX_PROGRESS = 10000;
 	
 	private static final String INSTALLING_PAGE = "apps/app/installing.html";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
@@ -294,11 +298,32 @@ public class Rhodes extends Activity {
 			}
 			
 			@Override
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
+				super.onPageStarted(view, url, favicon);
+			}
+			
+			@Override
 			public void onPageFinished(WebView view, String url) {
 				if (url.startsWith("http://"))
 					hideSplashScreen();
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				super.onPageFinished(view, url);
 			}
 
+		});
+		
+		w.setWebChromeClient(new WebChromeClient() {
+			@Override
+			public void onProgressChanged(WebView view, int newProgress) {
+				newProgress *= 100;
+				if (newProgress < 0)
+					newProgress = 0;
+				if (newProgress > MAX_PROGRESS)
+					newProgress = MAX_PROGRESS;
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
+				super.onProgressChanged(view, newProgress);
+			}
 		});
 
 		return w;
