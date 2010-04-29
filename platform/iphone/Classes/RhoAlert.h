@@ -12,6 +12,7 @@
 @interface RhoAlert : NSObject {}
 
 + (void)showPopup:(rho_param*)p;
++ (void)hidePopup;
 + (void)vibrate:(int)duration;
 + (void)playFile:(NSString*)file mediaType:(NSString*)type;
 
