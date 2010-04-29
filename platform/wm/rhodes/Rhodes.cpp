@@ -284,6 +284,9 @@ extern "C" void Init_fcntl(void)
 {
 }
 
+extern "C" void Init_NavBar(void)
+{
+}
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};
