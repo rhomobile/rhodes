@@ -1,5 +1,6 @@
 #include "SyncSource.h"
 #include "SyncEngine.h"
+#include "SyncThread.h"
 
 #include "common/RhoTime.h"
 #include "common/StringConverter.h"
@@ -456,6 +457,14 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
     {
         CJSONEntry oCmds = oJsonArr.getCurItem();
         PROF_START("Data");
+        //TODO: use isUIWaitDB inside processSyncCommand
+        //    if ( getDB().isUIWaitDB() )
+        //    {
+		//        LOG(INFO) + "Commit transaction because of UI request.";
+        //        getDB().endTransaction();
+        //        getDB().startTransaction();
+        //    }
+
         getDB().startTransaction();
         if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
         {
@@ -508,6 +517,15 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
         int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
         if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
             getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+
+        if ( getDB().isUIWaitDB() )
+        {
+	        LOG(INFO) + "Commit transaction because of UI request.";
+            getDB().endTransaction();
+            CSyncThread::getInstance()->sleep(1000);
+            getDB().startTransaction();
+        }
+
     }
 }
 
@@ -700,10 +718,11 @@ boolean CSyncSource::processBlob( const String& strCmd, const String& strObject,
 
     if ( bDownload )
     {
-        if ( !downloadBlob(oAttrValue) )
-	        return false;
+        getDB().endTransaction();
+        boolean bRes = downloadBlob(oAttrValue);
+        getDB().startTransaction();
 
-        return true;
+        return bRes;
     }
 
     oAttrValue.m_strValue = strDbValue;
@@ -816,9 +835,6 @@ CAttrValue::CAttrValue(const String& strAttrib, const String& strValue)
 
 boolean CSyncSource::downloadBlob(CAttrValue& value)//throws Exception
 {
-    if ( value.m_strBlobSuffix.length() == 0  )
-		return true;
-	
 	String fName = makeFileName( value );
 	String url = value.m_strValue;
 	const char* nQuest = strchr(url.c_str(),'?');

@@ -45,14 +45,81 @@
 }
 
 - (void)onAction:(id)sender {
-    rho_rhodesapp_load_url([url UTF8String]);
+    const char *s = [url UTF8String];
+    rho_rhodesapp_load_url(s);
 }
 
 @end
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar;
+@synthesize root, webView, toolbar, navbar;
+
+- (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
+    UIImage *img = nil;
+    if ([icon length] > 0) {
+        NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
+        img = [UIImage imageWithContentsOfFile:imagePath];
+    }
+    
+    UIBarButtonItem *btn = nil;
+    
+    if ([url compare:@"back"] == NSOrderedSame) {
+        btn = [[UIBarButtonItem alloc]
+               initWithImage:(img ? img : [UIImage imageNamed:@"back_btn.png"])
+               style:UIBarButtonItemStylePlain target:self
+               action:@selector(goBack:)];
+    }
+    else if ([url compare:@"forward"] == NSOrderedSame) {
+        btn = [[UIBarButtonItem alloc]
+               initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
+               style:UIBarButtonItemStylePlain target:self
+               action:@selector(goForward:)];
+    }
+    else if ([url compare:@"home"] == NSOrderedSame) {
+        btn = [[UIBarButtonItem alloc]
+               initWithImage:(img ? img : [UIImage imageNamed:@"home_btn.png"])
+               style:UIBarButtonItemStylePlain target:self
+               action:@selector(goHome:)];
+    }
+    else if ([url compare:@"options"] == NSOrderedSame) {
+        btn = [[UIBarButtonItem alloc]
+               initWithImage:(img ? img : [UIImage imageNamed:@"gears.png"])
+               style:UIBarButtonItemStylePlain target:self
+               action:@selector(goOptions:)];
+    }
+    else if ([url compare:@"refresh"] == NSOrderedSame) {
+        if (img)
+            btn = [[UIBarButtonItem alloc]
+                   initWithImage:img
+                   style:UIBarButtonItemStylePlain target:self
+                   action:@selector(onRefresh:)];
+        else
+            btn = [[UIBarButtonItem alloc]
+                   initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+                   target:self action:@selector(onRefresh:)];
+    }
+    else if ([url compare:@"separator"] == NSOrderedSame) {
+        btn = [[UIBarButtonItem alloc]
+               initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+               target:nil action:nil];
+    }
+    else {
+        id action = [[RhoToolbarButtonItemAction alloc] init:url];
+        if (img) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithImage:img style:UIBarButtonItemStylePlain
+                   target:action action:@selector(onAction:)];
+        }
+        else if ([label length] > 0) {
+            btn = [[UIBarButtonItem alloc]
+                   initWithTitle:label style:UIBarButtonItemStylePlain
+                   target:action action:@selector(onAction:)];
+        }
+    }
+    
+    return btn;
+}
 
 - (UIToolbar*)newToolbar:(NSArray*)items frame:(CGRect)mainFrame {
     if ([items count] % 4 != 0) {
@@ -91,66 +158,7 @@
             return nil;
         }
         
-        UIImage *img = nil;
-        if ([icon length] > 0) {
-            NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
-            img = [UIImage imageWithContentsOfFile:imagePath];
-        }
-        
-        UIBarButtonItem *btn = nil;
-        if ([url compare:@"back"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"back_btn.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goBack:)];
-        }
-        else if ([url compare:@"forward"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goForward:)];
-        }
-        else if ([url compare:@"home"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"home_btn.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goHome:)];
-        }
-        else if ([url compare:@"options"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:(img ? img : [UIImage imageNamed:@"gears.png"])
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(goOptions:)];
-        }
-        else if ([url compare:@"refresh"] == NSOrderedSame) {
-            if (img)
-                btn = [[UIBarButtonItem alloc]
-                       initWithImage:img
-                       style:UIBarButtonItemStylePlain target:self
-                       action:@selector(onRefresh:)];
-            else
-                btn = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
-                       target:self action:@selector(onRefresh:)];
-        }
-        else if ([url compare:@"separator"] == NSOrderedSame) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                   target:nil action:nil];
-        }
-        else {
-            id action = [[RhoToolbarButtonItemAction alloc] init:url];
-            if (img) {
-                btn = [[UIBarButtonItem alloc]
-                       initWithImage:img style:UIBarButtonItemStylePlain
-                       target:action action:@selector(onAction:)];
-            }
-            else if ([label length] > 0) {
-                btn = [[UIBarButtonItem alloc]
-                       initWithTitle:label style:UIBarButtonItemStylePlain
-                       target:action action:@selector(onAction:)];
-            }
-        }
+        UIBarButtonItem *btn = [self newButton:url label:label icon:icon];
         
         if (btn) {
             [btns addObject:fixed];
@@ -183,7 +191,12 @@
 - (id)initWithParentView:(UIView *)v frame:(CGRect)frame toolbar:(NSArray*)items {
     parent = v;
     
-    webView = [[UIWebView alloc] initWithFrame:frame];
+    root = [[UIView alloc] initWithFrame:frame];
+    root.userInteractionEnabled = YES;
+    
+    CGRect wFrame = frame;
+    wFrame.origin.y = 0;
+    webView = [[UIWebView alloc] initWithFrame:wFrame];
     webView.scalesPageToFit = YES;
     webView.userInteractionEnabled = YES;
     //webView.detectsPhoneNumbers = YES;
@@ -191,24 +204,26 @@
     webView.autoresizesSubviews = YES;
     webView.clipsToBounds = NO;
     webView.delegate = [Rhodes sharedInstance];
-    webView.frame = frame;
-    self.view = webView;
+    //webView.frame = frame;
+    
+    [root addSubview:webView];
     
     if (items) {
-        UIToolbar *tb = [self newToolbar:items frame:frame];
+        UIToolbar *tb = [self newToolbar:items frame:wFrame];
         self.toolbar = tb;
-        [webView addSubview:toolbar];
+        [root addSubview:toolbar];
+        
+        CGRect newFrame = wFrame;
+        CGRect tbFrame = tb.frame;
+        newFrame.size.height -= tbFrame.size.height;
+        webView.frame = newFrame;
+        
         [tb release];
     }
     
-    /*
-    if (toolbar) {
-        CGFloat tbHeight = [toolbar frame].size.height;
-        CGRect frame = webView.frame;
-        frame.size.height -= tbHeight;
-        webView.frame = frame;
-    }
-    */
+    navbar = nil;
+    
+    self.view = root;
     
     return self;
 }
@@ -222,13 +237,14 @@
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    self.toolbar = nil;
-    self.webView = nil;
+    [root removeFromSuperview];
 }
 
 - (void)dealloc {
+    [navbar release];
     [toolbar release];
     [webView release];
+    [root release];
     [super dealloc];
 }
 
@@ -259,7 +275,7 @@
 // RhoMainView implementation
 
 - (UIView*)view {
-    return webView;
+    return root;
 }
 
 - (void)loadHTMLString:(NSString *)data {
@@ -309,6 +325,56 @@
 
 - (int)activeTab {
     return 0;
+}
+
+- (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
+    [navbar removeFromSuperview];
+    self.navbar = nil;
+    
+    UINavigationBar *nb = [[UINavigationBar alloc] initWithFrame:CGRectZero];
+    [nb sizeToFit];
+    
+    UINavigationItem *ni = [[UINavigationItem alloc] initWithTitle:title];
+    
+    NSArray *btns[] = {left, right};
+    for (int i = 0, lim = sizeof(btns)/sizeof(btns[0]); i < lim; ++i) {
+        NSArray *btn = btns[i];
+        NSString *action = [btn objectAtIndex:0];
+        NSString *label = [btn objectAtIndex:1];
+        NSString *icon = [btn objectAtIndex:2];
+        UIBarButtonItem *button = [self newButton:action label:label icon:icon];
+        
+        if (btn == left)
+            [ni setLeftBarButtonItem:button];
+        else
+            [ni setRightBarButtonItem:button];
+
+    }
+    
+    [nb pushNavigationItem:ni animated:NO];
+    self.navbar = nb;
+    [nb release];
+    
+    [root addSubview:navbar];
+    
+    CGRect nFrame = navbar.frame;
+    CGRect wFrame = webView.frame;
+    wFrame.origin.y += nFrame.size.height;
+    wFrame.size.height -= nFrame.size.height;
+    webView.frame = wFrame;
+}
+
+- (void)removeNavBar {
+    if (navbar) {
+        CGRect nFrame = navbar.frame;
+        CGRect wFrame = webView.frame;
+        wFrame.origin.y -= nFrame.size.height;
+        wFrame.size.height += nFrame.size.height;
+        webView.frame = wFrame;
+    }
+    
+    [navbar removeFromSuperview];
+    self.navbar = nil;
 }
 
 @end

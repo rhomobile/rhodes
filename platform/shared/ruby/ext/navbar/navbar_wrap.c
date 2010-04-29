@@ -1533,10 +1533,10 @@ static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    Init_Alert
-#define SWIG_name    "Alert"
+#define SWIG_init    Init_NavBar
+#define SWIG_name    "NavBar"
 
-static VALUE mAlert;
+static VALUE mNavBar;
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
@@ -1547,71 +1547,13 @@ static VALUE mAlert;
 
 
 #include "ext/rho/rhoruby.h"
-extern void alert_show_popup(rho_param *p);
-#define show_popup alert_show_popup 
-extern void alert_hide_popup();
-#define hide_popup alert_hide_popup
-extern void alert_vibrate(void*);
-#define vibrate alert_vibrate
-extern void alert_play_file(char* file_name, ...);
-#define play_file alert_play_file 
-
-
-SWIGINTERN swig_type_info*
-SWIG_pchar_descriptor(void)
-{
-  static int init = 0;
-  static swig_type_info* info = 0;
-  if (!init) {
-    info = SWIG_TypeQuery("_p_char");
-    init = 1;
-  }
-  return info;
-}
-
-
-SWIGINTERN int
-SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
-{
-  if (TYPE(obj) == T_STRING) {
-    
-
-
-    char *cstr = STR2CSTR(obj);
-    
-    size_t size = RSTRING_LEN(obj) + 1;
-    if (cptr)  {
-      if (alloc) {
-	if (*alloc == SWIG_NEWOBJ) {
-	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
-	} else {
-	  *cptr = cstr;
-	  *alloc = SWIG_OLDOBJ;
-	}
-      }
-    }
-    if (psize) *psize = size;
-    return SWIG_OK;
-  } else {
-    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-    if (pchar_descriptor) {
-      void* vptr = 0;
-      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
-	if (cptr) *cptr = (char *)vptr;
-	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
-	if (alloc) *alloc = SWIG_OLDOBJ;
-	return SWIG_OK;
-      }
-    }
-  }  
-  return SWIG_TypeError;
-}
-
-
-
+extern void create_navbar(rho_param *p);
+#define create create_navbar
+extern void remove_navbar();
+#define remove remove_navbar
 
 SWIGINTERN VALUE
-_wrap_show_popup(int argc, VALUE *argv, VALUE self) {
+_wrap_create(int argc, VALUE *argv, VALUE self) {
   rho_param *arg1 = (rho_param *) 0 ;
   
   if ((argc < 1) || (argc > 1)) {
@@ -1620,7 +1562,7 @@ _wrap_show_popup(int argc, VALUE *argv, VALUE self) {
   {
     arg1 = valueToRhoParam(argv[0]);
   }
-  show_popup(arg1);
+  create(arg1);
   {
     rho_param_free(arg1);
   }
@@ -1634,52 +1576,13 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_hide_popup(int argc, VALUE *argv, VALUE self) {
+_wrap_remove(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  hide_popup();
+  remove();
   return Qnil;
 fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_vibrate(int argc, VALUE *argv, VALUE self) {
-  void *arg1 = 0 ;
-  
-  if (argc < 0) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  vibrate(arg1);
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_play_file(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  void *arg2 = 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  
-  if (argc < 1) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "play_file" "', argument " "1"" of type '" "char *""'");
-  }
-  arg1 = (char *)(buf1);
-  play_file(arg1,arg2);
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -1938,11 +1841,11 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C"
 #endif
-SWIGEXPORT void Init_Alert(void) {
+SWIGEXPORT void Init_NavBar(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mAlert = rb_define_module("Alert");
+  mNavBar = rb_define_module("NavBar");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -1950,9 +1853,7 @@ SWIGEXPORT void Init_Alert(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mAlert, "show_popup", _wrap_show_popup, -1);
-  rb_define_module_function(mAlert, "hide_popup", _wrap_hide_popup, -1);
-  rb_define_module_function(mAlert, "vibrate", _wrap_vibrate, -1);
-  rb_define_module_function(mAlert, "play_file", _wrap_play_file, -1);
+  rb_define_module_function(mNavBar, "create", _wrap_create, -1);
+  rb_define_module_function(mNavBar, "remove", _wrap_remove, -1);
 }
 

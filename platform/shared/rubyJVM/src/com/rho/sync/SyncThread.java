@@ -550,16 +550,12 @@ public class SyncThread extends RhoThread
 					DBAdapter db = DBAdapter.getUserDB();
 
 					try{
-						db.setUnlockDB(true);
 					    return getSyncEngine().isLoggedIn() ? 
 					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
 					}catch(Exception e)
 					{
 						LOG.ERROR("logged_in failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-					}finally
-					{
-						db.setUnlockDB(false);
 					}
 				    
 				}
@@ -572,16 +568,11 @@ public class SyncThread extends RhoThread
 
 					try{
 						stopSync();
-						
-						db.setUnlockDB(true);
 					    getSyncEngine().logout();
 					}catch(Exception e)
 					{
 						LOG.ERROR("logout failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-					}finally
-					{
-						db.setUnlockDB(false);
 					}
 					
 				    return RubyConstant.QNIL;

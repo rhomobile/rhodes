@@ -11,12 +11,16 @@
 
 @interface SimpleMainView : UIViewController <RhoMainView> {
     UIView *parent;
+    UIView *root;
     UIWebView *webView;
     UIToolbar *toolbar;
+    UINavigationBar *navbar;
 }
 
+@property (retain) UIView *root;
 @property (retain) UIWebView *webView;
 @property (retain) UIToolbar *toolbar;
+@property (retain) UINavigationBar *navbar;
 
 - (id)initWithParentView:(UIView *)v;
 - (id)initWithParentView:(UIView *)v frame:(CGRect)frame;
