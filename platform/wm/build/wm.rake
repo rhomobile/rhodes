@@ -202,7 +202,7 @@ namespace "run" do
 
     desc "Build and run on the Windows Phone"
     task :dev => ["device:wm:production"] do
-   	  cd $config["build"]["wmpath"] + "/tools/bin/"
+   	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
 	  args   = ['dev', $targetdir + '/' +  $appname + ".cab", $appname]
 	  puts "\nStarting application on the device"
@@ -212,7 +212,7 @@ namespace "run" do
 
     desc "Build and run on WM6 emulator"
     task :emu => ["device:wm:production"] do
-  	  cd $config["build"]["wmpath"] + "/tools/bin/"
+  	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"
 	  args   = ['emu', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname]
 	  puts "\nStarting application on the WM6 emulator\n\n"

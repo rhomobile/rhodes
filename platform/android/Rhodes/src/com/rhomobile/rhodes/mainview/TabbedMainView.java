@@ -215,4 +215,8 @@ public class TabbedMainView implements MainView {
 		getView(activeTab()).goBack();
 	}
 
+	public void loadData(String data, int index) {
+		getView(index).loadData(data, 0);
+	}
+
 }
