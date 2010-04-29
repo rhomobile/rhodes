@@ -33,6 +33,16 @@ RHO_GLOBAL void alert_show_popup(rho_param *p)
     env->DeleteLocalRef(paramsObj);
 }
 
+RHO_GLOBAL void alert_hide_popup()
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_ALERT);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "hidePopup", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
+}
+
 RHO_GLOBAL void alert_vibrate(void *arg)
 {
     JNIEnv *env = jnienv();
