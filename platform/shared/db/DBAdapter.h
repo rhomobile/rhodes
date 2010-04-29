@@ -31,7 +31,7 @@ class CDBAdapter
     common::CRubyMutex m_mxRuby;
     common::CMutex m_mxDB;
     boolean m_bUIWaitDB;
-    boolean m_bInsideTransaction;
+    int     m_nTransactionCounter;
     CDBAttrManager m_attrMgr;
 
     struct CDBVersion
@@ -50,7 +50,7 @@ class CDBAdapter
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUIWaitDB(false), m_bInsideTransaction(false){}
+    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUIWaitDB(false), m_nTransactionCounter(0){}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
@@ -61,7 +61,7 @@ public:
     boolean isUIWaitDB()const{ return m_bUIWaitDB; }
     void Lock();
     void Unlock();
-    boolean isInsideTransaction(){ return m_bInsideTransaction; }
+    boolean isInsideTransaction(){ return m_nTransactionCounter > 0; }
     const String& getDBPath(){ return m_strDbPath; }
 
     void bind(sqlite3_stmt* st, int nPos, int val)

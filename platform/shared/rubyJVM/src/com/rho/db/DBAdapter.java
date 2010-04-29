@@ -18,7 +18,7 @@ public class DBAdapter extends RubyBasic {
 	private DBAttrManager m_attrMgr = new DBAttrManager();
 	
     Mutex m_mxDB = new Mutex();
-    boolean m_bInsideTransaction=false;
+    int m_nTransactionCounter=0;
     boolean m_bUIWaitDB = false;
 	
 	DBAdapter(RubyClass c) {
@@ -113,8 +113,8 @@ public class DBAdapter extends RubyBasic {
 	public boolean isUIWaitDB(){ return m_bUIWaitDB; }
 	public void setUIWaitDB(boolean b){ m_bUIWaitDB = b; }
 	public void Lock(){ m_mxDB.Lock(); }
-	public void Unlock(){ setUIWaitDB(false); m_mxDB.Unlock(); }
-    public boolean isInsideTransaction(){ return m_bInsideTransaction; }
+	public void Unlock(){ m_mxDB.Unlock(); }
+    public boolean isInsideTransaction(){ return m_nTransactionCounter>0; }
 	
 	public static IDBResult createResult(){
 		return getInstance().m_dbStorage.createResult();
@@ -173,15 +173,22 @@ public class DBAdapter extends RubyBasic {
     public void startTransaction()throws DBException
     {
     	Lock();
-    	m_bInsideTransaction=true;    	
-    	m_dbStorage.startTransaction();
+    	m_nTransactionCounter++;
+    	
+    	if (m_nTransactionCounter == 1)
+    		m_dbStorage.startTransaction();
     }
     
     public void commit()throws DBException
     {
-    	getAttrMgr().save(this);
-    	m_dbStorage.commit();
-    	m_bInsideTransaction=false;
+    	m_nTransactionCounter--;
+    	
+    	if (m_nTransactionCounter == 0)
+    	{
+	    	getAttrMgr().save(this);
+	    	m_dbStorage.commit();
+    	}
+    	
     	Unlock();
     }
     public void endTransaction()throws DBException
@@ -534,8 +541,10 @@ public class DBAdapter extends RubyBasic {
     
     public void rollback()throws DBException
     {
-    	m_dbStorage.rollback();
-    	m_bInsideTransaction=false;
+    	m_nTransactionCounter--;
+
+    	if (m_nTransactionCounter == 0)    	
+    		m_dbStorage.rollback();
     	
     	Unlock();
     }
@@ -700,6 +709,7 @@ public class DBAdapter extends RubyBasic {
 	    		}
 			}finally
 			{
+				setUIWaitDB(false);
 				Unlock();
 			}
     		

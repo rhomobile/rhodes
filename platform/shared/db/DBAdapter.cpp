@@ -501,7 +501,7 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
     if ( m_dbHandle == null )
         return new CDBResult();
 
-	DBResultPtr res = new CDBResult(0,m_bInsideTransaction ? null : this);
+	DBResultPtr res = new CDBResult(0,this);
     sqlite3_stmt* st = m_mapStatements.get(szSt);
     if ( st != null )
 	{
@@ -550,14 +550,18 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res)
 
 void CDBAdapter::Lock()
 { 
-    m_bUIWaitDB = m_mxRuby.isMainRubyThread();
+    if ( m_mxRuby.isMainRubyThread() )
+        m_bUIWaitDB = true;
+
     m_mxRuby.Lock();
     m_mxDB.Lock(); 
+
+    if ( m_mxRuby.isMainRubyThread() )
+        m_bUIWaitDB = false;
 }
 
 void CDBAdapter::Unlock()
 { 
-    m_bUIWaitDB = false;
     m_mxDB.Unlock();
     m_mxRuby.Unlock();
 }
@@ -565,10 +569,11 @@ void CDBAdapter::Unlock()
 void CDBAdapter::startTransaction()
 {
     Lock();
-	m_bInsideTransaction=true;
+	m_nTransactionCounter++;
+
     char *zErr = 0;
     int rc = 0;
-	if ( m_dbHandle )
+	if ( m_dbHandle && m_nTransactionCounter == 1)
     {
 		rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
         checkDbError(rc);
@@ -580,14 +585,14 @@ void CDBAdapter::endTransaction()
     char *zErr = 0;
     int rc = 0;
 
-	if (m_dbHandle)
+	m_nTransactionCounter--;
+	if (m_dbHandle && m_nTransactionCounter == 0)
     {
         getAttrMgr().save(*this);
 		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
         checkDbError(rc);
     }
 
-	m_bInsideTransaction=false;
     Unlock();
 }
 
@@ -595,13 +600,14 @@ void CDBAdapter::rollback()
 {
     char *zErr = 0;
     int rc = 0;
-	if (m_dbHandle)
+
+	m_nTransactionCounter--;
+	if (m_dbHandle && m_nTransactionCounter == 0)
     {
 		rc = sqlite3_exec(m_dbHandle, "ROLLBACK;",0,0,&zErr);
         checkDbError(rc);
     }
 
-	m_bInsideTransaction=false;
     Unlock();
 }
 
