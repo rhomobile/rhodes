@@ -105,13 +105,15 @@ public class RubyRuntime {
     public static RubyClass XMLParserClass;
     //RHO
 
-    public static final RubyValue TOP_LEVEL_SELF_VALUE;
+    public static /*final*/ RubyValue TOP_LEVEL_SELF_VALUE;
 
     private static RubyMethod respondToMethod;
 
     public static boolean running = false;
 
-    static {
+//    static {
+    private static void initClasses()
+    {
         //Note: order is important: should creare parent classes first!
 
         ObjectClass = ClassFactory.defineBootClass("Object", null);
@@ -385,6 +387,8 @@ public class RubyRuntime {
             return;
         }
 
+        initClasses();
+        
         initARGV(args);
 
         RubyAPI.setTopLevelConstant(RubyAPI.isWindows() ? ObjectFactory.createString("mswin32") : ObjectFactory.createString("java"), "RUBY_PLATFORM");

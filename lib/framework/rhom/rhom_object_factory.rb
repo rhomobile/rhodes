@@ -756,7 +756,9 @@ module Rhom
  
                   rescue Exception => e
                       puts 'delete_all Exception: ' + e.inspect
-                      db.rollback    
+                      db.rollback
+                      
+                      raise    
                   end    
                       
                 end
@@ -851,7 +853,9 @@ module Rhom
  
                     rescue Exception => e
                       puts 'destroy Exception: ' + e.inspect
-                      db.rollback    
+                      db.rollback
+                      
+                      raise    
                     end    
                       
                 end
@@ -955,7 +959,9 @@ module Rhom
 
                 rescue Exception => e
                     puts 'save Exception: ' + e.inspect
-                    db.rollback    
+                    db.rollback
+                    
+                    raise    
                 end    
                 
                 true
@@ -1035,7 +1041,9 @@ module Rhom
 
                 rescue Exception => e
                     puts 'update_attributes Exception: ' + e.inspect
-                    db.rollback    
+                    db.rollback
+                    
+                    raise    
                 end    
                     
                 true
