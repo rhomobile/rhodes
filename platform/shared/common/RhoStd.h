@@ -68,7 +68,7 @@ inline boolean String_startsWith(const String& str, const String& strPrefix)
     if ( strPrefix.length() == 0 )
         return false;
 
-    if ( (int)str.length() < strPrefix.length() )
+    if ( str.length() < strPrefix.length() )
         return false;
 
     return strncmp(str.c_str(), strPrefix.c_str(), strPrefix.length()) == 0;
