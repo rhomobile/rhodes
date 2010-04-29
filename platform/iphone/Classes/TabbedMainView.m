@@ -191,4 +191,12 @@
     return tabbar.selectedIndex;
 }
 
+- (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
+    [[self subView:[self activeTab]] setNavBar:title left:left right:right];
+}
+
+- (void)removeNavBar {
+    [[self subView:[self activeTab]] removeNavBar];
+}
+
 @end

@@ -40,6 +40,7 @@ extern void Init_MapView(void);
 extern void Init_RingtoneManager(void);
 extern void Init_socket(void);
 extern void Init_AsyncHttp(void);
+extern void Init_NavBar(void);
 extern void Init_Extensions(void);
 
 //RhoSupport extension
@@ -162,6 +163,7 @@ void RhoRubyStart()
     Init_MapView();
     Init_RingtoneManager();
     Init_socket();
+    Init_NavBar();
     Init_Extensions();
 
 #ifdef ENABLE_RUBY_VM_STAT
