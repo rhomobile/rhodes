@@ -24,8 +24,8 @@ public class DBAdapter extends RubyBasic
 	static Hashtable/*Ptr<String,CDBAdapter*>*/ m_mapDBPartitions = new Hashtable();
 	
     Mutex m_mxDB = new Mutex();
-    boolean m_bInsideTransaction=false;
-    boolean m_bUnlockDB = false;
+    int m_nTransactionCounter=0;
+    boolean m_bUIWaitDB = false;
 	
     static Hashtable/*Ptr<String,CDBAdapter*>&*/ getDBPartitions(){ return  m_mapDBPartitions; }
     
@@ -70,8 +70,15 @@ public class DBAdapter extends RubyBasic
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
-		
-		return m_dbStorage.executeSQL(strStatement,values,false);
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values,false);
+		}finally
+		{
+			Unlock();
+		}
+		return res;
 	}
 	public IDBResult executeSQL(String strStatement)throws DBException{
 		return executeSQL(strStatement,null);
@@ -117,7 +124,16 @@ public class DBAdapter extends RubyBasic
 		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
 		Object[] values = {arg1,arg2,arg3,arg4};
-		return m_dbStorage.executeSQL(strStatement,values, true);
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values, true);
+		}finally
+		{
+			Unlock();
+		}
+		
+		return res; 
 	}
 
 	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector vecValues)throws DBException{
@@ -127,7 +143,16 @@ public class DBAdapter extends RubyBasic
 		for (int i = 0; i < vecValues.size(); i++ )
 			values[i] = vecValues.elementAt(i);
 		
-		return m_dbStorage.executeSQL(strStatement,values, true);
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values, true);
+		}finally
+		{
+			Unlock();
+		}
+		
+		return res; 
 	}
 	
 	public IDBResult executeSQLEx(String strStatement, Vector vecValues)throws DBException{
@@ -143,11 +168,20 @@ public class DBAdapter extends RubyBasic
 		return executeSQL(strStatement,values);
 	}
 
-	public boolean isUnlockDB(){ return m_bUnlockDB; }
-	public void setUnlockDB(boolean b){ m_bUnlockDB = b; }
-	public void Lock(){ m_mxDB.Lock(); }
-	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
-    public boolean isInsideTransaction(){ return m_bInsideTransaction; }
+	public boolean isUIWaitDB(){ return m_bUIWaitDB; }
+	public void Lock()
+	{
+	    if ( RhoRuby.isMainRubyThread() )
+	        m_bUIWaitDB = true;
+		
+		m_mxDB.Lock();
+		
+	    if ( RhoRuby.isMainRubyThread() )
+	        m_bUIWaitDB = false;
+	}
+	
+	public void Unlock(){ m_mxDB.Unlock(); }
+    public boolean isInsideTransaction(){ return m_nTransactionCounter>0; }
 	
 	//public static IDBResult createResult(){
 	//	return getInstance().m_dbStorage.createResult();
@@ -207,17 +241,32 @@ public class DBAdapter extends RubyBasic
     public void startTransaction()throws DBException
     {
     	Lock();
-    	m_bInsideTransaction=true;    	
-    	m_dbStorage.startTransaction();
+    	m_nTransactionCounter++;
+    	if (m_nTransactionCounter == 1)
+    		m_dbStorage.startTransaction();    	
     }
     
     public void commit()throws DBException
     {
-    	getAttrMgr().save(this);
-    	m_dbStorage.commit();
-    	m_bInsideTransaction=false;
+    	m_nTransactionCounter--;
+    	if (m_nTransactionCounter == 0)
+    	{
+	    	getAttrMgr().save(this);
+	    	m_dbStorage.commit();
+    	}
+    	
     	Unlock();
     }
+
+    public void rollback()throws DBException
+    {
+    	m_nTransactionCounter--;
+    	if (m_nTransactionCounter == 0)     	
+    		m_dbStorage.rollback();
+    	
+    	Unlock();
+    }
+    
     public void endTransaction()throws DBException
     {
     	commit();
@@ -633,14 +682,6 @@ public class DBAdapter extends RubyBasic
 		return RubyConstant.QNIL;
     }
     
-    public void rollback()throws DBException
-    {
-    	m_dbStorage.rollback();
-    	m_bInsideTransaction=false;
-    	
-    	Unlock();
-    }
-    
     public void setBulkSyncDB(String fDbName, String fScriptName)
     {
 		IDBStorage db = null;
@@ -836,40 +877,6 @@ public class DBAdapter extends RubyBasic
     	return new DBAdapter(RubyRuntime.DatabaseClass);
     }
     
-    private RubyValue rb_start_transaction() {
-    	try{
-    		setUnlockDB(true);
-    		startTransaction();
-    	}catch( Exception e ){
-    		LOG.ERROR("start_transaction failed.", e);
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private RubyValue rb_commit() {
-    	try{
-    		commit();
-    	}catch( Exception e ){
-    		LOG.ERROR("commit failed.", e);
-    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private RubyValue rb_rollback() {
-    	try{
-    		rollback();
-    	}catch( Exception e ){
-    		LOG.ERROR("rollback failed.", e);
-    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
     public static void closeAll()
     {
     	Enumeration enumDBs = m_mapDBPartitions.elements();
@@ -953,22 +960,61 @@ public class DBAdapter extends RubyBasic
 		});
 		
 		klass.defineMethod( "start_transaction", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_start_transaction();}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+		    		((DBAdapter)receiver).startTransaction();
+			        return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("start_transaction failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		klass.defineMethod( "commit", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_commit();}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+		    		((DBAdapter)receiver).commit();
+			        return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("commit failed.", e);
+		    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		klass.defineMethod( "rollback", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_rollback();}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+		    		((DBAdapter)receiver).rollback();
+			        return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("rollback failed.", e);
+		    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		klass.defineMethod( "destroy_tables", new RubyTwoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_destroy_tables(arg, arg1);}
 		});
 		
+		klass.defineMethod("is_ui_waitfordb", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			{
+				try{
+				    boolean bRes = ((DBAdapter)receiver).isUIWaitDB();
+				    return ObjectFactory.createBoolean(bRes);				    
+				}catch(Exception e)
+				{
+					LOG.ERROR("is_ui_waitfordb failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
+/*		
 		klass.defineMethod("lock_db",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
@@ -1000,6 +1046,8 @@ public class DBAdapter extends RubyBasic
 				    return RubyConstant.QNIL;
 				}
 			});
+*/
+		
 		klass.defineMethod( "table_exist?", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
