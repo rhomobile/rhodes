@@ -611,6 +611,14 @@ class SyncSource
 	        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
 	        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
 	            getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+	        
+	        if ( getDB().isUIWaitDB() )
+	        {
+		        LOG.INFO("Commit transaction because of UI request.");
+	            getDB().endTransaction();
+	            SyncThread.getInstance().sleep(1000);
+	            getDB().startTransaction();
+	        }
 	    }
 	}
 	
@@ -805,12 +813,18 @@ class SyncSource
 
 	    if ( bDownload )
 	    {
-	        if ( !downloadBlob(oAttrValue) )
-		        return false;
-
-	        return true;
+	    	boolean bRes = false;
+	        getDB().endTransaction();
+	        try{
+	        	bRes = downloadBlob(oAttrValue);
+	        }finally
+	        {
+	        	getDB().startTransaction();
+	        }
+	        
+	        return bRes;
 	    }
-
+	    
 	    String fName = makeFileName( oAttrValue );	  
 	    String fOldName = RhodesApp.getInstance().resolveDBFilesPath(strDbValue);
 	    RhoClassFactory.createFile().renameOverwrite(fOldName, fName); 
@@ -892,9 +906,6 @@ class SyncSource
 	
 	boolean downloadBlob(CAttrValue value)throws Exception
 	{
-	    if ( value.m_strBlobSuffix.length() == 0  )
-			return true;
-		
 		String fName = makeFileName( value );
 		String url = value.m_strValue;
 		int nQuest = url.lastIndexOf('?');
