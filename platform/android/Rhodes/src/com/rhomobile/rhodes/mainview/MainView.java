@@ -39,4 +39,6 @@ public interface MainView {
 	
 	public void switchTab(int index);
 	public int activeTab();
+	
+	public void loadData(String data, int index);
 }
