@@ -411,6 +411,7 @@ namespace "build" do
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = ANDROID_API_LEVEL.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
+      ENV["RHODES_ROOT_DIR"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
 
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
@@ -418,11 +419,19 @@ namespace "build" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
-          next unless File.executable? File.join(extpath, 'build')
+          if RUBY_PLATFORM =~ /(win|w)32$/
+            next unless File.exists? File.join(extpath, 'build.bat')
+          else
+            next unless File.executable? File.join(extpath, 'build')
+          end
 
           ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
 
-          puts Jake.run('./build', [], extpath)
+          if RUBY_PLATFORM =~ /(win|w)32$/
+            puts Jake.run('build.bat', [], extpath)
+          else
+            puts Jake.run('./build', [], extpath)
+          end
           exit 1 unless $? == 0
         end
       end
