@@ -20,6 +20,7 @@ platform/iphone/RhoLib/build/*
 platform/iphone/Tests/build/*
 platform/iphone/curl/build/*
 platform/iphone/bin/*
+platform/iphone/Info.plist
 platform/mac/bin/*
 platform/osx/Rhodes Debugger/build/*
 platform/iphone/*/*.link

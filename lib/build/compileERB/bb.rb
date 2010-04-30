@@ -17,8 +17,8 @@ Find.find(dir) do |path|
 	    frb.write( rbText )
 	    frb.close()
 	rescue Exception => e
-	    puts 'erb compilation failed: ' + path
-	    raise
+	    puts "\nYou have a syntax error in your ERB: " + path
+	    exit 1
 	end 
 	    
   end

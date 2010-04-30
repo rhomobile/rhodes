@@ -27,4 +27,7 @@
 - (void)switchTab:(int)index;
 - (int)activeTab;
 
+- (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right;
+- (void)removeNavBar;
+
 @end

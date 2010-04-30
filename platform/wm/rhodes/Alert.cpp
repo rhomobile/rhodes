@@ -70,3 +70,7 @@ extern "C" void alert_play_file(char* file_name, ...) {
     CAlert::playFile(file_name);
 #endif
 }
+
+extern "C" void alert_hide_popup()
+{
+}

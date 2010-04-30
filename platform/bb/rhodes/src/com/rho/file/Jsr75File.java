@@ -31,7 +31,19 @@ public class Jsr75File implements SimpleFile
 		System.out.println("FileSystem: " + txt);
 	}
 
-	static void createDir( String strDir  )throws IOException{
+	static void recursiveCreateDir( String strPath  )throws IOException
+	{
+		int nSlash = strPath.indexOf('/', getRhoPath().length() );
+		while (nSlash >=0 )
+		{
+			String strDir = strPath.substring(0, nSlash+1);
+			createDir(strDir);
+			nSlash = strPath.indexOf('/', nSlash+1 );
+		}
+	}
+	
+	static void createDir( String strDir  )throws IOException
+	{
 		log("Dir:"+strDir);
 		FileConnection fdir = null;
 		try{
@@ -133,6 +145,36 @@ public class Jsr75File implements SimpleFile
     	return m_strRhoPath;
     }
 
+    public void copyJarFileToMemory(String strFileName, InputStream jarStream)throws IOException
+    {
+    	//create target directories
+    	String strTargetPath = FilePath.join(getRhoPath(), strFileName);
+    	recursiveCreateDir(strTargetPath);
+    	
+    	FileConnection fMem = null;
+    	OutputStream out = null;
+    	
+    	try{
+	    	fMem = (FileConnection)Connector.open(strTargetPath,Connector.READ_WRITE);
+			if ( !fMem.exists() )
+				fMem.create();
+	    	
+    		int nSize = jarStream.available();
+    		if ( nSize > 0 )
+    		{
+    			out = fMem.openOutputStream();
+	    		byte[] buf = new byte[nSize];
+	    		jarStream.read(buf);
+	    		out.write(buf);
+    		}			
+    	}finally{
+			if ( out != null )
+				out.close();
+			if ( fMem != null )
+				fMem.close();
+    	}
+    }
+    
     public static void copyRhoFileFromDeviceMemory(String strFileName)
     {
     	InputStream in = null;

@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
-RHO_GLOBAL void webview_navigate(char* url, int index)
+RHO_GLOBAL void rho_webview_navigate(const char* url, int index)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
@@ -19,7 +19,7 @@ RHO_GLOBAL void webview_navigate(char* url, int index)
     env->DeleteLocalRef(objNormUrl);
 }
 
-RHO_GLOBAL void webview_refresh(int index)
+RHO_GLOBAL void rho_webview_refresh(int index)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
@@ -29,7 +29,17 @@ RHO_GLOBAL void webview_refresh(int index)
     env->CallStaticVoidMethod(cls, mid, index);
 }
 
-RHO_GLOBAL char* webview_current_location(int index)
+RHO_GLOBAL void rho_webview_navigate_back()
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
+    jmethodID mid =getJNIClassStaticMethod(env, cls, "navigateBack", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
+}
+
+RHO_GLOBAL const char* rho_webview_current_location(int index)
 {
     static std::string curLoc;
 
@@ -41,15 +51,15 @@ RHO_GLOBAL char* webview_current_location(int index)
 
     jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, index);
     curLoc = rho_cast<std::string>(str);
-    return (char*)curLoc.c_str();
+    return curLoc.c_str();
 }
 
-RHO_GLOBAL void webview_set_menu_items(VALUE valMenu)
+RHO_GLOBAL void rho_webview_set_menu_items(VALUE valMenu)
 {
     rho_rhodesapp_setViewMenu(valMenu);
 }
 
-RHO_GLOBAL int webview_active_tab()
+RHO_GLOBAL int rho_webview_active_tab()
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
@@ -60,7 +70,7 @@ RHO_GLOBAL int webview_active_tab()
     return env->CallStaticIntMethod(cls, mid);
 }
 
-RHO_GLOBAL char* webview_execute_js(char* js, int index)
+RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
 {
     static std::string result;
 
@@ -77,3 +87,7 @@ RHO_GLOBAL char* webview_execute_js(char* js, int index)
     return (char*)result.c_str();
 }
 
+RHO_GLOBAL void rho_webview_full_screen_mode(int enable)
+{
+    //TODO: rho_webview_full_screen_mode
+}

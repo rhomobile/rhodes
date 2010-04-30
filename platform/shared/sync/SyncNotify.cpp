@@ -401,8 +401,8 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 		    strBody = "";
             strBody = "total_count=" + convertToStringA(src.getTotalCount());
             strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
-            strBody += "&processed_objects_count=" + convertToStringA(getLastSyncObjectCount(src.getID()));
-            strBody += "&cumulative_count=" + convertToStringA(src.getServerObjectsCount());
+            //strBody += "&processed_objects_count=" + convertToStringA(getLastSyncObjectCount(src.getID()));
+            strBody += "&cumulative_count=" + convertToStringA(getLastSyncObjectCount(src.getID()));
             strBody += "&source_id=" + convertToStringA(src.getID());
             strBody += "&source_name=" + src.getName();
             strBody += "&rho_callback=1";

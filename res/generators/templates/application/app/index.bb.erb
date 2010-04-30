@@ -3,7 +3,7 @@
 </div>
 
 <div id="toolbar">
-            <%%= link_to "Sync", :controller => :Settings, :action => :do_sync %>
+        <%%= link_to "Sync", :controller => :Settings, :action => :do_sync %>
     	<%% if SyncEngine::logged_in > 0 %>
     	    <%%= link_to "Logout", :controller => :Settings, :action => :logout %>
     	<%% else %>
