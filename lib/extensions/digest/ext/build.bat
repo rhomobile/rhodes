@@ -1,0 +1,2 @@
+rake --trace
+
