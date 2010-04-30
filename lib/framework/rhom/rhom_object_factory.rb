@@ -172,7 +172,15 @@ module Rhom
                         else
                             condition_str += "\"" + attrib_name + "\""
                         end
-                        condition_str += ' ' + val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value)
+                        condition_str += ' '
+                        
+                        if val_op == 'IN' or val_op == 'in'
+                            svalue = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value)
+                            condition_str += val_op + ' ( ' + svalue[1,svalue.length()-2] + ' )'
+                        else
+                            condition_str += val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                        end
+                        
                     end
                     
                   end
@@ -200,7 +208,14 @@ module Rhom
                     
                     sql << "attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attrib_name)
                     sql << " AND source_id=" + srcid_value 
-                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' ' + val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                    
+                    if val_op == 'IN' or val_op == 'in'
+                        svalue = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value)
+                        sql << val_op + ' ( ' + svalue[1,svalue.length()-2] + ' )'
+                    else
+                        sql << val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                    end
                     
                     sql
                 end
@@ -613,7 +628,7 @@ module Rhom
                     if args.first != :count
                         list.each do |rowhash|
                           # always return object field with surrounding '{}'
-                          rowhash[:object] = "{#{rowhash['object']}}"
+                          rowhash[:object] = "#{rowhash['object']}"
                           #rowhash[:source_id] = nSrcID
                           new_obj = self.new
                           #new_obj.vars.merge!(rowhash)
@@ -741,7 +756,9 @@ module Rhom
  
                   rescue Exception => e
                       puts 'delete_all Exception: ' + e.inspect
-                      db.rollback    
+                      db.rollback
+                      
+                      raise    
                   end    
                       
                 end
@@ -767,7 +784,7 @@ module Rhom
 	          # overwise all modifications of unconfirmed created item will be lost
 	          def can_modify
 		        db = ::Rho::RHO.get_src_db(get_inst_source_name)
-   				obj = self.inst_strip_braces(self.object)
+   				obj = self.object #self.inst_strip_braces(self.object)
                 result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return !(result && result.length > 0) 
 	          end
@@ -780,7 +797,7 @@ module Rhom
 
 	          def changed?
 	            db = ::Rho::RHO.get_src_db(get_inst_source_name)
-	            obj = self.inst_strip_braces(self.object)
+	            obj = self.object #self.inst_strip_braces(self.object)
                 result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=?  and object=? LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return result && result.length > 0
 	          end
@@ -788,7 +805,7 @@ module Rhom
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
               def destroy
-                obj = self.inst_strip_braces(self.object)
+                obj = self.object #self.inst_strip_braces(self.object)
                 update_type='delete'
                 
                 if obj
@@ -836,7 +853,9 @@ module Rhom
  
                     rescue Exception => e
                       puts 'destroy Exception: ' + e.inspect
-                      db.rollback    
+                      db.rollback
+                      
+                      raise    
                     end    
                       
                 end
@@ -851,7 +870,7 @@ module Rhom
               # saves the current object to the database as a create type
               def save
                 # iterate over each instance variable and insert create row to table
-				obj = self.inst_strip_braces(self.object)
+				obj = self.object #self.inst_strip_braces(self.object)
 				nSrcID = self.get_inst_source_id
                 db = ::Rho::RHO.get_src_db(get_inst_source_name)
                 db_partition = Rho::RhoConfig.sources[get_inst_source_name]['partition'].to_s
@@ -881,7 +900,7 @@ module Rhom
                         key = key_a.to_s
                         next if ::Rhom::RhomObject.method_name_reserved?(key)
 
-                        val = self.inst_strip_braces(value.to_s)
+                        val = value.to_s #self.inst_strip_braces(value.to_s)
                         
                         # add rows excluding object, source_id and update_type
                         fields = {"source_id"=>nSrcID,
@@ -940,7 +959,9 @@ module Rhom
 
                 rescue Exception => e
                     puts 'save Exception: ' + e.inspect
-                    db.rollback    
+                    db.rollback
+                    
+                    raise    
                 end    
                 
                 true
@@ -949,7 +970,7 @@ module Rhom
               # updates the current record in the viewable list and adds
               # a sync operation to update
               def update_attributes(attrs)
-                obj = self.inst_strip_braces(self.object)
+                obj = self.object #self.inst_strip_braces(self.object)
                 update_type='update'
                 nSrcID = self.get_inst_source_id
                 db = ::Rho::RHO.get_src_db(get_inst_source_name)
@@ -963,7 +984,7 @@ module Rhom
                       old_val = self.send attrib.to_sym unless ::Rhom::RhomObject.method_name_reserved?(attrib)
                       
                       # Don't save objects with braces to database
-                      new_val = self.inst_strip_braces(val.to_s)
+                      new_val = val.to_s #self.inst_strip_braces(val.to_s)
                       
                       isModified = old_val != new_val
                       if isModified && new_val && old_val.nil? && new_val.to_s().length == 0
@@ -1020,7 +1041,9 @@ module Rhom
 
                 rescue Exception => e
                     puts 'update_attributes Exception: ' + e.inspect
-                    db.rollback    
+                    db.rollback
+                    
+                    raise    
                 end    
                     
                 true

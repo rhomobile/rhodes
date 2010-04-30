@@ -82,38 +82,27 @@ public class SimpleMainView implements MainView {
 	};
 
 	private class ActionCustomRunnable implements Runnable {
-		private boolean callback;
+		
 		private String url;
-		public ActionCustomRunnable(boolean c, String u) {
-			callback = c;
+		
+		public ActionCustomRunnable(String u) {
 			url = u;
 		}
 		
 		public void run() {
-			if (callback)
-				RhodesInstance.getInstance().doRequest(url);
-			else
-				navigate(url, 0);
+			Rhodes.loadUrl(url);
 		}
 	};
 	
 	private class ActionCustom implements View.OnClickListener {
-		private static final String scheme = "callback:";
 		private String url;
-		private boolean callback;
 		
 		public ActionCustom(String u) {
-			callback = false;
 			url = u;
-			if (url.startsWith(scheme)) {
-				url = url.substring(scheme.length());
-				callback = true;
-			}
-			url = RhodesInstance.getInstance().normalizeUrl(url);
 		}
 		
 		public void onClick(View v) {
-			Rhodes.performOnUiThread(new ActionCustomRunnable(callback, url), false);
+			Rhodes.performOnUiThread(new ActionCustomRunnable(url), false);
 		}
 	};
 	
@@ -264,11 +253,11 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		String backUrl = RhodesInstance.getInstance().getAppBackUrl();
-		if (backUrl == null || backUrl.length() == 0)
-			webView.goBack();
-		else
-			navigate(backUrl, index);
+		Rhodes.navigateBack();
+	}
+	
+	public void goBack() {
+		webView.goBack();
 	}
 
 	public void forward(int index) {
@@ -293,6 +282,10 @@ public class SimpleMainView implements MainView {
 	
 	public int activeTab() {
 		return 0;
+	}
+	
+	public void loadData(String data, int index) {
+		webView.loadData(data, "text/html", "utf-8");
 	}
 
 }

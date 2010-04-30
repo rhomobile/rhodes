@@ -17,6 +17,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
+static UIAlertView *currentAlert = nil;
+
 @interface RhoAlertShowPopupTask : NSObject<UIAlertViewDelegate> {
     NSString *callback;
     NSMutableArray *buttons;
@@ -148,13 +150,14 @@
     }
     
     [alert show];
+    currentAlert = alert;
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (!callback)
         return;
     
-    if (buttonIndex >= [buttons count])
+    if (buttonIndex < 0 || buttonIndex >= [buttons count])
         return;
     
     NSArray *btn = [buttons objectAtIndex:buttonIndex];
@@ -162,9 +165,25 @@
     NSString *itemTitle = [[btn objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     rho_rhodesapp_callPopupCallback([callback UTF8String], [itemId UTF8String], [itemTitle UTF8String]);
+    [self release];
+    currentAlert = nil;
 }
 
 @end
+
+@interface RhoAlertHidePopupTask : NSObject {}
++ (void)run;
+@end
+
+@implementation RhoAlertHidePopupTask
++ (void)run {
+    if (!currentAlert)
+        return;
+    [currentAlert dismissWithClickedButtonIndex:-1 animated:NO];
+    currentAlert = nil;
+}
+@end
+
 
 @interface RhoAlertVibrateTask : NSObject {}
 + (void)run;
@@ -189,9 +208,14 @@
 @implementation RhoAlert
 
 + (void)showPopup:(rho_param*)p {
-    id runnable = [[[RhoAlertShowPopupTask alloc] init] autorelease];
+    id runnable = [[RhoAlertShowPopupTask alloc] init];
     NSValue *value = [NSValue valueWithPointer:rho_param_dup(p)];
     [Rhodes performOnUiThread:runnable arg:value wait:NO];
+}
+
++ (void)hidePopup {
+    id runnable = [RhoAlertHidePopupTask class];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 + (void)vibrate:(int)duration {
@@ -213,6 +237,10 @@ void alert_show_popup(rho_param *p) {
 	}
     
     [RhoAlert showPopup:p];
+}
+
+void alert_hide_popup() {
+    [RhoAlert hidePopup];
 }
 
 void alert_vibrate(int duration) {

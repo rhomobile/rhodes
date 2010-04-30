@@ -30,12 +30,15 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
     private RhoMainScreen m_oMainScreen;
     
     private RhodesApplication m_app;
+	private HttpConnection m_connResource = null;
+    private boolean m_bLoadImageAsync = false;
     
-	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app) 
+	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app, boolean bLoadImageAsync) 
 	{
 		m_oMainScreen = oMainScreen;
 		m_app = app;
-			
+		m_bLoadImageAsync = bLoadImageAsync;
+		
         _renderingSession = RenderingSession.getNewInstance();
         
         // enable javascript
@@ -54,6 +57,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_EMBEDDED_RICH_CONTENT, false);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
+        
 	}
 
 	public void setFullBrowser()
@@ -191,9 +195,11 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                 Field field = browserContent.getDisplayableContent();
                 if (field != null) {
                 	
-                    synchronized (Application.getEventLock()) {
-                    	m_oMainScreen.deleteAll();
+                    synchronized (Application.getEventLock()) 
+                    {
+                    	Field old = m_oMainScreen.getField(0);
                     	m_oMainScreen.add(field);
+                    	m_oMainScreen.delete(old);
 /*                        
                         _mainScreen.doPaint();
                         if ( e == null )
@@ -206,6 +212,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                         }*/
                     }
                 }
+                
             }
         } catch (RenderingException re) {
         	LOG.ERROR("RenderingException", re);
@@ -232,10 +239,44 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
     public HttpConnection getResource( RequestedResource resource, BrowserContent referrer) {
 
-        if (resource == null) {
+        if (resource == null)
             return null;
+        
+        String url = resource.getUrl();
+        if (url == null || url.endsWith("/favicon.ico"))
+        	return null;
+        
+        try
+        {
+        	if (referrer == null || !m_bLoadImageAsync) 
+        	{
+	        	boolean bLocalHost = URI.isLocalHost(url);
+	        	if ( bLocalHost && m_connResource!= null)
+	        	{
+	        		com.rho.net.RhoConnection rhoConn = (com.rho.net.RhoConnection)((com.rho.net.bb.NativeBBHttpConnection)m_connResource).getNativeConnection(); 
+	        		rhoConn.resetUrl(url);
+	        		
+	        		Utilities.makeConnection(url, resource.getRequestHeaders(), null, m_connResource);
+	        		return m_connResource;
+	        	}else
+	        	{
+		            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null, null);
+		            if (bLocalHost)
+		            	m_connResource = connection;
+		            return connection;
+	        	}
+        	}else
+        	{
+        		SecondaryResourceFetchThread.enqueue(resource, referrer);        		
+        	}
+        }catch(Exception exc)
+        {
+        	LOG.ERROR("getResource failed.", exc);
         }
-
+        
+        return null;
+        
+/*
         // check if this is cache-only request
         if (resource.isCacheOnly()) {
             // no cache support
@@ -271,7 +312,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         	LOG.ERROR("getResource failed.", exc);
         }
         
-        return null;
+        return null;*/
     }
 
     public void invokeRunnable(Runnable runnable) {

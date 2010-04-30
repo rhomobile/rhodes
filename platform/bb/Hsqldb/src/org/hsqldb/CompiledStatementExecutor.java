@@ -103,7 +103,8 @@ final class CompiledStatementExecutor {
 
             result = executeImpl(cs);
         } catch (HsqlException e) {
-        	if ( e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX &&
+        	if ( (e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX ||
+        		  e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_CONSTRAINT) &&
         			bReportNonUnique )
         	{}
         	else

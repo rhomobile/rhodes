@@ -9,7 +9,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
 
-public class DBAdapter extends RubyBasic {
+public class DBAdapter extends RubyBasic 
+{
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("DbAdapter");
 
@@ -23,8 +24,8 @@ public class DBAdapter extends RubyBasic {
 	static Hashtable/*Ptr<String,CDBAdapter*>*/ m_mapDBPartitions = new Hashtable();
 	
     Mutex m_mxDB = new Mutex();
-    boolean m_bInsideTransaction=false;
-    boolean m_bUnlockDB = false;
+    int m_nTransactionCounter=0;
+    boolean m_bUIWaitDB = false;
 	
     static Hashtable/*Ptr<String,CDBAdapter*>&*/ getDBPartitions(){ return  m_mapDBPartitions; }
     
@@ -60,15 +61,29 @@ public class DBAdapter extends RubyBasic {
 	{ 
 		return m_attrMgr; 
 	}
+
+	public void executeBatchSQL(String strStatement)throws DBException{
+		LOG.TRACE("executeBatchSQL: " + strStatement);
+		
+		m_dbStorage.executeBatchSQL(strStatement);
+	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
-		
-		return m_dbStorage.executeSQL(strStatement,values,false);
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values,false);
+		}finally
+		{
+			Unlock();
+		}
+		return res;
 	}
 	public IDBResult executeSQL(String strStatement)throws DBException{
 		return executeSQL(strStatement,null);
 	}
+	
 	public IDBResult executeSQL(String strStatement, Object arg1)throws DBException{
 		Object[] values = {arg1};
 		return executeSQL(strStatement,values);
@@ -105,21 +120,47 @@ public class DBAdapter extends RubyBasic {
 		return executeSQL(strStatement,values);
 	}
 	
-	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)throws DBException{
+	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4)throws DBException{
 		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
-		Object[] values = {arg1,arg2,arg3,arg4,arg5};
-		return m_dbStorage.executeSQL(strStatement,values, true);
+		Object[] values = {arg1,arg2,arg3,arg4};
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values, true);
+		}finally
+		{
+			Unlock();
+		}
+		
+		return res; 
 	}
 
-	public IDBResult executeSQLReportNonUnique(String strStatement, Vector vecValues)throws DBException{
+	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector vecValues)throws DBException{
 		LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
 		Object[] values = new Object[vecValues.size()];
 		for (int i = 0; i < vecValues.size(); i++ )
 			values[i] = vecValues.elementAt(i);
 		
-		return m_dbStorage.executeSQL(strStatement,values, true);
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values, true);
+		}finally
+		{
+			Unlock();
+		}
+		
+		return res; 
+	}
+	
+	public IDBResult executeSQLEx(String strStatement, Vector vecValues)throws DBException{
+		Object[] values = new Object[vecValues.size()];
+		for (int i = 0; i < vecValues.size(); i++ )
+			values[i] = vecValues.elementAt(i);
+		
+		return executeSQL(strStatement,values);
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
@@ -127,18 +168,27 @@ public class DBAdapter extends RubyBasic {
 		return executeSQL(strStatement,values);
 	}
 
-	public boolean isUnlockDB(){ return m_bUnlockDB; }
-	public void setUnlockDB(boolean b){ m_bUnlockDB = b; }
-	public void Lock(){ m_mxDB.Lock(); }
-	public void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
-    public boolean isInsideTransaction(){ return m_bInsideTransaction; }
+	public boolean isUIWaitDB(){ return m_bUIWaitDB; }
+	public void Lock()
+	{
+	    if ( RhoRuby.isMainRubyThread() )
+	        m_bUIWaitDB = true;
+		
+		m_mxDB.Lock();
+		
+	    if ( RhoRuby.isMainRubyThread() )
+	        m_bUIWaitDB = false;
+	}
+	
+	public void Unlock(){ m_mxDB.Unlock(); }
+    public boolean isInsideTransaction(){ return m_nTransactionCounter>0; }
 	
 	//public static IDBResult createResult(){
 	//	return getInstance().m_dbStorage.createResult();
 	//}
 	
 	public static String makeBlobFolderName()throws Exception{
-		String fName = RhoClassFactory.createFile().getDirPath("apps/public/db-files");
+		String fName = RhoClassFactory.createFile().getDirPath("db/db-files");
 		
 		return fName;
 	}
@@ -191,17 +241,32 @@ public class DBAdapter extends RubyBasic {
     public void startTransaction()throws DBException
     {
     	Lock();
-    	m_bInsideTransaction=true;    	
-    	m_dbStorage.startTransaction();
+    	m_nTransactionCounter++;
+    	if (m_nTransactionCounter == 1)
+    		m_dbStorage.startTransaction();    	
     }
     
     public void commit()throws DBException
     {
-    	getAttrMgr().save(this);
-    	m_dbStorage.commit();
-    	m_bInsideTransaction=false;
+    	m_nTransactionCounter--;
+    	if (m_nTransactionCounter == 0)
+    	{
+	    	getAttrMgr().save(this);
+	    	m_dbStorage.commit();
+    	}
+    	
     	Unlock();
     }
+
+    public void rollback()throws DBException
+    {
+    	m_nTransactionCounter--;
+    	if (m_nTransactionCounter == 0)     	
+    		m_dbStorage.rollback();
+    	
+    	Unlock();
+    }
+    
     public void endTransaction()throws DBException
     {
     	commit();
@@ -617,14 +682,6 @@ public class DBAdapter extends RubyBasic {
 		return RubyConstant.QNIL;
     }
     
-    public void rollback()throws DBException
-    {
-    	m_dbStorage.rollback();
-    	m_bInsideTransaction=false;
-    	
-    	Unlock();
-    }
-    
     public void setBulkSyncDB(String fDbName, String fScriptName)
     {
 		IDBStorage db = null;
@@ -762,39 +819,49 @@ public class DBAdapter extends RubyBasic {
         return res;
     }*/
 
-    public RubyValue rb_execute(RubyValue v, RubyValue arg) 
+    public RubyValue rb_execute(RubyValue v, RubyValue batch, RubyValue arg) 
     {
     	RubyArray res = new RubyArray(); 
     	try{
-    		Object[] values = null;
-    		if ( arg != null )
+    		String strSql = v.toStr();
+    		if ( batch == RubyConstant.QTRUE )
     		{
-	    		RubyArray args1 = arg.toAry();
-	    		RubyArray args = args1;
-	    		if ( args.size() > 0 && args.get(0) instanceof RubyArray )
-	    			args = (RubyArray)args.get(0);
-	    		
-	    		values = new Object[args.size()];
-	    		for ( int i = 0; i < args.size(); i++ )
-	    		{
-	    			RubyValue val = args.get(i);
-	    			if ( val instanceof RubyFixnum )
-	    				values[i] = new Long( ((RubyFixnum)val).toLong() );
-	    			else
-	    				values[i] = val.toString();
-	    		}
-    		}
-    		
-    		IDBResult rows = executeSQL(v.toStr(), values);
-    		RubyString[] colNames = getOrigColNames(rows);
-    		
-    		for( ; !rows.isEnd(); rows.next() )
-    		{
-    			RubyHash row = ObjectFactory.createHash();
-    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+    			LOG.INFO("batch execute:" + strSql);
     			
-    			res.add( row );
+    			executeBatchSQL( strSql );
+    		}
+    		else
+    		{
+	    		Object[] values = null;
+	    		if ( arg != null )
+	    		{
+		    		RubyArray args1 = arg.toAry();
+		    		RubyArray args = args1;
+		    		if ( args.size() > 0 && args.get(0) instanceof RubyArray )
+		    			args = (RubyArray)args.get(0);
+		    		
+		    		values = new Object[args.size()];
+		    		for ( int i = 0; i < args.size(); i++ )
+		    		{
+		    			RubyValue val = args.get(i);
+		    			if ( val instanceof RubyFixnum )
+		    				values[i] = new Long( ((RubyFixnum)val).toLong() );
+		    			else
+		    				values[i] = val.toString();
+		    		}
+	    		}
+	    		
+	    		IDBResult rows = executeSQL( strSql, values);
+	    		RubyString[] colNames = getOrigColNames(rows);
+	    		
+	    		for( ; !rows.isEnd(); rows.next() )
+	    		{
+	    			RubyHash row = ObjectFactory.createHash();
+	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+	    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+	    			
+	    			res.add( row );
+	    		}
     		}
 		}catch(Exception e)
 		{
@@ -810,40 +877,6 @@ public class DBAdapter extends RubyBasic {
     	return new DBAdapter(RubyRuntime.DatabaseClass);
     }
     
-    private RubyValue rb_start_transaction() {
-    	try{
-    		setUnlockDB(true);
-    		startTransaction();
-    	}catch( Exception e ){
-    		LOG.ERROR("start_transaction failed.", e);
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private RubyValue rb_commit() {
-    	try{
-    		commit();
-    	}catch( Exception e ){
-    		LOG.ERROR("commit failed.", e);
-    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
-    private RubyValue rb_rollback() {
-    	try{
-    		rollback();
-    	}catch( Exception e ){
-    		LOG.ERROR("rollback failed.", e);
-    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-    	}
-    	
-        return ObjectFactory.createInteger(0);
-    }
-    
     public static void closeAll()
     {
     	Enumeration enumDBs = m_mapDBPartitions.elements();
@@ -854,6 +887,16 @@ public class DBAdapter extends RubyBasic {
 		}
     }
 
+    public static void initAttrManager()throws DBException
+    {
+    	Enumeration enumDBs = m_mapDBPartitions.elements();
+		while (enumDBs.hasMoreElements()) 
+		{
+			DBAdapter db = (DBAdapter)enumDBs.nextElement();
+			db.getAttrMgr().loadBlobAttrs(db);
+		}
+    }
+    
     public static DBAdapter getUserDB()
     {
         return (DBAdapter)getDBPartitions().get("user");
@@ -912,27 +955,66 @@ public class DBAdapter extends RubyBasic {
 		});*/
 		klass.defineMethod( "execute", new RubyVarArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_execute(args.get(0), 
-						(args.size() > 1 ? args.get(1):null));}
+				return ((DBAdapter)receiver).rb_execute(args.get(0), args.get(1), 
+						(args.size() > 2 ? args.get(2):null));}
 		});
 		
 		klass.defineMethod( "start_transaction", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_start_transaction();}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+		    		((DBAdapter)receiver).startTransaction();
+			        return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("start_transaction failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		klass.defineMethod( "commit", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_commit();}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+		    		((DBAdapter)receiver).commit();
+			        return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("commit failed.", e);
+		    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		klass.defineMethod( "rollback", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_rollback();}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+		    		((DBAdapter)receiver).rollback();
+			        return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("rollback failed.", e);
+		    		throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
 		});
 		klass.defineMethod( "destroy_tables", new RubyTwoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_destroy_tables(arg, arg1);}
 		});
 		
+		klass.defineMethod("is_ui_waitfordb", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			{
+				try{
+				    boolean bRes = ((DBAdapter)receiver).isUIWaitDB();
+				    return ObjectFactory.createBoolean(bRes);				    
+				}catch(Exception e)
+				{
+					LOG.ERROR("is_ui_waitfordb failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
+/*		
 		klass.defineMethod("lock_db",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
@@ -964,6 +1046,8 @@ public class DBAdapter extends RubyBasic {
 				    return RubyConstant.QNIL;
 				}
 			});
+*/
+		
 		klass.defineMethod( "table_exist?", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
@@ -1003,53 +1087,116 @@ public class DBAdapter extends RubyBasic {
 			}
 		}*/
 
-		public void OnInsertIntoTable(String tableName, IDBResult rows2Insert)
+		public void onAfterInsert(String tableName, IDBResult rows2Insert)
 		{
 			if ( !tableName.equalsIgnoreCase("object_values") )
 				return;
 
 			for( ; !rows2Insert.isEnd(); rows2Insert.next() )
 			{
-				int nSrcID = rows2Insert.getIntByIdx(0);
-				String name = rows2Insert.getStringByIdx(1);
-				m_db.getAttrMgr().add(nSrcID, name);
+				Object[] data = rows2Insert.getCurData();
+				Integer nSrcID = new Integer(rows2Insert.getIntByIdx(0));
+				String attrib = (String)data[1];
+				m_db.getAttrMgr().add(nSrcID, attrib);
 			}
 			
 		}
 		
-		public void OnDeleteFromTable(String tableName, IDBResult rows2Delete) 
+		public void onBeforeUpdate(String tableName, IDBResult rows2Delete, int[] cols)
 		{
-			if ( !tableName.equalsIgnoreCase("object_values") )
+			processDelete(tableName, rows2Delete, cols);
+		}
+		
+		public void onBeforeDelete(String tableName, IDBResult rows2Delete) 
+		{
+			processDelete(tableName, rows2Delete, null);
+		}
+		
+		private boolean isChangedCol(int[] cols, int iCol)
+		{
+			if (cols==null)
+				return true;
+			
+			for ( int i = 0; i < cols.length; i++ )
+			{
+				if ( cols[i] == iCol )
+					return true;
+			}
+			return false;
+		}
+		
+		private void processDelete(String tableName, IDBResult rows2Delete, int[] cols)
+		{
+			if ( tableName.equalsIgnoreCase("changed_values") || tableName.equalsIgnoreCase("sources") ||
+			     tableName.equalsIgnoreCase("client_info"))
+				return;
+			
+			boolean bProcessTable = tableName.equalsIgnoreCase("object_values");
+			boolean bSchemaSrc = false;
+			Integer nSrcID = null;
+			if ( !bProcessTable )
+			{
+				nSrcID = m_db.getAttrMgr().getSrcIDHasBlobsByName(tableName);
+				bProcessTable = nSrcID != null; 
+				bSchemaSrc = bProcessTable;
+			}
+			
+			if ( !bProcessTable)
+				return;
+		
+			if ( !bSchemaSrc && !isChangedCol(cols, 3))//value
 				return;
 			
 			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
 			{
-				int nSrcID = rows2Delete.getIntByIdx(0);
-				String attrib = rows2Delete.getStringByIdx(1);
-				m_db.getAttrMgr().remove(nSrcID, attrib);
+				Object[] data = rows2Delete.getCurData();
 				
-				String attrib_type = rows2Delete.getStringByIdx(4);
-				if ( !attrib_type.equals("blob.file") )
-					continue;
+				if ( !bSchemaSrc )
+				{
+					if ( nSrcID == null )
+						nSrcID = new Integer(rows2Delete.getIntByIdx(0));
+					
+					String attrib = (String)data[1];
+					String value = (String)data[3];
 
-				String url = rows2Delete.getStringByIdx(3);
-				if ( url == null || url.length() == 0 )
-					continue;
-				
-				try{
-				    SimpleFile oFile = RhoClassFactory.createFile();
-				    
-			        String strFilePath = oFile.getDirPath("");
-			        strFilePath += url;
-				    
-				    oFile.delete(strFilePath);
-				}catch(Exception exc){
-					LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + url, exc);				
+					if (cols == null) //delete
+						m_db.getAttrMgr().remove(nSrcID, attrib);
+					
+				    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
+				    	processBlobDelete(nSrcID, attrib, value);
+				}else
+				{
+					for ( int i = 0; i < rows2Delete.getColCount(); i++ )
+					{
+						if (!isChangedCol(cols, i))
+							continue;
+						
+						String attrib = rows2Delete.getColName(i);
+						if ( !(data[i] instanceof String) )
+							continue;
+						
+						String value = (String)data[i];
+					    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
+					    	processBlobDelete(nSrcID, attrib, value);
+					}
 				}
-				
+			}
+		}
+		
+		private void processBlobDelete(Integer nSrcID, String attrib, String value)
+		{
+			if ( value == null || value.length() == 0 )
+				return;
+			
+			try{
+		        String strFilePath = RhodesApp.getInstance().resolveDBFilesPath(value);
+		        
+			    SimpleFile oFile = RhoClassFactory.createFile();
+			    oFile.delete(strFilePath);
+			}catch(Exception exc){
+				LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + value, exc);				
 			}
 		}
 		
 	}
-	
 }

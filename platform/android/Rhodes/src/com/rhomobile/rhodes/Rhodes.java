@@ -39,11 +39,10 @@ import com.rhomobile.rhodes.uri.UriHandler;
 import com.rhomobile.rhodes.uri.VideoUriHandler;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -61,6 +60,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -80,7 +80,10 @@ public class Rhodes extends Activity {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
-	private static final String LOADING_PAGE = "file:///android_asset/apps/app/loading.html";
+	private static int MAX_PROGRESS = 10000;
+	
+	private static final String INSTALLING_PAGE = "apps/app/installing.html";
+	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
 	private long uiThreadId;
 	public long getUiThreadId() {
@@ -102,9 +105,11 @@ public class Rhodes extends Activity {
 	
 	private SplashScreen splashScreen = null;
 	
+	private Boolean contentChanged = null;
+	
 	private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
 
-	private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
+	//private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
 	
 	private RhoMenu appMenu = null;
 		
@@ -123,24 +128,29 @@ public class Rhodes extends Activity {
 	
 	public native String normalizeUrl(String url);
 	
+	public static native void loadUrl(String url);
+	
+	public static native void navigateBack();
+	
 	public native void doRequest(String url);
 	
 	public native static void makeLink(String src, String dst);
 	
 	private void initRootPath() {
-		//rootPath = phoneMemoryRootPath();
-		rootPath = sdcardRootPath();
+		Log.d(TAG, "Check if the SD card is mounted...");
+		String state = Environment.getExternalStorageState();
+		Log.d(TAG, "Storage state: " + state);
+		boolean hasSDCard = Environment.MEDIA_MOUNTED.equals(state);
+		rootPath = hasSDCard ? sdcardRootPath() : phoneMemoryRootPath();
 	}
 	
 	public String getRootPath() {
 		return rootPath;
 	}
 	
-	/*
 	private String phoneMemoryRootPath() {
 		return "/data/data/" + getPackageName() + "/data/";
 	}
-	*/
 	
 	private String sdcardRootPath() {
 		return Environment.getExternalStorageDirectory() + "/rhomobile/" + getPackageName() + "/";
@@ -150,7 +160,8 @@ public class Rhodes extends Activity {
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
 	}
-	
+
+	/*
 	private boolean checkSDCard() {
 		Log.d(TAG, "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
@@ -173,6 +184,7 @@ public class Rhodes extends Activity {
 		Log.d(TAG, "SD card check passed, going on");
 		return true;
 	}
+	*/
 	
 	private void copyFromBundle(String file) throws IOException {
 		File target = new File(sdcardRootPath(), file);
@@ -192,40 +204,54 @@ public class Rhodes extends Activity {
 		*/
 	}
 	
-	private void copyFilesFromBundle() {
+	private boolean isNameChanged() {
 		try {
-			//String phRootPath = phoneMemoryRootPath();
-			String sdRootPath = sdcardRootPath();
-			
-			boolean nameChanged = false;
-			boolean contentChanged = true;
-			
 			FileSource as = new AssetsSource(getResources().getAssets());
 			FileSource fs = new FileSource();
-			
-			nameChanged = !Utils.isContentsEquals(as, "name", fs, new File(sdRootPath, "name").getPath());
-			if (nameChanged)
-				contentChanged = true;
-			else
-				contentChanged = !Utils.isContentsEquals(as, "hash", fs, new File(sdRootPath, "hash").getPath());
-			
-			if (contentChanged) {
-				Logger.D(TAG, "Copying required files from bundle to sdcard");
+			return !Utils.isContentsEquals(as, "name", fs, new File(getRootPath(), "name").getPath());
+		}
+		catch (IOException e) {
+			return true;
+		}
+	}
+	
+	private boolean isBundleChanged() {
+		if (contentChanged == null) {
+			try {
+				String rp = getRootPath();
 				
-				/*
-				File phrf = new File(phRootPath);
-				if (!phrf.exists())
-					phrf.mkdirs();
-				phrf = null;
-				*/
+				FileSource as = new AssetsSource(getResources().getAssets());
+				FileSource fs = new FileSource();
+				
+				if (isNameChanged())
+					contentChanged = new Boolean(true);
+				else
+					contentChanged = new Boolean(!Utils.isContentsEquals(as, "hash", fs, new File(rp, "hash").getPath()));
+			}
+			catch (IOException e) {
+				contentChanged = new Boolean(true);
+			}
+		}
+		return contentChanged.booleanValue();
+	}
+	
+	private void copyFilesFromBundle() {
+		try {
+			if (isBundleChanged()) {
+				Logger.D(TAG, "Copying required files from bundle");
+				
+				boolean nameChanged = isNameChanged();
+				
+				String rp = getRootPath();
+				
+				FileSource as = new AssetsSource(getResources().getAssets());
 
 				String items[] = {"apps", "lib", "db", "hash", "name"};
 				for (int i = 0; i != items.length; ++i) {
 					String item = items[i];
-					//File phf = new File(phRootPath, item);
-					File sdf = new File(sdRootPath, item);
-					Logger.D(TAG, "Copy '" + item + "' to '" + sdf + "'");
-					Utils.copyRecursively(as, item, sdf, nameChanged);
+					File f = new File(rp, item);
+					Logger.D(TAG, "Copy '" + item + "' to '" + f.getAbsolutePath() + "'");
+					Utils.copyRecursively(as, item, f, nameChanged);
 					/*
 					String src = sdf.getAbsolutePath();
 					String dst = phf.getAbsolutePath();
@@ -234,11 +260,7 @@ public class Rhodes extends Activity {
 					*/
 				}
 				
-				File dbfiles = new File(rootPath + "apps/public/db-files");
-				if (!dbfiles.exists())
-					dbfiles.mkdirs();
-				dbfiles = null;
-				
+				contentChanged = new Boolean(true);
 				Logger.D(TAG, "All files copied");
 			}
 			else
@@ -268,13 +290,6 @@ public class Rhodes extends Activity {
 	public WebView createWebView() {
 		WebView w = new WebView(this);
 		
-		try {
-			w.loadUrl(LOADING_PAGE);
-		}
-		catch (Exception e) {
-			// Ignore
-		}
-		
 		WebSettings webSettings = w.getSettings();
 		webSettings.setSavePassword(false);
 		webSettings.setSaveFormData(false);
@@ -300,6 +315,12 @@ public class Rhodes extends Activity {
 			}
 			
 			@Override
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
+				super.onPageStarted(view, url, favicon);
+			}
+			
+			@Override
 			public void onPageFinished(WebView view, String url) {
 				// Clear page until we get real page loaded
 				if (!(realPageLoaded || url.equals(LOADING_PAGE)))
@@ -313,8 +334,23 @@ public class Rhodes extends Activity {
 				// Hide splash screen
 				if (url.startsWith("http://"))
 					hideSplashScreen();
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				super.onPageFinished(view, url);
 			}
 
+		});
+		
+		w.setWebChromeClient(new WebChromeClient() {
+			@Override
+			public void onProgressChanged(WebView view, int newProgress) {
+				newProgress *= 100;
+				if (newProgress < 0)
+					newProgress = 0;
+				if (newProgress > MAX_PROGRESS)
+					newProgress = MAX_PROGRESS;
+				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
+				super.onProgressChanged(view, newProgress);
+			}
 		});
 
 		return w;
@@ -399,17 +435,57 @@ public class Rhodes extends Activity {
 		view.requestFocus();
 	}
 	
+	private void showLoadingPage() {
+		try {
+			boolean hasInstalling = false;
+			try {
+				getResources().getAssets().open("apps/app/installing.png").close();
+				hasInstalling = true;
+			}
+			catch (IOException e) {}
+			showSplashScreen("apps/app/" + (hasInstalling && isBundleChanged() ? "installing.png" : "loading.png"));
+		}
+		catch (Exception e) {
+			MainView v = new SimpleMainView();
+			
+			boolean bc = isBundleChanged();
+			String page = bc ? INSTALLING_PAGE : LOADING_PAGE;
+			
+			boolean hasNeededPage;
+			try {
+				getResources().getAssets().open(page).close();
+				hasNeededPage = true;
+			}
+			catch (IOException e1) {
+				hasNeededPage = false;
+			}
+			
+			if (hasNeededPage) {
+				v.navigate("file:///android_asset/" + page, 0);
+			}
+			else {
+				StringBuffer p = new StringBuffer();
+				p.append("<html><title>");
+				p.append(bc ? "Installing" : "Loading");
+				p.append("</title><body>");
+				p.append(bc ? "Installing" : "Loading");
+				p.append("...</body></html>");
+				v.loadData(p.toString(), 0);
+			}
+			
+			setMainView(v);
+		}
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if (!checkSDCard()) {
-			finish();
-			return;
-		}
-		
-		uiThreadId = Thread.currentThread().getId();
+		Thread ct = Thread.currentThread();
+		ct.setPriority(Thread.MAX_PRIORITY);
+		uiThreadId = ct.getId();
+
 		RhodesInstance.setInstance(this);
 		
 		initRootPath();
@@ -420,7 +496,7 @@ public class Rhodes extends Activity {
 			finish();
 			return;
 		}
-		createRhodesApp(rootPath);
+		createRhodesApp(getRootPath());
 		
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))
@@ -441,7 +517,14 @@ public class Rhodes extends Activity {
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		Logger.I("Rhodes", "Loading...");
+		showLoadingPage();
 		
+		// Increase WebView rendering priority
+		WebView w = new WebView(this);
+		WebSettings webSettings = w.getSettings();
+		webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+		
+		// Get screen width/height
 		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 		Display d = wm.getDefaultDisplay();
 		screenHeight = d.getHeight();
@@ -451,13 +534,6 @@ public class Rhodes extends Activity {
 		d.getMetrics(metrics);
 		screenPpiX = metrics.xdpi;
 		screenPpiY = metrics.ydpi;
-		
-		try {
-			showSplashScreen("apps/app/loading.png");
-		}
-		catch (Exception e) {
-			setMainView(new SimpleMainView());
-		}
 		
 		// TODO: detect camera availability
 		isCameraAvailable = true;

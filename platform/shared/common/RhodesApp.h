@@ -52,7 +52,6 @@ private:
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
 
-    common::CMutex m_mxAppMenu;
     CAppMenu m_oAppMenu;
 	
 public:
@@ -67,6 +66,7 @@ public:
     String canonicalizeRhoUrl(const String& strUrl) ;
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
+    void navigateBack();
 
     const String& getRhobundleReloadUrl();
     const String& getStartUrl();
@@ -83,14 +83,13 @@ public:
     const String& getRhoRootPath(){return m_strRhoRootPath;}
 
     const String& getAppBackUrl(){return m_strAppBackUrl;}
+    void setAppBackUrl(const String& url);
 
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
 
-    void setAppMenu(unsigned long valMenu);
-    void addAppMenuItem( const String& strLabel, const String& strLink );
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
 	
     boolean sendLog();
@@ -110,6 +109,8 @@ public:
 	
     void setScreenRotationNotification(String strUrl, String strParams);
     void callScreenRotationCallback(int width, int height, int degrees);
+
+    void loadUrl(String url);
 
 private:
     virtual void run();
@@ -152,6 +153,8 @@ void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
 void rho_http_sendresponse(void* httpContext, const char* szBody);
 int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...);
+
+void rho_rhodesapp_navigate_back();
 	
 char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
@@ -176,6 +179,8 @@ int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);
 
 void rho_net_request(const char *url);
+
+void rho_rhodesapp_load_url(const char *url);
 
 #ifdef __cplusplus
 };

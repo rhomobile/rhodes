@@ -42,6 +42,7 @@
 + (UIApplication*)application;
 
 + (CGRect)applicationFrame;
++ (void)setStatusBarHidden:(BOOL)v;
 
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait;
