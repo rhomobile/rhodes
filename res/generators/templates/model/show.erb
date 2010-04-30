@@ -3,18 +3,16 @@
 </div>
 
 <div id="toolbar">
-    <div id="row">
-      <div id="leftItem" class="backButton"><%%= link_to "Back", :action => :index %></div>
-      <div id="rightItem" class="regularButton"><%%= link_to "Edit", :action => :edit, :id => @<%= name.downcase %>.object %></div>
-    </div>
+    <div id="leftItem" class="backButton"><%%= link_to "Back", :action => :index %></div>
+    <div id="rightItem" class="regularButton"><%%= link_to "Edit", :action => :edit, :id => @<%= name.downcase %>.object %></div>
 </div>
 
 <div id="content">
     <ul>
         <% attributes.each do |attribute| %>
         <li>
-            <span class="itemLabel"><%= attribute.camelize %></span>
-            <span class="itemValue"><%%= @<%= name.downcase %>.<%= attribute %>%></span>
+            <div class="itemLabel"><%= attribute.camelize %></div>
+            <div class="itemValue"><%%= @<%= name.downcase %>.<%= attribute %>%></div>
         </li>
         <% end %>
     </ul>

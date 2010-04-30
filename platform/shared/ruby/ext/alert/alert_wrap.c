@@ -1549,6 +1549,8 @@ static VALUE mAlert;
 #include "ext/rho/rhoruby.h"
 extern void alert_show_popup(rho_param *p);
 #define show_popup alert_show_popup 
+extern void alert_hide_popup();
+#define hide_popup alert_hide_popup
 extern void alert_vibrate(void*);
 #define vibrate alert_vibrate
 extern void alert_play_file(char* file_name, ...);
@@ -1627,6 +1629,18 @@ fail:
   {
     rho_param_free(arg1);
   }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_hide_popup(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  hide_popup();
+  return Qnil;
+fail:
   return Qnil;
 }
 
@@ -1937,6 +1951,7 @@ SWIGEXPORT void Init_Alert(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mAlert, "show_popup", _wrap_show_popup, -1);
+  rb_define_module_function(mAlert, "hide_popup", _wrap_hide_popup, -1);
   rb_define_module_function(mAlert, "vibrate", _wrap_vibrate, -1);
   rb_define_module_function(mAlert, "play_file", _wrap_play_file, -1);
 }

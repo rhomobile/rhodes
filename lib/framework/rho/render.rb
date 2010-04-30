@@ -102,7 +102,7 @@ module Rho
           options[:layout] = false if options[:layout].nil?
         end
       end
-      rho_info 'render content: ' + @content.length.to_s
+      #rho_info 'render content: ' + @content.length.to_s
       if xhr? and options[:use_layout_on_ajax] != true
         options[:layout] = false
       elsif options[:layout].nil? or options[:layout] == true

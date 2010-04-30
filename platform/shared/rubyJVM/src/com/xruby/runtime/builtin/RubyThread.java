@@ -241,6 +241,12 @@ public class RubyThread extends RubyBasic {
         return mainThread;
     }
 
+    //RHO
+    public static boolean isMainThread(){
+        return mainThread.thread_ == Thread.currentThread();
+    }
+    //RHO
+    
     //@RubyLevelMethod(name="stop?")
     public RubyValue getStoped(){
         return ObjectFactory.createBoolean(stoped);

@@ -23,6 +23,7 @@ div#pageTitle h1 {
     text-align: left;
     white-space: nowrap;
     color: white;
+    font-weight: bold;
 }
 
 /*toolbar */
@@ -31,16 +32,21 @@ div#toolbar{
 	height: 25px;
 	line-height: 25px;
 	padding-left: 4px;
+	width:100%;
 }
 
 /*content div styling*/
-div#content h3 {
+div#content h2 {
 	font-size:15px;
 	display:block;
 	margin:4px;
 }
 
-div#content h3.groupTitle{
+div#content h2.groupTitle{
+	background:black;
+	height:14px;
+	font-size:10px;
+	padding:5px;
 	border-bottom:1px solid lightgray;
 }
 

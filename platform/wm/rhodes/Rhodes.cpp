@@ -115,6 +115,8 @@ public :
 		rho_logconf_Init(m_strRootPath.c_str());
 		LOG(INFO) + "Rhodes started";
 
+        ::SetThreadPriority(GetCurrentThread(),10);
+
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
@@ -149,25 +151,6 @@ public :
 
         return S_OK;
     }
-
-	void DoViewRefresh() {
-		::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_REFRESH,0);
-	}
-
-	void DoViewNavigate(const char* url) 
-    {
-        rho::String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-        ::PostMessage( m_appWindow.m_hWnd, WM_COMMAND, IDM_NAVIGATE, (LPARAM)wce_mbtowc(strUrl.c_str()) );
-    }
-
-    void DoShowLog()
-    {
-        ::PostMessage(m_appWindow.m_hWnd,WM_COMMAND,IDM_LOG,0);
-    }
-
-	//char* GetCurrentLocation() {
-	//	return m_appWindow.GetCurrentLocation();
-	//}
 
 	HWND GetManWindow() {
 		return m_appWindow.m_hWnd;
@@ -255,30 +238,10 @@ extern "C" const char* rho_native_rhopath()
 
 extern "C" void rho_conf_show_log()
 {
-    _AtlModule.DoShowLog();
+    ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
 
 //Hook for ruby call to refresh web view
-
-extern "C" void webview_refresh(int index) {
-	_AtlModule.DoViewRefresh();
-}
-
-extern "C" void webview_navigate(char* url, int index) {
-	_AtlModule.DoViewNavigate(url);
-}
-
-extern "C" char* webview_execute_js(char* js, int index) 
-{
-    String strJS = "javascript:";
-    strJS += js;
-    _AtlModule.DoViewNavigate(strJS.c_str());
-	return "";
-}
-
-//extern "C" char* get_current_location() {
-//	return _AtlModule.GetCurrentLocation();
-//}
 
 extern "C" void rho_net_impl_network_indicator(int active)
 {
@@ -321,6 +284,9 @@ extern "C" void Init_fcntl(void)
 {
 }
 
+extern "C" void Init_NavBar(void)
+{
+}
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};

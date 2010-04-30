@@ -1,20 +1,6 @@
 #pragma once
 
 #if !defined(_WIN32_WCE)
-/*
-class CODButtonImpl : public CWindowImpl<CODButtonImpl, CButton>,
-                      public COwnerDraw<CODButtonImpl>
-{
-public:
-    BEGIN_MSG_MAP_EX(CODButtonImpl)
-        CHAIN_MSG_MAP_ALT(COwnerDraw<CODButtonImpl>, 1)
-        DEFAULT_REFLECTION_HANDLER()
-    END_MSG_MAP()
- 
-    void DrawItem ( LPDRAWITEMSTRUCT lpdis );
-};
-*/
-
 #define IDB_BACK 10
 #define IDB_MENU 11
 

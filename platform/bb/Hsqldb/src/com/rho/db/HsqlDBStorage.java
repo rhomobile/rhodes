@@ -68,6 +68,18 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 		}
 	}
 
+	public void executeBatchSQL(String strSqlScript)throws DBException
+	{
+		if ( m_dbSess == null )
+			throw new RuntimeException("executeSQL: m_dbSess == null");
+		
+		Result res = m_dbSess.sqlExecuteDirectNoPreChecks(strSqlScript);
+		if ( res.getException() != null )
+			throw new DBException(res.getException());
+		
+		m_dbSess.commitSchema();
+	}
+	
 /*    static class HsqlDeleteTrigger implements org.hsqldb.Trigger {
 
         public void fire(int i, String name, String table, Object[] row1,
@@ -77,21 +89,30 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
     }
 */ 
 	//IDBCallback
-	public void onDeleteRow(Table table, Row row) {
+	public void onBeforeDelete(Table table, Row row) {
 		if ( m_dbCallback == null )
 			return;
 		
 		m_rowResult.init(table, row);
-		m_dbCallback.OnDeleteFromTable(table.getName().name, m_rowResult );
+		m_dbCallback.onBeforeDelete(table.getName().name, m_rowResult );
 	}
 
-	public void onInsertRow(Table table, Row row) {
+	public void onAfterInsert(Table table, Row row) {
 		if ( m_dbCallback == null )
 			return;
 		
 		m_rowResult.init(table, row);
-		m_dbCallback.OnInsertIntoTable(table.getName().name, m_rowResult );
+		m_dbCallback.onAfterInsert(table.getName().name, m_rowResult );
 	}
+	
+	public void onBeforeUpdate(Table table, Row row, int[] cols) {
+		if ( m_dbCallback == null )
+			return;
+		
+		m_rowResult.init(table, row);
+		m_dbCallback.onBeforeUpdate(table.getName().name, m_rowResult, cols );
+	}
+	
 	//IDBCallback
 	
 	public void setDbCallback(IDBCallback callback)

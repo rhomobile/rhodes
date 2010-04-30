@@ -12,6 +12,7 @@
 #include "net/AsyncHttp.h"
 #include "unzip/unzip.h"
 #include "net/URI.h"
+#include "rubyext/WebView.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -29,7 +30,6 @@ void rho_sync_destroy();
 void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
-void webview_navigate(char* url, int index);
 void rho_db_init_attr_manager();
 }
 
@@ -421,7 +421,7 @@ String CRhodesApp::resolveDBFilesPath(const String& strFilePath)
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
-    LOG(INFO) + "Current URL: " + strUrl;
+    //LOG(INFO) + "Current URL: " + strUrl;
 
     m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
 
@@ -437,6 +437,14 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
         RHOCONF().setString("LastVisitedPage",strUrl);		
         RHOCONF().saveToFile();
     }
+}
+
+void CRhodesApp::setAppBackUrl(const String& url)
+{
+    if ( url.length() > 0 )
+        m_strAppBackUrl = canonicalizeRhoUrl(url);
+    else
+        m_strAppBackUrl = "";
 }
 
 const String& CRhodesApp::getStartUrl()
@@ -477,7 +485,17 @@ const String& CRhodesApp::getRhobundleReloadUrl()
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
 {
-    webview_navigate(const_cast<char*>(strUrl.c_str()), 0);
+    rho_webview_navigate(strUrl.c_str(), 0);
+}
+
+void CRhodesApp::navigateBack()
+{
+    rho::String strAppUrl = getAppBackUrl();
+
+    if ( strAppUrl.length() > 0 )
+        rho_webview_navigate(strAppUrl.c_str(), 0);
+    else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
+        rho_webview_navigate_back();
 }
 
 String CRhodesApp::canonicalizeRhoUrl(const String& strUrl) 
@@ -495,36 +513,6 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
         return strUrl;
 
     return CFilePath::join(m_strHomeUrl,strUrl);
-}
-
-void CRhodesApp::addAppMenuItem( const String& strLabel, const String& strLink )
-{
-    if ( strLabel.length() == 0 )
-        return;
-
-    synchronized(m_mxAppMenu)
-    {
-		m_oAppMenu.addItem(strLabel, strLink);
-        if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
-            m_strAppBackUrl = canonicalizeRhoUrl(strLink);
-    }
-}
-
-extern "C" void
-menu_iter(const char* szLabel, const char* szLink, void* pThis)
-{
-	((CRhodesApp*)pThis)->addAppMenuItem(szLabel, szLink );
-}
-
-void CRhodesApp::setAppMenu(unsigned long valMenu)
-{
-    synchronized(m_mxAppMenu) 
-	{
-		m_oAppMenu.removeAllItems();
-        m_strAppBackUrl="";
-    }
-
-    rho_ruby_enum_strhash(valMenu, menu_iter, this);
 }
 
 boolean CRhodesApp::sendLog() 
@@ -660,6 +648,27 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
             LOG(ERROR) + "Screen rotation notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         }
     }
+}
+
+void CRhodesApp::loadUrl(String url)
+{
+    boolean callback = false;
+    if (url.size() >= 9 && url.substr(0, 9) == "callback:")
+    {
+        callback = true;
+        url = url.substr(9);
+    }
+    char *s = rho_http_normalizeurl(url.c_str());
+    url = s;
+    free(s);
+    if (callback)
+    {
+        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        NetResponse(resp, pNetRequest->pullData( url, null ));
+        (void)resp;
+    }
+    else
+        navigateToUrl(url);
 }
 
 } //namespace common
@@ -811,6 +820,11 @@ const char* rho_rhodesapp_getblobsdirpath()
     return RHODESAPP().getBlobsDirPath().c_str();
 }
 
+void rho_rhodesapp_navigate_back()
+{
+    RHODESAPP().navigateBack();
+}
+
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
     const char* strError, int bCancel )
 {
@@ -834,7 +848,7 @@ void rho_rhodesapp_callAppActiveCallback(int nActive)
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 {
-    RHODESAPP().setAppMenu(valMenu);
+    RHODESAPP().getAppMenu().setAppMenu(valMenu);
 }
 
 const char* rho_rhodesapp_getappbackurl()
@@ -994,6 +1008,11 @@ int rho_unzip_file(const char* szZipPath)
 	CloseZip(hz);
 
     return res == ZR_OK ? 1 : 0;
+}
+
+void rho_rhodesapp_load_url(const char *url)
+{
+    RHODESAPP().loadUrl(url);
 }
 
 } //extern "C"

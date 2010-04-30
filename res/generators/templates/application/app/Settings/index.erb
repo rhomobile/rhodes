@@ -12,7 +12,12 @@
         </li>
         <% end %>
         <li>
-            <span class="title">Client ID:</span><span class="clientID"><%= Rhom::Rhom::client_id %></span>
+            <div class="itemLabel">
+                <span class="title">Client ID:</span>
+            </div>
+            <div class="itemValue">
+                <span class="clientID"><%= Rhom::Rhom::client_id %></span>
+            </div>
         </li>
         <li>
           <a href="<%= url_for :action => :reset %>">
