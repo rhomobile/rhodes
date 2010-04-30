@@ -366,6 +366,10 @@ final public class RhodesApplication extends UiApplication implements SystemList
     
     public static boolean isFullBrowser(){ return m_isFullBrowser; }
     
+    void invalidateMainScreen()
+    {
+    	_mainScreen.invalidate();
+    }
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -1002,11 +1006,11 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	        if ( ver.nMajor >= 5 )
 	        	m_oBrowserAdapter = new BrowserAdapter5(_mainScreen, this);
 	        else
-	        	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this);
+	        	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this, RhoConf.getInstance().getBool("bb_loadimages_async") );
 	        
         	m_oBrowserAdapter.setFullBrowser();
         }else
-        	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this);
+        	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this, RhoConf.getInstance().getBool("bb_loadimages_async"));
     }
     
     private void invokeStartupWork() {
@@ -1154,7 +1158,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	        	    		LOG.ERROR("Process command failed.", e);
 	        	    	}catch(Throwable exc)
 	        	    	{
-	        	    		LOG.ERROR("Process command failed.", exc);
+	        	    		LOG.ERROR("Process command crashed.", exc);
 	        	    	}
 	        		}
 	        		

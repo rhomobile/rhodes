@@ -140,6 +140,15 @@ public class SecondaryResourceFetchThread extends Thread {
 	                	{
 	                		_browserField.resourceReady(resource);
 	                	}
+	                	
+	                	if (_imageQueue.size() == 0)
+	                	{
+		                	synchronized (RhodesApplication.getEventLock())
+		                	{
+		                		RhodesApplication.getInstance().invalidateMainScreen();
+		                	}
+	                		
+	                	}
 	                }
             	}catch(Exception exc)
             	{
