@@ -131,7 +131,7 @@ public class SecondaryResourceFetchThread extends Thread {
             if (resource != null) {
                 
             	try{
-	                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null);
+	                HttpConnection connection = Utilities.makeConnection(resource.getUrl(), resource.getRequestHeaders(), null, null);
 	                resource.setHttpConnection(connection);
 	                
 	                // signal to the browser field that resource is ready
@@ -139,6 +139,15 @@ public class SecondaryResourceFetchThread extends Thread {
 	                	//synchronized (RhodesApplication.getEventLock())
 	                	{
 	                		_browserField.resourceReady(resource);
+	                	}
+	                	
+	                	if (_imageQueue.size() == 0)
+	                	{
+		                	synchronized (RhodesApplication.getEventLock())
+		                	{
+		                		RhodesApplication.getInstance().invalidateMainScreen();
+		                	}
+	                		
 	                	}
 	                }
             	}catch(Exception exc)

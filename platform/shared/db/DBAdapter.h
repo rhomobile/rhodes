@@ -5,6 +5,22 @@
 #include "logging/RhoLog.h"
 
 namespace rho{
+namespace common{
+class CRubyMutex
+{
+    int m_nLockCount;
+    unsigned long m_valThread, m_valMutex;
+
+public:
+    CRubyMutex();
+    ~CRubyMutex();
+
+    boolean isMainRubyThread();
+    void Lock();
+    void Unlock();
+};
+}
+
 namespace db{
 
 class CDBAdapter
@@ -12,10 +28,10 @@ class CDBAdapter
     sqlite3* m_dbHandle;
     String   m_strDbPath, m_strDbVer, m_strDbVerPath;
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
+    common::CRubyMutex m_mxRuby;
     common::CMutex m_mxDB;
-    common::CMutex m_mxTransDB;
-    boolean m_bUnlockDB;
-    boolean m_bInsideTransaction;
+    boolean m_bUIWaitDB;
+    int     m_nTransactionCounter;
     CDBAttrManager m_attrMgr;
     static HashtablePtr<String,CDBAdapter*> m_mapDBPartitions;
 
@@ -35,7 +51,7 @@ class CDBAdapter
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUnlockDB(false), m_bInsideTransaction(false){}
+    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUIWaitDB(false), m_nTransactionCounter(0){}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
@@ -43,11 +59,10 @@ public:
     sqlite3* getDbHandle(){ return m_dbHandle; }
     CDBAttrManager& getAttrMgr(){ return m_attrMgr; }
 
-    boolean isUnlockDB()const{ return m_bUnlockDB; }
-    void setUnlockDB(boolean b){ m_bUnlockDB = b; }
-    void Lock(){ m_mxDB.Lock(); }
-    void Unlock(){ setUnlockDB(false); m_mxDB.Unlock(); }
-    boolean isInsideTransaction(){ return m_bInsideTransaction; }
+    boolean isUIWaitDB()const{ return m_bUIWaitDB; }
+    void Lock();
+    void Unlock();
+    boolean isInsideTransaction(){ return m_nTransactionCounter > 0; }
     const String& getDBPath(){ return m_strDbPath; }
 
     static HashtablePtr<String,CDBAdapter*>& getDBPartitions(){ return  m_mapDBPartitions; }
@@ -59,6 +74,7 @@ public:
     static CDBAdapter& getDB(const char* szPartition);
 
     boolean isTableExist(String strTableName);
+    int prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt);
 
     void bind(sqlite3_stmt* st, int nPos, int val)
     {
@@ -156,7 +172,7 @@ public:
         return executeStatement(res);
     }
 
-    DBResultPtr executeSQLReportNonUnique( const char* szSt, Vector<String>& arValues );
+    DBResultPtr executeSQLReportNonUniqueEx( const char* szSt, Vector<String>& arValues );
 
     template<typename T1, typename T2, typename T3, typename T4>
     DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4 )
@@ -203,7 +219,7 @@ public:
         return executeStatement(res);
     }
 
-    DBResultPtr executeSQL( const char* szSt, Vector<String>& arValues);
+    DBResultPtr executeSQLEx( const char* szSt, Vector<String>& arValues);
     DBResultPtr executeSQL( const char* szSt);
 
     void startTransaction();

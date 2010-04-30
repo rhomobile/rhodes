@@ -140,7 +140,8 @@ public class RhoRuby {
 		//TODO: implement recursive dir creation
 		RhoClassFactory.createFile().getDirPath("apps");
 		RhoClassFactory.createFile().getDirPath("apps/public");
-		RhoClassFactory.createFile().getDirPath("apps/public/db-files");
+		RhoClassFactory.createFile().getDirPath("db");
+		RhoClassFactory.createFile().getDirPath("db/db-files");
 		
     	//Class mainRuby = Class.forName("xruby.ServeME.main");
 		//DBAdapter.startAllDBTransaction();
@@ -172,6 +173,11 @@ public class RhoRuby {
 	
 	public static boolean rho_ruby_isValid(){
 		return receiver!= null && receiver != RubyConstant.QNIL;
+	}
+	
+	public static boolean isMainRubyThread()
+	{
+		return RubyThread.isMainThread();
 	}
 	
 	public static void RhoRubyStop(){

@@ -27,7 +27,7 @@ public class RhoConnection implements IHttpConnection {
 	
 	/** Request URI **/
 	URI uri;
-	URI uri_external;
+	String  url_external;
 	
 	/** Method - GET, POST, HEAD **/
 	String method;
@@ -50,15 +50,62 @@ public class RhoConnection implements IHttpConnection {
 	
 	/** Construct connection using URI **/
     
-    public RhoConnection(URI _uri) {
-    	uri = new URI(_uri.toString());
-    	uri_external = _uri;
+    public RhoConnection(URI _uri) 
+    {
+    	url_external = _uri.toString();
+    	uri = new URI(url_external);
     
     	if ( !uri.getPath().startsWith("/apps") )
     		uri.setPath("/apps" + uri.getPath());
     	else
     		uri.setPath(uri.getPath());
     }
+    
+    public void resetUrl(String url)
+    {
+    	url_external = url;
+    	uri = new URI(url_external);
+    
+    	if ( !uri.getPath().startsWith("/apps") )
+    		uri.setPath("/apps" + uri.getPath());
+    	else
+    		uri.setPath(uri.getPath());
+    	
+    	method = "";
+        responseCode = 200;
+        responseMsg = "OK";
+        contentLength = -1;
+        reqHeaders.clear();
+        resHeaders.clear();
+        requestProcessed = false;
+        
+        try{
+        	clean();
+        }catch(IOException exc)
+        {
+        	LOG.ERROR("clean failed.", exc);
+        }
+    }
+
+	private void clean() throws IOException 
+	{
+		if ( m_file != null ){
+			m_file.close();
+			m_file = null;
+		}else if (responseData != null)
+			responseData.close();
+		
+		responseData = null;
+		
+		if ( postData != null )
+			postData.close();
+	}
+	
+	public void close() throws IOException 
+	{
+		clean();
+		LOG.TRACE("Close browser connection.");
+	}
     
 	public Object getNativeConnection() {
 		throw new RuntimeException("getNativeConnection - Not implemented");
@@ -194,8 +241,8 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getURL() {
-		LOG.TRACE("getURL: " + uri_external.toString());
-		return uri_external.toString();
+		LOG.TRACE("getURL: " + url_external);
+		return url_external;
 	}
 
 	public void setRequestMethod(String method) throws IOException {
@@ -318,16 +365,6 @@ public class RhoConnection implements IHttpConnection {
 	public InputStream openInputStream() throws IOException {
 		processRequest();
 		return responseData;
-	}
-
-	public void close() throws IOException {
-		if ( m_file != null ){
-			m_file.close();
-			m_file = null;
-		}else if (responseData != null)
-			responseData.close();
-		
-		responseData = null;
 	}
 
 	public DataOutputStream openDataOutputStream() throws IOException {
@@ -499,23 +536,38 @@ public class RhoConnection implements IHttpConnection {
 		return strTime;
 	}
 	
-	protected boolean httpServeFile(String strContType)throws IOException{
-		
+	protected boolean isDbFilesPath(String strPath)
+	{
+		return strPath.startsWith("/apps/app/db/db-files") || strPath.startsWith("/apps/db/db-files");
+	}
+	
+	protected boolean httpServeFile(String strContType)throws IOException
+	{
 		String strPath = uri.getPath();
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
 
 		LOG.TRACE("httpServeFile: " + strPath);
-		if ( strContType.equals("application/javascript")){
-			responseData = RhoRuby.loadFile(strPath);
-			if ( responseData == null ){
-				String str = "";
-				responseData = new ByteArrayInputStream(str.getBytes());
+		
+		if ( !isDbFilesPath(strPath) )
+		{
+			if ( strContType.equals("application/javascript")){
+				responseData = RhoRuby.loadFile(strPath);
+				if ( responseData == null ){
+					String str = "";
+					responseData = new ByteArrayInputStream(str.getBytes());
+				}
 			}
+			else	
+				responseData = RhoRuby.loadFile(strPath);
+		}else
+		{
+			if ( strPath.startsWith("/apps/app/db/db-files") )
+				strPath = strPath.substring(9);// remove /apps/app
+			else
+				strPath = strPath.substring(5);// remove /apps
 		}
-		else	
-			responseData = RhoRuby.loadFile(strPath);
-
+		
 		if (responseData == null){
 			  
 			SimpleFile file = null;
@@ -556,9 +608,22 @@ public class RhoConnection implements IHttpConnection {
 		return true;
 	}
 	
-	protected boolean httpGetFile(String strContType)throws IOException{
+	private boolean isKnownExtension(String strPath)
+	{
+		int nDot = strPath.lastIndexOf('.');
+		if ( nDot >= 0 )
+		{
+			String strExt = strPath.substring(nDot+1);
+			return strExt.equalsIgnoreCase("png") || strExt.equalsIgnoreCase("jpg") ||
+				strExt.equalsIgnoreCase("css") || strExt.equalsIgnoreCase("js");
+		}
 		
-		if ( strContType.length() == 0 )
+		return false;
+	}
+	
+	protected boolean httpGetFile(String strContType)throws IOException
+	{
+		if ( !isDbFilesPath(uri.getPath()) && !isKnownExtension(uri.getPath()) && strContType.length() == 0 )
 		{
 			String strTemp = FilePath.join(uri.getPath(), "/");
 	

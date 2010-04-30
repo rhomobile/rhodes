@@ -4,38 +4,7 @@
 
 #include "resource.h"
 #include "menubar.h"
-
-/*
-void CODButtonImpl::DrawItem ( LPDRAWITEMSTRUCT lpdis )
-{
-	CDCHandle dc = lpdis->hDC;
-	CDC dcMem;
-
-    dcMem.CreateCompatibleDC ( dc );
-    dc.SaveDC();
-    dcMem.SaveDC();
-
-    // Draw the button's background, red if it has the focus, blue if not.
-	if ( lpdis->itemState & ODS_FOCUS ) {
-		dc.FillSolidRect ( &lpdis->rcItem, ::GetSysColor(COLOR_3DLIGHT) );
-		dc.Draw3dRect(&lpdis->rcItem, ::GetSysColor(COLOR_BTNHILIGHT), ::GetSysColor(COLOR_BTNSHADOW));
-	} else {
-		dc.FillSolidRect ( &lpdis->rcItem, ::GetSysColor(COLOR_3DLIGHT) );
-	}
-
-	// Draw the bitmap in the top-left, or offset by 1 pixel if the button
-    // is clicked.
-    //dcMem.SelectBitmap ( m_bmp );
-
-    //if ( lpdis->itemState & ODS_SELECTED ) 
-    //    dc.BitBlt ( 1, 1, 80, 80, dcMem, 0, 0, SRCCOPY );
-    //else
-    //    dc.BitBlt ( 0, 0, 80, 80, dcMem, 0, 0, SRCCOPY );
-
-    dcMem.RestoreDC(-1);
-    dc.RestoreDC(-1);
-}
-*/
+#include "common/RhodesApp.h"
 
 LRESULT CMenuBar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 //	m_btnLeft.Create(m_hWnd,CWindow::rcDefault,TEXT("Exit"),WS_CHILD|WS_VISIBLE|BS_OWNERDRAW,0,10);
@@ -74,7 +43,7 @@ LRESULT CMenuBar::OnEraseBkgnd(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 
 LRESULT CMenuBar::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	::PostMessage(this->GetParent(),WM_COMMAND,IDM_BACK,0);
+    RHODESAPP().navigateBack();
     return 0;
 }
 

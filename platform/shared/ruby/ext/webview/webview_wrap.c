@@ -1545,18 +1545,22 @@ static VALUE mWebView;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void webview_refresh(int index);
-#define refresh webview_refresh 
-extern void webview_navigate(char* url, int index);
-#define navigate webview_navigate
-extern char* webview_current_location(int index);
-#define current_location webview_current_location
-extern char* webview_execute_js(char* js, int index);
-#define execute_js webview_execute_js
-extern void webview_set_menu_items(VALUE argv);
-#define set_menu_items webview_set_menu_items
-extern int webview_active_tab();
-#define active_tab webview_active_tab
+extern void rho_webview_refresh(int index);
+#define refresh rho_webview_refresh 
+extern void rho_webview_navigate(const char* url, int index);
+#define navigate rho_webview_navigate
+extern char* rho_webview_current_location(int index);
+#define current_location rho_webview_current_location
+extern char* rho_webview_execute_js(const char* js, int index);
+#define execute_js rho_webview_execute_js
+extern void rho_webview_set_menu_items(VALUE argv);
+#define set_menu_items rho_webview_set_menu_items
+extern int rho_webview_active_tab();
+#define active_tab rho_webview_active_tab
+
+extern void rho_webview_full_screen_mode(int enable);
+#define full_screen_mode rho_webview_full_screen_mode
+
 
 
 #include <limits.h>
@@ -1754,7 +1758,7 @@ _wrap_navigate(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "navigate" "', argument " "1"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "navigate" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   if (argc > 1) {
@@ -1764,7 +1768,7 @@ _wrap_navigate(int argc, VALUE *argv, VALUE self) {
     } 
     arg2 = (int)(val2);
   }
-  navigate(arg1,arg2);
+  navigate((char const *)arg1,arg2);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 fail:
@@ -1822,7 +1826,7 @@ _wrap_execute_js(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "execute_js" "', argument " "1"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "execute_js" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   if (argc > 1) {
@@ -1832,7 +1836,7 @@ _wrap_execute_js(int argc, VALUE *argv, VALUE self) {
     } 
     arg2 = (int)(val2);
   }
-  result = (char *)execute_js(arg1,arg2);
+  result = (char *)execute_js((char const *)arg1,arg2);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
@@ -1868,6 +1872,27 @@ _wrap_active_tab(int argc, VALUE *argv, VALUE self) {
   result = (int)active_tab();
   vresult = SWIG_From_int((int)(result));
   return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_full_screen_mode(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "full_screen_mode" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  full_screen_mode(arg1);
+  return Qnil;
 fail:
   return Qnil;
 }
@@ -2141,5 +2166,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "execute_js", _wrap_execute_js, -1);
   rb_define_module_function(mWebView, "set_menu_items", _wrap_set_menu_items, -1);
   rb_define_module_function(mWebView, "active_tab", _wrap_active_tab, -1);
+  rb_define_module_function(mWebView, "full_screen_mode", _wrap_full_screen_mode, -1);
 }
 

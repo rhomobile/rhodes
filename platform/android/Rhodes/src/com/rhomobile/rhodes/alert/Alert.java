@@ -52,6 +52,8 @@ public class Alert {
 	
 	private static final String TAG = "Alert";
 	
+	private static Dialog currentAlert = null;
+	
 	private static native void doCallback(String url, String id, String title);
 	
 	private static class CustomButton {
@@ -89,6 +91,7 @@ public class Alert {
 				doCallback(callback, Uri.encode(id), Uri.encode(title));
 			}
 			dialog.dismiss();
+			currentAlert = null;
 		}
 		
 	};
@@ -231,6 +234,17 @@ public class Alert {
 			
 			dialog.setContentView(main);
 			dialog.show();
+			
+			currentAlert = dialog;
+		}
+	};
+	
+	private static class HideDialog implements Runnable {
+		public void run() {
+			if (currentAlert == null)
+				return;
+			currentAlert.dismiss();
+			currentAlert = null;
 		}
 	};
 	
@@ -245,6 +259,16 @@ public class Alert {
 		}
 		catch (Exception e) {
 			reportFail("showPopup", e);
+		}
+	}
+	
+	public static void hidePopup() {
+		try {
+			Logger.T(TAG, "hidePopup");
+			Rhodes.performOnUiThread(new HideDialog(), false);
+		}
+		catch (Exception e) {
+			reportFail("hidePopup", e);
 		}
 	}
 	

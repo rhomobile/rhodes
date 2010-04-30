@@ -9,6 +9,7 @@ import java.util.Hashtable;
 
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.*;
+import com.rho.net.NetRequest.MultipartItem;
 
 import java.io.IOException;
 
@@ -148,8 +149,14 @@ public class AsyncHttp extends RhoThread
 		        break;
 	
 		    case hcUpload:
-		        m_pNetResponse = m_pNetRequest.pushFile(m_strUrl, m_strBody, null, m_mapHeaders);
-		        break;
+		    	{
+		            MultipartItem oItem = new MultipartItem();
+		            oItem.m_strFilePath = m_strBody;
+		            oItem.m_strContentType = "application/octet-stream";
+	
+		            m_pNetResponse = m_pNetRequest.pushMultipartData( m_strUrl, oItem, null, m_mapHeaders );
+			        break;
+		    	}
 		    }
 		    
 		    if ( !m_pNetRequest.isCancelled() )
