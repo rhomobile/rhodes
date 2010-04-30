@@ -10,16 +10,16 @@ def build_extension(name, arch)
 
     args = []
     args << "-I."
-    args << "-I../../../../platform/shared/ruby/include"
-    args << "-I../../../../platform/shared"
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
 
     if ENV['RHO_PLATFORM'] == 'android'
-      args << "-I../../../../platform/shared/ruby/linux"
-      args << "-I../../../../platform/shared/ruby/generated"
+      args << "-I#{$rootdir}/platform/shared/ruby/linux"
+      args << "-I#{$rootdir}/platform/shared/ruby/generated"
       cc_compile f, $tempdir, args or exit 1
 
     elsif ENV['RHO_PLATFORM'] == 'iphone'
-      args << "-I../../../../platform/shared/ruby/iphone"
+      args << "-I#{$rootdir}/platform/shared/ruby/iphone"
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
       args << "-isysroot #{$sdkroot}"
@@ -68,15 +68,15 @@ end
 
 namespace "build" do
   task :config do
-    $rhoroot = ENV['RHO_ROOT']
-
     $targetdir = ENV['TARGET_TEMP_DIR']
     raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
     $tempdir = ENV['TEMP_FILES_DIR']
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHODES_ROOT_DIR']
+    raise "RHODES_ROOT_DIR is not set" if $rootdir.nil?
 
     if ENV['RHO_PLATFORM'] == 'android'
-      require File.dirname(__FILE__) + '/../../../../platform/android/build/androidcommon.rb'
+      require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
