@@ -248,7 +248,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         
         try
         {
-        	if (referrer == null || !m_bLoadImageAsync) 
+        	if (referrer == null || URI.isLocalData(url) || !m_bLoadImageAsync) 
         	{
 	        	boolean bLocalHost = URI.isLocalHost(url);
 	        	if ( bLocalHost && m_connResource!= null)
