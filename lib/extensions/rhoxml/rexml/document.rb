@@ -246,7 +246,7 @@ module REXML
     # We override this, because XMLDecls and DocTypes must go at the start
     # of the document
     def add( child )
-      puts "document.add: #{child}"
+      #puts "document.add: #{child}"
       if child.kind_of? XMLDecl
         @children.unshift child
         child.parent = self
@@ -278,7 +278,7 @@ module REXML
     alias :<< :add
 
     def add_element(arg=nil, arg2=nil)
-      puts "document.add_element: #{arg}; #{arg2}"
+      #puts "document.add_element: #{arg}; #{arg2}"
       rv = super
       raise "attempted adding second root element to document" if @elements.size > 1
       rv
