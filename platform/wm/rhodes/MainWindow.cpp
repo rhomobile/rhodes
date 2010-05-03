@@ -24,6 +24,7 @@
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
+#include "Alert.h"
 
 #include <hash_map>
 
@@ -430,7 +431,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-    
+
     free ((void *)lParam);
 #endif    
 	return 0;
@@ -478,13 +479,18 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
 LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
+	LOG(INFO) + __FUNCTION__;
     StringW strAppName = getRhodesAppName();
+	CAlertDialog::Params *params = (CAlertDialog::Params *)lParam;
 
-    USES_CONVERSION;
-    MessageBox(A2T((const char*)lParam),
-               strAppName.c_str(),
-               MB_ICONWARNING | MB_OK);
-    free ((void *)lParam);
+	if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
+		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
+	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) {
+		CAlertDialog dialog(params);
+		dialog.DoModal();
+	}
+
+    delete params;
     return 0;
 }
 
