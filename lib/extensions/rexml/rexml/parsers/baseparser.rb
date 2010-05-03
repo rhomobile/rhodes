@@ -1,7 +1,3 @@
-if defined? RHO_ME
-
-else
-
 require 'rexml/parseexception'
 require 'rexml/undefinednamespaceexception'
 require 'rexml/source'
@@ -533,5 +529,3 @@ end
   when :end_doctype
   end
 =end
-
-end
