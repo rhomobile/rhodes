@@ -7,7 +7,9 @@ require "rexml/instruction"
 require "rexml/rexml"
 require "rexml/parseexception"
 require "rexml/output"
+if !defined? RHO_ME
 require "rexml/parsers/baseparser"
+end
 require "rexml/parsers/streamparser"
 require "rexml/parsers/treeparser"
 
