@@ -275,6 +275,11 @@ def common_bundle_start(startdir, dest)
     end
   end
 
+  if $excludeextlib  
+      chdir dest
+      $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
+  end
+  
   chdir startdir
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps')
