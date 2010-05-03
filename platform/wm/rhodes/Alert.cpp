@@ -70,6 +70,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	TEXTMETRIC tm = {0};
 	POINT point = { 5,  5};
 	SIZE  size  = { 0, 0 };
+	unsigned int iconHeight = 42;
 
 
 	int iconId = MB_ICONWARNING;
@@ -78,10 +79,10 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	if (hIcon == NULL) {
 		LOG(ERROR) + "Failed to load icon";
 	} else {
-		size.cx = 46; size.cy = 46;
+		size.cx = iconHeight; size.cy = iconHeight;
 		m_iconCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE);
-		//if (m_messageCtrl.SetIcon(hIcon) == NULL)
-		//LOG(INFO) + ": failed to set icon";
+		if (m_iconCtrl.SetIcon(hIcon) == NULL)
+			LOG(INFO) + ": failed to set icon";
 	}
 
 	dc.GetTextMetrics(&tm);
@@ -111,7 +112,9 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	
 	int bntNum = m_buttons.size();
 
-	point.x = indent, point.y = msgHeight + 46;
+	point.x = indent, point.y = msgHeight + 2;
+	if (iconHeight > msgHeight)
+		point.y = iconHeight + 6;
 
 	unsigned int btnWidth = 0, btnHeight = 0;
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
