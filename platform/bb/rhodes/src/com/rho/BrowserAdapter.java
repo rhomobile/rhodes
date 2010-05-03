@@ -197,9 +197,13 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                 	
                     synchronized (Application.getEventLock()) 
                     {
-                    	Field old = m_oMainScreen.getField(0);
-                    	m_oMainScreen.add(field);
-                    	m_oMainScreen.delete(old);
+                    	if ( m_oMainScreen.getFieldCount() > 0 )
+                    	{
+	                    	Field old = m_oMainScreen.getField(0);
+	                    	m_oMainScreen.add(field);
+	                    	m_oMainScreen.delete(old);
+                    	}else
+                    		m_oMainScreen.add(field);
 /*                        
                         _mainScreen.doPaint();
                         if ( e == null )
