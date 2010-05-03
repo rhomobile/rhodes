@@ -1,4 +1,9 @@
 == 2.0.0
+* client support of sync protocol 3 with rhosync 2.0
+* partial support
+* callback calls from menu ad toolbar
+* installing.html(png for android)
+* implement extended Alerts
 
 == 1.5.4
 * Fix issue #3132788 - rake clean:iphone fails
