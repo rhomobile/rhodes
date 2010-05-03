@@ -62,15 +62,11 @@ module REXML
       @attributes = Attributes.new(self)
       @context = context
 
-      puts "1"  
       if arg.kind_of? String
-        puts "2"
         self.name = arg
       elsif arg.kind_of? Element
-        puts "3"
         self.name = arg.expanded_name
         arg.attributes.each_attribute{ |attribute|
-          puts "4"
           @attributes << attribute #Attribute.new( attribute )
         }
         @context = arg.context

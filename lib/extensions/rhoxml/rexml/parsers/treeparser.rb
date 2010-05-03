@@ -20,8 +20,7 @@ module REXML
         begin
           while true
             event = @parser.pull
-            #STDERR.
-            puts "TREEPARSER GOT #{event.inspect}"
+            #STDERR.puts "TREEPARSER GOT #{event.inspect}"
             case event[0]
             when :end_document
               unless tag_stack.empty?
