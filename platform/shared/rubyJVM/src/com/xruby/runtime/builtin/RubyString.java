@@ -128,7 +128,10 @@ public class RubyString extends RubyBasic {
             return appendString((RubyString)v);
         } else {
             RubyValue r = RubyAPI.callPublicNoArgMethod(v, null, RubyID.toSID);
-            return appendString((RubyString)r);
+            if ( r instanceof RubyString )
+            	return appendString((RubyString)r);
+            
+            return ObjectFactory.createString(r.toString());
         }
     }
 
