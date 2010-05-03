@@ -763,24 +763,33 @@ public class RubyKernelModule {
     //@RubyLevelMethod(name="open")
     public static RubyValue open(RubyValue receiver, RubyArray args, RubyBlock block) {
         String filename = args.get(0).toStr();
-        RubyIO io;
+        String mode = "r";
+
+    	//RHO_COMMENT
+        RubyIO io = null;
         if (args.size() <= 1) {
-            //io = ObjectFactory.createFile(filename, "r");
-        	//RHO_COMMENT
-        	io = ObjectFactory.createResourceFile(filename, "r");
-        	//RHO_COMMENT
         } else if (args.get(1) instanceof RubyFixnum) {
-            String mode = "r";
             int i = args.get(1).toInt();
             if ((i & RDWR) != 0) {
                 mode = mode + "w";
             }
-            io = ObjectFactory.createFile(filename, mode);
         } else {
-            RubyString mode = (RubyString) args.get(1);
-            io = ObjectFactory.createFile(filename, mode.toString());
+            RubyString val = (RubyString) args.get(1);
+            mode = val.toString();
         }
 
+        try{
+        	io = ObjectFactory.createResourceFile(filename, mode);
+        }catch (java.lang.Error exc)
+        {
+        	LOG.ERROR("Cannot open file from jar: " + filename, exc);
+        }
+        
+        if ( io == null )
+        	io = ObjectFactory.createFile(filename, mode);
+        
+    	//RHO_COMMENT
+        
         if (null == block) {
             return io;
         } else {
