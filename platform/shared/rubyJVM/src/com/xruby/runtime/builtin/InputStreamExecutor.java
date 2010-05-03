@@ -20,7 +20,7 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		m_is = is;
 	}
 	public InputStreamExecutor(String filename, String mode) {
-		if ( mode != "r" )
+		if ( !mode.equals("r") )
 			throw new Error("Read Only!");
 		
     	try {
