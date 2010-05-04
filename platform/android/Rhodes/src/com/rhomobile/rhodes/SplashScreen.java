@@ -7,23 +7,75 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 
 public class SplashScreen {
 	
-	private ImageView view;
+	private static final String INSTALLING_PNG = "apps/app/installing.png";
+	private static final String LOADING_PNG = "apps/app/loading.png";
+	
+	private static final String INSTALLING_PAGE = "apps/app/installing.html";
+	private static final String LOADING_PAGE = "apps/app/loading.html";
+	
+	private View view;
 	
 	private native void nativeStart();
 	private native void nativeHide();
 	
-	public SplashScreen(Context ctx, String file) throws IOException {
-		view = new ImageView(ctx);
+	public SplashScreen(Context ctx) {
 		AssetManager am = ctx.getResources().getAssets();
-		InputStream is = am.open(file);
-		Bitmap bitmap = BitmapFactory.decodeStream(is);
-		view.setImageBitmap(bitmap);
-		view.setId(Rhodes.RHO_SPLASH_VIEW);
+		Rhodes r = RhodesInstance.getInstance();
+		boolean bc = r.isBundleChanged();
+		
+		String file = bc ? INSTALLING_PNG : LOADING_PNG;
+		
+		Bitmap bitmap = null;
+		try {
+			InputStream is = am.open(file);
+			bitmap = BitmapFactory.decodeStream(is);
+			is.close();
+			
+			ImageView v = new ImageView(ctx);
+			v.setImageBitmap(bitmap);
+			v.setId(Rhodes.RHO_SPLASH_VIEW);
+			view = v;
+		}
+		catch (IOException e) {
+			WebView v = r.createWebView();
+			
+			String page = bc ? INSTALLING_PAGE : LOADING_PAGE;
+			
+			boolean hasNeededPage;
+			try {
+				InputStream is1 = am.open(page);
+				if (is1 != null)
+					is1.close();
+				hasNeededPage = true;
+			}
+			catch (IOException e1) {
+				hasNeededPage = false;
+			}
+			
+			if (hasNeededPage) {
+				v.loadUrl("file:///android_asset/" + page);
+			}
+			else {
+				StringBuffer p = new StringBuffer();
+				p.append("<html><title>");
+				p.append(bc ? "Installing" : "Loading");
+				p.append("</title><body>");
+				p.append(bc ? "Installing" : "Loading");
+				p.append("...</body></html>");
+				v.loadData(p.toString(), "text/html", "utf-8");
+			}
+			
+			v.setId(Rhodes.RHO_SPLASH_VIEW);
+			
+			view = v;
+		}
 	}
 	
 	public void start(ViewGroup outer) {
