@@ -1,4 +1,4 @@
-source_id|attrib|object|value|attrib_type
+source_id|attrib|object|value
 23|name|722182959|i6mu98hel8|
 23|address|722182959|s8ganw9i49|
 23|industry|722182959|v2zjhoetsk|
