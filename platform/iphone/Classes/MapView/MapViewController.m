@@ -32,7 +32,7 @@
 
 @implementation MapViewController
 
-@synthesize gapikey;
+@synthesize region_center, gapikey;
 
 + (void)createMap:(rho_param *)params {
     id runnable = [RhoCreateMapTask class];
@@ -42,11 +42,12 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-		mapType =  MKMapTypeStandard;
-		zoomEnabled = TRUE;
-		scrollEnabled = TRUE;	
-		showsUserLocation = TRUE;
-		region_set = FALSE;
+        mapType =  MKMapTypeStandard;
+        zoomEnabled = TRUE;
+        scrollEnabled = TRUE;	
+        showsUserLocation = TRUE;
+        region_set = FALSE;
+        region_center = nil;
     }
     return self;
 }
@@ -71,27 +72,60 @@
                 mapType = MKMapTypeSatellite;
             else if (strcasecmp(map_type, "hybrid") == 0)
                 mapType = MKMapTypeHybrid;
+            else {
+                RAWLOG_ERROR1("Unknown map type: %s", map_type);
+                continue;
+            }
         }
         else if (strcasecmp(name, "region") == 0) {
-            if (value->type != RHO_PARAM_ARRAY)
-                continue;
-            if (value->v.array->size != 4)
-                continue;
-            
-            rho_param *lat = value->v.array->value[0];
-            rho_param *lon = value->v.array->value[1];
-            rho_param *latSpan = value->v.array->value[2];
-            rho_param *lonSpan = value->v.array->value[3];
-            
-            CLLocationCoordinate2D location;	
-            location.latitude = lat->type == RHO_PARAM_STRING ? strtod(lat->v.string, NULL) : 0;
-            location.longitude = lon->type == RHO_PARAM_STRING ? strtod(lon->v.string, NULL) : 0;
-            MKCoordinateSpan span;
-            span.latitudeDelta = latSpan->type == RHO_PARAM_STRING ? strtod(latSpan->v.string, NULL) : 0;
-            span.longitudeDelta = lonSpan->type == RHO_PARAM_STRING ? strtod(lonSpan->v.string, NULL) : 0;
-            region.span = span;
-            region.center = location;
-            region_set = TRUE;
+            if (value->type == RHO_PARAM_ARRAY) {
+                if (value->v.array->size != 4)
+                    continue;
+                
+                rho_param *lat = value->v.array->value[0];
+                rho_param *lon = value->v.array->value[1];
+                rho_param *latSpan = value->v.array->value[2];
+                rho_param *lonSpan = value->v.array->value[3];
+                
+                CLLocationCoordinate2D location;	
+                location.latitude = lat->type == RHO_PARAM_STRING ? strtod(lat->v.string, NULL) : 0;
+                location.longitude = lon->type == RHO_PARAM_STRING ? strtod(lon->v.string, NULL) : 0;
+                MKCoordinateSpan span;
+                span.latitudeDelta = latSpan->type == RHO_PARAM_STRING ? strtod(latSpan->v.string, NULL) : 0;
+                span.longitudeDelta = lonSpan->type == RHO_PARAM_STRING ? strtod(lonSpan->v.string, NULL) : 0;
+                region.span = span;
+                region.center = location;
+                region_set = TRUE;
+            }
+            else if (value->type == RHO_PARAM_HASH) {
+                char *center = NULL;
+                char *radius = NULL;
+                
+                for (int j = 0, limm = value->v.hash->size; j < limm; ++j) {
+                    char *rname = value->v.hash->name[j];
+                    rho_param *rvalue = value->v.hash->value[j];
+                    if (strcasecmp(rname, "center") == 0) {
+                        if (rvalue->type != RHO_PARAM_STRING) {
+                            RAWLOG_ERROR("Wrong type of 'center', should be String");
+                            continue;
+                        }
+                        center = rvalue->v.string;
+                    }
+                    else if (strcasecmp(rname, "radius") == 0) {
+                        if (rvalue->type != RHO_PARAM_STRING) {
+                            RAWLOG_ERROR("Wrong type of 'radius', should be String");
+                            continue;
+                        }
+                        radius = rvalue->v.string;
+                    }
+                }
+                
+                if (!center || !radius)
+                    continue;
+                
+                region_center = [NSString stringWithUTF8String:center];
+                region_radius = strtod(radius, NULL);
+            }
         }
         else if (strcasecmp(name, "zoom_enabled") == 0) {
             if (value->type != RHO_PARAM_STRING)
@@ -117,10 +151,20 @@
 }
 
 - (void)setAnnotations:(rho_param*)p {
-    int size = 0;
+    int size = 1;
     if (p && p->type == RHO_PARAM_ARRAY)
-        size = p->v.array->size;
+        size += p->v.array->size;
     NSMutableArray *annotations = [NSMutableArray arrayWithCapacity:size];
+    if (region_center) {
+        MapAnnotation *annObj = [[MapAnnotation alloc] init];
+        annObj.type = @"center";
+        annObj.address = region_center;
+        CLLocationCoordinate2D c;
+        c.latitude = c.longitude = 10000;
+        annObj.coordinate = c;
+        [annotations addObject:annObj];
+        [annObj release];
+    }
     if (p && p->type == RHO_PARAM_ARRAY) {
         for (int i = 0, lim = p->v.array->size; i < lim; ++i) {
             rho_param *ann = p->v.array->value[i];
@@ -176,70 +220,73 @@
         }
     }
     ggeoCoder = [[GoogleGeocoder alloc] initWithAnnotations:annotations apikey:gapikey];
-	ggeoCoder.actionTarget = self;
-	ggeoCoder.onDidFindAddress = @selector(didFindAddress:);
+    ggeoCoder.actionTarget = self;
+    ggeoCoder.onDidFindAddress = @selector(didFindAddress:);
 }
 
 - (void)setParams:(rho_param*)p {
     if (p && p->type == RHO_PARAM_HASH) {
+        rho_param *st = NULL;
+        rho_param *ann = NULL;
         for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
             char *name = p->v.hash->name[i];
             rho_param *value = p->v.hash->value[i];
             if (strcasecmp(name, "settings") == 0)
-                [self setSettings:value];
+                st = value;
             else if (strcasecmp(name, "annotations") == 0)
-                [self setAnnotations:value];
+                ann = value;
         }
+        if (st)
+            [self setSettings:st];
+        [self setAnnotations:ann];
     }
     rho_param_free(p);
 }
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
-	[super viewDidLoad];
-	
-	//Initialize the toolbar
-	toolbar = [[UIToolbar alloc] init];
-	toolbar.barStyle = UIBarStyleBlack;
-	[toolbar sizeToFit];
-	CGFloat toolbarHeight = [toolbar frame].size.height;
-	CGRect rootViewBounds = self.view.bounds;
-	CGFloat rootViewHeight = CGRectGetHeight(rootViewBounds);
-	CGFloat rootViewWidth = CGRectGetWidth(rootViewBounds);
-	CGRect rectArea = CGRectMake(0, rootViewHeight - toolbarHeight, rootViewWidth, toolbarHeight);
-	[toolbar setFrame:rectArea];
-	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
-								   initWithTitle:@"Close" style:UIBarButtonItemStyleBordered 
-								   target:self action:@selector(close_clicked:)];
-	[toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
-	[self.view addSubview:toolbar];
+    [super viewDidLoad];
+    
+    //Initialize the toolbar
+    toolbar = [[UIToolbar alloc] init];
+    toolbar.barStyle = UIBarStyleBlack;
+    [toolbar sizeToFit];
+    CGFloat toolbarHeight = [toolbar frame].size.height;
+    CGRect rootViewBounds = self.view.bounds;
+    CGFloat rootViewHeight = CGRectGetHeight(rootViewBounds);
+    CGFloat rootViewWidth = CGRectGetWidth(rootViewBounds);
+    CGRect rectArea = CGRectMake(0, rootViewHeight - toolbarHeight, rootViewWidth, toolbarHeight);
+    [toolbar setFrame:rectArea];
+    UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
+                               initWithTitle:@"Close" style:UIBarButtonItemStyleBordered 
+                               target:self action:@selector(close_clicked:)];
+    [toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
+    [self.view addSubview:toolbar];
     [closeButton release];
-	
-	CGRect rectMapArea = CGRectMake(0, 0, rootViewWidth, rootViewHeight - toolbarHeight);
-	mapView=[[MKMapView alloc] initWithFrame:rectMapArea];
-	mapView.delegate=self;
+    
+    CGRect rectMapArea = CGRectMake(0, 0, rootViewWidth, rootViewHeight - toolbarHeight);
+    mapView=[[MKMapView alloc] initWithFrame:rectMapArea];
+    mapView.delegate=self;
 
-	mapView.showsUserLocation=showsUserLocation;
-	mapView.scrollEnabled=scrollEnabled;
-	mapView.zoomEnabled=zoomEnabled;
-	mapView.mapType=mapType;
+    mapView.showsUserLocation=showsUserLocation;
+    mapView.scrollEnabled=scrollEnabled;
+    mapView.zoomEnabled=zoomEnabled;
+    mapView.mapType=mapType;
+    
+    /*Geocoder Stuff*/
+    [ggeoCoder start];
 	
-	/*Geocoder Stuff*/
-	[ggeoCoder start];
+    //geoCoder=[[MKReverseGeocoder alloc] initWithCoordinate:location];
+    //geoCoder.delegate=self;
+    //[geoCoder start];
 	
-	//geoCoder=[[MKReverseGeocoder alloc] initWithCoordinate:location];
-	//geoCoder.delegate=self;
-	//[geoCoder start];
-	
-	
-	/*Region and Zoom*/
-	if (region_set) {
-		[mapView setRegion:region animated:TRUE];
-		[mapView regionThatFits:region];
-	}
-	
-	[self.view insertSubview:mapView atIndex:0];
-
+    /*Region and Zoom*/
+    if (region_set) {
+        [mapView setRegion:region animated:TRUE];
+        [mapView regionThatFits:region];
+    }
+    
+    [self.view insertSubview:mapView atIndex:0];
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view 
@@ -293,7 +340,19 @@
 }
 
 - (void)didFindAddress:(MapAnnotation*)annotation {
-    [mapView addAnnotation:annotation];
+    if ([[annotation type] isEqualToString:@"center"]) {
+        MKCoordinateSpan span;
+        span.latitudeDelta = region_radius;
+        span.longitudeDelta = region_radius;
+        region.center = annotation.coordinate;
+        region.span = span;
+        region_set = TRUE;
+        
+        [mapView setRegion:region animated:YES];
+        [mapView regionThatFits:region];
+    }
+    else
+        [mapView addAnnotation:annotation];
 }
 	
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)placemark{
