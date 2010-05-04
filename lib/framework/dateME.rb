@@ -42,7 +42,11 @@ class Date
   end
 
   def to_s() format('%.4d-%02d-%02d', year(), mon(), mday()) end # 4p
-
+  
+  def self.civil(y=-4712, m=1, d=1, sg=2299161)
+    Date.new( Time.new(y,m,d) )
+  end
+  
   def _get_date
     @m_date      
   end
