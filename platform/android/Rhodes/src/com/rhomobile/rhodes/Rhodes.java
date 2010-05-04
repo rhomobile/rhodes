@@ -82,9 +82,6 @@ public class Rhodes extends Activity {
 	
 	private static int MAX_PROGRESS = 10000;
 	
-	private static final String INSTALLING_PAGE = "apps/app/installing.html";
-	private static final String LOADING_PAGE = "apps/app/loading.html";
-	
 	private long uiThreadId;
 	public long getUiThreadId() {
 		return uiThreadId;
@@ -191,7 +188,7 @@ public class Rhodes extends Activity {
 		*/
 	}
 	
-	private boolean isNameChanged() {
+	public boolean isNameChanged() {
 		try {
 			FileSource as = new AssetsSource(getResources().getAssets());
 			FileSource fs = new FileSource();
@@ -202,7 +199,7 @@ public class Rhodes extends Activity {
 		}
 	}
 	
-	private boolean isBundleChanged() {
+	public boolean isBundleChanged() {
 		if (contentChanged == null) {
 			try {
 				String rp = getRootPath();
@@ -291,6 +288,8 @@ public class Rhodes extends Activity {
 		w.setHorizontalScrollBarEnabled(true);
 
 		w.setWebViewClient(new WebViewClient() {
+			
+			private boolean splashHidden = false;
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -305,8 +304,10 @@ public class Rhodes extends Activity {
 			
 			@Override
 			public void onPageFinished(WebView view, String url) {
-				if (url.startsWith("http://"))
+				if (!splashHidden && url.startsWith("http://")) {
 					hideSplashScreen();
+					splashHidden = true;
+				}
 				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
 			}
@@ -393,8 +394,8 @@ public class Rhodes extends Activity {
 		}
 	}
 	
-	private void showSplashScreen(String file) throws IOException {
-		splashScreen = new SplashScreen(this, file);
+	private void showSplashScreen() {
+		splashScreen = new SplashScreen(this, "apps/app/loading.png");
 		splashScreen.start(outerFrame);
 	}
 	
@@ -406,42 +407,6 @@ public class Rhodes extends Activity {
 		View view = mainView.getView();
 		view.setVisibility(View.VISIBLE);
 		view.requestFocus();
-	}
-	
-	private void showLoadingPage() {
-		try {
-			showSplashScreen("apps/app/loading.png");
-		}
-		catch (Exception e) {
-			MainView v = new SimpleMainView();
-			
-			boolean bc = isBundleChanged();
-			String page = bc ? INSTALLING_PAGE : LOADING_PAGE;
-			
-			boolean hasNeededPage;
-			try {
-				getResources().getAssets().open(page).close();
-				hasNeededPage = true;
-			}
-			catch (IOException e1) {
-				hasNeededPage = false;
-			}
-			
-			if (hasNeededPage) {
-				v.navigate("file:///android_asset/" + page, 0);
-			}
-			else {
-				StringBuffer p = new StringBuffer();
-				p.append("<html><title>");
-				p.append(bc ? "Installing" : "Loading");
-				p.append("</title><body>");
-				p.append(bc ? "Installing" : "Loading");
-				p.append("...</body></html>");
-				v.loadData(p.toString(), 0);
-			}
-			
-			setMainView(v);
-		}
 	}
 	
 	/** Called when the activity is first created. */
@@ -488,7 +453,7 @@ public class Rhodes extends Activity {
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		Logger.I("Rhodes", "Loading...");
-		showLoadingPage();
+		showSplashScreen();
 		
 		// Increase WebView rendering priority
 		WebView w = new WebView(this);
