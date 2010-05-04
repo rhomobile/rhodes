@@ -49,7 +49,18 @@ public class RubyTime extends RubyBasic {
 
     //RHO_COMMENT : initialize
     //@RubyLevelMethod(name="initialize")
-    public RubyTime initialize() {
+    public RubyTime initialize(RubyArray args) 
+    {
+    	if ( args != null )
+    	{
+	    	if ( args.size() > 0 )
+	    		date_.set(Calendar.YEAR, args.get(0).toInt());
+	    	if ( args.size() > 1 )
+	    		date_.set(Calendar.MONTH, args.get(1).toInt()-1);
+	    	if ( args.size() > 2 )
+	    		date_.set(Calendar.DAY_OF_MONTH, args.get(2).toInt());
+    	}
+    	
         return this;
     }
     
