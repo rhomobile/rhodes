@@ -1,4 +1,4 @@
-source_name|attrib|object|value|attrib_type
+source_name|attrib|object|value
 Case|status|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|New|
 Case|assigned_user_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|d64e9409-6445-db6f-e9eb-48fce5e9fb16|
 Case|created_by_name|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|adam|
