@@ -391,10 +391,8 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
   (JNIEnv *, jobject, jstring strUrl)
 {
     std::string const &s = rho_cast<std::string>(strUrl);
-    char *normalized = rho_http_normalizeurl(s.c_str());
-    jstring newStr = rho_cast<jstring>(normalized);
-    free(normalized);
-    return newStr;
+    std::string const &cs = RHODESAPP().canonicalizeRhoUrl(s);
+    return rho_cast<jstring>(cs);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_navigateBack
