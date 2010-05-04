@@ -12,20 +12,22 @@
 
 @implementation MapAnnotation
 
-@synthesize title, subtitle, address, url, coordinateString, resolvedAddress, coordinate;
+@synthesize type, title, subtitle, address, url, coordinateString, resolvedAddress, coordinate;
 
 -(id) init {
-	[super init];
-	title = [[NSString alloc] initWithFormat:@""];
-	subtitle = [[NSString alloc] initWithFormat:@""];
+    [super init];
+    type = [[NSString alloc] initWithFormat:@"ann"];
+    title = [[NSString alloc] initWithFormat:@""];
+    subtitle = [[NSString alloc] initWithFormat:@""];
     address = [[NSString alloc] initWithFormat:@""];
-	coordinateString = [[NSMutableString alloc] initWithFormat:@""]; 
-	resolvedAddress = [[NSMutableString alloc] initWithFormat:@""];
-	url = [[NSString alloc] initWithFormat:@""];
-	return self;
+    coordinateString = [[NSMutableString alloc] initWithFormat:@""]; 
+    resolvedAddress = [[NSMutableString alloc] initWithFormat:@""];
+    url = [[NSString alloc] initWithFormat:@""];
+    return self;
 }
 
 -(void) dealloc {
+    [type release];
     [title release];
     [subtitle release];
     [address release];
