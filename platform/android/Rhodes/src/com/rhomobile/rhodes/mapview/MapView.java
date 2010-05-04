@@ -30,6 +30,9 @@ public class MapView extends MapActivity {
 	private com.google.android.maps.MapView view;
 	private AnnotationsOverlay annOverlay;
 	
+	private double spanLat = 0;
+	private double spanLon = 0;
+	
 	private String apiKey;
 	
 	private Vector<Annotation> annotations;
@@ -64,13 +67,35 @@ public class MapView extends MapActivity {
 					intent.putExtra(SETTINGS_PREFIX + "shows_user_location", ((String)shows_user_location).equalsIgnoreCase("true"));
 				
 				Object region = hash.get("region");
-				if (region != null && (region instanceof Vector<?>)) {
-					Vector<String> reg = (Vector<String>)region;
-					if (reg.size() == 4) {
-						intent.putExtra(SETTINGS_PREFIX + "region.latitude", reg.elementAt(0));
-						intent.putExtra(SETTINGS_PREFIX + "region.longitude", reg.elementAt(1));
-						intent.putExtra(SETTINGS_PREFIX + "region.latSpan", reg.elementAt(2));
-						intent.putExtra(SETTINGS_PREFIX + "region.lonSpan", reg.elementAt(3));
+				if (region != null) {
+					if (region instanceof Vector<?>) {
+						Vector<String> reg = (Vector<String>)region;
+						if (reg.size() == 4) {
+							intent.putExtra(SETTINGS_PREFIX + "region", "square");
+							intent.putExtra(SETTINGS_PREFIX + "region.latitude", reg.elementAt(0));
+							intent.putExtra(SETTINGS_PREFIX + "region.longitude", reg.elementAt(1));
+							intent.putExtra(SETTINGS_PREFIX + "region.latSpan", reg.elementAt(2));
+							intent.putExtra(SETTINGS_PREFIX + "region.lonSpan", reg.elementAt(3));
+						}
+					}
+					else if (region instanceof Map<?,?>) {
+						Map<Object, Object> reg = (Map<Object,Object>)region;
+						String center = null;
+						String radius = null;
+						
+						Object centerObj = reg.get("center");
+						if (centerObj != null && (centerObj instanceof String))
+							center = (String)centerObj;
+						
+						Object radiusObj = reg.get("radius");
+						if (radiusObj != null && (radiusObj instanceof String))
+							radius = (String)radiusObj;
+						
+						if (center != null && radius != null) {
+							intent.putExtra(SETTINGS_PREFIX + "region", "circle");
+							intent.putExtra(SETTINGS_PREFIX + "region.center", center);
+							intent.putExtra(SETTINGS_PREFIX + "region.radius", radius);
+						}
 					}
 				}
 			}
@@ -145,13 +170,8 @@ public class MapView extends MapActivity {
 		//boolean scroll_enabled = extras.getBoolean(SETTINGS_PREFIX + "scroll_enabled");
 		//boolean shows_user_location = extras.getBoolean(SETTINGS_PREFIX + "shows_user_location");
 		
-		String latitude = extras.getString(SETTINGS_PREFIX + "region.latitude");
-		String longitude = extras.getString(SETTINGS_PREFIX + "region.longitude");
-		String latSpan = extras.getString(SETTINGS_PREFIX + "region.latSpan");
-		String lonSpan = extras.getString(SETTINGS_PREFIX + "region.lonSpan");
-		
 		// Extract annotations
-		int size = extras.getInt(ANNOTATIONS_PREFIX + "size");
+		int size = extras.getInt(ANNOTATIONS_PREFIX + "size") + 1;
 		annotations = new Vector<Annotation>(size);
 		for (int i = 0; i < size; ++i) {
 			Annotation ann = new Annotation();
@@ -176,6 +196,7 @@ public class MapView extends MapActivity {
 				catch (NumberFormatException e) {}
 			}
 			
+			ann.type = "ann";
 			ann.address = extras.getString(prefix + "address");
 			ann.title = extras.getString(prefix + "title");
 			ann.subtitle = extras.getString(prefix + "subtitle");
@@ -200,25 +221,50 @@ public class MapView extends MapActivity {
 		view.setStreetView(false);
 		
 		MapController controller = view.getController();
-		if (latitude != null && longitude != null) {
-			try {
-				double lat = Double.parseDouble(latitude);
-				double lon = Double.parseDouble(longitude);
-				controller.setCenter(new GeoPoint((int)(lat*1000000), (int)(lon*1000000)));
+		String type = extras.getString(SETTINGS_PREFIX + "region");
+		if (type.equals("square")) {
+			String latitude = extras.getString(SETTINGS_PREFIX + "region.latitude");
+			String longitude = extras.getString(SETTINGS_PREFIX + "region.longitude");
+			if (latitude != null && longitude != null) {
+				try {
+					double lat = Double.parseDouble(latitude);
+					double lon = Double.parseDouble(longitude);
+					controller.setCenter(new GeoPoint((int)(lat*1000000), (int)(lon*1000000)));
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, "Wrong region center: " + e.getMessage());
+				}
 			}
-			catch (NumberFormatException e) {
-				Logger.E(TAG, "Wrong region center: " + e.getMessage());
+			
+			String latSpan = extras.getString(SETTINGS_PREFIX + "region.latSpan");
+			String lonSpan = extras.getString(SETTINGS_PREFIX + "region.lonSpan");
+			if (latSpan != null && lonSpan != null) {
+				try {
+					double lat = Double.parseDouble(latSpan);
+					double lon = Double.parseDouble(lonSpan);
+					controller.zoomToSpan((int)(lat*1000000), (int)(lon*1000000));
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, "Wrong region span: " + e.getMessage());
+				}
 			}
 		}
-		
-		if (latSpan != null && lonSpan != null) {
-			try {
-				double lat = Double.parseDouble(latSpan);
-				double lon = Double.parseDouble(lonSpan);
-				controller.zoomToSpan((int)(lat*1000000), (int)(lon*1000000));
-			}
-			catch (NumberFormatException e) {
-				Logger.E(TAG, "Wrong region span: " + e.getMessage());
+		else if (type.equals("circle")) {
+			String center = extras.getString(SETTINGS_PREFIX + "region.center");
+			String radius = extras.getString(SETTINGS_PREFIX + "region.radius");
+			if (center != null && radius != null) {
+				try {
+					double span = Double.parseDouble(radius);
+					spanLat = spanLon = span;
+					Annotation ann = new Annotation();
+					ann.type = "center";
+					ann.latitude = ann.longitude = 10000;
+					ann.address = center;
+					annotations.insertElementAt(ann, 0);
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, "Wrong region radius: " + e.getMessage());
+				}
 			}
 		}
 		
@@ -282,7 +328,13 @@ public class MapView extends MapActivity {
 				
 				ann.latitude = latitude;
 				ann.longitude = longitude;
-				annOverlay.addAnnotation(ann);
+				if (ann.type.equals("center")) {
+					MapController controller = view.getController();
+					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(longitude*1000000)));
+					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
+				}
+				else
+					annOverlay.addAnnotation(ann);
 			}
 			catch (Exception e) {
 				Logger.E(TAG, "GeoCoding request failed");
