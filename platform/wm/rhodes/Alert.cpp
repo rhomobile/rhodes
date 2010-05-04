@@ -19,7 +19,9 @@ extern "C" HWND getMainWnd();
  ********************************************************************************
  */
 
-//TODO: smart alignment and win32
+//TODO: 
+//      - smart alignment and win32
+//      - review for memory leaks.
 
 typedef CWinTraits <WS_CAPTION  | WS_VISIBLE | WS_POPUP | DS_CENTER> CAlertDialogTraits;
 
@@ -43,6 +45,9 @@ void CAlertDialog::DoInitTemplate()
 {
 #ifdef OS_WINCE
 	int initialWidth  = GetSystemMetrics(SM_CXSCREEN)/3;
+#else 
+	int initialWidth  = CMainWindow::getScreenWidth()/3;
+#endif
 	int initialHeight = initialWidth/2;
 
 	m_Template.Create(false, convertToStringW(m_title).c_str(), 
@@ -52,7 +57,6 @@ void CAlertDialog::DoInitTemplate()
 						initialHeight, 
 						CAlertDialogTraits::GetWndStyle(0), 
 						CAlertDialogTraits::GetWndExStyle(0));
-#endif
 }
 
 void CAlertDialog::DoInitControls() 
@@ -61,37 +65,65 @@ void CAlertDialog::DoInitControls()
 
 LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&bHandled)
 {
-#ifdef OS_WINCE
 	int indent   = 10;
+
+#ifdef OS_WINCE
 	unsigned int maxWidth  = GetSystemMetrics(SM_CXSCREEN) - (indent * 2);
 	unsigned int maxHeight = GetSystemMetrics(SM_CYSCREEN) - (indent * 2);
+#else
+	unsigned int maxWidth  = CMainWindow::getScreenWidth() - (indent * 2);
+	unsigned int maxHeight = CMainWindow::getScreenWidth() - (indent * 2);
+#endif
+
 	unsigned int msgWidth  = 0, msgHeight = 0;
 	CClientDC dc(m_hWnd);
 	TEXTMETRIC tm = {0};
 	POINT point = { 5,  5};
 	SIZE  size  = { 0, 0 };
 	unsigned int iconHeight = 42;
+
+#ifdef OS_WINCE
 	int iconId = 0;
+#else
+	LPWSTR iconId = NULL;
+#endif
 
 	/**
 	 * Icon.
 	 */
+#ifdef OS_WINCE
 	if (m_icon == "alert")
 		iconId = MB_ICONWARNING;
 	else if (m_icon == "question")
 		iconId = MB_ICONQUESTION;
 	else if (m_icon == "info")
 		iconId = MB_ICONINFORMATION;
+#else
+	if (m_icon == "alert")
+		iconId = IDI_WARNING;
+	else if (m_icon == "question")
+		iconId = IDI_QUESTION;
+	else if (m_icon == "info")
+		iconId = IDI_INFORMATION;
+#endif 
 
 	if (iconId != 0) {
+#ifdef OS_WINCE
 		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
 		HICON hIcon = LoadIcon(hGWES, MAKEINTRESOURCE(iconId));
-
+#else
+		HICON hIcon = LoadIcon(NULL, iconId);
+#endif
 		if (hIcon == NULL) {
 			LOG(ERROR) + "Failed to load icon";
 		} else {
 			size.cx = iconHeight; size.cy = iconHeight;
+#ifdef OS_WINCE
 			m_iconCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE | SS_ICON, 0);
+#else
+			RECT rc = {0, 0, 32, 32};
+			m_iconCtrl.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | SS_ICON);
+#endif
 			if (m_iconCtrl.SetIcon(hIcon) == NULL)
 				LOG(INFO) + "Failed to set icon";
 		}
@@ -120,8 +152,12 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 		size.cx = msgWidth; size.cy = msgHeight;
 	}
-
+#ifdef OS_WINCE
 	m_messageCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE);
+#else
+	RECT rc = {point.x, point.y, point.x + msgWidth, point.y + msgHeight};
+	m_messageCtrl.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE);
+#endif
 	m_messageCtrl.SetWindowText(convertToStringW(m_message).c_str());
 
 	
@@ -134,19 +170,27 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	unsigned int btnWidth = 0, btnHeight = 0;
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
-
+		LOG(INFO) + "insert button " + itr->m_title;
 		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth * 2) + 6;
 		btnHeight = tm.tmHeight + 4;
 
 		size.cx = btnWidth; size.cy = btnHeight;
+#ifdef OS_WINCE
 		itr->Create(m_hWnd, CRect(point, size), 
 					convertToStringW(itr->m_title).c_str(),
 					WS_CHILD | WS_VISIBLE, 0, 
 					itr->m_numId);
+#else
+		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
+		itr->Create(m_hWnd, rc, 
+					convertToStringW(itr->m_title).c_str(),
+					WS_CHILD | WS_VISIBLE, 0, 
+					itr->m_numId);
+#endif
 
 		point.x += btnWidth + 4;
 	}
-#endif
+
 	return bHandled = FALSE;
 }
 
@@ -185,7 +229,7 @@ IMPLEMENT_LOGCLASS(CAlert, "Alert");
 void CAlert::showPopup(CAlertDialog::Params *params)
 {
     HWND main_wnd = getMainWnd();
-	::PostMessage(main_wnd, WM_ALERT_SHOWPOPUP, 0, (LPARAM ) params);
+	::PostMessage(main_wnd, WM_ALERT_SHOW_POPUP, 0, (LPARAM ) params);
 }
 
 #if defined(_WIN32_WCE)
@@ -293,13 +337,13 @@ extern "C" void alert_show_popup(rho_param *p)
 							RAWLOG_ERROR("Illegal type of button item");
 							continue;
 					}
-				}
-				if (btnId == "" || btnTitle == "") {
-					RAWLOG_ERROR("Incomplete button item");
-					continue;
-				}
+					if (btnId == "" || btnTitle == "") {
+						RAWLOG_ERROR("Incomplete button item");
+						continue;
+					}
 
-				buttons.put(btnTitle, btnId);
+					buttons.put(btnTitle, btnId);
+				}
 			}//buttons
 		}
 		
@@ -321,4 +365,6 @@ extern "C" void alert_play_file(char* file_name, ...) {
 
 extern "C" void alert_hide_popup()
 {
+	HWND main_wnd = getMainWnd();
+	::PostMessage(main_wnd, WM_ALERT_HIDE_POPUP, 0, 0);
 }
