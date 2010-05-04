@@ -1,5 +1,6 @@
 #
 require File.dirname(__FILE__) + '/androidcommon.rb'
+require 'pathname'
 
 USE_STLPORT = true
 USE_TRACES = false
@@ -870,20 +871,36 @@ namespace "package" do
     args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
     puts Jake.run($aapt, args)
     unless $? == 0
-      puts "Error running AAPT"
+      puts "Error running AAPT (1)"
       exit 1
     end
 
-    rm_rf $bindir + "/lib"
-    mkdir_p $bindir + "/lib/armeabi"
-    cp_r $bindir + "/libs/" + $confdir + "/librhodes.so", $bindir + "/lib/armeabi"
-    cc_run($stripbin, [$bindir + "/lib/armeabi/librhodes.so"])
+    # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
+    rm_rf File.join($tmpdir, "assets")
+    cp_r assets, $tmpdir
+    Dir.glob(File.join($tmpdir, "assets/**/*")).each do |f|
+      next unless File.basename(f) =~ /^_/
+      relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
+      puts "Add #{relpath} to #{resourcepkg}..."
+      args = ["add", resourcepkg, relpath]
+      puts Jake.run($aapt, args, $tmpdir)
+      unless $? == 0
+        puts "Error running AAPT (2)"
+        exit 1
+      end
+    end
+
+    # Add native librhodes.so
+    rm_rf File.join($tmpdir, "lib")
+    mkdir_p File.join($tmpdir, "lib/armeabi")
+    cp_r File.join($bindir, "libs", $confdir, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
+    cc_run($stripbin, [$tmpdir + "/lib/armeabi/librhodes.so"])
     args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
-    puts Jake.run($aapt, args, $bindir)
+    puts Jake.run($aapt, args, $tmpdir)
     err = $?
-    rm_rf $bindir + "/lib"
+    rm_rf $tmpdir + "/lib"
     unless err == 0
-      puts "Error running AAPT"
+      puts "Error running AAPT (3)"
       exit 1
     end
   end
