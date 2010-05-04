@@ -1,13 +1,14 @@
 package com.rhomobile.rhodes.mapview;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
@@ -200,7 +201,9 @@ public class MapView extends MapActivity {
 			ann.address = extras.getString(prefix + "address");
 			ann.title = extras.getString(prefix + "title");
 			ann.subtitle = extras.getString(prefix + "subtitle");
-			ann.url = RhodesInstance.getInstance().normalizeUrl(extras.getString(prefix + "url"));
+			ann.url = extras.getString(prefix + "url");
+			if (ann.url != null)
+				ann.url = RhodesInstance.getInstance().normalizeUrl(ann.url);
 			annotations.addElement(ann);
 		}
 		
@@ -293,51 +296,25 @@ public class MapView extends MapActivity {
 			if (ann.address == null)
 				continue;
 			
+			Geocoder gc = new Geocoder(RhodesInstance.getInstance());
 			try {
-				StringBuffer b = new StringBuffer();
-				b.append("http://maps.google.com/maps/geo?q=");
-				b.append(Uri.encode(ann.address));
-				b.append("&output=csv&mobile=false&sensor=false");
-				
-				URL url = new URL(b.toString());
-				
-				b = new StringBuffer();
-				
-				InputStream is = url.openStream();
-				byte[] buf = new byte[128];
-				for (;;) {
-					int n = is.read(buf);
-					if (n == -1)
-						break;
-					
-					String s = new String(buf, 0, n);
-					b.append(s);
-				}
-				
-				String response = b.toString();
-				Vector<String> res = split(response, ",");
-				if (res.size() != 4) {
-					Logger.E(TAG, "Geocoding response parse error. Response: " + response);
+				List<Address> addrs = gc.getFromLocationName(ann.address, 1);
+				if (addrs.size() == 0)
 					continue;
-				}
 				
-				//int statusCode = Integer.parseInt(res.elementAt(0));
-				//int accuracy = Integer.parseInt(res.elementAt(1));
-				double latitude = Double.parseDouble(res.elementAt(2));
-				double longitude = Double.parseDouble(res.elementAt(3));
+				Address addr = addrs.get(0);
 				
-				ann.latitude = latitude;
-				ann.longitude = longitude;
+				ann.latitude = addr.getLatitude();
+				ann.longitude = addr.getLongitude();
 				if (ann.type.equals("center")) {
 					MapController controller = view.getController();
-					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(longitude*1000000)));
+					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
 					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
 				}
 				else
 					annOverlay.addAnnotation(ann);
-			}
-			catch (Exception e) {
-				Logger.E(TAG, "GeoCoding request failed");
+			} catch (IOException e) {
+				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
 			}
 			
 			Rhodes.performOnUiThread(new Runnable() {
@@ -351,23 +328,6 @@ public class MapView extends MapActivity {
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
-	}
-	
-	private static Vector<String> split(String s, String delimiter) {
-		Vector<String> res = new Vector<String>();
-		for (int start = 0, end = start;;) {
-			end = s.indexOf(delimiter, start);
-			if (end == -1) {
-				res.addElement(s.substring(start));
-				break;
-			}
-			else {
-				res.addElement(s.substring(start, end));
-				start = end + delimiter.length();
-			}
-		}
-
-		return res;
 	}
 	
 }
