@@ -134,7 +134,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	unsigned int btnWidth = 0, btnHeight = 0;
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
-
+		LOG(INFO) + "insert button " + itr->m_title;
 		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth * 2) + 6;
 		btnHeight = tm.tmHeight + 4;
 
@@ -185,7 +185,7 @@ IMPLEMENT_LOGCLASS(CAlert, "Alert");
 void CAlert::showPopup(CAlertDialog::Params *params)
 {
     HWND main_wnd = getMainWnd();
-	::PostMessage(main_wnd, WM_ALERT_SHOWPOPUP, 0, (LPARAM ) params);
+	::PostMessage(main_wnd, WM_ALERT_SHOW_POPUP, 0, (LPARAM ) params);
 }
 
 #if defined(_WIN32_WCE)
@@ -293,13 +293,13 @@ extern "C" void alert_show_popup(rho_param *p)
 							RAWLOG_ERROR("Illegal type of button item");
 							continue;
 					}
-				}
-				if (btnId == "" || btnTitle == "") {
-					RAWLOG_ERROR("Incomplete button item");
-					continue;
-				}
+					if (btnId == "" || btnTitle == "") {
+						RAWLOG_ERROR("Incomplete button item");
+						continue;
+					}
 
-				buttons.put(btnTitle, btnId);
+					buttons.put(btnTitle, btnId);
+				}
 			}//buttons
 		}
 		
@@ -321,4 +321,6 @@ extern "C" void alert_play_file(char* file_name, ...) {
 
 extern "C" void alert_hide_popup()
 {
+	HWND main_wnd = getMainWnd();
+	::PostMessage(main_wnd, WM_ALERT_HIDE_POPUP, 0, 0);
 }

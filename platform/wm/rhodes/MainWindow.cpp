@@ -24,7 +24,7 @@
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
-#include "Alert.h"
+
 
 #include <hash_map>
 
@@ -486,12 +486,25 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
 	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) {
-		CAlertDialog dialog(params);
-		dialog.DoModal();
+		if (m_alertDialog == NULL) {
+			m_alertDialog = new CAlertDialog(params);
+			m_alertDialog->DoModal();
+			delete m_alertDialog;
+			m_alertDialog = NULL;
+		} else {
+			LOG(WARNING) + "Trying to show alert dialog while it exists.";
+		}
 	}
 
     delete params;
     return 0;
+}
+
+LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if (m_alertDialog != NULL)
+		m_alertDialog->EndDialog(0);
+	return 0;
 }
 
 LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
