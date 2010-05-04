@@ -35,7 +35,7 @@ public class Camera {
 	
 	public static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "camera.";
 	
-	public static String BASE_CAMERA_DIR = RhodesInstance.getInstance().getRootPath() + "apps/public/db-files";
+	public static String BASE_CAMERA_DIR = RhodesInstance.getInstance().getRootPath() + "db/db-files";
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
