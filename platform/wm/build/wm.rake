@@ -223,8 +223,10 @@ namespace "run" do
   desc "Run win32" 
   task :win32 => ["build:win32"] do
     args = [' ']
-    chdir $config["build"]["wmpath"]
-    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
+#    chdir $config["build"]["wmpath"]
+#    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
+    Jake.run2 "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => true}
+    
     $stdout.flush
     chdir $startdir
     

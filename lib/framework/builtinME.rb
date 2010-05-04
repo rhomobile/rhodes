@@ -259,6 +259,8 @@ class IO
         end
         close
     end
+    
+    alias each_line each
 end
 
 class Time
