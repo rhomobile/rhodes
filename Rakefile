@@ -127,7 +127,7 @@ def add_linker_library(libraryname)
         tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
           ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
-  $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
+  $ldflags << "#{tmpdir}/lib#{libraryname}.a\n" unless $ldflags.nil?
 end
 
 def set_linker_flags

@@ -132,6 +132,7 @@ namespace "build" do
 
       ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
 
+      ENV['RHO_ROOT'] = $startdir
 
       $app_config["extensions"].each do |ext|
         rhoextpath = "lib/extensions/" + ext + "/ext"
@@ -146,7 +147,6 @@ namespace "build" do
         elsif File.exists? rhoextpath
           extpath = rhoextpath
         end
-
 
         puts Jake.run('./build', [], extpath) if File.executable? File.join(extpath, 'build')
         exit 1 unless $? == 0
