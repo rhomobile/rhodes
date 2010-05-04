@@ -71,20 +71,35 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	POINT point = { 5,  5};
 	SIZE  size  = { 0, 0 };
 	unsigned int iconHeight = 42;
+	int iconId = 0;
 
+	/**
+	 * Icon.
+	 */
+	if (m_icon == "alert")
+		iconId = MB_ICONWARNING;
+	else if (m_icon == "question")
+		iconId = MB_ICONQUESTION;
+	else if (m_icon == "info")
+		iconId = MB_ICONINFORMATION;
 
-	int iconId = MB_ICONWARNING;
-	HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
-	HICON hIcon = LoadIcon(hGWES, MAKEINTRESOURCE(iconId));
-	if (hIcon == NULL) {
-		LOG(ERROR) + "Failed to load icon";
-	} else {
-		size.cx = iconHeight; size.cy = iconHeight;
-		m_iconCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE);
-		if (m_iconCtrl.SetIcon(hIcon) == NULL)
-			LOG(INFO) + ": failed to set icon";
+	if (iconId != 0) {
+		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
+		HICON hIcon = LoadIcon(hGWES, MAKEINTRESOURCE(iconId));
+
+		if (hIcon == NULL) {
+			LOG(ERROR) + "Failed to load icon";
+		} else {
+			size.cx = iconHeight; size.cy = iconHeight;
+			m_iconCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE | SS_ICON, 0);
+			if (m_iconCtrl.SetIcon(hIcon) == NULL)
+				LOG(INFO) + "Failed to set icon";
+		}
 	}
 
+	/**
+	 * Message.
+	 */
 	dc.GetTextMetrics(&tm);
 	if ((m_message.length() * tm.tmAveCharWidth) > maxWidth) {
 		msgWidth = maxWidth - indent - size.cy;
@@ -110,11 +125,12 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	m_messageCtrl.SetWindowText(convertToStringW(m_message).c_str());
 
 	
+	/**
+	 * Buttons.
+	 */
 	int bntNum = m_buttons.size();
 
-	point.x = indent, point.y = msgHeight + 2;
-	if (iconHeight > msgHeight)
-		point.y = iconHeight + 6;
+	point.x = indent, point.y = iconHeight > msgHeight ? point.y = iconHeight + 6 : msgHeight + 2;
 
 	unsigned int btnWidth = 0, btnHeight = 0;
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
@@ -239,7 +255,14 @@ extern "C" void alert_show_popup(rho_param *p)
                     continue;
                 }
                 callback = value->v.string;
+            } else if (strcasecmp(name, "icon") == 0) {
+                if (value->type != RHO_PARAM_STRING) {
+                    RAWLOG_ERROR("'title' should be string");
+                    continue;
+                }
+                icon = value->v.string;
             }
+
             else if (strcasecmp(name, "buttons") == 0) {
 				if (value->type != RHO_PARAM_ARRAY) {
                     RAWLOG_ERROR("'buttons' should be array");
