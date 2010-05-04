@@ -502,8 +502,11 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if (m_alertDialog != NULL)
+	if (m_alertDialog != NULL) {
 		m_alertDialog->EndDialog(0);
+		m_alertDialog = NULL;
+	}
+
 	return 0;
 }
 
