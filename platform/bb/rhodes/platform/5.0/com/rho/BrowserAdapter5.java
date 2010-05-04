@@ -56,7 +56,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 			String url = request.getURL();
     		if ( URI.isLocalHost(url) || URI.isLocalData(url))
     		{
-                HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null);
+                HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null, null);
                 
                 return connection;
     		}else
