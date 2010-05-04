@@ -123,9 +123,9 @@ klass.defineMethod( "zone", new RubyNoArgMethod(){
 		return ((RubyTime)receiver).zone();}
 });
 
-klass.defineMethod( "initialize", new RubyNoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyBlock block ){
-		return ((RubyTime)receiver).initialize();}
+klass.defineMethod( "initialize", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return ((RubyTime)receiver).initialize(args);}
 });
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{
