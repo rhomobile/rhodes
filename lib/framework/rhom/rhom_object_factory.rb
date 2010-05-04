@@ -441,7 +441,7 @@ module Rhom
                                 listAttrs = sql.length > 0 ? db.execute_sql(sql,values) : []
                                 
                                 new_obj = self.new
-                                new_obj.vars.merge!({:object=>"{#{obj['object']}}"})
+                                new_obj.vars.merge!({:object=>"#{obj['object']}"})
                                 
                                 if attribs && obj['attrib']
                                     new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
@@ -805,6 +805,7 @@ module Rhom
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
               def destroy
+			    puts "destroy: #{self}"
                 obj = self.object #self.inst_strip_braces(self.object)
                 update_type='delete'
                 
