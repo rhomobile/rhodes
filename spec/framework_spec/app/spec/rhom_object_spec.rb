@@ -144,7 +144,7 @@ describe "Rhom::RhomObject" do
     new_id = @account1.object
     @account1.save
     @account2 = Account.find(new_id)
-    @account2.object.should =="{#{@account1.object}}"
+    @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
   end
@@ -155,7 +155,7 @@ describe "Rhom::RhomObject" do
     new_id = @account1.object
     @account1.save
     @account2 = Account.find(new_id)
-    @account2.object.should =="{#{@account1.object}}"
+    @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
   end
@@ -166,7 +166,7 @@ describe "Rhom::RhomObject" do
     new_id = @account1.object
     @account1.save
     @account2 = Account.find(new_id)
-    @account2.object.should =="{#{@account1.object}}"
+    @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
   end
@@ -191,7 +191,7 @@ describe "Rhom::RhomObject" do
     new_id = @account1.object
     @account1.save
     @account2 = Account.find(new_id)
-    @account2.object.should =="{#{@account1.object}}"
+    @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
     
@@ -199,7 +199,7 @@ describe "Rhom::RhomObject" do
     @account2.update_attributes(update_attributes)
 
     @account3 = Account.find(new_id)    
-    @account3.object.should =="{#{@account1.object}}"
+    @account3.object.should =="#{@account1.object}"
     @account3.name.should == vars['name']
     @account3.industry.should == update_attributes['industry']
 
@@ -217,7 +217,7 @@ describe "Rhom::RhomObject" do
     @account1.save
     
     @account2 = Account.find(new_id)
-    @account2.object.should =="{#{@account1.object}}"
+    @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     
     update_attributes = {"industry"=>"electronics2"}
@@ -225,7 +225,7 @@ describe "Rhom::RhomObject" do
     @account2.save
     
     @account3 = Account.find(new_id)    
-    @account3.object.should =="{#{@account1.object}}"
+    @account3.object.should =="#{@account1.object}"
     @account3.name.should == vars['name']
     @account3.industry.should == update_attributes['industry']
 
@@ -507,7 +507,7 @@ describe "Rhom::RhomObject" do
     
     @accts.length.should == 0
   end
-  
+=begin  
   it "should support blob file type" do
     @acct = Account.new({'image_uri'=>"/db/images/mynewimage.png"})
     @acct.name = "my new acct"
@@ -515,7 +515,7 @@ describe "Rhom::RhomObject" do
     @res = ::Rho::RHO.get_user_db().select_from_table('object_values','*', 'attrib_type' => "blob.file")
     @res.length.should == 1
   end
-  
+=end  
   it "should include only selected column" do
     @accts = Account.find(:all, :select => ['name'])
     
@@ -601,7 +601,7 @@ describe "Rhom::RhomObject" do
       3.times do |x|
         @accts = Account.paginate(:page => x)
         @accts.length.should == 10
-        @accts[9].object.should == "{#{@expected[x][:object]}}"
+        @accts[9].object.should == "#{@expected[x][:object]}"
         @accts[9].name.should == @expected[x][:name]
         @accts[9].address.should == @expected[x][:address]
         @accts[9].industry.should == @expected[x][:industry]
@@ -613,7 +613,7 @@ describe "Rhom::RhomObject" do
     it "should support paginate with options" do
       @accts = Account.paginate(:page => 0, :per_page => 20)
       @accts.length.should == 20
-      @accts[9].object.should == "{#{@expected[0][:object]}}"
+      @accts[9].object.should == "#{@expected[0][:object]}"
       @accts[9].name.should == @expected[0][:name]
       @accts[9].address.should == @expected[0][:address]
       @accts[9].industry.should == @expected[0][:industry]
@@ -624,7 +624,7 @@ describe "Rhom::RhomObject" do
     it "should support paginate with options and conditions" do
       @accts = Account.paginate(:page => 0, :per_page => 20, :conditions => {'name' => 'c2z5izd8w9'})
       @accts.length.should == 1
-      @accts[0].object.should == "{#{@expected[0][:object]}}"
+      @accts[0].object.should == "#{@expected[0][:object]}"
       @accts[0].name.should == @expected[0][:name]
       @accts[0].address.should == @expected[0][:address]
       @accts[0].industry.should == @expected[0][:industry]
