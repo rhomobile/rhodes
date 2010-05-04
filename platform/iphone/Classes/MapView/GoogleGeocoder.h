@@ -7,14 +7,13 @@
 #define kGeoCodeURL @"http://maps.google.com/maps/geo?q="
 
 @interface GoogleGeocoder : NSObject {
-	NSMutableArray *annotations;
-	MapAnnotation* currentAnnotation;
-	NSString *theElement;
-	NSString *gapikey;
+    NSMutableArray *annotations;
+    MapAnnotation* currentAnnotation;
+    NSString *theElement;
+    NSString *gapikey;
 @public
-	id  actionTarget;
-	SEL onDidFindAddress;
-	
+    id  actionTarget;
+    SEL onDidFindAddress;
 }
 
 // 
