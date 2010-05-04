@@ -204,7 +204,6 @@
     webView.autoresizesSubviews = YES;
     webView.clipsToBounds = NO;
     webView.delegate = [Rhodes sharedInstance];
-    //webView.frame = frame;
     
     [root addSubview:webView];
     

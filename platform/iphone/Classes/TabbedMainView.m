@@ -66,6 +66,10 @@
     tabbar.view.frame = frame;
     tabbar.selectedIndex = 0;
     
+    CGRect childFrame = frame;
+    CGRect tbFrame = tabbar.tabBar.frame;
+    childFrame.size.height -= tbFrame.size.height;
+    
     int count = [items count]/4;
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
@@ -82,7 +86,7 @@
             td.url = url;
             td.reload = [reload isEqualToString:@"true"];
             
-            SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:tabbar.view];
+            SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
             subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
@@ -101,11 +105,6 @@
     
     self.tabbarData = tabs;
     [tabs release];
-    
-    CGRect vFrame = tabbar.view.frame;
-    CGRect tbFrame = tabbar.tabBar.frame;
-    tbFrame.origin.y = vFrame.size.height - tbFrame.size.height - vFrame.origin.y;
-    tabbar.tabBar.frame = tbFrame;
     
     return self;
 }
