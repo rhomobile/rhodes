@@ -45,25 +45,30 @@ public class NativeBar {
 		}
 
 		public void run() {
-			Rhodes r = RhodesInstance.getInstance();
-			MainView v = null;
-			
-			switch (type) {
-			case NOBAR_TYPE:
-				v = new SimpleMainView();
-				break;
-			case TOOLBAR_TYPE:
-				v = new SimpleMainView(params);
-				break;
-			case TABBAR_TYPE:
-				v = new TabbedMainView(params);
-				break;
-			default:
-				Logger.E(TAG, "Unknown bar type passed: " + type);
+			try {
+				Rhodes r = RhodesInstance.getInstance();
+				MainView v = null;
+				
+				switch (type) {
+				case NOBAR_TYPE:
+					v = new SimpleMainView();
+					break;
+				case TOOLBAR_TYPE:
+					v = new SimpleMainView(params);
+					break;
+				case TABBAR_TYPE:
+					v = new TabbedMainView(params);
+					break;
+				default:
+					Logger.E(TAG, "Unknown bar type passed: " + type);
+				}
+				
+				if (v != null)
+					r.setMainView(v);
 			}
-			
-			if (v != null)
-				r.setMainView(v);
+			catch (Exception e) {
+				reportFail("CreateTask", e);
+			}
 		}
 		
 	};
