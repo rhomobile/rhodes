@@ -910,7 +910,9 @@ public class RubyString extends RubyBasic {
     //@RubyLevelMethod(name="each", alias="each_line")
     public RubyValue each(RubyBlock block) {
         // FIXME: for each line
-        block.invoke(this, this);
+    	if ( block != null )
+    		block.invoke(this, this);
+    	
         return this;
     }
 
@@ -1280,6 +1282,9 @@ public class RubyString extends RubyBasic {
     //@RubyLevelMethod(name="each_byte")
     public RubyValue each_byte(RubyBlock block) 
     {
+    	if ( block == null )
+    		return this;
+    	
         String string = toString();
         byte bytes[] = null;
         try{

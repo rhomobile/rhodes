@@ -490,6 +490,38 @@ module REXML
       @string.inspect
     end
 
+    def value
+      #TODO: 
+      #return @unnormalized if @unnormalized
+      #@unnormalized = Text::unnormalize( @string, doctype )
+      
+      @string
+    end
+
+    #TODO optimize it - regular expressions is slow on BB
+=begin    
+    def Text::unnormalize( string, doctype=nil, filter=nil, illegal=nil )
+      string.gsub( /\r\n?/, "\n" ).gsub( REFERENCE ) {
+        ref = $&
+        if ref[1] == ?#
+          if ref[2] == ?x
+            [ref[3...-1].to_i(16)].pack('U*')
+          else
+            [ref[2...-1].to_i].pack('U*')
+          end
+        elsif ref == '&amp;'
+          '&'
+        elsif filter and filter.include?( ref[1...-1] )
+          ref
+        elsif doctype
+          doctype.entity( ref[1...-1] ) or ref
+        else
+          entity_value = DocType::DEFAULT_ENTITIES[ ref[1...-1] ]
+          entity_value ? entity_value.value : ref
+        end
+      }
+    end
+=end
   end
   
 end
