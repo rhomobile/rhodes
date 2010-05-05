@@ -77,8 +77,8 @@ namespace "build" do
       raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
       $tempdir = ENV['TEMP_FILES_DIR']
       raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
-      $rootdir = ENV['RHODES_ROOT_DIR']
-      raise "RHODES_ROOT_DIR is not set" if $rootdir.nil?
+      $rootdir = ENV['RHO_ROOT']
+      raise "RHO_ROOT is not set" if $rootdir.nil?
 
       require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
