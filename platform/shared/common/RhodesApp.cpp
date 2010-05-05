@@ -635,7 +635,7 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 		String strBody = "rho_callback=1";
 		
         strBody += "&width=";   strBody += convertToStringA(width);
-		strBody += "&heigth=";  strBody += convertToStringA(height);
+		strBody += "&height=";  strBody += convertToStringA(height);
 		strBody += "&degrees="; strBody += convertToStringA(degrees);
 		
         if ( m_strScreenRotationCallbackParams.length() > 0 )
