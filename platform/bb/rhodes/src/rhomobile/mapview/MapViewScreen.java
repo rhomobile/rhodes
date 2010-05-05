@@ -129,6 +129,12 @@ public class MapViewScreen extends MainScreen {
 			}
 		}
 		
+		Double radius = (Double)settings.get("radius");
+		if (radius != null) {
+			int zoom = mapField.calculateZoom(radius.doubleValue(), radius.doubleValue());
+			mapField.setZoom(zoom);
+		}
+		
 		// Annotations
 		Enumeration e = annotations.elements();
 		while (e.hasMoreElements()) {
