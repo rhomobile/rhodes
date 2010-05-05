@@ -214,7 +214,8 @@ public class JSONArray {
     public double getDouble(int index) throws JSONException {
         Object o = get(index);
         try {
-            return Double.valueOf((String)o).doubleValue();
+        	Double v = (o instanceof Double) ? (Double)o : Double.valueOf((String)o);
+            return v.doubleValue();
         } catch (Exception e) {
             throw new JSONException("JSONArray[" + index +
                 "] is not a number.");

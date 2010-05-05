@@ -117,28 +117,57 @@ public class MapView extends RubyBasic {
 						else if (strKey.equals("shows_user_location"))
 							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
 						else if (strKey.equals("region")) {
-							if (!(value instanceof RubyArray))
-								throw new RubyException(RubyRuntime.ArgumentErrorClass,
-										"Wrong 'region' type, should be Array");
-							RubyArray arr = (RubyArray)value;
-							if (arr.size() == 4) {
-								Hashtable region = new Hashtable();
-								double[] cs = {0.0, 0.0, 0.0, 0.0};
-								for (int k = 0; k != 4; ++k) {
-									String v = arr.get(k).toString();
-									try {
-										cs[k] = Double.parseDouble(v);
+							if (value instanceof RubyArray) {
+								RubyArray arr = (RubyArray)value;
+								if (arr.size() == 4) {
+									Hashtable region = new Hashtable();
+									double[] cs = {0.0, 0.0, 0.0, 0.0};
+									for (int k = 0; k != 4; ++k) {
+										String v = arr.get(k).toString();
+										try {
+											cs[k] = Double.parseDouble(v);
+										}
+										catch (NumberFormatException e) {
+											throw new RubyException(RubyRuntime.ArgumentErrorClass,
+													"Wrong region value: " + v + ", should be Float");
+										}
 									}
-									catch (NumberFormatException e) {
-										throw new RubyException(RubyRuntime.ArgumentErrorClass,
-												"Wrong region value: " + v + ", should be Float");
+									region.put("latitude", new Double(cs[0]));
+									region.put("longitude", new Double(cs[1]));
+									region.put("latDelta", new Double(cs[2]));
+									region.put("lonDelta", new Double(cs[3]));
+									settings.put(strKey, region);
+								}
+							}
+							else if (value instanceof RubyHash) {
+								RubyHash hsh = (RubyHash)value;
+								RubyArray hKeys = hsh.keys();
+								RubyArray hValues = hsh.values();
+								for (int j = 0; j < hKeys.size(); ++j) {
+									RubyValue hKey = hKeys.get(j);
+									RubyValue hValue = hValues.get(j);
+									if (hKey == null || hValue == null)
+										continue;
+									
+									String strHKey = hKey.toString();
+									if (strHKey.equals("center")) {
+										Annotation ann = new Annotation();
+										ann.type = "center";
+										ann.street_address = hValue.toString();
+										annotations.addElement(ann);
+									}
+									else if (strHKey.equals("radius")) {
+										String strHValue = hValue.toString();
+										try {
+											double radius = Double.parseDouble(strHValue);
+											settings.put("radius", new Double(radius));
+										}
+										catch (NumberFormatException e) {
+											throw new RubyException(RubyRuntime.ArgumentErrorClass,
+													"Wrong 'radius' parameter: " + strHValue + ", should be Float");
+										}
 									}
 								}
-								region.put("latitude", new Double(cs[0]));
-								region.put("longitude", new Double(cs[1]));
-								region.put("latDelta", new Double(cs[2]));
-								region.put("lonDelta", new Double(cs[3]));
-								settings.put(strKey, region);
 							}
 						}
 					}
@@ -147,6 +176,7 @@ public class MapView extends RubyBasic {
 				if (annotationsArray != null) {
 					for (int i = 0; i != annotationsArray.size(); ++i) {
 						Annotation annotation = new Annotation();
+						annotation.type = "ann";
 						RubyValue val = annotationsArray.get(i);
 						if (!(val instanceof RubyHash))
 							throw new RubyException(RubyRuntime.ArgumentErrorClass,
