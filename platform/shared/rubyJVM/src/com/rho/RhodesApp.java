@@ -158,7 +158,7 @@ public class RhodesApp
     		String strBody = "rho_callback=1";
     		
             strBody += "&width=";   strBody += width;
-    		strBody += "&heigth=";  strBody += height;
+    		strBody += "&height=";  strBody += height;
     		strBody += "&degrees="; strBody += degrees;
     		
             if ( m_strScreenRotationCallbackParams.length() > 0 )
