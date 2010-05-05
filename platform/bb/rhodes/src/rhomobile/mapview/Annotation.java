@@ -22,6 +22,7 @@ public class Annotation {
 		}
 	};
 	
+	public String type = null;
 	public String title = null;
 	public String subtitle = null;
 	public String street_address = null;
