@@ -756,7 +756,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="each")
-    public RubyValue each(RubyBlock block) {
+    public RubyValue each(RubyBlock block) 
+    {
+    	if ( block == null )
+    		return this;
+    	
 //        for (RubyValue item : array_) {
         for (Iterator iter = array_.iterator(); iter.hasNext();) {
         	RubyValue item = (RubyValue)iter.next();
@@ -769,7 +773,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="each_index")
-    public RubyValue each_index(RubyBlock block) {
+    public RubyValue each_index(RubyBlock block) 
+    {
+    	if ( block == null )
+    		return this;
+    	
         for (int i=0;i<size();i++) {
             RubyValue v = block.invoke(this, new RubyFixnum(i));
             if (block.breakedOrReturned()) {
@@ -780,7 +788,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="reverse_each")
-    public RubyValue reverse_each(RubyBlock block) {
+    public RubyValue reverse_each(RubyBlock block) 
+    {
+    	if ( block == null )
+    		return this;
+    	
         ListIterator/*<RubyValue>*/ ite = array_.listIterator(array_.size());
         while (ite.hasPrevious()) {
             RubyValue v = block.invoke(this, (RubyValue)ite.previous());
