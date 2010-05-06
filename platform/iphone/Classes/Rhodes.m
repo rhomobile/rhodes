@@ -207,6 +207,13 @@ static Rhodes *instance = NULL;
 - (void)setMainView:(id<RhoMainView,NSObject>)view {
     if (mainView == view)
         return;
+    
+    if (splashViewController) {
+        [splashViewController hideSplash];
+        [splashViewController release];
+        splashViewController = nil;
+    }
+    
     [mainView.view removeFromSuperview];
     [mainView release];
     mainView = [view retain];
@@ -218,9 +225,14 @@ static Rhodes *instance = NULL;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *pngPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
-    if ([fileManager fileExistsAtPath:htmPath]) {
+    if ([fileManager fileExistsAtPath:pngPath]) {
+        splashViewController = [[SplashViewController alloc] initWithParentView:window];
+        [splashViewController showSplash:pngPath];
+    }
+    else if ([fileManager fileExistsAtPath:htmPath]) {
         NSError *err;
         NSString *data = [NSString stringWithContentsOfFile:htmPath encoding:NSUTF8StringEncoding error:&err];
         [mainView loadHTMLString:data];
