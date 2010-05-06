@@ -232,20 +232,6 @@ namespace "build" do
 
       has_push = caps.index("push") != nil
 
-      puts "Modify rhodes.jdp"
-      $stdout.flush
-      jdp = File.join($builddir, "..", "..", "..", "platform", "bb", "rhodes", "rhodes.jdp")
-      File.open(File.join($tmpdir, "rhodes.jdp"), "w") do |r|
-        File.open(jdp, "r") do |f|
-          while line = f.gets
-            line = "RunOnStartup=#{has_push ? 1 : 0}" if line =~ /^\s*RunOnStartup\s*=/
-            r.puts line
-          end
-        end
-      end
-      rm_f jdp
-      cp File.join($tmpdir, "rhodes.jdp"), jdp
-
       puts "Modify Capabilities.java"
       $stdout.flush
       capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
