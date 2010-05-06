@@ -328,7 +328,7 @@ namespace "build" do
 
     end
 #    desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android","build:bundle:noxruby",:extensions,:librhodes] do
+    task :rhobundle => ["config:android","build:bundle:noxruby",:generate_sources,:extensions,:librhodes] do
 #      Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
@@ -343,6 +343,29 @@ namespace "build" do
       File.open(File.join(assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
 
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
+    end
+
+    task :generate_sources => "config:android" do
+      # Generate gapikey.h
+      gapikey_h = File.join($androidpath, "Rhodes", "jni", "include", "gapikey.h")
+      gapi_defined = false
+      if File.file? gapikey_h
+        File.open(gapikey_h, 'r') do |f|
+          while line = f.gets
+            gapi_defined = true if line =~ /GOOGLE_API_KEY/
+            break if gapi_defined
+          end
+        end
+      end
+
+      if $use_geomapping != gapi_defined or not File.file? gapikey_h
+        File.open(gapikey_h, 'w') do |f|
+          f.puts "#ifndef RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
+          f.puts "#define RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
+          f.puts "#define GOOGLE_API_KEY \"#{$gapikey}\"" if $use_geomapping and !$gapikey.nil?
+          f.puts "#endif /* RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F */"
+        end
+      end
     end
 
     task :extensions => "config:android" do
@@ -568,27 +591,6 @@ namespace "build" do
       incdir = File.join $androidpath, "Rhodes", "jni", "include"
       objdir = File.join $rhobindir, $confdir, "librhodes"
       libname = File.join $bindir, "libs", $confdir, "librhodes.so"
-
-      # Generate gapikey.h
-      gapikey_h = File.join(incdir, 'gapikey.h')
-      gapi_defined = false
-      if File.file? gapikey_h
-        File.open(gapikey_h, 'r') do |f|
-          while line = f.gets
-            gapi_defined = true if line =~ /GOOGLE_API_KEY/
-            break if gapi_defined
-          end
-        end
-      end
-
-      if $use_geomapping != gapi_defined or not File.file? gapikey_h
-        File.open(gapikey_h, 'w') do |f|
-          f.puts "#ifndef RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
-          f.puts "#define RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F"
-          f.puts "#define GOOGLE_API_KEY \"#{$gapikey}\"" if $use_geomapping and !$gapikey.nil?
-          f.puts "#endif /* RHO_GAPIKEY_H_411BFA4742CF4F2AAA3F6B411ED7514F */"
-        end
-      end
 
       args = []
       args << "-I#{srcdir}/../include"
