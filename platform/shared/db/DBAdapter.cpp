@@ -806,6 +806,12 @@ void* rho_db_get_handle(void* pDB)
     return db.getDbHandle();
 }
 
+void* rho_db_user_get_handle()
+{
+    rho::db::CDBAdapter& db = rho::db::CDBAdapter::getUserDB();
+    return db.getDbHandle();
+}
+
 int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_stmt **ppStmt)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
