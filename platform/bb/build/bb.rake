@@ -224,9 +224,49 @@ namespace "build" do
       sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes/apps/rhoconfig.txt"
       cp $app_path+"/rhoconfig.txt", sdcardpath if File.exists? sdcardpath
     end
+
+    task :gensources => "config:bb" do
+      service = $app_config["service"]
+      service = true if service.nil?
+      service = service.to_s unless service.is_a? String
+      if service == 'true' or service == 'yes' or service == '1'
+        service = true
+      else
+        service = false
+      end
+      puts "++++ service: #{service.to_s}"
+      $stdout.flush
+
+      puts "Modify rhodes.jdp"
+      $stdout.flush
+      jdp = File.join($builddir, "..", "..", "..", "platform", "bb", "rhodes", "rhodes.jdp")
+
+      File.open(File.join($tmpdir, "rhodes.jdp"), "w") do |r|
+        File.open(jdp, "r") do |f|
+          while line = f.gets
+            line = "RunOnStartup=#{service ? 1 : 0}" if line =~ /^RunOnStartup=/
+            r.puts line
+          end
+        end
+      end
+      rm_f jdp
+      cp File.join($tmpdir, "rhodes.jdp"), jdp
+
+      puts "Modify Capabilities.java"
+      $stdout.flush
+      caps = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
+
+      File.open(caps, 'w') do |f|
+        f.puts "package com.rho;"
+        f.puts ""
+        f.puts "public class Capabilities {"
+        f.puts "  public static final boolean ENABLE_PUSH = #{service.to_s};"
+        f.puts "}"
+      end
+    end
     
 #    desc "Build RubyVM"
-    task :rubyvm => ["config:bb"] do
+    task :rubyvm => [:gensources, "config:bb"] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
