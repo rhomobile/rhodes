@@ -5,8 +5,20 @@ import java.util.Vector;
 
 import javax.microedition.media.Player;
 
+import rhomobile.RhodesApplication;
+
 import net.rim.device.api.system.Application;
+import net.rim.device.api.system.Bitmap;
+import net.rim.device.api.ui.Field;
+import net.rim.device.api.ui.FieldChangeListener;
+import net.rim.device.api.ui.Manager;
+import net.rim.device.api.ui.component.BitmapField;
+import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.Dialog;
+import net.rim.device.api.ui.component.LabelField;
+import net.rim.device.api.ui.container.HorizontalFieldManager;
+import net.rim.device.api.ui.container.PopupScreen;
+import net.rim.device.api.ui.container.VerticalFieldManager;
 
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
@@ -49,21 +61,123 @@ public class Alert
     	return val != null && val != RubyConstant.QNIL ? val.toStr() : ""; 
     }
     
+    private static class AlertDialog extends PopupScreen {
+    	
+    	private static AlertDialog current = null;
+    	
+    	private HorizontalFieldManager hfm;
+    	private String callback = null;
+    	
+    	public AlertDialog(String title, String msg, String icon, String c) {
+    		super(new VerticalFieldManager(Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR));
+    		
+    		callback = c;
+    		
+    		Manager mgr = new VerticalFieldManager(Manager.NO_VERTICAL_SCROLL | Manager.NO_VERTICAL_SCROLLBAR);
+    		add(mgr);
+    		
+    		if (title != null) {
+    			LabelField tf = new LabelField(title, Field.FIELD_HCENTER);
+    			mgr.add(tf);
+    		}
+    		
+    		HorizontalFieldManager lfm = new HorizontalFieldManager();
+    		mgr.add(lfm);
+
+    		Bitmap bmp = null;
+    		if (icon != null) {
+    			if (icon.equalsIgnoreCase(alertTypeID.toString()))
+    				bmp = Bitmap.getPredefinedBitmap(Bitmap.EXCLAMATION);
+    			else if (icon.equalsIgnoreCase(questionTypeID.toString()))
+    				bmp = Bitmap.getPredefinedBitmap(Bitmap.QUESTION);
+    			else if (icon.equalsIgnoreCase(infoTypeID.toString()))
+    				bmp = Bitmap.getPredefinedBitmap(Bitmap.INFORMATION);
+    			// TODO: load bitmap from file
+    		}
+			if (bmp != null) {
+				BitmapField bf = new BitmapField(bmp, Field.FIELD_LEFT | Field.FIELD_VCENTER);
+				lfm.add(bf);
+			}
+
+    		LabelField lf = new LabelField(msg, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
+    		lfm.add(lf);
+    		
+    		hfm = new HorizontalFieldManager();
+    		mgr.add(hfm);
+    	}
+    	
+    	private class Callback implements FieldChangeListener {
+
+    		private String id;
+    		private String text;
+    		
+    		public Callback(String i, String t) {
+    			id = i;
+    			text = t;
+    		}
+    		
+			public void fieldChanged(Field field, int context) {
+				try {
+					RhodesApp.getInstance().callPopupCallback(callback, id, text);
+				} catch (Exception e) {
+					LOG.ERROR("show_popup callback failed.", e);
+				}
+				hide();
+			}
+    		
+    	};
+    	
+    	public void addButton(String id, String text) {
+    		ButtonField bf = new ButtonField(text);
+    		bf.setChangeListener(new Callback(id, text));
+    		hfm.add(bf);
+    	}
+    	
+    	public void show() {
+    		RhodesApplication app = (RhodesApplication)Application.getApplication();
+    		app.requestForeground();
+    		app.pushScreen(this);
+    		current = this;
+    	}
+    	
+    	public void hide() {
+    		RhodesApplication app = (RhodesApplication)Application.getApplication();
+    		app.popScreen(this);
+    		current = null;
+    	}
+    	
+    	private static void hidePopup() {
+    		Application.getApplication().invokeLater(new Runnable() {
+    			public void run() {
+    				if (current == null)
+    	    			return;
+    				current.hide();
+    				current = null;
+    			}
+    		});
+    	}
+    };
+    
     private static class PopupHandler implements Runnable
     {
-    	String m_strMessage = "";
-    	String m_strCallback = "";
-    	Vector m_vecButtons = new Vector();
-    	Vector m_vecIDs = new Vector();
-    	private static final int atAlert = 1;
-    	private static final int atQuestion = 2;
-    	private static final int atInfo = 3;
-    	int      m_nType = 0;
+    	//String m_strMessage = "";
+    	//String m_strCallback = "";
+    	//Vector m_vecButtons = new Vector();
+    	//Vector m_vecIDs = new Vector();
+    	//private static final int atAlert = 1;
+    	//private static final int atQuestion = 2;
+    	//private static final int atInfo = 3;
+    	//int      m_nType = 0;
+    	
+    	private AlertDialog dialog;
     	
     	PopupHandler(RubyHash hash)
     	{
-    		m_strMessage = getHashStringValue(hash, messageID );
-    		m_strCallback = getHashStringValue(hash, callbackID );
+    		String title = getHashStringValue(hash, titleID );
+    		String msg = getHashStringValue(hash, messageID );
+    		String icon = getHashStringValue(hash, iconID );
+    		String callback = getHashStringValue(hash, callbackID );
+    		dialog = new AlertDialog(title, msg, icon, callback);
     		
     		RubyValue valButtons = hash.get(buttonsID.toSymbol());
     		if ( valButtons != null && valButtons instanceof RubyArray )
@@ -74,24 +188,24 @@ public class Alert
     				RubyValue valButton = arButtons.get(i);
     				if ( valButton != null && valButton instanceof RubyString )
     				{
-    					m_vecButtons.addElement(valButton.toStr());
-    					m_vecIDs.addElement(valButton.toStr());
+    					String text = valButton.toStr();
+    					dialog.addButton(text, text);
     				}else if ( valButton != null && valButton instanceof RubyHash )
     				{
     					String strLabel = getHashStringValue((RubyHash)valButton, titleID );
     					if ( strLabel.length() > 0 )
     					{
-    						m_vecButtons.addElement(strLabel);
     						String strID = getHashStringValue((RubyHash)valButton, buttonidID );
     						if ( strID.length() > 0 )
-    							m_vecIDs.addElement(strID);
+    							dialog.addButton(strID, strLabel);
     						else
-    							m_vecIDs.addElement(strLabel);
+    							dialog.addButton(strLabel, strLabel);
     					}
     				}
     			}
     		}
     		
+    		/*
     		RubyValue valIcon = hash.get(iconID.toSymbol());
     		if ( valIcon instanceof RubySymbol )
     		{
@@ -109,11 +223,14 @@ public class Alert
     			else
     				m_nType = atInfo;
     		}
+    		*/
     	}
     	
-        public void run() {    	
+        public void run() {
+        	dialog.show();
+        	/*
         	Application.getApplication().requestForeground();
-
+        	
         	switch( m_nType )
         	{
         	case atAlert:
@@ -138,6 +255,7 @@ public class Alert
         		break;
         		
         	}
+        	*/
         }
     	
     }
@@ -253,6 +371,20 @@ public class Alert
 				}
 					
 			}
+		});
+		klass.getSingletonClass().defineMethod("hide_popup", new RubyNoArgMethod() {
+
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try {
+					AlertDialog.hidePopup();
+					return RubyConstant.QNIL;
+				}
+				catch (Exception e) {
+					LOG.ERROR("hide_popup failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+			
 		});
 		klass.getSingletonClass().defineMethod("vibrate", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) 
