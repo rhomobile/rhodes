@@ -226,25 +226,19 @@ namespace "build" do
     end
 
     task :gensources => "config:bb" do
-      service = $app_config["service"]
-      service = true if service.nil?
-      service = service.to_s unless service.is_a? String
-      if service == 'true' or service == 'yes' or service == '1'
-        service = true
-      else
-        service = false
-      end
-      puts "++++ service: #{service.to_s}"
-      $stdout.flush
+      caps = $app_config["capabilities"]
+      caps = [] if caps.nil?
+      caps = [] unless caps.is_a? Array
+
+      has_push = caps.index("push") != nil
 
       puts "Modify rhodes.jdp"
       $stdout.flush
       jdp = File.join($builddir, "..", "..", "..", "platform", "bb", "rhodes", "rhodes.jdp")
-
       File.open(File.join($tmpdir, "rhodes.jdp"), "w") do |r|
         File.open(jdp, "r") do |f|
           while line = f.gets
-            line = "RunOnStartup=#{service ? 1 : 0}" if line =~ /^RunOnStartup=/
+            line = "RunOnStartup=#{has_push ? 1 : 0}" if line =~ /^\s*RunOnStartup\s*=/
             r.puts line
           end
         end
@@ -254,13 +248,13 @@ namespace "build" do
 
       puts "Modify Capabilities.java"
       $stdout.flush
-      caps = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
-
-      File.open(caps, 'w') do |f|
+      capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
+      File.open(capabilities, 'w') do |f|
         f.puts "package com.rho;"
         f.puts ""
         f.puts "public class Capabilities {"
-        f.puts "  public static final boolean ENABLE_PUSH = #{service.to_s};"
+        f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
+        f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
         f.puts "}"
       end
     end
