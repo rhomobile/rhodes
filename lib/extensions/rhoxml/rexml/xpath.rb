@@ -25,7 +25,6 @@ module REXML
     #  XPath.first( node, "a/x:b", { "x"=>"http://doofus" } )
     #  XPath.first( node, '/book/publisher/text()=$publisher', {}, {"publisher"=>"O'Reilly"})
     def XPath::first element, path=nil, namespaces=nil, variables={}
-      #TODO: optimize it for simple path like 'Name'
       raise "The namespaces argument, if supplied, must be a hash object." unless namespaces.nil? or namespaces.kind_of?(Hash)
       raise "The variables argument, if supplied, must be a hash object." unless variables.kind_of?(Hash)
       parser = XPathParser.new
