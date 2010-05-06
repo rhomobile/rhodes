@@ -777,6 +777,15 @@ module REXML
           (num += 1) == index
         }
       else
+        if index.kind_of?( String ) && index.length() > 0 && !index.index('/')
+            name = literalize(index)
+            res = @element.find { |child|
+              child.kind_of?( Element ) and child.has_name?( name )
+            }
+            
+            return res
+        end
+        
         return XPath::first( @element, index )
         #{ |element| 
         #	return element if element.kind_of? Element

@@ -33,8 +33,13 @@ CAlertDialog::CAlertDialog(Params *params)
 	m_icon     = params->m_icon;
 
 	int id = ID_ALERT_DLG_BUTTON_FIRST;
-	for (Hashtable<String, String>::iterator itr = params->m_buttons.begin(); itr != params->m_buttons.end(); ++itr)
+	for (Hashtable<String, String>::iterator itr = params->m_buttons.begin(); itr != params->m_buttons.end(); ++itr) {
+		if(id > ID_ALERT_DLG_BUTTON_LAST) {
+			LOG(ERROR) + "too many buttons";
+			break;
+		}
 		m_buttons.addElement(CustomButton(itr->first, itr->second, id++));
+	}
 }
 
 CAlertDialog::~CAlertDialog()
@@ -48,13 +53,13 @@ void CAlertDialog::DoInitTemplate()
 #else 
 	int initialWidth  = CMainWindow::getScreenWidth()/3;
 #endif
-	int initialHeight = initialWidth/2;
+	int initialHeight = initialWidth/3;
 
 	m_Template.Create(false, convertToStringW(m_title).c_str(), 
-						GetSystemMetrics(SM_CXSCREEN)/2 - initialWidth/2,
-						GetSystemMetrics(SM_CYSCREEN)/2 - initialHeight/2,
+						0, 
+						0,
 						initialWidth, 
-						initialHeight, 
+						initialHeight,
 						CAlertDialogTraits::GetWndStyle(0), 
 						CAlertDialogTraits::GetWndExStyle(0));
 }
@@ -65,28 +70,34 @@ void CAlertDialog::DoInitControls()
 
 LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&bHandled)
 {
-	int indent   = 10;
+#define MAX(i, j)   ((i) > (j) ? (i) : (j))
 
+	const int GAP = 10;   //space around dialog
+	const int INDENT = 8; //for dialog items
+	const unsigned int iconHeight = 42;
+	//space around label on buttons.
+	const int btnHIndent = 12; //horizontal
+	const int btnVIndent = 8;  //vertical
 #ifdef OS_WINCE
-	unsigned int maxWidth  = GetSystemMetrics(SM_CXSCREEN) - (indent * 2);
-	unsigned int maxHeight = GetSystemMetrics(SM_CYSCREEN) - (indent * 2);
+	unsigned int maxWidth  = GetSystemMetrics(SM_CXSCREEN) - (GAP * 2);
+	unsigned int maxHeight = GetSystemMetrics(SM_CYSCREEN) - (GAP * 2);
 #else
-	unsigned int maxWidth  = CMainWindow::getScreenWidth() - (indent * 2);
-	unsigned int maxHeight = CMainWindow::getScreenWidth() - (indent * 2);
+	unsigned int maxWidth  = CMainWindow::getScreenWidth() - (GAP * 2);
+	unsigned int maxHeight = CMainWindow::getScreenWidth() - (GAP * 2);
 #endif
-
 	unsigned int msgWidth  = 0, msgHeight = 0;
 	CClientDC dc(m_hWnd);
-	TEXTMETRIC tm = {0};
-	POINT point = { 5,  5};
-	SIZE  size  = { 0, 0 };
-	unsigned int iconHeight = 42;
-
+	TEXTMETRIC tm = { 0 };
+	RECT dlgRect, iconRect = {0 }, msgRect = { 0 }, buttonsRect = { 0 };
+	RECT rect = {0}; POINT point = { 0 };
 #ifdef OS_WINCE
 	int iconId = 0;
 #else
 	LPWSTR iconId = NULL;
 #endif
+
+	GetClientRect(&dlgRect);
+	LOG(INFO) + "dlgRect: " + dlgRect.left + " " + dlgRect.top + " " + dlgRect.right + " " + dlgRect.bottom; 
 
 	/**
 	 * Icon.
@@ -106,7 +117,8 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	else if (m_icon == "info")
 		iconId = IDI_INFORMATION;
 #endif 
-
+	
+	//if icon has predefined type - try to load it from system resources.
 	if (iconId != 0) {
 #ifdef OS_WINCE
 		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
@@ -114,16 +126,17 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 #else
 		HICON hIcon = LoadIcon(NULL, iconId);
 #endif
+
 		if (hIcon == NULL) {
 			LOG(ERROR) + "Failed to load icon";
 		} else {
-			size.cx = iconHeight; size.cy = iconHeight;
-#ifdef OS_WINCE
-			m_iconCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE | SS_ICON, 0);
-#else
-			RECT rc = {0, 0, 32, 32};
-			m_iconCtrl.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | SS_ICON);
-#endif
+			iconRect.left = INDENT; 
+			iconRect.top  = INDENT;
+			iconRect.right  = iconRect.left + iconHeight; 
+			iconRect.bottom = iconRect.top + iconHeight;
+
+			m_iconCtrl.Create(m_hWnd, iconRect, NULL, WS_CHILD | WS_VISIBLE | SS_ICON);
+
 			if (m_iconCtrl.SetIcon(hIcon) == NULL)
 				LOG(INFO) + "Failed to set icon";
 		}
@@ -132,66 +145,89 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	/**
 	 * Message.
 	 */
+	GetClientRect(&dlgRect);
 	dc.GetTextMetrics(&tm);
-	if ((m_message.length() * tm.tmAveCharWidth) > maxWidth) {
-		msgWidth = maxWidth - indent - size.cy;
-		msgHeight = (((m_message.length() * tm.tmAveCharWidth * 2) / msgWidth)) 
-					* (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
+	
+	msgWidth = m_message.length() * tm.tmAveCharWidth + (2 * INDENT);
+	msgHeight = (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
+	point.x = iconRect.right; point.y = iconRect.top;
 
-		RECT rect;
-		GetWindowRect(&rect);
-		MoveWindow(indent, rect.top, maxWidth, msgHeight + tm.tmHeight * 5);
+	int desiredDlgWidth = iconRect.right + msgWidth + (INDENT * 2);
 
-		point.x = size.cx; point.y = 5; 
-		size.cx = msgWidth; size.cy = msgHeight;
-	} else {
-		point.x = size.cx + 4; point.y = 5; 
-
-		msgWidth = m_message.length() * tm.tmAveCharWidth * 2;
-		msgHeight = (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
-
-		size.cx = msgWidth; size.cy = msgHeight;
+	//if ((desiredDlgWidth > (dlgRect.right - dlgRect.left))) { //adjust dialog window
+	if ( m_buttons.size() != 0 ) {
+		if ((point.x + msgWidth) > maxWidth) {
+			msgWidth = maxWidth - iconRect.right;
+			msgHeight = (((m_message.length() * tm.tmAveCharWidth) / msgWidth) + 1) 
+						* (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
+			desiredDlgWidth = iconRect.right + msgWidth + (INDENT * 2);
+		} else {
+			msgHeight = tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading;
+		}
+			
+		if (m_buttons.size() == 0) {
+			MoveWindow(GAP, GAP, 
+						desiredDlgWidth + 13 + INDENT, 
+						MAX((unsigned int )iconRect.bottom, msgHeight) + msgHeight + GetSystemMetrics(SM_CYCAPTION) + INDENT);
+		} else { 
+			MoveWindow(GAP, GAP, 
+						desiredDlgWidth + 13 + INDENT, 
+						MAX((unsigned int )iconRect.bottom, msgHeight)  + GetSystemMetrics(SM_CYCAPTION) + INDENT + 
+						(tm.tmHeight + btnVIndent + INDENT * 2)); //reserved place for buttons
+		}
 	}
-#ifdef OS_WINCE
-	m_messageCtrl.Create(m_hWnd, CRect(point, size), NULL, WS_CHILD | WS_VISIBLE);
-#else
-	RECT rc = {point.x, point.y, point.x + msgWidth, point.y + msgHeight};
-	m_messageCtrl.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE);
-#endif
+
+	msgRect.left = iconRect.right + INDENT;
+	msgRect.top  = iconRect.top;
+	msgRect.right  = iconRect.right + msgWidth + 2 * INDENT + INDENT * 2; 
+	msgRect.bottom = msgRect.top + msgHeight;
+
+	//LOG(DEBUG) + " msgWidth: " + msgWidth;
+	//LOG(DEBUG) + " msgRect: " + msgRect.left + " " + msgRect.top + " " + msgRect.right + " " + msgRect.bottom;
+
+	m_messageCtrl.Create(m_hWnd, msgRect, NULL, WS_CHILD | WS_VISIBLE);
 	m_messageCtrl.SetWindowText(convertToStringW(m_message).c_str());
 
+	//for Wait dailog text should be centered
+	if (m_buttons.size() == 0) {
+		m_messageCtrl.CenterWindow();
+	}
 	
 	/**
 	 * Buttons.
 	 */
-	int bntNum = m_buttons.size();
+	int btnsNum = m_buttons.size(); 
+	int btnsWidth = 0, btnsHeight =tm.tmHeight + btnVIndent;
 
-	point.x = indent, point.y = iconHeight > msgHeight ? point.y = iconHeight + 6 : msgHeight + 2;
+	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
+		btnsWidth += (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent + (INDENT * 2);
+	}
+
+	point.x = INDENT, point.y = (iconHeight > msgHeight ? point.y = iconHeight + 6 : msgHeight + 2) + INDENT;
 
 	unsigned int btnWidth = 0, btnHeight = 0;
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
-		LOG(INFO) + "insert button " + itr->m_title;
-		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth * 2) + 6;
-		btnHeight = tm.tmHeight + 4;
+		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
+		btnHeight = tm.tmHeight + btnVIndent;
 
-		size.cx = btnWidth; size.cy = btnHeight;
-#ifdef OS_WINCE
-		itr->Create(m_hWnd, CRect(point, size), 
-					convertToStringW(itr->m_title).c_str(),
-					WS_CHILD | WS_VISIBLE, 0, 
-					itr->m_numId);
-#else
 		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
 		itr->Create(m_hWnd, rc, 
 					convertToStringW(itr->m_title).c_str(),
-					WS_CHILD | WS_VISIBLE, 0, 
-					itr->m_numId);
+					WS_CHILD | WS_VISIBLE 
+#if defined(OS_WINDOWS)
+					| BS_DEFPUSHBUTTON 
 #endif
+					, 0, 
+					itr->m_numId);
 
-		point.x += btnWidth + 4;
+		point.x += btnWidth + INDENT;
 	}
 
+	CenterWindow();
+
 	return bHandled = FALSE;
+
+#undef MAX
 }
 
 bool CAlertDialog::findButton(int id, CustomButton &btn)

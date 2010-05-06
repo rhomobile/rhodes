@@ -12,6 +12,7 @@
 #import "AppManager.h"
 #import "RhoMainView.h"
 
+#import "SplashViewController.h"
 #import "LogOptionsController.h"
 #import "LogViewController.h"
 #import "DateTimePickerDelegate.h"
@@ -25,6 +26,7 @@
     UIWindow *window;
     AVAudioPlayer *player;
     // Controllers
+    SplashViewController *splashViewController;
     LogOptionsController* logOptionsController;
     LogViewController* logViewController;
     DateTimePickerDelegate* dateTimePickerDelegate;
