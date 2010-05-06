@@ -832,12 +832,20 @@ namespace "build" do
         exit 1
       end
 
-      puts "all_files_mask: #{$all_files_mask}"
-      args = ["cf","../../Rhodes.jar", $all_files_mask]
-      puts Jake.run($jarbin, args, "#{$tmpdir}/Rhodes/")
-      unless $? == 0
-        puts "Error running jar"
-        exit 1
+      files = []
+      Dir.glob(File.join($tmpdir, "Rhodes", "**/*")).each do |f|
+        next if File.directory? f
+        relpath = Pathname.new(f).relative_path_from(Pathname.new(File.join($tmpdir, "Rhodes"))).to_s
+        files << relpath
+      end
+      unless files.empty?
+        args = ["cf", "../../Rhodes.jar"]
+        args += files
+        puts Jake.run($jarbin, args, File.join($tmpdir, "Rhodes"))
+        unless $? == 0
+          puts "Error running jar"
+          exit 1
+        end
       end
     end
 
