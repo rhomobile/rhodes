@@ -182,10 +182,30 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
 	
     curl_httppost *post = NULL, *last = NULL;
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+
     for (size_t i = 0, lim = arItems.size(); i < lim; ++i) {
         CMultipartItem *mi = arItems[i];
         
-        const char *name = mi->m_strName.c_str();
+        size_t cl;
+        if (mi->m_strFilePath.empty())
+            cl = mi->m_strBody.size();
+        else {
+            common::CRhoFile f;
+            if (!f.open(mi->m_strFilePath.c_str(), common::CRhoFile::OpenReadOnly))
+                cl = 0;
+            else {
+                cl = f.size();
+                f.close();
+            }
+        }
+
+        char buf[32];
+        buf[sizeof(buf) - 1] = '\0';
+        snprintf(buf, sizeof(buf) - 1, "Content-Length: %lu", (unsigned long)cl);
+        curl_slist *fh = NULL;
+        fh = curl_slist_append(fh, buf);
+
+        const char *name = mi->m_strName.empty() ? "blob" : mi->m_strName.c_str();
         int opt = mi->m_strFilePath.empty() ? CURLFORM_COPYCONTENTS : CURLFORM_FILE;
         const char *data = mi->m_strFilePath.empty() ? mi->m_strBody.c_str() : mi->m_strFilePath.c_str();
         const char *ct = mi->m_strContentType.empty() ? NULL : mi->m_strContentType.c_str();
@@ -194,12 +214,14 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
                          CURLFORM_COPYNAME, name,
                          opt, data,
                          CURLFORM_CONTENTTYPE, ct,
+                         CURLFORM_CONTENTHEADER, fh,
                          CURLFORM_END);
         }
         else {
             curl_formadd(&post, &last,
                          CURLFORM_COPYNAME, name,
                          opt, data,
+                         CURLFORM_CONTENTHEADER, fh,
                          CURLFORM_END);
         }
     }
