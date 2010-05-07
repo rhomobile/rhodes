@@ -1,6 +1,6 @@
 package com.xruby.GeneratedMethods;
+import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.*;
-import com.xruby.runtime.lang.RubySymbol;
 public class RubySymbol_Methods{
 public static void initMethods( RubyClass klass){
 
@@ -23,6 +23,11 @@ klass.defineMethod( "to_s", new RubyNoArgMethod(){
 });
 klass.aliasMethod("id2name","to_s");
 klass.aliasMethod("to_str","to_s");
+
+klass.defineMethod( "length", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubySymbol)receiver).rubyLength();}
+});
 
 klass.defineMethod( "===", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){

@@ -224,9 +224,29 @@ namespace "build" do
       sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes/apps/rhoconfig.txt"
       cp $app_path+"/rhoconfig.txt", sdcardpath if File.exists? sdcardpath
     end
+
+    task :gensources => "config:bb" do
+      caps = $app_config["capabilities"]
+      caps = [] if caps.nil?
+      caps = [] unless caps.is_a? Array
+
+      has_push = caps.index("push") != nil
+
+      puts "Modify Capabilities.java"
+      $stdout.flush
+      capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
+      File.open(capabilities, 'w') do |f|
+        f.puts "package com.rho;"
+        f.puts ""
+        f.puts "public class Capabilities {"
+        f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
+        f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
+        f.puts "}"
+      end
+    end
     
 #    desc "Build RubyVM"
-    task :rubyvm => ["config:bb"] do
+    task :rubyvm => [:gensources, "config:bb"] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
