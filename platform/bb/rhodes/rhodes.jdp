@@ -28,11 +28,10 @@ resources\icon.png
 src\com\rho\BBVersionSpecific.java
 src\com\rho\BrowserAdapter.java
 src\com\rho\BrowserAdapter5.java
-src\com\rho\IBrowserAdapter.java
-src\com\rho\Version.java
 src\com\rho\file\Jsr75File.java
 src\com\rho\file\Jsr75RAFileImpl.java
 src\com\rho\file\PersistRAFileImpl.java
+src\com\rho\IBrowserAdapter.java
 src\com\rho\net\BaseSocket.java
 src\com\rho\net\bb\BBHttpConnection.java
 src\com\rho\net\bb\NativeBBHttpConnection.java
@@ -44,8 +43,9 @@ src\com\rho\RhoRubyHelper.java
 src\com\rho\rubyext\Alert.java
 src\com\rho\rubyext\GeoLocation.java
 src\com\rho\rubyext\System.java
-src\com\rho\rubyext\XMLParser.java
 src\com\rho\rubyext\WebView.java
+src\com\rho\rubyext\XMLParser.java
+src\com\rho\Version.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraFilesListener.java
 src\rhomobile\camera\CameraScreen.java
@@ -87,7 +87,7 @@ OutputFileName=rhodes
 RibbonPosition=0
 [RolloverIcons
 ]
-RunOnStartup=1
+RunOnStartup=0
 StartupTier=7
 SystemModule=0
 Type=0

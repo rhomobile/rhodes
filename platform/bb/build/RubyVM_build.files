@@ -37,6 +37,7 @@ platform\shared\rubyJVM\src\com\rho\RhoProfiler.java
 platform\shared\rubyJVM\src\com\rho\RhoRuby.java
 platform\shared\rubyJVM\src\com\rho\RhoThread.java
 platform\shared\rubyJVM\src\com\rho\StringScanner.java
+platform\shared\rubyJVM\src\com\rho\Capabilities.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONArrayIterator.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONStructIterator.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONEntry.java
