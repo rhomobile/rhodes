@@ -340,7 +340,6 @@ bool wceRunProcess(const char *process, const char *args)
 			_tprintf( TEXT("CreateProcess failed with Errorcode = %ld\n"), CeGetLastError());
 			return false;
 		}
-		WaitForSingleObject(pi.hProcess, INFINITE);
 		CeCloseHandle( pi.hProcess);
 		CeCloseHandle( pi.hThread);
 	}
@@ -383,10 +382,12 @@ bool wceInvokeCabSetup(const char *wceload_params)
 //#define EMU "USA Windows Mobile 6.5 Professional Portrait QVGA Emulator"
 
 /**
- * detool emu "<emu_name|vmid>" "app-name" rhobundle_path
+ * detool emu "<emu_name|vmid>" "app-name" rhobundle_path exe_name
  * or
  * detool emucab "<emu_name|vmid>" app.cab "app-name"
  * or
+   detool dev "app-name" rhobundle_path exe_name
+   or 
  * detool devcab app.cab "app-name"
  */
 void usage(void)
@@ -408,7 +409,7 @@ enum {
 int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 {
 	TCHAR exe_fullpath[MAX_PATH];
-
+	int retval = 0;
 	HANDLE hDest, hSrc;
 	BYTE  buffer[5120];
 	DWORD dwNumRead, dwNumWritten;
@@ -419,7 +420,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	_tcscat(exe_fullpath, _T("\\"));
 	_tcscat(exe_fullpath, _T("rhodes.exe"));
 
-/*
+
 	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hSrc) {
 		_tprintf( TEXT("Unable to open host file\n"));
@@ -429,7 +430,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	hDest = CeCreateFile(exe_fullpath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hDest ) {
 		_tprintf( TEXT("Unable to open target WinCE file\n"));
-		return false;
+		return CeGetLastError();
 	}
 
 	do {
@@ -446,17 +447,20 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	} while (dwNumRead);
 	_tprintf( TEXT("\n"));
 
+	CeCloseHandle( hDest);
+	CloseHandle (hSrc);
+
 	return EXIT_SUCCESS;
 
 copyFailure:
 	CeCloseHandle( hDest);
 	CloseHandle (hSrc);
-*/
+/*
 
 	if (wcePutFile (T2A(file_name), T2A(exe_fullpath)))
 		return EXIT_SUCCESS;
-
-	return CeGetLastError();
+*/
+	return EXIT_FAILURE;
 }
 
 int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
@@ -563,6 +567,8 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 			} while (dwNumRead);
 			_tprintf( TEXT("\n"));
 
+			CeCloseHandle( hDest);
+			CloseHandle (hSrc);
 			/*
 			if(!wcePutFile (T2A(host_file), T2A(new_app_item))) {
 				printf("Failed to copy file.");
@@ -608,6 +614,13 @@ int _tmain(int argc, _TCHAR* argv[])
 			cab_file = argv[3];
 			app_name = argv[4];
 			deploy_type = DEPLOY_EMUCAB;
+		}
+
+		if (strcmp(T2A(argv[1]), "dev") == 0) {
+			app_name = argv[2];
+			bundle_path = argv[3];
+			app_exe = argv[4];
+			deploy_type = DEPLOY_DEV;
 		}
 	} else if (argc == 4) { //assuming that need to deploy and start on device
 		cab_file = argv[2];
@@ -672,7 +685,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				_tcscpy(remote_bundle_path, app_dir);
 				_tcscat(remote_bundle_path, _T("\\rho"));
-				_tprintf( TEXT("%s\n"), remote_bundle_path);
 
 				hFind = CeFindFirstFile(remote_bundle_path, &findData);
 				if (INVALID_HANDLE_VALUE == hFind) {
@@ -786,6 +798,88 @@ int _tmain(int argc, _TCHAR* argv[])
 			CoUninitialize();
 			ExitProcess(EXIT_FAILURE);
 		}
+	}
+
+	if (deploy_type == DEPLOY_DEV) {
+		HANDLE hFind;
+		CE_FIND_DATA findData;
+
+		_tprintf( TEXT("Searching for Windows CE device..."));
+
+		HRESULT hRapiResult;
+		hRapiResult = CeRapiInit();
+		if (FAILED(hRapiResult)) {
+			_tprintf( TEXT("FAILED\n"));
+			return false;
+		}
+		_tprintf( TEXT("DONE\n"));
+
+		hFind = CeFindFirstFile(app_dir, &findData);
+		if (INVALID_HANDLE_VALUE == hFind) {
+			_tprintf( TEXT("Application directory on device was no found\n"));
+					
+			new_copy = 1;
+
+			if (!CeCreateDirectory(app_dir, NULL)) {
+				printf ("Failed to create app directory\n");
+				goto stop_emu_deploy;
+			}
+		}
+		FindClose( hFind);
+
+		if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			_tprintf( TEXT("Error: target directory is file\n"));
+			goto stop_emu_deploy;
+		}
+				
+
+		TCHAR remote_bundle_path[MAX_PATH];
+
+		_tcscpy(remote_bundle_path, app_dir);
+		_tcscat(remote_bundle_path, _T("\\rho"));
+
+		hFind = CeFindFirstFile(remote_bundle_path, &findData);
+		if (INVALID_HANDLE_VALUE == hFind) {
+			_tprintf( TEXT("Bundle directory on device was no found\n"));
+	
+			if (!CeCreateDirectory(remote_bundle_path, NULL)) {
+				printf ("Failed to create bundle directory\n");
+				goto stop_emu_deploy;
+			}
+		}
+		FindClose( hFind);
+
+		
+		int retval = copyExecutable (app_exe, app_dir);
+		if (retval != EXIT_SUCCESS) {
+			printf ("Failed to copy application executable\n");
+			if (retval == 32) {
+				printf ("Please, stop application on device and try again.\n");
+			}
+			goto stop_emu_deploy;
+		}
+
+		if (copyBundle(bundle_path, _T("/"), remote_bundle_path) == EXIT_FAILURE) {
+			printf ("Failed to copy bundle\n");
+			goto stop_emu_deploy;
+		}
+
+		Sleep(2 * 1000);
+
+		_tprintf( TEXT("Starting application..."));
+		_tcscpy(params_buf, TEXT("\\Program Files\\"));
+		_tcscat(params_buf, app_name);
+		_tcscat(params_buf, TEXT("\\rhodes.exe"));
+		_tprintf( TEXT("%s\n"), params_buf);
+
+		
+		if(!wceRunProcess(T2A(params_buf), NULL)) {
+			_tprintf( TEXT("FAILED\n"));
+			goto stop_emu_deploy;
+		}
+		_tprintf( TEXT("DONE\n"));
+
+		ExitProcess(EXIT_SUCCESS);
 	}
 
 	if (deploy_type == DEPLOY_DEVCAB) {
