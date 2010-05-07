@@ -305,7 +305,8 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 		if (!GetVersionEx(&osv))
 			return 0;
 		char buf[50];
-		snprintf(buf, sizeof(buf), "%u.%u.%u", (unsigned)osv.dwMajorVersion,
+		buf[sizeof(buf) - 1] = '\0';
+		snprintf(buf, sizeof(buf) - 1, "%u.%u.%u", (unsigned)osv.dwMajorVersion,
 			(unsigned)osv.dwMinorVersion, (unsigned)osv.dwBuildNumber);
 		*resValue = rho_ruby_create_string(&buf[0]);
 		return 1;
