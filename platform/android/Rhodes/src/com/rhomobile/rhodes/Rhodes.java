@@ -81,6 +81,8 @@ public class Rhodes extends Activity {
 	
 	private static int MAX_PROGRESS = 10000;
 	
+	private static boolean ENABLE_LOADING_INDICATION = true;
+	
 	private long uiThreadId;
 	public long getUiThreadId() {
 		return uiThreadId;
@@ -312,7 +314,8 @@ public class Rhodes extends Activity {
 			
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
+				if (ENABLE_LOADING_INDICATION)
+					getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
 				super.onPageStarted(view, url, favicon);
 			}
 			
@@ -327,7 +330,8 @@ public class Rhodes extends Activity {
 					hideSplashScreen();
 					splashHidden = true;
 				}
-				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				if (ENABLE_LOADING_INDICATION)
+					getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
 			}
 
@@ -336,12 +340,14 @@ public class Rhodes extends Activity {
 		w.setWebChromeClient(new WebChromeClient() {
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
-				newProgress *= 100;
-				if (newProgress < 0)
-					newProgress = 0;
-				if (newProgress > MAX_PROGRESS)
-					newProgress = MAX_PROGRESS;
-				getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
+				if (ENABLE_LOADING_INDICATION) {
+					newProgress *= 100;
+					if (newProgress < 0)
+						newProgress = 0;
+					if (newProgress > MAX_PROGRESS)
+						newProgress = MAX_PROGRESS;
+					getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
+				}
 				super.onProgressChanged(view, newProgress);
 			}
 		});
@@ -462,7 +468,9 @@ public class Rhodes extends Activity {
 		this.setRequestedOrientation(disableScreenRotation ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
 			ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 		
-		this.requestWindowFeature(Window.FEATURE_PROGRESS);
+		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
+		if (ENABLE_LOADING_INDICATION)
+			this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
 		outerFrame = new FrameLayout(this);
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
