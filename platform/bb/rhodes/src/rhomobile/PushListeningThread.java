@@ -147,24 +147,27 @@ public class PushListeningThread extends Thread {
             } 
             catch (IOException ioe)
             {
-            	LOG.ERROR("Exception thrown by _notify.acceptAndOpen() - exiting push thread", ioe);
+            	if ( !_stop )
+            	{
+            		LOG.ERROR("Exception thrown by _notify.acceptAndOpen() - exiting push thread", ioe);
+	            	
+	            	// Likely the stream was closed. Catches the exception thrown by 
+	                // _notify.acceptAndOpen() when this program exits.
+	            	
+	            	_stop = true;
+	                if ( _notify != null ) 
+	                {
+	                    try 
+	                    {
+	                        _notify.close();
+	                    } 
+	                    catch ( IOException e ) 
+	                    {
+	                    }
+	                }
+            	}
             	
-            	// Likely the stream was closed. Catches the exception thrown by 
-                // _notify.acceptAndOpen() when this program exits.
-            	
-            	_stop = true;
-                
-                if ( _notify != null ) 
-                {
-                    try 
-                    {
-                        _notify.close();
-                        _notify = null;
-                    } 
-                    catch ( IOException e ) 
-                    {
-                    }
-                }
+                _notify = null;
             }
         }
     }
