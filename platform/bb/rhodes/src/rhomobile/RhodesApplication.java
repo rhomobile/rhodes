@@ -41,6 +41,7 @@ import com.rho.*;
 import com.rho.rubyext.GeoLocation;
 import com.rho.net.NetResponse;
 import com.rho.net.RhoConnection;
+import com.rho.sync.ClientRegister;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
 import com.rho.file.Jsr75File;
@@ -394,16 +395,21 @@ final public class RhodesApplication extends UiApplication implements SystemList
         	throw new RuntimeException("Application failed and will exit. Log will send to log server." + e.toString());
 		}
 		
-		_pushListeningThread.stop();
-		
-        RhoLogger.close();
 		//LOG.TRACE("Rhodes MAIN exit ***--------------------------***");
     }
 
     void doClose(){   	
     	LOG.TRACE("Rhodes DO CLOSE ***--------------------------***");
-/*    	
-		SyncEngine.stop(null);
+
+    	if ( _pushListeningThread != null )
+    		_pushListeningThread.stop();
+		
+    	if ( ClientRegister.getInstance() != null )
+    		ClientRegister.getInstance().Destroy();
+    	
+    	if ( SyncThread.getInstance() != null )
+    		SyncThread.getInstance().Destroy();
+    	
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
         
@@ -412,7 +418,8 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	}catch(IOException exc){
     		LOG.ERROR(exc);
     	}
-*/
+
+        RhoLogger.close();
     }
     
     private int m_activateHookNo = 0;
@@ -812,15 +819,22 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		
 		public void close() {
 			LOG.TRACE("Calling Screen.close");
-			Application.getApplication().requestBackground();
+			
+			if (com.rho.Capabilities.RUNAS_SERVICE)
+				Application.getApplication().requestBackground();
+			else
+			{
+				doClose();
+				super.close();
+			}
 		}
-		
+/*		
 		public boolean onClose() {
 			doClose();
 			return super.onClose();
 			//System.exit(0);
 			//return true;
-		}
+		}*/
 
 		public boolean onMenu(int instance) {
 			// TODO Auto-generated method stub
@@ -915,7 +929,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	if (_mainScreen!=null)
     		return;
     	
-    	if ( ApplicationManager.getApplicationManager().inStartup() )// || isWaitForSDCardAtStartup() )
+    	if ( com.rho.Capabilities.RUNAS_SERVICE && ApplicationManager.getApplicationManager().inStartup() )// || isWaitForSDCardAtStartup() )
     	{
             this.invokeLater( new Runnable() {
                 public void run() 
@@ -928,10 +942,11 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	}
     	
     	try{
-    		System.out.println("RHODES - 1");
-    		if ( !Jsr75File.isSDCardExist() )
-    			Thread.sleep(5000); //Wait till SDCard may appear
-    		System.out.println("RHODES - 1");
+    		if ( com.rho.Capabilities.RUNAS_SERVICE )
+    		{
+    			if ( !Jsr75File.isSDCardExist() )
+    				Thread.sleep(5000); //Wait till SDCard may appear
+    		}
     		
         	RhoLogger.InitRhoLog();
 	    	
@@ -1019,14 +1034,19 @@ final public class RhodesApplication extends UiApplication implements SystemList
         // 2) From System Listener - after system restart and when the app is originally installed
         // To make sure we don't actually do the startup stuff twice,
         // we use _mainScreen as a flag
-        if ( _mainScreen == null ) {
-            LOG.INFO_OUT(" Shedule doStartupWork() ***---------------------------------- " );
-            this.invokeLater( new Runnable() { 
-                public void run() 
-                {
-                    doStartupWork(); 
-                }
-            } );
+        if ( _mainScreen == null ) 
+        {
+        	if ( com.rho.Capabilities.RUNAS_SERVICE )
+        	{
+	            LOG.INFO_OUT(" Shedule doStartupWork() ***---------------------------------- " );
+	            this.invokeLater( new Runnable() { 
+	                public void run() 
+	                {
+	                    doStartupWork(); 
+	                }
+	            } );
+        	}else
+        		doStartupWork();
         }
     }
 
@@ -1035,8 +1055,11 @@ final public class RhodesApplication extends UiApplication implements SystemList
 
     public void powerUp() {
         LOG.INFO_OUT(" POWER UP ***----------------------------------*** " );
-        invokeStartupWork();
-        this.requestBackground();
+        if ( com.rho.Capabilities.RUNAS_SERVICE)
+        {
+        	invokeStartupWork();
+        	this.requestBackground();
+        }
     }
     public void powerOff() {
         LOG.TRACE(" POWER DOWN ***----------------------------------*** " );
@@ -1055,7 +1078,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
         m_activateHooks = new Hashtable();
         this.addSystemListener(this);
         //this.addFileSystemListener(this);
-        if ( ApplicationManager.getApplicationManager().inStartup() ) {
+        if ( com.rho.Capabilities.RUNAS_SERVICE && ApplicationManager.getApplicationManager().inStartup() ) {
             LOG.INFO_OUT("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
         } else {
             invokeStartupWork();
@@ -1137,9 +1160,12 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    		LOG.ERROR("initRuby crashed.", exc);
     	    		return;
     	    	}
-
-    	    	_pushListeningThread = new PushListeningThread();
-    	    	_pushListeningThread.start();
+    	    	
+    	    	if (com.rho.Capabilities.ENABLE_PUSH)
+    	    	{
+	    	    	_pushListeningThread = new PushListeningThread();
+	    	    	_pushListeningThread.start();
+    	    	}
     	    	
         		while( !m_bExit )
         		{

@@ -1,9 +1,0 @@
-MIDlet-Name: rhodesApp
-MIDlet-Version: 0.2.0
-MIDlet-Vendor: rhomobile
-MIDlet-Jar-URL: rhodesApp.jar
-MIDlet-Jar-Size: 0
-MicroEdition-Profile: MIDP-2.0
-MicroEdition-Configuration: CLDC-1.1
-MIDlet-1: rhodesApp,resources/icon.png,
-RIM-MIDlet-Flags-1: 1

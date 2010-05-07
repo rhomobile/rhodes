@@ -64,7 +64,7 @@ public class ClientRegister extends RhoThread
     public void run() 
     {
     	LOG.INFO("ClientRegister start");    	
-    	while(true) 
+    	while(!m_bStop) 
     	{
     		try
     		{
