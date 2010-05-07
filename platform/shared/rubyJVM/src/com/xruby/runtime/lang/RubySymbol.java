@@ -72,6 +72,11 @@ public class RubySymbol extends RubyValue {
         return this;
     }
 
+    //@RubyLevelMethod(name="length")
+    public RubyFixnum rubyLength() {
+        return ObjectFactory.createFixnum(id.toString().length());
+    }
+    
     //@RubyLevelMethod(name="inspect")
     public RubyString rubyInspect() {
         String value = this.toString();
