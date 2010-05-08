@@ -196,7 +196,15 @@ module Rho
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
         content = eval_compiled_file(modelpath+'_' + partial_name.to_s+'_erb.iseq', locals.get_binding )
       else
+        #xruby issue - https://www.pivotaltracker.com/story/show/3454121
+        content = render_partial_collection(options,partial_name)
+      end
+      content
+    end
+
+    def render_partial_collection(options, partial_name)
         i = 0
+        content = ""
         options[:collection].each do |x|
           options[:locals][partial_name] = x
 
@@ -205,8 +213,8 @@ module Rho
           #puts "render partial: #{x}"
           content += render_partial :partial => options[:partial], :locals => options[:locals]
         end
-      end
-      content
+        
+        content
     end
 
     @@m_geoview_callback = nil
