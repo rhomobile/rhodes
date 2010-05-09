@@ -1,8 +1,8 @@
 h1. Rhodes
 
-The "Rhodes framework":http://github.com/rhomobile/rhodes/tree/master is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via "RhoSync":http://github.com/rhomobile/rhosync/tree/master). Rhodes is now available for iPhone, Windows Mobile, Research in Motion (Blackberry) and Symbian smartphones.  
+The "Rhodes framework":http://github.com/rhomobile/rhodes is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via "RhoSync":http://github.com/rhomobile/rhosync). Rhodes is now available for iPhone, Windows Mobile, Research in Motion (Blackberry) and Symbian smartphones.  
 
-Rhodes is available as an open source product under the "GNU Public License": http://gplv3.fsf.org/ for developers prepared to abide by the GPL and open source their own application.  For developers building closed source applications (either within an enterprise or as independent software vendors selling to other companies) we offer a "commercial license":http://rhomobile.com/products/licensing.  Contact sales@rhomobile.com for details
+Rhodes is available as an open source product under the MIT license.  For developers interested a commercial license is still "available":http://rhomobile.com/products/rhodes/license/.
 
 h2. INTRODUCTION  
 
@@ -20,7 +20,7 @@ Rhodes features an application generator called rhogen that generates  a control
 
   rhogen app appname
 
-This will generate a config.rb and an index.html file.  Currently config.rb is focused on describing what source to sync with.  Modify the URL that you see in this file with whatever your RhoSync server URL and source ID are for this particular "source" or data model.   It is assumed that you've already set up a RhoSync "source adapter" as described by the RhoSync README.
+This will generate a config.rb and an index.html file.  Currently config.rb is focused on describing what source to sync with.  Modify the URL that you see in this file with whatever your RhoSync server URL and source ID are for this particular "source" or data model.   It is assumed that you've already set up a RhoSync "source adapter" as described by the "RhoSync docs":http://wiki.rhomobile.com/index.php/RhoSync_2.0.
 
 h3. Generate a Model and Associated Controller and Templates
 
@@ -33,43 +33,12 @@ This will generate a controller as the file controller.rb and several views as a
     * edit - to edit the actual object
     * show - to show the object attributes
 
-h2. DIRECTORY STRUCTURE
-
-The Rhodes directory structure is outlined below.  In a default Rhodes application, there are several subdirectories inside of an app directory, one for each model or synced data object. For example, there might be subdirectories called Account, Employee, and Case. Each model subdirectory contains a controller in the file controller.rb. These subdirectories each contain a set of template files as Embedded Ruby (ERB) files. These control how data from the model is displayed and what links are available to other actions. Note that this structure is reminiscent of Rails and MERB's structure, but is a bit simpler by design.
-
-	  /appname
-	    build.yml (contains the settings for running builds)
-	    rhoconfig.txt (contains settings for setting the default start and options path)
-	    Rakefile
-	    /public (contains static resources for the generated objects)
-	      /css
-	      /images
-	      /js
-	    /app
-	      index.erb
-	      layout.erb
-	      loading.html  
-	      /modelname (for example Account)
-		    config.rb
-	        index.erb
-	        new.erb
-	        edit.erb
-	        show.erb
-	        controller.rb  
-	      /modelname (for example Case)
-	        config.rb
-	        index.erb
-	        new.erb
-	        edit.erb
-	        show.erb
-	        controller.rb
-
 
 h2. MORE RESOURCES
 
-There is a "tutorial available":http://rhomobile.com/wiki/index.php?title=Mobilizing_Your_Application_with_Rhomobile on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
+There is a "tutorial available":http://rhomobile.com/wiki/index.php/Mobilizing_Your_Application_with_Rhomobile on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
 
-The "Rhodes spec":http://rhomobile.com/wiki/index.php?title=Rhodes is also available on the "Rhomobile documentation wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile. 
+The "Rhodes spec":http://rhomobile.com/wiki/index.php/Rhodes is also available on the "Rhomobile documentation wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile. 
 
 For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
 
