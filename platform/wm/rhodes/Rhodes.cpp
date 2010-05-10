@@ -122,7 +122,7 @@ public :
 		WIN32_FIND_DATA wfd;
 		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
 
-		if (INVALID_HANDLE_VALUE == hFind) {
+		if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 			LOG(INFO) + "Bundle directory is  missing\n";
 
 			int last = 0, pre_last = 0;
