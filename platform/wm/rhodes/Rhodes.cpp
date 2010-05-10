@@ -120,7 +120,7 @@ public :
 		//Check for bundle directory is exists.
 		HANDLE hFind;
 		WIN32_FIND_DATA wfd;
-		hFind = FindFirstFile(convertToStringW(m_strRootPath).c_str(), &wfd);
+		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
 
 		if (INVALID_HANDLE_VALUE == hFind) {
 			LOG(INFO) + "Bundle directory is  missing\n";
