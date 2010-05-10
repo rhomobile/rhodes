@@ -223,7 +223,7 @@ namespace "run" do
     task :devcab => ["device:wm:production"] do
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = ['dev', $targetdir + '/' +  $appname + ".cab", $appname]
+	  args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname]
 	  puts "\nStarting application on the device"
 	  puts "Please, connect you device via ActiveSync.\n\n"
 	  Jake.run(detool,args)
@@ -233,7 +233,7 @@ namespace "run" do
     task :emucab => ["device:wm:production"] do
   	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"
-	  args   = ['emu', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname]
+	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname]
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  Jake.run(detool,args)
     end
