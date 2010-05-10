@@ -117,6 +117,29 @@ public :
 
         ::SetThreadPriority(GetCurrentThread(),10);
 
+		//Check for bundle directory is exists.
+		HANDLE hFind;
+		WIN32_FIND_DATA wfd;
+		hFind = FindFirstFile(convertToStringW(m_strRootPath).c_str(), &wfd);
+
+		if (INVALID_HANDLE_VALUE == hFind) {
+			LOG(INFO) + "Bundle directory is  missing\n";
+
+			int last = 0, pre_last = 0;
+			last = getRhoRootPath().find_last_of('\\');
+			pre_last = getRhoRootPath().substr(0, last).find_last_of('\\');
+			String appName = getRhoRootPath().substr(pre_last + 1, last - pre_last - 1);
+	
+			int msgboxID = MessageBox(NULL,
+										_T("Bundle directory is  missing."),
+										convertToStringW(appName).c_str(),
+										MB_ICONERROR | MB_OK);
+
+
+			return S_FALSE;
+	    }
+
+
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
