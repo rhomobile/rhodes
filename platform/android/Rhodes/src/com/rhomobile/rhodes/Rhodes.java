@@ -41,6 +41,8 @@ import com.rhomobile.rhodes.uri.VideoUriHandler;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -148,11 +150,21 @@ public class Rhodes extends Activity {
 	}
 	
 	private String phoneMemoryRootPath() {
-		return "/data/data/" + getPackageName() + "/data/";
+		String pkgName = getPackageName();
+		try {
+			ApplicationInfo info = getPackageManager().getApplicationInfo(pkgName, 0);
+			String path = info.dataDir + "/rhodata/";
+			return path;
+		} catch (NameNotFoundException e) {
+			throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
+		}
 	}
 	
 	private String sdcardRootPath() {
-		return Environment.getExternalStorageDirectory() + "/rhomobile/" + getPackageName() + "/";
+		String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+		String pkgName = getPackageName();
+		String path = sdPath + "/rhomobile/" + pkgName + "/";
+		return path;
 	}
 	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
