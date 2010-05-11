@@ -241,7 +241,9 @@ class Jake
 
       if cldc and icon
         f.write "MIDlet-1: " + title + "," + icon + ",\n"
-        f.write "RIM-MIDlet-Flags-1: 1\n"
+        puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! service_enabled: #{$service_enabled}"
+        $stdout.flush
+        f.write "RIM-MIDlet-Flags-1: 1\n" if $service_enabled
       end
 
       f.close
