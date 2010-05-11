@@ -385,10 +385,18 @@ static void
 native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex)
 {
     DWORD r;
+    DWORD dwErr = 0;
     struct cond_event_entry entry;
+    //WinMo BUG: in release mode CreateEventW without name inside non-main thread does not work
+    static int nCounter = 0;
+    wchar_t buf[20];
+    wsprintfW(buf, L"REvent%d", nCounter);
+    nCounter = nCounter + 1;
 
     entry.next = 0;
-    entry.event = CreateEvent(0, FALSE, FALSE, 0);
+    entry.event = CreateEventW(0, FALSE, FALSE, buf);
+//    dwErr = GetLastError();
+//    printf("CreateEvent: %d; %d", entry.event, dwErr);
 
     /* cond is guarded by mutex */
     if (cond->next) {
