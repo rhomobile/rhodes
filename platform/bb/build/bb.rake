@@ -232,6 +232,27 @@ namespace "build" do
 
       has_push = caps.index("push") != nil
 
+      $service_enabled = has_push
+
+      puts "Modify MANIFEST.MF"
+      $stdout.flush
+      mf = File.join($builddir, "MANIFEST.MF")
+      tmpmf = File.join($builddir, "MANIFEST.MF.new")
+      File.open(tmpmf, "w") do |nf|
+        File.open(mf, "r") do |f|
+          while line = f.gets
+            if line =~ /^\s*RIM-MIDlet-Flags-1\s*:/
+              nf.puts "RIM-MIDlet-Flags-1: 1" if has_push
+            else
+              nf.puts line
+            end
+          end
+        end
+      end
+      rm mf
+      cp tmpmf, mf
+      rm tmpmf
+
       puts "Modify Capabilities.java"
       $stdout.flush
       capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
