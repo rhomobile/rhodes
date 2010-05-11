@@ -225,6 +225,26 @@ namespace "build" do
       cp $app_path+"/rhoconfig.txt", sdcardpath if File.exists? sdcardpath
     end
 
+    def create_jarmanifest
+      mf = File.join($builddir, "MANIFEST.MF")
+      puts "mf: #{mf}"
+      f = File.new(mf, "w")
+
+      f.write "Manifest-Version: 1.0\n"
+      f.write "MIDlet-Vendor: <unknown>\n"
+      f.write "MIDlet-Version: 1.40\n"
+      f.write "MicroEdition-Configuration: CLDC-1.1\n"
+      f.write "MIDlet-1: ,resources/icon.png,\n"
+      f.write "Created-By: 1.6.0_02 (Sun Microsystems Inc.)\n"
+      f.write "MIDlet-Jar-URL: rhodes.jar\n"
+      f.write "MIDlet-Name: rhodes\n"
+      f.write "MicroEdition-Profile: MIDP-2.0\n"
+      f.write "MIDlet-Jar-Size: 0\n"
+      f.write "RIM-MIDlet-Flags-1: 1\n" if $service_enabled
+      f.close
+    
+    end
+    
     task :gensources => "config:bb" do
       caps = $app_config["capabilities"]
       caps = [] if caps.nil?
@@ -233,26 +253,8 @@ namespace "build" do
       has_push = caps.index("push") != nil
 
       $service_enabled = has_push
-
-      puts "Modify MANIFEST.MF"
-      $stdout.flush
-      mf = File.join($builddir, "MANIFEST.MF")
-      tmpmf = File.join($builddir, "MANIFEST.MF.new")
-      File.open(tmpmf, "w") do |nf|
-        File.open(mf, "r") do |f|
-          while line = f.gets
-            if line =~ /^\s*RIM-MIDlet-Flags-1\s*:/
-              nf.puts "RIM-MIDlet-Flags-1: 1" if has_push
-            else
-              nf.puts line
-            end
-          end
-        end
-      end
-      rm mf
-      cp tmpmf, mf
-      rm tmpmf
-
+      create_jarmanifest()
+        
       puts "Modify Capabilities.java"
       $stdout.flush
       capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
