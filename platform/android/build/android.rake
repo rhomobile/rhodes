@@ -833,8 +833,7 @@ namespace "build" do
       end
 
       files = []
-      Dir.glob(File.join($tmpdir, "Rhodes", "**/*")).each do |f|
-        next if File.directory? f
+      Dir.glob(File.join($tmpdir, "Rhodes", "*")).each do |f|
         relpath = Pathname.new(f).relative_path_from(Pathname.new(File.join($tmpdir, "Rhodes"))).to_s
         files << relpath
       end
