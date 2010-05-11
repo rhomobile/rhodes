@@ -33,6 +33,7 @@ import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
 import com.rhomobile.rhodes.uri.MailUriHandler;
+import com.rhomobile.rhodes.uri.SmsUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
 import com.rhomobile.rhodes.uri.UriHandler;
 import com.rhomobile.rhodes.uri.VideoUriHandler;
@@ -500,6 +501,7 @@ public class Rhodes extends Activity {
 		// Register custom uri handlers here
 		uriHandlers.addElement(new MailUriHandler(this));
 		uriHandlers.addElement(new TelUriHandler(this));
+		uriHandlers.addElement(new SmsUriHandler(this));
 		uriHandlers.addElement(new VideoUriHandler(this));
 		
 		Thread init = new Thread(new Runnable() {
