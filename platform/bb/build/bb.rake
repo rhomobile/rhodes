@@ -128,7 +128,7 @@ namespace "config" do
     $preverified = $app_path + "/preverified"
     $targetdir = $bindir + "/target/" + $bbver
     $rubyVMdir = $app_path + "/RubyVM"
-    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
+    $excludelib = ['**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
     $excludeextlib = ['rexml/parsers/baseparser.rb', 'rexml/set.rb']
     $compileERB = $app_path + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
