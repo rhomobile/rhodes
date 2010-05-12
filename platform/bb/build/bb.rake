@@ -128,7 +128,7 @@ namespace "config" do
     $preverified = $app_path + "/preverified"
     $targetdir = $bindir + "/target/" + $bbver
     $rubyVMdir = $app_path + "/RubyVM"
-    $excludelib = ['**/singleton.rb','**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
+    $excludelib = ['**/rational.rb','**/rhoframework.rb','**/dateOrig.rb']
     $excludeextlib = ['rexml/parsers/baseparser.rb', 'rexml/set.rb']
     $compileERB = $app_path + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
@@ -225,6 +225,26 @@ namespace "build" do
       cp $app_path+"/rhoconfig.txt", sdcardpath if File.exists? sdcardpath
     end
 
+    def create_jarmanifest
+      mf = File.join($builddir, "MANIFEST.MF")
+      puts "mf: #{mf}"
+      f = File.new(mf, "w")
+
+      f.write "Manifest-Version: 1.0\n"
+      f.write "MIDlet-Vendor: <unknown>\n"
+      f.write "MIDlet-Version: 1.40\n"
+      f.write "MicroEdition-Configuration: CLDC-1.1\n"
+      f.write "MIDlet-1: ,resources/icon.png,\n"
+      f.write "Created-By: 1.6.0_02 (Sun Microsystems Inc.)\n"
+      f.write "MIDlet-Jar-URL: rhodes.jar\n"
+      f.write "MIDlet-Name: rhodes\n"
+      f.write "MicroEdition-Profile: MIDP-2.0\n"
+      f.write "MIDlet-Jar-Size: 0\n"
+      f.write "RIM-MIDlet-Flags-1: 1\n" if $service_enabled
+      f.close
+    
+    end
+    
     task :gensources => "config:bb" do
       caps = $app_config["capabilities"]
       caps = [] if caps.nil?
@@ -232,6 +252,9 @@ namespace "build" do
 
       has_push = caps.index("push") != nil
 
+      $service_enabled = has_push
+      create_jarmanifest()
+        
       puts "Modify Capabilities.java"
       $stdout.flush
       capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
