@@ -132,6 +132,7 @@ namespace "build" do
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
       ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
+      ENV["RHO_ROOT"] = $startdir
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
