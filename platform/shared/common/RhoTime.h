@@ -68,10 +68,10 @@ public:
             struct tm* locTime = localtime(&m_nativeTime);
 
             if (inFileFormat)
-                nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d", locTime->tm_mon+1, locTime->tm_mday, locTime->tm_year + 1900,
                         locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
             else
-                nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d", locTime->tm_mon, locTime->tm_mday, locTime->tm_year + 1900,
+                nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d", locTime->tm_mon+1, locTime->tm_mday, locTime->tm_year + 1900,
                         locTime->tm_hour, locTime->tm_min, locTime->tm_sec );
         }
 
