@@ -327,8 +327,7 @@
 }
 
 - (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
-    [navbar removeFromSuperview];
-    self.navbar = nil;
+    [self removeNavBar];
     
     UINavigationBar *nb = [[UINavigationBar alloc] initWithFrame:CGRectZero];
     [nb sizeToFit];
