@@ -7,14 +7,14 @@ body {
 
 /* page title */
 div#pageTitle {
-    display:none;    
+    display:none;
 }
 
 /* toolbar */
 div#toolbar {
 	width:100%;
 	height: 30px;
-	background: black;  
+	background: black;
 	border-bottom:1px solid gray;
 }
 div#toolbar a {
@@ -60,14 +60,14 @@ div#content h2.groupTitle{
 /* Lists */
 div#content ul {
     margin: 0;
-    padding: 0; 
+    padding: 0;
     width: 100%;
 }
 
 div#content ul li {
     list-style-type:none;
-    height: 30px;  
-    width: 100%;  
+    height: 30px;
+    width: 100%;
     border-bottom: 1px solid black;
     margin:0;
 		padding:0;
@@ -86,7 +86,7 @@ div#content ul li span.title {
 div#content ul li a {
     text-decoration:none;
     display:block;
-    color: black; 
+    color: black;
 }
 div#content ul li a span.title {
     margin: 0 5px 0 5px;
@@ -104,7 +104,7 @@ div#content ul li div {
   width: 45%;
   line-height:30px;
   margin: 0 5px;
-}	
+}
 div#content ul li div.itemLabel {
     float:left;
     font-weight:bold;
@@ -126,7 +126,7 @@ div#content ul#settings li div {
 }
 
 div#content ul#settings li span.clientID {
-    font-size:60%;    
+    font-size:60%;
     float:right;
 		display:block;
 		height:20px;
@@ -149,7 +149,7 @@ div#content div#reset  {
 
 /* forms */
 div#content form {
-    margin: 0;  
+    margin: 0;
     padding:0;
 }
 
@@ -157,18 +157,18 @@ div#content form h4 {
     background-color:black;
     color:white;
     display:block;
-    padding: 5px;   
+    padding: 5px;
     margin:0;
 }
 
 
 div#content form ul {
-    margin: 0;  
+    margin: 0;
     padding:0;
 }
 
 div#content form ul li {
-    height: 40px; 
+    height: 40px;
 }
 div#content form ul li.textarea {
 		height:110px;
