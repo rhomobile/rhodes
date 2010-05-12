@@ -3,19 +3,19 @@ body {
     margin: 0;
     font-family: Arial, Helvetica;
     font-size:16px;
-		background: white;
+	background: white;
     color: black;
     overflow-x: hidden;
 }
 
 div#pageTitle {
-		background: black;
+	background: black;
     width: auto;
 }
 
 div#pageTitle h1 {
-		margin: 0;
-		padding: 4px;
+	margin: 0;
+	padding: 4px;
     width: auto;
     font-size: 16px;
     max-height: 16px;
@@ -59,7 +59,7 @@ div#content div.warning{
 }
 
 div#content p{
-	font-size:14px; 
+	font-size:14px;
 }
 
 /* bb list styles */
@@ -81,16 +81,16 @@ div#content ul li a {
 	font-weight:bold;
 	color:black;
 	display:block;
-	overflow: hidden; 
+	overflow: hidden;
 }
 
 /* bb table styles */
 
 div#content table {
-  display:block;
+    display:block;
 	border:none;
 	border-spacing:0;
-  font-size: 80%;
+    font-size: 80%;
 	margin:4px;
 }
 
