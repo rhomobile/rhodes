@@ -9,6 +9,13 @@ div#content {
     height: 100%;
 }
 
+/* Toolbar */
+
+div#toolbar .noButton {
+    display:hidden;
+}
+
+
 /* Lists */
 
 div#content ul {

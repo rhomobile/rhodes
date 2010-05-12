@@ -38,6 +38,11 @@ div#toolbar div#rightItem {
     margin-right:5px;
 }
 
+div#toolbar .noButton {
+    display:hidden;
+}
+
+
 /* content */
 div#content {
 	width: 100%;
