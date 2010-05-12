@@ -108,3 +108,18 @@ div#content table tr td {
 	padding:5px;
 	margin:0;
 }
+
+/* Lists */
+
+div#content table {
+    width:100%;
+}
+
+div#content table tr td.itemLabel {
+    width:50%;
+    font-weight:bold;
+}
+
+div#content table tr td.itemValue {
+    width:50%;
+}
