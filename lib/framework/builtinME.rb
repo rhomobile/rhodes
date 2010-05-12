@@ -32,6 +32,12 @@ module Kernel
     #private
     def require(file_name)
         return false if ($".include?(file_name) || $".include?(file_name + ".rb"))
+        nExt = file_name.index('.rb')
+        if nExt 
+            file_name1 = file_name[0,nExt]
+            #puts "require test: #{file_name1}"
+            return false if ($".include?(file_name1))
+        end
         
         load(file_name);
     end

@@ -74,8 +74,8 @@ div#toolbar .backButton {
     z-index: 3;
 }
 
-div#toolbar .deleteButton, 
-div#toolbar .regularButton, 
+div#toolbar .deleteButton,
+div#toolbar .regularButton,
 div#toolbar .blueButton {
    -webkit-border-radius: 5px;
     overflow: hidden;
@@ -121,7 +121,7 @@ div#content .standardButton {
     color: #436395;
     font-size: 15px;
     font-weight: bold;
-		width:100%;
+	width:100%;
     height: 40px;
     border: 1px solid black;
     margin-top:10px;
@@ -354,7 +354,7 @@ div#content ul#settings li.alertMessage{
 div#content ul#settings li span {
 	line-height:40px;
 }
- 
+
 div#content ul#settings li.alertMessage span.message{
 		color: red;
 }

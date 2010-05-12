@@ -31,7 +31,7 @@ div#toolbar {
 }
 
 div#toolbar div#leftItem,
-div#toolbar div#centerItem, 
+div#toolbar div#centerItem,
 div#toolbar div#rightItem {
     display: table-cell;
 }
@@ -42,9 +42,9 @@ div#toolbar a {
     display: block;
 }
 
-div#toolbar .deleteButton, 
-div#toolbar .regularButton, 
-div#toolbar .blueButton, 
+div#toolbar .deleteButton,
+div#toolbar .regularButton,
+div#toolbar .blueButton,
 div#toolbar .backButton {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
     -webkit-border-radius: 1px;
@@ -228,7 +228,7 @@ div#content form textarea {
     box-shadow:0 -1px 3px #000000;
 }
 
-div#content form input[type="text"], 
+div#content form input[type="text"],
 div#content form input[type="password"] {
     float: right;
     height: 40px;
@@ -243,11 +243,11 @@ div#content form input[type="password"] {
     box-shadow:0 -1px 3px #000000;
 }
 
-div#content form button.standardButton {
+div#content form input.standardButton {
     height: 45px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin: 2px 0 2px 0;
     -webkit-border: 2px;
+    width:100%;
 }
 
 /* Settings */
