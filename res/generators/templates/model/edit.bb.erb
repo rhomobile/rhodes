@@ -14,8 +14,8 @@
             <table>
         		<% attributes.each do |attribute| %>
                     <tr>
-            			<td width="125" class="fieldLabel"><%= humanize(attribute) %>: </td>
-              			<td><input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>"/></td>
+            			<td class="itemLabel"><%= humanize(attribute) %>: </td>
+              			<td class="itemValue"><input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>"/></td>
           		    </tr>
         		<% end %>
             </table>

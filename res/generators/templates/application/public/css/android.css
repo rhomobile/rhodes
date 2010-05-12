@@ -278,6 +278,8 @@ div#content div.standardButton a {
 
 div#content ul#settings li.alertMessage{
     text-align: center;
+    height: 45px;
+    line-height:45px;
 }
 
 div#content ul#settings li.alertMessage span.message{
