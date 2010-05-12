@@ -13,8 +13,8 @@
     <table>
       <% attributes.each do |attribute| %>
       <tr>
-    	<td><%= attribute.camelize %></td>
-        <td><%%= @<%= name.downcase %>.<%= attribute %>%></td>
+    	<td class="itemLabel"><%= attribute.camelize %></td>
+        <td class="itemValue"><%%= @<%= name.downcase %>.<%= attribute %>%></td>
       </tr>
       <% end %>
     </table>
