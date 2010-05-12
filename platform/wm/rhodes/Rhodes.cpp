@@ -120,18 +120,33 @@ public :
 		//Check for bundle directory is exists.
 		HANDLE hFind;
 		WIN32_FIND_DATA wfd;
-		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
+		
+		// rootpath + "rho/"
+		if (m_strRootPath.at(m_strRootPath.length()-1) == '/') {
+			hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
+		} else if (m_strRootPath.at(m_strRootPath.length()-1) == '\\') {
+			//delete all '\' from the end of the pathname
+			int i = m_strRootPath.length();
+			for ( ; i != 1; i--) {
+				if (m_strRootPath.at(i-1) != '\\')
+					break;
+			}
+			hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, i)).c_str(), &wfd);
+		}
 
 		if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-			LOG(INFO) + "Bundle directory is  missing\n";
-
 			int last = 0, pre_last = 0;
 			last = getRhoRootPath().find_last_of('\\');
 			pre_last = getRhoRootPath().substr(0, last).find_last_of('\\');
 			String appName = getRhoRootPath().substr(pre_last + 1, last - pre_last - 1);
-	
+
+			String messageText = "Bundle directory \"" + 
+									m_strRootPath.substr(0, m_strRootPath.find_last_of('/')) + 
+									"\" is  missing\n";
+
+			LOG(INFO) + messageText;
 			int msgboxID = MessageBox(NULL,
-										_T("Bundle directory is  missing."),
+										convertToStringW(messageText).c_str(),
 										convertToStringW(appName).c_str(),
 										MB_ICONERROR | MB_OK);
 
