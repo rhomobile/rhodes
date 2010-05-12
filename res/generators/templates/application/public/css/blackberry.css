@@ -35,6 +35,10 @@ div#toolbar{
 	width:100%;
 }
 
+div#toolbar .noButton {
+    display:hidden;
+}
+
 /*content div styling*/
 div#content h2 {
 	font-size:15px;
