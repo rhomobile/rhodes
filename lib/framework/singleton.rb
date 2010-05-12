@@ -60,7 +60,7 @@
 #    and _dump(depth) hooks allows the (partially) resurrections of
 #    a previous state of ``the instance''.
 
-require 'thread'
+#require 'thread'
 
 module Singleton
   #  disable build-in copying methods
