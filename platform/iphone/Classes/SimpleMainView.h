@@ -9,18 +9,20 @@
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
 
-@interface SimpleMainView : UIViewController <RhoMainView> {
+@interface SimpleMainView : UIViewController <RhoMainView, UIWebViewDelegate> {
     UIView *parent;
     UIView *root;
     UIWebView *webView;
     UIToolbar *toolbar;
     UINavigationBar *navbar;
+    NSMutableDictionary *cookies;
 }
 
 @property (retain) UIView *root;
 @property (retain) UIWebView *webView;
 @property (retain) UIToolbar *toolbar;
 @property (retain) UINavigationBar *navbar;
+@property (retain) NSMutableDictionary *cookies;
 
 - (id)initWithParentView:(UIView *)v;
 - (id)initWithParentView:(UIView *)v frame:(CGRect)frame;

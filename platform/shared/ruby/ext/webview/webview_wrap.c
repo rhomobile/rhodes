@@ -1561,6 +1561,9 @@ extern int rho_webview_active_tab();
 extern void rho_webview_full_screen_mode(int enable);
 #define full_screen_mode rho_webview_full_screen_mode
 
+extern void rho_webview_set_cookie(const char* url, const char* cookie);
+#define set_cookie rho_webview_set_cookie
+
 
 
 #include <limits.h>
@@ -1898,6 +1901,41 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_cookie(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_cookie" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "set_cookie" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  set_cookie((char const *)arg1,(char const *)arg2);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2167,5 +2205,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "set_menu_items", _wrap_set_menu_items, -1);
   rb_define_module_function(mWebView, "active_tab", _wrap_active_tab, -1);
   rb_define_module_function(mWebView, "full_screen_mode", _wrap_full_screen_mode, -1);
+  rb_define_module_function(mWebView, "set_cookie", _wrap_set_cookie, -1);
 }
 
