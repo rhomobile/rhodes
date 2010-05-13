@@ -406,7 +406,7 @@ namespace "build" do
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
     end
 
-    task :extensions => "config:android" do
+    task :extensions => :genconfig do
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
