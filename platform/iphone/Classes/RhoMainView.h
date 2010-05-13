@@ -30,6 +30,4 @@
 - (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right;
 - (void)removeNavBar;
 
-- (void)setCookie:(NSString*)cookie forUrl:(NSString*)url;
-
 @end

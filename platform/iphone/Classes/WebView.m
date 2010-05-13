@@ -78,7 +78,7 @@
 
 @implementation RhoWebViewSetCookieTask
 + (void)run:(NSString *)url :(NSString *)cookie {
-    [[[Rhodes sharedInstance] mainView] setCookie:cookie forUrl:url];
+    [[Rhodes sharedInstance] setCookie:cookie forUrl:url];
 }
 @end
 

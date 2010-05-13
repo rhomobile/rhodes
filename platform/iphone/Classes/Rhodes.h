@@ -25,6 +25,7 @@
     UIApplication *application;
     UIWindow *window;
     AVAudioPlayer *player;
+    NSMutableDictionary *cookies;
     // Controllers
     SplashViewController *splashViewController;
     LogOptionsController* logOptionsController;
@@ -38,6 +39,7 @@
 @property (nonatomic, retain) UIWindow *window;
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) id<RhoMainView,NSObject> mainView;
+@property (nonatomic, retain) NSMutableDictionary *cookies;
 
 + (Rhodes*)sharedInstance;
 
@@ -54,5 +56,8 @@
 
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
 - (void)playStop;
+
+- (void)setCookie:(NSString*)cookie forUrl:(NSString*)url;
+- (NSString*)cookie:(NSString*)url;
 
 @end
