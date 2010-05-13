@@ -53,7 +53,7 @@
 
 @implementation SimpleMainView
 
-@synthesize root, webView, toolbar, navbar;
+@synthesize root, webView, toolbar, navbar, cookies;
 
 - (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
     UIImage *img = nil;
@@ -203,7 +203,7 @@
     webView.multipleTouchEnabled = YES;
     webView.autoresizesSubviews = YES;
     webView.clipsToBounds = NO;
-    webView.delegate = [Rhodes sharedInstance];
+    webView.delegate = self;
     
     [root addSubview:webView];
     
@@ -223,6 +223,8 @@
     navbar = nil;
     
     self.view = root;
+    
+    cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     return self;
 }
@@ -291,7 +293,7 @@
 
 - (void)navigate:(NSString *)url tab:(int)index {
     NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
     [webView loadRequest:request];
 }
 
@@ -373,6 +375,59 @@
     
     [navbar removeFromSuperview];
     self.navbar = nil;
+}
+
+- (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
+    [cookies setObject:cookie forKey:url];
+}
+
+// UIWebViewDelegate imlementation
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType {
+    NSString *url = [[request URL] absoluteString];
+    if (url) {
+        NSString *c = [cookies objectForKey:url];
+        if (c) {
+            NSMutableURLRequest *r = (NSMutableURLRequest*)request;
+            [r addValue:c forHTTPHeaderField:@"Cookie"];
+        }
+    }
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webview {
+    // TODO
+    //[self active];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webview {
+    [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+    // TODO
+    /*
+     [self inactive];
+     
+     if ([webView canGoBack]) {
+     backBtn.enabled = YES;
+     } else {
+     backBtn.enabled = NO;
+     }
+     if ([webView canGoForward]) {
+     forwardBtn.enabled = YES;
+     } else {
+     forwardBtn.enabled = NO;
+     }
+     
+     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
+     
+     if ([actionTarget respondsToSelector:@selector(hideSplash)])
+     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
+     */
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    // TODO
 }
 
 @end
