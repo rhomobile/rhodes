@@ -53,7 +53,7 @@
 
 @implementation SimpleMainView
 
-@synthesize root, webView, toolbar, navbar, cookies;
+@synthesize root, webView, toolbar, navbar;
 
 - (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
     UIImage *img = nil;
@@ -224,8 +224,6 @@
     
     self.view = root;
     
-    cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
-    
     return self;
 }
 
@@ -377,17 +375,13 @@
     self.navbar = nil;
 }
 
-- (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
-    [cookies setObject:cookie forKey:url];
-}
-
 // UIWebViewDelegate imlementation
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     NSString *url = [[request URL] absoluteString];
     if (url) {
-        NSString *c = [cookies objectForKey:url];
+        NSString *c = [[Rhodes sharedInstance] cookie:url];
         if (c) {
             NSMutableURLRequest *r = (NSMutableURLRequest*)request;
             [r addValue:c forHTTPHeaderField:@"Cookie"];

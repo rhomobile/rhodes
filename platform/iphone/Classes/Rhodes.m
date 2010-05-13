@@ -17,7 +17,7 @@ void rho_geoimpl_init();
 
 @implementation Rhodes
 
-@synthesize window, player, mainView;
+@synthesize window, player, mainView, cookies;
 
 static Rhodes *instance = NULL;
 
@@ -130,6 +130,15 @@ static Rhodes *instance = NULL;
 
 - (void)showLog {
     [self performSelectorOnMainThread:@selector(doShowLog) withObject:nil waitUntilDone:NO];
+}
+
+- (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
+    [cookies setObject:cookie forKey:url];
+}
+
+- (NSString*)cookie:(NSString*)url {
+    NSString *c = [cookies objectForKey:url];
+    return c;
 }
 
 - (void)chooseDateTime:(DateTime*)dateTime {
@@ -261,6 +270,8 @@ static Rhodes *instance = NULL;
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
     [self showLoadingPage];
+    
+    cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     // Init controllers
     logOptionsController = [[LogOptionsController alloc] init];
