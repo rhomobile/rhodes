@@ -198,4 +198,11 @@
     [[self subView:[self activeTab]] removeNavBar];
 }
 
+- (void)setCookie:(NSString *)cookie forUrl:(NSString *)url {
+    for (int i = 0, lim = [tabbar.viewControllers count]; i < lim; ++i) {
+        SimpleMainView *v = [self subView:i];
+        [v setCookie:cookie forUrl:url];
+    }
+}
+
 @end
