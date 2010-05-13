@@ -57,6 +57,11 @@ void rho_webview_full_screen_mode(int enable)
     ::PostMessage( getMainWnd(), WM_COMMAND, ID_FULLSCREEN, (LPARAM)enable );
 }
 
+void rho_webview_set_cookie(const char *url, const char *cookie)
+{
+    // TODO: implement
+}
+
 }
 
 
