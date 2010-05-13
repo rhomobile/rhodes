@@ -18,7 +18,7 @@
 #import "DateTimePickerDelegate.h"
 #import "PickImageDelegate.h"
 
-@interface Rhodes : NSObject <UIApplicationDelegate, UIWebViewDelegate,
+@interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate>
 {
     AppManager *appManager;

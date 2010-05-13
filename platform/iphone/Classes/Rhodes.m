@@ -463,47 +463,6 @@ static Rhodes *instance = NULL;
     rho_rhodesapp_destroy();
 }
 
-// UIWebViewDelegate imlementation
-
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType {
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webview {
-	// TODO
-    //[self active];
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webview {
-    [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
-    // TODO
-    /*
-     [self inactive];
-     
-     if ([webView canGoBack]) {
-     backBtn.enabled = YES;
-     } else {
-     backBtn.enabled = NO;
-     }
-     if ([webView canGoForward]) {
-     forwardBtn.enabled = YES;
-     } else {
-     forwardBtn.enabled = NO;
-     }
-     
-     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
-     
-     if ([actionTarget respondsToSelector:@selector(hideSplash)])
-     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
-     */
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    // TODO
-}
-
 // UITabBarControllerDelegate implementation
 
 - (void)tabBarController:(UITabBarController *)tabBarController
