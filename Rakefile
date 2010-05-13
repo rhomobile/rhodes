@@ -211,6 +211,17 @@ def common_bundle_start(startdir, dest)
       end
     end
 
+    if extpath.nil?
+      begin
+        $rhodes_extensions = nil
+        require extname
+        extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+      rescue
+        #fail, do nothing
+      end
+
+    end
+
     unless extpath.nil?
       add_extension(extpath, dest)
 
