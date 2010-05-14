@@ -253,7 +253,10 @@ public class AsyncHttp extends RhoThread
 	        if (cookies.length()>0)
 	        	m_strResBody += "&cookies=" + URI.urlEncode(cookies);
 	    	
-	        m_strResBody += "&" + makeHeadersString();
+	        String strHeaders = makeHeadersString();
+	        if ( strHeaders != null && strHeaders.length() > 0 )
+	        	m_strResBody += "&" + makeHeadersString();
+	        
 	        m_strResBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
 	    }
 	    
