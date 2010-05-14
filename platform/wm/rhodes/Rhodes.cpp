@@ -7,6 +7,7 @@
 #include "common/rhoparams.h"
 #include "rho/rubyext/GeoLocationImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "net/NetRequestImpl.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -217,6 +218,8 @@ public :
         rho_ringtone_manager_stop();
 
         rho::common::CRhodesApp::Destroy();
+
+        net::CNetRequestImpl::deinitConnection();
     }
 
     const rho::String& getRhoRootPath()
