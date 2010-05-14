@@ -414,6 +414,7 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
+      ENV["RHO_INC"] = $appincdir
 
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
 

@@ -333,7 +333,7 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 {
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
-    const int nDownloadBufferSize = 1024*50;
+    const int nDownloadBufferSize = 1024*100;
     char* pDownloadBuffer = 0;
 
     do
@@ -644,7 +644,7 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
     if (!pBuf)
     {
         if ( dwBufSize==0)
-            dwBufSize=1024*4;
+            dwBufSize=1024*50;
 
         pBuf = (char*)malloc(dwBufSize);
         pBufToFree = pBuf;
