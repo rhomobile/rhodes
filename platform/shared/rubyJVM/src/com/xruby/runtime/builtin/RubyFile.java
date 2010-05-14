@@ -51,13 +51,28 @@ public class RubyFile extends RubyIO {
     ////@RubyLevelMethod(name="exist?", alias="exists?", singleton=true)
     public static RubyValue exist_question(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
+        boolean bExist = false;
         if ( fileName.startsWith("/apps"))
-        	return ObjectFactory.createBoolean(RhoSupport.findClass(fileName)!=null);
+        	bExist = RhoSupport.findClass(fileName)!=null;
         
-        File file = new File(fileName);
-        return ObjectFactory.createBoolean(file.exists());
+        if ( !bExist )
+        {        
+        	File file = new File(fileName);
+        	bExist = file.exists();
+        }
+        
+    	return ObjectFactory.createBoolean(bExist);
+        
     }
 
+    public static RubyValue existinjar_question(RubyValue receiver, RubyValue arg) 
+    {
+        String fileName = arg.toStr();
+        boolean bExist = RhoSupport.findClass(fileName)!=null;
+    	return ObjectFactory.createBoolean(bExist);
+        
+    }
+    
     ////@RubyLevelMethod(name="directory?", singleton=true)
     public static RubyValue directory_question(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();

@@ -29,13 +29,13 @@ module LocalizationSimplified
       
       if check_exist
         begin
-            require file + curLocale if File.exist?(file + curLocale + '.iseq')
+            require file + curLocale if Rho::file_exist?(file + curLocale + '.iseq')
         rescue Exception => e
             puts 'Could not load resources for locale: ' + curLocale.to_s
             if curLocale != 'en'
                 begin
                     puts 'Load english resources.'
-                    require file + 'en'  if File.exist?(file + 'en.iseq')
+                    require file + 'en'  if Rho::file_exist?(file + 'en.iseq')
                 rescue Exception => e
                 end    
             end    

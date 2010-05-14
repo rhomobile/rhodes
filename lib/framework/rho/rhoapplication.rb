@@ -76,10 +76,10 @@ module Rho
       controller_class = req['model']+'Controller'
       undercase = controller_class.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
 
-      if File.exists?  req[:modelpath]+ undercase +'.iseq'
-        require req[:modelpath]+ undercase
+      if Rho::file_exist?(  req[:modelpath]+ undercase +'.iseq' )
+        require req['model'] + '/' + undercase #req[:modelpath]+ undercase
       else
-        require req[:modelpath]+'controller'
+        require req['model'] + '/controller' #req[:modelpath]+'controller'
       end
       
       res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, self, @rhom, req, res
