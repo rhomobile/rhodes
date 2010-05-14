@@ -39,7 +39,7 @@ module Rho
       require 'rho/rhoviewhelpers'
       layout = File.dirname(filename) + "/layout_erb.iseq"
       @content = eval_compiled_file(filename, getBinding() )
-      @content = eval_compiled_file(layout, getBinding() ) if File.exist?(layout)
+      @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
       @content
     end
 
@@ -91,7 +91,7 @@ module Rho
         options[:layout] = false
       else
         if options[:file].nil? or !options[:file].is_a?(String)
-          if File.exist?(@request[:modelpath]+action.to_s+'_erb.iseq')
+          if Rho::file_exist?(@request[:modelpath]+action.to_s+'_erb.iseq')
             @content = eval_compiled_file(@request[:modelpath]+action+'_erb.iseq', getBinding() )
           else
             @content = ""
@@ -111,7 +111,7 @@ module Rho
 
       if options[:layout] != false
         layoutfile = RhoApplication::get_app_path(@request['application']) + options[:layout].to_s + "_erb.iseq"
-        @content = eval_compiled_file(layoutfile, binding ) if File.exist?(layoutfile)
+        @content = eval_compiled_file(layoutfile, binding ) if Rho::file_exist?(layoutfile)
         rho_info 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
       end
 
