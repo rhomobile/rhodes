@@ -45,7 +45,12 @@ public class RhoClassFactory
     {
     	return RhoClassFactory.createRhoRubyHelper().createRAFile();
     }
-    
+
+    public static IRAFile createFSRAFile() throws Exception
+    {
+    	return RhoClassFactory.createRhoRubyHelper().createFSRAFile();
+    }
+
     public static IDBStorage createDBStorage() throws Exception
     {
     	return RhoClassFactory.createRhoRubyHelper().createDBStorage();
