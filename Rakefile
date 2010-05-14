@@ -216,8 +216,8 @@ def common_bundle_start(startdir, dest)
         $rhodes_extensions = nil
         require extname
         extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
-      rescue
-        #fail, do nothing
+      rescue Exception => e
+        
       end
 
     end
