@@ -223,7 +223,10 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
         if (cookies.length()>0)
             m_strResBody += "&cookies=" + URI::urlEncode(cookies);
 
-        m_strResBody += "&" + makeHeadersString();
+        String strHeaders = makeHeadersString();
+        if (strHeaders.length() > 0 )
+            m_strResBody += "&" + strHeaders;
+
         m_strResBody += "&" + RHODESAPP().addCallbackObject(this, "body");
     }
 
