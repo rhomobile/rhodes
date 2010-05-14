@@ -519,7 +519,12 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
     String fDataName = makeBulkDataFileName(/*"data/bbook/bbook_1264475432.data"*/strDataUrl, dbPartition.getDBPath(), "");//, "_bulk");
     String strZip = ".rzip";
-    String strSqlDataUrl = /*"http://204.236.220.203/data/bbook/bbook_1264475432.data" + strZip;*/getHostFromUrl(serverUrl) + strDataUrl+strZip;
+    // String strSqlDataUrl = /*"http://204.236.220.203/data/bbook/bbook_1264475432.data" + strZip;*/getHostFromUrl(serverUrl) + strDataUrl+strZip;
+	String hostName = getHostFromUrl(serverUrl);
+	if (hostName.c_str()[hostName.length()-1] == '/') {
+		hostName = hostName.substr(0,hostName.length()-1);
+	}
+    String strSqlDataUrl = /*"http://204.236.220.203/data/bbook/bbook_1264475432.data" + strZip;*/ hostName + strDataUrl+strZip;
     LOG(INFO) + "Bulk sync: download data from server: " + strSqlDataUrl;
     {
         NetResponse( resp1, getNet().pullFile(strSqlDataUrl, fDataName+strZip, this, null) );

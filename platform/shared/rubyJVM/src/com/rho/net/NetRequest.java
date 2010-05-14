@@ -452,7 +452,7 @@ public class NetRequest
                 }              	
 	        }
 			
-			file = RhoClassFactory.createRAFile();
+			file = RhoClassFactory.createFSRAFile();
 			file.open(strFileName, "rw");
 			file.seek(file.size());
 			
