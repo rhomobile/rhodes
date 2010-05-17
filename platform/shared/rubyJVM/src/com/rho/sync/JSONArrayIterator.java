@@ -20,6 +20,12 @@ class JSONArrayIterator
 	    m_array = (JSONArray)oEntry.m_object.get(strName);
 	    m_nCurItem = 0;
 	}
+
+	private JSONArrayIterator()
+	{
+		m_array = null;
+		m_nCurItem = 0;
+	}
 	
 	boolean isEnd()
 	{
@@ -42,4 +48,15 @@ class JSONArrayIterator
 	{
 	    return new JSONEntry( isEnd() ? null : (JSONObject) m_array.get(m_nCurItem) );
 	}
+	
+	JSONArrayIterator getCurArrayIter()throws JSONException
+	{
+		JSONArrayIterator res = new JSONArrayIterator();
+		if ( isEnd() )
+			return res;
+		
+		res.m_array = (JSONArray)m_array.get(m_nCurItem);
+	    return res;
+	}
+	
 }
