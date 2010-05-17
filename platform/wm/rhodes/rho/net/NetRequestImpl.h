@@ -65,10 +65,15 @@ class CNetRequestImpl
 {
     DEFINE_LOGCLASS;
 
-    LPCTSTR  pszErrFunction;
-    HINTERNET  hInet, hConnection, hRequest;
-    URL_COMPONENTS uri;
-    CAtlStringW strReqUrlW;
+    static common::CMutex m_mxInternet;
+    static HINTERNET m_hInternet;
+    static HANDLE    m_hWceConnMgrConnection;
+    HINTERNET  m_hConnection, m_hRequest;
+
+    LPCTSTR  m_pszErrFunction;
+
+    URL_COMPONENTS m_uri;
+    CAtlStringW m_strReqUrlW;
     String      m_strUrl;
     CNetRequest* m_pParent;
     Hashtable<String,String>* m_pHeaders;
@@ -83,13 +88,14 @@ public :
 
     void close();
     void cancel();
-    bool isError(){ return pszErrFunction!= null; }
+    bool isError(){ return m_pszErrFunction!= null; }
     CNetResponseImpl* sendString(const String& strBody);
 
     CNetResponseImpl* sendMultipartData(VectorPtr<CMultipartItem*>& arItems);
 
     CNetResponseImpl* downloadFile(common::CRhoFile& oFile);
 
+    static void deinitConnection();
 private:
     String makeClientCookie();
 
@@ -109,6 +115,7 @@ private:
 
     int processMultipartItems( VectorPtr<CMultipartItem*>& arItems );
 
+    bool initConnection(boolean bLocalHost, LPCTSTR url);
 };
 
 }

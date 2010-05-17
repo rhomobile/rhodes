@@ -27,14 +27,14 @@ module Rhom
   class RhomObjectFactory
     
     def initialize
-	    unless not defined? Rho::RhoConfig.sources
-  	    init_objects
-  	  end
+	  #unless not defined? Rho::RhoConfig.sources
+  	  #  init_objects
+  	  #end
     end
   
     # Initialize new object with dynamic attributes
-    def init_objects
-      Rho::RhoConfig.sources.each do |classname,source|
+    def self.init_object(classname)
+      #Rho::RhoConfig.sources.each do |classname,source|
         unless Object.const_defined?(classname.intern)
           Object.const_set(classname.intern, 
             Class.new do
@@ -1070,9 +1070,10 @@ module Rhom
               end
             end)
         end #unless
-        modelname = classname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
-        require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}.iseq")
-      end
-    end
+        #modelname = classname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
+        #puts "classname: #{classname}; modelname: #{modelname}"
+        #require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}.iseq")
+      #end
+    end #init_object
   end # RhomObjectFactory
 end # Rhom
