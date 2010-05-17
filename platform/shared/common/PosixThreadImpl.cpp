@@ -27,6 +27,9 @@ void *runProc(void *pv)
 
 void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority)
 {
+    //TODO: check if already started:
+    // if (started)
+    //  return;
 #if defined(OS_ANDROID)
     // Android has no pthread_condattr_xxx API
     pthread_cond_init(&m_condSync, NULL);
