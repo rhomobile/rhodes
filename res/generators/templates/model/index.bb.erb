@@ -13,9 +13,9 @@
     <tr>
     <%% @<%= name.downcase.pluralize %>.each do |obj| %>
     	<% if self.attributes? %>
-    	    <td><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></td>
+    	    <td class="recordLabel"><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></td>
     	<% else %>
-    	    <td>Some list entry...</td>
+    	    <td class="recordLabel">Some list entry...</td>
     	<% end %>
     <%% end %>
     </tr>

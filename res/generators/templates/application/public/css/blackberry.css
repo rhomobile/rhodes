@@ -86,9 +86,7 @@ div#content table tr {
     width:100%;
 }
 div#content table tr td {
-	padding:5px;
 	margin:0;
-    width:100%;
     border-bottom:1px solid lightgray;
 	height: 25px;
 	line-height:25px;
@@ -102,11 +100,16 @@ div#content table tr td a {
 	overflow: hidden;
 }
 
+div#content table tr td.recordLabel {
+    width:100%;
+    padding: 5px;
+}
+
 div#content table tr td.itemLabel {
-    width:45%;
+    width:50%;
     font-weight:bold;
 }
 
 div#content table tr td.itemValue {
-    width:45%;
+    width:50%;
 }
