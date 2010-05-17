@@ -75,9 +75,11 @@ public:
 
 	bool findButton(int id, CustomButton &button);
 
-public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&bHandled);
 	LRESULT OnAlertDialogButton (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+private:
+	HICON loadIcon(void);
 
 private:
 	String m_title;
@@ -89,6 +91,7 @@ private:
 	CStatic m_iconCtrl;
 	Vector<CustomButton> m_buttons;
 };
+
 
 class CAlert {
     DEFINE_LOGCLASS;
