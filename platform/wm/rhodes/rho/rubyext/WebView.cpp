@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <wininet.h>
 
 #include "ruby/ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
@@ -59,7 +60,7 @@ void rho_webview_full_screen_mode(int enable)
 
 void rho_webview_set_cookie(const char *url, const char *cookie)
 {
-    // TODO: implement
+	::InternetSetCookieA(url, NULL, cookie);
 }
 
 }

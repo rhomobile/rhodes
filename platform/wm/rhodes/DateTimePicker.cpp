@@ -5,6 +5,9 @@
 #include "Utils.h"
 #include "DateTimePicker.h"
 
+extern "C" int rho_sys_get_screen_height();
+extern "C" int rho_sys_get_screen_width();
+
 #define DLG_ITEM_SET_FONT_BOLD(ITEM_ID)							\
 {																\
 	HFONT hFont = GetDlgItem((ITEM_ID)).GetFont();				\
@@ -17,7 +20,7 @@
 
 
 /*
- * TODO: title and initial time, flexible behavour 
+ * TODO: title and initial time
  */
 
 extern "C" HWND getMainWnd();
@@ -36,9 +39,9 @@ CDateTimePickerDialog::~CDateTimePickerDialog ()
 
 LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-#if defined(_WIN32_WCE)
-	//USES_CONVERSION;
 	SetWindowText(_T("Date"));
+
+#if defined(_WIN32_WCE)
 
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
@@ -49,6 +52,14 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
+	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
+
+#else 
+
+	CreateButtons();
+	GotoDlgCtrl(m_btnOk);
+
+#endif
 
 	DLG_ITEM_SET_FONT_BOLD (IDC_DATE_STATIC);
 	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);
@@ -57,9 +68,6 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_TIME_STATIC).ShowWindow(SW_HIDE);
 	}
-	
-	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
-#endif
 
     return FALSE;
 }
@@ -129,24 +137,28 @@ CTimePickerDialog::~CTimePickerDialog ()
 
 LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-#if defined(_WIN32_WCE)
-	//USES_CONVERSION;
 	SetWindowText(_T("Date"));
+
+#if defined(_WIN32_WCE)
 
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
-
 
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
+	GotoDlgCtrl(GetDlgItem(IDC_TIME_CTRL));
+
+#else
+
+	CreateButtons();
+	GotoDlgCtrl(m_btnOk);
+
+#endif
 
 	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);
-
-	GotoDlgCtrl(GetDlgItem(IDC_TIME_CTRL));
-#endif
 
     return FALSE;
 }
