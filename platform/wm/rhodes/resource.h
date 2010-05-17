@@ -17,7 +17,7 @@
 #define IDD_SIMULATOR_LOGOPTIONS        116
 #define IDI_ICON                        117
 #define IDD_DATETIME_PICKER             118
-#define IDD_DATEPICKER                  119
+//#define IDD_DATEPICKER                  119
 #define IDD_TIME_PICKER                 119
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002

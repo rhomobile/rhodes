@@ -58,6 +58,12 @@ public class Utilities {
 						&& !StringUtilities.startsWithIgnoreCase(url, "https:")) {
 					sendReferrer = false;
 				}
+				
+				// Set cookie
+				String cookie = RhodesApplication.getInstance().getCookie(url);
+				if (cookie != null) {
+					conn.setRequestProperty("Cookie", cookie);
+				}
 
 				int size = requestHeaders.size();
 				for (int i = 0; i < size;) {
