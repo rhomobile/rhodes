@@ -970,6 +970,10 @@
 				RelativePath=".\Vibrate.h"
 				>
 			</File>
+			<File
+				RelativePath=".\OkCancelModalDialog.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

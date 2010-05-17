@@ -36,12 +36,14 @@ public:
     virtual boolean isCancelled(){return m_bCancel;}
 
 private:
-	int getResponseCode(CURLMcode err, const String& strRespBody, IRhoSession* oSession);
-	String makeCookies();
+    curl_slist *set_curl_options(const char *method, const String& strUrl, const String& strBody,
+                                 IRhoSession* pSession, Hashtable<String,String>* pHeaders);
+    int getResponseCode(CURLMcode err, const String& strRespBody, IRhoSession* oSession);
+    String makeCookies();
     INetResponse *makeResponse(String strBody, int nErrorCode);
-	
+    
     boolean m_bCancel;
-	CURLM *curlm;
+    CURLM *curlm;
     CURL *curl;
     char *errbuf[CURL_ERROR_SIZE];
     boolean m_bTraceCalls;

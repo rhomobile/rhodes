@@ -19,5 +19,5 @@ KeepTrackOfLastVisitedPage = 0
 LastVisitedPage = ''
 
 # Sync server url.  This must be the full path to your sources.  
-# For example: http://rhomobile.rhohub.com/apps/SugarCRM/sources/
+# For example: 'http://localhost:9292/application'
 syncserver = '<%=syncserver%>'

@@ -35,7 +35,6 @@
 		BDB15ED310B2EC6D00003DFA /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD2C94DF10AE0A8C008D4692 /* libcurl.a */; };
 		BDB15ED410B2EC7500003DFA /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C7162970F8B7EEC0096B6AA /* librholib.a */; };
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
-		BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C12568C0F7CEA9200C87274 /* libtcmalloc.a */; };
 		BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373651144220F006EA6DA /* SimpleMainView.m */; };
 		BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373C411444A8F006EA6DA /* Rhodes.m */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
@@ -66,20 +65,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C12568B0F7CEA9200C87274 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = tcmalloc;
-		};
-		5C1256A80F7CEC8100C87274 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = tcmalloc;
-		};
 		5C7162960F8B7EEC0096B6AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */;
@@ -171,7 +156,6 @@
 		46B007061033776600D0C2F4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
-		5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tcmalloc.xcodeproj; path = tcmalloc/tcmalloc.xcodeproj; sourceTree = "<group>"; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
 		5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = rho/common/RhoClassFactory.cpp; sourceTree = "<group>"; };
 		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
@@ -248,7 +232,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BDB15ED610B2EC8E00003DFA /* libtcmalloc.a in Frameworks */,
 				BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */,
 				BDB15ED410B2EC7500003DFA /* librholib.a in Frameworks */,
 				BDB15ED310B2EC6D00003DFA /* libcurl.a in Frameworks */,
@@ -321,7 +304,6 @@
 				5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */,
 				F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */,
 				F59F15F90E9449B8004103B4 /* rhorubylib.xcodeproj */,
-				5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				BD72CCE4112D629F003B7D27 /* Info.plist */,
@@ -391,14 +373,6 @@
 				46AF5162103F150D006E02E1 /* NativeBar.m */,
 			);
 			name = NativeBar;
-			sourceTree = "<group>";
-		};
-		5C1256880F7CEA9200C87274 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5C12568C0F7CEA9200C87274 /* libtcmalloc.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		5C5332610FBD6AC700F268F0 /* rho */ = {
@@ -612,7 +586,6 @@
 			dependencies = (
 				F59F16040E9449E5004103B4 /* PBXTargetDependency */,
 				F563D5610EA8257A0062DA57 /* PBXTargetDependency */,
-				5C1256A90F7CEC8100C87274 /* PBXTargetDependency */,
 				5C7162C90F8B817F0096B6AA /* PBXTargetDependency */,
 				F5F0652F102B9CA0006CFD39 /* PBXTargetDependency */,
 				BD2C94F310AE0BC3008D4692 /* PBXTargetDependency */,
@@ -653,10 +626,6 @@
 					ProductGroup = F563D5410EA8240E0062DA57 /* Products */;
 					ProjectRef = F563D53B0EA8240D0062DA57 /* rhosynclib.xcodeproj */;
 				},
-				{
-					ProductGroup = 5C1256880F7CEA9200C87274 /* Products */;
-					ProjectRef = 5C1256870F7CEA9200C87274 /* tcmalloc.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -666,13 +635,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		5C12568C0F7CEA9200C87274 /* libtcmalloc.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libtcmalloc.a;
-			remoteRef = 5C12568B0F7CEA9200C87274 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5C7162970F8B7EEC0096B6AA /* librholib.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -824,11 +786,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C1256A90F7CEC8100C87274 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = tcmalloc;
-			targetProxy = 5C1256A80F7CEC8100C87274 /* PBXContainerItemProxy */;
-		};
 		5C7162C90F8B817F0096B6AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhoLib;

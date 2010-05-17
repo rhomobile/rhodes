@@ -25,6 +25,7 @@ private:
     pthread_cond_t m_condSync;
     common::CMutex m_mxSync;
     pthread_t m_thread;
+    bool m_started;
 };
 
 } // namespace common

@@ -1041,6 +1041,17 @@ char *  rho_strdup(const char * str)
     return tmp;
 }
 
+wchar_t *  rho_wcsdup(const wchar_t * str)
+{
+    wchar_t *tmp;
+    int len = (wcslen(str) + 1)*sizeof(wchar_t);
+
+    tmp = (wchar_t*)do_malloc(len);
+    memcpy(tmp, str, len);
+
+    return tmp;
+}
+
 #ifdef MALLOC_STAT
 void do_malloc_stats() {
   PrintStats(2);

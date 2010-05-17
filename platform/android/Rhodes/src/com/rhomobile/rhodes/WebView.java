@@ -20,6 +20,8 @@
  */
 package com.rhomobile.rhodes;
 
+import android.webkit.CookieManager;
+
 public class WebView {
 	
 	private static final String TAG = "WebView";
@@ -92,6 +94,21 @@ public class WebView {
 			ret.value = RhodesInstance.getInstance().getMainView().activeTab();
 		}
 	};
+	
+	private static class SetCookieTask implements Runnable {
+		private String url;
+		private String cookie;
+		
+		public SetCookieTask(String u, String c) {
+			url = u;
+			cookie = c;
+		}
+		
+		public void run() {
+			CookieManager mgr = CookieManager.getInstance();
+			mgr.setCookie(url, cookie);
+		}
+	};
 
 	public static void navigate(String url, int index) {
 		try {
@@ -155,5 +172,14 @@ public class WebView {
 		}
 		
 		return "";
+	}
+	
+	public static void setCookie(String url, String cookie) {
+		try {
+			Rhodes.performOnUiThread(new SetCookieTask(url, cookie), false);
+		}
+		catch (Exception e) {
+			reportFail("setCookie", e);
+		}
 	}
 }

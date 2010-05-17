@@ -71,10 +71,10 @@ void CAlertDialog::DoInitControls()
 LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&bHandled)
 {
 #define MAX(i, j)   ((i) > (j) ? (i) : (j))
-
 	const int GAP = 10;   //space around dialog
 	const int INDENT = 8; //for dialog items
 	const unsigned int iconHeight = 42;
+
 	//space around label on buttons.
 	const int btnHIndent = 12; //horizontal
 	const int btnVIndent = 8;  //vertical
@@ -90,56 +90,24 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	TEXTMETRIC tm = { 0 };
 	RECT dlgRect, iconRect = {0 }, msgRect = { 0 }, buttonsRect = { 0 };
 	RECT rect = {0}; POINT point = { 0 };
-#ifdef OS_WINCE
-	int iconId = 0;
-#else
-	LPWSTR iconId = NULL;
-#endif
 
 	GetClientRect(&dlgRect);
 	LOG(INFO) + "dlgRect: " + dlgRect.left + " " + dlgRect.top + " " + dlgRect.right + " " + dlgRect.bottom; 
 
 	/**
-	 * Icon.
+     * Icon
 	 */
-#ifdef OS_WINCE
-	if (m_icon == "alert")
-		iconId = MB_ICONWARNING;
-	else if (m_icon == "question")
-		iconId = MB_ICONQUESTION;
-	else if (m_icon == "info")
-		iconId = MB_ICONINFORMATION;
-#else
-	if (m_icon == "alert")
-		iconId = IDI_WARNING;
-	else if (m_icon == "question")
-		iconId = IDI_QUESTION;
-	else if (m_icon == "info")
-		iconId = IDI_INFORMATION;
-#endif 
-	
-	//if icon has predefined type - try to load it from system resources.
-	if (iconId != 0) {
-#ifdef OS_WINCE
-		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
-		HICON hIcon = LoadIcon(hGWES, MAKEINTRESOURCE(iconId));
-#else
-		HICON hIcon = LoadIcon(NULL, iconId);
-#endif
+	HICON hIcon = loadIcon();
+	if (hIcon == NULL) {
+		LOG(ERROR) + "Failed to load icon";
+	} else {
+		iconRect.left = INDENT;
+		iconRect.top = INDENT;
+		iconRect.right = iconRect.left + iconHeight;
+		iconRect.bottom = iconRect.top + iconHeight;
 
-		if (hIcon == NULL) {
-			LOG(ERROR) + "Failed to load icon";
-		} else {
-			iconRect.left = INDENT; 
-			iconRect.top  = INDENT;
-			iconRect.right  = iconRect.left + iconHeight; 
-			iconRect.bottom = iconRect.top + iconHeight;
-
-			m_iconCtrl.Create(m_hWnd, iconRect, NULL, WS_CHILD | WS_VISIBLE | SS_ICON);
-
-			if (m_iconCtrl.SetIcon(hIcon) == NULL)
-				LOG(INFO) + "Failed to set icon";
-		}
+		m_iconCtrl.Create(m_hWnd, iconRect, NULL, WS_CHILD | WS_VISIBLE | SS_ICON);
+		m_iconCtrl.SetIcon(hIcon);
 	}
 
 	/**
@@ -213,11 +181,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
 		itr->Create(m_hWnd, rc, 
 					convertToStringW(itr->m_title).c_str(),
-					WS_CHILD | WS_VISIBLE 
-#if defined(OS_WINDOWS)
-					| BS_DEFPUSHBUTTON 
-#endif
-					, 0, 
+					WS_CHILD | WS_VISIBLE, 0, 
 					itr->m_numId);
 
 		point.x += btnWidth + INDENT;
@@ -252,6 +216,56 @@ LRESULT CAlertDialog::OnAlertDialogButton (WORD /*wNotifyCode*/, WORD wID, HWND 
 
 	EndDialog(wID);
 	return 0;
+}
+
+HICON CAlertDialog::loadIcon()
+{
+	HICON hIcon = NULL;
+
+	struct iconTable_s {
+		String name;
+#ifdef OS_WINCE
+		int id;
+#else
+		LPWSTR id;
+#endif
+	} iconTable[] =	{
+#ifdef OS_WINCE
+						{ "alert",    MB_ICONWARNING     },
+						{ "question", MB_ICONQUESTION    },
+						{ "info",     MB_ICONINFORMATION }
+#else
+						{ "alert",    IDI_WARNING },
+						{ "question", IDI_QUESTION    },
+						{ "info",     IDI_INFORMATION }
+#endif
+					};
+
+#ifdef OS_WINCE
+	int iconId = 0;
+#else
+	LPWSTR iconId = NULL;
+#endif
+
+	for (int i = 0; i < (sizeof(iconTable)/sizeof(iconTable[0])); i++) 
+	{
+		LOG(ERROR) + "ICON == " + iconTable[i].name;
+		if (iconTable[i].name == m_icon)
+			iconId = iconTable[i].id;
+	}
+	
+	if (iconId != 0) 
+	{
+#ifdef OS_WINCE
+		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
+		hIcon = LoadIcon(hGWES, MAKEINTRESOURCE(iconId));
+#else
+		hIcon = LoadIcon(NULL, iconId);
+#endif
+	}
+	//TODO: if icon has predefined type - try to load it from system resources.
+
+	return hIcon;
 }
 
 /**
