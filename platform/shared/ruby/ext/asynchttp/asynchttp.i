@@ -11,7 +11,7 @@
 	extern VALUE rho_asynchttp_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
 	#define do_downloadfile rho_asynchttp_downloadfile
 
-	extern VALUE rho_asynchttp_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
+	extern VALUE rho_asynchttp_uploadfile(const char* url, VALUE headers, const char* body, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
 	#define do_uploadfile rho_asynchttp_uploadfile
 
 	extern void rho_asynchttp_cancel(const char* cancel_callback);
@@ -26,5 +26,5 @@
 extern VALUE do_get(const char* url, VALUE headers, const char* callback, const char* callback_params, int ssl_verify_peer);
 extern VALUE do_post(const char* url, VALUE headers, const char* body, const char* callback, const char* callback_params, int ssl_verify_peer);
 extern VALUE do_downloadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
-extern VALUE do_uploadfile(const char* url, VALUE headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
+extern VALUE do_uploadfile(const char* url, VALUE headers, const char* body, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
 extern void cancel(const char* cancel_callback);
