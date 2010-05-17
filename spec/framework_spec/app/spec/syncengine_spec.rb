@@ -28,6 +28,7 @@ describe "SyncEngine_test" do
     ::Rhom::Rhom.database_full_reset_and_logout
   end
   
+=begin    
   it "should update syncserver at runtime" do
     @rho = Rho::RHO.new
     saveSrv =  Rho::RhoConfig.syncserver
@@ -41,7 +42,7 @@ describe "SyncEngine_test" do
     Rho::RhoConfig.syncserver.should == saveSrv
   end
   
-=begin  
+
   it "should not sync without login" do
     Product.set_notification("/app/Settings/sync_notify", "fixed sync_notify for Product")
     SyncEngine.dosync

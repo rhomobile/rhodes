@@ -18,6 +18,9 @@ extern "C" int strnicmp( const char *s1, const char *s2, size_t count );
 namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
+common::CMutex CNetRequestImpl::m_mxInternet;
+HINTERNET CNetRequestImpl::m_hInternet;
+HANDLE    CNetRequestImpl::m_hWceConnMgrConnection;
 
 CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, 
     IRhoSession* oSession, Hashtable<String,String>* pHeaders, boolean sslVerifyPeer)
@@ -29,65 +32,57 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
     m_pSession = oSession;
     m_sslVerifyPeer = sslVerifyPeer;
 
-    pszErrFunction = NULL;
-    hInet = NULL, hConnection = NULL, hRequest = NULL;
-    memset(&uri, 0, sizeof(uri) );
+    m_pszErrFunction = NULL;
+    m_hConnection = NULL;
+    m_hRequest = NULL;
+    memset(&m_uri, 0, sizeof(m_uri) );
+
     m_strUrl = strUrl;
     CAtlStringW strUrlW(strUrl.c_str());
 
     LOG(INFO) + "Method: " + method + ";Url: " + strUrl;
     do 
     {
-        if ( !URI::isLocalHost(strUrl.c_str()) && !SetupInternetConnection(strUrlW) )
-        {
-            pszErrFunction = L"SetupInternetConnection";
+        if ( !initConnection(URI::isLocalHost(strUrl.c_str()), strUrlW) )
             break;
-        }
-
-        hInet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
-        if ( !hInet ) 
-        {
-            pszErrFunction = L"InternetOpen";
-            break;
-        }
 
         DWORD dwUrlLength = 1024;
         CAtlStringW strCanonicalUrlW;
         if ( !InternetCanonicalizeUrl( strUrlW, strCanonicalUrlW.GetBuffer(dwUrlLength), &dwUrlLength, 0) )
         {
-            pszErrFunction = _T("InternetCanonicalizeUrl");
+            m_pszErrFunction = _T("InternetCanonicalizeUrl");
             break;
         }
         strCanonicalUrlW.ReleaseBuffer();
 
-		alloc_url_components( &uri, strCanonicalUrlW );
-        if( !InternetCrackUrl( strCanonicalUrlW, strCanonicalUrlW.GetLength(), 0, &uri ) ) 
+		alloc_url_components( &m_uri, strCanonicalUrlW );
+        if( !InternetCrackUrl( strCanonicalUrlW, strCanonicalUrlW.GetLength(), 0, &m_uri ) ) 
         {
-			pszErrFunction = L"InternetCrackUrl";
+			m_pszErrFunction = L"InternetCrackUrl";
 			break;
 		}
 
-        hConnection = InternetConnect( hInet, uri.lpszHostName, uri.nPort, _T("anonymous"), NULL, 
+        m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), NULL, 
           INTERNET_SERVICE_HTTP, 0, 0 );
-        if ( !hConnection ) 
+        if ( !m_hConnection ) 
         {
-            pszErrFunction = L"InternetConnect";
+            m_pszErrFunction = L"InternetConnect";
             break;
         }
 
-        strReqUrlW = uri.lpszUrlPath;
-        strReqUrlW += uri.lpszExtraInfo;
+        m_strReqUrlW = m_uri.lpszUrlPath;
+        m_strReqUrlW += m_uri.lpszExtraInfo;
         DWORD dwFlags = INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES;
-        if ( uri.lpszScheme && wcsicmp(uri.lpszScheme,L"https")==0)
+        if ( m_uri.lpszScheme && wcsicmp(m_uri.lpszScheme,L"https")==0)
             dwFlags |= INTERNET_FLAG_SECURE;
 
         if ( !m_sslVerifyPeer )
             dwFlags |= INTERNET_FLAG_IGNORE_CERT_CN_INVALID|INTERNET_FLAG_IGNORE_CERT_DATE_INVALID;
 
-        hRequest = HttpOpenRequest( hConnection, CAtlStringW(method), strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
-        if ( !hRequest ) 
+        m_hRequest = HttpOpenRequest( m_hConnection, CAtlStringW(method), m_strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
+        if ( !m_hRequest ) 
         {
-            pszErrFunction = L"HttpOpenRequest";
+            m_pszErrFunction = L"HttpOpenRequest";
             break;
         }
 
@@ -99,8 +94,8 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
             {
                 String strHeader = "Cookie: " + strSession + "\r\n";
 
-                if ( !HttpAddRequestHeaders( hRequest, common::convertToStringW(strHeader).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
-                    pszErrFunction = L"HttpAddRequestHeaders";
+                if ( !HttpAddRequestHeaders( m_hRequest, common::convertToStringW(strHeader).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+                    m_pszErrFunction = L"HttpAddRequestHeaders";
             }
         }
 
@@ -118,11 +113,11 @@ boolean CNetRequestImpl::checkSslCertError()
     {
         DWORD dwFlag;
         DWORD dwBuffLen = sizeof(dwFlag);
-        InternetQueryOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlag, &dwBuffLen);
+        InternetQueryOption (m_hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlag, &dwBuffLen);
         dwFlag |= (SECURITY_FLAG_IGNORE_UNKNOWN_CA
             | SECURITY_FLAG_IGNORE_CERT_CN_INVALID
             | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID );
-        InternetSetOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS, &dwFlag, sizeof (dwFlag) );
+        InternetSetOption (m_hRequest, INTERNET_OPTION_SECURITY_FLAGS, &dwFlag, sizeof (dwFlag) );
         /*
         INTERNET_CERTIFICATE_INFO sInfo;
         DWORD dwSize = sizeof(sInfo);
@@ -162,26 +157,26 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
             strHeaders += getBodyContentType().c_str();
             strHeaders += L"\r\n";
 
-            if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+            if ( !HttpAddRequestHeaders( m_hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
             {
-                pszErrFunction = L"HttpAddRequestHeaders";
+                m_pszErrFunction = L"HttpAddRequestHeaders";
                 break;
             }
         }
         writeHeaders(m_pHeaders);
 
-        if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
+        if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
         {
             if (checkSslCertError())
             {
-                if ( !HttpSendRequest( hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
+                if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
                 {
-                    pszErrFunction = L"HttpSendRequest";
+                    m_pszErrFunction = L"HttpSendRequest";
                     break;
                 }
             }else
             {
-                pszErrFunction = L"HttpSendRequest";
+                m_pszErrFunction = L"HttpSendRequest";
                 break;
             }
         }
@@ -190,7 +185,7 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
         if ( isError() )
             break;
 
-        readInetFile(hRequest,pNetResp);
+        readInetFile(m_hRequest,pNetResp);
     }while(0);
 
     return pNetResp;
@@ -205,9 +200,9 @@ void CNetRequestImpl::writeHeaders(Hashtable<String,String>* pHeaders)
         for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
             strHeaders += it->first + ":" + it->second + "\r\n";
 
-        if ( !HttpAddRequestHeaders( hRequest, common::convertToStringW(strHeaders).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+        if ( !HttpAddRequestHeaders( m_hRequest, common::convertToStringW(strHeaders).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
         {
-            pszErrFunction = L"HttpAddRequestHeaders";
+            m_pszErrFunction = L"HttpAddRequestHeaders";
             return;
         }
     }
@@ -220,18 +215,18 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
     CAtlStringW strHeaders;
     DWORD dwLen = 0;
     DWORD nIndex = 0;
-    if( !HttpQueryInfo( hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, null, &dwLen, &nIndex) )
+    if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, null, &dwLen, &nIndex) )
     {   
         DWORD dwErr = ::GetLastError();
         if ( dwErr != ERROR_INSUFFICIENT_BUFFER )
         {
-            pszErrFunction = L"HttpQueryInfo";
+            m_pszErrFunction = L"HttpQueryInfo";
             return false;
         }
     }
-    if( !HttpQueryInfo( hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, strHeaders.GetBuffer(dwLen), &dwLen, &nIndex) )
+    if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, strHeaders.GetBuffer(dwLen), &dwLen, &nIndex) )
     {
-        pszErrFunction = L"HttpQueryInfo";
+        m_pszErrFunction = L"HttpQueryInfo";
         return false;
     }
     strHeaders.ReleaseBuffer();
@@ -264,7 +259,7 @@ String CNetRequestImpl::makeClientCookie()
     {
         CAtlStringW strCookie;
         DWORD dwLen = 0;
-        if( !HttpQueryInfo( hRequest, HTTP_QUERY_SET_COOKIE, null, &dwLen, &nIndex) )
+        if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_SET_COOKIE, null, &dwLen, &nIndex) )
         {   
             DWORD dwErr = ::GetLastError();
             if ( dwErr == ERROR_HTTP_HEADER_NOT_FOUND  )
@@ -272,20 +267,20 @@ String CNetRequestImpl::makeClientCookie()
 
             if ( dwErr != ERROR_INSUFFICIENT_BUFFER )
             {
-                pszErrFunction = L"HttpQueryInfo";
+                m_pszErrFunction = L"HttpQueryInfo";
                 break;
             }
         }
-        if( !HttpQueryInfo( hRequest, HTTP_QUERY_SET_COOKIE, strCookie.GetBuffer(dwLen), &dwLen, &nIndex) )
+        if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_SET_COOKIE, strCookie.GetBuffer(dwLen), &dwLen, &nIndex) )
         {
-            pszErrFunction = L"HttpQueryInfo";
+            m_pszErrFunction = L"HttpQueryInfo";
             break;
         }
         strCookie.ReleaseBuffer();
 
         URI::parseCookie(common::convertToStringA(strCookie.GetString()).c_str(), cookie);
     }
-    if (pszErrFunction)
+    if (m_pszErrFunction)
         return "";
 
 //    if ( cookie.strAuth.length() > 0 || cookie.strSession.length() >0 )
@@ -300,9 +295,9 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
     wchar_t szHttpRes[10];
     DWORD nIndex = 0;
 
-    if( !HttpQueryInfo( hRequest, HTTP_QUERY_STATUS_CODE, szHttpRes, &dwLen, &nIndex) )
+    if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_STATUS_CODE, szHttpRes, &dwLen, &nIndex) )
     {
-        pszErrFunction = L"HttpQueryInfo";
+        m_pszErrFunction = L"HttpQueryInfo";
         return;
     }
     int nCode = _wtoi(szHttpRes);
@@ -333,7 +328,7 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 {
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
-    const int nDownloadBufferSize = 1024*50;
+    const int nDownloadBufferSize = 1024*100;
     char* pDownloadBuffer = 0;
 
     do
@@ -351,25 +346,25 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
             //strHeaders += common::convertToStringW(oFile.size()+30068032).c_str();
             strHeaders += "\r\n";
 
-            if ( !HttpAddRequestHeaders( hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+            if ( !HttpAddRequestHeaders( m_hRequest, strHeaders, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
             {
-                pszErrFunction = L"HttpAddRequestHeaders";
+                m_pszErrFunction = L"HttpAddRequestHeaders";
                 break;
             }
         }
 
-        if ( !HttpSendRequest( hRequest, NULL, 0, NULL, 0 ) )
+        if ( !HttpSendRequest( m_hRequest, NULL, 0, NULL, 0 ) )
         {
             if (checkSslCertError())
             {
-                if ( !HttpSendRequest( hRequest, NULL, 0, NULL, 0 ) )
+                if ( !HttpSendRequest( m_hRequest, NULL, 0, NULL, 0 ) )
                 {
-                    pszErrFunction = L"HttpSendRequest";
+                    m_pszErrFunction = L"HttpSendRequest";
                     break;
                 }
             }else
             {
-                pszErrFunction = L"HttpSendRequest";
+                m_pszErrFunction = L"HttpSendRequest";
                 break;
             }
         }
@@ -387,7 +382,7 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
         if (!pDownloadBuffer)
             pDownloadBuffer = new char[nDownloadBufferSize];
 
-        readInetFile(hRequest,pNetResp, &oFile, pDownloadBuffer, nDownloadBufferSize);
+        readInetFile(m_hRequest,pNetResp, &oFile, pDownloadBuffer, nDownloadBufferSize);
 
     }while(0);
 
@@ -469,9 +464,9 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
         if ( isError() )
             break;
 
-        if ( !HttpAddRequestHeaders( hRequest, szMultipartContType, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+        if ( !HttpAddRequestHeaders( m_hRequest, szMultipartContType, -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
         {
-            pszErrFunction = L"HttpAddRequestHeaders";
+            m_pszErrFunction = L"HttpAddRequestHeaders";
             break;
         }
 
@@ -480,18 +475,18 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
 	    BufferIn.dwStructSize = sizeof( INTERNET_BUFFERS ); // Must be set or error will occur
         BufferIn.dwBufferTotal = processMultipartItems( arItems );
 
-        if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
+        if(!HttpSendRequestEx( m_hRequest, &BufferIn, NULL, 0, 0))
         {
             if (checkSslCertError())
             {
-                if(!HttpSendRequestEx( hRequest, &BufferIn, NULL, 0, 0))
+                if(!HttpSendRequestEx( m_hRequest, &BufferIn, NULL, 0, 0))
                 {
-                    pszErrFunction = L"HttpSendRequestEx";
+                    m_pszErrFunction = L"HttpSendRequestEx";
                     break;
                 }
             }else
             {
-                pszErrFunction = L"HttpSendRequestEx";
+                m_pszErrFunction = L"HttpSendRequestEx";
                 break;
             }
         }
@@ -506,14 +501,14 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
                 common::CRhoFile oFile;
                 if ( !oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
                 {
-                    pszErrFunction = L"InternetWriteFile";
+                    m_pszErrFunction = L"InternetWriteFile";
                     return pNetResp;
                 }
                 common::InputStream* bodyStream = oFile.getInputStream();
 
                 if ( !internetWriteHeader( oItem.m_strDataPrefix.c_str(), "", "") )
                 {
-                    pszErrFunction = L"InternetWriteFile";
+                    m_pszErrFunction = L"InternetWriteFile";
                     return pNetResp;
                 }
 
@@ -529,9 +524,9 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
                         nReaded = bodyStream->read(pBuf,0,dwBufSize);
                         if ( nReaded > 0 )
                         {
-		                    if ( !InternetWriteFile( hRequest, pBuf, nReaded, &dwBytesWritten) )
+		                    if ( !InternetWriteFile( m_hRequest, pBuf, nReaded, &dwBytesWritten) )
                             {
-                                pszErrFunction = L"InternetWriteFile";
+                                m_pszErrFunction = L"InternetWriteFile";
                                 return pNetResp;
                             }
                         }
@@ -544,7 +539,7 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
             {
                 if ( !internetWriteHeader( oItem.m_strDataPrefix.c_str(), oItem.m_strBody.c_str(), "") )
                 {
-                    pszErrFunction = L"InternetWriteFile";
+                    m_pszErrFunction = L"InternetWriteFile";
                     return pNetResp;
                 }
             }
@@ -553,13 +548,13 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
 
         if ( !internetWriteHeader( "", "", szMultipartPostfix) )
         {
-            pszErrFunction = L"InternetWriteFile";
+            m_pszErrFunction = L"InternetWriteFile";
             return pNetResp;
         }
 
-        if ( !HttpEndRequest(hRequest, NULL, 0, 0) )
+        if ( !HttpEndRequest(m_hRequest, NULL, 0, 0) )
         {
-            pszErrFunction = L"HttpEndRequest";
+            m_pszErrFunction = L"HttpEndRequest";
             break;
         }
 
@@ -570,7 +565,7 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
         if ( isError() )
             break;
 
-        readInetFile(hRequest,pNetResp);
+        readInetFile(m_hRequest,pNetResp);
 
     }while(0);
 
@@ -580,13 +575,13 @@ CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>&
 bool CNetRequestImpl::internetWriteHeader( const char* szPrefix, const char* szBody, const char* szPrefixEnd)
 {
     DWORD dwBytesWritten = 0;
-    if ( szPrefix && *szPrefix && !InternetWriteFile( hRequest, szPrefix, strlen(szPrefix), &dwBytesWritten) )
+    if ( szPrefix && *szPrefix && !InternetWriteFile( m_hRequest, szPrefix, strlen(szPrefix), &dwBytesWritten) )
         return false;
 
-    if ( szBody && *szBody && !InternetWriteFile( hRequest, szBody, strlen(szBody), &dwBytesWritten) )
+    if ( szBody && *szBody && !InternetWriteFile( m_hRequest, szBody, strlen(szBody), &dwBytesWritten) )
         return false;
 
-    if ( szPrefixEnd && *szPrefixEnd && !InternetWriteFile( hRequest, szPrefixEnd, strlen(szPrefixEnd), &dwBytesWritten) )
+    if ( szPrefixEnd && *szPrefixEnd && !InternetWriteFile( m_hRequest, szPrefixEnd, strlen(szPrefixEnd), &dwBytesWritten) )
         return false;
 
     return true;
@@ -596,8 +591,8 @@ void CNetRequestImpl::cancel()
 {
     m_bCancel = true;
 
-	if ( hRequest ) 
-        InternetCloseHandle(hRequest);
+	if ( m_hRequest ) 
+        InternetCloseHandle(m_hRequest);
 /*	if ( hConnection ) 
         InternetCloseHandle(hConnection);
 	if ( hInet ) 
@@ -610,23 +605,23 @@ void CNetRequestImpl::cancel()
 
 void CNetRequestImpl::close()
 {
-	if (!m_bCancel && pszErrFunction)
-		ErrorMessage(pszErrFunction);
+	if (!m_bCancel && m_pszErrFunction)
+		ErrorMessage(m_pszErrFunction);
 
-    free_url_components(&uri);
+    free_url_components(&m_uri);
 
-	if ( hRequest ) 
-        InternetCloseHandle(hRequest);
-	if ( hConnection ) 
-        InternetCloseHandle(hConnection);
-	if ( hInet ) 
-        InternetCloseHandle(hInet);
+	if ( m_hRequest ) 
+        InternetCloseHandle(m_hRequest);
+	if ( m_hConnection ) 
+        InternetCloseHandle(m_hConnection);
+//	if ( hInet ) 
+//        InternetCloseHandle(hInet);
 
-    memset(&uri, 0, sizeof(uri));
+    memset(&m_uri, 0, sizeof(m_uri));
 
-    hRequest = 0;
-    hConnection = 0;
-    hInet = 0;
+    m_hRequest = 0;
+    m_hConnection = 0;
+//    hInet = 0;
 }
 
 CNetRequestImpl::~CNetRequestImpl()
@@ -644,7 +639,7 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
     if (!pBuf)
     {
         if ( dwBufSize==0)
-            dwBufSize=1024*4;
+            dwBufSize=1024*50;
 
         pBuf = (char*)malloc(dwBufSize);
         pBufToFree = pBuf;
@@ -660,7 +655,7 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
         bRead = InternetReadFile(hRequest, pBuf, dwBufSize, &dwBytesRead);
         if ( !bRead )
         {
-            pszErrFunction = L"InternetReadFile";
+            m_pszErrFunction = L"InternetReadFile";
             pNetResp->setResponseCode(408);
             break;
         }
@@ -764,27 +759,66 @@ void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri)
     free(uri->lpszExtraInfo);
 }
 
+bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
+{
+    common::CMutexLock lock(m_mxInternet);
+
+    if (!bLocalHost)
+    {
+        if ( !SetupInternetConnection(url) )
+            return false;
+    }
+
+    if (m_hInternet)
+        return true;
+
+    m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
+    if ( !m_hInternet ) 
+    {
+        m_pszErrFunction = L"InternetOpen";
+        return false;
+    }
+
+    return true;
+}
+
+/*static*/void CNetRequestImpl::deinitConnection()
+{
+    common::CMutexLock lock(m_mxInternet);
+
+    if (m_hInternet)
+        InternetCloseHandle(m_hInternet);
+    m_hInternet = NULL;
+
+#if defined (_WIN32_WCE)
+    if ( m_hWceConnMgrConnection )
+        ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
+
+    m_hWceConnMgrConnection = NULL;
+#endif //_WIN32_WCE
+
+}
+
 bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 {
 #if defined (_WIN32_WCE)
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;
-    static HANDLE hConnection = NULL;
 
 	// cleanup the old connection
-	if(NULL != hConnection)
+	if(NULL != m_hWceConnMgrConnection)
 	{
-		hResult = ConnMgrConnectionStatus( hConnection, &dwStatus );
+		hResult = ConnMgrConnectionStatus( m_hWceConnMgrConnection, &dwStatus );
 		if( SUCCEEDED(hResult) )
 		{
 			LOG(INFO) + "Internet connection exist, use it";
 			if( dwStatus & CONNMGR_STATUS_CONNECTED )
 				return true;
 		}
-		ConnMgrReleaseConnection(hConnection, FALSE);
+		ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
 		LOG(INFO) + "Internet connection droped, open new one";
-		hConnection = NULL;
+		m_hWceConnMgrConnection = NULL;
 	}
 
 	// get the right network to connect to
@@ -810,17 +844,17 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 #endif
 		ConnInfo.guidDestNet = pguid;
 
-		hResult = ConnMgrEstablishConnection(&ConnInfo, &hConnection);
+		hResult = ConnMgrEstablishConnection(&ConnInfo, &m_hWceConnMgrConnection);
 
 		// check to see if the attempt failed
 		int count = 0;
 		while(SUCCEEDED(hResult) && count++ < 60 )
 		{
 			LOG(INFO) + "Wait for connect (" + count + ")";
-			DWORD dwResult = WaitForSingleObject(hConnection, 1000); 
+			DWORD dwResult = WaitForSingleObject(m_hWceConnMgrConnection, 1000); 
 			if (dwResult == (WAIT_OBJECT_0))
 			{ 
-				hResult=ConnMgrConnectionStatus(hConnection,&dwStatus);
+				hResult=ConnMgrConnectionStatus(m_hWceConnMgrConnection,&dwStatus);
 				if( SUCCEEDED(hResult) )
 				{
 					if( dwStatus & CONNMGR_STATUS_CONNECTED )

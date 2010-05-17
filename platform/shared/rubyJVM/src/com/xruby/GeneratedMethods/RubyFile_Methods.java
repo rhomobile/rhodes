@@ -9,6 +9,12 @@ klass.getSingletonClass().defineMethod( "exist?", new RubyOneArgMethod(){
 		return RubyFile.exist_question(receiver, arg);}
 });
 klass.getSingletonClass().aliasMethod("exists?","exist?");
+
+klass.getSingletonClass().defineMethod( "exist_injar?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyFile.existinjar_question(receiver, arg);}
+});
+
 klass.getSingletonClass().defineMethod( "dirname", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return RubyFile.dirname(receiver, arg);}

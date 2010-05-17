@@ -22,6 +22,7 @@
 require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
 require 'rhom/rhom_db_adapter'
+require 'rhom/rhom_model'
 
 module Rhom
   class RecordNotFound < StandardError
