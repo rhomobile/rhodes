@@ -126,7 +126,9 @@ public class System {
     	if ( strPropName.equalsIgnoreCase("has_network") )
     		return ObjectFactory.createBoolean(hasNetwork()); 
     	if ( strPropName.equalsIgnoreCase("locale") )
-    		return ObjectFactory.createString(getLocale()); 
+    		return ObjectFactory.createString(getLocale());
+    	if ( strPropName.equalsIgnoreCase("country") )
+    		return ObjectFactory.createString(getCountry());
     	if ( strPropName.equalsIgnoreCase("screen_width") )
     		return ObjectFactory.createInteger(getScreenWidth()); 
     	if ( strPropName.equalsIgnoreCase("screen_height") )
@@ -157,6 +159,12 @@ public class System {
     	
     	String lang = loc != null ? loc.getLanguage() : "en";
 		return lang;
+	}
+	
+	private static String getCountry() {
+		Locale loc = Locale.getDefault();
+		String country = loc != null ? loc.getCountry() : "US";
+		return country;
 	}
 	
 	public static boolean hasCamera() 
