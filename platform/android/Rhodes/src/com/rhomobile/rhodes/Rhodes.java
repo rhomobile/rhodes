@@ -648,6 +648,11 @@ public class Rhodes extends Activity {
 		return locale;
 	}
 	
+	private static String getCurrentCountry() {
+		String cl = Locale.getDefault().getCountry();
+		return cl;
+	}
+	
 	public static int getScreenWidth() {
 		return screenWidth;
 	}
@@ -661,6 +666,8 @@ public class Rhodes extends Activity {
 			return "ANDROID";
 		else if (name.equalsIgnoreCase("locale"))
 			return getCurrentLocale();
+		else if (name.equalsIgnoreCase("country"))
+			return getCurrentCountry();
 		else if (name.equalsIgnoreCase("screen_width"))
 			return new Integer(getScreenWidth());
 		else if (name.equalsIgnoreCase("screen_height"))
