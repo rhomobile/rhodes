@@ -213,6 +213,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         {*resValue = rho_ruby_create_string("APPLE"); return 1;}
     else if (strcasecmp("locale", szPropName) == 0)
         {*resValue = rho_sys_get_locale(); return 1; }
+    else if (strcasecmp("country", szPropName) == 0) {
+        NSLocale *locale = [NSLocale currentLocale];
+        NSString *cl = [locale objectForKey:NSLocaleCountryCode];
+        *resValue = rho_ruby_create_string([cl UTF8String]);
+        return 1;
+    }
     else if (strcasecmp("screen_width", szPropName) == 0)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_width()); return 1; }
     else if (strcasecmp("screen_height", szPropName) == 0)
