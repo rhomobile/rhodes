@@ -257,6 +257,16 @@ static double get_screen_ppi_y()
 	return ret;
 }
 
+VALUE rho_sys_get_locale()
+{
+	wchar_t szLang[20];
+	int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME , szLang, sizeof(szLang)/sizeof(szLang[0]));
+	szLang[2] = 0;
+	wcslwr(szLang);
+
+	return rho_ruby_create_string(convertToStringA(szLang).c_str());
+}
+
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("has_camera",szPropName) == 0) 
@@ -270,6 +280,19 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
 	if (strcasecmp("ppi_y",szPropName) == 0)
         {*resValue = rho_ruby_create_double(get_screen_ppi_y()); return 1; }
+
+	if (strcasecmp("locale",szPropName) == 0)
+		{*resValue = rho_sys_get_locale(); return 1;}
+
+	if (strcasecmp("country",szPropName) == 0)
+	{
+		wchar_t szCountry[20];
+		int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME , szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+		szCountry[2] = 0;
+
+		*resValue = rho_ruby_create_string(convertToStringA(szCountry).c_str());
+		return 1;
+	}
 
 	if (strcasecmp("device_name",szPropName) == 0)
 	{
@@ -313,16 +336,6 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	}
 
     return 0;
-}
-
-VALUE rho_sys_get_locale()
-{
-    wchar_t szLang[20];
-    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME , szLang, 20);
-    szLang[2] = 0;
-    wcslwr(szLang);
-
-    return rho_ruby_create_string(convertToStringA(szLang).c_str());
 }
 
 int rho_sys_get_screen_width()
