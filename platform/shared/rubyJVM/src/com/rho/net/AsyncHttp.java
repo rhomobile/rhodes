@@ -28,6 +28,7 @@ public class AsyncHttp extends RhoThread
 	private Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
 
 	private String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
+	private String m_strFilePath;
     private String m_strResBody = "";
     boolean m_bFinished = false;
     
@@ -38,13 +39,14 @@ public class AsyncHttp extends RhoThread
 	private RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
 	AsyncHttp(RhoClassFactory factory, int eCmd,
-		    String url, RubyValue headers, String body, String callback, String callback_params)
+		    String url, RubyValue headers, String body, String filepath, String callback, String callback_params)
 	{
 		super(factory);
 		
 	    m_ptrFactory = factory;
 	    m_strUrl = url != null ? url : "";
 	    m_strBody = body != null ? body : "";
+	    m_strFilePath = filepath != null ? filepath : "";
 	    m_strCallback = callback != null ? callback : "";
 	    m_strCallbackParams = callback_params != null ? callback_params : "";
 	    m_eCmd = eCmd;
@@ -150,11 +152,22 @@ public class AsyncHttp extends RhoThread
 	
 		    case hcUpload:
 		    	{
+		            Vector/*Ptr<net::CMultipartItem*>*/ arMultipartItems = new Vector();
+
 		            MultipartItem oItem = new MultipartItem();
-		            oItem.m_strFilePath = m_strBody;
+		            oItem.m_strFilePath = m_strFilePath;
 		            oItem.m_strContentType = "application/octet-stream";
-	
-		            m_pNetResponse = m_pNetRequest.pushMultipartData( m_strUrl, oItem, null, m_mapHeaders );
+		            arMultipartItems.addElement(oItem);
+
+		            if ( m_strBody.length() > 0 )
+		            {
+			            MultipartItem oItem2 = new MultipartItem();
+			            oItem2.m_strBody = m_strBody;
+			            oItem2.m_strContentType = (String)m_mapHeaders.get("content-type");
+			            arMultipartItems.addElement(oItem2);
+		            }
+		    		
+		            m_pNetResponse = m_pNetRequest.pushMultipartData( m_strUrl, arMultipartItems, null, m_mapHeaders );
 			        break;
 		    	}
 		    }
@@ -253,7 +266,10 @@ public class AsyncHttp extends RhoThread
 	        if (cookies.length()>0)
 	        	m_strResBody += "&cookies=" + URI.urlEncode(cookies);
 	    	
-	        m_strResBody += "&" + makeHeadersString();
+	        String strHeaders = makeHeadersString();
+	        if ( strHeaders != null && strHeaders.length() > 0 )
+	        	m_strResBody += "&" + makeHeadersString();
+	        
 	        m_strResBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
 	    }
 	    
@@ -290,7 +306,7 @@ public class AsyncHttp extends RhoThread
 					String callback = args.get(2).toStr();
 					String callback_params = args.get(3).toStr();
 					boolean ssl_verify_peer = args.get(4).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcGet, url, args.get(1), null, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcGet, url, args.get(1), null, null, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_get failed", e);
@@ -312,7 +328,7 @@ public class AsyncHttp extends RhoThread
 					String callback = args.get(3).toStr();
 					String callback_params = args.get(4).toStr();
 					boolean ssl_verify_peer = args.get(5).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcPost, url, args.get(1), body, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcPost, url, args.get(1), body, null, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_post failed", e);
@@ -334,7 +350,7 @@ public class AsyncHttp extends RhoThread
 					String callback = args.get(3).toStr();
 					String callback_params = args.get(4).toStr();
 					boolean ssl_verify_peer = args.get(5).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcDownload, url, args.get(1), filepath, callback, callback_params );
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcDownload, url, args.get(1), null, filepath, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_downloadfile failed", e);
@@ -346,17 +362,18 @@ public class AsyncHttp extends RhoThread
 		klass.getSingletonClass().defineMethod("do_uploadfile", new RubyVarArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
-				if ( args.size() != 6 )
+				if ( args.size() != 7 )
 					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-							"in AsyncHttp.do_uploadfile: wrong number of arguments ( " + args.size() + " for " + 6 + " )");			
+							"in AsyncHttp.do_uploadfile: wrong number of arguments ( " + args.size() + " for " + 7 + " )");			
 				
 				try {
 					String url = args.get(0).toStr();
-					String filepath = args.get(2).toStr();
-					String callback = args.get(3).toStr();
-					String callback_params = args.get(4).toStr();
-					boolean ssl_verify_peer = args.get(5).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcUpload, url, args.get(1), filepath, callback, callback_params );
+					String body = args.get(2).toStr();
+					String filepath = args.get(3).toStr();
+					String callback = args.get(4).toStr();
+					String callback_params = args.get(5).toStr();
+					boolean ssl_verify_peer = args.get(6).toInt() != 0 ? true : false;
+					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcUpload, url, args.get(1), body, filepath, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
 					LOG.ERROR("do_uploadfile failed", e);

@@ -664,8 +664,16 @@ public class SyncThread extends RhoThread
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{
-							String url = arg1.toStr();
-							getSyncEngine().setSyncServer(url);
+							String syncserver = arg1.toStr();
+							
+							stopSync();							
+							getSyncEngine().setSyncServer(syncserver);
+							
+						    if ( syncserver != null && syncserver.length() > 0 )
+						        SyncThread.getInstance().start(SyncThread.epLow);
+						    else
+						        SyncThread.getInstance().stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+							
 						}catch(Exception e)
 						{
 							LOG.ERROR("set_syncserver failed", e);

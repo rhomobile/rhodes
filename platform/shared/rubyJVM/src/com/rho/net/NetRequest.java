@@ -283,7 +283,7 @@ public class NetRequest
 	        if (oItem.m_strFileName.length()>0)
 	            oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
 	        oItem.m_strDataPrefix += "\r\n";
-	        if ( oItem.m_strContentType.length() > 0 )
+	        if ( oItem.m_strContentType != null && oItem.m_strContentType.length() > 0 )
 	            oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
 
 	        long nContentSize = 0;
@@ -306,7 +306,7 @@ public class NetRequest
 	        else
 	            nContentSize = oItem.m_strBody.length();
 
-	        if ( oItem.m_strContentType.length() > 0 )
+	        if ( oItem.m_strContentType != null && oItem.m_strContentType.length() > 0 )
 	            oItem.m_strDataPrefix += "Content-Length: " + nContentSize + "\r\n";
 
 	        oItem.m_strDataPrefix += "\r\n";
@@ -452,7 +452,7 @@ public class NetRequest
                 }              	
 	        }
 			
-			file = RhoClassFactory.createRAFile();
+			file = RhoClassFactory.createFSRAFile();
 			file.open(strFileName, "rw");
 			file.seek(file.size());
 			

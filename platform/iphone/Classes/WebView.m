@@ -72,6 +72,16 @@
 }
 @end
 
+@interface RhoWebViewSetCookieTask : NSObject {}
++ (void)run:(NSString*)url :(NSString*)cookie;
+@end
+
+@implementation RhoWebViewSetCookieTask
++ (void)run:(NSString *)url :(NSString *)cookie {
+    [[Rhodes sharedInstance] setCookie:cookie forUrl:url];
+}
+@end
+
 
 void rho_webview_navigate(const char* url, int index) {
     id runnable = [RhoWebViewNavigateTask class];
@@ -121,3 +131,10 @@ void rho_webview_full_screen_mode(int enable)
     [Rhodes setStatusBarHidden:enable];
 }
 
+void rho_webview_set_cookie(const char *u, const char *c)
+{
+    id runnable = [RhoWebViewSetCookieTask class];
+    NSString *url = [NSString stringWithUTF8String:u];
+    NSString *cookie = [NSString stringWithUTF8String:c];
+    [Rhodes performOnUiThread:runnable arg:url arg:cookie wait:NO];
+}

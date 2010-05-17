@@ -17,7 +17,7 @@ void rho_geoimpl_init();
 
 @implementation Rhodes
 
-@synthesize window, player, mainView;
+@synthesize window, player, mainView, cookies;
 
 static Rhodes *instance = NULL;
 
@@ -130,6 +130,15 @@ static Rhodes *instance = NULL;
 
 - (void)showLog {
     [self performSelectorOnMainThread:@selector(doShowLog) withObject:nil waitUntilDone:NO];
+}
+
+- (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
+    [cookies setObject:cookie forKey:url];
+}
+
+- (NSString*)cookie:(NSString*)url {
+    NSString *c = [cookies objectForKey:url];
+    return c;
 }
 
 - (void)chooseDateTime:(DateTime*)dateTime {
@@ -261,6 +270,8 @@ static Rhodes *instance = NULL;
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
     [self showLoadingPage];
+    
+    cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     // Init controllers
     logOptionsController = [[LogOptionsController alloc] init];
@@ -461,47 +472,6 @@ static Rhodes *instance = NULL;
     RAWLOG_INFO("Runner will terminate");
     [self saveLastUsedTime];
     rho_rhodesapp_destroy();
-}
-
-// UIWebViewDelegate imlementation
-
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType {
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webview {
-	// TODO
-    //[self active];
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webview {
-    [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
-    // TODO
-    /*
-     [self inactive];
-     
-     if ([webView canGoBack]) {
-     backBtn.enabled = YES;
-     } else {
-     backBtn.enabled = NO;
-     }
-     if ([webView canGoForward]) {
-     forwardBtn.enabled = YES;
-     } else {
-     forwardBtn.enabled = NO;
-     }
-     
-     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
-     
-     if ([actionTarget respondsToSelector:@selector(hideSplash)])
-     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
-     */
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    // TODO
 }
 
 // UITabBarControllerDelegate implementation

@@ -184,6 +184,11 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 			return new Jsr75RAFileImpl();
 	}
 
+	public IRAFile createFSRAFile()
+	{
+		return new Jsr75RAFileImpl();
+	}
+	
 	public String getGeoLocationText()
 	{
 		return GeoLocation.getGeoLocationText();
