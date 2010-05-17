@@ -21,12 +21,14 @@ extern "C" void header_iter(const char* szName, const char* szValue, void* pHash
 
 CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
     const char* url, unsigned long headers, const char* body,
+    const char* file_path,
     const char* callback, const char* callback_params, boolean ssl_verify_peer) :  CRhoThread(factory)
 {
     m_bFinished = false;
     m_ptrFactory = factory;
     m_strUrl = url != null ? url : "";
     m_strBody = body != null ? body : "";
+    m_strFilePath = file_path != null ? file_path : "";
     m_strCallback = callback != null ? callback : "";
     m_strCallbackParams = callback_params != null ? callback_params : "";
     m_eCmd = eCmd;
@@ -126,16 +128,27 @@ void CAsyncHttp::run()
         break;
 
     case hcDownload:
-        m_pNetResponse = m_pNetRequest->pullFile(m_strUrl, m_strBody, null, &m_mapHeaders);
+        m_pNetResponse = m_pNetRequest->pullFile(m_strUrl, m_strFilePath, null, &m_mapHeaders);
         break;
 
     case hcUpload:
         {
-            net::CMultipartItem oItem;
-            oItem.m_strFilePath = m_strBody;
-            oItem.m_strContentType = "application/octet-stream";
+            VectorPtr<net::CMultipartItem*> arMultipartItems;
 
-            m_pNetResponse = m_pNetRequest->pushMultipartData( m_strUrl, oItem, null, &m_mapHeaders );
+            net::CMultipartItem* pItem = new net::CMultipartItem();
+            pItem->m_strFilePath = m_strFilePath;
+            pItem->m_strContentType = "application/octet-stream";
+            arMultipartItems.addElement(pItem);
+
+            if ( m_strBody.length() > 0 )
+            {
+                net::CMultipartItem* pItem = new net::CMultipartItem();
+                pItem->m_strBody = m_strBody;
+                pItem->m_strContentType = m_mapHeaders.get("content-type");
+                arMultipartItems.addElement(pItem);
+            }
+
+            m_pNetResponse = m_pNetRequest->pushMultipartData( m_strUrl, arMultipartItems, null, &m_mapHeaders );
             break;
         }
     }
@@ -252,25 +265,25 @@ using namespace rho::net;
 
 unsigned long rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcGet, url, headers, null, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcGet, url, headers, null, null, callback, callback_params, ssl_verify_peer!=0 );
     return pHttp->getRetValue();
 }
 
 unsigned long rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcPost, url, headers, body!=null?body:"", callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcPost, url, headers, body!=null?body:"", null, callback, callback_params, ssl_verify_peer!=0 );
     return pHttp->getRetValue();
 }
 
 unsigned long rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcDownload, url, headers, file_path, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcDownload, url, headers, "", file_path, callback, callback_params, ssl_verify_peer!=0 );
     return pHttp->getRetValue();
 }
 
-unsigned long rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
+unsigned long rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* body, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcUpload, url, headers, file_path, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcUpload, url, headers, body, file_path, callback, callback_params, ssl_verify_peer!=0 );
     return pHttp->getRetValue();
 }
 
