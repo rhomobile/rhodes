@@ -49,6 +49,7 @@ platform/bb/.BB.jdw/*.files
 *.jad
 platform/bb/build/rholog.txt
 platform/bb/preverified
+platform/bb/build/MANIFEST.MF
 
 platform/symbian/.metadata/*
 platform/symbian/bin/*
