@@ -136,11 +136,11 @@ module Rhogen
     third_argument :priority, :required => false, :desc => "optional sync priority (i.e. 100)"
     fourth_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
 
-    template :config do |template|
-      @model_sync_server = syncserver_exists? ? class_name : ''
-      template.source = 'config.rb'
-      template.destination = "app/#{name.camel_case}/config.rb"
-    end
+    #template :config do |template|
+    #  @model_sync_server = syncserver_exists? ? class_name : ''
+    #  template.source = 'config.rb'
+    #  template.destination = "app/#{name.camel_case}/config.rb"
+    #end
 
     template :index do |template|
       template.source = 'index.erb'

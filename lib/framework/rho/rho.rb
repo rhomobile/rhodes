@@ -10,6 +10,12 @@ module Rho
   def self.get_app
     RHO.get_instance().get_app('app')
   end
+
+  def self.file_exist?(fname)
+      return File.exist_injar?(fname) if defined? RHO_ME
+            
+      File.exist?(fname)
+  end
   
   class RHO
     APPLICATIONS = {}
@@ -96,8 +102,22 @@ module Rho
       File.open(app_manifest_filename).each do |line|
         str = line.chomp
         if str != nil and str.length > 0 
-            require File.join(File.dirname(app_manifest_filename), str )
-        end    
+            #puts "model file: #{str}"
+            modelName = File.basename(File.dirname(str))
+            Rhom::RhomObjectFactory.init_object(modelName)
+            require str
+
+            #puts "model name: #{modelName}"            
+
+            modelClass = Object.const_get(modelName)
+            if modelClass
+                Rho::RhoConfig::add_source(modelName,modelClass.get_model_params())
+                modelClass.reset_model_params()
+            else
+                puts "Error load model : #{modelClass}"
+            end    
+        end
+        
       end
     end
     
@@ -181,7 +201,7 @@ module Rho
             source['links'].each do |src_name, attrib|    
                 linkSrc = find_src_byname(uniq_sources, src_name)
                 if !linkSrc
-                    rho_error( "links from '#{source['name']}' : source name '#{src_name}' does not exist."  )
+                    puts ( "Error: links from '#{source['name']}' : source name '#{src_name}' does not exist."  )
                     next
                 end
                 
@@ -232,7 +252,8 @@ module Rho
                     strCols += "\"#{col}\""
                 end
 
-                strIndex = "CREATE #{strUnique} INDEX \"rhoIndex_#{nInd}\" on #{src_name} (#{strCols});\r\n"
+                strIndName = "rhoIndex" + (is_unique ? "U" : "" ) + "_#{nInd}"
+                strIndex = "CREATE #{strUnique} INDEX \"#{strIndName}\" on #{src_name} (#{strCols});\r\n"
                 strRes += strIndex
                 nInd += 1
             end
@@ -246,7 +267,6 @@ module Rho
         puts 'init_schema_sources'
         
         uniq_sources.each do |source|
-          puts "source : #{source}"
           db = get_src_db(source['name'])
           
           if  source['schema'] && !db.table_exist?(source['name'])
@@ -309,7 +329,7 @@ module Rho
         uniq_sources.each do |source|
           puts "init_db_sources : #{source}"
           name = source['name']
-          priority = source['priority']
+          priority = source['sync_priority']
           partition = source['partition']
           sync_type = source['sync_type']
           schema_version = source['schema_version']
@@ -490,10 +510,10 @@ module Rho
       err_page = nil
       if exception && exception.is_a?(::Rhom::RecordNotFound)
         err_page = RhoApplication::get_app_path(APPNAME) + 'E400_erb.iseq'
-        err_page = nil unless File.exist?(err_page)
+        err_page = nil unless ::Rho::file_exist?(err_page)
       elsif exception
         err_page = RhoApplication::get_app_path(APPNAME) + 'E500_erb.iseq'
-        err_page = nil unless File.exist?(err_page)
+        err_page = nil unless ::Rho::file_exist?(err_page)
       end
 
       if err_page
@@ -587,25 +607,19 @@ module Rho
       def add_config(key,value)
         @@config[key] = value if key # allow nil value
       end
-      
+
       def add_source(modelname, new_source=nil)
         return if !modelname || modelname.length() == 0# || @@sources[modelname]
         
-        @@sources[modelname] = new_source ? new_source : {}
+        @@sources[modelname] = new_source ? new_source.clone() : {}
         @@sources[modelname]['name'] ||= modelname
-        @@sources[modelname]['priority'] ||= 1000
+        @@sources[modelname]['sync_priority'] ||= 1000
         @@sources[modelname]['partition'] ||= 'user'
+        
+        @@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
         @@sources[modelname]['sync_type'] ||= 'incremental'
         
-        if @@sources[modelname]['url'] && @@sources[modelname]['url'].length() == 0
-            @@sources[modelname]['sync'] = false
-        end
-
-        if @@sources[modelname]['sync'].nil?
-            @@sources[modelname]['sync'] = true
-        end
-        
-        @@max_config_srcid = new_source['source_id'] if new_source['source_id'] && @@max_config_srcid < new_source['source_id']
+        @@max_config_srcid = @@sources[modelname]['source_id'] if @@sources[modelname]['source_id'] && @@max_config_srcid < @@sources[modelname]['source_id']
       end
       
       @@g_base_temp_id = nil
