@@ -8,6 +8,12 @@
  */
 package j2me.io;
 
+import java.io.IOException;
+
+import com.rho.FilePath;
+import com.rho.RhoClassFactory;
+import com.rho.file.IFileAccess;
+
 import j2me.lang.UnsupportedOperationException;
 
 /**
@@ -47,19 +53,41 @@ public class File {
             return null;
         }
         return _path.substring(0, index);
-        }
+    }
+
+    public String getName() 
+    {
+    	if ( _path == null || _path.length() == 0)
+    		return "";
+    	
+        int index = _path.lastIndexOf('/');
+        if ( index < 0 )
+        	index = _path.lastIndexOf('\\');
+
+        if ( index < 0 )
+        	return _path;
+        
+        return _path.substring(index+1, _path.length());
+    }
     
-    public boolean exists() {
-        throw new UnsupportedOperationException(
-                "File operations not supported for J2ME build");
+    public boolean exists() 
+    {
+    	try
+    	{
+    		String strPath = _path;
+	        if (!strPath.startsWith("file:")) 
+           		strPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), strPath);
+    		
+	        com.rho.file.IRAFile fs = RhoClassFactory.createFSRAFile();
+	        fs.open(strPath);
+	    	return fs.exists();
+    	}catch(Exception exc)
+    	{
+    		return false;
+    	}
     }
 
     public boolean isDirectory() {
-        throw new UnsupportedOperationException(
-                "File operations not supported for J2ME build");
-    }
-
-    public String getName() {
         throw new UnsupportedOperationException(
                 "File operations not supported for J2ME build");
     }

@@ -299,7 +299,14 @@ void rho_sync_set_pollinterval(int nInterval)
 	
 void rho_sync_set_syncserver(char* syncserver)
 {
-	CSyncThread::getSyncEngine().setSyncServer(syncserver);	
+    rho_sync_stop();
+
+	CSyncThread::getSyncEngine().setSyncServer(syncserver);
+
+    if ( syncserver && *syncserver )
+        CSyncThread::getInstance()->start(CSyncThread::epLow);
+    else
+        CSyncThread::getInstance()->stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 }
 
 void rho_sync_login(const char *name, const char *password, const char* callback)
