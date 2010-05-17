@@ -19,6 +19,9 @@ public class RhoThread extends Thread
     
     public void start(int ePriority)
     {
+    	if ( super.isAlive() )
+    		return;
+    	
     	super.start();
     	
     	int nThreadPriority = Thread.NORM_PRIORITY;
