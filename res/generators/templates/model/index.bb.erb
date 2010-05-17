@@ -9,13 +9,15 @@
 </div>
 
 <div id="content">
-    <ul>
+  <table>
+    <tr>
     <%% @<%= name.downcase.pluralize %>.each do |obj| %>
     	<% if self.attributes? %>
-    	    <li><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></li>
+    	    <td><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></td>
     	<% else %>
-    	    <li>Some list entry...</li>
+    	    <td>Some list entry...</td>
     	<% end %>
     <%% end %>
-    </ul>
+    </tr>
+  </table>
 </div>

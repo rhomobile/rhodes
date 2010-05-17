@@ -66,28 +66,6 @@ div#content p{
 	font-size:14px;
 }
 
-/* bb list styles */
-div#content ul {
-	margin: 0;
-	padding: 0;
-}
-
-div#content ul li {
-	list-style-type :none;
-	border-bottom:1px solid lightgray;
-	height: 25px;
-	line-height:25px;
-	padding:0 5px 0 5px;
-}
-
-div#content ul li a {
-	text-decoration: none;
-	font-weight:bold;
-	color:black;
-	display:block;
-	overflow: hidden;
-}
-
 /* bb table styles */
 
 div#content table {
@@ -95,7 +73,7 @@ div#content table {
 	border:none;
 	border-spacing:0;
     font-size: 80%;
-	margin:4px;
+    width:100%;
 }
 
 div#content table th {
@@ -104,22 +82,31 @@ div#content table th {
 	border-bottom:1px solid #BBBBBB;
 }
 
+div#content table tr {
+    width:100%;
+}
 div#content table tr td {
 	padding:5px;
 	margin:0;
+    width:100%;
+    border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height:25px;
 }
 
-/* Lists */
-
-div#content table {
-    width:100%;
+div#content table tr td a {
+	text-decoration: none;
+	font-weight:bold;
+	color:black;
+	display:block;
+	overflow: hidden;
 }
 
 div#content table tr td.itemLabel {
-    width:50%;
+    width:45%;
     font-weight:bold;
 }
 
 div#content table tr td.itemValue {
-    width:50%;
+    width:45%;
 }
