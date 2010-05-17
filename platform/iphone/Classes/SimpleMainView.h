@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
 
-@interface SimpleMainView : UIViewController <RhoMainView> {
+@interface SimpleMainView : UIViewController <RhoMainView, UIWebViewDelegate> {
     UIView *parent;
     UIView *root;
     UIWebView *webView;

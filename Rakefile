@@ -211,6 +211,17 @@ def common_bundle_start(startdir, dest)
       end
     end
 
+    if extpath.nil?
+      begin
+        $rhodes_extensions = nil
+        require extname
+        extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+      rescue Exception => e
+        
+      end
+
+    end
+
     unless extpath.nil?
       add_extension(extpath, dest)
 
@@ -307,14 +318,33 @@ end
 
 def create_manifest
   dir = File.join($srcdir, 'apps')
-  fname = "config.rb"
+  #fname = "config.rb"
   fappManifest = File.new( File.join(dir,'app_manifest.txt'), "w")
+  dir = File.join($srcdir, 'apps/app')
 
   Find.find(dir) do |path|
+
+    strDir = File.dirname(path)
+    next unless dir == File.dirname(strDir) #one level only
+    
+    if File.basename(path) == "config.rb"
+        puts "******ERROR enumerating models***********"
+        puts "config.rb file should be deleted: '#{path}' "
+        puts "Use model definition: http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models_2.0"
+        puts "*****************************************"
+        exit 1
+    end
+    
+    fname = File.dirname(path)
+    fname = File.basename(fname)
+    modelname = fname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
+    fname = modelname + ".rb"
+  
     if File.basename(path) == fname
 
       relPath = path[dir.length+1, File.dirname(path).length-1]   #relative path
-      relPath = relPath[0, relPath.length-3] #remove .rb extension
+      relPath = relPath[0, relPath.length-3] #remove .rb extension and app
+      relPath = File.join(File.dirname(relPath), modelname )
       fappManifest.puts( relPath )
 
     end

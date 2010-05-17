@@ -7,24 +7,37 @@
 
 #define RHOSETUP_DLL "rhosetup.dll"
 
+void checkMDEstart(HRESULT hr) 
+{
+	if (FAILED(hr)) {
+		if (hr == REGDB_E_CLASSNOTREG) {
+			printf ("Microsoft Device Emulator is too old or corrupted. Please update it.\n");
+			printf ("You could get the latest version on:\n");
+			printf ("http://www.microsoft.com/downloads/details.aspx?familyid=a6f6adaf-12e3-4b2f-a394-356e2c2fb114\n");
+		} else {
+			wprintf_s(L"Error: Unable to instantiate DeviceEmulatorManager. ErrorCode=0x%08X\n", hr);
+		}
+	}
+}
 
 DWORD WINAPI startDEM(LPVOID lpParam)
 {
 	if (SUCCEEDED(CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
-        HRESULT hr;
+        HRESULT hr = 0;
 
 		CComPtr<IDeviceEmulatorManager> pDeviceEmulatorManager;
 		hr = pDeviceEmulatorManager.CoCreateInstance(__uuidof(DeviceEmulatorManager));
 		if (FAILED(hr)) {
-			wprintf_s(L"Error: Unable to instantiate DeviceEmulatorManager. ErrorCode=0x%08X\n", hr);
-			return false;
+			checkMDEstart(hr);
+			ExitProcess(EXIT_FAILURE);
+			return hr;
 		}
 		
 		pDeviceEmulatorManager->ShowManagerUI(false);
 		while (1) {
 			Sleep(600 * 1000);
 		}
-		return true;
+		return hr;
         CoUninitialize();
     }
 	return 0;

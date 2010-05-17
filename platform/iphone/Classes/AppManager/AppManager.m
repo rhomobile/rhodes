@@ -213,6 +213,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         {*resValue = rho_ruby_create_string("APPLE"); return 1;}
     else if (strcasecmp("locale", szPropName) == 0)
         {*resValue = rho_sys_get_locale(); return 1; }
+    else if (strcasecmp("country", szPropName) == 0) {
+        NSLocale *locale = [NSLocale currentLocale];
+        NSString *cl = [locale objectForKey:NSLocaleCountryCode];
+        *resValue = rho_ruby_create_string([cl UTF8String]);
+        return 1;
+    }
     else if (strcasecmp("screen_width", szPropName) == 0)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_width()); return 1; }
     else if (strcasecmp("screen_height", szPropName) == 0)
@@ -235,10 +241,16 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         
         return 1;
     }
-    else if (strcasecmp("device_name", szPropName) == 0) 
-    { *resValue = rho_ruby_create_string([[[UIDevice currentDevice] systemName] UTF8String]);  return 1; }
-    else if (strcasecmp("os_version", szPropName) == 0) 
-    { *resValue = rho_ruby_create_string([[[UIDevice currentDevice] systemVersion] UTF8String]);  return 1; }
+    else if (strcasecmp("device_name", szPropName) == 0) {
+        NSString *model = [[UIDevice currentDevice] model];
+        *resValue = rho_ruby_create_string([model UTF8String]);
+        return 1;
+    }
+    else if (strcasecmp("os_version", szPropName) == 0) {
+        NSString *version = [[UIDevice currentDevice] systemVersion];
+        *resValue = rho_ruby_create_string([version UTF8String]);
+        return 1;
+    }
     /*
     // Removed because it's possibly dangerous: Apple could reject application
     // used such approach from its AppStore

@@ -203,7 +203,7 @@
     webView.multipleTouchEnabled = YES;
     webView.autoresizesSubviews = YES;
     webView.clipsToBounds = NO;
-    webView.delegate = [Rhodes sharedInstance];
+    webView.delegate = self;
     
     [root addSubview:webView];
     
@@ -291,7 +291,7 @@
 
 - (void)navigate:(NSString *)url tab:(int)index {
     NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
     [webView loadRequest:request];
 }
 
@@ -337,6 +337,8 @@
     NSArray *btns[] = {left, right};
     for (int i = 0, lim = sizeof(btns)/sizeof(btns[0]); i < lim; ++i) {
         NSArray *btn = btns[i];
+        if ([btn count] < 3)
+            continue;
         NSString *action = [btn objectAtIndex:0];
         NSString *label = [btn objectAtIndex:1];
         NSString *icon = [btn objectAtIndex:2];
@@ -373,6 +375,55 @@
     
     [navbar removeFromSuperview];
     self.navbar = nil;
+}
+
+// UIWebViewDelegate imlementation
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType {
+    NSString *url = [[request URL] absoluteString];
+    if (url) {
+        NSString *c = [[Rhodes sharedInstance] cookie:url];
+        if (c) {
+            NSMutableURLRequest *r = (NSMutableURLRequest*)request;
+            [r addValue:c forHTTPHeaderField:@"Cookie"];
+        }
+    }
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webview {
+    // TODO
+    //[self active];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webview {
+    [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+    // TODO
+    /*
+     [self inactive];
+     
+     if ([webView canGoBack]) {
+     backBtn.enabled = YES;
+     } else {
+     backBtn.enabled = NO;
+     }
+     if ([webView canGoForward]) {
+     forwardBtn.enabled = YES;
+     } else {
+     forwardBtn.enabled = NO;
+     }
+     
+     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
+     
+     if ([actionTarget respondsToSelector:@selector(hideSplash)])
+     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
+     */
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    // TODO
 }
 
 @end

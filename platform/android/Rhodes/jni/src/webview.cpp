@@ -91,3 +91,16 @@ RHO_GLOBAL void rho_webview_full_screen_mode(int enable)
 {
     //TODO: rho_webview_full_screen_mode
 }
+
+RHO_GLOBAL void rho_webview_set_cookie(const char *url, const char *cookie)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setCookie", "(Ljava/lang/String;Ljava/lang/String;)V");
+    if (!mid) return;
+
+    jstring urlObj = rho_cast<jstring>(url);
+    jstring cookieObj = rho_cast<jstring>(cookie);
+    env->CallStaticVoidMethod(cls, mid, urlObj, cookieObj);
+}

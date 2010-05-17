@@ -406,7 +406,7 @@ namespace "build" do
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
     end
 
-    task :extensions => "config:android" do
+    task :extensions => :genconfig do
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
@@ -414,6 +414,7 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
+      ENV["RHO_INC"] = $appincdir
 
       mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
 
