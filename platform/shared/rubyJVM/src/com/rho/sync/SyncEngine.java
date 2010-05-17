@@ -25,6 +25,7 @@ import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
 import com.rho.RhoProfiler;
 import com.rho.RhoRuby;
+import com.rho.TimeInterval;
 import com.rho.db.*;
 import com.rho.net.*;
 import com.rho.*;
@@ -195,143 +196,160 @@ public class SyncEngine implements NetRequest.IRhoSession
 
     void doSearch(Vector/*<rho::String>*/ arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep)
     {
-/*        prepareSync(esSearch);
-        if ( !isContinueSync() )
-        {
-            if ( getState() != esExit )
-                setState(esNone);
+	    try
+	    {
+		    prepareSync(esSearch);
+		    if ( !isContinueSync() )
+		    {
+		        if ( getState() != esExit )
+		            setState(esNone);
+		
+		        return;
+		    }
+		
+		    TimeInterval startTime = TimeInterval.getCurrentTime();
+		
+		    if ( bSearchSyncChanges )
+		    {
+		        for ( int i = 0; i < (int)arSources.size(); i++ )
+		        {
+		            SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
+		            if ( pSrc != null )
+		                pSrc.syncClientChanges();
+		        }
+		    }
+		
+		    int nErrCode = 0;
+		    while( isContinueSync() )
+		    {
+		        int nSearchCount = 0;
+		        String strUrl = getProtocol().getServerQueryUrl(strAction);
+		        String strQuery = getProtocol().getServerQueryBody("", getClientID(), getSyncPageSize());
+		
+		        if ( strParams.length() > 0 )
+		            strQuery += strParams;
+		
+		        for ( int i = 0; i < (int)arSources.size(); i++ )
+		        {
+		            SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
+		            if ( pSrc != null )
+		            {
+		                strQuery += "&source[][name]=" + pSrc.getName();
+		
+		                if ( !pSrc.isTokenFromDB() && pSrc.getToken() > 1 )
+		                    strQuery += "&source[][token]=" + pSrc.getToken();
+		            }
+		        }
+		
+				LOG.INFO("Call search on server. Url: " + (strUrl+strQuery) );
+		        NetResponse resp = getNet().pullData(strUrl+strQuery, this);
+		
+		        if ( !resp.isOK() )
+		        {
+		            stopSync();
+		            nErrCode = RhoRuby.getErrorFromResponse(resp);
+		            continue;
+		        }
+		
+		        String szData = resp.getCharData();
+		
+		        JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
+		
+		        for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
+		        {
+		            JSONArrayIterator oSrcArr = oJsonArr.getCurArrayIter();//new JSONArrayIterator(oJsonArr.getCurItem());
+		
+		            int nVersion = 0;
+		            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
+		            {
+		                nVersion = oSrcArr.getCurItem().getInt("version");
+		                oJsonArr.next();
+		            }
+		
+		            if ( nVersion != getProtocol().getVersion() )
+		            {
+		                LOG.ERROR( "Sync server send search data with incompatible version. Client version: " + getProtocol().getVersion() +
+		                    "; Server response version: " + nVersion );
+		                stopSync();
+		                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                continue;
+		            }
+		
+		            if ( !oSrcArr.getCurItem().hasName("source") )
+		            {
+		                LOG.ERROR( "Sync server send search data without source name." );
+		                stopSync();
+		                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                continue;
+		            }
+		
+		            String strSrcName = oSrcArr.getCurItem().getString("source");
+		            SyncSource pSrc = findSourceByName(strSrcName);
+		            if ( pSrc == null )
+		            {
+		                LOG.ERROR("Sync server send search data for unknown source name:" + strSrcName);
+		                stopSync();
+		                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                continue;
+		            }
+		
+		            oSrcArr.reset(0);
+		            pSrc.m_bIsSearch = true;
+		            pSrc.setProgressStep(nProgressStep);
+		            pSrc.processServerResponse_ver3(oSrcArr);
+		
+		            nSearchCount += pSrc.getCurPageCount();
+		        }
+		
+		        if ( nSearchCount == 0 )
+		            break;
+		    }  
+		
+		    if ( isContinueSync() )
+		    {
+		        SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+		        src.m_bIsSearch = true;
+		
+		    	getNotify().fireSyncNotification(src, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
+		    }
+		    else if ( nErrCode != 0 )
+		    {
+		        SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+		        src.m_nErrCode = nErrCode;
+		        src.m_bIsSearch = true;
+		        getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
+		    }
+		
+		    //update db info
+		    TimeInterval endTime = TimeInterval.getCurrentTime();
+		    //unsigned long timeUpdated = CLocalTime().toULong();
+		    for ( int i = 0; i < (int)arSources.size(); i++ )
+		    {
+		        SyncSource oSrc = findSourceByName((String)arSources.elementAt(i));
+		        if ( oSrc == null )
+		            continue;
+		        oSrc.getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
+					 "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+					 new Long(endTime.toULong()/1000), new Integer(oSrc.getInsertedCount()), new Integer(oSrc.getDeletedCount()), 
+					 new Long((endTime.minus(startTime)).toULong()), new Integer(oSrc.getGetAtLeastOnePage()?1:0), 
+					 new Integer(oSrc.getRefreshTime()),  oSrc.getID() );
+		    }
+		    //
+		
+		    getNotify().cleanCreateObjectErrors();
+		    if ( getState() != esExit )
+		        setState(esNone);
 
-            return;
-        }
+	    } catch(Exception exc) {
+    		LOG.ERROR("Search failed.", exc);
 
-        CTimeInterval startTime = CTimeInterval::getCurrentTime();
-
-        if ( bSearchSyncChanges )
-        {
-            for ( int i = 0; i < (int)arSources.size(); i++ )
-            {
-                CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
-                if ( pSrc != null )
-                    pSrc->syncClientChanges();
-            }
-        }
-
-        int nErrCode = 0;
-        while( isContinueSync() )
-        {
-            int nSearchCount = 0;
-            String strUrl = getProtocol().getServerQueryUrl(strAction);
-            String strQuery = getProtocol().getServerQueryBody("", getClientID(), getSyncPageSize());
-
-            if ( strParams.length() > 0 )
-                strQuery += strParams;
-
-            for ( int i = 0; i < (int)arSources.size(); i++ )
-            {
-                CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
-                if ( pSrc != null )
-                {
-                    strQuery += "&sources[][name]=" + pSrc->getName();
-
-                    if ( !pSrc->isTokenFromDB() && pSrc->getToken() > 1 )
-                        strQuery += "&sources[][token]=" + convertToStringA(pSrc->getToken());
-                }
-            }
-
-    		LOG(INFO) + "Call search on server. Url: " + (strUrl+strQuery);
-            NetResponse(resp,getNet().pullData(strUrl+strQuery, this));
-
-            if ( !resp.isOK() )
-            {
-                stopSync();
-                nErrCode = RhoRuby.getErrorFromResponse(resp);
-                continue;
-            }
-
-            const char* szData = resp.getCharData();
-
-            CJSONArrayIterator oJsonArr(szData);
-
-            for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
-            {
-                CJSONArrayIterator oSrcArr(oJsonArr.getCurItem());
-
-                int nVersion = 0;
-                if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
-                {
-                    nVersion = oSrcArr.getCurItem().getInt("version");
-                    oJsonArr.next();
-                }
-
-                if ( nVersion != getProtocol().getVersion() )
-                {
-                    LOG(ERROR) + "Sync server send search data with incompatible version. Client version: " + convertToStringA(getProtocol().getVersion()) +
-                        "; Server response version: " + convertToStringA(nVersion);
-                    stopSync();
-                    nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
-                    continue;
-                }
-
-                if ( !oSrcArr.getCurItem().hasName("source") )
-                {
-                    LOG(ERROR) + "Sync server send search data without source name.";
-                    stopSync();
-                    nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
-                    continue;
-                }
-
-                String strSrcName = oSrcArr.getCurItem().getString("source");
-                CSyncSource* pSrc = findSourceByName(strSrcName);
-                if ( pSrc == null )
-                {
-                    LOG(ERROR) + "Sync server send search data for unknown source name:" + strSrcName;
-                    stopSync();
-                    nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
-                    continue;
-                }
-
-                oSrcArr.reset(0);
-                pSrc->m_bIsSearch = true;
-                pSrc->setProgressStep(nProgressStep);
-                pSrc->processServerResponse_ver3(oSrcArr);
-
-                nSearchCount += pSrc->getCurPageCount();
-            }
-
-            if ( nSearchCount == 0 )
-                break;
-        }  
-
-        if ( isContinueSync() )
-        	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
-        else if ( nErrCode != 0 )
-        {
-            CSyncSource& src = *m_sources.elementAt(getStartSource());
-            src.m_nErrCode = nErrCode;
-            src.m_bIsSearch = true;
-            getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
-        }
-
-        //update db info
-        CTimeInterval endTime = CTimeInterval::getCurrentTime();
-        unsigned long timeUpdated = CLocalTime().toULong();
-        for ( int i = 0; i < (int)arSources.size(); i++ )
-        {
-            CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
-            if ( pSrc == null )
-                continue;
-            CSyncSource& oSrc = *pSrc;
-            oSrc.getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
-    						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
-                             timeUpdated, oSrc.getInsertedCount(), oSrc.getDeletedCount(), 
-                             (endTime-startTime).toULong(), oSrc.getGetAtLeastOnePage(), oSrc.getRefreshTime(),
-                             oSrc.getID() );
-        }
-        //
-
-        getNotify().cleanCreateObjectErrors();
-        if ( getState() != esExit )
-            setState(esNone);*/
+	        SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+	        src.m_bIsSearch = true;
+    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+	    	
+	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" ); 
+	    }
+		    
     }
 
     void doSyncSource(SourceID oSrcID)
