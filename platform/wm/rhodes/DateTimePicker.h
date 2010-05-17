@@ -1,6 +1,7 @@
 #ifndef __DATETIMEPICKER_H__
 #define __DATETIMEPICKER_H__
 
+#include "OkCancelModalDialog.h"
 #include "resource.h"
 
 //TODO: delegates
@@ -9,7 +10,7 @@ class CDateTimeMessage
 public:
 	static enum 
 	{
-		FORMAT_DATE_TIME,
+		FORMAT_DATE_TIME = 0,
 		FORMAT_DATE,
 		FORMAT_TIME
 	};
@@ -37,7 +38,12 @@ public:
 	int   m_format;
 };
 
-class CDateTimePickerDialog : public CDialogImpl<CDateTimePickerDialog>
+class CDateTimePickerDialog : public 
+#if defined(OS_WINDOWS)
+	COkCancelModalDialog<CDateTimePickerDialog>
+#else
+	CDialogImpl <CDateTimePickerDialog>
+#endif
 {
 public:
 	CDateTimePickerDialog  (const CDateTimeMessage *msg);
@@ -53,11 +59,10 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 	END_MSG_MAP()
 
-private:
+public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
 private:
 	int         m_format;
 	time_t      m_returnTime;
@@ -65,7 +70,13 @@ private:
 	const char *m_title;
 };
 
-class CTimePickerDialog : public CDialogImpl<CTimePickerDialog>
+
+class CTimePickerDialog : public
+#if defined(OS_WINDOWS)
+	COkCancelModalDialog<CTimePickerDialog>
+#else
+	CDialogImpl <CTimePickerDialog>
+#endif
 {
 public:
 	CTimePickerDialog  (const CDateTimeMessage *msg);
