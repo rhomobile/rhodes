@@ -665,7 +665,7 @@ module Rho
         end
         def self.upload_file(args)
             process_result( 
-                AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:filename],
+                AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:body], args[:filename],
                     args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
         end
     end
