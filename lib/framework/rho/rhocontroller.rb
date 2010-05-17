@@ -56,7 +56,7 @@ module Rho
         res = send req['action'].nil? ? default_action : req['action']
       else
         called_action = @request['action'].nil? ? default_action : @request['action']
-        unless File.exist?(@request[:modelpath]+called_action.to_s+'_erb.iseq')
+        unless Rho::file_exist?(@request[:modelpath]+called_action.to_s+'_erb.iseq')
           rho_error( "Action '#{act}' does not exist in controller or has private access."  )
           res = render :string => "<font size=\"+4\"><h2>404 Not Found.</h2>The action <i>#{called_action}</i> does not have a view or a controller</font>"
         end

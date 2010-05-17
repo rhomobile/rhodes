@@ -33,6 +33,7 @@ void *  rho_calloc(size_t num, size_t size);
 size_t  rho_msize(void *);
 void *  rho_realloc(void *, size_t);
 char *  rho_strdup(const char *);
+wchar_t *  rho_wcsdup(const wchar_t * str);
 void    sys_free(void *);
 #ifdef __cplusplus
 }
@@ -45,6 +46,7 @@ void    sys_free(void *);
 #undef realloc
 #undef strdup
 #undef _strdup
+#undef _wcsdup
 
 //#define _recalloc(p, n, s) rho_realloc(p, n*s)
 #define free(p) rho_free(p)
@@ -55,6 +57,7 @@ void    sys_free(void *);
 
 #define strdup(s) rho_strdup(s)
 #define _strdup(s) rho_strdup(s)
+#define _wcsdup(s) rho_wcsdup(s)
 
 #ifndef __SYMBIAN32__
 
