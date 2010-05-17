@@ -990,6 +990,19 @@ final public class RhodesApplication extends UiApplication implements SystemList
         } );
     }
     
+    private Hashtable cookies = new Hashtable();
+    
+    public String getCookie(String url) {
+    	Object c = cookies.get(url);
+    	if (c instanceof String)
+    		return (String)c;
+    	return null;
+    }
+    
+    public void setCookie(String url, String cookie) {
+    	cookies.put(url, cookie);
+    }
+    
     private void createBrowserControl()
     {
     	//touch;5
