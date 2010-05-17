@@ -140,10 +140,10 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
             if ( pSrc != null )
             {
-                strQuery += "&sources[][name]=" + pSrc->getName();
+                strQuery += "&source[][name]=" + pSrc->getName();
 
                 if ( !pSrc->isTokenFromDB() && pSrc->getToken() > 1 )
-                    strQuery += "&sources[][token]=" + convertToStringA(pSrc->getToken());
+                    strQuery += "&source[][token]=" + convertToStringA(pSrc->getToken());
             }
         }
 
@@ -212,7 +212,12 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
     }  
 
     if ( isContinueSync() )
-    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
+    {
+        CSyncSource& src = *m_sources.elementAt(getStartSource());
+        src.m_bIsSearch = true;
+
+    	getNotify().fireSyncNotification(&src, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
+    }
     else if ( nErrCode != 0 )
     {
         CSyncSource& src = *m_sources.elementAt(getStartSource());
