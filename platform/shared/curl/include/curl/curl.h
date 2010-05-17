@@ -180,7 +180,11 @@ typedef int (*curl_progress_callback)(void *clientp,
      Windows, while 16K for some odd reason performed a lot better.
      We do the ifndef check to allow this value to easier be changed at build
      time for those who feel adventurous. */
+#if defined(OS_ANDROID) || defined(__APPLE__)
+#define CURL_MAX_WRITE_SIZE 200*1024
+#else
 #define CURL_MAX_WRITE_SIZE 16384
+#endif
 #endif
 
 #ifndef CURL_MAX_HTTP_HEADER
