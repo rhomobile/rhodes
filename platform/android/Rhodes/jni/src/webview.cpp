@@ -41,17 +41,7 @@ RHO_GLOBAL void rho_webview_navigate_back()
 
 RHO_GLOBAL const char* rho_webview_current_location(int index)
 {
-    static std::string curLoc;
-
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
-    if (!cls) return NULL;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "currentLocation", "(I)Ljava/lang/String;");
-    if (!mid) return NULL;
-
-    jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, index);
-    curLoc = rho_cast<std::string>(str);
-    return curLoc.c_str();
+    return rho_rhodesapp_getcurrenturl(index);
 }
 
 RHO_GLOBAL void rho_webview_set_menu_items(VALUE valMenu)
