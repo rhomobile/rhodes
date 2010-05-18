@@ -18,8 +18,8 @@ public class DBAdapter extends RubyBasic
 	
 	private IDBStorage m_dbStorage;
 	private boolean m_bIsOpen = false;
-	private String  m_strDBPath;
-	private String  m_strDBVerPath;
+	private String  m_strDBPath, m_strDBVerPath;
+	private String  m_strDbPartition;
 	private DBAttrManager m_attrMgr = new DBAttrManager();
 	static Hashtable/*Ptr<String,CDBAdapter*>*/ m_mapDBPartitions = new Hashtable();
 	
@@ -27,6 +27,7 @@ public class DBAdapter extends RubyBasic
     int m_nTransactionCounter=0;
     boolean m_bUIWaitDB = false;
 	
+    static String USER_PARTITION_NAME(){return "user";}
     static Hashtable/*Ptr<String,CDBAdapter*>&*/ getDBPartitions(){ return  m_mapDBPartitions; }
     
 	DBAdapter(RubyClass c) {
@@ -46,6 +47,11 @@ public class DBAdapter extends RubyBasic
 		return m_Instance;
 	}*/
 
+	private void setDbPartition(String strPartition)
+	{
+		m_strDbPartition = strPartition;
+	}
+	 
 	public void close()
 	{ 
 		try{
@@ -613,15 +619,7 @@ public class DBAdapter extends RubyBasic
 				if ( destroyTableName( tableName, vecIncludes, vecExcludes ) )
 					continue;
 				
-				res = executeSQL("SELECT * from " + tableName, null);
-				String strInsert = "";
-			    for ( ; !res.isEnd(); res.next() )
-			    {
-			    	if ( strInsert.length() == 0 )
-			    		strInsert = createInsertStatement(res, tableName);
-			    	
-			    	db.executeSQL(strInsert, res.getCurData(), false );
-			    }
+				copyTable(tableName, this.m_dbStorage, db );
 			}
 			
 		    db.commit();
@@ -682,6 +680,19 @@ public class DBAdapter extends RubyBasic
 		return RubyConstant.QNIL;
     }
     
+    private void copyTable(String tableName, IDBStorage dbFrom, IDBStorage dbTo)throws DBException
+    {
+    	IDBResult res = dbFrom.executeSQL("SELECT * from " + tableName, null, false);
+		String strInsert = "";
+	    for ( ; !res.isEnd(); res.next() )
+	    {
+	    	if ( strInsert.length() == 0 )
+	    		strInsert = createInsertStatement(res, tableName);
+	    	
+	    	dbTo.executeSQL(strInsert, res.getCurData(), false );
+	    }
+    }
+    
     public void setBulkSyncDB(String fDbName, String fScriptName)
     {
 		IDBStorage db = null;
@@ -691,48 +702,23 @@ public class DBAdapter extends RubyBasic
 
 		    db.startTransaction();
 			
-		    //copy client_info
-			{
-				IDBResult res = executeSQL("SELECT * from client_info", null);
-				String strInsert = "";
-				
-			    for ( ; !res.isEnd(); res.next() )
-			    {
-			    	if ( strInsert.length() == 0 )
-			    		strInsert = createInsertStatement(res, "client_info");
-			    	
-			    	db.executeSQL(strInsert, res.getCurData(), false );
-			    }
-			}
-		    //copy sources
-			{
-		        String tableName = "sources";
-		        String strSelect = "SELECT * from " + tableName;
-		        IDBResult res = executeSQL( strSelect );
-				String strInsert = "";
-			    for ( ; !res.isEnd(); res.next() )
-			    {
-		            String strName = res.getStringByIdx(1);
-		            Object[] values = {strName};
-		            IDBResult res2 = db.executeSQL("SELECT name from sources where name=?", values, false);
-		            if (!res2.isEnd())
-		                continue;
+		    copyTable("client_info", this.m_dbStorage, db );
+		    
+		    //update User partition
+		    if ( m_strDbPartition.compareTo(USER_PARTITION_NAME()) == 0 )
+		    {
+		        //copy all NOT user sources from current db to bulk db
+		        executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
+		        copyTable("sources", this.m_dbStorage, db );
+		    }else
+		    {
+		        //remove all m_strDbPartition sources from user db
+		        //copy all sources from bulk db to user db
+		        DBAdapter dbUser  = getDB(USER_PARTITION_NAME());
+		        dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
 
-			    	if ( strInsert.length() == 0 )
-			    		strInsert = createInsertStatement(res, tableName);
-			    	
-			    	db.executeSQL(strInsert, res.getCurData(), false );
-			    }
-/*				
-				IDBResult res = executeSQL("SELECT name, sync_type, partition, priority from sources", null);
-			    for ( ; !res.isEnd(); res.next() )
-			    {
-			    	String strName = res.getStringByIdx(0);
-			    	Object[] values = {res.getStringByIdx(1), new Integer(res.getIntByIdx(2)),new Integer(res.getIntByIdx(3)),strName};
-			    	
-		            db.executeSQL("UPDATE sources SET sync_type=?, partition=?, priority=? where name=?",values, false); 
-			    }*/
-			}
+		        copyTable("sources", db, dbUser.m_dbStorage );
+		    }
 			
 		    db.commit();
 		    db.close();
@@ -899,7 +885,7 @@ public class DBAdapter extends RubyBasic
     
     public static DBAdapter getUserDB()
     {
-        return (DBAdapter)getDBPartitions().get("user");
+        return (DBAdapter)getDBPartitions().get(USER_PARTITION_NAME());
     }
 
     public static DBAdapter getDB(String szPartition)
@@ -937,6 +923,7 @@ public class DBAdapter extends RubyBasic
 		    		String szDbName = arg1.toStr();
 		    		String szDbPartition = arg2.toStr();
 		    		((DBAdapter)receiver).openDB(szDbName);
+		    		((DBAdapter)receiver).setDbPartition(szDbPartition);
 		    		
 		    		DBAdapter.getDBPartitions().put(szDbPartition, receiver);
 		    		

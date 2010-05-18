@@ -1099,11 +1099,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     }
 
     public void refreshCurrentPage(){
-		navigateUrl(getCurrentPageUrl());
-    }
-
-    public String getCurrentPageUrl(){
-    	return (String)_history.lastElement();
+		navigateUrl((String)_history.lastElement());
     }
 
     void navigateHome(){

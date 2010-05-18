@@ -23,7 +23,7 @@ CREATE TABLE sources (
  source_id BIGINT PRIMARY KEY,
  name VARCHAR(255) default NULL,
  token BIGINT default NULL,
- priority BIGINT,
+ sync_priority BIGINT,
  partition VARCHAR(255),
  sync_type VARCHAR(255),
  metadata varchar default NULL, 
@@ -36,7 +36,7 @@ CREATE TABLE sources (
  source_attribs varchar default NULL,
  schema varchar default NULL,
  schema_version varchar default NULL,
- links varchar default NULL,
+ associations varchar default NULL,
  blob_attribs varchar default NULL);
 CREATE INDEX by_src_id on object_values (source_id);
 CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);
