@@ -27,6 +27,8 @@ class CDBAdapter
 {
     sqlite3* m_dbHandle;
     String   m_strDbPath, m_strDbVer, m_strDbVerPath;
+    String   m_strDbPartition;
+
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
     common::CRubyMutex m_mxRuby;
     common::CMutex m_mxDB;
@@ -48,10 +50,12 @@ class CDBAdapter
     	}
     };
 
+    static const char* USER_PARTITION_NAME(){return "user";}
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(void) : m_dbHandle(0), m_strDbPath(""), m_bUIWaitDB(false), m_nTransactionCounter(0){}
+    CDBAdapter(const char* szDBPartition) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
+        m_bUIWaitDB(false), m_nTransactionCounter(0) {}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
@@ -244,7 +248,7 @@ private:
     virtual DBResultPtr prepareStatement( const char* szSt );
 
     boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
-
+    void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);
 };
 
 }

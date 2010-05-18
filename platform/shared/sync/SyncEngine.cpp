@@ -303,7 +303,7 @@ void CSyncEngine::loadAllSources()
     m_sources.clear();
     m_arPartitions.clear();
 
-    DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY priority") );
+    DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY sync_priority") );
     for ( ; !res.isEnd(); res.next() )
     { 
         String strShouldSync = res.getStringByIdx(1);
@@ -377,7 +377,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
 
     NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
 
-/*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","
+/*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
         "\"schema_version\":\"7.0\",\"schema\":{"
         "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"*/
 /*        "\"sql\":\"CREATE TABLE Product ( "
@@ -414,7 +414,7 @@ String CSyncEngine::requestClientIDByNet()
     {
         const char* szData = resp.getCharData();
         /*
-        "{\"client\":{\"client_id\":\"vasy\"},\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","
+        "{\"client\":{\"client_id\":\"vasy\"},\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
         "\"schema\":{\"version\":\"1.0\","
         "\"sql\":\"CREATE TABLE Product ( "
         "brand varchar default NULL,"
@@ -446,6 +446,8 @@ String CSyncEngine::requestClientIDByNet()
 
 void CSyncEngine::doBulkSync()//throws Exception
 {
+//    processServerSources(String("{\"partition\":\"") + "application" + "\"}");
+
     if ( !RHOCONF().isExist("bulksync_state") )
         return;
 
@@ -522,14 +524,13 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
    	getNotify().fireBulkSyncNotification(false, "download", strPartition, RhoRuby.ERR_NONE);
 
-    String fDataName = makeBulkDataFileName(/*"data/bbook/bbook_1264475432.data"*/strDataUrl, dbPartition.getDBPath(), "");//, "_bulk");
+    String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "");
     String strZip = ".rzip";
-    // String strSqlDataUrl = /*"http://204.236.220.203/data/bbook/bbook_1264475432.data" + strZip;*/getHostFromUrl(serverUrl) + strDataUrl+strZip;
 	String hostName = getHostFromUrl(serverUrl);
 	if (hostName.c_str()[hostName.length()-1] == '/') {
 		hostName = hostName.substr(0,hostName.length()-1);
 	}
-    String strSqlDataUrl = /*"http://204.236.220.203/data/bbook/bbook_1264475432.data" + strZip;*/ hostName + strDataUrl+strZip;
+    String strSqlDataUrl = hostName + strDataUrl+strZip;
     LOG(INFO) + "Bulk sync: download data from server: " + strSqlDataUrl;
     {
         NetResponse( resp1, getNet().pullFile(strSqlDataUrl, fDataName+strZip, this, null) );
@@ -561,6 +562,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
    	getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoRuby.ERR_NONE);
     
     dbPartition.setBulkSyncDB(fDataName);
+    processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
 	LOG(INFO) + "Bulk sync: end change db";
    	getNotify().fireBulkSyncNotification(false, "", strPartition, RhoRuby.ERR_NONE);

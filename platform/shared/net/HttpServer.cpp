@@ -888,8 +888,6 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     Route route;
     if (dispatch(uri, route)) {
         RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
-        if (method == "GET")
-            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
         
         VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
                                         method, uri, query, headers, body);
@@ -899,7 +897,10 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
 
         if (!send_response(reply))
             return false;
-        
+
+        if (method == "GET")
+            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+
         if (!route.id.empty())
             rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
         
@@ -926,14 +927,18 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         }
         
         RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
-        if (method == "GET")
-            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
         
         VALUE data = callServeIndex((char *)fullPath.c_str());
         String reply(getStringFromValue(data), getStringLenFromValue(data));
         rho_ruby_releaseValue(data);
 
-        return send_response(reply);
+        if (!send_response(reply))
+            return false;
+
+        if (method == "GET")
+            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+
+        return true;
     }
     //RAWLOG_INFO("Sending File");
     

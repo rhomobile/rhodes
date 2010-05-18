@@ -154,6 +154,24 @@ module Rho
         puts "load_server_sources : #{data}"
         
         res = Rho::JSON.parse(data)
+        if res['partition']
+            str_partition = res['partition']
+            puts "reload sources for partition: #{str_partition}"
+            db = @db_partitions[ str_partition ]
+
+            puts "sources before: #{Rho::RhoConfig::sources()}"
+            
+            Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
+            arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
+                {'partition'=>str_partition} )
+            arSrcs.each do |src|
+                Rho::RhoConfig::sources()[ src['name'] ] = src
+            end
+            
+            puts "sources after: #{Rho::RhoConfig::sources()}"            
+            return
+        end
+        
         arSrc = res['server_sources']
         puts "arSrc: #{arSrc}"
         return unless arSrc
@@ -197,20 +215,20 @@ module Rho
           partition = source['partition']
           @db_partitions[partition] = nil
           
-          if source['links']
-            source['links'].each do |src_name, attrib|    
-                linkSrc = find_src_byname(uniq_sources, src_name)
-                if !linkSrc
-                    puts ( "Error: links from '#{source['name']}' : source name '#{src_name}' does not exist."  )
+          if source['associations']
+            source['associations'].each do |src_name, attrib|    
+                associationsSrc = find_src_byname(uniq_sources, src_name)
+                if !associationsSrc
+                    puts ( "Error: associations from '#{source['name']}' : source name '#{src_name}' does not exist."  )
                     next
                 end
                 
-                str_links = linkSrc['str_links']
-                str_links = "" unless str_links
-                str_links += ',' if str_links.length() > 0
+                str_associations = associationsSrc['str_associations']
+                str_associations = "" unless str_associations
+                str_associations += ',' if str_associations.length() > 0
                 
-                str_links += source['name'] + ',' + attrib
-                linkSrc['str_links'] = str_links
+                str_associations += source['name'] + ',' + attrib
+                associationsSrc['str_associations'] = str_associations
             end
           end
         end
@@ -329,18 +347,18 @@ module Rho
         uniq_sources.each do |source|
           puts "init_db_sources : #{source}"
           name = source['name']
-          priority = source['sync_priority']
+          sync_priority = source['sync_priority']
           partition = source['partition']
           sync_type = source['sync_type']
           schema_version = source['schema_version']
-          links = source['str_links']
+          associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
           
-          attribs = db.select_from_table('sources','priority,source_id,partition, sync_type, schema_version, links, blob_attribs', 'name'=>name)
+          attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
 
           if attribs && attribs.size > 0 
-            if attribs[0]['priority'].to_i != priority.to_i
-                db.update_into_table('sources', {"priority"=>priority},{"name"=>name})
+            if attribs[0]['sync_priority'].to_i != sync_priority.to_i
+                db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
             end
             if attribs[0]['sync_type'] != sync_type
                 db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
@@ -351,8 +369,8 @@ module Rho
             if attribs[0]['partition'] != partition
                 db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
             end
-            if attribs[0]['links'] != links
-                db.update_into_table('sources', {"links"=>links},{"name"=>name})
+            if attribs[0]['associations'] != associations
+                db.update_into_table('sources', {"associations"=>associations},{"name"=>name})
             end
             if attribs[0]['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
@@ -372,8 +390,8 @@ module Rho
             end
           
             db.insert_into_table('sources',
-                {"source_id"=>source['source_id'],"name"=>name, "priority"=>priority, "sync_type"=>sync_type, "partition"=>partition,
-                "schema_version"=>source['schema_version'], 'links'=>links, 'blob_attribs'=>blob_attribs })
+                {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
+                "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
                 
           end
           
@@ -614,7 +632,11 @@ module Rho
         @@sources[modelname] = new_source ? new_source.clone() : {}
         @@sources[modelname]['name'] ||= modelname
         @@sources[modelname]['sync_priority'] ||= 1000
-        @@sources[modelname]['partition'] ||= 'user'
+        if @@sources[modelname]['partition']
+            @@sources[modelname]['partition'] = @@sources[modelname]['partition'].to_s
+        else    
+            @@sources[modelname]['partition'] ||= 'user'
+        end    
         
         @@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
         @@sources[modelname]['sync_type'] ||= 'incremental'

@@ -85,7 +85,7 @@ class SyncSource
     int m_nRefreshTime = 0;
     int m_nProgressStep = -1;
     boolean m_bSchemaSource;
-    Hashtable/*<String,String>*/ m_hashLinks = new Hashtable();
+    Hashtable/*<String,String>*/ m_hashAssociations = new Hashtable();
     Vector/*Ptr<net::CMultipartItem*>*/ m_arMultipartItems = new Vector();
     Vector/*<String>*/                  m_arBlobAttrs = new Vector();
     
@@ -160,7 +160,7 @@ class SyncSource
         m_nErrCode = RhoRuby.ERR_NONE;
         m_bIsSearch = false;
 
-        IDBResult res = db.executeSQL("SELECT token,links from sources WHERE source_id=?", m_nID);
+        IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
         if ( !res.isEnd() )
         {
         	m_token = res.getLongByIdx(0);
@@ -172,15 +172,15 @@ class SyncSource
         }
         
         m_bSchemaSource = db.isTableExist(m_strName);
-        parseLinks(res.getStringByIdx(1));
+        parseAssociations(res.getStringByIdx(1));
     }
 	
-    void parseLinks(String strLinks)
+    void parseAssociations(String strAssociations)
     {
-        if (strLinks.length() == 0 )
+        if (strAssociations.length() == 0 )
             return;
 
-        Tokenizer oTokenizer = new Tokenizer( strLinks, "," );
+        Tokenizer oTokenizer = new Tokenizer( strAssociations, "," );
 
         String strSrcName = "";
         while (oTokenizer.hasMoreTokens()) 
@@ -191,7 +191,7 @@ class SyncSource
             
             if ( strSrcName.length() > 0 )
             {
-                m_hashLinks.put(strSrcName, tok);
+                m_hashAssociations.put(strSrcName, tok);
                 strSrcName = "";
             }else
                 strSrcName = tok;
@@ -623,19 +623,19 @@ class SyncSource
 	    }
 	}
 	
-	void processLinks(String strOldObject, String strNewObject)throws Exception
+	void processAssociations(String strOldObject, String strNewObject)throws Exception
 	{
-    	Enumeration vals = m_hashLinks.elements();
-    	Enumeration keys = m_hashLinks.keys();
+    	Enumeration vals = m_hashAssociations.elements();
+    	Enumeration keys = m_hashAssociations.keys();
 		while (vals.hasMoreElements()) 
 		{
 	        SyncSource pSrc = getSync().findSourceByName((String)keys.nextElement());
 	        if ( pSrc != null )
-	            pSrc.updateLink(strOldObject, strNewObject, (String)vals.nextElement());
+	            pSrc.updateAssociation(strOldObject, strNewObject, (String)vals.nextElement());
 	    }
 	}
 
-	void updateLink(String strOldObject, String strNewObject, String strAttrib)throws Exception
+	void updateAssociation(String strOldObject, String strNewObject, String strAttrib)throws Exception
 	{
 	    if ( m_bSchemaSource )
 	    {
@@ -768,7 +768,7 @@ class SyncSource
 	    }else if ( strCmd.compareTo("links") == 0 )
 	    {
 	        String strValue = attrIter.getCurString();
-	        processLinks(strObject, strValue);
+	        processAssociations(strObject, strValue);
 	        
 	        String strSqlUpdate = "UPDATE ";
 	        strSqlUpdate += getName() + " SET object=? WHERE object=?";
@@ -872,7 +872,7 @@ class SyncSource
 	        m_nDeleted++;
 	    }else if ( strCmd.compareTo("links") == 0 )
 	    {
-	        processLinks(strObject, oAttrValue.m_strValue);
+	        processAssociations(strObject, oAttrValue.m_strValue);
 
 	        getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", oAttrValue.m_strValue, strObject, getID() );
 	        getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", oAttrValue.m_strValue, strObject, getID() );

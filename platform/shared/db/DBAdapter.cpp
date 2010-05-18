@@ -140,7 +140,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
     //id INTEGER PRIMARY KEY, REMOVE
         LOG(INFO) + "Migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
 
-        CDBAdapter db;
+        CDBAdapter db(m_strDbPartition.c_str());
         db.open( m_strDbPath, m_strDbVer, true );
         DBResult( res, db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" ));
         DBResult( res1, db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" ));
@@ -335,7 +335,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     CRhoFile::deleteFile((dbNewName+"-journal").c_str());
     CRhoFile::deleteFile((dbNewName+".version").c_str());
 
-    CDBAdapter db;
+    CDBAdapter db(m_strDbPartition.c_str());
     db.open( dbNewName, m_strDbVer, true );
 
     //Copy all tables
@@ -352,21 +352,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
         if (destroyTableName(tableName, arIncludeTables, arExcludeTables)  )
             continue;
 
-        String strSelect = "SELECT * from " + tableName;
-        DBResult( res , executeSQL( strSelect.c_str() ) );
-		String strInsert = "";
-        int rc = 0;
-	    for ( ; !res.isEnd(); res.next() )
-	    {
-	    	sqlite3_stmt* stInsert = createInsertStatement(res, tableName, db, strInsert);
-
-            if (stInsert)
-            {
-                rc = sqlite3_step(stInsert);
-                checkDbError(rc);
-                sqlite3_finalize(stInsert);
-            }
-	    }
+        copyTable(tableName, *this, db );
     }
 
     db.endTransaction();
@@ -382,55 +368,50 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     open( dbOldName, m_strDbVer, false );
 }
 
+void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo)
+{
+    String strSelect = "SELECT * from " + tableName;
+    DBResult( res , dbFrom.executeSQL( strSelect.c_str() ) );
+	String strInsert = "";
+    int rc = 0;
+    for ( ; !res.isEnd(); res.next() )
+    {
+    	sqlite3_stmt* stInsert = createInsertStatement(res, tableName, dbTo, strInsert);
+
+        if (stInsert)
+        {
+            rc = sqlite3_step(stInsert);
+            checkDbError(rc);
+            sqlite3_finalize(stInsert);
+        }
+    }
+}
+
 void CDBAdapter::setBulkSyncDB(String fDataName)
 {
-    CDBAdapter db;
+    CDBAdapter db(m_strDbPartition.c_str());
     db.open( fDataName, m_strDbVer, true );
     db.createTriggers();
 
     db.startTransaction();
 
-    //copy client_info
-	{
-		DBResult( res, executeSQL("SELECT * from client_info") );
-		String strInsert = "";
-		int rc = 0;
-	    for ( ; !res.isEnd(); res.next() )
-	    {
-	    	sqlite3_stmt* stInsert = createInsertStatement(res, "client_info", db, strInsert);
+    copyTable("client_info", *this, db );
 
-            if (stInsert)
-            {
-                rc = sqlite3_step(stInsert);
-                checkDbError(rc);
-                sqlite3_finalize(stInsert);
-            }
-	    }
-	}
-    //copy sources
-	{
-        String tableName = "sources";
-        String strSelect = "SELECT * from " + tableName;
-        DBResult( res , executeSQL( strSelect.c_str() ) );
-		String strInsert = "";
-        int rc = 0;
-	    for ( ; !res.isEnd(); res.next() )
-	    {
-            String strName = res.getStringByIdx(1);
-            DBResult( res2, db.executeSQL("SELECT name from sources where name=?", strName) );
-            if (!res2.isEnd())
-                continue;
+    //update User partition
+    if ( m_strDbPartition.compare(USER_PARTITION_NAME())==0 )
+    {
+        //copy all NOT user sources from current db to bulk db
+        executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
+        copyTable("sources", *this, db );
+    }else
+    {
+        //remove all m_strDbPartition sources from user db
+        //copy all sources from bulk db to user db
+        CDBAdapter& dbUser  = getDB(USER_PARTITION_NAME());
+        dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
 
-	    	sqlite3_stmt* stInsert = createInsertStatement(res, tableName, db, strInsert);
-
-            if (stInsert)
-            {
-                rc = sqlite3_step(stInsert);
-                checkDbError(rc);
-                sqlite3_finalize(stInsert);
-            }
-	    }
-	}
+        copyTable("sources", db, dbUser );
+    }
 
     db.endTransaction();
     db.close();
@@ -694,7 +675,7 @@ void CDBAdapter::rollback()
 
 /*static*/ CDBAdapter& CDBAdapter::getUserDB()
 {
-    return *getDBPartitions().get("user");
+    return *getDBPartitions().get(USER_PARTITION_NAME());
 }
 
 /*static*/ CDBAdapter& CDBAdapter::getDB(const char* szPartition)
@@ -721,7 +702,7 @@ void CDBAdapter::rollback()
             return *(it->second);
     }
 
-    return *getDBPartitions().get("user");
+    return *getDBPartitions().get(USER_PARTITION_NAME());
 }
 
 }
@@ -737,7 +718,7 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
     CDBAdapter* pDB = CDBAdapter::getDBPartitions().get(szDBPartition);
     if ( !pDB )
     {
-        pDB = new CDBAdapter();
+        pDB = new CDBAdapter(szDBPartition);
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
     }
 
@@ -810,6 +791,12 @@ void* rho_db_user_get_handle()
 {
     rho::db::CDBAdapter& db = rho::db::CDBAdapter::getUserDB();
     return db.getDbHandle();
+}
+
+void* rho_db_user_get_adapter()
+{
+    rho::db::CDBAdapter& db = rho::db::CDBAdapter::getUserDB();
+    return &db;
 }
 
 int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_stmt **ppStmt)

@@ -635,6 +635,8 @@ public class RhoConnection implements IHttpConnection {
 				String url = uri.getPath();// + (nPos == 0 ? ".iseq" : "");
 				RubyValue res = RhoRuby.processIndexRequest(url);//erb-compiled should load from class
 				processResponse(res);
+				
+				RhodesApp.getInstance().keepLastVisitedUrl(url_external);
 				return true;
 			}
 			
@@ -762,6 +764,7 @@ public class RhoConnection implements IHttpConnection {
 			 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' )
 			SyncThread.getInstance().addobjectnotify_bysrcname( model, actionid);
 
+		RhodesApp.getInstance().keepLastVisitedUrl(url_external);
 		LOG.INFO("dispatch end");
 		return true;
 	}
