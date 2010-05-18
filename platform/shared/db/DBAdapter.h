@@ -54,8 +54,8 @@ class CDBAdapter
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(const char* szDBPartition) : m_dbHandle(0), m_strDbPath(""), m_bUIWaitDB(false), m_nTransactionCounter(0),
-        m_strDbPartition(szDBPartition){}
+    CDBAdapter(const char* szDBPartition) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
+        m_bUIWaitDB(false), m_nTransactionCounter(0) {}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
