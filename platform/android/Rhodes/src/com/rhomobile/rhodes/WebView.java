@@ -64,21 +64,6 @@ public class WebView {
 		}
 	};
 	
-	private static class LocationTask implements Runnable {
-		private int index;
-		private StringBuffer loc;
-		
-		public LocationTask(int i, StringBuffer l) {
-			index = i;
-			loc = l;
-		}
-		
-		public void run() {
-			loc.delete(0, -1);
-			loc.append(RhodesInstance.getInstance().getMainView().currentLocation(index));
-		} 
-	};
-	
 	private static class IntHolder {
 		public int value;
 	};
@@ -135,19 +120,6 @@ public class WebView {
 		catch (Exception e) {
 			reportFail("refresh", e);
 		}
-	}
-	
-	public static String currentLocation(int index) {
-		try {
-			StringBuffer loc = new StringBuffer();
-			Rhodes.performOnUiThread(new LocationTask(index, loc), true);
-			return loc.toString();
-		}
-		catch (Exception e) {
-			reportFail("currentLocation", e);
-		}
-		
-		return "";
 	}
 	
 	public static int activeTab() {
