@@ -66,7 +66,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;
 
-    DBResult( res, db.executeSQL("SELECT token,links from sources WHERE source_id=?", m_nID) );
+    DBResult( res, db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID) );
     if ( !res.isEnd() )
     {
         m_token = res.getUInt64ByIdx(0);
@@ -78,15 +78,15 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     }
 
     m_bSchemaSource = db.isTableExist(m_strName);
-    parseLinks(res.getStringByIdx(1));
+    parseAssociations(res.getStringByIdx(1));
 }
 
-void CSyncSource::parseLinks(const String& strLinks)
+void CSyncSource::parseAssociations(const String& strAssociations)
 {
-    if (strLinks.length() == 0 )
+    if (strAssociations.length() == 0 )
         return;
 
-    CTokenizer oTokenizer( strLinks, "," );
+    CTokenizer oTokenizer( strAssociations, "," );
 
     String strSrcName = "";
     while (oTokenizer.hasMoreTokens()) 
@@ -97,7 +97,7 @@ void CSyncSource::parseLinks(const String& strLinks)
         
         if ( strSrcName.length() > 0 )
         {
-            m_hashLinks.put(strSrcName, tok);
+            m_hashAssociations.put(strSrcName, tok);
             strSrcName = "";
         }else
             strSrcName = tok;
@@ -529,17 +529,17 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
     }
 }
 
-void CSyncSource::processLinks(const String& strOldObject, const String& strNewObject)
+void CSyncSource::processAssociations(const String& strOldObject, const String& strNewObject)
 {
-    for ( Hashtable<String,String>::iterator it = m_hashLinks.begin();  it != m_hashLinks.end(); ++it )
+    for ( Hashtable<String,String>::iterator it = m_hashAssociations.begin();  it != m_hashAssociations.end(); ++it )
     {
         CSyncSource* pSrc = getSync().findSourceByName(it->first);
         if ( pSrc != null )
-            pSrc->updateLink(strOldObject, strNewObject, it->second);
+            pSrc->updateAssociation(strOldObject, strNewObject, it->second);
     }
 }
 
-void CSyncSource::updateLink(const String& strOldObject, const String& strNewObject, const String& strAttrib)
+void CSyncSource::updateAssociation(const String& strOldObject, const String& strNewObject, const String& strAttrib)
 {
     if ( m_bSchemaSource )
     {
@@ -672,7 +672,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
     }else if ( strCmd.compare("links") == 0 )
     {
         String strValue = attrIter.getCurString();
-        processLinks(strObject, strValue);
+        processAssociations(strObject, strValue);
 
         String strSqlUpdate = "UPDATE ";
         strSqlUpdate += getName() + " SET object=? WHERE object=?";
@@ -766,7 +766,7 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
         m_nDeleted++;
     }else if ( strCmd.compare("links") == 0 )
     {
-        processLinks(strObject, oAttrValue.m_strValue);
+        processAssociations(strObject, oAttrValue.m_strValue);
 
         getDB().executeSQL("UPDATE object_values SET object=? where object=? and source_id=?", oAttrValue.m_strValue, strObject, getID() );
         getDB().executeSQL("UPDATE changed_values SET object=?,sent=3 where object=? and source_id=?", oAttrValue.m_strValue, strObject, getID() );

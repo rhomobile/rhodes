@@ -417,7 +417,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    m_sources.removeAllElements();
 	    
-	    IDBResult res = getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY priority");
+	    IDBResult res = getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY sync_priority");
 	    for ( ; !res.isEnd(); res.next() )
 	    { 
 	        String strShouldSync = res.getStringByIdx(1);
@@ -491,7 +491,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	    NetResponse resp = getNet().pullData(getProtocol().getClientResetUrl(strClientID), this);
 /*	    
-	    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"priority\":\"0\","+
+	    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","+
 	    	    "\"schema_version\":\"7.0\",\"schema\":{"+
 	    	    "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"+
 	    	    "}}]}"); 
@@ -539,6 +539,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	void doBulkSync()throws Exception
 	{
+//	    processServerSources("{\"partition\":\"" + "application" + "\"}");
+
 	    if ( !RhoConf.getInstance().isExist("bulksync_state") )
 	        return;
 		
@@ -646,6 +648,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoRuby.ERR_NONE);
 		
 	    dbPartition.setBulkSyncDB(fDataName, fScriptName);
+	    processServerSources("{\"partition\":\"" + strPartition + "\"}");
 	    
 		LOG.INFO("Bulk sync: end change db");
 		getNotify().fireBulkSyncNotification(false, "", strPartition, RhoRuby.ERR_NONE);
