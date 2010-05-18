@@ -662,6 +662,20 @@ module Rho
             ret ? 1 : 0
         end
 
+        def self.headers(args)
+          hdrs = args[:headers]
+          hdrs = {} if hdrs.nil?
+
+          if hdrs['User-Agent'].nil?
+            platform = System.get_property('platform')
+            device = System.get_property('device_name')
+            version = System.get_property('os_version')
+            hdrs['User-Agent'] = "Mozilla-5.0 (#{platform}; #{device}; #{version})"
+          end
+
+          hdrs
+        end
+
 	def self.process_result(res, callback)
             return res if callback && callback.length() > 0
             
@@ -672,22 +686,22 @@ module Rho
         
         def self.get(args)
             process_result( 
-                AsyncHttp.do_get(args[:url], args[:headers],
+                AsyncHttp.do_get(args[:url], headers(args),
                     args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
         end
         def self.post(args)
             process_result( 
-                AsyncHttp.do_post(args[:url], args[:headers], args[:body],
+                AsyncHttp.do_post(args[:url], headers(args), args[:body],
                     args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
         end
         def self.download_file(args)
             process_result( 
-                AsyncHttp.do_downloadfile(args[:url], args[:headers], args[:filename],
+                AsyncHttp.do_downloadfile(args[:url], headers(args), args[:filename],
                     args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
         end
         def self.upload_file(args)
             process_result( 
-                AsyncHttp.do_uploadfile(args[:url], args[:headers], args[:body], args[:filename],
+                AsyncHttp.do_uploadfile(args[:url], headers(args), args[:body], args[:filename],
                     args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
         end
     end
