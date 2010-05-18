@@ -13,6 +13,7 @@ public class RhodesApp
 	static RhodesApp m_pInstance;
 	
     private String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath;
+	private String m_strHomeUrl;
 	
     Vector/*<unsigned long>*/ m_arCallbackObjects = new Vector();
     private SplashScreen m_oSplashScreen = new SplashScreen();
@@ -22,6 +23,9 @@ public class RhodesApp
 
 	Mutex m_mxScreenRotationCallback = new Mutex();
     String m_strScreenRotationCallback = "", m_strScreenRotationCallbackParams = "";
+    
+    int m_currentTabIndex = 0;
+    String[] m_currentUrls = new String[5];
     
     NetRequest getNet() { return RhoClassFactory.createNetRequest();}
     
@@ -57,6 +61,7 @@ public class RhodesApp
 
     void initAppUrls() 
     {
+    	m_strHomeUrl = "http://localhost:8080";
         m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
     	m_strDBDirPath = getRhoRootPath() + "db";
     }
@@ -181,5 +186,34 @@ public class RhodesApp
         strBody += "&rho_callback=1";
         getNet().pushData( strCallbackUrl, strBody, null );
     }
+ 
+    public String getCurrentUrl(int index)
+    { 
+        return m_currentUrls[m_currentTabIndex]; 
+    }
     
+    public void keepLastVisitedUrl(String strUrl)
+    {
+        //LOG(INFO) + "Current URL: " + strUrl;
+
+    	try{
+	        m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
+	
+	        if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
+	        {
+	            if ( strUrl.startsWith(m_strHomeUrl) )
+	                strUrl = strUrl.substring(m_strHomeUrl.length());
+	
+	            int nFragment = strUrl.indexOf('#');
+	            if ( nFragment >= 0 )
+	                strUrl = strUrl.substring(0, nFragment);
+	
+	            RHOCONF().setString("LastVisitedPage",strUrl);		
+	            RHOCONF().saveToFile();
+	        }
+    	}catch(Exception exc)
+    	{
+    		LOG.ERROR("Save current location failed.", exc);
+    	}
+	}    
 }

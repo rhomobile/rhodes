@@ -2,6 +2,7 @@ package com.rho.rubyext;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import rhomobile.RhodesApplication;
@@ -43,17 +44,31 @@ public class WebView
 				}
 			}
 		});
-		klass.getSingletonClass().defineMethod("current_location", new RubyNoArgMethod() {
+		klass.getSingletonClass().defineMethod("current_location", new RubyNoOrOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) 
 			{
 				try {
-					String url = RhodesApplication.getInstance().getCurrentPageUrl();
+					String url = RhodesApp.getInstance().getCurrentUrl(0); 
+						//RhodesApplication.getInstance().getCurrentPageUrl();
 					return ObjectFactory.createString(url);
 				} catch(Exception e) {
 					LOG.ERROR("current_location failed.", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) 
+			{
+				try {
+					int nIndex = arg.toInt();
+					String url = RhodesApp.getInstance().getCurrentUrl(nIndex); 
+						//RhodesApplication.getInstance().getCurrentPageUrl();
+					return ObjectFactory.createString(url);
+				} catch(Exception e) {
+					LOG.ERROR("current_location failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+			
 		});		
 		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
