@@ -304,13 +304,13 @@ def common_bundle_start(startdir, dest)
 
 
   unless $debug
-    puts "RELEASE!!!!"
     rm_rf $srcdir + "/apps/app/test"
     rm_rf $srcdir + "/apps/app/SpecRunner"
     rm_rf $srcdir + "/apps/app/mspec"
     rm_rf $srcdir + "/apps/app/mspec.rb"
     rm_rf $srcdir + "/apps/app/spec_runner.rb"
   end
+
 
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
 
