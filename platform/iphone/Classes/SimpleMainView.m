@@ -337,6 +337,8 @@
     NSArray *btns[] = {left, right};
     for (int i = 0, lim = sizeof(btns)/sizeof(btns[0]); i < lim; ++i) {
         NSArray *btn = btns[i];
+        if ([btn count] < 3)
+            continue;
         NSString *action = [btn objectAtIndex:0];
         NSString *label = [btn objectAtIndex:1];
         NSString *icon = [btn objectAtIndex:2];
