@@ -48,9 +48,9 @@ module Rhom
     
     def belongs_to(name, owner)
   	  BaseModel.model_params ||= {}
-  	  BaseModel.model_params['links'] ||= {}
+  	  BaseModel.model_params['associations'] ||= {}
   	  
-  	  BaseModel.model_params['links'][owner.to_s] = name.to_s
+  	  BaseModel.model_params['associations'][owner.to_s] = name.to_s
     end
     
     def index(*args)

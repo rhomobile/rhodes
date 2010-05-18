@@ -52,7 +52,7 @@ class CSyncSource
     int m_nRefreshTime;
     int m_nProgressStep;
     boolean m_bSchemaSource;
-    Hashtable<String,String> m_hashLinks;
+    Hashtable<String,String> m_hashAssociations;
     VectorPtr<net::CMultipartItem*> m_arMultipartItems;
     Vector<String>                  m_arBlobAttrs;
 
@@ -121,9 +121,9 @@ public:
 
     void processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, json::CJSONStructIterator& attrIter);//throws Exception
 
-    void parseLinks(const String& strLinks);
-    void processLinks(const String& strOldObject, const String& strNewObject);
-    void updateLink(const String& strOldObject, const String& strNewObject, const String& strAttrib);
+    void parseAssociations(const String& strAssociations);
+    void processAssociations(const String& strOldObject, const String& strNewObject);
+    void updateAssociation(const String& strOldObject, const String& strNewObject, const String& strAttrib);
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();

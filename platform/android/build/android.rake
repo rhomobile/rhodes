@@ -732,20 +732,23 @@ namespace "build" do
       args << "-L#{$rhobindir}/#{$confdir}"
       args << "-L#{$bindir}/libs/#{$confdir}"
       args << "-L#{$extensionsdir}"
-      args << "-lrhomain"
-      args << "-lruby"
-      args << "-lrhosync"
-      args << "-lrhodb"
-      args << "-lrholog"
-      args << "-lrhocommon"
-      args << "-ljson"
-      args << "-lstlport" if USE_STLPORT
-      args << "-lcurl"
-      args << "-lrhocommon" # Need to specify twice because libcurl depends on librhocommon and vice versa
-      args << "-lsqlite"
-      args << "-llog"
-      args << "-ldl"
-      args << "-lz"
+
+      rlibs = []
+      rlibs << "rhomain"
+      rlibs << "ruby"
+      rlibs << "rhosync"
+      rlibs << "rhodb"
+      rlibs << "rholog"
+      rlibs << "rhocommon"
+      rlibs << "json"
+      rlibs << "stlport" if USE_STLPORT
+      rlibs << "curl"
+      rlibs << "sqlite"
+      rlibs << "log"
+      rlibs << "dl"
+      rlibs << "z"
+
+      args += rlibs.map { |x| "-l#{x}" }
 
       stub = []
       Dir.glob($extensionsdir + "/*.a").reverse.each do |f|
@@ -759,6 +762,8 @@ namespace "build" do
         end
         stub << lparam
       end
+
+      args += rlibs.map { |x| "-l#{x}" }
 
   	  mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
       cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
