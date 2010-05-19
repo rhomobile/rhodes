@@ -66,7 +66,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         RubyProgram p = (RubyProgram) o;
 		
 		return p;*/
-		return new xruby.ServeME.main();
+		return new xruby.rhoframework.main();
 	}
 
 	public String getPlatform() {
