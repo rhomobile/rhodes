@@ -193,6 +193,10 @@ module Rho
       content = ""
       if options[:collection].nil?
         locals = localclass.new(options[:locals])
+
+        self.instance_variables.each do |ivar|
+          locals.instance_variable_set(ivar,self.instance_variable_get(ivar))
+        end
         modelpath = @request[:modelpath]
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
         content = eval_compiled_file(modelpath+'_' + partial_name.to_s+'_erb.iseq', locals.get_binding )
