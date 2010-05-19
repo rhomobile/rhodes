@@ -10,13 +10,12 @@
 
 
 @interface DateTime : NSObject {
-
 @private
-	NSString* url;
-	NSString* title;
-	long	  initialTime;
-	int		  format;
-	NSString* data;
+    NSString* url;
+    NSString* title;
+    long	  initialTime;
+    int		  format;
+    NSString* data;
 }
 
 @property (nonatomic, retain) NSString* url;
