@@ -4,10 +4,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include <rhodes.h>
+
 #include <ruby.h>
 #include <ruby/ext/rho/rhoruby.h>
-
-#include <jni.h>
 
 #include <common/RhoDefs.h>
 #include <logging/RhoLogConf.h>
@@ -17,11 +17,10 @@
 
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
-JNIEnv *jnienv();
 
 enum rho_java_class_t {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) x,
-#include <details/rhojava.inc>
+#include <rhodes/details/rhojava.inc>
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 
@@ -35,56 +34,6 @@ jmethodID getJNIClassMethod(JNIEnv *env, jclass cls, const char *name, const cha
 jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, const char *signature);
 
 VALUE convertJavaMapToRubyHash(jobject objMap);
-
-namespace details
-{
-
-template <typename T, typename U>
-struct rho_cast_helper;
-
-template <>
-struct rho_cast_helper<std::string, jstring>
-{
-    std::string operator()(JNIEnv *env, jstring );
-};
-
-template <>
-struct rho_cast_helper<jstring, char const *>
-{
-    jstring operator()(JNIEnv *env, char const *);
-};
-
-template <>
-struct rho_cast_helper<jstring, char *>
-{
-    jstring operator()(JNIEnv *env, char *s) {return rho_cast_helper<jstring, char const *>()(env, s);}
-};
-
-template <int N>
-struct rho_cast_helper<jstring, char [N]>
-{
-    jstring operator()(JNIEnv *env, char (&s)[N]) {return rho_cast_helper<jstring, char const *>()(env, &s[0]);}
-};
-
-template <>
-struct rho_cast_helper<jstring, std::string>
-{
-    jstring operator()(JNIEnv *env, std::string const &s) {return rho_cast_helper<jstring, char const *>()(env, s.c_str());}
-};
-
-} // namespace details
-
-template <typename T, typename U>
-T rho_cast(JNIEnv *env, U u)
-{
-    return details::rho_cast_helper<T, U>()(env, u);
-}
-
-template <typename T, typename U>
-T rho_cast(U u)
-{
-    return details::rho_cast_helper<T, U>()(jnienv(), u);
-}
 
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 

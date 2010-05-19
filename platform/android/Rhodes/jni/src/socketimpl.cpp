@@ -1,6 +1,6 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
-#include <jni/com_rhomobile_rhodes_socket_RhoSocketImpl.h>
+#include "rhodes/jni/com_rhomobile_rhodes_socket_RhoSocketImpl.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSocketImpl"

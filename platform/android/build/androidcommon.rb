@@ -20,11 +20,10 @@ def setup_ndk(ndkpath,apilevel)
   $ndktools = ndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"
   $ndksysroot = ndkpath + "/build/platforms/android-#{apilevel}/arch-arm"
 
-  $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
-  $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
-  $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
-  $ranlib = $ndktools + "/bin/arm-eabi-ranlib" + $exe_ext
-  $stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
+  ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+    name = tool.gsub('+', 'p')
+    eval "$#{name}bin = $ndktools + '/bin/arm-eabi-#{tool}' + $exe_ext"
+  end
 end
 
 def cc_def_args
