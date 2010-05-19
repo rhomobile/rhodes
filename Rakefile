@@ -84,7 +84,12 @@ namespace "config" do
     extpaths << File.join($app_path, "extensions")
     extpaths << "lib/extensions"
     $app_config["extpaths"] = extpaths
-    
+
+    if $app_config["build"] and $app_config["build"] == "release"
+      $debug = false
+    else
+      $debug = true
+    end
   end
 
   out = `javac -version 2>&1`
@@ -296,6 +301,16 @@ def common_bundle_start(startdir, dest)
   cp_r app + '/app',File.join($srcdir,'apps')
   cp_r app + '/public', File.join($srcdir,'apps')
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
+
+
+  unless $debug
+    rm_rf $srcdir + "/apps/app/test"
+    rm_rf $srcdir + "/apps/app/SpecRunner"
+    rm_rf $srcdir + "/apps/app/mspec"
+    rm_rf $srcdir + "/apps/app/mspec.rb"
+    rm_rf $srcdir + "/apps/app/spec_runner.rb"
+  end
+
 
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
 
