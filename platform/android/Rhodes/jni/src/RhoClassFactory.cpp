@@ -1,9 +1,9 @@
 #include <net/CURLNetRequest.h>
 #include <common/PosixThreadImpl.h>
 
-#include "RhoClassFactory.h"
-#include "SystemInfoImpl.h"
-#include "sslimpl.h"
+#include "rhodes/RhoClassFactory.h"
+#include "rhodes/SystemInfoImpl.h"
+#include "rhodes/sslimpl.h"
 
 namespace rho
 {

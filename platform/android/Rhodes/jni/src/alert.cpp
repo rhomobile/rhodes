@@ -1,6 +1,6 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
-#include <jni/com_rhomobile_rhodes_alert_Alert.h>
+#include "rhodes/jni/com_rhomobile_rhodes_alert_Alert.h"
 
 #include <common/rhoparams.h>
 #include <common/RhodesApp.h>
