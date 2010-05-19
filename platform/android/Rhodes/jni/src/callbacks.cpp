@@ -1,7 +1,8 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
-#include "RhoClassFactory.h"
-#include "ruby/ext/rho/rhoruby.h"
+#include "rhodes/RhoClassFactory.h"
+
+#include <ruby/ext/rho/rhoruby.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"

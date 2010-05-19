@@ -706,7 +706,6 @@ public class Rhodes extends Activity {
 	}
 	
 	static {
-		// Load native implementation of rhodes
-		System.loadLibrary("rhodes");
+		NativeLibraries.load();
 	}
 }
