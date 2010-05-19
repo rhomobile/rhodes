@@ -1232,6 +1232,14 @@ rb_reg_prepare_re(VALUE re, VALUE str)
     rb_encoding *enc = rb_reg_prepare_enc(re, str, 1);
 
     if (reg->enc == enc) return reg;
+//RHO
+    if (reg->enc->ruby_encoding_index == rb_ascii8bit_encindex() &&
+        enc->ruby_encoding_index == rb_usascii_encindex() )
+        return reg;
+    if (reg->enc->ruby_encoding_index == rb_usascii_encindex() &&
+        enc->ruby_encoding_index == rb_ascii8bit_encindex() )
+        return reg;
+//RHO
 
     rb_reg_check(re);
     reg = RREGEXP(re)->ptr;
