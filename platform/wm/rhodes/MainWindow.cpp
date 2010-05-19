@@ -580,8 +580,8 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
     LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
 }
 
-#if defined(_WIN32_WCE)
-std::wstring& loadLoadingHtml(std::wstring& str) {
+std::wstring& loadLoadingHtml(std::wstring& str)
+{
 	FILE *file;
 	wchar_t	buf[1024];
 
@@ -599,7 +599,14 @@ std::wstring& loadLoadingHtml(std::wstring& str) {
 	return str;
 }
 
-void writeToTheDoc(IPIEHTMLDocument2 *document) {
+void writeToTheDoc (
+#if defined(_WIN32_WCE)
+					IPIEHTMLDocument2 *document
+#else
+					IHTMLDocument2 *document
+#endif
+					)
+{
 	HRESULT hresult = S_OK;
 	VARIANT *param;
 	SAFEARRAY *sfArray;
@@ -635,8 +642,13 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
     hr = m_spIWebBrowser2->get_Document( &pHtmlDoc );
     if ( SUCCEEDED(hr) )
     {
+#if defined(_WIN32_WCE)
 		IPIEHTMLDocument2* pDoc;
 		hr = pHtmlDoc->QueryInterface(__uuidof(IPIEHTMLDocument2),  (void**)&pDoc );
+#else
+		IHTMLDocument2* pDoc;
+		hr = pHtmlDoc->QueryInterface(__uuidof(IHTMLDocument2),  (void**)&pDoc );
+#endif
         if ( SUCCEEDED(hr) )
         {
 			// Write to the document
@@ -645,7 +657,6 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
         }
     }
 }
-#endif //_WIN32_WCE
 
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
@@ -655,9 +666,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
 	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
 		LOG(TRACE) + "Show loading page";
-#if defined(_WIN32_WCE)
 		ShowLoadingPage(pDisp, pvtURL);
-#endif //_WIN32_WCE
 		m_bLoading = false; //show loading page only once
     }else
     {
