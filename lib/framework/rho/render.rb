@@ -4,11 +4,12 @@ require 'rho/rhocontroller'
 module Rho
   class RhoController
     begin
-      require 'rhodes_translator'
-      include RhodesTranslator::Translator
-      include RhodesTranslator::Binding
-      include RhodesTranslator::Validation
-
+      if File.exist? File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator.iseq')
+        require 'rhodes_translator'
+        include RhodesTranslator::Translator
+        include RhodesTranslator::Binding
+        include RhodesTranslator::Validation
+      end
     rescue Exception => e
     end
 
