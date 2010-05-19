@@ -1,6 +1,6 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
-#include <jni/com_rhomobile_rhodes_RhoMenu.h>
+#include "rhodes/jni/com_rhomobile_rhodes_RhoMenu.h"
 
 #include <common/RhodesApp.h>
 #include <common/AppMenu.h>

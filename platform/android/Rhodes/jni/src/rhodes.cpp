@@ -1,6 +1,6 @@
 #include <android/log.h>
 
-#include <jni/com_rhomobile_rhodes_Rhodes.h>
+#include "rhodes/jni/com_rhomobile_rhodes_Rhodes.h"
 
 #include <common/RhoConf.h>
 #include <logging/RhoLogConf.h>
@@ -9,14 +9,14 @@
 
 #include <sys/stat.h>
 
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
 
 const char *rho_java_class[] = {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) name,
-#include <details/rhojava.inc>
+#include <rhodes/details/rhojava.inc>
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 
