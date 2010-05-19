@@ -269,22 +269,41 @@ VALUE isAlreadyLoaded(VALUE path)
 
 RHO_INIT_LOCK(require_lock);
 
+static int String_endsWith(const char* str, const char* szSuffix)
+{
+    int nOff = 0;
+    if ( !szSuffix || !*szSuffix )
+        return 0;
+
+    nOff = strlen(str) - strlen(szSuffix);
+    if ( nOff < 0 )
+        return 0;
+
+    return strcmp(str+nOff, szSuffix) == 0;
+}
+
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
     char* szName1 = 0;
     VALUE retval = Qtrue;
 
-    RHO_LOCK(require_lock);
-    rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
-
     szName1 = RSTRING_PTR(fname);
+
+    if ( String_endsWith(szName1,".rb") ) 
+    {
+        rb_str_chop_bang(fname); rb_str_chop_bang(fname); rb_str_chop_bang(fname);
+    }
+    //rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
+
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
         strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 ||
         strcmp("digest.so",szName1)==0 ||
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
         strcmp("digest/sha1",szName1)==0 )
         goto RCompExit;
+
+    RHO_LOCK(require_lock);
 
     if ( isAlreadyLoaded(fname) == Qtrue )
         goto RCompExit;
