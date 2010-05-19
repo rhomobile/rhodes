@@ -11,7 +11,7 @@
 
 @implementation DateTimePickerDelegate
 
-@synthesize dateTime, pickerView, mainWindow, toolbar, barLabel, dateFormatter;
+@synthesize dateTime, pickerView, parentView, toolbar, barLabel, dateFormatter;
 
 - (void)dealloc
 {	
@@ -66,11 +66,11 @@
 	[doneItem release];
 }
 
-- (void)createPicker:(UIWindow*)window {
+- (void)createPicker:(UIView*)parent {
 	// Create the picker
 	if (self.pickerView == nil) {
 		self.pickerView = [[UIDatePicker alloc] initWithFrame:CGRectZero];
-		self.mainWindow = window;
+		self.parentView = parent;
 	}
 	
 	self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
@@ -111,7 +111,7 @@
 		[self createPickerBar:mainViewBounds];
 		
 		// Add picker to view
-		[window addSubview:self.pickerView];
+		[parentView addSubview:self.pickerView];
 		CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
 		CGSize pickerSize = [self.pickerView sizeThatFits:CGSizeZero];
 		CGRect startRect = CGRectMake(0.0,
@@ -140,8 +140,8 @@
 - (void)slideUpDidStop
 {
 	// the date picker has finished sliding upwards, so add toolbar
-	[self.mainWindow addSubview:self.toolbar];
-	[self.mainWindow addSubview:self.barLabel];
+	[self.parentView addSubview:self.toolbar];
+	[self.parentView addSubview:self.barLabel];
 }
 
 - (void)slideDownDidStop

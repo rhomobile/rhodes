@@ -1,6 +1,6 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
-#include <jni/com_rhomobile_rhodes_camera_Camera.h>
+#include "rhodes/jni/com_rhomobile_rhodes_camera_Camera.h"
 
 #include <common/RhodesApp.h>
 
