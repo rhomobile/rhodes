@@ -15,7 +15,7 @@
 {
 @private
 	UIDatePicker *pickerView;
-	UIWindow *mainWindow;
+	UIView *parentView;
 	UIToolbar *toolbar;
 	UILabel *barLabel;
 	DateTime *dateTime;
@@ -24,13 +24,13 @@
 
 @property (nonatomic, retain) DateTime *dateTime;
 @property (nonatomic, retain) UIDatePicker *pickerView;
-@property (nonatomic, retain) UIWindow *mainWindow;
+@property (nonatomic, retain) UIView *parentView;
 @property (nonatomic, retain) UIToolbar *toolbar;
 @property (nonatomic, retain) UILabel *barLabel;
 @property (nonatomic, retain) NSDateFormatter *dateFormatter; 
 
 - (IBAction)dateAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
-- (void)createPicker:(UIWindow*)window;
+- (void)createPicker:(UIView*)parent;
 
 @end
