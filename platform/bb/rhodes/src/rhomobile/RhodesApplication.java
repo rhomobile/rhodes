@@ -62,6 +62,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	public static final String LABEL_LOG = "Log";
 	public static final String LABEL_SEPARATOR = "separator";
 	public static final String LABEL_CLOSE = "Close";
+	public static final String LABEL_EXIT = "Exit";
 	public static final String LABEL_NONE = "none";
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -780,7 +781,8 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR) || 
     	    		   (value != null && value.equalsIgnoreCase(RhodesApplication.LABEL_SEPARATOR))) {
     	    	menuItems.addElement(separatorItem);
-    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_CLOSE)) {
+    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_CLOSE) ||
+    	    		value.equalsIgnoreCase(RhodesApplication.LABEL_EXIT)) {
     	    	setDefaultItemToMenuItems(label, closeItem);
     	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_NONE)) {
     	    	menuItems = null;
