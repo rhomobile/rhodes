@@ -2,13 +2,18 @@
 
 #include "ext/phonebook/phonebook.h" 
 #include "NativeAddressBook.h"
+#include <common/RhoStd.h>
 
 #define INITGUID
 #include <pimstore.h>
 #include <comutil.h>
 
+using namespace rho;
+using namespace rho::common;
+
 IMPLEMENT_LOGCLASS(CABRecord,"ABRecord");
 IMPLEMENT_LOGCLASS(CABOutlookRecord,"ABOutlookRecord");
+IMPLEMENT_LOGCLASS(CABSimRecord,"ABSimRecord");
 IMPLEMENT_LOGCLASS(CNativeAddressBook,"NativeAddressBook");
 
 // Note that return type is std::string, not LPCSTR!!!
@@ -179,30 +184,38 @@ int CABOutlookRecord::remove() {
 //=============================================================================
 
 CNativeAddressBook::CNativeAddressBook() :
-m_openedOutlookAB(false), m_outlookApp(NULL), m_outlookItems(NULL) {
+m_openedOutlookAB(false), m_outlookApp(NULL), m_outlookItems(NULL), m_hSim(0) {
 }
 
 CNativeAddressBook::~CNativeAddressBook() {
-	if (m_openedOutlookAB) {
+	if (m_openedOutlookAB)
 		closeOutlookAB();
-	}
+
+	if (m_hSim)
+		closeSimAB();
 }
 
 int CNativeAddressBook::openAB() {
+	initSimAB();
 	return initOutlookAB();
 }
 
 int CNativeAddressBook::getAllRecords(std::vector<CABRecord*>& records) {
+	getAllSimPhonebookRecords(records);
+
 	return getAllOutlookRecords(records);
 }
 
-CABRecord* CNativeAddressBook::getRecord(char* id) {
+CABRecord* CNativeAddressBook::getRecord(char* id) 
+{
 	char recordType[20];
 	long recordId;
 	if ( sscanf(id, "{%s %ld}", recordType, &recordId) == 2 ) {
 		LOG(INFO) + "get Record " + recordId + " of " + recordType +" type";
 		if (strcmp(recordType,"outlook")==0) {
 			return getOutlookRecord(recordId);
+		} else if (strcmp(recordType,"sim")==0) {
+			return getSimRecord(recordId);
 		}
 	}
 	return NULL;
@@ -345,4 +358,115 @@ int CNativeAddressBook::addOutlookRecord(CABOutlookRecord* record) {
 		}
 	}
 	return 1;
+}
+
+bool CNativeAddressBook::initSimAB()
+{
+	HRESULT h = SimInitialize(0, NULL, 0, &m_hSim);
+	if (SUCCEEDED(h))
+	{
+		if (SUCCEEDED(SimGetDevCaps(m_hSim, SIM_CAPSTYPE_ALL, &m_SimCaps))) 
+		{
+				return true;				
+		}
+		LOG(ERROR) + "Failed to get SIM capabilities.";
+		SimDeinitialize(m_hSim);
+		m_hSim = NULL;
+	}
+	LOG(ERROR) + "Failed to init SIM. Error=" + (int)h;
+
+	return false;
+}
+
+bool CNativeAddressBook::closeSimAB()
+{
+	SimDeinitialize(m_hSim);
+	return false;
+}
+
+CABRecord* CNativeAddressBook::getSimRecord(int id)
+{
+	CABSimRecord *pRecord;
+	HRESULT hr = 0;
+
+	pRecord = new CABSimRecord(id, m_hSim);
+
+	if(pRecord) {
+		if (SUCCEEDED(hr = pRecord->load())) {
+			return pRecord;
+		} else {
+			if (SIM_E_NOTFOUND)
+				LOG(ERROR) + "Failed to get SIM entry";
+		}
+	} else {
+		LOG(ERROR) + "No more memory";
+	}
+	return NULL;
+}
+
+int CNativeAddressBook::getAllSimPhonebookRecords(std::vector<CABRecord*>& records)
+{
+	CABSimRecord *pRecord;
+	HRESULT hr = 0;
+
+	for(DWORD i = m_SimCaps.dwMinPBIndex; i <= m_SimCaps.dwMaxPBIndex; i++) {
+		pRecord = new CABSimRecord(i, m_hSim);
+		if(pRecord) {
+			if (SUCCEEDED(hr = pRecord->load()))
+				records.push_back(pRecord);
+			else {
+				if (SIM_E_NOTFOUND)
+					break;
+				LOG(ERROR) + "Failed to get SIM entry";
+			}
+		} else {
+			LOG(ERROR) + "No more memory";
+		}
+	}
+
+	
+	return SUCCEEDED(hr) ? 1 : 0;
+}
+
+CABSimRecord::CABSimRecord(int index, HSIM hSim)
+{
+	m_hSim = hSim;
+	m_index = index;
+}
+
+CABSimRecord::~CABSimRecord()
+{
+}
+
+int CABSimRecord::load()
+{
+	SIMPHONEBOOKENTRY entry;
+	
+	String name, address;
+	HRESULT hr = SimReadPhonebookEntry(m_hSim, SIM_PBSTORAGE_SIM, m_index, &entry);
+	if (SUCCEEDED(hr))
+	{
+		char buf[128];
+		sprintf(buf,"{sim %ld}", m_index);
+		setValue(RUBY_PB_ID,buf);
+
+		setValue(RUBY_PB_FIRST_NAME, convertToStringA(entry.lpszText));
+		setValue(RUBY_PB_MAIN_MUMBER, convertToStringA(entry.lpszAddress));
+	}
+
+	return hr;
+}
+
+int CABSimRecord::save()
+{
+	return 0;
+}
+
+int CABSimRecord::remove()
+{
+	return 0;
+}
+
+void CABSimRecord::saveValues()
+{
 }
