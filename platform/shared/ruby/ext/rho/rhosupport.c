@@ -295,13 +295,14 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         rb_str_chop_bang(fname); rb_str_chop_bang(fname); rb_str_chop_bang(fname);
     }
     //rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
+    szName1 = RSTRING_PTR(fname);
 
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
         strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 ||
         strcmp("digest.so",szName1)==0 ||
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
         strcmp("digest/sha1",szName1)==0 )
-        goto RCompExit;
+        return Qtrue;
 
     RHO_LOCK(require_lock);
 
