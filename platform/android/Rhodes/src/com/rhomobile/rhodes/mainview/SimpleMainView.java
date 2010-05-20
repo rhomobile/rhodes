@@ -39,6 +39,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class SimpleMainView implements MainView {
 
@@ -108,9 +109,94 @@ public class SimpleMainView implements MainView {
 	
 	private LinearLayout view;
 	private WebView webView;
+	private LinearLayout navBar = null;
 	
 	public View getView() {
 		return view;
+	}
+	
+	private View createButton(Map<Object,Object> hash) {
+		Rhodes r = RhodesInstance.getInstance();
+		
+		Object actionObj = hash.get("action");
+		if (actionObj == null || !(actionObj instanceof String))
+			throw new IllegalArgumentException("'action' should be String");
+		
+		String action = (String)actionObj;
+		if (action.length() == 0)
+			throw new IllegalArgumentException("'action' should not be empty");
+		
+		Drawable icon = null;
+		String label = null;
+		View.OnClickListener onClick = null;
+		
+		if (action.equalsIgnoreCase("back")) {
+			icon = r.getResources().getDrawable(AndroidR.drawable.back);
+			onClick = new ActionBack();
+		}
+		else if (action.equalsIgnoreCase("forward")) {
+			icon = r.getResources().getDrawable(AndroidR.drawable.next);
+			onClick = new ActionForward();
+		}
+		else if (action.equalsIgnoreCase("home")) {
+			icon = r.getResources().getDrawable(AndroidR.drawable.home);
+			onClick = new ActionHome();
+		}
+		else if (action.equalsIgnoreCase("options")) {
+			icon = r.getResources().getDrawable(AndroidR.drawable.options);
+			onClick = new ActionOptions();
+		}
+		else if (action.equalsIgnoreCase("refresh")) {
+			icon = r.getResources().getDrawable(AndroidR.drawable.refresh);
+			onClick = new ActionRefresh();
+		}
+		else if (action.equalsIgnoreCase("close") || action.equalsIgnoreCase("exit")) {
+			icon = r.getResources().getDrawable(AndroidR.drawable.exit);
+			onClick = new ActionExit();
+		}
+		else if (action.equalsIgnoreCase("separator"))
+			return null;
+		
+		Object iconObj = hash.get("icon");
+		if (iconObj != null) {
+			if (!(iconObj instanceof String))
+				throw new IllegalArgumentException("'icon' should be String");
+			String rootPath = r.getRootPath() + "/apps/";
+			String iconPath = rootPath + (String)iconObj;
+			Bitmap bitmap = BitmapFactory.decodeFile(iconPath);
+			if (bitmap == null)
+				throw new IllegalArgumentException("Can't find icon: " + iconPath);
+			icon = new BitmapDrawable(bitmap);
+		}
+		
+		if (icon == null) {
+			Object labelObj = hash.get("label");
+			if (labelObj == null || !(labelObj instanceof String))
+				throw new IllegalArgumentException("'label' should be String");
+			label = (String)labelObj;
+		}
+		
+		if (icon == null && label == null)
+			throw new IllegalArgumentException("One of 'icon' or 'label' should be specified");
+		
+		if (onClick == null)
+			onClick = new ActionCustom(action);
+		
+		View button;
+		if (icon != null) {
+			ImageButton btn = new ImageButton(r);
+			btn.setImageDrawable(icon);
+			button = btn;
+		}
+		else {
+			Button btn = new Button(r);
+			btn.setText(label);
+			button = btn;
+		}
+		
+		button.setOnClickListener(onClick);
+		
+		return button;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -133,8 +219,6 @@ public class SimpleMainView implements MainView {
 		view.addView(bottom);
 		
 		if (params != null) {
-			String rootPath = r.getRootPath() + "/apps/";
-			
 			LinearLayout group = null;
 			// First group should have gravity LEFT
 			int gravity = Gravity.LEFT;
@@ -145,88 +229,13 @@ public class SimpleMainView implements MainView {
 				
 				Map<Object, Object> hash = (Map<Object, Object>)param;
 				
-				Object actionObj = hash.get("action");
-				if (actionObj == null || !(actionObj instanceof String))
-					throw new IllegalArgumentException("'action' should be String");
-				
-				String action = (String)actionObj;
-				if (action.length() == 0)
-					throw new IllegalArgumentException("'action' should not be empty");
-				
-				Drawable icon = null;
-				String label = null;
-				
-				View.OnClickListener onClick = null;
-				if (action.equalsIgnoreCase("back")) {
-					icon = r.getResources().getDrawable(AndroidR.drawable.back);
-					onClick = new ActionBack();
-				}
-				else if (action.equalsIgnoreCase("forward")) {
-					icon = r.getResources().getDrawable(AndroidR.drawable.next);
-					onClick = new ActionForward();
-				}
-				else if (action.equalsIgnoreCase("home")) {
-					icon = r.getResources().getDrawable(AndroidR.drawable.home);
-					onClick = new ActionHome();
-				}
-				else if (action.equalsIgnoreCase("options")) {
-					icon = r.getResources().getDrawable(AndroidR.drawable.options);
-					onClick = new ActionOptions();
-				}
-				else if (action.equalsIgnoreCase("refresh")) {
-					icon = r.getResources().getDrawable(AndroidR.drawable.refresh);
-					onClick = new ActionRefresh();
-				}
-				else if (action.equalsIgnoreCase("close") || action.equalsIgnoreCase("exit")) {
-					icon = r.getResources().getDrawable(AndroidR.drawable.exit);
-					onClick = new ActionExit();
-				}
-				else if (action.equalsIgnoreCase("separator")) {
+				View button = createButton(hash);
+				if (button == null) {
 					group = null;
 					gravity = Gravity.CENTER;
 					continue;
 				}
 				
-				Object iconObj = hash.get("icon");
-				if (iconObj != null) {
-					if (!(iconObj instanceof String))
-						throw new IllegalArgumentException("'icon' should be String");
-					String iconPath = rootPath + (String)iconObj;
-					Bitmap bitmap = BitmapFactory.decodeFile(iconPath);
-					if (bitmap == null)
-						throw new IllegalArgumentException("Can't find icon: " + iconPath);
-					icon = new BitmapDrawable(bitmap);
-				}
-				
-				if (icon == null) {
-					Object labelObj = hash.get("label");
-					if (labelObj == null || !(labelObj instanceof String))
-						throw new IllegalArgumentException("'label' should be String");
-					label = (String)labelObj;
-				}
-				
-				if (icon == null && label == null)
-					throw new IllegalArgumentException("One of 'icon' or 'label' should be specified");
-				
-				View button = null;
-				if (icon != null) {
-					ImageButton btn = new ImageButton(r);
-					btn.setImageDrawable(icon);
-					button = btn;
-				}
-				else {
-					Button btn = new Button(r);
-					btn.setText(label);
-					button = btn;
-				}
-				
-				if (button == null)
-					continue;
-				
-				if (onClick == null)
-					onClick = new ActionCustom(action);
-				
-				button.setOnClickListener(onClick);
 				button.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
 				if (group == null) {
 					group = new LinearLayout(r);
@@ -288,4 +297,42 @@ public class SimpleMainView implements MainView {
 		webView.loadData(data, "text/html", "utf-8");
 	}
 
+	public void setNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
+		removeNavBar();
+		
+		Rhodes r = RhodesInstance.getInstance();
+		
+		LinearLayout top = new LinearLayout(r);
+		top.setOrientation(LinearLayout.HORIZONTAL);
+		top.setBackgroundColor(Color.GRAY);
+		top.setGravity(Gravity.CENTER);
+		top.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
+		
+		View leftButton = createButton(left);
+		leftButton.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1));
+		top.addView(leftButton);
+		
+		TextView label = new TextView(r);
+		label.setText(title);
+		label.setGravity(Gravity.CENTER);
+		label.setTextSize((float)30.0);
+		label.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 2));
+		top.addView(label);
+		
+		if (right != null) {
+			View rightButton = createButton(right);
+			rightButton.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1));
+			top.addView(rightButton);
+		}
+		
+		navBar = top;
+		view.addView(navBar, 0);
+	}
+	
+	public void removeNavBar() {
+		if (navBar == null)
+			return;
+		view.removeViewAt(0);
+		navBar = null;
+	}
 }
