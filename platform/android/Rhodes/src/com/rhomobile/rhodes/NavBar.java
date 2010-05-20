@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes;
 
+import java.util.Map;
 import java.util.Vector;
 
 public class NavBar {
@@ -9,21 +10,37 @@ public class NavBar {
 	private static class CreateTask implements Runnable {
 		
 		private String title;
-		private Vector<Object> left;
-		private Vector<Object> right;
+		private Map<Object, Object> left;
+		private Map<Object, Object> right;
 		
-		public CreateTask(Vector<Object> p) {
-			// TODO: implement
+		@SuppressWarnings("unchecked")
+		public CreateTask(Map<Object, Object> p) {
+			Object titleObj = p.get("title");
+			if (titleObj == null || !(titleObj instanceof String))
+				throw new IllegalArgumentException("'title' should be String");
+			title = (String)titleObj;
+			
+			Object leftObj = p.get("left");
+			if (leftObj == null || !(leftObj instanceof Map<?,?>))
+				throw new IllegalArgumentException("'left' - expected Hash");
+			left = (Map<Object,Object>)leftObj;
+			
+			Object rightObj = p.get("right");
+			if (rightObj != null && !(rightObj instanceof Map<?,?>))
+				throw new IllegalArgumentException("'right' - expected Hash");
+			right = (Map<Object,Object>)rightObj;
 		}
 		
 		public void run() {
-			// TODO: implement
+			Rhodes r = RhodesInstance.getInstance();
+			r.getMainView().setNavBar(title, left, right);
 		}
 	};
 	
 	private static class RemoveTask implements Runnable {
 		public void run() {
-			// TODO: implement
+			Rhodes r = RhodesInstance.getInstance();
+			r.getMainView().removeNavBar();
 		}
 	};
 	
@@ -31,7 +48,7 @@ public class NavBar {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
-	public static void create(Vector<Object> params) {
+	public static void create(Map<Object, Object> params) {
 		try {
 			Rhodes.performOnUiThread(new CreateTask(params), false);
 		}
