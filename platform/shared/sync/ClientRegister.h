@@ -28,7 +28,7 @@ class CClientRegister : public common::CRhoThread
     unsigned int                           m_nPollInterval;
 public:
     static CClientRegister* Create(common::IRhoClassFactory* factory,const char* device_pin);
-    //static void Destroy();
+    static void Destroy();
 	static CClientRegister* getInstance() { return m_pInstance; }
 	
 	virtual void run();	
@@ -55,6 +55,7 @@ extern "C" {
 #endif //__cplusplus
 	
 void rho_clientregister_create(const char* szDevicePin);
+void rho_clientregister_destroy();
 
 #ifdef __cplusplus
 };

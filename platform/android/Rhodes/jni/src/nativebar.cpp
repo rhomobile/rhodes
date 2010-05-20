@@ -1,4 +1,4 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #include <common/rhoparams.h>
 

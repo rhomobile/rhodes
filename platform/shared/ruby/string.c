@@ -5822,7 +5822,7 @@ chopped_length(VALUE str)
  *  <code>String#chomp!</code>.
  */
 
-static VALUE
+/*static*/ VALUE
 rb_str_chop_bang(VALUE str)
 {
     if (RSTRING_LEN(str) > 0) {
