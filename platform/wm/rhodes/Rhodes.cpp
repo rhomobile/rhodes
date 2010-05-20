@@ -8,6 +8,7 @@
 #include "rho/rubyext/GeoLocationImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "net/NetRequestImpl.h"
+#include "sync/ClientRegister.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -39,9 +40,6 @@ HREGNOTIFY g_hNotify = NULL;
 #define SN_CONNECTIONSNETWORKCOUNT_VALUE TEXT("Count")
 
 #endif
-
-//BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam);
-extern "C" void rho_clientregister_create(const char* szDevicePin);
 
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
@@ -155,6 +153,7 @@ public :
 			return S_FALSE;
 	    }
 
+        rho::common::CRhodesApp::Create(m_strRootPath );
 
         // Create the main application window
         m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
@@ -163,12 +162,8 @@ public :
             return S_FALSE;
         }
 
-        rho::common::CRhodesApp::Create(m_strRootPath );
         RHODESAPP().startApp();
 
-       // m_pServerHost = new CServerHost();
-        // Starting local server
-        //m_pServerHost->Start(m_appWindow.m_hWnd);
         // Navigate to the "loading..." page
 		m_appWindow.Navigate2(_T("about:blank"));
         // Show the main application window
@@ -206,16 +201,16 @@ public :
                 DispatchMessage(&msg);
             }
         }
-        // Stop local server
-        //m_pServerHost->Stop();
-        //delete m_pServerHost;
-        //m_pServerHost = NULL;
 
 #if defined(OS_WINCE)
         CGPSController* pGPS = CGPSController::Instance();
         pGPS->DeleteInstance();
 #endif
         rho_ringtone_manager_stop();
+
+#if !defined(_WIN32_WCE)
+        rho_clientregister_destroy();
+#endif
 
         rho::common::CRhodesApp::Destroy();
 
@@ -246,7 +241,6 @@ public :
 
 private:
     CMainWindow m_appWindow;
-    //CServerHost* m_pServerHost;
     rho::String m_strRootPath;
 	int m_nRestarting;
 };
