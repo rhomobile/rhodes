@@ -148,10 +148,10 @@ class RhomDbAdapter
         if value.nil? or value == 'NULL'
           "NULL"
         elsif value.is_a?(String)
-          s = value.gsub("'","''")
+          s = value.gsub(/'/,"''")
           "'#{s}'"
         else
-          s = value.to_s.gsub("'","''")
+          s = value.to_s.gsub(/'/,"''")
           "'#{s}'"
         end
       end
