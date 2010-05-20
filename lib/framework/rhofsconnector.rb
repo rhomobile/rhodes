@@ -1,1 +1,1 @@
-require 'rho/rhofsconnector.rb'
+require 'rho/rhofsconnector'
