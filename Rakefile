@@ -344,8 +344,9 @@ def create_manifest
     
     if File.basename(path) == "config.rb"
         puts "******ERROR enumerating models***********"
-        puts "config.rb file should be deleted: '#{path}' "
-        puts "Use model definition: http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models_2.0"
+        puts "Model definition has changed and doesn't use config.rb anymore: '#{path}' "
+        puts "You should replace config.rb with <model_name>.rb file as described: "
+        puts "http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models_2.0"
         puts "*****************************************"
         exit 1
     end
