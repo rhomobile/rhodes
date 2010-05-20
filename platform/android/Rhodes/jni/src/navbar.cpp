@@ -10,7 +10,7 @@ RHO_GLOBAL void create_navbar(rho_param *p)
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_NAVBAR);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(Ljava/util/Vector;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(Ljava/util/Map;)V");
     if (!mid) return;
 
     jobject paramsObj = RhoValueConverter(env).createObject(p);
