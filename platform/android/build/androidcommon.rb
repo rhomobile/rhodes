@@ -16,9 +16,15 @@ else
 end
 
 def setup_ndk(ndkpath,apilevel)
-  $ndkgccver = "4.2.1"
-  $ndktools = ndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"
-  $ndksysroot = ndkpath + "/build/platforms/android-#{apilevel}/arch-arm"
+  $ndkgccver = "unknown"
+  ["4.4.0", "4.2.1"].each do |ver|
+    tools = File.join(ndkpath, "build/prebuilt", $ndkhost, "arm-eabi-#{ver}")
+    next unless File.directory? tools
+    $ndkgccver = ver
+    $ndktools = tools
+    break
+  end
+  $ndksysroot = File.join(ndkpath, "build/platforms/android-#{apilevel}/arch-arm")
 
   ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
     name = tool.gsub('+', 'p')
@@ -166,7 +172,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   args << "#{$ndksysroot}/usr/lib/libstdc++.so"
   args << "#{$ndksysroot}/usr/lib/libsupc++.so" unless USE_STLPORT
-  args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a"
+  args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/libgcc.a"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
   cc_run($gccbin, args)
