@@ -486,7 +486,7 @@ VALUE callFramework(VALUE hashReq) {
 
     rb_gc_register_mark_object(callres);
     //TBD: need to cleanup memory
-    rb_gc();
+    //rb_gc();
 
     return callres;
 }
@@ -505,7 +505,7 @@ VALUE callServeIndex(char* index_name) {
     rb_gc_register_mark_object(callres);
 
     //TBD: need to cleanup memory
-    rb_gc();
+    //rb_gc();
     
     return callres;
 }
