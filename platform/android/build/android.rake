@@ -708,13 +708,13 @@ namespace "build" do
         f.puts "package com.rhomobile.rhodes;"
         f.puts "public class NativeLibraries {"
         f.puts "  public static void load() {"
-        f.puts "    // Load native implementation of rhodes"
-        f.puts "    System.loadLibrary(\"rhodes\");"
         f.puts "    // Load native .so libraries"
         Dir.glob($extensionsdir + "/lib*.so").each do |lib|
           libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
           f.puts "    System.loadLibrary(\"#{libname}\");"
         end
+        f.puts "    // Load native implementation of rhodes"
+        f.puts "    System.loadLibrary(\"rhodes\");"
         f.puts "  }"
         f.puts "};"
       end
@@ -772,7 +772,7 @@ namespace "build" do
 
       args += rlibs
 
-      extlibs = Dir.glob($extensionsdir + "/*.a") + Dir.glob($extensionsdir + "/*.so")
+      extlibs = Dir.glob($extensionsdir + "/lib*.a") + Dir.glob($extensionsdir + "/lib*.so")
       stub = []
       extlibs.reverse.each do |f|
         lparam = "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.(a|so)$/,"")
@@ -938,8 +938,16 @@ namespace "package" do
     rm_rf File.join($tmpdir, "lib")
     mkdir_p File.join($tmpdir, "lib/armeabi")
     cp_r File.join($bindir, "libs", $confdir, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
-    cc_run($stripbin, [$tmpdir + "/lib/armeabi/librhodes.so"])
-    args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
+    # Add extensions .so libraries
+    Dir.glob($extensionsdir + "/lib*.so").each do |lib|
+      cp_r lib, File.join($tmpdir, "lib/armeabi")
+    end
+    args = ["add", resourcepkg]
+    # Strip them all to decrease size
+    Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
+      cc_run($stripbin, [lib])
+      args << "lib/armeabi/#{File.basename(lib)}"
+    end
     puts Jake.run($aapt, args, $tmpdir)
     err = $?
     rm_rf $tmpdir + "/lib"
