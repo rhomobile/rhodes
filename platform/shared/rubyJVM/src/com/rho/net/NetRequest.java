@@ -110,6 +110,14 @@ public class NetRequest
 	    }
 	}
 	
+	private String getResponseEncoding() throws Exception
+	{
+		if ( m_OutHeaders != null )
+			return (String)m_OutHeaders.get("content-type");
+		
+		return "";
+	}
+	
 	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
     {
 		String strRespBody = null;
@@ -159,6 +167,9 @@ public class NetRequest
 			
 			is = m_connection.openInputStream();
 			LOG.INFO("openInputStream done");
+
+			readHeaders(headers);
+			copyHashtable(m_OutHeaders, headers);
 			
 			if (code != IHttpConnection.HTTP_OK) 
 			{
@@ -168,7 +179,7 @@ public class NetRequest
 				
 				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 				{
-					strRespBody = readFully(is);
+					strRespBody = readFully(is, getResponseEncoding());
 					
 					if ( code == IHttpConnection.HTTP_MOVED_TEMPORARILY ||
 						 code == IHttpConnection.HTTP_MOVED_PERMANENTLY )
@@ -181,13 +192,11 @@ public class NetRequest
 				long len = m_connection.getLength();
 				LOG.INFO("fetchRemoteData data size:" + len );
 		
-				strRespBody = readFully(is);
+				strRespBody = readFully(is, getResponseEncoding());
 				
 				LOG.INFO("fetchRemoteData data readFully.");
 			}
 
-			readHeaders(headers);
-			copyHashtable(m_OutHeaders, headers);
 		}finally
 		{
 			if ( is != null )
@@ -392,6 +401,9 @@ public class NetRequest
 			code = m_connection.getResponseCode();
 		
 			LOG.INFO("getResponseCode : " + code);
+
+			readHeaders(headers);
+			copyHashtable(m_OutHeaders, headers);
 			
 			if (code != IHttpConnection.HTTP_OK) 
 			{
@@ -400,19 +412,18 @@ public class NetRequest
 					oSession.logout();
 				
 				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					strRespBody = readFully(is);
+					strRespBody = readFully(is, getResponseEncoding());
 				
 			}else
 			{
 				long len = m_connection.getLength();
 				LOG.INFO("fetchRemoteData data size:" + len );
 		
-				strRespBody = readFully(is);
+				strRespBody = readFully(is, getResponseEncoding());
 				
 				LOG.INFO("fetchRemoteData data readFully.");
 			}
 			
-			readHeaders(headers);			
 		}finally{
 			try{
 				if ( is != null )
@@ -425,7 +436,6 @@ public class NetRequest
 			}catch(IOException exc2){}
 		}
 		
-		copyHashtable(m_OutHeaders, headers);
 		return makeResponse(strRespBody, code );
     }
 	
@@ -508,6 +518,7 @@ public class NetRequest
 			LOG.INFO("getResponseCode : " + code);
 			
 			m_nCurDownloadSize = 0;
+			readHeaders(headers);
 			
 			if ( code == IHttpConnection.HTTP_RANGENOTSATISFY )
 				code = IHttpConnection.HTTP_PARTIAL_CONTENT;
@@ -522,7 +533,7 @@ public class NetRequest
 					if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 					{
 						is = m_connection.openInputStream();
-						strRespBody = readFully(is);
+						strRespBody = readFully(is, getResponseEncoding());
 					}
 				}else
 				{
@@ -549,8 +560,6 @@ public class NetRequest
 				}
 				
 			}
-
-			readHeaders(headers);
 		}finally
 		{
 			if ( is != null )
@@ -644,17 +653,22 @@ public class NetRequest
 		return strRes;
 	}
 
-	private final String readFully(InputStream in) throws Exception 
+	private final String readFully(InputStream in, String strContType) throws Exception 
 	{
 		String strRes = "";
 		byte[]  byteBuffer = new byte[1024*4];
-		
+		boolean bUTF8 = strContType != null && strContType.indexOf("UTF-8")>=0;
+
 		int nRead = 0;
 		do{
 			nRead = in.read(byteBuffer);
 			if (nRead>0)
 			{
-				String strTemp = new String(byteBuffer,0,nRead);
+				String strTemp;
+				if (bUTF8)
+					strTemp = new String(byteBuffer,0,nRead, "UTF-8");
+				else	
+					strTemp = new String(byteBuffer,0,nRead);
 				strRes += strTemp;
 			}
 		}while( nRead > 0 );
