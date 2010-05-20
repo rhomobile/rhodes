@@ -585,10 +585,16 @@ std::wstring& loadLoadingHtml(std::wstring& str)
 	FILE *file;
 	wchar_t	buf[1024];
 
-    rho::String fname = RHODESAPP().getLoadingPagePath(); 
+	rho::String fname = RHODESAPP().getLoadingPagePath();
+
+	size_t pos = fname.find("file://");
+	if (pos == 0 && pos != std::string::npos)
+		fname.erase(0, 7);
+
 	file = fopen(fname.c_str(), "r");
 
 	if(file==NULL) {
+		LOG(ERROR) + "failed to open loading page \"" + fname + "\"";
 		str.append(L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>");
 	} else {
 		while(fgetws(buf, sizeof(buf), file) != NULL) {
