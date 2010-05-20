@@ -23,13 +23,13 @@ CClientRegister* CClientRegister::m_pInstance = 0;
 	return m_pInstance;
 }
 
-/*static void CClientRegister::Destroy()
+/*static*/ void CClientRegister::Destroy()
 {
     if ( m_pInstance )
         delete m_pInstance;
 
     m_pInstance = 0;
-}*/
+}
 
 CClientRegister::CClientRegister(common::IRhoClassFactory* factory,const char* device_pin) : CRhoThread(factory) 
 {
@@ -56,7 +56,7 @@ CClientRegister::~CClientRegister()
 void CClientRegister::run() 
 {	
     LOG(INFO)+"ClientRegister start";
-	while(true) 
+	while(!isStopped()) 
 	{
         if ( CSyncThread::getInstance() != null )
 		{
