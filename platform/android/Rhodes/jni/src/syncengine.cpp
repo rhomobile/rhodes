@@ -1,7 +1,7 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #include <sync/SyncThread.h>
-#include "RhoClassFactory.h"
+#include "rhodes/RhoClassFactory.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSync"
