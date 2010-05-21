@@ -545,6 +545,7 @@ static void Init_RhoLog(){
 static VALUE rb_RhoModule;
 static VALUE rb_RhoJSON;
 extern VALUE rho_json_parse(VALUE,VALUE);
+extern VALUE rho_json_quote_value(VALUE,VALUE);
 static void Init_RhoJSON()
 {
 
@@ -554,6 +555,7 @@ static void Init_RhoJSON()
     rb_RhoJSON = rb_define_class_under(rb_RhoModule, "JSON", rb_cObject);
 
     rb_define_singleton_method(rb_RhoJSON, "parse", rho_json_parse, 1);
+    rb_define_singleton_method(rb_RhoJSON, "quote_value", rho_json_quote_value, 1);
 }
 
 const char* rho_ruby_internal_getMessageText(const char* szName)
