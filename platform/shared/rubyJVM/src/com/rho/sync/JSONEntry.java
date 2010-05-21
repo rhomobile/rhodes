@@ -26,6 +26,11 @@ class JSONEntry
 		return m_object.has(name);
 	}
 	
+	static String quoteValue(String str)
+	{
+		return JSONObject.quote(str);
+	}
+	
 	String getString(String name)throws JSONException
 	{
 	    String szRes = null;

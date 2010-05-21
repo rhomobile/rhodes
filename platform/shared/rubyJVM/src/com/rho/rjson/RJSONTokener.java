@@ -225,6 +225,23 @@ public class RJSONTokener extends JSONTokener
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
+		});
+		
+		klass.getSingletonClass().defineMethod("quote_value", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+			{
+				try {
+					String str = arg.toStr();
+					
+					String strRes = JSONObject.quote(str);
+					
+					return ObjectFactory.createString(strRes);
+				} catch(Exception e) {
+					LOG.ERROR("parse failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
 		});		
+		
 	}    
 }
