@@ -20,6 +20,7 @@
  */
 package com.rhomobile.rhodes;
 
+import android.net.Uri;
 import android.webkit.CookieManager;
 
 public class WebView {
@@ -85,7 +86,8 @@ public class WebView {
 		private String cookie;
 		
 		public SetCookieTask(String u, String c) {
-			url = u;
+			Uri uri = Uri.parse(u);
+			url = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
 			cookie = c;
 		}
 		
