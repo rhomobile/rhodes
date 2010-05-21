@@ -14,23 +14,21 @@
 @interface DateTimePickerDelegate : RhoDelegate <UIPickerViewDelegate>
 {
 @private
-	UIDatePicker *pickerView;
-	UIWindow *mainWindow;
-	UIToolbar *toolbar;
-	UILabel *barLabel;
-	DateTime *dateTime;
-	NSDateFormatter *dateFormatter;
+    UIDatePicker *pickerView;
+    UIView *parentView;
+    UIToolbar *toolbar;
+    UILabel *barLabel;
+    DateTime *dateTime;
 }
 
 @property (nonatomic, retain) DateTime *dateTime;
 @property (nonatomic, retain) UIDatePicker *pickerView;
-@property (nonatomic, retain) UIWindow *mainWindow;
+@property (nonatomic, retain) UIView *parentView;
 @property (nonatomic, retain) UIToolbar *toolbar;
 @property (nonatomic, retain) UILabel *barLabel;
-@property (nonatomic, retain) NSDateFormatter *dateFormatter; 
 
 - (IBAction)dateAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
-- (void)createPicker:(UIWindow*)window;
+- (void)createPicker:(UIView*)parent;
 
 @end

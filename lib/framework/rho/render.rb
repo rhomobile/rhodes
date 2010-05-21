@@ -4,11 +4,12 @@ require 'rho/rhocontroller'
 module Rho
   class RhoController
     begin
-      require 'rhodes_translator'
-      include RhodesTranslator::Translator
-      include RhodesTranslator::Binding
-      include RhodesTranslator::Validation
-
+      if File.exist? File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator.iseq')
+        require 'rhodes_translator'
+        include RhodesTranslator::Translator
+        include RhodesTranslator::Binding
+        include RhodesTranslator::Validation
+      end
     rescue Exception => e
     end
 
@@ -192,6 +193,10 @@ module Rho
       content = ""
       if options[:collection].nil?
         locals = localclass.new(options[:locals])
+
+        self.instance_variables.each do |ivar|
+          locals.instance_variable_set(ivar,self.instance_variable_get(ivar))
+        end
         modelpath = @request[:modelpath]
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
         content = eval_compiled_file(modelpath+'_' + partial_name.to_s+'_erb.iseq', locals.get_binding )

@@ -1,6 +1,11 @@
 begin
 
-    require 'rational'
+    if defined? RHO_ME
+	    require 'rationalME'
+    else	
+        require 'rational'
+    end
+    
     require 'rhom/rhom_db_adapter'
 	
     require 'rhom/rhom_object'
@@ -13,6 +18,8 @@ begin
 
     require 'rho/rhoapplication'
 
+    require 'indifferent_access'
+    require 'rho/rhosupport'    
     require 'rho/rhocontroller'    
     require 'rho/render'
 

@@ -62,6 +62,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -362,6 +363,16 @@ public class Rhodes extends Activity {
 					getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
 				}
 				super.onProgressChanged(view, newProgress);
+			}
+			
+			@Override
+			public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+				return false;
+			}
+			
+			@Override
+			public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+				return false;
 			}
 		});
 
@@ -706,7 +717,6 @@ public class Rhodes extends Activity {
 	}
 	
 	static {
-		// Load native implementation of rhodes
-		System.loadLibrary("rhodes");
+		NativeLibraries.load();
 	}
 }

@@ -1,4 +1,4 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Phonebook"

@@ -38,7 +38,11 @@ static Rhodes *instance = NULL;
 }
 
 + (void)setStatusBarHidden:(BOOL)v {
+#ifdef __IPHONE_3_2
+    [[Rhodes application] setStatusBarHidden:v withAnimation:UIStatusBarAnimationFade];
+#else
     [[Rhodes application] setStatusBarHidden:v animated:YES];
+#endif
     [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
 }
 
@@ -133,11 +137,15 @@ static Rhodes *instance = NULL;
 }
 
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
-    [cookies setObject:cookie forKey:url];
+    NSURL *parsed = [NSURL URLWithString:url];
+    NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
+    [cookies setObject:cookie forKey:basicUrl];
 }
 
 - (NSString*)cookie:(NSString*)url {
-    NSString *c = [cookies objectForKey:url];
+    NSURL *parsed = [NSURL URLWithString:url];
+    NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
+    NSString *c = [cookies objectForKey:basicUrl];
     return c;
 }
 
@@ -146,7 +154,7 @@ static Rhodes *instance = NULL;
     [dateTimePickerDelegate setPostUrl:dateTime.url];
     //[self normalizeUrl:dateTime.url]];
     @try {
-        [dateTimePickerDelegate createPicker:window];
+        [dateTimePickerDelegate createPicker:[mainView view]];
     } @catch (NSException* theException) {
         RAWLOG_ERROR2("startDateTimePickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
     }

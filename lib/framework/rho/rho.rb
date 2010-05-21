@@ -91,7 +91,7 @@ module Rho
     
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
-        require RhoApplication::get_app_path(appname)+'application'
+        require 'application' #RhoApplication::get_app_path(appname)+'application'
         APPLICATIONS[appname] = Object.const_get('AppApplication').new
       end
       APPLICATIONS[appname]
@@ -111,10 +111,14 @@ module Rho
 
             modelClass = Object.const_get(modelName)
             if modelClass
-                Rho::RhoConfig::add_source(modelName,modelClass.get_model_params())
-                modelClass.reset_model_params()
+                if modelClass.respond_to?( :get_model_params )
+                    Rho::RhoConfig::add_source(modelName,modelClass.get_model_params())
+                    modelClass.reset_model_params()
+                else
+                    puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
+                end    
             else
-                puts "Error load model : #{modelClass}"
+                puts "ERROR: cannot load model : #{modelClass}"
             end    
         end
         
