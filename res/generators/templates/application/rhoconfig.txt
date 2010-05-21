@@ -18,6 +18,6 @@ ExcludeLogCategories =
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
 
-# Sync server url.  This must be the full path to your sources.  
+# Sync server url. Typically this will look like 'http://<hostname>:<port>/application'
 # For example: 'http://localhost:9292/application'
 syncserver = '<%=syncserver%>'

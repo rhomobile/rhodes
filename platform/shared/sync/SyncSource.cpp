@@ -42,7 +42,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
 
     m_nCurPageCount = 0;
     m_nInserted = 0;
-    m_nDeleted = 0;
+    m_nDeleted = 0;                                     
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
 
@@ -176,7 +176,7 @@ void CSyncSource::doSyncClientChanges()
 
     m_arMultipartItems.removeAllElements();
     m_arBlobAttrs.removeAllElements();
-    String strBody = "{\"source_name\":\"" + getName() + "\",\"client_id\":\"" + getSync().getClientID() + "\"";
+    String strBody = "{\"source_name\":" + CJSONEntry::quoteValue(getName()) + ",\"client_id\":" + CJSONEntry::quoteValue(getSync().getClientID());
     boolean bSend = false;
     int i = 0;
     for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
@@ -193,7 +193,7 @@ void CSyncSource::doSyncClientChanges()
                 if ( strBlobAttrs.length() > 0 )   
                     strBlobAttrs += ",";
 
-                strBlobAttrs += "\"" + m_arBlobAttrs.elementAt(j) + "\"";
+                strBlobAttrs += CJSONEntry::quoteValue(m_arBlobAttrs.elementAt(j));
             }
 
             if ( strBlobAttrs.length() > 0 )
@@ -252,6 +252,20 @@ void CSyncSource::doSyncClientChanges()
     m_arMultipartItems.removeAllElements();
     m_arBlobAttrs.removeAllElements();
 }
+/*
+static void escapeDoubleQuotes(String& str)
+{
+    const char* szQuote = strchr(str.c_str(), '\"');
+    while(szQuote)
+    {
+        int nPos = szQuote - str.c_str();
+        str.insert(nPos, 1, '\\');
+        if ( nPos+2 < str.length() )
+            szQuote = strchr(str.c_str()+nPos+2, '\"');
+        else
+            szQuote = 0;
+    }
+}*/
 
 //{"source_name":"SampleAdapter","client_id":1,"create":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 //{"source_name":"SampleAdapter","client_id":1,"update":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
@@ -303,7 +317,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
             }
 
             bFirst = true;
-            strBody += "\"" + strObject + "\"";
+            strBody += CJSONEntry::quoteValue(strObject);
             strCurObject = strObject;
         }
             
@@ -315,7 +329,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
             if ( bFirst )
                 strBody += ":{";
 
-            strBody += "\"" + strAttrib + "\":\"" + value + "\"";
+            strBody += CJSONEntry::quoteValue(strAttrib) + ":" + CJSONEntry::quoteValue(value);
             bFirst = false;
         }
     }

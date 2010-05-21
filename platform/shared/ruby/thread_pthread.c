@@ -17,6 +17,9 @@
 #include <sys/resource.h>
 #endif
 
+void *rho_nativethread_start();
+void rho_nativethread_end(void *arg);
+
 /*static*/ void native_mutex_lock(pthread_mutex_t *lock);
 /*static*/ void native_mutex_unlock(pthread_mutex_t *lock);
 static int native_mutex_trylock(pthread_mutex_t *lock);
@@ -350,8 +353,10 @@ thread_start_func_1(void *th_ptr)
 	rb_thread_t *th = th_ptr;
 	VALUE stack_start;
 
+  void *p = rho_nativethread_start();
 	/* run */
 	thread_start_func_2(th, &stack_start, rb_ia64_bsp());
+  rho_nativethread_end(p);
     }
 #if USE_THREAD_CACHE
     if (1) {

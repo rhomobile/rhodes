@@ -218,5 +218,13 @@ public class TabbedMainView implements MainView {
 	public void loadData(String data, int index) {
 		getView(index).loadData(data, 0);
 	}
+	
+	public void setNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
+		getView(activeTab()).setNavBar(title, left, right);
+	}
+	
+	public void removeNavBar() {
+		getView(activeTab()).removeNavBar();
+	}
 
 }

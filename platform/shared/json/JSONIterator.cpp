@@ -1,6 +1,7 @@
 #include "JSONIterator.h"
 
 #include "json/json.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #if defined(OS_WINCE) || defined (OS_WINDOWS)
 #define rho_atoi64 _atoi64
@@ -242,5 +243,70 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
     return CJSONEntry(obj);
 }
 
+/*static*/ String CJSONEntry::quoteValue(const String& strValue)
+{
+    int pos = 0, start_offset = 0;
+    unsigned char c;
+    String strRes = "\"";
+    const char* str = strValue.c_str();
+    do 
+    {
+        c = str[pos];
+        switch(c) {
+        case '\0':
+            break;
+        case '\b':
+        case '\n':
+        case '\r':
+        case '\t':
+        case '"':
+        case '\\':
+        case '/':
+            if(pos - start_offset > 0)
+                strRes.append(str + start_offset, pos - start_offset);
+
+            if(c == '\b') strRes.append( "\\b", 2 );
+            else if(c == '\n') strRes.append( "\\n", 2);
+            else if(c == '\r') strRes.append( "\\r", 2);
+            else if(c == '\t') strRes.append( "\\t", 2);
+            else if(c == '"') strRes.append( "\\\"", 2);
+            else if(c == '\\') strRes.append( "\\\\", 2);
+            else if(c == '/') strRes.append( "\\/", 2);
+
+            start_offset = ++pos;
+            break;
+        default:
+            if(c < ' ') 
+            {
+                if(pos - start_offset > 0)
+                    strRes.append( str + start_offset, pos - start_offset);
+
+                char buf[128];
+                int nSize = snprintf(buf, 128, "\\u00%c%c", json_hex_chars[c >> 4], json_hex_chars[c & 0xf]);
+                strRes.append(buf, nSize);
+
+                start_offset = ++pos;
+            }else 
+                pos++;
+        }
+    } while(c);
+
+    if ( strRes.length() == 1 )
+        return "\"" + strValue + "\"";
+
+    if ( pos - start_offset > 0 )
+        strRes.append( str + start_offset, pos - start_offset);
+
+    strRes.append("\"");
+    return strRes;
 }
+
+}
+}
+
+extern "C" VALUE rho_json_quote_value(VALUE v,VALUE str)
+{
+    rho::String strRes = rho::json::CJSONEntry::quoteValue(getStringFromValue(str));
+
+    return rho_ruby_create_string(strRes.c_str());
 }

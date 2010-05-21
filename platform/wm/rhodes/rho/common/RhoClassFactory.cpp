@@ -24,5 +24,10 @@ void rho_clientregister_create(const char* szDevicePin)
     rho::sync::CClientRegister::Create(rho::common::createClassFactory(), szDevicePin);
 }
 
+void rho_clientregister_destroy()
+{
+    rho::sync::CClientRegister::Destroy();
+}
+
 };
 

@@ -298,6 +298,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	{
 #ifdef OS_WINDOWS
 		*resValue = rho_ruby_create_string("Win32");
+        return 1;
 #else
 		HKEY hKey;
 		if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Ident"),
