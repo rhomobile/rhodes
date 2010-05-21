@@ -163,7 +163,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-z,defs"
   args << "-shared"
   args << "-fPIC"
-  args << "-Wl,-soname,#{outname}"
+  args << "-Wl,-soname,#{File.basename(outname)}"
   args << "-o"
   args << outname
   args += objects
@@ -172,9 +172,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   args << "#{$ndksysroot}/usr/lib/libstdc++.so"
   args << "#{$ndksysroot}/usr/lib/libsupc++.so" unless USE_STLPORT
-  args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/libgcc.a"
+  libgccdir = File.join($ndktools, "lib/gcc/arm-eabi", $ndkgccver)
+  libgccdir = File.join(libgccdir, "interwork") if $ndkgccver == "4.2.1"
+  args << "#{libgccdir}/libgcc.a" if $ndkgccver != "4.2.1"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
+  args << "#{libgccdir}/libgcc.a" if $ndkgccver == "4.2.1"
   cc_run($gccbin, args)
 end
 
