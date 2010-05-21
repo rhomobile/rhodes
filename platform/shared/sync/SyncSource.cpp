@@ -253,6 +253,20 @@ void CSyncSource::doSyncClientChanges()
     m_arBlobAttrs.removeAllElements();
 }
 
+static void escapeDoubleQuotes(String& str)
+{
+    const char* szQuote = strchr(str.c_str(), '\"');
+    while(szQuote)
+    {
+        int nPos = szQuote - str.c_str();
+        str.insert(nPos, 1, '\\');
+        if ( nPos+2 < str.length() )
+            szQuote = strchr(str.c_str()+nPos+2, '\"');
+        else
+            szQuote = 0;
+    }
+}
+
 //{"source_name":"SampleAdapter","client_id":1,"create":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 //{"source_name":"SampleAdapter","client_id":1,"update":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 //{"source_name":"SampleAdapter","client_id":1,"delete":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
@@ -315,6 +329,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
             if ( bFirst )
                 strBody += ":{";
 
+            escapeDoubleQuotes(value);
             strBody += "\"" + strAttrib + "\":\"" + value + "\"";
             bFirst = false;
         }
