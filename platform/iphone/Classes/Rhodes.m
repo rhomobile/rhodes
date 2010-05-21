@@ -137,11 +137,15 @@ static Rhodes *instance = NULL;
 }
 
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
-    [cookies setObject:cookie forKey:url];
+    NSURL *parsed = [NSURL URLWithString:url];
+    NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
+    [cookies setObject:cookie forKey:basicUrl];
 }
 
 - (NSString*)cookie:(NSString*)url {
-    NSString *c = [cookies objectForKey:url];
+    NSURL *parsed = [NSURL URLWithString:url];
+    NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
+    NSString *c = [cookies objectForKey:basicUrl];
     return c;
 }
 
