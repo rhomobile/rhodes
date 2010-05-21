@@ -272,7 +272,7 @@ class SyncSource
 
 	    m_arMultipartItems.removeAllElements();
 	    m_arBlobAttrs.removeAllElements();
-	    String strBody = "{\"source_name\":\"" + getName() + "\",\"client_id\":\"" + getSync().getClientID() + "\"";
+	    String strBody = "{\"source_name\":" + JSONEntry.quoteValue(getName()) + ",\"client_id\":" + JSONEntry.quoteValue(getSync().getClientID());
 	    boolean bSend = false;
 	    int i = 0;
 	    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
@@ -289,7 +289,7 @@ class SyncSource
 	                if ( strBlobAttrs.length() > 0 )   
 	                    strBlobAttrs += ",";
 
-	                strBlobAttrs += "\"" + m_arBlobAttrs.elementAt(j) + "\"";
+	                strBlobAttrs += JSONEntry.quoteValue((String)m_arBlobAttrs.elementAt(j));
 	            }
 
 	            if ( strBlobAttrs.length() > 0 )
@@ -398,7 +398,7 @@ class SyncSource
 	            }
 
 	            bFirst = true;
-	            strBody += "\"" + strObject + "\"";
+	            strBody += JSONEntry.quoteValue(strObject);
 	            strCurObject = strObject;
 	        }
 	            
@@ -410,7 +410,7 @@ class SyncSource
 	            if ( bFirst )
 	                strBody += ":{";
 
-	            strBody += "\"" + strAttrib + "\":\"" + value + "\"";
+	            strBody += JSONEntry.quoteValue(strAttrib) + ":" + JSONEntry.quoteValue(value);
 	            bFirst = false;
 	        }
 	    }

@@ -31,6 +31,8 @@ public:
     CJSONEntry getEntry(const char* name)const;
 
     struct json_object* getObject()const{ return m_object; }
+
+    static String quoteValue(const String& strValue);
 };
 
 class CJSONArrayIterator
