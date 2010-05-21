@@ -709,7 +709,7 @@ namespace "build" do
         f.puts "public class NativeLibraries {"
         f.puts "  public static void load() {"
         f.puts "    // Load native .so libraries"
-        Dir.glob($extensionsdir + "/lib*.so").each do |lib|
+        Dir.glob($extensionsdir + "/lib*.so").reverse.each do |lib|
           libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
           f.puts "    System.loadLibrary(\"#{libname}\");"
         end
