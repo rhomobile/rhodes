@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <pimstore.h>
+#include <simmgr.h>
 #include "logging/RhoLog.h"
 
 typedef void (*ab_callback_t)(const char*, const char*, void*);
@@ -33,10 +34,11 @@ public:
 
 protected:
 	ContactType m_type;
-	bool	m_modifyed;
+	bool		m_modifyed;
 
 	std::map<std::string,std::string> m_props;
 };
+
 
 class CABOutlookRecord : public CABRecord {
     DEFINE_LOGCLASS;
@@ -57,6 +59,26 @@ private:
 	friend class CNativeAddressBook;
 };
 
+class CABSimRecord : public CABRecord {
+	DEFINE_LOGCLASS;
+public:
+	CABSimRecord(int index, HSIM hSim);
+	virtual ~CABSimRecord();
+
+	virtual int load();
+	virtual int save();
+	virtual int remove();
+
+protected:
+	void saveValues();
+
+private:
+	int m_index;
+	HSIM m_hSim;
+
+	friend class CNativeAddressBook;
+};
+
 class CNativeAddressBook
 {
     DEFINE_LOGCLASS;
@@ -73,6 +95,7 @@ public:
 	int deleteRecord(CABRecord* record);
 
 protected:
+	//outlook
 	bool m_openedOutlookAB;
 	IPOutlookApp* m_outlookApp;
 	IPOutlookItemCollection* m_outlookItems;
@@ -84,6 +107,13 @@ protected:
 	CABRecord* getOutlookRecord(long oid);
 	int addOutlookRecord(CABOutlookRecord* record);
 
-	/*int initSimAB();
-	int closeSimAB();*/
+
+	//sim
+	HSIM	m_hSim;
+	SIMCAPS	m_SimCaps;
+
+	bool initSimAB();
+	bool closeSimAB();
+	int getAllSimPhonebookRecords(std::vector<CABRecord*>& records);
+	CABRecord* getSimRecord(int id);
 };

@@ -20,6 +20,8 @@
  */
 package com.rhomobile.rhodes.mainview;
 
+import java.util.Map;
+
 import android.view.View;
 
 public interface MainView {
@@ -41,4 +43,7 @@ public interface MainView {
 	public int activeTab();
 	
 	public void loadData(String data, int index);
+	
+	public void setNavBar(String title, Map<Object,Object> left, Map<Object,Object> right);
+	public void removeNavBar();
 }

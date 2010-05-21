@@ -16,15 +16,20 @@ else
 end
 
 def setup_ndk(ndkpath,apilevel)
-  $ndkgccver = "4.2.1"
-  $ndktools = ndkpath + "/build/prebuilt/#{$ndkhost}/arm-eabi-#{$ndkgccver}"
-  $ndksysroot = ndkpath + "/build/platforms/android-#{apilevel}/arch-arm"
+  $ndkgccver = "unknown"
+  ["4.4.0", "4.2.1"].each do |ver|
+    tools = File.join(ndkpath, "build/prebuilt", $ndkhost, "arm-eabi-#{ver}")
+    next unless File.directory? tools
+    $ndkgccver = ver
+    $ndktools = tools
+    break
+  end
+  $ndksysroot = File.join(ndkpath, "build/platforms/android-#{apilevel}/arch-arm")
 
-  $gccbin = $ndktools + "/bin/arm-eabi-gcc" + $exe_ext
-  $gppbin = $ndktools + "/bin/arm-eabi-g++" + $exe_ext
-  $arbin = $ndktools + "/bin/arm-eabi-ar" + $exe_ext
-  $ranlib = $ndktools + "/bin/arm-eabi-ranlib" + $exe_ext
-  $stripbin = $ndktools + "/bin/arm-eabi-strip" + $exe_ext
+  ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+    name = tool.gsub('+', 'p')
+    eval "$#{name}bin = $ndktools + '/bin/arm-eabi-#{tool}' + $exe_ext"
+  end
 end
 
 def cc_def_args
@@ -158,7 +163,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-z,defs"
   args << "-shared"
   args << "-fPIC"
-  args << "-Wl,-soname,#{outname}"
+  args << "-Wl,-soname,#{File.basename(outname)}"
   args << "-o"
   args << outname
   args += objects
@@ -167,9 +172,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   args << "#{$ndksysroot}/usr/lib/libstdc++.so"
   args << "#{$ndksysroot}/usr/lib/libsupc++.so" unless USE_STLPORT
-  args << "#{$ndktools}/lib/gcc/arm-eabi/#{$ndkgccver}/interwork/libgcc.a"
+  libgccdir = File.join($ndktools, "lib/gcc/arm-eabi", $ndkgccver)
+  libgccdir = File.join(libgccdir, "interwork") if $ndkgccver == "4.2.1"
+  args << "#{libgccdir}/libgcc.a" if $ndkgccver != "4.2.1"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
+  args << "#{libgccdir}/libgcc.a" if $ndkgccver == "4.2.1"
   cc_run($gccbin, args)
 end
 

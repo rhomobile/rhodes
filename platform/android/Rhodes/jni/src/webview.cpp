@@ -1,4 +1,4 @@
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #include <common/RhodesApp.h>
 
@@ -62,19 +62,16 @@ RHO_GLOBAL int rho_webview_active_tab()
 
 RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
 {
-    static std::string result;
-
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "executeJs", "(Ljava/lang/String;I)Ljava/lang/String;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "executeJs", "(Ljava/lang/String;I)V");
     if (!mid) return NULL;
 
-    jstring objJs = rho_cast<jstring>(js);
-    jstring str = (jstring)env->CallStaticObjectMethod(cls, mid, objJs, index);
+    jstring objJs = rho_cast<jstring>(env, js);
+    env->CallStaticObjectMethod(cls, mid, objJs, index);
     env->DeleteLocalRef(objJs);
-    result = rho_cast<std::string>(str);
-    return (char*)result.c_str();
+    return "";
 }
 
 RHO_GLOBAL void rho_webview_full_screen_mode(int enable)

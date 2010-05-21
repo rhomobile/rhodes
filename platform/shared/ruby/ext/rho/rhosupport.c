@@ -269,22 +269,42 @@ VALUE isAlreadyLoaded(VALUE path)
 
 RHO_INIT_LOCK(require_lock);
 
+static int String_endsWith(const char* str, const char* szSuffix)
+{
+    int nOff = 0;
+    if ( !szSuffix || !*szSuffix )
+        return 0;
+
+    nOff = strlen(str) - strlen(szSuffix);
+    if ( nOff < 0 )
+        return 0;
+
+    return strcmp(str+nOff, szSuffix) == 0;
+}
+
 VALUE require_compiled(VALUE fname, VALUE* result)
 {
     VALUE path;
     char* szName1 = 0;
     VALUE retval = Qtrue;
 
-    RHO_LOCK(require_lock);
-    rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
-
     szName1 = RSTRING_PTR(fname);
+
+    if ( String_endsWith(szName1,".rb") ) 
+    {
+        rb_str_chop_bang(fname); rb_str_chop_bang(fname); rb_str_chop_bang(fname);
+    }
+    //rb_funcall(fname, rb_intern("sub!"), 2, rb_str_new2(".rb"), rb_str_new2("") );
+    szName1 = RSTRING_PTR(fname);
+
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
         strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 ||
         strcmp("digest.so",szName1)==0 ||
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
         strcmp("digest/sha1",szName1)==0 )
-        goto RCompExit;
+        return Qtrue;
+
+    RHO_LOCK(require_lock);
 
     if ( isAlreadyLoaded(fname) == Qtrue )
         goto RCompExit;
@@ -525,6 +545,7 @@ static void Init_RhoLog(){
 static VALUE rb_RhoModule;
 static VALUE rb_RhoJSON;
 extern VALUE rho_json_parse(VALUE,VALUE);
+extern VALUE rho_json_quote_value(VALUE,VALUE);
 static void Init_RhoJSON()
 {
 
@@ -534,6 +555,7 @@ static void Init_RhoJSON()
     rb_RhoJSON = rb_define_class_under(rb_RhoModule, "JSON", rb_cObject);
 
     rb_define_singleton_method(rb_RhoJSON, "parse", rho_json_parse, 1);
+    rb_define_singleton_method(rb_RhoJSON, "quote_value", rho_json_quote_value, 1);
 }
 
 const char* rho_ruby_internal_getMessageText(const char* szName)

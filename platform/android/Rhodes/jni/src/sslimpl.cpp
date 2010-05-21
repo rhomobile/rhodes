@@ -1,7 +1,7 @@
-#include "sslimpl.h"
-#include "JNIRhodes.h"
+#include "rhodes/sslimpl.h"
+#include "rhodes/JNIRhodes.h"
 
-#include <jni/com_rhomobile_rhodes_socket_SSLImpl.h>
+#include "rhodes/jni/com_rhomobile_rhodes_socket_SSLImpl.h"
 
 #include <arpa/inet.h>
 

@@ -197,7 +197,7 @@ module Rhogen
     template :spec do |template|
       underscore_name = name.camel_case.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
       template.source = 'spec.rb'
-      template.destination = "app/#{name.camel_case}/#{underscore_name}_spec.rb"
+      template.destination = "app/test/#{underscore_name}_spec.rb"
     end
 
     def attributes?
@@ -238,10 +238,10 @@ module Rhogen
       directory.source = 'app/mspec'
       directory.destination = "app/mspec"
     end
-    directory :spec do |directory|
-      directory.source = 'app/spec'
-      directory.destination = "app/spec"
-    end
+    #directory :spec do |directory|
+    #  directory.source = 'app/spec'
+    #  directory.destination = "app/spec"
+    #end
     template :fileutils do |template|
       template.source = 'app/fileutils.rb'
       template.destination = "app/fileutils.rb"

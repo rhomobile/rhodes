@@ -84,7 +84,12 @@ namespace "config" do
     extpaths << File.join($app_path, "extensions")
     extpaths << "lib/extensions"
     $app_config["extpaths"] = extpaths
-    
+
+    if $app_config["build"] and $app_config["build"] == "release"
+      $debug = false
+    else
+      $debug = true
+    end
   end
 
   out = `javac -version 2>&1`
@@ -297,6 +302,16 @@ def common_bundle_start(startdir, dest)
   cp_r app + '/public', File.join($srcdir,'apps')
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
 
+
+  unless $debug
+    rm_rf $srcdir + "/apps/app/test"
+    rm_rf $srcdir + "/apps/app/SpecRunner"
+    rm_rf $srcdir + "/apps/app/mspec"
+    rm_rf $srcdir + "/apps/app/mspec.rb"
+    rm_rf $srcdir + "/apps/app/spec_runner.rb"
+  end
+
+
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
 
   chdir File.join($srcdir,'apps')
@@ -329,8 +344,9 @@ def create_manifest
     
     if File.basename(path) == "config.rb"
         puts "******ERROR enumerating models***********"
-        puts "config.rb file should be deleted: '#{path}' "
-        puts "Use model definition: http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models_2.0"
+        puts "Model definition has changed and doesn't use config.rb anymore: '#{path}' "
+        puts "You should replace config.rb with <model_name>.rb file as described: "
+        puts "http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models_2.0"
         puts "*****************************************"
         exit 1
     end
