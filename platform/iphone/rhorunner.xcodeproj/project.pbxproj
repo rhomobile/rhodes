@@ -172,7 +172,6 @@
 		BD97AC201160EE8F006960F9 /* RhoAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoAlert.m; sourceTree = "<group>"; };
 		BD97AC3D1160F8A5006960F9 /* RingtoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RingtoneManager.h; sourceTree = "<group>"; };
 		BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RingtoneManager.m; sourceTree = "<group>"; };
-		BD97ACA511610666006960F9 /* DateTimePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePicker.h; sourceTree = "<group>"; };
 		BD97ACA611610666006960F9 /* DateTimePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePicker.m; sourceTree = "<group>"; };
 		BD9E5DF81185D2E10053049C /* NavBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavBar.h; sourceTree = "<group>"; };
 		BD9E5DF91185D2E10053049C /* NavBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavBar.m; sourceTree = "<group>"; };
@@ -349,7 +348,6 @@
 				46056D211031EDA900C21967 /* DateTimePickerDelegate.m */,
 				46B005F51033690F00D0C2F4 /* DateTime.h */,
 				46B005F61033690F00D0C2F4 /* DateTime.m */,
-				BD97ACA511610666006960F9 /* DateTimePicker.h */,
 				BD97ACA611610666006960F9 /* DateTimePicker.m */,
 			);
 			name = DateTimePicker;

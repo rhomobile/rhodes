@@ -179,6 +179,7 @@ namespace "config" do
     $rho_android_r = File.join $androidpath, "Rhodes", "src", "com", "rhomobile", "rhodes", "AndroidR.java"
     $app_android_r = File.join $tmpdir, "AndroidR.java"
     $app_rjava_dir = File.join $tmpdir
+    $app_native_libs_java = File.join $tmpdir, "NativeLibraries.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = #"cmd /c " + 
@@ -416,7 +417,7 @@ namespace "build" do
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
       ENV["RHO_INC"] = $appincdir
 
-      mkdir_p $bindir + "/libs/" + $confdir + "/extensions" unless File.exist? $bindir + "/libs/" + $confdir + "/extensions"
+      mkdir_p $extensionsdir unless File.directory? $extensionsdir
 
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
@@ -489,7 +490,7 @@ namespace "build" do
         cc_compile f, objdir, args or exit 1
       end
 
-      cc_ar libname, Dir.glob(objdir + "/**/*.o") + Dir.glob($extensionsdir + "/*.a") or exit 1
+      cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
     task :libjson => "config:android" do
@@ -700,9 +701,28 @@ namespace "build" do
         puts "No need to regenerate rhocaps.inc"
         $stdout.flush
       end
-   end
+    end
 
-    task :librhodes => [:libs, :genconfig] do
+    task :gen_java_ext => "config:android" do
+      File.open($app_native_libs_java, "w") do |f|
+        f.puts "package com.rhomobile.rhodes;"
+        f.puts "public class NativeLibraries {"
+        f.puts "  public static void load() {"
+        f.puts "    // Load native .so libraries"
+        Dir.glob($extensionsdir + "/lib*.so").reverse.each do |lib|
+          libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
+          f.puts "    System.loadLibrary(\"#{libname}\");"
+        end
+        f.puts "    // Load native implementation of rhodes"
+        f.puts "    System.loadLibrary(\"rhodes\");"
+        f.puts "  }"
+        f.puts "};"
+      end
+    end
+
+    task :gensources => [:genconfig, :gen_java_ext]
+
+    task :librhodes => [:libs, :gensources] do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
       objdir = File.join $bindir, "libs", $confdir, "librhodes"
       libname = File.join $bindir, "libs", $confdir, "librhodes.so"
@@ -748,11 +768,14 @@ namespace "build" do
       rlibs << "dl"
       rlibs << "z"
 
-      args += rlibs.map { |x| "-l#{x}" }
+      rlibs.map! { |x| "-l#{x}" }
 
+      args += rlibs
+
+      extlibs = Dir.glob($extensionsdir + "/lib*.a") + Dir.glob($extensionsdir + "/lib*.so")
       stub = []
-      Dir.glob($extensionsdir + "/*.a").reverse.each do |f|
-        lparam = "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.a$/,"")
+      extlibs.reverse.each do |f|
+        lparam = "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.(a|so)$/,"")
         args << lparam
         # Workaround for GNU ld: this way we have specified one lib multiple times
         # command line so ld's dependency mechanism will find required functions
@@ -763,7 +786,7 @@ namespace "build" do
         stub << lparam
       end
 
-      args += rlibs.map { |x| "-l#{x}" }
+      args += rlibs
 
   	  mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
       cc_link libname, Dir.glob(objdir + "/**/*.o"), args, deps or exit 1
@@ -814,6 +837,14 @@ namespace "build" do
         end
       end
       lines << $app_android_r
+      lines << $app_native_libs_java
+      if File.exists? File.join($extensionsdir, "ext_build.files")
+        File.open(File.join($extensionsdir, "ext_build.files")) do |f|
+          while line = f.gets
+            lines << line
+          end
+        end
+      end
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
@@ -907,8 +938,16 @@ namespace "package" do
     rm_rf File.join($tmpdir, "lib")
     mkdir_p File.join($tmpdir, "lib/armeabi")
     cp_r File.join($bindir, "libs", $confdir, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
-    cc_run($stripbin, [$tmpdir + "/lib/armeabi/librhodes.so"])
-    args = ["add", resourcepkg, "lib/armeabi/librhodes.so"]
+    # Add extensions .so libraries
+    Dir.glob($extensionsdir + "/lib*.so").each do |lib|
+      cp_r lib, File.join($tmpdir, "lib/armeabi")
+    end
+    args = ["add", resourcepkg]
+    # Strip them all to decrease size
+    Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
+      cc_run($stripbin, [lib])
+      args << "lib/armeabi/#{File.basename(lib)}"
+    end
     puts Jake.run($aapt, args, $tmpdir)
     err = $?
     rm_rf $tmpdir + "/lib"

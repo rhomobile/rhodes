@@ -1,6 +1,6 @@
-#include <jni/com_rhomobile_rhodes_SplashScreen.h>
+#include "rhodes/jni/com_rhomobile_rhodes_SplashScreen.h"
 
-#include "JNIRhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #include <common/RhodesApp.h>
 
