@@ -657,7 +657,17 @@ public class NetRequest
 	{
 		String strRes = "";
 		byte[]  byteBuffer = new byte[1024*4];
-		boolean bUTF8 = strContType != null && strContType.indexOf("UTF-8")>=0;
+		boolean bUTF8 = false;
+		
+		if ( strContType != null )
+		{
+			int nCharsetPos = strContType.lastIndexOf('=');
+			if ( nCharsetPos > 0 )
+			{
+				String strEnc = strContType.substring(nCharsetPos+1);
+				bUTF8 = strEnc.equalsIgnoreCase("UTF-8");
+			}
+		}			
 
 		int nRead = 0;
 		do{
