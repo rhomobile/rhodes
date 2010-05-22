@@ -20,6 +20,7 @@
  */
 package com.rhomobile.rhodes;
 
+import android.net.Uri;
 import android.webkit.CookieManager;
 
 public class WebView {
@@ -85,7 +86,8 @@ public class WebView {
 		private String cookie;
 		
 		public SetCookieTask(String u, String c) {
-			url = u;
+			Uri uri = Uri.parse(u);
+			url = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
 			cookie = c;
 		}
 		
@@ -135,15 +137,13 @@ public class WebView {
 		return 0;
 	}
 	
-	public static String executeJs(String js, int index) {
+	public static void executeJs(String js, int index) {
 		try {
 			Rhodes.performOnUiThread(new NavigateTask("javascript:" + js, index), false);
 		}
 		catch (Exception e) {
 			reportFail("executeJs", e);
 		}
-		
-		return "";
 	}
 	
 	public static void setCookie(String url, String cookie) {
