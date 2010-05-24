@@ -178,7 +178,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"
-  args << "-shared"
   args << "-fPIC"
   args << "-Wl,-soname,#{File.basename(outname)}"
   args << "-o"
@@ -187,16 +186,20 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args += additional if additional.is_a? Array and not additional.empty?
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
-  args << "#{$ndksysroot}/usr/lib/libstdc++.so"
-  args << "#{$ndksysroot}/usr/lib/libsupc++.so" unless USE_STLPORT
-  #libgccdir = File.join($ndktools, "lib/gcc/arm-eabi", $ndkgccver)
-  #libgccdir = File.join(libgccdir, "interwork") if $ndkgccver == "4.2.1"
-  #args << "#{libgccdir}/libgcc.a" if $ndkgccver != "4.2.1"
+  if $cxxlibs.nil?
+    $cxxlibs = []
+    if USE_STLPORT
+      $cxxlibs << File.join($ndksysroot, "usr/lib/libstdc++.so")
+    else
+      $cxxlibs << `#{$gccbin} -mthumb-interwork -print-file-name=libstdc++.a`.gsub("\n", "")
+      $cxxlibs << `#{$gccbin} -mthumb-interwork -print-file-name=libsupc++.a`.gsub("\n", "")
+    end
+  end
+  args += $cxxlibs
   $libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
   args << $libgcc
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
-  #args << "#{libgccdir}/libgcc.a" if $ndkgccver == "4.2.1"
   args << $libgcc
   cc_run($gccbin, args)
 end
