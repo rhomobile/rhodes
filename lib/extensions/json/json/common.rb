@@ -44,8 +44,10 @@ module JSON
     # Set the module _generator_ to be used by JSON.
     def generator=(generator) # :nodoc:
       @generator = generator
+
       generator_methods = generator::GeneratorMethods
-      for const in generator_methods.constants
+      #for const in generator_methods.constants
+      generator_methods.constants.each do |const|
         klass = deep_const_get(const)
         modul = generator_methods.const_get(const)
         klass.class_eval do
@@ -117,10 +119,10 @@ module JSON
   # * *create_additions*: If set to false, the Parser doesn't create
   #   additions even if a matchin class and create_id was found. This option
   #   defaults to true.
-  def parse(source, opts = {})
-    JSON.parser.new(source, opts).parse
-  end
-  module_function :parse
+  #def parse(source, opts = {})
+  #  JSON.parser.new(source, opts).parse
+  #end
+  #module_function :parse
   
   # Parse the JSON string _source_ into a Ruby data structure and return it.
   # The bang version of the parse method, defaults to the more dangerous values
@@ -137,13 +139,13 @@ module JSON
   # * *create_additions*: If set to false, the Parser doesn't create
   #   additions even if a matchin class and create_id was found. This option
   #   defaults to true.
-  def parse!(source, opts = {})
-    opts = {
-      :max_nesting => false,
-      :allow_nan => true
-    }.update(opts)
-    JSON.parser.new(source, opts).parse
-  end
+  #def parse!(source, opts = {})
+  #  opts = {
+  #    :max_nesting => false,
+  #    :allow_nan => true
+  #  }.update(opts)
+  #  JSON.parser.new(source, opts).parse
+  #end
 
   # Unparse the Ruby data structure _obj_ into a single line JSON string and
   # return it. _state_ is
@@ -174,6 +176,7 @@ module JSON
   # See also the fast_generate for the fastest creation method with the least
   # amount of sanity checks, and the pretty_generate method for some
   # defaults for a pretty output.
+  module_function
   def generate(obj, state = nil)
     if state
       state = State.from_state(state)
@@ -182,7 +185,8 @@ module JSON
     end
     obj.to_json(state)
   end
-
+  module_function :generate
+  
   # :stopdoc:
   # I want to deprecate these later, so I'll first be silent about them, and
   # later delete them.
