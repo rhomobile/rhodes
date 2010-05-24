@@ -1,14 +1,5 @@
 #
 require "fileutils"
-require  'win32/registry'
-
-def getWindowsProductNameString
-    Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Microsoft\Windows NT\CurrentVersion') do |reg|
-        reg_typ, reg_val = reg.read('ProductName')
-        return reg_val
-    end
-end
-
 
 def fixWin7SimBug (rhoconfig) 
 	file = rhoconfig
@@ -578,6 +569,15 @@ namespace "package" do
 
       #Changing rhoconfig.txt to work on Windows 7
       if RUBY_PLATFORM =~ /(win|w)32$/
+	require  'win32/registry'
+
+	def getWindowsProductNameString
+	    Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Microsoft\Windows NT\CurrentVersion') do |reg|
+	        reg_typ, reg_val = reg.read('ProductName')
+	        return reg_val
+	    end
+	end
+
       	if getWindowsProductNameString =~ /Windows 7/
 	    fixWin7SimBug($tmpdir_sim + "/apps/rhoconfig.txt")	
 	end
