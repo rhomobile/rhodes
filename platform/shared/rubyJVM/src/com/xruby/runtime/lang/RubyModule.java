@@ -893,6 +893,19 @@ public class RubyModule extends RubyObject {
         return RubyAPI.isConstantDefined(this, s.toString());
     }
 
+    public RubyValue getConstants() 
+    {
+        RubyArray arRes = new RubyArray();
+        j2me.util.Set keys = constants_.keySet();
+        Iterator iter = keys.iterator(); 
+        while( iter.hasNext() )
+        {
+        	arRes.add( ObjectFactory.createSymbol((String)iter.next()));
+        }
+        
+        return arRes;
+    }
+    
     //@RubyLevelMethod(name="method_defined?")
     public RubyValue isMethodDefined(RubyValue arg) {
         RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
