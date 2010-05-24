@@ -337,11 +337,11 @@ namespace "config" do
     $objdir = {}
     $libname = {}
     $native_libs.each do |x|
-      $objdir[x] = File.join($rhobindir, $confdir, "lib" + x)
-      $libname[x] = File.join($rhobindir, $confdir, "lib" + x + ".a")
+      $objdir[x] = File.join($rhobindir, $confdir, $ndkgccver, "lib" + x)
+      $libname[x] = File.join($rhobindir, $confdir, $ndkgccver, "lib" + x + ".a")
     end
 
-    $extensionsdir = $bindir + "/libs/" + $confdir + "/extensions"
+    $extensionsdir = $bindir + "/libs/" + $confdir + "/" + $ndkgccver + "/extensions"
 
     $app_config["extensions"] = [] if $app_config["extensions"].nil?
     $app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
@@ -724,8 +724,8 @@ namespace "build" do
 
     task :librhodes => [:libs, :gensources] do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
-      objdir = File.join $bindir, "libs", $confdir, "librhodes"
-      libname = File.join $bindir, "libs", $confdir, "librhodes.so"
+      objdir = File.join $bindir, "libs", $confdir, $ndkgccver, "librhodes"
+      libname = File.join $bindir, "libs", $confdir, $ndkgccver, "librhodes.so"
 
       args = []
       args << "-I#{$appincdir}"
@@ -749,8 +749,8 @@ namespace "build" do
       end
 
       args = []
-      args << "-L#{$rhobindir}/#{$confdir}"
-      args << "-L#{$bindir}/libs/#{$confdir}"
+      args << "-L#{$rhobindir}/#{$confdir}/#{$ndkgccver}"
+      args << "-L#{$bindir}/libs/#{$confdir}/#{$ndkgccver}"
       args << "-L#{$extensionsdir}"
 
       rlibs = []
@@ -926,8 +926,8 @@ namespace "package" do
       next unless File.basename(f) =~ /^_/
       relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
       puts "Add #{relpath} to #{resourcepkg}..."
-      args = ["add", resourcepkg, relpath]
-      puts Jake.run($aapt, args, $tmpdir)
+      args = ["uf", resourcepkg, relpath]
+      puts Jake.run($jarbin, args, $tmpdir)
       unless $? == 0
         puts "Error running AAPT (2)"
         exit 1
@@ -937,18 +937,18 @@ namespace "package" do
     # Add native librhodes.so
     rm_rf File.join($tmpdir, "lib")
     mkdir_p File.join($tmpdir, "lib/armeabi")
-    cp_r File.join($bindir, "libs", $confdir, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
+    cp_r File.join($bindir, "libs", $confdir, $ndkgccver, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
     # Add extensions .so libraries
     Dir.glob($extensionsdir + "/lib*.so").each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
     end
-    args = ["add", resourcepkg]
+    args = ["uf", resourcepkg]
     # Strip them all to decrease size
     Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
       cc_run($stripbin, [lib])
       args << "lib/armeabi/#{File.basename(lib)}"
     end
-    puts Jake.run($aapt, args, $tmpdir)
+    puts Jake.run($jarbin, args, $tmpdir)
     err = $?
     rm_rf $tmpdir + "/lib"
     unless err == 0
@@ -1229,8 +1229,8 @@ namespace "clean" do
     end
   end
   task :librhodes => "config:android" do
-    rm_rf $rhobindir + "/" + $confdir + "/librhodes"
-    rm_rf $bindir + "/libs/" + $confdir + "/librhodes.so"
+    rm_rf $rhobindir + "/" + $confdir + "/" + $ndkgccver + "/librhodes"
+    rm_rf $bindir + "/libs/" + $confdir + "/" + $ndkgccver + "/librhodes.so"
   end
 #  desc "clean android"
   task :all => [:assets,:librhodes,:libs,:files]
