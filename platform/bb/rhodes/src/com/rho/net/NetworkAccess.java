@@ -43,8 +43,13 @@ public class NetworkAccess implements INetworkAccess {
 			strDeviceside = "";
 
 		if (DeviceInfo.isSimulator()) {
-			URLsuffix = ";deviceside=true";
-			WIFIsuffix = ";interface=wifi;deviceside=true";
+			if (com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1) {
+				URLsuffix = "";
+				WIFIsuffix = ";interface=wifi";
+			} else {
+				URLsuffix = ";deviceside=true";
+				WIFIsuffix = ";interface=wifi;deviceside=true";
+			}
 			networkConfigured = true;
 		}else{
 			ServiceBook sb = ServiceBook.getSB();
