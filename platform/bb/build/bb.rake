@@ -1,4 +1,35 @@
 #
+require "fileutils"
+require  'win32/registry'
+
+def getWindowsProductNameString
+    Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Microsoft\Windows NT\CurrentVersion') do |reg|
+        reg_typ, reg_val = reg.read('ProductName')
+        return reg_val
+    end
+end
+
+
+def fixWin7SimBug (rhoconfig) 
+	file = rhoconfig
+	tmpfile = file + ".tmp"
+	no_deviceside_postfix_isFound = 0
+	File.open(file, 'r') do |f|
+	  File.open(tmpfile, 'w') do |newf|
+	    while line = f.gets
+	      if line =~ /^\s*no_deviceside_postfix\s*=/
+		no_deviceside_postfix_isFound = 1
+	      end
+	      newf.puts line
+	    end
+	    if no_deviceside_postfix_isFound == 0
+	      newf.puts "no_deviceside_postfix = 1"
+	    end
+	  end
+	end
+	FileUtils.move(tmpfile, file)
+end
+
 
 def freplace( fname, pattern, str )
   f = File.open( fname )
@@ -132,6 +163,7 @@ namespace "config" do
     $excludeextlib = ['rexml/parsers/baseparser.rb', 'rexml/set.rb']
     $compileERB = $app_path + "/build/compileERB.rb"
     $tmpdir =  $bindir +"/tmp"
+    $tmpdir_sim =  $bindir +"/tmp_sim"
 
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
@@ -154,7 +186,9 @@ namespace "config" do
     
     mkdir_p $bindir unless File.exists? $bindir
     rm_rf $tmpdir
+    rm_rf $tmpdir_sim
     mkdir_p $tmpdir unless File.exists? $tmpdir
+    mkdir_p $tmpdir_sim unless File.exists? $tmpdir_sim
     mkdir_p  $targetdir if not FileTest.exists?  $targetdir
 
     File.open("#{$bindir}/lastver", "w") {|f| f.write($bbver)}
@@ -172,7 +206,7 @@ namespace "build" do
     def runPreverify(args)  
       jdehome = $config["env"]["paths"][$bbver]["jde"]
     
-      startdir = pwd      
+      startdir = pwd
       chdir $tmpdir
       puts Jake.run(jdehome + "/bin/preverify.exe",args)
       chdir startdir
@@ -529,6 +563,61 @@ namespace "package" do
       create_alx_file('rhodesApp', $outfilebase)
     end
 
+#    desc "Package all production (all parts in one package) for simulator"
+    task :production_sim => ["build:bb:rhodes"] do
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
+      rm_rf $tmpdir_sim
+      mkdir_p $tmpdir_sim
+
+      rm_rf $targetdir
+      mkdir_p $targetdir
+
+      Jake.unjar($preverified + "/RubyVM.jar", $tmpdir_sim)
+      Jake.unjar($preverified + "/RhoBundle.jar", $tmpdir_sim)
+      Jake.unjar($preverified + "/rhodes.jar", $tmpdir_sim)
+
+      #Changing rhoconfig.txt to work on Windows 7
+      if RUBY_PLATFORM =~ /(win|w)32$/
+      	if getWindowsProductNameString =~ /Windows 7/
+	    fixWin7SimBug($tmpdir_sim + "/apps/rhoconfig.txt")	
+	end
+      end
+
+      if $bbver =~ /^4\.[012](\..*)$/
+        max_size = 65536
+        Dir.glob( $tmpdir_sim + "/**/*" ).each do |f|
+          if File.size( f ) > max_size
+            puts "File size of " + f + " is more than " + max_size.to_s + " bytes"
+            puts "There is no ability to pack this file into .cod file for BB " + $bbver
+            puts "Please reduce its size and try again"
+            $stdout.flush
+            Process.exit
+          end
+        end
+      end
+
+      Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir_sim,true)
+
+      Jake.rapc($outfilebase,
+        $targetdir,
+        jdehome + "/lib/net_rim_api.jar",
+        $bindir + "/" + $outfilebase + ".jar",
+        $appname,
+        $app_config["vendor"],
+        $app_config["version"],
+        "resources/icon.png",
+        false,
+        true
+      )
+      unless $? == 0
+        puts "Error in RAPC"
+        exit 1
+      end
+      $stdout.flush
+      
+      create_alx_file('rhodesApp', $outfilebase)
+    end
+
     task :set_dev_build do
         $dev_build = true
     end
@@ -626,6 +715,11 @@ namespace "clean" do
       rm_rf $tmpdir
     end
 
+#    desc "Clean temp simulator dir"
+    task :tempdir_sim => "config:bb" do
+      rm_rf $tmpdir_sim
+    end
+
 #    desc "Clean all"
     task :all => [:preverified,:packaged,:tempdir] do
       rm_rf $bindir
@@ -650,7 +744,7 @@ namespace "run" do
   end
   
   desc "Builds everything, loads and starts bb sim and mds"
-  task :bb => ["run:bb:stopmdsandsim", "package:bb:production"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
     jde = $config["env"]["paths"][$bbver]["jde"]
     
     cp_r File.join($targetdir,"/."), jde + "/simulator"
@@ -677,8 +771,8 @@ namespace "config" do
   desc "Check local blackberry configuration"
   task :checkbb => ["config:bb"] do
     javahome = $config["env"]["paths"]["java"]
-    jdehome = $config["env"]["paths"][$bbver]["jde"]
-    mdshome = $config["env"]["paths"][$bbver]["mds"]
+    jdehome  = $config["env"]["paths"][$bbver]["jde"]
+    mdshome  = $config["env"]["paths"][$bbver]["mds"]
 
     puts "BBVER: " + $bbver
     puts "JAVAHOME: " + javahome
