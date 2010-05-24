@@ -1,6 +1,6 @@
 require 'json/common'
-require 'json/pure/parser'
-#require 'json/pure/generator'
+#require 'json/pure/parser'
+require 'json/pure/generator'
 
 module JSON
   begin
@@ -69,8 +69,8 @@ module JSON
   # functionality in pure ruby.
   module Pure
     $DEBUG and warn "Using pure library for JSON."
-    JSON.parser = Parser
-    #JSON.generator = Generator
+    #JSON.parser = Parser
+    JSON.generator = Generator
   end
 
   JSON_LOADED = true
