@@ -41,6 +41,7 @@ import com.rho.*;
 import com.rho.rubyext.GeoLocation;
 import com.rho.net.NetResponse;
 import com.rho.net.RhoConnection;
+import com.rho.net.URI;
 import com.rho.sync.ClientRegister;
 import com.rho.sync.SyncThread;
 import com.rho.sync.ISyncStatusListener;
@@ -995,14 +996,18 @@ final public class RhodesApplication extends UiApplication implements SystemList
     private Hashtable cookies = new Hashtable();
     
     public String getCookie(String url) {
-    	Object c = cookies.get(url);
+    	URI uri = new URI(url);
+    	String baseUrl = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+    	Object c = cookies.get(baseUrl);
     	if (c instanceof String)
     		return (String)c;
     	return null;
     }
     
     public void setCookie(String url, String cookie) {
-    	cookies.put(url, cookie);
+    	URI uri = new URI(url);
+    	String baseUrl = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+    	cookies.put(baseUrl, cookie);
     }
     
     private void createBrowserControl()
