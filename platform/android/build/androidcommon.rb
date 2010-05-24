@@ -30,6 +30,22 @@ def setup_ndk(ndkpath,apilevel)
     name = tool.gsub('+', 'p')
     eval "$#{name}bin = $ndktools + '/bin/arm-eabi-#{tool}' + $exe_ext"
   end
+  
+  # Detect rlim_t
+  if $have_rlim_t.nil?
+    $have_rlim_t = false
+    resource_h = File.join(ndkpath, 'build', 'platforms', "android-#{apilevel}", "arch-arm", "usr", "include", "sys", "resource.h")
+    if File.exists? resource_h
+      File.open(resource_h, 'r') do |f|
+        while line = f.gets
+          if line =~ /^\s*typedef\b.*\brlim_t\s*;\s*$/
+            $have_rlim_t = true;
+            break;
+          end
+        end
+      end
+    end
+  end
 end
 
 def cc_def_args
@@ -43,6 +59,7 @@ def cc_def_args
     args << "-DANDROID"
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
+    args << "-DHAVE_RLIM_T" if $have_rlim_t
     args << "-g"
     if $build_release
       args << "-O2"
@@ -172,12 +189,15 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   args << "#{$ndksysroot}/usr/lib/libstdc++.so"
   args << "#{$ndksysroot}/usr/lib/libsupc++.so" unless USE_STLPORT
-  libgccdir = File.join($ndktools, "lib/gcc/arm-eabi", $ndkgccver)
-  libgccdir = File.join(libgccdir, "interwork") if $ndkgccver == "4.2.1"
-  args << "#{libgccdir}/libgcc.a" if $ndkgccver != "4.2.1"
+  #libgccdir = File.join($ndktools, "lib/gcc/arm-eabi", $ndkgccver)
+  #libgccdir = File.join(libgccdir, "interwork") if $ndkgccver == "4.2.1"
+  #args << "#{libgccdir}/libgcc.a" if $ndkgccver != "4.2.1"
+  $libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
+  args << $libgcc
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
-  args << "#{libgccdir}/libgcc.a" if $ndkgccver == "4.2.1"
+  #args << "#{libgccdir}/libgcc.a" if $ndkgccver == "4.2.1"
+  args << $libgcc
   cc_run($gccbin, args)
 end
 
