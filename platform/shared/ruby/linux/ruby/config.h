@@ -260,7 +260,9 @@
 #  include <asm/page.h>
 
 typedef long int fd_mask;
-typedef unsigned long long rlim_t;
+#ifndef HAVE_RLIM_T
+typedef unsigned long rlim_t;
+#endif
 
 #  ifndef howmany
 #    define howmany(x, y)  (((x) + ((y) - 1)) / (y))
