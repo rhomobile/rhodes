@@ -13,6 +13,10 @@ klass.defineMethod( "const_defined?", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyModule)receiver).isConstDefined(arg);}
 });
+klass.defineMethod( "constants", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyModule)receiver).getConstants();}
+});
 klass.defineMethod( "method_defined?", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyModule)receiver).isMethodDefined(arg);}
