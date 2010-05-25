@@ -69,7 +69,7 @@ RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
     if (!mid) return NULL;
 
     jstring objJs = rho_cast<jstring>(env, js);
-    env->CallStaticObjectMethod(cls, mid, objJs, index);
+    env->CallStaticVoidMethod(cls, mid, objJs, index);
     env->DeleteLocalRef(objJs);
     return "";
 }
