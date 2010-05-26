@@ -47,14 +47,15 @@ public class NativeBar {
 		public void run() {
 			try {
 				Rhodes r = RhodesInstance.getInstance();
+				MainView mainView = r.getMainView();
 				MainView v = null;
 				
 				switch (type) {
 				case NOBAR_TYPE:
-					v = new SimpleMainView();
+					v = new SimpleMainView(mainView);
 					break;
 				case TOOLBAR_TYPE:
-					v = new SimpleMainView(params);
+					v = new SimpleMainView(mainView, params);
 					break;
 				case TABBAR_TYPE:
 					v = new TabbedMainView(params);

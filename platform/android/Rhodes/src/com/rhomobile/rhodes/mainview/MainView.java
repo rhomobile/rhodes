@@ -23,10 +23,13 @@ package com.rhomobile.rhodes.mainview;
 import java.util.Map;
 
 import android.view.View;
+import android.webkit.WebView;
 
 public interface MainView {
 
 	public View getView();
+	
+	public WebView detachWebView();
 	
 	public void back(int index);
 	public void forward(int index);
@@ -44,6 +47,6 @@ public interface MainView {
 	
 	public void loadData(String data, int index);
 	
-	public void setNavBar(String title, Map<Object,Object> left, Map<Object,Object> right);
+	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right);
 	public void removeNavBar();
 }
