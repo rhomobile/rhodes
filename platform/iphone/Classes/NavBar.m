@@ -25,7 +25,7 @@
     NSString *title = [args objectAtIndex:0];
     NSArray *left = [args objectAtIndex:1];
     NSArray *right = [args objectAtIndex:2];
-    [[[Rhodes sharedInstance] mainView] setNavBar:title left:left right:right];
+    [[[Rhodes sharedInstance] mainView] addNavBar:title left:left right:right];
 }
 @end
 
