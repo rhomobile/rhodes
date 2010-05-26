@@ -157,6 +157,8 @@ module Rho
       options = options.symbolize_keys
 
       localclass = Class.new do
+        require 'helpers/application_helper'
+        include ApplicationHelper
         def initialize(obj=nil)
           @vars = {}
           if obj
