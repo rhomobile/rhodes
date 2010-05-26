@@ -27,26 +27,30 @@
     [value getValue:&type];
     
     id view = nil;
-    
-    UIWindow *window = [[Rhodes sharedInstance] rootWindow];
-    CGRect frame = [Rhodes applicationFrame];
+   
+    Rhodes *r = [Rhodes sharedInstance];
+    //UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+    //CGRect frame = [Rhodes applicationFrame];
     
     switch (type) {
     case NOBAR_TYPE:
-        view = [[SimpleMainView alloc] initWithParentView:window frame:frame];
+        //view = [[SimpleMainView alloc] initWithParentView:window frame:frame];
+        view = [[SimpleMainView alloc] initWithMainView:r.mainView];
         break;
     case TOOLBAR_TYPE:
-        view = [[SimpleMainView alloc] initWithParentView:window frame:frame toolbar:items];
+        //view = [[SimpleMainView alloc] initWithParentView:window frame:frame toolbar:items];
+        view = [[SimpleMainView alloc] initWithMainView:r.mainView toolbar:items];
         break;
     case TABBAR_TYPE:
-        view = [[TabbedMainView alloc] initWithParentView:window frame:frame items:items];
+        //view = [[TabbedMainView alloc] initWithParentView:window frame:frame items:items];
+        view = [[TabbedMainView alloc] initWithMainView:r.mainView tabs:items];
         break;
     default:
         RAWLOG_ERROR1("Unknown bar type passed: %d", type);
         return;
     }
     
-    [Rhodes sharedInstance].mainView = view;
+    r.mainView = view;
     [view release];
 }
 @end

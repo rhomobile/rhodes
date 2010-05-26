@@ -18,7 +18,8 @@
 @property (nonatomic,retain) UITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 
-- (id)initWithParentView:(UIView*)v items:(NSArray*)items;
-- (id)initWithParentView:(UIView*)v frame:(CGRect)frame items:(NSArray*)items;
+//- (id)initWithParentView:(UIView*)v items:(NSArray*)items;
+//- (id)initWithParentView:(UIView*)v frame:(CGRect)frame items:(NSArray*)items;
+- (id)initWithMainView:(id<RhoMainView>)v tabs:(NSArray*)items;
 
 @end
