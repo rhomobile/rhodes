@@ -33,6 +33,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -183,6 +184,10 @@ public class TabbedMainView implements MainView {
 		return host;
 	}
 	
+	public WebView detachWebView() {
+		return getView(activeTab()).detachWebView();
+	}
+	
 	public void back(int index) {
 		getView(index).back(0);
 	}
@@ -219,8 +224,8 @@ public class TabbedMainView implements MainView {
 		getView(index).loadData(data, 0);
 	}
 	
-	public void setNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
-		getView(activeTab()).setNavBar(title, left, right);
+	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
+		getView(activeTab()).addNavBar(title, left, right);
 	}
 	
 	public void removeNavBar() {
