@@ -93,7 +93,7 @@
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
             subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
-            [subController navigate:url tab:0];
+            [subController navigateRedirect:url tab:0];
             
             [tabs addObject:td];
             [views addObject:subController];
@@ -121,11 +121,11 @@
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    self.tabbar = nil;
 }
 
 - (void)dealloc {
-    [tabbar release];
+    [tabbar.view removeFromSuperview];
+    [tabbarData release];
     [super dealloc];
 }
 
@@ -145,6 +145,10 @@
 
 - (UIView*)parent {
     return parent;
+}
+
+- (UIWebView*)detachWebView {
+    return [[self subView:[self activeTab]] detachWebView];
 }
 
 - (void)loadHTMLString:(NSString *)data {

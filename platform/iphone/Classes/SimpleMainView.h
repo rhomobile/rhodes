@@ -18,12 +18,9 @@
 }
 
 @property (retain) UIView *root;
-@property (retain) UIWebView *webView;
-@property (retain) UIToolbar *toolbar;
-@property (retain) UINavigationBar *navbar;
 
 - (id)initWithMainView:(id<RhoMainView>)v;
 - (id)initWithMainView:(id<RhoMainView>)v toolbar:(NSArray*)items;
-- (id)initWithParentView:(UIView *)v frame:(CGRect)frame;
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame;
 
 @end
