@@ -46,6 +46,22 @@ static Rhodes *instance = NULL;
     [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
 }
 
++ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view {
+    if (!view)
+        return nil;
+    
+    for (int i = 0, lim = [view.subviews count]; i < lim; ++i) {
+        UIView *subview = [view.subviews objectAtIndex:i];
+        if (subview.tag == tag)
+            return subview;
+        subview = [self subviewWithTag:tag ofView:subview];
+        if (subview)
+            return subview;
+    }
+    
+    return nil;
+}
+
 - (void)runRunnable:(NSArray*)args {
     id runnable = [args objectAtIndex:0];
     if ([runnable respondsToSelector:@selector(run)])

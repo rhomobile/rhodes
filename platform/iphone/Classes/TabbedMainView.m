@@ -54,12 +54,15 @@
 
 @synthesize tabbar, tabbarData;
 
-- (id)initWithParentView:(UIView *)v items:(NSArray *)items {
-    return [self initWithParentView:v frame:v.frame items:items];
-}
+//- (id)initWithParentView:(UIView *)v items:(NSArray *)items {
+//    return [self initWithParentView:v frame:v.frame items:items];
+//}
 
-- (id)initWithParentView:(UIView *)v frame:(CGRect)frame items:(NSArray*)items {
-    parent = v;
+//- (id)initWithParentView:(UIView *)v frame:(CGRect)frame items:(NSArray*)items {
+- (id)initWithMainView:(id<RhoMainView>)v tabs:(NSArray *)items {
+    parent = [v parent];
+    
+    CGRect frame = [[v view] frame];
     
     tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
     tabbar.delegate = [Rhodes sharedInstance];
@@ -140,6 +143,10 @@
     return tabbar.view;
 }
 
+- (UIView*)parent {
+    return parent;
+}
+
 - (void)loadHTMLString:(NSString *)data {
     [[self subView:[self activeTab]] loadHTMLString:data];
 }
@@ -190,8 +197,8 @@
     return tabbar.selectedIndex;
 }
 
-- (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
-    [[self subView:[self activeTab]] setNavBar:title left:left right:right];
+- (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
+    [[self subView:[self activeTab]] addNavBar:title left:left right:right];
 }
 
 - (void)removeNavBar {
