@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes;
 
 import java.util.Map;
-import java.util.Vector;
 
 public class NavBar {
 
@@ -33,7 +32,7 @@ public class NavBar {
 		
 		public void run() {
 			Rhodes r = RhodesInstance.getInstance();
-			r.getMainView().setNavBar(title, left, right);
+			r.getMainView().addNavBar(title, left, right);
 		}
 	};
 	
