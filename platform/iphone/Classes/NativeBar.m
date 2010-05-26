@@ -32,25 +32,27 @@
     //UIWindow *window = [[Rhodes sharedInstance] rootWindow];
     //CGRect frame = [Rhodes applicationFrame];
     
+    id mainView = [r mainView];
+    
     switch (type) {
     case NOBAR_TYPE:
         //view = [[SimpleMainView alloc] initWithParentView:window frame:frame];
-        view = [[SimpleMainView alloc] initWithMainView:r.mainView];
+        view = [[SimpleMainView alloc] initWithMainView:mainView];
         break;
     case TOOLBAR_TYPE:
         //view = [[SimpleMainView alloc] initWithParentView:window frame:frame toolbar:items];
-        view = [[SimpleMainView alloc] initWithMainView:r.mainView toolbar:items];
+        view = [[SimpleMainView alloc] initWithMainView:mainView toolbar:items];
         break;
     case TABBAR_TYPE:
         //view = [[TabbedMainView alloc] initWithParentView:window frame:frame items:items];
-        view = [[TabbedMainView alloc] initWithMainView:r.mainView tabs:items];
+        view = [[TabbedMainView alloc] initWithMainView:mainView tabs:items];
         break;
     default:
         RAWLOG_ERROR1("Unknown bar type passed: %d", type);
         return;
     }
     
-    r.mainView = view;
+    [r setMainView:view];
     [view release];
 }
 @end
