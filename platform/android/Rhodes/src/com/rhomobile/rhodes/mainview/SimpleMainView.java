@@ -115,6 +115,16 @@ public class SimpleMainView implements MainView {
 		return view;
 	}
 	
+	public WebView detachWebView() {
+		WebView v = null;
+		if (webView != null) {
+			view.removeView(webView);
+			v = webView;
+			webView = null;
+		}
+		return v;
+	}
+	
 	private View createButton(Map<Object,Object> hash) {
 		Rhodes r = RhodesInstance.getInstance();
 		
@@ -200,7 +210,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void init(Vector<Object> params) {
+	private void init(MainView v, Vector<Object> params) {
 		Rhodes r = RhodesInstance.getInstance();
 		
 		view = new LinearLayout(r);
@@ -209,7 +219,11 @@ public class SimpleMainView implements MainView {
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
 		view.setId(Rhodes.RHO_MAIN_VIEW);
 		
-		webView = r.createWebView();
+		webView = null;
+		if (v != null)
+			webView = v.detachWebView();
+		if (webView == null)
+			webView = r.createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(r);
@@ -254,11 +268,15 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public SimpleMainView() {
-		init(null);
+		init(null, null);
 	}
 	
-	public SimpleMainView(Vector<Object> params) {
-		init(params);
+	public SimpleMainView(MainView v) {
+		init(v, null);
+	}
+	
+	public SimpleMainView(MainView v, Vector<Object> params) {
+		init(v, params);
 	}
 	
 	public void back(int index) {
@@ -297,7 +315,7 @@ public class SimpleMainView implements MainView {
 		webView.loadData(data, "text/html", "utf-8");
 	}
 
-	public void setNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
+	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
 		removeNavBar();
 		
 		Rhodes r = RhodesInstance.getInstance();
