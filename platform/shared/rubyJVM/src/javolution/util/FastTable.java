@@ -534,7 +534,16 @@ public class FastTable/*<E>*/extends FastCollection/*<E>*/implements
         if ((fromIndex < 0) || (toIndex > _size) || (fromIndex > toIndex))
             throw new IndexOutOfBoundsException("fromIndex: " + fromIndex
                     + ", toIndex: " + toIndex + " for list of size: " + _size);
-        return SubTable.valueOf(this, fromIndex, toIndex - fromIndex);
+        int size = toIndex - fromIndex;
+        FastTable table = new FastTable(size);
+        
+        for( int i = fromIndex; i < size; i++ )
+        	table.add(this.get(i));
+        	
+        return table;
+//RHO    
+        //return SubTable.valueOf(this, fromIndex, toIndex - fromIndex);
+//RHO        
     }
 
     /**
@@ -714,6 +723,7 @@ public class FastTable/*<E>*/extends FastCollection/*<E>*/implements
     /**
      * This inner class implements a sub-table.
      */
+/*    
     private static final class SubTable extends FastCollection implements List,
             RandomAccess {
 
@@ -830,7 +840,7 @@ public class FastTable/*<E>*/extends FastCollection/*<E>*/implements
             return SubTable.valueOf(_table, _offset + fromIndex, toIndex
                     - fromIndex);
         }
-    }
+    }*/
 
     /**
      * This inner class implements a fast table iterator.
