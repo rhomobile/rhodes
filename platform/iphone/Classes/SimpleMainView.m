@@ -176,16 +176,12 @@
     return tb;
 }
 
-- (id)initWithParentView:(UIView *)v {
-    return [self initWithParentView:v toolbar:nil];
+- (void)removeToolbar {
+    // TODO
 }
 
-- (id)initWithParentView:(UIView *)v frame:(CGRect)frame {
-    return [self initWithParentView:v frame:frame toolbar:nil];
-}
-
-- (id)initWithParentView:(UIView *)v toolbar:(NSArray*)items {
-    return [self initWithParentView:v frame:v.frame toolbar:items];
+- (void)addToolbar:(NSArray*)items {
+    // TODO:
 }
 
 - (id)initWithParentView:(UIView *)v frame:(CGRect)frame toolbar:(NSArray*)items {
@@ -225,6 +221,20 @@
     self.view = root;
     
     return self;
+}
+
+- (id)initWithParentView:(UIView *)v frame:(CGRect)frame {
+    return [self initWithParentView:v frame:frame toolbar:nil];
+}
+
+- (id)initWithMainView:(id<RhoMainView>)v {
+    return [self initWithMainView:v toolbar:nil];
+}
+
+- (id)initWithMainView:(id<RhoMainView>)v toolbar:(NSArray*)items {
+    UIView *p = [v parent];
+    CGRect frame = [[v view] frame];
+    return [self initWithParentView:p frame:frame toolbar:items];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -277,6 +287,10 @@
     return root;
 }
 
+- (UIView*)parent {
+    return parent;
+}
+
 - (void)loadHTMLString:(NSString *)data {
     [webView loadHTMLString:data baseURL:[NSURL URLWithString:@""]];
 }
@@ -326,7 +340,7 @@
     return 0;
 }
 
-- (void)setNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
+- (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
     [self removeNavBar];
     
     UINavigationBar *nb = [[UINavigationBar alloc] initWithFrame:CGRectZero];

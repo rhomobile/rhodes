@@ -48,6 +48,8 @@
 + (CGRect)applicationFrame;
 + (void)setStatusBarHidden:(BOOL)v;
 
++ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view;
+
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait;
