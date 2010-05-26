@@ -1,9 +1,22 @@
 == 2.0.0
 * client support of sync protocol 3 with rhosync 2.0
 * partial support
-* callback calls from menu ad toolbar
+* callback calls from menu and toolbar
 * installing.html(png for android)
 * implement extended Alerts
+* support of :center and :radius parameters for MapView
+* new WebView.set_cookie method
+* added native navigation bar for iPhone and Android
+* full support of native extensions on Android (including Java)
+* new properties added for System.get_property: country, locale, device_name,
+  os_version, ppi_x, ppi_y
+* AsyncHttp now send requests with User-Agent indicating mobile platform, OS
+  and device name
+* 'sms:' uri supported for Android
+* implemented dynamic menu on Android
+* right handle video uri (open native video player) on Android
+* support of capabilities for applications (gps, camera, vibrate etc)
+* native toolbar for Android
 
 == 1.5.4
 * Fix issue #3132788 - rake clean:iphone fails
