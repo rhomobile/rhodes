@@ -32,13 +32,12 @@
     LogViewController* logViewController;
     DateTimePickerDelegate* dateTimePickerDelegate;
     PickImageDelegate* pickImageDelegate;
-@public
+    
     id<RhoMainView,NSObject> mainView;
 }
 
 @property (nonatomic, retain) UIWindow *window;
 @property (nonatomic, retain) AVAudioPlayer *player;
-@property (nonatomic, retain) id<RhoMainView,NSObject> mainView;
 @property (nonatomic, retain) NSMutableDictionary *cookies;
 
 + (Rhodes*)sharedInstance;
@@ -48,7 +47,7 @@
 + (CGRect)applicationFrame;
 + (void)setStatusBarHidden:(BOOL)v;
 
-+ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view;
+//+ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view;
 
 + (void)performOnUiThread:(id)runnable wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait;
@@ -61,5 +60,8 @@
 
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url;
 - (NSString*)cookie:(NSString*)url;
+
+- (id<RhoMainView,NSObject>)mainView;
+- (void)setMainView:(id<RhoMainView,NSObject>)view;
 
 @end
