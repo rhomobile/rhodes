@@ -17,7 +17,7 @@ void rho_geoimpl_init();
 
 @implementation Rhodes
 
-@synthesize window, player, mainView, cookies;
+@synthesize window, player, cookies;
 
 static Rhodes *instance = NULL;
 
@@ -46,6 +46,7 @@ static Rhodes *instance = NULL;
     [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
 }
 
+#if 0
 + (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view {
     if (!view)
         return nil;
@@ -61,6 +62,7 @@ static Rhodes *instance = NULL;
     
     return nil;
 }
+#endif
 
 - (void)runRunnable:(NSArray*)args {
     id runnable = [args objectAtIndex:0];
@@ -247,10 +249,13 @@ static Rhodes *instance = NULL;
         splashViewController = nil;
     }
     
-    [mainView.view removeFromSuperview];
     [mainView release];
     mainView = [view retain];
     [window addSubview:mainView.view];
+}
+
+- (id<RhoMainView,NSObject>)mainView {
+    return mainView;
 }
 
 - (void) showLoadingPage 

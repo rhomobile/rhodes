@@ -13,6 +13,8 @@
 - (UIView*)view;
 - (UIView*)parent;
 
+- (UIWebView*)detachWebView;
+
 - (void)loadHTMLString:(NSString*)data;
 
 - (void)back:(int)index;

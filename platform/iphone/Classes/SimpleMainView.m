@@ -1,4 +1,4 @@
-    //
+//
 //  SimpleMainView.m
 //  rhorunner
 //
@@ -16,6 +16,10 @@
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
+
+#define RHO_TAG_WEBVIEW 1
+#define RHO_TAG_TOOLBAR 2
+#define RHO_TAG_NAVBAR 3
 
 @interface RhoToolbarButtonItemAction : NSObject
 {
@@ -53,7 +57,7 @@
 
 @implementation SimpleMainView
 
-@synthesize root, webView, toolbar, navbar;
+@synthesize root;
 
 - (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
     UIImage *img = nil;
@@ -177,45 +181,64 @@
 }
 
 - (void)removeToolbar {
-    // TODO
+    if (toolbar) {
+        CGRect wFrame = webView.frame;
+        CGRect tbFrame = toolbar.frame;
+        wFrame.size.height += tbFrame.size.height;
+        webView.frame = wFrame;
+    }
+    
+    [toolbar removeFromSuperview];
+    toolbar = nil;
 }
 
 - (void)addToolbar:(NSArray*)items {
-    // TODO:
+    [self removeToolbar];
+    
+    if (!items)
+        return;
+    
+    CGRect wFrame = webView.frame;
+    
+    [toolbar removeFromSuperview];
+    toolbar = [self newToolbar:items frame:wFrame];
+    toolbar.tag = RHO_TAG_TOOLBAR;
+    [root addSubview:toolbar];
+    
+    CGRect tbFrame = toolbar.frame;
+    wFrame.size.height -= tbFrame.size.height;
+    webView.frame = wFrame;
 }
 
-- (id)initWithParentView:(UIView *)v frame:(CGRect)frame toolbar:(NSArray*)items {
-    parent = v;
+- (UIWebView*)newWebView:(CGRect)frame {
+    UIWebView *w = [[UIWebView alloc] initWithFrame:frame];
+    w.scalesPageToFit = YES;
+    w.userInteractionEnabled = YES;
+    w.multipleTouchEnabled = YES;
+    w.autoresizesSubviews = YES;
+    w.clipsToBounds = NO;
+    w.delegate = self;
+    w.tag = RHO_TAG_WEBVIEW;
+    
+    return w;
+}
+
+- (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
+    parent = p;
     
     root = [[UIView alloc] initWithFrame:frame];
     root.userInteractionEnabled = YES;
     
+    [webView removeFromSuperview];
+    webView = w;
+    if (!webView)
+        webView = [self newWebView:frame];
+    [root addSubview:webView];
     CGRect wFrame = frame;
     wFrame.origin.y = 0;
-    webView = [[UIWebView alloc] initWithFrame:wFrame];
-    webView.scalesPageToFit = YES;
-    webView.userInteractionEnabled = YES;
-    //webView.detectsPhoneNumbers = YES;
-    webView.multipleTouchEnabled = YES;
-    webView.autoresizesSubviews = YES;
-    webView.clipsToBounds = NO;
-    webView.delegate = self;
+    webView.frame = wFrame;
     
-    [root addSubview:webView];
-    
-    if (items) {
-        UIToolbar *tb = [self newToolbar:items frame:wFrame];
-        self.toolbar = tb;
-        [root addSubview:toolbar];
-        
-        CGRect newFrame = wFrame;
-        CGRect tbFrame = tb.frame;
-        newFrame.size.height -= tbFrame.size.height;
-        webView.frame = newFrame;
-        
-        [tb release];
-    }
-    
+    [self addToolbar:items];
     navbar = nil;
     
     self.view = root;
@@ -223,8 +246,12 @@
     return self;
 }
 
-- (id)initWithParentView:(UIView *)v frame:(CGRect)frame {
-    return [self initWithParentView:v frame:frame toolbar:nil];
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame toolbar:(NSArray*)items {
+    return [self init:p webView:nil frame:frame toolbar:items];
+}
+
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame {
+    return [self initWithParentView:p frame:frame toolbar:nil];
 }
 
 - (id)initWithMainView:(id<RhoMainView>)v {
@@ -234,7 +261,9 @@
 - (id)initWithMainView:(id<RhoMainView>)v toolbar:(NSArray*)items {
     UIView *p = [v parent];
     CGRect frame = [[v view] frame];
-    return [self initWithParentView:p frame:frame toolbar:items];
+    //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
+    UIWebView *w = [v detachWebView];
+    return [self init:p webView:w frame:frame toolbar:items];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -246,13 +275,10 @@
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    [root removeFromSuperview];
 }
 
 - (void)dealloc {
-    [navbar release];
-    [toolbar release];
-    [webView release];
+    [root removeFromSuperview];
     [root release];
     [super dealloc];
 }
@@ -289,6 +315,14 @@
 
 - (UIView*)parent {
     return parent;
+}
+
+- (UIWebView*)detachWebView {
+    UIWebView *w = [webView retain];
+    [w removeFromSuperview];
+    webView = nil;
+    
+    return w;
 }
 
 - (void)loadHTMLString:(NSString *)data {
@@ -344,6 +378,7 @@
     [self removeNavBar];
     
     UINavigationBar *nb = [[UINavigationBar alloc] initWithFrame:CGRectZero];
+    nb.tag = RHO_TAG_NAVBAR;
     [nb sizeToFit];
     
     UINavigationItem *ni = [[UINavigationItem alloc] initWithTitle:title];
@@ -366,9 +401,8 @@
     }
     
     [nb pushNavigationItem:ni animated:NO];
-    self.navbar = nb;
-    [nb release];
-    
+    [navbar removeFromSuperview];
+    navbar = nb;
     [root addSubview:navbar];
     
     CGRect nFrame = navbar.frame;
@@ -388,7 +422,7 @@
     }
     
     [navbar removeFromSuperview];
-    self.navbar = nil;
+    navbar = nil;
 }
 
 // UIWebViewDelegate imlementation
