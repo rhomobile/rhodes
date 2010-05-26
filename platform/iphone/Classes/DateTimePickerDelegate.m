@@ -71,7 +71,10 @@
     
     // Create the picker
     if (self.pickerView == nil) {
-        self.pickerView = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+        CGRect frame = parentFrame;
+        frame.size.height = 220;
+        frame.origin.y = parentFrame.origin.y + parentFrame.size.height - frame.size.height;
+        self.pickerView = [[UIDatePicker alloc] initWithFrame:frame];
     }
     
     if (self.pickerView.superview == nil) {
@@ -97,9 +100,6 @@
 
         //CGSize pickerSize = CGSizeMake(parentFrame.size.width, parentFrame.size.height/2);
         CGSize pickerSize = [pickerView sizeThatFits:pickerView.frame.size];
-        pickerSize.width = parentFrame.size.width;
-        if (pickerSize.height > parentFrame.size.height)
-            pickerSize.height = parentFrame.size.height;
         CGRect pickerFrame = CGRectMake(parentFrame.origin.x,
                                         parentFrame.origin.y + parentFrame.size.height - pickerSize.height,
                                         pickerSize.width,
