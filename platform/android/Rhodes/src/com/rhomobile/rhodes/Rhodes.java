@@ -199,7 +199,7 @@ public class Rhodes extends Activity {
 	*/
 	
 	private void copyFromBundle(String file) throws IOException {
-		File target = new File(sdcardRootPath(), file);
+		File target = new File(getRootPath(), file);
 		if (target.exists())
 			return;
 		FileSource as = new AssetsSource(getResources().getAssets());
