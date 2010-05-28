@@ -361,10 +361,11 @@ void CSyncEngine::processServerSources(String strSources)
 {
     if ( strSources.length() > 0 )
     {
-        NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
-        loadAllSources();
+        //TODO:processServerSources 
+        //NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
+        //loadAllSources();
 
-        rho_db_init_attr_manager();
+        //rho_db_init_attr_manager();
     }
 }
 
@@ -428,7 +429,7 @@ String CSyncEngine::requestClientIDByNet()
 
         CJSONEntry oJsonEntry(szData);
 
-        if (oJsonEntry.hasName("server_sources") )
+        if (oJsonEntry.hasName("sources") )
             processServerSources(szData);
 
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");

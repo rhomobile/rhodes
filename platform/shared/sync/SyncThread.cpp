@@ -31,13 +31,12 @@ CSyncThread* CSyncThread::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CRhoThread(factory)
+CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CThreadQueue(factory)
 {
-    m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
-    if( RHOCONF().isExist("sync_poll_interval") )
-        m_nPollInterval = RHOCONF().getInt("sync_poll_interval");
+    CThreadQueue::setLogCategory(getLogCategory());
 
-    m_ptrFactory = factory;
+    if( RHOCONF().isExist("sync_poll_interval") )
+        setPollInterval(RHOCONF().getInt("sync_poll_interval"));
 
     m_oSyncEngine.setFactory(factory);
 
@@ -55,36 +54,7 @@ CSyncThread::~CSyncThread(void)
     LOG(INFO) + "Sync engine thread shutdown";
 }
 
-void CSyncThread::addSyncCommand(CSyncCommand* pSyncCmd)
-{ 
-    if ( RHOCONF().getString("syncserver").length() == 0 )
-        return;
-
-   	LOG(INFO) + "addSyncCommand: " + (*pSyncCmd).m_nCmdCode;
-	{
-        synchronized(m_mxStackCommands);
-
-		boolean bExist = false;
-		for ( int i = 0; i < (int)m_stackCommands.size(); i++ )
-		{
-			if ( m_stackCommands.get(i)->equals(*pSyncCmd) )
-			{
-				bExist = true;
-				break;
-			}
-		}
-		
-		if ( !bExist )
-    		m_stackCommands.add(pSyncCmd);
-	}
-
-    if ( getSyncEngine().isNoThreadedMode() )
-        processCommands();
-    else
-	    stopWait(); 
-}
-
-int CSyncThread::getLastSyncInterval()
+int CSyncThread::getLastPollInterval()
 {
     uint64 nowTime = CLocalTime().toULong();
 	
@@ -100,63 +70,12 @@ int CSyncThread::getLastSyncInterval()
 	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
 }
 
-void CSyncThread::run()
-{
-	LOG(INFO) + "Starting sync engine main routine...";
-
-	int nLastSyncInterval = getLastSyncInterval();
-	while( m_oSyncEngine.getState() != CSyncEngine::esExit )
-	{
-        unsigned int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
-
-        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
-        {
-            int nWait2 = m_nPollInterval - nLastSyncInterval;
-            if ( nWait2 <= 0 )
-                nWait = SYNC_STARTUP_INTERVAL_SECONDS;
-            else
-                nWait = nWait2;
-        }
-
-        if ( nWait >= 0 && m_oSyncEngine.getState() != CSyncEngine::esExit && 
-		     isNoCommands() )
-		{
-		    LOG(INFO) + "Sync engine blocked for " + nWait + " seconds...";
-            wait(nWait);
-        }
-        nLastSyncInterval = 0;
-
-        if ( m_oSyncEngine.getState() != CSyncEngine::esExit )
-    		processCommands();
-	}
-}
-
-boolean CSyncThread::isNoCommands()
-{
-	boolean bEmpty = false;
-	synchronized(m_mxStackCommands)
-    {		
-		bEmpty = m_stackCommands.isEmpty();
-	}
-
-	return bEmpty;
-}
-
 void CSyncThread::processCommands()//throws Exception
 {
     if ( isNoCommands() )
-        addSyncCommand(new CSyncCommand(scNone,false));
+        addQueueCommand(new CSyncCommand(scNone,false));
 
-	while(!isNoCommands())
-	{
-		common::CAutoPtr<CSyncCommand> pSyncCmd = null;
-    	{
-        	synchronized(m_mxStackCommands);
-    		pSyncCmd = (CSyncCommand*)m_stackCommands.removeFirst();
-    	}
-		
-		processCommand(*pSyncCmd);
-	}
+    CThreadQueue::processCommands();
 }
 
 void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
@@ -167,12 +86,13 @@ void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
 		//m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 }	
 
-void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
+void CSyncThread::processCommand(CQueueCommand* pCmd)
 {
+    CSyncCommand& oSyncCmd = *((CSyncCommand*)pCmd);
     switch(oSyncCmd.m_nCmdCode)
     {
     case scNone:
-        if ( m_nPollInterval )
+        if ( getPollInterval() )
         {
             checkShowStatus(oSyncCmd);
             m_oSyncEngine.doSyncAllSources();
@@ -181,8 +101,6 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
     case scSyncAll:
         checkShowStatus(oSyncCmd);
         m_oSyncEngine.doSyncAllSources();
-        break;
-    case scChangePollInterval:
         break;
     case scSyncOne:
         {
@@ -211,11 +129,10 @@ void CSyncThread::processCommand(CSyncCommand& oSyncCmd)
 
 void CSyncThread::setPollInterval(int nInterval)
 { 
-    m_nPollInterval = nInterval; 
-    if ( m_nPollInterval == 0 )
+    if ( nInterval == 0 )
         m_oSyncEngine.stopSync();
 
-    addSyncCommand( new CSyncCommand(scChangePollInterval,false) );
+    CThreadQueue::setPollInterval(nInterval);
 }
 
 };
@@ -232,14 +149,14 @@ void rho_sync_destroy()
 	
 void rho_sync_doSyncAllSources(int show_status_popup)
 {
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0));
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0));
     //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
 }
 
 void rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 {
     CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0 ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0 ) );
 }	
 
 void rho_sync_stop()
@@ -271,7 +188,7 @@ void rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *p
     rho::Vector<rho::String> arSources;
     rho_ruby_enum_strary(ar_sources, source_iter, &arSources);
 
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
 }	
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
@@ -289,7 +206,7 @@ void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
         strName = szLastSlash ? szLastSlash + 1 : szSrcUrl;
 
     //TODO: save query params
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, strName, (int)0, false ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, strName, (int)0, false ) );
 }	
 
 void rho_sync_set_pollinterval(int nInterval)
@@ -306,13 +223,13 @@ void rho_sync_set_syncserver(char* syncserver)
     if ( syncserver && *syncserver )
         CSyncThread::getInstance()->start(CSyncThread::epLow);
     else
-        CSyncThread::getInstance()->stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+        CSyncThread::getInstance()->stop(CSyncThread::SYNC_WAIT_BEFOREKILL_SECONDS);
 }
 
 void rho_sync_login(const char *name, const char *password, const char* callback)
 {
     rho_sync_stop();
-    CSyncThread::getInstance()->addSyncCommand(new CSyncThread::CSyncLoginCommand(name, password, callback) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, callback) );
 }
 
 int rho_sync_logged_in()

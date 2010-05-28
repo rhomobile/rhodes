@@ -874,6 +874,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\ThreadQueue.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\ThreadQueue.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\Tokenizer.cpp"
 				>
 			</File>
