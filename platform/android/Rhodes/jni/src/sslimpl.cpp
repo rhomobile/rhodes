@@ -46,7 +46,9 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
     arr[0] = (jbyte)(addr & 0xFF);
     env->ReleaseByteArrayElements(array, arr, 0);
 
-    jobject inetaddrObj = env->NewObject(clsInetAddr, midInetAddr, array, rho_cast<jstring>(::inet_ntoa(sa.sin_addr)));
+    jstring ipaddrObj = rho_cast<jstring>(::inet_ntoa(sa.sin_addr));
+    jobject inetaddrObj = env->NewObject(clsInetAddr, midInetAddr, array, ipaddrObj);
+    env->DeleteLocalRef(ipaddrObj);
     if (!inetaddrObj) return NULL;
 
     jobject sockaddrObj = env->NewObject(clsSockAddr, midSockAddr);
@@ -54,6 +56,8 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
 
     env->SetObjectField(sockaddrObj, fidInetAddr, inetaddrObj);
     env->SetIntField(sockaddrObj, fidPort, ntohs(sa.sin_port));
+
+    env->DeleteLocalRef(inetaddrObj);
 
     return sockaddrObj;
 }
