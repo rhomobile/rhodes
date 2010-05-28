@@ -176,7 +176,7 @@ module Rho
             return
         end
         
-        arSrc = res['server_sources']
+        arSrc = res['sources']
         puts "arSrc: #{arSrc}"
         return unless arSrc
 
