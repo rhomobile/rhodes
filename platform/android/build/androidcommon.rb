@@ -197,10 +197,10 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   end
   args += $cxxlibs
   $libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
-  args << $libgcc
+  args << $libgcc if $ndkgccver != "4.2.1"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
-  args << $libgcc
+  args << $libgcc if $ndkgccver == "4.2.1"
   cc_run($gccbin, args)
 end
 
