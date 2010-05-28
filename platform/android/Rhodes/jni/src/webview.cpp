@@ -90,4 +90,6 @@ RHO_GLOBAL void rho_webview_set_cookie(const char *url, const char *cookie)
     jstring urlObj = rho_cast<jstring>(url);
     jstring cookieObj = rho_cast<jstring>(cookie);
     env->CallStaticVoidMethod(cls, mid, urlObj, cookieObj);
+    env->DeleteLocalRef(urlObj);
+    env->DeleteLocalRef(cookieObj);
 }

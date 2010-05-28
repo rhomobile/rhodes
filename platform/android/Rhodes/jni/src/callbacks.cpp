@@ -90,7 +90,9 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return 0;
 
-    jobject result = env->CallStaticObjectMethod(cls, mid, rho_cast<jstring>(szPropName));
+    jstring propNameObj = rho_cast<jstring>(szPropName);
+    jobject result = env->CallStaticObjectMethod(cls, mid, propNameObj);
+    env->DeleteLocalRef(propNameObj);
     if (!result) return 0;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
@@ -102,26 +104,31 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     if (env->IsInstanceOf(result, clsBoolean)) {
         jmethodID midValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
         *resValue = rho_ruby_create_boolean((int)env->CallBooleanMethod(result, midValue));
+        env->DeleteLocalRef(result);
         return 1;
     }
     else if (env->IsInstanceOf(result, clsInteger)) {
         jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
         *resValue = rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
+        env->DeleteLocalRef(result);
         return 1;
     }
     else if (env->IsInstanceOf(result, clsFloat)) {
         jmethodID midValue = getJNIClassMethod(env, clsFloat, "floatValue", "()F");
         *resValue = rho_ruby_create_double((double)env->CallFloatMethod(result, midValue));
+        env->DeleteLocalRef(result);
         return 1;
     }
     else if (env->IsInstanceOf(result, clsDouble)) {
         jmethodID midValue = getJNIClassMethod(env, clsDouble, "doubleValue", "()D");
         *resValue = rho_ruby_create_double((double)env->CallDoubleMethod(result, midValue));
+        env->DeleteLocalRef(result);
         return 1;
     }
     else if (env->IsInstanceOf(result, clsString)) {
         jstring resStrObj = (jstring)result;
         *resValue = rho_ruby_create_string(rho_cast<std::string>(resStrObj).c_str());
+        env->DeleteLocalRef(result);
         return 1;
     }
 
