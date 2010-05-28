@@ -3,6 +3,7 @@ platform/shared/common/PosixThreadImpl.cpp
 platform/shared/common/RhoConf.cpp
 platform/shared/common/RhoFile.cpp
 platform/shared/common/RhoThread.cpp
+platform/shared/common/ThreadQueue.cpp
 platform/shared/common/SplashScreen.cpp
 platform/shared/common/Tokenizer.cpp
 platform/shared/common/AppMenu.cpp

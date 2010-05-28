@@ -8,6 +8,7 @@ namespace net{
 
 struct ICallbackObject
 {
+    virtual ~ICallbackObject(){};
     virtual unsigned long getObjectValue() = 0;
 };
 

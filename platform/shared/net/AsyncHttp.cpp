@@ -11,21 +11,86 @@ namespace net
 {
 
 IMPLEMENT_LOGCLASS(CAsyncHttp, "AsyncHttp");
-common::CMutex CAsyncHttp::m_mxInstances;
-VectorPtr<CAsyncHttp*> CAsyncHttp::m_arInstances;
+CAsyncHttp* CAsyncHttp::m_pInstance = 0;
+
+/*static*/ CAsyncHttp* CAsyncHttp::Create()
+{
+    if ( m_pInstance ) 
+        return m_pInstance;
+
+    m_pInstance = new CAsyncHttp( rho::common::createClassFactory());
+    return m_pInstance;
+}
+
+/*static*/void CAsyncHttp::Destroy()
+{
+    if ( m_pInstance )
+        delete m_pInstance;
+
+    m_pInstance = 0;
+}
+
+CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory) : CThreadQueue(factory)
+{
+    CThreadQueue::setLogCategory(getLogCategory());
+
+    setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
+
+    m_pCurCmd = null;
+}
+
+CAsyncHttp::~CAsyncHttp(void)
+{
+    cancelRequest("*", true);
+    LOG(INFO) + "Thread shutdown";
+}
+
+void CAsyncHttp::addQueueCommand(CQueueCommand* pCmd)
+{
+    if ( ((CHttpCommand*)pCmd)->m_strCallback.length()==0)
+        processCommand(pCmd);
+    else
+    {
+        CThreadQueue::addQueueCommand(pCmd);
+        start(epLow);
+    }
+}
+
+void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
+{
+    if (!szCallback || !*szCallback )
+    {
+        LOG(INFO) + "Cancel callback should not be empty. Use * for cancel all";
+        return;
+    }
+
+    if ( m_pCurCmd != null )
+        m_pCurCmd->cancel();
+
+    if ( bWait )
+        stop(-1);
+
+    //TODO: find command by callback and cancel it if current, remove if it is still in queue
+}
+
+void CAsyncHttp::processCommand(CQueueCommand* pCmd)
+{
+    m_pCurCmd = (CHttpCommand*)pCmd;
+    m_pCurCmd->execute();
+    m_pCurCmd = null;
+}
 
 extern "C" void header_iter(const char* szName, const char* szValue, void* pHash)
 {
     ((Hashtable<String,String>*)pHash)->put(szName, szValue);
 }
 
-CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
+CAsyncHttp::CHttpCommand::CHttpCommand(
+    EHttpCommands eCmd,
     const char* url, unsigned long headers, const char* body,
     const char* file_path,
-    const char* callback, const char* callback_params, boolean ssl_verify_peer) :  CRhoThread(factory)
+    const char* callback, const char* callback_params, boolean ssl_verify_peer)
 {
-    m_bFinished = false;
-    m_ptrFactory = factory;
     m_strUrl = url != null ? url : "";
     m_strBody = body != null ? body : "";
     m_strFilePath = file_path != null ? file_path : "";
@@ -36,99 +101,31 @@ CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory, EHttpCommands eCmd,
 
     rho_ruby_enum_strhash(headers, &header_iter, &m_mapHeaders);
 
-    addNewObject(this);
+    m_pNetRequest = CAsyncHttp::getInstance()->getFactory()->createNetRequest();
+    m_pNetRequest->sslVerifyPeer(m_sslVerifyPeer);
 
-    if (m_strCallback.length()==0)
-        run();
-    else
-        start(epLow);
 }
 
-void CAsyncHttp::cancel(boolean bWait)
+void CAsyncHttp::CHttpCommand::cancel()
 {
-    {		
-    	synchronized(m_mxRequest)
-
-        if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
-            m_pNetRequest->cancel();
-    }
-
-    if ( bWait )
-        stop(-1);
+    if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
+        m_pNetRequest->cancel();
 }
 
-/*static*/ void CAsyncHttp::addNewObject(CAsyncHttp* pObj)
+void CAsyncHttp::CHttpCommand::execute()
 {
-	synchronized(m_mxInstances)
-    {
-        while(1)
-        {
-            int nToDelete = -1;
-            for (int i = 0; i < (int)m_arInstances.size(); i++ )
-            {
-                if ( m_arInstances.elementAt(i)->m_bFinished )
-                {
-                    nToDelete = i;
-                    break;
-                }
-            }
-
-            if (nToDelete==-1)
-                break;
-
-            m_arInstances.removeElementAt(nToDelete);
-        }
-
-        m_arInstances.addElement(pObj);
-    }
-}
-
-/*static*/ void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
-{
-    if (!szCallback || !*szCallback )
-    {
-        LOG(INFO) + "Cancel callback should not be empty. Use * for cancel all";
-        return;
-    }
-
-	synchronized(m_mxInstances)
-    {		
-        if ( *szCallback == '*')
-        {
-            for (int i = 0; i < (int)m_arInstances.size(); i++ )
-                m_arInstances.elementAt(i)->cancel(bWait);
-        }else
-        {
-            for (int i = 0; i < (int)m_arInstances.size(); i++ )
-            {
-                if ( m_arInstances.elementAt(i)->m_strCallback.compare(szCallback) == 0 )
-                    m_arInstances.elementAt(i)->cancel(bWait);    
-            }
-        }
-    }
-}
-
-void CAsyncHttp::run()
-{
-    LOG(INFO) + "RhoHttp thread start.";
-
-    {		
-        synchronized(m_mxRequest)
-        m_pNetRequest = m_ptrFactory->createNetRequest();
-        m_pNetRequest->sslVerifyPeer(m_sslVerifyPeer);
-    }
-
+    INetResponse* resp = null;
     switch( m_eCmd )
     {
     case hcGet:
-        m_pNetResponse = m_pNetRequest->doRequest("GET", m_strUrl, m_strBody, null, &m_mapHeaders);
+        resp = m_pNetRequest->doRequest("GET", m_strUrl, m_strBody, null, &m_mapHeaders);
         break;
     case hcPost:
-        m_pNetResponse = m_pNetRequest->doRequest("POST", m_strUrl, m_strBody, null, &m_mapHeaders);
+        resp = m_pNetRequest->doRequest("POST", m_strUrl, m_strBody, null, &m_mapHeaders);
         break;
 
     case hcDownload:
-        m_pNetResponse = m_pNetRequest->pullFile(m_strUrl, m_strFilePath, null, &m_mapHeaders);
+        resp = m_pNetRequest->pullFile(m_strUrl, m_strFilePath, null, &m_mapHeaders);
         break;
 
     case hcUpload:
@@ -148,23 +145,24 @@ void CAsyncHttp::run()
                 arMultipartItems.addElement(pItem);
             }
 
-            m_pNetResponse = m_pNetRequest->pushMultipartData( m_strUrl, arMultipartItems, null, &m_mapHeaders );
+            resp = m_pNetRequest->pushMultipartData( m_strUrl, arMultipartItems, null, &m_mapHeaders );
             break;
         }
     }
 
     if ( !m_pNetRequest->isCancelled())
-    {
-        //processResponse(*m_pNetResponse);
-        callNotify(*m_pNetResponse,0);
-    }
-
-	LOG(INFO) + "RhoHttp thread end.";
-
-    m_bFinished = true;
+        callNotify(resp,0);
 }
 
-String CAsyncHttp::makeHeadersString()
+unsigned long CAsyncHttp::CHttpCommand::getRetValue()
+{
+    if ( m_strCallback.length() == 0 )
+        return rho_ruby_create_string(m_strResBody.c_str()); 
+
+    return rho_ruby_get_NIL();
+}
+
+String CAsyncHttp::CHttpCommand::makeHeadersString()
 {
     String strRes = "";
 
@@ -182,39 +180,10 @@ String CAsyncHttp::makeHeadersString()
     return strRes;
 }
 
-extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
-unsigned long CAsyncHttp::getObjectValue()
-{ 
-    rho::net::INetResponse& resp = *m_pNetResponse;
-    if (resp.isOK())
-    {
-        String strContType = m_mapHeaders.get("content-type");
-        if ( strContType.find("application/json") != String::npos )
-        {
-            char* szError = 0;
-            unsigned long valBody = rjson_tokener_parse(resp.getCharData(), &szError);
-            if ( valBody != 0 )
-                return valBody;
-
-            LOG(ERROR) + "Incorrect json body.Error:" + (szError ? szError : "");
-            if ( szError )
-                free(szError);
-        }
-    }
-
-    return rho_ruby_create_string(resp.getCharData()); 
-}
-
-unsigned long CAsyncHttp::getRetValue()
+void CAsyncHttp::CHttpCommand::callNotify(rho::net::INetResponse* pResp, int nError )
 {
-    if ( m_strCallback.length() == 0 )
-        return rho_ruby_create_string(m_strResBody.c_str()); 
+    rho::net::INetResponse& resp = *pResp;
 
-    return rho_ruby_get_NIL();
-}
-
-void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
-{
     m_strResBody = "rho_callback=1";
     m_strResBody += "&status=";
     if ( nError > 0 )
@@ -240,7 +209,8 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
         if (strHeaders.length() > 0 )
             m_strResBody += "&" + strHeaders;
 
-        m_strResBody += "&" + RHODESAPP().addCallbackObject(this, "body");
+        m_strResBody += "&" + RHODESAPP().addCallbackObject(
+            new CAsyncHttpResponse(pResp, m_mapHeaders.get("content-type")), "body");
     }
 
     if ( m_strCallbackParams.length() > 0 )
@@ -248,12 +218,33 @@ void CAsyncHttp::callNotify(rho::net::INetResponse& resp, int nError )
 
     if ( m_strCallback.length() > 0 )
     {
-        common::CAutoPtr<INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-        String strFullUrl = pNetRequest->resolveUrl(m_strCallback);
-        NetResponse(resp1,pNetRequest->pushData( strFullUrl, m_strResBody, null ));
-        if ( !resp1.isOK() )
-            LOG(ERROR) + "AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData();
+        String strFullUrl = m_pNetRequest->resolveUrl(m_strCallback);
+        m_pNetRequest->pushData( strFullUrl, m_strResBody, null );
     }
+}
+
+CAsyncHttp::CAsyncHttpResponse::~CAsyncHttpResponse(){}
+
+extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
+unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
+{ 
+    rho::net::INetResponse& resp = *m_pNetResponse;
+    if (resp.isOK())
+    {
+        if ( m_strContentType.find("application/json") != String::npos )
+        {
+            char* szError = 0;
+            unsigned long valBody = rjson_tokener_parse(resp.getCharData(), &szError);
+            if ( valBody != 0 )
+                return valBody;
+
+            LOG(ERROR) + "Incorrect json body.Error:" + (szError ? szError : "");
+            if ( szError )
+                free(szError);
+        }
+    }
+
+    return rho_ruby_create_string(resp.getCharData()); 
 }
 
 } // namespace net
@@ -265,36 +256,44 @@ using namespace rho::net;
 
 unsigned long rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcGet, url, headers, null, null, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::Create();
+
+    CAsyncHttp::CHttpCommand* pHttp = new CAsyncHttp::CHttpCommand(CAsyncHttp::hcGet, url, headers, null, null, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::getInstance()->addQueueCommand(pHttp);
     return pHttp->getRetValue();
 }
 
 unsigned long rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcPost, url, headers, body!=null?body:"", null, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::Create();
+
+    CAsyncHttp::CHttpCommand* pHttp = new CAsyncHttp::CHttpCommand(CAsyncHttp::hcPost, url, headers, body!=null?body:"", null, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::getInstance()->addQueueCommand(pHttp);
     return pHttp->getRetValue();
 }
 
 unsigned long rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcDownload, url, headers, "", file_path, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::Create();
+
+    CAsyncHttp::CHttpCommand* pHttp = new CAsyncHttp::CHttpCommand(CAsyncHttp::hcDownload, url, headers, "", file_path, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::getInstance()->addQueueCommand(pHttp);
     return pHttp->getRetValue();
 }
 
 unsigned long rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* body, const char* file_path, const char* callback, const char* callback_params, int ssl_verify_peer)
 {
-    CAsyncHttp* pHttp = new CAsyncHttp(rho::common::createClassFactory(), CAsyncHttp::hcUpload, url, headers, body, file_path, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::Create();
+
+    CAsyncHttp::CHttpCommand* pHttp = new CAsyncHttp::CHttpCommand(CAsyncHttp::hcUpload, url, headers, body, file_path, callback, callback_params, ssl_verify_peer!=0 );
+    CAsyncHttp::getInstance()->addQueueCommand(pHttp);
     return pHttp->getRetValue();
 }
 
 void rho_asynchttp_cancel(const char* cancel_callback)
 {
-    CAsyncHttp::cancelRequest(cancel_callback, false);
-}
-
-void rho_asynchttp_destroy()
-{
-    CAsyncHttp::cancelRequest("*", true);
+    if ( CAsyncHttp::getInstance() )
+        CAsyncHttp::getInstance()->cancelRequest(cancel_callback, false);
 }
 
 }

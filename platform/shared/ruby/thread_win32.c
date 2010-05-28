@@ -190,10 +190,10 @@ typedef LPTHREAD_START_ROUTINE w32_thread_start_func;
 static HANDLE
 w32_create_thread(DWORD stack_size, w32_thread_start_func func, void *val)
 {
-    return start_thread(0, stack_size, func, val, CREATE_SUSPENDED
-#ifdef _WIN32_WCE
-        |STACK_SIZE_PARAM_IS_A_RESERVATION
-#endif
+    return start_thread(0, 0/*stack_size*/, func, val, CREATE_SUSPENDED
+//#ifdef _WIN32_WCE
+//        |STACK_SIZE_PARAM_IS_A_RESERVATION
+//#endif
         ,0);
 }
 
@@ -587,25 +587,26 @@ timer_thread_func(void *dummy)
 static void
 rb_thread_create_timer_thread(void)
 {
-    if (timer_thread_id == 0) {
+/*    if (timer_thread_id == 0) {
 	if (!timer_thread_lock) {
 	    timer_thread_lock = CreateEvent(0, TRUE, FALSE, 0);
 	}
 	timer_thread_id = w32_create_thread(1024 + (THREAD_DEBUG ? BUFSIZ : 0),
 					    timer_thread_func, 0);
 	w32_resume_thread(timer_thread_id);
-    }
+    }*/
 }
 
 static int
 native_stop_timer_thread(void)
 {
-    int stopped = --system_working <= 0;
+    return 1;
+/*    int stopped = --system_working <= 0;
     if (stopped) {
 	CloseHandle(timer_thread_lock);
 	timer_thread_lock = 0;
     }
-    return stopped;
+    return stopped;  */
 }
 
 #endif /* THREAD_SYSTEM_DEPENDENT_IMPLEMENTATION */
