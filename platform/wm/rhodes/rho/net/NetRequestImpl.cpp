@@ -6,6 +6,7 @@
 #include "NetRequest.h"
 #include "common/StringConverter.h"
 #include "net/URI.h"
+#include "common/RhoConf.h"
 
 #if defined(_WIN32_WCE)
 #include <connmgr.h>
@@ -62,8 +63,31 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
 			break;
 		}
 
-        m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), NULL, 
-          INTERNET_SERVICE_HTTP, 0, 0 );
+#ifdef OS_WINDOWS
+		if (RHOCONF().isExist("http_proxy_host")) {
+			rho::String login, password;
+			
+			if (RHOCONF().isExist("http_proxy_login"))
+				login = RHOCONF().getString ("http_proxy_login");
+			else
+				login = "anonymous";
+
+			if (RHOCONF().isExist("http_proxy_password"))
+				password = RHOCONF().getString("http_proxy_password");
+
+			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, 
+											//rho::common::convertToStringW(login).c_str(),
+											//password.length() ? rho::common::convertToStringW(password).c_str() : NULL,
+											_T("baran"), _T("baran"),
+											INTERNET_SERVICE_HTTP, 0, 0);
+		} else {
+			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), NULL, 
+											INTERNET_SERVICE_HTTP, 0, 0);
+		}
+#else
+        m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
+										 NULL, INTERNET_SERVICE_HTTP, 0, 0 );
+#endif
         if ( !m_hConnection ) 
         {
             m_pszErrFunction = L"InternetConnect";
@@ -772,8 +796,27 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     if (m_hInternet)
         return true;
 
+#ifdef OS_WINDOWS
+	if (RHOCONF().isExist("http_proxy_host")) {
+		rho::String proxyName = RHOCONF().getString("http_proxy_host");
+
+		if (RHOCONF().isExist("http_proxy_port")) {
+			proxyName += ":" +  RHOCONF().getString("http_proxy_port");
+		}
+
+		LOG(ERROR) + "PROXY: " + proxyName;
+
+		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PROXY, 
+									rho::common::convertToStringW(proxyName).c_str(), 
+									NULL, NULL);
+	} else {
+		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
+	}
+#else
     m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
-    if ( !m_hInternet ) 
+#endif
+
+	if ( !m_hInternet ) 
     {
         m_pszErrFunction = L"InternetOpen";
         return false;
