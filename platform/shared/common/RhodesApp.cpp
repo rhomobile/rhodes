@@ -92,6 +92,7 @@ void CRhodesApp::run()
 
     LOG(INFO) + "Starting sync engine...";
     rho_sync_create();
+
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
 
@@ -130,7 +131,7 @@ void CRhodesApp::stopApp()
         stop(2000);
     }
 
-    rho_asynchttp_destroy();
+    net::CAsyncHttp::Destroy();
 }
 
 class CRhoCallbackCall :  public common::CRhoThread
@@ -577,7 +578,11 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
     if ( !pCallbackObject )
         return rho_ruby_get_NIL();
 
-    return pCallbackObject->getObjectValue();
+    unsigned long valRes = pCallbackObject->getObjectValue();
+
+    delete pCallbackObject;
+
+    return valRes;
 }
 
 void CRhodesApp::setPushNotification(String strUrl, String strParams )
