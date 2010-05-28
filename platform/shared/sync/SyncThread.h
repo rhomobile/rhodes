@@ -5,26 +5,24 @@
 #include "logging/RhoLog.h"
 #include "db/DBAdapter.h"
 #include "sync/SyncEngine.h"
-#include "common/RhoThread.h"
+#include "common/ThreadQueue.h"
 
 namespace rho {
 namespace sync {
 
-#define SYNC_POLL_INTERVAL_SECONDS 300
-#define SYNC_POLL_INTERVAL_INFINITE (unsigned int)(-1)
-#define SYNC_WAIT_BEFOREKILL_SECONDS 3
-#define SYNC_STARTUP_INTERVAL_SECONDS 10
-
-class CSyncThread : public common::CRhoThread
+class CSyncThread : public common::CThreadQueue
 {
 public:
-    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scChangePollInterval, scExit, scLogin, scSearchOne};
+    enum ESyncCommands{ scNone = 0, scSyncAll, scSyncOne, scLogin, scSearchOne};
 
 private:
 
     DEFINE_LOGCLASS;
+
 public:
-    class CSyncCommand
+    static const unsigned int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
+
+    class CSyncCommand : public CQueueCommand
     {
     public:
 	    int m_nCmdCode;
@@ -59,11 +57,28 @@ public:
             m_bShowStatus = bShowStatus;
 	    }
 
-	    boolean equals(const CSyncCommand& oSyncCmd)
+	    boolean equals(const CQueueCommand& cmd)
 	    {
+            const CSyncCommand& oSyncCmd = (const CSyncCommand&)cmd;
 		    return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
 			    m_strCmdParam == oSyncCmd.m_strCmdParam;
 	    }
+
+        String toString()
+        {
+            switch(m_nCmdCode)
+            {
+            case scSyncAll:
+                return "SyncAll";
+            case scSyncOne:
+                return "SyncOne";
+            case scLogin:
+                return "Login";
+            case scSearchOne:
+                return "Search";
+            }
+            return "Unknown";
+        }
 
     };
 
@@ -96,10 +111,6 @@ private:
     static CSyncThread* m_pInstance;
 
     CSyncEngine     m_oSyncEngine;
-    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
-	int           m_nPollInterval;
-   	common::CMutex m_mxStackCommands;
-	LinkedListPtr<CSyncCommand*> m_stackCommands;
 public:
     ~CSyncThread(void);
 
@@ -108,18 +119,15 @@ public:
     static CSyncThread* getInstance(){ return m_pInstance; }
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
 
-    void addSyncCommand(CSyncCommand* pSyncCmd);
-
-	virtual void run();
-
 	void setPollInterval(int nInterval);
 private:
     CSyncThread(common::IRhoClassFactory* factory);
-    int getLastSyncInterval();
 
-    void processCommands();
-    void processCommand(CSyncCommand& oSyncCmd);
-    boolean isNoCommands();
+    virtual int getLastPollInterval();
+    virtual void processCommand(CQueueCommand* pCmd);
+    virtual boolean isSkipDuplicateCmd() { return true; }
+
+    virtual void processCommands();
 
     void checkShowStatus(CSyncCommand& oSyncCmd);
 };

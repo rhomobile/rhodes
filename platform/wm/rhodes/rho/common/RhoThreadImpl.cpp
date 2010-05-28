@@ -15,6 +15,7 @@ static DWORD WINAPI runProc(void* pv) throw()
 {
 	IRhoRunnable* p = static_cast<IRhoRunnable*>(pv);
 	p->run();
+    ::ExitThread(0);
 	return 0;
 }
 
