@@ -25,4 +25,8 @@ extern rho::LogCategory __rhoCurrentCategory;
 #define IMPLEMENT_LOGCLASS(classname, name) \
     rho::LogCategory classname::__rhoCurrentCategory = name
 
+#define DEFINE_BASELOGCLASS rho::LogCategory __rhoCurrentCategory;\
+    rho::LogCategory getLogCategory(){return __rhoCurrentCategory;}\
+    void setLogCategory(const rho::LogCategory& cat){__rhoCurrentCategory = cat;}
+
 #endif //_RHOLOGCAT_H_
