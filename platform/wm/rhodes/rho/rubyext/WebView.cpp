@@ -75,8 +75,18 @@ void rho_webview_set_cookie(const char *url, const char *cookie)
 	nurl += "://";
 	nurl += std::string(uri.lpszHostName, uri.dwHostNameLength);
 	nurl += std::string(uri.lpszUrlPath, uri.dwUrlPathLength);
-	if (!::InternetSetCookieA(nurl.c_str(), NULL, cookie))
-		RAWLOG_ERROR1("WebView.set_cookie: can not set cookie for url %s", nurl.c_str());
+
+	for (const char *c = cookie;;) {
+		const char *s = c;
+		for (; *s != ';' && *s != '\0'; ++s);
+		std::string c1(c, s - c);
+		if (!::InternetSetCookieA(nurl.c_str(), NULL, c1.c_str()))
+			RAWLOG_ERROR1("WebView.set_cookie: can not set cookie for url %s", nurl.c_str());
+		if (*s == '\0')
+			break;
+		for (c = s + 1; *c == ' '; ++c);
+	}
+	
 }
 
 }
