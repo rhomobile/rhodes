@@ -41,6 +41,10 @@ HREGNOTIFY g_hNotify = NULL;
 
 #endif
 
+#ifdef OS_WINDOWS
+String httpProxy;
+#endif
+
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
 public :
@@ -49,13 +53,24 @@ public :
 		TCHAR szTokens[] = _T("-/");
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
         getRhoRootPath();
+
 		while (lpszToken != NULL)
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
 			}
+
 #if defined(OS_WINDOWS)
-			else if (wcsncmp(lpszToken, _T("approot"),7)==0) {
+			if (wcsncmp(lpszToken, _T("http_proxy"),10)==0) {
+				char *token = wce_wctomb(lpszToken);
+				char *proxy =parseToken(token,strlen(token));
+
+				httpProxy = proxy;
+
+				free(proxy);
+				free(token);
+
+			} else if (wcsncmp(lpszToken, _T("approot"),7)==0) {
 				char* token = wce_wctomb(lpszToken);
 				//parseToken will allocate extra byte at the end of the returned token value
 				char* path = parseToken( token, strlen(token) );
@@ -113,6 +128,12 @@ public :
 
 		rho_logconf_Init(m_strRootPath.c_str());
 		LOG(INFO) + "Rhodes started";
+
+#ifdef OS_WINDOWS
+		if (httpProxy.length() > 0)
+			parseHttpProxyURI(httpProxy);
+#endif
+			
 
         ::SetThreadPriority(GetCurrentThread(),10);
 
@@ -238,6 +259,127 @@ public :
 
         return m_strRootPath; 
     }
+
+	void parseHttpProxyURI(const rho::String &http_proxy)
+	{
+		// http://<login>:<passwod>@<host>:<port>
+		const char *default_port = "8080";
+
+		int index = http_proxy.find("http://", 0, 7);
+		if (index == string::npos) {
+			LOG(ERROR) + "http proxy url should starts with \"http://\"";
+			return;
+		}
+		index = 7;
+
+		enum {
+			ST_START,
+			ST_LOGIN,
+			ST_PASSWORD,
+			ST_HOST,
+			ST_PORT,
+			ST_FINISH
+		};
+
+		String token, login, password, host, port;
+		char c, state = ST_START, prev_state = state;
+		int length = http_proxy.length();
+
+		for (int i = index; i < length; i++) {
+			c = http_proxy[i];
+
+			switch (state) {
+			case ST_START:
+				if (c == '@') {
+					prev_state = state; state = ST_HOST;
+				} else if (c == ':') {
+					prev_state = state; state = ST_PASSWORD;
+				} else {
+					token +=c;
+					state = ST_HOST;
+				}
+				break;
+			case ST_HOST:
+				if (c == ':') {
+					host = token; token.clear();			
+					prev_state = state; state = ST_PORT;
+				} else if (c == '@') {
+					host = token; token.clear();		
+					prev_state = state;	state = ST_LOGIN;					
+				} else {
+					token += c;
+					if (i == (length - 1)) {
+						host = token; token.clear();								
+					}
+				}
+				break;
+			case ST_PORT:
+				if (c == '@') {
+					port = token; token.clear();			
+					prev_state = state; state = ST_LOGIN;
+				} else {
+					token += c;
+					if (i == (length - 1)) {
+						port = token; token.clear();
+					}
+				}
+				break;
+			case ST_LOGIN:
+				if (prev_state == ST_PORT || prev_state == ST_HOST) {
+					login    = host; host.clear();
+					password = port; port.clear();
+					prev_state = state; state = ST_HOST;
+					token += c;
+				} else {
+					token += c;
+					if (i == (length - 1)) {
+						login = token; token.clear();								
+					}
+				}
+				break;
+			case ST_PASSWORD:
+				if (c == '@') {
+					password = token; token.clear();			
+					prev_state = state; state = ST_HOST;
+				} else {
+					token += c;
+					if (i == (length - 1)) {
+						password = token; token.clear();								
+					}
+				}
+				break;
+			default:
+				;
+			}
+		}
+
+		LOG(INFO) + "Setting up HTTP proxy:";
+		LOG(INFO) + "URI: " + http_proxy;
+		LOG(INFO) + "HTTP proxy login    = " + login;
+		LOG(INFO) + "HTTP proxy password = " + password;
+		LOG(INFO) + "HTTP proxy host     = " + host;
+		LOG(INFO) + "HTTP proxy port     = " + port;
+	
+		if (host.length()) {
+			RHOCONF().setString ("http_proxy_host", host);
+
+			if (port.length()){
+				RHOCONF().setString ("http_proxy_port", port);
+			} else {
+				LOG(WARNING) + "there is no proxy port defined";
+			}
+
+			if (login.length())
+				RHOCONF().setString ("http_proxy_login", login);
+
+			if (password.length())
+				RHOCONF().setString ("http_proxy_password", password);
+
+		} else {
+			LOG(ERROR) + "empty host name in HTTP-proxy URL";
+		}
+
+	}
 
 private:
     CMainWindow m_appWindow;
