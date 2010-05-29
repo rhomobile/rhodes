@@ -475,10 +475,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    if ( strSources.length() > 0 )
 	    {
-	        NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
+	        /*NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
 	        loadAllSources();
 	        
-	        DBAdapter.initAttrManager();
+	        DBAdapter.initAttrManager();*/
 	    }
 	}
 	
@@ -521,7 +521,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	
 	        JSONEntry oJsonEntry = new JSONEntry(szData);
 	
-	        if (oJsonEntry.hasName("server_sources") )
+	        if (oJsonEntry.hasName("sources") )
 	            processServerSources(szData);
 	        
 	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
