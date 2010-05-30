@@ -13,6 +13,7 @@ import com.xruby.runtime.lang.RubyMethod;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.xruby.runtime.lang.RubySymbol;
 import com.xruby.runtime.lang.RubyValue;
+import java.util.Hashtable;
 
 import j2me.math.HugeInt;
 import org.apache.oro.text.regex.MatchResult;
@@ -83,8 +84,17 @@ public class ObjectFactory {
         return new RubyString(c, s);
     }
 
-    public static RubyRegexp createRegexp(String value, String option) {
-        return new RubyRegexp(value, option);
+    private static Hashtable m_hashRegex = new Hashtable(); 
+    public static synchronized RubyRegexp createRegexp(String value, String option) 
+    {
+    	String strKey = value+option;
+    	Object obj = m_hashRegex.get(strKey);
+    	if ( obj == null )
+    	{
+    		obj = new RubyRegexp(value, option);
+    		m_hashRegex.put(strKey, obj);
+    	}
+        return (RubyRegexp)obj;
     }
 
     public static RubyRegexp createRegexp() {
