@@ -157,46 +157,52 @@ module Rho
     def load_server_sources(data)
         puts "load_server_sources : #{data}"
         
-        res = Rho::JSON.parse(data)
-        if res['partition']
-            str_partition = res['partition']
-            puts "reload sources for partition: #{str_partition}"
-            db = @db_partitions[ str_partition ]
+        begin
+            res = Rho::JSON.parse(data)
+            if res['partition']
+                str_partition = res['partition']
+                puts "reload sources for partition: #{str_partition}"
+                db = @db_partitions[ str_partition ]
 
-            puts "sources before: #{Rho::RhoConfig::sources()}"
-            
-            Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
-            arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
-                {'partition'=>str_partition} )
-            arSrcs.each do |src|
-                Rho::RhoConfig::sources()[ src['name'] ] = src
-            end
-            
-            puts "sources after: #{Rho::RhoConfig::sources()}"            
-            return
-        end
-        
-        arSrc = res['sources']
-        puts "arSrc: #{arSrc}"
-        return unless arSrc
-
-        hashSrcs = Rhom::RhomSource::find_all_ashash
-        puts "hashSrcs : #{hashSrcs}"
-        arSrc.each do |src|
-            oldSrc = hashSrcs[src['name']]
-            puts "oldSrc: #{oldSrc}"
-            if oldSrc
-                oldVer = oldSrc.schema_version
-                newVer = src['schema_version']
-                if ( oldVer != newVer )    
-                    get_app(APPNAME).on_migrate_source(oldSrc.schema_version, src)
+                puts "sources before: #{Rho::RhoConfig::sources()}"
+                
+                Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
+                arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
+                    {'partition'=>str_partition} )
+                arSrcs.each do |src|
+                    Rho::RhoConfig::sources()[ src['name'] ] = src
                 end
+                
+                puts "sources after: #{Rho::RhoConfig::sources()}"            
+                return
             end
             
-            Rho::RhoConfig::add_source(src['name'], src)
-        end
-        
-        init_sources()
+            arSrc = res['sources']
+            puts "arSrc: #{arSrc}"
+            return unless arSrc
+
+            hashSrcs = Rhom::RhomSource::find_all_ashash
+            puts "hashSrcs : #{hashSrcs}"
+            arSrc.each do |src|
+                oldSrc = hashSrcs[src['name']]
+                puts "oldSrc: #{oldSrc}"
+                if oldSrc
+                    oldVer = oldSrc.schema_version
+                    newVer = src['schema_version']
+                    if ( oldVer != newVer )    
+                        get_app(APPNAME).on_migrate_source(oldSrc.schema_version, src)
+                    end
+                end
+                
+                Rho::RhoConfig::add_source(src['name'], src)
+            end
+            
+            init_sources()
+      rescue Exception => e
+        puts "Error load_server_sources: #{e}"
+        puts "Trace: #{e.backtrace}"
+      end
+            
     end
 
     def find_src_byname(uniq_sources, src_name)
@@ -216,14 +222,18 @@ module Rho
         puts 'init_sources: ' + uniq_sources.inspect
 
         uniq_sources.each do |source|
+            source['str_associations'] = ""    
+        end
+        
+        uniq_sources.each do |source|
           partition = source['partition']
           @db_partitions[partition] = nil
           
-          if source['associations']
-            source['associations'].each do |src_name, attrib|    
+          if source['belongs_to']
+            source['belongs_to'].each do |attrib, src_name|    
                 associationsSrc = find_src_byname(uniq_sources, src_name)
                 if !associationsSrc
-                    puts ( "Error: associations from '#{source['name']}' : source name '#{src_name}' does not exist."  )
+                    puts ( "Error: belongs_to '#{source['name']}' : source name '#{src_name}' does not exist."  )
                     next
                 end
                 
@@ -257,30 +267,33 @@ module Rho
         ::Rho::RHO.init_schema_sources
     end
 
-    def self.processIndexes(index_param, src_name, is_unique)
+    def self.processIndexes(index_ar, src_name, is_unique)
 
-        return "" unless index_param
+        return "" unless index_ar
         
         strUnique = 'UNIQUE' if is_unique
         strRes = ""
-        if index_param.is_a?( String )
-            strRes = index_param
-        else
-            nInd = 0
-            index_param.each do |index_cols|
-                strCols = ""
-                index_cols.each do |col|
-                    strCols += ',' if strCols.length() > 0
-                    strCols += "\"#{col}\""
-                end
+        index_ar.each do |index_param|            
+        
+            if index_param.is_a?( String )
+                strRes = index_param
+            else
+                nInd = 0
+                
+                index_param.each do |index_name, index_cols|
+                    strCols = ""
+                    index_cols.each do |col|
+                        strCols += ',' if strCols.length() > 0
+                        strCols += "\"#{col}\""
+                    end
 
-                strIndName = "rhoIndex" + (is_unique ? "U" : "" ) + "_#{nInd}"
-                strIndex = "CREATE #{strUnique} INDEX \"#{strIndName}\" on #{src_name} (#{strCols});\r\n"
-                strRes += strIndex
-                nInd += 1
+                    #strIndName = "rhoIndex" + (is_unique ? "U" : "" ) + "_#{nInd}"
+                    strIndex = "CREATE #{strUnique} INDEX \"#{index_name}\" on #{src_name} (#{strCols});\r\n"
+                    strRes += strIndex
+                    nInd += 1
+                end
             end
         end
-        
         strRes
     end
         
@@ -291,31 +304,32 @@ module Rho
         uniq_sources.each do |source|
           db = get_src_db(source['name'])
           
-          if  source['schema'] && !db.table_exist?(source['name'])
-          
-            strCreate = source['schema']['sql']
-            if source['schema']['columns']
-                arCols = source['schema']['columns']
-                arCols = arCols
-                strCols = ""
-                arCols.each do |col|
-                    strCols += ',' if strCols.length() > 0
-                    strCols += "\"#{col}\" varchar default NULL"
-                end
-
-                strCols += ",object varchar(255) PRIMARY KEY"
-                strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
+          next unless source['schema'] && source['model_type'] == 'fixed_schema' &&
+            !db.table_exist?(source['name'])
+            
+          strCreate = source['schema']['sql']
+          if source['schema']['property']
+            arCols = source['schema']['property']
+            arCols = arCols
+            strCols = ""
+            arCols.each do |col, type|
+                strCols += ',' if strCols.length() > 0
+                strCols += "\"#{col}\" varchar default NULL"
+                #TODO: support column type
             end
 
-            strCreate += ";\r\n" if strCreate && strCreate.length() > 0
-            strCreate += processIndexes(source['schema']['indexes'], source['name'], false)
-            strCreate += ";\r\n" if strCreate && strCreate.length() > 0
-            strCreate += processIndexes(source['schema']['unique_indexes'], source['name'], true)
-            
-            db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
-            
-            db.execute_batch_sql(strCreate)
+            strCols += ",object varchar(255) PRIMARY KEY"
+            strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
           end
+
+          strCreate += ";\r\n" if strCreate && strCreate.length() > 0
+          strCreate += processIndexes(source['schema']['index'], source['name'], false)
+          strCreate += ";\r\n" if strCreate && strCreate.length() > 0
+          strCreate += processIndexes(source['schema']['unique_index'], source['name'], true)
+        
+          db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
+        
+          db.execute_batch_sql(strCreate)
           
         end
     end
@@ -324,21 +338,24 @@ module Rho
       return source['str_blob_attribs'] if source['str_blob_attribs']
       source['str_blob_attribs'] = ""
       
-      if source['blob_attribs']
+      if source['schema'] && source['schema']['property']
         str = ""
-        source['blob_attribs'].each do |blobAttr|  
-            str += ',' if str.length()>0
-            if blobAttr.is_a?(Hash)    
-                str += blobAttr['name'].to_s() + ',' + blobAttr['server_overwrite'].to_i()
-            else
-                str += blobAttr.to_s() + ',0'
+        source['schema']['property'].each do |name, type|
+            if type && type.is_a?(Hash)
+                next unless type[:blob] || type['blob']
+                str += ',' if str.length()>0
+                str += name.to_s() + ',' + (type[:server_overwrite]||type[:server_overwrite].to_i() ? '1' : '0')
+            elsif type && type.to_s == 'blob'
+                str += ',' if str.length()>0
+                str += name.to_s() + ',0'
             end
         end
         
         source['str_blob_attribs'] = str
       end
-      
+            
       source['str_blob_attribs']
+      
     end
     
     def init_db_sources(db, uniq_sources, db_partition)
@@ -355,10 +372,11 @@ module Rho
           partition = source['partition']
           sync_type = source['sync_type']
           schema_version = source['schema_version']
+          model_type = source['model_type']
           associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
           
-          attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
+          attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs, model_type', {'name'=>name})
 
           if attribs && attribs.size > 0 
             if attribs[0]['sync_priority'].to_i != sync_priority.to_i
@@ -380,6 +398,10 @@ module Rho
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
 
+            if attribs[0]['model_type'] != model_type
+                db.update_into_table('sources', {"model_type"=>model_type},{"name"=>name})
+            end
+
             if !source['source_id']
                 source['source_id'] = attribs[0]['source_id'].to_i
                 Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
@@ -395,7 +417,8 @@ module Rho
           
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
-                "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
+                "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs,
+                "model_type"=>model_type })
                 
           end
           
@@ -633,17 +656,28 @@ module Rho
       def add_source(modelname, new_source=nil)
         return if !modelname || modelname.length() == 0# || @@sources[modelname]
         
+        puts "#{modelname} : #{new_source}"
         @@sources[modelname] = new_source ? new_source.clone() : {}
         @@sources[modelname]['name'] ||= modelname
-        @@sources[modelname]['sync_priority'] ||= 1000
+        
+        if @@sources[modelname]['sync_priority']
+            @@sources[modelname]['sync_priority'] = @@sources[modelname]['sync_priority'].to_i()
+        else
+            @@sources[modelname]['sync_priority'] = 1000
+        end
+        
         if @@sources[modelname]['partition']
             @@sources[modelname]['partition'] = @@sources[modelname]['partition'].to_s
         else    
             @@sources[modelname]['partition'] ||= 'user'
         end    
         
-        @@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
+        #@@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
         @@sources[modelname]['sync_type'] ||= 'incremental'
+        
+        if @@sources[modelname]['source_id']
+            @@sources[modelname]['source_id'] = @@sources[modelname]['source_id'].to_i()
+        end
         
         @@max_config_srcid = @@sources[modelname]['source_id'] if @@sources[modelname]['source_id'] && @@max_config_srcid < @@sources[modelname]['source_id']
       end
