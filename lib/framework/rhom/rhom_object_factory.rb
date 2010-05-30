@@ -119,7 +119,7 @@ module Rhom
                 end
               
                 def is_schema_source
-                    Rho::RhoConfig.sources[get_source_name]['schema'] != nil
+                    Rho::RhoConfig.sources[get_source_name]['model_type'] == 'fixed_schema'
                 end
                 def get_schema_table_name
                     get_source_name()
@@ -1059,7 +1059,7 @@ module Rhom
               end
           
               def is_inst_schema_source
-                 Rho::RhoConfig.sources[get_inst_source_name]['schema'] != nil
+                 Rho::RhoConfig.sources[get_inst_source_name]['model_type'] == 'fixed_schema'
               end
               def get_inst_schema_table_name
                  get_inst_source_name()

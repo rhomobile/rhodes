@@ -44,7 +44,7 @@ module Rho
     def on_migrate_source(old_version, new_src)
         puts "on_migrate_source; old_version :#{old_version}; new_src : #{new_src}"
         db = ::Rho::RHO.get_src_db(new_src['name'])
-        if new_src['schema']
+        if new_src['model_type'] == 'fixed_schema'
             db.delete_table(new_src['name'])
         end    
     end

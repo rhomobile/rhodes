@@ -33,6 +33,7 @@ CREATE TABLE sources (
  last_sync_duration BIGINT default 0,
  last_sync_success BIGINT default 0,
  backend_refresh_time BIGINT default 0,
+ model_type varchar default NULL,
  source_attribs varchar default NULL,
  schema varchar default NULL,
  schema_version varchar default NULL,

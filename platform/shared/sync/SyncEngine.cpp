@@ -361,11 +361,10 @@ void CSyncEngine::processServerSources(String strSources)
 {
     if ( strSources.length() > 0 )
     {
-        //TODO:processServerSources 
-        //NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
-        //loadAllSources();
+        NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
+        loadAllSources();
 
-        //rho_db_init_attr_manager();
+        rho_db_init_attr_manager();
     }
 }
 
@@ -377,6 +376,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
     NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
+
 
 /*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
         "\"schema_version\":\"7.0\",\"schema\":{"
@@ -624,6 +624,17 @@ void CSyncEngine::syncAllSources()
 
 void CSyncEngine::login(String name, String password, String callback)
 {
+/*
+    processServerSources(
+        "{\"sources\":[{ \"name\":\"ProductEx\", "
+        "\"sync_type\":\"incremental\", \"partition\":\"application\", \"source_id\":\"7\","
+        " \"sync_priority\":\"0\", \"model_type\":\"fixed_schema\", "
+        " \"schema\":{\"property\":{\"brand\":\"string\", \"price\":\"string\", \"quantity\":\"string\", \"name\":\"string\", "
+        " \"image_url\":\"blob\", \"image_url_ex\":{\"blob\":\"1\", \"server_overwrite\":\"1\"}}, "
+        " \"index\":[{\"by_brand_price1\":[\"brand\", \"price\"]}, {\"by_quantity1\":[\"quantity\"]}], \"unique_index\":[{\"by_name1\":[\"name\"]}]}, "
+        " \"belongs_to\":{\"brand\":\"Customer\"}, "
+        " \"schema_version\":\"1.0\"}]}");
+*/
     PROF_START("Login");
 	//try {
 
