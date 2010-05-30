@@ -16,30 +16,36 @@ module Rhom
     end
     
     def fixed_schema?
+        BaseModel.model_params ||= {}
+        BaseModel.model_params["model_type"] = "property_bag" unless BaseModel.model_params["model_type"]
+        
         false
     end
     
     def property(name,type=:string)
+      fixed_schema?()
+
   	  BaseModel.model_params ||= {}
-  	  
-  	  if type == :blob
-  	      BaseModel.model_params['blob_attribs'] ||= []
-  	      BaseModel.model_params['blob_attribs'] << name.to_s
-  	  end
-  	      
-  	  if fixed_schema?
-  	      BaseModel.model_params['schema'] ||= {}
-          BaseModel.model_params['schema']['columns'] ||= []  	  
-        
-  	      BaseModel.model_params['schema']['columns'] << name.to_s
-      	  #TODO: type support
-  	  end    
-  	  
+
+      BaseModel.model_params['schema'] ||= {}
+      BaseModel.model_params['schema']['property'] ||= {}
+      BaseModel.model_params['schema']['property'][name.to_s] = type 
+      
+
     end
 
     def set(name,value)
   	  BaseModel.model_params ||= {}
-  	  BaseModel.model_params[name.to_s] = value
+  	  
+  	  if ( name == :sync )
+  	    if ( value )
+  	        BaseModel.model_params['sync_type'] = 'incremental' unless BaseModel.model_params['sync_type']
+  	    else
+  	        BaseModel.model_params.delete('sync_type')
+  	    end        
+  	  else
+  	    BaseModel.model_params[name.to_s] = value
+  	  end
     end
 
     def enable(name)
@@ -48,27 +54,27 @@ module Rhom
     
     def belongs_to(name, owner)
   	  BaseModel.model_params ||= {}
-  	  BaseModel.model_params['associations'] ||= {}
+  	  BaseModel.model_params['belongs_to'] ||= {}
   	  
-  	  BaseModel.model_params['associations'][owner.to_s] = name.to_s
+  	  BaseModel.model_params['belongs_to'][name.to_s] = owner.to_s
     end
     
-    def index(*args)
+    def index(name,cols)
   	  return unless fixed_schema?
   	  
       BaseModel.model_params['schema'] ||= {}
-      BaseModel.model_params['schema']['indexes'] ||= []  	  
+      BaseModel.model_params['schema']['index'] ||= []  	  
 
-      BaseModel.model_params['schema']['indexes'] << args
+      BaseModel.model_params['schema']['index'] << {name.to_s=>cols}
     end
 
-    def unique_index(*args)
+    def unique_index(name,cols)
   	  return unless fixed_schema?
   	  
       BaseModel.model_params['schema'] ||= {}
-      BaseModel.model_params['schema']['unique_indexes'] ||= []  	  
+      BaseModel.model_params['schema']['unique_index'] ||= []  	  
 
-      BaseModel.model_params['schema']['unique_indexes'] << args
+      BaseModel.model_params['schema']['unique_index'] << {name.to_s=>cols}
     end
     
   end
@@ -81,6 +87,9 @@ module Rhom
     end
     
     def fixed_schema?
+        BaseModel.model_params ||= {}
+        BaseModel.model_params["model_type"] = "fixed_schema" unless BaseModel.model_params["model_type"]
+        
         true
     end
     

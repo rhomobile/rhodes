@@ -126,23 +126,26 @@ public class RubyString extends RubyBasic {
     public RubyString appendString(RubyValue v) {
         if (v instanceof RubyString) {
             return appendString((RubyString)v);
-        } else {
+        } else if (v!=null){
             RubyValue r = RubyAPI.callPublicNoArgMethod(v, null, RubyID.toSID);
             if ( r instanceof RubyString )
             	return appendString((RubyString)r);
             
             return ObjectFactory.createString(r.toString());
         }
+        
+       	return this;
     }
 
     public int appendString2(RubyValue v) {
     	RubyString str = null;
         if (v instanceof RubyString) {
             str = (RubyString)v;
-        } else {
+        } else  if (v!=null){
             RubyValue r = RubyAPI.callPublicNoArgMethod(v, null, RubyID.toSID);
             str = (RubyString)r;
-        }
+        }else
+        	str = ObjectFactory.createString("");
         
         appendString(str);
         
