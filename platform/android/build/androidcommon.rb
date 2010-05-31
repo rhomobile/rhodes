@@ -15,6 +15,24 @@ else
   $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
 end
 
+def num_cpus
+  if RUBY_PLATFORM =~ /linux/
+    num = `cat /proc/cpuinfo | grep processor | wc -l`
+  elsif RUBY_PLATFORM =~ /darwin/
+    num = `sysctl -n hw.ncpu`
+  elsif RUBY_PLATFORM =~ /w(in)?32/
+    num = ENV['NUMBER_OF_PROCESSORS']
+  else
+    num '1'
+  end
+  num.gsub!("\n", '')
+  num.to_i
+end
+
+def get_sources(name)
+    File.read(File.join($builddir, name + '_build.files')).split("\n")
+end
+
 def setup_ndk(ndkpath,apilevel)
   $ndkgccver = "unknown"
   ["4.4.0", "4.2.1"].each do |ver|
@@ -161,6 +179,36 @@ def cc_compile(filename, objdir, additional = nil)
   args << objname
   cmdline = ccbin + ' ' + args.join(' ')
   cc_run(ccbin, args)
+end
+
+def cc_build(name, objdir, additional = nil)
+  jobs = num_cpus
+  jobs += 1 if jobs > 1
+
+  srcs = []
+  jobs.times.each { |x| srcs << [] }
+  sources = get_sources(name)
+  sources.each do |src|
+    idx = sources.index(src)%jobs
+    srcs[idx] << src
+  end
+
+  ths = []
+  jobs.times.each do |x|
+    ths << Thread.new do
+      srcs[x].each do |src|
+        cc_compile src, objdir, additional or return 1
+      end
+      0
+    end
+  end
+
+  ret = 0
+  ths.each do |th|
+    v = th.value
+    ret = v unless v == 0
+  end
+  ret
 end
 
 def cc_ar(libname, objects)
