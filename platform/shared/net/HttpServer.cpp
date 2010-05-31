@@ -333,6 +333,8 @@ CHttpServer::callback_t CHttpServer::registered(String const &uri)
     return it->second;
 }
 
+extern "C" void rb_gc(void);
+
 bool CHttpServer::run()
 {
     if (m_listener == INVALID_SOCKET)
@@ -357,13 +359,17 @@ bool CHttpServer::run()
             return false;
         }
 
+        bool bProcessed = false;
         if (!m_bPause){
             RAWTRACE("Connection accepted, process it...");
-            process(conn);
+            bProcessed = process(conn);
         }
 
         RAWTRACE("Close connected socket");
         closesocket(conn);
+
+        if ( bProcessed )
+            rb_gc();
     }
     
     return true;
