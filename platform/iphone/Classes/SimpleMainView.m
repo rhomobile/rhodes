@@ -338,17 +338,14 @@
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
-    NSString *escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:escapedUrl]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [webView loadRequest:request];
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
-    NSString* escapedUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString* redirector = [@"/system/redirect_to?url=" stringByAppendingString:escapedUrl];
     NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
-    NSString* redirector1 = [homeurl stringByAppendingString:redirector];
-    [self navigate:redirector1 tab:index];
+    NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, url];
+    [self navigate:redirect tab:index];
 }
 
 - (void)reload:(int)index {
