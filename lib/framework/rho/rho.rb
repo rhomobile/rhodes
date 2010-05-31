@@ -700,6 +700,19 @@ module Rho
             ret ? 1 : 0
         end
 
+        def self.make_auth_header(args)
+          auth = args[:authorization]
+          return nil unless auth.is_a? Hash
+          return nil if auth[:type].nil?
+
+          raise "Authorization type #{auth[:type].inspect.to_s} is unsupported" if auth[:type].to_s != 'basic'
+          raise "Username or password should be specified for 'basic' authorization" if auth[:username].nil? or auth[:password].nil?
+
+          plain = 'Basic ' + [auth[:username].to_s + ':' + auth[:password].to_s].pack('m')
+          # Remove trailing \n
+          plain[0..-2]
+        end
+
         def self.headers(args)
           hdrs = args[:headers]
           hdrs = {} if hdrs.nil?
@@ -711,10 +724,13 @@ module Rho
             hdrs['User-Agent'] = "Mozilla-5.0 (#{platform}; #{device}; #{version})"
           end
 
+          auth = make_auth_header(args)
+          hdrs['Authorization'] = auth unless auth.nil?
+
           hdrs
         end
 
-	def self.process_result(res, callback)
+        def self.process_result(res, callback)
             return res if callback && callback.length() > 0
             
             _params = ::Rho::RhoSupport::parse_query_parameters res
