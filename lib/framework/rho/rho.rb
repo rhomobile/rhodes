@@ -673,7 +673,7 @@ module Rho
         end    
         
         #@@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
-        @@sources[modelname]['sync_type'] ||= 'incremental'
+        @@sources[modelname]['sync_type'] ||= 'none'
         
         if @@sources[modelname]['source_id']
             @@sources[modelname]['source_id'] = @@sources[modelname]['source_id'].to_i()
