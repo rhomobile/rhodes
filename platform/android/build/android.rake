@@ -35,10 +35,6 @@ ANDROID_PERMISSIONS = {
   'vibrate' => 'VIBRATE'
 }
 
-def get_sources(name)
-  File.read(File.join($builddir, name + '_build.files')).split("\n")
-end
-
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -446,7 +442,7 @@ namespace "build" do
       objdir = $objdir["sqlite"]
       libname = $libname["sqlite"]
 
-      cc_compile File.join(srcdir, "sqlite3.c"), objdir, ["-I#{srcdir}"] or exit 1
+      cc_build 'libsqlite', objdir, ["-I#{srcdir}"] or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -468,9 +464,7 @@ namespace "build" do
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
 
-      get_sources('libcurl').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'libcurl', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -486,10 +480,7 @@ namespace "build" do
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
 
-      get_sources('libruby').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
-
+      cc_build 'libruby', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -503,10 +494,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      objects = []
-      get_sources('libjson').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'libjson', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -532,9 +520,7 @@ namespace "build" do
           args << "-fno-rtti"
           args << "-fno-exceptions"
 
-          get_sources('libstlport').each do |f|
-            cc_compile f, objdir, args or exit 1
-          end
+          cc_build 'libstlport', objdir, args or exit 1
           cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
         end
       end
@@ -549,9 +535,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      get_sources('librholog').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'librholog', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -564,9 +548,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      get_sources('librhomain').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'librhomain', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -579,10 +561,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      objects = []
-      get_sources('librhocommon').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'librhocommon', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -597,9 +576,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      get_sources('librhodb').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'librhodb', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -614,9 +591,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      get_sources('librhosync').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'librhosync', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
@@ -739,9 +714,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_STLPORT
       args << "-I#{$stlport_includes}" if USE_STLPORT
 
-      get_sources('librhodes').each do |f|
-        cc_compile f, objdir, args or exit 1
-      end
+      cc_build 'librhodes', objdir, args or exit 1
 
       deps = []
       $libname.each do |k,v|
