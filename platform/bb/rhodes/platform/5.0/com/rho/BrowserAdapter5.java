@@ -7,6 +7,7 @@ import net.rim.device.api.system.Application;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.io.InputConnection;
 
+import com.rho.RhodesApp;
 import com.rho.net.URI;
 
 import rhomobile.Utilities;
@@ -54,7 +55,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 				throws Exception 
 		{
 			String url = request.getURL();
-    		if ( URI.isLocalHost(url) || URI.isLocalData(url))
+    		if ( RhodesApp.getInstance().isRhodesAppUrl(url) || URI.isLocalData(url))
     		{
                 HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null, null);
                 

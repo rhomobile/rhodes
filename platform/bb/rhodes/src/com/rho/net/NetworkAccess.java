@@ -13,6 +13,7 @@ import com.rho.BBVersionSpecific;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoConf;
+import com.rho.RhodesApp;
 import com.rho.net.bb.BBHttpConnection;
 import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.servicebook.ServiceBook;
@@ -28,12 +29,8 @@ public class NetworkAccess implements INetworkAccess {
 	private static boolean bes = true;
 	private static long  m_nMaxPacketSize = 0;
 	
-	public String getHomeUrl()
+	public void configure() 
 	{
-		return "http://localhost:8080/";
-	}
-	
-	public void configure() {
 		networkConfigured = false;
 		bes = false;
 		URLsuffix = null;
@@ -156,7 +153,7 @@ public class NetworkAccess implements INetworkAccess {
 	
 	public IHttpConnection connect(String url, boolean ignoreSuffixOnSim) throws IOException 
 	{
-		if ( URI.isLocalHost(url) )
+		if ( RhodesApp.getInstance().isRhodesAppUrl(url) )
 		{
 			URI uri = new URI(url);
 			return new RhoConnection(uri);
