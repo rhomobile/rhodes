@@ -309,7 +309,6 @@ static Rhodes *instance = NULL;
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
     
-    rho_geoimpl_init();
     rho_rhodesapp_start();
     
 #ifdef __IPHONE_3_0
