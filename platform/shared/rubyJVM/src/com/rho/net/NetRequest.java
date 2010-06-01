@@ -13,6 +13,7 @@ import com.rho.IRhoRubyHelper;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhodesApp;
 import com.rho.file.*;
 
 import java.util.Enumeration;
@@ -225,7 +226,7 @@ public class NetRequest
     {
 		m_bCancel = false;
 		
-		if ( URI.isLocalHost(strUrl) )
+		if ( RhodesApp.getInstance().isRhodesAppUrl(strUrl) )
 		{
 			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
 			return helper.postUrl(strUrl,strBody);
@@ -594,19 +595,9 @@ public class NetRequest
 		return false;
 	}
 	
-	public String resolveUrl(String url) throws Exception
+	public String resolveUrl(String strUrl) throws Exception
     {
-		if ( url == null || url.length() == 0 )
-			return "";
-
-		String _httpRoot = RhoClassFactory.getNetworkAccess().getHomeUrl();
-		if(!_httpRoot.endsWith("/"))
-			_httpRoot = _httpRoot + "/";
-		url.replace('\\', '/');
-		if ( !url.startsWith(_httpRoot) )
-			url = FilePath.join(_httpRoot, url);
-		
-		return url;
+	    return RhodesApp.getInstance().canonicalizeRhoUrl(strUrl);
     }
 
 	public void cancel()

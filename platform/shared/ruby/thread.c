@@ -47,6 +47,10 @@
 #include "eval_intern.h"
 #include "gc.h"
 
+//RHO
+#define USE_NATIVE_THREAD_PRIORITY  1
+//RHO
+
 #ifndef USE_NATIVE_THREAD_PRIORITY
 #define USE_NATIVE_THREAD_PRIORITY 0
 #define RUBY_THREAD_PRIORITY_MAX 3
