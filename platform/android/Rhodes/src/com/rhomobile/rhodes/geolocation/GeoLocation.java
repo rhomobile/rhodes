@@ -49,8 +49,10 @@ public class GeoLocation {
 	
 	public static boolean isAvailable() {
 		try {
-			checkState();
 			Logger.T(TAG, "isAvailable");
+			if (locImpl == null)
+				return false;
+			checkState();
 			init();
 			return locImpl.isAvailable();
 		}
