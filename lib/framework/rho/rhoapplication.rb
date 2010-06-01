@@ -34,19 +34,38 @@ module Rho
 	      NativeBar.create(TOOLBAR_TYPE, @@toolbar)
       else
         NativeBar.create(NOBAR_TYPE, [])
-	    end
+	  end
+	  
+	  uniq_sources = Rho::RhoConfig::sources.values
+      uniq_sources.each do |source|
+          next unless source['migrate_version']
+          
+          db = ::Rho::RHO.get_src_db(source['name'])	  
+          
+          if !on_migrate_source(source['migrate_version'], source)
+            db.execute_batch_sql(source['schema']['sql'])
+          end  
+          
+          db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
+      end
+          
     end
     
     def on_activate_app
     end
 
-    # works for schema sources    
+    # works for schema sources
+    #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
         puts "on_migrate_source; old_version :#{old_version}; new_src : #{new_src}"
-        db = ::Rho::RHO.get_src_db(new_src['name'])
         if new_src['model_type'] == 'fixed_schema'
+            db = ::Rho::RHO.get_src_db(new_src['name'])
             db.delete_table(new_src['name'])
-        end    
+            
+            return false  #create new table
+        end
+        
+        return true
     end
     
     def set_menu(menu=nil,back_action=nil)
