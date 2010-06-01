@@ -98,7 +98,6 @@ public class GeoLocationImpl implements LocationListener {
 	public void onProviderDisabled(String provider) {
 		Logger.T(TAG, "onProviderDisabled");
 		setCurrentGpsLocation(null);
-
 	}
 
 	public void onProviderEnabled(String provider) {
