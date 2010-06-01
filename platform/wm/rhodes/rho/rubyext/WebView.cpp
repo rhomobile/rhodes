@@ -33,7 +33,7 @@ const char* rho_webview_execute_js(const char* js, int index)
     String strJS = "javascript:";
     strJS += js;
 
-	RAWTRACEC1("Execute JS: %s", js);
+	//RAWTRACEC1("Execute JS: %s", js);
 
     rho_webview_navigate(strJS.c_str(), index);
 	return "";
