@@ -249,12 +249,12 @@ module Rho
         
         #user partition should alwayse exist
         @db_partitions['user'] = nil
-        
+        hash_migrate = {}
         @db_partitions.each_key do |partition|
             db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
             db.start_transaction
             begin
-                init_db_sources(db, uniq_sources, partition)
+                init_db_sources(db, uniq_sources, partition,hash_migrate)
                 db.commit
             rescue Exception => e
                 puts "exception when init_db_sources: #{e}"    
@@ -264,7 +264,7 @@ module Rho
             @db_partitions[partition] = db
         end
         
-        ::Rho::RHO.init_schema_sources
+        ::Rho::RHO.init_schema_sources(hash_migrate)
     end
 
     def self.processIndexes(index_ar, src_name, is_unique)
@@ -297,16 +297,21 @@ module Rho
         strRes
     end
         
-    def self.init_schema_sources
+    def self.init_schema_sources(hash_migrate)
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_schema_sources'
         
         uniq_sources.each do |source|
           db = get_src_db(source['name'])
           
-          next unless source['schema'] && source['model_type'] == 'fixed_schema' &&
-            !db.table_exist?(source['name'])
-            
+          next unless source['schema'] && source['model_type'] == 'fixed_schema'
+          
+          call_migrate = false
+          if db.table_exist?(source['name'])
+            next unless hash_migrate[ source['name'] ]
+            call_migrate = true 
+          end
+          
           strCreate = source['schema']['sql']
           if source['schema']['property']
             arCols = source['schema']['property']
@@ -327,10 +332,15 @@ module Rho
           strCreate += ";\r\n" if strCreate && strCreate.length() > 0
           strCreate += processIndexes(source['schema']['unique_index'], source['name'], true)
         
-          db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
+          if call_migrate
+            db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
+            source['migrate_version'] = hash_migrate[ source['name'] ]
+            source['schema']['sql'] = strCreate
+          else
+            db.execute_batch_sql(strCreate)
+            db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
+          end
         
-          db.execute_batch_sql(strCreate)
-          
         end
     end
 
@@ -358,7 +368,7 @@ module Rho
       
     end
     
-    def init_db_sources(db, uniq_sources, db_partition)
+    def init_db_sources(db, uniq_sources, db_partition, hash_migrate)
     
         result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
         #puts 'result: ' + result.inspect
@@ -386,7 +396,11 @@ module Rho
                 db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
             if attribs[0]['schema_version'] != schema_version
-                db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
+                if db_partition == partition
+                    hash_migrate[name] = attribs[0]['schema_version']
+                else    
+                    db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
+                end    
             end
             if attribs[0]['partition'] != partition
                 db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
@@ -730,7 +744,7 @@ module Rho
           hdrs
         end
 
-        def self.process_result(res, callback)
+	def self.process_result(res, callback)
             return res if callback && callback.length() > 0
             
             _params = ::Rho::RhoSupport::parse_query_parameters res
