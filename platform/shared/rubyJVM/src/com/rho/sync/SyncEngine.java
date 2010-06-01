@@ -475,10 +475,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    if ( strSources.length() > 0 )
 	    {
-	        NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
+	        /*NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
 	        loadAllSources();
 	        
-	        DBAdapter.initAttrManager();
+	        DBAdapter.initAttrManager();*/
 	    }
 	}
 	
