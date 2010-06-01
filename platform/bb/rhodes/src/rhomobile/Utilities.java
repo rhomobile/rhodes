@@ -11,6 +11,7 @@ import net.rim.device.api.io.http.HttpProtocolConstants;
 import net.rim.device.api.util.StringUtilities;
 
 import com.rho.RhoClassFactory;
+import com.rho.RhodesApp;
 import com.rho.net.URI;
 import com.rho.net.IHttpConnection;
 import com.rho.net.bb.NativeBBHttpConnection;
@@ -30,7 +31,7 @@ public class Utilities {
 			
 			if ( conn == null )
 			{
-				if ( URI.isLocalHost(url) )
+				if ( RhodesApp.getInstance().isRhodesAppUrl(url) )
 				{
 					URI uri = new URI(url);
 					conn = new NativeBBHttpConnection( new RhoConnection(uri) );
