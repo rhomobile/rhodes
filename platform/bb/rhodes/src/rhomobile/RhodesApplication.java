@@ -112,34 +112,15 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		public boolean trackwheelUnclick(int status, int time) {return false;}
     }
 
-    boolean isExternalUrl(String strUrl)
-    {
-    	return strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
-    		strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
-    		 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:");    
-    }
-    
-    String canonicalizeURL( String url ){
-		if ( url == null || url.length() == 0 )
-			return "";
-
-		url.replace('\\', '/');
-		if ( !url.startsWith(_httpRoot) && !isExternalUrl(url) )
-			url = FilePath.join(_httpRoot,url);
-
-		return url;
-    }
-
     public void navigateUrl(String url){
     	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), null, null, null);
+        		RHODESAPP().canonicalizeRhoUrl(url), null, null, null);
         thread.start();                       
     }
     
-	public String getPathForMenuItem(String url) {
-		url = _httpRoot +
-			url.substring(url.charAt(0) == '\\' || url.charAt(0) == '/' ? 1 : 0 );
-		return url;
+	public String getPathForMenuItem(String url) 
+	{
+		return RHODESAPP().canonicalizeRhoUrl(url);
 	}
     
     public void addMenuItem(String label, String value){
@@ -160,7 +141,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     
     public void postUrl(String url, String body, HttpHeaders headers, Runnable callback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), headers, body.getBytes(), null, callback);
+        		RHODESAPP().canonicalizeRhoUrl(url), headers, body.getBytes(), null, callback);
         thread.setInternalRequest(true);
         thread.start();                       
     }
@@ -188,7 +169,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	}
     public void postUrlWithCallback(String url, String body, HttpHeaders headers, NetCallback netCallback){
         PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		canonicalizeURL(url), headers, body.getBytes(), null);
+        		RHODESAPP().canonicalizeRhoUrl(url), headers, body.getBytes(), null);
         thread.setNetCallback(netCallback);
         thread.start();                       
     }
@@ -263,8 +244,9 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	strUrl = removeSemicolon(strUrl);
     	refferer = removeSemicolon(refferer);
     	
-        if ( !strUrl.startsWith(_httpRoot) && !isExternalUrl(strUrl) )
-        	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
+    	strUrl = RHODESAPP().canonicalizeRhoUrl(strUrl);
+//        if ( !strUrl.startsWith(_httpRoot) && !isExternalUrl(strUrl) )
+//        	strUrl = _httpRoot + (strUrl.startsWith("/") ? strUrl.substring(1) : strUrl);
         
     	int nPos = -1;
     	for( int i = 0; i < _history.size(); i++ ){
@@ -355,8 +337,6 @@ final public class RhodesApplication extends UiApplication implements SystemList
     //private HttpConnection  _currentConnection;
 
     private Vector _history;
-
-    private final String _httpRoot = "http://localhost:8080/";
 
     private static boolean m_isFullBrowser = false;
     
@@ -1109,13 +1089,10 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		navigateUrl((String)_history.lastElement());
     }
 
-    void navigateHome(){
+    void navigateHome()
+    {
     	String strHomePage = RhoRuby.getStartPage();
-    	String strStartPage = _httpRoot;
-    	if ( strHomePage != null && strHomePage.length() > 0 )
-    	{
-    		strStartPage = _httpRoot.substring(0, _httpRoot.length()-1) + strHomePage;
-    	}
+    	String strStartPage = RhodesApp.getInstance().canonicalizeRhoUrl(strHomePage);
     	
         _history.removeAllElements();
 	    _history.addElement(strStartPage);

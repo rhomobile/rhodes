@@ -76,8 +76,6 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
                 UrlRequestedEvent urlRequestedEvent = (UrlRequestedEvent) event;
                 String absoluteUrl = urlRequestedEvent.getURL();
-                //if ( !absoluteUrl.startsWith(_httpRoot) )
-                //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
                 if ( urlRequestedEvent.getPostData() == null ||
                 	 urlRequestedEvent.getPostData().length == 0 )
@@ -138,8 +136,6 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                             // MSIE, Mozilla, and Opera all send the original
                             // request's Referer as the Referer for the new
                             // request.
-                            //if ( !absoluteUrl.startsWith(_httpRoot) )
-                            //	absoluteUrl = _httpRoot + absoluteUrl.substring(_httpRoot.length()-5);
 
                         	m_app.addToHistory(absoluteUrl,referrer);
                             Object eventSource = e.getSource();
@@ -257,7 +253,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         {
         	if (referrer == null || URI.isLocalData(url) || !m_bLoadImageAsync) 
         	{
-	        	boolean bLocalHost = URI.isLocalHost(url);
+	        	boolean bLocalHost = RhodesApp.getInstance().isRhodesAppUrl(url);
 	        	if ( bLocalHost && m_connResource!= null)
 	        	{
 	        		com.rho.net.RhoConnection rhoConn = (com.rho.net.RhoConnection)((com.rho.net.bb.NativeBBHttpConnection)m_connResource).getNativeConnection(); 
