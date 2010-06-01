@@ -17,6 +17,12 @@
 * right handle video uri (open native video player) on Android
 * support of capabilities for applications (gps, camera, vibrate etc)
 * native toolbar for Android
+* fix GPS on application start issue (iPhone and Android)
+* AsyncHttp support basic authentication
+* fixed wrong url escaping on iPhone
+* suport of parallel build for Android (on multi-core cpus)
+* NativeBar.create now re-use WebView so no more need to call WebView.navigate
+  after NativeBar.create
 
 == 1.5.4
 * Fix issue #3132788 - rake clean:iphone fails
