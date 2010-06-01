@@ -217,6 +217,7 @@
     w.multipleTouchEnabled = YES;
     w.autoresizesSubviews = YES;
     w.clipsToBounds = NO;
+    w.dataDetectorTypes = UIDataDetectorTypeNone;
     w.delegate = self;
     w.tag = RHO_TAG_WEBVIEW;
     
@@ -427,12 +428,20 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     NSString *url = [[request URL] absoluteString];
-    if (url) {
-        NSString *c = [[Rhodes sharedInstance] cookie:url];
-        if (c) {
-            NSMutableURLRequest *r = (NSMutableURLRequest*)request;
-            [r addValue:c forHTTPHeaderField:@"Cookie"];
-        }
+    if (!url)
+        return NO;
+    
+    if (![url hasPrefix:@"http:"]) {
+        // This is not http url so try to open external application for it
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        return NO;
+    }
+    
+    // Retrieve cookie for http url
+    NSString *c = [[Rhodes sharedInstance] cookie:url];
+    if (c && [request isKindOfClass:[NSMutableURLRequest class]]) {
+        NSMutableURLRequest *r = (NSMutableURLRequest*)request;
+        [r addValue:c forHTTPHeaderField:@"Cookie"];
     }
     return YES;
 }
