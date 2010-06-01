@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'templater'
 #TODO: This is temporary, see https://www.pivotaltracker.com/story/show/3399292
-gem "activesupport", "= 2.3.5"
+gem "activesupport", "~> 2.3.5"
 require 'active_support'
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
