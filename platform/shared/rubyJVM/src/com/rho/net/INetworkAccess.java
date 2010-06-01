@@ -8,6 +8,4 @@ public interface INetworkAccess {
 	public abstract IHttpConnection connect(String server, boolean ignoreSuffixOnSim) throws IOException;
 	public abstract void close();
 	public abstract long getMaxPacketSize();
-	
-	public abstract String getHomeUrl();
 }
