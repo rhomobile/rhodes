@@ -27,8 +27,6 @@ public class RhodesApp
     int m_currentTabIndex = 0;
     String[] m_currentUrls = new String[5];
     
-    NetRequest getNet() { return RhoClassFactory.createNetRequest();}
-    
     public static RhodesApp Create(String strRootPath)
     {
         if ( m_pInstance != null ) 
@@ -50,6 +48,9 @@ public class RhodesApp
     public String getDBDirPath(){return m_strDBDirPath; }
     public String getRhoRootPath(){return m_strRhoRootPath;}
     
+    NetRequest getNet() { return RhoClassFactory.createNetRequest();}
+    public String getHomeUrl(){ return m_strHomeUrl; }
+    
     RhodesApp(String strRootPath)
     {
         m_strRhoRootPath = strRootPath;
@@ -61,7 +62,7 @@ public class RhodesApp
 
     void initAppUrls() 
     {
-    	m_strHomeUrl = "http://localhost:8080";
+    	m_strHomeUrl = "http://localhost:2375";
         m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
     	m_strDBDirPath = getRhoRootPath() + "db";
     }
@@ -104,9 +105,29 @@ public class RhodesApp
         return res;
     }
     
-    String canonicalizeRhoUrl(String strUrl)throws Exception 
+    boolean isExternalUrl(String strUrl)
     {
-    	return getNet().resolveUrl(strUrl);    	
+    	return strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
+    		strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
+    		 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:");    
+    }
+    
+    public String canonicalizeRhoUrl(String url) 
+    {
+		if ( url == null || url.length() == 0 )
+			return getHomeUrl();
+
+		String strUrl = new String(url);
+		strUrl.replace('\\', '/');
+		if ( !strUrl.startsWith(getHomeUrl()) && !isExternalUrl(strUrl) )
+			strUrl = FilePath.join(getHomeUrl(), strUrl);
+		
+		return strUrl;
+    }
+    
+    public boolean isRhodesAppUrl(String url)
+    {
+    	return url.startsWith(getHomeUrl()); 
     }
     
     public void setPushNotification(String strUrl, String strParams )throws Exception

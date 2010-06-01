@@ -87,7 +87,7 @@ boolean CThreadQueue::isNoCommands()
 
 void CThreadQueue::processCommands()//throws Exception
 {
-	while(!isNoCommands())
+	while(!isStopped() && !isNoCommands())
 	{
 		common::CAutoPtr<CQueueCommand> pCmd = null;
     	{
