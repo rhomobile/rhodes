@@ -76,9 +76,13 @@ Dir.glob(File.join(android, 'platforms', '*')).each do |dir|
 end
 android = "" if apilevel == -1
 
-android = prompt_for("Android 1.5 SDK path", android, false, android_platform_dir)
+android = prompt_for("Android SDK path", android, false, android_platform_dir)
 
-androidndk = prompt_for("Android NDK path", "",false)
+# try to detect android ndk
+ndks = Dir.glob(File.dirname(android) + "/android-ndk-*").sort
+ndk = ""
+ndk = ndks.last if ndks.size > 0
+androidndk = prompt_for("Android NDK path", ndk, false)
 
 #now cabwiz
 cabwiz = ""
