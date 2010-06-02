@@ -183,9 +183,11 @@ module Rho
 
             hashSrcs = Rhom::RhomSource::find_all_ashash
             puts "hashSrcs : #{hashSrcs}"
-            arSrc.each do |src|
-                oldSrc = hashSrcs[src['name']]
+            arSrc.each do |name, src|
+                oldSrc = hashSrcs[name]
                 puts "oldSrc: #{oldSrc}"
+                #update schema_version
+                src['schema_version'] = src['schema']['version'] if src['schema'] && src['schema']['version']
                 if oldSrc
                     oldVer = oldSrc.schema_version
                     newVer = src['schema_version']
@@ -194,14 +196,14 @@ module Rho
                     end
                 end
                 
-                Rho::RhoConfig::add_source(src['name'], src)
+                Rho::RhoConfig::add_source(name, src)
             end
             
             init_sources()
-      rescue Exception => e
-        puts "Error load_server_sources: #{e}"
-        puts "Trace: #{e.backtrace}"
-      end
+        rescue Exception => e
+            puts "Error load_server_sources: #{e}"
+            puts "Trace: #{e.backtrace}"
+        end
             
     end
 
@@ -282,6 +284,10 @@ module Rho
                 
                 index_param.each do |index_name, index_cols|
                     strCols = ""
+                    if index_cols.is_a?(String)
+                        index_cols = index_cols.split(',')    
+                    end
+                    
                     index_cols.each do |col|
                         strCols += ',' if strCols.length() > 0
                         strCols += "\"#{col}\""
@@ -350,14 +356,15 @@ module Rho
       
       if source['schema'] && source['schema']['property']
         str = ""
-        source['schema']['property'].each do |name, type|
-            if type && type.is_a?(Hash)
-                next unless type[:blob] || type['blob']
+        source['schema']['property'].each do |name, ar_type|
+            if ar_type && ar_type.is_a?(String)
+                ar_type = ar_type.split(',')    
+            end
+            
+            if ar_type && ar_type[0].to_s == 'blob'
                 str += ',' if str.length()>0
-                str += name.to_s() + ',' + (type[:server_overwrite]||type[:server_overwrite].to_i() ? '1' : '0')
-            elsif type && type.to_s == 'blob'
-                str += ',' if str.length()>0
-                str += name.to_s() + ',0'
+                str += name.to_s() + ','
+                str += (ar_type[1].to_s() == 'overwrite' ? '1' : '0')
             end
         end
         
