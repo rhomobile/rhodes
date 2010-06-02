@@ -17,7 +17,7 @@
 #define WIN32_WAIT_TIMEOUT 10	/* 10 ms */
 #undef Sleep
 
-#define native_thread_yield() Sleep(0)
+#define native_thread_yield() Sleep(10)
 #define remove_signal_thread_list(th)
 
 static volatile DWORD ruby_native_thread_key = TLS_OUT_OF_INDEXES;
