@@ -723,6 +723,15 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void login(String name, String password, String callback)
 	{
 		try {
+/*			
+			processServerSources("{\"sources\":{ \"ProductEx\":{ "+
+	        "\"sync_type\":\"incremental\", \"partition\":\"application\", \"source_id\":\"7\","+
+	        " \"sync_priority\":\"0\", \"model_type\":\"fixed_schema\", "+
+	        " \"schema\":{\"version\":\"1.1\", \"property\":{\"brand\":\"string\", \"price\":\"string\", \"quantity\":\"string\", \"name\":\"string\", "+
+	        " \"image_url\":\"blob\", \"image_url_ex\":\"blob,overwrite\"}, "+
+	        " \"index\":[{\"by_brand_price1\":\"brand,price\"}, {\"by_quantity1\":\"quantity\"}], \"unique_index\":[{\"by_name1\":\"name\"}]}, "+
+	        " \"belongs_to\":{\"brand\":\"Customer\"}}}}");//, \"schema_version\":\"1.0\"
+	        */
 		    NetResponse resp = null;
 		    
 		    try{

@@ -22,14 +22,14 @@ module Rhom
         false
     end
     
-    def property(name,type=:string)
+    def property(name,type=:string,option=nil)
       fixed_schema?()
 
   	  BaseModel.model_params ||= {}
 
       BaseModel.model_params['schema'] ||= {}
       BaseModel.model_params['schema']['property'] ||= {}
-      BaseModel.model_params['schema']['property'][name.to_s] = type 
+      BaseModel.model_params['schema']['property'][name.to_s] = [type,option] 
       
 
     end
