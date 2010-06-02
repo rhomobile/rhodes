@@ -14,7 +14,8 @@ Gem::Specification.new do |s|
   files = Array.new
   IO.read("Manifest.txt").each_line {|x| files << x.chomp}
   s.files =  files
-  s.has_rdoc = true
+  # disable rdoc until we fix the docs
+  s.has_rdoc = false
   s.homepage = %q{http://www.rhomobile.com}
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
   s.require_paths = ["lib"]
