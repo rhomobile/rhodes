@@ -191,7 +191,7 @@ CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
 
         if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
         {
-            if (checkSslCertError())
+            if (!m_bCancel && checkSslCertError())
             {
                 if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
                 {
@@ -319,6 +319,9 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
     wchar_t szHttpRes[10];
     DWORD nIndex = 0;
 
+    if ( m_bCancel )
+        return;
+
     if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_STATUS_CODE, szHttpRes, &dwLen, &nIndex) )
     {
         m_pszErrFunction = L"HttpQueryInfo";
@@ -379,7 +382,7 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
 
         if ( !HttpSendRequest( m_hRequest, NULL, 0, NULL, 0 ) )
         {
-            if (checkSslCertError())
+            if (!m_bCancel && checkSslCertError())
             {
                 if ( !HttpSendRequest( m_hRequest, NULL, 0, NULL, 0 ) )
                 {
@@ -617,9 +620,9 @@ void CNetRequestImpl::cancel()
 
 	if ( m_hRequest ) 
         InternetCloseHandle(m_hRequest);
-/*	if ( hConnection ) 
-        InternetCloseHandle(hConnection);
-	if ( hInet ) 
+	if ( m_hConnection ) 
+        InternetCloseHandle(m_hConnection);
+/*	if ( hInet ) 
         InternetCloseHandle(hInet); */
 /*
     hRequest = 0;
@@ -657,6 +660,9 @@ CNetRequestImpl::~CNetRequestImpl()
 void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/,
     char* pBuf, DWORD dwBufSize )
 {
+    if (m_bCancel)
+        return;
+
     //if ( pNetResp->getRespCode() == 500 || pNetResp->getRespCode() == 422 )
     //    return;
     char* pBufToFree = 0;
@@ -694,7 +700,7 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
 
         pNetResp->setValid(true);
 
-    }while(bRead && dwBytesRead > 0);
+    }while(bRead && dwBytesRead > 0 && !m_bCancel );
 
     if ( !pNetResp->isOK() )
         LOG(TRACE) + "Server response: " + pNetResp->getCharData();
