@@ -55,28 +55,37 @@ if ENV['ANDROID_HOME']
   android = ENV['ANDROID_HOME']
 end
 
-android = android.gsub(/\\/,"/")
-apilevel = -1
-android_platform_dir = "/platforms/android-1.5"
-Dir.glob(File.join(android, 'platforms', '*')).each do |dir|
-  props = File.join(dir, 'source.properties')
-  next unless File.file? props
-  File.open(props, 'r') do |f|
-    while line = f.gets
-      next if line !~ /^\s*AndroidVersion\.ApiLevel\s*=\s*([0-9]+)\s*$/
-      apilevel = $1.to_i
+while true
+  android = prompt_for("Android SDK path", android, false)
+
+  android = android.gsub(/\\/,"/")
+  apilevel = -1
+  android_platform_dir = "/platforms/android-1.5"
+  Dir.glob(File.join(android, 'platforms', '*')).each do |dir|
+    props = File.join(dir, 'source.properties')
+    next unless File.file? props
+    File.open(props, 'r') do |f|
+      while line = f.gets
+        next if line !~ /^\s*AndroidVersion\.ApiLevel\s*=\s*([0-9]+)\s*$/
+        apilevel = $1.to_i
+        break
+      end
+    end
+
+    if apilevel == 3
+      android_platform_dir = dir[android.length..-1]
       break
     end
   end
+  android = "" if apilevel == -1
 
-  if apilevel == 3
-    android_platform_dir = dir[android.length..-1]
-    break
+  unless File.directory? File.join(android, android_platform_dir)
+    puts "Invalid Android SDK path"
+    next
   end
-end
-android = "" if apilevel == -1
 
-android = prompt_for("Android SDK path", android, false, android_platform_dir)
+  break
+end
 
 # try to detect android ndk
 ndks = Dir.glob(File.dirname(android) + "/android-ndk-*").sort
