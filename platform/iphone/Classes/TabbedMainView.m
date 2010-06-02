@@ -77,12 +77,17 @@
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
+    NSString *initUrl = nil;
+    
     for (int i = 0; i < count; ++i) {
         int index = i*4 - 1;
         NSString *label = [items objectAtIndex:++index];
         NSString *url = [items objectAtIndex:++index];
         NSString *icon = [items objectAtIndex:++index];
         NSString *reload = [items objectAtIndex:++index];
+        
+        if (!initUrl)
+            initUrl = url;
         
         if (label && url && icon) {
             RhoTabBarData *td = [[RhoTabBarData alloc] init];
@@ -93,7 +98,7 @@
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
             subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
-            [subController navigateRedirect:url tab:0];
+            //[subController navigateRedirect:url tab:0];
             
             [tabs addObject:td];
             [views addObject:subController];
@@ -108,6 +113,9 @@
     
     self.tabbarData = tabs;
     [tabs release];
+    
+    if (initUrl)
+        [self navigateRedirect:initUrl tab:0];
     
     return self;
 }
