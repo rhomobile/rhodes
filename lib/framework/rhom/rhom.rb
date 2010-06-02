@@ -54,7 +54,8 @@ module Rhom
             db.destroy_tables(:exclude => ['sources','client_info'])
         end
       
-        ::Rho::RHO.init_schema_sources  
+        hash_migrate = {}
+        ::Rho::RHO.init_schema_sources(hash_migrate) 
       end
       
       def database_full_reset_and_logout
