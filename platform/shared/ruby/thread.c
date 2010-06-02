@@ -324,6 +324,11 @@ rb_thread_terminate_all(void)
     thread_debug("rb_thread_terminate_all (main thread: %p)\n", (void *)th);
     st_foreach(vm->living_threads, terminate_i, (st_data_t)th);
 
+#if USE_NATIVE_THREAD_PRIORITY
+    th->priority -= 2;
+    native_thread_apply_priority(th);
+#endif
+
     while (!rb_thread_alone()) {
 	PUSH_TAG();
 	if (EXEC_TAG() == 0) {
