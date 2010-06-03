@@ -368,6 +368,7 @@ void CSyncSource::syncServerChanges()
         {
             getSync().stopSync();
 			m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+            m_strError = resp.getCharData();
             continue;
         }
 
