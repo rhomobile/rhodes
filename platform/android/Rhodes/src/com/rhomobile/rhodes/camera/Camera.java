@@ -35,14 +35,12 @@ public class Camera {
 	
 	public static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "camera.";
 	
-	public static String BASE_CAMERA_DIR = RhodesInstance.getInstance().getRootPath() + "db/db-files";
-	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
 	private static void init() {
-		File f = new File(BASE_CAMERA_DIR);
+		File f = new File(Rhodes.getBlobPath());
 		if (!f.exists())
 			f.mkdirs();
 	}
@@ -61,28 +59,27 @@ public class Camera {
 		
 	};
 	
-	private static class Runner implements Runnable {
-		
+	private static class Picture implements Runnable {
 		private String url;
-		private Class<?> cls;
+		private Class<?> klass;
 		
-		public Runner(String u, Class<?> c) {
+		public Picture(String u, Class<?> c) {
 			url = u;
-			cls = c;
+			klass = c;
 		}
 		
 		public void run() {
 			init();
 			Rhodes r = RhodesInstance.getInstance();
-			Intent intent = new Intent(r, cls);
+			Intent intent = new Intent(r, klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
 			r.startActivity(intent);
 		}
 	};
-
+	
 	public static void takePicture(String url) {
 		try {
-			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Runner(url, ImageCapture.class) :
+			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Picture(url, ImageCapture.class) :
 				new CameraDisabled(url);
 			Rhodes.performOnUiThread(runnable, false);
 		}
@@ -93,7 +90,7 @@ public class Camera {
 
 	public static void choosePicture(String url) {
 		try {
-			Rhodes.performOnUiThread(new Runner(url, FileList.class), false);
+			Rhodes.performOnUiThread(new Picture(url, FileList.class), false);
 		}
 		catch (Exception e) {
 			reportFail("choosePicture", e);
