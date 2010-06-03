@@ -97,7 +97,7 @@ public class RubyMatchData extends RubyBasic {
     {
     	String res = "";
     	int nMatchEnd = result_.endOffset(result_.groups()-1);
-    	if ( nMatchEnd >= 0 && nMatchEnd+1 < str_.length() )
+    	if ( nMatchEnd >= 0 && nMatchEnd+1 <= str_.length() )
     		res = str_.substring(nMatchEnd); 
 
         if ( res == null )
