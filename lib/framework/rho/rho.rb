@@ -294,35 +294,32 @@ module Rho
         ::Rho::RHO.init_schema_sources(hash_migrate)
     end
 
-    def self.processIndexes(index_ar, src_name, is_unique)
+    def self.processIndexes(index_param, src_name, is_unique)
 
-        return "" unless index_ar
+        return "" unless index_param
         
         strUnique = 'UNIQUE' if is_unique
         strRes = ""
-        index_ar.each do |index_param|            
-        
-            if index_param.is_a?( String )
-                strRes = index_param
-            else
-                nInd = 0
-                
-                index_param.each do |index_name, index_cols|
-                    strCols = ""
-                    if index_cols.is_a?(String)
-                        index_cols = index_cols.split(',')    
-                    end
-                    
-                    index_cols.each do |col|
-                        strCols += ',' if strCols.length() > 0
-                        strCols += "\"#{col}\""
-                    end
-
-                    #strIndName = "rhoIndex" + (is_unique ? "U" : "" ) + "_#{nInd}"
-                    strIndex = "CREATE #{strUnique} INDEX \"#{index_name}\" on #{src_name} (#{strCols});\r\n"
-                    strRes += strIndex
-                    nInd += 1
+        if index_param.is_a?( String )
+            strRes = index_param
+        else
+            nInd = 0
+            
+            index_param.each do |index_name, index_cols|
+                strCols = ""
+                if index_cols.is_a?(String)
+                    index_cols = index_cols.split(',')    
                 end
+                
+                index_cols.each do |col|
+                    strCols += ',' if strCols.length() > 0
+                    strCols += "\"#{col}\""
+                end
+
+                #strIndName = "rhoIndex" + (is_unique ? "U" : "" ) + "_#{nInd}"
+                strIndex = "CREATE #{strUnique} INDEX \"#{index_name}\" on #{src_name} (#{strCols});\r\n"
+                strRes += strIndex
+                nInd += 1
             end
         end
         strRes
@@ -335,7 +332,7 @@ module Rho
         uniq_sources.each do |source|
           db = get_src_db(source['name'])
           
-          next unless source['schema'] && source['model_type'] == 'fixed_schema'
+          next unless source['schema']
           
           call_migrate = false
           if db.table_exist?(source['name'])
@@ -379,9 +376,15 @@ module Rho
       return source['str_blob_attribs'] if source['str_blob_attribs']
       source['str_blob_attribs'] = ""
       
-      if source['schema'] && source['schema']['property']
+      if source['schema']
+        props = source['schema']['property']
+      else
+        props = source['property']
+      end
+      
+      if props    
         str = ""
-        source['schema']['property'].each do |name, ar_type|
+        props.each do |name, ar_type|
             if ar_type && ar_type.is_a?(String)
                 ar_type = ar_type.split(',')    
             end
@@ -414,11 +417,10 @@ module Rho
           partition = source['partition']
           sync_type = source['sync_type']
           schema_version = source['schema_version']
-          model_type = source['model_type']
           associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
           
-          attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs, model_type', {'name'=>name})
+          attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
 
           if attribs && attribs.size > 0 
             if attribs[0]['sync_priority'].to_i != sync_priority.to_i
@@ -443,11 +445,7 @@ module Rho
             if attribs[0]['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
-
-            if attribs[0]['model_type'] != model_type
-                db.update_into_table('sources', {"model_type"=>model_type},{"name"=>name})
-            end
-
+            
             if !source['source_id']
                 source['source_id'] = attribs[0]['source_id'].to_i
                 Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
@@ -463,8 +461,7 @@ module Rho
           
             db.insert_into_table('sources',
                 {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
-                "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs,
-                "model_type"=>model_type })
+                "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
                 
           end
           
