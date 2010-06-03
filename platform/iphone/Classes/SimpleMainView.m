@@ -338,14 +338,26 @@
     [webView goForward];
 }
 
+- (NSString*)encodeUrl:(NSString*)url {
+    // This decode/encode trick allow to work properly with urls which are already encoded
+    // in the same manner as with those which are not. In case if 'url' is already encoded,
+    // encodedUrl will be exactly the same as original one whereas if original url was not
+    // encoded, encodedUrl will contain correct encoded version
+    NSString *decodedUrl = [url stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *encodedUrl = [decodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return encodedUrl;
+}
+
 - (void)navigate:(NSString *)url tab:(int)index {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSString *encodedUrl = [self encodeUrl:url];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
     [webView loadRequest:request];
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
+    NSString *encodedUrl = [self encodeUrl:url];
     NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
-    NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, url];
+    NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, encodedUrl];
     [self navigate:redirect tab:index];
 }
 
