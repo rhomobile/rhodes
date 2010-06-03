@@ -39,6 +39,7 @@ module Rho
       
       # Initialize application and sources
       @@rho_framework = self
+      @db_partitions = {}
       init_sources()
     end
 
@@ -154,6 +155,21 @@ module Rho
       end
     end
 
+    def check_source_migration(app)
+	  uniq_sources = Rho::RhoConfig::sources.values
+      uniq_sources.each do |source|
+          next unless source['migrate_version']
+          
+          db = ::Rho::RHO.get_src_db(source['name'])	  
+          
+          if !app.on_migrate_source(source['migrate_version'], source)
+            db.execute_batch_sql(source['schema']['sql'])
+          end  
+          
+          db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
+      end
+    end
+    
     def load_server_sources(data)
         puts "load_server_sources : #{data}"
         
@@ -183,23 +199,32 @@ module Rho
 
             hashSrcs = Rhom::RhomSource::find_all_ashash
             puts "hashSrcs : #{hashSrcs}"
+            Rho::RhoConfig::reset_max_config_srcid()
             arSrc.each do |name, src|
                 oldSrc = hashSrcs[name]
                 puts "oldSrc: #{oldSrc}"
                 #update schema_version
                 src['schema_version'] = src['schema']['version'] if src['schema'] && src['schema']['version']
-                if oldSrc
-                    oldVer = oldSrc.schema_version
-                    newVer = src['schema_version']
-                    if ( oldVer != newVer )    
-                        get_app(APPNAME).on_migrate_source(oldSrc.schema_version, src)
-                    end
+                src['sync_type'] ||= 'incremental'
+                #if oldSrc
+                #    oldVer = oldSrc.schema_version
+                #    newVer = src['schema_version']
+                #    if ( oldVer != newVer )    
+                #        get_app(APPNAME).on_migrate_source(oldSrc.schema_version, src)
+                #    end
+                #end
+                
+                Rho::RhoConfig::sources[name] = nil
+                @db_partitions.each_value do |db_part|
+                  db_part.delete_from_table('sources', {"name"=>name})
                 end
                 
                 Rho::RhoConfig::add_source(name, src)
             end
             
             init_sources()
+            
+            check_source_migration(get_app(APPNAME))
         rescue Exception => e
             puts "Error load_server_sources: #{e}"
             puts "Trace: #{e.backtrace}"
@@ -219,7 +244,6 @@ module Rho
     def init_sources()
         return unless defined? Rho::RhoConfig::sources
     
-        @db_partitions = {}
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_sources: ' + uniq_sources.inspect
 
@@ -229,7 +253,7 @@ module Rho
         
         uniq_sources.each do |source|
           partition = source['partition']
-          @db_partitions[partition] = nil
+          @db_partitions[partition] = nil unless @db_partitions[partition]
           
           if source['belongs_to']
             source['belongs_to'].each do |attrib, src_name|    
@@ -250,10 +274,11 @@ module Rho
         end
         
         #user partition should alwayse exist
-        @db_partitions['user'] = nil
+        @db_partitions['user'] = nil unless @db_partitions['user']
         hash_migrate = {}
-        @db_partitions.each_key do |partition|
-            db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
+        puts "@db_partitions : #{@db_partitions}"
+        @db_partitions.each do |partition, db|
+            db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition) unless db
             db.start_transaction
             begin
                 init_db_sources(db, uniq_sources, partition,hash_migrate)
@@ -652,6 +677,10 @@ module Rho
       
       def max_config_srcid
         @@max_config_srcid
+      end
+
+      def reset_max_config_srcid
+        @@max_config_srcid = 1
       end
         
       def show_log

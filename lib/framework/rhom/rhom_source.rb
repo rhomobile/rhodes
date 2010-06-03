@@ -7,7 +7,7 @@ module Rhom
     attr_reader   :source_id, :name, :last_updated, :last_inserted_size, 
                   :last_deleted_size, :last_sync_duration,
                   :last_sync_success, :distinct_objects, :backend_refresh_time,
-                  :partition, :schema, :schema_version
+                  :partition, :schema, :schema_version, :model_type
                   
     def initialize(args,count=0)
       # setup the name
@@ -28,6 +28,7 @@ module Rhom
       @partition =  args['partition']
       @schema =  args['schema']
       @schema_version =  args['schema_version']
+      @model_type = args['model_type']
       
       #VERY SLOW OPERATION!
       #@distinct_objects = ::Rhom::RhomDbAdapter::select_from_table(
