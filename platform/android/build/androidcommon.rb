@@ -16,18 +16,17 @@ else
 end
 
 def num_cpus
+  num = nil
   if RUBY_PLATFORM =~ /linux/
-    num = `cat /proc/cpuinfo | grep processor | wc -l`
+    num = `cat /proc/cpuinfo | grep processor | wc -l`.gsub("\n", '')
   elsif RUBY_PLATFORM =~ /darwin/
-    num = `sysctl -n hw.ncpu`
+    num = `sysctl -n hw.ncpu`.gsub("\n", '')
   elsif RUBY_PLATFORM =~ /w(in)?32/
     num = ENV['NUMBER_OF_PROCESSORS']
-  else
-    num = 1
   end
-  num.gsub!("\n", '')
   num = num.to_i
   num = 1 if num == 0
+  num
 end
 
 def get_sources(name)
@@ -186,8 +185,7 @@ def cc_build(name, objdir, additional = nil)
   jobs = num_cpus
   jobs += 1 if jobs > 1
 
-  srcs = []
-  jobs.times.each { |x| srcs << [] }
+  srcs = Array.new(jobs, [])
   sources = get_sources(name)
   sources.each do |src|
     idx = sources.index(src)%jobs
@@ -195,10 +193,10 @@ def cc_build(name, objdir, additional = nil)
   end
 
   ths = []
-  jobs.times.each do |x|
+  srcs.each do |src|
     ths << Thread.new do
-      srcs[x].each do |src|
-        cc_compile src, objdir, additional or return 1
+      src.each do |f|
+        cc_compile f, objdir, additional or return 1
       end
       0
     end
