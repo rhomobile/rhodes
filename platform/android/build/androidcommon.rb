@@ -23,10 +23,11 @@ def num_cpus
   elsif RUBY_PLATFORM =~ /w(in)?32/
     num = ENV['NUMBER_OF_PROCESSORS']
   else
-    num '1'
+    num = 1
   end
   num.gsub!("\n", '')
-  num.to_i
+  num = num.to_i
+  num = 1 if num == 0
 end
 
 def get_sources(name)
