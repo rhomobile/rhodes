@@ -168,6 +168,10 @@ public class Rhodes extends Activity {
 		return path;
 	}
 	
+	public static String getBlobPath() {
+		return RhodesInstance.getInstance().getRootPath() + "db/db-files";
+	}
+	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
@@ -463,6 +467,8 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		Logger.T(TAG, "+++ onCreate");
+		
 		Thread ct = Thread.currentThread();
 		ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
@@ -537,27 +543,49 @@ public class Rhodes extends Activity {
 		});
 		init.start();
 	}
-
+	
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+	protected void onRestart() {
+		super.onRestart();
+		Logger.T(TAG, "+++ onRestart");
 	}
 	
 	@Override
-	protected void onPause() {
-		super.onPause();
+	protected void onStart() {
+		super.onStart();
+		Logger.T(TAG, "+++ onStart");
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Logger.T(TAG, "+++ onResume");
 	}
 	
 	@Override
+	protected void onPause() {
+		Logger.T(TAG, "+++ onPause");
+		super.onPause();
+	}
+	
+	@Override
+	protected void onStop() {
+		Logger.T(TAG, "+++ onStop");
+		super.onStop();
+	}
+		
+	@Override
 	protected void onDestroy() {
+		Logger.T(TAG, "+++ onDestroy");
 		stopSelf();
 		
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Logger.T(TAG, "+++ onConfigurationChanged");
+		super.onConfigurationChanged(newConfig);
 	}
 	
 	@Override
