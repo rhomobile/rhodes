@@ -17,6 +17,7 @@ module REXML
       end
 
       def parse path
+        return [:child, :any] if path == '*'
         path.gsub!(/([\(\[])\s+/, '\1') # Strip ignorable spaces
         path.gsub!( /\s+([\]\)])/, '\1' )
         parsed = []
