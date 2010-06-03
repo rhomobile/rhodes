@@ -149,5 +149,17 @@ public class Utils {
 				os.close();
 		}
 	}
+	
+	public static String getDirName(String filePath) {
+		if (filePath == null)
+			return null;
+		return new File(filePath).getParent();
+	}
+	
+	public static String getBaseName(String filePath) {
+		if (filePath == null)
+			return null;
+		return new File(filePath).getName();
+	}
 
 }
