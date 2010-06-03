@@ -147,7 +147,7 @@ public class AsyncHttp extends RhoThread
 		        break;
 	
 		    case hcDownload:
-		        m_pNetResponse = m_pNetRequest.pullFile(m_strUrl, m_strBody, null, m_mapHeaders);
+		        m_pNetResponse = m_pNetRequest.pullFile(m_strUrl, m_strFilePath, null, m_mapHeaders);
 		        break;
 	
 		    case hcUpload:
