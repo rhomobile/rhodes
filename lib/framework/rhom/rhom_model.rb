@@ -16,21 +16,22 @@ module Rhom
     end
     
     def fixed_schema?
-        BaseModel.model_params ||= {}
-        BaseModel.model_params["model_type"] = "property_bag" unless BaseModel.model_params["model_type"]
-        
         false
     end
     
     def property(name,type=:string,option=nil)
-      fixed_schema?()
+      if fixed_schema?()
 
-  	  BaseModel.model_params ||= {}
+  	      BaseModel.model_params ||= {}
 
-      BaseModel.model_params['schema'] ||= {}
-      BaseModel.model_params['schema']['property'] ||= {}
-      BaseModel.model_params['schema']['property'][name.to_s] = [type,option] 
-      
+          BaseModel.model_params['schema'] ||= {}
+          BaseModel.model_params['schema']['property'] ||= {}
+          BaseModel.model_params['schema']['property'][name.to_s] = [type,option] 
+      else
+  	      BaseModel.model_params ||= {}
+          BaseModel.model_params['property'] ||= {}
+          BaseModel.model_params['property'][name.to_s] = [type,option] 
+      end
 
     end
 
@@ -63,18 +64,18 @@ module Rhom
   	  return unless fixed_schema?
   	  
       BaseModel.model_params['schema'] ||= {}
-      BaseModel.model_params['schema']['index'] ||= []  	  
+      BaseModel.model_params['schema']['index'] ||= {}  	  
 
-      BaseModel.model_params['schema']['index'] << {name.to_s=>cols}
+      BaseModel.model_params['schema']['index'][name.to_s] = cols
     end
 
     def unique_index(name,cols)
   	  return unless fixed_schema?
   	  
       BaseModel.model_params['schema'] ||= {}
-      BaseModel.model_params['schema']['unique_index'] ||= []  	  
+      BaseModel.model_params['schema']['unique_index'] ||= {}  	  
 
-      BaseModel.model_params['schema']['unique_index'] << {name.to_s=>cols}
+      BaseModel.model_params['schema']['unique_index'][name.to_s] = cols
     end
     
   end
@@ -87,9 +88,6 @@ module Rhom
     end
     
     def fixed_schema?
-        BaseModel.model_params ||= {}
-        BaseModel.model_params["model_type"] = "fixed_schema" unless BaseModel.model_params["model_type"]
-        
         true
     end
     
