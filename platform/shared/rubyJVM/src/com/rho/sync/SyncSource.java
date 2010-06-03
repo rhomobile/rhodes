@@ -454,6 +454,7 @@ class SyncSource
 		        {
 		            getSync().stopSync();
 		            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+		            m_strError = resp.getCharData();
 		            continue;
 		        }
 		    }catch(Exception exc)
