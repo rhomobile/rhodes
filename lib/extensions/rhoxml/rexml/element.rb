@@ -77,8 +77,8 @@ module REXML
       rv = "<#@expanded_name"
 
       @attributes.each_attribute do |attr|
-        rv << " "
-        attr.write( rv, 0 )
+        rv << " " << attr
+        #attr.write( rv, 0 )
       end
 
       if children.size > 0
@@ -913,8 +913,7 @@ module REXML
     #  XPath.each(doc.root, 'child::node()', &block)
     #  #-> Yields <b/>, <c/>, <d/>, sean, <b/>, <c/>, <d/>
     def each( xpath=nil, &block)
-      puts "each : #{xpath}"
-      XPath::each( @element, xpath ) {|e| yield e if e.kind_of? Element }
+      XPath::each( @element, xpath ) {|e| yield e if e.kind_of?( Element) }
     end
 
     def collect( xpath=nil, &block )
@@ -983,5 +982,23 @@ module REXML
     def initialize element
       @element = element
     end
+    
+    # Iterates over the attributes of an Element.  Yields actual Attribute
+    # nodes, not String values.
+    # 
+    #  doc = Document.new '<a x="1" y="2"/>'
+    #  doc.root.attributes.each_attribute {|attr|
+    #    p attr.expanded_name+" => "+attr.value
+    #  }
+    def each_attribute # :yields: attribute
+      each_value do |val|
+        #if val.kind_of? Attribute
+          yield val
+        #else
+        #  val.each_value { |atr| yield atr }
+        #end
+      end
+    end
+    
   end
 end
