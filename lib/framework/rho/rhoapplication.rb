@@ -36,18 +36,7 @@ module Rho
         NativeBar.create(NOBAR_TYPE, [])
 	  end
 	  
-	  uniq_sources = Rho::RhoConfig::sources.values
-      uniq_sources.each do |source|
-          next unless source['migrate_version']
-          
-          db = ::Rho::RHO.get_src_db(source['name'])	  
-          
-          if !on_migrate_source(source['migrate_version'], source)
-            db.execute_batch_sql(source['schema']['sql'])
-          end  
-          
-          db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
-      end
+	  ::Rho::RHO.get_instance().check_source_migration(self)
           
     end
     
