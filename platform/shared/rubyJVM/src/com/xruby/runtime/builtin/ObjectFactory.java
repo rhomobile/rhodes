@@ -131,8 +131,12 @@ public class ObjectFactory {
     }
 
     //RHO_COMMENT
-    public static RubyIO createResourceFile(String filename, String mode) {
-        return new RubyFile(new InputStreamExecutor(filename, mode), RubyRuntime.FileClass );
+    public static RubyIO createResourceFile(String filename, String mode) 
+    {
+    	InputStreamExecutor ise = new InputStreamExecutor(filename, mode);
+    	if ( ise.getInputStream() == null )
+    		return null;
+        return new RubyFile( ise, RubyRuntime.FileClass );
     }
     //RHO_COMMENT
     
