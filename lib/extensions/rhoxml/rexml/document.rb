@@ -492,13 +492,16 @@ module REXML
 
     def value
       #TODO: 
-      #return @unnormalized if @unnormalized
-      #@unnormalized = Text::unnormalize( @string, doctype )
+      return @unnormalized if @unnormalized
+      @unnormalized = Text::unnormalize( @string, doctype )
       
-      @string
+      @unnormalized
     end
 
     #TODO optimize it - regular expressions is slow on BB
+    def Text::unnormalize( string, doctype=nil, filter=nil, illegal=nil )
+        string.to_s.gsub(/\&amp;/, "&").gsub(/\&quot;/, "\"").gsub(/\&gt;/, ">").gsub(/\&lt;/, "<")
+    end
 =begin    
     def Text::unnormalize( string, doctype=nil, filter=nil, illegal=nil )
       string.gsub( /\r\n?/, "\n" ).gsub( REFERENCE ) {
