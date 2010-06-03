@@ -47,7 +47,7 @@ module Rho
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
         puts "on_migrate_source; old_version :#{old_version}; new_src : #{new_src}"
-        if new_src['model_type'] == 'fixed_schema'
+        if new_src['schema']
             db = ::Rho::RHO.get_src_db(new_src['name'])
             db.delete_table(new_src['name'])
             
