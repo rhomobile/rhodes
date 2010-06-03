@@ -16,16 +16,14 @@ else
 end
 
 def num_cpus
+  num = nil
   if RUBY_PLATFORM =~ /linux/
-    num = `cat /proc/cpuinfo | grep processor | wc -l`
+    num = `cat /proc/cpuinfo | grep processor | wc -l`.gsub("\n", '')
   elsif RUBY_PLATFORM =~ /darwin/
-    num = `sysctl -n hw.ncpu`
+    num = `sysctl -n hw.ncpu`.gsub("\n", '')
   elsif RUBY_PLATFORM =~ /w(in)?32/
     num = ENV['NUMBER_OF_PROCESSORS']
-  else
-    num = 1
   end
-  num.gsub!("\n", '')
   num = num.to_i
   num = 1 if num == 0
 end
