@@ -20,9 +20,9 @@
  */
 package com.rhomobile.rhodes.camera;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.rhomobile.rhodes.AndroidR;
@@ -31,11 +31,11 @@ import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.Utils;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
-//import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -51,15 +51,27 @@ public class FileList extends Activity implements OnClickListener{
 	private static final String TAG = "FileList";
 	
 	private String callbackUrl;
-	private Button okButton;
-	private Button cancelButton;
-	private TextView lookIn;
-	private List<String> items = null;
+	private List<String> files;
 	private String selectedFile = "";
 	private ImageView imagePreview;
-	private ListView filesList;
 	
-	private static final String BASE_DIR = Environment.getExternalStorageDirectory() + "/DCIM/Camera";
+	private ArrayList<String> getImages() {
+		String[] proj = {MediaStore.Images.Media.DATA};
+		Cursor cursor = MediaStore.Images.Media.query(getContentResolver(),
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, proj);
+		
+		ArrayList<String> files = new ArrayList<String>();
+		
+		int idx = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		if (cursor.moveToFirst()) {
+			do {
+				String path = cursor.getString(idx);
+				files.add(path);
+			} while (cursor.moveToNext());
+		}
+		
+		return files;
+	}
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -74,18 +86,21 @@ public class FileList extends Activity implements OnClickListener{
 
 		imagePreview = (ImageView) findViewById(AndroidR.id.preview);
 
-		filesList = (ListView) findViewById(AndroidR.id.filesList);
+		ListView filesList = (ListView) findViewById(AndroidR.id.filesList);
+
+		files = getImages();
+		List<String> names = new ArrayList<String>();
+		Iterator<String> it = files.iterator();
+		while (it.hasNext())
+			names.add(Utils.getBaseName(it.next()));
+		filesList.setAdapter(new ArrayAdapter<String>(this,
+				AndroidR.layout.file_row, names));
 		
-		// TODO: implement cursor reading
-		fill(new File(BASE_DIR).listFiles());
-		//Cursor cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, null, null, null, null);
-		//fill(cursor);
 
-		okButton = (Button) findViewById(AndroidR.id.okButton);
-		cancelButton = (Button) findViewById(AndroidR.id.cancelButton);
+		Button okButton = (Button) findViewById(AndroidR.id.okButton);
+		Button cancelButton = (Button) findViewById(AndroidR.id.cancelButton);
 
-		lookIn = (TextView) findViewById(AndroidR.id.lookIn);
-
+		TextView lookIn = (TextView) findViewById(AndroidR.id.lookIn);
 		lookIn.setText("Look In: Gallery");
 
 		okButton.setOnClickListener(this);
@@ -95,13 +110,12 @@ public class FileList extends Activity implements OnClickListener{
 
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				try {
-					String file = items.get(position);
+					String file = files.get(position);
 					Logger.D(TAG, "Selected file: " + file);
 					
 					BitmapFactory.Options options = new BitmapFactory.Options();
 					options.inSampleSize = 10;
-					String fullPath = BASE_DIR + "/" + file;
-					Bitmap bm = BitmapFactory.decodeFile(fullPath, options);
+					Bitmap bm = BitmapFactory.decodeFile(file, options);
 					if (bm != null)
 						bm = Bitmap.createScaledBitmap(bm, 176, 144, true);
 					if (bm != null) {
@@ -115,65 +129,31 @@ public class FileList extends Activity implements OnClickListener{
 			
 		});
 	}
+	
+	private void doCallback(String file) {
+		try {
+			String dst = null;
+			if (file != null && file.length() > 0) {
+				dst = Rhodes.getBlobPath() + "/" + Utils.getBaseName(file);
+				Utils.copy(file, dst);
+			}
+			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, dst == null ? "" : dst);
+		}
+		catch (IOException e) {
+			Logger.E(TAG, e);
+		}
+	}
 
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.okButton:
-			try {
-				String src = BASE_DIR + "/" + selectedFile;
-				String dst = Camera.BASE_CAMERA_DIR + "/" + selectedFile;
-				Utils.copy(src, dst);
-				com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, dst);
-			} catch (IOException e) {
-				Logger.E(TAG, e);
-			}
-			finish();
+			doCallback(selectedFile);
 			break;
 		case AndroidR.id.cancelButton:
-			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, "");
-			finish();
+			doCallback(null);
 			break;
 		}
+		finish();
 	}
 	
-	/*
-	private void fill(Cursor cursor) {
-		if (!cursor.moveToFirst())
-			return;
-		
-		int count = cursor.getColumnCount();
-		for (int i = 0; i < count; ++i) {
-			String name = cursor.getColumnName(i);
-			Logger.D(TAG, "Name of " + i + " column: " + name);
-		}
-		
-		do {
-			String filename = cursor.getString(cursor.getColumnIndex(Media.TITLE));
-			Logger.D(TAG, "Filename: " + filename);
-		} while (cursor.moveToNext());
-	}
-	*/
-	
-	private void fill(File[] files) {
-		items = new ArrayList<String>();
-		if (files != null) {
-			for (File file : files) {
-				if (!file.isDirectory()) {
-					
-					boolean skip = false;
-					
-					if ( file.getName().indexOf(".png") == -1 && file.getName().indexOf(".jpg") == -1 )
-						skip = true;
-					
-					if ( !skip )
-						items.add(file.getName());
-				}
-			}
-		}
-		ArrayAdapter<String> fileList = new ArrayAdapter<String>(this,
-				AndroidR.layout.file_row, items);
-		
-		filesList.setAdapter(fileList);
-	}
-
 }
