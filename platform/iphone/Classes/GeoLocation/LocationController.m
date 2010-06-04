@@ -9,6 +9,7 @@
 #import <CFNetwork/CFNetwork.h>
 
 #import <CoreLocation/CoreLocation.h>
+#import "Rhodes.h"
 #import "LocationController.h"
 #import "logging/RhoLog.h"
 #include "rubyext/GeoLocation.h"
@@ -21,6 +22,17 @@ static void _TimerCallBack(CFRunLoopTimerRef timer, void* context);
 
 // This is a singleton class, see below
 static LocationController *sharedLC = nil;
+
+@interface LocationControllerInit : NSObject {}
++ (void)run;
+@end
+
+@implementation LocationControllerInit
++ (void)run {
+    [[LocationController alloc] init]; // assignment not done here
+}
+@end
+
 
 @implementation LocationController
 
@@ -154,7 +166,7 @@ static LocationController *sharedLC = nil;
 + (LocationController *)sharedInstance {
     @synchronized(self) {
         if (sharedLC == nil) {
-            [[self alloc] init]; // assignment not done here
+            [Rhodes performOnUiThread:[LocationControllerInit class] wait:NO];
         }
     }
     return sharedLC;
