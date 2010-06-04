@@ -57,6 +57,7 @@ end
 
 while true
   android = prompt_for("Android SDK path", android, false)
+  android = "" if android.nil?
 
   android = android.gsub(/\\/,"/")
   apilevel = -1
