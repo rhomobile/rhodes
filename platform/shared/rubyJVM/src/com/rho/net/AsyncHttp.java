@@ -44,7 +44,7 @@ public class AsyncHttp extends RhoThread
 		super(factory);
 		
 	    m_ptrFactory = factory;
-	    m_strUrl = url != null ? url : "";
+	    m_strUrl = RHODESAPP().canonicalizeRhoUrl(url != null ? url : "");
 	    m_strBody = body != null ? body : "";
 	    m_strFilePath = filepath != null ? filepath : "";
 	    m_strCallback = callback != null ? callback : "";
