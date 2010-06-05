@@ -91,7 +91,7 @@ CAsyncHttp::CHttpCommand::CHttpCommand(
     const char* file_path,
     const char* callback, const char* callback_params, boolean ssl_verify_peer)
 {
-    m_strUrl = url != null ? url : "";
+    m_strUrl = RHODESAPP().canonicalizeRhoUrl(url != null ? url : "");
     m_strBody = body != null ? body : "";
     m_strFilePath = file_path != null ? file_path : "";
     m_strCallback = callback != null ? callback : "";

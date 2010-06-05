@@ -175,9 +175,10 @@ public :
 	    }
 
         rho::common::CRhodesApp::Create(m_strRootPath );
+        String strTitle = RHODESAPP().getAppTitle();
 
         // Create the main application window
-        m_appWindow.Create(NULL, CWindow::rcDefault, TEXT("Rhodes"), WS_VISIBLE);
+        m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), WS_VISIBLE);
         if (NULL == m_appWindow.m_hWnd)
         {
             return S_FALSE;
