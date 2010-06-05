@@ -84,6 +84,7 @@ public:
 
     const String& getAppBackUrl(){return m_strAppBackUrl;}
     void setAppBackUrl(const String& url);
+    String getAppTitle();
 
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
