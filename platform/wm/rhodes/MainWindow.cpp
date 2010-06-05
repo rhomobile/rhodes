@@ -216,6 +216,11 @@ Error:
     return SUCCEEDED(hr) ? 0 : -1;
 }
 
+LRESULT CMainWindow::OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+    return TRUE;
+}
+
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 #if defined (_WIN32_WCE)
@@ -550,12 +555,12 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
     LPCTSTR szURL = OLE2CT(V_BSTR(pvtURL));
 
     LOG(TRACE) + "OnBeforeNavigate2: " + szURL ;
-
+/*
     String strTitle = RHOCONF().getString("title_text");
     if ( strTitle.length() > 0 )
         SetWindowText(convertToStringW(strTitle).c_str());
     else
-        SetWindowText(TEXT("Untitled"));
+        SetWindowText(TEXT("Untitled"));*/
 	
     //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, TRUE));
 }
