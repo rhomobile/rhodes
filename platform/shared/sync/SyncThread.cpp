@@ -308,12 +308,13 @@ int rho_sync_get_pagesize()
 
 void rho_sync_set_pagesize(int nPageSize)
 {
-    return CSyncThread::getSyncEngine().setSyncPageSize(nPageSize);
+    CSyncThread::getSyncEngine().setSyncPageSize(nPageSize);
 }
 
 void rho_sync_set_threaded_mode(int b)
 {
-    return CSyncThread::getSyncEngine().setNonThreadedMode(b==0);
+    CSyncThread::getInstance()->setNonThreadedMode(b==0);
+    CSyncThread::getSyncEngine().setNonThreadedMode(b==0);
 }
 
 }
