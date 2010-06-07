@@ -800,7 +800,8 @@ import com.rho.Tokenizer;
     return schemespec.toString();
   }
 
-  public String getPathSpecificPart() {
+  public String getHostSpecificPart() 
+  {
     StringBuffer schemespec = new StringBuffer();
 
     if (m_scheme != null) {
@@ -832,10 +833,6 @@ import com.rho.Tokenizer;
       }
     }
 
-    if (m_path != null) {
-      schemespec.append((m_path));
-    }
-  
 	return schemespec.toString();	    
   }
   
@@ -1219,12 +1216,12 @@ import com.rho.Tokenizer;
 	  
 	  return sb.toString();
   }
-/*  
+  
   public static boolean isLocalHost(String strUrl)
   {
 	  return strUrl.startsWith("http://localhost") ||
 	  	strUrl.startsWith("http://127.0.0.1");
-  }*/
+  }
 
   public static boolean isLocalData(String strUrl)
   {

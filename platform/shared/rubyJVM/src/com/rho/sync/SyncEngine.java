@@ -499,10 +499,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    
 	    if ( !resp.isOK() )
 	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
-	    else
+	    /*else
     	{
     		processServerSources(resp.getCharData());
-    	}
+    	}*/
 	    
 	    return resp.isOK();
 	}
@@ -521,8 +521,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	
 	        JSONEntry oJsonEntry = new JSONEntry(szData);
 	
-	        if (oJsonEntry.hasName("sources") )
-	            processServerSources(szData);
+	        //if (oJsonEntry.hasName("sources") )
+	        //    processServerSources(szData);
 	        
 	        JSONEntry oJsonObject = oJsonEntry.getEntry("client");
 	        if ( !oJsonObject.isEmpty() )
@@ -614,7 +614,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    getNotify().fireBulkSyncNotification(false, "download", strPartition, RhoRuby.ERR_NONE);
 	    
 	    String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.data");
-	    String strHsqlDataUrl = getHostFromUrl(serverUrl) + strDataUrl + ".hsqldb.data";
+	    String strHsqlDataUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.data";
 	    LOG.INFO("Bulk sync: download data from server: " + strHsqlDataUrl);
 	    {
 		    NetResponse resp1 = getNet().pullFile(strHsqlDataUrl, fDataName, this, null);
@@ -631,7 +631,7 @@ public class SyncEngine implements NetRequest.IRhoSession
             return;
 	    
 	    String fScriptName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.script" );
-	    String strHsqlScriptUrl = getHostFromUrl(serverUrl) + strDataUrl + ".hsqldb.script";
+	    String strHsqlScriptUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.script";
 	    LOG.INFO("Bulk sync: download script from server: " + strHsqlScriptUrl);
 	    {
 		    NetResponse resp1 = getNet().pullFile(strHsqlScriptUrl, fScriptName, this, null);
@@ -820,7 +820,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	static String getHostFromUrl( String strUrl )
 	{
 		URI uri = new URI(strUrl);
-		return uri.getPathSpecificPart() + "/";
+		return uri.getHostSpecificPart() + "/";
 	}
 	
 }
