@@ -395,10 +395,10 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
 
     if ( !resp.isOK() )
         m_nErrCode = RhoRuby.getErrorFromResponse(resp);
-    else
+    /*else
     {
         processServerSources(resp.getCharData());
-    }
+    } */
 
     return resp.isOK();
 }
@@ -429,8 +429,8 @@ String CSyncEngine::requestClientIDByNet()
 
         CJSONEntry oJsonEntry(szData);
 
-        if (oJsonEntry.hasName("sources") )
-            processServerSources(szData);
+        //if (oJsonEntry.hasName("sources") )
+        //    processServerSources(szData);
 
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");
         if ( !oJsonObject.isEmpty() )
@@ -527,11 +527,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
     String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "");
     String strZip = ".rzip";
-	String hostName = getHostFromUrl(serverUrl);
-	if (hostName.c_str()[hostName.length()-1] == '/') {
-		hostName = hostName.substr(0,hostName.length()-1);
-	}
-    String strSqlDataUrl = hostName + strDataUrl+strZip;
+    String strSqlDataUrl = CFilePath::join(getHostFromUrl(serverUrl), strDataUrl) +strZip;
     LOG(INFO) + "Bulk sync: download data from server: " + strSqlDataUrl;
     {
         NetResponse( resp1, getNet().pullFile(strSqlDataUrl, fDataName+strZip, this, null) );
