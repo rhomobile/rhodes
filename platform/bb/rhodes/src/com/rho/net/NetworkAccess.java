@@ -164,7 +164,7 @@ public class NetworkAccess implements INetworkAccess {
 			url = url.substring(0, fragment);
 		}
 
-		boolean ignoreSuffix = ignoreSuffixOnSim && DeviceInfo.isSimulator();
+		boolean ignoreSuffix = !URI.isLocalHost(url) && ignoreSuffixOnSim && DeviceInfo.isSimulator();
 		HttpConnection http = (HttpConnection)baseConnect(url, ignoreSuffix );
 		return new BBHttpConnection(http);
 	}
