@@ -556,7 +556,7 @@ public class NetRequest
 		    			}
 		    		}while( !m_bCancel && nRead >= 0 );
 		    		
-		    		if ( code == IHttpConnection.HTTP_PARTIAL_CONTENT && isFinishDownload() )
+		    		if ( code == IHttpConnection.HTTP_OK || (code == IHttpConnection.HTTP_PARTIAL_CONTENT && isFinishDownload()) )
 		    			m_nCurDownloadSize = 0;
 				}
 				
