@@ -12,7 +12,7 @@ class CRubyMutex
     unsigned long m_valThread, m_valMutex;
 
 public:
-    CRubyMutex();
+    CRubyMutex(boolean bIgnore);
     ~CRubyMutex();
 
     boolean isMainRubyThread();
@@ -54,8 +54,8 @@ class CDBAdapter
 public:
     DEFINE_LOGCLASS;
 
-    CDBAdapter(const char* szDBPartition) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
-        m_bUIWaitDB(false), m_nTransactionCounter(0) {}
+    CDBAdapter(const char* szDBPartition, boolean bNoRubyLock) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
+        m_bUIWaitDB(false), m_nTransactionCounter(0), m_mxRuby(bNoRubyLock) {}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);

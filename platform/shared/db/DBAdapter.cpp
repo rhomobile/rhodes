@@ -140,7 +140,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
     //id INTEGER PRIMARY KEY, REMOVE
         LOG(INFO) + "Migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
 
-        CDBAdapter db(m_strDbPartition.c_str());
+        CDBAdapter db(m_strDbPartition.c_str(), true);
         db.open( m_strDbPath, m_strDbVer, true );
         DBResult( res, db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" ));
         DBResult( res1, db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" ));
@@ -335,7 +335,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     CRhoFile::deleteFile((dbNewName+"-journal").c_str());
     CRhoFile::deleteFile((dbNewName+".version").c_str());
 
-    CDBAdapter db(m_strDbPartition.c_str());
+    CDBAdapter db(m_strDbPartition.c_str(), true);
     db.open( dbNewName, m_strDbVer, true );
 
     //Copy all tables
@@ -389,7 +389,7 @@ void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbT
 
 void CDBAdapter::setBulkSyncDB(String fDataName)
 {
-    CDBAdapter db(m_strDbPartition.c_str());
+    CDBAdapter db(m_strDbPartition.c_str(), true);
     db.open( fDataName, m_strDbVer, true );
     db.createTriggers();
 
@@ -718,7 +718,7 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
     CDBAdapter* pDB = CDBAdapter::getDBPartitions().get(szDBPartition);
     if ( !pDB )
     {
-        pDB = new CDBAdapter(szDBPartition);
+        pDB = new CDBAdapter(szDBPartition, false);
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
     }
 
@@ -833,13 +833,16 @@ void rho_db_init_attr_manager()
 namespace rho{
 namespace common{
 
-CRubyMutex::CRubyMutex() : m_nLockCount(0), m_valThread(0), m_valMutex(null)
+CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
 {
+    if ( !bIgnore )
+        m_valMutex = rho_ruby_create_mutex();
 }
 
 CRubyMutex::~CRubyMutex()
 {
-    rho_ruby_destroy_mutex(m_valMutex);
+    if ( m_valMutex )
+        rho_ruby_destroy_mutex(m_valMutex);
 }
 
 boolean CRubyMutex::isMainRubyThread()
@@ -849,15 +852,15 @@ boolean CRubyMutex::isMainRubyThread()
 
 void CRubyMutex::Lock()
 {
+    if ( m_valMutex == null )
+        return;
+
     unsigned long curThread = rho_ruby_current_thread();
     if ( curThread == null )
         return;
 
     if ( m_valThread != curThread )
     {
-        if ( m_valMutex == null )
-            m_valMutex = rho_ruby_create_mutex();
-
         rho_ruby_lock_mutex(m_valMutex);
         m_valThread = curThread;
         m_nLockCount = 1;
@@ -867,6 +870,9 @@ void CRubyMutex::Lock()
 
 void CRubyMutex::Unlock()
 {
+    if ( m_valMutex == null )
+        return;
+
     m_nLockCount--;
     if ( m_nLockCount == 0 )
     {
