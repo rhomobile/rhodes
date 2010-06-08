@@ -1,2 +1,2 @@
 entry: Init_fcntl
-libraries: [ "libfcntl.a" ]
+libraries: [ "fcntl" ]
