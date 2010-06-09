@@ -61,14 +61,15 @@ public :
 			}
 
 #if defined(OS_WINDOWS)
-			if (wcsncmp(lpszToken, _T("http_proxy"),10)==0) {
+			if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) {
 				char *token = wce_wctomb(lpszToken);
 				char *proxy =parseToken(token,strlen(token));
+				
+				if (proxy)
+				  httpProxy = proxy;
 
-				httpProxy = proxy;
-
-				free(proxy);
-				free(token);
+				if (proxy) free(proxy);
+				if (token) free(token);
 
 			} else if (wcsncmp(lpszToken, _T("approot"),7)==0) {
 				char* token = wce_wctomb(lpszToken);
