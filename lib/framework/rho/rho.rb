@@ -192,44 +192,12 @@ module Rho
                 puts "sources after: #{Rho::RhoConfig::sources()}"            
                 return
             end
-            
-            arSrc = res['sources']
-            puts "arSrc: #{arSrc}"
-            return unless arSrc
-
-            hashSrcs = Rhom::RhomSource::find_all_ashash
-            puts "hashSrcs : #{hashSrcs}"
-            Rho::RhoConfig::reset_max_config_srcid()
-            arSrc.each do |name, src|
-                oldSrc = hashSrcs[name]
-                puts "oldSrc: #{oldSrc}"
-                #update schema_version
-                src['schema_version'] = src['schema']['version'] if src['schema'] && src['schema']['version']
-                src['sync_type'] ||= 'incremental'
-                #if oldSrc
-                #    oldVer = oldSrc.schema_version
-                #    newVer = src['schema_version']
-                #    if ( oldVer != newVer )    
-                #        get_app(APPNAME).on_migrate_source(oldSrc.schema_version, src)
-                #    end
-                #end
-                
-                Rho::RhoConfig::sources[name] = nil
-                @db_partitions.each_value do |db_part|
-                  db_part.delete_from_table('sources', {"name"=>name})
-                end
-                
-                Rho::RhoConfig::add_source(name, src)
-            end
-            
-            init_sources()
-            
-            check_source_migration(get_app(APPNAME))
         rescue Exception => e
             puts "Error load_server_sources: #{e}"
             puts "Trace: #{e.backtrace}"
         end
-            
+        
+        raise ArgumentError, "load_server_sources should be called only from bulk sync with partition parameter!"     
     end
 
     def find_src_byname(uniq_sources, src_name)
