@@ -27,6 +27,15 @@ module Rho
       def get_db_fullpathname(postfix)
           File.join(__rhoGetCurrentDir(), 'db/syncdb' + postfix + '.sqlite')
       end
+
+      def get_blob_folder()
+        File.join(__rhoGetCurrentDir(), 'db/db-files')
+      end
+      
+      def get_blob_path(relative_path)
+        File.join(__rhoGetCurrentDir(), relative_path)
+      end
+      
     end
   end # RhoApplication
 end # Rho

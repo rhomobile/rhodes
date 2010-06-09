@@ -61,7 +61,7 @@
 #define L_NUM_SEVERITIES  5
 
 #define RHO_STRIP_LOG 0
-#define RHO_STRIP_PROFILER 0
+#define RHO_STRIP_PROFILER 1
 
 typedef int LogSeverity;
 
