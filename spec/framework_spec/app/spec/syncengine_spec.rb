@@ -26,6 +26,9 @@ describe "SyncEngine_test" do
     SyncEngine.set_threaded_mode(false)
   
     ::Rhom::Rhom.database_full_reset_and_logout
+    
+    SyncEngine.set_syncserver('http://warm-flower-88.heroku.com/application')
+    
   end
   
 =begin    
