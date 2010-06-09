@@ -24,7 +24,7 @@
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
-
+#include "common/RhoFile.h"
 
 #include <hash_map>
 
@@ -585,29 +585,25 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
     LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
 }
 
-std::wstring& loadLoadingHtml(std::wstring& str)
+BSTR loadLoadingHtml()
 {
-	FILE *file;
-	wchar_t	buf[1024];
-
 	rho::String fname = RHODESAPP().getLoadingPagePath();
 
 	size_t pos = fname.find("file://");
 	if (pos == 0 && pos != std::string::npos)
 		fname.erase(0, 7);
 
-	file = fopen(fname.c_str(), "r");
-
-	if(file==NULL) {
+    CRhoFile oFile;
+    StringW strTextW;
+    if ( oFile.open( fname.c_str(), common::CRhoFile::OpenReadOnly) )
+        oFile.readStringW(strTextW);
+    else
+    {
 		LOG(ERROR) + "failed to open loading page \"" + fname + "\"";
-		str.append(L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>");
-	} else {
-		while(fgetws(buf, sizeof(buf), file) != NULL) {
-			str.append(buf);
-		}
-		fclose(file);
-	}
-	return str;
+		strTextW = L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
+    }
+
+    return SysAllocString(strTextW.c_str());
 }
 
 void writeToTheDoc (
@@ -621,8 +617,8 @@ void writeToTheDoc (
 	HRESULT hresult = S_OK;
 	VARIANT *param;
 	SAFEARRAY *sfArray;
-	std::wstring html;
-	BSTR bstr = SysAllocString(loadLoadingHtml(html).c_str());
+	//std::wstring html;
+	BSTR bstr = loadLoadingHtml();
 
 	// Creates a new one-dimensional array
 	sfArray = SafeArrayCreateVector(VT_VARIANT, 0, 1);
