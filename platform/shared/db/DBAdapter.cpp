@@ -38,6 +38,22 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     attrMgr.remove( nSrcID, szAttrName );
 }
 
+void SyncBlob_UpdateCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
+{
+    if ( nArgs < 3 )
+        return;
+
+    CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
+
+    char* szAttrName = (char*)sqlite3_value_text(*(ppArgs+2));
+    int nSrcID = sqlite3_value_int(*(ppArgs+1));
+    if ( attrMgr.isBlobAttr(nSrcID, szAttrName) )
+    {
+        String strFilePath = RHODESAPP().resolveDBFilesPath((char*)sqlite3_value_text(*(ppArgs)));
+        CRhoFile::deleteFile(strFilePath.c_str());
+    }
+}
+
 void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
     CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
@@ -107,6 +123,9 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 
     sqlite3_create_function( m_dbHandle, "rhoOnDeleteObjectRecord", 3, SQLITE_ANY, 0,
 	    SyncBlob_DeleteCallback, 0, 0 );
+    sqlite3_create_function( m_dbHandle, "rhoOnUpdateObjectRecord", 3, SQLITE_ANY, 0,
+	    SyncBlob_UpdateCallback, 0, 0 );
+
     sqlite3_create_function( m_dbHandle, "rhoOnDeleteRecord", 1, SQLITE_ANY, 0,
 	    SyncBlob_DeleteSchemaCallback, 0, 0 );
 
