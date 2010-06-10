@@ -78,8 +78,12 @@ module Rho
         Rho::RhoFSConnector::get_model_path(appname, modelname)
       end
       
-      def get_blob_path(relative_file_path)
-        File.join(__rhoGetCurrentDir(), relative_file_path)
+      def get_blob_folder()
+        Rho::RhoFSConnector::get_blob_folder()
+      end
+      
+      def get_blob_path(relative_path)
+        Rho::RhoFSConnector::get_blob_path(relative_path)      
       end
       
     end
