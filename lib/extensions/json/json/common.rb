@@ -104,7 +104,7 @@ module JSON
   # system. Usually this means, that the iconv library is not installed.
   class MissingUnicodeSupport < JSONError; end
 
-  module_function
+  #module_function
 
   # Parse the JSON string _source_ into a Ruby data structure and return it.
   #
@@ -176,7 +176,7 @@ module JSON
   # See also the fast_generate for the fastest creation method with the least
   # amount of sanity checks, and the pretty_generate method for some
   # defaults for a pretty output.
-  module_function
+  #module_function
   def generate(obj, state = nil)
     if state
       state = State.from_state(state)
@@ -190,8 +190,8 @@ module JSON
   # :stopdoc:
   # I want to deprecate these later, so I'll first be silent about them, and
   # later delete them.
-  alias unparse generate
-  module_function :unparse
+  #alias unparse generate
+  #module_function :unparse
   # :startdoc:
 
   # Unparse the Ruby data structure _obj_ into a single line JSON string and
