@@ -66,7 +66,9 @@ public :
 				char *proxy =parseToken(token,strlen(token));
 				
 				if (proxy)
-				  httpProxy = proxy;
+					httpProxy = proxy;
+				else 
+					LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
 
 				if (proxy) free(proxy);
 				if (token) free(token);
@@ -131,8 +133,13 @@ public :
 		LOG(INFO) + "Rhodes started";
 
 #ifdef OS_WINDOWS
-		if (httpProxy.length() > 0)
+		if (httpProxy.length() > 0) {
 			parseHttpProxyURI(httpProxy);
+		} else {
+			if (RHOCONF().isExist("http_proxy_url")) {
+				parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+			}
+		}
 #endif
 			
 
@@ -266,6 +273,11 @@ public :
 	{
 		// http://<login>:<passwod>@<host>:<port>
 		const char *default_port = "8080";
+
+		if (http_proxy.length() < 8) {
+			LOG(ERROR) + "invalid http proxy url";
+			return;
+		}
 
 		int index = http_proxy.find("http://", 0, 7);
 		if (index == string::npos) {
