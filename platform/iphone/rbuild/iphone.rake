@@ -193,6 +193,7 @@ namespace "run" do
        simlink = sdk + "/Library/Preferences"
 
        simrhodes = File.join(simapp,$guid)
+       $simrhodes = simrhodes if $simrhodes.nil?
 
        mkdir_p File.join(simrhodes,"Documents")
        mkdir_p File.join(simrhodes,"Library","Preferences")
