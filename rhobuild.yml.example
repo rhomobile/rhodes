@@ -28,16 +28,20 @@ android:
   #version: 1.5
   # This enable/disable native geo mapping for Android. Disabled by default
   #mapping: yes
+  
 excludedirs:
   bb:
     - public/js/iui
     - public/js/jquery*
+    - public/jqtouch*
     - public/js/prototype*
     - public/css/iphone*
     - public/iwebkit
+    - public/themes
     - **/*.db
     - **/.*.swo
     - **/.*.swn
     - **/jquery*.js
     - **/.DS_Store
+  
 
