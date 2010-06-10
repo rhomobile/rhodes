@@ -1177,6 +1177,9 @@ static VALUE
 rb_file_exist_p(VALUE obj, VALUE fname)
 {
 //RHO
+    if (TYPE(fname) != T_STRING)
+        rb_raise(rb_eTypeError, "argument is not a string");
+    
     if ( rho_rhodesapp_isrubycompiler() )
     {
         struct stat st;
@@ -1185,7 +1188,10 @@ rb_file_exist_p(VALUE obj, VALUE fname)
         return Qtrue;
     }else
     {
-        if( file_load_ok(RSTRING_PTR(fname)) ) 
+        char *name;
+        
+        name = RSTRING_PTR(fname);
+        if( file_load_ok(name) ) 
             return Qtrue;
         return Qfalse;
     }
