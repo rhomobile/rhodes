@@ -36,9 +36,9 @@ This will generate a controller as the file controller.rb and several views as a
 
 h2. MORE RESOURCES
 
-There is a "tutorial available":http://rhomobile.com/wiki/index.php/Mobilizing_Your_Application_with_Rhomobile on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
+There is a "tutorial available":http://rhomobile.com/wiki/index.php/Tutorial2 on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
 
-The "Rhodes spec":http://rhomobile.com/wiki/index.php/Rhodes is also available on the "Rhomobile documentation wiki":http://rhomobile.com/wiki/index.php?title=Rhomobile. 
+The "Rhodes spec":http://rhomobile.com/wiki/index.php/Rhodes for full documentation on the Rhodes framework.
 
 For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
 
