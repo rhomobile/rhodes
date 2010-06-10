@@ -212,7 +212,7 @@ public class RJSONTokener extends JSONTokener
         }
     }
     
-	public static void initMethods(RubyClass klass) {
+	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("parse", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
