@@ -810,7 +810,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 			proxyName += ":" +  RHOCONF().getString("http_proxy_port");
 		}
 
-		LOG(ERROR) + "PROXY: " + proxyName;
+		LOG(INFO) + "PROXY: " + proxyName;
 
 		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PROXY, 
 									rho::common::convertToStringW(proxyName).c_str(), 
