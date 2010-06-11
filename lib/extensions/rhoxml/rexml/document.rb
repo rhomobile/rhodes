@@ -13,8 +13,18 @@ require "rexml/output"
 =end
 if !defined? RHO_ME
 require "rexml/parsers/baseparser"
+else
+module REXML
+  module Parsers
+    class BaseParser
+      def unnormalize( string, entities=nil, filter=nil )
+        string
+      end      
+    end
+  end
+end  
 end
-#require "rexml/parsers/streamparser"
+require "rexml/parsers/streamparser"
 
 require "rexml/parsers/treeparser"
 
