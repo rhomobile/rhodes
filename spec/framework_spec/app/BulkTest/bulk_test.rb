@@ -1,9 +1,9 @@
 require 'rhom'
 
-class Product
+class BulkTest
     include Rhom::PropertyBag
 
     enable :sync
-    #set :partition, :application
-
+    set :partition, :app
+    
 end

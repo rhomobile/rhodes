@@ -361,7 +361,13 @@ void CSyncEngine::processServerSources(String strSources)
 {
     if ( strSources.length() > 0 )
     {
-        NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
+        if (isNoThreadedMode())
+            rho_ruby_loadserversources(strSources.c_str());            
+        else
+        {
+            NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
+        }
+
         loadAllSources();
 
         rho_db_init_attr_manager();
