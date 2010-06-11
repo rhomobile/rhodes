@@ -118,11 +118,6 @@ final public class RhodesApplication extends UiApplication implements SystemList
         thread.start();                       
     }
     
-	public String getPathForMenuItem(String url) 
-	{
-		return RHODESAPP().canonicalizeRhoUrl(url);
-	}
-    
     public void addMenuItem(String label, String value){
     	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
     	_mainScreen.addCustomMenuItem(label, value);
@@ -682,7 +677,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		private MenuItem optionsItem = new MenuItem("", 200000, 10) {
 			public void run() {
 					String curUrl = RhoRuby.getOptionsPage();
-					curUrl = getPathForMenuItem(curUrl);
+					curUrl = RHODESAPP().canonicalizeRhoUrl(curUrl);
 
 					addToHistory(curUrl, null );
 			    	
@@ -773,10 +768,19 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    	else
     	    	{
 					MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
-						public void run() {
-					    	String val = getPathForMenuItem(value);
-							addToHistory(val, null );
-							navigateUrl(val);
+						public void run() 
+						{
+							if (value != null && value.startsWith("callback:") )
+							{
+								String url = RHODESAPP().canonicalizeRhoUrl(value.substring(9));
+								RhoRubyHelper helper = new RhoRubyHelper();
+								helper.postUrl(url, "");
+							}else
+							{
+						    	String url = RHODESAPP().canonicalizeRhoUrl(value);
+								addToHistory(url, null );
+								navigateUrl(url);
+							}
 						}
 					};
 					menuItems.addElement(itemToAdd);
