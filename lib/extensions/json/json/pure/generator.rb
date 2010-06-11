@@ -1,6 +1,4 @@
-
 module JSON
-=begin
   MAP = {
     "\x0" => '\u0000',
     "\x1" => '\u0001',
@@ -36,55 +34,31 @@ module JSON
     "\x1f" => '\u001f',
     '"'   =>  '\"',
     '\\'  =>  '\\\\',
+    '/'   =>  '\/',
   } # :nodoc:
 
   # Convert a UTF8 encoded Ruby string _string_ to a JSON string, encoded with
   # UTF16 big endian characters as \u????, and return it.
-  if String.method_defined?(:force_encoding)
-    def utf8_to_json(string) # :nodoc:
-      string = string.dup
-      string << '' # XXX workaround: avoid buffer sharing
-      string.force_encoding(Encoding::ASCII_8BIT)
-      string.gsub!(/["\\\x0-\x1f]/) { MAP[$&] }
-      string.gsub!(/(
-                      (?:
-                        [\xc2-\xdf][\x80-\xbf]    |
-                        [\xe0-\xef][\x80-\xbf]{2} |
-                        [\xf0-\xf4][\x80-\xbf]{3}
-                      )+ |
-                      [\x80-\xc1\xf5-\xff]       # invalid
-                    )/nx) { |c|
-                      c.size == 1 and raise GeneratorError, "invalid utf8 byte: '#{c}'"
-                      s = JSON::UTF8toUTF16.iconv(c).unpack('H*')[0]
-                      s.gsub!(/.{4}/n, '\\\\u\&')
-                    }
-      string.force_encoding(Encoding::UTF_8)
-      string
-    rescue Iconv::Failure => e
-      raise GeneratorError, "Caught #{e.class}: #{e}"
-    end
-  else
-    def utf8_to_json(string) # :nodoc:
-      string = string.gsub(/["\\\x0-\x1f]/) { MAP[$&] }
-      string.gsub!(/(
-                      (?:
-                        [\xc2-\xdf][\x80-\xbf]    |
-                        [\xe0-\xef][\x80-\xbf]{2} |
-                        [\xf0-\xf4][\x80-\xbf]{3}
-                      )+ |
-                      [\x80-\xc1\xf5-\xff]       # invalid
-                    )/nx) { |c|
-        c.size == 1 and raise GeneratorError, "invalid utf8 byte: '#{c}'"
-        s = JSON::UTF8toUTF16.iconv(c).unpack('H*')[0]
-        s.gsub!(/.{4}/n, '\\\\u\&')
-      }
-      string
-    rescue Iconv::Failure => e
-      raise GeneratorError, "Caught #{e.class}: #{e}"
-    end
+  def utf8_to_json(string) # :nodoc:
+    string = string.dup.force_encoding("ASCII-8BIT")
+    string.gsub!(/["\\\/\x0-\x1f]/) { MAP[$&] }
+    string.gsub!(/(
+                    (?:
+                      [\xc2-\xdf][\x80-\xbf]    |
+                      [\xe0-\xef][\x80-\xbf]{2} |
+                      [\xf0-\xf4][\x80-\xbf]{3}
+                    )+ |
+                    [\x80-\xc1\xf5-\xff]       # invalid
+                  )/nx) { |c|
+      c.size == 1 and raise GeneratorError, "invalid utf8 byte: '#{c}'"
+      c.unpack("U*").map{|c|
+        c>0xFFFF ? ('\ud%03x\ud%03x'%[0x7C0+c/1024,0xC00+c%1024]) : ('\u%04x'%c)
+      }.join("")
+    }
+    string
   end
   module_function :utf8_to_json
-=end
+
   module Pure
     module Generator
       # This class is used to create State instances, that are use to hold data
@@ -226,7 +200,7 @@ module JSON
           # Converts this object to a string (calling #to_s), converts
           # it to a JSON string, and returns the result. This is a fallback, if no
           # special method #to_json was defined for some object.
-          def to_json(*) to_s.to_json end
+          def to_json(*args) to_s.to_json end
         end
 
         module Hash
@@ -235,7 +209,7 @@ module JSON
           # _state_ is a JSON::State object, that can also be used to configure the
           # produced JSON string output further.
           # _depth_ is used to find out nesting depth, to indent accordingly.
-          def to_json(state = nil, depth = 0, *)
+          def to_json(state = nil, depth = 0, *args)
             if state
               state = JSON.state.from_state(state)
               state.check_max_nesting(depth)
@@ -265,28 +239,20 @@ module JSON
 
           def json_transform(state, depth)
             delim = ','
-            if state
-              delim << state.object_nl
-              result = '{'
-              result << state.object_nl
-              result << map { |key,value|
-                s = json_shift(state, depth + 1)
-                s << key.to_s.to_json(state, depth + 1)
-                s << state.space_before
-                s << ':'
-                s << state.space
-                s << value.to_json(state, depth + 1)
-              }.join(delim)
-              result << state.object_nl
-              result << json_shift(state, depth)
-              result << '}'
-            else
-              result = '{'
-              result << map { |key,value|
-                key.to_s.to_json << ':' << value.to_json
-              }.join(delim)
-              result << '}'
-            end
+            delim << state.object_nl if state
+            result = '{'
+            result << state.object_nl if state
+            result << map { |key,value|
+              s = json_shift(state, depth + 1)
+              s << key.to_s.to_json(state, depth + 1)
+              s << state.space_before if state
+              s << ':'
+              s << state.space if state
+              s << value.to_json(state, depth + 1)
+            }.join(delim)
+            result << state.object_nl if state
+            result << json_shift(state, depth)
+            result << '}'
             result
           end
         end
@@ -297,7 +263,7 @@ module JSON
           # _state_ is a JSON::State object, that can also be used to configure the
           # produced JSON string output further.
           # _depth_ is used to find out nesting depth, to indent accordingly.
-          def to_json(state = nil, depth = 0, *)
+          def to_json(state = nil, depth = 0, *args)
             if state
               state = JSON.state.from_state(state)
               state.check_max_nesting(depth)
@@ -327,30 +293,27 @@ module JSON
 
           def json_transform(state, depth)
             delim = ','
-            if state
-              delim << state.array_nl
-              result = '['
-              result << state.array_nl
-              result << map { |value|
-                json_shift(state, depth + 1) << value.to_json(state, depth + 1)
-              }.join(delim)
-              result << state.array_nl
-              result << json_shift(state, depth) 
-              result << ']'
-            else
-              '[' << map { |value| value.to_json }.join(delim) << ']'
-            end
+            delim << state.array_nl if state
+            result = '['
+            result << state.array_nl if state
+            result << map { |value|
+              json_shift(state, depth + 1) << value.to_json(state, depth + 1)
+            }.join(delim)
+            result << state.array_nl if state
+            result << json_shift(state, depth) 
+            result << ']'
+            result
           end
         end
 
         module Integer
           # Returns a JSON string representation for this Integer number.
-          def to_json(*) to_s end
+          def to_json(*args) to_s end
         end
 
         module Float
           # Returns a JSON string representation for this Float number.
-          def to_json(state = nil, *)
+          def to_json(state = nil, *args)
             case
             when infinite?
               if !state || state.allow_nan?
@@ -374,8 +337,8 @@ module JSON
           # This string should be encoded with UTF-8 A call to this method
           # returns a JSON string encoded with UTF16 big endian characters as
           # \u????.
-          def to_json(*)
-            '"' << self << '"' #JSON.utf8_to_json(self) << '"'
+          def to_json(*args)
+            '"' << JSON.utf8_to_json(self) << '"'
           end
 
           # Module that holds the extinding methods if, the String module is
@@ -413,17 +376,17 @@ module JSON
 
         module TrueClass
           # Returns a JSON string for true: 'true'.
-          def to_json(*) 'true' end
+          def to_json(*args) 'true' end
         end
 
         module FalseClass
           # Returns a JSON string for false: 'false'.
-          def to_json(*) 'false' end
+          def to_json(*args) 'false' end
         end
 
         module NilClass
           # Returns a JSON string for nil: 'null'.
-          def to_json(*) 'null' end
+          def to_json(*args) 'null' end
         end
       end
     end
