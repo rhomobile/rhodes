@@ -81,8 +81,8 @@ public class StringExpression extends Expression {
             }
             case 'x':
             {
-                //e.g. "\x63"
-                String hex = value.substring(i + 2, i + 4);
+                //e.g. "\x63", "\x0"
+                String hex = value.substring(i + 2, i + (value.length() > 4 ? 4 : 3));
                 char h = (char)Integer.parseInt(hex, 16);
                 result.append(h);
                 i += 3;

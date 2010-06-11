@@ -439,18 +439,17 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
-    NSString *url = [[request URL] absoluteString];
+    NSURL *url = [request URL];
     if (!url)
         return NO;
-    
-    if (![url hasPrefix:@"http:"]) {
+    if (![url.scheme isEqualToString:@"http"] && ![url.scheme isEqualToString:@"https"]) {
         // This is not http url so try to open external application for it
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        [[UIApplication sharedApplication] openURL:url];
         return NO;
     }
     
     // Retrieve cookie for http url
-    NSString *c = [[Rhodes sharedInstance] cookie:url];
+    NSString *c = [[Rhodes sharedInstance] cookie:[url absoluteString]];
     if (c && [request isKindOfClass:[NSMutableURLRequest class]]) {
         NSMutableURLRequest *r = (NSMutableURLRequest*)request;
         [r addValue:c forHTTPHeaderField:@"Cookie"];
