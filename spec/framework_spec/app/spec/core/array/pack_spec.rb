@@ -5,6 +5,8 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
 
+=begin
+
 if ENV['MRI'] then
   $: << 'kernel/core'
   require 'pack'
@@ -2371,3 +2373,4 @@ describe "String#unpack with 'w' directive" do
   end
 end
 
+=end

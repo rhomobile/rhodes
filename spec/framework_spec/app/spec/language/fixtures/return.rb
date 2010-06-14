@@ -46,20 +46,6 @@ module ReturnSpecs
     end
   end
 
-  class ThroughDefineMethod
-    lamb = proc { |x| x.call }
-    define_method :foo, lamb
-
-    def mp(&b); b; end
-
-    def outer
-      pr = mp { return :good }
-
-      foo(pr)
-      return :bad
-    end
-  end
-
   class DefineMethod
     lamb = proc { return :good }
     define_method :foo, lamb
