@@ -3,7 +3,7 @@ require 'rhom'
 class BulkTest
     include Rhom::PropertyBag
 
-    enable :sync
+    #enable :sync
     set :partition, :app
     
 end

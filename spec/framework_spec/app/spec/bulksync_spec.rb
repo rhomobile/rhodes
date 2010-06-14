@@ -30,6 +30,11 @@ describe "BulkSync_test" do
     SyncEngine.set_syncserver('http://localhost:9292/application')
     Rho::RhoConfig.bulksync_state='0'
     
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'BulkTest'})
+  end
+
+  after(:all)  do
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'}, {'name'=>'BulkTest'})
   end
   
   it "should login" do
