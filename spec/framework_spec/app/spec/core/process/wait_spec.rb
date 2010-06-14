@@ -1,5 +1,6 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 
+=begin
 describe "Process.wait" do
   before :all do
     Process.waitall
@@ -80,3 +81,4 @@ describe "Process.wait" do
     end
   end
 end
+=end
