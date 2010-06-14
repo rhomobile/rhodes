@@ -1,5 +1,6 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 
+=begin
 describe "Process.ppid" do
   it "returns the process id of the parent of this process" do
 
@@ -18,3 +19,4 @@ describe "Process.ppid" do
     pid.to_i.should == Process.pid
   end
 end
+=end

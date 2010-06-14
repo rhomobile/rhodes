@@ -14,17 +14,17 @@ describe "The __FILE__ constant" do
   
   it "equals a relative path when required using a relative path" do
     base_path = File.dirname(File.dirname(fixture(File.join(__rhoGetCurrentDir(), __FILE__), "file.rb")))
-    path = "fixtures/file.rb"
+    path = fixture(File.join(__rhoGetCurrentDir(), __FILE__), "file.rb")
     Dir.chdir(base_path) do
       require path
-      ScratchPad.recorded.should == File.join(".",path)
+      ScratchPad.recorded.should == path + '.rb'
     end
   end
   
   it "equals the full path when required using a full path" do
     path = fixture(File.join(__rhoGetCurrentDir(), __FILE__), "file.rb")
     require path
-    ScratchPad.recorded.should == path
+    ScratchPad.recorded.should == path + '.rb'
   end
 end
 
