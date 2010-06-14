@@ -80,6 +80,28 @@ module Super
     end
   end
 
+  class S5
+    def here
+      :good
+    end
+  end
+
+  class S6 < S5
+    def under
+      yield
+    end
+
+    def here
+      under {
+        super
+      }
+    end
+  end
+
+  class S7 < S5
+    define_method(:here) { super() }
+  end
+
   module MS1
     module ModA
       def foo(a)
@@ -179,5 +201,62 @@ module Super
       include Layer2
       public :example
     end
+  end
+
+  class MM_A
+    undef_method :is_a?
+  end
+
+  class MM_B < MM_A
+    def is_a?(blah)
+      # should fire the method_missing below
+      super
+    end
+
+    def method_missing(*)
+      false
+    end
+  end
+
+  class Alias1
+    def name
+      [:alias1]
+    end
+  end
+
+  class Alias2 < Alias1
+    def initialize
+      @times = 0
+    end
+
+    def name
+      if @times >= 10
+        raise "runaway super"
+      end
+
+      @times += 1
+
+      # Use this so that we can see collect all supers that we see.
+      # One bug that arises is that we call Alias2#name from Alias2#name
+      # as it's superclass. In that case, either we get a runaway recursion
+      # super OR we get the return value being [:alias2, :alias2, :alias1]
+      # rather than [:alias2, :alias1].
+      #
+      # Which one depends on caches and how super is implemented.
+      [:alias2] + super
+    end
+  end
+
+  class Alias3 < Alias2
+    alias_method :name3, :name
+    # In the method table for Alias3 now should be a special alias entry
+    # that references Alias2 and Alias2#name (probably as an object).
+    #
+    # When name3 is called then, Alias2 (NOT Alias3) is presented as the
+    # current module to Alias2#name, so that when super is called,
+    # Alias2->superclass is next.
+    #
+    # Otherwise, Alias2 is next, which is where name was to begin with,
+    # causing the wrong #name method to be called.
   end
 end
