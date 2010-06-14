@@ -265,10 +265,6 @@ describe "The return keyword" do
   end
 
   describe "within define_method" do
-    it "goes through the method via a closure" do
-      ReturnSpecs::ThroughDefineMethod.new.outer.should == :good
-    end
-
     it "stops at the method when the return is used directly" do
       ReturnSpecs::DefineMethod.new.outer.should == :good
     end

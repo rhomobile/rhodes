@@ -4,7 +4,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 # The natural logarithm, having base Math::E
 describe "Math.log" do
   it "returns a float" do
-    Math.log(1).class.should == Float
+    Math.log(1).should be_kind_of(Float)
   end
   
   it "returns the natural logarithm of the argument" do 
@@ -21,10 +21,18 @@ describe "Math.log" do
     end
   end
   
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.log("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.log("test") }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.log("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.log(nil) }.should raise_error(TypeError)
   end

@@ -42,4 +42,17 @@ module VariablesSpecs
   def self.reverse_foo(a, b)
     return b, a
   end
+
+  class ArrayLike
+    def initialize(array)
+      @array = array
+    end
+
+    def to_a
+      @array
+    end
+  end
+
+  class ArraySubclass < Array
+  end
 end
