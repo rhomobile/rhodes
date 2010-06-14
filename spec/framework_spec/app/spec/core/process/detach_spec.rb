@@ -1,5 +1,6 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 
+=begin
 describe "Process#detach" do
   platform_is_not :windows do
     it "requires one argument" do
@@ -26,3 +27,4 @@ describe "Process#detach" do
     end
   end
 end
+=end

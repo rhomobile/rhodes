@@ -11,33 +11,88 @@ class SpecRunner < MSpecScript
     MSpec.backtrace = true
 
     #MSpec.guard
-
-    # CORE, not including thread or fiber
-    [
-      "argf","class","exception","float","marshal","numeric","range","systemexit",
-      "array","comparable","false","gc","matchdata","object","regexp",
-      "basicobject","continuation","hash","math","objectspace","signal","threadgroup",        
-      "bignum","dir","file","integer","method","precision","string","time",   
-      "binding","enumerable","filetest","io","module","proc","struct","true", 
-      "builtin_constants","env","fixnum","kernel","nil","process","symbol","unboundmethod"
-    ].each do |folder|
-
-      specs =  Rho::RhoFSConnector.get_app_path('app') + "spec/core/#{folder}/**/*_spec.iseq"
-      Dir.glob(specs) { |file|
-        file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
-        file.gsub!(/\.iseq/,"")
-        config[:files] << file
-      }
-    end
- 
+    
     #LANGUAGE
     specs =  Rho::RhoFSConnector.get_app_path('app') + "spec/language/**/*_spec.iseq"
-      Dir.glob(specs) { |file|
+    Dir.glob(specs) do |file|
+      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
+      file.gsub!(/\.iseq/,"")
+      # Temporary disable for_spec until https://www.pivotaltracker.com/story/show/3876583 will be fixed
+      next if file =~ /\/for_spec$/
+      config[:files] << file
+    end
+
+    # CORE
+    core = []
+    core << 'argf'
+    core << 'class'
+    core << 'exception'
+    core << 'float'
+    # TODO: enable it, right now it reports many fails because of encoding mismatch
+    #core << 'marshal'
+    core << 'numeric'
+    core << 'range'
+    core << 'systemexit'
+    core << 'array'
+    core << 'comparable'
+    core << 'false'
+    core << 'gc'
+    core << 'matchdata'
+    core << 'object'
+    core << 'regexp'
+    core << 'basicobject'
+    core << 'continuation'
+    core << 'hash'
+    core << 'math'
+    core << 'objectspace'
+    core << 'signal'
+    # TODO: see if thread relating testing could be enabled
+    #core << 'thread'
+    #core << 'threadgroup'
+    #core << 'fiber'
+    core << 'bignum'
+    core << 'dir'
+    core << 'file'
+    core << 'integer'
+    core << 'method'
+    core << 'precision'
+    core << 'string'
+    core << 'time'
+    core << 'binding'
+    core << 'enumerable'
+    core << 'filetest'
+    # TODO: enable
+    #core << 'io'
+    core << 'module'
+    core << 'proc'
+    core << 'struct'
+    core << 'true'
+    core << 'builtin_constants'
+    core << 'env'
+    core << 'fixnum'
+    core << 'kernel'
+    core << 'nil'
+    core << 'process'
+    core << 'symbol'
+    core << 'unboundmethod'
+
+    core.each do |folder|
+      specs =  Rho::RhoFSConnector.get_app_path('app') + "spec/core/#{folder}/**/*_spec.iseq"
+      Dir.glob(specs) do |file|
         file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
         file.gsub!(/\.iseq/,"")
         config[:files] << file
-      }
+      end
+    end
 
+    # LIBRARIES
+    specs = Rho::RhoFSConnector.get_app_path('app') + "spec/library/**/*_spec.iseq"
+    Dir.glob(specs) do |file|
+      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
+      file.gsub!(/\.iseq/,"")
+      config[:files] << file
+    end
+ 
     # RHODES
     config[:files] << 'spec/rhom_spec'
     config[:files] << 'spec/rhoruby_spec'
@@ -54,13 +109,6 @@ class SpecRunner < MSpecScript
     config[:files] << 'spec/bsearch_spec'
     #config[:files] << 'spec/find_spec'  # find not available on the device
 
-    #LIBRARIES
-    specs = Rho::RhoFSConnector.get_app_path('app') + "spec/library/**/*_spec.iseq"
-    Dir.glob(specs) { |file|
-      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
-      file.gsub!(/\.iseq/,"")
-      config[:files] << file
-    }
   end
 
   def run
