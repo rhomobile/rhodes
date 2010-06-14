@@ -57,7 +57,7 @@ end
 
 while true
   android = prompt_for("Android SDK path", android, false)
-  android = "" if android.nil?
+  break if android.nil?
 
   android = android.gsub(/\\/,"/")
   apilevel = -1
@@ -89,9 +89,11 @@ while true
 end
 
 # try to detect android ndk
-ndks = Dir.glob(File.dirname(android) + "/android-ndk-*").sort
 ndk = ""
-ndk = ndks.last if ndks.size > 0
+unless android.nil?
+  ndks = Dir.glob(File.dirname(android) + "/android-ndk-*").sort
+  ndk = ndks.last if ndks.size > 0
+end
 androidndk = prompt_for("Android NDK path", ndk, false)
 
 #now cabwiz
