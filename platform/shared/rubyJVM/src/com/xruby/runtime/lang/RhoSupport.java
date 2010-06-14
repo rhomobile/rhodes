@@ -181,6 +181,13 @@ public class RhoSupport {
         required_file = required_file.replace('\\', '.');
         required_file = StringMe.replaceAll(required_file,"-", "minus");
         
+        int nDot = required_file.lastIndexOf('.');
+        if (nDot>0)
+        {
+        	String fName = required_file.substring(nDot+1);
+        	required_file = required_file.substring(0, nDot+1) + fName.toLowerCase();
+        }
+        
         required_file += ".main";
         return getAppName() + "." + required_file;
     }
