@@ -4,6 +4,6 @@ class Product
     include Rhom::PropertyBag
 
     enable :sync
-    set :partition, :application
+    #set :partition, :application
 
 end
