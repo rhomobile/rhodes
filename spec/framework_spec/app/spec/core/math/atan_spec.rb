@@ -4,7 +4,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 # arctangent : (-Inf, Inf) --> (-PI/2, PI/2)
 describe "Math.atan" do     
   it "returns a float" do 
-    Math.atan(1).class.should == Float
+    Math.atan(1).should be_kind_of(Float)
   end 
   
   it "return the arctangent of the argument" do    
@@ -16,10 +16,18 @@ describe "Math.atan" do
     Math.atan(0.75).should be_close(0.643501108793284, TOLERANCE)
   end   
   
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.atan("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.atan("test") }.should raise_error(ArgumentError)
+    end
   end
-  
+
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.atan("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.atan(nil) }.should raise_error(TypeError)
   end  
