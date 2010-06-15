@@ -13,6 +13,7 @@ import java.io.IOException;
 import com.rho.FilePath;
 import com.rho.RhoClassFactory;
 import com.rho.file.IFileAccess;
+import com.rho.file.IRAFile;
 
 import j2me.lang.UnsupportedOperationException;
 
@@ -33,9 +34,24 @@ public class File {
 	
     private String _path;
     private transient int prefixLength = 0;
+    private IRAFile m_raFile;
+    private String m_strFullPath;
     
-    public File(String path) {
+    public File(String path) 
+    {
         _path = path;
+        
+        try
+        {
+            m_strFullPath = _path;
+            if (!m_strFullPath.startsWith("file:")) 
+            	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
+        	
+        	m_raFile = RhoClassFactory.createFSRAFile();
+            m_raFile.open(m_strFullPath);
+        }catch(Exception exc)
+        {
+        }
     }
 
     public String getPath() {
@@ -72,24 +88,12 @@ public class File {
     
     public boolean exists() 
     {
-    	try
-    	{
-    		String strPath = _path;
-	        if (!strPath.startsWith("file:")) 
-           		strPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), strPath);
-    		
-	        com.rho.file.IRAFile fs = RhoClassFactory.createFSRAFile();
-	        fs.open(strPath);
-	    	return fs.exists();
-    	}catch(Exception exc)
-    	{
-    		return false;
-    	}
+    	return m_raFile != null && m_raFile.exists();
     }
 
-    public boolean isDirectory() {
-        throw new UnsupportedOperationException(
-                "File operations not supported for J2ME build");
+    public boolean isDirectory() 
+    {
+    	return m_raFile != null && m_raFile.isDirectory();    	
     }
 
     public File[] listFiles() {
@@ -115,17 +119,31 @@ public class File {
         throw new RuntimeException("Not Implemented");
         //return false;
     }
-    public boolean delete() {
-        //TODO: delete
-        throw new RuntimeException("Not Implemented");
-        //return false;
+    public boolean delete() 
+    {
+    	try
+    	{
+	    	if ( m_raFile != null )
+	    	{
+	    		m_raFile.close();
+	    		m_raFile.open(m_strFullPath, "w");
+	    		m_raFile.delete();
+	    		m_raFile.close();
+	    		m_raFile = null;
+	    		return true;
+	    	}
+    	}catch(IOException exc)
+    	{
+    		
+    	}
+    	
+    	return false;
     }
     
     public boolean isFile() {
-        //TODO: isFile
-        throw new RuntimeException("Not Implemented");
-        //return false;
+    	return m_raFile != null && m_raFile.isFile();    	
     }
+    
     public boolean canWrite() {
         //TODO: canWrite
         throw new RuntimeException("Not Implemented");
@@ -141,11 +159,17 @@ public class File {
         throw new RuntimeException("Not Implemented");
         //return 0;
     }
-    public long length() {
-        //TODO: length
-        throw new RuntimeException("Not Implemented");
-        //return 0;
+    public long length() 
+    {
+    	try{
+	    	if ( m_raFile != null )
+	    		return m_raFile.size();
+    	}catch(IOException exc)
+    	{
+    	}
+    	return 0;
     }
+    
     public boolean renameTo(File dest) {
         //TODO: renameTo
         throw new RuntimeException("Not Implemented");
