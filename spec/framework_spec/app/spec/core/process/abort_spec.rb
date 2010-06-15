@@ -1,5 +1,6 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 
+=begin
 # TODO: share with Kernel.abort, abort.
 describe "Process.abort" do
   platform_is_not :windows do
@@ -14,3 +15,4 @@ describe "Process.abort" do
     end
   end
 end
+=end

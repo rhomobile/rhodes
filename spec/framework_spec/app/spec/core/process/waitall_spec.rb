@@ -13,6 +13,7 @@ describe "Process.waitall" do
     lambda { Process.waitall(0) }.should raise_error(ArgumentError)
   end
 
+=begin
   platform_is_not :windows do
     it "waits for all children" do
       pids = []
@@ -42,4 +43,5 @@ describe "Process.waitall" do
       }
     end
   end
+=end
 end

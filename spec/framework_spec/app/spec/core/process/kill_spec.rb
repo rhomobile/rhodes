@@ -20,6 +20,7 @@ describe "Process.kill" do
     lambda { Process.kill("HUP ", 0) }.should raise_error(ArgumentError)
   end
 
+=begin
   platform_is_not :windows do
     it "tests for the existence of a process without sending a signal" do
       Process.kill(0, 0).should == 1
@@ -41,6 +42,7 @@ describe "Process.kill" do
       lambda { Process.kill(0, pid) }.should raise_error(Errno::ESRCH)
     end
   end
+=end
 
   it "raises an EPERM if permission is denied" do
     if Process.uid != 0
@@ -95,6 +97,7 @@ describe "Process.kill" do
   end
 end
 
+=begin
 describe "Process.kill" do
   platform_is_not :windows do
     before :each do
@@ -140,3 +143,4 @@ describe "Process.kill" do
     end
   end
 end
+=end

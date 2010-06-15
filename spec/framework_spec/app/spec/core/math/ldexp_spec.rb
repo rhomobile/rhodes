@@ -3,7 +3,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 
 describe "Math.ldexp" do
   it "returns a float" do
-    Math.ldexp(1.0, 2).class.should == Float
+    Math.ldexp(1.0, 2).should be_kind_of(Float)
   end
   
   it "returns the argument multiplied by 2**n" do
@@ -14,10 +14,18 @@ describe "Math.ldexp" do
     Math.ldexp(5.7, 4).should be_close(91.2, TOLERANCE)
   end
 
-  it "raises an ArgumentError if the first argument cannot be coerced with Float()" do    
-    lambda { Math.ldexp("test", 2) }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the first argument cannot be coerced with Float()" do    
+      lambda { Math.ldexp("test", 2) }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the first argument cannot be coerced with Float()" do    
+      lambda { Math.ldexp("test", 2) }.should raise_error(TypeError)
+    end
+  end
+
   it "raises an TypeError if the second argument cannot be coerced with Integer()" do
     lambda { Math.ldexp(3.2, "this") }.should raise_error(TypeError)
   end

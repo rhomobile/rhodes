@@ -4,7 +4,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 # arcsine : (-1.0, 1.0) --> (-PI/2, PI/2)
 describe "Math.asin" do
   it "return a float" do 
-    Math.asin(1).class.should == Float
+    Math.asin(1).should be_kind_of(Float)
   end 
   
   it "returns the arcsine of the argument" do   
@@ -26,10 +26,18 @@ describe "Math.asin" do
     end
   end
   
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.asin("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.asin("test") }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.asin("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.asin(nil) }.should raise_error(TypeError)
   end

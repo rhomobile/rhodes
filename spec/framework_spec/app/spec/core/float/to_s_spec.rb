@@ -15,18 +15,9 @@ describe "Float#to_s" do
     1.50505000e-20.to_s.should == "1.50505e-20"
   end
 
-  ruby_version_is "" ... "1.9" do
-    it "returns a string representation of self" do
-      100000000000000.to_f.to_s.should == "1.0e+14"
-      -100000000000000.to_f.to_s.should == "-1.0e+14"
-    end
-  end
-
-  ruby_version_is "1.9" do
-    it "returns a string representation of self" do
-      100000000000000.to_f.to_s.should == "100000000000000.0"
-      -100000000000000.to_f.to_s.should == "-100000000000000.0"
-    end
+  it "returns a string representation of self" do
+    100000000000000.to_f.to_s.should == "1.0e+14"
+    -100000000000000.to_f.to_s.should == "-1.0e+14"
   end
 
   platform_is_not :openbsd do

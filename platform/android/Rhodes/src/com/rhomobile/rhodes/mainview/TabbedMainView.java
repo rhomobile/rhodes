@@ -43,7 +43,7 @@ public class TabbedMainView implements MainView {
 	private static final String TAG = "TabbedMainView";
 	
 	private TabHost host;
-	private Vector<TabData> tabs;
+	private Vector<TabData> tabData;
 	
 	private static class TabData {
 		public MainView view;
@@ -71,20 +71,34 @@ public class TabbedMainView implements MainView {
 	};
 	
 	private MainView getView(int index) {
-		TabData data = tabs.elementAt(index);
+		TabData data = tabData.elementAt(index);
 		return data.view;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public TabbedMainView(Vector<Object> params) {
+	public TabbedMainView(Object params) {
 		Rhodes r = RhodesInstance.getInstance();
 		
-		int size = params.size();
+		Vector<Object> tabs = null;
+		if (params instanceof Vector<?>)
+			tabs = (Vector<Object>)params;
+		else if (params instanceof Map<?,?>) {
+			Map<Object,Object> settings = (Map<Object,Object>)params;
+			
+			Object tabsObj = settings.get("tabs");
+			if (tabsObj != null && (tabsObj instanceof Vector<?>))
+				tabs = (Vector<Object>)tabsObj;
+		}
+		
+		if (tabs == null)
+			throw new IllegalArgumentException("No tabs specified");
+		
+		int size = tabs.size();
 		
 		host = new TabHost(r);
 		host.setId(Rhodes.RHO_MAIN_VIEW);
 		
-		tabs = new Vector<TabData>(size);
+		tabData = new Vector<TabData>(size);
 		
 		TabWidget tabWidget = new TabWidget(r);
 		tabWidget.setId(android.R.id.tabs);
@@ -107,7 +121,7 @@ public class TabbedMainView implements MainView {
 			public void onTabChanged(String tabId) {
 				try {
 					int index = Integer.parseInt(tabId);
-					TabData data = tabs.elementAt(index);
+					TabData data = tabData.elementAt(index);
 					if (data.reload || !data.loaded) {
 						getView(index).navigate(data.url, index);
 						data.loaded = true;
@@ -124,7 +138,7 @@ public class TabbedMainView implements MainView {
 		String rootPath = RhodesInstance.getInstance().getRootPath() + "/apps/";
 
 		for (int i = 0; i < size; ++i) {
-			Object param = params.elementAt(i);
+			Object param = tabs.elementAt(i);
 			if (!(param instanceof Map<?,?>))
 				throw new IllegalArgumentException("Hash expected");
 			
