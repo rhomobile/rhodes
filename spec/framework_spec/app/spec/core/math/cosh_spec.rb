@@ -3,7 +3,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 
 describe "Math.cosh" do
   it "returns a float" do
-    Math.cosh(1.0).class.should == Float
+    Math.cosh(1.0).should be_kind_of(Float)
   end
   
   it "returns the hyperbolic cosine of the argument" do
@@ -13,10 +13,18 @@ describe "Math.cosh" do
     Math.cosh(-2.99).should be_close(9.96798496414416, TOLERANCE)
   end
 
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.cosh("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.cosh("test") }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.cosh("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.cosh(nil) }.should raise_error(TypeError)
   end

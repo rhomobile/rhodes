@@ -71,15 +71,33 @@
 
 void create_nativebar(int bar_type, rho_param *p)
 {
-    if (p->type != RHO_PARAM_ARRAY) {
-        RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array");
-        return;
+    rho_param *params = NULL;
+    switch (p->type) {
+        case RHO_PARAM_ARRAY:
+            params = p;
+            break;
+        case RHO_PARAM_HASH: {
+            for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+                const char *name = p->v.hash->name[i];
+                rho_param *value = p->v.hash->value[i];
+                
+                // TODO: implement color settings
+                if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
+                    params = value;
+                }
+            }
+        }
+            break;
+        default: {
+            RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array or Hash");
+            return;
+        }
     }
     
-    int size = p->v.array->size;
+    int size = params->v.array->size;
     NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
     for (int i = 0; i < size; ++i) {
-        rho_param *hash = p->v.array->value[i];
+        rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
             RAWLOG_ERROR("Unexpected type of array item for create_nativebar, should be Hash");
             return;

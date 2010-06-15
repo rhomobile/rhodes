@@ -3,7 +3,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 
 describe "Math.exp" do
   it "returns a float" do
-    Math.exp(1.0).class.should == Float
+    Math.exp(1.0).should be_kind_of(Float)
   end
   
   it "returns the base-e exponential of the argument" do
@@ -13,10 +13,18 @@ describe "Math.exp" do
     Math.exp(1.25).should be_close(3.49034295746184, TOLERANCE)
   end
 
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.exp("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.exp("test") }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.exp("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.exp(nil) }.should raise_error(TypeError)
   end

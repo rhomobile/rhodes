@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../fixtures/constants'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/constants', __FILE__)
 
 # Read the documentation in fixtures/constants.rb for the guidelines and
 # rationale for the structure and organization of these specs.
@@ -33,6 +33,12 @@ describe "Literal (A::X) constant resolution" do
     it "searches Object if no class or module qualifier is given" do
       CS_CONST1.should == :const1
       CS_CONST10.should == :const10_1
+    end
+
+    it "searches Object after searching other scopes" do
+      module ConstantSpecs::SpecAdded1
+        CS_CONST10.should == :const10_1
+      end
     end
 
     it "searches Object if a toplevel qualifier (::X) is given" do

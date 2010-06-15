@@ -3,7 +3,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 
 describe "Math.asinh" do
   it "returns a float" do
-    Math.asinh(1.5).class.should == Float
+    Math.asinh(1.5).should be_kind_of(Float)
   end
   
   it "returns the inverse hyperbolic sin of the argument" do
@@ -18,10 +18,18 @@ describe "Math.asinh" do
     #Math.asinh(-94906265.62).should be_close(-19.0615, TOLERANCE)
   end
   
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.asinh("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.asinh("test") }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.asinh("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.asinh(nil) }.should raise_error(TypeError)
   end
