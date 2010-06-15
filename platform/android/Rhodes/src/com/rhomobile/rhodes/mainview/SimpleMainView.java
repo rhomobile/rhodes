@@ -210,7 +210,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void init(MainView v, Vector<Object> params) {
+	private void init(MainView v, Object params) {
 		Rhodes r = RhodesInstance.getInstance();
 		
 		view = new LinearLayout(r);
@@ -232,12 +232,49 @@ public class SimpleMainView implements MainView {
 		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
 		view.addView(bottom);
 		
+		Vector<Object> buttons = null;
+		if (params != null) {
+			if (params instanceof Vector<?>) {
+				buttons = (Vector<Object>)params;
+			}
+			else if (params instanceof Map<?,?>) {
+				Map<Object,Object> settings = (Map<Object,Object>)params;
+				
+				Object colorObj = settings.get("color");
+				if (colorObj != null && (colorObj instanceof Map<?,?>)) {
+					Map<Object,Object> color = (Map<Object,Object>)colorObj;
+					
+					Object redObj = color.get("red");
+					Object greenObj = color.get("green");
+					Object blueObj = color.get("blue");
+					
+					if (redObj != null && greenObj != null && blueObj != null &&
+							(redObj instanceof String) && (greenObj instanceof String) && (blueObj instanceof String)) {
+						try {
+							int red = Integer.parseInt((String)redObj);
+							int green = Integer.parseInt((String)greenObj);
+							int blue = Integer.parseInt((String)blueObj);
+							
+							bottom.setBackgroundColor(Color.rgb(red, green, blue));
+						}
+						catch (NumberFormatException e) {
+							// Do nothing here
+						}
+					}
+				}
+				
+				Object buttonsObj = settings.get("buttons");
+				if (buttonsObj != null && (buttonsObj instanceof Vector<?>))
+					buttons = (Vector<Object>)buttonsObj;
+			}
+		}
+		
 		if (params != null) {
 			LinearLayout group = null;
 			// First group should have gravity LEFT
 			int gravity = Gravity.LEFT;
-			for (int i = 0, lim = params.size(); i < lim; ++i) {
-				Object param = params.elementAt(i);
+			for (int i = 0, lim = buttons.size(); i < lim; ++i) {
+				Object param = buttons.elementAt(i);
 				if (!(param instanceof Map<?,?>))
 					throw new IllegalArgumentException("Hash expected");
 				
@@ -275,7 +312,7 @@ public class SimpleMainView implements MainView {
 		init(v, null);
 	}
 	
-	public SimpleMainView(MainView v, Vector<Object> params) {
+	public SimpleMainView(MainView v, Object params) {
 		init(v, params);
 	}
 	
