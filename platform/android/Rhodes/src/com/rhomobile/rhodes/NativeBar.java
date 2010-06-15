@@ -20,8 +20,6 @@
  */
 package com.rhomobile.rhodes;
 
-import java.util.Vector;
-
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
@@ -37,9 +35,9 @@ public class NativeBar {
 	private static class CreateTask implements Runnable {
 		
 		private int type;
-		private Vector<Object> params;
+		private Object params;
 		
-		public CreateTask(int t, Vector<Object> p) {
+		public CreateTask(int t, Object p) {
 			type = t;
 			params = p;
 		}
@@ -91,7 +89,7 @@ public class NativeBar {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 
-	public static void create(int type, Vector<Object> params) {
+	public static void create(int type, Object params) {
 		try {
 			Rhodes.performOnUiThread(new CreateTask(type, params), false);
 		}

@@ -10,11 +10,11 @@ RHO_GLOBAL void create_nativebar(int bar_type, rho_param *p)
     JNIEnv *env = jnienv();
     jclass clsNativeBar = getJNIClass(RHODES_JAVA_CLASS_NATIVEBAR);
     if (!clsNativeBar) return;
-    jmethodID midCreate = getJNIClassStaticMethod(env, clsNativeBar, "create", "(ILjava/util/Vector;)V");
+    jmethodID midCreate = getJNIClassStaticMethod(env, clsNativeBar, "create", "(ILjava/lang/Object;)V");
     if (!midCreate) return;
 
-    if (p->type != RHO_PARAM_ARRAY) {
-        RAWLOG_ERROR("Unexpected parameter type, should be Array");
+    if (p->type != RHO_PARAM_ARRAY && p->type != RHO_PARAM_HASH) {
+        RAWLOG_ERROR("Unexpected parameter type, should be Array or Hash");
         return;
     }
 

@@ -22,22 +22,47 @@ describe "The return keyword" do
     r().should be_nil
   end
 
-
   describe "in a Thread" do
-    it "raises a ThreadError if used to exit a thread" do
-      lambda { Thread.new { return }.join }.should raise_error(ThreadError)
+    ruby_version_is "" ... "1.9" do
+      it "raises a ThreadError if used to exit a thread" do
+        lambda { Thread.new { return }.join }.should raise_error(ThreadError)
+      end
+    end
+
+    ruby_version_is "1.9" do
+      it "raises a LocalJumpError if used to exit a thread" do
+        lambda { Thread.new { return }.join }.should raise_error(LocalJumpError)
+      end
     end
   end
 
   describe "when passed a splat" do
-    it "returns nil when the ary is empty" do
-      def r; ary = []; return *ary; end
-      r.should be_nil
+    ruby_version_is "" ... "1.9" do
+      it "returns nil when the ary is empty" do
+        def r; ary = []; return *ary; end
+        r.should be_nil
+      end
     end
 
-    it "returns the first element when the array is size of 1" do
-      def r; ary = [1]; return *ary; end
-      r.should == 1
+    ruby_version_is "1.9" do
+      it "returns [] when the ary is empty" do
+        def r; ary = []; return *ary; end
+        r.should == []
+      end
+    end
+
+    ruby_version_is "" ... "1.9" do
+      it "returns the first element when the array is size of 1" do
+        def r; ary = [1]; return *ary; end
+        r.should == 1
+      end
+    end
+
+    ruby_version_is "1.9" do
+      it "returns the array when the array is size of 1" do
+        def r; ary = [1]; return *ary; end
+        r.should == [1]
+      end
     end
 
     it "returns the whole array when size is greater than 1" do
@@ -48,37 +73,25 @@ describe "The return keyword" do
       r.should == [1,2,3]
     end
 
-    it "returns a non-array when used as a splat" do
-      def r; value = 1; return *value; end
-      r.should == 1
+    ruby_version_is "" ... "1.9" do
+      it "returns a non-array when used as a splat" do
+        def r; value = 1; return *value; end
+        r.should == 1
+      end
     end
+
+    ruby_version_is "1.9" do
+      it "returns an array when used as a splat" do
+        def r; value = 1; return *value; end
+        r.should == [1]
+      end
+    end
+
 
     it "calls 'to_a' on the splatted value first" do
       def r
         obj = Object.new
         def obj.to_a
-          []
-        end
-
-        return *obj
-      end
-
-      r().should be_nil
-
-      def r
-        obj = Object.new
-        def obj.to_a
-          [1]
-        end
-
-        return *obj
-      end
-
-      r().should == 1
-
-      def r
-        obj = Object.new
-        def obj.to_a
           [1,2]
         end
 
@@ -88,111 +101,129 @@ describe "The return keyword" do
       r().should == [1,2]
     end
 
-    it "calls 'to_ary' on the splatted value first" do
-      def r
-        obj = Object.new
-        def obj.to_ary
-          []
+    ruby_version_is "" ... "1.9" do
+      it "calls 'to_ary' on the splatted value first" do
+        def r
+          obj = Object.new
+          def obj.to_ary
+            [1,2]
+          end
+
+          return *obj
         end
 
-        return *obj
+        r().should == [1,2]
       end
-
-      r().should be_nil
-
-      def r
-        obj = Object.new
-        def obj.to_ary
-          [1]
-        end
-
-        return *obj
-      end
-
-      r().should == 1
-
-      def r
-        obj = Object.new
-        def obj.to_ary
-          [1,2]
-        end
-
-        return *obj
-      end
-
-      r().should == [1,2]
     end
   end
-
 
   describe "within a begin" do
-    it "executes ensure before returning from function" do
-      def f(a)
-        begin
-          return a
-        ensure
-          a << 1
-        end
-      end
-      f([]).should == [1]
+    before :each do
+      ScratchPad.record []
     end
 
-    it "executes return in ensure before returning from function" do
-      def f(a)
+    it "executes ensure before returning" do
+      def f()
         begin
-          return a
+          ScratchPad << :begin
+          return :begin
+          ScratchPad << :after_begin
         ensure
-          return [0]
-          a << 1
+          ScratchPad << :ensure
         end
+        ScratchPad << :function
       end
-      f([]).should == [0]
+      f().should == :begin
+      ScratchPad.recorded.should == [:begin, :ensure]
     end
 
-    it "executes ensures in stack order before returning from function" do
-      def f(a)
+    it "returns last value returned in ensure" do
+      def f()
+        begin
+          ScratchPad << :begin
+          return :begin
+          ScratchPad << :after_begin
+        ensure
+          ScratchPad << :ensure
+          return :ensure
+          ScratchPad << :after_ensure
+        end
+        ScratchPad << :function
+      end
+      f().should == :ensure
+      ScratchPad.recorded.should == [:begin, :ensure]
+    end
+
+    it "executes nested ensures before returning" do
+      def f()
         begin
           begin
-            return a
+            ScratchPad << :inner_begin
+            return :inner_begin
+            ScratchPad << :after_inner_begin
           ensure
-            a << 2
+            ScratchPad << :inner_ensure
           end
+          ScratchPad << :outer_begin
+          return :outer_begin
+          ScratchPad << :after_outer_begin
         ensure
-          a << 1
+          ScratchPad << :outer_ensure
         end
+        ScratchPad << :function
       end
-      f([]).should == [2,1]
+      f().should == :inner_begin
+      ScratchPad.recorded.should == [:inner_begin, :inner_ensure, :outer_ensure]
     end
 
-    it "executes return at base of ensure stack" do
-      def f(a)
+    it "returns last value returned in nested ensures" do
+      def f()
         begin
           begin
-            return a
+            ScratchPad << :inner_begin
+            return :inner_begin
+            ScratchPad << :after_inner_begin
           ensure
-            a << 2
-            return 2
+            ScratchPad << :inner_ensure
+            return :inner_ensure
+            ScratchPad << :after_inner_ensure
           end
+          ScratchPad << :outer_begin
+          return :outer_begin
+          ScratchPad << :after_outer_begin
         ensure
-          a << 1
-          return 1
+          ScratchPad << :outer_ensure
+          return :outer_ensure
+          ScratchPad << :after_outer_ensure
         end
+        ScratchPad << :function
       end
-      a = []
-      f(a).should == 1
-      a.should == [2, 1]
+      f().should == :outer_ensure
+      ScratchPad.recorded.should == [:inner_begin, :inner_ensure, :outer_ensure]
+    end
+
+    it "executes the ensure clause when begin/ensure are inside a lambda" do
+      lambda do
+        begin
+          return
+        ensure
+          ScratchPad.recorded << :ensure
+        end
+      end.call
+      ScratchPad.recorded.should == [:ensure]
     end
   end
-
 
   describe "within a block" do
     before :each do
       ScratchPad.clear
     end
 
-    it "raises a LocalJumpError if there is no lexicaly enclosing method" do
-      def f; yield; end
-      lambda { f { return 5 } }.should raise_error(LocalJumpError)
+    ruby_version_is "" ... "1.9" do
+      it "raises a LocalJumpError if there is no lexicaly enclosing method" do
+        def f; yield; end
+        lambda { f { return 5 } }.should raise_error(LocalJumpError)
+      end
     end
 
     it "causes lambda to return nil if invoked without any arguments" do
@@ -221,6 +252,7 @@ describe "The return keyword" do
       ReturnSpecs::NestedBlocks.new.enclosing_method.should == :return_value
       ScratchPad.recorded.should == :before_return
     end
+
   end
 
   describe "within two blocks" do
@@ -232,4 +264,9 @@ describe "The return keyword" do
     end
   end
 
+  describe "within define_method" do
+    it "stops at the method when the return is used directly" do
+      ReturnSpecs::DefineMethod.new.outer.should == :good
+    end
+  end
 end

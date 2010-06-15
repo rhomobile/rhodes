@@ -57,7 +57,7 @@ describe "The super keyword" do
     Super::S4::B.new.foo([],"test").should == ["B#foo(a,test)", "A#foo"]
   end
 
-  ruby_bug "#1151 [ruby-core:22040]", "1.8.6" do
+  ruby_bug "#1151 [ruby-core:22040]", "1.8.7.174" do
     it "raises an error error when super method does not exist" do
       sup = Class.new
       sub_normal = Class.new(sup) do
@@ -76,6 +76,14 @@ describe "The super keyword" do
     end
   end
 
+  it "calls the superclass method when in a block" do
+    Super::S6.new.here.should == :good
+  end
+
+  it "calls the superclass method when initial method is defined_method'd" do
+    Super::S7.new.here.should == :good
+  end
+
   it "supers up appropriate name even if used for multiple method names" do
     sup = Class.new do
       def a; "a"; end
@@ -85,7 +93,7 @@ describe "The super keyword" do
     sub = Class.new(sup) do
       [:a, :b].each do |name|
         define_method name do
-          super
+          super()
         end
       end
     end
@@ -93,5 +101,45 @@ describe "The super keyword" do
     sub.new.a.should == "a"
     sub.new.b.should == "b"
     sub.new.a.should == "a"
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "can be used with implicit arguments from a method defined with define_method" do
+      sup = Class.new do
+        def a; "a"; end
+      end
+
+      sub = Class.new(sup) do
+        define_method :a do
+          super
+        end
+      end
+
+      sub.new.a.should == "a"
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "can't be used with implicit arguments from a method defined with define_method" do
+      Class.new do
+        define_method :a do
+          super
+        end.should raise_error(RuntimeError)
+      end
+    end
+  end
+
+  # Rubinius ticket github#157
+  it "calls method_missing when a superclass method is not found" do
+    lambda {
+      Super::MM_B.new.is_a?(Hash).should == false
+    }.should_not raise_error(NoMethodError)
+  end
+
+  # Rubinius ticket github#180
+  it "respects the original module a method is aliased from" do
+    lambda {
+      Super::Alias3.new.name3.should == [:alias2, :alias1]
+    }.should_not raise_error(RuntimeError)
   end
 end

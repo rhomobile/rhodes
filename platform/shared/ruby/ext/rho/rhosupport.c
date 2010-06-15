@@ -287,6 +287,9 @@ VALUE require_compiled(VALUE fname, VALUE* result)
     VALUE path;
     char* szName1 = 0;
     VALUE retval = Qtrue;
+    
+    if (TYPE(fname) != T_STRING)
+        rb_raise(rb_eLoadError, "can not load non-string");
 
     szName1 = RSTRING_PTR(fname);
 

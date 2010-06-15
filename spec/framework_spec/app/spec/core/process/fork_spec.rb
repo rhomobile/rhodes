@@ -1,5 +1,6 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 
+=begin
 describe "Process.fork" do
   not_supported_on :jruby, :windows do
     before :each do
@@ -32,3 +33,4 @@ describe "Process.fork" do
     end
   end
 end
+=end

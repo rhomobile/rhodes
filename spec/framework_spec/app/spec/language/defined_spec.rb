@@ -165,6 +165,7 @@ describe "The defined? keyword" do
   end
 
   not_compliant_on :rubinius do
+=begin
     # I (Evan) am not certain we'll support defined?(super) ever.
     # for now, i'm marking these as compliant.
     it "returns 'super' when Subclass#no_args uses defined?" do
@@ -176,6 +177,7 @@ describe "The defined? keyword" do
       ret = (LanguageDefinedSpecs::LanguageDefinedSubclass.new.args)
       ret.should == "super"
     end
+=end
 
     ruby_version_is "" ... "1.9" do
       it "returns 'local-variable(in-block)' when defined? is called on a block var" do

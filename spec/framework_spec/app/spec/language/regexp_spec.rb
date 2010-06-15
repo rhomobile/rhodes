@@ -664,7 +664,7 @@ describe "Literal Regexps" do
     o1 = LanguageSpecs::ClassWith_to_s.new(to_s_callback1)
     ScratchPad << LanguageSpecs.get_regexp_with_substitution(o1)
 
-    ScratchPad.recorded.should == [:to_s_callback1, :to_s_callback2, /class_with_to_s2/, /class_with_to_s2/]
+    ScratchPad.recorded.should == [:to_s_callback1, :to_s_callback2, /class_with_to_s2/, /class_with_to_s1/]
   end
   
   it 'supports modifier combinations' do
@@ -678,7 +678,7 @@ describe "Literal Regexps" do
   # Encodings
   #############################################################################
 
-  not_compliant_on :ruby19 do
+  ruby_version_is ""..."1.9" do
     it 'supports /e (EUC encoding)' do
       /./e.match("\303\251").to_a.should == ["\303\251"]
     end
