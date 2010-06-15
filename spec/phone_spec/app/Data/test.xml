@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<event id="E0-001-000278174-6">
+    <url>http://eventful.com/westchester_oh/events/martini-tasting-/E0-001-000278174-6</url>
+    <title>Martini Tasting</title>
+    <description>Sample drinks made with featured vodkas.</description>
+    <start_time>2005-08-24 12:00:00</start_time>
+    <stop_time></stop_time>
+
+    <all_day>0</all_day>
+    <tz_id>127</tz_id>
+    <tz_olson_path>America/New_York</tz_olson_path>
+    <tz_country>U.S.A.</tz_country>
+    <tz_city>New York</tz_city>
+    <venue_name>Encore Cafe - West Chester</venue_name>
+
+    <venue_id>V0-001-000108360-1</venue_id>
+    <venue_type></venue_type>
+    <venue_display>1</venue_display>
+    <address></address>
+    <city>West Chester</city>
+    <region>Ohio</region>
+    <region_abbr>OH</region_abbr>
+
+    <postal_code>45069</postal_code>
+    <country>United States</country>
+    <country_abbr2>US</country_abbr2>
+    <country_abbr>USA</country_abbr>
+    <latitude>39.3382</latitude>
+    <longitude>-84.4044</longitude>
+
+    <geocode_type>Zip Code Based GeoCodes</geocode_type>
+    <created>2005-07-28 13:09:09</created>
+    <modified>2009-07-06 04:06:29</modified>
+    <owner>evdb</owner>
+    <privacy>1</privacy>
+    <free></free>
+
+    <price></price>
+    <withdrawn>0</withdrawn>
+    <withdrawn_note></withdrawn_note>
+    <recurrence></recurrence>
+    <parents></parents>
+    <children>
+        <child>
+            <id>E0-001-017718779-6</id>
+
+            <title>Momba</title>
+        </child>
+        <child>
+            <id>E0-001-017718998-9</id>
+            <title>Momba</title>
+        </child>
+        <child>
+
+            <id>E0-001-017723446-5</id>
+            <title>Momba</title>
+        </child>
+        <child>
+            <id>E0-001-017728141-8</id>
+            <title>Momba</title>
+        </child>
+
+        <child>
+            <id>E0-001-017728966-9</id>
+            <title>Momba</title>
+        </child>
+        <child>
+            <id>E0-001-017729577-6</id>
+            <title>Momba</title>
+
+        </child>
+        <child>
+            <id>E0-001-017731739-7</id>
+            <title>Momba</title>
+        </child>
+        <child>
+            <id>E0-001-017734313-4</id>
+
+            <title>Momba</title>
+        </child>
+        <child>
+            <id>E0-001-017735148-9</id>
+            <title>Momba</title>
+        </child>
+        <child>
+
+            <id>E0-001-017736797-6</id>
+            <title>Momba</title>
+        </child>
+    </children>
+    <links>
+        <link id="312146">
+            <url>http://frontier.cincinnati.com/calendar/proddisplay.asp?prodid=28356</url>
+
+            <type>Official Site</type>
+            <description>Details</description>
+            <username>evdb</username>
+            <time>2005-07-28 13:09:09.372445</time>
+        </link>
+        <link id="8270969">
+            <url>http://www.weblo.com</url>
+
+            <type>Blog</type>
+            <description></description>
+            <username>Irfan</username>
+            <time>2007-05-22 00:52:20.48632</time>
+        </link>
+        <link id="8271086">
+            <url>http://www.weblo.com</url>
+
+            <type>Blog</type>
+            <description></description>
+            <username>Irfan</username>
+            <time>2007-05-22 00:54:53.031913</time>
+        </link>
+        <link id="33399387">
+            <url>http://foo.com</url>
+
+            <type>Info</type>
+            <description>More Info&lt;img alt="some" src="http://img385.imageshack.us/img385/8363/fillerbu1.jpg"&gt;</description>
+            <username>edepotinc</username>
+            <time>2008-11-26 17:07:34.038587</time>
+        </link>
+    </links>
+
+    <comments>
+        <comment id="75653">
+            <text>Thats great. am gonna be there</text>
+            <username>imedia1</username>
+            <time>1274204800.49034</time>
+        </comment>
+        <comment id="75652">
+
+            <text>Thats+great.+am+gonna+be+there</text>
+            <username>imedia1</username>
+            <time>1274204756.48552</time>
+        </comment>
+        <comment id="52285">
+            <text>Hello</text>
+            <username>bala_1225</username>
+
+            <time>1246878389.29811</time>
+        </comment>
+        <comment id="52283">
+            <text>Hello</text>
+            <username>bala_1225</username>
+            <time>1246872083.867</time>
+        </comment>
+
+        <comment id="52281">
+            <text>hhhh</text>
+            <username>bala_1225</username>
+            <time>1246871431</time>
+        </comment>
+        <comment id="52280">
+            <text>Hello</text>
+
+            <username>bala_1225</username>
+            <time>1246871216.86715</time>
+        </comment>
+        <comment id="52075">
+            <text>HI................</text>
+            <username>bala_1225</username>
+            <time>1246441078</time>
+
+        </comment>
+        <comment id="36659">
+            <text>blue green</text>
+            <username>kcrca</username>
+            <time>1228459591.54093</time>
+        </comment>
+        <comment id="35773">
+
+            <text>some more fun </text>
+            <username>edepotinc</username>
+            <time>1227747540.38978</time>
+        </comment>
+        <comment id="35772">
+            <text>some more fun </text>
+            <username>edepotinc</username>
+
+            <time>1227745148.97307</time>
+        </comment>
+    </comments>
+    <trackbacks></trackbacks>
+    <performers>
+        <performer>
+            <id>P0-001-000007820-4</id>
+            <url>http://eventful.com/performers/michgan-/P0-001-000007820-4?utm_source=apis&amp;utm_medium=apim&amp;utm_campaign=apic</url>
+
+            <name>MICH!GAN</name>
+            <short_bio> Hardcore / Punk / Metal</short_bio>
+            <creator>misscat</creator>
+            <linker>prabhukal</linker>
+        </performer>
+    </performers>
+
+    <images>
+        <image>
+            <id>I0-001-000193866-6</id>
+            <creator>misscat</creator>
+            <url>http://static.eventful.com/images/small/I0-001/000/193/866-6.jpg</url>
+            <width>48</width>
+            <height>48</height>
+
+            <thumb>
+                <url>http://static.eventful.com/images/thumb/I0-001/000/193/866-6.jpg</url>
+                <width>48</width>
+                <height>48</height>
+            </thumb>
+            <small>
+                <url>http://static.eventful.com/images/small/I0-001/000/193/866-6.jpg</url>
+
+                <width>48</width>
+                <height>48</height>
+            </small>
+            <medium>
+                <url>http://static.eventful.com/images/medium/I0-001/000/193/866-6.jpg</url>
+                <width>128</width>
+                <height>128</height>
+
+            </medium>
+        </image>
+        <image>
+            <id>I0-001-000153337-3</id>
+            <creator>ladielauryn</creator>
+            <url>http://static.eventful.com/images/small/I0-001/000/153/337-3.jpg</url>
+            <width>48</width>
+
+            <height>48</height>
+            <thumb>
+                <url>http://static.eventful.com/images/thumb/I0-001/000/153/337-3.jpg</url>
+                <width>48</width>
+                <height>48</height>
+            </thumb>
+            <small>
+
+                <url>http://static.eventful.com/images/small/I0-001/000/153/337-3.jpg</url>
+                <width>48</width>
+                <height>48</height>
+            </small>
+            <medium>
+                <url>http://static.eventful.com/images/medium/I0-001/000/153/337-3.jpg</url>
+                <width>128</width>
+
+                <height>128</height>
+            </medium>
+        </image>
+    </images>
+    <tags>
+        <tag id="dining">
+            <title>Dining</title>
+            <owner>evdb</owner>
+
+        </tag>
+        <tag id="city">
+            <title>CITY</title>
+            <owner>evdb</owner>
+        </tag>
+        <tag id="concert">
+            <title>concert</title>
+
+            <owner>evdb</owner>
+        </tag>
+        <tag id="concerts">
+            <title>concerts</title>
+            <owner>evdb</owner>
+        </tag>
+        <tag id="hardcore">
+
+            <title>hardcore</title>
+            <owner>evdb</owner>
+        </tag>
+        <tag id="lake">
+            <title>LAKE</title>
+            <owner>evdb</owner>
+        </tag>
+
+        <tag id="metal">
+            <title>metal</title>
+            <owner>evdb</owner>
+        </tag>
+        <tag id="music">
+            <title>music</title>
+            <owner>evdb</owner>
+
+        </tag>
+        <tag id="punk">
+            <title>punk</title>
+            <owner>evdb</owner>
+        </tag>
+        <tag id="salt">
+            <title>SALT</title>
+
+            <owner>evdb</owner>
+        </tag>
+    </tags>
+    <flags></flags>
+    <calendars></calendars>
+    <groups></groups>
+    <going></going>
+    <properties></properties>
+
+    <categories>
+        <category>
+            <id>music</id>
+            <name>Concerts | Live Music</name>
+        </category>
+    </categories>
+</event>
