@@ -1177,24 +1177,22 @@ static VALUE
 rb_file_exist_p(VALUE obj, VALUE fname)
 {
 //RHO
+#ifdef DOSISH
+    int ret = 1;
+    int fd;
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eTypeError, "argument is not a string");
     
-    if ( rho_rhodesapp_isrubycompiler() )
-    {
-        struct stat st;
-
-        if (rb_stat(fname, &st) < 0) return Qfalse;
-        return Qtrue;
-    }else
-    {
-        char *name;
-        
-        name = RSTRING_PTR(fname);
-        if( file_load_ok(name) ) 
-            return Qtrue;
-        return Qfalse;
-    }
+    fd = open(RSTRING_PTR(fname), O_RDONLY);
+    if (fd == -1) return 0;
+    (void)close(fd);
+    return ret;
+#else
+    struct stat st;
+    
+    if (rb_stat(fname, &st) < 0) return Qfalse;
+    return Qtrue;
+#endif
 //RHO
 }
 
