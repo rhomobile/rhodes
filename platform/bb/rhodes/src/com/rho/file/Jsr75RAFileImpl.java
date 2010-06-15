@@ -65,6 +65,14 @@ public class Jsr75RAFileImpl implements IRAFile {
 		return m_fileSize;
 	}
 
+	public boolean isDirectory() {
+		return m_file.isDirectory();
+	}
+
+	public boolean isFile() {
+		return !m_file.isDirectory();
+	}
+	
 	public void close() throws IOException {
 		if (m_in != null) { 
             m_in.close();
