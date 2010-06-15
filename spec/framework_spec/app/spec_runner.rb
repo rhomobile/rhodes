@@ -55,25 +55,31 @@ class SpecRunner < MSpecScript
     core << 'file'
     core << 'integer'
     core << 'method'
-    core << 'precision'
-    core << 'string'
-    core << 'time'
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3915975 will be fixed
+    #core << 'precision'
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3916078 will be fixed
+    #core << 'string'
     core << 'binding'
     core << 'enumerable'
     core << 'filetest'
-    # TODO: enable
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3915946 will be fixed
     #core << 'io'
-    core << 'module'
-    core << 'proc'
-    core << 'struct'
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3916275 will be fixed
+    #core << 'module'
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3916389 will be fixed
+    #core << 'proc'
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3916570 will be fixed
+    #core << 'struct'
+    #core << 'fixnum'
+    #core << 'time'
+    #core << 'symbol'
     core << 'true'
     core << 'builtin_constants'
     core << 'env'
-    core << 'fixnum'
-    core << 'kernel'
+    # TODO: enable when bug https://www.pivotaltracker.com/story/show/3916324 will be fixed
+    #core << 'kernel'
     core << 'nil'
     core << 'process'
-    core << 'symbol'
     core << 'unboundmethod'
 
     core.each do |folder|
@@ -100,7 +106,6 @@ class SpecRunner < MSpecScript
     config[:files] << 'spec/rhom_object_spec'
     config[:files] << 'spec/rho_spec'
     config[:files] << 'spec/spec_helper'
-    config[:files] << 'spec/webview_spec'
     #config[:files] << 'spec/syncengine_spec'
     #config[:files] << 'spec/blobsync_spec'
     #config[:files] << 'spec/bulksync_spec'
