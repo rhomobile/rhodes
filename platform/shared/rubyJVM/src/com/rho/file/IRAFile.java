@@ -29,4 +29,7 @@ public interface IRAFile {
 	public boolean exists();
 	public void delete() throws IOException;
 	public void rename(String newName) throws IOException;
+	
+	public boolean isDirectory();
+	public boolean isFile();
 }

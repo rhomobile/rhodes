@@ -1,0 +1,8 @@
+I 06/15/2010 13:17:35 00000d34            RhodesApp| RhodesApp thread shutdown
+I 06/15/2010 13:17:35 00000d34                 Sync| Sync engine thread shutdown
+I 06/15/2010 13:17:35 000008f4            AsyncHttp| Thread shutdown
+I 06/15/2010 13:18:31 00000e50      Rhodes.cpp: 133| Rhodes started
+I 06/15/2010 13:18:31 00000e50            RhodesApp| Trying to get free listening port.
+I 06/15/2010 13:18:31 00000e50            RhodesApp| Free listening port: 8080
+I 06/15/2010 13:18:31 00000e50           MainWindow| Screen size: x=1440;y=900
+I 06/15/2010 13:18:32 00000ae4            RhodesApp| Starting RhodesApp main routine...

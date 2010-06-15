@@ -413,6 +413,18 @@ public class PersistRAFileImpl implements IRAFile {
 		}
 	}
 
+	public boolean isDirectory()
+	{
+		//TODO: isDirectory
+		return false;
+	}
+	
+	public boolean isFile()
+	{
+		//TODO: isFile
+		return true;
+	}
+	
 	public void sync() throws IOException {
 		if (!isWritable())
 			throw new IOException("File is not open in write mode");
