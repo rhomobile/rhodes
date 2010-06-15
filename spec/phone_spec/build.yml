@@ -1,0 +1,19 @@
+--- 
+name: phone_spec
+bbver: 4.6
+sdk: /Users/brian/work/rhodes
+applog: rholog.txt
+version: 1.0.0
+vendor: rhomobile
+sdkversion: 1.4
+wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
+iphone: 
+  sdk: iphonesimulator3.0
+  entitlements: ""
+  codesignidentity: ""
+  configuration: Debug
+android:
+  capabilities:
+    - network_state
+   
+extensions: ["json", "rhoxml"]
