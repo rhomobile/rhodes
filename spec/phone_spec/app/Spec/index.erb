@@ -1,0 +1,15 @@
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Phone spec
+	</h1>
+</div>
+
+<%@color = @code == 0 ? "#00ff00" : "#ff0000"%>
+<% unless $is_network_available %>Network is not available, only offline tests are processed!<% end %>
+    
+<ul id="specrunner" title="SpecRunner" selected="true">
+	<% if @msg %><li style="color:<%=@color%>" align="center"><%=@msg%></li><% end %>
+    <li style="color:<%=@color%>">Total: <%=@count%></li>
+    <li style="color:<%=@color%>">Passed: <%=@count - @exc_count%></li>
+    <li style="color:<%=@color%>">Failed: <%=@exc_count%></li>
+</ul>
