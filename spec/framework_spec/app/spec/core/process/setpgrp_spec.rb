@@ -8,6 +8,7 @@ describe "Process.setpgrp and Process.getpgrp" do
       lambda { Process.getpgrp(1) }.should raise_error(ArgumentError)
     end
 
+=begin
     it "set and get the process group ID of the calling process" do
       # there are two synchronization points here:
       # One for the child to let the parent know that it has finished
@@ -35,6 +36,7 @@ describe "Process.setpgrp and Process.getpgrp" do
       write2 << "!"
       write2.close
     end
+=end
 
   end
 

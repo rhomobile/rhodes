@@ -5,7 +5,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/cla
 # distribution (which is a normalized form of the Gaussian function).
 describe "Math.erf" do
   it "returns a float" do 
-    Math.erf(1).class.should == Float
+    Math.erf(1).should be_kind_of(Float)
   end 
   
   it "returns the error function of the argument" do 
@@ -20,10 +20,18 @@ describe "Math.erf" do
     Math.erf(-0.00000000000001).should be_close(0.0, TOLERANCE) 
   end
   
-  it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
-    lambda { Math.erf("test") }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if the argument cannot be coerced with Float()" do    
+      lambda { Math.erf("test") }.should raise_error(ArgumentError)
+    end
   end
   
+  ruby_version_is "1.9" do
+    it "raises a TypeError if the argument cannot be coerced with Float()" do    
+      lambda { Math.erf("test") }.should raise_error(TypeError)
+    end
+  end
+
   it "raises a TypeError if the argument is nil" do
     lambda { Math.erf(nil) }.should raise_error(TypeError)
   end 
