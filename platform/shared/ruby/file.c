@@ -1184,9 +1184,9 @@ rb_file_exist_p(VALUE obj, VALUE fname)
         rb_raise(rb_eTypeError, "argument is not a string");
     
     fd = open(RSTRING_PTR(fname), O_RDONLY);
-    if (fd == -1) return 0;
+    if (fd == -1) return Qfalse;
     (void)close(fd);
-    return ret;
+    return Qtrue;
 #else
     struct stat st;
     
