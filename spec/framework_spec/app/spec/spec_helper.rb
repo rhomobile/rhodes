@@ -13,10 +13,10 @@ describe "rhom initializer", :shared => true do
     ::Rho::RHO.get_user_db().delete_all_from_table('client_info')
     ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
-    begin
-        ::Rho::RHO.get_user_db().delete_all_from_table('Account')
-    rescue Exception => e
-    end    
+    #begin
+        #::Rho::RHO.get_user_db().delete_all_from_table('Account')
+    #rescue Exception => e
+    #end    
     
     ::Rho::RHO.get_user_db().commit
     
