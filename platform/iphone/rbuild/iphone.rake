@@ -104,6 +104,8 @@ namespace "build" do
 
       Rake::Task["build:bundle:noxruby"].execute
 
+      Rake::Task["build:iphone:extensions"].execute
+
       # Store hash
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(get_dir_hash($srcdir).hexdigest) }
       # Store app name
@@ -146,7 +148,7 @@ namespace "build" do
     end
     
 #    desc "Build rhodes"
-    task :rhodes => ["config:iphone", "build:iphone:extensions", "build:iphone:rhobundle"] do
+    task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
       cp $app_path + "/icon/icon.png", $config["build"]["iphonepath"]
