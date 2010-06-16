@@ -30,7 +30,7 @@ class SpecController < Rho::RhoController
     begin
         puts "TEST: #{name}"
     
-        require 'Spec/' + name+'_spec'
+        require 'Spec/' + name.downcase()+'_spec'
         testClass = Object.const_get(name+'Test')
         testObj = testClass.new
         
