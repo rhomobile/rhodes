@@ -6,6 +6,7 @@ class SpecController < Rho::RhoController
     run_spec('AsyncHttp')
     run_spec('Json')
     run_spec('Xml')
+    run_spec('Contacts')
   end
   
 end
