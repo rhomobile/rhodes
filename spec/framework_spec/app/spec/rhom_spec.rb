@@ -29,6 +29,10 @@ describe "Rhom" do
     Rhom::Rhom::client_id.should == CLIENT_ID
   end
   
+  it "should fail!" do
+    false.should == true
+  end
+  
 #  it "should perform full reset of database" do
 #    Rhom::Rhom::database_full_reset
 #    verify_reset
