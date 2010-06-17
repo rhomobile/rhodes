@@ -32,7 +32,7 @@ public class RandomAccessFile
     public RandomAccessFile(File file, String mode)
         throws FileNotFoundException
     {
-    	String name = (file != null ? file.getPath() : null);
+    	String name = (file != null ? file.getFullPath() : null);
     	int imode = -1;
     	if (mode.equals("r"))
     	    imode = Connector.READ;

@@ -782,7 +782,7 @@ public class RubyKernelModule {
         	io = ObjectFactory.createResourceFile(filename, mode);
         }catch (java.lang.Error exc)
         {
-        	LOG.ERROR("Cannot open file from jar: " + filename, exc);
+        	LOG.TRACE("Cannot open file from jar: " + filename, exc);
         }
         
         if ( io == null )
