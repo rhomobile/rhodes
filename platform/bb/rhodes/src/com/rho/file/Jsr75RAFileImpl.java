@@ -46,7 +46,13 @@ public class Jsr75RAFileImpl implements IRAFile {
 			if (!m_file.exists()) {
 				if (mode.startsWith("rw") || mode.startsWith("w")) {
 					LOG.TRACE("Create file: " + name);
-					m_file.create();  // create the file if it doesn't exist
+					try{
+						m_file.create();  // create the file if it doesn't exist
+					}catch(IOException exc)
+					{
+						Jsr75File.recursiveCreateDir(name);
+						m_file.create();  // create the file if it doesn't exist
+					}
 				}
 				else
 					throw new FileNotFoundException("File '" + name + "' not exists");

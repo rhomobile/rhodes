@@ -54,6 +54,10 @@ public class File {
         }
     }
 
+    public String getFullPath() {
+        return m_strFullPath;
+    }
+    
     public String getPath() {
         return _path;
     }
