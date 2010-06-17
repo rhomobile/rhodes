@@ -25,6 +25,7 @@ class ContactsTest
     mobile_number = '+1222333444'
 
     contacts = Rho::RhoContact.find(:all)
+    Test_not_equal( contacts, nil )
 
     contact = {}
     contact['first_name'] = first_name
@@ -33,6 +34,7 @@ class ContactsTest
     Rho::RhoContact.create!(contact)
 
     newcontacts = Rho::RhoContact.find(:all)
+    Test_not_equal( newcontacts, nil )
 
     diff = newcontacts.diff(contacts)
     Test_equal( diff.size, 1 )
@@ -41,6 +43,33 @@ class ContactsTest
     Test_equal( c['first_name'], first_name )
     Test_equal( c['last_name'], last_name )
     Test_equal( c['mobile_number'], mobile_number )
+
+    @id = c['id']
   end
-  
-end    
+
+  def update_test
+    Rho::RhoContact.update_attributes 'id' => @id, 'first_name' => "RANDOM", 'last_name' => "NEWBIE"
+
+    contact = Rho::RhoContact.find(@id)
+    Test_not_equal( contact, nil )
+
+    Test_equal( contact['first_name'], 'RANDOM' )
+    Test_equal( contact['last_name'], 'NEWBIE' )
+  end
+
+  def remove_test
+    contacts = Rho::RhoContact.find(:all)
+    Test_not_equal( contacts, nil )
+    Test_equal( contacts.size >= 1, true )
+
+    size = contacts.size
+
+    Rho::RhoContact.destroy(@id)
+
+    contacts = Rho::RhoContact.find(:all)
+    Test_not_equal( contacts, nil )
+
+    Test_equal( size - contacts.size, 1 )
+  end
+
+end
