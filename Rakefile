@@ -299,7 +299,7 @@ def common_bundle_start(startdir, dest)
   chdir startdir
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps')
-  cp_r app + '/public', File.join($srcdir,'apps')
+  cp_r app + '/public', File.join($srcdir,'apps') if File.exists? app + '/public'
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
 
 
