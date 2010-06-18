@@ -47,14 +47,34 @@ public class GeoLocation {
 		}
 	}
 	
+	public static void stop() {
+		try {
+			Logger.T(TAG, "stop");
+			if (locImpl == null)
+				return;
+			synchronized (TAG) {
+				if (locImpl == null)
+					return;
+				locImpl.stop();
+				locImpl = null;
+			}
+		}
+		catch (Exception e) {
+			reportFail("stop", e);
+		}
+	}
+	
 	public static boolean isAvailable() {
 		try {
-			Logger.T(TAG, "isAvailable");
-			if (locImpl == null)
-				return false;
-			checkState();
-			init();
-			return locImpl.isAvailable();
+			Logger.T(TAG, "isAvailable...");
+			boolean result = false;
+			if (locImpl != null) {
+				checkState();
+				init();
+				result = locImpl.isAvailable();
+			}
+			Logger.T(TAG, "Geo location service is " + (result ? "" : "not ") + "available");
+			return result;
 		}
 		catch (Exception e) {
 			reportFail("isAvailable", e);

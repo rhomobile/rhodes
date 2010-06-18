@@ -41,6 +41,7 @@ extern HREGNOTIFY g_hNotify;
 #include "DateTimePicker.h"
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
+extern "C" void rho_geoimpl_turngpsoff();
 
 using namespace rho::common;
 using namespace rho;
@@ -324,6 +325,9 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     //    RHODESAPP().callAppActiveCallback(fActive!=0);
 
 #endif
+
+    if (!fActive)
+        rho_geoimpl_turngpsoff();
 
     return 0;
 }

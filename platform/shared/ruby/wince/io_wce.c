@@ -19,8 +19,7 @@
 
 extern int _errno;
 
-
-int _rename(const char *oldname, const char *newname)
+int rb_w32_rename(const char *oldname, const char *newname)
 {
 	wchar_t *wold, *wnew;
 	BOOL rc;
@@ -37,7 +36,12 @@ int _rename(const char *oldname, const char *newname)
 	return rc==TRUE ? 0 : -1;
 }
 
-int _unlink(const char *file)
+int _rename(const char *oldname, const char *newname)
+{
+    return rb_w32_rename(oldname, newname);
+}
+
+int rb_w32_unlink(const char *file)
 {
 	wchar_t *wfile;
 	BOOL rc;
@@ -49,6 +53,12 @@ int _unlink(const char *file)
 
 	return rc==TRUE ? 0 : -1;
 }
+
+int _unlink(const char *file)
+{
+    return rb_w32_unlink(file);
+}
+
 /*
 int
 vsnprintf(char *buf, size_t size, const char *format, va_list va)
@@ -232,6 +242,9 @@ int _open(const char *path, int oflag, va_list arg)
 
     if ( osfh != INVALID_HANDLE_VALUE  )
     {
+        if ( (oflag & _O_APPEND) )
+            SetFilePointer( osfh, 0, NULL, FILE_END );
+
         set_FileNumber(fNumber, osfh);
         return fNumber;
     }
