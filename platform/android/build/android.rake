@@ -378,8 +378,7 @@ namespace "build" do
       args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-J", $app_rjava_dir]
       puts Jake.run($aapt, args)
 
-      exitstatus = $?
-      unless exitstatus == 0
+      unless $?.success?
         puts "Error in AAPT"
         exit 1
       end
@@ -431,7 +430,7 @@ namespace "build" do
           else
             puts Jake.run('./build', [], extpath)
           end
-          exit 1 unless $? == 0
+          exit 1 unless $?.success?
         end
       end
 
@@ -793,7 +792,7 @@ namespace "build" do
       args << "latin1"
       args << File.join($app_rjava_dir, "R.java")
       puts Jake.run(javac, args)
-      unless $? == 0
+      unless $?.success?
         puts "Error compiling java code"
         exit 1
       end
@@ -837,7 +836,7 @@ namespace "build" do
       args << classpath
       args << "@#{srclist}"
       puts Jake.run(javac, args)
-      unless $? == 0
+      unless $?.success?
         puts "Error compiling java code"
         exit 1
       end
@@ -851,7 +850,7 @@ namespace "build" do
         args = ["cf", "../../Rhodes.jar"]
         args += files
         puts Jake.run($jarbin, args, File.join($tmpdir, "Rhodes"))
-        unless $? == 0
+        unless $?.success?
           puts "Error running jar"
           exit 1
         end
@@ -871,7 +870,7 @@ namespace "package" do
     args << "--output=#{$bindir}/classes.dex"
     args << "#{$bindir}/Rhodes.jar"
     puts Jake.run($dx, args)
-    unless $? == 0
+    unless $?.success?
       puts "Error running DX utility"
       exit 1
     end
@@ -887,7 +886,7 @@ namespace "package" do
 
     args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
     puts Jake.run($aapt, args)
-    unless $? == 0
+    unless $?.success?
       puts "Error running AAPT (1)"
       exit 1
     end
@@ -901,7 +900,7 @@ namespace "package" do
       puts "Add #{relpath} to #{resourcepkg}..."
       args = ["uf", resourcepkg, relpath]
       puts Jake.run($jarbin, args, $tmpdir)
-      unless $? == 0
+      unless $?.success?
         puts "Error running AAPT (2)"
         exit 1
       end
@@ -924,7 +923,7 @@ namespace "package" do
     puts Jake.run($jarbin, args, $tmpdir)
     err = $?
     rm_rf $tmpdir + "/lib"
-    unless err == 0
+    unless err.success?
       puts "Error running AAPT (3)"
       exit 1
     end
@@ -950,7 +949,7 @@ namespace "device" do
 
       puts "Building APK file"
       Jake.run($apkbuilder, [apkfile, "-z", resourcepkg, "-f", dexfile])
-      unless $? == 0
+      unless $?.success?
         puts "Error building APK file"
         exit 1
       end
@@ -960,7 +959,7 @@ namespace "device" do
       apkfile = $targetdir + "/" + $appname + "-debug.apk"
       puts "Install APK file"
       Jake.run($adb, ["-d", "install", "-r", apkfile])
-      unless $? == 0
+      unless $?.success?
         puts "Error installing APK file"
         exit 1
       end
@@ -976,7 +975,7 @@ namespace "device" do
 
       puts "Building APK file"
       Jake.run($apkbuilder, [apkfile, "-u", "-z", resourcepkg, "-f", dexfile])
-      unless $? == 0
+      unless $?.success?
         puts "Error building APK file"
         exit 1
       end
@@ -1000,7 +999,7 @@ namespace "device" do
         args << "-keypass"
         args << $keypass
         puts Jake.run($keytool, args)
-        unless $? == 0
+        unless $?.success?
           puts "Error generating keystore file"
           exit 1
         end
@@ -1018,7 +1017,7 @@ namespace "device" do
       args << apkfile
       args << "rhomobile.keystore"
       puts Jake.run($jarsigner, args)
-      unless $? == 0
+      unless $?.success?
         puts "Error running jarsigner"
         exit 1
       end
@@ -1030,7 +1029,7 @@ namespace "device" do
       # args << "4"
       # args << '"' + apkfile + '"'
       # puts Jake.run($zipalign, args)
-      # unless $? == 0
+      # unless $?.success?
       #   puts "Error running zipalign"
       #   exit 1
       # end
@@ -1134,7 +1133,7 @@ namespace "uninstall" do
     args << "uninstall"
     args << $app_package_name
     Jake.run($adb, args)
-    unless $? == 0
+    unless $?.success?
       puts "Error uninstalling application"
       exit 1
     end
@@ -1146,7 +1145,7 @@ namespace "uninstall" do
     args << "-r"
     args << "/sdcard/rhomobile/#{$app_package_name}"
     Jake.run($adb, args)
-    unless $? == 0
+    unless $?.success?
       puts "Error removing files from SD card"
       exit 1
     end
