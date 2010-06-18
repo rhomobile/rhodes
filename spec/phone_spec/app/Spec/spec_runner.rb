@@ -7,6 +7,7 @@ class SpecController < Rho::RhoController
     run_spec('Json')
     run_spec('Xml')
     run_spec('Contacts')
+    run_spec('RhoFile')
   end
   
 end

@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import j2me.io.File;
-import j2me.io.RandomAccessFile;
+//import j2me.io.RandomAccessFile;
+import com.rho.file.RandomAccessFile;
 
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;

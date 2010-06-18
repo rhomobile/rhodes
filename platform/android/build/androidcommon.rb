@@ -157,7 +157,7 @@ def cc_run(command, args, chdir = nil)
   end
   ret = $?
   FileUtils.cd save_cwd
-  ret == 0
+  ret.success?
 end
 
 def cc_compile(filename, objdir, additional = nil)
@@ -195,17 +195,19 @@ def cc_build(name, objdir, additional = nil)
   ths = []
   srcs.each do |src|
     ths << Thread.new do
+      success = true
       src.each do |f|
-        cc_compile f, objdir, additional or return 1
+        success = cc_compile f, objdir, additional
+        break unless success
       end
-      0
+      success
     end
   end
 
-  ret = 0
+  ret = true
   ths.each do |th|
-    v = th.value
-    ret = v unless v == 0
+    success = th.value
+    ret = success unless success
   end
   ret
 end
