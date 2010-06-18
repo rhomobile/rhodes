@@ -425,8 +425,8 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
 	printbuf_memappend(tok->pb, &c, 1);	
 	if(c == '.' || c == 'e' || c == 'E') tok->is_double = 1;
       } else {
-	int64 numi;
-	double numd;
+	int64 numi = 0;
+	double numd = 0;
 	if(!tok->is_double && sscanf(tok->pb->buf, "%lli", &numi) == 1) {
 	  current = rjson_object_new_int(numi);
 	} else if(tok->is_double && sscanf(tok->pb->buf, "%lf", &numd) == 1) {

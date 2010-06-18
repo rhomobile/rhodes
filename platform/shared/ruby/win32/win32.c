@@ -4759,6 +4759,7 @@ rb_w32_rmdir(const char *path)
     return ret;
 }
 
+#ifndef _WIN32_WCE
 int
 rb_w32_unlink(const char *path)
 {
@@ -4778,6 +4779,7 @@ rb_w32_unlink(const char *path)
     });
     return ret;
 }
+#endif //!_WIN32_WCE
 
 #if !defined(__BORLANDC__)&& !defined(_WIN32_WCE)
 int

@@ -72,6 +72,7 @@ public:
     static CGPSController* startInstance();
 	static void DeleteInstance();
 	static void CheckTimeout();
+    static void TurnGpsOff();
 	virtual ~CGPSController();
     //static void show_geolocation(struct shttpd_arg *arg);
 
