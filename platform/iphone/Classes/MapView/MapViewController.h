@@ -13,7 +13,6 @@
 #import "GoogleGeocoder.h"
 
 #include "common/rhoparams.h"
-#include "ruby/ext/rho/rhoruby.h"
 
 @interface MapViewController : UIViewController <MKReverseGeocoderDelegate,MKMapViewDelegate> {
     MKMapView *mapView;
@@ -37,9 +36,10 @@
 @property (copy) NSString *gapikey; 
 
 + (void)createMap:(rho_param*)params;
-+ (VALUE)state;
++ (void)closeMap;
 
 - (void)setParams:(rho_param*)params;
+- (void)close;
 
 @end
 
