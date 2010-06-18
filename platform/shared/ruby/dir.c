@@ -1760,9 +1760,16 @@ static VALUE
 dir_entries(int argc, VALUE *argv, VALUE io)
 {
     VALUE dir;
-
+    VALUE res, temp;
     dir = dir_open_dir(argc, argv);
-    return rb_ensure(rb_Array, dir, dir_close, dir);
+//RHO
+    res = rb_ensure(rb_Array, dir, dir_close, dir);
+#ifdef _WIN32_WCE
+    temp = rb_ary_new3(2, rb_str_new2("."), rb_str_new2(".."));
+    res = rb_ary_concat(temp, res);
+#endif //_WIN32_WCE
+    return res;
+//RHO
 }
 
 /*

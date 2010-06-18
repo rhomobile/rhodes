@@ -1563,7 +1563,8 @@ rb_w32_opendir(const char *filename)
 	p->nfiles++;
 	idx += len;
     } while (FindNextFile(fh, &fd));
-    FindClose(fh);
+    if ( fh )
+        FindClose(fh);
     p->size = idx;
     p->curr = p->start;
     return p;
@@ -3581,7 +3582,8 @@ check_valid_dir(const char *path)
     HANDLE fh = open_dir_handle(path, &fd);
     if (fh == INVALID_HANDLE_VALUE)
 	return -1;
-    FindClose(fh);
+    if (fh)
+        FindClose(fh);
     return 0;
 }
 
