@@ -24,6 +24,8 @@ class SpecController < Rho::RhoController
     puts "***Total:  " + @count.to_s
     puts "***Passed: " + (@count - @exc_count).to_s
     puts "***Failed: " + @exc_count.to_s
+    
+    render    
   end
   
   def run_spec(name)
