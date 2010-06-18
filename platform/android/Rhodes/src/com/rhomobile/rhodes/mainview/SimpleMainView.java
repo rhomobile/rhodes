@@ -302,6 +302,8 @@ public class SimpleMainView implements MainView {
 			if (group != null)
 				group.setGravity(Gravity.RIGHT);
 		}
+		
+		webView.requestFocus();
 	}
 	
 	public SimpleMainView() {
