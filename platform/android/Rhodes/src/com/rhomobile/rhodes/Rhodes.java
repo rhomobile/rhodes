@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
+import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
@@ -86,6 +87,8 @@ public class Rhodes extends Activity {
 	private static int MAX_PROGRESS = 10000;
 	
 	private static boolean ENABLE_LOADING_INDICATION = true;
+	
+	private boolean needGeoLocationRestart = false;
 	
 	private long uiThreadId;
 	public long getUiThreadId() {
@@ -320,6 +323,7 @@ public class Rhodes extends Activity {
 		w.setHorizontalScrollBarEnabled(true);
 		w.setVerticalScrollbarOverlay(true);
 		w.setHorizontalScrollbarOverlay(true);
+		w.setFocusableInTouchMode(true);
 
 		w.setWebViewClient(new WebViewClient() {
 			
@@ -559,6 +563,8 @@ public class Rhodes extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if (needGeoLocationRestart)
+			GeoLocation.isKnownPosition();
 		Logger.T(TAG, "+++ onResume");
 	}
 	
@@ -571,6 +577,8 @@ public class Rhodes extends Activity {
 	@Override
 	protected void onStop() {
 		Logger.T(TAG, "+++ onStop");
+		needGeoLocationRestart = GeoLocation.isAvailable();
+		GeoLocation.stop();
 		super.onStop();
 	}
 		
