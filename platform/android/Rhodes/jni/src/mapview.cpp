@@ -52,7 +52,7 @@ RHO_GLOBAL VALUE mapview_state_started()
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isStarted", "()Z");
     if (!mid) return nil;
 
-    return env->CallStaticBooleanMethod(cls, mid);
+    return rho_ruby_create_boolean(env->CallStaticBooleanMethod(cls, mid));
 #else
     return rho_ruby_create_boolean(0);
 #endif
