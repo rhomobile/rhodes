@@ -3,6 +3,7 @@ package com.rho.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 
 import j2me.io.FileNotFoundException;
 
@@ -65,6 +66,34 @@ public class Jsr75RAFileImpl implements IRAFile {
 			//LOG.ERROR("Open '" + name + "' failed");
 			throw new FileNotFoundException(exc.getMessage());
 		}
+	}
+	
+	public boolean mkdir()
+	{
+		if ( m_file == null )
+			return false;
+		
+        if (m_file.exists())
+        	return true;
+        
+        try{ 
+        	m_file.mkdir();  // create the dir if it doesn't exist
+        	return true;
+        	
+        }catch(IOException exc)
+        {
+        	LOG.ERROR("cannot create directory: " + m_file.getPath(), exc);
+        }
+        
+        return false;
+	}
+	
+	public Enumeration list()throws IOException
+	{
+		if ( m_file == null )
+			return null;
+		
+		return m_file.list();
 	}
 	
 	public long size() throws IOException {
