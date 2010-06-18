@@ -5,6 +5,8 @@
 
 package com.xruby.runtime.builtin;
 
+import java.util.Vector;
+
 import j2me.io.File;
 import j2me.util.ArrayList;
 import j2me.util.Iterator;
@@ -12,6 +14,7 @@ import j2me.util.List;
 import j2me.lang.SystemMe;
 import org.apache.oro.io.GlobFilenameFilter;
 
+import com.xruby.runtime.lang.RhoSupport;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
@@ -35,10 +38,12 @@ public class RubyDir extends RubyBasic {
 
         list.add(".");
         list.add("..");
-        String[] contents = dir_.list();
-        if(contents != null){
-            for(int i=0;i<contents.length;i++){
-                list.add(contents[i]);
+        Vector contents = dir_.list();
+        if(contents != null)
+        {
+            for(int i=0;i<contents.size();i++)
+            {
+                list.add(contents.elementAt(i));
             }
         }
         curPos = 0;
@@ -217,7 +222,7 @@ public class RubyDir extends RubyBasic {
     //@RubyLevelMethod(name="mkdir", singleton=true)
     public static RubyValue mkdir(RubyValue receiver, RubyValue arg) {
         String dir = arg.toStr();
-        File file = new File(dir);
+        File file = new File(dir, "rw");
         if (file.isDirectory() || file.mkdir()) {
             return ObjectFactory.FIXNUM0;
         }
@@ -246,9 +251,12 @@ public class RubyDir extends RubyBasic {
         }
 
         RubyArray files = new RubyArray();
-//        for (String f : file.list()) {
-        for( int i = 0; i < file.list().length; i++ ){        
-            files.add(ObjectFactory.createString(file.list()[i]));
+        files.add(ObjectFactory.createString("."));
+        files.add(ObjectFactory.createString(".."));
+        Vector arFiles = file.list();
+        for( int i = 0; i < arFiles.size(); i++ )
+        {        
+            files.add(ObjectFactory.createString((String)arFiles.elementAt(i)));
         }
 
         return files;
@@ -284,6 +292,16 @@ public class RubyDir extends RubyBasic {
     //@RubyLevelMethod(name="[]", singleton=true)
     public static RubyValue array_access(RubyValue receiver, RubyValue arg) {
         return glob(receiver, arg);
+    }
+
+    ////@RubyLevelMethod(name="exist?", alias="exists?", singleton=true)
+    public static RubyValue exist_question(RubyValue receiver, RubyValue arg) {
+        String fileName = arg.toStr();
+        
+    	File file = new File(fileName);
+    	boolean bExist = file.isDirectory();
+        
+    	return ObjectFactory.createBoolean(bExist);
     }
     
 }
