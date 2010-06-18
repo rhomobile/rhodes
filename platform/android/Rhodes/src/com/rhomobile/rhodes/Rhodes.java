@@ -323,6 +323,7 @@ public class Rhodes extends Activity {
 		w.setHorizontalScrollBarEnabled(true);
 		w.setVerticalScrollbarOverlay(true);
 		w.setHorizontalScrollbarOverlay(true);
+		w.setFocusableInTouchMode(true);
 
 		w.setWebViewClient(new WebViewClient() {
 			
