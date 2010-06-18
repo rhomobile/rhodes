@@ -29,3 +29,62 @@ RHO_GLOBAL void mapview_create(rho_param *p)
 #endif
 }
 
+RHO_GLOBAL void mapview_close()
+{
+#ifdef RHO_GOOGLE_API_KEY
+    JNIEnv *env = jnienv();
+    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!clsMapView) return;
+    jmethodID midClose = getJNIClassStaticMethod(env, clsMapView, "close", "()V");
+    if (!midClose) return;
+
+    env->CallStaticVoidMethod(clsMapView, midClose);
+#endif
+}
+
+RHO_GLOBAL VALUE mapview_state_started()
+{
+#ifdef RHO_GOOGLE_API_KEY
+    VALUE nil = rho_ruby_get_NIL();
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return nil;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "isStarted", "()Z");
+    if (!mid) return nil;
+
+    return env->CallStaticBooleanMethod(cls, mid);
+#else
+    return rho_ruby_create_boolean(0);
+#endif
+}
+
+RHO_GLOBAL double mapview_state_center_lat()
+{
+#ifdef RHO_GOOGLE_API_KEY
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return 0;
+    jmethod mid = getJNIClassStaticMethod(env, cls, "getCenterLatitude", "()D");
+    if (!mid) return 0;
+
+    return env->CallStaticDoubleMethod(cls, mid);
+#else
+    return 0;
+#endif
+}
+
+RHO_GLOBAL double mapview_state_center_lon()
+{
+#ifdef RHO_GOOGLE_API_KEY
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return 0;
+    jmethod mid = getJNIClassStaticMethod(env, cls, "getCenterLongitude", "()D");
+    if (!mid) return 0;
+
+    return env->CallStaticDoubleMethod(cls, mid);
+#else
+    return 0;
+#endif
+}
+
