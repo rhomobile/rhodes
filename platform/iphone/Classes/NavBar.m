@@ -10,11 +10,13 @@
 #import "Rhodes.h"
 
 #include "common/rhoparams.h"
-
-#import "logging/RhoLog.h"
+#include "logging/RhoLog.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NavBar"
+
+static int started = 0;
 
 @interface RhoNavBarCreateTask : NSObject {}
 + (void)run:(NSArray*)args;
@@ -26,6 +28,7 @@
     NSArray *left = [args objectAtIndex:1];
     NSArray *right = [args objectAtIndex:2];
     [[[Rhodes sharedInstance] mainView] addNavBar:title left:left right:right];
+    started = 1;
 }
 @end
 
@@ -36,6 +39,7 @@
 @implementation RhoNavBarRemoveTask
 + (void)run {
     [[[Rhodes sharedInstance] mainView] removeNavBar];
+    started = 0;
 }
 @end
 
@@ -112,4 +116,8 @@ void remove_navbar()
 {
     id runnable = [RhoNavBarRemoveTask class];
     [Rhodes performOnUiThread:runnable wait:YES];
+}
+
+VALUE navbar_started() {
+    return rho_ruby_create_boolean(started);
 }

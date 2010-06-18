@@ -6,6 +6,8 @@ public class NavBar {
 
 	private static final String TAG = "NavBar";
 	
+	private static boolean started = false;
+	
 	private static class CreateTask implements Runnable {
 		
 		private String title;
@@ -33,6 +35,7 @@ public class NavBar {
 		public void run() {
 			Rhodes r = RhodesInstance.getInstance();
 			r.getMainView().addNavBar(title, left, right);
+			started = true;
 		}
 	};
 	
@@ -40,6 +43,7 @@ public class NavBar {
 		public void run() {
 			Rhodes r = RhodesInstance.getInstance();
 			r.getMainView().removeNavBar();
+			started = false;
 		}
 	};
 	
@@ -65,4 +69,7 @@ public class NavBar {
 		}
 	}
 	
+	public static boolean isStarted() {
+		return started;
+	}
 }
