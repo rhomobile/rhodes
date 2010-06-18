@@ -19,8 +19,7 @@
 
 extern int _errno;
 
-
-int _rename(const char *oldname, const char *newname)
+int rb_w32_rename(const char *oldname, const char *newname)
 {
 	wchar_t *wold, *wnew;
 	BOOL rc;
@@ -35,6 +34,11 @@ int _rename(const char *oldname, const char *newname)
 	free(wnew);
 
 	return rc==TRUE ? 0 : -1;
+}
+
+int _rename(const char *oldname, const char *newname)
+{
+    return rb_w32_rename(oldname, newname);
 }
 
 int rb_w32_unlink(const char *file)
