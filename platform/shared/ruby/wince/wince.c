@@ -388,13 +388,26 @@ HANDLE FindFirstFileA(LPCSTR path,
 {
 	LPWSTR wpath;
 	HANDLE h;
-	WIN32_FIND_DATAW wdata;
-
+    WIN32_FIND_DATAW wdata = {0};
+    int i = 0;
+    DWORD dwErr = 0;
 	wpath = wce_mbtowc(path);
+    for( i = 0; wpath[i]; i++)
+    {
+        if ( wpath[i] == L'/' )
+            wpath[i] = L'\\';
+    }
+
+    //if ( wpath[wcslen(wpath)-1] == '*')  //wince does not support *
+    //    wpath[wcslen(wpath)-1] = 0;
+
 	h = FindFirstFileW( wpath, &wdata );
+    dwErr = GetLastError();
+    if ( h == INVALID_HANDLE_VALUE && dwErr == 18)
+        h = 0;
 	free(wpath);
 	
-  copy_fund_data(data,&wdata);
+    copy_fund_data(data,&wdata);
 
 	return h;
 }
@@ -404,6 +417,9 @@ BOOL FindNextFileA(HANDLE handle,
 {
 	BOOL b;
 	WIN32_FIND_DATAW wdata;
+
+    if ( !handle )
+        return FALSE;
 
 	b = FindNextFileW(handle, &wdata);
 

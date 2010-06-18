@@ -1,5 +1,6 @@
 class RhoFileTest
     def initialize
+        clear()
     end
 
     def write_test
@@ -36,6 +37,7 @@ class RhoFileTest
 	    
         # if no, get number of files in saving location. call delete action if equals 14
         files = Dir.entries(dir_name)
+        #puts "files: #{files}"
 	    dd = files.size - 2 #skip . and ..
 	    if  dd == 14
 	        return "limit"
