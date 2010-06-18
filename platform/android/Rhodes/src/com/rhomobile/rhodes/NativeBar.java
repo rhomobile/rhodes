@@ -32,6 +32,8 @@ public class NativeBar {
 	public static final int TABBAR_TYPE = 1;
 	public static final int NOBAR_TYPE = 2;
 	
+	private static boolean started = false;
+	
 	private static class CreateTask implements Runnable {
 		
 		private int type;
@@ -51,12 +53,15 @@ public class NativeBar {
 				switch (type) {
 				case NOBAR_TYPE:
 					v = new SimpleMainView(mainView);
+					started = false;
 					break;
 				case TOOLBAR_TYPE:
 					v = new SimpleMainView(mainView, params);
+					started = true;
 					break;
 				case TABBAR_TYPE:
 					v = new TabbedMainView(params);
+					started = true;
 					break;
 				default:
 					Logger.E(TAG, "Unknown bar type passed: " + type);
@@ -116,4 +121,7 @@ public class NativeBar {
 		}
 	}
 	
+	public static boolean isStarted() {
+		return started;
+	}
 }

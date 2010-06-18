@@ -8,6 +8,8 @@ extern void remove_nativebar();
 #define remove remove_nativebar
 extern void nativebar_switch_tab(int index);
 #define switch_tab nativebar_switch_tab
+extern VALUE nativebar_started();
+#define started nativebar_started
 %}
 
 %typemap(in) (rho_param *p) {
@@ -21,3 +23,4 @@ extern void nativebar_switch_tab(int index);
 extern void create(int bar_type, rho_param *p);
 extern void remove();
 extern void switch_tab(int index);
+extern VALUE started();

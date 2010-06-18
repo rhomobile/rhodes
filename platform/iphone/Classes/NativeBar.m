@@ -6,16 +6,19 @@
 //  Copyright 2009 Home. All rights reserved.
 //
 
-#include "common/rhoparams.h"
 #import "NativeBar.h"
 #import "Rhodes.h"
 #import "SimpleMainView.h"
 #import "TabbedMainView.h"
 
-#import "logging/RhoLog.h"
+#include "common/rhoparams.h"
+#include "logging/RhoLog.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NativeBar"
+
+static int started = 0;
 
 @interface RhoNativeBarCreateTask : NSObject {}
 + (void)run:(NSValue*)value :(NSArray*)items;
@@ -29,23 +32,21 @@
     id view = nil;
    
     Rhodes *r = [Rhodes sharedInstance];
-    //UIWindow *window = [[Rhodes sharedInstance] rootWindow];
-    //CGRect frame = [Rhodes applicationFrame];
     
     id mainView = [r mainView];
     
     switch (type) {
     case NOBAR_TYPE:
-        //view = [[SimpleMainView alloc] initWithParentView:window frame:frame];
         view = [[SimpleMainView alloc] initWithMainView:mainView];
+        started = 0;
         break;
     case TOOLBAR_TYPE:
-        //view = [[SimpleMainView alloc] initWithParentView:window frame:frame toolbar:items];
         view = [[SimpleMainView alloc] initWithMainView:mainView toolbar:items];
+        started = 1;
         break;
     case TABBAR_TYPE:
-        //view = [[TabbedMainView alloc] initWithParentView:window frame:frame items:items];
         view = [[TabbedMainView alloc] initWithMainView:mainView tabs:items];
+        started = 1;
         break;
     default:
         RAWLOG_ERROR1("Unknown bar type passed: %d", type);
@@ -92,6 +93,11 @@ void create_nativebar(int bar_type, rho_param *p)
             RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array or Hash");
             return;
         }
+    }
+    
+    if (!params) {
+        RAWLOG_ERROR("Wrong parameters for create_nativebar");
+        return;
     }
     
     int size = params->v.array->size;
@@ -156,4 +162,8 @@ void nativebar_switch_tab(int index) {
     id runnable = [RhoNativeBarSwitchTabTask class];
     id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg wait:YES];
+}
+
+VALUE nativebar_started() {
+    return rho_ruby_create_boolean(started);
 }

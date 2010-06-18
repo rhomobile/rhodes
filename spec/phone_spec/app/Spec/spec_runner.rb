@@ -9,6 +9,8 @@ class SpecController < Rho::RhoController
     run_spec('Contacts')
     run_spec('RhoFile')
     run_spec('MapView')
+    run_spec('NativeBar')
+    run_spec('NavBar')
   end
   
 end

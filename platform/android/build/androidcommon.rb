@@ -73,6 +73,7 @@ def cc_def_args
     args << $ndksysroot
     #args << "-fvisibility=hidden"
     args << "-fPIC"
+    args << "-Wno-psabi" if $ndkgccver != "4.2.1"
     args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"
