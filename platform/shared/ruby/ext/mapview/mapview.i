@@ -4,7 +4,9 @@
 #include "ext/rho/rhoruby.h"
 extern void mapview_create(rho_param *p);
 #define create mapview_create
-extern int mapview_state_started();
+extern void mapview_close();
+#define close mapview_close
+extern VALUE mapview_state_started();
 #define state_started mapview_state_started
 extern double mapview_state_center_lat();
 #define state_center_lat mapview_state_center_lat
@@ -21,7 +23,8 @@ extern double mapview_state_center_lon();
 }
 
 extern void create(rho_param *p);
-extern int state_started();
+extern void close();
+extern VALUE state_started();
 extern double state_center_lat();
 extern double state_center_lon();
 
