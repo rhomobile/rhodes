@@ -413,6 +413,18 @@ public class PersistRAFileImpl implements IRAFile {
 		}
 	}
 
+	public boolean mkdir()
+	{
+		//TODO: mkdir
+		return false;
+	}
+	
+	public Enumeration list()throws IOException
+	{
+		//TODOL list
+		return null;
+	}
+	
 	public boolean isDirectory()
 	{
 		//TODO: isDirectory

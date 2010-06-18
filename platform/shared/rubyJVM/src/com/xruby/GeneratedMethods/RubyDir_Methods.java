@@ -1,6 +1,7 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.RubyDir;
+import com.xruby.runtime.builtin.RubyFile;
 public class RubyDir_Methods{
 public static void initMethods( RubyClass klass){
 
@@ -80,4 +81,11 @@ klass.defineMethod( "each", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyDir)receiver).each(block);}
 });
+
+klass.getSingletonClass().defineMethod( "exist?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyDir.exist_question(receiver, arg);}
+});
+klass.getSingletonClass().aliasMethod("exists?","exist?");
+
 }}
