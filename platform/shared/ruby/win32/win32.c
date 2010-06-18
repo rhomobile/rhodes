@@ -3397,6 +3397,7 @@ rb_w32_getenv(const char *name)
     return NULL;
 }
 
+#ifndef _WIN32_WCE
 int
 rb_w32_rename(const char *oldpath, const char *newpath)
 {
@@ -3447,6 +3448,7 @@ rb_w32_rename(const char *oldpath, const char *newpath)
 
     return res;
 }
+#endif //!_WIN32_WCE
 
 static int
 isUNCRoot(const char *path)
