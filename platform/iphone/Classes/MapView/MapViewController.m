@@ -12,9 +12,12 @@
 
 #include "common/rhoparams.h"
 #include "logging/RhoLog.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
+
+static MapViewController *mc = nil;
 
 @interface RhoCreateMapTask : NSObject {}
 + (void)run:(NSValue*)value;
@@ -22,13 +25,32 @@
 
 @implementation RhoCreateMapTask
 + (void)run:(NSValue*)value {
+    if (mc) {
+        [mc close];
+        mc = nil;
+    }
     MapViewController* map = [[MapViewController alloc] init];
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
     [window addSubview:map.view];
-    //[map release];
+    
+    mc = map;
 }
 @end
+
+@interface RhoCloseMapTask : NSObject
++ (void)run;
+@end
+
+@implementation RhoCloseMapTask
++ (void)run {
+    if (mc) {
+        [mc close];
+        mc = nil;
+    }
+}
+@end
+
 
 @implementation MapViewController
 
@@ -38,6 +60,11 @@
     id runnable = [RhoCreateMapTask class];
     id arg = [NSValue valueWithPointer:params];
     [Rhodes performOnUiThread:runnable arg:arg wait:NO];
+}
+
++ (void)closeMap {
+    id runnable = [RhoCloseMapTask class];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -50,6 +77,11 @@
         region_center = nil;
     }
     return self;
+}
+
+- (void)close {
+    [self dismissModalViewControllerAnimated:YES]; 
+	self.view.hidden = YES;
 }
 
 - (void)setSettings:(rho_param*)p {
@@ -66,7 +98,7 @@
             if (value->type != RHO_PARAM_STRING)
                 continue;
             char *map_type = value->v.string;
-            if (strcasecmp(map_type, "standard") == 0)
+            if (strcasecmp(map_type, "standard") == 0 || strcasecmp(map_type, "roadmap") == 0)
                 mapType = MKMapTypeStandard;
             else if (strcasecmp(map_type, "satellite") == 0)
                 mapType = MKMapTypeSatellite;
@@ -302,8 +334,7 @@
 }
 
 - (void) close_clicked:(id)sender {
-    [self dismissModalViewControllerAnimated:YES]; 
-	self.view.hidden = YES;
+    [self close];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -376,9 +407,21 @@
     return annView;
 }
 
-+ (VALUE)state {
-    // TODO: implement
-    return rho_ruby_get_NIL();
++ (BOOL)isStarted {
+    return mc != nil;
+}
+
++ (CLLocationCoordinate2D)center {
+    CLLocationCoordinate2D center;
+    if (mc) {
+        center = mc->region.center;
+    }
+    else {
+        center.latitude = 0;
+        center.longitude = 0;
+    }
+        
+    return center;
 }
 
 @end
@@ -391,10 +434,33 @@ void mapview_create(rho_param *p) {
 #endif	
 }
 
-VALUE mapview_state() {
+void mapview_close() {
 #ifdef __IPHONE_3_0
-    return [MapViewController state];
+    [MapViewController closeMap];
+#endif
+}
+
+VALUE mapview_state_started() {
+#ifdef __IPHONE_3_0
+    BOOL started = [MapViewController isStarted];
+    return rho_ruby_create_boolean(started);
 #else
-    return rho_ruby_get_NIL();
+    return 0;
+#endif
+}
+
+double mapview_state_center_lat() {
+#ifdef __IPHONE_3_0
+    return [MapViewController center].latitude;
+#else
+    return 0;
+#endif
+}
+
+double mapview_state_center_lon() {
+#ifdef __IPHONE_3_0
+    return [MapViewController center].longitude;
+#else
+    return 0;
 #endif
 }

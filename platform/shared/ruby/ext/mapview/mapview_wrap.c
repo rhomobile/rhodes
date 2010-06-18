@@ -1549,34 +1549,14 @@ static VALUE mMapView;
 #include "ext/rho/rhoruby.h"
 extern void mapview_create(rho_param *p);
 #define create mapview_create
-extern int mapview_state_started();
+extern void mapview_close();
+#define close mapview_close
+extern VALUE mapview_state_started();
 #define state_started mapview_state_started
 extern double mapview_state_center_lat();
 #define state_center_lat mapview_state_center_lat
 extern double mapview_state_center_lon();
 #define state_center_lon mapview_state_center_lon
-
-
-#include <limits.h>
-#ifndef LLONG_MIN
-# define LLONG_MIN	LONG_LONG_MIN
-#endif
-#ifndef LLONG_MAX
-# define LLONG_MAX	LONG_LONG_MAX
-#endif
-#ifndef ULLONG_MAX
-# define ULLONG_MAX	ULONG_LONG_MAX
-#endif
-
-
-  #define SWIG_From_long   LONG2NUM 
-
-
-SWIGINTERNINLINE VALUE
-SWIG_From_int  (int value)
-{    
-  return SWIG_From_long  (value);
-}
 
 
   #define SWIG_From_double   rb_float_new 
@@ -1605,15 +1585,27 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_close(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  close();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_state_started(int argc, VALUE *argv, VALUE self) {
-  int result;
+  VALUE result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)state_started();
-  vresult = SWIG_From_int((int)(result));
+  result = (VALUE)state_started();
+  vresult = result;
   return vresult;
 fail:
   return Qnil;
@@ -1919,6 +1911,7 @@ SWIGEXPORT void Init_MapView(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mMapView, "create", _wrap_create, -1);
+  rb_define_module_function(mMapView, "close", _wrap_close, -1);
   rb_define_module_function(mMapView, "state_started", _wrap_state_started, -1);
   rb_define_module_function(mMapView, "state_center_lat", _wrap_state_center_lat, -1);
   rb_define_module_function(mMapView, "state_center_lon", _wrap_state_center_lon, -1);

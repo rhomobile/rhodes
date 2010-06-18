@@ -8,6 +8,7 @@ class SpecController < Rho::RhoController
     run_spec('Xml')
     run_spec('Contacts')
     run_spec('RhoFile')
+    run_spec('MapView')
   end
   
 end
