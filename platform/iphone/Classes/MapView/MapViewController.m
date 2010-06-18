@@ -376,6 +376,11 @@
     return annView;
 }
 
++ (VALUE)state {
+    // TODO: implement
+    return rho_ruby_get_NIL();
+}
+
 @end
 
 #endif
@@ -384,4 +389,12 @@ void mapview_create(rho_param *p) {
 #ifdef __IPHONE_3_0
 	[MapViewController createMap:rho_param_dup(p)];
 #endif	
+}
+
+VALUE mapview_state() {
+#ifdef __IPHONE_3_0
+    return [MapViewController state];
+#else
+    return rho_ruby_get_NIL();
+#endif
 }
