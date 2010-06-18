@@ -338,7 +338,7 @@ struct json_object* json_object_new_int(int64 i)
 
 int64 json_object_get_int(struct json_object *this)
 {
-  int64 cint;
+  int64 cint = 0;
 
   if(!this) return 0;
   switch(this->o_type) {

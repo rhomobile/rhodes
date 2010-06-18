@@ -331,6 +331,22 @@ void CGPSController::CheckTimeout() {
 	}
 }
 
+void CGPSController::TurnGpsOff() {
+	if( CGPSController::s_pInstance != NULL ) {
+		CGPSController* gps = CGPSController::s_pInstance;
+		gps->Lock();
+		bool gpsOff = gps->m_gpsIsOn;
+		gps->Unlock();
+		if (gpsOff) {
+			CGPSDevice::TurnOff();
+			gps->m_gpsIsOn = false;
+			gps->m_knownPosition = false;
+	    gps->m_latitude = 0;
+	    gps->m_longitude = 0;
+		}
+	}
+}
+
 CGPSController::~CGPSController() {
 	DeleteCriticalSection(&m_critical_section);
 	CGPSDevice::TurnOff();
@@ -427,6 +443,14 @@ int rho_geo_known_position()
 
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {
+}
+
+void rho_geoimpl_turngpsoff()
+{
+#if defined(_WIN32_WCE)
+	CGPSController::TurnGpsOff();
+#endif
+
 }
 
 int rho_geo_is_available()
