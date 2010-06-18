@@ -1178,7 +1178,7 @@ rb_file_exist_p(VALUE obj, VALUE fname)
 {
 //RHO
 #ifdef DOSISH
-    int ret = 1;
+/*    int ret = 1;
     int fd;
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eTypeError, "argument is not a string");
@@ -1186,6 +1186,11 @@ rb_file_exist_p(VALUE obj, VALUE fname)
     fd = open(RSTRING_PTR(fname), O_RDONLY);
     if (fd == -1) return Qfalse;
     (void)close(fd);
+    return Qtrue; */
+    DWORD res = GetFileAttributesA(RSTRING_PTR(fname));
+    if (res == INVALID_FILE_ATTRIBUTES)
+        return Qfalse;
+
     return Qtrue;
 #else
     struct stat st;
