@@ -1553,6 +1553,8 @@ extern void remove_nativebar();
 #define remove remove_nativebar
 extern void nativebar_switch_tab(int index);
 #define switch_tab nativebar_switch_tab
+extern VALUE nativebar_started();
+#define started nativebar_started
 
 
 #include <limits.h>
@@ -1677,6 +1679,22 @@ _wrap_switch_tab(int argc, VALUE *argv, VALUE self) {
   arg1 = (int)(val1);
   switch_tab(arg1);
   return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_started(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)started();
+  vresult = result;
+  return vresult;
 fail:
   return Qnil;
 }
@@ -1951,5 +1969,6 @@ SWIGEXPORT void Init_NativeBar(void) {
   rb_define_module_function(mNativeBar, "create", _wrap_create, -1);
   rb_define_module_function(mNativeBar, "remove", _wrap_remove, -1);
   rb_define_module_function(mNativeBar, "switch_tab", _wrap_switch_tab, -1);
+  rb_define_module_function(mNativeBar, "started", _wrap_started, -1);
 }
 

@@ -1551,6 +1551,8 @@ extern void create_navbar(rho_param *p);
 #define create create_navbar
 extern void remove_navbar();
 #define remove remove_navbar
+extern VALUE navbar_started();
+#define started navbar_started
 
 SWIGINTERN VALUE
 _wrap_create(int argc, VALUE *argv, VALUE self) {
@@ -1582,6 +1584,22 @@ _wrap_remove(int argc, VALUE *argv, VALUE self) {
   }
   remove();
   return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_started(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)started();
+  vresult = result;
+  return vresult;
 fail:
   return Qnil;
 }
@@ -1855,5 +1873,6 @@ SWIGEXPORT void Init_NavBar(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mNavBar, "create", _wrap_create, -1);
   rb_define_module_function(mNavBar, "remove", _wrap_remove, -1);
+  rb_define_module_function(mNavBar, "started", _wrap_started, -1);
 }
 
