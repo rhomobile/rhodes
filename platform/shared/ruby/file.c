@@ -1014,11 +1014,34 @@ rb_file_directory_p(VALUE obj, VALUE fname)
 #   define S_ISDIR(m) ((m & S_IFMT) == S_IFDIR)
 #endif
 
+//RHO
+#ifdef DOSISH
+/*    int ret = 1;
+    int fd;
+    if (TYPE(fname) != T_STRING)
+        rb_raise(rb_eTypeError, "argument is not a string");
+    
+    fd = open(RSTRING_PTR(fname), O_RDONLY);
+    if (fd == -1) return Qfalse;
+    (void)close(fd);
+    return Qtrue; */
+    DWORD res = GetFileAttributesA(RSTRING_PTR(fname));
+    if (res == INVALID_FILE_ATTRIBUTES)
+        return Qfalse;
+    if ( res&FILE_ATTRIBUTE_DIRECTORY )
+        return Qtrue;
+
+    return Qfalse;
+#else
+
     struct stat st;
 
     if (rb_stat(fname, &st) < 0) return Qfalse;
     if (S_ISDIR(st.st_mode)) return Qtrue;
     return Qfalse;
+#endif
+//RHO
+
 }
 
 /*
