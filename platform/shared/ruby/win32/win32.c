@@ -3397,6 +3397,7 @@ rb_w32_getenv(const char *name)
     return NULL;
 }
 
+#ifndef _WIN32_WCE
 int
 rb_w32_rename(const char *oldpath, const char *newpath)
 {
@@ -3447,6 +3448,7 @@ rb_w32_rename(const char *oldpath, const char *newpath)
 
     return res;
 }
+#endif //!_WIN32_WCE
 
 static int
 isUNCRoot(const char *path)
@@ -4759,6 +4761,7 @@ rb_w32_rmdir(const char *path)
     return ret;
 }
 
+#ifndef _WIN32_WCE
 int
 rb_w32_unlink(const char *path)
 {
@@ -4778,6 +4781,7 @@ rb_w32_unlink(const char *path)
     });
     return ret;
 }
+#endif //!_WIN32_WCE
 
 #if !defined(__BORLANDC__)&& !defined(_WIN32_WCE)
 int

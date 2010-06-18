@@ -109,6 +109,13 @@ public class GeoLocationImpl implements LocationListener {
 		Logger.T(TAG, "onStatusChanged");
 		setCurrentGpsLocation(null);
 	}
+	
+	public synchronized void stop() {
+		if (locationManager == null)
+			return;
+		locationManager.removeUpdates(this);
+		locationManager = null;
+	}
 
 	public synchronized boolean isAvailable() {
 		return available;

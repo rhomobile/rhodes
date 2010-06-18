@@ -16,6 +16,8 @@ import com.rho.file.IFileAccess;
 import com.rho.file.IRAFile;
 
 import j2me.lang.UnsupportedOperationException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  *  Class provided for the sole purpose of compiling the FileFilter and 
@@ -54,6 +56,23 @@ public class File {
         }
     }
 
+    public File(String path, String mode) 
+    {
+        _path = path;
+        
+        try
+        {
+            m_strFullPath = _path;
+            if (!m_strFullPath.startsWith("file:")) 
+            	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
+        	
+        	m_raFile = RhoClassFactory.createFSRAFile();
+            m_raFile.open(m_strFullPath, mode);
+        }catch(Exception exc)
+        {
+        }
+    }
+    
     public String getPath() {
         return _path;
     }
@@ -101,24 +120,38 @@ public class File {
                 "File operations not supported for J2ME build");
     }
     
-    public String[] list() {
-        //TODO: list
-        throw new RuntimeException("Not Implemented");
-        //return new String[0]; 
+    public Vector list() 
+    {
+    	if ( m_raFile == null )
+    		return new Vector();
+
+    	Vector res = new Vector();
+    	
+    	try{
+	    	Enumeration eFiles = m_raFile.list();
+	    	while( eFiles != null && eFiles.hasMoreElements() )
+	    	{
+	    		res.addElement(eFiles.nextElement());
+	    	}
+    	}catch(IOException exc)
+    	{
+    		
+    	}
+    	return res;
     }
     public String getAbsolutePath() 
     {
-    	return _path;
-        //TODO: getAbsolutePath
-        //throw new RuntimeException("Not Implemented");
-        //return _path;
+    	return m_strFullPath;
     }
     
-    public boolean mkdir() {
-        //TODO: mkdir
-        throw new RuntimeException("Not Implemented");
-        //return false;
+    public boolean mkdir() 
+    {
+    	if ( m_raFile != null )
+    		return m_raFile.mkdir();
+    	
+    	return false;
     }
+    
     public boolean delete() 
     {
     	try
