@@ -28,6 +28,8 @@ public class MapView extends MapActivity {
 	private static final String SETTINGS_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "settings.";
 	private static final String ANNOTATIONS_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "annotations.";
 	
+	private static MapView mc = null;
+	
 	private com.google.android.maps.MapView view;
 	private AnnotationsOverlay annOverlay;
 	
@@ -38,8 +40,207 @@ public class MapView extends MapActivity {
 	
 	private Vector<Annotation> annotations;
 	
+	private static class Coordinates {
+		public double latitude;
+		public double longitude;
+		
+		public Coordinates() {
+			latitude = 0;
+			longitude = 0;
+		}
+	};
+	
+	private Coordinates center = new Coordinates();
+	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+	}
+	
+	@Override
+	public void onCreate(Bundle icicle) {
+		super.onCreate(icicle);
+		
+		mc = this;
+		
+		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
+		
+		RelativeLayout layout = new RelativeLayout(this);
+		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		
+		// Extrace parameters
+		Bundle extras = getIntent().getExtras();
+		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
+		
+		// Extract settings
+		String map_type = extras.getString(SETTINGS_PREFIX + "map_type");
+		if (map_type == null)
+			map_type = "roadmap";
+		
+		boolean zoom_enabled = extras.getBoolean(SETTINGS_PREFIX + "zoom_enabled");
+		//boolean scroll_enabled = extras.getBoolean(SETTINGS_PREFIX + "scroll_enabled");
+		//boolean shows_user_location = extras.getBoolean(SETTINGS_PREFIX + "shows_user_location");
+		
+		// Extract annotations
+		int size = extras.getInt(ANNOTATIONS_PREFIX + "size") + 1;
+		annotations = new Vector<Annotation>(size);
+		for (int i = 0; i < size; ++i) {
+			Annotation ann = new Annotation();
+			String prefix = ANNOTATIONS_PREFIX + Integer.toString(i) + ".";
+			
+			ann.latitude = 10000;
+			ann.longitude = 10000;
+			
+			String lat = extras.getString(prefix + "latitude");
+			if (lat != null) {
+				try {
+					ann.latitude = Double.parseDouble(lat);
+				}
+				catch (NumberFormatException e) {}
+			}
+			
+			String lon = extras.getString(prefix + "longitude");
+			if (lon != null) {
+				try {
+					ann.longitude = Double.parseDouble(lon);
+				}
+				catch (NumberFormatException e) {}
+			}
+			
+			ann.type = "ann";
+			ann.address = extras.getString(prefix + "address");
+			ann.title = extras.getString(prefix + "title");
+			ann.subtitle = extras.getString(prefix + "subtitle");
+			ann.url = extras.getString(prefix + "url");
+			if (ann.url != null)
+				ann.url = RhodesInstance.getInstance().normalizeUrl(ann.url);
+			annotations.addElement(ann);
+		}
+		
+		// Create view
+		view = new com.google.android.maps.MapView(this, apiKey);
+		view.setClickable(true);
+		layout.addView(view);
+		
+		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
+		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+		annOverlay = new AnnotationsOverlay(this, marker);
+		view.getOverlays().add(annOverlay);
+		
+		// Apply extracted parameters
+		view.setBuiltInZoomControls(zoom_enabled);
+		view.setSatellite(map_type.equals("hybrid") || map_type.equals("satellite"));
+		view.setTraffic(false);
+		view.setStreetView(false);
+		
+		MapController controller = view.getController();
+		String type = extras.getString(SETTINGS_PREFIX + "region");
+		if (type.equals("square")) {
+			String latitude = extras.getString(SETTINGS_PREFIX + "region.latitude");
+			String longitude = extras.getString(SETTINGS_PREFIX + "region.longitude");
+			if (latitude != null && longitude != null) {
+				try {
+					double lat = Double.parseDouble(latitude);
+					double lon = Double.parseDouble(longitude);
+					center.latitude = lat;
+					center.longitude = lon;
+					controller.setCenter(new GeoPoint((int)(lat*1000000), (int)(lon*1000000)));
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, "Wrong region center: " + e.getMessage());
+				}
+			}
+			
+			String latSpan = extras.getString(SETTINGS_PREFIX + "region.latSpan");
+			String lonSpan = extras.getString(SETTINGS_PREFIX + "region.lonSpan");
+			if (latSpan != null && lonSpan != null) {
+				try {
+					double lat = Double.parseDouble(latSpan);
+					double lon = Double.parseDouble(lonSpan);
+					controller.zoomToSpan((int)(lat*1000000), (int)(lon*1000000));
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, "Wrong region span: " + e.getMessage());
+				}
+			}
+		}
+		else if (type.equals("circle")) {
+			String center = extras.getString(SETTINGS_PREFIX + "region.center");
+			String radius = extras.getString(SETTINGS_PREFIX + "region.radius");
+			if (center != null && radius != null) {
+				try {
+					double span = Double.parseDouble(radius);
+					spanLat = spanLon = span;
+					Annotation ann = new Annotation();
+					ann.type = "center";
+					ann.latitude = ann.longitude = 10000;
+					ann.address = center;
+					annotations.insertElementAt(ann, 0);
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, "Wrong region radius: " + e.getMessage());
+				}
+			}
+		}
+		
+		view.preLoad();
+		
+		Thread geocoding = new Thread(new Runnable() {
+			public void run() {
+				doGeocoding();
+			}
+		});
+		geocoding.start();
+	}
+	
+	private void doGeocoding() {
+		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
+			Annotation ann = annotations.elementAt(i);
+			if (ann.latitude == 10000 || ann.longitude == 10000)
+				continue;
+			annOverlay.addAnnotation(ann);
+		}
+		
+		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
+			Annotation ann = annotations.elementAt(i);
+			if (ann.latitude != 10000 && ann.longitude != 10000)
+				continue;
+			if (ann.address == null)
+				continue;
+			
+			Geocoder gc = new Geocoder(RhodesInstance.getInstance());
+			try {
+				List<Address> addrs = gc.getFromLocationName(ann.address, 1);
+				if (addrs.size() == 0)
+					continue;
+				
+				Address addr = addrs.get(0);
+				
+				ann.latitude = addr.getLatitude();
+				ann.longitude = addr.getLongitude();
+				if (ann.type.equals("center")) {
+					MapController controller = view.getController();
+					center.latitude = ann.latitude;
+					center.longitude = ann.longitude;
+					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
+					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
+				}
+				else
+					annOverlay.addAnnotation(ann);
+			} catch (IOException e) {
+				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
+			}
+			
+			Rhodes.performOnUiThread(new Runnable() {
+				public void run() {
+					view.invalidate();
+				}
+			}, false);
+		}
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		return false;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -149,185 +350,47 @@ public class MapView extends MapActivity {
 		}
 	}
 	
-	@Override
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-		
-		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
-		
-		RelativeLayout layout = new RelativeLayout(this);
-		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		
-		// Extrace parameters
-		Bundle extras = getIntent().getExtras();
-		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
-		
-		// Extract settings
-		String map_type = extras.getString(SETTINGS_PREFIX + "map_type");
-		if (map_type == null)
-			map_type = "roadmap";
-		
-		boolean zoom_enabled = extras.getBoolean(SETTINGS_PREFIX + "zoom_enabled");
-		//boolean scroll_enabled = extras.getBoolean(SETTINGS_PREFIX + "scroll_enabled");
-		//boolean shows_user_location = extras.getBoolean(SETTINGS_PREFIX + "shows_user_location");
-		
-		// Extract annotations
-		int size = extras.getInt(ANNOTATIONS_PREFIX + "size") + 1;
-		annotations = new Vector<Annotation>(size);
-		for (int i = 0; i < size; ++i) {
-			Annotation ann = new Annotation();
-			String prefix = ANNOTATIONS_PREFIX + Integer.toString(i) + ".";
-			
-			ann.latitude = 10000;
-			ann.longitude = 10000;
-			
-			String lat = extras.getString(prefix + "latitude");
-			if (lat != null) {
-				try {
-					ann.latitude = Double.parseDouble(lat);
-				}
-				catch (NumberFormatException e) {}
-			}
-			
-			String lon = extras.getString(prefix + "longitude");
-			if (lon != null) {
-				try {
-					ann.longitude = Double.parseDouble(lon);
-				}
-				catch (NumberFormatException e) {}
-			}
-			
-			ann.type = "ann";
-			ann.address = extras.getString(prefix + "address");
-			ann.title = extras.getString(prefix + "title");
-			ann.subtitle = extras.getString(prefix + "subtitle");
-			ann.url = extras.getString(prefix + "url");
-			if (ann.url != null)
-				ann.url = RhodesInstance.getInstance().normalizeUrl(ann.url);
-			annotations.addElement(ann);
-		}
-		
-		// Create view
-		view = new com.google.android.maps.MapView(this, apiKey);
-		view.setClickable(true);
-		layout.addView(view);
-		
-		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
-		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
-		annOverlay = new AnnotationsOverlay(this, marker);
-		view.getOverlays().add(annOverlay);
-		
-		// Apply extracted parameters
-		view.setBuiltInZoomControls(zoom_enabled);
-		view.setSatellite(map_type.equals("hybrid") || map_type.equals("satellite"));
-		view.setTraffic(false);
-		view.setStreetView(false);
-		
-		MapController controller = view.getController();
-		String type = extras.getString(SETTINGS_PREFIX + "region");
-		if (type.equals("square")) {
-			String latitude = extras.getString(SETTINGS_PREFIX + "region.latitude");
-			String longitude = extras.getString(SETTINGS_PREFIX + "region.longitude");
-			if (latitude != null && longitude != null) {
-				try {
-					double lat = Double.parseDouble(latitude);
-					double lon = Double.parseDouble(longitude);
-					controller.setCenter(new GeoPoint((int)(lat*1000000), (int)(lon*1000000)));
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, "Wrong region center: " + e.getMessage());
-				}
-			}
-			
-			String latSpan = extras.getString(SETTINGS_PREFIX + "region.latSpan");
-			String lonSpan = extras.getString(SETTINGS_PREFIX + "region.lonSpan");
-			if (latSpan != null && lonSpan != null) {
-				try {
-					double lat = Double.parseDouble(latSpan);
-					double lon = Double.parseDouble(lonSpan);
-					controller.zoomToSpan((int)(lat*1000000), (int)(lon*1000000));
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, "Wrong region span: " + e.getMessage());
-				}
-			}
-		}
-		else if (type.equals("circle")) {
-			String center = extras.getString(SETTINGS_PREFIX + "region.center");
-			String radius = extras.getString(SETTINGS_PREFIX + "region.radius");
-			if (center != null && radius != null) {
-				try {
-					double span = Double.parseDouble(radius);
-					spanLat = spanLon = span;
-					Annotation ann = new Annotation();
-					ann.type = "center";
-					ann.latitude = ann.longitude = 10000;
-					ann.address = center;
-					annotations.insertElementAt(ann, 0);
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, "Wrong region radius: " + e.getMessage());
-				}
-			}
-		}
-		
-		view.preLoad();
-		
-		Thread geocoding = new Thread(new Runnable() {
-			public void run() {
-				doGeocoding();
-			}
-		});
-		geocoding.start();
-	}
-	
-	private void doGeocoding() {
-		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
-			Annotation ann = annotations.elementAt(i);
-			if (ann.latitude == 10000 || ann.longitude == 10000)
-				continue;
-			annOverlay.addAnnotation(ann);
-		}
-		
-		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
-			Annotation ann = annotations.elementAt(i);
-			if (ann.latitude != 10000 && ann.longitude != 10000)
-				continue;
-			if (ann.address == null)
-				continue;
-			
-			Geocoder gc = new Geocoder(RhodesInstance.getInstance());
-			try {
-				List<Address> addrs = gc.getFromLocationName(ann.address, 1);
-				if (addrs.size() == 0)
-					continue;
-				
-				Address addr = addrs.get(0);
-				
-				ann.latitude = addr.getLatitude();
-				ann.longitude = addr.getLongitude();
-				if (ann.type.equals("center")) {
-					MapController controller = view.getController();
-					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
-					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
-				}
-				else
-					annOverlay.addAnnotation(ann);
-			} catch (IOException e) {
-				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
-			}
-			
+	public static void close() {
+		try {
 			Rhodes.performOnUiThread(new Runnable() {
 				public void run() {
-					view.invalidate();
+					if (mc != null) {
+						mc.finish();
+						mc = null;
+					}
 				}
 			}, false);
 		}
-	}
-
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
+		catch (Exception e) {
+			reportFail("close", e);
+		}
 	}
 	
+	public static boolean isStarted() {
+		return mc != null;
+	}
+	
+	public static double getCenterLatitude() {
+		try {
+			if (mc == null)
+				return 0;
+			return mc.center.latitude;
+		}
+		catch (Exception e) {
+			reportFail("getCenterLatitude", e);
+			return 0;
+		}
+	}
+	
+	public static double getCenterLongitude() {
+		try {
+			if (mc == null)
+				return 0;
+			return mc.center.longitude;
+		}
+		catch (Exception e) {
+			reportFail("getCenterLongitude", e);
+			return 0;
+		}
+	}
 }
