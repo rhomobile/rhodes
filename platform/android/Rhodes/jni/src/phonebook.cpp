@@ -49,7 +49,7 @@ static VALUE createHashFromContact(jobject contactObj)
     jmethodID getValueMID = getJNIClassMethod(env, fieldCls, "getValue", "()Ljava/lang/String;");
     if (!getValueMID) return Qnil;
 
-    CHoldRubyValue contactHash(createHash());
+    CHoldRubyValue contactHash(rho_ruby_createHash());
     // contact.moveToBegin();
     env->CallVoidMethod(contactObj, contactMoveToBeginMID);
 
@@ -99,7 +99,7 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
     // pb.moveToBegin();
     env->CallVoidMethod(phonebookObj, phonebookMoveToBeginMID);
 
-    CHoldRubyValue hash(createHash());
+    CHoldRubyValue hash(rho_ruby_createHash());
     // while(pb.hasNext())
     while(env->CallBooleanMethod(phonebookObj, hasNextMID))
     {

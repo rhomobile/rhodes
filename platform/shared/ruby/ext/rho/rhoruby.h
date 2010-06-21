@@ -40,7 +40,7 @@ void rho_ruby_loadserversources(const char* szData);
 void rho_ruby_start_threadidle();
 void rho_ruby_stop_threadidle();
 
-VALUE createHash();
+VALUE rho_ruby_createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
 VALUE addIntToHash(VALUE hash, const char* key, int val);	
 VALUE addStrToHash(VALUE hash, const char* key, const char* val);
