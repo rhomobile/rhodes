@@ -12,6 +12,7 @@ import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
+import com.xruby.runtime.lang.RubyModule;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
 import com.xruby.runtime.lang.RubyOneArgMethod;
@@ -56,7 +57,7 @@ public class MapView extends RubyBasic {
 		UiApplication.getUiApplication().invokeLater(new CallMapViewScreen(provider, settings, annotations));
 	}
 
-	public static void initMethods(RubyClass klass) {
+	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("create", new RubyOneArgMethod() {
 
 			protected RubyValue run(RubyValue receiver, RubyValue arg,
