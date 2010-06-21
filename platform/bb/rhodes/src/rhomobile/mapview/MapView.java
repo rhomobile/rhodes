@@ -65,7 +65,7 @@ public class MapView extends RubyBasic {
 		}
 		
 		public boolean closed() {
-			return screen != null;
+			return screen == null;
 		}
 		
 		public double getCenterLatitude() {

@@ -1,7 +1,7 @@
 module MapView
   def self.state
     state = nil
-    unless MapView.state_started
+    if MapView.state_started
       state = {}
       state[:center] = {}
       state[:center][:latitude] = MapView.state_center_lat
