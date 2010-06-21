@@ -38,5 +38,8 @@ public interface RhoMapField {
 	public int getContentTop();
 	public int getContentWidth();
 	public int getContentHeight();
+	
+	public double getCenterLatitude();
+	public double getCenterLongitude();
 
 }

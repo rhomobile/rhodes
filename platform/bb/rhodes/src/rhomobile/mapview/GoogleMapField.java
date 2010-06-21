@@ -1098,4 +1098,12 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return 0.5*math_ln((1 + a)/(1 - a));
 	}
 
+	public double getCenterLatitude() {
+		return pixelsToDegreesY(latitude, MAX_ZOOM);
+	}
+
+	public double getCenterLongitude() {
+		return pixelsToDegreesX(longitude, MAX_ZOOM);
+	}
+
 }

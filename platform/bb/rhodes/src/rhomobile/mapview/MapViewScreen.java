@@ -32,6 +32,7 @@ public class MapViewScreen extends MainScreen {
 		new GoogleMapProvider()
 	};
 	
+	private MapViewParent parent;
 	private MapProvider mapProvider;
 	private RhoMapField mapField;
 	
@@ -69,10 +70,11 @@ public class MapViewScreen extends MainScreen {
 		}
 	};
 	
-	MapViewScreen(String providerName, Hashtable settings, Vector annotations) {
+	MapViewScreen(MapViewParent p, String providerName, Hashtable settings, Vector annotations) {
 		super(DEFAULT_MENU | DEFAULT_CLOSE);
 		addMenuItem(new PanModeMenuItem(this, 0, 100));
 		addMenuItem(new ZoomModeMenuItem(this, 1, 100));
+		parent = p;
 		createMapProvider(providerName);
 		createUI(settings, annotations);
 	}
@@ -80,6 +82,7 @@ public class MapViewScreen extends MainScreen {
 	public void close() {
 		mapField.close();
 		super.close();
+		parent.childClosed();
 	}
 	
 	private void setMode(int m) {
@@ -290,5 +293,13 @@ public class MapViewScreen extends MainScreen {
 		
 		invalidate();
 		return true;
+	}
+	
+	public double getCenterLatitude() {
+		return mapField.getCenterLatitude();
+	}
+	
+	public double getCenterLongitude() {
+		return mapField.getCenterLongitude();
 	}
 }
