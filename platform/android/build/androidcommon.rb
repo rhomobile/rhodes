@@ -186,7 +186,11 @@ def cc_build(name, objdir, additional = nil)
   jobs = num_cpus
   jobs += 1 if jobs > 1
 
-  srcs = Array.new(jobs, [])
+  srcs = []
+  for i in (0..jobs-1)
+    srcs[i] = []
+  end
+
   sources = get_sources(name)
   sources.each do |src|
     idx = sources.index(src)%jobs
