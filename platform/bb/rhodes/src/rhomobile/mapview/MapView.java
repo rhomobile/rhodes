@@ -4,59 +4,96 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import net.rim.device.api.ui.UiApplication;
-import rhomobile.datetime.DateTimeScreen;
 
+import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
-import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
 import com.xruby.runtime.lang.RubyModule;
 import com.xruby.runtime.lang.RubyConstant;
 import com.xruby.runtime.lang.RubyException;
+import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyOneArgMethod;
 import com.xruby.runtime.lang.RubyRuntime;
-import com.xruby.runtime.lang.RubySymbol;
-import com.xruby.runtime.lang.RubyTwoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
-import com.xruby.runtime.lang.RubyVarArgMethod;
 
 public class MapView extends RubyBasic {
 
-	public MapView(RubyClass c) {
-		super(c);
-	}
-	
-	private static class CallMapViewScreen implements Runnable {
-
-		private String _provider;
-		private Hashtable _settings;
-		private Vector _annotations;
+	private static class Parent implements MapViewParent {
 		
 		private static MapViewScreen screen = null;
 		
-		public CallMapViewScreen(String provider, Hashtable settings, Vector annotations) {
-			_provider = provider;
-			_settings = settings;
-			_annotations = annotations;
-		}
+		private static class CallMapViewScreen implements Runnable {
+			
+			private Parent thiz;
+			private String provider;
+			private Hashtable settings;
+			private Vector annotations;
+			
+			public CallMapViewScreen(Parent t, String p, Hashtable s, Vector a) {
+				thiz = t;
+				provider = p;
+				settings = s;
+				annotations = a;
+			}
+			
+			public void run() {
+				if (screen != null)
+					return;
+				//Initialize the screen.
+				screen = new MapViewScreen(thiz, provider, settings, annotations);
+				UiApplication.getUiApplication().pushModalScreen(screen);
+			}
+		};
 
-		public void run() {
-			if (screen != null)
-				return;
-			//Initialize the screen.
-			screen = new MapViewScreen(_provider, _settings, _annotations);
-	        UiApplication.getUiApplication().pushModalScreen(screen);
-	        screen = null;
+		public void create(String provider, Hashtable settings, Vector annotations) {
+			UiApplication.getUiApplication().invokeLater(
+					new CallMapViewScreen(this, provider, settings, annotations));
+		}
+		
+		public void close() {
+			UiApplication.getUiApplication().invokeLater(new Runnable() {
+				public void run() {
+					if (screen == null)
+						return;
+					screen.close();
+					screen = null;
+				}
+			});
+		}
+		
+		public boolean closed() {
+			return screen != null;
+		}
+		
+		public double getCenterLatitude() {
+			if (screen == null)
+				return 0.0;
+			return screen.getCenterLatitude();
+		}
+		
+		public double getCenterLongitude() {
+			if (screen == null)
+				return 0.0;
+			return screen.getCenterLongitude();
+		}
+		
+		public void childClosed() {
+			if (screen != null) {
+				screen = null;
+			}
 		}
 		
 	};
 	
-	private static void show(String provider, Hashtable settings, Vector annotations) {
-		UiApplication.getUiApplication().invokeLater(new CallMapViewScreen(provider, settings, annotations));
+	private static Parent parent = new Parent();
+	
+	public MapView(RubyClass c) {
+		super(c);
 	}
-
+	
 	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("create", new RubyOneArgMethod() {
 
@@ -237,9 +274,42 @@ public class MapView extends RubyBasic {
 					}
 				}
 				
-				MapView.show("google", settings, annotations);
+				parent.create("google", settings, annotations);
 				
 				return RubyConstant.QNIL;
+			}
+			
+		});
+		
+		klass.getSingletonClass().defineMethod("close", new RubyNoArgMethod() {
+
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				parent.close();
+				return RubyConstant.QNIL;
+			}
+			
+		});
+		
+		klass.getSingletonClass().defineMethod("state_started", new RubyNoArgMethod() {
+
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return parent.closed() ? RubyConstant.QFALSE : RubyConstant.QTRUE;
+			}
+			
+		});
+		
+		klass.getSingletonClass().defineMethod("state_center_lat", new RubyNoArgMethod() {
+
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return ObjectFactory.createFloat(parent.getCenterLatitude());
+			}
+			
+		});
+		
+		klass.getSingletonClass().defineMethod("state_center_lon", new RubyNoArgMethod() {
+
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				return ObjectFactory.createFloat(parent.getCenterLongitude());
 			}
 			
 		});
