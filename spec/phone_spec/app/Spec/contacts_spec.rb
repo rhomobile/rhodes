@@ -53,8 +53,12 @@ class ContactsTest
     contact = Rho::RhoContact.find(@id)
     Test_not_equal( contact, nil )
 
-    Test_equal( contact['first_name'], 'RANDOM' )
-    Test_equal( contact['last_name'], 'NEWBIE' )
+    unless System.get_property('platform') == 'Blackberry'
+    #https://www.pivotaltracker.com/story/show/3983643
+        Test_equal( contact['first_name'], 'RANDOM' )
+        Test_equal( contact['last_name'], 'NEWBIE' )
+    end
+    
   end
 
   def remove_test
