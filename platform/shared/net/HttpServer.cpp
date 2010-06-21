@@ -238,7 +238,7 @@ static VALUE create_request_hash(String const &application, String const &model,
                                  String const &method, String const &uri, String const &query,
                                  HttpHeaderList const &headers, String const &body)
 {
-    CHoldRubyValue hash(createHash());
+    CHoldRubyValue hash(rho_ruby_createHash());
 
     addStrToHash(hash, "application", application.c_str());
 	addStrToHash(hash, "model", model.c_str());
@@ -251,7 +251,7 @@ static VALUE create_request_hash(String const &application, String const &model,
 	addStrToHash(hash, "request-uri", uri.c_str());
     addStrToHash(hash, "request-query", query.c_str());
 	
-    CHoldRubyValue hash_headers(createHash());
+    CHoldRubyValue hash_headers(rho_ruby_createHash());
     for (HttpHeaderList::const_iterator it = headers.begin(), lim = headers.end(); it != lim; ++it)
         addStrToHash(hash_headers, it->name.c_str(), it->value.c_str());
 	addHashToHash(hash,"headers",hash_headers);
