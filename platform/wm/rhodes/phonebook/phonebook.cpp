@@ -42,8 +42,8 @@ void _addRecordValue(const char* key, const char* value, void* hash) {
 #if defined (_WIN32_WCE)
 static VALUE _getRecord(CABRecord* record) {
 	if (record) {
-		VALUE hash = createHash();
-		record->enumValues(_addRecordValue,&hash);
+        CHoldRubyValue hash(rho_ruby_createHash());
+		record->enumValues(_addRecordValue,&(hash.m_value));
 		return hash;
 	}
 	return rho_ruby_get_NIL();
@@ -54,7 +54,7 @@ VALUE getallPhonebookRecords(void* pb) {
 #if defined (_WIN32_WCE)
 	if (pb) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
-		VALUE hash = createHash();
+        CHoldRubyValue hash(rho_ruby_createHash());
 		
 		std::vector<CABRecord*> records;
 		phonebook->getAllRecords(records);
