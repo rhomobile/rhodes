@@ -102,7 +102,7 @@ module JSON
           @space_before   = ''
           @object_nl      = ''
           @array_nl       = ''
-          @check_circular = true
+          @check_circular = false #true
           @allow_nan      = false
           configure opts
         end

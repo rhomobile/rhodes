@@ -101,7 +101,7 @@ public class RubyRuntime {
     public static RubyClass TCPSocketClass;
     public static RubyClass SSLSocketClass;
     public static RubyClass TopSelfClass;
-    public static RubyClass MapViewClass;
+    public static RubyModule MapViewClass;
     public static RubyClass XMLParserClass;
     //RHO
 
@@ -276,7 +276,7 @@ public class RubyRuntime {
         MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
         TCPSocketClass = RubyAPI.defineClass("TCPSocket", RubyRuntime.ObjectClass);
         SSLSocketClass = RubyAPI.defineClass("SSLSocket", RubyRuntime.ObjectClass);
-        MapViewClass = RubyAPI.defineClass("MapView", RubyRuntime.ObjectClass);
+        MapViewClass = RubyAPI.defineModule("MapView" );//, RubyRuntime.ObjectClass);
         RubyMutex.initMethods(MutexClass);
 
         RubyModule rexmlModule = RubyAPI.defineModule("REXML"); 

@@ -179,6 +179,8 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
 {
   struct json_object *obj = NULL;
   char c;
+  int bRoot = 0;
+  VALUE root_item = 0;
 
   tok->char_offset = 0;
   tok->err = json_tokener_success;
@@ -215,12 +217,26 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
       case '{':
 	state = json_tokener_state_eatws;
 	saved_state = json_tokener_state_object_field_start;
+    bRoot = current == 0 && tok->depth == 0;
 	current = rjson_object_new_object();
+    if (bRoot)
+    {
+        root_item = (VALUE)current;
+        rho_ruby_holdValue(root_item);
+    }
+
 	break;
       case '[':
 	state = json_tokener_state_eatws;
 	saved_state = json_tokener_state_array;
+    bRoot = current == 0 && tok->depth == 0;
 	current = rjson_object_new_array();
+    if (bRoot)
+    {
+        root_item = (VALUE)current;
+        rho_ruby_holdValue(root_item);
+    }
+
 	break;
       case 'N':
       case 'n':
@@ -558,6 +574,10 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
     tok->err = json_tokener_error_parse_eof;
 
  out:
+
+  if (root_item);
+    rho_ruby_releaseValue((VALUE)root_item);
+
   if(tok->err == json_tokener_success) 
       return rjson_object_get(current);
 
