@@ -233,7 +233,7 @@ VALUE convertJavaMapToRubyHash(jobject objMap)
     jobject objIterator = env->CallObjectMethod(objSet, midIterator);
     if (!objIterator) return Qnil;
                                   
-    CHoldRubyValue retval(createHash());
+    CHoldRubyValue retval(rho_ruby_createHash());
     while(env->CallBooleanMethod(objIterator, midHasNext))
     {
         jstring objKey = (jstring)env->CallObjectMethod(objIterator, midNext);

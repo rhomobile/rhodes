@@ -100,7 +100,7 @@ VALUE rho_ringtone_manager_get_all()
 {
     LOG(INFO) + __FUNCTION__;
     
-    CHoldRubyValue retval(createHash());
+    CHoldRubyValue retval(rho_ruby_createHash());
 
 #if defined(_WIN32_WCE)
 

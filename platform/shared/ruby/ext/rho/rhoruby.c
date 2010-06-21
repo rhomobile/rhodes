@@ -333,7 +333,7 @@ void rho_ruby_set_const(const char* szName, const char* szVal)
     rb_const_set(rb_cObject, rb_intern(szName), rb_str_new2(szVal) );
 }
 
-VALUE createHash() {
+VALUE rho_ruby_createHash() {
     return rb_hash_new();
 }
 
