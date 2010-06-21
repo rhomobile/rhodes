@@ -451,8 +451,32 @@ extern "C" void nativebar_switch_tab(int index) {
 	//TODO: Implement me!
 }
 
+extern "C" VALUE nativebar_started() {
+    // TODO:
+    return rho_ruby_create_boolean(0);
+}
+
 extern "C" void mapview_create(rho_param *p) {
     //TODO: mapview_create
+}
+
+extern "C" void mapview_close() {
+    //TODO: mapview_close
+}
+
+extern "C" VALUE mapview_state_started() {
+    //TODO: mapview_state_started
+    return 0;
+}
+
+extern "C" double mapview_state_center_lat() {
+    //TODO:
+    return 0;
+}
+
+extern "C" double mapview_state_center_lon() {
+    //TODO:
+    return 0;
 }
 
 extern "C" void rho_map_location(char* query)
