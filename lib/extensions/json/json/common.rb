@@ -221,7 +221,7 @@ module JSON
       :space      => ' ',
       :object_nl  => "\n",
       :array_nl   => "\n",
-      :check_circular => true
+      :check_circular => false #true
     )
     if opts
       if opts.respond_to? :to_hash
