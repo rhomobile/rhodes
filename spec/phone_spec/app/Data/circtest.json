@@ -1,0 +1,130 @@
+{"ObjectUrl":"http://192.168.1.104:3000/mapi/trips/83.xml","Name":"My New Trip","NodeName":"Trip","NodeChildren":
+[{"NodeName":"MostRelevantItem","ItemId":"278","Index":"6"},
+{"NodeName":"Messages","NodeChildren":
+[{"NodeName":"Message","NodeChildren":[{"Text":"TripCase wants to be the greatest travel app out there. Click to tell us your feedback.","NodeName":"Body"}],"EventName":"solicit_feedback","StartTime":"2010-10-19T06:01:00"},
+{"IconUrl":"http://icons.iconator.com/401/ICONATOR_04002c9632f296651ed381909ed307e4.gif","Url":"http://www.chucknorrisfacts.com","NodeName":"Message","NodeChildren":[{"NodeName":"Item","id":"269","Type":"Generic"},{"Text":"Flight delayed? Pass the time with Chuck Norris!","NodeName":"Body"}],"EventName":"chuck_norris","StartTime":"2010-06-07T23:48:45","EventAction":"GotoUrl"},
+{"NodeName":"Message","NodeChildren":
+[{"NodeName":"Item","id":"269","Type":"Generic"},
+{"Text":"generic","NodeName":"Body"}],"EventName":"generic","StartTime":"2010-06-07T23:48:45"},
+{"NodeName":"Message","NodeChildren":[{"Text":"TripCase wants to be the greatest travel app out there. Click to tell us your feedback.","NodeName":"Body"}],"EventName":"solicit_feedback","StartTime":"2010-06-07T23:48:45","EndTime":"2010-10-19T06:00:00"}],"Type":"Array"},
+{"NodeName":"Items","NodeChildren":
+[{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-06-07T18:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-06-07T23:00:00"},
+{"TzOffset":"-18000","Time":"2010-06-08T18:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-06-08T23:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-06-07T18:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-06-08T18:00:00","NodeName":"EndDate"},
+{"NodeContent":"13","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"My
+Att","NodeName":"Name"},{"IATACode":"DAL","NodeName":"ClosestAirport"},
+{"City":"Dallas","NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","NodeChildren":[{"Text":"Dallas,TX","NodeName":"Line","Part":"city"}],"Type":"Array"}],"CountryCode":"US","GeneralLocation":"Dallas,TX","StateCode":"TX"},
+{"Longitude":"-96.800003","NodeName":"GeoCode","Latitude":"32.783298"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"3232323232","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"attraction"},
+{"NodeContent":"test","NodeName":"Note"}],"id":"269","Type":"Generic"},
+{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-06-07T19:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-06-08T00:00:00"},
+{"TzOffset":"-18000","Time":"2010-06-08T19:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-06-09T00:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-06-07T19:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-06-08T19:00:00","NodeName":"EndDate"},
+{"NodeContent":"11111","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"My Rail 2","NodeName":"Name"},{"IATACode":"DAL","NodeName":"ClosestAirport"},
+{"City":"Dallas","NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","NodeChildren":[{"Text":"Dallas,TX","NodeName":"Line","Part":"city"}],"Type":"Array"}],"CountryCode":"US","GeneralLocation":"Dallas,TX","StateCode":"TX"},
+{"Longitude":"-96.800003","NodeName":"GeoCode","Latitude":"32.783298"}]},
+{"NodeName":"DestLocation","NodeChildren":
+[{"IATACode":"MMR","NodeName":"ClosestAirport"},
+{"City":"Austin","NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","NodeChildren":[{"Text":"Austin,TX","NodeName":"Line","Part":"city"}],"Type":"Array"}],"CountryCode":"US","GeneralLocation":"Austin,TX","StateCode":"TX"},
+{"Longitude":"-97.742798","NodeName":"GeoCode","Latitude":"30.266899"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"222222","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"rail"},
+{"NodeContent":"test note","NodeName":"Note"}],"id":"273","Type":"Generic"},
+{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-06-07T19:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-06-08T00:00:00"},
+{"TzOffset":"-18000","Time":"2010-06-08T19:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-06-09T00:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-06-07T19:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-06-08T19:00:00","NodeName":"EndDate"},
+{"NodeContent":"11111","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"My Lodging","NodeName":"Name"},
+{"IATACode":"MDA","NodeName":"ClosestAirport"},{"City":"San Antonio","NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","NodeChildren":[{"Text":"San Antonio, TX","NodeName":"Line","Part":"city"}],"Type":"Array"}],"CountryCode":"US","GeneralLocation":"San Antonio, TX","StateCode":"TX"},
+{"Longitude":"-98.493301","NodeName":"GeoCode","Latitude":"29.423901"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"333333","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"lodging"},
+{"NodeContent":"note","NodeName":"Note"}],"id":"276","Type":"Generic"},
+{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-06-07T21:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-06-08T02:00:00"},
+{"TzOffset":"-18000","Time":"2010-06-08T21:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-06-09T02:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-06-07T21:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-06-08T21:00:00","NodeName":"EndDate"},
+{"NodeContent":"234","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"my fairy","NodeName":"Name"},
+{"IATACode":"HLC","NodeName":"ClosestAirport"},
+{"NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","Type":"Array"}],"CountryCode":"US"},
+{"Longitude":"-99.141968","NodeName":"GeoCode","Latitude":"39.527596"}]},
+{"NodeName":"DestLocation","NodeChildren":
+[{"IATACode":"HLC","NodeName":"ClosestAirport"},
+{"NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","Type":"Array"}],"CountryCode":"US"},
+{"Longitude":"-99.141968","NodeName":"GeoCode","Latitude":"39.527596"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"423","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"ferry"},
+{"NodeContent":"423","NodeName":"Note"}],"id":"281","Type":"Generic"},
+{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-06-07T21:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-06-08T02:00:00"},
+{"TzOffset":"-18000","Time":"2010-06-08T21:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-06-09T02:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-06-07T21:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-06-08T21:00:00","NodeName":"EndDate"},
+{"NodeContent":"fsad","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"my cool lodging","NodeName":"Name"}, {"IATACode":"HLC","NodeName":"ClosestAirport"},
+{"NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","Type":"Array"}],"CountryCode":"US"},
+{"Longitude":"-99.141968","NodeName":"GeoCode","Latitude":"39.527596"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"fasd","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"lodging"},
+{"NodeContent":"fsda","NodeName":"Note"}],"id":"284","Type":"Generic"},
+{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-07-21T01:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-07-21T06:00:00"},
+{"TzOffset":"-18000","Time":"2010-08-26T03:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-08-26T08:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-07-21T01:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-08-26T03:00:00","NodeName":"EndDate"},
+{"NodeContent":"43432","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"My Bar","NodeName":"Name"},{"IATACode":"BBD","NodeName":"ClosestAirport"},
+{"NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","Type":"Array"}],"CountryCode":"US","StateCode":"TX"},
+{"Longitude":"-99.346703","NodeName":"GeoCode","Latitude":"31.19688"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"432423","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"food_drink"},
+{"NodeContent":"test","NodeName":"Note"}],"id":"277","Type":"Generic"},
+{"ReadOnly":"false","NumFollowing":"0","NodeName":"Item","NodeChildren":
+[{"TzOffset":"-18000","Time":"2010-10-19T01:00:00","NodeName":"StartTime","TzName":"America/Chicago","UtcTime":"2010-10-19T06:00:00"},
+{"TzOffset":"-18000","Time":"2010-10-30T13:00:00","NodeName":"EndTime","TzName":"America/Chicago","UtcTime":"2010-10-30T18:00:00"},
+{"NodeName":"GenericReservation","NodeChildren":
+[{"NodeContent":"2010-10-19T01:00:00","NodeName":"StartDate"},
+{"NodeContent":"2010-10-30T13:00:00","NodeName":"EndDate"},
+{"NodeContent":"fsd","NodeName":"ConfirmationNumber"},
+{"NodeName":"OrigLocation","NodeChildren":[{"NodeContent":"my cruise","NodeName":"Name"},
+{"IATACode":"DAL","NodeName":"ClosestAirport"},
+{"City":"Dallas","NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","NodeChildren":[{"Text":"Dallas, TX","NodeName":"Line","Part":"city"}],"Type":"Array"}],"CountryCode":"US","GeneralLocation":"Dallas,TX","StateCode":"TX"},
+{"Longitude":"-96.800003","NodeName":"GeoCode","Latitude":"32.783298"}]},
+{"NodeName":"DestLocation","NodeChildren":
+[{"IATACode":"MMR","NodeName":"ClosestAirport"},
+{"City":"Austin","NodeName":"Address","NodeChildren":
+[{"NodeName":"LabelLines","NodeChildren":[{"Text":"Austin, TX","NodeName":"Line","Part":"city"}],"Type":"Array"}],"CountryCode":"US","GeneralLocation":"Austin,TX","StateCode":"TX"},
+{"Longitude":"-97.742798","NodeName":"GeoCode","Latitude":"30.266899"}]},
+{"NodeName":"Phones","NodeChildren":
+[{"Number":"342432","NodeName":"Phone","Type":"Voice"}],"Type":"Array"}],"Type":"cruise"},
+{"NodeContent":"fsfasd","NodeName":"Note"}],"id":"278","Type":"Generic"}],"Type":"Array"},
+{"NodeContent":"0","NodeName":"UnreadReplies"},
+{"NodeName":"SocialClients","NodeChildren":
+[{"Enabled":"false","Name":"Facebook","NodeName":"Client","Authorized":"false"},
+{"Enabled":"false","Name":"Twitter","NodeName":"Client","Authorized":"false"}],"Type":"Array"}],"id":"83","CreatedAt":"2010-06-07T23:48:45","StartTime":"2010-06-07T18:00:00","UserId":"7","EndTime":"2010-10-30T13:00:00"}

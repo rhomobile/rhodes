@@ -7,7 +7,7 @@ class NativeBarTest
     sleep 2
     Test_equal( NativeBar.started, false )
 
-    NativeBar.create Rho::RhoApplication::TOOLBAR_TYPE, [:action => :back]
+    NativeBar.create Rho::RhoApplication::TOOLBAR_TYPE, [{:action => :back}]
     sleep 2
     Test_equal( NativeBar.started, true )
 
