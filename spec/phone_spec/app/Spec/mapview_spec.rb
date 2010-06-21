@@ -14,7 +14,9 @@ class MapViewTest
     state = MapView.state
     Test_not_equal( state, nil )
     Test_equal( state.is_a?(Hash), true )
-    Test_equal( state[:center], {:latitude => 37.0, :longitude => -122.0} )
+    delta = 0.001
+    Test_equal( (state[:center][:latitude] - 37.0).abs < delta, true )
+    Test_equal( (state[:center][:longitude] - (-122.0)).abs < delta, true )
 
     MapView.close
     sleep 2
