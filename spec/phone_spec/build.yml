@@ -16,5 +16,6 @@ android:
   version: 1.6
   capabilities:
     - network_state
+    - pim
    
 extensions: ["json", "rhoxml"]
