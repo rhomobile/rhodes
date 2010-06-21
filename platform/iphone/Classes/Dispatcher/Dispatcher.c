@@ -97,7 +97,8 @@ static VALUE
 _CreateRequestHash(HttpContextRef context, RouteRef route) {
 	RAWTRACE("Creating Req Hash");
 	
-	VALUE hash = createHash();
+	VALUE hash = rho_ruby_createHash();
+    rho_ruby_holdValue(hash);
 
 	const char* applicationName = route->_application;
 	addStrToHash(hash, "application", applicationName, strlen(applicationName));
@@ -124,7 +125,9 @@ _CreateRequestHash(HttpContextRef context, RouteRef route) {
 	const char* query = context->_request->_query == NULL ? "" : context->_request->_query;
 	addStrToHash(hash, "request-query", query, strlen(query));
 	
-	VALUE hash_headers = createHash();
+	VALUE hash_headers = rho_ruby_createHash();
+    rho_ruby_holdValue(hash_headers);
+
 	struct parsed_header* h = &context->_request->_cheaders.cl;
 	for (int i = 0; i < sizeof(struct headers)/sizeof(struct parsed_header); i++) {
 		if (h->_name) {
@@ -141,13 +144,15 @@ _CreateRequestHash(HttpContextRef context, RouteRef route) {
 		h++;
 	}
 	addHashToHash(hash,"headers",hash_headers);
-	
+    rho_ruby_releaseValue(hash_headers);
+
 	int buflen = CFDataGetLength(context->_rcvdBytes);
 	if (buflen > 0) {
 		addStrToHash(hash, "request-body", 
 					 (char*)CFDataGetBytePtr(context->_rcvdBytes), buflen);
 	}
-	
+
+    rho_ruby_releaseValue(hash);
 	return hash;
 }
 
