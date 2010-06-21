@@ -199,7 +199,8 @@ static void _addDatesToHash(VALUE hash,ABRecordRef ref) {
 static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	char buf[256];
 
-	VALUE hash = createHash();
+	VALUE hash = rho_ruby_createHash();
+	rho_ruby_holdValue(hash);
 	
 	ABRecordID recordId = ABRecordGetRecordID(ref);
 	if (precordId) {
@@ -300,6 +301,7 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	
 	_addDatesToHash(hash, ref);
 	
+	rho_ruby_releaseValue(hash);
 	return hash;
 }
 
@@ -315,6 +317,7 @@ VALUE getallPhonebookRecords(void* pb) {
 	if (pb) {
 		LocalPhonebook* phonebook = pb;
 		VALUE hash = createHash();
+		rho_ruby_holdValue(hash);
 		ABRecordID recordId;
 		VALUE record; char buf[128];
 		
@@ -324,7 +327,8 @@ VALUE getallPhonebookRecords(void* pb) {
 			snprintf(buf, sizeof(buf), "{%d}", recordId);
 			addHashToHash(hash, buf, record);
 		}
-		
+
+        rho_ruby_releaseValue(hash);		
 		return hash; 
 	}
 	return rho_ruby_get_NIL();	
