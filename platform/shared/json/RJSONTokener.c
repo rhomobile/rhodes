@@ -118,7 +118,7 @@ VALUE rjson_tokener_parse(const char *str, char** pszError)
 
 struct json_object* rjson_object_new_object()
 {
-    return (struct json_object*)createHash();
+    return (struct json_object*)rho_ruby_createHash();
 }
 
 struct json_object* rjson_object_new_array()
