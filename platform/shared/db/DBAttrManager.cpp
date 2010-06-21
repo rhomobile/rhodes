@@ -94,7 +94,7 @@ unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
 {
     synchronized(m_mxSrcAttrs)
     {
-        VALUE arRes = rho_ruby_create_array();
+        CHoldRubyValue arRes(rho_ruby_create_array());
 
         Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
         if ( pmapAttr != null )

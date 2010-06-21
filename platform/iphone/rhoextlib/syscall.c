@@ -1,6 +1,7 @@
 #include "ruby.h"
 #include "logging/RhoLog.h"
 #include "syscall.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSysCall"
@@ -33,6 +34,7 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 		ret = do_syscall(&params);
 		if (ret!=NULL) {
 			VALUE hash = rb_hash_new();
+            rho_ruby_holdValue(hash);
 			RAWLOG_INFO("Add to return hash:\n");
 			for (i=0;i<ret->_nparams;i++) {
 				RAWLOG_INFO2("%s => %s\n",ret->_names[i],ret->_values[i]);
@@ -45,6 +47,7 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 			if (ret->_values) free(ret->_values);
 			free(ret);			
 			ret_value = hash;
+            rho_ruby_releaseValue(hash);
 		}
 	}
 	
