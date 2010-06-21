@@ -100,6 +100,17 @@ void rho_ruby_unlock_mutex(VALUE val);
 
 #if defined(__cplusplus)
 }
+
+struct CHoldRubyValue
+{
+    VALUE m_value;
+    CHoldRubyValue(VALUE val) : m_value(val){ rho_ruby_holdValue(m_value); }
+    ~CHoldRubyValue(){ rho_ruby_releaseValue(m_value); }
+
+    VALUE getValue(){return m_value;}
+    operator VALUE() {return m_value;}
+};
+
 #endif
 		
 	
