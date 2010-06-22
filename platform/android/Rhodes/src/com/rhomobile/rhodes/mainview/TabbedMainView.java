@@ -189,7 +189,7 @@ public class TabbedMainView implements MainView {
 			TabViewFactory factory = new TabViewFactory(data);
 			spec.setContent(factory);
 			
-			tabs.addElement(data);
+			tabData.addElement(data);
 			host.addTab(spec);
 		}
 	}
