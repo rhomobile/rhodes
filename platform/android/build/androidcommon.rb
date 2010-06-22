@@ -23,6 +23,8 @@ def num_cpus
     num = `sysctl -n hw.ncpu`.gsub("\n", '')
   elsif RUBY_PLATFORM =~ /w(in)?32/
     num = ENV['NUMBER_OF_PROCESSORS']
+  else
+    num = 1
   end
   num = num.to_i
   num = 1 if num == 0
@@ -183,38 +185,47 @@ def cc_compile(filename, objdir, additional = nil)
 end
 
 def cc_build(name, objdir, additional = nil)
-  jobs = num_cpus
-  jobs += 1 if jobs > 1
-
-  srcs = []
-  for i in (0..jobs-1)
-    srcs[i] = []
-  end
-
   sources = get_sources(name)
-  sources.each do |src|
-    idx = sources.index(src)%jobs
-    srcs[idx] << src
-  end
-
-  ths = []
-  srcs.each do |src|
-    ths << Thread.new do
-      success = true
-      src.each do |f|
-        success = cc_compile f, objdir, additional
-        break unless success
-      end
-      success
+  
+  # Ruby 1.8 has problems with Thread.join on Windows
+  if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
+    sources.each do |f|
+      return false unless cc_compile f, objdir, additional
     end
-  end
+    true
+  else
+    jobs = num_cpus
+    jobs += 1 if jobs > 1
 
-  ret = true
-  ths.each do |th|
-    success = th.value
-    ret = success unless success
+    srcs = []
+    for i in (0..jobs-1)
+      srcs[i] = []
+    end
+
+    sources.each do |src|
+      idx = sources.index(src)%jobs
+      srcs[idx] << src
+    end
+
+    ths = []
+    srcs.each do |src|
+      ths << Thread.new do
+        success = true
+        src.each do |f|
+          success = cc_compile f, objdir, additional
+          break unless success
+        end
+        success
+      end
+    end
+
+    ret = true
+    ths.each do |th|
+      success = th.value
+      ret = success unless success
+    end
+    ret
   end
-  ret
 end
 
 def cc_ar(libname, objects)
