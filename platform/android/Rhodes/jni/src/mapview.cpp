@@ -64,7 +64,7 @@ RHO_GLOBAL double mapview_state_center_lat()
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return 0;
-    jmethod mid = getJNIClassStaticMethod(env, cls, "getCenterLatitude", "()D");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLatitude", "()D");
     if (!mid) return 0;
 
     return env->CallStaticDoubleMethod(cls, mid);
@@ -79,7 +79,7 @@ RHO_GLOBAL double mapview_state_center_lon()
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return 0;
-    jmethod mid = getJNIClassStaticMethod(env, cls, "getCenterLongitude", "()D");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLongitude", "()D");
     if (!mid) return 0;
 
     return env->CallStaticDoubleMethod(cls, mid);
