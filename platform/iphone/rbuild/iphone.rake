@@ -367,9 +367,9 @@ namespace "run" do
     puts "************************"
     puts "\n\n"
     puts "Tests completed in #{finish - start} seconds"
-    puts "Total: #{$total}"
-    puts "Passed: #{$passed}"
-    puts "Failed: #{$failed}"
+    puts "Total: #{total}"
+    puts "Passed: #{passed}"
+    puts "Failed: #{failed}"
     puts "\n"
     puts "Failures stored in faillog.txt" if failed.to_i > 0
         
