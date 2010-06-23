@@ -43,6 +43,26 @@ def set_signing_identity(identity,profile,entitlements)
 
 end
 
+def basedir
+  File.join(File.dirname(__FILE__),'..','..','..')
+end
+
+def app_expanded_path(appname)
+  File.expand_path(File.join(basedir,'spec',appname))
+end
+
+def run_spec_app(appname)
+  rhobuildyml = File.join(basedir,'rhobuild.yml')
+  rhobuild = YAML::load_file(rhobuildyml)
+  rhobuild['env']['app'] = app_expanded_path(appname)
+  File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
+  $app_path = File.expand_path(File.join(basedir,'spec',appname))
+  $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
+  $config = Jake.config(File.open(rhobuildyml,'r'))
+  Rake::Task.tasks.each { |t| t.reenable }
+  Rake::Task['run:iphonespec'].invoke
+end
+
 
 namespace "config" do
   task :iphone => ["config:common", "switch_app"] do
@@ -232,11 +252,44 @@ namespace "run" do
      system("open \"#{$sim}/iPhone Simulator.app\"")
 
   end
+  
+  task :allspecs do
+    $dont_exit_on_failure = true
+    Rake::Task['run:phone_spec'].invoke
+    Rake::Task['run:framework_spec'].invoke    
+    failure_output = ""
+    if $failed.to_i > 0
+      failure_output = ""
+      failure_output += "phone_spec failures:\n\n" + File.open(app_expanded_path('phone_spec') + "/faillog.txt").read if
+        File.exist?(app_expanded_path('phone_spec') + "/faillog.txt")
+      failure_output += "framework_spec failures:\n\n" + File.open(app_expanded_path('framework_spec') + "/faillog.txt").read if
+        File.exist?(app_expanded_path('framework_spec') + "/faillog.txt")
+      chdir basedir
+      File.open("faillog.txt", "w") { |io| failure_output.each {|x| io << x }  }
+    end
+    puts "Agg Total: #{$total}"
+    puts "Agg Passed: #{$passed}"
+    puts "Agg Failed: #{$failed}" 
+    exit $failed.to_i
+  end
+  
+  task :phone_spec do
+    run_spec_app('phone_spec')
+  end
+  
+  task :framework_spec do
+    run_spec_app('framework_spec')
+  end
 
   task :iphonespec => ["clean:iphone",:buildsim] do
 
     sdkroot = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
               $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+              
+    old_user_home = ENV["CFFIXED_USER_HOME"]
+    old_dyld_root = ENV["DYLD_ROOT_PATH"]
+    old_dyld_framework = ENV["DYLD_FRAMEWORK_PATH"]
+    old_iphone_simulator = ENV["IPHONE_SIMULATOR_ROOT"]
 
     ENV["CFFIXED_USER_HOME"] = $simrhodes
     ENV["DYLD_ROOT_PATH"] = sdkroot
@@ -302,17 +355,29 @@ namespace "run" do
 
     rm_rf $app_path + "/faillog.txt"
     File.open($app_path + "/faillog.txt", "w") { |io| faillog.each {|x| io << x }  } if failed.to_i > 0
+    
+    $total ||= 0
+    $passed ||= 0
+    $failed ||= 0
+    
+    $total += total.to_i
+    $passed += passed.to_i
+    $failed += failed.to_i
 
     puts "************************"
     puts "\n\n"
     puts "Tests completed in #{finish - start} seconds"
-    puts "Total: #{total}"
-    puts "Passed: #{passed}"
-    puts "Failed: #{failed}"
+    puts "Total: #{$total}"
+    puts "Passed: #{$passed}"
+    puts "Failed: #{$failed}"
     puts "\n"
     puts "Failures stored in faillog.txt" if failed.to_i > 0
-    
-    exit failed.to_i
+        
+    ENV["CFFIXED_USER_HOME"] = old_user_home
+    ENV["DYLD_ROOT_PATH"] = old_dyld_root
+    ENV["DYLD_FRAMEWORK_PATH"] = old_dyld_framework
+    ENV["IPHONE_SIMULATOR_ROOT"] = old_iphone_simulator
+    exit $failed.to_i unless $dont_exit_on_failure
   end
 end
 
