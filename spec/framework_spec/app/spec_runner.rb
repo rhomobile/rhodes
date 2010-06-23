@@ -119,6 +119,7 @@ class SpecRunner < MSpecScript
   def run
 
     MSpec.register_files config[:files]
+    MSpec.backtrace=true
 
     MSpec.process
     MSpec.exit_code
