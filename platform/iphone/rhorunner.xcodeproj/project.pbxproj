@@ -850,8 +850,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -881,8 +881,6 @@
 					"$(EXTENSIONS_LDFLAGS)",
 				);
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -972,8 +970,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lars Burgess";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lars Burgess";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1029,8 +1027,6 @@
 					"$(EXTENSIONS_LDFLAGS)",
 				);
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E302C486-8C38-4E23-B945-196D8B2BA5B9";
 				SDKROOT = iphoneos2.2.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
