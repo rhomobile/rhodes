@@ -27,7 +27,7 @@ describe "SyncEngine_test" do
   
     ::Rhom::Rhom.database_full_reset_and_logout
     
-    SyncEngine.set_syncserver('http://warm-flower-88.heroku.com/application')
+    SyncEngine.set_syncserver('http://rhodes-store-server.heroku.com/application')
     
   end
   
