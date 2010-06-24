@@ -6,7 +6,7 @@
 #include <algorithm>
 
 #if !defined(OS_WINCE)
-#include <sys/stat.h>
+#include <common/stat.h>
 #else
 #include "CompatWince.h"
 

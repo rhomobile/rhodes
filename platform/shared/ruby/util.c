@@ -187,7 +187,9 @@ ruby_strtoul(const char *str, char **endptr, int base)
 }
 
 #include <sys/types.h>
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif

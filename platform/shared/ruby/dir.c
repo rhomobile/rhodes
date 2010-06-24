@@ -15,7 +15,9 @@
 #include "ruby/encoding.h"
 
 #include <sys/types.h>
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
