@@ -39,10 +39,10 @@ class RhoFileTest
         files = Dir.entries(dir_name)
         #puts "files: #{files}"
 	    dd = files.size - 2 #skip . and ..
-	    if  dd == 14
+	    if  dd == 2
 	        return "limit"
 	    else
-	        # if less than 14, save record of file in model Save, open a new file, write content to file.
+	        # if less than 2, save record of file in model Save, open a new file, write content to file.
             content = "TEST cache"
             content = File.new("#{f}", "w")
             content.write(content)
@@ -57,7 +57,7 @@ class RhoFileTest
         dir_name = Rho::RhoApplication::get_model_path('app', 'cache')
         Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
         
-        (1..14).each do |n|
+        (1..2).each do |n|
             res = create_file_in_cache(dir_name, "cache_test", n.to_s())
             Test_equal( res, "saved" )
         end
@@ -65,13 +65,13 @@ class RhoFileTest
         res = create_file_in_cache(dir_name, "cache_test", "1")
         Test_equal( res, "exist" )
         
-        res = create_file_in_cache(dir_name, "cache_test", "15")
+        res = create_file_in_cache(dir_name, "cache_test", "3")
         Test_equal( res, "limit" )
         
     end
         
     def clear
-        (1..14).each do |n|
+        (1..2).each do |n|
     	    file_name = File.join(Rho::RhoApplication::get_model_path('app', 'cache'), "cache_test"+ n.to_s())
             File.delete(file_name) if File.exists?(file_name)
         end

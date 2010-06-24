@@ -9,8 +9,10 @@
 #include <time.h>
 
 #if defined(OS_WINCE)
-#include "wince/sys/types.h"
-#include "wince/sys/stat.h"
+#include "ruby/wince/sys/types.h"
+#include "ruby/wince/sys/stat.h"
+#else
+#include <sys/stat.h>
 #endif
 
 #define LOG_NEWLINE "\r\n"
