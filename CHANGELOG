@@ -1,4 +1,10 @@
-== 2.0.0
+## 2.0.0.rc2
+* #3992192 - send_log no longer requires login
+* #4032345 - iOS 3.x build crashed on iOS 4 simulator
+* iOS device build issues
+* fixed compile error in BB build related to MapView
+
+## 2.0.0.beta1-13, 2.0.0.rc1
 * client support of sync protocol 3 with rhosync 2.0
 * partial support
 * callback calls from menu and toolbar
@@ -24,28 +30,28 @@
 * NativeBar.create now re-use WebView so no more need to call WebView.navigate
   after NativeBar.create
 
-== 1.5.4
+## 1.5.4
 * Fix issue #3132788 - rake clean:iphone fails
 
-== 1.5.3
+## 1.5.3
 * Fix issue #2980590 - iphone: call NetRequest from toolbar
 * Fix issue #3104338 - rake run:iphone doesn't install into iphone sdk 3.2
 
-== 1.5.2
+## 1.5.2
 * Fix AsyncHttp 'cancel request'
 * Implement #2948610 - enable AysyncHttp synchronous call
 * Implement #2950632 - BB: System.get_property('has_network')
 * Fix issue #2948834 - iPhone: ringtonemanager
 * Fix issue #2964439 - Android: build problems when no Google API add-ons installed
 
-== 1.5.1
+## 1.5.1
 * Fix issue #2924952 - BB Sim doesn't launch on windows 7
 * Fix issue #2931788 - iPhone: wrong refresh
 * Fix AsyncHttp 'cancel request'
 * Fix issue #2948834 - iPhone: ringtonemanager
 * Fix issue #2964439 - Android: build problems when no Google API add-ons installed
 
-== 1.5.0
+## 1.5.0
 * native screen resolution for iPad
 * native tab bar for android
 * support of SSL in AsyncHttp for iPhone and Android
@@ -54,7 +60,7 @@
 * native geo mapping for android
 * support of splash screen for iPhone, Android, Blackberry and Windows Mobile
 
-== 1.4.2
+## 1.4.2
 * Fix for BB push data
 * Fix issue #2547236 - BB map: incorrect drawing of world bounds (90N/90S, 180W/180E)
 * Fix issue #2539966 - System::get_property('platform') on Android is UNKNOWN
@@ -64,10 +70,10 @@
 * Fix issue #2561958 - iPhone map: crash in case of wrong input parameters
 * Fix issue #2581678 - Android: GPS updates does not work
  
-== 1.4.1
+## 1.4.1
 * fixed issue with empty cookie check failing
 
-== 1.4.0
+## 1.4.0
 * improved spec running framework, see spec/framework_spec for details
 * added api for returning screensize
 * improved 404/500 error page reporting
@@ -78,10 +84,10 @@
 * added crypt, openssl, digest, lang, set, fcntl, net/http(s), json, rexml extensions
 * support for RIM 5.0 JDE
 
-== 1.2.1
+## 1.2.1
 * Fixed issue with broken gem dependencies
 
-== 1.2.0
+## 1.2.0
 * Push support for RIM & iPhone
 * Improved Rhom performance by using horizontal resultset to rhom object conversion
 * Support android 1.5
@@ -90,11 +96,11 @@
 * Alert (popup) ruby API
 * DateTime Picker ruby API
 
-== 1.1.1
+## 1.1.1
 * #630 - handle rhoconfig.txt without newline at EOF
 * #721 - RIM save changes to DB on interrupted shutdown
 
-== 1.1.0
+## 1.1.0
 * Stability fixes in 1.0
 * Support HSQLDB on RIM
 * Integrated mspec framework for testing
@@ -105,10 +111,10 @@
 * remove prebuilt binaries to save space
 * iPhone OS 3.0 support w/ 2.2.1 build -> 3.0 device compatibility
 
-== 1.0.0
+## 1.0.0
 * Initial support for Android
 
-== 0.3.0 & 0.3.1
+## 0.3.0 & 0.3.1
 Major features:
 * incremental sync enhancements
 * source refresh enhancements
@@ -117,7 +123,7 @@ Major features:
 Known issues:
 * see http://rhomobile.lighthouseapp.com/projects/17413/milestones/29833-03x
 
-== 0.2.0
+## 0.2.0
 Major features:
 * scripted build process for all platforms
 * incremental sync
@@ -142,7 +148,7 @@ Known issues:
 * [#188] opera mini browser opens when launching on HTC Fuze (as workaround you can close manually)
 * [#166] RIM needs format on reinstall to delete database
 
-== 0.1.0 
+## 0.1.0 
 * Initial support for iPhone, RIM (v4.6), and Windows Mobile (v6)
 * Support for full sync
 * sample applications Rhosugar and RhoSiebel
