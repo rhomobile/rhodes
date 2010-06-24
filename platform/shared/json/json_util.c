@@ -26,7 +26,7 @@
 #endif /* HAVE_SYS_TYPES_H */
 
 #if HAVE_SYS_STAT_H
-#include <sys/stat.h>
+#include <common/stat.h>
 #endif /* HAVE_SYS_STAT_H */
 
 #if HAVE_FCNTL_H
