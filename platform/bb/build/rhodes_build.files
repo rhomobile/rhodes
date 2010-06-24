@@ -35,5 +35,6 @@ platform\bb\rhodes\src\rhomobile\mapview\GoogleMapField.java
 platform\bb\rhodes\src\rhomobile\mapview\GoogleMapProvider.java
 platform\bb\rhodes\src\rhomobile\mapview\MapProvider.java
 platform\bb\rhodes\src\rhomobile\mapview\MapView.java
+platform\bb\rhodes\src\rhomobile\mapview\MapViewParent.java
 platform\bb\rhodes\src\rhomobile\mapview\MapViewScreen.java
 platform\bb\rhodes\src\rhomobile\mapview\RhoMapField.java
