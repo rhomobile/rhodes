@@ -438,6 +438,14 @@ final public class RhodesApplication extends UiApplication implements SystemList
     private static boolean m_bRubyInit = false;
 	public void activate()
 	{
+		rhodes_activate();
+		super.activate();
+	}
+	
+	private boolean m_bActivate = false;
+	private void rhodes_activate()
+	{
+		m_bActivate = true;
 		//DO NOT DO ANYTHING before doStartupWork 
 		doStartupWork();
 		showSplashScreen();
@@ -960,6 +968,10 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	    	
 	        PrimaryResourceFetchThread.Create(this);
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
+	        
+	        if ( com.rho.Capabilities.RUNAS_SERVICE && !m_bActivate &&
+	        	 RhoConf.getInstance().getBool("activate_at_startup"))
+	        	rhodes_activate();
     	}catch(Exception exc)
     	{
     		LOG.ERROR("doStartupWork failed", exc);
