@@ -1,6 +1,6 @@
 --- 
 name: phone_spec
-bbver: 4.6
+bbver: 5.1
 sdk: /Users/crystax/work/rhomobile/rhodes
 applog: rholog.txt
 version: 1.0.0
@@ -17,5 +17,8 @@ android:
   capabilities:
     - network_state
     - pim
-   
+
+capabilities:
+  - push
+     
 extensions: ["json", "rhoxml"]
