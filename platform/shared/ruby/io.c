@@ -60,7 +60,9 @@
 # define off_t  long
 #endif
 
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 
 /* EMX has sys/param.h, but.. */
 #if defined(HAVE_SYS_PARAM_H) && !(defined(__EMX__) || defined(__HIUX_MPP__))

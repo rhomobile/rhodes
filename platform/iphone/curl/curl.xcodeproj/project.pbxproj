@@ -755,7 +755,7 @@
 					"-DUSE_RHOSSL",
 				);
 				PRODUCT_NAME = curl;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.2;
 				SYMROOT = ../build;
 			};
 			name = Debug;
@@ -773,7 +773,7 @@
 					"-DUSE_RHOSSL",
 				);
 				PRODUCT_NAME = curl;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.2;
 				SYMROOT = ../build;
 			};
 			name = Release;
@@ -786,6 +786,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
@@ -799,6 +800,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../shared;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
 			};
@@ -811,6 +813,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../shared;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
 			};
@@ -829,7 +832,7 @@
 					"-DUSE_RHOSSL",
 				);
 				PRODUCT_NAME = curl;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.2;
 				SYMROOT = ../build;
 			};
 			name = Distribution;
