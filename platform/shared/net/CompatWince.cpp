@@ -1,5 +1,6 @@
-#include <windows.h>
-#include <time.h>
+//#include <windows.h>
+//#include <time.h>
+#include "common/RhoPort.h"
 #include "CompatWince.h"
 
 #ifdef _WIN32_WCE
@@ -284,7 +285,7 @@ static FILETIME *Convert_tm_To_FILETIME(struct tm *tm)
 	SystemTimeToFileTime(&System_Time, &File_Time);
 	return(&File_Time);
 }
-
+#if 0
 int
 _wstat(const WCHAR *path, struct stat *buffer)
 {
@@ -364,6 +365,7 @@ int stat(const char *path, struct stat *st)
 
 	return (_wstat(wbuf, (struct stat *) st));
 }
+#endif //0
 
 /*** strftime() from newlib libc/time/strftime.c ***/
 
