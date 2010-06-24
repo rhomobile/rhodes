@@ -23,13 +23,13 @@ static void _TimerCallBack(CFRunLoopTimerRef timer, void* context);
 // This is a singleton class, see below
 static LocationController *sharedLC = nil;
 
-@interface LocationControllerInit : NSObject {}
+@interface LocationManagerInit : NSObject {}
 + (void)run;
 @end
 
-@implementation LocationControllerInit
+@implementation LocationManagerInit
 + (void)run {
-    [[LocationController alloc] init]; // assignment not done here
+    [[LocationController sharedInstance] initLocationManager];
 }
 @end
 
@@ -40,6 +40,8 @@ static LocationController *sharedLC = nil;
 @synthesize onUpdateLocation; 
 
 - (bool)update{
+    if (!_locationManager)
+        return false;
 	if (!_locationManager.locationServicesEnabled) {
 		return false;
 	}
@@ -67,12 +69,16 @@ static LocationController *sharedLC = nil;
 	[self update];
 }
 
+- (void) initLocationManager {
+    self._locationManager = [[[CLLocationManager alloc] init] autorelease];
+    self._locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self._locationManager.delegate = self; // Tells the location manager to send updates to this object
+}
+
 - (id) init {
 	self = [super init];
 	if (self != nil) {
-		self._locationManager = [[[CLLocationManager alloc] init] autorelease];
-		self._locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-		self._locationManager.delegate = self; // Tells the location manager to send updates to this object
+		[Rhodes performOnUiThread:[LocationManagerInit class] wait:NO];
 		
 		self.onUpdateLocation = @selector(doUpdateLocation);	
 		_dLatitude = 0;
@@ -87,6 +93,8 @@ static LocationController *sharedLC = nil;
 }
 
 - (void) stop {
+    if (!_locationManager)
+        return;
 	[_locationManager stopUpdatingLocation];
 	
     // Get rid of the timer, if it still exists
@@ -166,7 +174,7 @@ static LocationController *sharedLC = nil;
 + (LocationController *)sharedInstance {
     @synchronized(self) {
         if (sharedLC == nil) {
-            [Rhodes performOnUiThread:[LocationControllerInit class] wait:NO];
+            [[LocationController alloc] init]; // assignment not done here
         }
     }
     return sharedLC;
