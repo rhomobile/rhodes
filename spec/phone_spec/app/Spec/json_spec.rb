@@ -33,6 +33,17 @@ class JsonTest
         
     end
     
+    def parseseparator_test
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'septest.json')
+        content = File.read(file_name)
+        parsed = Rho::JSON.parse(content)
+        puts "parsed: #{parsed}"
+        
+        Test_equal( parsed.is_a?(Hash), true )
+        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )
+        Test_equal( parsed["Category List"].is_a?(Array), true )
+    end
+    
     def webservice_test
         return unless $is_network_available
             
