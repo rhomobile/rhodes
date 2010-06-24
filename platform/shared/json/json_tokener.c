@@ -443,7 +443,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       if(c == ']') {
 	saved_state = json_tokener_state_finish;
 	state = json_tokener_state_eatws;
-      } else if(c == ',') {
+      } else if(c == ','||c == ';') {
 	saved_state = json_tokener_state_array;
 	state = json_tokener_state_eatws;
       } else {
@@ -515,7 +515,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       if(c == '}') {
 	saved_state = json_tokener_state_finish;
 	state = json_tokener_state_eatws;
-      } else if(c == ',') {
+      } else if(c == ','||c == ';') {
 	saved_state = json_tokener_state_object_field_start;
 	state = json_tokener_state_eatws;
       } else {
