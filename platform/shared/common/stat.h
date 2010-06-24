@@ -1,15 +1,6 @@
-#ifdef stat
-#undef stat
+/*
+#if defined(__APPLE__) && !(defined(__DARWIN_ONLY_64_BIT_INO_T) && ___DARWIN_ONLY_64_BIT_INO_T)
+#define __DARWIN_ONLY_64_BIT_INO_T 1
 #endif
-#ifdef lstat
-#undef lstat
-#endif
-#ifdef fstat
-#undef fstat
-#endif
+*/
 #include <sys/stat.h>
-#if defined(__APPLE__) && !defined(__IPHONE_4_0)
-#define stat stat64
-#define lstat lstat64
-#define fstat fstat64
-#endif
