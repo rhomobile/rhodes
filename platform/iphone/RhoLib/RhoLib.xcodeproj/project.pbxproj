@@ -427,7 +427,7 @@
 					"-fvisibility=hidden",
 				);
 				PRODUCT_NAME = rholib;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.2;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};

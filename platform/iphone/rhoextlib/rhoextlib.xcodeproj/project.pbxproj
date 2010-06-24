@@ -208,7 +208,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.2;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/ ../../shared/syncengine ../../shared/logging ../../shared/common ../../shared/ruby ../../shared/ruby/include ../../shared/ruby/iphone";
 			};
@@ -225,7 +225,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator2.2.1;
+				SDKROOT = iphonesimulator3.2;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/ ../../shared/syncengine ../../shared/logging ../../shared/common ../../shared/ruby ../../shared/ruby/include ../../shared/ruby/iphone";
 			};
