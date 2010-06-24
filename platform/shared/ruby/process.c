@@ -59,7 +59,9 @@ struct timeval rb_time_interval(VALUE);
 #undef HAVE_GETPGRP
 #endif
 
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 
 #ifdef HAVE_SYS_TIMES_H
 #include <sys/times.h>
