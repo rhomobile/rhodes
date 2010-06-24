@@ -326,7 +326,7 @@
 					"-fvisibility=hidden",
 				);
 				PRODUCT_NAME = rhosynclib;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.2;
 			};
 			name = Release;
 		};
@@ -341,7 +341,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator3.0;
+				SDKROOT = iphonesimulator3.2;
 				SYMROOT = ../build;
 			};
 			name = Debug;
@@ -356,7 +356,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.2;
 				SYMROOT = ../build;
 			};
 			name = Release;
@@ -371,7 +371,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.2;
 				SYMROOT = ../build;
 			};
 			name = Distribution;
@@ -390,7 +390,7 @@
 					"-fvisibility=hidden",
 				);
 				PRODUCT_NAME = rhosynclib;
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.2;
 			};
 			name = Distribution;
 		};
