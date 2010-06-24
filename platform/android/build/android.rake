@@ -1064,6 +1064,19 @@ def is_device_running
   return false
 end
 
+def run_application (target_flag)
+  args = []
+  args << target_flag
+  args << "shell"
+  args << "am"
+  args << "start"
+  args << "-a"
+  args << "android.intent.action.MAIN"
+  args << "-n"
+  args << $app_package_name + "/com.rhomobile.rhodes.Rhodes"
+  Jake.run($adb, args)
+end
+
 namespace "run" do
   namespace "android" do
     task :emulator => "device:android:debug" do
@@ -1113,11 +1126,15 @@ namespace "run" do
         sleep 1
         count += 1
       end
-      puts "Loading complete, you may now run the application" if done
+
+      puts "Loading complete, starting application.." if done
+      run_application("-e") if done
     end
 
     desc "build and install on device"
     task :device => "device:android:install" do
+      puts "Starting application..."
+      run_application("-d")
     end
   end
 
