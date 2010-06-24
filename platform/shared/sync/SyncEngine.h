@@ -88,6 +88,7 @@ public:
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
     int getStartSource();
     String loadClientID();
+    String readClientID();
     String requestClientIDByNet();
     boolean resetClientIDByNet(const String& strClientID);//throws Exception
     void doBulkSync();//throws Exception

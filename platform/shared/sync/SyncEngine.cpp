@@ -320,6 +320,19 @@ void CSyncEngine::loadAllSources()
     }
 }
 
+String CSyncEngine::readClientID()
+{
+    String clientID = "";
+    synchronized(m_mxLoadClientID)
+    {
+        DBResult( res, getUserDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
+        if ( !res.isEnd() )
+            clientID = res.getStringByIdx(0);
+    }
+
+    return clientID;
+}
+
 String CSyncEngine::loadClientID()
 {
     String clientID = "";

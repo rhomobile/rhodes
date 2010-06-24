@@ -434,6 +434,20 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 
+	public String readClientID()throws Exception
+	{
+	    String clientID = "";
+		
+		synchronized( m_mxLoadClientID )
+		{
+	        IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info");
+	        if ( !res.isEnd() )
+	            clientID = res.getStringByIdx(0);
+		}
+		
+		return clientID;
+	}
+	
 	public String loadClientID()throws Exception
 	{
 	    String clientID = "";

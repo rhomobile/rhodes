@@ -20,7 +20,7 @@ void __WinCE_Errno_Thread_Exit(void);
 extern int *(*__WinCE_Errno_Pointer_Function)(void);
 
 #define	errno (*(*__WinCE_Errno_Pointer_Function)())
-
+/*
 struct stat {
 	unsigned long st_size;
 	unsigned long st_ino;
@@ -34,7 +34,7 @@ struct stat {
 	unsigned short st_gid;
 };
 
-int stat(const char *path, struct stat *st);
+int stat(const char *path, struct stat *st);   */
 
 #define _S_IFMT   0170000
 #define _S_IFDIR  0040000
