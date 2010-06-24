@@ -56,7 +56,9 @@ int flock(int, int);
 #endif
 
 #include <sys/types.h>
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 
 #ifdef HAVE_SYS_MKDEV_H
 #include <sys/mkdev.h>

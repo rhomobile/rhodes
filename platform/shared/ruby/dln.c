@@ -56,7 +56,9 @@ void *xrealloc();
 #include "missing/file.h"
 #endif
 #include <sys/types.h>
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 
 #ifndef S_ISDIR
 #   define S_ISDIR(m) ((m & S_IFMT) == S_IFDIR)

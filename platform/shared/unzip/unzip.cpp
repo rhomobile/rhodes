@@ -26,7 +26,9 @@
 #define lumkdir(t) (mkdir(t,0755))
 #endif
 #include <sys/types.h>
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 #include "unzip.h"
 //
 typedef unsigned short WORD;
