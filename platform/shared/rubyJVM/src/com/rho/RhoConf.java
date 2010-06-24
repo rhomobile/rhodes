@@ -269,10 +269,10 @@ public class RhoConf {
 		}
 
 		try{
-			strClientID = com.rho.sync.SyncThread.getSyncEngine().loadClientID();
+			strClientID = com.rho.sync.SyncThread.getSyncEngine().readClientID();
 		}catch(Exception exc)
 		{
-			LOG.ERROR("send_log:loadClientID failed", exc);
+			LOG.ERROR("send_log:readClientID failed", exc);
 		}
 		
 	    String strLogUrl = RhoConf.getInstance().getPath("logserver");
