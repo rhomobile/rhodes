@@ -768,8 +768,9 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
-				SDKROOT = macosx10.5;
+				SDKROOT = iphonesimulator3.2;
 				SYMROOT = ../build;
 			};
 			name = Debug;
