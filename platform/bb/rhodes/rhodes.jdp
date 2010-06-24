@@ -59,6 +59,7 @@ src\rhomobile\mapview\GoogleMapField.java
 src\rhomobile\mapview\GoogleMapProvider.java
 src\rhomobile\mapview\MapProvider.java
 src\rhomobile\mapview\MapView.java
+src\rhomobile\mapview\MapViewParent.java
 src\rhomobile\mapview\MapViewScreen.java
 src\rhomobile\mapview\RhoMapField.java
 src\rhomobile\NativeBar.java
