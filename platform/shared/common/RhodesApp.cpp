@@ -539,7 +539,7 @@ String CRhodesApp::canonicalizeRhoUrl(const String& strUrl)
 boolean CRhodesApp::sendLog() 
 {
     String strDevicePin = rho::sync::CClientRegister::getInstance() ? rho::sync::CClientRegister::getInstance()->getDevicePin() : "";
-	String strClientID = rho::sync::CSyncThread::getSyncEngine().loadClientID();
+	String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
 
     String strLogUrl = RHOCONF().getPath("logserver");
     if ( strLogUrl.length() == 0 )
