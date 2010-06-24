@@ -1,13 +1,6 @@
 #include "RhoFile.h"
 #include "common/StringConverter.h"
 
-#if defined(OS_WINCE)
-#include "wince/sys/types.h"
-#include "wince/sys/stat.h"
-#else
-#include <sys/stat.h>
-#endif
-
 namespace rho{
 namespace common{
 

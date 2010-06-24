@@ -8,6 +8,11 @@
 #include <windows.h>
 #include <time.h>
 
+#if defined(OS_WINCE)
+#include "wince/sys/types.h"
+#include "wince/sys/stat.h"
+#endif
+
 #define LOG_NEWLINE "\r\n"
 #define LOG_NEWLINELEN 2
 
@@ -39,6 +44,7 @@ typedef unsigned __int64 uint64;
 #  include <string.h>
 #  include <pthread.h>
 #  include <fcntl.h>
+#  include <common/stat.h>
 
 #undef ASSERT
 #define ASSERT RHO_ASSERT
@@ -73,6 +79,5 @@ char* str_assign(char* data);
 #ifdef __cplusplus
 }
 #endif
-		
-	
+
 #endif //_RHOPORT_H_
