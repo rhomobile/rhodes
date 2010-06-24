@@ -27,7 +27,7 @@ describe "BulkSync_test" do
   
     ::Rhom::Rhom.database_full_reset_and_logout
     
-    SyncEngine.set_syncserver('http://localhost:9292/application')
+    SyncEngine.set_syncserver('http://rhodes-store-server-bulk.heroku.com/application')
     Rho::RhoConfig.bulksync_state='0'
     
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'BulkTest'})
