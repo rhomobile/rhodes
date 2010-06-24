@@ -45,6 +45,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
     m_nDeleted = 0;                                     
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_nRefreshTime = 0;
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;
@@ -62,6 +63,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nDeleted = 0;
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
+    m_nRefreshTime = 0;
 
     m_nErrCode = RhoRuby.ERR_NONE;
     m_bIsSearch = false;

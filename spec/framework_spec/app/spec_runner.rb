@@ -106,8 +106,8 @@ class SpecRunner < MSpecScript
     config[:files] << 'spec/rhom_object_spec'
     config[:files] << 'spec/rho_spec'
     config[:files] << 'spec/spec_helper'
-    #config[:files] << 'spec/syncengine_spec'
-    #config[:files] << 'spec/blobsync_spec'
+    config[:files] << 'spec/syncengine_spec'
+    config[:files] << 'spec/blobsync_spec'
     #config[:files] << 'spec/bulksync_spec'
     config[:files] << 'spec/rhom_db_adapter_spec'
     config[:files] << 'spec/rhoerror_spec'
@@ -119,6 +119,7 @@ class SpecRunner < MSpecScript
   def run
 
     MSpec.register_files config[:files]
+    MSpec.backtrace=true
 
     MSpec.process
     MSpec.exit_code
