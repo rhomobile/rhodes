@@ -21,3 +21,6 @@ LastVisitedPage = ''
 # Sync server url. Typically this will look like 'http://<hostname>:<port>/application'
 # For example: 'http://localhost:9292/application'
 syncserver = '<%=syncserver%>'
+
+logserver = 'http://rhologs.heroku.com'
+logname='<%=@app_name%>'

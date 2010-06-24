@@ -26,5 +26,5 @@ sync_poll_interval=0
 syncserver = 'http://rhosyncnew.staging.rhohub.com/application'
 
 activate_at_startup = 1
-logserver = 'http://rhologs.heroku.com/client_log'
+logserver = 'http://rhologs.heroku.com'
 logname=phone_spec
