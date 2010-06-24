@@ -186,7 +186,9 @@ genrand_real(struct MT *mt)
 #endif
 #include <time.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif

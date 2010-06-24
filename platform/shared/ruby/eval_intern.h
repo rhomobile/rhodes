@@ -97,7 +97,9 @@ NORETURN(void _longjmp(jmp_buf, int));
 #include <sys/param.h>
 #endif
 
-#include <sys/stat.h>
+/* RHO BEGIN */
+#include <common/stat.h>
+/* RHO END */
 
 #define SAVE_ROOT_JMPBUF(th, stmt) do \
   if (ruby_setjmp((th)->root_jmpbuf) == 0) { \
