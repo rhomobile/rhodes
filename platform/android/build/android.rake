@@ -462,6 +462,7 @@ namespace "build" do
       args << "-DHAVE_CONFIG_H"
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
+      args << "-I#{$shareddir}"      
 
       cc_build 'libcurl', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
