@@ -44,8 +44,8 @@ class SpecController < Rho::RhoController
                 testObj.send meth
             rescue Exception => e
                 @exc_count += 1
-                puts "  FAILED: '#{name}:#{meth}' failed: Error: #{e}"
-                puts "  #{e.backtrace[1]}" if e.backtrace && e.backtrace.length > 0
+                puts "FAIL: '#{name}:#{meth}' failed: Error: #{e}\n" + 
+                    "#{e.backtrace[1]}" if e.backtrace && e.backtrace.length > 0
                 #e.backtrace.each do |item|
                 #    puts item
                 #end
