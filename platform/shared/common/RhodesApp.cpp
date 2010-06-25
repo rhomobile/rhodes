@@ -559,7 +559,7 @@ boolean CRhodesApp::sendLog()
 
     if ( !resp.isOK() )
     {
-        LOG(ERROR) + "send_log failed : network error";
+        LOG(ERROR) + "send_log failed : network error - " + resp.getRespCode() + "; Body - " + resp.getCharData();
         return false;
     }
 
