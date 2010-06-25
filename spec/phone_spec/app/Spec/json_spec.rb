@@ -69,6 +69,34 @@ class JsonTest
         
     end
     
+=begin
+    def webservice2_test
+        return unless $is_network_available
+            
+        res = Rho::AsyncHttp.get( :url => 'http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=&startindex=1&endindex=10' )
+        puts "res : #{res}"  
+        Test_equal(res['status'],'ok')
+        
+        parsed = res['body']
+        Test_equal( parsed.is_a?(Hash), true )
+        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
+        
+        manf =  parsed["Manufacturer List"][10]["Manufacturer"]
+        puts "manf : #{manf}"
+        
+        url2 = "http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=" + 
+            Rho::RhoSupport.url_encode(manf) + "&startindex=1&endindex=10"
+        
+        res = Rho::AsyncHttp.get( :url => url2 )
+        puts "res : #{res}"  
+        Test_equal(res['status'],'ok')
+        
+        parsed = res['body']
+        Test_equal( parsed.is_a?(Hash), true )
+        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
+        
+    end
+=end    
     def clear
     end
 end    
