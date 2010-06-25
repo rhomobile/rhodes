@@ -767,22 +767,16 @@ bool CHttpServer::parse_route(String const &line, Route &route)
     if (isid(aoi)) {
         route.id = aoi;
         route.action = s;
-
-        const char* frag = strrchr(route.action.c_str(), '#');
-        if (frag)
-            route.action = route.action.substr(0, frag-route.action.c_str());
-
     }
     else {
         route.id = s;
         route.action = aoi;
-
-        const char* frag = strrchr(route.id.c_str(), '#');
-        if (frag)
-            route.id = route.id.substr(0, frag-route.id.c_str());
-
     }
     
+	//const char* frag = strrchr(route.action.c_str(), '#');
+	//if (frag)
+	//	route.action = route.action.substr(0, frag-route.action.c_str());
+	
     return true;
 }
 
