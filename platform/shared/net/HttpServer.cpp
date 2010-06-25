@@ -706,7 +706,11 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
         if (*e != '\0')
             query.assign(s, e);
     }
-    
+
+    const char* frag = strrchr(uri.c_str(), '#');
+    if (frag)
+        uri = uri.substr(0, frag-uri.c_str());
+
     return true;
 }
 
