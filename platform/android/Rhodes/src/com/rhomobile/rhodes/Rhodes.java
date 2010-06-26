@@ -141,6 +141,8 @@ public class Rhodes extends Activity {
 	
 	public native static void makeLink(String src, String dst);
 	
+	private native void initClassLoader(ClassLoader c);
+	
 	private void initRootPath() {
 		Log.d(TAG, "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
@@ -478,6 +480,8 @@ public class Rhodes extends Activity {
 		uiThreadId = ct.getId();
 
 		RhodesInstance.setInstance(this);
+
+		initClassLoader(this.getClassLoader());
 		
 		initRootPath();
 		try {
