@@ -308,6 +308,25 @@ static bool set_capabilities(JNIEnv *env)
     return true;
 }
 
+static jobject g_classLoader = NULL;
+static jmethodID g_loadClass = NULL;
+
+jclass rho_find_class(JNIEnv *env, const char *c)
+{
+    jstring className = env->NewStringUTF(c);
+    jclass cls = (jclass)env->CallObjectMethod(g_classLoader, g_loadClass, className);
+    env->DeleteLocalRef(className);
+    return cls;
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
+  (JNIEnv *env, jobject, jobject cl)
+{
+    g_classLoader = env->NewGlobalRef(cl);
+    jclass javaLangClassLoader = env->FindClass("java/lang/ClassLoader");
+    g_loadClass = env->GetMethodID(javaLangClassLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
   (JNIEnv *env, jobject, jstring path)
 {
