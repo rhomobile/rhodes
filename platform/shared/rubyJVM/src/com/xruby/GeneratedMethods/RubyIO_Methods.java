@@ -9,6 +9,11 @@ klass.getSingletonClass().defineMethod( "read", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyIO.read(receiver, args, block);}
 });
+klass.getSingletonClass().defineMethod( "binread", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return RubyIO.binread(receiver, args, block);}
+});
+
 klass.defineMethod( "gets", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).gets(args);}

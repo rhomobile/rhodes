@@ -644,7 +644,7 @@ public class NetRequest
 		return strRes;
 	}
 
-	private final String readFully(InputStream in, String strContType) throws Exception 
+	public static final String readFully(InputStream in, String strContType) throws Exception 
 	{
 		String strRes = "";
 		byte[]  byteBuffer = new byte[1024*4];
