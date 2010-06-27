@@ -201,15 +201,18 @@ static Rhodes *instance = NULL;
         // Show picker
 #ifdef __IPHONE_3_2
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:picker];
-            popover.delegate = delegateObject;
+            // WARNING!!! DO NOT USE UIPopoverController DIRECTLY HERE!!!
+            // It will cause problem of starting application on iPhone OS < 3.2
+            // All such stuff should be loaded in runtime using NSClassFromString
+            id popover = [[NSClassFromString(@"UIPopoverController") alloc] initWithContentViewController:picker];
+            [popover setDelegate:delegateObject];
             delegateObject->popover = popover;
             CGRect rect = [[[self mainView] view] frame];
             rect.origin.x += rect.size.width/4;
             rect.origin.y += rect.size.height/4;
             rect.size.width /= 2;
             rect.size.height /= 2;
-            popover.popoverContentSize = CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect));
+            [popover setPopoverContentSize:CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
             [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         }
         else
