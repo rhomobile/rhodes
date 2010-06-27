@@ -7,7 +7,7 @@ import com.xruby.runtime.lang.RubyValue;
 import java.io.InputStream;
 import java.io.IOException;
 
-import javolution.io.UTF8StreamReader;
+//import javolution.io.UTF8StreamReader;
 
 public class InputStreamExecutor implements RubyIOExecutor {
 

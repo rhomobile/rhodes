@@ -5,6 +5,9 @@
 
 package com.xruby.runtime.builtin;
 
+import java.io.InputStream;
+
+import com.rho.RhoRuby;
 import com.xruby.runtime.lang.*;
 //import com.xruby.runtime.lang.annotation.RubyLevelClass;
 //import com.xruby.runtime.lang.annotation.RubyLevelMethod;
@@ -154,6 +157,23 @@ public class RubyFile extends RubyIO {
     //@RubyLevelMethod(name="size", singleton=true)
     public static RubyValue size(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
+    	InputStream stream = null;
+        
+        if ( fileName.startsWith("/apps"))
+        {
+			try {
+				stream = RhoRuby.loadFile("/" + fileName);
+				if ( stream != null )
+				{
+		        	RubyValue res = ObjectFactory.createInteger(stream.available());
+		        	stream.close();
+		        	return res;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+        
         File file = new File(fileName);
         if (!file.isFile() && !file.isDirectory()) {
             throw new RubyException(RubyRuntime.RuntimeErrorClass, "No such file or directory - " + fileName);

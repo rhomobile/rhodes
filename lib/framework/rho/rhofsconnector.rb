@@ -33,7 +33,12 @@ module Rho
       end
       
       def get_blob_path(relative_path)
-        File.join(__rhoGetCurrentDir(), relative_path)
+        cur_dir = __rhoGetCurrentDir()
+        if cur_dir && cur_dir.length()>0
+            File.join(cur_dir, relative_path)
+        else
+            relative_path
+        end    
       end
       
     end
