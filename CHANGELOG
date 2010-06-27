@@ -1,5 +1,6 @@
 ## 2.0.0.rc2
 * #3992192 - send_log no longer requires login
+* #4028896 - iPhone crash on location init
 * #4032345 - iOS 3.x build crashed on iOS 4 simulator
 * iOS device build issues
 * fixed compile error in BB build related to MapView

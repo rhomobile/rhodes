@@ -6,6 +6,8 @@
 
 JNIEnv *jnienv();
 
+jclass rho_find_class(JNIEnv *env, const char *c);
+
 namespace details
 {
 
