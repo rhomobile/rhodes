@@ -117,6 +117,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doRequest
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
   (JNIEnv *, jclass, jstring, jstring);
 
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    initClassLoader
+ * Signature: (Ljava/lang/ClassLoader;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
+  (JNIEnv *, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif
