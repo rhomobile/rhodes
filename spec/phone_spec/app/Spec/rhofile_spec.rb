@@ -29,6 +29,23 @@ class RhoFileTest
         
     end
 
+    def binary_readwrite_test
+        file_testname = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.png')
+        test_content = File.binread(file_testname)
+        Test_equal(File.size(file_testname), test_content.length)
+    
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.png')
+        File.delete(file_name) if File.exists?(file_name)
+        Test_equal(File.exists?(file_name), false)
+
+        f = File.new(file_name, "wb")
+        f.write(test_content)
+        f.close        
+        
+        content = File.binread(file_name)
+        Test_equal( content, test_content )
+    end
+
     def create_file_in_cache(dir_name, file, ext)
 	    # get full file path
 	    f = File.join(dir_name, "#{file}"+ "#{ext}")
