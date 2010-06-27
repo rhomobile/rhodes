@@ -34,8 +34,13 @@ public class RandomAccessFile
     {
     	String name = (file != null ? file.getAbsolutePath() : null);
     	int imode = -1;
-    	if (mode.equals("r"))
+    	if (mode.equals("r") || mode.equals("rb"))
     	    imode = Connector.READ;
+    	else if (mode.equals("w") || mode.equals("wb"))
+    	{
+    	    imode = Connector.WRITE;
+    	    m_bWriteAccess = true;
+    	}
     	else if (mode.startsWith("rw")) {
     	    imode = Connector.READ_WRITE;
     	    m_bWriteAccess = true;

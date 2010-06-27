@@ -26,7 +26,8 @@ import com.xruby.runtime.lang.RubyValue;
 
 import java.io.InputStream;
 //import java.io.ByteArrayOutputStream;
-import javolution.io.UTF8StreamReader;
+//import javolution.io.UTF8StreamReader;
+import com.rho.net.NetRequest;
 
 ////@RubyLevelClass(name="IO")
 public class RubyIO extends RubyBasic {
@@ -296,9 +297,10 @@ public class RubyIO extends RubyBasic {
     }*/
     
     //RHO_COMMENT
+/*    
     private static char[] buffer = new char[1024];
-	public static final RubyValue readFully(InputStream in) throws IOException {
-		RubyString str = ObjectFactory.createString();	
+	public static final RubyValue readFully(InputStream in, boolean bText) throws IOException {
+		RubyString str = ObjectFactory.createString();
 		UTF8StreamReader reader = new UTF8StreamReader();
 		reader.setInput(in);
 		while (true) {
@@ -311,9 +313,9 @@ public class RubyIO extends RubyBasic {
 			}
 		}
 		return str;
-	}
+	}*/
 
-    static RubyValue loadFromResources(String fileName){
+    static RubyValue loadFromResources(String fileName, boolean bText){
     	InputStream stream = null;
 		try {
 			//stream = RhoClassFactory.createFile().getResourceAsStream(fileName.getClass(), "/"+fileName);
@@ -326,8 +328,10 @@ public class RubyIO extends RubyBasic {
     		return null;
     	
     	try{
-    		return readFully(stream);
-    	}catch( IOException exc ){
+   			String res = NetRequest.readFully(stream, bText ? "=UTF-8" : "");
+   			
+   			return ObjectFactory.createString(res);
+    	}catch( Exception exc ){
     		throw new RubyException(RubyRuntime.RuntimeErrorClass,exc.getMessage());
     	}
     }
@@ -336,7 +340,7 @@ public class RubyIO extends RubyBasic {
     public static RubyValue read(RubyValue receiver, RubyArray args, RubyBlock block) {
         String fileName = ((RubyString) args.get(0)).toStr();
         //RHO_COMMENT
-        RubyValue r = loadFromResources(fileName);
+        RubyValue r = loadFromResources(fileName, true);
         if ( r != null )
         	return r;
         
@@ -359,4 +363,33 @@ public class RubyIO extends RubyBasic {
         io.close();
         return r;
     }
+    
+    //@RubyLevelMethod(name="read")
+    public static RubyValue binread(RubyValue receiver, RubyArray args, RubyBlock block) {
+        String fileName = ((RubyString) args.get(0)).toStr();
+        //RHO_COMMENT
+        RubyValue r = loadFromResources(fileName, false);
+        if ( r != null )
+        	return r;
+        
+        RubyIO io = ObjectFactory.createFile(fileName, "r");
+        int offset;
+        int length;
+
+        if (args.size() == 1) {
+            r = buildResult(io.read(), null);
+        } else {
+            length = ((RubyFixnum) args.get(1)).toInt();
+            if (args.size() == 2) {
+                r = buildResult(io.read(length), null);
+            } else {
+                offset = ((RubyFixnum) args.get(2)).toInt();
+                r = buildResult(io.read(length, offset), null);
+            }
+        }
+
+        io.close();
+        return r;
+    }
+    
 }
