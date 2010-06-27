@@ -15,6 +15,7 @@ class SpecController < Rho::RhoController
   def index
     @exc_count = 0
     @count = 0
+    @errorMessages = ""
     $is_network_available = System.get_property('has_network')
     
     run_all_tests()
@@ -44,6 +45,8 @@ class SpecController < Rho::RhoController
                 testObj.send meth
             rescue Exception => e
                 @exc_count += 1
+                @errorMessages += "<br/>FAIL: '#{name}:#{meth}' failed: Error: #{e}\n" + 
+                    "#{e.backtrace[1]}" if e.backtrace && e.backtrace.length > 0
                 puts "FAIL: '#{name}:#{meth}' failed: Error: #{e}\n" + 
                     "#{e.backtrace[1]}" if e.backtrace && e.backtrace.length > 0
                 #e.backtrace.each do |item|
