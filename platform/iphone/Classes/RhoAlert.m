@@ -25,7 +25,7 @@ static UIAlertView *currentAlert = nil;
 }
 
 @property (nonatomic,retain) NSString *callback;
-@property (nonatomic,retain) NSArray *buttons;
+@property (nonatomic,retain) NSMutableArray *buttons;
 
 - (id)init;
 - (void)dealloc;
