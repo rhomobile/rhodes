@@ -254,4 +254,23 @@ namespace "run" do
       exit 1
     end
   end
+ 
+  namespace "win32" do
+  
+    task :spec => ["build:win32"] do
+        Jake.before_run_spec
+        start = Time.now
+        
+        args = [' ']
+        Jake.run2( "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+            Jake.process_spec_output(line)        
+        end
+        Jake.process_spec_results(start)        
+        
+        $stdout.flush
+        chdir $startdir
+    end
+    
+  end
+  
 end
