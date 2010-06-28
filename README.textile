@@ -20,7 +20,7 @@ Rhodes features an application generator called rhogen that generates  a control
 
   rhogen app appname
 
-This will generate a config.rb and an index.html file.  Currently config.rb is focused on describing what source to sync with.  Modify the URL that you see in this file with whatever your RhoSync server URL and source ID are for this particular "source" or data model.   It is assumed that you've already set up a RhoSync "source adapter" as described by the "RhoSync docs":http://wiki.rhomobile.com/index.php/RhoSync_2.0.
+This will generate a config.rb and an index.html file.  Currently config.rb is focused on describing what source to sync with.  Modify the URL that you see in this file with whatever your RhoSync server URL and source ID are for this particular "source" or data model.   It is assumed that you've already set up a RhoSync "source adapter" as described by the "RhoSync docs":http://wiki.rhomobile.com/index.php/RhoSync.
 
 h3. Generate a Model and Associated Controller and Templates
 
@@ -36,9 +36,9 @@ This will generate a controller as the file controller.rb and several views as a
 
 h2. MORE RESOURCES
 
-There is a "tutorial available":http://rhomobile.com/wiki/index.php/Tutorial2 on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
+There is a "tutorial available":http://wiki.rhomobile.com/index.php/Tutorial on the "Rhomobile site":http://www.rhomobile.com.  This includes thorough and current platform by platform build instructions.
 
-The "Rhodes spec":http://rhomobile.com/wiki/index.php/Rhodes for full documentation on the Rhodes framework.
+The "Rhodes Developer Reference":http://wiki.rhomobile.com/index.php/Rhodes for full documentation on the Rhodes framework.
 
 For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
 
