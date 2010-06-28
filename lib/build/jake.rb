@@ -94,7 +94,59 @@ class Jake
     conf
   end
 
-  def self.run2(command, args, options = {})
+  def self.before_run_spec()
+    $total ||= 0
+    $passed ||= 0
+    $failed ||= 0
+    $faillog = []
+    $getdump = false
+  end
+  
+  def self.process_spec_output(line)
+      puts line if line =~ /\| - it/ or line =~ /\| describe/
+
+      if $getdump
+        if line =~ /^I/
+          $getdump = false
+        else
+          $faillog << line
+        end
+      end
+
+      if line =~ /\*\*\*Failed:\s+(.*)/
+        $failed += $1.to_i
+        return false
+      elsif line =~ /\*\*\*Total:\s+(.*)/
+        $total += $1.to_i
+      elsif line =~ /\*\*\*Passed:\s+(.*)/
+        $passed += $1.to_i
+      end
+
+      if line =~ /\| FAIL:/
+        $faillog << line.gsub(/I.*APP\|/,"\n\n***")
+        $getdump = true
+      end
+      
+      return true
+  end
+  
+  def self.process_spec_results(start)
+    finish = Time.now
+  
+    rm_rf $app_path + "/faillog.txt"
+    File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  } if $failed.to_i > 0
+    
+    puts "************************"
+    puts "\n\n"
+    puts "Tests completed in #{finish - start} seconds"
+    puts "Total: #{$total}"
+    puts "Passed: #{$passed}"
+    puts "Failed: #{$failed}"
+    puts "\n"
+    puts "Failures stored in faillog.txt" if $failed.to_i > 0
+  end
+
+  def self.run2(command, args, options = {}, &block)
   	argv = []
   	currentdir = ""
   	retval = ""
@@ -133,8 +185,16 @@ class Jake
       else
         IO.popen(argv) do |f|
           while line = f.gets
-            puts line
-            $stdout.flush
+            if block_given?
+                res = yield(line)
+                if !res
+                    #puts "f.pid : #{f.pid}"
+                    Process.kill( 9, f.pid ) 
+                end    
+            else
+                puts line
+                $stdout.flush
+            end    
           end
         end
       end

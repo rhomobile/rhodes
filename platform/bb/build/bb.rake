@@ -52,7 +52,7 @@ def stopmds
   Jake.run("cmd.exe",args, mdshome, true, true)
 end 
 
-def startsim
+def startsim(hidden=false)
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
     
@@ -68,6 +68,7 @@ def startsim
   args << "/pin=0x2100000A"
   args << "/no-compact-filesystem"
   args << "/JvmDisableBacklightTimeout"
+  args << "/start-hidden" if hidden
   #args << "/keep-lcd-on"
     
   if $bbver !~ /^4\.[012](\..*)?$/
@@ -740,6 +741,47 @@ namespace "run" do
       task :startmdsandsim => ["config:bb"] do
         startmds
         startsim
+      end
+      
+      task :spec => ["clean:bb", "run:bb:stopmdsandsim", "package:bb:production_sim"] do
+        jde = $config["env"]["paths"][$bbver]["jde"]
+        cp_r File.join($targetdir,"/."), jde + "/simulator"
+        rm_rf jde + "/simulator/sdcard/Rho"
+        
+        log_name  = Jake.get_absolute($app_config["applog"] )
+        File.delete(log_name) if File.exist?(log_name)
+        
+        startmds
+        startsim(true)
+
+        Jake.before_run_spec
+        start = Time.now
+      
+        while !File.exist?(log_name)
+            sleep(1)
+        end
+        
+        io = File.new(log_name, "r")
+        end_spec = false
+        while !end_spec do
+            io.each do |line|
+                #puts line
+                
+                end_spec = !Jake.process_spec_output(line)
+                break if end_spec
+            end
+            sleep(1) unless end_spec
+        end
+        
+        io.close
+        
+        stopsim  
+        stopmds
+
+        Jake.process_spec_results(start)        
+        
+        $stdout.flush
+        
       end
   end
   
