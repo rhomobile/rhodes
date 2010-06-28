@@ -13,7 +13,7 @@ h1 {
 }
 
 div#content {
-	background-color:#ffffff;
+	background-color:black;
 	width: 100%;
 	padding:0;
 	margin:0;
@@ -264,8 +264,10 @@ div#content ul#settings {
     margin: 0;
 }
 
+
 div#content div#reset h4 {
     margin:20px;
+    color:white;
 }
 
 div#content div.standardButton {
