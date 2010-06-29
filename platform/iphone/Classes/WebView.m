@@ -83,7 +83,14 @@
 @end
 
 
-void rho_webview_navigate(const char* url, int index) {
+void rho_webview_navigate(const char* url, int index) 
+{
+//    if ( !url )
+//    {
+//        RAWLOG_ERROR("WebView.navigate failed: url is nil");
+//        return;
+//    }
+
     id runnable = [RhoWebViewNavigateTask class];
     id arg1 = [NSString stringWithUTF8String:url];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
