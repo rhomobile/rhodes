@@ -41,6 +41,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
@@ -64,7 +65,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.camera);
 		
@@ -137,7 +138,9 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 				camera.stopPreview();
 			}
 			Camera.Parameters p = camera.getParameters();
-			p.setPreviewSize(w, h);
+			int newW = (w >> 3) << 3;
+			int newH = (h >> 3) << 3;
+			p.setPreviewSize(newW, newH);
 			camera.setParameters(p);
 			camera.setPreviewDisplay(holder);
 			camera.startPreview();
