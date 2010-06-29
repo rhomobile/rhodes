@@ -41,7 +41,7 @@ module Rhom
         c_id.nil? ? nil : c_id['client_id']
       end
       
-      def database_full_reset
+      def database_full_reset(reset_client_info=false)
         SyncEngine.stop_sync
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
@@ -51,7 +51,8 @@ module Rhom
         ::Rho::RHO.get_user_db().execute_sql("UPDATE sources SET token=0")
         
         ::Rho::RHO.get_db_partitions().each_value do |db|
-            db.destroy_tables(:exclude => ['sources','client_info'])
+            db.destroy_tables(
+             :exclude => (reset_client_info ? ['sources'] : ['sources','client_info']) )
         end
       
         hash_migrate = {}
@@ -60,6 +61,11 @@ module Rhom
       
       def database_full_reset_and_logout
         database_full_reset
+        SyncEngine.logout
+      end
+
+      def database_fullclient_reset_and_logout
+        database_full_reset(true)
         SyncEngine.logout
       end
       
