@@ -19,6 +19,12 @@ void rho_webview_refresh(int index)
 
 void rho_webview_navigate(const char* url, int index) 
 {
+    if ( !url )
+    {
+        RAWLOG_ERROR("WebView.navigate failed: url is nil");
+        return;
+    }
+
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_tcsdup(convertToStringW(strUrl).c_str()) );
 }
