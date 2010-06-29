@@ -35,8 +35,13 @@ public class WebView
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
 				try {
-					String url = args.get(0).toString();
-					navigate(url);
+					if ( args.get(0) == RubyConstant.QNIL )
+						LOG.ERROR("WebView.navigate failed: url is nil");
+					else
+					{
+						String url = args.get(0).toString();
+						navigate(url);
+					}
 					return RubyConstant.QNIL;
 				} catch(Exception e) {
 					LOG.ERROR("navigate failed.", e);
