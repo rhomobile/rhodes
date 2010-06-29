@@ -7,6 +7,9 @@
 #include "common/StringConverter.h"
 #include "MainWindow.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "WebView"
+
 using namespace rho;
 using namespace rho::common;
 extern "C" {
