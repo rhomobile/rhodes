@@ -13,6 +13,12 @@ RHO_GLOBAL void rho_webview_navigate(const char* url, int index)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "navigate", "(Ljava/lang/String;I)V");
     if (!mid) return;
 
+    if ( !url )
+    {
+        RAWLOG_ERROR("WebView.navigate failed: url is nil");
+        return;
+    }
+
     char *normUrl = rho_http_normalizeurl(url);
     jstring objNormUrl = rho_cast<jstring>(normUrl);
     env->CallStaticVoidMethod(cls, mid, objNormUrl, index);
