@@ -1,3 +1,8 @@
+## 2.0.0
+* #4053947 - Android: FindClass always return NULL when called outside of JNI_OnLoad
+* #4060638 - reset functions don't wipe client_id
+* #4072732 - Spec: add rake command to all platforms
+
 ## 2.0.0.rc2
 * #3992192 - send_log no longer requires login
 * #4028896 - iPhone crash on location init

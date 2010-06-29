@@ -931,11 +931,11 @@ namespace "package" do
   end
 end
 
-def get_app_log(appname, device)
+def get_app_log(appname, device, silent = false)
   pkgname = 'com.rhomobile.' + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/sdcard/rhomobile', pkgname, 'RhoLog.txt')
   cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
-  puts "RhoLog.txt stored to " + $app_path
+  puts "RhoLog.txt stored to " + $app_path unless silent
   return true
 end
 
@@ -1080,7 +1080,57 @@ end
 
 namespace "run" do
   namespace "android" do
+    
+    task :spec => ["device:android:debug"] do
+        run_emulator
+        do_uninstall('-e')
+        
+        log_name  = $app_path + '/RhoLog.txt'
+        File.delete(log_name) if File.exist?(log_name)
+        
+        load_app_and_run
+
+        Jake.before_run_spec
+        start = Time.now
+
+        puts "wating for log"
+      
+        while !File.exist?(log_name)
+            get_app_log($appname, false, true)
+            sleep(1)
+        end
+
+        puts "start read log"
+        
+        end_spec = false
+        while !end_spec do
+            get_app_log($appname, false, true)
+            io = File.new(log_name, "r")
+        
+            io.each do |line|
+                #puts line
+                
+                end_spec = !Jake.process_spec_output(line)
+                break if end_spec
+            end
+            io.close
+            
+            sleep(5) unless end_spec
+        end
+
+        #TODO: stop app
+        Jake.process_spec_results(start)        
+        
+        $stdout.flush
+        
+    end
+    
     task :emulator => "device:android:debug" do
+        run_emulator
+        load_app_and_run
+    end
+
+    def  run_emulator
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
       puts `"#{$adb}" start-server`
 
@@ -1103,8 +1153,11 @@ namespace "run" do
       puts "Emulator is up and running" if running
       $stdout.flush
       puts `"#{$adb}" -e wait-for-device`
-
+    end
+    
+    def  load_app_and_run
       puts "Loading package into emulator"
+      apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
       count = 0
       done = false
       while count < 20
