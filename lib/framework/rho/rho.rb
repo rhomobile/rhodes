@@ -560,7 +560,10 @@ module Rho
     end
         
     def send_error(exception=nil,status=500,hash=false)
-	  puts "App error: #{exception}" if exception
+      if exception
+        trace_msg = exception.backtrace.join("\n")
+	    puts "App error: #{exception}\n #{trace_msg}"
+	  end  
       body=''
       
       err_page = nil
