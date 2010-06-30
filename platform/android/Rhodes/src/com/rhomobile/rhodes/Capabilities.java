@@ -8,6 +8,7 @@ public class Capabilities {
 	public static boolean NETWORK_STATE_ENABLED = true;
 	public static boolean PHONE_ENABLED = true;
 	public static boolean PIM_ENABLED = true;
+	public static boolean RECORD_AUDIO_ENABLED = true;
 	public static boolean VIBRATE_ENABLED = true;
 	
 }
