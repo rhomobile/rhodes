@@ -120,7 +120,7 @@ public class Rhodes extends Activity {
 		
 	private String rootPath = null;
 	
-	public native void createRhodesApp(String path);
+	public native void createRhodesApp(String rootPath, String sqliteJournalsPath);
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
@@ -155,15 +155,24 @@ public class Rhodes extends Activity {
 		return rootPath;
 	}
 	
-	private String phoneMemoryRootPath() {
+	private ApplicationInfo getAppInfo() {
 		String pkgName = getPackageName();
 		try {
 			ApplicationInfo info = getPackageManager().getApplicationInfo(pkgName, 0);
-			String path = info.dataDir + "/rhodata/";
-			return path;
+			return info;
 		} catch (NameNotFoundException e) {
 			throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
 		}
+	}
+	
+	private String getSqliteJournalsPath() {
+		String path = getAppInfo().dataDir + "/sqlite_stmt_journals/";
+		new File(path).mkdirs();
+		return path;
+	}
+	
+	private String phoneMemoryRootPath() {
+		return getAppInfo().dataDir + "/rhodata/";
 	}
 	
 	private String sdcardRootPath() {
@@ -174,7 +183,7 @@ public class Rhodes extends Activity {
 	}
 	
 	public static String getBlobPath() {
-		return RhodesInstance.getInstance().getRootPath() + "db/db-files";
+		return RhodesInstance.getInstance().getRootPath() + "/db/db-files";
 	}
 	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
@@ -491,7 +500,7 @@ public class Rhodes extends Activity {
 			finish();
 			return;
 		}
-		createRhodesApp(getRootPath());
+		createRhodesApp(getRootPath(), getSqliteJournalsPath());
 		
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))
