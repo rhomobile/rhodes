@@ -2,11 +2,11 @@ require 'rho/rhocontroller'
 require 'Spec/spec_runner'
 
 def Test_equal(p1,p2)
-    raise "Expected '#{p1}' equal to '#{p2}'" if p1 != p2
+    raise "Expected '#{p1.inspect.to_s}' equal to '#{p2.inspect.to_s}'" if p1 != p2
 end
 
 def Test_not_equal(p1,p2)
-    raise "Expected '#{p1}' not equal to '#{p2}'" if p1 == p2
+    raise "Expected '#{p1.inspect.to_s}' not equal to '#{p2.inspect.to_s}'" if p1 == p2
 end
 
 class SpecController < Rho::RhoController
