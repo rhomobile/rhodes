@@ -100,6 +100,7 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
 
 void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 {
+    LOG(INFO) + "Open DB: " + strDbPath;
     if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 )
         return;
     close();
