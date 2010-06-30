@@ -69,7 +69,7 @@ class RhoFileTest
         end
         
     end
-    
+
     def dir_test
         dir_name = Rho::RhoApplication::get_model_path('app', 'cache')
         Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
@@ -85,6 +85,15 @@ class RhoFileTest
         res = create_file_in_cache(dir_name, "cache_test", "3")
         Test_equal( res, "limit" )
         
+    end
+
+    def isfileexist_test
+        Test_equal( File.exist?(Rho::RhoApplication::get_model_path('app', 'spec')), true ) if System.get_property('platform') != 'Blackberry'
+        Test_equal( File.exist?(Rho::RhoApplication::get_blob_folder()), true )
+        Test_equal( File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')),  true )
+        
+        Test_equal( File.exist?(nil), false )        
+        Test_equal( File.exist?(""), false )        
     end
         
     def clear
