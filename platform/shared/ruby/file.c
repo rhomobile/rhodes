@@ -1202,6 +1202,7 @@ static VALUE
 rb_file_exist_p(VALUE obj, VALUE fname)
 {
 //RHO
+
 #ifdef DOSISH
 /*    int ret = 1;
     int fd;
@@ -1212,13 +1213,19 @@ rb_file_exist_p(VALUE obj, VALUE fname)
     if (fd == -1) return Qfalse;
     (void)close(fd);
     return Qtrue; */
-    DWORD res = GetFileAttributesA(RSTRING_PTR(fname));
+    DWORD res = 0;
+    if (NIL_P(fname))
+        return Qfalse;
+
+    res = GetFileAttributesA(RSTRING_PTR(fname));
     if (res == INVALID_FILE_ATTRIBUTES)
         return Qfalse;
 
     return Qtrue;
 #else
     struct stat st;
+    if (NIL_P(fname))
+        return Qfalse;
     
     if (rb_stat(fname, &st) < 0) return Qfalse;
     return Qtrue;
