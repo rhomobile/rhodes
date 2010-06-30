@@ -16,10 +16,10 @@ extern "C" {
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    createRhodesApp
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
