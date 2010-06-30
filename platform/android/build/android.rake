@@ -178,6 +178,7 @@ namespace "config" do
     $app_android_r = File.join $tmpdir, "AndroidR.java"
     $app_rjava_dir = File.join $tmpdir
     $app_native_libs_java = File.join $tmpdir, "NativeLibraries.java"
+    $app_capabilities_java = File.join $tmpdir, "Capabilities.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = #"cmd /c " + 
@@ -670,13 +671,23 @@ namespace "build" do
         puts "Need to regenerate rhocaps.inc"
         $stdout.flush
         File.open(rhocaps_inc, 'w') do |f|
-          ANDROID_PERMISSIONS.keys.each do |k|
+          ANDROID_PERMISSIONS.keys.sort.each do |k|
             f.puts "RHO_DEFINE_CAP(#{k.upcase})"
           end
         end
       else
         puts "No need to regenerate rhocaps.inc"
         $stdout.flush
+      end
+
+      # Generate Capabilities.java
+      File.open($app_capabilities_java, "w") do |f|
+        f.puts "package com.rhomobile.rhodes;"
+        f.puts "public class Capabilities {"
+        ANDROID_PERMISSIONS.keys.sort.each do |k|
+          f.puts "  public static boolean #{k.upcase}_ENABLED = true;"
+        end
+        f.puts "}"
       end
     end
 
@@ -813,6 +824,7 @@ namespace "build" do
       end
       lines << $app_android_r
       lines << $app_native_libs_java
+      lines << $app_capabilities_java
       if File.exists? File.join($extensionsdir, "ext_build.files")
         File.open(File.join($extensionsdir, "ext_build.files")) do |f|
           while line = f.gets
