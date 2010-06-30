@@ -17,6 +17,11 @@ public abstract class RubyConstant extends RubyBasic {
         public boolean isTrue() {
             return false;
         }
+        
+        public String toStr() {
+            throw new RubyException(RubyRuntime.TypeErrorClass, "Cannot convert nil into String");
+        }
+        
     };
 
     private RubyConstant(RubyClass c) {
