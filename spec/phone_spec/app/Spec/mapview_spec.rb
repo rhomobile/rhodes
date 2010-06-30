@@ -9,7 +9,9 @@ class MapViewTest
     Test_equal( state, nil )
 
     MapView.create :settings => {:map_type => 'roadmap', :region => [37, -122, 10, 10]}
-    sleep 2
+    w = 2
+    w = 5 if System::get_property('platform') == 'ANDROID'
+    sleep w
 
     state = MapView.state
     Test_not_equal( state, nil )
