@@ -52,7 +52,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 		File f = new File(filename);
 		long length =  f.length();
         try {
-            file_ = new RandomAccessFile(f, translateMode(mode));
+            file_ = new RandomAccessFile(f, translateMode(mode), true);
             if (mode.equals("w")) {
                 file_.setLength(0);
             } else if (mode.equals("a")) {

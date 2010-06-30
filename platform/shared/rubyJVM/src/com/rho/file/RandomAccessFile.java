@@ -26,12 +26,19 @@ public class RandomAccessFile
     public RandomAccessFile(String name, String mode)
         throws FileNotFoundException
     {
-        this(name != null ? new File(name) : null, mode);
+        this(name != null ? new File(name) : null, mode, false);
     }
         
     public RandomAccessFile(File file, String mode)
         throws FileNotFoundException
     {
+    	this(file, mode, false);
+    }
+    
+    public RandomAccessFile(File file, String mode, boolean bFileSystem)
+    	throws FileNotFoundException
+    {
+    
     	String name = (file != null ? file.getAbsolutePath() : null);
     	int imode = -1;
     	if (mode.equals("r") || mode.equals("rb"))
@@ -55,7 +62,11 @@ public class RandomAccessFile
         }
     	
         try {
-			m_impl = RhoClassFactory.createRAFile();
+        	if ( bFileSystem )
+        		m_impl = RhoClassFactory.createFSRAFile();
+        	else
+        		m_impl = RhoClassFactory.createRAFile();
+        	
 		} catch (Exception e) {
 			throw new FileNotFoundException(e.getMessage());
 		}

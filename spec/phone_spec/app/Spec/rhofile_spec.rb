@@ -1,8 +1,8 @@
 class RhoFileTest
     def initialize
-        clear()
+      clear()
     end
-
+    
     def write_test
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.txt')
         File.delete(file_name) if File.exists?(file_name)
@@ -92,7 +92,14 @@ class RhoFileTest
         Test_equal( File.exist?(Rho::RhoApplication::get_blob_folder()), true )
         Test_equal( File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')),  true )
         
-        Test_equal( File.exist?(nil), false )        
+        bExc = false
+        begin
+            File.exist?(nil)
+        rescue Exception => e
+            bExc = e.is_a?(TypeError)
+        end
+        
+        Test_equal( bExc, true )
         Test_equal( File.exist?(""), false )        
     end
         
