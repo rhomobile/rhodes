@@ -303,9 +303,9 @@ public class AsyncHttp extends RhoThread
 				
 				try {
 					String url = args.get(0).toStr();
-					String callback = args.get(2).toStr();
-					String callback_params = args.get(3).toStr();
-					boolean ssl_verify_peer = args.get(4).toInt() != 0 ? true : false;
+					String callback = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
+					String callback_params = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
+					boolean ssl_verify_peer = args.get(4) != RubyConstant.QNIL && args.get(4).toInt() != 0 ? true : false;
 					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcGet, url, args.get(1), null, null, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
@@ -324,10 +324,10 @@ public class AsyncHttp extends RhoThread
 				
 				try {
 					String url = args.get(0).toStr();
-					String body = args.get(2).toStr();
-					String callback = args.get(3).toStr();
-					String callback_params = args.get(4).toStr();
-					boolean ssl_verify_peer = args.get(5).toInt() != 0 ? true : false;
+					String body = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
+					String callback = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
+					String callback_params = args.get(4) != RubyConstant.QNIL ? args.get(4).toStr() : null;
+					boolean ssl_verify_peer = args.get(4) != RubyConstant.QNIL && args.get(4).toInt() != 0 ? true : false;
 					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcPost, url, args.get(1), body, null, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
@@ -346,10 +346,10 @@ public class AsyncHttp extends RhoThread
 				
 				try {
 					String url = args.get(0).toStr();
-					String filepath = args.get(2).toStr();
-					String callback = args.get(3).toStr();
-					String callback_params = args.get(4).toStr();
-					boolean ssl_verify_peer = args.get(5).toInt() != 0 ? true : false;
+					String filepath = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
+					String callback = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
+					String callback_params = args.get(4) != RubyConstant.QNIL ? args.get(4).toStr() : null;
+					boolean ssl_verify_peer = args.get(4) != RubyConstant.QNIL && args.get(4).toInt() != 0 ? true : false;
 					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcDownload, url, args.get(1), null, filepath, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
@@ -368,11 +368,11 @@ public class AsyncHttp extends RhoThread
 				
 				try {
 					String url = args.get(0).toStr();
-					String body = args.get(2).toStr();
-					String filepath = args.get(3).toStr();
-					String callback = args.get(4).toStr();
-					String callback_params = args.get(5).toStr();
-					boolean ssl_verify_peer = args.get(6).toInt() != 0 ? true : false;
+					String body = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
+					String filepath = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
+					String callback = args.get(4) != RubyConstant.QNIL ? args.get(4).toStr() : null;
+					String callback_params = args.get(5) != RubyConstant.QNIL ? args.get(5).toStr() : null;
+					boolean ssl_verify_peer = args.get(6) != RubyConstant.QNIL && args.get(6).toInt() != 0 ? true : false;
 					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcUpload, url, args.get(1), body, filepath, callback, callback_params );
 					return pHttp.getRetValue();
 				} catch(Exception e) {
