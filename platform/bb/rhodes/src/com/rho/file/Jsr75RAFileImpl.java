@@ -327,12 +327,12 @@ public class Jsr75RAFileImpl implements IRAFile {
 	}
 
 	public boolean exists() {
-		return m_file.exists();
+		return m_file != null && m_file.exists();
 	}
 	
 	public void rename(String newName) throws IOException {
 		//PROF.START(RhoProfiler.FILE_RENAME);
-		if (m_file.exists())
+		if (m_file != null && m_file.exists())
 			m_file.rename(newName);
 		//PROF.STOP(RhoProfiler.FILE_RENAME);
 	}
