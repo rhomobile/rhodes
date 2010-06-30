@@ -20,7 +20,8 @@ const char *rho_java_class[] = {
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 
-static rho::String g_rootPath;
+static std::string g_root_path;
+static std::string g_sqlite_journals_path;
 
 static pthread_key_t g_thrkey;
 
@@ -179,7 +180,7 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 
 const char* rho_native_rhopath()
 {
-    return g_rootPath.c_str();
+    return g_root_path.c_str();
 }
 
 jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
@@ -328,14 +329,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
-  (JNIEnv *env, jobject, jstring path)
+  (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path)
 {
     if (!set_capabilities(env)) return;
 
-    g_rootPath = rho_cast<std::string>(path);
+    g_root_path = rho_cast<std::string>(root_path);
+    g_sqlite_journals_path = rho_cast<std::string>(sqlite_journals_path);
 
     // Init SQLite temp directory
-    sqlite3_temp_directory = (char*)"/sqlite_stmt_journals";
+    sqlite3_temp_directory = (char*)g_sqlite_journals_path.c_str();
 
     const char* szRootPath = rho_native_rhopath();
 
