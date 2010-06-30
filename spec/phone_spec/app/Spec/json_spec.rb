@@ -84,8 +84,7 @@ class JsonTest
         manf =  parsed["Manufacturer List"][10]["Manufacturer"]
         puts "manf : #{manf}"
         
-        url2 = "http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=" + 
-            Rho::RhoSupport.url_encode(manf) + "&startindex=1&endindex=10"
+        url2 = "http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=#{Rho::RhoSupport.url_encode(manf)}&startindex=1&endindex=10"
         
         res = Rho::AsyncHttp.get( :url => url2 )
         puts "res : #{res}"  
@@ -96,7 +95,22 @@ class JsonTest
         Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
         
     end
+
+    def webservice3_test
+        return unless $is_network_available
+            
+        res = Rho::AsyncHttp.get( :url => 'http://api.foursquare.com/v1/venues.json?geolat=37.331689&geolong=-122.030731' )
+        puts "res : #{res}"  
+        Test_equal(res['status'],'ok')
+        
+        #@places = Array.new
+        #res['body'].each do |attributes|
+        #    puts "attributes : #{attributes}"
+        #    @places << Place.new(attributes)
+        #end        
+    end
 =end    
+    
     def clear
     end
 end    
