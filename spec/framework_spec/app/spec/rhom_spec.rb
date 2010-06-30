@@ -25,10 +25,6 @@ describe "Rhom" do
 
   it_should_behave_like "rhom initializer"
   
-  it "should fail a test right now!" do
-    true.should == false
-  end
-  
   it "should get client_id" do
     Rhom::Rhom::client_id.should == CLIENT_ID
   end
