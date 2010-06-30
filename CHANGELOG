@@ -1,3 +1,7 @@
+## 2.0.1
+* #4049590 - Android 2.2, rhodes rc2: take picture hangs
+* #4103477 - Android 2.2: can't write to DB
+
 ## 2.0.0
 * #4053947 - Android: FindClass always return NULL when called outside of JNI_OnLoad
 * #4060638 - reset functions don't wipe client_id
