@@ -27,12 +27,14 @@ end
 ANDROID_API_LEVEL = 3
 
 ANDROID_PERMISSIONS = {
+  'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
   'camera' => 'CAMERA',
   'gps' => 'ACCESS_FINE_LOCATION',
   'network_state' => 'ACCESS_NETWORK_STATE',
   'phone' => ['CALL_PHONE', 'READ_PHONE_STATE'],
   'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS'],
-  'vibrate' => 'VIBRATE'
+  'record_audio' => 'RECORD_AUDIO'
+  'vibrate' => 'VIBRATE',
 }
 
 def set_app_name_android(newname)
@@ -77,7 +79,7 @@ def set_app_name_android(newname)
   end
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
 
-  caps = ['INTERNET']
+  caps = ['INTERNET', 'PERSISTENT_ACTIVITY']
   $app_config["capabilities"].each do |cap|
     cap = ANDROID_PERMISSIONS[cap]
     next if cap.nil?
@@ -89,7 +91,7 @@ def set_app_name_android(newname)
 
   manifest = doc.elements["manifest"]
   manifest.elements.each('uses-permission') { |e| manifest.delete e }
-  caps.each do |cap|
+  caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
     element.add_attribute('android:name', "android.permission.#{cap}")
     manifest.add element
