@@ -46,7 +46,7 @@ public class File {
         try
         {
             m_strFullPath = _path;
-            if (!m_strFullPath.startsWith("file:")) 
+            if ( m_strFullPath != null && m_strFullPath.length() > 0 && !m_strFullPath.startsWith("file:")) 
             	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
         	
         	m_raFile = RhoClassFactory.createFSRAFile();
@@ -63,7 +63,7 @@ public class File {
         try
         {
             m_strFullPath = _path;
-            if (!m_strFullPath.startsWith("file:")) 
+            if ( m_strFullPath != null && m_strFullPath.length() > 0 && !m_strFullPath.startsWith("file:")) 
             	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
         	
         	m_raFile = RhoClassFactory.createFSRAFile();
