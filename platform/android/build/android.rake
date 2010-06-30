@@ -33,8 +33,8 @@ ANDROID_PERMISSIONS = {
   'network_state' => 'ACCESS_NETWORK_STATE',
   'phone' => ['CALL_PHONE', 'READ_PHONE_STATE'],
   'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS'],
-  'record_audio' => 'RECORD_AUDIO'
-  'vibrate' => 'VIBRATE',
+  'record_audio' => 'RECORD_AUDIO',
+  'vibrate' => 'VIBRATE'
 }
 
 def set_app_name_android(newname)
