@@ -2,6 +2,7 @@ package com.rhomobile.rhodes;
 
 public class Capabilities {
 	
+	public static boolean AUDIO_ENABLED = true;
 	public static boolean CAMERA_ENABLED = true;
 	public static boolean GPS_ENABLED = true;
 	public static boolean NETWORK_STATE_ENABLED = true;
