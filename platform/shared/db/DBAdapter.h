@@ -55,7 +55,7 @@ public:
     DEFINE_LOGCLASS;
 
     CDBAdapter(const char* szDBPartition, boolean bNoRubyLock) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
-        m_bUIWaitDB(false), m_nTransactionCounter(0), m_mxRuby(bNoRubyLock) {}
+        m_mxRuby(bNoRubyLock), m_bUIWaitDB(false), m_nTransactionCounter(0) {}
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
