@@ -97,7 +97,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 
     public void print(String s) {
         if (null == file_) {
-            throw new RubyException(RubyRuntime.IOErrorClass, "file is not opened");
+            throw new RubyException(RubyRuntime.SystemCallErrorClass, "file is not opened");
         }
 
         try {
@@ -129,7 +129,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 
     public String gets(RubyValue separator) {
         if (null == file_) {
-            throw new RubyException(RubyRuntime.IOErrorClass, "file is not opened");
+            throw new RubyException(RubyRuntime.SystemCallErrorClass, "file is not opened");
         }
 
         try {
@@ -152,7 +152,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 
     public String read() {
         if (null == file_) {
-            throw new RubyException(RubyRuntime.IOErrorClass, "file is not opened");
+            throw new RubyException(RubyRuntime.SystemCallErrorClass, "file is not opened");
         }
 
         try {
@@ -164,7 +164,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 
     public String read(long length) {
         if (null == file_) {
-            throw new RubyException(RubyRuntime.IOErrorClass, "file is not opened");
+            throw new RubyException(RubyRuntime.SystemCallErrorClass, "file is not opened");
         }
 
         try {
@@ -183,7 +183,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 
     public String read(int length, int offset) {
         if (null == file_) {
-            throw new RubyException(RubyRuntime.IOErrorClass, "file is not opened");
+            throw new RubyException(RubyRuntime.SystemCallErrorClass, "file is not opened");
         }
 
         try {
