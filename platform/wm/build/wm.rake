@@ -104,16 +104,23 @@ namespace "build" do
     task :devrhobundle => ["wm:rhobundle"] do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         mkdir_p win32rhopath
+        namepath = File.join(win32rhopath,"name.txt")        
+        old_appname = File.read(namepath) if File.exists?(namepath)
+        
         rm_rf win32rhopath + 'lib'      
         rm_rf win32rhopath + 'apps'
+        rm_rf win32rhopath + 'db' if old_appname != $appname
         
         cp_r $srcdir + '/lib', win32rhopath
         cp_r $srcdir + '/apps', win32rhopath      
         cp_r $srcdir + '/db', win32rhopath      
+        
+        File.open(namepath, "w") { |f| f.write($appname) }      
+        
     end
   end
 
-  #desc "Build rhode for win32"
+  #desc "Build rhodes for win32"
   task :win32 => ["config:wm", "build:win32:devrhobundle"] do
     chdir $config["build"]["wmpath"]
 
@@ -258,6 +265,13 @@ namespace "run" do
   namespace "win32" do
   
     task :spec => ["build:win32"] do
+        #remove log file
+        win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+        win32logpath = File.join(win32rhopath,"RhoLog.txt")        
+        win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")        
+        rm_rf win32logpath if File.exists?(win32logpath)
+        rm_rf win32logpospath if File.exists?(win32logpospath)
+        
         Jake.before_run_spec
         start = Time.now
         
