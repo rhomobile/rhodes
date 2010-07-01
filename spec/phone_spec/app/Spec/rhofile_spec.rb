@@ -102,6 +102,20 @@ class RhoFileTest
         Test_equal( bExc, true )
         Test_equal( File.exist?(""), false )        
     end
+    
+    def readnonexistfile_test
+        file_name = Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_345'
+        Test_equal( File.exist?(file_name), false )
+    
+        bExc = false
+        begin
+            File.binread(file_name)
+        rescue Exception => e
+            puts "e: #{e}"
+            bExc = e.is_a?(SystemCallError)
+        end
+        Test_equal( bExc, true )
+    end
         
     def clear
         (1..2).each do |n|
