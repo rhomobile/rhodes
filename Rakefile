@@ -346,7 +346,7 @@ def create_manifest
         puts "******ERROR enumerating models***********"
         puts "Model definition has changed and doesn't use config.rb anymore: '#{path}' "
         puts "You should replace config.rb with <model_name>.rb file as described: "
-        puts "http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models_2.0"
+        puts "http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models"
         puts "*****************************************"
         exit 1
     end
