@@ -18,22 +18,27 @@
 #include "common/RhoMutexLock.h"
 
 extern int _errno;
+#define map_errno rb_w32_map_errno
 
 int rb_w32_rename(const char *oldname, const char *newname)
 {
 	wchar_t *wold, *wnew;
-	BOOL rc;
+	int ret = 0;
 
 	wold = wce_mbtowc(oldname);
 	wnew = wce_mbtowc(newname);
 
 	/* replace with MoveFile. */
-	rc = MoveFileW(wold, wnew);
+	if ( MoveFileW(wold, wnew) == FALSE )
+    {
+        errno = map_errno(GetLastError());
+        ret = -1;
+    }
 
 	free(wold);
 	free(wnew);
 
-	return rc==TRUE ? 0 : -1;
+	return ret;
 }
 
 int _rename(const char *oldname, const char *newname)
@@ -41,17 +46,25 @@ int _rename(const char *oldname, const char *newname)
     return rb_w32_rename(oldname, newname);
 }
 
-int rb_w32_unlink(const char *file)
+int rb_w32_unlink(const char *path)
 {
-	wchar_t *wfile;
-	BOOL rc;
+	wchar_t *wfile = wce_mbtowc(path);
+    int ret = 0;
 
-	/* replace with DeleteFile. */
-	wfile = wce_mbtowc(file);
-	rc = DeleteFileW(wfile);
+	const DWORD attr = GetFileAttributes(path);
+	if (attr != (DWORD)-1 && (attr & FILE_ATTRIBUTE_READONLY)) {
+	    SetFileAttributes(path, attr & ~FILE_ATTRIBUTE_READONLY);
+	}
+	if (DeleteFileW(wfile) == FALSE) {
+	    errno = map_errno(GetLastError());
+	    ret = -1;
+	    if (attr != (DWORD)-1 && (attr & FILE_ATTRIBUTE_READONLY)) {
+		SetFileAttributes(path, attr);
+	    }
+	}
+
 	free(wfile);
-
-	return rc==TRUE ? 0 : -1;
+    return ret;
 }
 
 int _unlink(const char *file)
@@ -213,7 +226,10 @@ int _open(const char *path, int oflag, va_list arg)
 
     fNumber = get_NewFileNumber();
     if ( fNumber == 0 )
+    {
+    	errno = EMFILE;
         return -1;
+    }
 
     wfile = wce_mbtowc(path);
     if ( (osfh = CreateFileW( wfile,
@@ -249,6 +265,7 @@ int _open(const char *path, int oflag, va_list arg)
         return fNumber;
     }
 
+    errno = rb_w32_map_errno(lasterror);
     return -1;
 }
 /*
@@ -299,7 +316,12 @@ int _read(int fd, void *buffer, int length)
 	DWORD dw;
     HANDLE fHandle = get_OSHandleByFileNumber(fd);
 
-	ReadFile( fHandle, buffer, length, &dw, NULL );
+	if ( ReadFile( fHandle, buffer, length, &dw, NULL ) == FALSE )
+    {
+        errno = map_errno(GetLastError());
+        return -1;
+    }
+
 	return (int)dw;
 }
 
@@ -316,17 +338,22 @@ int _write(int fd, const void *buffer, unsigned count)
 {
     DWORD dw;
     if ( fd < 0 ) {
-      //char* buf = (char*) malloc(count+1);
-	  //memcpy(buf,buffer,count);
-	  //buf[count] = 0;
-	  //printf("%s",buf);
-	  //free(buf);
-	  //dw = count;
-	  //TBD: fix output of the long strings
-      dw = fwrite( buffer, 1, count, stdout);
+        //char* buf = (char*) malloc(count+1);
+        //memcpy(buf,buffer,count);
+        //buf[count] = 0;
+        //printf("%s",buf);
+        //free(buf);
+        //dw = count;
+        //TBD: fix output of the long strings
+        dw = fwrite( buffer, 1, count, stdout);
     } else {
-      HANDLE fHandle = get_OSHandleByFileNumber(fd);
-      WriteFile( fHandle, buffer, count, &dw, NULL );
+        HANDLE fHandle = get_OSHandleByFileNumber(fd);
+        if ( WriteFile( fHandle, buffer, count, &dw, NULL ) == FALSE )
+        {
+            errno = map_errno(GetLastError());
+            return -1;
+        }
+
     }
     return (int)dw;
 }
@@ -342,7 +369,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
 
 long _lseek(int fd, long offset, int origin)
 {
-	DWORD flag, ret;
+	DWORD flag, ret = 0;
     HANDLE fHandle = get_OSHandleByFileNumber(fd);
 	switch(origin)
 	{
@@ -352,8 +379,13 @@ long _lseek(int fd, long offset, int origin)
 	default:       flag = FILE_CURRENT; break;
 	}
 
-	ret = SetFilePointer( fHandle, offset, NULL, flag );
-	return ret==0xFFFFFFFF ? -1 : 0;
+	if ( SetFilePointer( fHandle, offset, NULL, flag ) == 0xFFFFFFFF )
+    {
+        errno = map_errno(GetLastError());
+        ret = -1;
+    }
+
+	return ret ? -1 : 0;
 }
 /*
 long _lseeki64(int handle, long offset, int origin)
@@ -375,7 +407,8 @@ long _findfirst( char *file, struct _finddata_t *fi )
 	h = FindFirstFileA( file, &fda );
 	if( h==NULL )
 	{
-		errno = EINVAL; return -1;
+		errno = map_errno(GetLastError());
+        return -1;
 	}
 
 	fi->attrib      = fda.dwFileAttributes;
@@ -399,7 +432,8 @@ int _findnext( long fd, struct _finddata_t *fi )
 
 	if( b==FALSE )
 	{
-		errno = ENOENT; return -1;
+		errno = map_errno(GetLastError());
+        return -1;
 	}
 
 	fi->attrib      = fda.dwFileAttributes;
@@ -415,10 +449,16 @@ int _findnext( long fd, struct _finddata_t *fi )
 int _findclose( long fd )
 {
 	BOOL b;
+    int ret = 0;
     HANDLE fHandle = get_OSHandleByFileNumber(fd);
     set_FileNumber(fd,0);
-	b = FindClose( fHandle );
-	return b==FALSE ? -1 : 0;
+	if ( FindClose( fHandle ) == FALSE )
+    {
+        errno = map_errno(GetLastError());
+        ret = -1;
+    }
+
+	return ret;
 }
 
 /* below functions unsupported... */
