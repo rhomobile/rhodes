@@ -247,8 +247,18 @@ namespace "build" do
     task :devrhobundle => [:set_dev_outname,:rhobundle] do
       cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
       
-      sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes/apps/rhoconfig.txt"
-      cp $app_path+"/rhoconfig.txt", sdcardpath if File.exists? sdcardpath
+      sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes"
+      
+      namepath = File.join(sdcardpath,"name.txt")        
+      old_appname = File.read(namepath) if File.exists?(namepath)
+      rm_rf sdcardpath if old_appname != $appname
+      mkdir_p sdcardpath unless File.exists?(sdcardpath)
+      
+      confpath = File.join( sdcardpath, "/apps/rhoconfig.txt" )
+      cp $app_path+"/rhoconfig.txt", confpath if File.exists? confpath
+      
+      File.open(namepath, "w") { |f| f.write($appname) }      
+      
     end
 
     def create_jarmanifest
