@@ -2,6 +2,7 @@
 #include "SyncEngine.h"
 #include "net/URI.h"
 #include "rubyext/RhoRuby.h"
+#include "common/RhoFilePath.h"
 
 namespace rho {
 namespace sync {
@@ -448,14 +449,9 @@ boolean CSyncNotify::callNotify(const String& strUrl, const String& strBody )
 {
     if ( getSync().isNoThreadedMode() )
     {
-        const char* szName = strrchr(strUrl.c_str(), '/');
-        if (!szName)
-            szName = strUrl.c_str();
-        else
-            szName++;
+        common::CFilePath path(strUrl);
+    	String strName = String("C_") + path.getBaseName();
 
-        String strName = "C_";
-        strName += szName;
         rho_ruby_set_const( strName.c_str(), strBody.c_str());
         return false;
     }

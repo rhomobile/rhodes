@@ -780,6 +780,14 @@ module Rho
   
 end # Rho
 
+module SyncEngine
+    def self.set_syncserver(url)
+        Rho::RhoConfig.syncserver = url
+        
+        SyncEngine.do_set_syncserver(url)
+    end
+end
+
 #at_exit do
 	#::Rhom::RhomDbAdapter.close
 #end

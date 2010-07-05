@@ -17,7 +17,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-require 'spec/spec_helper'
+#require 'spec/spec_helper'
 require 'rho/rho'
 
 describe "BulkSync_test" do
@@ -29,14 +29,19 @@ describe "BulkSync_test" do
     
     SyncEngine.set_syncserver('http://rhodes-store-server-bulk.heroku.com/application')
     Rho::RhoConfig.bulksync_state='0'
-    
+
+    @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
+
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'BulkTest'})
   end
 
   after(:all)  do
-    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'}, {'name'=>'BulkTest'})
+    @save_sync_types.each do |src|
+        ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>src['sync_type']}, {'name'=>src['name']})
+    end
   end
-  
+
   it "should login" do
     SyncEngine.login('admin', "", "/app/Settings/login_callback")
   
@@ -44,6 +49,7 @@ describe "BulkSync_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
+    Object.const_set( "C_login_callback", nil )
   end
 
   it "should sync BulkTest" do
@@ -55,6 +61,7 @@ describe "BulkSync_test" do
     res = ::Rho::RhoSupport::parse_query_parameters C_bulk_sync_notify
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    Object.const_set( "C_bulk_sync_notify", nil )
   end
 
   it "should logout" do
@@ -62,4 +69,6 @@ describe "BulkSync_test" do
   
     SyncEngine.logged_in.should == 0
   end
+  
+
 end

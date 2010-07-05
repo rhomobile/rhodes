@@ -81,7 +81,7 @@ public class RubyRuntime {
     //RHO
 	private static RubyModule SQLite3Module;
     public static RubyClass DatabaseClass;
-    public static RubyClass SyncEngineClass;
+    public static RubyModule SyncEngineClass;
     public static RubyClass StringScannerClass;
     public static RubyClass PhonebookClass;
     public static RubyClass PBRecordClass;
@@ -252,7 +252,7 @@ public class RubyRuntime {
 //        DBAdapterClass = RubyAPI.defineClass("DbAdapter", RubyRuntime.ObjectClass);
 //        PerstLiteAdapter.initMethods(DBAdapterClass);
         
-        SyncEngineClass = RubyAPI.defineClass("SyncEngine", RubyRuntime.ObjectClass);
+        SyncEngineClass = RubyAPI.defineModule("SyncEngine" );//, RubyRuntime.ObjectClass);
 //        SyncEngine.initMethods(SyncEngineClass);
 
         StringScannerClass = RubyAPI.defineClass("StringScanner", RubyRuntime.ObjectClass);

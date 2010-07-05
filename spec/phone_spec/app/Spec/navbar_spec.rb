@@ -1,4 +1,4 @@
-class NavBarTest
+class NavBarSpec
   def initialize
   end
 
