@@ -1,4 +1,4 @@
-class AsyncHttpTest
+class AsyncHttpSpec
     def initialize
     end
 
@@ -8,7 +8,7 @@ class AsyncHttpTest
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0' )
         
-        puts "res : #{res}"  
+        #puts "res : #{res}"  
         
         Test_equal(res['status'],'ok')
         Test_equal(res['headers']['content-length'].to_i, 11358 )
@@ -33,7 +33,7 @@ class AsyncHttpTest
         res = Rho::AsyncHttp.download_file(
           :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
           :filename => file_name )
-        puts "res : #{res}"  
+        #puts "res : #{res}"  
         
         Test_equal(res['status'],'ok')
         Test_equal(res['headers']['content-length'].to_i, 8945 )
@@ -55,7 +55,7 @@ class AsyncHttpTest
         res = Rho::AsyncHttp.upload_file(
           :url => server + "/client_log?log_name=phone_test",
           :filename => file_name )
-        puts "res : #{res}"  
+        #puts "res : #{res}"  
         
         Test_equal(res['status'],'ok')
 
@@ -71,7 +71,7 @@ class AsyncHttpTest
         res = Rho::AsyncHttp.get(
           :url => 'https://mail.google.com/' )
         
-        puts "res : #{res}"  
+        #puts "res : #{res}"  
         
         Test_equal(res['status'],'ok')
         

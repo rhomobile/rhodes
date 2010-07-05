@@ -31,7 +31,7 @@ module LocalizationSimplified
         if Rho::file_exist?(file + curLocale + '.iseq')
             require file + curLocale
         else    
-            puts 'Could not find resources for locale: ' + curLocale.to_s
+            puts 'Could not find resources for locale: ' + curLocale.to_s if curLocale != 'en'
             if curLocale != 'en' && Rho::file_exist?(file + 'en.iseq')
                 puts 'Load english resources.'
                 require file + 'en'

@@ -169,9 +169,9 @@ namespace "config" do
     
 
     needsclean = true
-    if File.exists? "#{$bindir}/lastver"
-      lastver = IO.read("#{$bindir}/lastver").strip
-      needsclean = false if $bbver == lastver
+    if File.exists? "#{$app_path}/last_bbver"
+      last_bbver = IO.read("#{$app_path}/last_bbver").strip
+      needsclean = false if $bbver == last_bbver
     end
 
     Rake::Task["clean:bb:all"].invoke if needsclean
@@ -183,7 +183,7 @@ namespace "config" do
     mkdir_p $tmpdir_sim unless File.exists? $tmpdir_sim
     mkdir_p  $targetdir if not FileTest.exists?  $targetdir
 
-    File.open("#{$bindir}/lastver", "w") {|f| f.write($bbver)}
+    File.open("#{$app_path}/last_bbver", "w") {|f| f.write($bbver)}
 
   end
 end
@@ -753,7 +753,8 @@ namespace "run" do
         startsim
       end
       
-      task :spec => ["clean:bb", "run:bb:stopmdsandsim", "package:bb:production_sim"] do
+      #"clean:bb", 
+      task :spec => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"
         rm_rf jde + "/simulator/sdcard/Rho"

@@ -104,6 +104,9 @@ public class SyncEngine implements NetRequest.IRhoSession
     NetRequest getNet() { return m_NetRequest;}
     ISyncProtocol getProtocol(){ return m_SyncProtocol; }
     
+    boolean isNoThreadedMode(){ return m_bNoThreaded; }
+    void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
+    
     SyncEngine(){
 		m_NetRequest = null;
     	m_syncState = esNone;
@@ -123,7 +126,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		m_NetRequest = RhoClassFactory.createNetRequest();
     }
     
-    void prepareSync(int eState)throws Exception
+    void prepareSync(int eState, SourceID oSrcID)throws Exception
     {
         setState(eState);
         m_bStopByUser = false;
@@ -145,9 +148,15 @@ public class SyncEngine implements NetRequest.IRhoSession
         }else
             m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
         
-    	if ( m_sources.size() > 0 )
-        {		    	
-	    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
+        SyncSource src = null;
+        if ( oSrcID != null )
+        	src = findSource(oSrcID);
+        
+    	if ( src == null && m_sources.size() > 0 )
+	    	src = (SyncSource)m_sources.elementAt(getStartSource());
+    	
+    	if ( src != null )
+    	{
 	    	src.m_nErrCode = m_nErrCode;
 	    	
 	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
@@ -161,7 +170,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     {
 	    try
 	    {
-	        prepareSync(esSyncAllSources);
+	        prepareSync(esSyncAllSources, null);
 	
 	        if ( isContinueSync() )
 	        {
@@ -198,7 +207,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     {
 	    try
 	    {
-		    prepareSync(esSearch);
+		    prepareSync(esSearch, null);
 		    if ( !isContinueSync() )
 		    {
 		        if ( getState() != esExit )
@@ -358,7 +367,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	    try
 	    {
-	        prepareSync(esSyncSource);
+	        prepareSync(esSyncSource, oSrcID);
 	
 	        if ( isContinueSync() )
 	        {
@@ -416,6 +425,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
+	    m_arPartitions.removeAllElements();
 	    
 	    IDBResult res = getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY sync_priority");
 	    for ( ; !res.isEnd(); res.next() )
@@ -489,7 +499,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    if ( strSources.length() > 0 )
 	    {
-	        NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
+	        if (isNoThreadedMode())
+	            RhoRuby.loadserversources(strSources);            
+	        else
+	        {
+	        	NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
+	        }
+	        
 	        loadAllSources();
 	        
 	        DBAdapter.initAttrManager();

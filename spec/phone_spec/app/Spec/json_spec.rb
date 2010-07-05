@@ -1,4 +1,4 @@
-class JsonTest
+class JsonSpec
     def initialize
     end
 

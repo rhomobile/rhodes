@@ -17,18 +17,31 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-require 'spec/spec_helper'
+#require 'spec/spec_helper'
 require 'rho/rhocontroller'
 
-describe "Rho::RhoController" do
+module Rho
+  class RhoControllerStub < Rho::RhoController
+    def send(action)
+        render :string => "", :layout => false
+    end
+    
+    def index
+        render :string => "", :layout => false
+    end
+    
+  end
+end
 
-  describe "url_for and link_to" do
+describe "url_for and link_to" do
 
+    before(:all) do
+        @application = AppApplication.new
+    end
+    
     before do
-      @c = Rho::RhoController.new
-      @c.stub!(:send).and_return(nil)
-      #@c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model'},{})
-      @c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },{})      
+      @c = ::Rho::RhoControllerStub.new()
+      @c.serve(@application,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },{})
     end
 
     it "should generate urls for empty params" do
@@ -104,17 +117,19 @@ describe "Rho::RhoController" do
       @c.link_to("Invate",:action => :invite, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}).should == "<a href=\"/application/model/invite?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com\" >Invate</a>"
     end
 
-  end #describe "url_for and link_to"
+end #describe "url_for and link_to"
 
-  describe "redirect" do
+describe "redirect" do
+
+    before(:all) do
+        @application = AppApplication.new
+    end
 
     before do
       @response = Hash.new
       @response['headers'] = {}
-      @c = Rho::RhoController.new
-      @c.stub!(:send).and_return(nil)
-      #@c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model'},@response)
-      @c.serve(AppApplication.new,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },@response)
+      @c = Rho::RhoControllerStub.new
+      @c.serve(@application,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },@response)
     end
 
     it "should redirect to a url" do
@@ -137,7 +152,5 @@ describe "Rho::RhoController" do
       @response['status'].should == 301
       @response['message'].should == 'Moved permanently'
     end
-    
-  end #describe "redirect"
 
-end
+end #describe "redirect"

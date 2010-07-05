@@ -15,7 +15,7 @@ class Hash
   end
 end
 
-class ContactsTest
+class ContactsSpec
   def initialize
   end
 

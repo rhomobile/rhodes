@@ -100,18 +100,7 @@ class SpecRunner < MSpecScript
     end
  
     # RHODES
-    config[:files] << 'spec/rhom_spec'
-    config[:files] << 'spec/rhoruby_spec'
-    config[:files] << 'spec/rho_controller_spec'
     config[:files] << 'spec/rhom_object_spec'
-    config[:files] << 'spec/rho_spec'
-    config[:files] << 'spec/spec_helper'
-    config[:files] << 'spec/syncengine_spec'
-    config[:files] << 'spec/blobsync_spec'
-    #config[:files] << 'spec/bulksync_spec'
-    config[:files] << 'spec/rhom_db_adapter_spec'
-    config[:files] << 'spec/rhoerror_spec'
-    config[:files] << 'spec/bsearch_spec'
     #config[:files] << 'spec/find_spec'  # find not available on the device
 
   end

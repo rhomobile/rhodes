@@ -501,19 +501,14 @@ public class SyncNotify {
 
     boolean callNotify(String strUrl, String strBody )throws Exception
     {
-/*        if ( getSync().isNoThreadedMode() )
+        if ( getSync().isNoThreadedMode() )
         {
-            const char* szName = strrchr(strUrl.c_str(), '/');
-            if (!szName)
-                szName = strUrl.c_str();
-            else
-                szName++;
+        	FilePath path = new FilePath(strUrl);
+        	String strName = "C_" + path.getBaseName();
 
-            String strName = "C_";
-            strName += szName;
-            rho_ruby_set_const( strName.c_str(), strBody.c_str());
+            RhoRuby.set_const(strName, strBody);
             return false;
-        }*/
+        }
 
         NetResponse resp = getNet().pushData( strUrl, strBody, null );
         if ( !resp.isOK() )

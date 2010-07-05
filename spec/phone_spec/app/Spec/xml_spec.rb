@@ -1,6 +1,6 @@
 require 'rexml/document'
 
-class XmlTest
+class XmlSpec
     def initialize
     end
 

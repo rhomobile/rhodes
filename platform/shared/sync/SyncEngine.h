@@ -83,7 +83,7 @@ public:
 
     void loadAllSources();
     void syncAllSources();
-    void prepareSync(ESyncState eState);
+    void prepareSync(ESyncState eState, const CSourceID* oSrcID);
 
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
     int getStartSource();
@@ -103,7 +103,7 @@ public:
     void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
 
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
-    void setNonThreadedMode(bool b){m_bNoThreaded = b;}
+    void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
 private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);
