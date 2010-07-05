@@ -1,6 +1,6 @@
 require 'rho/mapview'
 
-class MapViewTest
+class MapViewSpec
   def initialize
   end
 

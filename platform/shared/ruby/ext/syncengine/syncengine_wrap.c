@@ -1567,7 +1567,7 @@ static VALUE mSyncEngine;
 	extern void rho_sync_set_pollinterval(int interval);
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern void rho_sync_set_syncserver(char* syncserver);
-	#define set_syncserver rho_sync_set_syncserver
+	#define do_set_syncserver rho_sync_set_syncserver
 	extern VALUE rho_sync_get_attrs(const char* szPartition, int source_id);
 	#define get_src_attrs rho_sync_get_attrs
 	extern VALUE rho_sync_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
@@ -2051,7 +2051,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_set_syncserver(int argc, VALUE *argv, VALUE self) {
+_wrap_do_set_syncserver(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -2062,10 +2062,10 @@ _wrap_set_syncserver(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_syncserver" "', argument " "1"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "do_set_syncserver" "', argument " "1"" of type '" "char *""'");
   }
   arg1 = (char *)(buf1);
-  set_syncserver(arg1);
+  do_set_syncserver(arg1);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 fail:
@@ -2624,7 +2624,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_notification", _wrap_set_notification, -1);
   rb_define_module_function(mSyncEngine, "clear_notification", _wrap_clear_notification, -1);
   rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_set_pollinterval, -1);
-  rb_define_module_function(mSyncEngine, "set_syncserver", _wrap_set_syncserver, -1);
+  rb_define_module_function(mSyncEngine, "do_set_syncserver", _wrap_do_set_syncserver, -1);
   rb_define_module_function(mSyncEngine, "get_src_attrs", _wrap_get_src_attrs, -1);
   rb_define_module_function(mSyncEngine, "is_blob_attr", _wrap_is_blob_attr, -1);
   rb_define_module_function(mSyncEngine, "set_objectnotify_url", _wrap_set_objectnotify_url, -1);

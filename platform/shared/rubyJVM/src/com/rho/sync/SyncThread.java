@@ -118,7 +118,11 @@ public class SyncThread extends RhoThread
     RhoClassFactory m_ptrFactory;
 	int           m_nPollInterval;
 	Object        m_mxStackCommands;// = new Mutex();
-	LinkedList	  m_stackCommands = new LinkedList();	         
+	LinkedList	  m_stackCommands = new LinkedList();
+	boolean m_bNoThreaded = false;
+	
+    boolean isNoThreadedMode(){ return m_bNoThreaded; }
+    void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
 	
 	public static SyncThread Create(RhoClassFactory factory)throws Exception
 	{
@@ -187,7 +191,17 @@ public class SyncThread extends RhoThread
     		if ( !bExist )
     			m_stackCommands.add(oSyncCmd);
     	}
-    	stopWait(); 
+        if ( isNoThreadedMode()  )
+        {
+        	try{
+        		processCommands();
+        	}catch(Exception e)
+        	{
+        		LOG.ERROR("processCommand failed", e);
+        	}
+        }
+        else
+        	stopWait(); 
     }
     
 	
@@ -278,7 +292,7 @@ public class SyncThread extends RhoThread
 
 	void checkShowStatus(SyncCommand oSyncCmd)
 	{
-		boolean bShowStatus = oSyncCmd.m_bShowStatus;
+		boolean bShowStatus = oSyncCmd.m_bShowStatus && !this.isNoThreadedMode();
 		m_oSyncEngine.getNotify().enableReporting(bShowStatus);
 		if (bShowStatus)
 			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
@@ -403,7 +417,7 @@ public class SyncThread extends RhoThread
 		getSyncEngine().getNotify().addObjectNotify(strSrcName, strObject);
 	}
 	
-	public static void initMethods(RubyClass klass) {
+	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("dosync", new RubyNoOrOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block )
 			{
@@ -660,7 +674,7 @@ public class SyncThread extends RhoThread
 					return RubyConstant.QNIL;
 				}
 			});
-		klass.getSingletonClass().defineMethod("set_syncserver",
+		klass.getSingletonClass().defineMethod("do_set_syncserver",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{
@@ -797,6 +811,23 @@ public class SyncThread extends RhoThread
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{
 							getSyncEngine().setSyncPageSize(arg1.toInt());
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_pagesize failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
+
+		klass.getSingletonClass().defineMethod("set_threaded_mode",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							boolean bThreadMode = arg1 == RubyConstant.QTRUE;
+							getInstance().setNonThreadedMode(!bThreadMode);
+							getSyncEngine().setNonThreadedMode(!bThreadMode);
 						}catch(Exception e)
 						{
 							LOG.ERROR("set_pagesize failed", e);

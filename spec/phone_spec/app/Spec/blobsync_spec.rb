@@ -17,9 +17,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-require 'spec/spec_helper'
+#require 'spec/spec_helper'
 require 'rho/rho'
-require 'fileutils'
+#require 'fileutils'
 
 describe "BlobSync_test" do
 
@@ -39,6 +39,7 @@ describe "BlobSync_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
+    Object.const_set( "C_login_callback", nil )
   end
 
   it "should sync BlobTest" do
@@ -49,6 +50,7 @@ describe "BlobSync_test" do
     res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should delete all Test Blobs" do
@@ -74,14 +76,19 @@ describe "BlobSync_test" do
     
     item2 = BlobTest.find(:first ) #, :conditions => {:name => 'BlobTestItem'})
     item2.should == nil
-    
+    Object.const_set( "C_sync_notify", nil )
   end
 
+  def copy_file(src, dst_dir)
+    content = File.binread(src)  
+    File.new(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
+  end
+  
   it "should create new BlobTest" do
     SyncEngine.logged_in.should == 1
 
     file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobTest'), 'test.png')
-    FileUtils.cp(file_name, Rho::RhoApplication::get_blob_folder() )
+    copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
     file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test.png')
     
     file_size = File.size(file_name)
@@ -108,6 +115,8 @@ describe "BlobSync_test" do
     File.size(new_file_name).should == file_size
     content_new = File.read(new_file_name)
     content_new.should == file_content
+    
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should modify BlobTest" do
@@ -118,7 +127,7 @@ describe "BlobSync_test" do
     saved_obj = item.object
 
     file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobTest'), 'test2.png')
-    FileUtils.cp(file_name, Rho::RhoApplication::get_blob_folder() )
+    copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
     file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test2.png')
     
 #    file_size = File.size(file_name)
@@ -145,6 +154,7 @@ describe "BlobSync_test" do
 #    content_new = File.read(new_file_name)
 #    content_new.should == file_content
     
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should logout" do

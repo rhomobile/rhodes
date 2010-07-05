@@ -47,7 +47,7 @@ public:
     int  getPollInterval()const{ return m_nPollInterval;}
 
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
-    void setNonThreadedMode(bool b){m_bNoThreaded = b;}
+    void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
 
     common::IRhoClassFactory* getFactory(){ return m_ptrFactory; }
 protected:

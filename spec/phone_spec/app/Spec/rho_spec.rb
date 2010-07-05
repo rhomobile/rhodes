@@ -17,9 +17,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-require 'spec/spec_helper'
+#require 'spec/spec_helper'
 
-describe "Rho" do
+describe "RhoConfig" do
 
   before(:each) do
     Rho::RhoConfig.config['start_path'] = '/app'
@@ -66,4 +66,33 @@ describe "Rho" do
     Rho::RhoConfig.reload
     Rho::RhoConfig.start_path.should == oldpath
   end  
+end
+
+describe "RhoError" do
+
+  it "should save error code" do
+    error = Rho::RhoError.new(Rho::RhoError::ERR_RUNTIME);
+    error.code.should == Rho::RhoError::ERR_RUNTIME
+  end
+
+  it "should catch the error" do
+    error = Rho::RhoError.new(Rho::RhoError::ERR_RUNTIME);
+    begin
+      raise error
+    rescue Rho::RhoError
+      $!.code.should == Rho::RhoError::ERR_RUNTIME
+    end
+  end
+
+end
+
+describe "RhoRuby" do
+  
+  it "should compute string to_f to test flt_rounds" do
+    "100.250".to_f.should == 100.25
+  end
+  
+  it "should compute == on float to test flt_rounds" do
+    1.0.should == 1
+  end
 end

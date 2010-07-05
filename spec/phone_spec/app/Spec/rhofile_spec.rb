@@ -1,4 +1,4 @@
-class RhoFileTest
+class RhoFileSpec
     def initialize
       clear()
     end
