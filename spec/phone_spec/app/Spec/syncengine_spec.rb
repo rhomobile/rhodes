@@ -17,7 +17,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-require 'spec/spec_helper'
+#require 'spec/spec_helper'
 require 'rho/rho'
 
 describe "SyncEngine_test" do
@@ -31,29 +31,25 @@ describe "SyncEngine_test" do
     
   end
   
-=begin    
   it "should update syncserver at runtime" do
-    @rho = Rho::RHO.new
     saveSrv =  Rho::RhoConfig.syncserver
-  
     SyncEngine.set_syncserver('http://example.com/sources/')
-    @rho = Rho::RHO.new
     Rho::RhoConfig.syncserver.should == 'http://example.com/sources/'
     
     SyncEngine.set_syncserver(saveSrv)
-    @rho = Rho::RHO.new
     Rho::RhoConfig.syncserver.should == saveSrv
   end
-  
 
   it "should not sync without login" do
-    Product.set_notification("/app/Settings/sync_notify", "fixed sync_notify for Product")
-    SyncEngine.dosync
+    SyncEngine.logged_in.should == 0
+  
+    Product.sync( "/app/Settings/sync_notify")
 
     res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
+    Object.const_set( "C_sync_notify", nil )
+
   end
-=end
 
   it "should login" do
     SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")
@@ -62,6 +58,7 @@ describe "SyncEngine_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
+    Object.const_set( "C_login_callback", nil )
   end
 
   it "should sync Product" do
@@ -72,26 +69,19 @@ describe "SyncEngine_test" do
     res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should sync Product by name" do
     SyncEngine.logged_in.should == 1
-  
+
+    SyncEngine.set_notification(Product.get_source_id.to_i(), "/app/Settings/sync_notify", "")
     SyncEngine.dosync_source( "Product" )
 
     res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  end
-
-  it "should sync Product by url" do
-    SyncEngine.logged_in.should == 1
-  
-    SyncEngine.dosync_source( Rho::RhoConfig.syncserver + "Product" )
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should search Product" do
@@ -112,6 +102,7 @@ describe "SyncEngine_test" do
     res = ::Rho::RhoSupport::parse_query_parameters C_search_callback
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    Object.const_set( "C_search_callback", nil )
   end
 
 =begin  
@@ -138,6 +129,7 @@ describe "SyncEngine_test" do
     res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    Object.const_set( "C_sync_notify", nil )
   end
   
   it "should modify Product" do
@@ -159,6 +151,8 @@ describe "SyncEngine_test" do
     
     item2 = Product.find(saved_obj)
     item2.sku.should == new_sku
+    
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should delete all Test Product" do
@@ -179,7 +173,7 @@ describe "SyncEngine_test" do
     
     item2 = Product.find(:first, :conditions => {:name => 'Test'})
     item2.should == nil
-    
+    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should logout" do
@@ -187,4 +181,5 @@ describe "SyncEngine_test" do
   
     SyncEngine.logged_in.should == 0
   end
+
 end

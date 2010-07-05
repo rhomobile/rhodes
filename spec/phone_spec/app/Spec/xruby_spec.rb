@@ -1,4 +1,4 @@
-class XrubyTest
+class XrubySpec
   def initialize
   end
 

@@ -37,7 +37,7 @@ void CSyncEngine::initProtocol()
     m_SyncProtocol = new CSyncProtocol_3();
 }
 
-void CSyncEngine::prepareSync(ESyncState eState)
+void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
 {
     setState(eState);
     m_bStopByUser = false;
@@ -59,11 +59,17 @@ void CSyncEngine::prepareSync(ESyncState eState)
     }else
         m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
 
-    if ( m_sources.size() > 0 )
-    {
-        CSyncSource& src = *m_sources.elementAt(getStartSource());
-        src.m_nErrCode = m_nErrCode;
-        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
+    CSyncSource* src = null;
+    if ( oSrcID != null )
+    	src = findSource(*oSrcID);
+    
+	if ( src == null && m_sources.size() > 0 )
+    	src = m_sources.elementAt(getStartSource());
+	
+	if ( src != null )
+	{
+        src->m_nErrCode = m_nErrCode;
+        getNotify().fireSyncNotification(src, true, src->m_nErrCode, "");
     }else
         getNotify().fireSyncNotification(null, true, m_nErrCode, "");
 
@@ -72,7 +78,7 @@ void CSyncEngine::prepareSync(ESyncState eState)
 
 void CSyncEngine::doSyncAllSources()
 {
-    prepareSync(esSyncAllSources);
+    prepareSync(esSyncAllSources, null);
 
     if ( isContinueSync() )
     {
@@ -104,7 +110,7 @@ void CSyncEngine::doSyncAllSources()
 
 void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep)
 {
-    prepareSync(esSearch);
+    prepareSync(esSearch, null);
     if ( !isContinueSync() )
     {
         if ( getState() != esExit )
@@ -250,7 +256,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
 void CSyncEngine::doSyncSource(const CSourceID& oSrcID)
 {
-    prepareSync(esSyncSource);
+    prepareSync(esSyncSource, &oSrcID);
 
     if ( isContinueSync() )
     {
@@ -300,8 +306,8 @@ CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
 
 void CSyncEngine::loadAllSources()
 {
-    m_sources.clear();
-    m_arPartitions.clear();
+    m_sources.removeAllElements();
+    m_arPartitions.removeAllElements();
 
     DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY sync_priority") );
     for ( ; !res.isEnd(); res.next() )

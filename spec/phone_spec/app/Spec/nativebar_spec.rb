@@ -1,4 +1,4 @@
-class NativeBarTest
+class NativeBarSpec
   def initialize
   end
 
