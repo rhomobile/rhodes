@@ -15,16 +15,15 @@ class Hash
   end
 end
 
-class ContactsSpec
-  def initialize
-  end
+describe "Contacts" do
 
-  def create_test
+  it "should create new contact" do
     first_name = 'Random'
     last_name = 'Newbie'
     mobile_number = '+1222333444'
 
     contacts = Rho::RhoContact.find(:all)
+    puts "contacts: #{contacts.inspect.to_s}"
     Test_not_equal( contacts, nil )
 
     contact = {}
@@ -34,6 +33,7 @@ class ContactsSpec
     Rho::RhoContact.create!(contact)
 
     newcontacts = Rho::RhoContact.find(:all)
+    puts "newcontacts: #{newcontacts.inspect.to_s}"
     Test_not_equal( newcontacts, nil )
 
     diff = newcontacts.diff(contacts)
@@ -45,23 +45,26 @@ class ContactsSpec
     Test_equal( c['mobile_number'], mobile_number )
 
     @id = c['id']
+    puts "id: #{@id}"
   end
 
-  def update_test
+  it "should update existing contact" do
+    puts "id: #{@id}"
     Rho::RhoContact.update_attributes 'id' => @id, 'first_name' => "RANDOM", 'last_name' => "NEWBIE"
 
     contact = Rho::RhoContact.find(@id)
+    puts "contacts: #{contact.inspect.to_s}"
     Test_not_equal( contact, nil )
 
     unless System.get_property('platform') == 'Blackberry'
-    #https://www.pivotaltracker.com/story/show/3983643
-        Test_equal( contact['first_name'], 'RANDOM' )
-        Test_equal( contact['last_name'], 'NEWBIE' )
+      #https://www.pivotaltracker.com/story/show/3983643
+      Test_equal( contact['first_name'], 'RANDOM' )
+      Test_equal( contact['last_name'], 'NEWBIE' )
     end
     
   end
 
-  def remove_test
+  it "should remove contact" do
     contacts = Rho::RhoContact.find(:all)
     Test_not_equal( contacts, nil )
     Test_equal( contacts.size >= 1, true )
