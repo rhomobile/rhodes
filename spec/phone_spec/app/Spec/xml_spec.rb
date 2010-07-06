@@ -68,7 +68,7 @@ class XmlSpec
         def entity content
         end
         def cdata content
-            puts "cdata: #{content}"
+            #puts "cdata: #{content}"
         end
         def xmldecl version, encoding, standalone
         end
