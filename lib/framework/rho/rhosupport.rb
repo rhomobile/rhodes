@@ -60,9 +60,9 @@ module Rho
         return {} if query_string.nil?
 
         pairs = query_string.split('&').collect do |chunk|
-          next if chunk.empty?
+          next if !chunk || chunk.empty?
           key, value = chunk.split('=', 2)
-          next if key.empty?
+          next if !key || key.empty?
           value = value.nil? ? nil : form_decode(value)
           [ form_decode(key), value ]
         end.compact
