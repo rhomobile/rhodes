@@ -25,7 +25,7 @@ class StringParser implements Enumeration
 		if ( m_nCurPos >= m_strToSplit.length() )
 		{
 			m_bFinish = true;
-			return "";
+			return null;//"";
 		}
 		
 		String strRes = "";
@@ -45,7 +45,11 @@ class StringParser implements Enumeration
 			
 			if ( m_nCurPos >= 0 )
 			{
-				strRes = m_strToSplit.substring(nStart, m_nCurPos);
+				if ( nStart == m_nCurPos )
+					strRes = null;
+				else
+					strRes = m_strToSplit.substring(nStart, m_nCurPos);
+				
 				m_nCurPos += m_strDelim.length();
 			}
 			else

@@ -1092,7 +1092,10 @@ public class RubyString extends RubyBasic {
             if ( !( bSkipFirstEmptyItem && 0 == i && (str == null || str.equals(""))) )
             {
                 //To conform ruby's behavior, discard the first empty element
-                a.add(ObjectFactory.createString(str));
+            	if (str == null)
+            		a.add(RubyConstant.QNIL);
+            	else
+            		a.add(ObjectFactory.createString(str));
             }
             ++i;
         }
@@ -1153,6 +1156,28 @@ public class RubyString extends RubyBasic {
         }
     }
 
+    public RubyValue match(RubyValue arg) 
+    {
+    	RubyRegexp reg = null;
+    	
+        if (arg instanceof RubyRegexp) 
+            reg = (RubyRegexp) arg;
+        else if ( arg instanceof RubyString )
+        	reg = new RubyRegexp(arg.toStr());
+        
+        if ( reg != null )
+        {
+            int p = reg.matchPosition(toString());
+            if (p >= 0) {
+                return ObjectFactory.createFixnum(p);
+            } else {
+                return RubyConstant.QNIL;
+            }
+        } else {
+            return RubyAPI.callPublicOneArgMethod(arg, this, null, RubyID.matchID);
+        }
+    }
+    
     //@RubyLevelMethod(name="[]")
     public RubyValue array_access(RubyArray args) {
         String string = toString();
