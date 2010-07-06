@@ -9,6 +9,7 @@ class RhoSpec
     
     run_spec('rho')
     run_spec('rho_controller')
+    run_spec('Rhom_Object')            
     
     #fix contacts on android
     run_spec('Contacts') unless System.get_property('device_name') == 'Win32' || System.get_property('platform') == 'ANDROID'
@@ -19,11 +20,10 @@ class RhoSpec
 if defined? RHO_ME
     run_spec('Xruby')
 end
-
     run_spec('SyncEngine')        
     run_spec('BlobSync')        
     run_spec('BulkSync')        
-    
+
   end
   
 end

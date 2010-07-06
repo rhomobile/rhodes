@@ -195,6 +195,21 @@ class PositiveOperatorMatcher
   end
 end
 
+class BeNilMatcher
+  def matches?(actual)
+    @actual = actual
+    @actual.nil?
+  end
+
+  def failure_message
+    ["Expected #{@actual.inspect}", "to be nil"]
+  end
+  
+  def negative_failure_message
+    ["Expected #{@actual.inspect}", "not to be nil"]
+  end
+end
+
 class Expectation
     def self.fail_with(msg, msg1)
         raise msg+ " " + msg1        
@@ -259,8 +274,10 @@ end
 class Object
   def should(matcher=nil)
 
-    if matcher  
-        raise "Expected '#{self.inspect.to_s}' equal to '#{matcher.inspect.to_s}'" if self != matcher  
+    if matcher
+      unless matcher.matches?(self)
+        Expectation.fail_with(*matcher.failure_message)
+      end
     else
         PositiveOperatorMatcher.new(self)
         #raise "Expected '#{matcher.inspect.to_s}' equal to nil" if self != nil
@@ -269,13 +286,20 @@ class Object
   end
 
   def should_not(matcher=nil)
-    if matcher  
-        raise "Expected '#{self.inspect.to_s}' not equal to '#{matcher.inspect.to_s}'" if self == matcher  
+    if matcher
+      if matcher.matches?(self)
+        Expectation.fail_with(*matcher.negative_failure_message)
+      end
     else
         #raise "Expected '#{self.inspect.to_s}' not equal to nil" if self == nil
         NegativeOperatorMatcher.new(self)
     end
   end
+  
+  def be_nil
+    BeNilMatcher.new
+  end
+  
 end
 
 def Test_equal(p1,p2)

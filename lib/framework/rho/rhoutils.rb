@@ -28,7 +28,7 @@ module Rho
         cur_src = nil
         hashItem = {}
         cur_objid = nil
-        File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',prefix,'fixtures',filename+'.txt')).each do |line|
+        File.open(File.join(Rho::RhoFSConnector.get_base_app_path(),'app',prefix,'fixtures',filename+'.txt')).each do |line|
           if first_row
             columns = line.chomp.split('|'); first_row = false; next;
           end
@@ -95,7 +95,7 @@ module Rho
         prefix = dir_prefix.nil? ? "" : dir_prefix
         query = ""
         
-        File.open(File.join(Rho::RhoFSConnector.get_base_app_path,'app',prefix,'fixtures',filename+'.txt')).each do |line|
+        File.open(File.join(Rho::RhoFSConnector.get_base_app_path(),'app',prefix,'fixtures',filename+'.txt')).each do |line|
           if row_index == 0
             columns = line.chomp.split('|')
             quests = ""

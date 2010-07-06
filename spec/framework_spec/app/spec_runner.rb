@@ -99,10 +99,6 @@ class SpecRunner < MSpecScript
       config[:files] << file
     end
  
-    # RHODES
-    config[:files] << 'spec/rhom_object_spec'
-    #config[:files] << 'spec/find_spec'  # find not available on the device
-
   end
 
   def run
