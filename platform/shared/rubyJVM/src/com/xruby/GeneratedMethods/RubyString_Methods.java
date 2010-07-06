@@ -1,7 +1,6 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
-import com.xruby.runtime.builtin.RubyString;
 public class RubyString_Methods{
 public static void initMethods( RubyClass klass){
 
@@ -33,6 +32,11 @@ klass.defineMethod( "=~", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyString)receiver).operator_match(arg);}
 });
+klass.defineMethod( "match", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).match(arg);}
+});
+
 klass.defineMethod( "squeeze", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).squeeze(args);}

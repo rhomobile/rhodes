@@ -95,4 +95,13 @@ describe "RhoRuby" do
   it "should compute == on float to test flt_rounds" do
     1.0.should == 1
   end
+  
+  it "split should have nil" do
+    line = "Account|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||\n"
+    parts = line.chomp.split('|')
+    
+    parts[3].should be_nil
+    parts[4].should be_nil
+  end
+  
 end
