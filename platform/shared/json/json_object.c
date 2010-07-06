@@ -324,7 +324,7 @@ boolean json_object_get_boolean(struct json_object *this)
 static int json_object_int_to_json_string(struct json_object* this,
 					  struct printbuf *pb)
 {
-  return sprintbuf(pb, "%lli", this->o.c_int);
+  return sprintbuf(pb, FMTI64/*"%lli"*/, this->o.c_int);
 }
 
 struct json_object* json_object_new_int(int64 i)
@@ -349,7 +349,7 @@ int64 json_object_get_int(struct json_object *this)
   case json_type_boolean:
     return this->o.c_boolean;
   case json_type_string:
-    if(sscanf(this->o.c_string, "%lli", &cint) == 1) return cint;
+    if(sscanf(this->o.c_string, FMTI64/*"%lli"*/, &cint) == 1) return cint;
   default:
     return 0;
   }
