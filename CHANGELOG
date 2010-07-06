@@ -1,6 +1,8 @@
 ## 2.0.1
 * #4049590 - Android 2.2, rhodes rc2: take picture hangs
 * #4103477 - Android 2.2: can't write to DB
+* #3985537 - Android: cannot build with 2.2 sdk only
+* #4038658 - Get free listening port on iphone
 
 ## 2.0.0
 * #4053947 - Android: FindClass always return NULL when called outside of JNI_OnLoad
