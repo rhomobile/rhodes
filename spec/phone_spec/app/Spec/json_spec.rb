@@ -37,7 +37,7 @@ class JsonSpec
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'septest.json')
         content = File.read(file_name)
         parsed = Rho::JSON.parse(content)
-        puts "parsed: #{parsed}"
+        #puts "parsed: #{parsed}"
         
         Test_equal( parsed.is_a?(Hash), true )
         Test_equal( parsed["Manufacturer List"].is_a?(Array), true )
@@ -48,7 +48,7 @@ class JsonSpec
         return unless $is_network_available
             
         res = Rho::AsyncHttp.get( :url => 'http://rhostore.heroku.com/products.json' )
-        puts "res : #{res}"  
+        #puts "res : #{res}"  
         Test_equal(res['status'],'ok')
         
         parsed = res['body']
