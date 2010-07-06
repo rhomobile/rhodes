@@ -22,7 +22,7 @@ if defined? RHO_ME
 end
     run_spec('SyncEngine')        
     run_spec('BlobSync')        
-    run_spec('BulkSync')        
+    #run_spec('BulkSync')        
 
   end
   
