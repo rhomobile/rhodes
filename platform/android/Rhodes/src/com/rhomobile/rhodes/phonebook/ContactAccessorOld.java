@@ -18,16 +18,19 @@ import android.provider.Contacts.Phones;
 
 import com.rhomobile.rhodes.RhodesInstance;
 
+@SuppressWarnings("deprecation")
 public class ContactAccessorOld implements ContactAccessor {
 	
-	static final String PB_ID = Phonebook.PB_ID;
-	static final String PB_FIRST_NAME = "first_name";
-	static final String PB_LAST_NAME = "last_name";
-	static final String PB_MOBILE_NUMBER = "mobile_number";
-	static final String PB_HOME_NUMBER = "home_number";
-	static final String PB_BUSINESS_NUMBER = "business_number";
-	static final String PB_EMAIL_ADDRESS = "email_address";
-	static final String PB_COMPANY_NAME = "company_name";
+	private static final String TAG = "ContactsAccessorOld";
+	
+	private static final String PB_ID = Phonebook.PB_ID;
+	private static final String PB_FIRST_NAME = Phonebook.PB_FIRST_NAME;
+	private static final String PB_LAST_NAME = Phonebook.PB_LAST_NAME;
+	private static final String PB_MOBILE_NUMBER = Phonebook.PB_MOBILE_NUMBER;
+	private static final String PB_HOME_NUMBER = Phonebook.PB_HOME_NUMBER;
+	private static final String PB_BUSINESS_NUMBER = Phonebook.PB_BUSINESS_NUMBER;
+	private static final String PB_EMAIL_ADDRESS = Phonebook.PB_EMAIL_ADDRESS;
+	private static final String PB_COMPANY_NAME = Phonebook.PB_COMPANY_NAME;
 	
 	private Activity activity;
 	private ContentResolver cr;
@@ -40,7 +43,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	}
 	
 	private String getId(Contact contact) {
-		Matcher m = idPattern.matcher(contact.getField(PB_ID));
+		Matcher m = idPattern.matcher(contact.id());
 		return m.find() ? m.group(1) : "";
 	}
 
