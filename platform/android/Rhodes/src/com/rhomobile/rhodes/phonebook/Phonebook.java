@@ -23,6 +23,8 @@ package com.rhomobile.rhodes.phonebook;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.os.Build;
+
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 
@@ -32,6 +34,13 @@ public class Phonebook {
 	private static final String TAG = "Phonebook";
 	
 	public static final String PB_ID = "id";
+	public static final String PB_FIRST_NAME = "first_name";
+	public static final String PB_LAST_NAME = "last_name";
+	public static final String PB_MOBILE_NUMBER = "mobile_number";
+	public static final String PB_HOME_NUMBER = "home_number";
+	public static final String PB_BUSINESS_NUMBER = "business_number";
+	public static final String PB_EMAIL_ADDRESS = "email_address";
+	public static final String PB_COMPANY_NAME = "company_name";
 	
 	private Map<String, Contact> contactList;
 	private ContactAccessor accessor;
@@ -43,13 +52,31 @@ public class Phonebook {
 		return Capabilities.PIM_ENABLED;
 	}
 	
+	private ContactAccessor createAccessor() {
+		String className;
+		int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+		if (sdkVersion < Build.VERSION_CODES.ECLAIR)
+			className = "ContactAccessorOld";
+		else
+			className = "ContactAccessorNew";
+		
+		try {
+			Class<? extends ContactAccessor> klass =
+				Class.forName(ContactAccessor.class.getPackage() + "." + className)
+					.asSubclass(ContactAccessor.class);
+			return klass.newInstance();
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+	
 	public Phonebook() {
 		try {
 			if (!checkState())
 				return;
 			
-			// TODO: select needed ContactAccessor
-			accessor = new ContactAccessorOld();
+			accessor = createAccessor();
 			contactList = accessor.getAll();
 			moveToBegin();
 		}
