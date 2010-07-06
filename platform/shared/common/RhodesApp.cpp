@@ -325,74 +325,91 @@ void CRhodesApp::initHttpServer()
 
 const char* CRhodesApp::getFreeListeningPort()
 {
+    int sockfd = -1;
+	struct sockaddr_in serv_addr = {0};
+    int noerrors = 1;
+    
 	if ( m_strListeningPorts.length() > 0 )
 		return m_strListeningPorts.c_str();
 	
-	int noerrors = 1;
 	LOG(INFO) + "Trying to get free listening port.";
 	
-	//get free port
-	int sockfd = -1;
-	struct sockaddr_in serv_addr = {0};
-	//struct hostent *server = {0};
-	//int result = -1;
-	
-	if ( noerrors )
-	{
-		sockfd = socket(AF_INET, SOCK_STREAM, 0);
-		if ( sockfd < 0 )
-		{
-			LOG(WARNING) + ("Unable to open socket");
-			noerrors = 0;
-		}
-		
-		if ( noerrors )
-		{
-			//server = gethostbyname( "localhost" );
-			
-			memset((void *) &serv_addr, 0, sizeof(serv_addr));
-			serv_addr.sin_family = AF_INET;
-			serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-			serv_addr.sin_port = htons(8080);
-
-			if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
-            {
-    			serv_addr.sin_port = htons(0);
-			    if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) )
-			    {
-				    LOG(WARNING) + "Unable to bind";
-				    noerrors = 0;
-			    }
-            }
-
-			if ( noerrors )
-			{
-				char buf[10] = {0};
-#ifdef OS_MACOSX
-				socklen_t
-#else				
-				int
-#endif				
-				length = sizeof( serv_addr );
-				
-				getsockname( sockfd, (struct sockaddr *)&serv_addr, &length );
-				
-				sprintf(buf,"%d",ntohs(serv_addr.sin_port));
-				
-				m_strListeningPorts = buf;
-			}
-			//Clean up
-#if defined(OS_ANDROID)
-			close(sockfd);
-#else
-			closesocket(sockfd);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if ( sockfd < 0 )
+    {
+        LOG(WARNING) + "Unable to open socket";
+        noerrors = 0;
+    }
+    
+    int disable = 0;
+    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &disable, sizeof(disable)) != 0)
+    {
+        LOG(WARNING) + "Unable to set socket option";
+        noerrors = 0;
+    }
+#if defined(OS_MACOSX)
+    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &disable, sizeof(disable)) != 0)
+    {
+        LOG(WARNING) + "Unable to set socket option";
+        noerrors = 0;
+    }
 #endif
-		}
-		
-	}
+    
+    if (noerrors)
+    {
+        memset((void *) &serv_addr, 0, sizeof(serv_addr));
+#if defined(OS_MACOSX)
+        serv_addr.sin_len = sizeof(serv_addr);
+#endif
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        serv_addr.sin_port = htons(8080);
+
+        if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
+        {
+            // Fill serv_addr again but with dynamically selected port
+#if defined(OS_MACOSX)
+            serv_addr.sin_len = sizeof(serv_addr);
+#endif
+            serv_addr.sin_family = AF_INET;
+            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+            serv_addr.sin_port = htons(0);
+            
+            if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
+            {
+                LOG(WARNING) + "Unable to bind";
+                noerrors = 0;
+            }
+        }
+    }
+
+    if ( noerrors )
+    {
+        char buf[10] = {0};
+        
+        socklen_t length = sizeof( serv_addr );
+        
+        if (getsockname( sockfd, (struct sockaddr *)&serv_addr, &length ) != 0)
+        {
+            LOG(WARNING) + "Can not get socket info";
+            noerrors = 0;
+        }
+        else
+        {
+            sprintf(buf,"%d",ntohs(serv_addr.sin_port));
+            m_strListeningPorts = buf;
+        }
+    }
+    
+    //Clean up
+#if defined(OS_ANDROID)
+    close(sockfd);
+#else
+    closesocket(sockfd);
+#endif
 	
 	if ( !noerrors )
-		m_strListeningPorts = "8080";
+		m_strListeningPorts = "0";
 	
 	LOG(INFO) + "Free listening port: " + m_strListeningPorts;
 	

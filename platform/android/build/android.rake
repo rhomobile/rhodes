@@ -127,8 +127,6 @@ namespace "config" do
 
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-    $emuversion = get_market_version(ANDROID_API_LEVEL) if $emuversion.nil?
-    $emuversion = $emuversion.to_s unless $emuversion.nil?
 
     # Here is switch between release/debug configuration used for
     # building native libraries
@@ -209,6 +207,7 @@ namespace "config" do
     end
 
     puts "+++ Looking for platform..." if USE_TRACES
+    napilevel = ANDROID_API_LEVEL
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
@@ -227,7 +226,11 @@ namespace "config" do
 
       puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
 
-      $androidplatform = File.basename(platform) if apilevel == ANDROID_API_LEVEL
+      if apilevel > napilevel
+        napilevel = apilevel
+        $androidplatform = File.basename(platform)
+        $found_api_level = apilevel
+      end
     end
 
     if $androidplatform.nil?
@@ -236,7 +239,7 @@ namespace "config" do
     end
 
     if $androidplatform.nil?
-      puts "+++ No required platform (API level #{ANDROID_API_LEVEL}) found, can't proceed"
+      puts "+++ No required platform (API level >= #{ANDROID_API_LEVEL}) found, can't proceed"
       exit 1
     else
       puts "+++ Platform found: #{$androidplatform}" if USE_TRACES
@@ -285,15 +288,11 @@ namespace "config" do
       end
     end
 
-    $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-    $avdname += "ext" if $use_geomapping
-    $avdtarget = $androidtargets[get_api_level($emuversion)]
-
     # Detect Google API add-on path
     if $use_geomapping
       puts "+++ Looking for Google APIs add-on..." if USE_TRACES
+      napilevel = ANDROID_API_LEVEL
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
-        break unless $gapijar.nil?
 
         props = File.join(dir, 'manifest.ini')
         if !File.file? props
@@ -312,7 +311,11 @@ namespace "config" do
 
         puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
-        $gapijar = File.join(dir, 'libs', 'maps.jar') if apilevel == ANDROID_API_LEVEL
+        if apilevel > napilevel
+          napilevel = apilevel
+          $gapijar = File.join(dir, 'libs', 'maps.jar')
+          $found_api_level = apilevel
+        end
       end
       if $gapijar.nil?
         puts "+++ No Google APIs add-on found (which is required because 'mapping' enabled in build.yml)"
@@ -322,7 +325,13 @@ namespace "config" do
       end
     end
 
-    setup_ndk($androidndkpath,ANDROID_API_LEVEL)
+    $emuversion = get_market_version($found_api_level) if $emuversion.nil?
+    $emuversion = $emuversion.to_s
+    $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
+    $avdname += "ext" if $use_geomapping
+    $avdtarget = $androidtargets[get_api_level($emuversion)]
+
+    setup_ndk($androidndkpath, ANDROID_API_LEVEL)
     
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
 
