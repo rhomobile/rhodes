@@ -81,7 +81,7 @@ describe "BlobSync_test" do
 
   def copy_file(src, dst_dir)
     content = File.binread(src)  
-    File.new(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
+    File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
   end
   
   it "should create new BlobTest" do

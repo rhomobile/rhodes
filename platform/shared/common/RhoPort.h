@@ -8,12 +8,19 @@
 #include <windows.h>
 #include <time.h>
 
+typedef int socklen_t;
+
 #if defined(OS_WINCE)
 #include "ruby/wince/sys/types.h"
 #include "ruby/wince/sys/stat.h"
-#else
+#ifdef __cplusplus
+extern "C"
+#endif //__cplusplus
+char *strdup(const char * str);
+
+#else //!defined(OS_WINCE)
 #include <sys/stat.h>
-#endif
+#endif //!defined(OS_WINCE)
 
 #define LOG_NEWLINE "\r\n"
 #define LOG_NEWLINELEN 2
@@ -25,7 +32,15 @@ typedef unsigned __int64 uint64;
 
 #define strcasecmp _stricmp
 #define snprintf _snprintf
-#else
+
+#define FMTI64 "%I64d"
+#define FMTU64 "%I64u"
+
+#else // !(defined( OS_WINDOWS ) || defined( OS_WINCE ))
+
+#define FMTI64 "%lli"
+#define FMTU64 "%llu"
+
 #  if defined(OS_ANDROID)
 // Needed for va_list on Android
 #    include <stdarg.h>
