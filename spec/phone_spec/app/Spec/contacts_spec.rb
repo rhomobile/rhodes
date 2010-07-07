@@ -66,6 +66,7 @@ describe "Contacts" do
 
   it "should remove contact" do
     contacts = Rho::RhoContact.find(:all)
+    puts "contacts: #{contacts.inspect.to_s}"
     Test_not_equal( contacts, nil )
     Test_equal( contacts.size >= 1, true )
 
@@ -74,6 +75,7 @@ describe "Contacts" do
     Rho::RhoContact.destroy(@id)
 
     contacts = Rho::RhoContact.find(:all)
+    puts "new contacts: #{contacts.inspect.to_s}"
     Test_not_equal( contacts, nil )
 
     Test_equal( size - contacts.size, 1 )

@@ -32,7 +32,7 @@ ANDROID_PERMISSIONS = {
   'gps' => 'ACCESS_FINE_LOCATION',
   'network_state' => 'ACCESS_NETWORK_STATE',
   'phone' => ['CALL_PHONE', 'READ_PHONE_STATE'],
-  'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS'],
+  'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS', 'GET_ACCOUNTS'],
   'record_audio' => 'RECORD_AUDIO',
   'vibrate' => 'VIBRATE'
 }
@@ -211,7 +211,7 @@ namespace "config" do
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
-        puts "+++ WARNING! No source.properties found in #{platform}" if USE_TRACES
+        puts "+++ WARNING! No source.properties found in #{platform}"
         next
       end
 
@@ -296,7 +296,7 @@ namespace "config" do
 
         props = File.join(dir, 'manifest.ini')
         if !File.file? props
-          puts "+++ WARNING: no manifest.ini found in #{dir}" if USE_TRACES
+          puts "+++ WARNING: no manifest.ini found in #{dir}"
           next
         end
 
