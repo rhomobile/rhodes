@@ -342,13 +342,13 @@ const char* CRhodesApp::getFreeListeningPort()
     }
     
     int disable = 0;
-    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &disable, sizeof(disable)) != 0)
+    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&disable, sizeof(disable)) != 0)
     {
         LOG(WARNING) + "Unable to set socket option";
         noerrors = 0;
     }
 #if defined(OS_MACOSX)
-    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &disable, sizeof(disable)) != 0)
+    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char *)&disable, sizeof(disable)) != 0)
     {
         LOG(WARNING) + "Unable to set socket option";
         noerrors = 0;
