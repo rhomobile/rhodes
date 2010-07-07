@@ -2,8 +2,6 @@ package com.rhomobile.rhodes.phonebook;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -21,7 +19,7 @@ import com.rhomobile.rhodes.RhodesInstance;
 @SuppressWarnings("deprecation")
 public class ContactAccessorOld implements ContactAccessor {
 	
-	private static final String TAG = "ContactsAccessorOld";
+	//private static final String TAG = "ContactsAccessorOld";
 	
 	private static final String PB_ID = Phonebook.PB_ID;
 	private static final String PB_FIRST_NAME = Phonebook.PB_FIRST_NAME;
@@ -34,43 +32,64 @@ public class ContactAccessorOld implements ContactAccessor {
 	
 	private Activity activity;
 	private ContentResolver cr;
-	private Pattern idPattern;
 	
 	public ContactAccessorOld() {
-		idPattern = Pattern.compile("\\{([0-9]+)\\}");
 		activity = RhodesInstance.getInstance(); 
 		cr = activity.getContentResolver();
 	}
 	
-	private String getId(Contact contact) {
-		Matcher m = idPattern.matcher(contact.id());
-		return m.find() ? m.group(1) : "";
+	private void fillPhones(String id, Contact contact) {
+		Cursor cursor = cr.query(Contacts.Phones.CONTENT_URI,
+				new String[] {Phones.NUMBER, Phones.TYPE},
+				"person=?", new String[] {id},
+				null);
+
+		try {
+			int numColumn = cursor.getColumnIndex(Phones.NUMBER);
+			int typeColumn = cursor.getColumnIndex(Phones.TYPE);
+			cursor.moveToFirst();
+			for (int i = 0, lim = cursor.getCount(); i < lim; ++i) {
+				switch (cursor.getInt(typeColumn)) {
+				case Phones.TYPE_WORK:
+					contact.setField(PB_BUSINESS_NUMBER, cursor.getString(numColumn));
+					break;
+				case Phones.TYPE_HOME:
+					contact.setField(PB_HOME_NUMBER, cursor.getString(numColumn));
+					break;
+				case Phones.TYPE_MOBILE:
+					contact.setField(PB_MOBILE_NUMBER, cursor.getString(numColumn));
+					break;
+				}
+				cursor.moveToNext();
+			}
+		}
+		finally {
+			cursor.close();
+		}
 	}
 
-	public Map<String, Contact> getAll() {
+	public Map<String, Contact> getAll() throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
 		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
-
-		// load contacts
-
-		if (cursor.moveToFirst()) {
+		try {
+			if (!cursor.moveToFirst())
+				return contacts;
+			
 			do {
 				Contact contact = new Contact();
-
-				contact.setField(PB_ID, "{" + cursor.getString(cursor.getColumnIndex(People._ID)) + "}");
-
+	
+				String id = cursor.getString(cursor.getColumnIndex(People._ID));
+				contact.setId(id);
+	
 				//contact.setField(PB_COMPANY_NAME, cursor.getString(cursor.getColumnIndex(People.COMPANY)));
-
-				String name = cursor.getString(cursor
-						.getColumnIndex(People.NAME));
-
+	
 				contact.setField(PB_FIRST_NAME, "");
 				contact.setField(PB_LAST_NAME, "");
-				
+				String name = cursor.getString(cursor.getColumnIndex(People.NAME));
 				if (name != null) {
 					String[] names = name.split(" ");
-
+	
 					if (names.length == 1) {
 						contact.setField(PB_FIRST_NAME, names[0]);
 					}
@@ -79,104 +98,75 @@ public class ContactAccessorOld implements ContactAccessor {
 						contact.setField(PB_LAST_NAME, name.replaceFirst(names[0] + " ", ""));
 					}
 				}
-
-				long personId = cursor.getLong(cursor
-						.getColumnIndex(People._ID));
-
-				String whereClause = "person=" + personId;
-
-				String[] phonesProjection = new String[] { Phones.NUMBER,
-						Phones.TYPE };
-				Cursor phonesCursor = activity.managedQuery(
-						Contacts.Phones.CONTENT_URI, phonesProjection,
-						whereClause, null, null);
-
-				int phonesCursorCount = phonesCursor.getCount();
-				if (phonesCursorCount > 0) {
-					phonesCursor.moveToFirst();
-					int numberColumn = phonesCursor
-							.getColumnIndex(Phones.NUMBER);
-					int typeColumn = phonesCursor
-							.getColumnIndex(Phones.TYPE);
-					for (int j = 0; j < phonesCursorCount; j++) {
-						switch (phonesCursor.getInt(typeColumn)) {
-						case Phones.TYPE_WORK:
-							contact.setField(PB_BUSINESS_NUMBER, phonesCursor.getString(numberColumn));
-							break;
-						case Phones.TYPE_HOME:
-							contact.setField(PB_HOME_NUMBER, phonesCursor.getString(numberColumn));
-							break;
-						case Phones.TYPE_MOBILE:
-							contact.setField(PB_MOBILE_NUMBER, phonesCursor.getString(numberColumn));
-							break;
-						}
-						phonesCursor.moveToNext();
-					}
-				}
-				
-				phonesCursor.close();
-
+	
+				fillPhones(id, contact);
+	
 				Uri uri = ContentUris.withAppendedId(People.CONTENT_URI,
-						Long.parseLong(getId(contact)));
-
+						Long.parseLong(contact.id()));
+	
 				Uri orgUri = Uri.withAppendedPath(uri,
 						Contacts.Organizations.CONTENT_DIRECTORY);
-
+	
 				String[] organizationProjection = new String[] { Organizations.COMPANY };
 				Cursor organizationCursor = activity.managedQuery(orgUri,
-						organizationProjection, whereClause, null, null);
-
-				int organizationCursorCount = organizationCursor.getCount();
-				if (organizationCursorCount > 0) {
-					organizationCursor.moveToFirst();
-					int numberColumn = organizationCursor
-							.getColumnIndex(Organizations.COMPANY);
-
-					if (numberColumn != -1)
-						contact.setField(PB_COMPANY_NAME,
-								organizationCursor.getString(numberColumn));
+						organizationProjection, "person=?", new String[] {id}, null);
+				try {
+					int organizationCursorCount = organizationCursor.getCount();
+					if (organizationCursorCount > 0) {
+						organizationCursor.moveToFirst();
+						int numberColumn = organizationCursor
+								.getColumnIndex(Organizations.COMPANY);
+		
+						if (numberColumn != -1)
+							contact.setField(PB_COMPANY_NAME,
+									organizationCursor.getString(numberColumn));
+					}
 				}
-				
-				organizationCursor.close();
-
+				finally {
+					organizationCursor.close();
+				}
+	
 				String[] contactProjection = new String[] {
 						Contacts.ContactMethods.KIND,
 						Contacts.ContactMethods.DATA };
-
+	
 				Cursor contactCursor = activity.managedQuery(
 						Contacts.ContactMethods.CONTENT_URI,
-						contactProjection, whereClause, null, null);
-
-				int contactCursorCount = contactCursor.getCount();
-				if (contactCursorCount > 0) {
-					contactCursor.moveToFirst();
-					int numberColumn = contactCursor
-							.getColumnIndex(Contacts.ContactMethods.DATA);
-					int typeColumn = contactCursor
-							.getColumnIndex(Contacts.ContactMethods.KIND);
-					for (int j = 0; j < contactCursorCount; j++) {
-						switch (contactCursor.getInt(typeColumn)) {
-						case Contacts.ContactMethods.TYPE_HOME:
-							contact.setField(PB_EMAIL_ADDRESS, contactCursor.getString(numberColumn));
-							break;
+						contactProjection, "person=?", new String[] {id}, null);
+				try {
+					int contactCursorCount = contactCursor.getCount();
+					if (contactCursorCount > 0) {
+						contactCursor.moveToFirst();
+						int numberColumn = contactCursor
+								.getColumnIndex(Contacts.ContactMethods.DATA);
+						int typeColumn = contactCursor
+								.getColumnIndex(Contacts.ContactMethods.KIND);
+						for (int j = 0; j < contactCursorCount; j++) {
+							switch (contactCursor.getInt(typeColumn)) {
+							case Contacts.ContactMethods.TYPE_HOME:
+								contact.setField(PB_EMAIL_ADDRESS, contactCursor.getString(numberColumn));
+								break;
+							}
+							contactCursor.moveToNext();
 						}
-						contactCursor.moveToNext();
 					}
 				}
-				
-				contactCursor.close();
-
+				finally {
+					contactCursor.close();
+				}
+	
 				contacts.put(contact.getField(PB_ID), contact);
 			} while (cursor.moveToNext());
 		}
-		
-		cursor.close();
+		finally {
+			cursor.close();
+		}
 		
 		return contacts;
 	}
 
 	public void save(Contact contact) throws Exception {
-		String rbID = getId(contact);
+		String rbID = contact.id();
 		Uri uri = null;
 
 		String firstName = contact.getField(PB_FIRST_NAME);
@@ -204,7 +194,6 @@ public class ContactAccessorOld implements ContactAccessor {
 		if (!isNew) {
 			ContentValues values = new ContentValues();
 			values.put(People.NAME, name);
-			values.put(People.DISPLAY_NAME, name);
 			
 			cr.update(uri, values, null, null);
 		}
@@ -212,31 +201,32 @@ public class ContactAccessorOld implements ContactAccessor {
 		String pathLeaf = (String) uri.getPathSegments().get(
 				uri.getPathSegments().size() - 1);
 
-		contact.setField(PB_ID, "{" + pathLeaf + "}");
+		contact.setId(pathLeaf);
 
 		String[] phones = {PB_MOBILE_NUMBER, PB_HOME_NUMBER, PB_BUSINESS_NUMBER};
 		int[] types = {Phones.TYPE_MOBILE, Phones.TYPE_HOME, Phones.TYPE_WORK};
 		for (int i = 0; i < phones.length; ++i) {
 			String phName = phones[i];
-			if (!contact.getField(phName).equals("")) {
-				ContentValues number = new ContentValues();
-				number.put(Phones.PERSON_ID, pathLeaf);
-				number.put(Phones.NUMBER, contact.getField(phName));
-				number.put(Phones.TYPE, types[i]);
+			String value = contact.getField(phName);
+			if (value == null)
+				continue;
+			ContentValues number = new ContentValues();
+			number.put(Phones.PERSON_ID, pathLeaf);
+			number.put(Phones.NUMBER, value);
+			number.put(Phones.TYPE, types[i]);
+			
+			Uri phoneUpdate = cr.insert(Phones.CONTENT_URI, number);
+			
+			if (phoneUpdate == null) {
+				int retval = cr.update(People.CONTENT_URI, number, null, null);
 				
-				Uri phoneUpdate = cr.insert(Phones.CONTENT_URI, number);
-				
-				if (phoneUpdate == null) {
-					int retval = cr.update(People.CONTENT_URI, number, null, null);
-					
-					if (retval == 0)
-						throw new Exception("Failed to insert phone number");
-				}
+				if (retval == 0)
+					throw new Exception("Failed to insert phone number");
 			}
 		}
 		
 		// add email
-		if (!contact.getField(PB_EMAIL_ADDRESS).equals("")) {
+		if (contact.getField(PB_EMAIL_ADDRESS) != null) {
 			ContentValues email = new ContentValues();
 			email.put(Contacts.ContactMethods.PERSON_ID, pathLeaf);
 			email.put(Contacts.ContactMethods.KIND,
@@ -255,7 +245,7 @@ public class ContactAccessorOld implements ContactAccessor {
 			}
 		}
 		// add organization
-		if (!contact.getField(PB_COMPANY_NAME).equals("")) {
+		if (contact.getField(PB_COMPANY_NAME) != null) {
 			Uri orgUri = Uri.withAppendedPath(uri,
 					Contacts.Organizations.CONTENT_DIRECTORY);
 
@@ -278,7 +268,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	public void remove(Contact contact) {
 		Uri uri = People.CONTENT_URI;
 		
-		String id = getId(contact);
+		String id = contact.id();
 		cr.delete(uri, People._ID + "=" + id, null);
 	}
 

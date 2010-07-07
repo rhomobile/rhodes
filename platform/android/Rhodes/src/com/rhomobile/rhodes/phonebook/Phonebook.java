@@ -61,9 +61,9 @@ public class Phonebook {
 			className = "ContactAccessorNew";
 		
 		try {
+			String fullName = "com.rhomobile.rhodes.phonebook." + className;
 			Class<? extends ContactAccessor> klass =
-				Class.forName(ContactAccessor.class.getPackage() + "." + className)
-					.asSubclass(ContactAccessor.class);
+				Class.forName(fullName).asSubclass(ContactAccessor.class);
 			return klass.newInstance();
 		}
 		catch (Exception e) {
@@ -183,6 +183,7 @@ public class Phonebook {
 				return;
 			
 			accessor.remove(contact);
+			contactList.remove(contact.getField(PB_ID));
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);
@@ -195,6 +196,7 @@ public class Phonebook {
 				return;
 			
 			accessor.save(contact);
+			contactList.put(contact.getField(PB_ID), contact);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);

@@ -26,6 +26,7 @@ import java.util.Map;
 
 public class Contact {
 	
+	private String id = null;
 	private Map<String, ContactField> fields = new HashMap<String, ContactField>();
 	private Iterator<ContactField> iter = null;
 	
@@ -43,11 +44,16 @@ public class Contact {
 		if ( fields.containsKey(key) )
 			return fields.get(key).getValue();
 		
-		return "";
+		return null;
+	}
+	
+	public void setId(String v) {
+		id = v;
+		setField(Phonebook.PB_ID, "{" + v + "}");
 	}
 	
 	public String id() {
-		return getField(Phonebook.PB_ID);
+		return id;
 	}
 	
 	public void moveToBegin() {
