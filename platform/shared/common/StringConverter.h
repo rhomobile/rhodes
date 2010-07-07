@@ -104,6 +104,7 @@ CONVERT_TYPE_W( short, L"%hd" );
 CONVERT_TYPE_W( bool, L"%d" );
 CONVERT_TYPE_W( float, L"%f" );
 CONVERT_TYPE_W( double, L"%lf" );
+
 #endif
 CONVERT_TYPE_A( unsigned int, "%u" );
 CONVERT_TYPE_A( int, "%d" );
@@ -118,8 +119,8 @@ CONVERT_TYPE_A( short, "%hd" );
 CONVERT_TYPE_A( float, "%f" );
 CONVERT_TYPE_A( double, "%lf" );
 
-CONVERT_TYPE_A( uint64, "%llu" );
-CONVERT_TYPE_A( int64, "%lli" );
+CONVERT_TYPE_A( uint64, FMTU64 );
+CONVERT_TYPE_A( int64, FMTI64 );
 
 // Special case for bool
 template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
