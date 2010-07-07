@@ -1,0 +1,46 @@
+require 'fileutils'
+
+USE_STLPORT = true
+
+
+def build_extension(name, arch)
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+    args = []
+    args << "/M4"
+    args << name + ".vcproj"
+    args << "\"Release|#{$sdk}\""
+    cmdline = $vcbuild + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    exit unless $? == 0
+
+    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
+end
+
+namespace "build" do
+  task :config do
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+  end
+
+  task :all => :config do
+
+    build_extension('Barcode', $arch)
+  end
+end
+
+task :default => "build:all"
