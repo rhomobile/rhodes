@@ -731,15 +731,19 @@ module Rho
           plain[0..-2]
         end
 
+        @@user_agent = nil
         def self.headers(args)
           hdrs = args[:headers]
           hdrs = {} if hdrs.nil?
 
           if hdrs['User-Agent'].nil?
-            platform = System.get_property('platform')
-            device = System.get_property('device_name')
-            version = System.get_property('os_version')
-            hdrs['User-Agent'] = "Mozilla-5.0 (#{platform}; #{device}; #{version})"
+            if !@@user_agent
+                platform = System.get_property('platform')
+                device = System.get_property('device_name')
+                version = System.get_property('os_version')
+                @@user_agent = "Mozilla-5.0 (#{platform}; #{device}; #{version})"
+            end
+            hdrs['User-Agent'] =  @@user_agent   
           end
 
           auth = make_auth_header(args)
@@ -748,7 +752,7 @@ module Rho
           hdrs
         end
 
-	def self.process_result(res, callback)
+	    def self.process_result(res, callback)
             return res if callback && callback.length() > 0
             
             _params = ::Rho::RhoSupport::parse_query_parameters res
