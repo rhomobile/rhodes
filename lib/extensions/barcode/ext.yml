@@ -1,0 +1,2 @@
+entry: Init_Barcode
+libraries: ["Barcode"]
