@@ -1,0 +1,84 @@
+require 'fileutils'
+
+USE_STLPORT = true
+
+
+def build_extension(name, arch, src_files)
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  #Dir.glob("*.c").each do |f|
+  src_files.each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+    objects << objname
+
+    args = []
+    args << "-I."
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
+
+    args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_STLPORT
+    args << "-D__NEW__" if USE_STLPORT
+    args << "-I#{$rootdir}/platform/shared/ruby/linux"
+    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
+    args << "-I#{$rootdir}/platform/shared/stlport/stlport" if USE_STLPORT
+
+    cc_compile f, $tempdir, args or exit 1
+
+  end
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  cc_ar File.join( $targetdir, 'lib' + name + '.a' ), Dir.glob($tempdir + "/**/*.o") or exit 1
+
+end
+
+namespace "build" do
+  task :config do
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+  end
+
+  task :all => :config do
+
+    fixed_path = ENV['RHO_ROOT'] + '/lib/extensions/barcode/ext'
+    fixed_path = fixed_path.gsub("\\","/")
+
+    src_files = []
+    src_files << fixed_path + '/barcode/shared/ruby/barcode_wrap.c'
+    src_files << fixed_path + '/barcode/shared/src/zbar.c'
+    src_files << fixed_path + '/barcode/shared/zbar/rho_bridge.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/error.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/code128.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/code39.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/ean.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/i25.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/processor/null.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/video/null.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/window/null.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/config.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/convert.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/image.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/img_scanner.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/refcnt.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/scanner.c'
+    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/symbol.c'
+
+    src_files << fixed_path + '/barcode/platform/android/jni/src/imageprovider.cpp'
+
+    build_extension('Barcode', $arch, src_files)
+  end
+end
+
+task :default => "build:all"
