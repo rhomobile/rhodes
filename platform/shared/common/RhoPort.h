@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <time.h>
 
+typedef int socklen_t;
+
 #if defined(OS_WINCE)
 #include "ruby/wince/sys/types.h"
 #include "ruby/wince/sys/stat.h"
