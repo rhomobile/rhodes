@@ -443,7 +443,7 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
       } else {
 	int64 numi = 0;
 	double numd = 0;
-	if(!tok->is_double && sscanf(tok->pb->buf, "%lli", &numi) == 1) {
+	if(!tok->is_double && sscanf(tok->pb->buf, FMTI64/*"%lli"*/, &numi) == 1) {
 	  current = rjson_object_new_int(numi);
 	} else if(tok->is_double && sscanf(tok->pb->buf, "%lf", &numd) == 1) {
 	  current = rjson_object_new_double(numd);
