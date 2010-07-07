@@ -750,11 +750,11 @@ class ERB
   # setup of an ERB _compiler_ object.
   #
   def set_eoutvar(compiler, eoutvar = '_erbout')
-    compiler.put_cmd = "#{eoutvar}.concat"
-    compiler.insert_cmd = "#{eoutvar}.concat"
+    compiler.put_cmd = "#{eoutvar}.force_encoding('utf-8');#{eoutvar}.concat"
+    compiler.insert_cmd = "#{eoutvar}.force_encoding('utf-8');#{eoutvar}.concat"
 
     cmd = []
-    cmd.push "#{eoutvar} = ''"
+    cmd.push "#{eoutvar} = '';#{eoutvar}.force_encoding('utf-8')"
     
     compiler.pre_cmd = cmd
 
