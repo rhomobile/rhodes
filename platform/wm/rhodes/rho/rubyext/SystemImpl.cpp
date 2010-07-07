@@ -301,24 +301,27 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         return 1;
 #else
 		HKEY hKey;
+        int nRes = 0;
 		if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Ident"),
 			0, KEY_READ, &hKey ) != ERROR_SUCCESS)
-			return 0;
+			return nRes;
 
 		DWORD dwType = REG_SZ;
 		DWORD dwDataSize = 0;
-		if ( RegQueryValueEx( hKey, _T("name"), 0, &dwType, (PBYTE)NULL,
-			&dwDataSize ) != ERROR_SUCCESS)
-			return 0;
+		if ( RegQueryValueEx( hKey, _T("name"), 0, &dwType, (PBYTE)NULL, &dwDataSize ) == ERROR_SUCCESS)
+        {
+		    CAtlString deviceName;
+		    RegQueryValueEx( hKey, _T("name"), 0, &dwType, 
+                (PBYTE)deviceName.GetBuffer((dwDataSize/sizeof(TCHAR) + sizeof(TCHAR))), &dwDataSize );
+            deviceName.ReleaseBuffer();
 
-		std::vector<wchar_t> deviceName(dwDataSize + 1);
-		RegQueryValueEx( hKey, _T("name"), 0, &dwType, (PBYTE)&deviceName[0], &dwDataSize );
-		char *s = wce_wctomb(&deviceName[0]);
-		*resValue = rho_ruby_create_string(s);
-		::free(s);
+		    *resValue = rho_ruby_create_string( convertToStringA(deviceName.GetString()).c_str() );
+
+            nRes = 1;
+        }
 
 		RegCloseKey(hKey);
-		return 1;
+		return nRes;
 #endif
 	}
 
