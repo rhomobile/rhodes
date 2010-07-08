@@ -61,7 +61,8 @@ public class Phonebook {
 			className = "ContactAccessorNew";
 		
 		try {
-			String fullName = "com.rhomobile.rhodes.phonebook." + className;
+			String pkgname = ContactAccessor.class.getPackage().getName();
+			String fullName = pkgname + "." + className;
 			Class<? extends ContactAccessor> klass =
 				Class.forName(fullName).asSubclass(ContactAccessor.class);
 			return klass.newInstance();
