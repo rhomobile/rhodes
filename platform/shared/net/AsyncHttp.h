@@ -5,6 +5,8 @@
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
 #include "common/ThreadQueue.h"
+#include "rubyext/RhoRuby.h"
+#include "common/rhoparams.h"
 
 namespace rho
 {
@@ -32,24 +34,35 @@ class CAsyncHttp : public common::CThreadQueue
     };
 
 public:
-    enum EHttpCommands{ hcGet = 0, hcPost, hcDownload, hcUpload };
+    enum EHttpCommands{ hcNone = 0, hcGet, hcPost, hcDownload, hcUpload };
 
-    class CHttpCommand : public CQueueCommand
+    class CHttpCommand : public IQueueCommand
     {
     public:
 	    EHttpCommands m_eCmd;
-        String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
-        String m_strFilePath;
-        boolean m_sslVerifyPeer;
+        String m_strCallback, m_strCallbackParams;
         Hashtable<String,String> m_mapHeaders;
 
         common::CAutoPtr<INetRequest> m_pNetRequest;
         String m_strResBody;
 
-        CHttpCommand(EHttpCommands eCmd,
-            const char* url, unsigned long headers, const char* body,
-            const char* file_path,
-            const char* callback, const char* callback_params, boolean ssl_verify_peer = true);
+        CRhoParams    m_params;
+
+        CHttpCommand(String strCmd, rho_param *p);
+
+        EHttpCommands translateCommand(String strCmd)
+        {
+            if ( strCmd.compare("GET") == 0 )
+                return hcGet;
+            else if ( strCmd.compare("POST") == 0 )
+                return hcPost;
+            else if ( strCmd.compare("Download") == 0 )
+                return hcDownload;
+            else if ( strCmd.compare("Upload") == 0 )
+                return hcUpload;
+
+            return hcNone;
+        }
 
         void execute();
         void cancel();
@@ -57,7 +70,7 @@ public:
         void callNotify(INetResponse* pResp, int nError );
         unsigned long getRetValue();
 
-	    boolean equals(const CQueueCommand& cmd){ return false; }
+	    boolean equals(const IQueueCommand& cmd){ return false; }
 
         String toString()
         {
@@ -93,13 +106,13 @@ public:
 
     void cancelRequest(const char* szCallback, boolean bWait);
 
-    virtual void addQueueCommand(CQueueCommand* pCmd);
+    virtual void addQueueCommand(IQueueCommand* pCmd);
 
 private:
     CAsyncHttp(common::IRhoClassFactory* factory);
     ~CAsyncHttp();
 
-    virtual void processCommand(CQueueCommand* pCmd);
+    virtual void processCommand(IQueueCommand* pCmd);
 };
 
 } // namespace net
@@ -110,11 +123,8 @@ private:
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-	
-unsigned long rho_asynchttp_get(const char* url, unsigned long headers, const char* callback, const char* callback_params, int ssl_verify_peer);
-unsigned long rho_asynchttp_post(const char* url, unsigned long headers, const char* body, const char* callback, const char* callback_params, int ssl_verify_peer);
-unsigned long rho_asynchttp_downloadfile(const char* url, unsigned long headers, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
-unsigned long rho_asynchttp_uploadfile(const char* url, unsigned long headers, const char* body, const char* filename, const char* callback, const char* callback_params, int ssl_verify_peer);
+
+unsigned long rho_asynchttp_request(const char* command, rho_param *p);
 void rho_asynchttp_cancel(const char* cancel_callback);
 
 #ifdef __cplusplus

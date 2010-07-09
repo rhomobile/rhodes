@@ -7,7 +7,7 @@ platform/shared/common/ThreadQueue.cpp
 platform/shared/common/SplashScreen.cpp
 platform/shared/common/Tokenizer.cpp
 platform/shared/common/AppMenu.cpp
-platform/shared/common/rhoparams.c
+platform/shared/common/rhoparams.cpp
 platform/shared/net/AsyncHttp.cpp
 platform/shared/net/CURLNetRequest.cpp
 platform/shared/net/HttpServer.cpp

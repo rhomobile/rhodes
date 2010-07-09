@@ -2,6 +2,7 @@ package com.rho.net;
 
 import com.rho.*;
 import com.rho.rjson.RJSONTokener;
+import com.rho.sync.SyncThread;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -10,384 +11,368 @@ import java.util.Hashtable;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.*;
 import com.rho.net.NetRequest.MultipartItem;
+import com.rho.ThreadQueue;
 
 import java.io.IOException;
 
-public class AsyncHttp extends RhoThread
+public class AsyncHttp extends ThreadQueue
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("AsyncHttp");
-
-	private static Object m_mxInstances = new Object();
-	private static Vector/*<CAsyncHttp*>*/ m_arInstances = new Vector();
-	private RhoClassFactory m_ptrFactory;
-	private Object m_mxRequest = new Object();
+	private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
-	private NetRequest m_pNetRequest;
-	private NetResponse m_pNetResponse;
-	private Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
+    static AsyncHttp m_pInstance;
+    HttpCommand m_pCurCmd;
 
-	private String m_strUrl, m_strBody, m_strCallback, m_strCallbackParams;
-	private String m_strFilePath;
-    private String m_strResBody = "";
-    boolean m_bFinished = false;
+    static AsyncHttp Create()
+    {
+	    if ( m_pInstance != null) 
+	        return m_pInstance;
+	
+	    m_pInstance = new AsyncHttp(new RhoClassFactory());
+	    return m_pInstance;
+    }
     
-	private RubyValue m_valBody;
-	public final static int  hcGet = 0, hcPost=1, hcDownload=2, hcUpload =3;
-	private int m_eCmd;
-	
-	private RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
-	
-	AsyncHttp(RhoClassFactory factory, int eCmd,
-		    String url, RubyValue headers, String body, String filepath, String callback, String callback_params)
-	{
-		super(factory);
-		
-	    m_ptrFactory = factory;
-	    m_strUrl = RHODESAPP().canonicalizeRhoUrl(url != null ? url : "");
-	    m_strBody = body != null ? body : "";
-	    m_strFilePath = filepath != null ? filepath : "";
-	    m_strCallback = callback != null ? callback : "";
-	    m_strCallbackParams = callback_params != null ? callback_params : "";
-	    m_eCmd = eCmd;
+    static void Destroy()
+    {
+    	if ( m_pInstance != null )
+    	{
+    		m_pInstance.cancelRequest("*", true);
+	        LOG.INFO("Thread shutdown");
+	        
+	        m_pInstance = null;
+    	}
+    }
+    
+    static AsyncHttp getInstance(){ return m_pInstance; }
+    
+    AsyncHttp(RhoClassFactory factory)
+    {
+    	super(factory);
+        ThreadQueue.setLogCategory(LOG.getLogCategory());
 
-	    m_mapHeaders = RhoRuby.enum_strhash(headers);
+        setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
 
-	    addNewObject(this);	    
+        m_pCurCmd = null;
+    }
+    
+    void cancelRequest(String szCallback, boolean bWait)
+    {
+        if (szCallback == null || szCallback.length() == 0 )
+        {
+            LOG.INFO("Cancel callback should not be empty. Use * for cancel all");
+            return;
+        }
 
-	    if (m_strCallback.length()==0)
-	        run();
-	    else
-	        start(epLow);
-	}
+        if ( m_pCurCmd != null )
+            m_pCurCmd.cancel();
 
-	void cancel(boolean bWait)
-	{
-		synchronized(m_mxRequest)
-		{		
-		    if (m_pNetRequest!=null && !m_pNetRequest.isCancelled())
-		        m_pNetRequest.cancel();
-		}
-		
-		if ( bWait )
-			stop(10000);
-	    //delete this;
-	}
+        if ( bWait )
+            stop(-1);
 
-	static void addNewObject(AsyncHttp pObj)
-	{
-	    synchronized(m_mxInstances)
-	    {
-	        while(true)
-	        {
-	            int nToDelete = -1;
-	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+        //TODO: find command by callback and cancel it if current, remove if it is still in queue
+    }
+    
+    public void addQueueCommand(IQueueCommand pCmd)
+    {
+        if ( ((HttpCommand)pCmd).m_strCallback.length()==0)
+        	processCommand(pCmd);
+        else
+        {
+            super.addQueueCommand(pCmd);
+            start(epLow);
+        }
+    }
+    
+    public void processCommand(IQueueCommand pCmd)
+    {
+        m_pCurCmd = (HttpCommand)pCmd;
+        m_pCurCmd.execute();
+        m_pCurCmd = null;
+    }
+    
+	public final static int  hcNone = 0, hcGet = 1, hcPost=2, hcDownload=3, hcUpload =4;
+    
+    private static class HttpCommand implements IQueueCommand
+    {
+	    int m_eCmd;
+        String m_strCallback, m_strCallbackParams;
+        Hashtable/*<String,String>*/ m_mapHeaders = new Hashtable();
+
+        private NetRequest m_pNetRequest;
+        String m_strResBody;
+        private RubyValue m_valBody;
+        
+        RhoParams    m_params;
+
+        HttpCommand(String strCmd, RubyValue p)
+        {
+        	m_params = new RhoParams(p); 
+            m_eCmd = translateCommand(strCmd);
+            m_strCallback = m_params.getString("callback");
+            m_strCallbackParams = m_params.getString("callback_param");
+
+            m_mapHeaders = m_params.getHash("headers");
+
+            m_pNetRequest = AsyncHttp.getInstance().getFactory().createNetRequest();
+            m_pNetRequest.sslVerifyPeer(m_params.getBool("ssl_verify_peer"));
+        }
+
+        int translateCommand(String strCmd)
+        {
+            if ( strCmd.compareTo("GET") == 0 )
+                return hcGet;
+            else if ( strCmd.compareTo("POST") == 0 )
+                return hcPost;
+            else if ( strCmd.compareTo("Download") == 0 )
+                return hcDownload;
+            else if ( strCmd.compareTo("Upload") == 0 )
+                return hcUpload;
+
+            return hcNone;
+        }
+
+    	void processResponse(NetResponse resp )
+    	{
+    	    if (resp.isOK() && m_mapHeaders != null)
+    	    {
+    	    	String strContType = (String)m_mapHeaders.get("content-type");
+    	    	if ( strContType != null && strContType.indexOf("application/json") >=0 )
+    	    	{
+    	    		RJSONTokener json = new RJSONTokener(resp.getCharData());
+    	    		
+    	    		try{
+    	    			m_valBody = json.nextRValue();
+    	    			
+    	    			return;
+    	    		}catch(Exception exc)
+    	    		{
+    	    			LOG.ERROR("Incorrect json body.", exc);
+    	    		}
+    	    	}
+    	    }
+
+    	    m_valBody = RhoRuby.create_string(resp.getCharData());
+    	}
+        
+        void execute()
+        {
+            NetResponse resp = null;
+     	    try
+     	    {
+	            switch( m_eCmd )
 	            {
-	                if ( ((AsyncHttp)m_arInstances.elementAt(i)).m_bFinished )
+	            case hcGet:
+	            	m_pNetRequest.setIgnoreSuffixOnSim(false);
+	                resp = m_pNetRequest.doRequest( m_params.getString("http_command", "GET"), 
+	                    m_params.getString("url"), m_params.getString("body"), null, m_mapHeaders);
+	                break;
+	            case hcPost:
+	            	m_pNetRequest.setIgnoreSuffixOnSim(false);
+	                resp = m_pNetRequest.doRequest(m_params.getString("http_command", "POST"), 
+	                    m_params.getString("url"), m_params.getString("body"), null, m_mapHeaders);
+	                break;
+	
+	            case hcDownload:
+	                resp = m_pNetRequest.pullFile(m_params.getString("url"), m_params.getString("filename"), null, m_mapHeaders);
+	                break;
+	
+	            case hcUpload:
 	                {
-	                    nToDelete = i;
+	                    Vector/*Ptr<net::CMultipartItem*>*/ arMultipartItems = new Vector();
+	
+	                    RhoParamArray arParams = new RhoParamArray( m_params, "multipart");
+	                    if ( arParams.size() > 0 )
+	                    {
+	                        for( int i = 0; i < arParams.size(); i++)
+	                        {
+	                            RhoParams oItem = arParams.getItem(i);
+	
+	                            MultipartItem pItem = new MultipartItem();
+	                            String strBody = oItem.getString("body");
+	                            if ( strBody.length() > 0 )
+	                            {
+	                                pItem.m_strBody = strBody;
+	                                pItem.m_strContentType = oItem.getString("content_type", "application/x-www-form-urlencoded");
+	                            }
+	                            else
+	                            {
+	                                pItem.m_strFilePath = oItem.getString("filename");
+	                                pItem.m_strContentType = oItem.getString("content_type", "application/octet-stream");
+	                            }
+	
+	                            pItem.m_strName = oItem.getString("name");
+	                            pItem.m_strFileName = oItem.getString("filename_base");
+	                            arMultipartItems.addElement(pItem);
+	                        }
+	                    }else
+	                    {
+	                        MultipartItem pItem = new MultipartItem();
+	                        pItem.m_strFilePath = m_params.getString("filename");
+	                        pItem.m_strContentType = m_params.getString("file_content_type", "application/octet-stream");
+	                        pItem.m_strName = m_params.getString("name");
+	                        pItem.m_strFileName = m_params.getString("filename_base");
+	                        arMultipartItems.addElement(pItem);
+	
+	                        String strBody = m_params.getString("body");
+	                        if ( strBody.length() > 0 )
+	                        {
+	                            MultipartItem pItem2 = new MultipartItem();
+	                            pItem2.m_strBody = strBody;
+	                            pItem2.m_strContentType = (String)m_mapHeaders.get("content-type");
+	                            arMultipartItems.addElement(pItem2);
+	                        }
+	                    }
+	
+	                    resp = m_pNetRequest.pushMultipartData( m_params.getString("url"), arMultipartItems, null, m_mapHeaders );
 	                    break;
 	                }
 	            }
-
-	            if (nToDelete==-1)
-	                break;
-
-	            m_arInstances.removeElementAt(nToDelete);
-	        }
-	    	
-	        m_arInstances.addElement(pObj);
-	    }
-	}
 	
-	static void cancelRequest(String szCallback, boolean bWait)
-	{
-	    if (szCallback == null|| szCallback.length() ==0 )
-	    {
-	        LOG.INFO("Cancel callback should not be empty. Use * for cancel all");
-	        return;
-	    }
-
-		synchronized(m_mxInstances)
-	    {		
-	        if ( szCallback.compareTo("*") ==0 )
-	        {
-	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
-	                ((AsyncHttp)m_arInstances.elementAt(i)).cancel(bWait);
-	        }else
-	        {
-	            for (int i = 0; i < (int)m_arInstances.size(); i++ )
+	            if ( !m_pNetRequest.isCancelled())
 	            {
-	                if ( ((AsyncHttp)m_arInstances.elementAt(i)).m_strCallback.compareTo(szCallback) == 0 )
-	                	((AsyncHttp)m_arInstances.elementAt(i)).cancel(bWait);    
+				    processResponse(resp);
+	                callNotify(resp,0);
 	            }
-	        }
-	    }
-	}
+    	    }catch(IOException exc)
+    	    {
+    	    	LOG.ERROR("command failed: " + m_eCmd + "url: " + m_params.getString("url"), exc);
+    	    	callNotify(null, RhoRuby.ERR_NETWORK);
+    	    }catch(Exception exc)
+    	    {
+    	    	LOG.ERROR("command crashed: " + m_eCmd + "url: " + m_params.getString("url"), exc);
+    	    	callNotify(null, RhoRuby.ERR_RUNTIME);
+    	    }
+        }
+        
+        void cancel()
+        {
+            if (m_pNetRequest!=null && !m_pNetRequest.isCancelled() )
+                m_pNetRequest.cancel();
+        }
 
-	public void run()
+        void callNotify(NetResponse resp, int nError )
+        {
+            m_strResBody = "rho_callback=1";
+            m_strResBody += "&status=";
+            if ( nError > 0 )
+            {
+            	m_strResBody += "error&error_code=" + nError;
+            }else
+            {
+                if ( resp.isOK() )
+            	    m_strResBody += "ok";
+                else
+                {
+            	    m_strResBody += "error&error_code=";
+                    m_strResBody += RhoRuby.getErrorFromResponse(resp);
+                    //if ( resp.isResponseRecieved())
+        	            m_strResBody += "&http_error=" + resp.getRespCode();
+                }
+
+                String cookies = resp.getCookies();
+                if (cookies.length()>0)
+                    m_strResBody += "&cookies=" + URI.urlEncode(cookies);
+
+                String strHeaders = makeHeadersString();
+                if (strHeaders.length() > 0 )
+                    m_strResBody += "&" + strHeaders;
+
+                m_strResBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
+            }
+
+            if ( m_strCallbackParams.length() > 0 )
+                m_strResBody += "&" + m_strCallbackParams;
+
+            if ( m_strCallback.length() > 0 )
+            {
+    		    try{
+	                String strFullUrl = m_pNetRequest.resolveUrl(m_strCallback);
+	                NetResponse resp1 = m_pNetRequest.pushData( strFullUrl, m_strResBody, null );
+    		        if ( !resp1.isOK() )
+    		            LOG.ERROR("AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData() );
+    	        }catch(Exception exc)
+    	        {
+    	        	LOG.ERROR("Async http callback failed.", exc);
+    	        }
+            }
+        }
+        
+        RubyValue getRetValue()
+        {
+    	    if ( m_strCallback.length() == 0 )
+    	        return RhoRuby.create_string(m_strResBody); 
+
+    	    return RubyConstant.QNIL;
+        }
+
+	    public boolean equals(IQueueCommand cmd){ return false; }
+
+        public String toString()
+        {
+            switch(m_eCmd)
+            {
+            case hcGet:
+                return "GET";
+            case hcPost:
+                return "POST";
+            case hcDownload:
+                return "Download";
+            case hcUpload:
+                return "Upload";
+            }
+            return "Unknown";
+        }
+
+        String makeHeadersString()
+        {
+    	    String strRes = "";
+
+        	Enumeration valsHeaders = m_mapHeaders.elements();
+        	Enumeration keysHeaders = m_mapHeaders.keys();
+    		while (valsHeaders.hasMoreElements()) 
+    		{
+    	        if ( strRes.length() > 0)
+    	            strRes += "&";
+
+    	        strRes += "headers[";
+    	        strRes += URI.urlEncode((String)keysHeaders.nextElement());
+    	        strRes += "]=";
+    	        strRes += URI.urlEncode((String)valsHeaders.nextElement());
+    	    }
+
+    	    return strRes;
+        }
+
+    };
+	
+	public static void initMethods(RubyModule klass) 
 	{
-		LOG.INFO("RhoHttp thread start.");
-
-		synchronized(m_mxRequest)
-		{		
-			m_pNetRequest = m_ptrFactory.createNetRequest();
-		}
-		
-	    try{
-		    switch( m_eCmd )
-		    {
-		    case hcGet:
-		    	m_pNetRequest.setIgnoreSuffixOnSim(false);
-		        m_pNetResponse = m_pNetRequest.doRequest("GET", m_strUrl, m_strBody, null, m_mapHeaders);
-		        break;
-		    case hcPost:
-		    	m_pNetRequest.setIgnoreSuffixOnSim(false);
-		        m_pNetResponse = m_pNetRequest.doRequest("POST", m_strUrl, m_strBody, null, m_mapHeaders);
-		        break;
-	
-		    case hcDownload:
-		        m_pNetResponse = m_pNetRequest.pullFile(m_strUrl, m_strFilePath, null, m_mapHeaders);
-		        break;
-	
-		    case hcUpload:
-		    	{
-		            Vector/*Ptr<net::CMultipartItem*>*/ arMultipartItems = new Vector();
-
-		            MultipartItem oItem = new MultipartItem();
-		            oItem.m_strFilePath = m_strFilePath;
-		            oItem.m_strContentType = "application/octet-stream";
-		            arMultipartItems.addElement(oItem);
-
-		            if ( m_strBody.length() > 0 )
-		            {
-			            MultipartItem oItem2 = new MultipartItem();
-			            oItem2.m_strBody = m_strBody;
-			            oItem2.m_strContentType = (String)m_mapHeaders.get("content-type");
-			            arMultipartItems.addElement(oItem2);
-		            }
-		    		
-		            m_pNetResponse = m_pNetRequest.pushMultipartData( m_strUrl, arMultipartItems, null, m_mapHeaders );
-			        break;
-		    	}
-		    }
-		    
-		    if ( !m_pNetRequest.isCancelled() )
-		    {
-			    processResponse(m_pNetResponse);
-		        callNotify(m_pNetResponse, 0);
-		    }
-	    }catch(IOException exc)
-	    {
-	    	LOG.ERROR("command failed: " + m_eCmd + "url: " + m_strUrl, exc);
-	    	callNotify(null, RhoRuby.ERR_NETWORK);
-	    }catch(Exception exc)
-	    {
-	    	LOG.ERROR("command crashed: " + m_eCmd + "url: " + m_strUrl, exc);
-	    	callNotify(null, RhoRuby.ERR_RUNTIME);
-	    }finally
-	    {
-			LOG.INFO("RhoHttp thread end.");
-			m_bFinished = true;			
-	    }
-	}
-
-	String makeHeadersString()
-	{
-	    String strRes = "";
-
-    	Enumeration valsHeaders = m_mapHeaders.elements();
-    	Enumeration keysHeaders = m_mapHeaders.keys();
-		while (valsHeaders.hasMoreElements()) 
-		{
-	        if ( strRes.length() > 0)
-	            strRes += "&";
-
-	        strRes += "headers[";
-	        strRes += URI.urlEncode((String)keysHeaders.nextElement());
-	        strRes += "]=";
-	        strRes += URI.urlEncode((String)valsHeaders.nextElement());
-	    }
-
-	    return strRes;
-	}
-	
-	void processResponse(NetResponse resp )
-	{
-	    if (resp.isOK() && m_mapHeaders != null)
-	    {
-	    	String strContType = (String)m_mapHeaders.get("content-type");
-	    	if ( strContType != null && strContType.indexOf("application/json") >=0 )
-	    	{
-	    		RJSONTokener json = new RJSONTokener(resp.getCharData());
-	    		
-	    		try{
-	    			m_valBody = json.nextRValue();
-	    			
-	    			return;
-	    		}catch(Exception exc)
-	    		{
-	    			LOG.ERROR("Incorrect json body.", exc);
-	    		}
-	    	}
-	    }
-
-	    m_valBody = RhoRuby.create_string(resp.getCharData());
-	}
-
-	RubyValue getRetValue()
-	{
-	    if ( m_strCallback.length() == 0 )
-	        return RhoRuby.create_string(m_strResBody); 
-
-	    return RubyConstant.QNIL;
-	}
-	
-	void callNotify(NetResponse resp, int nError )
-	{
-		m_strResBody = "rho_callback=1";
-		m_strResBody += "&status=";
-	    if ( nError > 0 )
-	    {
-	    	m_strResBody += "error&error_code=" + nError;
-	    }else
-	    {
-	    	if ( resp.isOK() )
-	    		m_strResBody += "ok";
-		    else
-		    {
-		    	m_strResBody += "error&error_code=";
-		    	m_strResBody += RhoRuby.getErrorFromResponse(resp);		    	
-		        //if ( resp.isResponseRecieved())
-		        m_strResBody += "&http_error=" + resp.getRespCode();
-		    }
-
-	        String cookies = resp.getCookies();
-	        if (cookies.length()>0)
-	        	m_strResBody += "&cookies=" + URI.urlEncode(cookies);
-	    	
-	        String strHeaders = makeHeadersString();
-	        if ( strHeaders != null && strHeaders.length() > 0 )
-	        	m_strResBody += "&" + makeHeadersString();
-	        
-	        m_strResBody += "&" + RHODESAPP().addCallbackObject(m_valBody, "body");
-	    }
-	    
-	    if ( m_strCallbackParams.length() > 0 )
-	    	m_strResBody += "&" + m_strCallbackParams;
-	    	
-
-	    if ( m_strCallback.length() > 0 )
-	    {
-		    try{
-		        NetRequest pNetRequest = m_ptrFactory.createNetRequest();
-	
-		        String strFullUrl = pNetRequest.resolveUrl(m_strCallback);
-		        NetResponse resp1 = pNetRequest.pushData( strFullUrl, m_strResBody, null );
-		        if ( !resp1.isOK() )
-		            LOG.ERROR("AsyncHttp notification failed. Code: " + resp1.getRespCode() + "; Error body: " + resp1.getCharData() );
-	        }catch(Exception exc)
-	        {
-	        	LOG.ERROR("Async http callback failed.", exc);
-	        }
-	    }
-	}
-	
-	public static void initMethods(RubyModule klass) {
-		klass.getSingletonClass().defineMethod("do_get", new RubyVarArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
+		klass.getSingletonClass().defineMethod("do_request", new RubyTwoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block )
 			{
-				if ( args.size() != 5 )
-					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-							"in AsyncHttp.do_get: wrong number of arguments ( " + args.size() + " for " + 5 + " )");			
-				
 				try {
-					String url = args.get(0).toStr();
-					String callback = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
-					String callback_params = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
-					boolean ssl_verify_peer = args.get(4) != RubyConstant.QNIL && args.get(4).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcGet, url, args.get(1), null, null, callback, callback_params );
-					return pHttp.getRetValue();
+				    AsyncHttp.Create();
+				    
+				    String command = arg1.toStr();
+				    AsyncHttp.HttpCommand pHttp = new AsyncHttp.HttpCommand( command, arg2 );
+				    AsyncHttp.getInstance().addQueueCommand(pHttp);
+				    return pHttp.getRetValue();
 				} catch(Exception e) {
-					LOG.ERROR("do_get failed", e);
+					LOG.ERROR("do_request failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
 		});
-		
-		klass.getSingletonClass().defineMethod("do_post", new RubyVarArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
-			{
-				if ( args.size() != 6 )
-					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-							"in AsyncHttp.do_post: wrong number of arguments ( " + args.size() + " for " + 6 + " )");			
-				
-				try {
-					String url = args.get(0).toStr();
-					String body = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
-					String callback = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
-					String callback_params = args.get(4) != RubyConstant.QNIL ? args.get(4).toStr() : null;
-					boolean ssl_verify_peer = args.get(5) != RubyConstant.QNIL && args.get(5).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcPost, url, args.get(1), body, null, callback, callback_params );
-					return pHttp.getRetValue();
-				} catch(Exception e) {
-					LOG.ERROR("do_post failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-			}
-		});		
-
-		klass.getSingletonClass().defineMethod("do_downloadfile", new RubyVarArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
-			{
-				if ( args.size() != 6 )
-					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-							"in AsyncHttp.do_downloadfile: wrong number of arguments ( " + args.size() + " for " + 6 + " )");			
-				
-				try {
-					String url = args.get(0).toStr();
-					String filepath = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
-					String callback = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
-					String callback_params = args.get(4) != RubyConstant.QNIL ? args.get(4).toStr() : null;
-					boolean ssl_verify_peer = args.get(5) != RubyConstant.QNIL && args.get(5).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcDownload, url, args.get(1), null, filepath, callback, callback_params );
-					return pHttp.getRetValue();
-				} catch(Exception e) {
-					LOG.ERROR("do_downloadfile failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-			}
-		});		
-
-		klass.getSingletonClass().defineMethod("do_uploadfile", new RubyVarArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
-			{
-				if ( args.size() != 7 )
-					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-							"in AsyncHttp.do_uploadfile: wrong number of arguments ( " + args.size() + " for " + 7 + " )");			
-				
-				try {
-					String url = args.get(0).toStr();
-					String body = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : null;
-					String filepath = args.get(3) != RubyConstant.QNIL ? args.get(3).toStr() : null;
-					String callback = args.get(4) != RubyConstant.QNIL ? args.get(4).toStr() : null;
-					String callback_params = args.get(5) != RubyConstant.QNIL ? args.get(5).toStr() : null;
-					boolean ssl_verify_peer = args.get(6) != RubyConstant.QNIL && args.get(6).toInt() != 0 ? true : false;
-					AsyncHttp pHttp = new AsyncHttp(new RhoClassFactory(), AsyncHttp.hcUpload, url, args.get(1), body, filepath, callback, callback_params );
-					return pHttp.getRetValue();
-				} catch(Exception e) {
-					LOG.ERROR("do_uploadfile failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-			}
-		});		
 
 		klass.getSingletonClass().defineMethod("cancel", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 				try {
 					String cancel_callback = arg.toStr();
-					AsyncHttp.cancelRequest(cancel_callback, false);
+				    if ( AsyncHttp.getInstance() != null )
+				        AsyncHttp.getInstance().cancelRequest(cancel_callback, false);
+					
 				} catch(Exception e) {
 					LOG.ERROR("cancel failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

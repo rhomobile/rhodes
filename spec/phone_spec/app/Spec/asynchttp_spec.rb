@@ -4,7 +4,7 @@ class AsyncHttpSpec
 
     def get_test
         return unless $is_network_available
-            
+        
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0' )
         
@@ -45,24 +45,94 @@ class AsyncHttpSpec
 
     def upload_test
         return unless $is_network_available
-        #TODO: upload_test
-=begin
-        server = 'http://logserver.staging.rhohub.com/log_handler'
+        
+        server = 'http://rhologs.heroku.com'
         
         file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
         Test_equal(File.exists?(file_name), true)
 
         res = Rho::AsyncHttp.upload_file(
-          :url => server + "/client_log?log_name=phone_test",
+          :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
           :filename => file_name )
         #puts "res : #{res}"  
         
         Test_equal(res['status'],'ok')
-
         Test_equal(File.exists?(file_name), true)
-=end        
     end
-  
+
+    def upload_test
+        return unless $is_network_available
+        
+        server = 'http://rhologs.heroku.com'
+        
+        file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
+        File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
+
+        res = Rho::AsyncHttp.upload_file(
+          :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
+          :filename => file_name )
+          #optional parameters:
+          #:filename_base => "phone_spec_file",
+          #:name => "phone_spec_name" )
+        
+        Test_equal(res['status'],'ok')
+        Test_equal(File.exists?(file_name), true)
+    end
+=begin
+    def upload_withbody_test
+        return unless $is_network_available
+        
+        server = 'http://rhologs.heroku.com'
+        
+        file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
+        File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
+
+        res = Rho::AsyncHttp.upload_file(
+          :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
+          :filename => file_name,
+          :file_content_type => "application/octet-stream",
+          :filename_base => "phone_spec_file",
+          :name => "phone_spec_name",
+          
+          :body => "upload test",
+          :headers => {"content-type"=>"plain/text"}
+           )
+        #puts "res : #{res}"  
+        
+        Test_equal(res['status'],'ok')
+        Test_equal(File.exists?(file_name), true)
+    end
+
+    def upload_multiple_test
+        return unless $is_network_available
+        
+        server = 'http://rhologs.heroku.com'
+        
+        file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
+        File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
+
+        res = Rho::AsyncHttp.upload_file(
+          :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
+          :multipart => [
+              { 
+                :filename => file_name,
+                :filename_base => "phone_spec_file",
+                :name => "phone_spec_name",
+                :content_type => "application/octet-stream"
+              },
+              {
+                :body => "upload test",
+                :name => "phone_spec_bodyname",
+                :content_type => "plain/text"
+              }
+           ]
+        )
+        #puts "res : #{res}"  
+        
+        Test_equal(res['status'],'ok')
+        Test_equal(File.exists?(file_name), true)
+    end
+=end  
 # TODO: Fix this test!
 =begin
     def httpsget_test

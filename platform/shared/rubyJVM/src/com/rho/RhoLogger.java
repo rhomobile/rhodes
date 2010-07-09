@@ -30,6 +30,9 @@ public class RhoLogger {
 		return m_oLogConf;
 	}
 	
+	public String getLogCategory(){ return m_category; }
+	public void setLogCategory(String category){ m_category = category; }
+	
 	public static void close(){ RhoLogConf.close(); }
 	
 	private boolean isEnabled(){

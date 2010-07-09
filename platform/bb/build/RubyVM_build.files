@@ -36,6 +36,9 @@ platform\shared\rubyJVM\src\com\rho\RhoLogOutputSink.java
 platform\shared\rubyJVM\src\com\rho\RhoProfiler.java
 platform\shared\rubyJVM\src\com\rho\RhoRuby.java
 platform\shared\rubyJVM\src\com\rho\RhoThread.java
+platform\shared\rubyJVM\src\com\rho\ThreadQueue.java
+platform\shared\rubyJVM\src\com\rho\RhoParams.java
+platform\shared\rubyJVM\src\com\rho\RhoParamArray.java
 platform\shared\rubyJVM\src\com\rho\StringScanner.java
 platform\shared\rubyJVM\src\com\rho\Capabilities.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONArrayIterator.java

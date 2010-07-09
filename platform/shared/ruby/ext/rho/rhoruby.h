@@ -14,7 +14,6 @@ extern "C" {
 #endif
 
 #include "common/RhoDefs.h"
-#include "common/rhoparams.h"
 
 #ifdef __SYMBIAN32__
 #include <sys/types.h>
@@ -46,8 +45,6 @@ VALUE addIntToHash(VALUE hash, const char* key, int val);
 VALUE addStrToHash(VALUE hash, const char* key, const char* val);
 VALUE addStrToHashLen(VALUE hash, const char* key, const char* val, int len);
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
-
-rho_param *valueToRhoParam(VALUE v);
 
 char* getStringFromValue(VALUE val);
 int getStringLenFromValue(VALUE val);
@@ -97,6 +94,45 @@ VALUE rho_ruby_main_thread();
 VALUE rho_ruby_current_thread();
 void rho_ruby_lock_mutex(VALUE val);
 void rho_ruby_unlock_mutex(VALUE val);
+
+#define RHO_PARAM_UNKNWON 0
+#define RHO_PARAM_STRING 1
+#define RHO_PARAM_ARRAY 2
+#define RHO_PARAM_HASH 3
+
+struct rho_param_t;
+
+typedef struct rho_array_t
+{
+    int size;
+    struct rho_param_t **value;
+} rho_array;
+
+typedef struct rho_hash_t
+{
+    int size;
+    char **name;
+    struct rho_param_t **value;
+} rho_hash;
+
+typedef struct rho_param_t
+{
+    int type;
+    union {
+        char *string;
+        rho_array *array;
+        rho_hash *hash;
+    } v;
+} rho_param;
+
+rho_param *rho_param_str(char *s);
+rho_param *rho_param_array(int size);
+rho_param *rho_param_hash(int size);
+
+rho_param *rho_param_dup(rho_param *p);
+void rho_param_free(rho_param *p);
+
+rho_param *rho_param_fromvalue(VALUE v);
 
 #if defined(__cplusplus)
 }
