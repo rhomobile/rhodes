@@ -11,7 +11,7 @@
 #import "SimpleMainView.h"
 #import "TabbedMainView.h"
 
-#include "common/rhoparams.h"
+//#include "common/rhoparams.h"
 #include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
 
