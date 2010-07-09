@@ -3,6 +3,7 @@ platform/android/Rhodes/jni/src/alert.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
 platform/android/Rhodes/jni/src/camera.cpp
 platform/android/Rhodes/jni/src/datetimepicker.cpp
+platform/android/Rhodes/jni/src/file.cpp
 platform/android/Rhodes/jni/src/geolocation.cpp
 platform/android/Rhodes/jni/src/logconf.cpp
 platform/android/Rhodes/jni/src/logger.cpp

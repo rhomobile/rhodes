@@ -28,9 +28,9 @@ public class SplashScreen {
 	public SplashScreen(Context ctx) {
 		AssetManager am = ctx.getResources().getAssets();
 		Rhodes r = RhodesInstance.getInstance();
-		boolean bc = r.isBundleChanged();
+		//boolean bc = r.isBundleChanged();
 		
-		String file = bc ? INSTALLING_PNG : LOADING_PNG;
+		String file = LOADING_PNG;
 		
 		Bitmap bitmap = null;
 		try {
@@ -46,7 +46,7 @@ public class SplashScreen {
 		catch (IOException e) {
 			WebView v = r.createWebView();
 			
-			String page = bc ? INSTALLING_PAGE : LOADING_PAGE;
+			String page = LOADING_PAGE;
 			
 			boolean hasNeededPage;
 			try {
@@ -63,13 +63,7 @@ public class SplashScreen {
 				v.loadUrl("file:///android_asset/" + page);
 			}
 			else {
-				StringBuffer p = new StringBuffer();
-				p.append("<html><title>");
-				p.append(bc ? "Installing" : "Loading");
-				p.append("</title><body>");
-				p.append(bc ? "Installing" : "Loading");
-				p.append("...</body></html>");
-				v.loadData(p.toString(), "text/html", "utf-8");
+				v.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
 			}
 			
 			v.setId(Rhodes.RHO_SPLASH_VIEW);
