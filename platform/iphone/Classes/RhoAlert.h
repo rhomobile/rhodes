@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "common/rhoparams.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 @interface RhoAlert : NSObject {}
 
