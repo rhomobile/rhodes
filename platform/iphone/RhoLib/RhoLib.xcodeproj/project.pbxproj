@@ -55,6 +55,7 @@
 		5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */; };
 		5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCD7EBB116CE2D5005E6CA3 /* AppMenu.h */; };
 		5CE294121009D8D9009A75F6 /* isysteminfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE294111009D8D9009A75F6 /* isysteminfo.h */; };
+		5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */; };
 		5CECDBB3113FE3620084A75B /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CECDBB2113FE3620084A75B /* System.cpp */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
 		BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */; };
@@ -65,7 +66,6 @@
 		BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */ = {isa = PBXBuildFile; fileRef = BD4FC54A10BFE4D100D280D0 /* HttpServer.h */; };
 		BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DF8861147C8090041A968 /* SplashScreen.cpp */; };
 		BD8DF8891147C8090041A968 /* SplashScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8DF8871147C8090041A968 /* SplashScreen.h */; };
-		BDD11ECD113664E700349BE3 /* rhoparams.c in Sources */ = {isa = PBXBuildFile; fileRef = BDD11ECB113664E700349BE3 /* rhoparams.c */; };
 		BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD11ECC113664E700349BE3 /* rhoparams.h */; };
 		BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB13B112EE2B500AE3724 /* ssl.cpp */; };
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
@@ -120,6 +120,7 @@
 		5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppMenu.cpp; path = ../../shared/common/AppMenu.cpp; sourceTree = SOURCE_ROOT; };
 		5CCD7EBB116CE2D5005E6CA3 /* AppMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMenu.h; path = ../../shared/common/AppMenu.h; sourceTree = SOURCE_ROOT; };
 		5CE294111009D8D9009A75F6 /* isysteminfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = isysteminfo.h; path = ../../shared/common/isysteminfo.h; sourceTree = SOURCE_ROOT; };
+		5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhoparams.cpp; path = ../../shared/common/rhoparams.cpp; sourceTree = SOURCE_ROOT; };
 		5CECDBB2113FE3620084A75B /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../shared/rubyext/System.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixThreadImpl.h; path = ../../shared/common/PosixThreadImpl.h; sourceTree = SOURCE_ROOT; };
@@ -130,7 +131,6 @@
 		BD4FC54A10BFE4D100D280D0 /* HttpServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HttpServer.h; path = ../../shared/net/HttpServer.h; sourceTree = SOURCE_ROOT; };
 		BD8DF8861147C8090041A968 /* SplashScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SplashScreen.cpp; path = ../../shared/common/SplashScreen.cpp; sourceTree = SOURCE_ROOT; };
 		BD8DF8871147C8090041A968 /* SplashScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplashScreen.h; path = ../../shared/common/SplashScreen.h; sourceTree = SOURCE_ROOT; };
-		BDD11ECB113664E700349BE3 /* rhoparams.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoparams.c; path = ../../shared/common/rhoparams.c; sourceTree = SOURCE_ROOT; };
 		BDD11ECC113664E700349BE3 /* rhoparams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoparams.h; path = ../../shared/common/rhoparams.h; sourceTree = SOURCE_ROOT; };
 		BDFCB13B112EE2B500AE3724 /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
@@ -200,11 +200,11 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */,
 				5CA2DE8E11B01EF000B868D5 /* ThreadQueue.cpp */,
 				5CA2DE8F11B01EF000B868D5 /* ThreadQueue.h */,
 				5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */,
 				5CCD7EBB116CE2D5005E6CA3 /* AppMenu.h */,
-				BDD11ECB113664E700349BE3 /* rhoparams.c */,
 				BDD11ECC113664E700349BE3 /* rhoparams.h */,
 				BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */,
 				BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */,
@@ -396,7 +396,6 @@
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
 				5C8EE85C11220E9E0005C20D /* AsyncHttp.cpp in Sources */,
 				BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */,
-				BDD11ECD113664E700349BE3 /* rhoparams.c in Sources */,
 				5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */,
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
 				BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */,
@@ -404,6 +403,7 @@
 				5C2F10BB116146930054AC80 /* RhoRuby.cpp in Sources */,
 				5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */,
 				5CA2DE9011B01EF000B868D5 /* ThreadQueue.cpp in Sources */,
+				5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
