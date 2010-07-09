@@ -503,7 +503,7 @@ public class RhoConnection implements IHttpConnection {
 			if ( nameClass.endsWith(".iseq"))
 				nameClass = nameClass.substring(0, nameClass.length()-5);
 			
-			if ( RhoSupport.findClass(nameClass) != null || RhoRuby.loadFile(name) != null ){
+			if ( RhoSupport.findClass(nameClass) != null || RhoRuby.resourceFileExists(name)  ){
 				strIndex = name;
 				break;
 			}

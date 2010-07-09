@@ -26,6 +26,7 @@ public class NetRequest
 		new RhoLogger("Net");
 	
 	boolean m_bCancel = false;
+	boolean m_sslVerifyPeer = true;
 	
 	public static interface IRhoSession
 	{
@@ -51,6 +52,11 @@ public class NetRequest
 	private boolean m_bIgnoreSuffixOnSim = true;
 	private Hashtable m_OutHeaders;
 	public boolean isCancelled(){ return m_bCancel;}
+	
+	//TODO: use sslVerifyPeer
+    boolean sslVerifyPeer() {return m_sslVerifyPeer;}
+    void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+	
 	public NetResponse pullData(String strUrl, IRhoSession oSession ) throws Exception
     {
 		return doRequest("GET", strUrl, "", oSession, null);

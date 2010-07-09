@@ -333,6 +333,9 @@ public class RubyIO extends RubyBasic {
    			return ObjectFactory.createString(res);
     	}catch( Exception exc ){
     		throw new RubyException(RubyRuntime.RuntimeErrorClass,exc.getMessage());
+    	}finally
+    	{
+			try{ if ( stream != null ) stream.close(); }catch(java.io.IOException exc){}
     	}
     }
     

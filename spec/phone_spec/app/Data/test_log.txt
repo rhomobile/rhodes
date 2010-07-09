@@ -1,3 +1,4 @@
+******************THIS IS TEST! REMOVE THIS FILE! *******************
 I 06/15/2010 13:17:35 00000d34            RhodesApp| RhodesApp thread shutdown
 I 06/15/2010 13:17:35 00000d34                 Sync| Sync engine thread shutdown
 I 06/15/2010 13:17:35 000008f4            AsyncHttp| Thread shutdown

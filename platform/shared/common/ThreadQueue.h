@@ -20,10 +20,10 @@ protected:
 public:
     DEFINE_BASELOGCLASS
 
-    struct CQueueCommand
+    struct IQueueCommand
     {
-        virtual ~CQueueCommand(){};
-        virtual boolean equals(const CQueueCommand& cmd) = 0;
+        virtual ~IQueueCommand(){};
+        virtual boolean equals(const IQueueCommand& cmd) = 0;
         virtual String toString() = 0;
     };
 
@@ -32,7 +32,7 @@ private:
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
 	int           m_nPollInterval;
    	common::CMutex m_mxStackCommands;
-	LinkedListPtr<CQueueCommand*> m_stackCommands;
+	LinkedListPtr<IQueueCommand*> m_stackCommands;
 
     boolean m_bNoThreaded;
 public:
@@ -40,7 +40,7 @@ public:
 
     ~CThreadQueue(void);
 
-    virtual void addQueueCommand(CQueueCommand* pCmd);
+    virtual void addQueueCommand(IQueueCommand* pCmd);
 	virtual void run();
 
 	void setPollInterval(int nInterval);
@@ -52,7 +52,7 @@ public:
     common::IRhoClassFactory* getFactory(){ return m_ptrFactory; }
 protected:
     virtual int getLastPollInterval(){ return 0;}
-    virtual void processCommand(CQueueCommand* pCmd) = 0;
+    virtual void processCommand(IQueueCommand* pCmd) = 0;
     virtual boolean isSkipDuplicateCmd() { return false; }
 
     virtual void processCommands();

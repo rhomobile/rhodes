@@ -15,7 +15,7 @@ CThreadQueue::~CThreadQueue(void)
 {
 }
 
-void CThreadQueue::addQueueCommand(CQueueCommand* pCmd)
+void CThreadQueue::addQueueCommand(IQueueCommand* pCmd)
 { 
     LOG(INFO) + "addCommand: " + pCmd->toString();
 	{
@@ -89,10 +89,10 @@ void CThreadQueue::processCommands()//throws Exception
 {
 	while(!isStopped() && !isNoCommands())
 	{
-		common::CAutoPtr<CQueueCommand> pCmd = null;
+		common::CAutoPtr<IQueueCommand> pCmd = null;
     	{
         	synchronized(m_mxStackCommands);
-    		pCmd = (CQueueCommand*)m_stackCommands.removeFirst();
+    		pCmd = (IQueueCommand*)m_stackCommands.removeFirst();
     	}
 		
 		processCommand(pCmd);
