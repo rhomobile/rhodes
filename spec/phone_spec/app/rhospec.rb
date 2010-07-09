@@ -60,7 +60,7 @@ class RhoSpec
             yield if block_given?
         rescue Exception => e
             @exc_count += 1
-            ntrace_index = RhoSpec.current.tests.size > 0 ? 2 : 1
+            ntrace_index = RhoSpec.current && RhoSpec.current.tests.size() > 0 ? 2 : 1
             @errorMessages += "<br/>FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
             puts "FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
