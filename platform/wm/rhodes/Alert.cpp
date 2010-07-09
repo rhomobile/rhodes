@@ -130,7 +130,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	//get text metrics
 	dc.GetTextMetrics(&tm);
 
-	int msgWidth  =  m_message.length() * (tm.tmAveCharWidth * 1.3) + (2 * INDENT);
+	int msgWidth  =  (int)(m_message.length() * (tm.tmAveCharWidth * 1.3) + (2 * INDENT));
 	int msgHeight =  tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading;
 
 	int desiredDlgWidth = iconRect.right + msgWidth + (INDENT * 2);

@@ -22,7 +22,7 @@ private:
 public:
     static const unsigned int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
 
-    class CSyncCommand : public CQueueCommand
+    class CSyncCommand : public IQueueCommand
     {
     public:
 	    int m_nCmdCode;
@@ -57,7 +57,7 @@ public:
             m_bShowStatus = bShowStatus;
 	    }
 
-	    boolean equals(const CQueueCommand& cmd)
+	    boolean equals(const IQueueCommand& cmd)
 	    {
             const CSyncCommand& oSyncCmd = (const CSyncCommand&)cmd;
 		    return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
@@ -124,7 +124,7 @@ private:
     CSyncThread(common::IRhoClassFactory* factory);
 
     virtual int getLastPollInterval();
-    virtual void processCommand(CQueueCommand* pCmd);
+    virtual void processCommand(IQueueCommand* pCmd);
     virtual boolean isSkipDuplicateCmd() { return true; }
 
     virtual void processCommands();

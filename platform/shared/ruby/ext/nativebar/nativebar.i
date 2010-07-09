@@ -13,7 +13,7 @@ extern VALUE nativebar_started();
 %}
 
 %typemap(in) (rho_param *p) {
-  $1 = valueToRhoParam($input);
+  $1 = rho_param_fromvalue($input);
 }
 
 %typemap(freearg) (rho_param *p) {

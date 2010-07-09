@@ -16,6 +16,7 @@ public class RhoThread extends Thread
     }
 
     public Object getSyncObject(){ return m_syncObj; }
+    public boolean isStopped(){return m_bStop;}
     
     public void start(int ePriority)
     {

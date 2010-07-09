@@ -1636,7 +1636,7 @@ _wrap_create(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = (int)(val1);
   {
-    arg2 = valueToRhoParam(argv[1]);
+    arg2 = rho_param_fromvalue(argv[1]);
   }
   create(arg1,arg2);
   {

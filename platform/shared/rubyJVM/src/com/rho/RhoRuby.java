@@ -188,6 +188,15 @@ public class RhoRuby {
 		com.xruby.runtime.lang.RubyRuntime.fini();	
 	}
 	
+	static public boolean resourceFileExists(String path)
+	{
+		InputStream is = loadFile(path);
+		boolean bRes = is != null;
+		try{ if ( is != null ) is.close(); }catch(java.io.IOException exc){}
+		
+		return bRes;
+	}
+	
 	static public InputStream loadFile(String path){
 		try {
 			return RhoClassFactory.createFile().getResourceAsStream(mainObj.getClass(), path);

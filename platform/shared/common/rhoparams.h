@@ -1,49 +1,42 @@
-#ifndef RHO_PARAMS_H
-#define RHO_PARAMS_H
+#ifndef RHO_PARAMSWRAP_H
+#define RHO_PARAMSWRAP_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "common/RhoStd.h"
+#include "ruby/ext/rho/rhoruby.h"
 
-#define RHO_PARAM_UNKNWON 0
-#define RHO_PARAM_STRING 1
-#define RHO_PARAM_ARRAY 2
-#define RHO_PARAM_HASH 3
-
-struct rho_param_t;
-
-typedef struct rho_array_t
+namespace rho
 {
-    int size;
-    struct rho_param_t **value;
-} rho_array;
 
-typedef struct rho_hash_t
+class CRhoParams
 {
-    int size;
-    char **name;
-    struct rho_param_t **value;
-} rho_hash;
+protected:
+    rho_param * m_pParams;
 
-typedef struct rho_param_t
+    rho_param * findHashParam(const char* name);
+
+public:
+    CRhoParams(rho_param *p);
+    CRhoParams(const CRhoParams& copy) : m_pParams(copy.m_pParams){} 
+
+    String getString(const char* name);
+    String getString(const char* szName, const char* szDefValue);
+
+    void getHash(const char* name, Hashtable<String,String>& mapHeaders);
+    boolean getBool(const char* name);
+
+    void free();
+};
+
+class CRhoParamArray : public CRhoParams
 {
-    int type;
-    union {
-        char *string;
-        rho_array *array;
-        rho_hash *hash;
-    } v;
-} rho_param;
+    rho_array * m_array;
+public:
+    CRhoParamArray(CRhoParams& oParams, const char* name);
+    int size();
 
-rho_param *rho_param_str(char *s);
-rho_param *rho_param_array(int size);
-rho_param *rho_param_hash(int size);
+    CRhoParams getItem(int nIndex);
+};
 
-rho_param *rho_param_dup(rho_param *p);
-void rho_param_free(rho_param *p);
+} // namespace rho
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* RHO_PARAMS_H */
+#endif /* RHO_PARAMSWRAP_H */

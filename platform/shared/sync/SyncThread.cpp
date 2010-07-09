@@ -86,7 +86,7 @@ void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
 		//m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 }	
 
-void CSyncThread::processCommand(CQueueCommand* pCmd)
+void CSyncThread::processCommand(IQueueCommand* pCmd)
 {
     CSyncCommand& oSyncCmd = *((CSyncCommand*)pCmd);
     switch(oSyncCmd.m_nCmdCode)
