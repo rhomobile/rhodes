@@ -10,7 +10,6 @@
 #import "MapViewController.h"
 #import "Rhodes.h"
 
-#include "common/rhoparams.h"
 #include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
 
