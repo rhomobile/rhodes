@@ -1,3 +1,6 @@
+## 2.0.2
+* #4223112 - fixed problem with script order in iphone build
+
 ## 2.0.1
 * #4049590 - Android 2.2, rhodes rc2: take picture hangs
 * #4103477 - Android 2.2: can't write to DB
