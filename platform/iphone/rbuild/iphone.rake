@@ -76,10 +76,10 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir =  $bindir +"/tmp"
 
-    $homedir = `echo ~`.to_s.strip
+    $homedir = ENV['HOME']
     $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
-    $guid="364FFCAF-C71D-4543-B293-9058E31CFFEE"
+    $guid = `uuidgen`.strip
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
 
@@ -171,7 +171,9 @@ namespace "build" do
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
-      cp $app_path + "/icon/icon.png", $config["build"]["iphonepath"]
+      ipath = $config["build"]["iphonepath"]
+      cp File.join(ipath, 'icon.png'), File.join(ipath, 'icon.png.bak') unless File.exists? File.join(ipath, 'icon.png.bak')
+      cp $app_path + "/icon/icon.png", ipath
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
 
@@ -179,11 +181,18 @@ namespace "build" do
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
 
       puts Jake.run("xcodebuild",args)
-      unless $? == 0
+      ret = $?
+
+      chdir $startdir
+      set_app_name("Rhodes") unless $app_config["name"].nil?
+      rm_f File.join(ipath, 'icon.png')
+      cp File.join(ipath, 'icon.png.bak'), File.join(ipath, 'icon.png')
+      rm_f File.join(ipath, 'icon.png.bak')
+
+      unless ret == 0
         puts "Error cleaning"
         exit 1
       end
-      chdir $startdir
 
     end
     
@@ -198,50 +207,66 @@ namespace "run" do
        exit 1       
      end
      `killall "iPhone Simulator"`
+
+     puts "sdk: #{$sdk.inspect.to_s}"
+     sdkver = $sdk.gsub(/^iphonesimulator/, '')
      
      rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
+     puts "rhorunner: #{rhorunner}"
 
   
-     Find.find($simdir) do |path|
-       if File.basename(path) == "rhorunner.app"
-         $guid = File.basename(File.dirname(path))
+     puts "our app name: #{$app_config['name']}"
+     puts "simdir: #{$simdir}"
+     Dir.glob(File.join($simdir, sdkver, "Applications", "*")).each do |simapppath|
+       need_rm = true if File.directory? simapppath
+       if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
+         name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
+         puts "found app name: #{name}"
+         guid = File.basename(simapppath)
+         puts "found guid: #{guid}"
+         if name == $app_config['name']
+           $guid = guid
+           need_rm = false
+         end
        end
+       rm_rf simapppath if need_rm
+       rm_rf simapppath + ".sb" if need_rm
      end
 
-     Dir.glob($simdir + '*').each do |sdk|
-       simapp = sdk + "/Applications"
-       simlink = sdk + "/Library/Preferences"
+     puts "app guid: #{$guid}"
 
-       simrhodes = File.join(simapp,$guid)
-       $simrhodes = simrhodes if $simrhodes.nil?
+     mkdir_p File.join($simdir, sdkver)
 
-       mkdir_p File.join(simrhodes,"Documents")
-       mkdir_p File.join(simrhodes,"Library","Preferences")
+     simapp = File.join($simdir, sdkver, "Applications")
+     simlink = File.join($simdir, sdkver, "Library", "Preferences")
 
-       `cp -R -p "#{rhorunner}" "#{simrhodes}"`
-       `ln -f -s "#{simlink}/com.apple.PeoplePicker.plist" "#{simrhodes}/Library/Preferences/com.apple.PeoplePicker.plist"`
-       `ln -f -s "#{simlink}/.GlobalPreferences.plist" "#{simrhodes}/Library/Preferences/.GlobalPreferences.plist"`
+     $simrhodes = File.join(simapp, $guid)
 
-       `echo "#{$applog}" > "#{simrhodes}/Documents/rhologpath.txt"`
-       rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+     mkdir_p File.join($simrhodes, "Documents")
+     mkdir_p File.join($simrhodes, "Library", "Preferences")
 
-
-       simpublic = simapp + "/" + $guid + "/Documents/apps/public"
-       apppublic = $app_path + "/sim-public-#{File.basename(sdk)}"
-
-       apprholog = $app_path + "/rholog-#{File.basename(sdk)}.txt"
-       rm_f apprholog
-       rm_f apppublic
-       `ln -f -s "#{simpublic}" "#{apppublic}"`
-       `ln -f -s "#{rholog}" "#{apprholog}"`
-       `echo > "#{rholog}"`
-       f = File.new("#{simapp}/#{$guid}.sb","w")
-       f << "(version 1)\n(debug deny)\n(allow default)\n"
-       f.close
-
-
+     rm_rf File.join($simrhodes, 'rhorunner.app')
+     cp_r rhorunner, $simrhodes
+     ['com.apple.PeoplePicker.plist', '.GlobalPreferences.plist'].each do |f|
+       `ln -f -s "#{simlink}/#{f}" "#{$simrhodes}/Library/Preferences/#{f}"`
      end
-     
+
+     `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
+     rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+
+
+     simpublic = simapp + "/" + $guid + "/Documents/apps/public"
+     apppublic = $app_path + "/sim-public-#{sdkver}"
+
+     apprholog = $app_path + "/rholog-#{sdkver}.txt"
+     rm_f apprholog
+     rm_f apppublic
+     `ln -f -s "#{simpublic}" "#{apppublic}"`
+     `ln -f -s "#{rholog}" "#{apprholog}"`
+     `echo > "#{rholog}"`
+     f = File.new("#{simapp}/#{$guid}.sb","w")
+     f << "(version 1)\n(debug deny)\n(allow default)\n"
+     f.close
      
   end
 
