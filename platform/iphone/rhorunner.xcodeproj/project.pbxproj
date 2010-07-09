@@ -571,13 +571,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "rhorunner" */;
 			buildPhases = (
-				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
-				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
-				BDFBD98F10B1B98100BAAFAB /* Resources */,
-				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				BD4D7DB210AE2A45003DCE59 /* Rez */,
+				BDFBD98F10B1B98100BAAFAB /* Resources */,
+				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
+				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
+				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 			);
 			buildRules = (
 			);
@@ -739,7 +739,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\nmkdir -p ${RHO_TARGET_DIR}\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
+			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\nfor i in `ls -1 ${RHO_SOURCE_DIR}`\ndo\n  echo \"rm -Rf $RHO_TARGET_DIR/$i\"\n  rm -Rf ${RHO_TARGET_DIR}/$i\ndone\necho \"cp -Rf $RHO_SOURCE_DIR/* $RHO_TARGET_DIR\"\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
