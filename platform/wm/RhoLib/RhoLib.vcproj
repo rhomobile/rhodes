@@ -830,7 +830,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\common\rhoparams.c"
+				RelativePath="..\..\shared\common\rhoparams.cpp"
 				>
 			</File>
 			<File

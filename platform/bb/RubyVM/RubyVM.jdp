@@ -59,6 +59,9 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\RhoProfiler.java
 ..\..\shared\rubyJVM\src\com\rho\RhoRuby.java
 ..\..\shared\rubyJVM\src\com\rho\RhoThread.java
+..\..\shared\rubyJVM\src\com\rho\ThreadQueue.java
+..\..\shared\rubyJVM\src\com\rho\RhoParams.java
+..\..\shared\rubyJVM\src\com\rho\RhoParamArray.java
 ..\..\shared\rubyJVM\src\com\rho\Sprintf.java
 ..\..\shared\rubyJVM\src\com\rho\StringScanner.java
 ..\..\shared\rubyJVM\src\com\rho\Capabilities.java

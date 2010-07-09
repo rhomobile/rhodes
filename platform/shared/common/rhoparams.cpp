@@ -1,5 +1,88 @@
 #include "common/rhoparams.h"
-#include "common/RhoPort.h"
+
+namespace rho
+{
+
+CRhoParams::CRhoParams(rho_param *p): m_pParams(p){}
+
+rho_param * CRhoParams::findHashParam(const char* name)
+{
+    if (m_pParams->type == RHO_PARAM_HASH)
+    {
+        for (int i = 0; i < m_pParams->v.hash->size; ++i) 
+        {
+            if (strcasecmp(name, m_pParams->v.hash->name[i]) == 0)
+                return m_pParams->v.hash->value[i];
+        }
+    }
+    return null;
+}
+
+String CRhoParams::getString(const char* szName)
+{
+    return getString(szName, "");
+}
+
+String CRhoParams::getString(const char* szName, const char* szDefValue)
+{
+    rho_param * value = findHashParam(szName);
+    String strRes = value && value->v.string ? value->v.string : "";
+    if (strRes.length() == 0 && szDefValue && *szDefValue)
+        strRes = szDefValue;
+
+    return strRes;
+}
+
+void CRhoParams::getHash(const char* name, rho::Hashtable<rho::String,rho::String>& mapHeaders)
+{
+    rho_param * hash = findHashParam(name);
+    if (!hash || hash->type != RHO_PARAM_HASH)
+        return;
+
+    for (int i = 0; i < hash->v.hash->size; ++i) 
+    {
+        rho_param * value = hash->v.hash->value[i];
+        mapHeaders.put( hash->v.hash->name[i], value->v.string );
+    }
+}
+
+boolean CRhoParams::getBool(const char* name)
+{
+	String strValue = getString(name);
+	if ( strValue.length() == 0 )
+		return false;
+
+    return strValue.compare("1") == 0 || strValue.compare("true") == 0;
+}
+
+void CRhoParams::free()
+{
+    if ( m_pParams != null )
+        rho_param_free(m_pParams);
+}
+
+CRhoParamArray::CRhoParamArray(CRhoParams& oParams, const char* name) : CRhoParams(oParams)
+{
+    m_array = null;
+    rho_param * ar = findHashParam(name);
+    if (ar != null && ar->type == RHO_PARAM_ARRAY)
+        m_array = ar->v.array;
+}
+
+int CRhoParamArray::size()
+{
+    if ( m_array == null )
+        return 0;
+
+    return m_array->size;
+}
+
+CRhoParams CRhoParamArray::getItem(int nIndex)
+{
+    return m_array->value[nIndex];
+}
+
+}
 
 #ifdef __cplusplus
 extern "C" {

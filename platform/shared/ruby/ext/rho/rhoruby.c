@@ -365,7 +365,7 @@ int getStringLenFromValue(VALUE val){
     return RSTRING_LEN(val);
 }
 
-rho_param *valueToRhoParam(VALUE v)
+rho_param *rho_param_fromvalue(VALUE v)
 {
     int i, size;
 
@@ -377,7 +377,7 @@ rho_param *valueToRhoParam(VALUE v)
             p = rho_param_array(size);
             for (i = 0; i < size; ++i) {
                 VALUE item = rb_ary_entry(v, i);
-                p->v.array->value[i] = valueToRhoParam(item);
+                p->v.array->value[i] = rho_param_fromvalue(item);
             }
             return p;
         }
@@ -392,7 +392,7 @@ rho_param *valueToRhoParam(VALUE v)
                 VALUE key = rb_ary_entry(keys, i);
                 VALUE value = rb_hash_aref(v, key);
                 p->v.hash->name[i] = strdup(StringValuePtr(key));
-                p->v.hash->value[i] = valueToRhoParam(value);
+                p->v.hash->value[i] = rho_param_fromvalue(value);
             }
             return p;
         }

@@ -57,9 +57,12 @@ public class RubyFile extends RubyIO {
         boolean bExist = false;
         if ( fileName.startsWith("/apps"))
         	bExist = RhoSupport.findClass(fileName)!=null;
+
+        if ( !bExist )
+        	bExist = RhoRuby.resourceFileExists(fileName);
         
         if ( !bExist )
-        {        
+        {
         	File file = new File(fileName);
         	bExist = file.exists();
         }
@@ -166,11 +169,14 @@ public class RubyFile extends RubyIO {
 				if ( stream != null )
 				{
 		        	RubyValue res = ObjectFactory.createInteger(stream.available());
-		        	stream.close();
+		        	
 		        	return res;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}finally
+			{
+				try{ if ( stream != null ) stream.close(); }catch(java.io.IOException exc){}
 			}
         }
         

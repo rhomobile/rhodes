@@ -712,11 +712,6 @@ module Rho
   end # RhoConfig
   
     module AsyncHttp
-        def self.ssl_verify_peer(args)
-            ret = args[:ssl_verify_peer]
-            ret = true if !ret.is_a? TrueClass and !ret.is_a? FalseClass
-            ret ? 1 : 0
-        end
 
         def self.make_auth_header(args)
           auth = args[:authorization]
@@ -732,7 +727,7 @@ module Rho
         end
 
         @@user_agent = nil
-        def self.headers(args)
+        def self.preprocess_headers(args)
           hdrs = args[:headers]
           hdrs = {} if hdrs.nil?
 
@@ -749,7 +744,13 @@ module Rho
           auth = make_auth_header(args)
           hdrs['Authorization'] = auth unless auth.nil?
 
-          hdrs
+          args[:headers] = hdrs
+        end
+
+        def self.check_ssl_verify_peer(args)
+            ret = args[:ssl_verify_peer]
+            ret = true if !ret.is_a? TrueClass and !ret.is_a? FalseClass
+            args[:ssl_verify_peer] = ret ? 1 : 0
         end
 
 	    def self.process_result(res, callback)
@@ -759,27 +760,28 @@ module Rho
             ::Rho::RhoController.process_rho_object(_params)
             _params
         end
-        
+
         def self.get(args)
-            process_result( 
-                AsyncHttp.do_get(args[:url], headers(args),
-                    args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
+            preprocess_headers(args)
+            check_ssl_verify_peer(args)
+            process_result( AsyncHttp.do_request("GET", args ), args[:callback] )
         end
         def self.post(args)
-            process_result( 
-                AsyncHttp.do_post(args[:url], headers(args), args[:body],
-                    args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
+            preprocess_headers(args)
+            check_ssl_verify_peer(args)
+            process_result( AsyncHttp.do_request("POST", args ), args[:callback] )
         end
         def self.download_file(args)
-            process_result( 
-                AsyncHttp.do_downloadfile(args[:url], headers(args), args[:filename],
-                    args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
+            preprocess_headers(args)
+            check_ssl_verify_peer(args)
+            process_result( AsyncHttp.do_request("Download", args ), args[:callback] )
         end
         def self.upload_file(args)
-            process_result( 
-                AsyncHttp.do_uploadfile(args[:url], headers(args), args[:body], args[:filename],
-                    args[:callback], args[:callback_param], ssl_verify_peer(args) ), args[:callback] )
+            preprocess_headers(args)
+            check_ssl_verify_peer(args)
+            process_result( AsyncHttp.do_request("Upload", args ), args[:callback] )
         end
+        
     end
   
 end # Rho

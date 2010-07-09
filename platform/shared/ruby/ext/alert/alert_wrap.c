@@ -1618,7 +1618,7 @@ _wrap_show_popup(int argc, VALUE *argv, VALUE self) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   {
-    arg1 = valueToRhoParam(argv[0]);
+    arg1 = rho_param_fromvalue(argv[0]);
   }
   show_popup(arg1);
   {

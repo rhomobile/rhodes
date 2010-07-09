@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RhoStd.h"
 #include "IRhoThreadImpl.h"
 #include "AutoPointer.h"
 
@@ -10,8 +11,8 @@ struct IRhoClassFactory;
 class CRhoThread : public IRhoRunnable
 {
     CAutoPtr<IRhoThreadImpl> m_pImpl;
-    bool m_isInWaitState;
-    bool m_bStop;
+    boolean m_isInWaitState;
+    boolean m_bStop;
 public:
 
     CRhoThread(IRhoClassFactory* factory);
@@ -23,7 +24,7 @@ public:
     virtual void stopWait(){ if (m_isInWaitState) m_pImpl->stopWait(); }
     virtual void sleep(unsigned int nTimeout){ m_pImpl->sleep(nTimeout); }
 
-    bool isStopped(){return m_bStop;}
+    boolean isStopped(){return m_bStop;}
 };
 
 }
