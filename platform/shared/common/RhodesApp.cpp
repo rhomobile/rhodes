@@ -364,6 +364,8 @@ const char* CRhodesApp::getFreeListeningPort()
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
         serv_addr.sin_port = htons(8080);
+        
+        LOG(INFO) + "Trying to bind on 8080 port...";
 
         if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
         {
@@ -374,6 +376,8 @@ const char* CRhodesApp::getFreeListeningPort()
             serv_addr.sin_family = AF_INET;
             serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
             serv_addr.sin_port = htons(0);
+            
+            LOG(INFO) + "Trying to bind on dynamic port...";
             
             if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
             {
@@ -396,7 +400,8 @@ const char* CRhodesApp::getFreeListeningPort()
         }
         else
         {
-            sprintf(buf,"%d",ntohs(serv_addr.sin_port));
+            sprintf(buf, "%d", (int)ntohs(serv_addr.sin_port));
+            LOG(INFO) + "Got port to bind on: " + buf;
             m_strListeningPorts = buf;
         }
     }
