@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.ui.AboutDialog;
@@ -110,7 +111,7 @@ public class Rhodes extends Activity {
 	
 	private SplashScreen splashScreen = null;
 	
-	private Boolean contentChanged = null;
+	//private Boolean contentChanged = null;
 	
 	private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
 
@@ -144,11 +145,15 @@ public class Rhodes extends Activity {
 	private native void initClassLoader(ClassLoader c);
 	
 	private void initRootPath() {
+		/*
 		Log.d(TAG, "Check if the SD card is mounted...");
 		String state = Environment.getExternalStorageState();
 		Log.d(TAG, "Storage state: " + state);
 		boolean hasSDCard = Environment.MEDIA_MOUNTED.equals(state);
 		rootPath = hasSDCard ? sdcardRootPath() : phoneMemoryRootPath();
+		*/
+		rootPath = phoneMemoryRootPath();
+		Log.d(TAG, "Root path: " + rootPath);
 	}
 	
 	public String getRootPath() {
@@ -175,12 +180,14 @@ public class Rhodes extends Activity {
 		return getAppInfo().dataDir + "/rhodata/";
 	}
 	
+	/*
 	private String sdcardRootPath() {
 		String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 		String pkgName = getPackageName();
 		String path = sdPath + "/rhomobile/" + pkgName + "/";
 		return path;
 	}
+	*/
 	
 	public static String getBlobPath() {
 		return RhodesInstance.getInstance().getRootPath() + "/db/db-files";
@@ -215,25 +222,18 @@ public class Rhodes extends Activity {
 		return true;
 	}
 	*/
-	
+
+	/*
 	private void copyFromBundle(String file) throws IOException {
 		File target = new File(getRootPath(), file);
 		if (target.exists())
 			return;
 		FileSource as = new AssetsSource(getResources().getAssets());
 		Utils.copyRecursively(as, file, target, true);
-		
-		/*
-		int idx = file.indexOf('/');
-		String dir = idx == -1 ? file : file.substring(0, idx);
-		
-		File sdPath = new File(sdcardRootPath(), dir);
-		File phPath = new File(phoneMemoryRootPath(), dir);
-		phPath.getParentFile().mkdirs();
-		makeLink(sdPath.getAbsolutePath(), phPath.getAbsolutePath());
-		*/
 	}
+	*/
 	
+	/*
 	public boolean isNameChanged() {
 		try {
 			FileSource as = new AssetsSource(getResources().getAssets());
@@ -244,7 +244,9 @@ public class Rhodes extends Activity {
 			return true;
 		}
 	}
+	*/
 	
+	/*
 	public boolean isBundleChanged() {
 		if (contentChanged == null) {
 			try {
@@ -264,8 +266,10 @@ public class Rhodes extends Activity {
 		}
 		return contentChanged.booleanValue();
 	}
-	
-	private void copyFilesFromBundle() {
+	*/
+
+	/*
+	private void copyFilesFromBundle11() {
 		try {
 			if (isBundleChanged()) {
 				Logger.D(TAG, "Copying required files from bundle");
@@ -282,12 +286,6 @@ public class Rhodes extends Activity {
 					File f = new File(rp, item);
 					Logger.D(TAG, "Copy '" + item + "' to '" + f.getAbsolutePath() + "'");
 					Utils.copyRecursively(as, item, f, nameChanged);
-					/*
-					String src = sdf.getAbsolutePath();
-					String dst = phf.getAbsolutePath();
-					Logger.D(TAG, "Make symlink from '" + src + "' to '" + dst + "'");
-					makeLink(src, dst);
-					*/
 				}
 				
 				contentChanged = new Boolean(true);
@@ -300,6 +298,7 @@ public class Rhodes extends Activity {
 			return;
 		}
 	}
+	*/
 	
 	private boolean handleUrlLoading(String url) {
 		Enumeration<UriHandler> e = uriHandlers.elements();
@@ -493,6 +492,10 @@ public class Rhodes extends Activity {
 		initClassLoader(this.getClassLoader());
 		
 		initRootPath();
+		
+		RhoFileApi.init();
+		
+		/*
 		try {
 			copyFromBundle("apps/rhoconfig.txt");
 		} catch (IOException e1) {
@@ -500,6 +503,7 @@ public class Rhodes extends Activity {
 			finish();
 			return;
 		}
+		*/
 		createRhodesApp(getRootPath(), getSqliteJournalsPath());
 		
 		boolean fullScreen = true;
@@ -553,7 +557,7 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				copyFilesFromBundle();
+				//copyFilesFromBundle();
 				startRhodesApp();
 			}
 			
