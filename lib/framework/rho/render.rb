@@ -120,6 +120,7 @@ module Rho
       RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
+      model.clean_cached_metadata() if model
       @content
     end
 
