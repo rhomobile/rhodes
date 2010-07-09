@@ -77,18 +77,25 @@ module Rhom
                   end
                 end
               end
-		  
+
+              @@metadata = {}
               class << self
 
+                def clean_cached_metadata
+                    src_name = get_source_name()
+                    @@metadata[src_name] = nil                    
+                end
+                
                 def metadata
-                  db = ::Rho::RHO.get_src_db(get_source_name)
-                  result = db.select_from_table('sources', 'metadata', {"name"=>get_source_name} )
+                  src_name = get_source_name()
+                  return @@metadata[src_name] if @@metadata[src_name]
+                  db = ::Rho::RHO.get_src_db(src_name)
+                  result = db.select_from_table('sources', 'metadata', {"name"=>src_name} )
                   if result && result.length > 0 && result[0]['metadata']
-                    return Rho::JSON.parse(result[0]['metadata'])
-                  else
-                    return nil
+                    @@metadata[src_name] = Rho::JSON.parse(result[0]['metadata'])
                   end
-
+                  
+                  @@metadata[src_name]
                 end
 
                 def count
