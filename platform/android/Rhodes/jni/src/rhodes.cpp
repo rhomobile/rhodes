@@ -178,9 +178,14 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
     return mid;
 }
 
+std::string const &rho_root_path()
+{
+    return g_root_path;
+}
+
 const char* rho_native_rhopath()
 {
-    return g_root_path.c_str();
+    return rho_root_path().c_str();
 }
 
 jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)

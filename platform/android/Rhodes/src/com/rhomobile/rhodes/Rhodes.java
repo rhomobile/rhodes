@@ -26,7 +26,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Vector;
 
-import com.rhomobile.rhodes.Utils.AssetsSource;
+//import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
@@ -493,7 +493,7 @@ public class Rhodes extends Activity {
 		
 		initRootPath();
 		
-		RhoFileApi.init();
+		RhoFileApi.initAll();
 		
 		/*
 		try {
@@ -557,6 +557,17 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
+				/*
+				try {
+					int ms = 5000;
+					Log.d(TAG, "Sleep for " + ms + " ms");
+					Thread.sleep(ms);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				*/
+				
 				//copyFilesFromBundle();
 				startRhodesApp();
 			}

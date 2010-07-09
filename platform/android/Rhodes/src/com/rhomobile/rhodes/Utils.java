@@ -25,6 +25,7 @@ public class Utils {
 		}
 	};
 	
+	/*
 	public static class AssetsSource extends FileSource {
 
 		private AssetManager amgr;
@@ -41,7 +42,8 @@ public class Utils {
 			return amgr.open(file);
 		}
 		
-	}; 
+	};
+	*/ 
 	
 	public static String getContent(InputStream in) throws IOException {
 		String retval = "";
