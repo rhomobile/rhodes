@@ -12,7 +12,7 @@
 #import <MapKit/MKReverseGeocoder.h>
 #import "GoogleGeocoder.h"
 
-#include "common/rhoparams.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 @interface MapViewController : UIViewController <MKReverseGeocoderDelegate,MKMapViewDelegate> {
     MKMapView *mapView;
