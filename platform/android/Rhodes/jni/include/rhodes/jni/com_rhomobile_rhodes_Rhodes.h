@@ -16,10 +16,10 @@ extern "C" {
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    createRhodesApp
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
-  (JNIEnv *, jobject, jstring, jstring);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
@@ -79,6 +79,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    getBlobPath
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getBlobPath
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    normalizeUrl
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
@@ -124,6 +132,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    nativeInitPath
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeInitPath
+  (JNIEnv *, jobject, jstring, jstring);
 
 #ifdef __cplusplus
 }

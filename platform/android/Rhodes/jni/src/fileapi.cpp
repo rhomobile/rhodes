@@ -3,6 +3,8 @@
 #include <dlfcn.h>
 #include <android/log.h>
 
+#include <hash_map>
+
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
 
 static int const RHO_FD_BASE = 4096;
@@ -30,6 +32,16 @@ int rho_log(const char *fmt, ...)
 
 #define RHO_LOG rho_log
 
+struct rho_stat_t
+{
+    std::string type;
+    size_t size;
+    unsigned long mtime;
+};
+
+typedef std::hash_map<std::string, rho_stat_t> rho_stat_map_t;
+static rho_stat_map_t rho_stat_map;
+
 struct iss_data_t
 {
     jobject is;
@@ -46,12 +58,19 @@ static int iss_counter = RHO_FD_BASE;
 
 static jclass clsFileApi;
 static jmethodID midCopy;
-static jmethodID midExists;
-static jmethodID midSize;
+//static jmethodID midType;
+//static jmethodID midSize;
+//static jmethodID midMtime;
 static jmethodID midOpen;
 static jmethodID midClose;
 static jmethodID midRead;
 static jmethodID midSeek;
+
+typedef FILE *(*func_sfp_t)();
+typedef int (*func_sflags_t)(const char *mode, int *optr);
+
+static func_sfp_t __sfp;
+static func_sflags_t __sflags;
 
 typedef int (*func_open_t)(const char *path, int oflag, ...);
 typedef int (*func_close_t)(int fd);
@@ -63,6 +82,8 @@ typedef int (*func_lstat_t)(const char *path, struct stat *buf);
 typedef off_t (*func_lseek_t)(int fd, off_t offset, int whence);
 typedef int (*func_fcntl_t)(int fd, int command, ...);
 typedef int (*func_access_t)(const char *path, int mode);
+typedef int (*func_unlink_t)(const char *path);
+typedef int (*func_fsync_t)(int fd);
 
 static func_open_t real_open;
 static func_close_t real_close;
@@ -74,8 +95,21 @@ static func_lstat_t real_lstat;
 static func_lseek_t real_lseek;
 static func_fcntl_t real_fcntl;
 static func_access_t real_access;
+static func_unlink_t real_unlink;
+static func_fsync_t real_fsync;
 
-struct stat file_stat;
+struct stat librhodes_st;
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
+  (JNIEnv *env, jclass, jstring path, jstring type, jlong size, jlong mtime)
+{
+    rho_stat_t st;
+    st.type = rho_cast<std::string>(env, type);
+    st.size = (size_t)size;
+    st.mtime = (unsigned long)mtime;
+
+    rho_stat_map.insert(std::make_pair(rho_cast<std::string>(env, path), st));
+}
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *env, jclass)
@@ -84,10 +118,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!clsFileApi) return;
     midCopy = getJNIClassStaticMethod(env, clsFileApi, "copy", "(Ljava/lang/String;)Z");
     if (!midCopy) return;
-    midExists = getJNIClassStaticMethod(env, clsFileApi, "exists", "(Ljava/lang/String;)Z");
-    if (!midExists) return;
-    midSize = getJNIClassStaticMethod(env, clsFileApi, "size", "(Ljava/lang/String;)J");
-    if (!midSize) return;
+    //midType = getJNIClassStaticMethod(env, clsFileApi, "statType", "(Ljava/lang/String;)Ljava/lang/String;");
+    //if (!midType) return;
+    //midSize = getJNIClassStaticMethod(env, clsFileApi, "statSize", "(Ljava/lang/String;)J");
+    //if (!midSize) return;
+    //midMtime = getJNIClassStaticMethod(env, clsFileApi, "statMtime", "(Ljava/lang/String;)J");
+    //if (!midMtime) return;
     midOpen = getJNIClassStaticMethod(env, clsFileApi, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
     if (!midOpen) return;
     midClose = getJNIClassStaticMethod(env, clsFileApi, "close", "(Ljava/io/InputStream;)V");
@@ -99,6 +135,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 
     const char *libc = "/system/lib/libc.so";
     void *pc = dlopen(libc, RTLD_LAZY);
+    __sfp = (func_sfp_t)dlsym(pc, "__sfp");
+    __sflags = (func_sflags_t)dlsym(pc, "__sflags");
     real_open = (func_open_t)dlsym(pc, "open");
     real_close = (func_close_t)dlsym(pc, "close");
     real_read = (func_read_t)dlsym(pc, "read");
@@ -109,42 +147,18 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_lseek = (func_lseek_t)dlsym(pc, "lseek");
     real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
     real_access = (func_access_t)dlsym(pc, "access");
+    real_unlink = (func_unlink_t)dlsym(pc, "unlink");
+    real_fsync = (func_fsync_t)dlsym(pc, "fsync");
     dlclose(pc);
 
     // This is just to get typical stat of file
-    real_stat(libc, &file_stat);
-    file_stat.st_mode = S_IFREG|S_IRWXU;
-    file_stat.st_nlink = 1;
-    file_stat.st_uid = getuid();
-    file_stat.st_gid = getgid();
-    time_t tm = time(NULL);
-    file_stat.st_atime = tm;
-    file_stat.st_mtime = tm;
-    file_stat.st_ctime = tm;
+    std::string librhodes = rho_root_path() + "../lib/librhode.so";
+    real_stat(librhodes.c_str(), &librhodes_st);
+    librhodes_st.st_mode = S_IFREG|S_IRWXU;
+    librhodes_st.st_nlink = 1;
+    librhodes_st.st_uid = getuid();
+    librhodes_st.st_gid = getgid();
 }
-
-#if 0
-static void dump_stat(struct stat const &st)
-{
-    RHO_LOG("st.st_dev: %llx", (long long)st.st_dev);
-    RHO_LOG("st.st_ino: %lx", (long)st.st_ino);
-    RHO_LOG("st.st_mode: %x", (int)st.st_mode);
-    RHO_LOG("st.st_nlink: %x", (int)st.st_nlink);
-    RHO_LOG("st.st_uid: %lx", (unsigned long)st.st_uid);
-    RHO_LOG("st.st_gid: %lx", (unsigned long)st.st_gid);
-    RHO_LOG("st.st_rdev: %llx", (long long)st.st_rdev);
-    RHO_LOG("st.st_size: %lld", (long long)st.st_size);
-    RHO_LOG("st.st_blksize: %lu", (unsigned long)st.st_blksize);
-    RHO_LOG("st.st_blocks: %llu", (unsigned long long)st.st_blocks);
-    RHO_LOG("st.st_atime: %lu", (unsigned long)st.st_atime);
-    RHO_LOG("st.st_atime_nsec: %lu", (unsigned long)st.st_atime_nsec);
-    RHO_LOG("st.st_mtime: %lu", (unsigned long)st.st_mtime);
-    RHO_LOG("st.st_mtime_nsec: %lu", (unsigned long)st.st_mtime_nsec);
-    RHO_LOG("st.st_ctime: %lu", (unsigned long)st.st_ctime);
-    RHO_LOG("st.st_ctime_nsec: %lu", (unsigned long)st.st_ctime_nsec);
-    RHO_LOG("st.st_ino: %llx", (unsigned long long)st.st_ino);
-}
-#endif
 
 static std::string make_full_path(const char *path)
 {
@@ -154,7 +168,7 @@ static std::string make_full_path(const char *path)
     if (*path == '/')
         return path;
 
-    RHO_LOG("make_full_path: path (%s) is relative, detect full path...", path);
+    //RHO_LOG("make_full_path: path (%s) is relative, detect full path...", path);
     char *dir = 0;
     char *buf = 0;
     size_t bufsize = 128;
@@ -188,6 +202,43 @@ static std::string make_rel_path(std::string const &fpath)
     return fpath.substr(root_path.size());
 }
 
+static rho_stat_t *rho_stat(const char *path)
+{
+    std::string relpath = make_rel_path(make_full_path(path));
+    rho_stat_map_t::iterator it = rho_stat_map.find(relpath);
+    if (it == rho_stat_map.end())
+        return NULL;
+    return &(it->second);
+}
+
+static rho_stat_t *rho_stat(std::string const &path)
+{
+    return rho_stat(path.c_str());
+}
+
+#if 0
+static void dump_stat(struct stat const &st)
+{
+    RHO_LOG("st.st_dev: %llx", (long long)st.st_dev);
+    RHO_LOG("st.st_ino: %lx", (long)st.st_ino);
+    RHO_LOG("st.st_mode: %x", (int)st.st_mode);
+    RHO_LOG("st.st_nlink: %x", (int)st.st_nlink);
+    RHO_LOG("st.st_uid: %lx", (unsigned long)st.st_uid);
+    RHO_LOG("st.st_gid: %lx", (unsigned long)st.st_gid);
+    RHO_LOG("st.st_rdev: %llx", (long long)st.st_rdev);
+    RHO_LOG("st.st_size: %lld", (long long)st.st_size);
+    RHO_LOG("st.st_blksize: %lu", (unsigned long)st.st_blksize);
+    RHO_LOG("st.st_blocks: %llu", (unsigned long long)st.st_blocks);
+    RHO_LOG("st.st_atime: %lu", (unsigned long)st.st_atime);
+    RHO_LOG("st.st_atime_nsec: %lu", (unsigned long)st.st_atime_nsec);
+    RHO_LOG("st.st_mtime: %lu", (unsigned long)st.st_mtime);
+    RHO_LOG("st.st_mtime_nsec: %lu", (unsigned long)st.st_mtime_nsec);
+    RHO_LOG("st.st_ctime: %lu", (unsigned long)st.st_ctime);
+    RHO_LOG("st.st_ctime_nsec: %lu", (unsigned long)st.st_ctime_nsec);
+    RHO_LOG("st.st_ino: %llx", (unsigned long long)st.st_ino);
+}
+#endif
+
 static bool need_java_way(std::string const &path)
 {
     std::string fpath = make_full_path(path);
@@ -204,6 +255,15 @@ static bool need_java_way(std::string const &path)
             }
 
         }
+        else if (S_ISREG(st.st_mode))
+        {
+            rho_stat_t *rst = rho_stat(fpath);
+            if (rst && rst->mtime > st.st_mtime)
+            {
+                real_unlink(fpath.c_str());
+                return true;
+            }
+        }
     }
 
     return false;
@@ -212,16 +272,6 @@ static bool need_java_way(std::string const &path)
 RHO_GLOBAL int open(const char *path, int oflag, ...)
 {
     //RHO_LOG("open file %s...", path);
-    if (oflag & O_CREAT)
-    {
-        //RHO_LOG("open: requested O_CREAT");
-        va_list vl;
-        va_start(vl, oflag);
-        mode_t mode = va_arg(vl, int);
-        va_end(vl);
-        return real_open(path, oflag, mode);
-    }
-
     std::string fpath;
     if (path)
         fpath = path;
@@ -277,7 +327,15 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     else
     {
         //RHO_LOG("open: native way");
-        fd = real_open(path, oflag);
+        mode_t mode = 0;
+        if (oflag & O_CREAT)
+        {
+            va_list vl;
+            va_start(vl, oflag);
+            mode = va_arg(vl, int);
+            va_end(vl);
+        }
+        fd = real_open(path, oflag, mode);
     }
     //RHO_LOG("open file %s => %d", path, fd);
     return fd;
@@ -292,12 +350,6 @@ RHO_GLOBAL int openat(int fd, const char* path, int mode, ...)
 RHO_GLOBAL int creat(const char* path, mode_t mode)
 {
     return open(path, O_CREAT|O_WRONLY|O_TRUNC, mode);
-}
-
-RHO_GLOBAL int unlinkat(int dirfd, const char *pathname, int flags)
-{
-    RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
 RHO_GLOBAL int fcntl(int fd, int command, ...)
@@ -420,6 +472,22 @@ RHO_GLOBAL int access(const char *path, int mode)
     return 0;
 }
 
+RHO_GLOBAL int link(const char *src, const char *dst)
+{
+    RHO_NOT_IMPLEMENTED;
+    return -1;
+}
+
+RHO_GLOBAL int unlink(const char *path)
+{
+    std::string fpath = make_full_path(path);
+    if (!need_java_way(fpath))
+        return real_unlink(path);
+
+    errno = EACCES;
+    return -1;
+}
+
 RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
 {
     if (fd < RHO_FD_BASE)
@@ -516,9 +584,12 @@ RHO_GLOBAL int ioctl(int, int, ...)
     return -1;
 }
 
-RHO_GLOBAL int fsync(int )
+RHO_GLOBAL int fsync(int fd)
 {
-    RHO_NOT_IMPLEMENTED;
+    if (fd < RHO_FD_BASE)
+        return real_fsync(fd);
+
+    errno = EINVAL;
     return -1;
 }
 
@@ -541,31 +612,30 @@ RHO_GLOBAL int stat(const char *path, struct stat *buf)
     if (!java_way)
         return real_stat(path, buf);
 
-    memset(buf, 0, sizeof(struct stat));
+    //RHO_LOG("stat: %s", path);
 
-    JNIEnv *env = jnienv();
-    jstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath).c_str());
-
-    jboolean exists = env->CallStaticBooleanMethod(clsFileApi, midExists, relPathObj);
-    if (!exists)
+    rho_stat_t *rst = rho_stat(fpath);
+    if (!rst)
     {
-        env->DeleteLocalRef(relPathObj);
         errno = ENOENT;
         return -1;
     }
 
-    jlong size = env->CallStaticLongMethod(clsFileApi, midSize, relPathObj);
-    if (size == -1)
-    {
-        env->DeleteLocalRef(relPathObj);
-        errno = EFAULT;
-        return -1;
-    }
+    memcpy(buf, &librhodes_st, sizeof(struct stat));
+    buf->st_mode = S_IRWXU;
+    if (rst->type == "dir")
+        buf->st_mode |= S_IFDIR;
+    else if (rst->type == "file")
+        buf->st_mode |= S_IFREG;
+    buf->st_size = rst->size;
+    time_t tm = rst->mtime;
+    buf->st_atime = tm;
+    buf->st_mtime = tm;
+    buf->st_ctime = tm;
 
-    memcpy(buf, &file_stat, sizeof(struct stat));
-    buf->st_size = size;
+    //RHO_LOG("dump stat:");
+    //dump_stat(*buf);
 
-    env->DeleteLocalRef(relPathObj);
     return 0;
 }
 
@@ -599,4 +669,75 @@ RHO_GLOBAL int lstat(const char *path, struct stat *buf)
         return real_lstat(path, buf);
 
     return stat(path, buf);
+}
+
+RHO_GLOBAL int __sread(void *cookie, char *buf, int n)
+{
+    FILE *fp = (FILE*)cookie;
+    int ret;
+
+    ret = read(fp->_file, buf, n);
+    if (ret >= 0)
+        fp->_offset += ret;
+    else
+        fp->_flags &= ~__SOFF;
+    return ret;
+}
+
+RHO_GLOBAL int __swrite(void *cookie, const char *buf, int n)
+{
+    FILE *fp = (FILE*)cookie;
+
+    if (fp->_flags & __SAPP)
+        lseek(fp->_file, (off_t)0, SEEK_END);
+    fp->_flags &= ~__SOFF;
+    return write(fp->_file, buf, n);
+}
+
+RHO_GLOBAL fpos_t __sseek(void *cookie, fpos_t offset, int whence)
+{
+    FILE *fp = (FILE*)cookie;
+    off_t ret = lseek(fp->_file, (off_t)offset, whence);
+    if (ret == (off_t)-1)
+        fp->_flags &= ~__SOFF;
+    else
+    {
+        fp->_flags |= __SOFF;
+        fp->_offset = ret;
+    }
+    return ret;
+}
+
+RHO_GLOBAL int __sclose(void *cookie)
+{
+    return close(((FILE *)cookie)->_file);
+}
+
+RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
+{
+    //RHO_LOG("fopen: %s (%s)", path, mode);
+
+    int flags, oflags;
+    if ((flags = __sflags(mode, &oflags)) == 0)
+        return NULL;
+
+    int fd = open(path, oflags, S_IRWXU);
+    //RHO_LOG("fopen: %s (%s): fd: %d", path, mode, fd);
+    if (fd == -1)
+        return NULL;
+
+    FILE *fp = __sfp();
+    if (!fp)
+        return NULL;
+
+    fp->_flags = flags;
+    fp->_file = fd;
+    fp->_cookie = fp;
+    fp->_read = __sread;
+    fp->_write = __swrite;
+    fp->_seek = __sseek;
+    fp->_close = __sclose;
+
+    //RHO_LOG("fopen: %s (%s): fp: %p", path, mode, fp);
+    return fp;
 }
