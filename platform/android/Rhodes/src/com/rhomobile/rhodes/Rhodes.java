@@ -121,7 +121,7 @@ public class Rhodes extends Activity {
 		
 	private String rootPath = null;
 	
-	public native void createRhodesApp(String rootPath, String sqliteJournalsPath);
+	public native void createRhodesApp();
 	public native void startRhodesApp();
 	public native void stopRhodesApp();
 	
@@ -131,6 +131,8 @@ public class Rhodes extends Activity {
 	public native String getStartUrl();
 	public native String getCurrentUrl();
 	public native String getAppBackUrl();
+	
+	public static native String getBlobPath();
 	
 	public native String normalizeUrl(String url);
 	
@@ -144,6 +146,8 @@ public class Rhodes extends Activity {
 	
 	private native void initClassLoader(ClassLoader c);
 	
+	private native void nativeInitPath(String rootPath, String sqliteJournalsPath);
+	
 	private void initRootPath() {
 		/*
 		Log.d(TAG, "Check if the SD card is mounted...");
@@ -152,12 +156,16 @@ public class Rhodes extends Activity {
 		boolean hasSDCard = Environment.MEDIA_MOUNTED.equals(state);
 		rootPath = hasSDCard ? sdcardRootPath() : phoneMemoryRootPath();
 		*/
-		rootPath = phoneMemoryRootPath();
+		String dataDir = getAppInfo().dataDir;
+		
+		rootPath = dataDir + "/rhodata/";
 		Log.d(TAG, "Root path: " + rootPath);
 		File f = new File(rootPath);
 		f.mkdirs();
 		f = new File(f, "db/db-files");
 		f.mkdirs();
+		
+		nativeInitPath(rootPath, dataDir + "/sqlite_stmt_journals/");
 	}
 	
 	public String getRootPath() {
@@ -173,16 +181,20 @@ public class Rhodes extends Activity {
 			throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
 		}
 	}
-	
+
+	/*
 	private String getSqliteJournalsPath() {
 		String path = getAppInfo().dataDir + "/sqlite_stmt_journals/";
 		new File(path).mkdirs();
 		return path;
 	}
+	*/
 	
+	/*
 	private String phoneMemoryRootPath() {
 		return getAppInfo().dataDir + "/rhodata/";
 	}
+	*/
 	
 	/*
 	private String sdcardRootPath() {
@@ -192,10 +204,6 @@ public class Rhodes extends Activity {
 		return path;
 	}
 	*/
-	
-	public static String getBlobPath() {
-		return RhodesInstance.getInstance().getRootPath() + "/db/db-files";
-	}
 	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
@@ -497,7 +505,14 @@ public class Rhodes extends Activity {
 		
 		initRootPath();
 		
-		RhoFileApi.init();
+		try {
+			RhoFileApi.init();
+		}
+		catch (Exception e) {
+			Logger.E("Rhodes", e);
+			finish();
+			return;
+		}
 		
 		/*
 		try {
@@ -508,7 +523,7 @@ public class Rhodes extends Activity {
 			return;
 		}
 		*/
-		createRhodesApp(getRootPath(), getSqliteJournalsPath());
+		createRhodesApp();
 		
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))

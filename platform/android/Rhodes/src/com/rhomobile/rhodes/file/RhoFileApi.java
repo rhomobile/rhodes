@@ -1,8 +1,11 @@
 package com.rhomobile.rhodes.file;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import com.rhomobile.rhodes.Rhodes;
@@ -20,17 +23,57 @@ public class RhoFileApi {
 	private static AssetManager am;
 	
 	private static native void nativeInit();
+	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
-	public static void init()
+	private static void fillStatTable() throws IOException
+	{
+		InputStream is = null;
+		try {
+			is = am.open("rho.dat");
+			BufferedReader in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			for (;;) {
+				String line = in.readLine();
+				if (line == null)
+					break;
+				
+				int idx = line.indexOf('\t');
+				if (idx == -1)
+					continue;
+				String path = line.substring(0, idx);
+				line = line.substring(idx + 1);
+				idx = line.indexOf('\t');
+				if (idx == -1)
+					continue;
+				String type = line.substring(0, idx);
+				line = line.substring(idx + 1);
+				idx = line.indexOf('\t');
+				if (idx == -1)
+					continue;
+				long size = Long.parseLong(line.substring(0, idx));
+				long mtime = Long.parseLong(line.substring(idx + 1));
+				
+				updateStatTable(path, type, size, mtime);
+			}
+		}
+		finally {
+			if (is != null)
+				is.close();
+		}
+	}
+	
+	public static void init() throws IOException
 	{
 		nativeInit();
 	
 		Rhodes r = RhodesInstance.getInstance();
 		am = r.getAssets();
+
+		fillStatTable();
 	}
 	
 	public static boolean copy(String path)
 	{
+		//Log.d(TAG, "Copy " + path + " to FS");
 		InputStream is = null;
 		OutputStream os = null;
 		try {
@@ -47,9 +90,11 @@ public class RhoFileApi {
 			while((len = is.read(buf)) > 0)
 				os.write(buf, 0, len);
 			
+			//Log.d(TAG, "File " + path + " copied");
 			return true;
 		}
 		catch (Exception e) {
+			//Log.e(TAG, "Can not copy " + path + " to FS");
 			return false;
 		}
 		finally {
@@ -58,50 +103,6 @@ public class RhoFileApi {
 					is.close();
 				if (os != null)
 					os.close();
-			}
-			catch (Exception e1) {
-				// Ignore
-			}
-		}
-	}
-	
-	public static boolean exists(String path)
-	{
-		try {
-			//Log.d(TAG, "Check " + path + "...");
-			InputStream is = am.open(path, AssetManager.ACCESS_RANDOM);
-			is.close();
-			return true;
-		}
-		catch (Exception e) {
-			//Log.e(TAG, "Can not open " + path);
-			return false;
-		}
-	}
-	
-	public static long size(String path)
-	{
-		InputStream is = null;
-		try {
-			//Log.d(TAG, "Read size of " + path + "...");
-			is = am.open(path, AssetManager.ACCESS_RANDOM);
-			long total = 0;
-			for (;;) {
-				long ret = is.skip(4096);
-				if (ret == 0)
-					break;
-				total += ret;
-			}
-			return total;
-		}
-		catch (Exception e) {
-			//Log.e(TAG, "Can not open " + path);
-			return -1;
-		}
-		finally {
-			try {
-				if (is != null)
-					is.close();
 			}
 			catch (Exception e1) {
 				// Ignore

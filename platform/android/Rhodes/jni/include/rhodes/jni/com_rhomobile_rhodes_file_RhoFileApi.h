@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_rhomobile_rhodes_file_RhoFileApi_MAX_SIZE
+#define com_rhomobile_rhodes_file_RhoFileApi_MAX_SIZE 2097152L
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
  * Method:    nativeInit
@@ -14,6 +16,14 @@ extern "C" {
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    updateStatTable
+ * Signature: (Ljava/lang/String;Ljava/lang/String;JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
+  (JNIEnv *, jclass, jstring, jstring, jlong, jlong);
 
 #ifdef __cplusplus
 }
