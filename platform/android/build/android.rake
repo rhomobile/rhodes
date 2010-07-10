@@ -405,13 +405,33 @@ namespace "build" do
       mkdir_p assets
       hash = nil
       ["apps", "db", "lib"].each do |d|
-        cp_r File.join($srcdir, d), assets
+        cp_r File.join($srcdir, d), assets, :preserve => true
         # Calculate hash of directories
         hash = get_dir_hash(File.join(assets, d), hash)
       end
       File.open(File.join(assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
 
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
+      
+      psize = assets.size + 1
+
+      File.open(File.join(assets, 'rho.dat'), 'w') do |dat|
+        Dir.glob(File.join(assets, '**/*')).each do |f|
+          relpath = f[psize..-1]
+
+          if File.directory?(f)
+            type = 'dir'
+          elsif File.file?(f)
+            type = 'file'
+          else
+            next
+          end
+          size = File.stat(f).size
+          tm = File.stat(f).mtime.to_i
+
+          dat.puts "#{relpath}\t#{type}\t#{size.to_s}\t#{tm.to_s}"
+        end
+      end
     end
 
     task :extensions => :genconfig do

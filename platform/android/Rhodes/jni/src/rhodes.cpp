@@ -333,13 +333,17 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
     g_loadClass = env->GetMethodID(javaLangClassLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeInitPath
   (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path)
 {
-    if (!set_capabilities(env)) return;
+    g_root_path = rho_cast<std::string>(env, root_path);
+    g_sqlite_journals_path = rho_cast<std::string>(env, sqlite_journals_path);
+}
 
-    g_root_path = rho_cast<std::string>(root_path);
-    g_sqlite_journals_path = rho_cast<std::string>(sqlite_journals_path);
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
+  (JNIEnv *env, jobject)
+{
+    if (!set_capabilities(env)) return;
 
     // Init SQLite temp directory
     sqlite3_temp_directory = (char*)g_sqlite_journals_path.c_str();
@@ -382,28 +386,35 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getOptionsUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
-    return rho_cast<jstring>(s);
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getStartUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
-    return rho_cast<jstring>(s);
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getCurrentUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
-    return rho_cast<jstring>(s);
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getAppBackUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
-    return rho_cast<jstring>(s);
+    return rho_cast<jstring>(env, s);
+}
+
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_getBlobPath
+  (JNIEnv *env, jclass)
+{
+    const char *s = RHODESAPP().getBlobsDirPath().c_str();
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_doRequest
@@ -414,11 +425,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_doRequest
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_Rhodes_normalizeUrl
-  (JNIEnv *, jobject, jstring strUrl)
+  (JNIEnv *env, jobject, jstring strUrl)
 {
     std::string const &s = rho_cast<std::string>(strUrl);
     std::string const &cs = RHODESAPP().canonicalizeRhoUrl(s);
-    return rho_cast<jstring>(cs);
+    return rho_cast<jstring>(env, cs);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_navigateBack
@@ -428,7 +439,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_navigateBack
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_loadUrl
-  (JNIEnv *, jclass, jstring str)
+  (JNIEnv *env, jclass, jstring str)
 {
-    rho_rhodesapp_load_url(rho_cast<std::string>(str).c_str());
+    rho_rhodesapp_load_url(rho_cast<std::string>(env, str).c_str());
 }

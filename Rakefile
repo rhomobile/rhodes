@@ -100,7 +100,7 @@ def copy_assets(asset)
   
   dest = File.join($srcdir,'apps/public')
   
-  cp_r asset + "/.", dest, :remove_destination => true 
+  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true 
   
 end
 
@@ -184,7 +184,7 @@ def common_bundle_start(startdir, dest)
   start = pwd
   chdir rhodeslib
 
-  Dir.glob("*").each { |f| cp_r f,dest }
+  Dir.glob("*").each { |f| cp_r f,dest, :preserve => true }
 
   chdir dest
   Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
@@ -298,9 +298,9 @@ def common_bundle_start(startdir, dest)
   
   chdir startdir
   #throw "ME"
-  cp_r app + '/app',File.join($srcdir,'apps')
-  cp_r app + '/public', File.join($srcdir,'apps') if File.exists? app + '/public'
-  cp   app + '/rhoconfig.txt', File.join($srcdir,'apps')
+  cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
+  cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true if File.exists? app + '/public'
+  cp   app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
 
   unless $debug
