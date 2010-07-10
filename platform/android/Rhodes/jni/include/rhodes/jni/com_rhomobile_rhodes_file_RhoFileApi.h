@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
- * Method:    init
+ * Method:    nativeInit
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_init
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus
