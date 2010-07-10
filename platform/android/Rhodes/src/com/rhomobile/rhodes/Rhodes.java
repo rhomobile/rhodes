@@ -154,6 +154,10 @@ public class Rhodes extends Activity {
 		*/
 		rootPath = phoneMemoryRootPath();
 		Log.d(TAG, "Root path: " + rootPath);
+		File f = new File(rootPath);
+		f.mkdirs();
+		f = new File(f, "db/db-files");
+		f.mkdirs();
 	}
 	
 	public String getRootPath() {
@@ -493,7 +497,7 @@ public class Rhodes extends Activity {
 		
 		initRootPath();
 		
-		RhoFileApi.initAll();
+		RhoFileApi.init();
 		
 		/*
 		try {
