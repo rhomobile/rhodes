@@ -23,7 +23,7 @@ const char *rho_java_class[] = {
 static std::string g_root_path;
 static std::string g_sqlite_journals_path;
 
-static bool g_already_started;
+static bool g_already_started = false;
 
 static pthread_key_t g_thrkey;
 
