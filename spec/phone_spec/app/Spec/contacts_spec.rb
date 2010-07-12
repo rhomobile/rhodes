@@ -15,9 +15,9 @@ class Hash
   end
 end
 
-describe "Contacts" do
+class ContactsSpec
 
-  it "should create new contact" do
+  def create_test
     first_name = 'Random'
     last_name = 'Newbie'
     mobile_number = '+1222333444'
@@ -48,7 +48,7 @@ describe "Contacts" do
     puts "id: #{@id}"
   end
 
-  it "should update existing contact" do
+  def update_test
     puts "id: #{@id}"
     Rho::RhoContact.update_attributes 'id' => @id, 'first_name' => "RANDOM", 'last_name' => "NEWBIE"
 
@@ -64,7 +64,7 @@ describe "Contacts" do
     
   end
 
-  it "should remove contact" do
+  def remove_test
     contacts = Rho::RhoContact.find(:all)
     puts "contacts: #{contacts.inspect.to_s}"
     Test_not_equal( contacts, nil )
