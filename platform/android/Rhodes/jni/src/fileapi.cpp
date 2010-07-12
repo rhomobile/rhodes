@@ -128,6 +128,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
     RHO_LOG("updateStatTable: %s -> type %s, size %lu, mtime %lu", path.c_str(), st.type.c_str(), (unsigned long)st.size, st.mtime);
 
     rho_stat_map.insert(std::make_pair(path, st));
+
+    if (st.type == "dir")
+    {
+        std::string fpath = rho_root_path() + "/" + path;
+        RHO_LOG("updateStatTable: create dir: %s", fpath.c_str());
+        mkdir(fpath.c_str(), S_IRWXU);
+    }
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
@@ -336,7 +343,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
 
         java_way = false;
     }
-
+    
     int fd;
     if (java_way)
     {
