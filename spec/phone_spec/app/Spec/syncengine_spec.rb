@@ -43,45 +43,35 @@ describe "SyncEngine_test" do
   it "should not sync without login" do
     SyncEngine.logged_in.should == 0
   
-    Product.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
-    Object.const_set( "C_sync_notify", nil )
 
   end
-
-  it "should login" do
-    SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")
   
-    res = ::Rho::RhoSupport::parse_query_parameters C_login_callback
+  it "should login" do
+    
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
-    Object.const_set( "C_login_callback", nil )
   end
 
   it "should sync Product" do
     SyncEngine.logged_in.should == 1
   
-    Product.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should sync Product by name" do
     SyncEngine.logged_in.should == 1
 
     SyncEngine.set_notification(Product.get_source_id.to_i(), "/app/Settings/sync_notify", "")
-    SyncEngine.dosync_source( "Product" )
 
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync_source( "Product" )
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should search Product" do
@@ -90,7 +80,7 @@ describe "SyncEngine_test" do
 
     _search_id = Time.now.to_i.to_s
 
-    Product.search(
+    search_res = Product.search(
       :from => 'search',
       :search_params => { :filterData => "Test", :search_id => _search_id },
       :offset => 0,
@@ -99,10 +89,9 @@ describe "SyncEngine_test" do
       :callback => '/app/Contact/search_callback',
       :callback_param => "")
   
-    res = ::Rho::RhoSupport::parse_query_parameters C_search_callback
+    res = ::Rho::RhoSupport::parse_query_parameters search_res
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Object.const_set( "C_search_callback", nil )
   end
 
 =begin  
@@ -124,12 +113,10 @@ describe "SyncEngine_test" do
     item = Product.new
     item.name = 'Test'
     item.save
-    Product.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    
+    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Object.const_set( "C_sync_notify", nil )
   end
   
   it "should modify Product" do
@@ -143,16 +130,14 @@ describe "SyncEngine_test" do
     new_sku += "_TEST"
     item.sku = new_sku
     item.save
-    Product.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    
+    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     item2 = Product.find(saved_obj)
     item2.sku.should == new_sku
     
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should delete all Test Product" do
@@ -165,15 +150,12 @@ describe "SyncEngine_test" do
         item.destroy
     end    
 
-    Product.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     item2 = Product.find(:first, :conditions => {:name => 'Test'})
     item2.should == nil
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should logout" do

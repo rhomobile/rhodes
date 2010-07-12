@@ -50,6 +50,7 @@ private:
     common::CAutoPtr<CSyncNotification> m_pSearchNotification;
 	CSyncNotification m_bulkSyncNotify;
     common::CMutex m_mxSyncNotifications;
+    String m_strNotifyBody;
 
     net::INetRequest& getNet();
     CSyncEngine& getSync(){ return m_syncEngine; }
@@ -89,6 +90,9 @@ public:
     void callLoginCallback(String callback, int nErrCode, String strMessage);
 
     void enableReporting(boolean bEnable){m_bEnableReporting = bEnable;}
+
+    const String& getNotifyBody(){ return m_strNotifyBody; }
+    void cleanNotifyBody(){ m_strNotifyBody = ""; }
 
 private:
     String makeCreateObjectErrorBody(int nSrcID);

@@ -44,10 +44,14 @@ public class SyncNotify {
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
     boolean m_bEnableReporting = false;
+    String m_strNotifyBody = "";
     
     SyncEngine getSync(){ return m_syncEngine; }
 	NetRequest getNet(){ return getSync().getNet(); }
 
+	String getNotifyBody(){ return m_strNotifyBody; }
+	void cleanNotifyBody(){ m_strNotifyBody = ""; }
+	
     SyncNotify( SyncEngine syncEngine ) 
     {
     	m_syncEngine = syncEngine;
@@ -503,10 +507,7 @@ public class SyncNotify {
     {
         if ( getSync().isNoThreadedMode() )
         {
-        	FilePath path = new FilePath(strUrl);
-        	String strName = "C_" + path.getBaseName();
-
-            RhoRuby.set_const(strName, strBody);
+            m_strNotifyBody = strBody;
             return false;
         }
 

@@ -54,6 +54,18 @@ CSyncThread::~CSyncThread(void)
     LOG(INFO) + "Sync engine thread shutdown";
 }
 
+unsigned long CSyncThread::getRetValue()
+{
+    unsigned long ret = rho_ruby_get_NIL();
+    if ( isNoThreadedMode()  )
+    {
+        ret = rho_ruby_create_string( getSyncEngine().getNotify().getNotifyBody().c_str() );
+        getSyncEngine().getNotify().cleanNotifyBody();
+    }
+
+    return ret;
+}
+
 int CSyncThread::getLastPollInterval()
 {
     uint64 nowTime = CLocalTime().toULong();
@@ -147,16 +159,19 @@ void rho_sync_destroy()
 	CSyncThread::Destroy();
 }
 	
-void rho_sync_doSyncAllSources(int show_status_popup)
+unsigned long rho_sync_doSyncAllSources(int show_status_popup)
 {
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0));
-    //rho_sync_doSyncSourceByUrl("http://dev.rhosync.rhohub.com/apps/SugarCRM/sources/SugarAccounts");
+
+    return CSyncThread::getInstance()->getRetValue();
 }
 
-void rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
+unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 {
     CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0 ) );
+
+    return CSyncThread::getInstance()->getRetValue();
 }	
 
 void rho_sync_stop()
@@ -178,7 +193,7 @@ source_iter(const char* szName, void* parSources)
     arSources.addElement(szName);
 }
 
-void rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
+unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
     const char* callback, const char* callback_params)
 {
     rho_sync_stop();
@@ -189,6 +204,8 @@ void rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *p
     rho_ruby_enum_strary(ar_sources, source_iter, &arSources);
 
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
+
+    return CSyncThread::getInstance()->getRetValue();
 }	
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
@@ -226,10 +243,12 @@ void rho_sync_set_syncserver(char* syncserver)
         CSyncThread::getInstance()->stop(CSyncThread::SYNC_WAIT_BEFOREKILL_SECONDS);
 }
 
-void rho_sync_login(const char *name, const char *password, const char* callback)
+unsigned long rho_sync_login(const char *name, const char *password, const char* callback)
 {
     rho_sync_stop();
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, callback) );
+
+    return CSyncThread::getInstance()->getRetValue();
 }
 
 int rho_sync_logged_in()
