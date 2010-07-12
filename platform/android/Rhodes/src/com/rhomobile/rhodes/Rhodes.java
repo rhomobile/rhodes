@@ -184,9 +184,13 @@ public class Rhodes extends Activity {
 
 	public boolean isNameChanged() {
 		try {
+			File name = new File(getRootPath(), "name");
+			if (!name.exists())
+				return false;
+			
 			FileSource as = new AssetsSource(getResources().getAssets());
 			FileSource fs = new FileSource();
-			return !Utils.isContentsEquals(as, "name", fs, new File(getRootPath(), "name").getPath());
+			return !Utils.isContentsEquals(as, "name", fs, name.getPath());
 		}
 		catch (IOException e) {
 			return true;
@@ -386,30 +390,27 @@ public class Rhodes extends Activity {
 		RhodesInstance.setInstance(this);
 
 		initClassLoader(this.getClassLoader());
-		
-		initRootPath();
-		
+
 		try {
+			initRootPath();
 			RhoFileApi.init();
-		}
-		catch (Exception e) {
-			Logger.E("Rhodes", e);
+		} catch (IOException e) {
+			Logger.E(TAG, e);
 			finish();
 			return;
 		}
 		
 		if (isNameChanged()) {
-			Logger.I(TAG, "Application name was changed, so");
 			try {
+				Logger.I(TAG, "Application name was changed, so remove files");
 				Utils.deleteRecursively(new File(rootPath));
-			}
-			catch (Exception e) {
-				Logger.E("Rhodes", e);
+				RhoFileApi.init();
+				RhoFileApi.copy("name");
+			} catch (IOException e) {
+				Logger.E(TAG, e);
 				finish();
 				return;
 			}
-			initRootPath();
-			RhoFileApi.copy("name");
 		}
 		
 		createRhodesApp();
