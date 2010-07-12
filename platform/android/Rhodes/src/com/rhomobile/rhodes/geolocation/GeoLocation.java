@@ -34,7 +34,7 @@ public class GeoLocation {
 	
 	private static void checkState() throws IllegalAccessException {
 		if (!Capabilities.GPS_ENABLED)
-			throw new IllegalAccessException("GPS disabled");
+			throw new IllegalAccessException("Capability GPS disabled");
 	}
 	
 	private static void init() {
