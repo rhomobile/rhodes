@@ -25,25 +25,23 @@ public class Utils {
 		}
 	};
 	
-	/*
 	public static class AssetsSource extends FileSource {
-
-		private AssetManager amgr;
+		
+		private AssetManager am;
 		
 		public AssetsSource(AssetManager a) {
-			amgr = a;
+			am = a;
 		}
 		
 		String[] list(String dir) throws IOException {
-			return amgr.list(dir);
-		};
+			return am.list(dir);
+		}
 		
 		InputStream open(String file) throws IOException {
-			return amgr.open(file);
+			return am.open(file);
 		}
 		
 	};
-	*/ 
 	
 	public static String getContent(InputStream in) throws IOException {
 		String retval = "";
@@ -76,20 +74,20 @@ public class Utils {
 		}
 	}
 	
-	public static boolean deleteRecursively(File target) {
+	public static void deleteRecursively(File target) throws IOException {
 		if (target.isDirectory()) {
 			String[] children = target.list();
 			for(int i = 0; i != children.length; ++i)
-				if (!deleteRecursively(new File(target, children[i])))
-					return false;
+				deleteRecursively(new File(target, children[i]));
 		}
-		return target.delete();
+		if (!target.delete())
+			throw new IOException("Can not delete " + target.getAbsolutePath());
 	}
 	
 	public static void copyRecursively(FileSource fs, String source, File target, boolean remove) throws IOException
 	{
-		if (remove && target.exists() && !deleteRecursively(target))
-			throw new IOException("Can not delete " + target.getAbsolutePath());
+		if (remove && target.exists())
+			deleteRecursively(target);
 		
 		String[] children = fs.list(source);
 		if (children != null && children.length > 0) {
