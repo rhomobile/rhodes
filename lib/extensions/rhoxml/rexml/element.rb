@@ -1,6 +1,6 @@
 require "rexml/parent"
 require "rexml/namespace"
-#require "rexml/attribute"
+require "rexml/attribute"
 #require "rexml/cdata"
 require "rexml/xpath"
 #require "rexml/parseexception"
@@ -998,6 +998,62 @@ module REXML
         #  val.each_value { |atr| yield atr }
         #end
       end
+    end
+    
+    def namespaces
+      namespaces = {}
+=begin      
+      each_attribute do |attribute|
+        namespaces[attribute.name] = attribute.value if attribute.prefix == 'xmlns' or attribute.name == 'xmlns'
+      end
+      if @element.document and @element.document.doctype
+        expn = @element.expanded_name
+        expn = @element.document.doctype.name if expn.size == 0
+        @element.document.doctype.attributes_of(expn).each {
+          |attribute|
+          namespaces[attribute.name] = attribute.value if attribute.prefix == 'xmlns' or attribute.name == 'xmlns'
+        }
+      end
+=end      
+      namespaces
+    end
+    
+    def get_attribute( name )
+      attr = fetch( name, nil )
+      if attr.nil?
+        return nil if name.nil?
+        # Look for prefix
+        name =~ Namespace::NAMESPLIT
+        prefix, n = $1, $2
+        if prefix
+          attr = fetch( n, nil )
+          # check prefix
+          if attr == nil
+          elsif attr.kind_of? Attribute
+            return attr if prefix == attr.prefix
+          else
+            attr = attr[ prefix ]
+            return attr
+          end
+        end
+        element_document = @element.document
+        if element_document and element_document.doctype
+          expn = @element.expanded_name
+          expn = element_document.doctype.name if expn.size == 0
+          attr_val = element_document.doctype.attribute_of(expn, name)
+          return Attribute.new( name, attr_val ) if attr_val
+        end
+        return nil
+      end
+      if attr.kind_of? Hash
+        attr = attr[ @element.prefix ]
+      end
+      
+      if attr.kind_of? String
+        return Attribute.new( name, attr )
+      end
+      
+      return attr
     end
     
   end
