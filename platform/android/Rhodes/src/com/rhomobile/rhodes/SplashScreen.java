@@ -14,10 +14,7 @@ import android.widget.ImageView;
 
 public class SplashScreen {
 	
-	private static final String INSTALLING_PNG = "apps/app/installing.png";
 	private static final String LOADING_PNG = "apps/app/loading.png";
-	
-	private static final String INSTALLING_PAGE = "apps/app/installing.html";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
 	private View view;

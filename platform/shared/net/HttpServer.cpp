@@ -46,6 +46,8 @@ namespace net
 using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
+
+static size_t const FILE_BUF_SIZE = 65536;
     
 static bool isid(String const &s)
 {
@@ -858,7 +860,7 @@ bool CHttpServer::send_file(String const &path)
     //headers.push_back(Header("Cache-Control", "max-age=2592000") );
 
     // Content length
-    char buf[8192];
+    char buf[FILE_BUF_SIZE];
     
     size_t fileSize = st.st_size;
     snprintf(buf, sizeof(buf), "%lu", (unsigned long)fileSize);
