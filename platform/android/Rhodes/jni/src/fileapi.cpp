@@ -204,8 +204,20 @@ static std::string make_full_path(const char *path)
             bufsize *= 2;
         }
     }
-    std::string fpath = std::string(dir) + "/" + path;
+    std::string fdir = dir;
     free(buf);
+    if (fdir.empty() || fdir[fdir.size() - 1] != '/')
+        fdir.push_back('/');
+
+    std::string fpath = path;
+    if (fpath.size() >= 2 && fpath[0] == '.' && fpath[1] == '/')
+        fpath.erase(0, 2);
+    fpath = std::string(dir) + fpath;
+    free(buf);
+
+    size_t size = fpath.size();
+    if (size > 0 && fpath[size - 1] == '/')
+        fpath.erase(size - 1);
 
     return fpath;
 }
@@ -269,7 +281,7 @@ static bool need_java_way(std::string const &path)
         {
             if (errno == ENOENT)
             {
-                RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
+                //RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
                 return true;
             }
 
@@ -311,11 +323,12 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
 
     RHO_LOG("open: %s...", path);
     fpath = make_full_path(fpath);
+    //RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
 
     bool java_way = need_java_way(fpath);
     if (java_way && (oflag & (O_WRONLY | O_RDWR)))
     {
-        RHO_LOG("open: %s for write", path);
+        //RHO_LOG("open: %s: copy from Android package", path);
         JNIEnv *env = jnienv();
         jstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath).c_str());
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj);
@@ -362,7 +375,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         }
         fd = real_open(path, oflag, mode);
     }
-    RHO_LOG("open file %s => %d", path, fd);
+    RHO_LOG("open: %s => %d", path, fd);
     return fd;
 }
 
@@ -387,7 +400,7 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
 
 RHO_GLOBAL int close(int fd)
 {
-    RHO_LOG("close: fd %d", fd);
+    //RHO_LOG("close: fd %d", fd);
     if (fd < RHO_FD_BASE)
         return real_close(fd);
 
@@ -414,7 +427,7 @@ RHO_GLOBAL int close(int fd)
 
 RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 {
-    RHO_LOG("read: fd %d", fd);
+    //RHO_LOG("read: fd %d", fd);
     if (fd < RHO_FD_BASE)
         return real_read(fd, buf, count);
 
@@ -465,7 +478,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 
 RHO_GLOBAL ssize_t write(int fd, const void *buf, size_t count)
 {
-    RHO_LOG("write: fd %d", fd);
+    //RHO_LOG("write: fd %d", fd);
     if (fd < RHO_FD_BASE)
         return real_write(fd, buf, count);
 
@@ -569,7 +582,7 @@ RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
 
 RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 {
-    RHO_LOG("lseek64: fd %d", fd);
+    //RHO_LOG("lseek64: fd %d", fd);
     if (fd < RHO_FD_BASE)
         return real_lseek64(fd, offset, whence);
 
@@ -636,7 +649,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 
 RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
 {
-    RHO_LOG("lseek: fd %d", fd);
+    //RHO_LOG("lseek: fd %d", fd);
     if (fd < RHO_FD_BASE)
         return real_lseek(fd, offset, whence);
 

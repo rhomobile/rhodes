@@ -149,12 +149,18 @@ public class Rhodes extends Activity {
 		
 		rootPath = dataDir + "/rhodata/";
 		Log.d(TAG, "Root path: " + rootPath);
+		
+		String sqliteJournalsPath = dataDir + "/sqlite_stmt_journals/";
+		Log.d(TAG, "Sqlite journals path: " + sqliteJournalsPath);
+		
 		File f = new File(rootPath);
 		f.mkdirs();
 		f = new File(f, "db/db-files");
 		f.mkdirs();
+		f = new File(sqliteJournalsPath);
+		f.mkdirs();
 		
-		nativeInitPath(rootPath, dataDir + "/sqlite_stmt_journals/");
+		nativeInitPath(rootPath, sqliteJournalsPath);
 	}
 	
 	public String getRootPath() {
