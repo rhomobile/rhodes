@@ -120,6 +120,8 @@ public:
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
 
 	void setPollInterval(int nInterval);
+
+    unsigned long getRetValue();
 private:
     CSyncThread(common::IRhoClassFactory* factory);
 
@@ -143,11 +145,11 @@ extern "C" {
 void rho_sync_create();
 void rho_sync_destroy();
 
-void rho_sync_doSyncAllSources(int show_status_popup);
-void rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup);
-void rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
+unsigned long rho_sync_doSyncAllSources(int show_status_popup);
+unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup);
+unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
-void rho_sync_login(const char *login, const char *password, const char* callback);
+unsigned long rho_sync_login(const char *login, const char *password, const char* callback);
 int rho_sync_logged_in();
 void rho_sync_logout();
 void rho_sync_set_notification(int source_id, const char *url, char* params);
