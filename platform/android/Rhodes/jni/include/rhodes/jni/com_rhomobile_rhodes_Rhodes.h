@@ -15,6 +15,14 @@ extern "C" {
 #define com_rhomobile_rhodes_Rhodes_RHO_TOOLBAR_VIEW 3L
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    nativeAlreadyStarted
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeAlreadyStarted
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    createRhodesApp
  * Signature: ()V
  */
@@ -27,14 +35,6 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhodes_Rhodes
- * Method:    stopRhodesApp
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_stopRhodesApp
   (JNIEnv *, jobject);
 
 /*
