@@ -416,7 +416,7 @@ namespace "build" do
       psize = assets.size + 1
 
       File.open(File.join(assets, 'rho.dat'), 'w') do |dat|
-        Dir.glob(File.join(assets, '**/*')).each do |f|
+        Dir.glob(File.join(assets, '**/*')).sort.each do |f|
           relpath = f[psize..-1]
 
           if File.directory?(f)
