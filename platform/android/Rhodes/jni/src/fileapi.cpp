@@ -12,14 +12,15 @@ static int const RHO_FD_BASE = 4096;
 #ifdef RHO_NOT_IMPLEMENTED
 #undef RHO_NOT_IMPLEMENTED
 #endif
-#define RHO_NOT_IMPLEMENTED __android_log_print(ANDROID_LOG_ERROR, "RhoFileApi", \
-    "WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#define RHO_NOT_IMPLEMENTED \
+  __android_log_print(ANDROID_LOG_ERROR, "RhoFileApi", \
+    "WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+  errno = EACCES; \
+  return -1
 
-static int rho_log(const char *fmt, ...)
-#if defined(__GNUC__)
-      __attribute__ ((format(printf, 1, 2)))
-#endif
-    ;
+//#define RHO_ENABLE_LOG
+#ifdef RHO_ENABLE_LOG
+static int rho_log(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
 
 int rho_log(const char *fmt, ...)
 {
@@ -31,6 +32,9 @@ int rho_log(const char *fmt, ...)
 }
 
 #define RHO_LOG rho_log
+#else
+#define RHO_LOG(...)
+#endif
 
 struct rho_stat_t
 {
@@ -42,25 +46,22 @@ struct rho_stat_t
 typedef std::hash_map<std::string, rho_stat_t> rho_stat_map_t;
 static rho_stat_map_t rho_stat_map;
 
-struct iss_data_t
+struct rho_fd_data_t
 {
     jobject is;
     std::string fpath;
-    off_t pos;
+    loff_t pos;
 };
 
 typedef rho::common::CMutexLock scoped_lock_t;
-static rho::common::CMutex iss_mtx;
-typedef std::map<int, iss_data_t> iss_map_t;
-iss_map_t iss_map;
-static std::vector<int> iss_free;
-static int iss_counter = RHO_FD_BASE;
+static rho::common::CMutex rho_fd_mtx;
+typedef std::map<int, rho_fd_data_t> rho_fd_map_t;
+rho_fd_map_t rho_fd_map;
+static std::vector<int> rho_fd_free;
+static int rho_fd_counter = RHO_FD_BASE;
 
 static jclass clsFileApi;
 static jmethodID midCopy;
-//static jmethodID midType;
-//static jmethodID midSize;
-//static jmethodID midMtime;
 static jmethodID midOpen;
 static jmethodID midClose;
 static jmethodID midRead;
@@ -69,46 +70,63 @@ static jmethodID midSeek;
 typedef FILE *(*func_sfp_t)();
 typedef int (*func_sflags_t)(const char *mode, int *optr);
 
-static func_sfp_t __sfp;
 static func_sflags_t __sflags;
+static func_sfp_t __sfp;
 
-typedef int (*func_open_t)(const char *path, int oflag, ...);
+typedef int (*func_access_t)(const char *path, int mode);
 typedef int (*func_close_t)(int fd);
+typedef int (*func_dup2_t)(int fd, int fd2);
+typedef int (*func_dup_t)(int fd);
+typedef int (*func_fchdir_t)(int fd);
+typedef int (*func_fcntl_t)(int fd, int command, ...);
+typedef int (*func_fdatasync_t)(int fd);
+typedef int (*func_flock_t)(int fd, int operation);
+typedef int (*func_fstat_t)(int filedes, struct stat *buf);
+typedef int (*func_fsync_t)(int fd);
+typedef int (*func_ftruncate_t)(int fd, off_t offset);
+typedef int (*func_lstat_t)(const char *path, struct stat *buf);
+typedef int (*func_open_t)(const char *path, int oflag, ...);
+typedef int (*func_stat_t)(const char *path, struct stat *buf);
+typedef int (*func_unlink_t)(const char *path);
+typedef loff_t (*func_lseek64_t)(int fd, loff_t offset, int whence);
+typedef off_t (*func_lseek_t)(int fd, off_t offset, int whence);
 typedef ssize_t (*func_read_t)(int fd, void *buf, size_t count);
 typedef ssize_t (*func_write_t)(int fd, const void *buf, size_t count);
-typedef int (*func_stat_t)(const char *path, struct stat *buf);
-typedef int (*func_fstat_t)(int filedes, struct stat *buf);
-typedef int (*func_lstat_t)(const char *path, struct stat *buf);
-typedef off_t (*func_lseek_t)(int fd, off_t offset, int whence);
-typedef int (*func_fcntl_t)(int fd, int command, ...);
-typedef int (*func_access_t)(const char *path, int mode);
-typedef int (*func_unlink_t)(const char *path);
-typedef int (*func_fsync_t)(int fd);
 
-static func_open_t real_open;
-static func_close_t real_close;
-static func_read_t real_read;
-static func_write_t real_write;
-static func_stat_t real_stat;
-static func_fstat_t real_fstat;
-static func_lstat_t real_lstat;
-static func_lseek_t real_lseek;
-static func_fcntl_t real_fcntl;
 static func_access_t real_access;
-static func_unlink_t real_unlink;
+static func_close_t real_close;
+static func_dup2_t real_dup2;
+static func_dup_t real_dup;
+static func_fchdir_t real_fchdir;
+static func_fcntl_t real_fcntl;
+static func_fdatasync_t real_fdatasync;
+static func_flock_t real_flock;
+static func_fstat_t real_fstat;
 static func_fsync_t real_fsync;
+static func_ftruncate_t real_ftruncate;
+static func_lseek64_t real_lseek64;
+static func_lseek_t real_lseek;
+static func_lstat_t real_lstat;
+static func_open_t real_open;
+static func_read_t real_read;
+static func_stat_t real_stat;
+static func_unlink_t real_unlink;
+static func_write_t real_write;
 
 struct stat librhodes_st;
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
-  (JNIEnv *env, jclass, jstring path, jstring type, jlong size, jlong mtime)
+  (JNIEnv *env, jclass, jstring pathObj, jstring type, jlong size, jlong mtime)
 {
+    std::string path = rho_cast<std::string>(env, pathObj);
     rho_stat_t st;
     st.type = rho_cast<std::string>(env, type);
     st.size = (size_t)size;
     st.mtime = (unsigned long)mtime;
 
-    rho_stat_map.insert(std::make_pair(rho_cast<std::string>(env, path), st));
+    //RHO_LOG("updateStatTable: %s -> type %s, size %lu, mtime %lu", path.c_str(), st.type.c_str(), (unsigned long)st.size, st.mtime);
+
+    rho_stat_map.insert(std::make_pair(path, st));
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
@@ -118,12 +136,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!clsFileApi) return;
     midCopy = getJNIClassStaticMethod(env, clsFileApi, "copy", "(Ljava/lang/String;)Z");
     if (!midCopy) return;
-    //midType = getJNIClassStaticMethod(env, clsFileApi, "statType", "(Ljava/lang/String;)Ljava/lang/String;");
-    //if (!midType) return;
-    //midSize = getJNIClassStaticMethod(env, clsFileApi, "statSize", "(Ljava/lang/String;)J");
-    //if (!midSize) return;
-    //midMtime = getJNIClassStaticMethod(env, clsFileApi, "statMtime", "(Ljava/lang/String;)J");
-    //if (!midMtime) return;
     midOpen = getJNIClassStaticMethod(env, clsFileApi, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
     if (!midOpen) return;
     midClose = getJNIClassStaticMethod(env, clsFileApi, "close", "(Ljava/io/InputStream;)V");
@@ -135,20 +147,27 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 
     const char *libc = "/system/lib/libc.so";
     void *pc = dlopen(libc, RTLD_LAZY);
-    __sfp = (func_sfp_t)dlsym(pc, "__sfp");
     __sflags = (func_sflags_t)dlsym(pc, "__sflags");
-    real_open = (func_open_t)dlsym(pc, "open");
-    real_close = (func_close_t)dlsym(pc, "close");
-    real_read = (func_read_t)dlsym(pc, "read");
-    real_write = (func_write_t)dlsym(pc, "write");
-    real_stat = (func_stat_t)dlsym(pc, "stat");
-    real_fstat = (func_fstat_t)dlsym(pc, "fstat");
-    real_lstat = (func_lstat_t)dlsym(pc, "lstat");
-    real_lseek = (func_lseek_t)dlsym(pc, "lseek");
-    real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
+    __sfp = (func_sfp_t)dlsym(pc, "__sfp");
     real_access = (func_access_t)dlsym(pc, "access");
-    real_unlink = (func_unlink_t)dlsym(pc, "unlink");
+    real_close = (func_close_t)dlsym(pc, "close");
+    real_dup = (func_dup_t)dlsym(pc, "dup");
+    real_dup2 = (func_dup2_t)dlsym(pc, "dup2");
+    real_fchdir = (func_fchdir_t)dlsym(pc, "fchdir");
+    real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
+    real_fdatasync = (func_fdatasync_t)dlsym(pc, "fdatasync");
+    real_flock = (func_flock_t)dlsym(pc, "flock");
+    real_fstat = (func_fstat_t)dlsym(pc, "fstat");
     real_fsync = (func_fsync_t)dlsym(pc, "fsync");
+    real_ftruncate = (func_ftruncate_t)dlsym(pc, "ftruncate");
+    real_lseek = (func_lseek_t)dlsym(pc, "lseek");
+    real_lseek64 = (func_lseek64_t)dlsym(pc, "lseek64");
+    real_lstat = (func_lstat_t)dlsym(pc, "lstat");
+    real_open = (func_open_t)dlsym(pc, "open");
+    real_read = (func_read_t)dlsym(pc, "read");
+    real_stat = (func_stat_t)dlsym(pc, "stat");
+    real_unlink = (func_unlink_t)dlsym(pc, "unlink");
+    real_write = (func_write_t)dlsym(pc, "write");
     dlclose(pc);
 
     // This is just to get typical stat of file
@@ -260,6 +279,9 @@ static bool need_java_way(std::string const &path)
             rho_stat_t *rst = rho_stat(fpath);
             if (rst && rst->mtime > st.st_mtime)
             {
+                //RHO_LOG("need_java_way: %s, st.st_mtime: %lu", fpath.c_str(), st.st_mtime);
+                //RHO_LOG("need_java_way: %s, rst->mtime: %lu", fpath.c_str(), rst ? rst->mtime : -1);
+                //RHO_LOG("need_java_way: file %s in Android package is newer than one located on FS, unlink FS one", fpath.c_str());
                 real_unlink(fpath.c_str());
                 return true;
             }
@@ -290,7 +312,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         //RHO_LOG("open: for write");
         JNIEnv *env = jnienv();
         jstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath).c_str());
-        env->CallStaticVoidMethod(clsFileApi, midCopy, relPathObj);
+        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj);
         env->DeleteLocalRef(relPathObj);
 
         java_way = false;
@@ -309,19 +331,19 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         fd = -1;
         if (is != NULL)
         {
-            scoped_lock_t guard(iss_mtx);
-            if (!iss_free.empty())
+            scoped_lock_t guard(rho_fd_mtx);
+            if (!rho_fd_free.empty())
             {
-                fd = iss_free[0];
-                iss_free.erase(iss_free.begin());
+                fd = rho_fd_free[0];
+                rho_fd_free.erase(rho_fd_free.begin());
             }
             else
-                fd = iss_counter++;
-            iss_data_t d;
+                fd = rho_fd_counter++;
+            rho_fd_data_t d;
             d.is = is;
             d.fpath = fpath;
             d.pos = 0;
-            iss_map[fd] = d;
+            rho_fd_map[fd] = d;
         }
     }
     else
@@ -341,12 +363,6 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     return fd;
 }
 
-RHO_GLOBAL int openat(int fd, const char* path, int mode, ...)
-{
-    RHO_NOT_IMPLEMENTED;
-    return -1;
-}
-
 RHO_GLOBAL int creat(const char* path, mode_t mode)
 {
     return open(path, O_CREAT|O_WRONLY|O_TRUNC, mode);
@@ -364,7 +380,6 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
     }
 
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
 RHO_GLOBAL int close(int fd)
@@ -375,18 +390,18 @@ RHO_GLOBAL int close(int fd)
 
     jobject is = NULL;
     {
-        scoped_lock_t guard(iss_mtx);
+        scoped_lock_t guard(rho_fd_mtx);
 
-        iss_map_t::iterator it = iss_map.find(fd);
-        if (it == iss_map.end())
+        rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+        if (it == rho_fd_map.end())
         {
             errno = EBADF;
             return -1;
         }
 
         is = it->second.is;
-        iss_map.erase(it);
-        iss_free.push_back(fd);
+        rho_fd_map.erase(it);
+        rho_fd_free.push_back(fd);
     }
 
     JNIEnv *env = jnienv();
@@ -402,10 +417,10 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 
     jobject is = NULL;
     {
-        scoped_lock_t guard(iss_mtx);
+        scoped_lock_t guard(rho_fd_mtx);
 
-        iss_map_t::iterator it = iss_map.find(fd);
-        if (it == iss_map.end())
+        rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+        if (it == rho_fd_map.end())
         {
             errno = EBADF;
             return (ssize_t)-1;
@@ -422,9 +437,9 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
     if (result > 0)
     {
         {
-            scoped_lock_t guard(iss_mtx);
-            iss_map_t::iterator it = iss_map.find(fd);
-            if (it == iss_map.end())
+            scoped_lock_t guard(rho_fd_mtx);
+            rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+            if (it == rho_fd_map.end())
             {
                 errno = EIO;
                 return (off_t)-1;
@@ -475,7 +490,6 @@ RHO_GLOBAL int access(const char *path, int mode)
 RHO_GLOBAL int link(const char *src, const char *dst)
 {
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
 RHO_GLOBAL int unlink(const char *path)
@@ -484,26 +498,88 @@ RHO_GLOBAL int unlink(const char *path)
     if (!need_java_way(fpath))
         return real_unlink(path);
 
-    errno = EACCES;
-    return -1;
+    RHO_NOT_IMPLEMENTED;
 }
 
-RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
+RHO_GLOBAL int chdir(const char *)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int fchdir(int fd)
 {
     if (fd < RHO_FD_BASE)
-        return real_lseek(fd, offset, whence);
+        return real_fchdir(fd);
+
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int rmdir(const char *)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int chroot(const char *)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int chown(const char *path, uid_t uid, gid_t gid)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int fchown(int fd, uid_t uid, gid_t gid)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int lchown(const char *path, uid_t uid, gid_t gid)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int chmod(const char *path, mode_t mode)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int fchmod(int fd, mode_t mode)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int mknod(const char *path, mode_t mode, dev_t dev)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int symlink(const char *src, const char *dst)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+
+RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
+{
+    if (fd < RHO_FD_BASE)
+        return real_lseek64(fd, offset, whence);
 
     jobject is = NULL;
-    off_t pos = 0;
+    loff_t pos = 0;
 
     {
-        scoped_lock_t guard(iss_mtx);
+        scoped_lock_t guard(rho_fd_mtx);
 
-        iss_map_t::iterator it = iss_map.find(fd);
-        if (it == iss_map.end())
+        rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+        if (it == rho_fd_map.end())
         {
             errno = EBADF;
-            return (off_t)-1;
+            return -1;
         }
 
         is = it->second.is;
@@ -537,13 +613,13 @@ RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
     }
 
     {
-        scoped_lock_t guard(iss_mtx);
+        scoped_lock_t guard(rho_fd_mtx);
 
-        iss_map_t::iterator it = iss_map.find(fd);
-        if (it == iss_map.end())
+        rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+        if (it == rho_fd_map.end())
         {
             errno = EBADF;
-            return (off_t)-1;
+            return -1;
         }
         it->second.pos = pos;
     }
@@ -554,34 +630,41 @@ RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
     return pos;
 }
 
-RHO_GLOBAL loff_t lseek64(int, loff_t, int)
+RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
 {
-    RHO_NOT_IMPLEMENTED;
-    return (loff_t)-1;
+    if (fd < RHO_FD_BASE)
+        return real_lseek(fd, offset, whence);
+
+    return lseek64(fd, offset, whence);
 }
 
 RHO_GLOBAL int dup(int fd)
 {
+    if (fd < RHO_FD_BASE)
+        return real_dup(fd);
+
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
-RHO_GLOBAL int dup2(int , int )
+RHO_GLOBAL int dup2(int fd, int fd2)
 {
+    if (fd < RHO_FD_BASE)
+        return real_dup2(fd, fd2);
+
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
-RHO_GLOBAL int flock(int , int )
+RHO_GLOBAL int flock(int fd, int operation)
 {
+    if (fd < RHO_FD_BASE)
+        return real_flock(fd, operation);
+
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
 RHO_GLOBAL int ioctl(int, int, ...)
 {
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
 RHO_GLOBAL int fsync(int fd)
@@ -593,15 +676,20 @@ RHO_GLOBAL int fsync(int fd)
     return -1;
 }
 
-RHO_GLOBAL int fdatasync(int )
+RHO_GLOBAL int fdatasync(int fd)
 {
+    if (fd < RHO_FD_BASE)
+        return real_fdatasync(fd);
+
     RHO_NOT_IMPLEMENTED;
-    return -1;
 }
 
-RHO_GLOBAL int ftruncate(int , off_t )
+RHO_GLOBAL int ftruncate(int fd, off_t offset)
 {
-    RHO_NOT_IMPLEMENTED;
+    if (fd < RHO_FD_BASE)
+        return real_ftruncate(fd, offset);
+
+    errno = EINVAL;
     return -1;
 }
 
@@ -647,10 +735,10 @@ RHO_GLOBAL int fstat(int fd, struct stat *buf)
     std::string fpath;
 
     {
-        scoped_lock_t guard(iss_mtx);
+        scoped_lock_t guard(rho_fd_mtx);
 
-        iss_map_t::iterator it = iss_map.find(fd);
-        if (it == iss_map.end())
+        rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+        if (it == rho_fd_map.end())
         {
             errno = EBADF;
             return -1;
@@ -671,7 +759,7 @@ RHO_GLOBAL int lstat(const char *path, struct stat *buf)
     return stat(path, buf);
 }
 
-RHO_GLOBAL int __sread(void *cookie, char *buf, int n)
+static int __sread(void *cookie, char *buf, int n)
 {
     FILE *fp = (FILE*)cookie;
     int ret;
@@ -684,7 +772,7 @@ RHO_GLOBAL int __sread(void *cookie, char *buf, int n)
     return ret;
 }
 
-RHO_GLOBAL int __swrite(void *cookie, const char *buf, int n)
+static int __swrite(void *cookie, const char *buf, int n)
 {
     FILE *fp = (FILE*)cookie;
 
@@ -694,7 +782,7 @@ RHO_GLOBAL int __swrite(void *cookie, const char *buf, int n)
     return write(fp->_file, buf, n);
 }
 
-RHO_GLOBAL fpos_t __sseek(void *cookie, fpos_t offset, int whence)
+static fpos_t __sseek(void *cookie, fpos_t offset, int whence)
 {
     FILE *fp = (FILE*)cookie;
     off_t ret = lseek(fp->_file, (off_t)offset, whence);
@@ -708,7 +796,7 @@ RHO_GLOBAL fpos_t __sseek(void *cookie, fpos_t offset, int whence)
     return ret;
 }
 
-RHO_GLOBAL int __sclose(void *cookie)
+static int __sclose(void *cookie)
 {
     return close(((FILE *)cookie)->_file);
 }

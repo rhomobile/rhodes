@@ -26,7 +26,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Vector;
 
-//import com.rhomobile.rhodes.Utils.AssetsSource;
+import com.rhomobile.rhodes.Utils.AssetsSource;
 import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
@@ -51,7 +51,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -111,12 +110,8 @@ public class Rhodes extends Activity {
 	
 	private SplashScreen splashScreen = null;
 	
-	//private Boolean contentChanged = null;
-	
 	private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
 
-	//private String sdCardError = "Application can not access the SD card while it's mounted. Please unmount the device and stop the adb server before launching the app.";
-	
 	private RhoMenu appMenu = null;
 		
 	private String rootPath = null;
@@ -149,13 +144,6 @@ public class Rhodes extends Activity {
 	private native void nativeInitPath(String rootPath, String sqliteJournalsPath);
 	
 	private void initRootPath() {
-		/*
-		Log.d(TAG, "Check if the SD card is mounted...");
-		String state = Environment.getExternalStorageState();
-		Log.d(TAG, "Storage state: " + state);
-		boolean hasSDCard = Environment.MEDIA_MOUNTED.equals(state);
-		rootPath = hasSDCard ? sdcardRootPath() : phoneMemoryRootPath();
-		*/
 		String dataDir = getAppInfo().dataDir;
 		
 		rootPath = dataDir + "/rhodata/";
@@ -182,70 +170,11 @@ public class Rhodes extends Activity {
 		}
 	}
 
-	/*
-	private String getSqliteJournalsPath() {
-		String path = getAppInfo().dataDir + "/sqlite_stmt_journals/";
-		new File(path).mkdirs();
-		return path;
-	}
-	*/
-	
-	/*
-	private String phoneMemoryRootPath() {
-		return getAppInfo().dataDir + "/rhodata/";
-	}
-	*/
-	
-	/*
-	private String sdcardRootPath() {
-		String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-		String pkgName = getPackageName();
-		String path = sdPath + "/rhomobile/" + pkgName + "/";
-		return path;
-	}
-	*/
-	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
 	}
 
-	/*
-	private boolean checkSDCard() {
-		Log.d(TAG, "Check if the SD card is mounted...");
-		String state = Environment.getExternalStorageState();
-		Log.d(TAG, "Storage state: " + state);
-		if(!Environment.MEDIA_MOUNTED.equals(state)) {
-			new AlertDialog.Builder(this)
-				.setTitle("SD card error")
-				.setMessage(sdCardError)
-				.setCancelable(false)
-				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						Log.e(this.getClass().getSimpleName(), "Exit - SD card is not accessible");
-						Process.killProcess(Process.myPid());
-					}					
-				})
-				.create()
-				.show();
-			return false;
-		}
-		Log.d(TAG, "SD card check passed, going on");
-		return true;
-	}
-	*/
-
-	/*
-	private void copyFromBundle(String file) throws IOException {
-		File target = new File(getRootPath(), file);
-		if (target.exists())
-			return;
-		FileSource as = new AssetsSource(getResources().getAssets());
-		Utils.copyRecursively(as, file, target, true);
-	}
-	*/
-	
-	/*
 	public boolean isNameChanged() {
 		try {
 			FileSource as = new AssetsSource(getResources().getAssets());
@@ -256,61 +185,6 @@ public class Rhodes extends Activity {
 			return true;
 		}
 	}
-	*/
-	
-	/*
-	public boolean isBundleChanged() {
-		if (contentChanged == null) {
-			try {
-				String rp = getRootPath();
-				
-				FileSource as = new AssetsSource(getResources().getAssets());
-				FileSource fs = new FileSource();
-				
-				if (isNameChanged())
-					contentChanged = new Boolean(true);
-				else
-					contentChanged = new Boolean(!Utils.isContentsEquals(as, "hash", fs, new File(rp, "hash").getPath()));
-			}
-			catch (IOException e) {
-				contentChanged = new Boolean(true);
-			}
-		}
-		return contentChanged.booleanValue();
-	}
-	*/
-
-	/*
-	private void copyFilesFromBundle11() {
-		try {
-			if (isBundleChanged()) {
-				Logger.D(TAG, "Copying required files from bundle");
-				
-				boolean nameChanged = isNameChanged();
-				
-				String rp = getRootPath();
-				
-				FileSource as = new AssetsSource(getResources().getAssets());
-
-				String items[] = {"apps", "lib", "db", "hash", "name"};
-				for (int i = 0; i != items.length; ++i) {
-					String item = items[i];
-					File f = new File(rp, item);
-					Logger.D(TAG, "Copy '" + item + "' to '" + f.getAbsolutePath() + "'");
-					Utils.copyRecursively(as, item, f, nameChanged);
-				}
-				
-				contentChanged = new Boolean(true);
-				Logger.D(TAG, "All files copied");
-			}
-			else
-				Logger.D(TAG, "No need to copy files to SD card");
-		} catch (IOException e) {
-			Logger.E(TAG, e);
-			return;
-		}
-	}
-	*/
 	
 	private boolean handleUrlLoading(String url) {
 		Enumeration<UriHandler> e = uriHandlers.elements();
@@ -514,6 +388,20 @@ public class Rhodes extends Activity {
 			return;
 		}
 		
+		if (isNameChanged()) {
+			Logger.I(TAG, "Application name was changed, so");
+			try {
+				Utils.deleteRecursively(new File(rootPath));
+			}
+			catch (Exception e) {
+				Logger.E("Rhodes", e);
+				finish();
+				return;
+			}
+			initRootPath();
+			RhoFileApi.copy("name");
+		}
+		
 		/*
 		try {
 			copyFromBundle("apps/rhoconfig.txt");
@@ -707,9 +595,14 @@ public class Rhodes extends Activity {
 	
 	// Called from native code
 	public static void deleteFilesInFolder(String folder) {
-		String[] children = new File(folder).list();
-		for (int i = 0; i != children.length; ++i)
-			Utils.deleteRecursively(new File(folder, children[i]));
+		try {
+			String[] children = new File(folder).list();
+			for (int i = 0; i != children.length; ++i)
+				Utils.deleteRecursively(new File(folder, children[i]));
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
 	}
 	
 	private static boolean hasNetwork() {
