@@ -88,7 +88,7 @@ class RhoFileSpec
     end
 
     def isfileexist_test
-        Test_equal( File.exist?(Rho::RhoApplication::get_model_path('app', 'spec')), true ) if System.get_property('platform') != 'Blackberry'
+        Test_equal( File.exist?(Rho::RhoApplication::get_model_path('app', 'Spec')), true ) if System.get_property('platform') != 'Blackberry'
         Test_equal( File.exist?(Rho::RhoApplication::get_blob_folder()), true )
         Test_equal( File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')),  true )
         
