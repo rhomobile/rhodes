@@ -43,25 +43,20 @@ describe "BulkSync_test" do
   end
 
   it "should login" do
-    SyncEngine.login('admin', "", "/app/Settings/login_callback")
-  
-    res = ::Rho::RhoSupport::parse_query_parameters C_login_callback
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('admin', "", "/app/Settings/login_callback")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
-    Object.const_set( "C_login_callback", nil )
   end
 
   it "should sync BulkTest" do
     SyncEngine.logged_in.should == 1
   
     SyncEngine.set_bulk_notification("/app/Settings/bulk_sync_notify", "")
-    Product.sync( "/app/Settings/sync_notify")
 
-    res = ::Rho::RhoSupport::parse_query_parameters C_bulk_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Object.const_set( "C_bulk_sync_notify", nil )
   end
 
   it "should logout" do

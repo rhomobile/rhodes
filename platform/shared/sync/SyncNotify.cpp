@@ -449,10 +449,7 @@ boolean CSyncNotify::callNotify(const String& strUrl, const String& strBody )
 {
     if ( getSync().isNoThreadedMode() )
     {
-        common::CFilePath path(strUrl);
-    	String strName = String("C_") + path.getBaseName();
-
-        rho_ruby_set_const( strName.c_str(), strBody.c_str());
+        m_strNotifyBody = strBody;
         return false;
     }
 
