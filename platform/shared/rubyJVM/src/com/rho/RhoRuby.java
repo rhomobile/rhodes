@@ -117,11 +117,6 @@ public class RhoRuby {
 		return res.toStr();
 	}
 	
-	public static void set_const(String name, String value)
-	{
-		RubyRuntime.ObjectClass.setConstant(name, ObjectFactory.createString(value) );
-	}
-	
 	public static void RhoRubyStart(String szAppPath)throws Exception
 	{
 		String[] args = new String[0];

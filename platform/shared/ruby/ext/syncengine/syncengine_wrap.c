@@ -1547,12 +1547,12 @@ static VALUE mSyncEngine;
 
 /* Put header files here or function declarations like below */
 	#define dosync rho_sync_doSyncAllSources
-	extern void rho_sync_doSyncAllSources(int show_status_popup);
+	extern VALUE rho_sync_doSyncAllSources(int show_status_popup);
 	#define dosync_source rho_sync_doSyncSource
-	extern void rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
+	extern VALUE rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
 	#define dosearch rho_sync_doSearch
-	extern void rho_sync_doSearch(VALUE ar_sources, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
-	extern void rho_sync_login(const char *login, const char *password, const char* callback);
+	extern VALUE rho_sync_doSearch(VALUE ar_sources, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
+	extern VALUE rho_sync_login(const char *login, const char *password, const char* callback);
 	#define login rho_sync_login
 	extern int rho_sync_logged_in();
 	#define logged_in rho_sync_logged_in
@@ -1753,8 +1753,10 @@ SWIG_From_int  (int value)
 SWIGINTERN VALUE
 _wrap_dosync(int argc, VALUE *argv, VALUE self) {
   bool arg1 ;
+  VALUE result;
   bool val1 ;
   int ecode1 = 0 ;
+  VALUE vresult = Qnil;
   
   {
     arg1 = 1;
@@ -1769,8 +1771,9 @@ _wrap_dosync(int argc, VALUE *argv, VALUE self) {
     } 
     arg1 = (bool)(val1);
   }
-  dosync(arg1);
-  return Qnil;
+  result = (VALUE)dosync(arg1);
+  vresult = result;
+  return vresult;
 fail:
   return Qnil;
 }
@@ -1780,8 +1783,10 @@ SWIGINTERN VALUE
 _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
   VALUE arg1 = (VALUE) 0 ;
   bool arg2 ;
+  VALUE result;
   bool val2 ;
   int ecode2 = 0 ;
+  VALUE vresult = Qnil;
   
   {
     arg2 = 1;
@@ -1797,8 +1802,9 @@ _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
     } 
     arg2 = (bool)(val2);
   }
-  dosync_source(arg1,arg2);
-  return Qnil;
+  result = (VALUE)dosync_source(arg1,arg2);
+  vresult = result;
+  return vresult;
 fail:
   return Qnil;
 }
@@ -1813,6 +1819,7 @@ _wrap_dosearch(int argc, VALUE *argv, VALUE self) {
   int arg5 ;
   char *arg6 = (char *) 0 ;
   char *arg7 = (char *) 0 ;
+  VALUE result;
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
@@ -1829,6 +1836,7 @@ _wrap_dosearch(int argc, VALUE *argv, VALUE self) {
   int res7 ;
   char *buf7 = 0 ;
   int alloc7 = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 7) || (argc > 7)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 7)",argc); SWIG_fail;
@@ -1864,12 +1872,13 @@ _wrap_dosearch(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "dosearch" "', argument " "7"" of type '" "char const *""'");
   }
   arg7 = (char *)(buf7);
-  dosearch(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5,(char const *)arg6,(char const *)arg7);
+  result = (VALUE)dosearch(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5,(char const *)arg6,(char const *)arg7);
+  vresult = result;
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
-  return Qnil;
+  return vresult;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -1884,6 +1893,7 @@ _wrap_login(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -1893,6 +1903,7 @@ _wrap_login(int argc, VALUE *argv, VALUE self) {
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 3) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
@@ -1912,11 +1923,12 @@ _wrap_login(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "login" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
-  login((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  result = (VALUE)login((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  return Qnil;
+  return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);

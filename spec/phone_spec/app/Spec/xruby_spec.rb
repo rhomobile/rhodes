@@ -7,7 +7,7 @@ class XrubySpec
     #[:action => :back] - Does not compile
     [{:action => :back}]
   end
-
+=begin
   def elsif_test
     cond = 'false'
     res = false
@@ -30,5 +30,5 @@ class XrubySpec
 	Test_equal(res,true)
 	
   end
- 
+=end 
 end

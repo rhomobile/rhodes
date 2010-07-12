@@ -204,6 +204,17 @@ public class SyncThread extends RhoThread
         	stopWait(); 
     }
     
+    RubyValue getRetValue()
+    {
+    	RubyValue ret = RubyConstant.QNIL;
+        if ( isNoThreadedMode()  )
+        {
+            ret = ObjectFactory.createString( getSyncEngine().getNotify().getNotifyBody() );
+            getSyncEngine().getNotify().cleanNotifyBody();
+        }
+
+        return ret;
+    }
 	
     int getLastSyncInterval()
     {
@@ -427,7 +438,7 @@ public class SyncThread extends RhoThread
 					LOG.ERROR("dosync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
+				return getInstance().getRetValue();
 			}
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
@@ -439,7 +450,7 @@ public class SyncThread extends RhoThread
 					LOG.ERROR("dosync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
+				return getInstance().getRetValue();
 			}
 		});		
 		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneOrTwoArgMethod(){ 
@@ -458,7 +469,7 @@ public class SyncThread extends RhoThread
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
+				return getInstance().getRetValue();
 			}
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block )
 			{
@@ -478,7 +489,7 @@ public class SyncThread extends RhoThread
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				return RubyConstant.QNIL;
+				return getInstance().getRetValue();
 			}
 		});
 		
@@ -513,7 +524,7 @@ public class SyncThread extends RhoThread
 						RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
 					}
 					
-					return RubyConstant.QNIL;
+					return getInstance().getRetValue();
 				    
 				}
 			});
@@ -553,7 +564,7 @@ public class SyncThread extends RhoThread
 							RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
 						}
 						
-						return RubyConstant.QNIL;
+						return getInstance().getRetValue();
 					    
 					}
 				});
