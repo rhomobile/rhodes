@@ -976,7 +976,6 @@ end
 
 def get_app_log(appname, device, silent = false)
   pkgname = 'com.rhomobile.' + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
-  #path = File.join('/sdcard/rhomobile', pkgname, 'RhoLog.txt')
   path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')
   cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
   puts "RhoLog.txt stored to " + $app_path unless silent
@@ -1259,18 +1258,6 @@ namespace "uninstall" do
     Jake.run($adb, args)
     unless $?.success?
       puts "Error uninstalling application"
-      exit 1
-    end
-
-    args = []
-    args << flag
-    args << "shell"
-    args << "rm"
-    args << "-r"
-    args << "/sdcard/rhomobile/#{$app_package_name}"
-    Jake.run($adb, args)
-    unless $?.success?
-      puts "Error removing files from SD card"
       exit 1
     end
 
