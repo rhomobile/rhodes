@@ -622,7 +622,8 @@ module REXML
       def FunctionCall rest, parsed
         path, arguments = parse_args(rest)
         argset = []
-        for argument in arguments
+        #for argument in arguments
+        arguments.each do |argument|
           args = []
           OrExpr( argument, args )
           argset << args
