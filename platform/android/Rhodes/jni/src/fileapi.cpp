@@ -707,7 +707,7 @@ RHO_GLOBAL int stat(const char *path, struct stat *buf)
     if (!java_way)
         return real_stat(path, buf);
 
-    //RHO_LOG("stat: %s", path);
+    RHO_LOG("stat: %s...", path);
 
     rho_stat_t *rst = rho_stat(fpath);
     if (!rst)
@@ -727,6 +727,8 @@ RHO_GLOBAL int stat(const char *path, struct stat *buf)
     buf->st_atime = tm;
     buf->st_mtime = tm;
     buf->st_ctime = tm;
+
+    RHO_LOG("stat: %s: %s, size %lu, mtime: %lu", fpath.c_str(), rst->type.c_str(), (unsigned long)rst->size, rst->mtime);
 
     return 0;
 }

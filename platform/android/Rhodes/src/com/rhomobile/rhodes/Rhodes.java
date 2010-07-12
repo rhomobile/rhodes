@@ -116,9 +116,10 @@ public class Rhodes extends Activity {
 		
 	private String rootPath = null;
 	
-	public native void createRhodesApp();
-	public native void startRhodesApp();
-	public native void stopRhodesApp();
+	private native boolean nativeAlreadyStarted();
+	
+	private native void createRhodesApp();
+	private native void startRhodesApp();
 	
 	public native void doSyncAllSources(boolean v);
 	
@@ -367,6 +368,9 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		if (nativeAlreadyStarted())
+			return;
+		
 		Logger.T(TAG, "+++ onCreate");
 		
 		Thread ct = Thread.currentThread();
@@ -402,15 +406,6 @@ public class Rhodes extends Activity {
 			RhoFileApi.copy("name");
 		}
 		
-		/*
-		try {
-			copyFromBundle("apps/rhoconfig.txt");
-		} catch (IOException e1) {
-			Logger.E("Rhodes", e1);
-			finish();
-			return;
-		}
-		*/
 		createRhodesApp();
 		
 		boolean fullScreen = true;
@@ -464,18 +459,6 @@ public class Rhodes extends Activity {
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
-				/*
-				try {
-					int ms = 5000;
-					Log.d(TAG, "Sleep for " + ms + " ms");
-					Thread.sleep(ms);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				*/
-				
-				//copyFilesFromBundle();
 				startRhodesApp();
 			}
 			
