@@ -25,9 +25,6 @@ using rho::net::HttpHeaderList;
 using rho::net::CHttpServer;
 
 extern "C" {
-void rho_sync_create();
-void rho_sync_destroy();
-void rho_sync_doSyncAllSources(int show_status_popup);
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();

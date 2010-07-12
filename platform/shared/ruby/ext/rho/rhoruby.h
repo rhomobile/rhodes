@@ -74,8 +74,6 @@ void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func *, void* data);
 typedef void rho_ary_eachstr_func(const char*, void*);
 void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func *, void* data);
 
-void rho_ruby_set_const(const char* szName, const char* szVal);
-
 struct CRhoRubyStringOrInt 
 {
     const char* m_szStr;

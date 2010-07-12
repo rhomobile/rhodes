@@ -33,24 +33,19 @@ describe "BlobSync_test" do
   end
   
   it "should login" do
-    SyncEngine.login('lars', 'b', "/app/Settings/login_callback")
-  
-    res = ::Rho::RhoSupport::parse_query_parameters C_login_callback
+    
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars', 'b', "/app/Settings/login_callback")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
-    Object.const_set( "C_login_callback", nil )
   end
 
   it "should sync BlobTest" do
     SyncEngine.logged_in.should == 1
   
-    BlobTest.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should delete all Test Blobs" do
@@ -68,15 +63,13 @@ describe "BlobSync_test" do
 
     BlobTest.sync( "/app/Settings/sync_notify")
     sleep(2) #wait till sync server update data
-    BlobTest.sync( "/app/Settings/sync_notify")
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    
+    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     item2 = BlobTest.find(:first ) #, :conditions => {:name => 'BlobTestItem'})
     item2.should == nil
-    Object.const_set( "C_sync_notify", nil )
   end
 
   def copy_file(src, dst_dir)
@@ -100,9 +93,8 @@ describe "BlobSync_test" do
     item.save
     BlobTest.sync( "/app/Settings/sync_notify")
     sleep(2) #wait till sync server update data
-    BlobTest.sync( "/app/Settings/sync_notify")
 
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
 
@@ -116,7 +108,6 @@ describe "BlobSync_test" do
     content_new = File.read(new_file_name)
     content_new.should == file_content
     
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should modify BlobTest" do
@@ -140,9 +131,8 @@ describe "BlobSync_test" do
     
     BlobTest.sync( "/app/Settings/sync_notify")
     sleep(2) #wait till sync server update data
-    BlobTest.sync( "/app/Settings/sync_notify")
 
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
+    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
@@ -154,7 +144,6 @@ describe "BlobSync_test" do
 #    content_new = File.read(new_file_name)
 #    content_new.should == file_content
     
-    Object.const_set( "C_sync_notify", nil )
   end
 
   it "should logout" do
