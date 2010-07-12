@@ -91,7 +91,8 @@ module REXML
         # do nothing 
         return first( path[1..-1], node )
       when :child
-        for c in node.children
+        #for c in node.children
+         node.children.each do |c| 
           #puts "#{depth}) CHILD checking #{name(c)}"
           r = first( path[1..-1], c )
           #puts "#{depth}) RETURNING #{r.inspect}" if r
@@ -110,7 +111,8 @@ module REXML
       when :descendant_or_self
         r = first( path[1..-1], node )
         return r if r
-        for c in node.children
+        #for c in node.children
+        node.children.each do |c| 
           r = first( path, c )
           return r if r
         end
@@ -238,7 +240,8 @@ module REXML
           when :qname
             prefix = path_stack.shift
             name = path_stack.shift
-            for element in nodeset
+            #for element in nodeset
+            nodeset.each do |element|
               if element.node_type == :element
                 #puts "Element name = #{element.name}"
                 #puts "get_namespace( #{element.inspect}, #{prefix} ) = #{get_namespace(element, prefix)}"
@@ -249,7 +252,8 @@ module REXML
             end
           when :any
             #puts "ANY"
-            for element in nodeset
+            #for element in nodeset
+            nodeset.each do |element|
               if element.node_type == :element
                 new_nodeset += element.attributes.to_a
               end
@@ -569,7 +573,8 @@ module REXML
 
 
     def recurse( nodeset, &block )
-      for node in nodeset
+      #for node in nodeset
+      nodeset.each do |node|
         yield node
         recurse( node, &block ) if node.node_type == :element
       end
