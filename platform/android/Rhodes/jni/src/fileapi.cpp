@@ -13,7 +13,7 @@ static int const RHO_FD_BASE = 4096;
 #undef RHO_NOT_IMPLEMENTED
 #endif
 #define RHO_NOT_IMPLEMENTED \
-  __android_log_print(ANDROID_LOG_ERROR, "RhoFileApi", \
+  __android_log_print(ANDROID_LOG_ERROR, "RhoFileApiNotImpl", \
     "WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__); \
   errno = EACCES; \
   return -1
