@@ -1122,6 +1122,14 @@ def run_application (target_flag)
   Jake.run($adb, args)
 end
 
+def application_running(flag, pkgname)
+  pkg = pkgname.gsub(/\./, '\.')
+  `#{$adb} #{flag} shell ps`.split.each do |line|
+    return true if line =~ /#{pkg}/
+  end
+  false
+end
+
 namespace "run" do
   namespace "android" do
     
@@ -1137,7 +1145,7 @@ namespace "run" do
         Jake.before_run_spec
         start = Time.now
 
-        puts "wating for log"
+        puts "waiting for log"
       
         while !File.exist?(log_name)
             get_app_log($appname, false, true)
@@ -1159,6 +1167,7 @@ namespace "run" do
             end
             io.close
             
+            break unless application_running('-e', $app_package_name)
             sleep(5) unless end_spec
         end
 
