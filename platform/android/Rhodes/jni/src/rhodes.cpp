@@ -23,6 +23,8 @@ const char *rho_java_class[] = {
 static std::string g_root_path;
 static std::string g_sqlite_journals_path;
 
+static bool g_already_started;
+
 static pthread_key_t g_thrkey;
 
 static JavaVM *g_jvm = NULL;
@@ -364,9 +366,16 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
     rho_rhodesapp_create(szRootPath);
 }
 
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeAlreadyStarted
+  (JNIEnv *, jobject)
+{
+    return g_already_started;
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
+    g_already_started = true;
     rho_rhodesapp_start();
 }
 
