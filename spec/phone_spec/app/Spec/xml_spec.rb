@@ -20,6 +20,7 @@ class XmlSpec
         end
         Test_equal(count,1)
         Test_not_equal(event,nil)
+        Test_equal( REXML::XPath.first( event, "@id" ).value, "E0-001-000278174-6" )
         
         Test_equal(event.elements['title'].text, "Martini Tasting")
         
