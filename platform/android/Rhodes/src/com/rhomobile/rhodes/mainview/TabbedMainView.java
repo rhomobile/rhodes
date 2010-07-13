@@ -26,6 +26,7 @@ import java.util.Vector;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.file.RhoFileApi;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -135,8 +136,6 @@ public class TabbedMainView implements MainView {
 		
 		TabHost.TabSpec spec;
 		
-		String rootPath = RhodesInstance.getInstance().getRootPath() + "/apps/";
-
 		for (int i = 0; i < size; ++i) {
 			Object param = tabs.elementAt(i);
 			if (!(param instanceof Map<?,?>))
@@ -159,7 +158,7 @@ public class TabbedMainView implements MainView {
 			
 			Object iconObj = hash.get("icon");
 			if (iconObj != null && (iconObj instanceof String))
-				icon = rootPath + (String)iconObj;
+				icon = "apps/" + (String)iconObj;
 			
 			Object reloadObj = hash.get("reload");
 			if (reloadObj != null && (reloadObj instanceof String))
@@ -170,7 +169,8 @@ public class TabbedMainView implements MainView {
 			// Set label and icon
 			BitmapDrawable drawable = null;
 			if (icon != null) {
-				Bitmap bitmap = BitmapFactory.decodeFile(icon);
+				String iconPath = RhoFileApi.normalizePath(icon);
+				Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 				if (bitmap != null)
 					drawable = new BitmapDrawable(bitmap);
 			}

@@ -26,6 +26,7 @@ import java.util.Vector;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.file.RhoFileApi;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -171,9 +172,9 @@ public class SimpleMainView implements MainView {
 		if (iconObj != null) {
 			if (!(iconObj instanceof String))
 				throw new IllegalArgumentException("'icon' should be String");
-			String rootPath = r.getRootPath() + "/apps/";
-			String iconPath = rootPath + (String)iconObj;
-			Bitmap bitmap = BitmapFactory.decodeFile(iconPath);
+			String iconPath = "apps/" + (String)iconObj;
+			iconPath = RhoFileApi.normalizePath(iconPath);
+			Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 			if (bitmap == null)
 				throw new IllegalArgumentException("Can't find icon: " + iconPath);
 			icon = new BitmapDrawable(bitmap);

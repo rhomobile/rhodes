@@ -362,9 +362,7 @@
 }
 
 - (void)reload:(int)index {
-    //[webView reload];
-    const char *url = rho_rhodesapp_getcurrenturl(0);
-    [self navigateRedirect:[NSString stringWithUTF8String:url] tab:0];
+    [webView reload];
 }
 
 - (void)executeJs:(NSString*)js tab:(int)index {
