@@ -41,6 +41,7 @@ src\com\rho\net\TCPSocket.java
 src\com\rho\RhoMainScreen.java
 src\com\rho\RhoRubyHelper.java
 src\com\rho\rubyext\Alert.java
+src\com\rho\rubyext\ExternalExtensions.java
 src\com\rho\rubyext\GeoLocation.java
 src\com\rho\rubyext\System.java
 src\com\rho\rubyext\WebView.java
