@@ -25,7 +25,10 @@
     // perform actual url loading from time to time
     int index;
     [value getValue:&index];
-    [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
+    id mainView = [[Rhodes sharedInstance] mainView];
+    if (index == -1)
+        index = [mainView activeTab];
+    [mainView navigateRedirect:url tab:index];
 }
 @end
 
