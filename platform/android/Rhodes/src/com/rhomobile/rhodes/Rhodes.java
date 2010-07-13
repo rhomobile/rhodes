@@ -26,8 +26,6 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Vector;
 
-import com.rhomobile.rhodes.Utils.AssetsSource;
-import com.rhomobile.rhodes.Utils.FileSource;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -42,6 +40,7 @@ import com.rhomobile.rhodes.uri.VideoUriHandler;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -116,8 +115,6 @@ public class Rhodes extends Activity {
 		
 	private String rootPath = null;
 	
-	private native boolean nativeAlreadyStarted();
-	
 	private native void createRhodesApp();
 	private native void startRhodesApp();
 	
@@ -182,21 +179,6 @@ public class Rhodes extends Activity {
 		return m_rhoLogConf;
 	}
 
-	public boolean isNameChanged() {
-		try {
-			File name = new File(getRootPath(), "name");
-			if (!name.exists())
-				return false;
-			
-			FileSource as = new AssetsSource(getResources().getAssets());
-			FileSource fs = new FileSource();
-			return !Utils.isContentsEquals(as, "name", fs, name.getPath());
-		}
-		catch (IOException e) {
-			return true;
-		}
-	}
-	
 	private boolean handleUrlLoading(String url) {
 		Enumeration<UriHandler> e = uriHandlers.elements();
 		while (e.hasMoreElements()) {
@@ -378,8 +360,9 @@ public class Rhodes extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if (nativeAlreadyStarted())
+		if (RhodesService.isCreated())
 			return;
+		this.startService(new Intent(this, RhodesService.class));
 		
 		Logger.T(TAG, "+++ onCreate");
 		
@@ -400,7 +383,7 @@ public class Rhodes extends Activity {
 			return;
 		}
 		
-		if (isNameChanged()) {
+		if (Utils.isAppNameChanged()) {
 			try {
 				Logger.I(TAG, "Application name was changed, so remove files");
 				Utils.deleteRecursively(new File(rootPath));
@@ -679,6 +662,7 @@ public class Rhodes extends Activity {
 	
 	private void stopSelf() {
 		//stopRhodesApp();
+		this.stopService(new Intent(this, RhodesService.class));
 		Process.killProcess(Process.myPid());
 	}
 	

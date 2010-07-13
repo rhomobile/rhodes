@@ -47,6 +47,7 @@ import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.Rhodes;
 import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.file.RhoFileApi;
 
 public class Alert {
 	
@@ -138,8 +139,8 @@ public class Alert {
 					else if (iconName.equalsIgnoreCase("info"))
 						icon = r.getResources().getDrawable(AndroidR.drawable.alert_info);
 					else {
-						iconName = r.getRootPath() + "/apps/" + iconName;
-						Bitmap bitmap = BitmapFactory.decodeFile(iconName);
+						String iconPath = RhoFileApi.normalizePath("apps/" + iconName);
+						Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 						if (bitmap != null)
 							icon = new BitmapDrawable(bitmap);
 					}
@@ -296,9 +297,11 @@ public class Alert {
 					return false;
 				}
 			});
+			fileName = RhoFileApi.normalizePath("apps/" + fileName);
 			File f = new File(RhodesInstance.getInstance().getRootPath());
-			f = new File(f, "apps");
 			f = new File(f, fileName);
+			if (!f.exists())
+				RhoFileApi.copy(fileName);
 			String source = f.getCanonicalPath();
 			Logger.T(TAG, "Final file name: " + source);
 			mp.setDataSource(source);
