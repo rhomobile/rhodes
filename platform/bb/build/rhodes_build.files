@@ -4,6 +4,7 @@ platform\bb\rhodes\src\com\rho\rubyext\GeoLocation.java
 platform\bb\rhodes\src\com\rho\rubyext\System.java
 platform\bb\rhodes\src\com\rho\rubyext\XMLParser.java
 platform\bb\rhodes\src\com\rho\rubyext\Alert.java
+platform\bb\rhodes\src\com\rho\rubyext\ExternalExtensions.java
 platform\bb\rhodes\src\com\rho\net\BaseSocket.java
 platform\bb\rhodes\src\com\rho\net\bb\BBHttpConnection.java
 platform\bb\rhodes\src\com\rho\net\bb\NativeBBHttpConnection.java
