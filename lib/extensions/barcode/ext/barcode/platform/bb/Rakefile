@@ -1,0 +1,93 @@
+require 'fileutils'
+require '../../../../../../build/jake.rb'
+
+
+USE_STLPORT = true
+
+
+def build_extension
+
+	#vsrclist = #rhoroot + "/lib/extensions/barcode/ext/barcode/platform/bb/barcode.files"
+	vsrclist = "Barcode.files"
+        args = []
+        args << "-g"
+        args << "-d"
+        args << $tempdir
+        args << "-classpath"
+        args << $rubyvmjar
+        args << "-bootclasspath"
+        args << $jde + "/lib/net_rim_api.jar"
+        args << "-source"
+        args << "1.3"
+        args << "-target"
+        args << "1.3"
+        args << "-nowarn"
+        args << "@#{vsrclist}"
+        puts "\texecuting javac"
+        puts Jake.run($javac,args)
+        unless $? == 0
+          puts "Error compiling java code"
+          exit 1
+        end
+        $stdout.flush
+
+
+
+    	args2 = []
+	args2 << "cf"
+    	args2 << $targetdir+"/Barcode.jar"
+    	#args2 << manifest
+	args2 << "-C"
+      	args2 << $tempdir
+      	args2 << "."
+
+
+        puts "\texecuting jar"
+        puts Jake.run($jar, args2)
+        unless $? == 0
+          puts "Error making JAR"
+          exit 1
+        end
+        $stdout.flush
+		
+
+
+end
+
+namespace "build" do
+  task :config do
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+
+    $javac = ENV['JAVAC_EXE']
+    raise "JAVAC_EXE is not set" if $javac.nil?
+
+    $jar = ENV['JAR_EXE']
+    raise "JAR_EXE is not set" if $jar.nil?
+
+    $jde = ENV['JDE_HOME']
+    raise "JDE_HOME is not set" if $jde.nil?
+
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+
+    $jde = ENV['JDE_HOME']
+    raise "JDE_HOME is not set" if $jde.nil?
+
+    $rubyvmjar = ENV['RUBYVM_JAR']
+    raise "RUBYVM_JAR is not set" if $rubyvmjar.nil?
+
+    $rhoroot = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rhoroot.nil?
+
+  end
+
+  task :all => :config do
+
+
+    build_extension	
+
+  end
+end
+
+task :default => "build:all"
