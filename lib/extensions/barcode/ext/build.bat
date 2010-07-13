@@ -20,4 +20,10 @@ rake --trace
 
 )
 
+if "%RHO_PLATFORM%" == "bb" (
+
+cd barcode\platform\bb
+rake --trace
+
+)
 
