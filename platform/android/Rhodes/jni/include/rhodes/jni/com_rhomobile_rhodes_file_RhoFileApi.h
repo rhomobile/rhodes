@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
   (JNIEnv *, jclass, jstring, jstring, jlong, jlong);
 
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    normalizePath
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePath
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif
