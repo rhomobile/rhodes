@@ -3,7 +3,7 @@ env:
   paths:
     java: C:/Program Files/Java/jdk1.6.0_11/bin
     android: C:/android-sdk-windows
-    android-ndk: C:/android-ndk-1.6_r1
+    android-ndk: C:/android-ndk-r4b
     cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
     4.6:
       jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0
@@ -24,7 +24,7 @@ build:
 android:
   # Google API key obtained from http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html
   #apikey: "GOOGLE-API-KEY-FOR-ANDROID"
-  # This is version of Android platform used to run emulator. If not specified, 1.5 will be used.
+  # This is version of Android platform used to run emulator. If not specified, latest available will be used.
   #version: 1.5
   # This enable/disable native geo mapping for Android. Disabled by default
   #mapping: yes
