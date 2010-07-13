@@ -1,2 +1,3 @@
 entry: Init_Barcode
+javaentry: com.rho.rubyext.BarcodeRecognizer
 libraries: ["Barcode"]
