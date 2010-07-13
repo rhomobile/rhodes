@@ -72,6 +72,8 @@ public class TabbedMainView implements MainView {
 	};
 	
 	private MainView getView(int index) {
+		if (index == -1)
+			index = activeTab();
 		TabData data = tabData.elementAt(index);
 		return data.view;
 	}
