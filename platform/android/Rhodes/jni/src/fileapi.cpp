@@ -187,6 +187,55 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     librhodes_st.st_gid = getgid();
 }
 
+static std::string normalize_path(std::string path)
+{
+    RHO_LOG("normalize_path: (1): path: %s", path.c_str());
+
+    bool has_leading_slash = !path.empty() && path[0] == '/';
+
+    std::vector<std::string> parts;
+    for (;;)
+    {
+        size_t idx = path.find('/');
+        std::string part = path.substr(0, idx);
+        if (part == "..")
+        {
+            RHO_LOG("normalize_path: (2)");
+            if (!parts.empty())
+                parts.erase(parts.end() - 1);
+        }
+        else if (!part.empty() && part != ".")
+        {
+            RHO_LOG("normalize_path: (3): part: %s", part.c_str());
+            parts.push_back(part);
+        }
+        if (idx == std::string::npos)
+            break;
+        path = path.substr(idx + 1);
+        RHO_LOG("normalize_path: (4): path: %s", path.c_str());
+    }
+
+    path.clear();
+    for (size_t i = 0, lim = parts.size(); i < lim; ++i)
+    {
+        path += "/";
+        path += parts[i];
+    }
+
+    if (!has_leading_slash)
+        path.erase(0, 1);
+
+    RHO_LOG("normalize_path: return %s", path.c_str());
+    return path;
+}
+
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePath
+  (JNIEnv *env, jclass, jstring pathObj)
+{
+    std::string path = normalize_path(rho_cast<std::string>(env, pathObj));
+    return rho_cast<jstring>(env, path);
+}
+
 static std::string make_full_path(const char *path)
 {
     if (path == NULL || *path == '\0')
@@ -213,20 +262,13 @@ static std::string make_full_path(const char *path)
     }
     std::string fdir = dir;
     free(buf);
-    if (fdir.empty() || fdir[fdir.size() - 1] != '/')
-        fdir.push_back('/');
 
-    std::string fpath = path;
-    if (fpath.size() >= 2 && fpath[0] == '.' && fpath[1] == '/')
-        fpath.erase(0, 2);
-    fpath = std::string(dir) + fpath;
-    free(buf);
+    if (fdir.empty() || fdir[0] != '/')
+        return "";
 
-    size_t size = fpath.size();
-    if (size > 0 && fpath[size - 1] == '/')
-        fpath.erase(size - 1);
+    std::string fpath = fdir + "/" + fpath;
 
-    return fpath;
+    return normalize_path(fpath);
 }
 
 static std::string make_full_path(std::string const &path)

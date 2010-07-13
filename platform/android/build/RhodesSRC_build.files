@@ -10,6 +10,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoMenu.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/SplashScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Utils.java
