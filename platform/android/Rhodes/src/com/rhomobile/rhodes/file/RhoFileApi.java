@@ -25,6 +25,8 @@ public class RhoFileApi {
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
+	public static native String normalizePath(String path);
+	
 	private static void fillStatTable() throws IOException
 	{
 		InputStream is = null;
@@ -77,8 +79,11 @@ public class RhoFileApi {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
+			Rhodes r = RhodesInstance.getInstance();
+			
 			is = am.open(path);
-			File dst = new File(RhodesInstance.getInstance().getRootPath(), path);
+			
+			File dst = new File(r.getRootPath(), path);
 			File parent = dst.getParentFile();
 			if (parent == null)
 				return false;
