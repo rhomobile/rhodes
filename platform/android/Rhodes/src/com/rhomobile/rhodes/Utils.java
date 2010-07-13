@@ -161,5 +161,21 @@ public class Utils {
 			return null;
 		return new File(filePath).getName();
 	}
-
+	
+	public static boolean isAppNameChanged() {
+		try {
+			Rhodes r = RhodesInstance.getInstance();
+			File name = new File(r.getRootPath(), "name");
+			if (!name.exists())
+				return false;
+			
+			FileSource as = new AssetsSource(r.getResources().getAssets());
+			FileSource fs = new FileSource();
+			return !Utils.isContentsEquals(as, "name", fs, name.getPath());
+		}
+		catch (IOException e) {
+			return true;
+		}
+	}
+	
 }
