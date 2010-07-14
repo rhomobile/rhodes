@@ -76,9 +76,13 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir =  $bindir +"/tmp"
 
+    $devroot = '/Developer' if $devroot.nil?
+
+    $xcodebuild = $devroot + "/usr/bin/xcodebuild"
+
     $homedir = ENV['HOME']
     $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
-    $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
+    $sim = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/Applications"
     $guid = `uuidgen`.strip
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
@@ -136,14 +140,14 @@ namespace "build" do
     task :extensions => "config:iphone" do
       ENV['RHO_PLATFORM'] = 'iphone'
       simulator = $sdk =~ /iphonesimulator/
-      ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= "/Developer/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
+      ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= $devroot + "/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
         ".platform/Developer/usr/bin"
 
       if simulator
-        ENV["SDKROOT"] ||= "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+        ENV["SDKROOT"] ||= $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
               $sdk.gsub(/iphonesimulator/,"") + ".sdk"
       else
-        ENV["SDKROOT"] ||= "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
+        ENV["SDKROOT"] ||= $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
               $sdk.gsub(/iphoneos/,"") + ".sdk"
       end
       ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
@@ -180,7 +184,7 @@ namespace "build" do
       chdir $config["build"]["iphonepath"]
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
 
-      puts Jake.run("xcodebuild",args)
+      puts Jake.run($xcodebuild,args)
       ret = $?
 
       chdir $startdir
@@ -308,7 +312,7 @@ namespace "run" do
 
   task :iphonespec => ["clean:iphone",:buildsim] do
 
-    sdkroot = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+    sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
               $sdk.gsub(/iphonesimulator/,"") + ".sdk"
               
     old_user_home = ENV["CFFIXED_USER_HOME"]
@@ -415,7 +419,7 @@ namespace "clean" do
       chdir $config["build"]["iphonepath"]
     
       args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
-      puts Jake.run("xcodebuild",args)
+      puts Jake.run($xcodebuild,args)
       unless $? == 0
         puts "Error cleaning"
         exit 1
