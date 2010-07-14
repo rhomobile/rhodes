@@ -104,4 +104,10 @@ describe "RhoRuby" do
     parts[4].should be_nil
   end
   
+  it "should call to_a on string" do
+    s = "abcdef"
+    a = s.to_a
+    a[0].should == "a"
+    a[3].should == "d"
+  end
 end
