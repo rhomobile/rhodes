@@ -33,6 +33,22 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePath
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    needJavaWay
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    makeRelativePath
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativePath
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

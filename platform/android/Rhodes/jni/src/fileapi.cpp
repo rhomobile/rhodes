@@ -144,7 +144,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!clsFileApi) return;
     midCopy = getJNIClassStaticMethod(env, clsFileApi, "copy", "(Ljava/lang/String;)Z");
     if (!midCopy) return;
-    midOpen = getJNIClassStaticMethod(env, clsFileApi, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
+    midOpen = getJNIClassStaticMethod(env, clsFileApi, "openInPackage", "(Ljava/lang/String;)Ljava/io/InputStream;");
     if (!midOpen) return;
     midClose = getJNIClassStaticMethod(env, clsFileApi, "close", "(Ljava/io/InputStream;)V");
     if (!midClose) return;
@@ -282,6 +282,13 @@ static std::string make_rel_path(std::string const &fpath)
     return fpath.substr(root_path.size());
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativePath
+  (JNIEnv *env, jclass, jstring pathObj)
+{
+    std::string path = rho_cast<std::string>(env, pathObj);
+    return rho_cast<jstring>(env, make_rel_path(make_full_path(path)));
+}
+
 static rho_stat_t *rho_stat(const char *path)
 {
     std::string relpath = make_rel_path(make_full_path(path));
@@ -355,6 +362,13 @@ static bool need_java_way(std::string const &path)
 static bool need_java_way(const char *path)
 {
     return path ? need_java_way(make_full_path(path)) : false;
+}
+
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay
+  (JNIEnv *env, jclass, jstring pathObj)
+{
+    std::string path = rho_cast<std::string>(env, pathObj);
+    return need_java_way(path);
 }
 
 RHO_GLOBAL int open(const char *path, int oflag, ...)

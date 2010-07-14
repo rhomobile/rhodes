@@ -2,6 +2,8 @@ package com.rhomobile.rhodes.file;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +28,9 @@ public class RhoFileApi {
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
 	public static native String normalizePath(String path);
+	
+	private static native boolean needJavaWay(String path);
+	private static native String makeRelativePath(String path);
 	
 	private static void fillStatTable() throws IOException
 	{
@@ -116,6 +121,23 @@ public class RhoFileApi {
 	}
 	
 	public static InputStream open(String path)
+	{
+		//Log.d(TAG, "open: " + path);
+		if (needJavaWay(path)) {
+			String relPath = makeRelativePath(path);
+			//Log.d(TAG, "open: (1): " + relPath);
+			return openInPackage(relPath);
+		}
+		
+		try {
+			//Log.d(TAG, "open (2): " + path);
+			return new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			return null;
+		}
+	}
+	
+	public static InputStream openInPackage(String path)
 	{
 		try {
 			//Log.d(TAG, "Open " + path + "...");
