@@ -65,6 +65,7 @@ ExcludeFromBuildAll=0
 ..\..\shared\rubyJVM\src\com\rho\Sprintf.java
 ..\..\shared\rubyJVM\src\com\rho\StringScanner.java
 ..\..\shared\rubyJVM\src\com\rho\Capabilities.java
+..\..\shared\rubyJVM\src\com\rho\Extensions.java
 ..\..\shared\rubyJVM\src\com\rho\sync\ClientRegister.java
 ..\..\shared\rubyJVM\src\com\rho\sync\ISyncStatusListener.java
 ..\..\shared\rubyJVM\src\com\rho\sync\JSONArrayIterator.java
