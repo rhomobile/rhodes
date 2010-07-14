@@ -41,6 +41,7 @@ platform\shared\rubyJVM\src\com\rho\RhoParams.java
 platform\shared\rubyJVM\src\com\rho\RhoParamArray.java
 platform\shared\rubyJVM\src\com\rho\StringScanner.java
 platform\shared\rubyJVM\src\com\rho\Capabilities.java
+platform\shared\rubyJVM\src\com\rho\Extensions.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONArrayIterator.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONStructIterator.java
 platform\shared\rubyJVM\src\com\rho\sync\JSONEntry.java

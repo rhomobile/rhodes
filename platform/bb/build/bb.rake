@@ -235,32 +235,12 @@ namespace "build" do
       
       ENV["RHO_ROOT"] = $startdir
       
-      #ENV["BUILD_DIR"] ||= $startdir + "/platform/bb/build"
-      #ENV["RHO_INC"] = $appincdir
-
       ENV["JAVA_EXE"] = $config["env"]["paths"]["java"] + "/java.exe"
       ENV["JAVAC_EXE"] = $config["env"]["paths"]["java"] + "/javac.exe"
       ENV["JDE_HOME"] = jdehome
       ENV["JAR_EXE"] = jarexe
 	
       ENV["RUBYVM_JAR"] = $preverified+"/RubyVM.jar"	
-
-
-
-      #    $bbver = $app_config["bbver"].to_s
-      #    $builddir = $config["build"]["bbpath"] + "/build"
-      #    $bindir = $app_path + "/bin"
-      #    $rhobundledir =  $app_path + "/RhoBundle"
-      #    $srcdir =  $bindir + "/RhoBundle"
-      #    $preverified = $app_path + "/preverified"
-      #    $targetdir = $bindir + "/target/" + $bbver
-      #    $rubyVMdir = $app_path + "/RubyVM"
-      #    $excludelib = ['**/rational.rb','**/dateOrig.rb']
-      #    $excludeextlib = ['rexml/parsers/baseparser.rb', 'rexml/set.rb']
-      #    $compileERB = $app_path + "/build/compileERB.rb"
-      #    $tmpdir =  $bindir +"/tmp"
-      #    $tmpdir_sim =  $bindir +"/tmp_sim"
-
 
       mkdir_p extensionsdir unless File.directory? extensionsdir
       mkdir_p extensionstmpdir unless File.directory? extensionstmpdir
@@ -303,97 +283,6 @@ namespace "build" do
       end
 
       # finish build extensions
-
-      # start Extensions.java making and compiling
-
-
-      extensions_java_dir = extensionstmpdir + "/com/rho/rubyext"	
-      mkdir_p extensions_java_dir unless File.directory? extensions_java_dir
-
-      exts = extensions_java_dir + "/Extensions.java"
-
-      File.open(exts, "w") do |f|
-        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-        f.puts "// Generated #{Time.now.to_s}"
-
-
-        f.puts "package com.rho.rubyext;"
-        f.puts " "
-        f.puts "import com.rho.RhoEmptyLogger;"
-        f.puts "import com.rho.RhoLogger;"
-        f.puts "import com.xruby.runtime.lang.*;"
-        f.puts " "
-        f.puts "public class Extensions implements Runnable {"
-        f.puts "	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :"
-        f.puts '		new RhoLogger("Extensions");'
-        f.puts " "
-        f.puts "	private static String[] extensions_classes = {"
-
-        extentries.each do |entry|
-          f.puts '          "' + entry + '",'
-        end
-
-        f.puts '	""};'
-        f.puts " "
-        f.puts "	public void run() {"
-        f.puts "		int i;"
-        f.puts "		for (i = 0; i < extensions_classes.length; i++) {"
-        f.puts "			String ext_class = extensions_classes[i];"
-        f.puts "			  if (ext_class.length() > 0) {"
-        f.puts "		          Class wrapperClass = null;"
-        f.puts "		          try {"
-        f.puts "		              wrapperClass = Class.forName(ext_class);"
-        f.puts "		          } catch (ClassNotFoundException exc) { "
-        f.puts '		          	LOG.ERROR("Extension class [" + ext_class + "] not exist !",exc);'    	
-        f.puts "		          }"
-        f.puts "		          if (wrapperClass != null) {"
-        f.puts "		        	Runnable ext_run = null;"
-        f.puts "		        	try {"
-        f.puts "		        		ext_run = (Runnable)wrapperClass.newInstance();"
-        f.puts "		        	} catch (Exception e) {"
-        f.puts '		            	  LOG.ERROR("Extension class [" + ext_class + "] not instantiated !",e);'
-        f.puts " "		      		
-        f.puts "		        	}"
-        f.puts "			        if (ext_run != null ) {"
-        f.puts "			        	ext_run.run();"
-        f.puts "			        }"
-        f.puts "			        else {"
-        f.puts '		            	  LOG.ERROR("Extension class [" + ext_class + "] not implemented Runnable interface !");'
-        f.puts "			        }"
-        f.puts "		          }"
-        f.puts "			}"
-        f.puts "		}"
-        f.puts "	}"
-        f.puts "}"
-
-      end
-
-      vsrclist = exts
-      args = []
-      args << "-g"
-      args << "-d"
-      args << extensionstmpdir
-      args << "-classpath"
-      args << $preverified+"/RubyVM.jar"
-      args << "-bootclasspath"
-      args << jdehome + "/lib/net_rim_api.jar"
-      args << "-source"
-      args << "1.3"
-      args << "-target"
-      args << "1.3"
-      args << "-nowarn"
-      args << "#{vsrclist}"
-      puts "\texecuting javac"
-      puts Jake.run($config["env"]["paths"]["java"] + "/javac.exe",args)
-      unless $? == 0
-        puts "Error compiling java code"
-        exit 1
-      end
-      $stdout.flush
-
-      rm_rf exts if File.exists? exts
-
-      # finish Extensions.java making and compiling
 
       # start adding builded extension jars to RhoBundle.jar
 
@@ -499,6 +388,53 @@ namespace "build" do
         f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
         f.puts "}"
       end
+
+
+      extentries = []
+
+      $app_config["extensions"].each do |ext|
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          if RUBY_PLATFORM =~ /(win|w)32$/
+            next unless File.exists? File.join(extpath, 'build.bat')
+          else
+            next unless File.executable? File.join(extpath, 'build')
+          end
+          
+          extroot = File.join(p,ext)
+
+          extyml = File.join(extroot, "ext.yml")
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+            javaentry = extconf["javaentry"]
+            extentries << javaentry unless javaentry.nil?
+          end
+
+        end
+      end
+
+      exts = $startdir + "/platform/shared/rubyJVM/src/com/rho/Extensions.java"
+
+      File.open(exts, "w") do |f|
+        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+        f.puts "// Generated #{Time.now.to_s}"
+        f.puts "package com.rho; "
+        f.puts " "
+        f.puts "public class Extensions {"
+        f.puts " "
+        f.puts "public static String[] extensions = {"
+
+        extentries.each do |entry|
+          f.puts '          "' + entry + '",'
+        end
+
+        f.puts '""'
+        f.puts "};"
+        f.puts " "
+        f.puts "}"
+      end
+
+
     end
     
 #    desc "Build RubyVM"
