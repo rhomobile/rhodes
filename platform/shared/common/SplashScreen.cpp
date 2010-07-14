@@ -31,7 +31,7 @@ void CSplashScreen::hide()
 	if ( nWaitMs <= 0 )
 		return;
 
-    CAutoPtr<IRhoClassFactory> ptrFactory = createClassFactory();
+    CAutoPtr<IRhoClassFactory> ptrFactory = rho_impl_createClassFactory();
     CAutoPtr<IRhoThreadImpl> ptrThread = ptrFactory->createThreadImpl();
 
     ptrThread->sleep(nWaitMs);

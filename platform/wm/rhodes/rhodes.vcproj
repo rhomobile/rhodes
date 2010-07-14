@@ -951,6 +951,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OkCancelModalDialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -968,10 +972,6 @@
 			</File>
 			<File
 				RelativePath=".\Vibrate.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OkCancelModalDialog.h"
 				>
 			</File>
 		</Filter>
@@ -1034,10 +1034,6 @@
 				</File>
 				<File
 					RelativePath=".\rho\common\RhoThreadImpl.h"
-					>
-				</File>
-				<File
-					RelativePath=".\rho\common\SystemInfoImpl.h"
 					>
 				</File>
 			</Filter>

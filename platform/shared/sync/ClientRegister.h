@@ -3,7 +3,6 @@
 
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
-#include "common/ISystemInfo.h"
 #include "net/INetRequest.h"
 #include "common/IRhoClassFactory.h"
 
@@ -22,7 +21,6 @@ class CClientRegister : public common::CRhoThread
     DEFINE_LOGCLASS;
 
 	static CClientRegister* m_pInstance;
-    common::CAutoPtr<common::ISystemInfo>  m_sysInfo;
 	common::CAutoPtr<net::INetRequest>     m_NetRequest;
 	String                                 m_strDevicePin;
     unsigned int                           m_nPollInterval;

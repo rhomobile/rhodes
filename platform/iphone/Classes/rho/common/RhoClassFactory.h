@@ -3,7 +3,6 @@
 #include "common/IRhoClassFactory.h"
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
-#include "SystemInfoImpl.h"
 #include "../net/sslimpl.h"
 
 namespace rho {
@@ -19,10 +18,6 @@ public:
     common::IRhoThreadImpl* createThreadImpl()
     {
         return new CPosixThreadImpl;
-    }
-    ISystemInfo* createSystemInfo()
-    {
-        return new CSystemInfoImpl;
     }
     net::ISSL* createSSLEngine()
     {

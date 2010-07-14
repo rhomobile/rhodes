@@ -142,9 +142,6 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-void rho_sync_create();
-void rho_sync_destroy();
-
 unsigned long rho_sync_doSyncAllSources(int show_status_popup);
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup);
 unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
@@ -167,6 +164,10 @@ void rho_sync_clear_bulk_notification();
 unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID);
 unsigned long rho_sync_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
 int rho_sync_get_lastsync_objectcount(int nSrcID);
+
+void rho_sync_set_threaded_mode(int b);
+char* rho_sync_create_string(const char* szStr);
+void rho_sync_free_string(char* szStr);
 
 #ifdef __cplusplus
 };

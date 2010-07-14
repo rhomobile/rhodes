@@ -787,6 +787,7 @@ string_iter(const char* szVal, void* par)
     ar.addElement(szVal);
 }
 
+#ifndef RHO_NO_RUBY
 int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned long arExclude)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
@@ -800,6 +801,7 @@ int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned long arEx
     db.destroy_tables(arIncludeTables,arExcludeTables);
     return 0;
 }
+#endif //RHO_NO_RUBY
 
 void* rho_db_get_handle(void* pDB)
 {
@@ -853,6 +855,7 @@ void rho_db_init_attr_manager()
 namespace rho{
 namespace common{
 
+#ifndef RHO_NO_RUBY
 CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
 {
     if ( !bIgnore )
@@ -900,6 +903,28 @@ void CRubyMutex::Unlock()
         rho_ruby_unlock_mutex(m_valMutex);
     }
 }
+#else //RHO_NO_RUBY
+CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
+{
+}
 
+CRubyMutex::~CRubyMutex()
+{
+}
+
+boolean CRubyMutex::isMainRubyThread()
+{
+    return true;
+}
+
+void CRubyMutex::Lock()
+{
+}
+
+void CRubyMutex::Unlock()
+{
+}
+
+#endif //RHO_NO_RUBY
 }
 }

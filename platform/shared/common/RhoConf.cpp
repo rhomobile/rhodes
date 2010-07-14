@@ -203,10 +203,12 @@ char* rho_conf_getString(const char* szName) {
 	return strdup(RHOCONF().getString(szName).c_str());
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long rho_conf_is_property_exists(char* name)
 {
     return rho_ruby_create_boolean(RHOCONF().isExist(name));
 }
+#endif //RHO_NO_RUBY
 
 void rho_conf_freeString(char* str) {
 	free(str);

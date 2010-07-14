@@ -4,7 +4,6 @@
 #include <common/IRhoClassFactory.h>
 #include <net/INetRequest.h>
 #include <net/ssl.h>
-#include <common/ISystemInfo.h>
 #include <common/IRhoThreadImpl.h>
 
 namespace rho
@@ -17,7 +16,6 @@ class CRhoClassFactory : public IRhoClassFactory
 public:
     net::INetRequest *createNetRequest();
     IRhoThreadImpl *createThreadImpl();
-    ISystemInfo *createSystemInfo();
     net::ISSL *createSSLEngine();
 };
 

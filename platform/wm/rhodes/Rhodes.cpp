@@ -143,7 +143,7 @@ public :
 #endif
 			
 
-        ::SetThreadPriority(GetCurrentThread(),10);
+        //::SetThreadPriority(GetCurrentThread(),10);
 
 		//Check for bundle directory is exists.
 		HANDLE hFind;
