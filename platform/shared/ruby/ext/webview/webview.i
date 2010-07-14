@@ -23,7 +23,7 @@ extern void rho_webview_set_cookie(const char* url, const char* cookie);
 %}
 
 %typemap(default) int index {
-  $1 = 0;
+  $1 = -1;
 }
 
 extern void refresh(int index);
