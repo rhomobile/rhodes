@@ -19,11 +19,17 @@ RHO_GLOBAL void rho_platform_image_load_grayscale(const char* url, void** image_
 	//__android_log_write(ANDROID_LOG_INFO, "APP", "$$$$$$$$$$$$$$$$$$$$$   [ 1 ]");
 
 	JNIEnv *env = jnienv();
-	jclass bitmapf_class = env->FindClass("android/graphics/BitmapFactory");
+	jclass bitmapf_class = rho_find_class(env, "android/graphics/BitmapFactory");
 	if (!bitmapf_class) {
 		RAWLOG_ERROR("rho_platform_image_load_grayscale() : can not found Bitmap class");
 		return;
 	}
+
+  jclass rhofileapi_class = rho_find_class(env, "com/rhomobile/rhodes/file/RhoFileApi");
+  if (!rhofileapi_class) {
+    RAWLOG_ERROR("rho_platform_image_load_grayscale() : can not find RhoFileApi class");
+    return;
+  }
 
 	if (url == 0) {
 		return;
@@ -35,13 +41,33 @@ RHO_GLOBAL void rho_platform_image_load_grayscale(const char* url, void** image_
 		return;
 	}
 
-	jmethodID bf_mid = env->GetStaticMethodID(bitmapf_class, "decodeFile", "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
+  jmethodID fopen_mid = env->GetStaticMethodID(rhofileapi_class, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
+  if (!fopen_mid) {
+    RAWLOG_ERROR("rho_platform_image_load_grayscale() : can not find 'open' method in RhoFileApi");
+    return;
+  }
+
+  jmethodID fclose_mid = env->GetStaticMethodID(rhofileapi_class, "close", "(Ljava/io/InputStream;)V");
+  if (!fclose_mid) {
+    RAWLOG_ERROR("rho_platform_image_load_grayscale() : can not find 'close' method in RhoFileApi");
+    return;
+  }
+
+  
+	jmethodID bf_mid = env->GetStaticMethodID(bitmapf_class, "decodeStream", "(Ljava/io/InputStream;)Landroid/graphics/Bitmap;");
 	if (!bf_mid) {
-		RAWLOG_ERROR("rho_platform_image_load_grayscale() : not identify decodeFile() !");
+		RAWLOG_ERROR("rho_platform_image_load_grayscale() : not identify decodeStream() !");
 		return;
 	}
 
-	jobject bitmap = env->CallStaticObjectMethod(bitmapf_class, bf_mid, jstrFileUrl);
+  jobject is = env->CallStaticObjectMethod(rhofileapi_class, fopen_mid, jstrFileUrl);
+  if (!is) {
+    RAWLOG_ERROR("rho_platform_image_load_grayscale() : can not open stream");
+    return;
+  }
+
+	jobject bitmap = env->CallStaticObjectMethod(bitmapf_class, bf_mid, is);
+  env->CallStaticVoidMethod(rhofileapi_class, fclose_mid, is);
 	if (!bitmap) {
 		RAWLOG_ERROR("rho_platform_image_load_grayscale() : Bitmap not produced !");
 		return;

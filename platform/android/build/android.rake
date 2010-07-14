@@ -785,13 +785,12 @@ namespace "build" do
 
       rlibs.map! { |x| "-l#{x}" }
 
-      args += rlibs
-
+      elibs = []
       extlibs = Dir.glob($extensionsdir + "/lib*.a") + Dir.glob($extensionsdir + "/lib*.so")
       stub = []
       extlibs.reverse.each do |f|
         lparam = "-l" + File.basename(f).gsub(/^lib/,"").gsub(/\.(a|so)$/,"")
-        args << lparam
+        elibs << lparam
         # Workaround for GNU ld: this way we have specified one lib multiple times
         # command line so ld's dependency mechanism will find required functions
         # independently of its position in command line
@@ -801,6 +800,9 @@ namespace "build" do
         stub << lparam
       end
 
+      args += elibs
+      args += rlibs
+      args += elibs
       args += rlibs
 
   	  mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
