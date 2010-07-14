@@ -238,35 +238,14 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePa
 
 static std::string make_full_path(const char *path)
 {
+    RHO_LOG("make_full_path: %s", path);
     if (path == NULL || *path == '\0')
         return "";
 
     if (*path == '/')
         return path;
 
-    char *dir = 0;
-    char *buf = 0;
-    size_t bufsize = 128;
-    while (!buf)
-    {
-        buf = (char *)malloc(bufsize);
-        dir = getcwd(buf, bufsize);
-        if (!dir)
-        {
-            free(buf);
-            if (errno != ERANGE)
-                return "";
-            buf = 0;
-            bufsize *= 2;
-        }
-    }
-    std::string fdir = dir;
-    free(buf);
-
-    if (fdir.empty() || fdir[0] != '/')
-        return "";
-
-    std::string fpath = fdir + "/" + fpath;
+    std::string fpath = rho_root_path() + "/" + path;
 
     return normalize_path(fpath);
 }
@@ -328,23 +307,29 @@ static void dump_stat(struct stat const &st)
 
 static bool need_java_way(std::string const &path)
 {
+    RHO_LOG("need_java_way: %s", path.c_str());
     std::string fpath = make_full_path(path);
+    RHO_LOG("need_java_way: (1): %s", fpath.c_str());
     std::string const &root_path = rho_root_path();
     if (strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0)
     {
+        RHO_LOG("need_java_way: (2)");
         struct stat st;
         if (real_stat(fpath.c_str(), &st) == -1)
         {
+            RHO_LOG("need_java_way: (3)");
             if (errno == ENOENT)
             {
-                //RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
+                RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
                 return true;
             }
 
         }
         else if (S_ISREG(st.st_mode))
         {
+            RHO_LOG("need_java_way: (4)");
             rho_stat_t *rst = rho_stat(fpath);
+            RHO_LOG("need_java_way: (5)");
             if (rst && rst->mtime > st.st_mtime)
             {
                 RHO_LOG("need_java_way: %s, st.st_mtime: %lu", fpath.c_str(), st.st_mtime);
@@ -356,6 +341,7 @@ static bool need_java_way(std::string const &path)
         }
     }
 
+    RHO_LOG("need_java_way: return false");
     return false;
 }
 
@@ -367,8 +353,12 @@ static bool need_java_way(const char *path)
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay
   (JNIEnv *env, jclass, jstring pathObj)
 {
+    RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay");
     std::string path = rho_cast<std::string>(env, pathObj);
-    return need_java_way(path);
+    RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay: %s", path.c_str());
+    bool need = need_java_way(path);
+    RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay: need: %d", (int)need);
+    return need;
 }
 
 RHO_GLOBAL int open(const char *path, int oflag, ...)
