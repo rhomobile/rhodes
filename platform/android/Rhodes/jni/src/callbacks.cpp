@@ -14,7 +14,7 @@ namespace rho
 namespace common
 {
 
-IRhoClassFactory* createClassFactory()
+IRhoClassFactory* rho_impl_createClassFactory()
 {
     return new CRhoClassFactory();
 }

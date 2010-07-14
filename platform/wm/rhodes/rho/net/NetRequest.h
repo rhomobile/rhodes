@@ -1,6 +1,7 @@
 #pragma once
 
 #include "net/INetRequest.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 namespace net {

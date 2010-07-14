@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/IRhoThreadImpl.h"
+#include "logging/RhoLog.h"
 
 namespace rho{
 namespace common{
