@@ -1724,7 +1724,7 @@ _wrap_refresh(int argc, VALUE *argv, VALUE self) {
   int ecode1 = 0 ;
   
   {
-    arg1 = 0;
+    arg1 = -1;
   }
   if ((argc < 0) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
@@ -1754,7 +1754,7 @@ _wrap_navigate(int argc, VALUE *argv, VALUE self) {
   int ecode2 = 0 ;
   
   {
-    arg2 = 0;
+    arg2 = -1;
   }
   if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
@@ -1789,7 +1789,7 @@ _wrap_current_location(int argc, VALUE *argv, VALUE self) {
   VALUE vresult = Qnil;
   
   {
-    arg1 = 0;
+    arg1 = -1;
   }
   if ((argc < 0) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
@@ -1822,7 +1822,7 @@ _wrap_execute_js(int argc, VALUE *argv, VALUE self) {
   VALUE vresult = Qnil;
   
   {
-    arg2 = 0;
+    arg2 = -1;
   }
   if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
