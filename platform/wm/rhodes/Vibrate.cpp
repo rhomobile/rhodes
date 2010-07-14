@@ -22,7 +22,7 @@ CVibrate::~CVibrate ()
 
 void CVibrate::createCVibrate()
 {
-    static CVibrate instance(createClassFactory());
+    static CVibrate instance(rho_impl_createClassFactory());
     m_pInstance = &instance;
 }
 

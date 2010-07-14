@@ -786,10 +786,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\common\isysteminfo.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\shared\common\RhoConf.cpp"
 				>
 			</File>

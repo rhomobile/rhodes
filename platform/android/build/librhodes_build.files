@@ -18,5 +18,4 @@ platform/android/Rhodes/jni/src/ringtones.cpp
 platform/android/Rhodes/jni/src/socketimpl.cpp
 platform/android/Rhodes/jni/src/splashscreen.cpp
 platform/android/Rhodes/jni/src/sslimpl.cpp
-platform/android/Rhodes/jni/src/syncengine.cpp
 platform/android/Rhodes/jni/src/webview.cpp

@@ -1,6 +1,7 @@
 #include "ClientRegister.h"
 #include "sync/SyncThread.h"
 #include "common/RhoConf.h"
+#include "common/RhodesApp.h"
 
 namespace rho{
 namespace sync{
@@ -33,8 +34,6 @@ CClientRegister* CClientRegister::m_pInstance = 0;
 
 CClientRegister::CClientRegister(common::IRhoClassFactory* factory,const char* device_pin) : CRhoThread(factory) 
 {
-	m_sysInfo = factory->createSystemInfo();
-
 	m_strDevicePin = device_pin;
 	m_NetRequest = factory->createNetRequest();
     m_nPollInterval = POLL_INTERVAL_SECONDS;
@@ -75,7 +74,7 @@ String CClientRegister::getRegisterBody(const String& strClientID)
 	int port = RHOCONF().getInt("push_port");
 
     return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
-        port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo->getPlatform());
+        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform());
 }
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync) 

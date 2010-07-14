@@ -4,21 +4,20 @@
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
 #include "net/INetRequest.h"
-#include "net/HttpServer.h"
-#include "ruby/ext/rho/rhoruby.h"
-//#include <math.h>
 #include "sync/ClientRegister.h"
 #include "sync/SyncThread.h"
+#include "net/URI.h"
+
+#include "net/HttpServer.h"
+#include "ruby/ext/rho/rhoruby.h"
 #include "net/AsyncHttp.h"
 #include "unzip/unzip.h"
-#include "net/URI.h"
 #include "rubyext/WebView.h"
+#include "rubyext/GeoLocation.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
 #endif 
-//#include "shttpd/src/shttpd.h"
-//#include "shttpd/src/std_includes.h"
 
 using rho::net::HttpHeader;
 using rho::net::HttpHeaderList;
@@ -53,14 +52,13 @@ CRhodesApp* CRhodesApp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(createClassFactory())
+CRhodesApp::CRhodesApp(const String& strRootPath) : CRhoThread(rho_impl_createClassFactory())
 {
     m_strRhoRootPath = strRootPath;
     m_bExit = false;
 
-    m_ptrFactory = createClassFactory();
+    m_ptrFactory = rho_impl_createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
-    m_oGeoLocation.init(m_ptrFactory);
 
 #if defined( OS_WINCE ) || defined (OS_WINDOWS)
     //initializing winsock
@@ -85,10 +83,12 @@ void CRhodesApp::run()
     LOG(INFO) + "Starting RhodesApp main routine...";
     initHttpServer();
     RhoRubyStart();
+    rubyext::CGeoLocation::Create(m_ptrFactory);
+
     rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
-    rho_sync_create();
+    sync::CSyncThread::Create(rho_impl_createClassFactory());
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
@@ -105,8 +105,9 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
+    rubyext::CGeoLocation::Destroy();
     RhoRubyStop();
-    rho_sync_destroy();
+    sync::CSyncThread::Destroy();
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -151,7 +152,7 @@ private:
 
 void CRhodesApp::runCallbackInThread(const String& strCallback, const String& strBody)
 {
-    new CRhoCallbackCall(strCallback, strBody, createClassFactory() );
+    new CRhoCallbackCall(strCallback, strBody, rho_impl_createClassFactory() );
 }
 
 static void callback_activateapp(void *arg, String const &strQuery)
@@ -720,6 +721,7 @@ void CRhodesApp::loadUrl(String url)
 
 extern "C" {
 
+using namespace rho::common;
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex)
 {
     return RHODESAPP().getCallbackObject(nIndex);
@@ -1008,7 +1010,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 
 void rho_net_request(const char *url)
 {
-    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho::common::createClassFactory();
+    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho_impl_createClassFactory();
     rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
     request->pullData(url, null);
 }
@@ -1058,5 +1060,23 @@ void rho_rhodesapp_load_url(const char *url)
 {
     RHODESAPP().loadUrl(url);
 }
+
+const char* rho_rhodesapp_getplatform()
+{
+#if defined(OS_MACOSX)
+	return "APPLE";
+#elif defined(OS_WINDOWS) || defined (OS_WINCE)
+	return "WINDOWS";
+#elif defined(OS_SYMBIAN)
+	return "SYMBIAN";
+#elif defined(OS_ANDROID)
+    return "ANDROID";
+#elif defined(OS_LINUX)
+    return "LINUX";
+#else
+	return "UNKNOWN";
+#endif			
+}
+
 
 } //extern "C"

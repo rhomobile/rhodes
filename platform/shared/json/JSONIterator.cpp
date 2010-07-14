@@ -303,10 +303,11 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
 
 }
 }
-
+#ifndef RHO_NO_RUBY
 extern "C" VALUE rho_json_quote_value(VALUE v,VALUE str)
 {
     rho::String strRes = rho::json::CJSONEntry::quoteValue(getStringFromValue(str));
 
     return rho_ruby_create_string(strRes.c_str());
 }
+#endif //RHO_NO_RUBY

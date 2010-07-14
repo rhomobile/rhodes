@@ -2,7 +2,6 @@
 #include <common/PosixThreadImpl.h>
 
 #include "rhodes/RhoClassFactory.h"
-#include "rhodes/SystemInfoImpl.h"
 #include "rhodes/sslimpl.h"
 
 namespace rho
@@ -18,11 +17,6 @@ net::INetRequest *CRhoClassFactory::createNetRequest()
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
 {
     return new CPosixThreadImpl();
-}
-
-ISystemInfo *CRhoClassFactory::createSystemInfo()
-{
-    return new CSystemInfoImpl();
 }
 
 net::ISSL *CRhoClassFactory::createSSLEngine()

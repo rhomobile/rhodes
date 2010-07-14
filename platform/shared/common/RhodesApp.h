@@ -6,10 +6,12 @@
 #include "common/RhoThread.h"
 #include "net/INetRequest.h"
 #include "common/IRhoClassFactory.h"
+
+#ifndef RHO_NO_RUBY
 #include "net/HttpServer.h"
-#include "rubyext/GeoLocation.h"
 #include "SplashScreen.h"
 #include "AppMenu.h"
+#endif //RHO_NO_RUBY
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -33,7 +35,12 @@ private:
     common::CAutoPtr<net::INetRequest> m_NetRequest;
 
     String m_strListeningPorts;
+#ifndef RHO_NO_RUBY
     common::CAutoPtr<net::CHttpServer> m_httpServer;
+    CSplashScreen m_oSplashScreen;
+    CAppMenu m_oAppMenu;
+#endif //RHO_NO_RUBY
+
     String m_strRhoRootPath, m_strLoadingPagePath, m_strLoadingPngPath, m_strBlobsDirPath, m_strDBDirPath;
     String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
     String m_strRhoMessage;
@@ -43,8 +50,6 @@ private:
 
     String m_strAppBackUrl;
     Vector<ICallbackObject*> m_arCallbackObjects;
-    rubyext::CGeoLocation m_oGeoLocation;
-    CSplashScreen m_oSplashScreen;
 
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
@@ -52,8 +57,7 @@ private:
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
 
-    CAppMenu m_oAppMenu;
-	
+
 public:
     ~CRhodesApp(void);
 
@@ -90,18 +94,17 @@ public:
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
-
+#ifndef RHO_NO_RUBY
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
-	
+    CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
+#endif //RHO_NO_RUBY
+
     boolean sendLog();
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
 
     const String& getRhoMessage(int nError, const char* szName);
-
-    rubyext::CGeoLocation& getGeo(){ return m_oGeoLocation;}
-    CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
 
     void runCallbackInThread(const String& strCallback, const String& strBody);
 
@@ -182,6 +185,8 @@ int rho_base64_decode(const char *src, int srclen, char *dst);
 void rho_net_request(const char *url);
 
 void rho_rhodesapp_load_url(const char *url);
+
+const char* rho_rhodesapp_getplatform();
 
 #ifdef __cplusplus
 };

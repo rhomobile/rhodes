@@ -17,7 +17,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CAsyncHttp( rho::common::createClassFactory());
+    m_pInstance = new CAsyncHttp( rho_impl_createClassFactory());
     return m_pInstance;
 }
 
