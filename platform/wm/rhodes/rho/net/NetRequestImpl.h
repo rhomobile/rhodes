@@ -2,6 +2,7 @@
 
 #include <wininet.h>
 #include "net/INetRequest.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 namespace common {

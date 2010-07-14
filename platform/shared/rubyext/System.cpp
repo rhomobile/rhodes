@@ -14,23 +14,6 @@ extern VALUE rho_sys_get_locale();
 extern int rho_sys_get_screen_width();
 extern int rho_sys_get_screen_height();
 
-static const char* getPlatformProp()
-{
-#if defined(OS_MACOSX)
-	return "APPLE";
-#elif defined(OS_WINDOWS) || defined (OS_WINCE)
-	return "WINDOWS";
-#elif defined(OS_SYMBIAN)
-	return "SYMBIAN";
-#elif defined(OS_ANDROID)
-    return "ANDROID";
-#elif defined(OS_LINUX)
-    return "LINUX";
-#else
-	return "UNKNOWN";
-#endif			
-}
-
 VALUE rho_sys_get_property(char* szPropName) 
 {
 	if (!szPropName || !*szPropName) 
@@ -41,7 +24,7 @@ VALUE rho_sys_get_property(char* szPropName)
         return res;
 
 	if (strcasecmp("platform",szPropName) == 0) 
-        return rho_ruby_create_string(getPlatformProp());
+        return rho_ruby_create_string(rho_rhodesapp_getplatform());
 
 	if (strcasecmp("has_network",szPropName) == 0) 
         return rho_sys_has_network();

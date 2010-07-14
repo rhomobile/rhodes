@@ -19,14 +19,28 @@ using namespace common;
 namespace rubyext{
 
 IMPLEMENT_LOGCLASS(CGeoLocation,"GeoLocation");
+CGeoLocation* CGeoLocation::m_pInstance = 0;
 
-CGeoLocation::CGeoLocation()
+/*static*/ CGeoLocation* CGeoLocation::Create(common::IRhoClassFactory* factory)
 {
-    m_nGeoPingTimeoutSec = 0;
+    if ( m_pInstance ) 
+        return m_pInstance;
+
+    m_pInstance = new CGeoLocation(factory);
+    return m_pInstance;
 }
 
-void CGeoLocation::init(common::IRhoClassFactory* pFactory)
+/*static*/void CGeoLocation::Destroy()
 {
+    if ( m_pInstance )
+        delete m_pInstance;
+
+    m_pInstance = 0;
+}
+
+CGeoLocation::CGeoLocation(common::IRhoClassFactory* pFactory)
+{
+    m_nGeoPingTimeoutSec = 0;
     m_NetRequest = pFactory->createNetRequest();
 }
 
@@ -145,12 +159,14 @@ int CGeoLocation::getGeoTimeoutSec()
 
 extern "C" {
 
+using namespace rho::rubyext;
+
 void rho_geo_set_notification( const char *url, char* params, int timeout_sec)
 {
     if ( url && *url )
         rho_geo_known_position();
 
-    RHODESAPP().getGeo().setGeoCallback(url, params, timeout_sec, false);
+    CGeoLocation::getInstance()->setGeoCallback(url, params, timeout_sec, false);
 }
 
 void rho_geo_set_view_notification( const char *url, char* params, int timeout_sec)
@@ -158,22 +174,22 @@ void rho_geo_set_view_notification( const char *url, char* params, int timeout_s
     if ( url && *url )
         rho_geo_known_position();
 
-    RHODESAPP().getGeo().setGeoCallback(url, params, timeout_sec, true);
+    CGeoLocation::getInstance()->setGeoCallback(url, params, timeout_sec, true);
 }
 
 void rho_geo_callcallback()
 {
-    RHODESAPP().getGeo().callGeoCallback(false);
+    CGeoLocation::getInstance()->callGeoCallback(false);
 }
 
 void rho_geo_callcallback_error()
 {
-    RHODESAPP().getGeo().callGeoCallback(true);
+    CGeoLocation::getInstance()->callGeoCallback(true);
 }
 
 int rho_geo_gettimeout_sec()
 {
-    return RHODESAPP().getGeo().getGeoTimeoutSec();
+    return CGeoLocation::getInstance()->getGeoTimeoutSec();
 }
 
 double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2)

@@ -3,7 +3,7 @@
 
 extern "C" {
 
-#define GETSSL rho::common::createClassFactory()->createSSLEngine()
+#define GETSSL rho::common::rho_impl_createClassFactory()->createSSLEngine()
 
 void *rho_ssl_create_storage()
 {

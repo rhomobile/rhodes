@@ -4,7 +4,7 @@
 
 namespace rho{
 namespace common{
-	IRhoClassFactory* createClassFactory()
+	IRhoClassFactory* rho_impl_createClassFactory()
 	{
 		return new rho::common::CRhoClassFactory;
 	}
@@ -12,10 +12,6 @@ namespace common{
 }
 
 extern "C" {
-void rho_sync_create()
-{
-    rho::sync::CSyncThread::Create(new rho::common::CRhoClassFactory);
-}
 	
 void rho_clientregister_create(const char* szDevicePin)
 {

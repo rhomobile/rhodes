@@ -54,6 +54,7 @@ CSyncThread::~CSyncThread(void)
     LOG(INFO) + "Sync engine thread shutdown";
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long CSyncThread::getRetValue()
 {
     unsigned long ret = rho_ruby_get_NIL();
@@ -65,6 +66,19 @@ unsigned long CSyncThread::getRetValue()
 
     return ret;
 }
+#else
+unsigned long CSyncThread::getRetValue()
+{
+    unsigned long ret = 0;
+    if ( isNoThreadedMode()  )
+    {
+        ret = (unsigned long)rho_sync_create_string( getSyncEngine().getNotify().getNotifyBody().c_str() );
+        getSyncEngine().getNotify().cleanNotifyBody();
+    }
+
+    return ret;
+}
+#endif 
 
 int CSyncThread::getLastPollInterval()
 {
@@ -154,10 +168,6 @@ extern "C" {
 
 using namespace rho::sync;
 using namespace rho::db;
-void rho_sync_destroy()
-{
-	CSyncThread::Destroy();
-}
 	
 unsigned long rho_sync_doSyncAllSources(int show_status_popup)
 {
@@ -166,6 +176,7 @@ unsigned long rho_sync_doSyncAllSources(int show_status_popup)
     return CSyncThread::getInstance()->getRetValue();
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 {
     CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
@@ -173,6 +184,7 @@ unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 
     return CSyncThread::getInstance()->getRetValue();
 }	
+#endif //RHO_NO_RUBY
 
 void rho_sync_stop()
 {
@@ -193,6 +205,7 @@ source_iter(const char* szName, void* parSources)
     arSources.addElement(szName);
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
     const char* callback, const char* callback_params)
 {
@@ -207,6 +220,7 @@ unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, cons
 
     return CSyncThread::getInstance()->getRetValue();
 }	
+#endif //RHO_NO_RUBY
 
 void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
 {
@@ -285,6 +299,7 @@ void rho_sync_clear_bulk_notification()
     return CSyncThread::getSyncEngine().getNotify().clearBulkSyncNotification();
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID)
 {
     return (VALUE)CDBAdapter::getDB(szPartition).getAttrMgr().getAttrsBySrc(nSrcID);
@@ -294,6 +309,7 @@ unsigned long rho_sync_is_blob_attr(const char* szPartition, int nSrcID, const c
 {
     return rho_ruby_create_boolean( CDBAdapter::getDB(szPartition).getAttrMgr().isBlobAttr(nSrcID, szAttrName) );
 }
+#endif //RHO_NO_RUBY
 
 void rho_sync_setobjectnotify_url(const char* szUrl)
 {
@@ -334,6 +350,16 @@ void rho_sync_set_threaded_mode(int b)
 {
     CSyncThread::getInstance()->setNonThreadedMode(b==0);
     CSyncThread::getSyncEngine().setNonThreadedMode(b==0);
+}
+
+char* rho_sync_create_string(const char* szStr)
+{
+    return strdup(szStr);
+}
+
+void rho_sync_free_string(char* szStr)
+{
+    return free(szStr);
 }
 
 }

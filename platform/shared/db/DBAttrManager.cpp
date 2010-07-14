@@ -90,6 +90,7 @@ void CDBAttrManager::reset(CDBAdapter& db)
     }
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
 {
     synchronized(m_mxSrcAttrs)
@@ -111,6 +112,7 @@ unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
         return arRes;
     }
 }
+#endif //RHO_NO_RUBY
 
 boolean CDBAttrManager::isBlobAttr(int nSrcID, const char* szAttr)
 {

@@ -33,9 +33,15 @@ private:
     CGeoNotification m_ViewNotify, m_Notify;
     common::CMutex   m_mxNotify;
 
+    static CGeoLocation* m_pInstance;
+
+    CGeoLocation(common::IRhoClassFactory* pFactory);
+
 public:
-    CGeoLocation();
-    void init(common::IRhoClassFactory* pFactory);
+
+    static CGeoLocation* Create(common::IRhoClassFactory* factory);
+    static void Destroy();
+    static CGeoLocation* getInstance(){ return m_pInstance; }
 
     void setGeoCallback(const char *url, char* params, int timeout_sec, boolean bView);
     void callGeoCallback(boolean bError, boolean bRunInThread=false);
