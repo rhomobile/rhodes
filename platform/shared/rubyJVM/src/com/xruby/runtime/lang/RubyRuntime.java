@@ -13,6 +13,8 @@ import com.xruby.GeneratedMethods.*;
 import com.rho.RhoClassFactory;
 import com.rho.StringScanner;
 
+import com.rho.Extensions;
+
 public class RubyRuntime {
     public static RubyClass ObjectClass;
     public static RubyClass ModuleClass;
@@ -110,6 +112,38 @@ public class RubyRuntime {
     private static RubyMethod respondToMethod;
 
     public static boolean running = false;
+
+
+    private static void registerExtensions() {
+		int i;
+		for (i = 0; i < Extensions.extensions.length; i++) {
+			String ext_class = Extensions.extensions[i];
+			if (ext_class.length() > 0) {
+ 		          Class wrapperClass = null;
+		          try {
+		            wrapperClass = Class.forName(ext_class);
+		          } catch (ClassNotFoundException exc) {  
+		        	//LOG.ERROR("Extension class [" + ext_class + "] not exist !",exc);    	
+		          }
+		          if (wrapperClass != null) {
+		        	Runnable ext_run = null;
+		        	try {
+		        		ext_run = (Runnable)wrapperClass.newInstance();
+		        	} catch (Exception e) {
+		            	  //LOG.ERROR("Extension class [" + ext_class + "] not instantiated !",e);    	
+		      		
+		        	}
+			        if (ext_run != null ) {
+			        	ext_run.run();
+			        }
+			        else {
+		            	  //LOG.ERROR("Extension class [" + ext_class + "] not implemented Runnable interface !");    	
+			        }
+		          }
+			}
+		}
+    }
+
 
 //    static {
     private static void initClasses()
@@ -354,6 +388,7 @@ public class RubyRuntime {
         //StringIOClass = RubyTypeFactory.getClass(RubyStringIO.class);
 
         RubyThread.init();
+
     }
 
     private static void initARGV(String[] args) {
@@ -390,6 +425,8 @@ public class RubyRuntime {
         initClasses();
         
         initARGV(args);
+
+	registerExtensions();
 
         RubyAPI.setTopLevelConstant(RubyAPI.isWindows() ? ObjectFactory.createString("mswin32") : ObjectFactory.createString("java"), "RUBY_PLATFORM");
 
