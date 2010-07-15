@@ -106,8 +106,17 @@ describe "RhoRuby" do
   
   it "should call to_a on string" do
     s = "abcdef"
-    a = s.to_a
+if !defined? RHO_ME    
+    #https://www.pivotaltracker.com/story/show/4292906
+    a = s.chars.to_a
     a[0].should == "a"
     a[3].should == "d"
+end    
+    ch = '1'
+    s.each_char do |c|
+        ch =  c
+    end
+    
+    ch.should == 'f'
   end
 end

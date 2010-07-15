@@ -1311,7 +1311,7 @@ public class RubyString extends RubyBasic {
     public RubyValue each_byte(RubyBlock block) 
     {
     	if ( block == null )
-    		return this;
+    		return this; //TODO: return enumerator
     	
         String string = toString();
         byte bytes[] = null;
@@ -1331,6 +1331,22 @@ public class RubyString extends RubyBasic {
         return this;
     }
 
+    //@RubyLevelMethod(name="each_char")
+    public RubyValue each_char(RubyBlock block) 
+    {
+    	if ( block == null )
+    		return this; //TODO: return enumerator
+    	
+        for (int i = 0; i <sb_.length(); ++i) 
+        {
+        	String value = "";
+        	value += sb_.charAt(i);
+            block.invoke(this, ObjectFactory.createString(value));
+        }
+    	
+        return this;
+    }
+    
     //@RubyLevelMethod(name="reverse")
     public RubyValue reverse() {
         RubyString string = ObjectFactory.createString(toString());

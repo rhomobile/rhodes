@@ -92,6 +92,13 @@ klass.defineMethod( "each_byte", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).each_byte(block);}
 });
+klass.aliasMethod("bytes","each_byte");
+klass.defineMethod( "each_char", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).each_char(block);}
+});
+klass.aliasMethod("chars","each_char");
+
 klass.defineMethod( "each", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).each(block);}
