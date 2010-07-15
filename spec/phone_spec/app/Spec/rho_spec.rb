@@ -119,4 +119,20 @@ end
     
     ch.should == 'f'
   end
+    
+  it "should call each on array of hashes"  do
+    id = 8775
+    providers = [{:IsMandatory=>"true", :RequiresSaveOrderToFile=>"true", :HasFarmPackageAccess=>"true", :OfficeID=>"2354", :OfficeName=>"Poway Realty Services", :ProviderID=>"8775", :ProviderFirstName=>"Jodie", :ProviderLastName=>"Fagan", :ProviderName=>"Jodie Fagan"}]
+
+    provider = nil
+    providers.each do |e|
+	    if e[:ProviderID].to_i == id
+		    provider = e
+		    break
+	    end
+    end
+    
+    provider.should_not be_nil
+  end
+  
 end
