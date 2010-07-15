@@ -6,13 +6,6 @@ require 'rhofsconnector'
 require 'rho/rhoerror'
 require 'rhom/rhom_source'
 
-class String
-  alias / split
-  def to_a
-    split('')
-  end  
-end
-
 module Rho
   def self.get_app
     RHO.get_instance().get_app('app')
