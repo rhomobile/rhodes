@@ -124,7 +124,7 @@ end
     id = 8775
     providers = [{:IsMandatory=>"true", :RequiresSaveOrderToFile=>"true", :HasFarmPackageAccess=>"true", :OfficeID=>"2354", :OfficeName=>"Poway Realty Services", :ProviderID=>"8775", :ProviderFirstName=>"Jodie", :ProviderLastName=>"Fagan", :ProviderName=>"Jodie Fagan"}]
 
-    provider = nil
+    provider = {}
     providers.each do |e|
 	    if e[:ProviderID].to_i == id
 		    provider = e
@@ -133,6 +133,7 @@ end
     end
     
     provider.should_not be_nil
+    provider[:OfficeID].should == "2354"
   end
   
 end
