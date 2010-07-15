@@ -135,5 +135,27 @@ end
     provider.should_not be_nil
     provider[:OfficeID].should == "2354"
   end
+
+  it "should calll []= on string with non-empty string"  do
+
+    file = "some file text with [propertyOwnerName] within"
+
+    replace_str = 'a' 
+
+    file["[propertyOwnerName]"] = replace_str
+    
+    file.should == "some file text with a within"
+  end  
+
+  it "should calll []= on string with empty string"  do
+
+    file = "some file text with [propertyOwnerName] within"
+
+    replace_str = ''
+
+    file["[propertyOwnerName]"] = replace_str
+    
+    file.should == "some file text with  within"
+  end  
   
 end
