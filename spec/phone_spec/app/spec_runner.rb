@@ -14,7 +14,7 @@ class RhoSpec
     
     #fix contacts on android
     run_spec('Contacts') unless System.get_property('device_name') == 'Win32'
-    #run_spec('Barcode') unless System.get_property('device_name') == 'Win32'        
+    run_spec('Barcode') unless System.get_property('device_name') == 'Win32'        
     run_spec('MapView')  unless System.get_property('platform') == 'WINDOWS'
     run_spec('NativeBar') if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
     run_spec('NavBar') if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
