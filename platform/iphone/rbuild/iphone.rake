@@ -110,6 +110,14 @@ namespace "config" do
       $app_config["extensions"] += $app_config["iphone"]["extensions"] if $app_config["extensions"]
       $app_config["iphone"]["extensions"] = nil
     end
+
+    # check environment variables setted by XCode (when we executed from XCode)
+    #xcode_sdk_name = ENV['SDK_NAME']
+    #$sdk = xcode_sdk_name if not xcode_sdk_name.nil?
+    #$xcode_sdk_dir = ENV['SDK_DIR']
+    #xcode_configuration = ENV['CONFIGURATION']
+    #$configuration = xcode_configuration if not xcode_configuration.nil?
+
   end
 end
 
@@ -150,6 +158,10 @@ namespace "build" do
         ENV["SDKROOT"] ||= $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
               $sdk.gsub(/iphoneos/,"") + ".sdk"
       end
+
+      #ENV["SDKROOT"] = $xcode_sdk_dir if not $xcode_sdk_dir.nil?
+
+
       ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
       ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
         ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
@@ -158,6 +170,11 @@ namespace "build" do
       ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
       ENV["RHO_ROOT"] = $startdir
 
+      # added by dmitrys
+      ENV["XCODEBUILD"] = $xcodebuild
+      ENV["CONFIGURATION"] ||= $configuration
+      ENV["SDK_NAME"] ||= $sdk
+ 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
       $app_config["extensions"].each do |ext|
