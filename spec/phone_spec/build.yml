@@ -13,7 +13,7 @@ iphone:
   codesignidentity: ""
   configuration: Debug
 android:
-  version: 2.0
+  version: 2.2
   mapping: enabled
   capabilities:
     - network_state
@@ -22,4 +22,4 @@ android:
 capabilities:
   - push
      
-extensions: ["json", "rhoxml"]
+extensions: ["json", "rhoxml", "Barcode"]
