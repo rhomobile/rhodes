@@ -392,27 +392,29 @@ namespace "build" do
 
       extentries = []
 
-      $app_config["extensions"].each do |ext|
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-          if RUBY_PLATFORM =~ /(win|w)32$/
-            next unless File.exists? File.join(extpath, 'build.bat')
-          else
-            next unless File.executable? File.join(extpath, 'build')
-          end
-          
-          extroot = File.join(p,ext)
+      if $app_config["extensions"]
+          $app_config["extensions"].each do |ext|
+            $app_config["extpaths"].each do |p|
+              extpath = File.join(p, ext, 'ext')
+              if RUBY_PLATFORM =~ /(win|w)32$/
+                next unless File.exists? File.join(extpath, 'build.bat')
+              else
+                next unless File.executable? File.join(extpath, 'build')
+              end
+              
+              extroot = File.join(p,ext)
 
-          extyml = File.join(extroot, "ext.yml")
-          if File.file? extyml
-            extconf = Jake.config(File.open(extyml))
-            javaentry = extconf["javaentry"]
-            extentries << javaentry unless javaentry.nil?
-          end
+              extyml = File.join(extroot, "ext.yml")
+              if File.file? extyml
+                extconf = Jake.config(File.open(extyml))
+                javaentry = extconf["javaentry"]
+                extentries << javaentry unless javaentry.nil?
+              end
 
-        end
+            end
+          end
       end
-
+        
       exts = $startdir + "/platform/shared/rubyJVM/src/com/rho/Extensions.java"
 
       File.open(exts, "w") do |f|
