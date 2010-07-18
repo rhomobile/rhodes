@@ -76,6 +76,7 @@ public:
     static CDBAdapter& getUserDB();
     static CDBAdapter& getDBByHandle(sqlite3* db);
     static CDBAdapter& getDB(const char* szPartition);
+    static void destroy_tables_allpartitions(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
 
     boolean isTableExist(String strTableName);
     int prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt);
@@ -212,6 +213,25 @@ public:
         return executeStatement(res);
     }
 
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
+    DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8 )
+    {
+        DBResultPtr res = prepareStatement(szSt);
+        if ( res->getStatement() == null )
+            return res;
+
+        bind(res->getStatement(), 1, p1);
+        bind(res->getStatement(), 2, p2);
+        bind(res->getStatement(), 3, p3);
+        bind(res->getStatement(), 4, p4);
+        bind(res->getStatement(), 5, p5);
+        bind(res->getStatement(), 6, p6);
+        bind(res->getStatement(), 7, p7);
+        bind(res->getStatement(), 8, p8);
+
+        return executeStatement(res);
+    }
+
     template<typename T1>
     DBResultPtr executeSQL( const char* szSt, T1 p1)
     {
@@ -254,4 +274,13 @@ private:
 }
 }
 
-extern "C" void rho_db_init_attr_manager();
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
+void rho_db_init_attr_manager();
+int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB);
+
+#ifdef __cplusplus
+};
+#endif //__cplusplus

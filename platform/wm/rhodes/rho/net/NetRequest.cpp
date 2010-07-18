@@ -39,7 +39,7 @@ INetResponse* CNetRequest::doRequest( const char* method, const String& strUrl, 
 
 String CNetRequest::resolveUrl(const String& strUrl)
 {
-    return RHODESAPP().canonicalizeRhoUrl(strUrl);
+    return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
 void CNetRequest::cancel()

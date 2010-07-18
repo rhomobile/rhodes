@@ -41,7 +41,7 @@ public:
     static void         renameFile( const char* szOldFilePath, const char* szNewFilePath );
     static void         deleteFilesInFolder(const char* szFolderPath);
     static void         loadTextFile(const char* szFilePath, String& strFile);
-
+    static void         createFolder(const char* szDirPath);
 private:
     CRhoFile(const CRhoFile&);
     void operator=(const CRhoFile&);
