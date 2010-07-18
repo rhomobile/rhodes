@@ -1,8 +1,9 @@
 #pragma once
 
+#include "RhodesAppBase.h"
+
 #ifdef __cplusplus
 
-#include "RhodesAppBase.h"
 #include "net/INetRequest.h"
 
 #include "net/HttpServer.h"
