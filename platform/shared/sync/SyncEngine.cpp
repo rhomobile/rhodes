@@ -41,7 +41,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
 {
     setState(eState);
     m_bStopByUser = false;
-    m_nErrCode = RhoRuby.ERR_NONE;
+    m_nErrCode = RHO_ERR_NONE;
 
     loadAllSources();
 
@@ -49,7 +49,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     if ( isSessionExist()  )
     {
         m_clientID = loadClientID();
-        if ( m_nErrCode == RhoRuby.ERR_NONE )
+        if ( m_nErrCode == RHO_ERR_NONE )
         {
             getNotify().cleanLastSyncObjectCount();
    	        doBulkSync();
@@ -57,7 +57,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
             return;
         }
     }else
-        m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+        m_nErrCode = RHO_ERR_CLIENTISNOTLOGGEDIN;
 
     CSyncSource* src = null;
     if ( oSrcID != null )
@@ -183,7 +183,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
                 LOG(ERROR) + "Sync server send search data with incompatible version. Client version: " + convertToStringA(getProtocol().getVersion()) +
                     "; Server response version: " + convertToStringA(nVersion);
                 stopSync();
-                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+                nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
                 continue;
             }
 
@@ -191,7 +191,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             {
                 LOG(ERROR) + "Sync server send search data without source name.";
                 stopSync();
-                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+                nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
                 continue;
             }
 
@@ -201,7 +201,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             {
                 LOG(ERROR) + "Sync server send search data for unknown source name:" + strSrcName;
                 stopSync();
-                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+                nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
                 continue;
             }
 
@@ -222,7 +222,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         CSyncSource& src = *m_sources.elementAt(getStartSource());
         src.m_bIsSearch = true;
 
-    	getNotify().fireSyncNotification(&src, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
+    	getNotify().fireSyncNotification(&src, true, RHO_ERR_NONE, RhoRuby.getMessageText("sync_completed"));
     }
     else if ( nErrCode != 0 )
     {
@@ -268,14 +268,14 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID)
 
             src.sync();
 
-            getNotify().fireSyncNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? RhoRuby.getMessageText("sync_completed") : "");
+            getNotify().fireSyncNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RHO_ERR_NONE ? RhoRuby.getMessageText("sync_completed") : "");
         }else
         {
             LOG(ERROR) + "Sync one source : Unknown Source " + oSrcID.toString();
 
             CSyncSource src(*this, getUserDB() );
     	    //src.m_strError = "Unknown sync source.";
-            src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+            src.m_nErrCode = RHO_ERR_RUNTIME;
 
             getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
         }
@@ -463,8 +463,8 @@ String CSyncEngine::requestClientIDByNet()
     }else
     {
         m_nErrCode = RhoRuby.getErrorFromResponse(resp);
-        if ( m_nErrCode == RhoRuby.ERR_NONE )
-            m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+        if ( m_nErrCode == RHO_ERR_NONE )
+            m_nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
     }
 
     return "";
@@ -482,7 +482,7 @@ void CSyncEngine::doBulkSync()//throws Exception
         return;
 
 	LOG(INFO) + "Bulk sync: start";
-    getNotify().fireBulkSyncNotification(false, "start", "", RhoRuby.ERR_NONE);        
+    getNotify().fireBulkSyncNotification(false, "start", "", RHO_ERR_NONE);        
 
     for (int i = 0; i < (int)m_arPartitions.size() && isContinueSync(); i++)
         loadBulkPartition(m_arPartitions.elementAt(i));
@@ -490,7 +490,7 @@ void CSyncEngine::doBulkSync()//throws Exception
     if (isContinueSync())
     {
         RHOCONF().setInt("bulksync_state", 1, true);
-        getNotify().fireBulkSyncNotification(true, "", "", RhoRuby.ERR_NONE);
+        getNotify().fireBulkSyncNotification(true, "", "", RHO_ERR_NONE);
     }
 }
 
@@ -505,7 +505,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
     String strDataUrl = "", strCmd = "";
 
-  	getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoRuby.ERR_NONE);
+  	getNotify().fireBulkSyncNotification(false, "start", strPartition, RHO_ERR_NONE);
 
     while(strCmd.length() == 0&&isContinueSync())
     {	    
@@ -515,7 +515,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
         {
     	    LOG(ERROR) + "Bulk sync failed: server return an error.";
     	    stopSync();
-    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_REMOTESERVER);
+    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RHO_ERR_REMOTESERVER);
     	    return;
         }
 
@@ -540,7 +540,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     if ( strCmd.compare("nop") == 0)
     {
 	    LOG(INFO) + "Bulk sync return no data.";
-      	getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_NONE);
+      	getNotify().fireBulkSyncNotification(true, "", strPartition, RHO_ERR_NONE);
 
 	    return;
     }
@@ -548,7 +548,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     if ( !isContinueSync() )
         return;
 
-   	getNotify().fireBulkSyncNotification(false, "download", strPartition, RhoRuby.ERR_NONE);
+   	getNotify().fireBulkSyncNotification(false, "download", strPartition, RHO_ERR_NONE);
 
     String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "");
     String strZip = ".rzip";
@@ -560,7 +560,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
         {
 	        LOG(ERROR) + "Bulk sync failed: cannot download database file.";
 	        stopSync();
-	        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_REMOTESERVER);
+	        getNotify().fireBulkSyncNotification(true, "", strPartition, RHO_ERR_REMOTESERVER);
 	        return;
         }
     }
@@ -575,19 +575,19 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
         CRhoFile::deleteFile((fDataName+strZip).c_str());
         LOG(ERROR) + "Bulk sync failed: cannot unzip database file.";
         stopSync();
-        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE);
+        getNotify().fireBulkSyncNotification(true, "", strPartition, RHO_ERR_UNEXPECTEDSERVERRESPONSE);
         return;
     }
     CRhoFile::deleteFile((fDataName+strZip).c_str());
 
 	LOG(INFO) + "Bulk sync: start change db";
-   	getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoRuby.ERR_NONE);
+   	getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RHO_ERR_NONE);
     
     dbPartition.setBulkSyncDB(fDataName);
     processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
 	LOG(INFO) + "Bulk sync: end change db";
-   	getNotify().fireBulkSyncNotification(false, "", strPartition, RhoRuby.ERR_NONE);
+   	getNotify().fireBulkSyncNotification(false, "", strPartition, RHO_ERR_NONE);
 }
 
 String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)
@@ -636,11 +636,11 @@ void CSyncEngine::syncAllSources()
             src.sync();
 
         getNotify().onSyncSourceEnd(i, m_sources);
-        bError = src.m_nErrCode != RhoRuby.ERR_NONE;
+        bError = src.m_nErrCode != RHO_ERR_NONE;
     }
 
     if ( !bError)
-    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
+    	getNotify().fireSyncNotification(null, true, RHO_ERR_NONE, RhoRuby.getMessageText("sync_completed"));
 }
 
 void CSyncEngine::login(String name, String password, String callback)
@@ -661,7 +661,7 @@ void CSyncEngine::login(String name, String password, String callback)
 
     NetResponse( resp, getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this ) );
     int nErrCode = RhoRuby.getErrorFromResponse(resp);
-    if ( nErrCode != RhoRuby.ERR_NONE )
+    if ( nErrCode != RHO_ERR_NONE )
     {
         getNotify().callLoginCallback(callback, nErrCode, resp.getCharData());
         return;
@@ -671,7 +671,7 @@ void CSyncEngine::login(String name, String password, String callback)
     if ( strSession.length() == 0 )
     {
     	LOG(ERROR) + "Return empty session.";
-    	getNotify().callLoginCallback(callback, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE, "" );
+    	getNotify().callLoginCallback(callback, RHO_ERR_UNEXPECTEDSERVERRESPONSE, "" );
         return;
     }
 
@@ -685,13 +685,13 @@ void CSyncEngine::login(String name, String password, String callback)
     if ( CClientRegister::getInstance() != null )
         CClientRegister::getInstance()->stopWait();
 
-    getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
+    getNotify().callLoginCallback(callback, RHO_ERR_NONE, "" );
 	
     PROF_STOP("Login");
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Login failed.", exc);
-    //	callLoginCallback(callback, RhoRuby.ERR_RUNTIME, exc.getMessage() );
+    //	callLoginCallback(callback, RHO_ERR_RUNTIME, exc.getMessage() );
 	//}
 }
 

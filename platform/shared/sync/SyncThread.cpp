@@ -176,6 +176,18 @@ unsigned long rho_sync_doSyncAllSources(int show_status_popup)
     return CSyncThread::getInstance()->getRetValue();
 }
 
+unsigned long rho_sync_doSyncSourceByID(int nSrcID)
+{
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, "", nSrcID, false ) );
+    return CSyncThread::getInstance()->getRetValue();
+}
+
+unsigned long rho_sync_doSyncSourceByName(const char* szSrcName)
+{
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcName, 0, false ) );
+    return CSyncThread::getInstance()->getRetValue();
+}
+
 #ifndef RHO_NO_RUBY
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 {

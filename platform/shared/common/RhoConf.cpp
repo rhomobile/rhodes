@@ -183,8 +183,8 @@ void rho_conf_Init(const char* szRootPath){
     RHOCONF().loadFromFile();
 }
 
-bool rho_conf_getBool(const char* szName) {
-	return RHOCONF().getBool(szName);
+int rho_conf_getBool(const char* szName) {
+    return RHOCONF().getBool(szName) ? 1 : 0;
 }
 
 void rho_conf_setBool(const char* szName, bool value) {
@@ -203,12 +203,10 @@ char* rho_conf_getString(const char* szName) {
 	return strdup(RHOCONF().getString(szName).c_str());
 }
 
-#ifndef RHO_NO_RUBY
-unsigned long rho_conf_is_property_exists(char* name)
+int rho_conf_is_property_exists(char* name)
 {
-    return rho_ruby_create_boolean(RHOCONF().isExist(name));
+    return RHOCONF().isExist(name) ? 1 : 0;
 }
-#endif //RHO_NO_RUBY
 
 void rho_conf_freeString(char* str) {
 	free(str);
