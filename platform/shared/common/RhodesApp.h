@@ -2,32 +2,26 @@
 
 #ifdef __cplusplus
 
-#include "logging/RhoLog.h"
-#include "common/RhoThread.h"
+#include "RhodesAppBase.h"
 #include "net/INetRequest.h"
-#include "common/IRhoClassFactory.h"
 
-#ifndef RHO_NO_RUBY
 #include "net/HttpServer.h"
 #include "SplashScreen.h"
 #include "AppMenu.h"
-#endif //RHO_NO_RUBY
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
-
-struct shttpd_ctx;
 
 namespace rho {
 namespace common {
 
-class CRhodesApp : public common::CRhoThread
+class CRhodesApp : public CRhodesAppBase
 {
 public:
     DEFINE_LOGCLASS;
 
 private:
 
-    static CRhodesApp* m_pInstance;
     CRhodesApp(const String& strRootPath);
     boolean m_bExit;
 
@@ -35,14 +29,13 @@ private:
     common::CAutoPtr<net::INetRequest> m_NetRequest;
 
     String m_strListeningPorts;
-#ifndef RHO_NO_RUBY
+
     common::CAutoPtr<net::CHttpServer> m_httpServer;
     CSplashScreen m_oSplashScreen;
     CAppMenu m_oAppMenu;
-#endif //RHO_NO_RUBY
 
-    String m_strRhoRootPath, m_strLoadingPagePath, m_strLoadingPngPath, m_strBlobsDirPath, m_strDBDirPath;
-    String m_strHomeUrl, m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
+    String m_strLoadingPagePath, m_strLoadingPngPath;
+    String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
     String m_strRhoMessage;
 
     int m_currentTabIndex;
@@ -63,11 +56,10 @@ public:
 
     static CRhodesApp* Create(const String& strRootPath);
     static void Destroy();
-    static CRhodesApp* getInstance(){ return m_pInstance; }
+    static CRhodesApp* getInstance(){ return (CRhodesApp*)m_pInstance; }
     void startApp();
     void stopApp();
 
-    String canonicalizeRhoUrl(const String& strUrl) ;
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
     void navigateBack();
@@ -77,14 +69,9 @@ public:
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
     const String& getFirstStartUrl();
-    const String& getHomeUrl(){ return m_strHomeUrl; }
 
 	const String& getLoadingPngPath(){return m_strLoadingPngPath;}
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
-    const String& getBlobsDirPath(){return m_strBlobsDirPath; }
-    const String& getDBDirPath(){return m_strDBDirPath; }
-    String resolveDBFilesPath(const String& strFilePath);
-    const String& getRhoRootPath(){return m_strRhoRootPath;}
 
     const String& getAppBackUrl(){return m_strAppBackUrl;}
     void setAppBackUrl(const String& url);
@@ -94,10 +81,9 @@ public:
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
     void callAppActiveCallback(boolean bActive);
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
-#ifndef RHO_NO_RUBY
+
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
-#endif //RHO_NO_RUBY
 
     boolean sendLog();
 
@@ -116,7 +102,7 @@ public:
 
     void loadUrl(String url);
 
-private:
+protected:
     virtual void run();
 
     void initHttpServer();
@@ -140,7 +126,6 @@ extern "C" {
 void rho_rhodesapp_create(const char* szRootPath);
 void rho_rhodesapp_start();	
 void rho_rhodesapp_destroy();
-const char* rho_native_rhopath();
 	
 const char* rho_rhodesapp_getstarturl();
 const char* rho_rhodesapp_getfirststarturl();
@@ -185,8 +170,6 @@ int rho_base64_decode(const char *src, int srclen, char *dst);
 void rho_net_request(const char *url);
 
 void rho_rhodesapp_load_url(const char *url);
-
-const char* rho_rhodesapp_getplatform();
 
 #ifdef __cplusplus
 };

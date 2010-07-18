@@ -278,7 +278,7 @@ void CSyncNotify::setBulkSyncNotification(String strUrl, String strParams )//thr
 
 extern "C" void alert_show_popup(const char* message);
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
-    if ( error == RhoRuby.ERR_SYNCVERSION )
+    if ( error == RHO_ERR_SYNCVERSION )
     {
         status = RhoRuby.getErrorText(error);
         alert_show_popup(status.c_str());
@@ -308,7 +308,7 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
 		return;
 	
 	//TODO: show report
-	if( nErrCode != RhoRuby.ERR_NONE)
+	if( nErrCode != RHO_ERR_NONE)
 	{
 		String strMessage = RhoRuby.getMessageText("sync_failed_for") + "bulk.";
 		reportSyncStatus(strMessage,nErrCode,"");
@@ -329,12 +329,12 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
         strBody += "&status=";
         if ( bFinish )
         {
-	        if ( nErrCode == RhoRuby.ERR_NONE )
+	        if ( nErrCode == RHO_ERR_NONE )
                 strBody += "ok";
 	        else
 	        {
 	        	if ( getSync().isStoppedByUser() )
-                    nErrCode = RhoRuby.ERR_CANCELBYUSER;
+                    nErrCode = RHO_ERR_CANCELBYUSER;
 	        	
 	        	strBody += "error";				        	
 			    strBody += "&error_code=" + convertToStringA(nErrCode);
@@ -363,7 +363,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
 	
-	if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+	if( strMessage.length() > 0 || nErrCode != RHO_ERR_NONE)
 	{
 		if ( !( psrc != null && psrc->isSearch()) )
         {
@@ -394,9 +394,10 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 			else
 				pSN = m_mapSyncNotifications.get(src.getID());
             
-			if ( pSN == 0 )
+			if ( pSN == 0 && !getSync().isNoThreadedMode() )
                 return;
-            CSyncNotification& sn = *pSN;
+            CSyncNotification emptyNotify;
+            CSyncNotification& sn = pSN != null ? *pSN : emptyNotify;
 
             strUrl = sn.m_strUrl;
 		    strBody = "";
@@ -412,12 +413,12 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
             if ( bFinish )
             {
-                if ( nErrCode == RhoRuby.ERR_NONE )
+                if ( nErrCode == RHO_ERR_NONE )
 	        	    strBody += "ok";
 	            else
 	            {
                     if ( getSync().isStoppedByUser() )
-                        nErrCode = RhoRuby.ERR_CANCELBYUSER;
+                        nErrCode = RHO_ERR_CANCELBYUSER;
 
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);

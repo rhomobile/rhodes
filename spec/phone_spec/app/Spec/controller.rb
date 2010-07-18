@@ -5,12 +5,11 @@ class SpecController < Rho::RhoController
 
   #GET /Spec
   def index
-    if $tests_done.nil?
+    if $rhospec.nil?
       puts "SpecController.index"
-      @rhospec = RhoSpec.new
-      @rhospec.start
+      $rhospec = RhoSpec.new
+      $rhospec.start
 
-      $tests_done = true
     end
     
     render    

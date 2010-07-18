@@ -199,6 +199,7 @@ void wce_SetCurrentDir();
 #define FILE_TYPE_REMOTE    0x8000
 #define WNOHANG -1
 
+#undef stati64
 #define stati64 stat
 
 BOOL GetHandleInformation(
