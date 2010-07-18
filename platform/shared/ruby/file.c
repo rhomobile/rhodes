@@ -1019,15 +1019,16 @@ rb_file_directory_p(VALUE obj, VALUE fname)
 //RHO
 #ifdef DOSISH
 /*    int ret = 1;
-    int fd;
+    int fd;*/
+    DWORD res = 0;
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eTypeError, "argument is not a string");
-    
+/*    
     fd = open(RSTRING_PTR(fname), O_RDONLY);
     if (fd == -1) return Qfalse;
     (void)close(fd);
     return Qtrue; */
-    DWORD res = GetFileAttributesA(RSTRING_PTR(fname));
+    res = GetFileAttributesA(RSTRING_PTR(fname));
     if (res == INVALID_FILE_ATTRIBUTES)
         return Qfalse;
     if ( res&FILE_ATTRIBUTE_DIRECTORY )
