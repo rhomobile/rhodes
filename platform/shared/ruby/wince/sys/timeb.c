@@ -6,6 +6,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 
+time_t wce_FILETIME2time_t(const FILETIME* f);
 
 int ftime(struct timeb *tp)
 {

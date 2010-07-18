@@ -4,13 +4,13 @@
 	</h1>
 </div>
 
-<%@color = @rhospec.code == 0 ? "#00ff00" : "#ff0000"%>
+<%@color = $rhospec.code == 0 ? "#00ff00" : "#ff0000"%>
 <% unless $is_network_available %>Network is not available, only offline tests are processed!<% end %>
     
 <ul id="specrunner" title="SpecRunner" selected="true">
-    <li style="color:<%=@color%>">Total: <%=@rhospec.count%></li>
-    <li style="color:<%=@color%>">Passed: <%=@rhospec.count - @rhospec.exc_count%></li>
-    <li style="color:<%=@color%>">Failed: <%=@rhospec.exc_count%></li>
-    <li style="color:<%=@color%>">Errors: <%=@rhospec.errorMessages%></li>
+    <li style="color:<%=@color%>">Total: <%=$rhospec.count%></li>
+    <li style="color:<%=@color%>">Passed: <%=$rhospec.count - $rhospec.exc_count%></li>
+    <li style="color:<%=@color%>">Failed: <%=$rhospec.exc_count%></li>
+    <li style="color:<%=@color%>">Errors: <%=$rhospec.errorMessages%></li>
     
 </ul>

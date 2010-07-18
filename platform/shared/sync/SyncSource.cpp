@@ -31,7 +31,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nTotalCount = 0;
     m_bGetAtLeastOnePage = false;
 
-    m_nErrCode = RhoRuby.ERR_NONE;
+    m_nErrCode = RHO_ERR_NONE;
 
     m_bIsSearch = false;
 }
@@ -47,7 +47,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
     m_bGetAtLeastOnePage = false;
     m_nRefreshTime = 0;
 
-    m_nErrCode = RhoRuby.ERR_NONE;
+    m_nErrCode = RHO_ERR_NONE;
     m_bIsSearch = false;
     m_bSchemaSource = db.isTableExist(m_strName);
 }
@@ -65,7 +65,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_bGetAtLeastOnePage = false;
     m_nRefreshTime = 0;
 
-    m_nErrCode = RhoRuby.ERR_NONE;
+    m_nErrCode = RHO_ERR_NONE;
     m_bIsSearch = false;
 
     DBResult( res, db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID) );
@@ -112,7 +112,7 @@ ISyncProtocol& CSyncSource::getProtocol(){ return getSync().getProtocol(); }
 
 void CSyncSource::sync()
 {
-    getNotify().fireSyncNotification(null, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
+    getNotify().fireSyncNotification(null, false, RHO_ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
     m_bIsSearch = false;
@@ -225,7 +225,7 @@ void CSyncSource::doSyncClientChanges()
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
-                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+                m_nErrCode = RHO_ERR_REMOTESERVER;
             }
         }else
         {
@@ -233,7 +233,7 @@ void CSyncSource::doSyncClientChanges()
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
-                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+                m_nErrCode = RHO_ERR_REMOTESERVER;
             }
         }
     }
@@ -298,7 +298,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         {
             CMultipartItem* pItem = new CMultipartItem();
             CMultipartItem& oItem = *pItem;
-            oItem.m_strFilePath = RHODESAPP().resolveDBFilesPath(value);
+            oItem.m_strFilePath = RHODESAPPBASE().resolveDBFilesPath(value);
             oItem.m_strContentType = "application/octet-stream";
             oItem.m_strName = strAttrib + "-" + strObject;
 
@@ -405,7 +405,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
         LOG(ERROR) + "Sync server send data with incompatible version. Client version: " + convertToStringA(getProtocol().getVersion()) +
             "; Server response version: " + convertToStringA(nVersion) + ". Source name: " + getName();
         getSync().stopSync();
-        m_nErrCode = RhoRuby.ERR_SYNCVERSION;
+        m_nErrCode = RHO_ERR_SYNCVERSION;
         return;
     }
 
@@ -450,13 +450,13 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
     {
         CJSONEntry oJsonErr = oJsonArr.getCurItem().getEntry("source-error");
         m_strError = oJsonErr.getString("message");
-        m_nErrCode = RhoRuby.ERR_CUSTOMSYNCSERVER;
+        m_nErrCode = RHO_ERR_CUSTOMSYNCSERVER;
         getSync().stopSync();
         return;
     }*/
 
     //if ( getServerObjectsCount() == 0 )
-    //    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+    //    getNotify().fireSyncNotification(this, false, RHO_ERR_NONE, "");
 
     if ( getToken() == 0 )
     {
@@ -506,7 +506,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 
 	PROF_START("Data1");
     if ( getCurPageCount() > 0 )
-        getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+        getNotify().fireSyncNotification(this, false, RHO_ERR_NONE, "");
 	PROF_STOP("Data1");
 }
 
@@ -533,7 +533,7 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
 
         int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
         if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-            getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+            getNotify().fireSyncNotification(this, false, RHO_ERR_NONE, "");
 
         if ( getDB().isUIWaitDB() )
         {
@@ -833,7 +833,7 @@ String CSyncSource::makeFileName(const CAttrValue& value)//throws Exception
     if ( szExt[0] )
         strExt = szExt;
 
-    String fName = RHODESAPP().getBlobsDirPath() + "/id_" + CLocalTime().toString(true,true) + strExt;
+    String fName = RHODESAPPBASE().getBlobsDirPath() + "/id_" + CLocalTime().toString(true,true) + strExt;
 	
 	return  fName;
 }
@@ -870,7 +870,7 @@ boolean CSyncSource::downloadBlob(CAttrValue& value)//throws Exception
         return false;
     }
 
-    value.m_strValue = CFilePath::getRelativePath( fName, RHODESAPP().getRhoRootPath());
+    value.m_strValue = CFilePath::getRelativePath( fName, RHODESAPPBASE().getRhoRootPath());
     
     return true;
 }
