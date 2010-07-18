@@ -28,13 +28,15 @@ describe "Math.atanh" do
   #platform_is :windows, :linux, :openbsd do
     # jruby is cross-platform and behaves as :darwin above
     not_compliant_on :jruby do
-      it "raises an Errno::EDOM if x = 1.0" do
-        lambda { Math.atanh(1.0) }.should raise_error(Errno::EDOM)
-      end
+        platform_is_not :windows do
+          it "raises an Errno::EDOM if x = 1.0" do
+            lambda { Math.atanh(1.0) }.should raise_error(Errno::EDOM)
+          end
 
-      it "raises an Errno::EDOM if x = -1.0" do
-        lambda { Math.atanh(-1.0) }.should raise_error(Errno::EDOM)
-      end
+          it "raises an Errno::EDOM if x = -1.0" do
+            lambda { Math.atanh(-1.0) }.should raise_error(Errno::EDOM)
+          end
+        end  
     end
   #end
 
