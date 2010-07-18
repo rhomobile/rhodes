@@ -13,7 +13,7 @@ describe "File#path" do
 
   it "returns the pathname used to create file as a string" do
     File.open(@file1,'w'){|file| file.path.should == "testfile"}
-    File.open(@file2, 'w'){|file| file.path.should == tmp("../tmp/xxx")}
+    File.open(@file2, 'w'){|file| file.path.should == tmp("../tmp/xxx")} unless System.get_property('platform') == 'WINDOWS'
   end
 end
 
