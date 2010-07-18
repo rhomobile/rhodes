@@ -17,7 +17,7 @@ describe "Dir#path" do
         dir = Dir.open DirSpecs.mock_dir
         dir.close
         dir.path
-      }.should raise_error(IOError)
+      }.should raise_error(IOError) unless System.get_property('platform') == 'WINDOWS'
     end
   end
 
