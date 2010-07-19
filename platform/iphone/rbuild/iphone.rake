@@ -23,6 +23,38 @@ def set_app_name(newname)
 
 end
 
+ICONS = ['icon', 'icon57', 'icon72', 'icon114']
+
+def restore_app_icon
+  puts "restore icon"
+  ipath = $config["build"]["iphonepath"]
+  ICONS.each do |name|
+    ibak = File.join(ipath, name + '.bak')
+    icon = File.join(ipath, name + '.png')
+    next if !File.exists? ibak
+    rm_f icon
+    cp ibak, icon
+    rm_f ibak
+  end
+end
+
+def set_app_icon
+  puts "set icon"
+  ipath = $config["build"]["iphonepath"]
+  begin
+    ICONS.each do |name|
+      ibak = File.join(ipath, name + '.bak')
+      icon = File.join(ipath, name + '.png')
+      appicon = File.join($app_path, 'icon', name + '.png')
+      cp icon, ibak unless File.exists? ibak
+      cp appicon, ipath
+    end
+  ensure
+    restore_app_icon
+  end
+
+end
+
 def set_signing_identity(identity,profile,entitlements)
   fname = $config["build"]["iphonepath"] + "/rhorunner.xcodeproj/project.pbxproj"
   buf = ""
@@ -176,9 +208,7 @@ namespace "build" do
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
-      ipath = $config["build"]["iphonepath"]
-      cp File.join(ipath, 'icon.png'), File.join(ipath, 'icon.png.bak') unless File.exists? File.join(ipath, 'icon.png.bak')
-      cp $app_path + "/icon/icon.png", ipath
+      set_app_icon
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
 
@@ -190,9 +220,7 @@ namespace "build" do
 
       chdir $startdir
       set_app_name("Rhodes") unless $app_config["name"].nil?
-      rm_f File.join(ipath, 'icon.png')
-      cp File.join(ipath, 'icon.png.bak'), File.join(ipath, 'icon.png')
-      rm_f File.join(ipath, 'icon.png.bak')
+      restore_app_icon
 
       unless ret == 0
         puts "Error cleaning"
