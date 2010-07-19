@@ -107,6 +107,9 @@ module Rho
       #rho_info 'render content: ' + @content.length.to_s
       if xhr? and options[:use_layout_on_ajax] != true
         options[:layout] = false
+        if @request["headers"]["Jqtouch"] == "true"
+          @content = "<div>#{@content}</div>"
+        end
       elsif options[:layout].nil? or options[:layout] == true
         options[:layout] = self.class.get_layout_name
       end
@@ -121,7 +124,7 @@ module Rho
       RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
-      model.clean_cached_metadata() if clean_metadata
+      model.clean_cached_metadata() if clean_metadata    
       @content
     end
 
