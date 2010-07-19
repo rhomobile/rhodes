@@ -1,21 +1,35 @@
-require 'spec_runner'
+
+class MSpecScript
+  # Returns the config object. Maintained at the class
+  # level to easily enable simple config files. See the
+  # class method +set+.
+  def self.config
+    @config ||= {
+    }
+  end
+  
+  def config
+    MSpecScript.config
+  end
+  
+end
 
 class RhoSpecModule
-    attr_accessor :before, :after, :tests
+    attr_accessor :before, :after, :tests, :spec_name
     
-    def initialize(msg, spec_body)
+    def initialize(spec_name, spec_body)
         @before = {}
         @after = {}
         @tests = {}
         
         @env = Object.new
         
-        @spec_message = msg
+        @spec_name = spec_name
         @spec_body = spec_body
     end
     
     def run_spec
-        puts "TEST: #{@spec_message}"
+        puts "TEST: #{@spec_name}"
 
         @env.instance_eval(&@spec_body) if @spec_body
     end
@@ -25,30 +39,63 @@ class RhoSpecModule
     end
 end
 
-class RhoSpec
-    attr_reader :exc_count, :count, :errorMessages, :code
+class MSpec
+    VERSION = "RhoSpec 1.0"
+    
+    attr_reader :exc_count, :count, :errorMessages, :code, :is_network_available
     @@spec_modules = []
     @@spec_index = 0
+    @@spec_files = []
+    @@instance = nil
+    
+    def self.exit_code
+        @@instance.code   
+    end
+
+    def self.exc_count
+        @@instance.exc_count   
+    end
+
+    def self.count
+        @@instance.count   
+    end
+
+    def self.errorMessages
+        @@instance.errorMessages   
+    end
+    
+    def self.is_network_available
+        @@instance.is_network_available
+    end
     
     def self.current
         @@spec_modules[@@spec_index]
+    end
+
+    def self.register_files(spec_files)
+        @@spec_files = spec_files
+    end
+    
+    def self.process
+        @@instance = MSpec.new        
+        @@instance.start        
     end
     
     def start
         @exc_count = 0
         @count = 0
         @errorMessages = ""
-        $is_network_available = System.get_property('has_network')
+        @is_network_available = System.get_property('has_network')
+        $is_network_available = @is_network_available
         
-        run_all_specs()
+        @@spec_files.each do |spec_file|
+            run_spec(spec_file)
+        end
         
         @code = @exc_count > 0 ? 1 : 0
         
-        puts "***Total:  " + @count.to_s
-        puts "***Passed: " + (@count - @exc_count).to_s
-        puts "***Failed: " + @exc_count.to_s
     end
-
+    
     def self.describe(mod, msg=nil, options=nil, &block)
         @@spec_modules << RhoSpecModule.new(mod, block)
     end
@@ -60,7 +107,7 @@ class RhoSpec
             yield if block_given?
         rescue Exception => e
             @exc_count += 1
-            ntrace_index = RhoSpec.current && RhoSpec.current.tests.size() > 0 ? 2 : 1
+            ntrace_index = 2 #MSpec.current && MSpec.current.tests.size() > 0 ? 2 : 1
             @errorMessages += "<br/>FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
             puts "FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
@@ -71,47 +118,34 @@ class RhoSpec
         end
     end
             
-    def run_spec(spec_name)
+    def run_spec(spec_file)
+        spec_name = ""
         begin
             @@spec_modules = []
             @@spec_index = 0
-            require 'Spec/' + spec_name.downcase()+'_spec'
+            require spec_file #'Spec/' + spec_name.downcase()+'_spec'
             
-            if @@spec_modules.size > 0
+            @@spec_modules.each do |spec_module|
+                spec_module.run_spec
+                spec_module.run_test(spec_module.before[:all])
                 
-                @@spec_modules.each do |spec_module|
-                    spec_module.run_spec
-                    spec_module.run_test(spec_module.before[:all])
+                spec_module.tests.each do |test_name, body|
+                    spec_module.run_test(spec_module.before[:each])
+                
+                    spec_name  = spec_module.spec_name
+                    run_test(spec_name, test_name){spec_module.run_test(body)}
                     
-                    spec_module.tests.each do |test_name, body|
-                        spec_module.run_test(spec_module.before[:each])
+                    spec_module.run_test(spec_module.after[:each])
                     
-                        run_test(spec_name, test_name){spec_module.run_test(body)}
-                        
-                        spec_module.run_test(spec_module.after[:each])
-                        
-                    end
+                end
 
-                    spec_module.run_test(spec_module.after[:all])
-                    
-                    @@spec_index += 1
-                end
-            else
-                puts "TEST: #{spec_name}"
-            
-                testClass = Object.const_get(spec_name+'Spec')
-                testObj = testClass.new
+                spec_module.run_test(spec_module.after[:all])
                 
-                testClass.instance_methods(false).each do |test_name|
-                    next unless test_name.to_s().end_with?('_test')
-                    run_test(spec_name, test_name){testObj.send test_name}
-                end
-            
-                testObj.clear if testObj.respond_to?( :clear )
-            end    
+                @@spec_index += 1
+            end
         rescue Exception => e
             @exc_count += 1
-            puts "Test '#{spec_name}' failed: Error: #{e}"
+            puts "Test '#{spec_name}' FAIL: Error: #{e}"
             e.backtrace.each do |item|
                 puts item
             end
@@ -123,19 +157,19 @@ end
 class Object
   
     def before(at=:each, &block)
-        RhoSpec.current.before[ at ] = block
+        MSpec.current.before[ at ] = block
     end
 
     def after(at=:each, &block)
-        RhoSpec.current.after[ at ] = block
+        MSpec.current.after[ at ] = block
     end
 
     def describe(mod, msg=nil, options=nil, &block)
-        RhoSpec.describe mod, msg, &block
+        MSpec.describe mod, msg, &block
     end
 
     def it(msg, &block)
-        RhoSpec.current.tests[ msg ] = block
+        MSpec.current.tests[ msg ] = block
     end
 
     def it_should_behave_like(desc)
