@@ -9,10 +9,12 @@ class SpecRunner < MSpecScript
     MSpec.backtrace = true
 
     #MSpec.guard
+    app_folder = Rho::RhoFSConnector.get_app_path('app')
+    app_folder.gsub!(/\\/, '/')
 
-    specs = Rho::RhoFSConnector.get_app_path('app') + "**/*_spec.iseq"
+    specs = app_folder + "**/*_spec.iseq"
     Dir.glob(specs) { |file|
-      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
+      file.gsub!(app_folder,"")
       file.gsub!(/\.iseq/,"")
       config[:files] << file
     }
