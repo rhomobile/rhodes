@@ -171,6 +171,13 @@ end
     value1.should be_nil
     
   end
+  
+  it "should require with diff case" do
+    require "Data/reqTest.rb"
+    
+    ReqTest.get_name.should == "reqTest"
+  end
+  
 end
 =begin
 describe "String#split with String" do
