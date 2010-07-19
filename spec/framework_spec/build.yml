@@ -17,4 +17,4 @@ iphone:
 android:    
   extensions: ["digest"]
 
-extensions: ["mspec"]
+extensions: ["mspec", "fileutils"]
