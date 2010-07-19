@@ -49,8 +49,8 @@ def set_app_icon
       cp icon, ibak unless File.exists? ibak
       cp appicon, ipath
     end
-  ensure
-    restore_app_icon
+  rescue => e
+    puts "WARNING!!! Can not change icon: #{e.to_s}"
   end
 
 end
