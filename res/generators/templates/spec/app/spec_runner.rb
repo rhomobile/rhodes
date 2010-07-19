@@ -1,8 +1,4 @@
 require 'mspec'
-require 'mspec/utils/script'
-require 'mspec/version'
-
-TEST_LIBS_ONLY = false
 
 class SpecRunner < MSpecScript
   def initialize

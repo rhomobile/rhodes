@@ -1,6 +1,4 @@
 require 'mspec'
-require 'mspec/utils/script'
-require 'mspec/version'
 
 class SpecRunner < MSpecScript
   def initialize
@@ -141,9 +139,7 @@ class SpecRunner < MSpecScript
   end
 
   def run
-    puts "run"
     MSpec.register_files config[:files]
-    MSpec.backtrace=true
 
     MSpec.process
     MSpec.exit_code

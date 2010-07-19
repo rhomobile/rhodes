@@ -234,18 +234,18 @@ module Rhogen
       directory.source = 'app/SpecRunner'
       directory.destination = "app/SpecRunner"
     end
-    directory :mspec do |directory|
-      directory.source = 'app/mspec'
-      directory.destination = "app/mspec"
-    end
+    #directory :mspec do |directory|
+    #  directory.source = 'app/mspec'
+    #  directory.destination = "app/mspec"
+    #end
     #directory :spec do |directory|
     #  directory.source = 'app/spec'
     #  directory.destination = "app/spec"
     #end
-    template :fileutils do |template|
-      template.source = 'app/fileutils.rb'
-      template.destination = "app/fileutils.rb"
-    end
+    #template :fileutils do |template|
+    #  template.source = 'app/fileutils.rb'
+    #  template.destination = "app/fileutils.rb"
+    #end
     template :mspecrb do |template|
       template.source = 'app/mspec.rb'
       template.destination = "app/mspec.rb"
