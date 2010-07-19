@@ -17,8 +17,9 @@ android:
   capabilities:
     - network_state
     - pim
-
+  
 capabilities:
   - push
      
-extensions: ["json", "rhoxml", "Barcode"]
+
+extensions: ["json", "rhoxml", "barcode", "rhospec"]
