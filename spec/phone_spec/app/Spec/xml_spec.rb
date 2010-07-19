@@ -33,13 +33,13 @@ describe "Xml" do
 
     class MyStreamListener
 
-        def initialize(parent)
-            @parent = parent
+        def initialize(events)
+            @events = events
         end
 
         def tag_start name, attrs
             #puts "tag_start: #{name}; #{attrs}"
-            @parent.add_event(attrs) if name == 'event'
+            @events << attrs if name == 'event'
         end
         def tag_end name
             #puts "tag_end: #{name}"
@@ -72,9 +72,9 @@ describe "Xml" do
         end
     end
     
-    def add_event(attrs)
-        @events<<attrs
-    end
+    #def add_event(attrs)
+    #    @events<<attrs
+    #end
     
     it "should stream parse" do
     
@@ -82,7 +82,7 @@ describe "Xml" do
         file = File.new(file_name)
     
         @events = []
-        list = MyStreamListener.new(self)
+        list = MyStreamListener.new(@events)
         REXML::Document.parse_stream(file, list)
     
         @events.size.should == 1
