@@ -1,10 +1,7 @@
 require 'rexml/document'
 
-class XmlSpec
-    def initialize
-    end
-
-    def parse_test
+describe "Xml" do
+    it "should parse" do
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.xml')
         
         file = File.new(file_name)
@@ -18,11 +15,11 @@ class XmlSpec
             count += 1
             event = e
         end
-        Test_equal(count,1)
-        Test_not_equal(event,nil)
-        Test_equal( REXML::XPath.first( event, "@id" ).value, "E0-001-000278174-6" )
+        count.should == 1
+        event.should_not be_nil
+        REXML::XPath.first( event, "@id" ).value.should == "E0-001-000278174-6" 
         
-        Test_equal(event.elements['title'].text, "Martini Tasting")
+        event.elements['title'].text.should ==  "Martini Tasting"
         
 		childs = REXML::XPath.each( doc, "//children/child/" )
 		ch_count = 0
@@ -31,7 +28,7 @@ class XmlSpec
             Test_equal(ch.elements['title'].text, "Momba")            
         end
 
-        Test_equal(ch_count,10)
+        ch_count.should == 10
     end
 
     class MyStreamListener
@@ -79,7 +76,7 @@ class XmlSpec
         @events<<attrs
     end
     
-    def stream_test
+    it "should stream parse" do
     
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.xml')
         file = File.new(file_name)
@@ -88,13 +85,10 @@ class XmlSpec
         list = MyStreamListener.new(self)
         REXML::Document.parse_stream(file, list)
     
-        Test_equal(@events.size,1)
+        @events.size.should == 1
     end
     
     #def generate_test
         #TODO: generate_test
     #end
-    
-    def clear
-    end
 end    

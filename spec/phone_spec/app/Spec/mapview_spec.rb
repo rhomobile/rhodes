@@ -1,12 +1,10 @@
 require 'rho/mapview'
 
-class MapViewSpec
-  def initialize
-  end
+describe "MapView" do
 
-  def create_test
+  it "should create" do
     state = MapView.state
-    Test_equal( state, nil )
+    state.should be_nil
 
     MapView.create :settings => {:map_type => 'roadmap', :region => [37, -122, 10, 10]}
     w = 2
@@ -14,17 +12,17 @@ class MapViewSpec
     sleep w
 
     state = MapView.state
-    Test_not_equal( state, nil )
-    Test_equal( state.is_a?(Hash), true )
+    state.should_not be_nil
+    state.is_a?(Hash).should == true 
     delta = 0.001
-    Test_equal( (state[:center][:latitude] - 37.0).abs < delta, true )
-    Test_equal( (state[:center][:longitude] - (-122.0)).abs < delta, true )
+    (state[:center][:latitude] - 37.0).abs.should  < delta
+    (state[:center][:longitude] - (-122.0)).abs.should  < delta
 
     MapView.close
     sleep 2
 
     state = MapView.state
-    Test_equal( state, nil )
+    state.should be_nil
   end
 
 end
