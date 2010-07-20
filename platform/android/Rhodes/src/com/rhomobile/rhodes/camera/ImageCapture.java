@@ -45,7 +45,8 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class ImageCapture extends Activity implements SurfaceHolder.Callback, OnClickListener {
+public class ImageCapture extends Activity implements SurfaceHolder.Callback, OnClickListener, Camera.AutoFocusCallback
+ {
 	
 	private static final String TAG = "ImageCapture";
 	
@@ -90,6 +91,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 		public void onPictureTaken(byte[] data, Camera c) {
 			Logger.D(TAG, "PICTURE CALLBACK RAW");
 			camera.startPreview();
+			startAutoFocusIfExist();
 		}
 	};
 
@@ -144,6 +146,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 			camera.setParameters(p);
 			camera.setPreviewDisplay(holder);
 			camera.startPreview();
+			startAutoFocusIfExist();
 			isPreviewRunning = true;
 		} catch (Exception e) {
 			Logger.E(TAG, e.getMessage());
@@ -186,5 +189,15 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 		}
 		
 		camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
+	}
+
+                        private void startAutoFocusIfExist() {
+		String focus_mode = camera.getParameters().getFocusMode();
+		if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
+			camera.autoFocus(this);
+		}
+                        }
+
+	public void onAutoFocus (boolean success, Camera camera) {
 	}
 }

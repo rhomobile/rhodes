@@ -7,7 +7,6 @@ import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.io.http.HttpHeaders;
 import com.rho.rubyext.Alert;
-import com.rho.rubyext.ExternalExtensions;
 import rhomobile.NativeBar;
 import rhomobile.RhoPhonebook;
 import rhomobile.RhodesApplication;
@@ -43,7 +42,6 @@ public class RhoRubyHelper implements IRhoRubyHelper {
         WebView.initMethods(RubyRuntime.WebViewClass);
         RhoConf.initMethods(RubyRuntime.RhoConfClass);
         Alert.initMethods(RubyRuntime.AlertClass);        
-        ExternalExtensions.registerExtensions(); 
         DateTimePicker.initMethods(RubyRuntime.DateTimePickerClass);
         RingtoneManager.initMethods(RubyRuntime.RingtoneManagerClass);
         NativeBar.initMethods(RubyRuntime.NativeBarClass);
