@@ -133,6 +133,14 @@ namespace "config" do
       $sdk = $app_config["iphone"]["sdk"]
     end
 
+    if $sdk =~ /iphonesimulator/
+      $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+        $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+    else
+      $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
+        $sdk.gsub(/iphoneos/,"") + ".sdk"
+    end
+
     unless File.exists? $homedir + "/.profile"
       File.open($homedir + "/.profile","w") {|f| f << "#" }
       chmod 0744, $homedir + "/.profile"
@@ -182,14 +190,7 @@ namespace "build" do
       simulator = $sdk =~ /iphonesimulator/
       ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= $devroot + "/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
         ".platform/Developer/usr/bin"
-
-      if simulator
-        ENV["SDKROOT"] ||= $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
-              $sdk.gsub(/iphonesimulator/,"") + ".sdk"
-      else
-        ENV["SDKROOT"] ||= $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
-              $sdk.gsub(/iphoneos/,"") + ".sdk"
-      end
+      ENV["SDKROOT"] = $sdkroot
 
       #ENV["SDKROOT"] = $xcode_sdk_dir if not $xcode_sdk_dir.nil?
 
@@ -257,15 +258,66 @@ namespace "run" do
      end
      `killall "iPhone Simulator"`
 
-     puts "sdk: #{$sdk.inspect.to_s}"
      sdkver = $sdk.gsub(/^iphonesimulator/, '')
-     
+
+     elements = []
+     binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')
+     xmlplist = '/tmp/iphone.plist'
+     if File.exists? binplist
+       `plutil -convert xml1 -o #{xmlplist} #{binplist}`
+
+       elements = []
+       doc = REXML::Document.new(File.new(xmlplist))
+       nextignore = false
+       doc.elements.each('plist/dict/*') do |element|
+         if nextignore
+           nextignore = false
+           next
+         end
+         if element.name == 'key'
+           if element.text == 'currentSDKRoot' or element.text == 'SimulateDevice'
+             nextignore = true
+             next
+           end
+         end
+         
+         elements << element
+       end
+     end
+
+     e = REXML::Element.new 'key'
+     e.text = 'SimulateDevice'
+     elements << e
+     e = REXML::Element.new 'string'
+     e.text = sdkver == '3.2' ? 'iPad' : 'iPhone'
+     elements << e
+     e = REXML::Element.new 'key'
+     e.text = 'currentSDKRoot'
+     elements << e
+     e = REXML::Element.new 'string'
+     e.text = $sdkroot
+     elements << e
+
+     File.open(xmlplist, 'w') do |f|
+       f.puts "<?xml version=\"1.0\" encoding=\"UTF-8'\"?>"
+       f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+       f.puts "<plist version=\"1.0\">"
+       f.puts "<dict>"
+       elements.each do |e|
+         f.puts "\t#{e.to_s}"
+       end
+       f.puts "</dict>"
+       f.puts "</plist>"
+     end
+
+     `plutil -convert binary1 -o #{binplist} #{xmlplist}`
+
      rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
      puts "rhorunner: #{rhorunner}"
 
-  
      puts "our app name: #{$app_config['name']}"
      puts "simdir: #{$simdir}"
+
      Dir.glob(File.join($simdir, sdkver, "Applications", "*")).each do |simapppath|
        need_rm = true if File.directory? simapppath
        if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
