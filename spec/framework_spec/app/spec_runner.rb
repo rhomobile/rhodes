@@ -1,6 +1,4 @@
 require 'mspec'
-require 'mspec/utils/script'
-require 'mspec/version'
 
 class SpecRunner < MSpecScript
   def initialize
@@ -13,18 +11,28 @@ class SpecRunner < MSpecScript
     #MSpec.guard
     
     #LANGUAGE
-    specs =  Rho::RhoFSConnector.get_app_path('app') + "spec/language/**/*_spec.iseq"
+    app_folder = Rho::RhoFSConnector.get_app_path('app')
+    app_folder.gsub!(/\\/, '/')
+    
+    specs =  app_folder + "spec/language/**/*_spec.iseq"
+    
     Dir.glob(specs) do |file|
-      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
+      file.gsub!(app_folder,"")
       file.gsub!(/\.iseq/,"")
       # Temporary disable for_spec until https://www.pivotaltracker.com/story/show/3876583 will be fixed
       next if file =~ /\/for_spec$/
+      
+      if ( System.get_property('platform') == 'WINDOWS' )
+        next if file =~ /\/execution_spec$/      
+        next if file =~ /\/file_spec$/      
+      end
+      
       config[:files] << file
     end
-
     # CORE
     core = []
-    core << 'argf'
+
+    core << 'argf' unless System.get_property('platform') == 'WINDOWS'
     core << 'class'
     core << 'exception'
     core << 'float'
@@ -75,36 +83,63 @@ class SpecRunner < MSpecScript
     #core << 'symbol'
     core << 'true'
     core << 'builtin_constants'
-    core << 'env'
+    core << 'env' unless System.get_property('platform') == 'WINDOWS'
     # TODO: enable when bug https://www.pivotaltracker.com/story/show/3916324 will be fixed
     #core << 'kernel'
     core << 'nil'
-    core << 'process'
+    core << 'process' unless System.get_property('platform') == 'WINDOWS'
     core << 'unboundmethod'
 
     core.each do |folder|
-      specs =  Rho::RhoFSConnector.get_app_path('app') + "spec/core/#{folder}/**/*_spec.iseq"
+      specs =  app_folder + "spec/core/#{folder}/**/*_spec.iseq"
       Dir.glob(specs) do |file|
-        file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
+        file.gsub!(app_folder,"")
         file.gsub!(/\.iseq/,"")
+        
+        if ( System.get_property('platform') == 'WINDOWS' )
+          next if file =~ /\/file\/expand_path_spec$/      
+          next if file =~ /\/file\/executable_real_spec$/      
+          next if file =~ /\/file\/lstat_spec$/      
+          next if file =~ /\/file\/mtime_spec$/      
+          next if file =~ /\/file\/new_spec$/      
+          next if file =~ /\/file\/open_spec$/      
+          next if file =~ /\/file\/readable_real_spec$/                
+          next if file =~ /\/file\/setgid_spec$/                
+          next if file =~ /\/file\/readlink_spec$/                
+          next if file =~ /\/file\/setuid_spec$/                
+          next if file =~ /\/file\/size_spec$/                
+          next if file =~ /\/file\/stat_spec$/      
+          next if file =~ /\/file\/truncate_spec$/      
+          next if file =~ /\/file\/umask_spec$/      
+          next if file =~ /\/file\/ulink_spec$/      
+          next if file =~ /\/file\/writable_real_spec$/      
+          next if file =~ /\/file\/zero_spec$/      
+          
+          next if file =~ /\/file\/stat\//                
+          
+          next if file =~ /\/filetest\/executable_real_spec$/      
+          next if file =~ /\/filetest\/zero_spec$/      
+          
+          next if file =~ /\/process\/kill_spec$/      
+        end
+        
         config[:files] << file
       end
     end
 
     # LIBRARIES
-    specs = Rho::RhoFSConnector.get_app_path('app') + "spec/library/**/*_spec.iseq"
-    Dir.glob(specs) do |file|
-      file.gsub!(Rho::RhoFSConnector.get_app_path('app'),"")
-      file.gsub!(/\.iseq/,"")
-      config[:files] << file
-    end
- 
+    unless System.get_property('platform') == 'WINDOWS'    
+        specs = app_folder + "spec/library/**/*_spec.iseq"
+        Dir.glob(specs) do |file|
+          file.gsub!(app_folder,"")
+          file.gsub!(/\.iseq/,"")
+          config[:files] << file
+        end
+    end 
   end
 
   def run
-
     MSpec.register_files config[:files]
-    MSpec.backtrace=true
 
     MSpec.process
     MSpec.exit_code

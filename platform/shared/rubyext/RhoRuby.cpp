@@ -17,15 +17,20 @@ const _CRhoRuby& RhoRuby = _CRhoRuby();
 /*static*/ int  _CRhoRuby::getErrorFromResponse(net::INetResponse& resp)
 {
     if ( !resp.isResponseRecieved())
-        return RhoRuby.ERR_NETWORK;
+        return RHO_ERR_NETWORK;
 
     if ( resp.isUnathorized() )
-    	return RhoRuby.ERR_UNATHORIZED;
+    	return RHO_ERR_UNATHORIZED;
 
     if ( !resp.isOK() )
-    	return RhoRuby.ERR_REMOTESERVER;
+    	return RHO_ERR_REMOTESERVER;
 
-    return RhoRuby.ERR_NONE;
+    return RHO_ERR_NONE;
 }
 
+}
+
+extern "C" char* rho_error_getErrorText(int nError)
+{
+    return strdup(rho::RhoRuby.getErrorText(nError).c_str());
 }

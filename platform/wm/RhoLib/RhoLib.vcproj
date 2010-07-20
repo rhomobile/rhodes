@@ -806,6 +806,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\RhodesAppBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhodesAppBase.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoFatalError.h"
 				>
 			</File>

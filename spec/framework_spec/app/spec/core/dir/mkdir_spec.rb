@@ -34,6 +34,7 @@ describe "Dir.mkdir" do
     end
   end
 
+unless System.get_property('platform') == 'WINDOWS'
   it "raises a SystemCallError when lacking adequate permissions in the parent dir" do
     # In case something happened it it didn't get cleaned up.
       if File.exist? 'noperms'
@@ -43,7 +44,7 @@ describe "Dir.mkdir" do
 
     Dir.mkdir 'noperms', 0000
 
-    lambda { Dir.mkdir 'noperms/subdir' }.should raise_error(SystemCallError)
+    lambda { Dir.mkdir 'noperms/subdir' }.should raise_error(SystemCallError) 
 
     system 'chmod 0777 noperms'
     platform_is_not :windows do
@@ -54,7 +55,7 @@ describe "Dir.mkdir" do
     end
     Dir.rmdir 'noperms'
   end
-
+end
   it "raises a SystemCallError if any of the directories in the path before the last does not exist" do
     lambda { Dir.mkdir "#{DirSpecs.nonexistent}/subdir" }.should raise_error(SystemCallError)
   end
