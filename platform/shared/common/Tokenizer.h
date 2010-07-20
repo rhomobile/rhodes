@@ -17,7 +17,8 @@ public:
     CTokenizer(String str,String delims);
 	String nextToken();
     boolean hasMoreTokens();
-	
+
+    int getCurPos(){ return m_position; }
 private:
   	void eatDelimeters();
 

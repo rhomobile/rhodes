@@ -1,12 +1,13 @@
-class RhoFileSpec
-    def initialize
-      clear()
+describe "RhoFile" do
+    
+    before(:all) do
+        clear()
     end
     
-    def write_test
+    it "should write" do
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.txt')
         File.delete(file_name) if File.exists?(file_name)
-        Test_equal(File.exists?(file_name), false)
+        File.exists?(file_name).should ==  false
 
         write_data  = "this is rhodes test"
         #File.open(file_name, "w"){|file| file.write(write_data)}
@@ -15,35 +16,35 @@ class RhoFileSpec
         f.close        
         
         content = File.read(file_name)
-        Test_equal( content, write_data )
+        content.should ==  write_data 
 
         write_data1  = "one more test"
         File.open(file_name, "w"){|file| file.write(write_data1)}
         content = File.read(file_name)
-        Test_equal( content, write_data1 )
+        content.should ==  write_data1 
         
         write_data2  = ";add more test"
         File.open(file_name, "a"){|file| file.write(write_data2)}
         content = File.read(file_name)
-        Test_equal( content, write_data1 + write_data2 )
+        content.should ==  write_data1 + write_data2 
         
     end
 
-    def binary_readwrite_test
+    it "should binary read/write" do
         file_testname = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.png')
         test_content = File.binread(file_testname)
-        Test_equal(File.size(file_testname), test_content.length)
+        File.size(file_testname).should == test_content.length
     
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.png')
         File.delete(file_name) if File.exists?(file_name)
-        Test_equal(File.exists?(file_name), false)
+        File.exists?(file_name).should ==  false
 
         f = File.new(file_name, "wb")
         f.write(test_content)
         f.close        
         
         content = File.binread(file_name)
-        Test_equal( content, test_content )
+        content.should == test_content
     end
 
     def create_file_in_cache(dir_name, file, ext)
@@ -70,7 +71,7 @@ class RhoFileSpec
         
     end
 
-    def dir_test
+    it "should dir" do
         dir_name = Rho::RhoApplication::get_model_path('app', 'cache')
         Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
         
@@ -80,17 +81,17 @@ class RhoFileSpec
         end
         
         res = create_file_in_cache(dir_name, "cache_test", "1")
-        Test_equal( res, "exist" )
+        res.should ==  "exist" 
         
         res = create_file_in_cache(dir_name, "cache_test", "3")
-        Test_equal( res, "limit" )
+        res.should ==  "limit" 
         
     end
 
-    def isfileexist_test
-        Test_equal( File.exist?(Rho::RhoApplication::get_model_path('app', 'Spec')), true ) if System.get_property('platform') != 'Blackberry'
-        Test_equal( File.exist?(Rho::RhoApplication::get_blob_folder()), true )
-        Test_equal( File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')),  true )
+    it "should isfileexist" do
+        File.exist?(Rho::RhoApplication::get_model_path('app', 'Spec')).should == true if System.get_property('platform') != 'Blackberry'
+        File.exist?(Rho::RhoApplication::get_blob_folder()).should ==  true 
+        File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')).should ==  true 
         
         bExc = false
         begin
@@ -99,13 +100,13 @@ class RhoFileSpec
             bExc = e.is_a?(TypeError)
         end
         
-        Test_equal( bExc, true )
-        Test_equal( File.exist?(""), false )        
+        bExc.should ==  true
+        File.exist?("").should == false
     end
     
-    def readnonexistfile_test
+    it "should readnonexistfile" do
         file_name = Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_345'
-        Test_equal( File.exist?(file_name), false )
+        File.exist?(file_name).should ==  false 
 
         #TODO: crash after this exception on windows mobile(rb_sys_fail)
         #https://www.pivotaltracker.com/story/show/4164945
@@ -116,7 +117,7 @@ class RhoFileSpec
             rescue Exception => e
                 bExc = e.is_a?(SystemCallError)
             end
-            Test_equal( bExc, true )
+            bExc.should ==  true
         end    
     end
     

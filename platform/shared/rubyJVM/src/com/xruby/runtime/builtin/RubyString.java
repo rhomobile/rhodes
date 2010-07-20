@@ -325,7 +325,7 @@ public class RubyString extends RubyBasic {
         }
     }
 
-    private Collection/*<String>*/ split(RubyString s, String delimiter) {
+    private Collection/*<String>*/ split(RubyString s, String delimiter, int nLimit) {
         StringParser t = new StringParser(s.toString(), delimiter);
 //        int total = t.countTokens();
         //Collection/*<String>*/ r = new ArrayList/*<String>*/(total);
@@ -334,9 +334,17 @@ public class RubyString extends RubyBasic {
 //        }
         
         Collection/*<String>*/ r = new ArrayList/*<String>*/(0);
+        int i = 0;
         while ( t.hasMoreElements() )
         {
-        	r.add(t.nextElement());
+        	if ( nLimit > 0 && i > nLimit )
+        		break;
+        	Object res = t.nextElement();
+        	
+        	if ( nLimit > 0 && res == null )
+        		res = "";
+        	
+        	r.add(res);
         }
         return r;
     }
@@ -1066,11 +1074,14 @@ public class RubyString extends RubyBasic {
     //@RubyLevelMethod(name="split")
     public RubyValue split(RubyArray args) {
         RubyValue r = (null == args) ? GlobalVariables.get("$;") : args.get(0);
-
+        int nLimit = 0;
+        if ( args.size() > 1 )
+        	nLimit = args.get(1).toInt();
+        
         Collection/*<String>*/ splitResult;
         boolean bSkipFirstEmptyItem = false;
         if (r == RubyConstant.QNIL) {
-            splitResult = split(this, " ");
+            splitResult = split(this, " ", nLimit);
         } else if (r instanceof RubyRegexp) 
         {
         	RubyRegexp reg = (RubyRegexp) r;
@@ -1079,7 +1090,7 @@ public class RubyString extends RubyBasic {
             if ( reg.getPattern().getPattern().startsWith("(?=") )
             	bSkipFirstEmptyItem = true;
         } else if (r instanceof RubyString) {
-            splitResult = split(this, ((RubyString) r).toString());
+            splitResult = split(this, ((RubyString) r).toString(), nLimit);
         } else {
             throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong argument type " + r.getRubyClass() + " (expected Regexp)");
         }

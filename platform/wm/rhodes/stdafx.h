@@ -90,6 +90,11 @@
 #include <atlmisc.h>
 #include <atlctrls.h>
 #include <atldlgs.h>
+
+#if defined(WIN32_PLATFORM_WFSP) && !defined(_TPCSHELL_H_)
+#include <tpcshell.h>
+#endif
+
 #define _WTL_CE_NO_ZOOMSCROLL
 #include <atlwince.h>
 

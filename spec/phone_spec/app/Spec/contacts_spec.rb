@@ -15,16 +15,16 @@ class Hash
   end
 end
 
-class ContactsSpec
+describe "Contacts" do
 
-  def create_test
+  it "should create" do
     first_name = 'Random'
     last_name = 'Newbie'
     mobile_number = '+1222333444'
 
     contacts = Rho::RhoContact.find(:all)
-    puts "contacts: #{contacts.inspect.to_s}"
-    Test_not_equal( contacts, nil )
+    #puts "contacts: #{contacts.inspect.to_s}"
+    contacts.should_not be_nil
 
     contact = {}
     contact['first_name'] = first_name
@@ -33,42 +33,42 @@ class ContactsSpec
     Rho::RhoContact.create!(contact)
 
     newcontacts = Rho::RhoContact.find(:all)
-    puts "newcontacts: #{newcontacts.inspect.to_s}"
-    Test_not_equal( newcontacts, nil )
+    #puts "newcontacts: #{newcontacts.inspect.to_s}"
+    newcontacts.should_not be_nil
 
     diff = newcontacts.diff(contacts)
-    Test_equal( diff.size, 1 )
-    Test_equal( diff.keys.size, 1 )
+    diff.size.should == 1 
+    diff.keys.size.should ==  1 
     c = diff[diff.keys.first]
-    Test_equal( c['first_name'], first_name )
-    Test_equal( c['last_name'], last_name )
-    Test_equal( c['mobile_number'], mobile_number )
+    c['first_name'].should ==  first_name 
+    c['last_name'].should ==  last_name 
+    c['mobile_number'].should == mobile_number 
 
     @id = c['id']
-    puts "id: #{@id}"
+    #puts "id: #{@id}"
   end
 
-  def update_test
-    puts "id: #{@id}"
+  it "should update" do
+    #puts "id: #{@id}"
     Rho::RhoContact.update_attributes 'id' => @id, 'first_name' => "RANDOM", 'last_name' => "NEWBIE"
 
     contact = Rho::RhoContact.find(@id)
-    puts "contacts: #{contact.inspect.to_s}"
-    Test_not_equal( contact, nil )
+    #puts "contacts: #{contact.inspect.to_s}"
+    contact.should_not be_nil
 
     unless System.get_property('platform') == 'Blackberry'
       #https://www.pivotaltracker.com/story/show/3983643
-      Test_equal( contact['first_name'], 'RANDOM' )
-      Test_equal( contact['last_name'], 'NEWBIE' )
+      contact['first_name'].should ==  'RANDOM' 
+      contact['last_name'].should ==  'NEWBIE' 
     end
     
   end
 
-  def remove_test
+  it "should remove" do
     contacts = Rho::RhoContact.find(:all)
     puts "contacts: #{contacts.inspect.to_s}"
-    Test_not_equal( contacts, nil )
-    Test_equal( contacts.size >= 1, true )
+    contacts.should_not be_nil
+    contacts.size.should >= 1 
 
     size = contacts.size
 
@@ -76,9 +76,9 @@ class ContactsSpec
 
     contacts = Rho::RhoContact.find(:all)
     puts "new contacts: #{contacts.inspect.to_s}"
-    Test_not_equal( contacts, nil )
+    contacts.should_not be_nil
 
-    Test_equal( size - contacts.size, 1 )
+    (size - contacts.size).should == 1 
   end
 
 end
