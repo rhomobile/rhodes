@@ -165,8 +165,11 @@ public class RhoSupport {
     	return m_strAppName;
 	}
 	
-    public static String createMainClassName(String required_file) {
-
+    public static String createMainClassName(String required_file) 
+    {
+    	if ( required_file.startsWith("/lib") )
+    		required_file = required_file.substring(4);
+    	
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {
             required_file = required_file.substring(0, required_file.length() - 3);
