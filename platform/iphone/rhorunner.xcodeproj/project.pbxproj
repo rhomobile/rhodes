@@ -37,6 +37,9 @@
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
 		BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373651144220F006EA6DA /* SimpleMainView.m */; };
 		BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373C411444A8F006EA6DA /* Rhodes.m */; };
+		BDC6F34911F4ABBF0056C1C3 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34611F4ABBF0056C1C3 /* icon57.png */; };
+		BDC6F34A11F4ABBF0056C1C3 /* icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34711F4ABBF0056C1C3 /* icon72.png */; };
+		BDC6F34B11F4ABBF0056C1C3 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34811F4ABBF0056C1C3 /* icon114.png */; };
 		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
@@ -182,6 +185,9 @@
 		BDB373651144220F006EA6DA /* SimpleMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleMainView.m; sourceTree = "<group>"; };
 		BDB373C3114449B6006EA6DA /* Rhodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rhodes.h; sourceTree = "<group>"; };
 		BDB373C411444A8F006EA6DA /* Rhodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rhodes.m; sourceTree = "<group>"; };
+		BDC6F34611F4ABBF0056C1C3 /* icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon57.png; sourceTree = SOURCE_ROOT; };
+		BDC6F34711F4ABBF0056C1C3 /* icon72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon72.png; sourceTree = SOURCE_ROOT; };
+		BDC6F34811F4ABBF0056C1C3 /* icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon114.png; sourceTree = SOURCE_ROOT; };
 		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -257,6 +263,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
+				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
+				BDC6F34811F4ABBF0056C1C3 /* icon114.png */,
 				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
 				BD97AC1E1160EE7A006960F9 /* Alert */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
@@ -680,6 +689,9 @@
 				BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */,
 				BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */,
 				BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */,
+				BDC6F34911F4ABBF0056C1C3 /* icon57.png in Resources */,
+				BDC6F34A11F4ABBF0056C1C3 /* icon72.png in Resources */,
+				BDC6F34B11F4ABBF0056C1C3 /* icon114.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

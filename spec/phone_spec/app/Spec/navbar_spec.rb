@@ -1,9 +1,6 @@
-class NavBarSpec
-  def initialize
-  end
-
-  def create_test
-    Test_equal( NavBar.started, false )
+describe "NavBar" do
+  it "should create" do
+    NavBar.started.should ==  false 
     
     begin
       NavBar.create
@@ -11,15 +8,15 @@ class NavBarSpec
       # Nothing
     end
     sleep 2
-    Test_equal( NavBar.started, false )
+    NavBar.started.should ==  false 
 
     NavBar.create :title => "", :left => {:action => :back}
     sleep 2
-    Test_equal( NavBar.started, true )
+    NavBar.started.should ==  true
 
     NavBar.remove
     sleep 2
-    Test_equal( NavBar.started, false )
+    NavBar.started.should ==  false
 
   end
 
