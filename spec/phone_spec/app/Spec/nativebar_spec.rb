@@ -1,19 +1,17 @@
-class NativeBarSpec
-  def initialize
-  end
+describe "NativeBar" do
 
-  def create_test
+  it "should create" do
     NativeBar.create Rho::RhoApplication::NOBAR_TYPE, []
     sleep 2
-    Test_equal( NativeBar.started, false )
+    NativeBar.started.should ==  false
 
     NativeBar.create Rho::RhoApplication::TOOLBAR_TYPE, [{:action => :back}]
     sleep 2
-    Test_equal( NativeBar.started, true )
+    NativeBar.started.should ==  true
 
     NativeBar.remove
     sleep 2
-    Test_equal( NativeBar.started, false )
+    NativeBar.started.should ==  false
 
   end
 

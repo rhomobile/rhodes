@@ -1,32 +1,36 @@
-class RhoSpec
+require 'rhospec'
 
-  def run_all_specs
+class SpecRunner < MSpecScript
+  def initialize
+    config[:files] = []
 
-    run_spec('AsyncHttp')
-    run_spec('Json')
-    run_spec('Xml')
-    run_spec('RhoFile')
-    run_spec('Bsearch')
+    config[:files] << "spec/asynchttp_spec"
+    config[:files] << "spec/json_spec"
+    config[:files] << "spec/xml_spec"
+    config[:files] << "spec/rhofile_spec"
+    config[:files] << "spec/bsearch_spec"
+    config[:files] << "spec/rho_spec"
+    config[:files] << "spec/rho_controller_spec"
+    config[:files] << "spec/rhom_object_spec"
+
+    config[:files] << "spec/contacts_spec" unless System.get_property('device_name') == 'Win32'
+    config[:files] << "spec/barcode_spec" unless System.get_property('device_name') == 'Win32'            
+    config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
+    config[:files] << "spec/nativebar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
+    config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
+
+    config[:files] << "spec/xruby_spec" if defined? RHO_ME
+    config[:files] << "spec/syncengine_spec"
+    config[:files] << "spec/blobsync_spec"
+    #config[:files] << "spec/bulksync_spec"
     
-    run_spec('rho')
-    run_spec('rho_controller')
-    run_spec('Rhom_Object')            
-    
-    #fix contacts on android
-    run_spec('Contacts') unless System.get_property('device_name') == 'Win32'
-    run_spec('Barcode') unless System.get_property('device_name') == 'Win32'        
-    run_spec('MapView')  unless System.get_property('platform') == 'WINDOWS'
-    run_spec('NativeBar') if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
-    run_spec('NavBar') if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
+  end
 
-if defined? RHO_ME
-    run_spec('Xruby')
-end
-    run_spec('SyncEngine')        
-    run_spec('BlobSync')        
-    #run_spec('BulkSync')        
+  def run
+    MSpec.register_files config[:files]
 
-
+    MSpec.process
+    MSpec.exit_code
   end
   
 end
