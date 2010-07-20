@@ -20,10 +20,11 @@ describe "File.split" do
     File.split("").should == [".", ""]
   end
 
+unless System.get_property('platform') == 'WINDOWS'
   it "collapses multiple '/' characters and strips trailing ones" do
     File.split("//foo////").should == ["/", "foo"]
   end
-
+end
   platform_is_not :os => :windows do
     not_compliant_on :jruby do
       it "does not split a string that contains '\\'" do

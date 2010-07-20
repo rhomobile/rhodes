@@ -62,11 +62,11 @@ module Rho
       options = options.symbolize_keys
 
       metaenabled = false
-
+      clean_metadata = false
+      
       action = nil
       action = options[:action] if options[:action]
       action = @request['action'].nil? ? default_action : @request['action'] unless action
-
 
       if $".include? "rhodes_translator" and @request['model'] != nil
         model = nil
@@ -74,8 +74,9 @@ module Rho
           model = Object.const_get(@request['model'].to_sym)
         rescue
         end
-        if model.respond_to?( :metadata ) and model.metadata != nil and model.metadata[action.to_s] != nil
-          metaenabled = true
+        if model.respond_to?( :metadata ) and model.metadata != nil
+          clean_metadata = true
+          metaenabled = model.metadata[action.to_s] != nil
         end
       end
 
@@ -106,6 +107,9 @@ module Rho
       #rho_info 'render content: ' + @content.length.to_s
       if xhr? and options[:use_layout_on_ajax] != true
         options[:layout] = false
+        if @request["headers"]["Jqtouch"] == "true"
+          @content = "<div>#{@content}</div>"
+        end
       elsif options[:layout].nil? or options[:layout] == true
         options[:layout] = self.class.get_layout_name
       end
@@ -120,7 +124,7 @@ module Rho
       RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
-      model.clean_cached_metadata() if model
+      model.clean_cached_metadata() if clean_metadata    
       @content
     end
 

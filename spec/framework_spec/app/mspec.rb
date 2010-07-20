@@ -9,3 +9,6 @@ require 'mspec/helpers'
 # load pp from the standard library, add a pp.rb file that
 # defines the #pretty_inspect method on Object or Kernel.
 require 'mspec/pp'
+
+require 'mspec/utils/script'
+require 'mspec/version'

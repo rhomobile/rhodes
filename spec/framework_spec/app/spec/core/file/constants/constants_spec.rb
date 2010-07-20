@@ -5,6 +5,8 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../../spe
   "FNM_SYSCASE", "LOCK_EX", "LOCK_NB", "LOCK_SH",
   "LOCK_UN", "NONBLOCK", "RDONLY",
   "RDWR", "SYNC", "TRUNC", "WRONLY"].each do |const|
+  next if System.get_property('platform') == 'WINDOWS' && const == "SYNC"
+  
   describe "File::Constants::#{const}" do
     it "is defined" do
       File::Constants.const_defined?(const).should be_true

@@ -144,6 +144,9 @@ extern "C" {
 	
 unsigned long rho_sync_doSyncAllSources(int show_status_popup);
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup);
+unsigned long rho_sync_doSyncSourceByID(int nSrcID);
+unsigned long rho_sync_doSyncSourceByName(const char* szSrcName);
+
 unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 void rho_sync_doSyncSourceByUrl(const char* szSrcID);
 unsigned long rho_sync_login(const char *login, const char *password, const char* callback);
