@@ -1,8 +1,11 @@
-class AsyncHttpSpec
-    def initialize
+describe "AsyncHttp" do
+
+    after(:all) do
+        file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
+        File.delete(file_name) if File.exists?(file_name)
     end
 
-    def get_test
+    it "should http get" do
         return unless $is_network_available
         
         res = Rho::AsyncHttp.get(
@@ -10,57 +13,57 @@ class AsyncHttpSpec
         
         #puts "res : #{res}"  
         
-        Test_equal(res['status'],'ok')
-        Test_equal(res['headers']['content-length'].to_i, 11358 )
-        Test_equal(res['headers']['content-type'], 'text/plain' )
-        Test_not_equal(res['body'], nil )
-        Test_equal(res['body'].length, res['headers']['content-length'].to_i )
+        res['status'].should == 'ok'
+        res['headers']['content-length'].to_i.should == 11358
+        res['headers']['content-type'].should ==  'text/plain'
+        res['body'].should_not be_nil
+        res['body'].length.should == res['headers']['content-length'].to_i
     end
 
-    def post_test
+    it "should http post" do
         return unless $is_network_available    
         
         #TODO: post_test
     end
     
-    def download_test
+    it "should http download" do
         return unless $is_network_available
 
         file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
         File.delete(file_name) if File.exists?(file_name)
-        Test_equal(File.exists?(file_name), false)
+        File.exists?(file_name).should == false
 
         res = Rho::AsyncHttp.download_file(
           :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
           :filename => file_name )
         #puts "res : #{res}"  
         
-        Test_equal(res['status'],'ok')
-        Test_equal(res['headers']['content-length'].to_i, 8945 )
-        Test_equal(res['headers']['content-type'], 'image/jpeg' )
+        res['status'].should == 'ok'
+        res['headers']['content-length'].to_i.should ==  8945
+        res['headers']['content-type'].should == 'image/jpeg'
 
-        Test_equal(File.exists?(file_name), true)
-        Test_equal(File.size(file_name), res['headers']['content-length'].to_i )
+        File.exists?(file_name).should == true
+        File.size(file_name).should == res['headers']['content-length'].to_i
     end
 
-    def upload_test
+    it "should http upload" do
         return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
         
         file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
-        Test_equal(File.exists?(file_name), true)
+        File.exists?(file_name).should ==  true
 
         res = Rho::AsyncHttp.upload_file(
           :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
           :filename => file_name )
         #puts "res : #{res}"  
         
-        Test_equal(res['status'],'ok')
-        Test_equal(File.exists?(file_name), true)
+        res['status'].should == 'ok'
+        File.exists?(file_name).should ==  true
     end
 
-    def upload_test
+    it "should http upload" do
         return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
@@ -75,8 +78,8 @@ class AsyncHttpSpec
           #:filename_base => "phone_spec_file",
           #:name => "phone_spec_name" )
         
-        Test_equal(res['status'],'ok')
-        Test_equal(File.exists?(file_name), true)
+        res['status'].should == 'ok'
+        File.exists?(file_name).should ==  true
     end
 =begin
     def upload_withbody_test
@@ -154,8 +157,4 @@ class AsyncHttpSpec
         
     end
 =end
-    def clear
-        file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
-        File.delete(file_name) if File.exists?(file_name)
-    end
 end    

@@ -26,6 +26,8 @@ const char* rho_barcode_barcode_recognize(const char* filename) {
 	zbar_image_t* zbar_img = zbar_image_create();
 	const zbar_symbol_t* zbar_symbol = 0;
 
+        zbar_image_scanner_set_config(zbar_img_scanner, ZBAR_NONE, ZBAR_CFG_ENABLE, 1);
+
 	zbar_image_set_format(zbar_img, zbar_fourcc('Y','8','0','0'));
 	zbar_image_set_size(zbar_img, img_width, img_height);
 	//zbar_image_set_data(zbar_img, img_buf, img_width * img_height, zbar_image_free_data);
