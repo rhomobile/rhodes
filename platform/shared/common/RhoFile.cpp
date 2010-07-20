@@ -202,6 +202,19 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 #endif
 }
 
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    extern "C" int _mkdir(const char * dir);
+#endif
+
+/*static*/ void CRhoFile::createFolder(const char* szFolderPath)
+{
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    _mkdir(szFolderPath);
+#else
+    mkdir(szFolderPath, S_IRWXU);
+#endif
+}
+
 /*static*/ void CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
 {
 #if defined(OS_WINDOWS) || defined(OS_WINCE)

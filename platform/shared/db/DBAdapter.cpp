@@ -31,7 +31,7 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     int nSrcID = sqlite3_value_int(*(ppArgs+1));
     if ( attrMgr.isBlobAttr(nSrcID, szAttrName) )
     {
-        String strFilePath = RHODESAPP().resolveDBFilesPath((char*)sqlite3_value_text(*(ppArgs)));
+        String strFilePath = RHODESAPPBASE().resolveDBFilesPath((char*)sqlite3_value_text(*(ppArgs)));
         CRhoFile::deleteFile(strFilePath.c_str());
     }
 
@@ -49,7 +49,7 @@ void SyncBlob_UpdateCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
     int nSrcID = sqlite3_value_int(*(ppArgs+1));
     if ( attrMgr.isBlobAttr(nSrcID, szAttrName) )
     {
-        String strFilePath = RHODESAPP().resolveDBFilesPath((char*)sqlite3_value_text(*(ppArgs)));
+        String strFilePath = RHODESAPPBASE().resolveDBFilesPath((char*)sqlite3_value_text(*(ppArgs)));
         CRhoFile::deleteFile(strFilePath.c_str());
     }
 }
@@ -100,9 +100,10 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
 
 void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 {
-    LOG(INFO) + "Open DB: " + strDbPath;
     if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 )
         return;
+
+    LOG(INFO) + "Open DB: " + strDbPath;
     close();
 
     m_strDbPath = strDbPath;
@@ -218,7 +219,7 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
         CRhoFile::deleteFile(m_strDbPath.c_str());
         CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
 
-        CRhoFile::deleteFilesInFolder(RHODESAPP().getBlobsDirPath().c_str());
+        CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
         writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
 	}
@@ -381,7 +382,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     String dbOldName = m_strDbPath;
     close();
 
-    CRhoFile::deleteFilesInFolder(RHODESAPP().getBlobsDirPath().c_str());
+    CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
@@ -439,7 +440,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     String dbOldName = m_strDbPath;
     close();
 
-    CRhoFile::deleteFilesInFolder(RHODESAPP().getBlobsDirPath().c_str());
+    CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(fDataName.c_str(),dbOldName.c_str());
@@ -712,6 +713,14 @@ void CDBAdapter::rollback()
     }
 
     return false;
+}
+
+/*static*/ void CDBAdapter::destroy_tables_allpartitions(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
+{
+    for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
+    {
+        it->second->destroy_tables(arIncludeTables, arExcludeTables);
+    }
 }
 
 /*static*/ db::CDBAdapter& CDBAdapter::getDBByHandle(sqlite3* db)

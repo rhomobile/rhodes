@@ -1,1 +1,2 @@
 platform/shared/common/RhodesApp.cpp
+platform/shared/common/RhodesAppBase.cpp

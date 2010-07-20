@@ -1,9 +1,7 @@
-class XrubySpec
-  def initialize
-  end
+describe "Xruby" do
 
   #https://www.pivotaltracker.com/story/show/3979550  
-  def compilebug3979550_test
+  it "should compilebug3979550" do
     #[:action => :back] - Does not compile
     [{:action => :back}]
   end

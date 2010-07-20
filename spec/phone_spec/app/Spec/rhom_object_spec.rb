@@ -40,7 +40,7 @@ describe "Rhom::RhomObject" do
   end
   
   before(:each) do
-    Rho::RhoUtils.load_offline_data(['client_info','object_values'], 'Spec')
+    Rho::RhoUtils.load_offline_data(['client_info','object_values'], 'spec')
   end
 
   after(:each) do
@@ -640,7 +640,7 @@ describe "Rhom#paginate" do
   end
   
   before(:each) do
-      Rho::RhoUtils.load_offline_data(['object_values'], 'Spec/pagination')
+      Rho::RhoUtils.load_offline_data(['object_values'], 'spec/pagination')
   end
 
   after(:each) do

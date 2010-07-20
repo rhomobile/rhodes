@@ -13,7 +13,7 @@
 #include <time.h>
 #include "..\wince.h" /* for wce_mbtowc */
 
-
+time_t wce_FILETIME2time_t(const FILETIME* f);
 int _stat(const char *filename, struct _stat *st)
 {
 	DWORD dwAttribute;
