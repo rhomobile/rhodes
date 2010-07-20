@@ -29,6 +29,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
 
+#define MAX_CONNECTION_TRY 64
+
 extern int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags);
 typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
 
@@ -50,7 +52,15 @@ void rho_net_impl_network_indicator(int active)
 // Determines network connectivity
 VALUE rho_sys_has_network() {
 	SCNetworkReachabilityFlags defaultRouteFlags;
-	int defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
+	
+	
+	int defaultRouteIsAvailable = 0;
+	
+	int i = 0;
+	while  ((!defaultRouteIsAvailable) && (i++ < MAX_CONNECTION_TRY)) {
+		defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
+    }
+	
 	if (defaultRouteIsAvailable == 1) {
 		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
 			// Ad-Hoc network, not available
