@@ -8,6 +8,7 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/json_spec"
     config[:files] << "spec/xml_spec"
     config[:files] << "spec/rhofile_spec"
+    config[:files] << "spec/date_spec"
     config[:files] << "spec/bsearch_spec"
     config[:files] << "spec/rho_spec"
     config[:files] << "spec/rho_controller_spec"
