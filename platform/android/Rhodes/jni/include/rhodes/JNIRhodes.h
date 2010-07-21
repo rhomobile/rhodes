@@ -15,6 +15,8 @@
 
 #include <genconfig.h>
 
+static int const RHO_FD_BASE = 512;
+
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
 
