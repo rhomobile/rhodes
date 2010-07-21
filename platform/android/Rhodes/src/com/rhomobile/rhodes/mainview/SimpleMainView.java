@@ -83,19 +83,6 @@ public class SimpleMainView implements MainView {
 		}
 	};
 
-	private class ActionCustomRunnable implements Runnable {
-		
-		private String url;
-		
-		public ActionCustomRunnable(String u) {
-			url = u;
-		}
-		
-		public void run() {
-			Rhodes.loadUrl(url);
-		}
-	};
-	
 	private class ActionCustom implements View.OnClickListener {
 		private String url;
 		
@@ -104,7 +91,11 @@ public class SimpleMainView implements MainView {
 		}
 		
 		public void onClick(View v) {
-			Rhodes.performOnUiThread(new ActionCustomRunnable(url), false);
+			Rhodes.performOnUiThread(new Runnable() {
+				public void run() {
+					Rhodes.loadUrl(ActionCustom.this.url);
+				}
+			}, false);
 		}
 	};
 	
