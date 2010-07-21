@@ -1,3 +1,8 @@
+## 2.0.3
+* #4317065 - App store requires 3 icons now for iphone
+* #4356949 - iPhone simulator: rake run:iphone open simulator but there is no
+  application
+
 ## 2.0.2
 * #4223112 - fixed problem with script order in iphone build
 
