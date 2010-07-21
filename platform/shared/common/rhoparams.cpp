@@ -55,7 +55,7 @@ boolean CRhoParams::getBool(const char* name)
     return strValue.compare("1") == 0 || strValue.compare("true") == 0;
 }
 
-void CRhoParams::free()
+void CRhoParams::free_params()
 {
     if ( m_pParams != null )
         rho_param_free(m_pParams);

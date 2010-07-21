@@ -24,7 +24,7 @@ public:
     void getHash(const char* name, Hashtable<String,String>& mapHeaders);
     boolean getBool(const char* name);
 
-    void free();
+    void free_params();
 };
 
 class CRhoParamArray : public CRhoParams
