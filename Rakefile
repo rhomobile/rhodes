@@ -369,6 +369,29 @@ def create_manifest
   fappManifest.close()
   
 end
+
+def process_exclude_folders
+  excl = []
+
+  if $app_config["excludedirs"]
+      excl << $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
+      excl << $app_config["excludedirs"][$config["platform"]] if $app_config["excludedirs"][$config["platform"]]
+  end
+      
+  if  $config["excludedirs"]    
+      excl << $config["excludedirs"]['all'] if $config["excludedirs"]['all']
+      excl << $config["excludedirs"][$config["platform"]] if $config["excludedirs"][$config["platform"]]
+  end  
+  
+  if excl
+      chdir File.join($srcdir, 'apps')
+  
+      excl.each do |mask|
+        Dir.glob(mask).each {|f| rm_rf f}
+      end
+  end
+
+end
   
 namespace "build" do
   namespace "bundle" do
@@ -383,16 +406,7 @@ namespace "build" do
       
       common_bundle_start(startdir,dest)
 
-      if not $config["excludedirs"].nil?
-        if $config["excludedirs"].has_key?($config["platform"])
-          chdir File.join($srcdir, 'apps')
-
-          excl = $config["excludedirs"][$config["platform"]]
-          excl.each do |mask|
-            Dir.glob(mask).each {|f| rm_rf f}
-          end
-        end
-      end
+      process_exclude_folders()
       
       cp_r File.join(startdir, "res/build-tools/db"), File.join($srcdir, 'apps')
       
@@ -466,6 +480,7 @@ namespace "build" do
       dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
+      process_exclude_folders
       chdir startdir
       
       create_manifest
