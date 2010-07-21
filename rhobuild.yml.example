@@ -30,6 +30,10 @@ android:
   #mapping: yes
   
 excludedirs:
+  all:
+    - **/.*.swo
+    - **/.*.swn
+    - **/.DS_Store
   bb:
     - public/js/iui
     - public/js/jquery*
@@ -38,10 +42,7 @@ excludedirs:
     - public/css/iphone*
     - public/iwebkit
     - public/themes
-    - **/*.db
-    - **/.*.swo
-    - **/.*.swn
     - **/jquery*.js
-    - **/.DS_Store
+    - **/*.db
   
 
