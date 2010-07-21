@@ -37,6 +37,8 @@ import com.rhomobile.rhodes.uri.SmsUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
 import com.rhomobile.rhodes.uri.UriHandler;
 import com.rhomobile.rhodes.uri.VideoUriHandler;
+import com.rhomobile.rhodes.webview.ChromeClientOld;
+import com.rhomobile.rhodes.webview.RhoWebSettings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -50,6 +52,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -62,7 +65,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
-import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -74,6 +76,8 @@ public class Rhodes extends Activity {
 
 	private static final String TAG = "Rhodes";
 	
+	public static final boolean ENABLE_PROFILING = false;
+	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
 	
 	public static final int RHO_SPLASH_VIEW = 1;
@@ -83,9 +87,12 @@ public class Rhodes extends Activity {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
-	private static int MAX_PROGRESS = 10000;
+	public static int MAX_PROGRESS = 10000;
 	
-	private static boolean ENABLE_LOADING_INDICATION = true;
+	public static boolean ENABLE_LOADING_INDICATION = true;
+	
+	private WebChromeClient chromeClient;
+	private RhoWebSettings webSettings;
 	
 	private boolean needGeoLocationRestart = false;
 	
@@ -198,21 +205,7 @@ public class Rhodes extends Activity {
 	public WebView createWebView() {
 		WebView w = new WebView(this);
 		
-		WebSettings webSettings = w.getSettings();
-		webSettings.setSavePassword(false);
-		webSettings.setSaveFormData(false);
-		webSettings.setJavaScriptEnabled(true);
-		webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
-		webSettings.setSupportZoom(false);
-		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-		webSettings.setSupportMultipleWindows(false);
-		// webSettings.setLoadsImagesAutomatically(true);
-
-		w.setVerticalScrollBarEnabled(true);
-		w.setHorizontalScrollBarEnabled(true);
-		w.setVerticalScrollbarOverlay(true);
-		w.setHorizontalScrollbarOverlay(true);
-		w.setFocusableInTouchMode(true);
+		webSettings.setWebSettings(w);
 
 		w.setWebViewClient(new WebViewClient() {
 			
@@ -248,31 +241,8 @@ public class Rhodes extends Activity {
 
 		});
 		
-		w.setWebChromeClient(new WebChromeClient() {
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-				if (ENABLE_LOADING_INDICATION) {
-					newProgress *= 100;
-					if (newProgress < 0)
-						newProgress = 0;
-					if (newProgress > MAX_PROGRESS)
-						newProgress = MAX_PROGRESS;
-					getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
-				}
-				super.onProgressChanged(view, newProgress);
-			}
-			
-			@Override
-			public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-				return false;
-			}
-			
-			@Override
-			public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-				return false;
-			}
-		});
-
+		w.setWebChromeClient(chromeClient);
+		
 		return w;
 	}
 	
@@ -355,10 +325,44 @@ public class Rhodes extends Activity {
 		view.requestFocus();
 	}
 	
+	private void initWebStuff() {
+		String ccName;
+		String wsName;
+		int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+		if (sdkVersion < Build.VERSION_CODES.ECLAIR_MR1) {
+			ccName = "ChromeClientOld";
+			wsName = "RhoWebSettingsOld";
+		}
+		else {
+			ccName = "ChromeClientNew";
+			wsName = "RhoWebSettingsNew";
+		}
+		
+		try {
+			String pkgname = ChromeClientOld.class.getPackage().getName();
+			String fullName = pkgname + "." + ccName;
+			Class<? extends WebChromeClient> ccClass =
+				Class.forName(fullName).asSubclass(WebChromeClient.class);
+			chromeClient = ccClass.newInstance();
+			
+			pkgname = RhoWebSettings.class.getPackage().getName();
+			fullName = pkgname + "." + wsName;
+			Class<? extends RhoWebSettings> wsClass =
+				Class.forName(fullName).asSubclass(RhoWebSettings.class);
+			webSettings = wsClass.newInstance();
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (ENABLE_PROFILING)
+			Debug.startMethodTracing("duri");
 		
 		if (RhodesService.isCreated())
 			return;
@@ -417,6 +421,8 @@ public class Rhodes extends Activity {
 
 		outerFrame = new FrameLayout(this);
 		this.setContentView(outerFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		
+		initWebStuff();
 		
 		Logger.I("Rhodes", "Loading...");
 		showSplashScreen();
@@ -663,6 +669,8 @@ public class Rhodes extends Activity {
 	private void stopSelf() {
 		//stopRhodesApp();
 		this.stopService(new Intent(this, RhodesService.class));
+		if (ENABLE_PROFILING)
+			Debug.stopMethodTracing();
 		Process.killProcess(Process.myPid());
 	}
 	
