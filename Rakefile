@@ -327,7 +327,7 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/*.bb.*").each { |f| rm f }
   Dir.glob("**/*.android.*").each { |f| rm f }
   Dir.glob("**/.svn").each { |f| rm_rf f }
-  Dir.glob("**/cvs").each { |f| rm_rf f }
+  Dir.glob("**/CVS").each { |f| rm_rf f }
 
 end
 
