@@ -403,6 +403,13 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 };
 
+LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    if (m_spIWebBrowser2)
+        m_spIWebBrowser2->Refresh();
+    return 0;
+}
+
 LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	LPTSTR wcurl = (LPTSTR)hWndCtl;
