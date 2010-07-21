@@ -989,4 +989,22 @@ void rho_rhodesapp_load_url(const char *url)
     RHODESAPP().loadUrl(url);
 }
 
+#if defined(OS_ANDROID) && defined(RHO_LOG_ENABLED)
+int rho_log(const char *fmt, ...)
+{
+  va_list vl;
+  va_start(vl, fmt);
+  int ret = __android_log_vprint(ANDROID_LOG_INFO, "RhoLog", fmt, vl);
+  va_end(vl);
+  return ret;
+}
+
+unsigned long long rho_cur_time()
+{
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    return ((unsigned long long)tv.tv_sec)*1000000 + tv.tv_usec;
+}
+#endif
+
 } //extern "C"
