@@ -176,7 +176,7 @@ void CAsyncHttp::CHttpCommand::execute()
     if ( !m_pNetRequest->isCancelled())
         callNotify(resp,0);
 
-    m_params.free();
+    m_params.free_params();
 }
 
 unsigned long CAsyncHttp::CHttpCommand::getRetValue()
