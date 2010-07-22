@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import javax.microedition.io.*;
 
+import com.rho.FilePath;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
@@ -268,10 +269,11 @@ public class PushListeningThread extends Thread {
             			op = splitOnce(ops[loop],"=");
             			if (op.length>1) {
             				op = splitOnce(op[1],",");
+            				String fileName = FilePath.join("/public/alerts/", op[0]);
             				if (op.length>1) {
-            					play_file(op[0],op[1]);
+            					play_file(fileName,op[1]);
             				} else {
-            					play_file(op[0],null);
+            					play_file(fileName,null);
             				}
             			}            			
             		}
