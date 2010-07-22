@@ -678,7 +678,7 @@ void CSyncEngine::login(String name, String password, String callback)
     else
         getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 
-    getNotify().callLoginCallback(callback, RHO_ERR_NONE, "" );
+    getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 	
     PROF_STOP("Login");
 

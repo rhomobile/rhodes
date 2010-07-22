@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RhoStd.h"
 #include "IRhoThreadImpl.h"
 #include "AutoPointer.h"
 
