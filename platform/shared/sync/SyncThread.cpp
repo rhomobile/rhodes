@@ -4,6 +4,7 @@
 #include "common/RhoFilePath.h"
 
 #include "ruby/ext/rho/rhoruby.h"
+#include "sync/ClientRegister.h"
 
 namespace rho {
 namespace sync {
@@ -50,8 +51,6 @@ CSyncThread::~CSyncThread(void)
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 
     db::CDBAdapter::closeAll();
-
-    LOG(INFO) + "Sync engine thread shutdown";
 }
 
 #ifndef RHO_NO_RUBY
@@ -264,9 +263,17 @@ void rho_sync_set_syncserver(char* syncserver)
 	CSyncThread::getSyncEngine().setSyncServer(syncserver);
 
     if ( syncserver && *syncserver )
+    {
         CSyncThread::getInstance()->start(CSyncThread::epLow);
+        if ( CClientRegister::getInstance() != null )
+            CClientRegister::getInstance()->startUp();
+    }
     else
+    {
         CSyncThread::getInstance()->stop(CSyncThread::SYNC_WAIT_BEFOREKILL_SECONDS);
+        if ( CClientRegister::getInstance() != null )
+            CClientRegister::getInstance()->stop(CSyncThread::SYNC_WAIT_BEFOREKILL_SECONDS);
+    }
 }
 
 unsigned long rho_sync_login(const char *name, const char *password, const char* callback)
