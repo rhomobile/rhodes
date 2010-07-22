@@ -252,6 +252,7 @@ static Rhodes *instance = NULL;
         splashViewController = nil;
     }
     
+    [mainView.view removeFromSuperview];
     [mainView release];
     mainView = [view retain];
     [window addSubview:mainView.view];
@@ -297,11 +298,20 @@ static Rhodes *instance = NULL;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [window makeKeyAndVisible];
+	window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	window.autoresizesSubviews = YES;
+
     
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
-    [self showLoadingPage];
+ 	mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	mainView.view.autoresizesSubviews = YES;
+	
+	[window addSubview:mainView.view];
+	
+    [window makeKeyAndVisible];
+
+   [self showLoadingPage];
     
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
