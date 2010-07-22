@@ -359,14 +359,14 @@ static Rhodes *instance = NULL;
     
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if (aps) {
-        NSString *alert = [aps objectForKey:@"alert"];
+        NSString *alert = [aps objectForKey:@"show_popup"];
         if (alert && [alert length] > 0) {
             NSLog(@"Push Alert: %@", alert);
             rho_param *p = rho_param_str((char*)[alert UTF8String]);
             [RhoAlert showPopup:p];
             rho_param_free(p);
         }
-        NSString *sound = [aps objectForKey:@"sound"];
+        NSString *sound = [aps objectForKey:@"play_file"];
         if (sound && [sound length] > 0) {
             NSLog(@"Sound file name: %@", sound);
             [RhoAlert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
