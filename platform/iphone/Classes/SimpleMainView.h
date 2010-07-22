@@ -10,17 +10,19 @@
 #import "RhoMainView.h"
 
 @interface SimpleMainView : UIViewController <RhoMainView, UIWebViewDelegate> {
-    UIView *parent;
-    UIView *root;
+
     UIWebView *webView;
     UIToolbar *toolbar;
     UINavigationBar *navbar;
 }
 
-@property (retain) UIView *root;
 
-- (id)initWithMainView:(id<RhoMainView>)v;
-- (id)initWithMainView:(id<RhoMainView>)v toolbar:(NSArray*)items;
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame;
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
+- (void)loadView;
 
 @end

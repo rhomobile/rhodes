@@ -34,27 +34,46 @@ static int started = 0;
     Rhodes *r = [Rhodes sharedInstance];
     
     id mainView = [r mainView];
-    
+    UIWindow* w = r.window;
+
+	SimpleMainView* smv = nil;
+    if ([mainView isKindOfClass:[SimpleMainView class]]) {
+	    smv = (SimpleMainView*)mainView;
+	}
     switch (type) {
-    case NOBAR_TYPE:
-        view = [[SimpleMainView alloc] initWithMainView:mainView];
-        started = 0;
-        break;
-    case TOOLBAR_TYPE:
-        view = [[SimpleMainView alloc] initWithMainView:mainView toolbar:items];
-        started = 1;
-        break;
-    case TABBAR_TYPE:
-        view = [[TabbedMainView alloc] initWithMainView:mainView tabs:items];
-        started = 1;
-        break;
-    default:
-        RAWLOG_ERROR1("Unknown bar type passed: %d", type);
+		case NOBAR_TYPE:
+			if (smv != nil) {
+				[smv removeToolbar];
+			}
+			else {
+				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w ];
+				[r setMainView:view];
+				[view release];
+			}
+			started = 0;
+			break;
+		case TOOLBAR_TYPE:
+			if (smv != nil) {
+				[smv addToolbar:items];
+			}
+			else {
+				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w toolbar:items];
+				[r setMainView:view];
+				[view release];
+			}
+			started = 1;
+			break;
+		case TABBAR_TYPE:
+			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+			started = 1;
+			[r setMainView:view];
+			[view release];
+			break;
+		default:
+			RAWLOG_ERROR1("Unknown bar type passed: %d", type);
         return;
     }
-    
-    [r setMainView:view];
-    [view release];
+ 
 }
 @end
 
