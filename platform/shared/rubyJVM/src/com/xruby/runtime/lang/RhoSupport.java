@@ -2,6 +2,7 @@ package com.xruby.runtime.lang;
 
 import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
@@ -259,7 +260,12 @@ public class RhoSupport {
         }
         
         if ( strValue == null || strValue.length() == 0 )
-        	return RubyConstant.QNIL;
+        {
+        	if ( RhoConf.getInstance().isExist(name) )
+        		strValue = RhoConf.getInstance().getString(name);
+        	else
+        		return RubyConstant.QNIL;
+        }
         
         return ObjectFactory.createString(strValue);
     }
