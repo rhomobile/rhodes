@@ -54,13 +54,16 @@
 
 @synthesize tabbar, tabbarData;
 
-//- (id)initWithParentView:(UIView *)v items:(NSArray *)items {
-//    return [self initWithParentView:v frame:v.frame items:items];
-//}
 
-//- (id)initWithParentView:(UIView *)v frame:(CGRect)frame items:(NSArray*)items {
-- (id)initWithMainView:(id<RhoMainView>)v tabs:(NSArray *)items {
-    parent = [v parent];
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	// custom rotation code based on interfaceOrientation here...
+	return YES;
+}
+
+
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
+    UIView* parent = p;
     
     CGRect frame = [[v view] frame];
     
@@ -132,8 +135,10 @@
 }
 
 - (void)dealloc {
-    [tabbar.view removeFromSuperview];
+    //[tabbar.view removeFromSuperview];
     [tabbarData release];
+	[tabbar release];
+	tabbar = nil;
     [super dealloc];
 }
 
@@ -151,9 +156,6 @@
     return tabbar.view;
 }
 
-- (UIView*)parent {
-    return parent;
-}
 
 - (UIWebView*)detachWebView {
     return [[self subView:[self activeTab]] detachWebView];
