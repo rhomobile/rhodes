@@ -40,8 +40,7 @@ CClientRegister::CClientRegister(common::IRhoClassFactory* factory,const char* d
 
     delete factory;
 
-    if ( RHOCONF().getString("syncserver").length() > 0 )
-    	start(epLow);
+    startUp();
 }
 
 CClientRegister::~CClientRegister()
@@ -52,10 +51,19 @@ CClientRegister::~CClientRegister()
     m_pInstance = null;
 }
 
+void CClientRegister::startUp() 
+{	
+    if ( RHOCONF().getString("syncserver").length() > 0 )
+    {
+    	start(epLow);
+        stopWait();
+    }
+}
+
 void CClientRegister::run() 
 {	
     LOG(INFO)+"ClientRegister start";
-	while(!isStopped()) 
+	while(!isStopping()) 
 	{
         if ( CSyncThread::getInstance() != null )
 		{
