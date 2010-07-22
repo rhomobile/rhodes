@@ -358,6 +358,9 @@ String CSyncEngine::loadClientID()
             else
                 getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 
+            if ( CClientRegister::getInstance() != null )
+                CClientRegister::getInstance()->startUp();
+
         }else if ( bResetClient )
         {
     	    if ( !resetClientIDByNet(clientID) )
@@ -675,13 +678,13 @@ void CSyncEngine::login(String name, String password, String callback)
     else
         getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 
-
-    if ( CClientRegister::getInstance() != null )
-        CClientRegister::getInstance()->stopWait();
-
-    getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
+    getNotify().callLoginCallback(callback, RHO_ERR_NONE, "" );
 	
     PROF_STOP("Login");
+
+    if ( CClientRegister::getInstance() != null )
+        CClientRegister::getInstance()->startUp();
+
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Login failed.", exc);

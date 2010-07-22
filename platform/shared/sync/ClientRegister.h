@@ -37,6 +37,7 @@ public:
 
     String getRegisterBody(const String& strClientID);
 
+    void startUp();
 private:
 	CClientRegister(common::IRhoClassFactory* factory,const char* device_pin);
     ~CClientRegister();
