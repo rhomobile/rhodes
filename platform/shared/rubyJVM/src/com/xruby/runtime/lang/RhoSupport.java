@@ -8,6 +8,7 @@ import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import j2me.lang.StringMe;
+import com.rho.RhoConf;
 
 public class RhoSupport {
 
@@ -262,7 +263,12 @@ public class RhoSupport {
         }
         
         if ( strValue == null || strValue.length() == 0 )
-        	return RubyConstant.QNIL;
+        {
+        	if ( RhoConf.getInstance().isExist(name) )
+        		strValue = RhoConf.getInstance().getString(name);
+        	else
+        		return RubyConstant.QNIL;
+        }        	
         
         return ObjectFactory.createString(strValue);
     }
