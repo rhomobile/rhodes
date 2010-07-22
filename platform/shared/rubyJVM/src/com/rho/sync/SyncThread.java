@@ -137,7 +137,6 @@ public class SyncThread extends RhoThread
 	{
 	    m_oSyncEngine.exitSync();
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
-	    LOG.INFO( "Sync engine thread shutdown" );
 		
 	    if ( ClientRegister.getInstance() != null )
 	    	ClientRegister.getInstance().Destroy();
@@ -271,6 +270,8 @@ public class SyncThread extends RhoThread
 	        	}
 	        }
 		}
+		
+		LOG.INFO("Sync engine thread shutdown");		
 	}
 	
 	boolean isNoCommands()
@@ -695,9 +696,18 @@ public class SyncThread extends RhoThread
 							getSyncEngine().setSyncServer(syncserver);
 							
 						    if ( syncserver != null && syncserver.length() > 0 )
+						    {
 						        SyncThread.getInstance().start(SyncThread.epLow);
+						    	if ( ClientRegister.getInstance() != null )
+						    		ClientRegister.getInstance().startUp();	    	
+						    }
 						    else
-						        SyncThread.getInstance().stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+						    {
+						    	//DO NOT STOP thread. because they cannot be restarted
+						        //SyncThread.getInstance().stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+						    	//if ( ClientRegister.getInstance() != null )
+						    	//	ClientRegister.getInstance().stop(SYNC_WAIT_BEFOREKILL_SECONDS);
+						    }
 							
 						}catch(Exception e)
 						{

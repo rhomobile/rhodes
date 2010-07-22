@@ -6,14 +6,18 @@ namespace common {
 
 CRhoThread::CRhoThread(IRhoClassFactory* factory)
 {
-    m_isInWaitState = false;
-    m_bStop = false;
+    m_nState = TS_NONE;
     m_pImpl = factory->createThreadImpl();
 }
 
 void CRhoThread::start(EPriority ePriority)
 {
-    m_pImpl->start(this, ePriority);
+    if ( !isRunning() )
+    {
+        m_pImpl->start(this, ePriority);
+
+        m_nState = TS_RUNNING;
+    }
 }
 
 }
