@@ -138,8 +138,11 @@ end
 
 
 namespace "config" do
-  task :bb => ["config:common"] do
-    $config["platform"] = "bb"
+  task :set_platform do
+    $current_platform = "bb"
+  end
+  
+  task :bb => ["config:set_platform", "config:common"] do
 
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
 
@@ -246,7 +249,8 @@ namespace "build" do
       mkdir_p extensionstmpdir unless File.directory? extensionstmpdir
 
       extentries = []
-
+      
+      puts "$app_config['extensions'] : #{$app_config['extensions']}"
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
@@ -651,6 +655,49 @@ namespace "package" do
       end
           
     end
+    
+    def runProGuard(target_jar, lib_jar)
+      jdehome = $config["env"]["paths"][$bbver]["jde"]
+      java = $config["env"]["paths"]["java"] + "/java.exe"
+      jde = $config["env"]["paths"][$bbver]["jde"]
+      proguard =  File.join( $startdir, '/res/build-tools/proguard-4.5.1.jar' )
+      out_jar = File.join( File.dirname(target_jar), File.basename(target_jar, File.extname(target_jar) ) + "_out.jar" )
+      puts "****out jar: #{out_jar}"
+      
+      args = []
+      args << "-jar"
+      args << proguard
+      args << "-injars"
+      args << target_jar
+      args << "-outjars"
+      args << out_jar
+      args << "-libraryjars"
+      args << jdehome + "/lib/net_rim_api.jar"
+      args << "-overloadaggressively"
+      args << "-repackageclasses '' "
+      args << "-allowaccessmodification"
+      args << "-microedition"
+      args << "-printseeds"
+      args << "-dontusemixedcaseclassnames"
+      #args << "-keep public class * extends net.rim.device.api.ui.UiApplication"
+      #args << "-keep final public class rhomobile.RhodesApplication"
+      args << "-keep final public class rhomobile.RhodesApplication { public static void main(java.lang.String[]); }"
+      #args << "-keep public class xruby.version.main { public static void main(java.lang.String[]); }"
+      #args << "-keep public class xruby.rhoframework.main { public static void main(java.lang.String[]); }"
+      
+      #args << "-keepclasseswithmembers public class * {  public static void main(java.lang.String[]); }"
+      #args << "-dontobfuscate"
+      #args << "-dontpreverify"
+      #args << "-target 1.3"
+      args << "-dontshrink"
+      args << "-dontoptimize"
+      
+      puts Jake.run(java,args)
+      $stdout.flush
+      
+      rm_rf target_jar
+      File.rename( out_jar, target_jar )
+    end
 
 #    desc "Package all production (all parts in one package)"
     task :production => ["build:bb:rhodes"] do
@@ -679,7 +726,7 @@ namespace "package" do
       end
 
       Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir,true)
-
+      
       Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",
@@ -743,7 +790,8 @@ namespace "package" do
       end
 
       Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir_sim,true)
-
+        
+      #runProGuard($bindir + "/" + $outfilebase + ".jar", jdehome + "/lib/net_rim_api.jar")
       Jake.rapc($outfilebase,
         $targetdir,
         jdehome + "/lib/net_rim_api.jar",

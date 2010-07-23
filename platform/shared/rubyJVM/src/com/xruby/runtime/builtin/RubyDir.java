@@ -12,7 +12,7 @@ import j2me.util.ArrayList;
 import j2me.util.Iterator;
 import j2me.util.List;
 import j2me.lang.SystemMe;
-import org.apache.oro.io.GlobFilenameFilter;
+//import org.apache.oro.io.GlobFilenameFilter;
 
 import com.xruby.runtime.lang.RhoSupport;
 import com.xruby.runtime.lang.RubyBasic;
@@ -73,7 +73,7 @@ public class RubyDir extends RubyBasic {
     }
 
     private static RubyValue glob(RubyValue receiver, RubyValue arg) {
-        String s = arg.toStr();
+        /*String s = arg.toStr();
         String dir;
         String pattern;
         int index = s.lastIndexOf('/');
@@ -95,11 +95,13 @@ public class RubyDir extends RubyBasic {
                 a.add(ObjectFactory.createString(dir + "/" + files[i]));
             }
         }
-        return a;
+        return a;*/
+    	
+    	throw new RuntimeException("glob is not implemented");
     }
 
     private static RubyValue glob_with_block(RubyValue receiver, RubyValue arg, RubyBlock block) {
-        String s = arg.toStr();
+        /*String s = arg.toStr();
         String dir;
         String pattern;
         int index = s.lastIndexOf('/');
@@ -120,7 +122,8 @@ public class RubyDir extends RubyBasic {
                 block.invoke(receiver, ObjectFactory.createString(dir + "/" + files[i]));
             }
         }
-        return RubyConstant.QNIL;
+        return RubyConstant.QNIL;*/
+    	throw new RuntimeException("glob_with_block is not implemented");
     }
 
     ////@RubyLevelMethod(name="close")
