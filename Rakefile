@@ -59,6 +59,8 @@ namespace "config" do
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
+    $config["platform"] = $current_platform if $current_platform
+    
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
     else
@@ -90,6 +92,13 @@ namespace "config" do
     else
       $debug = true
     end
+    
+    extensions = []
+    extensions += $app_config["extensions"] if $app_config["extensions"] and
+       $app_config["extensions"].is_a? Array
+    extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
+       $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
+    $app_config["extensions"] = extensions
   end
 
   out = `javac -version 2>&1`
@@ -194,13 +203,6 @@ def common_bundle_start(startdir, dest)
 
   chdir start
   clear_linker_settings
-
-  extensions = []
-  extensions += $app_config["extensions"] if $app_config["extensions"] and
-    $app_config["extensions"].is_a? Array
-  extensions += $app_config[$config["platform"]["extensions"]] if $config["platform"] and
-    $config["platform"]["extensions"] and $config["platform"]["extensions"].is_a? Array
-  $app_config["extensions"] = extensions
 
   extentries = []
   extlibs = [] 

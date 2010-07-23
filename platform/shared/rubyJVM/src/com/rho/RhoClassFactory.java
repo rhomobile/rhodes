@@ -16,13 +16,14 @@ public class RhoClassFactory
         try {
             wrapperClass = Class.forName("com.rho.file.Jsr75File");
         } catch (ClassNotFoundException exc) {  
-        	try {
+/*        	try {
                 wrapperClass = Class.forName("com.rhomobile.rhodes.AndroidFile"); //android
             } catch (ClassNotFoundException e) {
 	        	LOG.ERROR_OUT("createFile - Class not found",e);    	
 
                 throw e;
-            }
+            }*/
+        	throw exc;
         }
         
         try {
@@ -64,13 +65,14 @@ public class RhoClassFactory
         try {
             wrapperClass = Class.forName("com.rho.RhoRubyHelper"); //bb
         } catch (ClassNotFoundException exc) {  
-        	try {
+        	/*try {
                 wrapperClass = Class.forName("com.rhomobile.rhodes.RhoRubyHelper"); //android
             } catch (ClassNotFoundException e) {
 	        	LOG.ERROR("createRhoRubyHelper- Class not found",e);    	
             	
                 throw e;
-            }
+            }*/
+        	throw exc;
         }
         
         try{
@@ -96,13 +98,14 @@ public class RhoClassFactory
 		        try {
 		            wrapperClass = Class.forName("com.rho.net.NetworkAccess");
 		        } catch (ClassNotFoundException exc) {  
-		        	try {
+		        	/*try {
 			            wrapperClass = Class.forName("com.rhomobile.rhodes.NetworkAccessImpl"); //android 
 			        } catch (ClassNotFoundException e) {
 			        	LOG.ERROR("getNetworkAccess- Class not found",e);    	
 			        	
 			            throw e;
-			        }
+			        }*/
+		        	throw exc;
 		        }
 		        
 		        m_NAInstance = (INetworkAccess)wrapperClass.newInstance();
