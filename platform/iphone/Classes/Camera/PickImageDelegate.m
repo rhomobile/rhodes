@@ -44,8 +44,9 @@
     [self useImage:image]; 
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES];
-    picker.view.hidden = YES;
-    //[picker release];
+    [picker.view removeFromSuperview];
+	//picker.view.hidden = YES;
+    [picker release];
 #ifdef __IPHONE_3_2
     [popover dismissPopoverAnimated:YES];
 #endif
@@ -58,8 +59,9 @@
     
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES]; 
-    picker.view.hidden = YES;
-    //[picker release]; 
+    [picker.view removeFromSuperview];
+	//picker.view.hidden = YES;
+    [picker release]; 
 #ifdef __IPHONE_3_2
     [popover dismissPopoverAnimated:YES];
 #endif
