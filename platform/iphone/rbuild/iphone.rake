@@ -108,6 +108,8 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
     $tmpdir =  $bindir +"/tmp"
 
+    $devroot = '/Developer' if $devroot.nil?
+
     $homedir = ENV['HOME']
     $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
     $sim="/Developer/Platforms/iPhoneSimulator.platform/Developer/Applications"
