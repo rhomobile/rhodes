@@ -97,11 +97,11 @@ end
 
 
 namespace "config" do
-  task :set_platform do
+  task :set_iphone_platform do
     $current_platform = "iphone"
   end
 
-  task :iphone => ["config:set_platform", "config:common", "switch_app"] do
+  task :iphone => [:set_iphone_platform, "config:common", "switch_app"] do
     $rubypath = "res/build-tools/RubyMac" #path to RubyMac
     iphonepath = $config["build"]["iphonepath"]
     $builddir = iphonepath + "/rbuild"

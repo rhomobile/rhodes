@@ -112,11 +112,11 @@ def get_boolean(arg)
 end
 
 namespace "config" do
-  task :set_platform do
+  task :set_android_platform do
     $current_platform = "android"
   end
 
-  task :android => ["config:set_platform", "config:common"] do
+  task :android => [:set_android_platform, "config:common"] do
 
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
