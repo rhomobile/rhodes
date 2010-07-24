@@ -29,11 +29,11 @@ def sign (cabfile)
 end
 
 namespace "config" do
-  task :set_platform do
+  task :set_wm_platform do
     $current_platform = "wm"
   end
 
-  task :wm => ["config:set_platform", "config:common"] do
+  task :wm => [:set_wm_platform, "config:common"] do
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"

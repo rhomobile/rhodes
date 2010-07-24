@@ -138,11 +138,11 @@ end
 
 
 namespace "config" do
-  task :set_platform do
+  task :set_bb_platform do
     $current_platform = "bb"
   end
   
-  task :bb => ["config:set_platform", "config:common"] do
+  task :bb => [:set_bb_platform, "config:common"] do
 
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
 
