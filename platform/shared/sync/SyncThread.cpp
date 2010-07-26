@@ -160,6 +160,23 @@ void CSyncThread::setPollInterval(int nInterval)
     CThreadQueue::setPollInterval(nInterval);
 }
 
+String CSyncThread::CSyncCommand::toString()
+{
+    switch(m_nCmdCode)
+    {
+    case scSyncAll:
+        return "SyncAll";
+    case scSyncOne:
+        return "SyncOne";
+    case scLogin:
+        return "Login";
+    case scSearchOne:
+        return "Search";
+    }
+
+    return "Unknown; Code : " + convertToStringA(m_nCmdCode);
+}
+
 };
 };
 
