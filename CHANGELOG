@@ -2,6 +2,7 @@
 * #4317065 - App store requires 3 icons now for iphone
 * #4356949 - iPhone simulator: rake run:iphone open simulator but there is no
   application
+* #4394846 - Android: no application screen when go to background and switch back
 
 ## 2.0.2
 * #4223112 - fixed problem with script order in iphone build
