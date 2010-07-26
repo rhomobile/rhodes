@@ -12,6 +12,24 @@ describe "Json" do
         parsed[2]['object_value'].is_a?(Hash).should ==  true
         parsed[2]['object_value']['attrib'].should ==  "xform"
     end
+    it "should parse big json" do
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'big_test.json')
+        content = File.read(file_name)
+        
+        #GC.stress=true
+        parsed = nil
+        #(1..10).each do |i|
+            #puts "i : #{i}"
+            #GC.start
+            parsed = Rho::JSON.parse(content)
+            
+            #puts "#{parsed[0]['coupleName']}"
+        #end    
+
+        parsed.is_a?(Array).should == true
+        
+        #GC.stress=false
+    end
 
     it "should parse circular" do
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'circtest.json')
@@ -40,7 +58,7 @@ describe "Json" do
         parsed["Manufacturer List"].is_a?(Array).should ==  true 
         parsed["Category List"].is_a?(Array).should ==  true 
     end
-    
+
     it "should webservice" do
         return unless $is_network_available
             
@@ -52,7 +70,7 @@ describe "Json" do
         parsed.is_a?(Array).should ==  true
         parsed[0].is_a?(Hash).should ==  true 
     end
-    
+
     it "should generate" do
         require 'json'
         
