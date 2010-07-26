@@ -56,6 +56,7 @@ static ID framework_mid;
 static ID framework_mid2;
 static ID initApp_mid;
 static ID activateApp_mid;
+static ID deactivateApp_mid;
 static ID loadServerSources_mid;
 
 static char* rb_type_to_s(VALUE obj);
@@ -193,6 +194,7 @@ void RhoRubyStart()
     CONST_ID(framework_mid2, "serve_index");
     CONST_ID(initApp_mid, "init_app");
     CONST_ID(activateApp_mid, "activate_app");
+    CONST_ID(deactivateApp_mid, "deactivate_app");
     CONST_ID(loadServerSources_mid,"load_server_sources");
 
     //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
@@ -211,6 +213,11 @@ void RhoRubyInitApp()
 void rho_ruby_activateApp()
 {
     rb_funcall(framework, activateApp_mid, 0);
+}
+
+void rho_ruby_deactivateApp()
+{
+    rb_funcall(framework, deactivateApp_mid, 0);
 }
 
 void rho_ruby_loadserversources(const char* szData)
