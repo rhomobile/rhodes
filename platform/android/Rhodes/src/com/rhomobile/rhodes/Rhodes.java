@@ -91,6 +91,8 @@ public class Rhodes extends Activity {
 	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
+	//private boolean bAppJustStarted;
+	
 	private WebChromeClient chromeClient;
 	private RhoWebSettings webSettings;
 	
@@ -360,15 +362,15 @@ public class Rhodes extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Here Log should be used, not Logger. It is because Logger is not initialized yet.
+		Log.v(TAG, "+++ onCreate");
 		
 		if (ENABLE_PROFILING)
 			Debug.startMethodTracing("duri");
 		
-		if (RhodesService.isCreated())
-			return;
-		this.startService(new Intent(this, RhodesService.class));
-		
-		Logger.T(TAG, "+++ onCreate");
+		if (!RhodesService.isCreated())
+			startService(new Intent(this, RhodesService.class));
 		
 		Thread ct = Thread.currentThread();
 		ct.setPriority(Thread.MAX_PRIORITY);
@@ -460,6 +462,8 @@ public class Rhodes extends Activity {
 			
 		});
 		init.start();
+		
+		//bAppJustStarted = true;
 	}
 	
 	@Override
@@ -472,19 +476,30 @@ public class Rhodes extends Activity {
 	protected void onStart() {
 		super.onStart();
 		Logger.T(TAG, "+++ onStart");
+		if (needGeoLocationRestart) {
+			GeoLocation.isKnownPosition();
+			needGeoLocationRestart = false;
+		}
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (needGeoLocationRestart)
-			GeoLocation.isKnownPosition();
 		Logger.T(TAG, "+++ onResume");
+		//if (!bAppJustStarted && mainView != null) {
+		//	int idx = mainView.activeTab();
+		//	mainView.reload(idx);
+		//}
 	}
 	
 	@Override
 	protected void onPause() {
 		Logger.T(TAG, "+++ onPause");
+		//int idx = mainView.activeTab();
+		//RhoConf.setInt("rho_current_tab", idx);
+		//String url = getCurrentUrl();
+		//RhoConf.setString("rho_last_visited_url", url);
+		//bAppJustStarted = false;
 		super.onPause();
 	}
 	

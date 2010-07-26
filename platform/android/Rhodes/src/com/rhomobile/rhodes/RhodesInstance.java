@@ -29,7 +29,7 @@ public class RhodesInstance {
 	}
 
 	public static void setInstance(Rhodes instance) {
-		if ( RhodesInstance.instance == null )
+		if ( RhodesInstance.instance != instance )
 			RhodesInstance.instance = instance;
 	}
 	
