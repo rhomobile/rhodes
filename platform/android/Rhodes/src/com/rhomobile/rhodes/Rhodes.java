@@ -84,7 +84,11 @@ public class Rhodes extends Activity {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 	
-	private static int MAX_PROGRESS = 10000;
+	public static int MAX_PROGRESS = 10000;
+	
+	public static boolean ENABLE_LOADING_INDICATION = true;
+	
+	private static boolean ownActivityActivated;
 	
 	private static boolean ENABLE_LOADING_INDICATION = true;
 	
@@ -560,8 +564,6 @@ public class Rhodes extends Activity {
 			
 		});
 		init.start();
-		
-		//bAppJustStarted = true;
 	}
 	
 	@Override
@@ -574,6 +576,7 @@ public class Rhodes extends Activity {
 	protected void onStart() {
 		super.onStart();
 		Logger.T(TAG, "+++ onStart");
+		ownActivityActivated = false;
 		if (needGeoLocationRestart) {
 			GeoLocation.isKnownPosition();
 			needGeoLocationRestart = false;
@@ -584,20 +587,11 @@ public class Rhodes extends Activity {
 	protected void onResume() {
 		super.onResume();
 		Logger.T(TAG, "+++ onResume");
-		//if (!bAppJustStarted && mainView != null) {
-		//	int idx = mainView.activeTab();
-		//	mainView.reload(idx);
-		//}
 	}
 	
 	@Override
 	protected void onPause() {
 		Logger.T(TAG, "+++ onPause");
-		//int idx = mainView.activeTab();
-		//RhoConf.setInt("rho_current_tab", idx);
-		//String url = getCurrentUrl();
-		//RhoConf.setString("rho_last_visited_url", url);
-		//bAppJustStarted = false;
 		super.onPause();
 	}
 	
@@ -606,6 +600,8 @@ public class Rhodes extends Activity {
 		Logger.T(TAG, "+++ onStop");
 		needGeoLocationRestart = GeoLocation.isAvailable();
 		GeoLocation.stop();
+		if (!ownActivityActivated)
+			stopSelf();
 		super.onStop();
 	}
 		
@@ -777,6 +773,12 @@ public class Rhodes extends Activity {
 	private void stopSelf() {
 		//stopRhodesApp();
 		Process.killProcess(Process.myPid());
+	}
+	
+	@Override
+	public void startActivity(Intent intent) {
+		ownActivityActivated = true;
+		super.startActivity(intent);
 	}
 	
 	static {
