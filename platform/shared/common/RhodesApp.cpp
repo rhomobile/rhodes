@@ -131,7 +131,7 @@ void CRhodesApp::stopApp()
 class CRhoCallbackCall :  public common::CRhoThread
 {
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
-	String m_strCallback, m_strBody;
+    String m_strCallback, m_strBody;
 public:
     CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory) : CRhoThread(factory), 
         m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
@@ -141,7 +141,7 @@ private:
     virtual void run()
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-		common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
+        common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
         delete this;
     }
 };
@@ -154,6 +154,13 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 static void callback_activateapp(void *arg, String const &strQuery)
 {
     rho_ruby_activateApp();
+    String strMsg;
+    rho_http_sendresponse(arg, strMsg.c_str());
+}
+
+static void callback_deactivateapp(void *arg, String const &strQuery)
+{
+    rho_ruby_deactivateApp();
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
@@ -177,6 +184,13 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
 
         //LOG(INFO) + "navigate to first start url";
         //navigateToUrl(getFirstStartUrl());
+    }
+    else
+    {
+        String strUrl = m_strHomeUrl + "/system/deactivateapp";
+        NetResponse(resp,getNet().pullData( strUrl, null ));
+        if ( !resp.isOK() )
+            LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     }
 }
 
@@ -332,6 +346,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);
+    m_httpServer->register_uri("/system/deactivateapp", callback_deactivateapp);
     m_httpServer->register_uri("/system/loadserversources", callback_loadserversources);
 }
 
