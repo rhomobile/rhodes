@@ -525,26 +525,14 @@ static Rhodes *instance = NULL;
 #endif
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-#if 0
-    if (appStarted) {
-        //rho_rhodesapp_callAppActiveCallback();
-        /*
-        RhoDelegate* callback = [[RhoDelegate alloc] init];
-        char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
-        if (callbackUrl && strlen(callbackUrl) > 0) {
-            callback.postUrl = [self normalizeUrl:[NSString stringWithCString:callbackUrl
-                            encoding:[NSString defaultCStringEncoding]]];
-            [callback doCallback:@""];
-        }
-        [callback release];
-        */
-    }
-#endif // #if 0
+    RAWLOG_INFO("Application did become active");
+    rho_rhodesapp_callAppActiveCallback(1);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-	RAWLOG_INFO("Runner will resign active");
-	[self saveLastUsedTime];
+    RAWLOG_INFO("Application will resign active");
+    rho_rhodesapp_callAppActiveCallback(0);
+    [self saveLastUsedTime];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
