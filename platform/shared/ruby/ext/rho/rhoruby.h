@@ -50,7 +50,10 @@ char* getStringFromValue(VALUE val);
 int getStringLenFromValue(VALUE val);
 
 void rho_ruby_holdValue(VALUE val);
-void  rho_ruby_releaseValue(VALUE val);
+void rho_ruby_releaseValue(VALUE val);
+
+VALUE rho_ruby_disable_gc();
+void  rho_ruby_enable_gc(VALUE val);
 
 VALUE callFramework(VALUE hashReq);
 VALUE callServeIndex(char* index_name);
