@@ -74,6 +74,10 @@ module Rho
       get_app(APPNAME).on_activate_app
     end
 
+    def deactivate_app
+      get_app(APPNAME).on_deactivate_app
+    end
+
     # make sure we close the database file
     #def self.finalize
       #Rhom::RhomDbAdapter::close
