@@ -41,6 +41,7 @@ import com.rhomobile.rhodes.uri.VideoUriHandler;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -89,8 +90,6 @@ public class Rhodes extends Activity {
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
 	private static boolean ownActivityActivated;
-	
-	private static boolean ENABLE_LOADING_INDICATION = true;
 	
 	private boolean needGeoLocationRestart = false;
 	
