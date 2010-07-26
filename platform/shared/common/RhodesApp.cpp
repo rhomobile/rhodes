@@ -563,7 +563,6 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
         if ( m_arCallbackObjects.elementAt(i) == 0 )
             nIndex = i;
     }
-//    rho_ruby_holdValue(valObject);
     if ( nIndex  == -1 )
     {
         m_arCallbackObjects.addElement(pCallbackObject);
