@@ -14,27 +14,7 @@ namespace common
 IMPLEMENT_LOGCLASS(CPosixThreadImpl, "RhoThread");
 
 CPosixThreadImpl::CPosixThreadImpl()
-    :m_started(false)
-{}
-
-void *runProc(void *pv)
 {
-    IRhoRunnable *p = static_cast<IRhoRunnable *>(pv);
-    void *pData = rho_nativethread_start();
-    p->run();
-    rho_nativethread_end(pData);
-    return 0;
-}
-
-void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority)
-{
-    {
-        common::CMutexLock lock(m_mxSync);
-        if (m_started)
-            return;
-        m_started = true;
-    }
-
 #if defined(OS_ANDROID)
     // Android has no pthread_condattr_xxx API
     pthread_cond_init(&m_condSync, NULL);
@@ -44,7 +24,24 @@ void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority eP
     pthread_cond_init(&m_condSync, &sync_details);
     pthread_condattr_destroy(&sync_details);
 #endif
+}
 
+CPosixThreadImpl::~CPosixThreadImpl()
+{
+    pthread_cond_destroy(&m_condSync);
+}
+
+void *runProc(void *pv)
+{
+    IRhoRunnable *p = static_cast<IRhoRunnable *>(pv);
+    void *pData = rho_nativethread_start();
+    p->runObject();
+    rho_nativethread_end(pData);
+    return 0;
+}
+
+void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority)
+{
     pthread_attr_t  attr;
     int return_val = pthread_attr_init(&attr);
     //return_val = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -71,8 +68,6 @@ void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
     //TODO: wait for nTimeoutToKill and kill thread
     void* status;
     pthread_join(m_thread,&status);
-
-    pthread_cond_destroy(&m_condSync);
 }
 
 void CPosixThreadImpl::wait(unsigned int nTimeout)

@@ -17,7 +17,8 @@ HWND getMainWnd();
 
 void rho_webview_refresh(int index) 
 {
-    rho_webview_navigate(RHODESAPP().getCurrentUrl().c_str(),0);
+//rho_webview_navigate(RHODESAPP().getCurrentUrl().c_str(),0);
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_REFRESH, (LPARAM)index );
 }
 
 void rho_webview_navigate(const char* url, int index) 

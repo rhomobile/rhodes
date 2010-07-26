@@ -210,7 +210,7 @@ public :
 			NULL, 
 			&g_hNotify);
 #else
-		//rho_clientregister_create("win32_client");
+		rho_clientregister_create("win32_client");
 #endif
 
         return S_OK;
@@ -502,12 +502,6 @@ extern "C" void Init_fcntl(void)
 extern "C" void Init_NavBar(void)
 {
 }
-
-#if defined(OS_WINDOWS)
-extern "C" void Init_Barcode()
-{
-}
-#endif
 
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {

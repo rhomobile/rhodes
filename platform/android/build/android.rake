@@ -112,8 +112,11 @@ def get_boolean(arg)
 end
 
 namespace "config" do
-  task :android => ["config:common"] do
-    $config["platform"] = "android"
+  task :set_android_platform do
+    $current_platform = "android"
+  end
+
+  task :android => [:set_android_platform, "config:common"] do
 
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
@@ -351,12 +354,12 @@ namespace "config" do
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/" + $ndkgccver + "/extensions"
 
-    $app_config["extensions"] = [] if $app_config["extensions"].nil?
-    $app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
-    if $app_config["android"] and $app_config["android"]["extensions"]
-      $app_config["extensions"] += $app_config["android"]["extensions"]
-      $app_config["android"]["extensions"] = nil
-    end
+    #$app_config["extensions"] = [] if $app_config["extensions"].nil?
+    #$app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
+    #if $app_config["android"] and $app_config["android"]["extensions"]
+    #  $app_config["extensions"] += $app_config["android"]["extensions"]
+    #  $app_config["android"]["extensions"] = nil
+    #end
 
     $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
     $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
