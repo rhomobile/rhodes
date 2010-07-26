@@ -164,6 +164,9 @@ String CSyncThread::CSyncCommand::toString()
 {
     switch(m_nCmdCode)
     {
+    case scNone:
+        return "CheckPollInterval";
+
     case scSyncAll:
         return "SyncAll";
     case scSyncOne:
