@@ -192,10 +192,11 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 	}
 
                         private void startAutoFocusIfExist() {
-		String focus_mode = camera.getParameters().getFocusMode();
-		if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
+		//this only from API v.5 and higher
+		//String focus_mode = camera.getParameters().getFocusMode();
+		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
 			camera.autoFocus(this);
-		}
+		//}
                         }
 
 	public void onAutoFocus (boolean success, Camera camera) {
