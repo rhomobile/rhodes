@@ -476,11 +476,11 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     
     // First of all, make socket blocking
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
-	unsigned long optval = 0;
-	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
-		RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
-		return false;
-	}
+    unsigned long optval = 0;
+        if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
+        RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
+        return false;
+    }
 #else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
@@ -518,7 +518,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     if (continuation)
         RAWTRACE1("Sent response body: %d bytes", data.size());
     else
-        RAWTRACE1("Sent response:\n%s", data.c_str());
+        RAWTRACE1("Sent response (only headers displayed):\n%s", data.c_str());
     return true;
 }
 

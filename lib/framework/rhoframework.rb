@@ -21,9 +21,10 @@ begin
     require 'indifferent_access'
     require 'rho/rhosupport'    
     require 'rho/rhocontroller'    
-    require 'rho/render'
 
     require 'rho/rho'
+    require 'rho/render'
+    
     require 'rho'
 	
     puts 'RHO loaded'

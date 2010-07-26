@@ -12,14 +12,24 @@ iphone:
   entitlements: ""
   codesignidentity: ""
   configuration: Debug
+  extensions: ["barcode"]
+  
 android:
   mapping: enabled
   capabilities:
     - network_state
     - pim
+    
+  extensions: ["barcode"]
   
+wm:
+  extensions: ["barcode"]
+  
+bb:
+  extensions: ["barcode"]
+      
 capabilities:
   - push
      
+extensions: ["json", "rhoxml", "rhospec"]  
 
-extensions: ["json", "rhoxml", "barcode", "rhospec"]

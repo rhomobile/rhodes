@@ -59,6 +59,8 @@ namespace "config" do
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
+    $config["platform"] = $current_platform if $current_platform
+    
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
     else
@@ -90,6 +92,13 @@ namespace "config" do
     else
       $debug = true
     end
+    
+    extensions = []
+    extensions += $app_config["extensions"] if $app_config["extensions"] and
+       $app_config["extensions"].is_a? Array
+    extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
+       $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
+    $app_config["extensions"] = extensions
   end
 
   out = `javac -version 2>&1`
@@ -195,13 +204,6 @@ def common_bundle_start(startdir, dest)
   chdir start
   clear_linker_settings
 
-  extensions = []
-  extensions += $app_config["extensions"] if $app_config["extensions"] and
-    $app_config["extensions"].is_a? Array
-  extensions += $app_config[$config["platform"]["extensions"]] if $config["platform"] and
-    $config["platform"]["extensions"] and $config["platform"]["extensions"].is_a? Array
-  $app_config["extensions"] = extensions
-
   extentries = []
   extlibs = [] 
   extpaths = $app_config["extpaths"]
@@ -237,7 +239,7 @@ def common_bundle_start(startdir, dest)
         extentries << entry unless entry.nil?
         libs = extconf["libraries"]
         libs = [] unless libs.is_a? Array
-        if $config["platform"] == "wm"
+        if $config["platform"] == "wm" || $config["platform"] == "win32"
           libs.map! { |lib| lib + ".lib" }
         else
           libs.map! { |lib| "lib" + lib + ".a" }
@@ -259,7 +261,7 @@ def common_bundle_start(startdir, dest)
     File.open(exts, "w") do |f|
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
       f.puts "// Generated #{Time.now.to_s}"
-      if $config["platform"] == "wm"
+      if $config["platform"] == "wm" || $config["platform"] == "win32"
         # Add libraries through pragma
         extlibs.each do |lib|
           f.puts "#pragma comment(lib, \"#{lib}\")"
@@ -327,7 +329,7 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/*.bb.*").each { |f| rm f }
   Dir.glob("**/*.android.*").each { |f| rm f }
   Dir.glob("**/.svn").each { |f| rm_rf f }
-  Dir.glob("**/cvs").each { |f| rm_rf f }
+  Dir.glob("**/CVS").each { |f| rm_rf f }
 
 end
 
@@ -369,6 +371,29 @@ def create_manifest
   fappManifest.close()
   
 end
+
+def process_exclude_folders
+  excl = []
+
+  if $app_config["excludedirs"]
+      excl << $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
+      excl << $app_config["excludedirs"][$config["platform"]] if $app_config["excludedirs"][$config["platform"]]
+  end
+      
+  if  $config["excludedirs"]    
+      excl << $config["excludedirs"]['all'] if $config["excludedirs"]['all']
+      excl << $config["excludedirs"][$config["platform"]] if $config["excludedirs"][$config["platform"]]
+  end  
+  
+  if excl
+      chdir File.join($srcdir, 'apps')
+  
+      excl.each do |mask|
+        Dir.glob(mask).each {|f| rm_rf f}
+      end
+  end
+
+end
   
 namespace "build" do
   namespace "bundle" do
@@ -383,16 +408,7 @@ namespace "build" do
       
       common_bundle_start(startdir,dest)
 
-      if not $config["excludedirs"].nil?
-        if $config["excludedirs"].has_key?($config["platform"])
-          chdir File.join($srcdir, 'apps')
-
-          excl = $config["excludedirs"][$config["platform"]]
-          excl.each do |mask|
-            Dir.glob(mask).each {|f| rm_rf f}
-          end
-        end
-      end
+      process_exclude_folders()
       
       cp_r File.join(startdir, "res/build-tools/db"), File.join($srcdir, 'apps')
       
@@ -437,17 +453,17 @@ namespace "build" do
   
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
-
+=begin
       # RubyIDContainer.* files takes half space of jar why we need it?
-      #Jake.unjar("../RhoBundle.jar", $tmpdir)
-      #Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
-      #rm "#{$bindir}/RhoBundle.jar"
-      #chdir $tmpdir
-      #puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
-      #rm_rf $tmpdir
-      #mkdir_p $tmpdir
-      #chdir $srcdir
-      
+      Jake.unjar("../RhoBundle.jar", $tmpdir)
+      Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
+      rm "#{$bindir}/RhoBundle.jar"
+      chdir $tmpdir
+      puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
+      rm_rf $tmpdir
+      mkdir_p $tmpdir
+      chdir $srcdir
+=end      
       puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
         puts "Error creating Rhobundle.jar"
@@ -466,6 +482,7 @@ namespace "build" do
       dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
+      process_exclude_folders
       chdir startdir
       
       create_manifest
