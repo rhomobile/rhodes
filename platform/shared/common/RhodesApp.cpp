@@ -95,7 +95,8 @@ void CRhodesApp::run()
 
     LOG(INFO) + "navigate to first start url";
     navigateToUrl(getFirstStartUrl());
-
+    //rho_clientregister_create("iphone_client");
+    
     m_httpServer->run();
 
     LOG(INFO) + "RhodesApp thread shutdown";
