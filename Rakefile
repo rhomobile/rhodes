@@ -239,7 +239,7 @@ def common_bundle_start(startdir, dest)
         extentries << entry unless entry.nil?
         libs = extconf["libraries"]
         libs = [] unless libs.is_a? Array
-        if $config["platform"] == "wm"
+        if $config["platform"] == "wm" || $config["platform"] == "win32"
           libs.map! { |lib| lib + ".lib" }
         else
           libs.map! { |lib| "lib" + lib + ".a" }
@@ -261,7 +261,7 @@ def common_bundle_start(startdir, dest)
     File.open(exts, "w") do |f|
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
       f.puts "// Generated #{Time.now.to_s}"
-      if $config["platform"] == "wm"
+      if $config["platform"] == "wm" || $config["platform"] == "win32"
         # Add libraries through pragma
         extlibs.each do |lib|
           f.puts "#pragma comment(lib, \"#{lib}\")"
@@ -453,17 +453,17 @@ namespace "build" do
   
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
-
+=begin
       # RubyIDContainer.* files takes half space of jar why we need it?
-      #Jake.unjar("../RhoBundle.jar", $tmpdir)
-      #Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
-      #rm "#{$bindir}/RhoBundle.jar"
-      #chdir $tmpdir
-      #puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
-      #rm_rf $tmpdir
-      #mkdir_p $tmpdir
-      #chdir $srcdir
-      
+      Jake.unjar("../RhoBundle.jar", $tmpdir)
+      Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
+      rm "#{$bindir}/RhoBundle.jar"
+      chdir $tmpdir
+      puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
+      rm_rf $tmpdir
+      mkdir_p $tmpdir
+      chdir $srcdir
+=end      
       puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
         puts "Error creating Rhobundle.jar"
