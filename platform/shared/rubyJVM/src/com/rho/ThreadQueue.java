@@ -83,7 +83,7 @@ public abstract class ThreadQueue extends RhoThread
 	    LOG.INFO("Starting main routine...");
 
 	    int nLastPollInterval = getLastPollInterval();
-	    while( !isStopped() )
+	    while( !isStopping() )
 	    {
             int nWait = m_nPollInterval > 0 ? m_nPollInterval : QUEUE_POLL_INTERVAL_INFINITE;
 
@@ -96,16 +96,18 @@ public abstract class ThreadQueue extends RhoThread
                     nWait = nWait2;
             }
 
-            if ( nWait >= 0 && !isStopped() && isNoCommands() )
+            if ( nWait >= 0 && !isStopping() && isNoCommands() )
 		    {
                 LOG.INFO("ThreadQueue blocked for " + nWait + " seconds...");
                 wait(nWait);
             }
             nLastPollInterval = 0;
 
-            if ( !isStopped() )
+            if ( !isStopping() )
     		    processCommands();
 	    }
+	    
+	    LOG.INFO("Thread shutdown");	    
     }
 
     boolean isNoCommands()
@@ -121,7 +123,7 @@ public abstract class ThreadQueue extends RhoThread
 
     void processCommands()//throws Exception
     {
-	    while(!isStopped() && !isNoCommands())
+	    while(!isStopping() && !isNoCommands())
 	    {
 		    IQueueCommand pCmd = null;
 		    synchronized(m_mxStackCommands)

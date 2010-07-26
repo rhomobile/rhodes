@@ -316,7 +316,10 @@ static VALUE _getRecordByIndex(CFArrayRef people, CFIndex index, ABRecordID* pre
 VALUE getallPhonebookRecords(void* pb) {
 	if (pb) {
 		LocalPhonebook* phonebook = pb;
+		
 		VALUE hash = rho_ruby_createHash();
+		VALUE valGc = rho_ruby_disable_gc();
+		
 		rho_ruby_holdValue(hash);
 		ABRecordID recordId;
 		VALUE record; char buf[128];
@@ -329,6 +332,8 @@ VALUE getallPhonebookRecords(void* pb) {
 		}
 
         rho_ruby_releaseValue(hash);		
+        
+        rho_ruby_enable_gc(valGc);
 		return hash; 
 	}
 	return rho_ruby_get_NIL();	

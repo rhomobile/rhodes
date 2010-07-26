@@ -389,6 +389,18 @@ describe "Rhom::RhomObject" do
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 1
   end
+
+  it "should update record with time field" do
+    @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+  
+    @acct.update_attributes(:last_checked =>Time.now())
+    @accts = Account.find(:all, 
+    #:conditions => ["last_checked > ?", (Time.now-(10*60)).to_i])
+     :conditions => { {:name=>'last_checked', :op=>'>'}=>(Time.now-(10*60)).to_i() } )
+    
+    @accts.length.should == 1
+    @accts[0].object.should == '44e804f2-4933-4e20-271c-48fcecd9450d'
+  end
   
   it "should retrieve and modify one record" do
     @acct = Account.find('44e804f2-4933-4e20-271c-48fcecd9450d')
