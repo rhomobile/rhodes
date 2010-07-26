@@ -23,8 +23,8 @@ public:
     virtual ~CRhoThread(void){};
 
     virtual void start(EPriority ePriority);
-    virtual void stop(unsigned int nTimeoutToKill){ m_nState |= TS_STOPPING; m_pImpl->stop(nTimeoutToKill); m_nState &= ~TS_STOPPING; }
-    virtual void wait(unsigned int nTimeout){ m_nState |= TS_WAIT; m_pImpl->wait(nTimeout); m_nState &= ~TS_WAIT; }
+    virtual void stop(unsigned int nTimeoutToKill){ m_nState |= TS_STOPPING; if (m_nState&TS_RUNNING) m_pImpl->stop(nTimeoutToKill); m_nState &= ~TS_STOPPING; }
+    virtual void wait(unsigned int nTimeout){ m_nState |= TS_WAIT; if (m_nState&TS_RUNNING) m_pImpl->wait(nTimeout); m_nState &= ~TS_WAIT; }
     virtual void stopWait(){ if (isWaiting()) m_pImpl->stopWait(); }
     virtual void sleep(unsigned int nTimeout){ m_pImpl->sleep(nTimeout); }
     virtual void run() = 0;
