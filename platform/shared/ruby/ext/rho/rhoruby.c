@@ -419,6 +419,19 @@ struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val)
     return oRes;
 }
 
+VALUE rho_ruby_disable_gc()
+{
+    return rb_gc_disable() == Qtrue ? Qfalse : Qtrue;
+}
+
+void  rho_ruby_enable_gc(VALUE val)
+{
+    if ( val == Qtrue )
+        rb_gc_enable();
+    else
+        rb_gc_disable();
+}
+
 void rho_ruby_holdValue(VALUE val)
 {
     rb_gc_register_mark_object(val);
