@@ -481,8 +481,9 @@ public class Rhodes extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		Logger.T(TAG, "+++ onCreate");
+
+		// Here Log should be used, not Logger. It is because Logger is not initialized yet.
+		Log.v(TAG, "+++ onCreate");
 		
 		Thread ct = Thread.currentThread();
 		ct.setPriority(Thread.MAX_PRIORITY);
@@ -559,6 +560,8 @@ public class Rhodes extends Activity {
 			
 		});
 		init.start();
+		
+		//bAppJustStarted = true;
 	}
 	
 	@Override
@@ -571,19 +574,30 @@ public class Rhodes extends Activity {
 	protected void onStart() {
 		super.onStart();
 		Logger.T(TAG, "+++ onStart");
+		if (needGeoLocationRestart) {
+			GeoLocation.isKnownPosition();
+			needGeoLocationRestart = false;
+		}
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (needGeoLocationRestart)
-			GeoLocation.isKnownPosition();
 		Logger.T(TAG, "+++ onResume");
+		//if (!bAppJustStarted && mainView != null) {
+		//	int idx = mainView.activeTab();
+		//	mainView.reload(idx);
+		//}
 	}
 	
 	@Override
 	protected void onPause() {
 		Logger.T(TAG, "+++ onPause");
+		//int idx = mainView.activeTab();
+		//RhoConf.setInt("rho_current_tab", idx);
+		//String url = getCurrentUrl();
+		//RhoConf.setString("rho_last_visited_url", url);
+		//bAppJustStarted = false;
 		super.onPause();
 	}
 	
