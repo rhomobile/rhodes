@@ -91,7 +91,7 @@ public class Rhodes extends Activity {
 	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
-	//private boolean bAppJustStarted;
+	private static boolean ownActivityActivated;
 	
 	private WebChromeClient chromeClient;
 	private RhoWebSettings webSettings;
@@ -369,8 +369,12 @@ public class Rhodes extends Activity {
 		if (ENABLE_PROFILING)
 			Debug.startMethodTracing("duri");
 		
-		if (!RhodesService.isCreated())
+		if (!RhodesService.isCreated()) {
+			Log.v(TAG, "Starting rhodes service...");
 			startService(new Intent(this, RhodesService.class));
+		}
+		else
+			Log.v(TAG, "Rhodes service already started...");
 		
 		Thread ct = Thread.currentThread();
 		ct.setPriority(Thread.MAX_PRIORITY);
@@ -462,8 +466,6 @@ public class Rhodes extends Activity {
 			
 		});
 		init.start();
-		
-		//bAppJustStarted = true;
 	}
 	
 	@Override
@@ -476,6 +478,7 @@ public class Rhodes extends Activity {
 	protected void onStart() {
 		super.onStart();
 		Logger.T(TAG, "+++ onStart");
+		ownActivityActivated = false;
 		if (needGeoLocationRestart) {
 			GeoLocation.isKnownPosition();
 			needGeoLocationRestart = false;
@@ -486,20 +489,11 @@ public class Rhodes extends Activity {
 	protected void onResume() {
 		super.onResume();
 		Logger.T(TAG, "+++ onResume");
-		//if (!bAppJustStarted && mainView != null) {
-		//	int idx = mainView.activeTab();
-		//	mainView.reload(idx);
-		//}
 	}
 	
 	@Override
 	protected void onPause() {
 		Logger.T(TAG, "+++ onPause");
-		//int idx = mainView.activeTab();
-		//RhoConf.setInt("rho_current_tab", idx);
-		//String url = getCurrentUrl();
-		//RhoConf.setString("rho_last_visited_url", url);
-		//bAppJustStarted = false;
 		super.onPause();
 	}
 	
@@ -508,6 +502,8 @@ public class Rhodes extends Activity {
 		Logger.T(TAG, "+++ onStop");
 		needGeoLocationRestart = GeoLocation.isAvailable();
 		GeoLocation.stop();
+		if (!ownActivityActivated)
+			stopSelf();
 		super.onStop();
 	}
 		
@@ -687,6 +683,12 @@ public class Rhodes extends Activity {
 		if (ENABLE_PROFILING)
 			Debug.stopMethodTracing();
 		Process.killProcess(Process.myPid());
+	}
+	
+	@Override
+	public void startActivity(Intent intent) {
+		ownActivityActivated = true;
+		super.startActivity(intent);
 	}
 	
 	static {
