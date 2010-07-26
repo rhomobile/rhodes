@@ -149,10 +149,10 @@ namespace "config" do
       chmod 0744, $homedir + "/.profile"
     end
 
-    if $app_config["iphone"] and $app_config["iphone"]["extensions"]
-      $app_config["extensions"] += $app_config["iphone"]["extensions"] if $app_config["extensions"]
-      $app_config["iphone"]["extensions"] = nil
-    end
+    #if $app_config["iphone"] and $app_config["iphone"]["extensions"]
+    #  $app_config["extensions"] += $app_config["iphone"]["extensions"] if $app_config["extensions"]
+    #  $app_config["iphone"]["extensions"] = nil
+    #end
 
     # check environment variables setted by XCode (when we executed from XCode)
     #xcode_sdk_name = ENV['SDK_NAME']
