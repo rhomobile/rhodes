@@ -175,22 +175,15 @@ static void callback_loadserversources(void *arg, String const &strQuery)
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
     m_httpServer->pause(!bActive);
+    String action = bActive ? "activate" : "deactivate";
+    String strUrl = m_strHomeUrl + "/system/" + action + "app";
+    NetResponse(resp,getNet().pullData( strUrl, null ));
+    if ( !resp.isOK() )
+        LOG(ERROR) + action + " app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     if (bActive)
     {
-        String strUrl = m_strHomeUrl + "/system/activateapp";
-        NetResponse(resp,getNet().pullData( strUrl, null ));
-        if ( !resp.isOK() )
-            LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-
-        //LOG(INFO) + "navigate to first start url";
-        //navigateToUrl(getFirstStartUrl());
-    }
-    else
-    {
-        String strUrl = m_strHomeUrl + "/system/deactivateapp";
-        NetResponse(resp,getNet().pullData( strUrl, null ));
-        if ( !resp.isOK() )
-            LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        LOG(INFO) + "navigate to first start url";
+        navigateToUrl(getFirstStartUrl());
     }
 }
 
