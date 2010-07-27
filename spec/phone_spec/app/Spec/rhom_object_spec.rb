@@ -37,6 +37,8 @@ describe "Rhom::RhomObject" do
   before(:all) do
     @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
+    
+    Rho::RhoConfig.sources['Account']['sync_type'] = 'incremental'
   end
   
   before(:each) do
@@ -51,6 +53,8 @@ describe "Rhom::RhomObject" do
       @save_sync_types.each do |src|
         ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>src['sync_type']}, {'name'=>src['name']})
       end
+      
+      Rho::RhoConfig.sources['Account']['sync_type'] = 'none'
   end
   
   it "should set source_id attributes" do
