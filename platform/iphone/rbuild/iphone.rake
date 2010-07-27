@@ -83,18 +83,6 @@ def app_expanded_path(appname)
   File.expand_path(File.join(basedir,'spec',appname))
 end
 
-def run_spec_app(appname)
-  rhobuildyml = File.join(basedir,'rhobuild.yml')
-  rhobuild = YAML::load_file(rhobuildyml)
-  rhobuild['env']['app'] = app_expanded_path(appname)
-  File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
-  $app_path = File.expand_path(File.join(basedir,'spec',appname))
-  $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
-  $config = Jake.config(File.open(rhobuildyml,'r'))
-  Rake::Task.tasks.each { |t| t.reenable }
-  Rake::Task['run:iphonespec'].invoke
-end
-
 
 namespace "config" do
   task :set_iphone_platform do
@@ -253,6 +241,94 @@ namespace "build" do
 end
 
 namespace "run" do
+  namespace "iphone" do
+    task :spec => ["clean:iphone",:buildsim] do
+
+      sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
+                $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+
+      old_user_home = ENV["CFFIXED_USER_HOME"]
+      old_dyld_root = ENV["DYLD_ROOT_PATH"]
+      old_dyld_framework = ENV["DYLD_FRAMEWORK_PATH"]
+      old_iphone_simulator = ENV["IPHONE_SIMULATOR_ROOT"]
+
+      ENV["CFFIXED_USER_HOME"] = $simrhodes
+      ENV["DYLD_ROOT_PATH"] = sdkroot
+      ENV["DYLD_FRAMEWORK_PATH"] = sdkroot + "/System/Library/Frameworks"
+      ENV["IPHONE_SIMULATOR_ROOT"] = sdkroot
+
+      command = '"' + $simrhodes + '/rhorunner.app/rhorunner"' + " -RegisterForSystemEvents"
+
+      #if someone runs against the wrong app, kill after 120 seconds
+      Thread.new {
+        sleep 300
+        `killall -9 rhorunner`
+      }
+
+      `killall -9 rhorunner`
+
+      # Run local http server
+      $iphonespec = true
+      httpserver = false
+      httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
+
+      if httpserver
+        require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
+        NetHTTPSpecs.start_server
+      end
+
+      Jake.before_run_spec
+
+      start = Time.now
+      io = IO.popen(command)
+      io.each do |line|
+        Jake.process_spec_output(line)
+      end
+
+      Jake.process_spec_results(start)
+
+      $stdout.flush
+
+      NetHTTPSpecs.stop_server if httpserver
+
+      ENV["CFFIXED_USER_HOME"] = old_user_home
+      ENV["DYLD_ROOT_PATH"] = old_dyld_root
+      ENV["DYLD_FRAMEWORK_PATH"] = old_dyld_framework
+      ENV["IPHONE_SIMULATOR_ROOT"] = old_iphone_simulator
+      exit $failed.to_i unless $dont_exit_on_failure
+    end
+
+    task :phone_spec do
+      Jake.run_spec_app('iphone','phone_spec')
+    end
+
+    task :framework_spec do
+      Jake.run_spec_app('iphone','framework_spec')
+    end
+
+    task :allspecs do
+      $dont_exit_on_failure = true
+      Rake::Task['run:iphone:phone_spec'].invoke
+      Rake::Task['run:iphone:framework_spec'].invoke
+      failure_output = ""
+      if $failed.to_i > 0
+        failure_output = ""
+        failure_output += "phone_spec failures:\n\n" + File.open(app_expanded_path('phone_spec') + "/faillog.txt").read if
+          File.exist?(app_expanded_path('phone_spec') + "/faillog.txt")
+        failure_output += "framework_spec failures:\n\n" + File.open(app_expanded_path('framework_spec') + "/faillog.txt").read if
+          File.exist?(app_expanded_path('framework_spec') + "/faillog.txt")
+        chdir basedir
+        File.open("faillog.txt", "w") { |io| failure_output.each {|x| io << x }  }
+      end
+      puts "Agg Total: #{$total}"
+      puts "Agg Passed: #{$passed}"
+      puts "Agg Failed: #{$failed}"
+      exit $failed.to_i
+    end
+
+
+  end
+
   task :buildsim => ["config:iphone", "build:iphone:rhodes"] do
     
      unless $sdk =~ /^iphonesimulator/
@@ -384,8 +460,8 @@ namespace "run" do
   
   task :allspecs do
     $dont_exit_on_failure = true
-    Rake::Task['run:phone_spec'].invoke
-    Rake::Task['run:framework_spec'].invoke    
+    Rake::Task['run:iphone:phone_spec'].invoke
+    Rake::Task['run:iphone:framework_spec'].invoke
     failure_output = ""
     if $failed.to_i > 0
       failure_output = ""
@@ -402,112 +478,6 @@ namespace "run" do
     exit $failed.to_i
   end
   
-  task :phone_spec do
-    run_spec_app('phone_spec')
-  end
-  
-  task :framework_spec do
-    run_spec_app('framework_spec')
-  end
-
-  task :iphonespec => ["clean:iphone",:buildsim] do
-
-    sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
-              $sdk.gsub(/iphonesimulator/,"") + ".sdk"
-              
-    old_user_home = ENV["CFFIXED_USER_HOME"]
-    old_dyld_root = ENV["DYLD_ROOT_PATH"]
-    old_dyld_framework = ENV["DYLD_FRAMEWORK_PATH"]
-    old_iphone_simulator = ENV["IPHONE_SIMULATOR_ROOT"]
-
-    ENV["CFFIXED_USER_HOME"] = $simrhodes
-    ENV["DYLD_ROOT_PATH"] = sdkroot
-    ENV["DYLD_FRAMEWORK_PATH"] = sdkroot + "/System/Library/Frameworks"
-    ENV["IPHONE_SIMULATOR_ROOT"] = sdkroot
-
-    command = '"' + $simrhodes + '/rhorunner.app/rhorunner"' + " -RegisterForSystemEvents"
-
-    total = failed = passed = 1
-
-    #if someone runs against the wrong app, kill after 120 seconds
-    Thread.new {
-      sleep 300
-      `killall -9 rhorunner`
-    }
-
-    `killall -9 rhorunner`
-
-    # Run local http server
-    $iphonespec = true
-    httpserver = false
-    httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
-
-    if httpserver
-      require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
-      NetHTTPSpecs.start_server
-    end
-
-    faillog = []
-    getdump = false
-    start = Time.now
-    io = IO.popen(command)
-    io.each { |line|
-
-      puts line if line =~ /\| - it/ or line =~ /\| describe/
-
-      if getdump
-        if line =~ /^I/
-          getdump = false
-        else
-          faillog << line
-        end
-      end
-
-      if line =~ /\*\*\*Failed:\s+(.*)/
-        failed = $1
-        `killall -9 rhorunner`
-      elsif line =~ /\*\*\*Total:\s+(.*)/
-        total = $1
-      elsif line =~ /\*\*\*Passed:\s+(.*)/
-        passed = $1
-      end
-
-      if line =~ /\| FAIL:/
-        faillog << line.gsub(/I.*APP\|/,"\n\n***")
-        getdump = true
-      end
-    }
-    finish = Time.now
-
-
-    NetHTTPSpecs.stop_server if httpserver
-
-    rm_rf $app_path + "/faillog.txt"
-    File.open($app_path + "/faillog.txt", "w") { |io| faillog.each {|x| io << x }  } if failed.to_i > 0
-    
-    $total ||= 0
-    $passed ||= 0
-    $failed ||= 0
-    
-    $total += total.to_i
-    $passed += passed.to_i
-    $failed += failed.to_i
-
-    puts "************************"
-    puts "\n\n"
-    puts "Tests completed in #{finish - start} seconds"
-    puts "Total: #{total}"
-    puts "Passed: #{passed}"
-    puts "Failed: #{failed}"
-    puts "\n"
-    puts "Failures stored in faillog.txt" if failed.to_i > 0
-        
-    ENV["CFFIXED_USER_HOME"] = old_user_home
-    ENV["DYLD_ROOT_PATH"] = old_dyld_root
-    ENV["DYLD_FRAMEWORK_PATH"] = old_dyld_framework
-    ENV["IPHONE_SIMULATOR_ROOT"] = old_iphone_simulator
-    exit $failed.to_i unless $dont_exit_on_failure
-  end
 end
 
 namespace "clean" do
