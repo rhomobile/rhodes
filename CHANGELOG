@@ -3,6 +3,7 @@
 * #4356949 - iPhone simulator: rake run:iphone open simulator but there is no
   application
 * #4394846 - Android: no application screen when go to background and switch back
+* #4365316 - build.yml should default to iPhoneSimulator 4.0
 
 ## 2.0.2
 * #4223112 - fixed problem with script order in iphone build
