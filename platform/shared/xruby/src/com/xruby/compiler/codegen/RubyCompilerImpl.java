@@ -82,7 +82,7 @@ public class RubyCompilerImpl implements CodeVisitor {
         binding_ = binding;
         RubyIDClassGenerator.initScript(extra_, script_name_);
         String className = NameFactory.createClassName(extra_, script_name_, null);
-        cg_ = new ClassGeneratorForRubyProgram(className, script_name_, binding, true, false);
+        cg_ = new ClassGeneratorForRubyProgram(className, script_name_, binding, false, false);
 
         // Start compiling
         program.accept(this);
