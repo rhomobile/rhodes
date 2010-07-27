@@ -1181,6 +1181,14 @@ namespace "run" do
         $stdout.flush
         
     end
+
+    task :phone_spec do
+      Jake.run_spec_app('android','phone_spec')
+    end
+
+    task :framework_spec do
+      Jake.run_spec_app('android','framework_spec')
+    end
     
     task :emulator => "device:android:debug" do
         run_emulator
