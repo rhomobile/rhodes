@@ -91,6 +91,8 @@ public class RubyIDClassGenerator {
         staticBlockMg.endMethod();
         cw.visitEnd();
 
+        clear();
+
         return cw.toByteArray();
     }
 
