@@ -94,6 +94,19 @@ class Jake
     conf
   end
 
+
+  def self.run_spec_app(platform,appname)
+    rhobuildyml = File.join(basedir,'rhobuild.yml')
+    rhobuild = YAML::load_file(rhobuildyml)
+    rhobuild['env']['app'] = app_expanded_path(appname)
+    File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
+    $app_path = File.expand_path(File.join(basedir,'spec',appname))
+    $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
+    $config = Jake.config(File.open(rhobuildyml,'r'))
+    Rake::Task.tasks.each { |t| t.reenable }
+    Rake::Task['run:' + platform + ':spec'].invoke
+  end
+
   def self.before_run_spec()
     $total ||= 0
     $passed ||= 0
