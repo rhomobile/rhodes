@@ -535,6 +535,16 @@ static Rhodes *instance = NULL;
     [self saveLastUsedTime];
 }
 
+#ifdef __IPHONE_4_0
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    // Nothing right now
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    // Nothing right now
+}
+#endif
+
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
     [self saveLastUsedTime];
