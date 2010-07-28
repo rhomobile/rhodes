@@ -1129,6 +1129,25 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
+		<Filter
+			Name="signature"
+			>
+			<File
+				RelativePath=".\signature\Signature.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\signature\Signature.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 		<Global
