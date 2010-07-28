@@ -198,6 +198,24 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
+void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, 
+										const String& strError, boolean bCancel ) 
+	{
+		strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+		String strBody;
+		if ( bCancel || strError.length() > 0 )
+		{
+			if ( bCancel )
+				strBody = "status=cancel&message=User canceled operation.";
+			else
+				strBody = "status=error&message=" + strError;
+		}else
+			strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
+		
+		strBody += "&rho_callback=1";
+		NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+	}
+	
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
@@ -846,6 +864,12 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
     RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
 }
 
+void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
+									  const char* strError, int bCancel )
+{
+	RHODESAPP().callSignatureCallback(strCallbackUrl, strSignaturePath, strError, bCancel != 0);
+}
+	
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
