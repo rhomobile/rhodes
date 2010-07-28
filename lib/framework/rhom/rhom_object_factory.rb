@@ -124,6 +124,10 @@ module Rhom
                 def get_source_name
                   self.name.to_s
                 end
+
+                def is_sync_source
+                    Rho::RhoConfig.sources[get_source_name]['sync_type'] != 'none'
+                end
               
                 def is_schema_source
                     !Rho::RhoConfig.sources[get_source_name]['schema'].nil?
@@ -747,7 +751,7 @@ module Rhom
                         puts "del_objects : #{del_objects}"
                         del_objects.each do |obj|
                           db.delete_from_table(tableName, {'object'=>obj['object']})
-                          db.delete_from_table('changed_values', {'object'=>obj['object']})
+                          db.delete_from_table('changed_values', {'object'=>obj['object']}) if is_sync_source()
                         end
                       else
                         if is_schema_source()
@@ -756,7 +760,7 @@ module Rhom
                             db.delete_from_table(tableName, {"source_id"=>get_source_id})
                         end
                             
-                        db.delete_from_table('changed_values', {"source_id"=>get_source_id})
+                        db.delete_from_table('changed_values', {"source_id"=>get_source_id})  if is_sync_source()
                         #TODO: add delete all update_type
                       end
                       db.commit
@@ -829,14 +833,14 @@ module Rhom
                       # first delete the record from viewable list
                       db.delete_from_table(tableName, {"object"=>obj})
                       
-                      resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) 
+                      resUpdateType =  is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) : nil 
                       if resUpdateType && resUpdateType.length > 0 
                         update_type = nil                              
                       end
                       
-                      db.delete_from_table('changed_values', {"object"=>obj, "sent"=>0})
+                      db.delete_from_table('changed_values', {"object"=>obj, "sent"=>0}) if is_inst_sync_source()
                       
-                      if update_type and attrsList and attrsList.length() > 0
+                      if is_inst_sync_source() && update_type and attrsList and attrsList.length() > 0
                         # now add delete operation
                         if is_inst_schema_source()
                             attrsList[0].each do |attrName, attrValue|
@@ -894,7 +898,7 @@ module Rhom
                     end
 
                     if result && result.length > 0                     
-                        resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
+                        resUpdateType = is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) : nil
                         if resUpdateType && resUpdateType.length > 0 
                             update_type = resUpdateType[0]['update_type'] 
                         else
@@ -937,13 +941,16 @@ module Rhom
                             
                             if isModified
                             
-                                resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
-                                if resUpdateType && resUpdateType.length > 0 
-                                    fields['update_type'] = resUpdateType[0]['update_type'] 
-                                    db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
-                                end
+                                if is_inst_sync_source()
+                                    resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
+                                    if resUpdateType && resUpdateType.length > 0 
+                                        fields['update_type'] = resUpdateType[0]['update_type'] 
+                                        db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
+                                    end
 
-                                db.insert_into_table('changed_values', fields)
+                                    db.insert_into_table('changed_values', fields)
+                                end
+                                    
                                 if isSchemaSrc
                                     db.update_into_table(tableName, {key=>val}, {"object"=>obj})
                                 else
@@ -951,7 +958,7 @@ module Rhom
                                 end    
                             end    
                         else
-                            db.insert_into_table('changed_values', fields)
+                            db.insert_into_table('changed_values', fields) if is_inst_sync_source()
                             fields.delete("update_type")
                             fields.delete("attrib_type")
                             
@@ -1006,7 +1013,7 @@ module Rhom
                       # then we procede with update
                       if isModified
                           # only one update at a time
-                          resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
+                          resUpdateType = is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) : nil 
                           if resUpdateType && resUpdateType.length > 0 
                               update_type = resUpdateType[0]['update_type'] 
                               db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
@@ -1033,13 +1040,15 @@ module Rhom
                               end    
                             
                           end
-                            
-                          if result && result.length > 0 
-                            db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
-                          else
-                            db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
-                          end    
                           
+                          if is_inst_sync_source()  
+                              if result && result.length > 0 
+                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                              else
+                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                              end    
+                          end
+                                                      
                           # update in-memory object
                           self.vars[attrib.to_sym()] = new_val
                       end
@@ -1063,6 +1072,10 @@ module Rhom
 	
               def get_inst_source_id
                 Rho::RhoConfig.sources[get_inst_source_name]['source_id'].to_s
+              end
+          
+              def is_inst_sync_source
+                  Rho::RhoConfig.sources[get_inst_source_name]['sync_type'] != 'none'
               end
           
               def is_inst_schema_source
