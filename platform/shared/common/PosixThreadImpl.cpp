@@ -14,6 +14,7 @@ namespace common
 IMPLEMENT_LOGCLASS(CPosixThreadImpl, "RhoThread");
 
 CPosixThreadImpl::CPosixThreadImpl()
+    :m_stop_wait(false)
 {
 #if defined(OS_ANDROID)
     // Android has no pthread_condattr_xxx API
@@ -72,8 +73,6 @@ void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
 
 void CPosixThreadImpl::wait(unsigned int nTimeout)
 {
-    common::CMutexLock oLock(m_mxSync);
-
     struct timespec   ts;
     struct timeval    tp;
     gettimeofday(&tp, NULL);
@@ -81,13 +80,19 @@ void CPosixThreadImpl::wait(unsigned int nTimeout)
     ts.tv_sec  = tp.tv_sec;
     ts.tv_nsec = tp.tv_usec * 1000;
 
-    if ( (unsigned)ts.tv_sec + nTimeout < (unsigned)ts.tv_sec )
-        pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex() );
-    else
+    common::CMutexLock oLock(m_mxSync);
+
+    while (!m_stop_wait)
     {
-        ts.tv_sec += nTimeout;
-        pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+        if ( (unsigned)ts.tv_sec + nTimeout < (unsigned)ts.tv_sec )
+            pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex() );
+        else
+        {
+            ts.tv_sec += nTimeout;
+            pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+        }
     }
+    m_stop_wait = false;
 }
 
 void CPosixThreadImpl::sleep(unsigned int nTimeout)
@@ -97,6 +102,8 @@ void CPosixThreadImpl::sleep(unsigned int nTimeout)
 
 void CPosixThreadImpl::stopWait()
 {
+    common::CMutexLock oLock(m_mxSync);
+    m_stop_wait = true;
     pthread_cond_broadcast(&m_condSync);
 }
 
