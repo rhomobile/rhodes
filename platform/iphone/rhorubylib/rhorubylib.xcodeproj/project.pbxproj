@@ -115,6 +115,7 @@
 		F5E363050EB79F8400226287 /* lgamma_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363040EB79F8400226287 /* lgamma_r.c */; };
 		F5E363080EB7A0DB00226287 /* newline.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363070EB7A0DB00226287 /* newline.c */; };
 		F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */; };
+		FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA291E8811FF2BF90096AC39 /* signature_wrap.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -227,6 +228,7 @@
 		F5E363040EB79F8400226287 /* lgamma_r.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lgamma_r.c; path = ../../shared/ruby/missing/lgamma_r.c; sourceTree = SOURCE_ROOT; };
 		F5E363070EB7A0DB00226287 /* newline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newline.c; path = ../../shared/ruby/newline.c; sourceTree = SOURCE_ROOT; };
 		F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mapview_wrap.c; path = ../../shared/ruby/ext/mapview/mapview_wrap.c; sourceTree = SOURCE_ROOT; };
+		FA291E8811FF2BF90096AC39 /* signature_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = signature_wrap.c; path = ext/signature/signature_wrap.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -477,6 +479,7 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				FA291E8011FF2A5F0096AC39 /* signature */,
 				5C8EE86311220EBB0005C20D /* asynchttp */,
 				5CF8DBBE10B1D40400247AB4 /* socket */,
 				F5FD0A3910619E5300B7B8ED /* mapview */,
@@ -582,6 +585,14 @@
 				F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */,
 			);
 			name = mapview;
+			sourceTree = "<group>";
+		};
+		FA291E8011FF2A5F0096AC39 /* signature */ = {
+			isa = PBXGroup;
+			children = (
+				FA291E8811FF2BF90096AC39 /* signature_wrap.c */,
+			);
+			name = signature;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -744,6 +755,7 @@
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
+				FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
