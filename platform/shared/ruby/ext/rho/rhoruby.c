@@ -33,6 +33,7 @@ extern void Init_WebView(void);
 extern void Init_RhoConf(void);
 extern void Init_Alert(void);
 extern void Init_Camera(void);
+extern void Init_SignatureTool(void);
 extern void Init_stringio(void);
 extern void Init_DateTimePicker(void);
 extern void Init_NativeBar(void);
@@ -155,6 +156,7 @@ void RhoRubyStart()
     Init_WebView();
     Init_RhoConf();
     Init_Alert();
+	Init_SignatureTool();
     Init_Camera();
     Init_stringio();
     Init_DateTimePicker();

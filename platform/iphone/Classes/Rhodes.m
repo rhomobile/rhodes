@@ -46,6 +46,7 @@ static Rhodes *instance = NULL;
     [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
 }
 
+
 #if 0
 + (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view {
     if (!view)
@@ -232,6 +233,31 @@ static Rhodes *instance = NULL;
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
+- (void)takeSignature:(NSString*) url {
+	[signatureDelegate setPostUrl:url];
+	[signatureDelegate setParentView:window];
+	[signatureDelegate setPrevView:mainView.view];
+	@try {
+		CGRect rect = window.frame;
+		rect.origin.x = 0;
+		rect.origin.y = 0;
+		SignatureViewController* svc = [[SignatureViewController alloc] initWithRect:rect delegate:signatureDelegate];
+		[signatureDelegate setSignatureViewControllerValue:svc];
+		[mainView.view retain];
+		[mainView.view removeFromSuperview];
+		[window addSubview:svc.view];
+    } @catch(NSException* theException) {
+        RAWLOG_ERROR2("startSignatureViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+        return NO;
+    }
+    
+	
+	//[self startCameraPicker:pickImageDelegate 
+    //             sourceType:UIImagePickerControllerSourceTypeCamera];
+	
+}
+
+
 - (void)choosePicture:(NSString*) url {
     [pickImageDelegate setPostUrl:url];
     [self startCameraPicker:pickImageDelegate 
@@ -321,6 +347,7 @@ static Rhodes *instance = NULL;
     
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
+	signatureDelegate = [[SignatureDelegate alloc] init];
     
     rho_rhodesapp_start();
     
