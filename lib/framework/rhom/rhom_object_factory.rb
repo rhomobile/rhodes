@@ -283,7 +283,7 @@ module Rhom
                                 sql << strLimit if strLimit
                             end
                         else
-                            sql << "SELECT distinct object FROM object_values WHERE \n"
+                            sql << "SELECT distinct( object ) FROM object_values WHERE \n"
                             sql << "source_id=" + srcid_value 
                             sql << strLimit if strLimit
                         end
@@ -307,8 +307,7 @@ module Rhom
                             sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
                             sql << " AND source_id=?" # + srcid_value
 
-                            attrVal = db.execute_sql(sql, 
-                                obj['object'], key, get_source_id)
+                            attrVal = db.execute_sql(sql, obj['object'], key, get_source_id)
                             #puts 'attrVal: ' + attrVal.inspect  if attrVal
                             if attrVal && attrVal.length>0 && attrVal[0]['value']
                                 bSkip = true
@@ -408,7 +407,7 @@ module Rhom
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
 
                     db = ::Rho::RHO.get_src_db(get_source_name)
-                    db.start_transaction
+                    db.lock_db
                     begin
                         listObjs = []
                         if condition_hash.is_a?(Hash)
@@ -428,18 +427,20 @@ module Rhom
                                 if attribs
                                     nonExistAttrs = attribs.dup
                                     nonExistAttrs.delete(obj['attrib']) if obj['attrib']
-                                    
-                                    nonExistAttrs.each do |attr|
-                                        sql << "\nUNION ALL\n" if sql.length > 0
-                                        sql << "SELECT attrib,value FROM object_values WHERE \n"
-                                        sql << "object=?" #+ obj_value
-                                        sql << " AND attrib=?" #+ ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
-                                        sql << " AND source_id=?" #+ srcid_value 
-                                        
+
+                                    if nonExistAttrs.length > 0
+                                        sql << "SELECT attrib,value FROM object_values WHERE object=?"
                                         values << obj['object']
-                                        values << attr
-                                        values << get_source_id
-                                    end
+                                    
+                                        quests = ""
+                                        nonExistAttrs.each do |attr|
+                                            quests << ',' if quests.length() > 0
+                                            quests << '?'
+                                            values << attr
+                                        end
+
+                                        sql << " AND attrib IN (#{quests})"
+                                    end                                    
                                 else
                                     sql << "SELECT attrib,value FROM object_values WHERE \n"
                                     sql << "object=?"
@@ -449,6 +450,7 @@ module Rhom
                                     values << get_source_id
                                 end
                                 
+                                #puts "get attribs: #{sql}"
                                 listAttrs = sql.length > 0 ? db.execute_sql(sql,values) : []
                                 
                                 new_obj = self.new
@@ -477,7 +479,7 @@ module Rhom
                             end
                         end    
                     ensure
-                      db.commit
+                      db.unlock_db
                     end
                   
                     if order_attr
@@ -587,35 +589,111 @@ module Rhom
                     attribs = select_arr
                     attribs = attribs | condition_hash.keys if condition_hash
                   else
-                    if !is_schema_source()
-                        attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)
-                    else
-                        attribs = '*'
-                    end    
+                    attribs = '*'
                   end
 
                   if attribs and attribs.length > 0
                     sql = ""
-                    
-                    if !is_schema_source()                    
-                        sql << "SELECT * FROM (\n" if condition_hash or condition_str
-                        sql << "SELECT object, \n"
-                        #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
-                        attribs.each do |attrib|
-                          unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
-                            sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
+                    list = []
+                    if !is_schema_source()
+                      if !condition_hash && !condition_str
+                        srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                        values = [] 
+
+                        if args.first.is_a?(String)                      
+                          sql << "SELECT object FROM object_values WHERE object=?"
+                          values << where_cond['object']
+                        else  
+                          if !block_given? && order_attr
+                              if  !args[1][:dont_ignore_missed_attribs]
+                                  sql << "SELECT object FROM object_values WHERE source_id=? "
+                                  sql << " AND attrib=? ORDER BY \"value\" " + order_dir
+                                  values << get_source_id
+                                  values << order_attr
+                              end    
+                          else
+                              #it is more effective to use old find here
+                              if attribs && attribs != '*' && attribs.length() != 0 && !args[1][:dont_ignore_missed_attribs]
+                                  sql << "SELECT object FROM object_values WHERE source_id=? AND attrib=?"
+                                  values << get_source_id
+                                  values << attribs[0]
+                              else 
+                                  sql << "SELECT distinct(object) FROM object_values WHERE source_id=" << srcid_value 
+                              end    
                           end
-                        end 
-                        sql.chomp!
-                        sql.chop!
-                        sql << " FROM object_values ov \n"
-                        sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
-                        sql << "group by object\n"
-                        sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
-                        #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
-                        sql << ") WHERE " + condition_str if condition_str
-                        sql << strLimit if strLimit
-                    else
+                        end
+                        
+                        if sql.length() > 0                          
+                            sql << strLimit if strLimit
+
+                            puts "Database query start" # : #{sql}; #{values}"
+                            db = ::Rho::RHO.get_src_db(get_source_name)
+                            objects = db.execute_sql(sql, values)
+
+                            puts "Database query end" #: #{objects}"
+
+                            objects.each do |object|
+                                object_id = object['object']
+                                sql2 = "SELECT attrib,value FROM object_values WHERE object=?"
+                                values2 = []
+                                values2 << object_id
+                                
+                                if attribs && attribs != '*'    
+                                    quests = ""
+                                    attribs.each do |attr|
+                                        quests << ',' if quests.length() > 0
+                                        quests << '?'
+                                        values2 << attr
+                                    end
+
+                                    sql2 << " AND attrib IN (#{quests})"
+                                end                                    
+                               
+                                item_attribs = db.execute_sql(sql2, values2)
+
+                                new_item = {'object'=>object_id }
+                                item_attribs.each do |item|
+                                   new_item[item['attrib']] = item['value']
+                                end    
+
+                                list << new_item
+                            end    
+                         end
+                      end
+                            
+                      if sql.length() == 0
+                      
+                        if attribs == "*"
+                            attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)                            
+                        end    
+                      
+                        if attribs and attribs.length > 0                      
+                            sql << "SELECT * FROM (\n" if condition_hash or condition_str
+                            sql << "SELECT object, \n"
+                            #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
+                            attribs.each do |attrib|
+                              unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
+                                sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
+                              end
+                            end 
+                            sql.chomp!
+                            sql.chop!
+                            sql << " FROM object_values ov \n"
+                            sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
+                            sql << "group by object\n"
+                            sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
+                            #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                            sql << ") WHERE " + condition_str if condition_str
+                            sql << strLimit if strLimit
+                            
+                            puts "Database query start"
+                            db = ::Rho::RHO.get_src_db(get_source_name)
+                            list = db.execute_sql(sql)
+                            puts "Database query end"
+                        end   
+                      end  
+
+                    else #schema source
                        attribs = attribs.join(',') if attribs.is_a?(Array)
                        
                        sql << "SELECT #{attribs} FROM #{get_schema_table_name}"
@@ -628,13 +706,13 @@ module Rhom
                            
                        sql << " order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
                        sql << strLimit if strLimit
+                       
+                       puts "Database query start"
+                       db = ::Rho::RHO.get_src_db(get_source_name)
+                       list = db.execute_sql(sql)
+                       puts "Database query end"
+                       
                     end
-                    
-                    puts "Database query start"
-                    
-                    db = ::Rho::RHO.get_src_db(get_source_name)
-                    list = db.execute_sql(sql)
-                    puts "Database query end"
                     
                     if args.first != :count
                         list.each do |rowhash|

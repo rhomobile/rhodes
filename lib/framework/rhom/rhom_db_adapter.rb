@@ -45,7 +45,7 @@ class RhomDbAdapter
   def is_ui_waitfordb
       @database.is_ui_waitfordb
   end
-  
+
   def start_transaction
       begin
         @database.start_transaction
@@ -70,6 +70,24 @@ class RhomDbAdapter
       rescue Exception => e
         puts "exception when rollback transaction : #{e}"
         raise
+      end
+  end
+
+  def lock_db
+      begin
+        @database.lock_db
+      rescue Exception => e
+        puts "exception when lock_db: #{e}"
+        raise        
+      end
+  end
+
+  def unlock_db
+      begin
+        @database.unlock_db
+      rescue Exception => e
+        puts "exception when unlock_db: #{e}"
+        raise        
       end
   end
 
