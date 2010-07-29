@@ -1001,13 +1001,13 @@ public class DBAdapter extends RubyBasic
 			}
 		});
 		
-/*		
+		
 		klass.defineMethod("lock_db",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
 					try{
 					    DBAdapter db = (DBAdapter)receiver;
-					    db.setUnlockDB(true);
+					    //db.setUnlockDB(true);
 					    db.Lock();
 					}catch(Exception e)
 					{
@@ -1033,7 +1033,6 @@ public class DBAdapter extends RubyBasic
 				    return RubyConstant.QNIL;
 				}
 			});
-*/
 		
 		klass.defineMethod( "table_exist?", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
