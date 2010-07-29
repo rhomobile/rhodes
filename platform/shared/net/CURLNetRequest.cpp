@@ -534,6 +534,11 @@ curl_slist *CURLNetRequest::set_curl_options(const char *method, const String& s
     }
     
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+
+    // Enable all available encodings (identity, deflate and gzip)
+    curl_easy_setopt(curl, CURLOPT_ENCODING, "");
+    curl_easy_setopt(curl, CURLOPT_HTTP_CONTENT_DECODING, (long)1);
+    curl_easy_setopt(curl, CURLOPT_HTTP_TRANSFER_DECODING, (long)1);
     
     if (m_bTraceCalls) {
         curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &curl_trace);
