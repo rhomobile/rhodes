@@ -529,7 +529,7 @@ end
   end
   
   it "should return records when order by is nil for some records" do
-    @accts = Account.find(:all, :order => 'shipping_address_country')
+    @accts = Account.find(:all, :order => 'shipping_address_country', :dont_ignore_missed_attribs => true)
     @accts.length.should == 2
     
     if ( @accts[1].name == "Aeroprise" )
