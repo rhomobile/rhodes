@@ -131,13 +131,11 @@ describe "Rhom::RhomObject" do
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     Account.changed?.should == false
-    account = Account.new(vars)
-    obj = account.object
-    account.save
+    account = Account.create(vars)
     Account.changed?.should == true
     account.changed?.should == true
     
-    acct = Account.find(obj)
+    acct = Account.find(account.object)
     acct.name.should == 'foobarthree'
     acct.industry.should == 'entertainment'
     
@@ -166,20 +164,16 @@ describe "Rhom::RhomObject" do
     res = ::Rho::RHO.get_user_db().select_from_table('object_values',"*")
     res.length.should == 0
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
-    account = Account.new(vars)
-    obj = account.object
-    account.save
-    acct = Account.find(obj)
+    account = Account.create(vars)
+    acct = Account.find(account.object)
     acct.name.should == 'foobarthree'
     acct.industry.should == 'entertainment'
   end
   
   it "should create a record" do
     vars = {"name"=>"some new record", "industry"=>"electronics"}
-    @account1 = Account.new(vars)
-    new_id = @account1.object
-    @account1.save
-    @account2 = Account.find(new_id)
+    @account1 = Account.create(vars)
+    @account2 = Account.find(@account1.object)
     @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
@@ -187,10 +181,8 @@ describe "Rhom::RhomObject" do
 
   it "should create a record with comma" do
     vars = {"name"=>"some new record", "industry"=>"elec'tronics"}
-    @account1 = Account.new(vars)
-    new_id = @account1.object
-    @account1.save
-    @account2 = Account.find(new_id)
+    @account1 = Account.create(vars)
+    @account2 = Account.find(@account1.object)
     @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
@@ -198,10 +190,8 @@ describe "Rhom::RhomObject" do
   
   it "should create multiple records" do
     vars = {"name"=>"some new record", "industry"=>"electronics"}
-    @account1 = Account.new(vars)
-    new_id = @account1.object
-    @account1.save
-    @account2 = Account.find(new_id)
+    @account1 = Account.create(vars)
+    @account2 = Account.find(@account1.object)
     @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
@@ -211,9 +201,8 @@ describe "Rhom::RhomObject" do
     ids = []
     10.times do |i|
       vars = {"name"=>"some new record#{rand.to_s}", "industry"=>"electronics#{rand.to_s}"}
-      @acct = Account.new(vars)
+      @acct = Account.create(vars)
       ids << @acct.object
-      @acct.save
       @acct = Account.find(ids[i])
       @acct.name.should == vars['name']
       @acct.industry.should == vars['industry']
@@ -223,9 +212,8 @@ describe "Rhom::RhomObject" do
 
   it "should create a record, then update" do
     vars = {"name"=>"some new record", "industry"=>"electronics"}
-    @account1 = Account.new(vars)
+    @account1 = Account.create(vars)
     new_id = @account1.object
-    @account1.save
     @account2 = Account.find(new_id)
     @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
@@ -248,10 +236,8 @@ describe "Rhom::RhomObject" do
   
   it "should create a record, then update 2" do
     vars = {"name"=>"some new record"}
-    @account1 = Account.new(vars)
+    @account1 = Account.create(vars)
     new_id = @account1.object
-    @account1.save
-    
     @account2 = Account.find(new_id)
     @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']

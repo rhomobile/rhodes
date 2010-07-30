@@ -174,15 +174,13 @@ module Rho
           end
         end
         def method_missing(name, *args)
-          unless name == Fixnum
-            varname = name.to_s.gsub(/\=/,"")
-            setting = (name.to_s =~ /=/)
-            if setting
-              @vars[varname.to_sym()] = args[0]
-            else
-              @vars[varname.to_sym()]
+            unless name == Fixnum
+              if name[name.length()-1] == '='
+                @vars[name.to_s.chop.to_sym()] = args[0]  
+              else
+                @vars[name]
+              end
             end
-          end
         end
         def get_binding
           binding
