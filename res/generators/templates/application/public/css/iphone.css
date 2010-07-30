@@ -1,382 +1,677 @@
-/* Common css */
-
 body {
-    margin: 0;
-    font-family: Helvetica;
+    background: rgb(0,0,0);
 }
 
-h1 {
-    font-size: 1.4em;
+body > * {
+    background: rgb(197,204,211) url(/public/images/iphone/jqtouch/pinstripes.png);
 }
 
-
-/* header */
-
-div#pageTitle h1 {
-    position: absolute;
-    text-align: center;
-    width: 100%;
-    margin: 0 auto 0 auto;
-    line-height: 50px;
-    color: white;
-    text-shadow: 1px 1px 1px #000;
+h1, h2 {
+    font: bold 18px Helvetica;
+    text-shadow: rgba(255,255,255,.2) 0 1px 1px;
+    color: rgb(76, 86, 108);
+    margin: 10px 20px 6px;
 }
 
+/* @group Toolbar */
 
-/* toolbar */
-
-div#toolbar {
-    width: 100%;
-    height: 50px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #aebbcb),color-stop(0.5, #8094ae), color-stop(1.0, #6e84a2));
+.toolbar {
+    -webkit-box-sizing: border-box;
+    border-bottom: 1px solid #2d3642;
+    padding: 10px;
+    height: 45px;
+    background: url(/public/images/iphone/jqtouch/toolbar.png) #6d84a2 repeat-x;
+    position: relative;
 }
 
-div#toolbar div {
+.black-translucent .toolbar {
+	margin-top: 20px;
+}
+
+.toolbar > h1 {
     position: absolute;
     overflow: hidden;
-    text-align: center;
-}
-
-div#toolbar div#leftItem {
+    left: 50%;
     top: 10px;
-    left: 10px;
-    width: 50px;
-}
-
-div#toolbar div#centerItem {
-    bottom: 20px;
-		width:100%;
-    margin-left: 10px;
-    height: 30px;
-}
-
-div#toolbar div#rightItem {
-    top: 10px;
-    right: 10px;
-    width: 50px;
-}
-
-div#toolbar a {
-    color:white;
-    display: block;
-    line-height: 30px;
-}
-
-div#toolbar .backButton {
-    -webkit-border-bottom-left-radius: 16px 16px;
-    -webkit-border-bottom-right-radius: 6px 6px;
-    -webkit-border-image: url(/public/images/backButton.png) 0 5 0 13 stretch stretch;
-    -webkit-border-top-left-radius: 16px 16px;
-    -webkit-border-top-right-radius: 6px 6px;
-    border-width: 0 5px 0 13px;
-    width: auto;
-    font-size: .9em;
-    z-index: 3;
-}
-
-div#toolbar .deleteButton,
-div#toolbar .regularButton,
-div#toolbar .blueButton {
-   -webkit-border-radius: 5px;
-    overflow: hidden;
-    text-align: center;
-    width: auto;
-    height: 30px;
-    font-size: .9em;
-    border-left: #5e7088 1px solid;
-    border-right: #5e7088 1px solid;
-    border-top: #34404e 1px solid;
-    border-bottom: #34404e 1px solid;
-		padding: 0 2px 0 2px;
-}
-
-div#toolbar .deleteButton {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #aebbcb),color-stop(0.5, #8094ae), color-stop(1.0, #6e84a2));
-}
-
-div#toolbar .regularButton {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #92a4bc),color-stop(0.5, #476997), color-stop(1.0, #4e6c92));
-}
-
-div#toolbar .blueButton {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #6f96e9),color-stop(0.5, #3366cc), color-stop(1.0, #3366cc));
-    border: #1a49b3 1px solid;
-}
-
-div#content {
-    background: url('/public/images/pinstripes.png');
-		min-height:480px;
-}
-
-div#content form button.createButton {
-    position: absolute;
-    bottom: 20px;
-    height: 35px;
-}
-
-div#content .standardButton {
-    -webkit-appearance: none;
-    -webkit-border-radius: 8px;
-    background: white;
-    color: #436395;
-    font-size: 15px;
-    font-weight: bold;
-	width:100%;
+    line-height: 1em;
+    margin: 1px 0 0 -75px;
     height: 40px;
-    border: 1px solid black;
-    margin-top:10px;
-}
-
-div#content .standardButton a {
-    display: block;
-    width: 100%;
-    color: #436395;
+    font-size: 20px;
+    width: 150px;
+    font-weight: bold;
+    text-shadow: rgba(0, 0, 0, 0.4) 0px -1px 0;
     text-align: center;
-    line-height: 40px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff;
 }
 
-
-/*  text styles  */
-
-.darkBlue {
-	color:#7287A4;
+body.landscape .toolbar > h1 {
+    margin-left: -125px;
+    width: 250px;
 }
 
-div#content h2.groupTitle{
-	font-size:16px;
-	margin: 8px;
-	color:#565E70;
-}
-
-
-/* lists */
-
-div#content ul {
-    border-top: 1px solid #848284;
-    background-color: white;
-	margin-bottom:50px;
-}
-
-div#content ul li {
-    border-bottom: 1px solid #848284;
-		min-height: 40px;
-}
-
-div#content ul li a {
-    display: block;
-    color: black;
-    font-size: 20px;
-    height: 100%;
-    width: 100%;
-    padding: 15px 0 15px 0;
-}
-div#content ul li > span  {
-    padding: 15px 0 15px 0;
-}
-
-div#content ul li a:hover {
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(5, 140, 245)), to(rgb(1, 95, 230)));
-}
-
-div#content ul li span.title {
-    padding: 0 10px 0 10px;
-    font-size: 20px;
-		font-weight: bold;
-		display: inline;
-}
-
-div#content ul li div.itemLabel {
-    float: left;
-    width: 45%;
-    padding: 15px 0 15px 10px;
-}
-
-div#content ul li div.itemValue {
-    float: right;
-    width: 45%;
-    padding: 15px 10px 15px 0;
-}
-
-div#content ul li a span.disclosure_indicator {
-    background: url('/public/images/iphone/disclosure.png') no-repeat center right;
-    height: 25px;
-    width: 35px;
-    float: right;
-    margin-right: 10px;
-		display: inline;
-}
-
-div#content ul li a span.detail_disclosure {
-    background: url('/public/images/iphone/disclosure_detail.png') no-repeat center right;
-    height: 27px;
-    width: 34px;
-    float: right;
-    margin-right: 10px;
-		display: inline;
-}
-
-div#content ul li a img {
-    float: left;
-    height: 100%;
-    max-width: 100px;
-}
-
-
-/* Forms */
-
-div#content form {
-   padding: 5px 0 75px 0;
-	border: none;
-	width:300px;
-	margin:0 auto;
-	font-size: medium;
-}
-
-div#content form ul {
-    -webkit-border-radius: 8px;
-    background-color: white;
-    border: 1px solid #878787;
-    display: block;
-    font-size: 16px;
-    list-style-type: none;
-    margin: 0 auto 15px auto;
+.button, .back, .cancel, .add {
+    position: absolute;
     overflow: hidden;
-    padding: 0;
-}
-
-div#content form ul li {
-    display: block;
-    border-bottom: 1px solid #848284;
-    line-height: 40px;
-    min-height: 40px;
-    width: 300px;
-    overflow:hidden;
-}
-
-div#content form ul li:last-child {
-    border:none;
-}
-
-
-div#content form ul li label {
-    float: left;
-    display:block;
-    color: black;
-    line-height: 40px;
-    padding: 0;
-    margin: 0 20px 0 10px;
-    width: 40%;
-    overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-weight:bold;
-}
-
-div#content form ul li label.fieldLabel {
-	display:none;
-}
-
-div#content form input {
-	-webkit-appearance: none;
-	width: 45%;
-    border: 0;
-}
-
-div#content form input, div#content form select{
-	height:40px;
-	font-size: medium;
-	font-weight: bold;
-}
-
-div#content form input[type="text"], div#content form input[type="password"] {
-    width:289px;
-    background: transparent;
-    padding: 0 5px 0 10px;
-}
-
-div#content form input[type="checkbox"] {
-    background: url('/public/images/iphone/switch.png') no-repeat center;
-		background-position-y: -27px;
-    float: right;
-    display:block;
-    margin:7px 10px 7px 10px;
-    line-height:40px;
-    height: 27px;
-    width: 94px;
-}
-
-div#content form input[type="checkbox"]:checked {
-    background-position-y: 0;
-}
-
-div#content form input[type="radio"] {
-	position: relative;
-	display:block;
-	width:290px;
-	height: 40px;
-	line-height:40px;
-	margin:0;
-	-webkit-border-radius: 8px;
-}
-
-div#content form input[type="radio"]:checked {
- background: url('/public/images/iphone/radiobutton.png') no-repeat;
- background-position-x: 100%;
- background-position-y: 50%;
-}
-
-div#content form select {
-  	background: url('/public/images/iphone/select.png') no-repeat right;
-    border: 0px;
-		width:100%;
-}
-
-div#content form textarea {
-	-webkit-appearance: none;
-	border: none;
-	font-size: medium;
-	width:280px;
-	line-height:20px;
-}
-
-
-/* Settings */
-
-div#content ul#settings {
-    padding: 0;
+    top: 8px;
+    right: 6px;
     margin: 0;
+    border-width: 0 5px;
+    padding: 0 3px;
+    width: auto;
+    height: 30px;
+    line-height: 30px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    white-space: nowrap;
+    background: none;
+    -webkit-border-image: url(/public/images/iphone/jqtouch/toolButton.png) 0 5 0 5;
 }
 
-div#content ul#settings li.alertMessage{
+.button.active, .back.active, .cancel.active, .add.active {
+    -webkit-border-image: url(/public/images/iphone/jqtouch/toolButton.png) 0 5 0 5;
+}
+
+.blueButton {
+    -webkit-border-image: url(/public/images/iphone/jqtouch/blueButton.png) 0 5 0 5;
+    border-width: 0 5px;
+}
+
+.back {
+    left: 6px;
+    right: auto;
+    padding: 0;
+    max-width: 55px;
+    border-width: 0 8px 0 14px;
+    -webkit-border-image: url(/public/images/iphone/jqtouch/backButton.png) 0 8 0 14;
+}
+
+.leftButton, .cancel {
+    left: 6px;
+    right: auto;
+}
+
+.add {
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: bold;
+}
+
+.whiteButton,
+.grayButton {
+    display: block;
+    border-width: 0 12px;
+    padding: 10px;
     text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: inherit;
+    color: inherit;
 }
 
-div#content ul#settings li span {
-	line-height:40px;
+.whiteButton {
+    -webkit-border-image: url(/public/images/iphone/jqtouch/whiteButton.png) 0 12 0 12;
+    text-shadow: rgba(255, 255, 255, 0.7) 0 1px 0;
 }
 
-div#content ul#settings li.alertMessage span.message{
-		color: red;
+.grayButton {
+    -webkit-border-image: url(/public/images/iphone/jqtouch/grayButton.png) 0 12 0 12;
+    color: #FFFFFF;
 }
 
-div#content ul#settings li span.clientID{
-	margin-left:4px;
-	font-size:10px;
-}
-div#content ul#settings li div.itemLabel span.title{
-  padding: 0;
-	margin:0;
-}
-div#content div#reset {
-    height: 100%;
-		width:300px;
-    padding:10px;
+/* @end */
+
+/* @group Lists */
+
+h1 + ul, h2 + ul, h3 + ul, h4 + ul, h5 + ul, h6 + ul {
+    margin-top: 0;
 }
 
-div#content div#reset h4 {
+ul {
+    color: black;
+    background: #fff;
+    border: 1px solid #B4B4B4;
+    font: bold 17px Helvetica;
+    padding: 0;
+    /*margin: 15px 10px 17px 10px;*/
+    /*-webkit-border-radius: 8px;*/
+}
+
+ul li {
+    color: #666;
+    border-top: 1px solid #B4B4B4;
+    list-style-type: none;
+    padding: 10px 10px 10px 10px;
+}
+
+/* when you have a first LI item on any list */
+
+/*li:first-child, li:first-child a {*/
+    /*border-top: 0;*/
+    /*-webkit-border-top-left-radius: 8px;*/
+    /*-webkit-border-top-right-radius: 8px;*/
+/*}*/
+
+/*li:last-child, li:last-child a {*/
+    /*-webkit-border-bottom-left-radius: 8px;*/
+    /*-webkit-border-bottom-right-radius: 8px;*/
+/*}*/
+
+/* universal arrows */
+
+ul li.arrow {
+    background-image: url(/public/images/iphone/jqtouch/chevron.png);
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+#plastic ul li.arrow, #metal ul li.arrow {
+    background-image: url(/public/images/iphone/jqtouch/chevron_dg.png);
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+/* universal links on list */
+
+ul li a, li.img a + a {
+    color: #000;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    padding: 12px 10px 12px 10px;
+    margin: -10px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+ul li a.active {
+    background: #194fdb url(/public/images/iphone/jqtouch/selection.png) 0 0 repeat-x;
+    color: #fff;
+}
+
+ul li a.button {
+    background-color: #194fdb;
+    color: #fff;
+}
+
+ul li.img a + a {
+    margin: -10px 10px -20px -5px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+ul li.img a + a + a {
+    font-size: 14px;
+    font-weight: normal;
+    margin-left: -10px;
+    margin-bottom: -10px;
+    margin-top: 0;
+}
+
+ul li.img a + small + a {
+    margin-left: -5px;
+}
+
+ul li.img a + small + a + a {
+    margin-left: -10px;
+    margin-top: -20px;
+    margin-bottom: -10px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+ul li.img a + small + a + a + a {
+    margin-left: 0px !important;
+    margin-bottom: 0;
+}
+
+ul li a + a {
+    color: #000;
+    font: 14px Helvetica;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+ul li a + a + a, ul li.img a + a + a + a, ul li.img a + small + a + a + a {
+    color: #666;
+    font: 13px Helvetica;
+    margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    padding: 0;
+}
+
+/*
+@end */
+
+/* @group Forms */
+
+ul.form li {
+    padding: 7px 10px;
+}
+
+ul.form li.error {
+    border: 2px solid red;
+}
+
+ul.form li.error + li.error {
+    border-top: 0;
+}
+
+ul.form li:hover {
+    background: #fff;
+}
+
+ul li input[type="text"], ul li input[type="password"], ul li textarea, ul li select {
+    color: #777;
+    background: #fff url(../.png);
+    border: 0;
+    font: normal 17px Helvetica;
+    padding: 0;
+    display: inline-block;
+    margin-left: 0px;
     width: 100%;
-		padding:0;
-		margin:0;
-		margin: 0 8px;
-		color:#565E70;
+    -webkit-appearance: textarea;
+}
+
+ul li textarea {
+    height: 120px;
+    padding: 0;
+    text-indent: -2px;
+}
+
+ul li select {
+    text-indent: 0px;
+    background: transparent url(/public/images/iphone/jqtouch/chevron.png) no-repeat 103% 3px;
+    -webkit-appearance: textfield;
+    margin-left: -6px;
+    width: 104%;
+}
+
+ul li input[type="checkbox"], ul li input[type="radio"] {
+    margin: 0;
+    color: rgb(50,79,133);
+    padding: 10px 10px;
+}
+
+ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
+    content: attr(title);
+    font: 17px Helvetica;
+    display: block;
+    width: 246px;
+    margin: -12px 0 0 17px;
+}
+
+/* @end */
+
+/* @group Edge to edge */
+
+.edgetoedge h4 {
+    color: #fff;
+    background: rgb(154,159,170) url(/public/images/iphone/jqtouch/listGroup.png) top left repeat-x;
+    border-top: 1px solid rgb(165,177,186);
+    text-shadow: #666 0 1px 0;
+    margin: 0;
+    padding: 2px 10px;
+}
+
+.edgetoedge, .metal {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(255,255,255);
+}
+
+.edgetoedge ul, .metal ul, .plastic ul {
+    -webkit-border-radius: 0;
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+.metal ul {
+    border-top: 0;
+    border-bottom: 0;
+    background: rgb(180,180,180);
+}
+
+.edgetoedge ul li:first-child, .edgetoedge ul li:first-child a, .edgetoedge ul li:last-child, .edgetoedge ul li:last-child a, .metal ul li:first-child a, .metal ul li:last-child a {
+    -webkit-border-radius: 0;
+}
+
+.edgetoedge ul li small {
+    font-size: 16px;
+    line-height: 28px;
+}
+
+.edgetoedge li, .metal li {
+    -webkit-border-radius: 0;
+}
+
+.edgetoedge li em {
+    font-weight: normal;
+    font-style: normal;
+}
+
+.edgetoedge h4 + ul {
+    border-top: 1px solid rgb(152,158,164);
+    border-bottom: 1px solid rgb(113,125,133);
+}
+
+/* @end */
+
+/* @group Mini Label */
+
+ul li small {
+    color: #369;
+    font: 17px Helvetica;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    width: 23%;
+    float: right;
+    padding: 3px 0px;
+}
+
+ul li.arrow small {
+    padding: 0 15px;
+}
+
+ul li small.counter {
+    font-size: 17px !important;
+    line-height: 13px !important;
+    font-weight: bold;
+    background: rgb(154,159,170);
+    color: #fff;
+    -webkit-border-radius: 11px;
+    padding: 4px 10px 5px 10px;
+    display: inline !important;
+    width: auto;
+    margin-top: -22px;
+}
+
+ul li.arrow small.counter {
+    margin-right: 15px;
+}
+
+/* @end */
+
+/* @group Plastic */
+
+#plastic ul li.arrow, #metal ul li.arrow {
+    background-image: url(/public/images/iphone/jqtouch/listArrow.png);
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+.edgetoedge ul, .metal ul, .plastic ul {
+    -webkit-border-radius: 0;
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+.metal ul li {
+    border-top: 1px solid rgb(238,238,238);
+    border-bottom: 1px solid rgb(156,158,165);
+    background: url(/public/images/iphone/jqtouch/bgMetal.png) top left repeat-x;
+    font-size: 26px;
+    text-shadow: #fff 0 1px 0;
+}
+
+.metal ul li a {
+    line-height: 26px;
+    margin: 0;
+    padding: 13px 0;
+}
+
+.metal ul li a:hover {
+    color: rgb(0,0,0);
+}
+
+.metal ul li:hover small {
+    color: inherit;
+}
+
+.metal ul li a em {
+    display: block;
+    font-size: 14px;
+    font-style: normal;
+    color: #444;
+    width: 50%;
+    line-height: 14px;
+}
+
+.metal ul li small {
+    float: right;
+    position: relative;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.metal ul li.arrow a small {
+    padding-right: 0;
+    line-height: 17px;
+}
+
+.metal ul li.arrow {
+    background: url(/public/images/iphone/jqtouch/bgMetal.png) top left repeat-x,
+    url(/public/images/iphone/jqtouch/chevron_dg.png) right center no-repeat;
+}
+
+.plastic {
+    margin: 0;
+    padding: 0;
+    background: rgb(173,173,173);
+}
+
+.plastic ul {
+    -webkit-border-radius: 0;
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    background-color: rgb(173,173,173);
+}
+
+.plastic ul li {
+    -webkit-border-radius: 0;
+    border-top: 1px solid rgb(191,191,191);
+    border-bottom: 1px solid rgb(157,157,157);
+}
+
+.plastic ul li:nth-child(odd) {
+    background-color: rgb(152,152,152);
+    border-top: 1px solid rgb(181,181,181);
+    border-bottom: 1px solid rgb(138,138,138);
+}
+
+.plastic ul + p {
+    font-size: 11px;
+    color: #2f3237;
+    text-shadow: none;
+    padding: 10px 10px;
+}
+
+.plastic ul + p strong {
+    font-size: 14px;
+    line-height: 18px;
+    text-shadow: #fff 0 1px 0;
+}
+
+.plastic ul li a {
+    text-shadow: rgb(211,211,211) 0 1px 0;
+}
+
+.plastic ul li:nth-child(odd) a {
+    text-shadow: rgb(191,191,191) 0 1px 0;
+}
+
+.plastic ul li small {
+    color: #3C3C3C;
+    text-shadow: rgb(211,211,211) 0 1px 0;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 24px;
+}
+
+#plastic ul.minibanner, #plastic ul.bigbanner {
+    margin: 10px;
+    border: 0;
+    height: 81px;
+    clear: both;
+}
+
+#plastic ul.bigbanner {
+    height: 140px !important;
+}
+
+#plastic ul.minibanner li {
+    border: 1px solid rgb(138,138,138);
+    background-color: rgb(152,152,152);
+    width: 145px;
+    height: 81px;
+    float: left;
+    -webkit-border-radius: 5px;
+    padding: 0;
+}
+
+#plastic ul.bigbanner li {
+    border: 1px solid rgb(138,138,138);
+    background-color: rgb(152,152,152);
+    width: 296px;
+    height: 140px;
+    float: left;
+    -webkit-border-radius: 5px;
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+#plastic ul.minibanner li:first-child {
+    margin-right: 6px;
+}
+
+#plastic ul.minibanner li a {
+    color: transparent;
+    text-shadow: none;
+    display: block;
+    width: 145px;
+    height: 81px;
+}
+
+#plastic ul.bigbanner li a {
+    color: transparent;
+    text-shadow: none;
+    display: block;
+    width: 296px;
+    height: 145px;
+}
+
+/* @end */
+
+/* @group Individual */
+
+ul.individual {
+    border: 0;
+    background: none;
+    clear: both;
+    overflow: hidden;
+}
+
+ul.individual li {
+    color: rgb(183,190,205);
+    background: white;
+    border: 1px solid rgb(180,180,180);
+    font-size: 14px;
+    text-align: center;
+    -webkit-border-radius: 8px;
+    -webkit-box-sizing: border-box;
+    width: 48%;
+    float: left;
+    display: block;
+    padding: 11px 10px 14px 10px;
+}
+
+ul.individual li + li {
+    float: right;
+}
+
+ul.individual li a {
+    color: rgb(50,79,133);
+    line-height: 16px;
+    margin: -11px -10px -14px -10px;
+    padding: 11px 10px 14px 10px;
+    -webkit-border-radius: 8px;
+}
+
+ul.individual li a:hover {
+    color: #fff;
+    background: #36c;
+}
+
+/* @end */
+
+/* @group Toggle */
+
+
+.toggle {
+    width: 94px;
+    position: relative;
+    height: 27px;
+    display: block;
+    overflow: hidden;
+    float: right;
+}
+
+.toggle input[type="checkbox"]:checked {
+    left: 0px;
+}
+
+.toggle input[type="checkbox"] {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    margin: 0;
+    -webkit-border-radius: 5px;
+    background: #fff url(/public/images/iphone/jqtouch/on_off.png) 0 0 no-repeat;
+    height: 27px;
+    overflow: hidden;
+    width: 149px;
+    border: 0;
+    -webkit-appearance: textarea;
+    background-color: transparent;
+    -webkit-transition: left .15s;
+    position: absolute;
+    top: 0;
+    left: -55px;
+}
+/* @end */
+
+
+
+.info {
+    background: #dce1eb;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    text-shadow: rgba(255,255,255,.8) 0 1px 0;
+    color: rgb(76, 86, 108);
+    padding: 15px;
+    border-top: 1px solid rgba(76, 86, 108, .3);
+    font-weight: bold;
 }
