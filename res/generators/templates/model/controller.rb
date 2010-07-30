@@ -38,8 +38,7 @@ class <%= class_name %>Controller < Rho::RhoController
 
   # POST /<%= class_name %>/create
   def create
-    @<%= name.downcase %> = <%= class_name %>.new(@params['<%= name.downcase %>'])
-    @<%= name.downcase %>.save
+    @<%= name.downcase %> = <%= class_name %>.create(@params['<%= name.downcase %>'])
     redirect :action => :index
   end
 
