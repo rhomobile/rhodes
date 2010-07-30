@@ -1,6 +1,7 @@
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_ALERT, "com/rhomobile/rhodes/alert/Alert")
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_BOOLEAN, "java/lang/Boolean")
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_CAMERA, "com/rhomobile/rhodes/camera/Camera")
+RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_SIGNATURE, "com/rhomobile/rhodes/signature/Signature")
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_CAPABILITIES, "com/rhomobile/rhodes/Capabilities")
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_CONTACT, "com/rhomobile/rhodes/phonebook/Contact")
 RHODES_DEFINE_JAVA_CLASS(RHODES_JAVA_CLASS_CONTACT_FIELD, "com/rhomobile/rhodes/phonebook/ContactField")
