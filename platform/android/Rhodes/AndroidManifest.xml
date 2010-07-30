@@ -20,6 +20,7 @@
         </activity>
         <activity android:name="com.rhomobile.rhodes.camera.FileList" />
         <activity android:name="com.rhomobile.rhodes.camera.ImageCapture" android:screenOrientation="landscape" />
+        <activity android:name="com.rhomobile.rhodes.signature.ImageCapture" />
         <activity android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
         <activity android:name="com.rhomobile.rhodes.mapview.MapView" />
         <service android:name="com.rhomobile.rhodes.RhodesService" />
