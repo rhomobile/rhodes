@@ -1,31 +1,25 @@
-<div id="pageTitle">
+<div class="toolbar">
   <h1>Login</h1>
+  <a class="cancel slide" href="<%= url_for :action => :index%>">Cancel</a>
 </div>
 
 
-<div id="toolbar">
-    <div id="leftItem" class="regularButton"><%= link_to "Cancel", :action => :index %></div>
-</div>
+<div class="content" >
+  <form class="slide" method="POST" action="<%= url_for :action => :do_login %>">
+    <% if @msg %>
+        <p style="color: red"><%= @msg %></p>
+    <% end %>
+    <ul>
+      <li>
+        <label for="login">Login</label>
+        <input type="text" name="login" <%= placeholder("Login") %> />
+      </li>
 
-
-
-<div id="content">
-    <form method="POST" action="<%= url_for :action => :do_login %>">
-
-        <% if @msg %>
-            <p style="color:#ff0000"><%= @msg %></p>
-        <% end %>
-        <ul>
-            <li>
-                <label for="login" class="fieldLabel">Login</label>
-                <input type="text" name="login" <%= placeholder( "Login" ) %> />
-            </li>
-
-            <li>
-                <label for="password" class="fieldLabel">Password</label>
-                <input type="password" name="password" <%= placeholder( "Password" ) %> />
-            </li>
-        </ul>
-        <input type="submit" class="standardButton" value="Login" />
-    </form>
+      <li>
+        <label for="password">Password</label>
+        <input type="password" name="password" <%= placeholder("Password") %> />
+      </li>
+    </ul>
+    <input type="submit" class="standardButton" value="Login"/>
+  </form>
 </div>
