@@ -1,46 +1,30 @@
-<div id="pageTitle">
-	<h1>Settings</h1>
+<div class="toolbar">
+  <h1>Settings</h1>
 </div>
 
-<div id="toolbar"></div>
-
-<div id="content">
-    <ul id="settings">
-        <% if @msg %>
-        <li class="alertMessage">
-            <span class="message"><%= @msg %></span>
-        </li>
-        <% end %>
-        <li>
-            <div class="itemLabel">
-                <span class="title">Client ID:</span>
-            </div>
-            <div class="itemValue">
-                <span class="clientID"><%= Rhom::Rhom::client_id %></span>
-            </div>
-        </li>
-        <li>
-          <a href="<%= url_for :action => :reset %>">
-              <span class="title">Reset Database</span>
-          </a>
-        </li>
-        <li>
-          <a href="<%= url_for :action => :do_sync %>">
-              <span class="title">Perform Sync</span>
-          </a>
-        </li>
-        <% if SyncEngine::logged_in > 0 %>
-        <li>
-            <a href="<%= url_for :action => :logout %>">
-              <span class="title">Logout</span>
-            </a>
-        </li>
-        <% else %>
-        <li>
-          <a href="<%= url_for :action => :login %>">
-               <span class="title">Login</span>
-          </a>
-        </li>
-        <% end %>
-    </ul>
+<div class="content">
+  <ul>
+    <% if @msg %>
+    <li style="color: red; text-align: center"><%= @msg %></li>
+    <% end %>
+    <li>
+      <div class="label">Client ID:</div>
+      <div class="value"><%= Rhom::Rhom::client_id %></div>
+    </li>
+    <li class="arrow">
+      <a class="slide" href="<%= url_for :action => :reset %>">Reset Database</a>
+    </li>
+    <li class="arrow">
+      <a href="<%= url_for :action => :do_sync %>">Perform Sync</a>
+    </li>
+    <% if SyncEngine::logged_in > 0 %>
+    <li class="arrow">
+      <a class="slide" href="<%= url_for :action => :logout %>">Logout</a>
+    </li>
+    <% else %>
+    <li class="arrow">
+      <a class="slide" href="<%= url_for :action => :login %>">Login</a>
+    </li>
+    <% end %>
+  </ul>
 </div>
