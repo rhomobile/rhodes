@@ -39,7 +39,7 @@
 
         // Set to 30 seconds; Ajax request doesn't come back if >= 60
         $.ajaxSetup({timeout: 30000});
-        
+
         var asyncRequestSettings = {};
 
         // Initialize internal variables
@@ -82,7 +82,8 @@
                 touchSelector: 'a, .touch',
                 popSelector: '.pop',
                 preloadImages: false,
-                slideSelector: 'body > * > ul li a',
+//                slideSelector: 'body > * > ul li a',
+                slideSelector: '.slide',
                 slideupSelector: '.slideup',
                 startupScreen: null,
                 statusBar: 'default', // other options: black-translucent, black
@@ -154,9 +155,10 @@
                 touchSelectors.push(jQTSettings.backSelector);
                 touchSelectors.push(jQTSettings.submitSelector);
                 $(touchSelectors.join(', ')).css('-webkit-touch-callout', 'none');
-//                $(jQTSettings.backSelector).tap(liveTap);
+                //                $(jQTSettings.backSelector).tap(liveTap);
+                //                $(jQTSettings.submitSelector).tap(submitParentForm);
                 $('a').tap(liveTap); // Rho: make all links call liveTap
-                $(jQTSettings.submitSelector).tap(submitParentForm);
+                $("[type=submit]").tap(submitParentForm);
 
                 $body = $('body');
 
@@ -284,7 +286,6 @@
 
         // PRIVATE FUNCTIONS
         function liveTap(e) {
-
             // Grab the clicked element
             var $el = $(e.target);
 
@@ -556,10 +557,20 @@
             var $form = (typeof(e) === 'string') ? $(e) : $(e.target);
 
             if ($form.length && $form.is(jQTSettings.formSelector) && $form.attr('action')) {
+
+                // Rho: Figure out the animation to use for form
+                var animation = null;
+                for (var i = animations.length - 1; i >= 0; i--) {
+                    if ($form.is(animations[i].selector)) {
+                        animation = animations[i];
+                        break;
+                    }
+                }
+
                 showPageByHref($form.attr('action'), {
                     data: $form.serialize(),
                     method: $form.attr('method') || "POST",
-                    animation: animations[0] || null,
+                    animation: animation,
                     callback: callback
                 });
                 return false;
@@ -594,7 +605,6 @@
         }
 
         function handleTouch(e) {
-
             var $el = $(e.target);
 
             // Only handle touchSelectors
