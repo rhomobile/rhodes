@@ -1,14 +1,14 @@
 body {
-    background: rgb(0,0,0);
+    background: rgb(0, 0, 0);
 }
 
 body > * {
-    background: rgb(197,204,211) url(/public/images/iphone/jqtouch/pinstripes.png);
+    background: rgb(197, 204, 211) url(/public/images/iphone/jqtouch/pinstripes.png);
 }
 
 h1, h2 {
     font: bold 18px Helvetica;
-    text-shadow: rgba(255,255,255,.2) 0 1px 1px;
+    text-shadow: rgba(255, 255, 255, .2) 0 1px 1px;
     color: rgb(76, 86, 108);
     margin: 10px 20px 6px;
 }
@@ -25,7 +25,7 @@ h1, h2 {
 }
 
 .black-translucent .toolbar {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
 .toolbar > h1 {
@@ -38,8 +38,8 @@ h1, h2 {
     height: 40px;
     font-size: 20px;
     width: 150px;
-    font-weight: bold;
-    text-shadow: rgba(0, 0, 0, 0.4) 0px -1px 0;
+    font-weight: bold; /*text-shadow: rgba(0, 0, 0, 0.4) 0px -1px 0;*/
+    text-shadow: 1px 1px 1px #000;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -136,11 +136,10 @@ h1 + ul, h2 + ul, h3 + ul, h4 + ul, h5 + ul, h6 + ul {
 ul {
     color: black;
     background: #fff;
-    border: 1px solid #B4B4B4;
+    border: 1px solid #436395;
     font: bold 17px Helvetica;
-    padding: 0;
-    /*margin: 15px 10px 17px 10px;*/
-    /*-webkit-border-radius: 8px;*/
+    padding: 0; /*margin: 15px 10px 17px 10px;*/
+    -webkit-border-radius: 8px;
 }
 
 ul li {
@@ -152,16 +151,16 @@ ul li {
 
 /* when you have a first LI item on any list */
 
-/*li:first-child, li:first-child a {*/
-    /*border-top: 0;*/
-    /*-webkit-border-top-left-radius: 8px;*/
-    /*-webkit-border-top-right-radius: 8px;*/
-/*}*/
+li:first-child, li:first-child a {
+    border-top: 0;
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+}
 
-/*li:last-child, li:last-child a {*/
-    /*-webkit-border-bottom-left-radius: 8px;*/
-    /*-webkit-border-bottom-right-radius: 8px;*/
-/*}*/
+li:last-child, li:last-child a {
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+}
 
 /* universal arrows */
 
@@ -188,7 +187,7 @@ ul li a, li.img a + a {
     display: block;
     padding: 12px 10px 12px 10px;
     margin: -10px;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 ul li a.active {
@@ -303,7 +302,7 @@ ul li select {
 
 ul li input[type="checkbox"], ul li input[type="radio"] {
     margin: 0;
-    color: rgb(50,79,133);
+    color: rgb(50, 79, 133);
     padding: 10px 10px;
 }
 
@@ -321,8 +320,8 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
 
 .edgetoedge h4 {
     color: #fff;
-    background: rgb(154,159,170) url(/public/images/iphone/jqtouch/listGroup.png) top left repeat-x;
-    border-top: 1px solid rgb(165,177,186);
+    background: rgb(154, 159, 170) url(/public/images/iphone/jqtouch/listGroup.png) top left repeat-x;
+    border-top: 1px solid rgb(165, 177, 186);
     text-shadow: #666 0 1px 0;
     margin: 0;
     padding: 2px 10px;
@@ -331,7 +330,7 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
 .edgetoedge, .metal {
     margin: 0;
     padding: 0;
-    background-color: rgb(255,255,255);
+    background-color: rgb(255, 255, 255);
 }
 
 .edgetoedge ul, .metal ul, .plastic ul {
@@ -345,7 +344,7 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
 .metal ul {
     border-top: 0;
     border-bottom: 0;
-    background: rgb(180,180,180);
+    background: rgb(180, 180, 180);
 }
 
 .edgetoedge ul li:first-child, .edgetoedge ul li:first-child a, .edgetoedge ul li:last-child, .edgetoedge ul li:last-child a, .metal ul li:first-child a, .metal ul li:last-child a {
@@ -367,8 +366,8 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
 }
 
 .edgetoedge h4 + ul {
-    border-top: 1px solid rgb(152,158,164);
-    border-bottom: 1px solid rgb(113,125,133);
+    border-top: 1px solid rgb(152, 158, 164);
+    border-bottom: 1px solid rgb(113, 125, 133);
 }
 
 /* @end */
@@ -396,7 +395,7 @@ ul li small.counter {
     font-size: 17px !important;
     line-height: 13px !important;
     font-weight: bold;
-    background: rgb(154,159,170);
+    background: rgb(154, 159, 170);
     color: #fff;
     -webkit-border-radius: 11px;
     padding: 4px 10px 5px 10px;
@@ -428,8 +427,8 @@ ul li.arrow small.counter {
 }
 
 .metal ul li {
-    border-top: 1px solid rgb(238,238,238);
-    border-bottom: 1px solid rgb(156,158,165);
+    border-top: 1px solid rgb(238, 238, 238);
+    border-bottom: 1px solid rgb(156, 158, 165);
     background: url(/public/images/iphone/jqtouch/bgMetal.png) top left repeat-x;
     font-size: 26px;
     text-shadow: #fff 0 1px 0;
@@ -442,7 +441,7 @@ ul li.arrow small.counter {
 }
 
 .metal ul li a:hover {
-    color: rgb(0,0,0);
+    color: rgb(0, 0, 0);
 }
 
 .metal ul li:hover small {
@@ -471,14 +470,13 @@ ul li.arrow small.counter {
 }
 
 .metal ul li.arrow {
-    background: url(/public/images/iphone/jqtouch/bgMetal.png) top left repeat-x,
-    url(/public/images/iphone/jqtouch/chevron_dg.png) right center no-repeat;
+    background: url(/public/images/iphone/jqtouch/bgMetal.png) top left repeat-x, url(/public/images/iphone/jqtouch/chevron_dg.png) right center no-repeat;
 }
 
 .plastic {
     margin: 0;
     padding: 0;
-    background: rgb(173,173,173);
+    background: rgb(173, 173, 173);
 }
 
 .plastic ul {
@@ -487,19 +485,66 @@ ul li.arrow small.counter {
     border-left: 0;
     border-right: 0;
     border-top: 0;
-    background-color: rgb(173,173,173);
+    background-color: rgb(173, 173, 173);
 }
 
 .plastic ul li {
     -webkit-border-radius: 0;
-    border-top: 1px solid rgb(191,191,191);
-    border-bottom: 1px solid rgb(157,157,157);
+    border-top: 1px solid rgb(191, 191, 191);
+    border-bottom: 1px solid rgb(157, 157, 157);
 }
 
-.plastic ul li:nth-child(odd) {
-    background-color: rgb(152,152,152);
-    border-top: 1px solid rgb(181,181,181);
-    border-bottom: 1px solid rgb(138,138,138);
+.plastic ul li:
+
+nth-child
+
+(
+odd
+
+)
+{
+background-color:
+
+rgb
+
+(
+152
+,
+152
+,
+152
+)
+;
+border-top:
+
+1
+px solid
+
+rgb
+
+(
+181
+,
+181
+,
+181
+)
+;
+border-bottom:
+
+1
+px solid
+
+rgb
+
+(
+138
+,
+138
+,
+138
+)
+;
 }
 
 .plastic ul + p {
@@ -516,16 +561,24 @@ ul li.arrow small.counter {
 }
 
 .plastic ul li a {
-    text-shadow: rgb(211,211,211) 0 1px 0;
+    text-shadow: rgb(211, 211, 211) 0 1px 0;
 }
 
-.plastic ul li:nth-child(odd) a {
-    text-shadow: rgb(191,191,191) 0 1px 0;
+.plastic ul li:
+
+nth-child
+
+(
+odd
+
+)
+a {
+    text-shadow: rgb(191, 191, 191) 0 1px 0;
 }
 
 .plastic ul li small {
     color: #3C3C3C;
-    text-shadow: rgb(211,211,211) 0 1px 0;
+    text-shadow: rgb(211, 211, 211) 0 1px 0;
     font-size: 13px;
     font-weight: bold;
     text-transform: uppercase;
@@ -544,8 +597,8 @@ ul li.arrow small.counter {
 }
 
 #plastic ul.minibanner li {
-    border: 1px solid rgb(138,138,138);
-    background-color: rgb(152,152,152);
+    border: 1px solid rgb(138, 138, 138);
+    background-color: rgb(152, 152, 152);
     width: 145px;
     height: 81px;
     float: left;
@@ -554,8 +607,8 @@ ul li.arrow small.counter {
 }
 
 #plastic ul.bigbanner li {
-    border: 1px solid rgb(138,138,138);
-    background-color: rgb(152,152,152);
+    border: 1px solid rgb(138, 138, 138);
+    background-color: rgb(152, 152, 152);
     width: 296px;
     height: 140px;
     float: left;
@@ -596,9 +649,9 @@ ul.individual {
 }
 
 ul.individual li {
-    color: rgb(183,190,205);
+    color: rgb(183, 190, 205);
     background: white;
-    border: 1px solid rgb(180,180,180);
+    border: 1px solid rgb(180, 180, 180);
     font-size: 14px;
     text-align: center;
     -webkit-border-radius: 8px;
@@ -614,7 +667,7 @@ ul.individual li + li {
 }
 
 ul.individual li a {
-    color: rgb(50,79,133);
+    color: rgb(50, 79, 133);
     line-height: 16px;
     margin: -11px -10px -14px -10px;
     padding: 11px 10px 14px 10px;
@@ -630,7 +683,6 @@ ul.individual li a:hover {
 
 /* @group Toggle */
 
-
 .toggle {
     width: 94px;
     position: relative;
@@ -645,7 +697,7 @@ ul.individual li a:hover {
 }
 
 .toggle input[type="checkbox"] {
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     margin: 0;
     -webkit-border-radius: 5px;
     background: #fff url(/public/images/iphone/jqtouch/on_off.png) 0 0 no-repeat;
@@ -660,18 +712,70 @@ ul.individual li a:hover {
     top: 0;
     left: -55px;
 }
+
 /* @end */
-
-
 
 .info {
     background: #dce1eb;
     font-size: 12px;
     line-height: 16px;
     text-align: center;
-    text-shadow: rgba(255,255,255,.8) 0 1px 0;
+    text-shadow: rgba(255, 255, 255, .8) 0 1px 0;
     color: rgb(76, 86, 108);
     padding: 15px;
     border-top: 1px solid rgba(76, 86, 108, .3);
     font-weight: bold;
+}
+
+/* Rho */
+.content .standardButton {
+    -webkit-appearance: none;
+    -webkit-border-radius: 8px;
+    background: white;
+    color: #436395;
+    font-size: 15px;
+    font-weight: bold;
+    width: 100%;
+    height: 40px;
+    border: 1px solid black;
+    margin-top: 10px;
+}
+
+.content form input {
+    -webkit-appearance: none;
+    width: 45%;
+    border: 0;
+}
+
+.content form ul li {
+    padding: 0px 10px;    
+}
+
+.content form ul li input,
+.content form ul li select {
+    height: 40px;
+    font-size: medium;
+    font-weight: bold;
+}
+
+.content label {
+    display: none;
+}
+
+li > .label {
+    float: left;
+    width: 45%;
+}
+
+li > .value {
+    float: right;
+    width: 45%;
+}
+
+.content form {
+    padding: 5px 0 75px 0;
+    border: none;
+    width: 300px;
+    margin: 0 auto;
+    font-size: medium;
 }
