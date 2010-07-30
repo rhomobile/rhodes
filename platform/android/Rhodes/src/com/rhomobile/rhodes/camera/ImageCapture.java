@@ -59,6 +59,8 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 	private SurfaceHolder surfaceHolder;
 	private ImageButton cameraButton;
 
+	boolean mIsActive = true;
+
 	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
 	@Override
@@ -164,10 +166,15 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 	public void onClick(View v) {
 		if (v.getId() == AndroidR.id.cameraButton) {
 			takePicture();
+			cameraButton.setVisibility(View.INVISIBLE);
+			
 		}
 	}
 	
 	private void takePicture() {
+		if (!mIsActive) {
+			return;
+		}
 		ImageCaptureCallback iccb = null;
 		try {
 			String filename = "Image_" + timeStampFormat.format(new Date());
@@ -183,12 +190,13 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 			String dir = Rhodes.getBlobPath();
 			
 			OutputStream osCommon = getContentResolver().openOutputStream(uri);
-			iccb = new ImageCaptureCallback(callbackUrl, osCommon, dir + "/" + filename + ".jpg");
+			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg");
 		} catch (Exception ex) {
 			Logger.E(TAG, ex.getMessage());
 		}
 		
 		camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
+		mIsActive = false;
 	}
 
                         private void startAutoFocusIfExist() {
