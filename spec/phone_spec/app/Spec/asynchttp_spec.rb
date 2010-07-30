@@ -14,7 +14,7 @@ describe "AsyncHttp" do
         #puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == 11358
+        res['headers']['content-length'].to_i.should == 3967
         res['headers']['content-type'].should ==  'text/plain'
         res['body'].should_not be_nil
         res['body'].length.should == res['headers']['content-length'].to_i
