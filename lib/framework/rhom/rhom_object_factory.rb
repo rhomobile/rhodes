@@ -61,19 +61,25 @@ module Rhom
                   end
                 end
               end
+
+              def object
+                @vars[:object]                
+              end
               
+              def source_id
+                @vars[:source_id]                
+              end
+
               def to_s
                   @vars.to_s if @vars
               end
               
               def method_missing(name, *args)
                 unless name == Fixnum
-                  varname = name.to_s.gsub(/\=/,"")
-                  setting = (name.to_s =~ /=/)
-                  if setting
-                    @vars[varname.to_sym()] = args[0]  
+                  if name[name.length()-1] == '='
+                    @vars[name.to_s.chop.to_sym()] = args[0]  
                   else
-                    @vars[varname.to_sym()]
+                    @vars[name]
                   end
                 end
               end
@@ -235,7 +241,7 @@ module Rhom
                     nulls_cond = {}
                     if op == 'AND'
                         condition_hash.each do |key,value|
-                            if !value
+                            if value.nil?
                                 nulls_cond[key] = value
                                 condition_hash.delete(key)
                             end
@@ -851,6 +857,61 @@ module Rhom
                   end    
                       
                 end
+
+                # saves the current object to the database as a create type
+                def create(obj)  		      
+                    new_obj = self.new(obj)
+                    
+                    update_type = 'create'
+                    nSrcID = get_source_id
+                    obj = new_obj.object
+                    src_name = get_source_name
+                    db_partition = Rho::RhoConfig.sources[src_name]['partition'].to_s
+                    isSchemaSrc = is_schema_source()
+                    tableName = isSchemaSrc ? get_schema_table_name() : 'object_values'
+                    db = ::Rho::RHO.get_src_db(src_name)
+                    begin
+                        db.start_transaction
+                        
+                        if !( isSchemaSrc && !is_sync_source() )
+                            new_obj.vars.each do |key_a,value|
+                                key = key_a.to_s
+                                next if ::Rhom::RhomObject.method_name_reserved?(key)
+
+                                val = value.to_s #self.inst_strip_braces(value.to_s)
+                                
+                                # add rows excluding object, source_id and update_type
+                                fields = {"source_id"=>nSrcID,
+                                          "object"=>obj,
+                                          "attrib"=>key,
+                                          "value"=>val,
+                                          "update_type"=>update_type}
+                                fields = new_obj.is_blob_attrib(db_partition, nSrcID, key) ? fields.merge!({"attrib_type" => "blob.file"}) : fields
+                                
+                                db.insert_into_table('changed_values', fields) if is_sync_source()
+                                fields.delete("update_type")
+                                fields.delete("attrib_type")
+                                
+                                if isSchemaSrc
+                                    db.insert_into_table(tableName, {key=>val, "object"=>obj})
+                                else
+                                    db.insert_into_table(tableName, fields)
+                                end    
+                            end
+                        else
+                            db.insert_into_table(tableName, new_obj.vars)                            
+                        end
+                        
+                        db.commit
+                    rescue Exception => e
+                        puts 'create Exception: ' + e.inspect
+                        db.rollback
+                        
+                        raise    
+                    end
+                    
+                    new_obj    
+                end
                     
                 private
                 
@@ -866,6 +927,7 @@ module Rhom
                     nil
                   end
                 end
+                
               end #class methods
 	          
 	          # if app server does not support oo in inserts. 
@@ -956,7 +1018,7 @@ module Rhom
                 SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
 		        #return attrib_name == "image_uri"
 		      end
-		      
+
               # saves the current object to the database as a create type
               def save
                 # iterate over each instance variable and insert create row to table
@@ -968,22 +1030,25 @@ module Rhom
 				isSchemaSrc = is_inst_schema_source()
                 begin
                     db.start_transaction
-                    
-                    if isSchemaSrc
-                        result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? LIMIT 1 OFFSET 0",obj)
-                    else
-                        result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
-                    end
 
-                    if result && result.length > 0                     
-                        resUpdateType = is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) : nil
-                        if resUpdateType && resUpdateType.length > 0 
-                            update_type = resUpdateType[0]['update_type'] 
+			        update_type = ''
+                    if is_inst_sync_source()
+                        if isSchemaSrc
+                            result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? LIMIT 1 OFFSET 0",obj)
                         else
-        				    update_type = 'update'
-        				end    
-    				else
-    				    update_type = 'create'
+                            result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
+                        end
+
+                        if result && result.length > 0                     
+                            resUpdateType = is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) : nil
+                            if resUpdateType && resUpdateType.length > 0 
+                                update_type = resUpdateType[0]['update_type'] 
+                            else
+        				        update_type = 'update'
+        				    end    
+    				    else
+    				        update_type = 'create'
+    				    end
     				end
     				
                     self.vars.each do |key_a,value|

@@ -137,9 +137,7 @@ describe "SyncEngine_test" do
   it "should create new Product" do
     SyncEngine.logged_in.should == 1
   
-    item = Product.new
-    item.name = 'Test'
-    item.save
+    item = Product.create({:name => 'Test'})
     
     res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
