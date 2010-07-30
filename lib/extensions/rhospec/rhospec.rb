@@ -112,9 +112,9 @@ class MSpec
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
             puts "FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
-            #e.backtrace.each do |item|
-            #    puts item
-            #end
+            e.backtrace.each do |item|
+                puts item
+            end
         end
     end
             

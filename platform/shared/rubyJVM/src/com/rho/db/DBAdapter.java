@@ -830,8 +830,12 @@ public class DBAdapter extends RubyBasic
 		    		for ( int i = 0; i < args.size(); i++ )
 		    		{
 		    			RubyValue val = args.get(i);
-		    			if ( val instanceof RubyFixnum )
-		    				values[i] = new Long( ((RubyFixnum)val).toLong() );
+		    			if ( val == RubyConstant.QNIL )
+		    				values[i] = null;
+		    			else if ( val instanceof RubyInteger )
+		    				values[i] = new Long( ((RubyInteger)val).toLong() );
+		    			else if ( val instanceof RubyFloat )
+		    				values[i] = new Double( ((RubyFloat)val).toFloat() );
 		    			else
 		    				values[i] = val.toString();
 		    		}

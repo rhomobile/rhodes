@@ -6,6 +6,7 @@
 package com.xruby.runtime.lang;
 
 import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyFixnum;
 import com.xruby.runtime.builtin.RubyString;
 
@@ -75,6 +76,11 @@ public class RubySymbol extends RubyValue {
     //@RubyLevelMethod(name="length")
     public RubyFixnum rubyLength() {
         return ObjectFactory.createFixnum(id.toString().length());
+    }
+
+    //@RubyLevelMethod(name="[]")
+    public RubyValue array_access(RubyArray args) {
+    	return to_s().array_access(args);
     }
     
     //@RubyLevelMethod(name="inspect")
