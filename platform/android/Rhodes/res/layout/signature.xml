@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+android:layout_width="fill_parent" 
+android:layout_height="fill_parent"
+android:background="@color/sig_bkgColor" 
+android:orientation="vertical">
+<com.rhomobile.rhodes.signature.SignatureView
+      android:id="@+id/signature_view"
+      android:layout_width="fill_parent"
+      android:layout_weight="1"
+      android:layout_height="fill_parent"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+android:layout_width="fill_parent" 
+android:layout_height="wrap_content"
+android:background="@color/sig_bkgColor" 
+android:orientation="horizontal">
+<ImageButton
+    android:id="@+id/sig_cancelButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:src="@drawable/signature_cancel"
+    android:layout_gravity="bottom|left"
+    android:layout_marginTop="10px"
+    android:layout_marginRight="10px"
+    android:layout_marginLeft="10px"
+    android:layout_marginBottom="10px">
+</ImageButton>
+<ImageButton
+    android:id="@+id/sig_clearButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:src="@drawable/signature_clear"
+    android:layout_gravity="bottom|left"
+    android:layout_marginTop="10px"
+    android:layout_marginRight="10px"
+    android:layout_marginLeft="10px"
+    android:layout_marginBottom="10px">
+</ImageButton>
+<ImageButton
+    android:id="@+id/sig_okButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:src="@drawable/signature_ok"
+    android:layout_gravity="bottom|right"
+    android:layout_marginTop="10px"
+    android:layout_marginRight="10px"
+    android:layout_marginLeft="10px"
+    android:layout_marginBottom="10px">
+</ImageButton>
+</LinearLayout>
+</LinearLayout>
