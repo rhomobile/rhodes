@@ -1,5 +1,5 @@
 <div class="toolbar">
-  <h1><%= class_name.camelize.pluralize %></h1>
+  <h1><%= name.camelize.pluralize %></h1>
   <!-- TODO: handle home case -->
   <!--<a class="button leftButton blueButton" href="#" onclick="window.location = '<%%= Rho::RhoConfig.start_path %>'; return false;">Home</a>-->
   <a class="button slide" href="<%%= url_for :controller => :<%= name.camelize %>, :action => :new %>">New</a>
@@ -7,11 +7,11 @@
 
 <div class="content">
   <ul>
-    <%% @<%= name.downcase.pluralize %>.each do |obj| %>
+    <%% @<%= name.downcase.pluralize %>.each do |<%= name.downcase %>| %>
     <% if self.attributes? %>
         <li class="arrow">
-          <a class="slide" href="<%%= url_for :action => :show, :id => obj.object %>">
-            <%%= obj.<%= attributes[0] %> %>
+          <a class="slide" href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>">
+            <%%= <%= name.downcase %>.<%= attributes[0] %> %>
           </a>
         </li>
     <% else %>
