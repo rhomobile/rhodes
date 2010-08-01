@@ -22,5 +22,8 @@ LastVisitedPage = ''
 # For example: 'http://localhost:9292/application'
 syncserver = '<%=syncserver%>'
 
+# To disable auto sync, uncomment the following line.
+# sync_poll_interval=0
+
 logserver = 'http://rhologs.heroku.com'
 logname='<%=@app_name%>'
