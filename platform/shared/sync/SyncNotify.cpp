@@ -212,9 +212,10 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 {
     CSyncSource& src = *sources.elementAt(nSrc);
 
-    fireSyncNotification(&src, true, src.m_nErrCode, "");
     if ( getSync().getState() == CSyncEngine::esStop )
-		fireAllSyncNotifications(true, src.m_nErrCode, "", sources );
+		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources );
+    else
+        fireSyncNotification(&src, true, src.m_nErrCode, "");
 
     cleanCreateObjectErrors();
 }
@@ -294,11 +295,11 @@ void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
 	//LOG(INFO) + "Status: "+status;
 }
 
-void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strMessage, VectorPtr<CSyncSource*>& sources )
+void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources )
 {
     for( int i = 0; i < (int)sources.size(); i++ )
     {
-    	doFireSyncNotification( sources.elementAt(i), bFinish, nErrCode, strMessage );
+    	doFireSyncNotification( sources.elementAt(i), bFinish, nErrCode, strError );
     }
 }
 
@@ -374,10 +375,10 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
         }
 	}
 
-	doFireSyncNotification(psrc, bFinish, nErrCode, strMessage );
+	doFireSyncNotification(psrc, bFinish, nErrCode, "" );
 }
 
-void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
+void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strError)
 {
 	if ( psrc == null || getSync().isStoppedByUser() )
 		return; //TODO: implement all sources callback
@@ -423,7 +424,11 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);
 		            strBody += "&error_message=";
-                    URI::urlEncode(src.m_strError,strBody);
+
+                    if ( strError.length() > 0 )
+                        URI::urlEncode(strError,strBody);
+                    else
+                        URI::urlEncode(src.m_strError,strBody);
 	            }
 
                 strBody += makeCreateObjectErrorBody(src.getID());
