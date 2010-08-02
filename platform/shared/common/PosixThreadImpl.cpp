@@ -73,36 +73,32 @@ void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
 
 void CPosixThreadImpl::wait(unsigned int nTimeout)
 {
-    struct timespec   ts;
     struct timeval    tp;
-    gettimeofday(&tp, NULL);
-    /* Convert from timeval to timespec */
-    ts.tv_sec  = tp.tv_sec;
-    ts.tv_nsec = tp.tv_usec * 1000;
-    
+    struct timespec   ts;
     unsigned long long max;
-    bool timed_wait;
-    if ( (unsigned)ts.tv_sec + nTimeout >= (unsigned)ts.tv_sec )
+    bool timed_wait = (int)nTimeout >= 0;
+    
+    if (timed_wait)
     {
-        timed_wait = true;
+        gettimeofday(&tp, NULL);
+        /* Convert from timeval to timespec */
+        ts.tv_sec  = tp.tv_sec;
+        ts.tv_nsec = tp.tv_usec * 1000;
         ts.tv_sec += nTimeout;
         max = ((unsigned long long)tp.tv_sec + nTimeout)*1000000 + tp.tv_usec;
     }
-    else
-        timed_wait = false;
-
 
     common::CMutexLock oLock(m_mxSync);
 
     while (!m_stop_wait)
     {
         if (timed_wait) {
-            pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
-            
             gettimeofday(&tp, NULL);
             unsigned long long now = ((unsigned long long)tp.tv_sec)*1000000 + tp.tv_usec;
             if (now > max)
-                m_stop_wait = true;
+                break;
+            
+            pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
         }
         else
             pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex());
