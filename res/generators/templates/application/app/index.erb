@@ -1,6 +1,8 @@
-<div class="toolbar">
+<div class="pageTitle">
   <h1><%= class_name %></h1>
+</div>
 
+<div class="toolbar">
   <a class="button leftButton blueButton slide" href="<%%= url_for :controller => :Settings, :action => :do_sync %>">Sync</a>
   <%% if SyncEngine::logged_in > 0 %>
   <a class="button slide" href="<%%= url_for :controller => :Settings, :action => :logout %>">Logout</a>
