@@ -1,5 +1,8 @@
-<div class="toolbar">
+<div class="pageTitle">
   <h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
+</div>
+
+<div class="toolbar">
   <a class="cancel slide" href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>">Cancel</a>
   <a class="button slide" href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>">Delete</a>
 </div>
