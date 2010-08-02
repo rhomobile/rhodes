@@ -93,7 +93,7 @@ module Enumerable
 
     def sort_by &block
         array_of_tuples = []
-        each {|x| array_of_tuples.push([x, yield(x)])}
+        each {|x| puts "x: #{x}"; array_of_tuples.push([x, yield(x)])}
         array_of_tuples = array_of_tuples.sort {|x, y| x[1] <=> y[1]}
         return array_of_tuples.collect {|x| x[0]}
     end
@@ -185,7 +185,20 @@ module Enumerable
         each {|obj| min = obj if min.nil? || proc.call(min, obj) > 0}
         min
     end
-    
+
+    def group_by(&block)
+        res = {}
+        self.each do |obj|
+            group = yield(obj)
+            values = res[group]
+            if values.nil?
+                values = [obj]
+                res[group] = values
+            else
+                values << obj
+            end
+        end
+    end    
 end
 
 class Array
@@ -238,6 +251,29 @@ class Array
     end
 
     alias to_s inspect
+    
+    def count(*args, &block)
+        
+        if !args || args.length() == 0
+            n = 0
+            if !block_given?
+                return self.length()
+            else
+                self.each do |item|                
+                    n += 1 if yield(item)
+                end
+            end
+            
+            return n
+        else
+            n = 0
+            self.each do |item|                
+                n += 1 if item == args[0]
+            end
+            
+            return n
+        end    
+    end
     
 end
 
