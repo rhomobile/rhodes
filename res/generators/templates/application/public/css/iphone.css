@@ -21,14 +21,13 @@ h1, h2 {
     padding: 10px;
     height: 45px;
     background: url(/public/images/iphone/jqtouch/toolbar.png) #6d84a2 repeat-x;
-    position: relative;
 }
 
 .black-translucent .toolbar {
     margin-top: 20px;
 }
 
-.toolbar > h1 {
+.pageTitle > h1 {
     position: absolute;
     overflow: hidden;
     left: 50%;
