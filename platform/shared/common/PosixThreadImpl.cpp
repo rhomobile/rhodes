@@ -79,18 +79,33 @@ void CPosixThreadImpl::wait(unsigned int nTimeout)
     /* Convert from timeval to timespec */
     ts.tv_sec  = tp.tv_sec;
     ts.tv_nsec = tp.tv_usec * 1000;
+    
+    unsigned long long max;
+    bool timed_wait;
+    if ( (unsigned)ts.tv_sec + nTimeout >= (unsigned)ts.tv_sec )
+    {
+        timed_wait = true;
+        ts.tv_sec += nTimeout;
+        max = ((unsigned long long)tp.tv_sec + nTimeout)*1000000 + tp.tv_usec;
+    }
+    else
+        timed_wait = false;
+
 
     common::CMutexLock oLock(m_mxSync);
 
     while (!m_stop_wait)
     {
-        if ( (unsigned)ts.tv_sec + nTimeout < (unsigned)ts.tv_sec )
-            pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex() );
-        else
-        {
-            ts.tv_sec += nTimeout;
+        if (timed_wait) {
             pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+            
+            gettimeofday(&tp, NULL);
+            unsigned long long now = ((unsigned long long)tp.tv_sec)*1000000 + tp.tv_usec;
+            if (now > max)
+                m_stop_wait = true;
         }
+        else
+            pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex());
     }
     m_stop_wait = false;
 }
