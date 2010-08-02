@@ -53,6 +53,7 @@ IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
 CRhodesApp::CRhodesApp(const String& strRootPath) : CRhodesAppBase(strRootPath)
 {
     m_bExit = false;
+    m_bDeactivationMode = false;
 
     m_ptrFactory = rho_impl_createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
@@ -64,6 +65,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhodesAppBase(strRootPath)
 #endif
 
     initAppUrls();
+    
+    initHttpServer();
 
     getSplashScreen().init();
 }
@@ -76,7 +79,6 @@ void CRhodesApp::startApp()
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
-    initHttpServer();
     RhoRubyStart();
     rubyext::CGeoLocation::Create(m_ptrFactory);
 
@@ -88,13 +90,14 @@ void CRhodesApp::run()
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
 
-    LOG(INFO) + "activate app";
-    rho_ruby_activateApp();
+    //LOG(INFO) + "activate app";
+    //rho_ruby_activateApp();
 
     getSplashScreen().hide();
 
-    LOG(INFO) + "navigate to first start url";
-    navigateToUrl(getFirstStartUrl());
+    //LOG(INFO) + "navigate to first start url";
+    //navigateToUrl(getFirstStartUrl());
+
     //rho_clientregister_create("iphone_client");
     
     m_httpServer->run();
@@ -128,27 +131,52 @@ void CRhodesApp::stopApp()
     net::CAsyncHttp::Destroy();
 }
 
-class CRhoCallbackCall :  public common::CRhoThread
+template <typename T>
+class CRhoCallInThread : public common::CRhoThread
 {
-    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
-    String m_strCallback, m_strBody;
 public:
-    CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory) : CRhoThread(factory), 
-        m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
-    { start(epNormal); }
+    CRhoCallInThread(T* cb)
+        :CRhoThread(rho_impl_createClassFactory()), m_cb(cb)
+    {
+        start(epNormal);
+    }
 
 private:
     virtual void run()
     {
+        m_cb->run();
+        delete this;
+    }
+
+private:
+    common::CAutoPtr<T> m_cb;
+};
+
+template <typename T>
+void rho_rhodesapp_call_in_thread(T *cb)
+{
+    new CRhoCallInThread<T>(cb);
+}
+
+class CRhoCallbackCall
+{
+    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
+    String m_strCallback, m_strBody;
+public:
+    CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory)
+      :m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
+    {}
+
+    void run()
+    {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
         common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
-        delete this;
     }
 };
 
 void CRhodesApp::runCallbackInThread(const String& strCallback, const String& strBody)
 {
-    new CRhoCallbackCall(strCallback, strBody, rho_impl_createClassFactory() );
+    rho_rhodesapp_call_in_thread(new CRhoCallbackCall(strCallback, strBody, rho_impl_createClassFactory() ) );
 }
 
 static void callback_activateapp(void *arg, String const &strQuery)
@@ -172,18 +200,50 @@ static void callback_loadserversources(void *arg, String const &strQuery)
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
+class CRhoActivateApp
+{
+    String m_strUrl, m_strFirstUrl;
+public:
+    CRhoActivateApp(const String& strUrl, const String& strFirstUrl) :m_strUrl(strUrl), m_strFirstUrl(strFirstUrl) {}
+    void run()
+    {
+        common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
+        common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
+        NetResponse(resp, pNetRequest->pullData( m_strUrl, null ) );
+        if ( !resp.isOK() )
+            LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+
+        LOG(INFO) + "navigate to first start url";
+        RHODESAPP().navigateToUrl(m_strFirstUrl);
+    }
+};
+
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
-    m_httpServer->pause(!bActive);
-    String action = bActive ? "activate" : "deactivate";
-    String strUrl = m_strHomeUrl + "/system/" + action + "app";
-    NetResponse(resp,getNet().pullData( strUrl, null ));
-    if ( !resp.isOK() )
-        LOG(ERROR) + action + " app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+    m_bDeactivationMode = !bActive;
     if (bActive)
     {
-        LOG(INFO) + "navigate to first start url";
-        navigateToUrl(getFirstStartUrl());
+        m_httpServer->pause(false);
+        String strUrl = m_strHomeUrl + "/system/activateapp";
+        // Activation callback need to be runned in separate thread
+        // Otherwise UI thread will be blocked. This can cause deadlock if user defined
+        // activate callback contains code which need to hold UI thread for execute
+        rho_rhodesapp_call_in_thread( new CRhoActivateApp( strUrl, getFirstStartUrl() ) );
+    }
+    else
+    {
+        // Deactivation callback must be called in place (not in separate thread!)
+        // This is because system can kill application at any time after this callback finished
+        // So to guarantee user code is executed on deactivation, we must not exit from this function
+        // until application finish executing of user-defined deactivation callback.
+        // However, blocking UI thread can cause problem with API refering to UI (such as WebView.navigate etc)
+        // To fix this problem, new mode 'deactivation' introduced. When this mode active, no UI operations allowed.
+        // All such operation will throw exception in ruby code when calling in 'deactivate' mode.
+        String strUrl = m_strHomeUrl + "/system/deactivateapp";
+        NetResponse(resp,getNet().pullData( strUrl, null ));
+        if ( !resp.isOK() )
+            LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        m_httpServer->pause(true);
     }
 }
 
@@ -1032,6 +1092,11 @@ void rho_net_request(const char *url)
 void rho_rhodesapp_load_url(const char *url)
 {
     RHODESAPP().loadUrl(url);
+}
+
+int rho_rhodesapp_deactivation_mode()
+{
+    return RHODESAPP().deactivationMode();
 }
 
 #if defined(OS_ANDROID) && defined(RHO_LOG_ENABLED)
