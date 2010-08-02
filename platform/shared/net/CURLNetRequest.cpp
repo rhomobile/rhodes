@@ -464,6 +464,8 @@ curl_slist *CURLNetRequest::set_curl_options(const char *method, const String& s
                              IRhoSession* pSession, Hashtable<String,String>* pHeaders)
 {
     curl_easy_reset(curl);
+    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, CURL_MAX_WRITE_SIZE-1);
+
     if (strcasecmp(method, "GET") == 0)
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     else if (strcasecmp(method, "POST") == 0)
@@ -484,7 +486,7 @@ curl_slist *CURLNetRequest::set_curl_options(const char *method, const String& s
     }
     
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 180);
-    curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1);
+    curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)m_sslVerifyPeer);
     
