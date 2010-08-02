@@ -14,7 +14,6 @@ describe "AsyncHttp" do
         #puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == 3967
         res['headers']['content-type'].should ==  'text/plain'
         res['body'].should_not be_nil
         res['body'].length.should == res['headers']['content-length'].to_i
@@ -81,6 +80,20 @@ describe "AsyncHttp" do
         res['status'].should == 'ok'
         File.exists?(file_name).should ==  true
     end
+
+    it "should decode chunked body" do
+      return unless $is_network_available
+
+      host = Rho::RhoConfig.config["spec_local_server_host"]
+      port = Rho::RhoConfig.config["spec_local_server_port"]
+      puts "+++++++++++++++++++ chunked test: #{host}:#{port}"
+      res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}"
+      res['status'].should == 'ok'
+      res['body'].should_not be_nil
+      res['body'].should == "1234567890"
+
+    end
+
 =begin
     def upload_withbody_test
         return unless $is_network_available

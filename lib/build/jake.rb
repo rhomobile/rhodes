@@ -1,5 +1,7 @@
 require 'pathname'
 require 'yaml'
+require 'socket'
+require 'webrick'
   
 class Hash
   def fetch_r(key)
@@ -94,6 +96,46 @@ class Jake
     conf
   end
 
+  def self.localip
+    orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true  # turn off reverse DNS resolution temporarily
+    UDPSocket.open do |s|
+      s.connect '174.142.8.58', 1
+      s.addr.last
+    end
+  ensure
+    Socket.do_not_reverse_lookup = orig
+  end
+
+  def self.run_local_server(port = 0)
+    addr = localip
+    server = WEBrick::HTTPServer.new :BindAddress => addr, :Port => port
+    server.mount_proc '/chunked' do |req,res|
+      res.status = 200
+      res.chunked = true
+      res.body = "1234567890"
+    end
+    port = server.config[:Port]
+    puts "LOCAL SERVER STARTED ON #{addr}:#{port}"
+    return server, addr, port
+  end
+
+  def self.modify_rhoconfig_txt(app_path, host, port)
+    rhoconf = File.join(app_path, 'rhoconfig.txt')
+    FileUtils.rm_f rhoconf + '.bak'
+    FileUtils.cp rhoconf, rhoconf + '.bak'
+    File.open(rhoconf, 'a+') do |f|
+      f.puts "spec_local_server_host = '#{host}'"
+      f.puts "spec_local_server_port = #{port}"
+    end
+  end
+
+  def self.restore_rhoconfig_txt(app_path)
+    rhoconf = File.join(app_path, 'rhoconfig.txt')
+    if File.exists? rhoconf + '.bak'
+      FileUtils.rm_f rhoconf
+      FileUtils.mv rhoconf + '.bak', rhoconf
+    end
+  end
 
   def self.run_spec_app(platform,appname)
     rhobuildyml = File.join(basedir,'rhobuild.yml')
@@ -103,8 +145,19 @@ class Jake
     $app_path = File.expand_path(File.join(basedir,'spec',appname))
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
     $config = Jake.config(File.open(rhobuildyml,'r'))
-    Rake::Task.tasks.each { |t| t.reenable }
-    Rake::Task['run:' + platform + ':spec'].invoke
+
+    server, addr, port = run_local_server
+    modify_rhoconfig_txt($app_path, addr, port)
+    Kernel.at_exit do
+      restore_rhoconfig_txt($app_path)
+    end
+    begin
+      Rake::Task.tasks.each { |t| t.reenable }
+      Rake::Task['run:' + platform + ':spec'].invoke
+    ensure
+      server.shutdown
+      restore_rhoconfig_txt($app_path)
+    end
   end
 
   def self.before_run_spec()
