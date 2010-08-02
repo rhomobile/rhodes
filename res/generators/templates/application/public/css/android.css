@@ -113,18 +113,12 @@ li:last-child, li:last-child a {
 /*-webkit-border-bottom-right-radius: 8px;*/
 }
 
-/* universal arrows */
-
-ul li.arrow {
-    color: white;
-    background-image: url("../images/android/disclosure.png");
-    background-position: right center;
-    background-repeat: no-repeat;
-}
-
 /* universal links on list */
 
 ul li a, li.img a + a {
+    background-image: url("../images/android/disclosure.png");
+    background-position: right center;
+    background-repeat: no-repeat;
     color: white;
     text-decoration: none;
     text-overflow: ellipsis;
