@@ -272,8 +272,13 @@ namespace "run" do
   end
  
   namespace "win32" do
-  
-    task :spec => ["build:win32"] do
+
+    task :delete_db do
+        db_path = 'platform/wm/bin/win32/rhodes/Debug/rho/db'
+        rm_rf db_path if File.exists?(db_path)    
+    end
+    
+    task :spec => [:delete_db, "build:win32"] do
         #remove log file
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         win32logpath = File.join(win32rhopath,"RhoLog.txt")        

@@ -90,11 +90,11 @@ describe "Json" do
             
         res = Rho::AsyncHttp.get( :url => 'http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=&startindex=1&endindex=10' )
         puts "res : #{res}"  
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         parsed = res['body']
-        Test_equal( parsed.is_a?(Hash), true )
-        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
+        parsed.is_a?(Hash).should ==  true
+        parsed["Manufacturer List"].is_a?(Array).should ==  true
         
         manf =  parsed["Manufacturer List"][10]["Manufacturer"]
         puts "manf : #{manf}"
@@ -103,11 +103,11 @@ describe "Json" do
         
         res = Rho::AsyncHttp.get( :url => url2 )
         puts "res : #{res}"  
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         parsed = res['body']
-        Test_equal( parsed.is_a?(Hash), true )
-        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
+        parsed.is_a?(Hash).should ==  true
+        parsed["Manufacturer List"].is_a?(Array).should ==  true
         
     end
 
@@ -116,7 +116,7 @@ describe "Json" do
             
         res = Rho::AsyncHttp.get( :url => 'http://api.foursquare.com/v1/venues.json?geolat=37.331689&geolong=-122.030731' )
         puts "res : #{res}"  
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         #@places = Array.new
         #res['body'].each do |attributes|
