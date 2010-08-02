@@ -87,7 +87,7 @@ describe "RhoError" do
 end
 
 describe "RhoRuby" do
-  
+
   it "should compute string to_f to test flt_rounds" do
     "100.250".to_f.should == 100.25
   end
@@ -178,6 +178,23 @@ end
     ReqTest.get_name.should == "reqTest"
   end
   
+  it "should array count" do
+    ary = [1, 2, 4, 2]
+    ary.count.should == 4
+    ary.count(2).should == 2
+    ary.count{|x|x%2==0}.should == 3
+  end
+
+  it "should array group_by" do
+    res = [1,2,3,4,5,6].group_by {|i| i%3}
+    res.should == {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
+  end
+
+  it "should range group_by" do
+    res = (1..6).group_by {|i| i%3}
+    res.should == {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
+  end
+
 end
 =begin
 describe "String#split with String" do

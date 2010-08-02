@@ -77,7 +77,7 @@ describe "RhoFile" do
         
         (1..2).each do |n|
             res = create_file_in_cache(dir_name, "cache_test", n.to_s())
-            Test_equal( res, "saved" )
+            res.should ==  "saved"
         end
         
         res = create_file_in_cache(dir_name, "cache_test", "1")

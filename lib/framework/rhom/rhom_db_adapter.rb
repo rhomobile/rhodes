@@ -104,7 +104,7 @@ class RhomDbAdapter
   def _execute_sql(sql, is_batch, args)      
     result = []
     if sql
-      #puts "RhomDbAdapter: Executing query - #{sql}"
+      #puts "RhomDbAdapter: Executing query - #{sql}; #{args}"
       begin
         result = @database.execute( sql, is_batch, args )
       rescue Exception => e
@@ -228,14 +228,14 @@ class RhomDbAdapter
   # insert_into_table('object_values, {"source_id"=>1,"object"=>"some-object","update_type"=>'delete'})
   # this would execute the following sql:
   # insert into object_values (source_id,object,update_type) values (1,'some-object','delete');
-  def insert_into_table(table=nil,values=nil)
+  def insert_into_table(table=nil,values=nil, excludes=nil)
     raise ArgumentError if !table
-    cols,quests,vals = make_insert_params(values)
+    cols,quests,vals = make_insert_params(values, excludes)
     query = "insert into #{table} (#{cols}) values (#{quests})"
     execute_sql query, vals
   end
 
-  def make_insert_params(values)
+  def make_insert_params(values, excludes)
     raise ArgumentError if !values
     
     cols = ""
@@ -243,6 +243,7 @@ class RhomDbAdapter
     vals = []
   
     values.each do |key,val|
+        next if excludes && excludes[key]
         if cols.length > 0
             cols << ','
             quests << ','
