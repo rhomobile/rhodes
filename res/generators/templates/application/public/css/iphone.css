@@ -138,7 +138,7 @@ ul {
     border: 1px solid #436395;
     font: bold 17px Helvetica;
     padding: 0; /*margin: 15px 10px 17px 10px;*/
-    -webkit-border-radius: 8px;
+    /*-webkit-border-radius: 8px;*/
 }
 
 ul li {
