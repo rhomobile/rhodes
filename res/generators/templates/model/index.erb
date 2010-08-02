@@ -13,13 +13,13 @@
     <%% @<%= name.downcase.pluralize %>.each do |<%= name.downcase %>| %>
     <% if self.attributes? %>
         <li class="arrow">
-          <a class="slide" href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>">
+          <a href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>">
             <%%= <%= name.downcase %>.<%= attributes[0] %> %>
           </a>
         </li>
     <% else %>
         <li class="arrow">
-          <a class="slide" href="#">Some list entry...</a>
+          <a href="#">Some list entry...</a>
         </li>
     <% end %>
     <%% end %>

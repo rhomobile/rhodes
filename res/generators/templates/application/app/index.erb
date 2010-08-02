@@ -3,24 +3,24 @@
 </div>
 
 <div class="toolbar">
-  <a class="button leftButton blueButton slide" href="<%%= url_for :controller => :Settings, :action => :do_sync %>">Sync</a>
+  <a class="button leftButton" href="<%%= url_for :controller => :Settings, :action => :do_sync %>">Sync</a>
   <%% if SyncEngine::logged_in > 0 %>
-  <a class="button slide" href="<%%= url_for :controller => :Settings, :action => :logout %>">Logout</a>
+  <a class="button" href="<%%= url_for :controller => :Settings, :action => :logout %>">Logout</a>
   <%% else %>
-  <a class="button slide" href="<%%= url_for :controller => :Settings, :action => :login %>">Login</a>
+  <a class="button" href="<%%= url_for :controller => :Settings, :action => :login %>">Login</a>
   <%% end %>
 </div>
 
 <div class="content">
   <ul>
     <li class="arrow">
-      <a class="slide" href="#">Link 1</a>
+      <a href="#">Link 1</a>
     </li>
     <li class="arrow">
-      <a class="slide" href="#">Link 2</a>
+      <a href="#">Link 2</a>
     </li>
     <li class="arrow">
-      <a class="slide" href="#">Link 3</a>
+      <a href="#">Link 3</a>
     </li>
   </ul>
 </div>
