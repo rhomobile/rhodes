@@ -198,6 +198,8 @@ module Enumerable
                 values << obj
             end
         end
+        
+        res
     end    
 end
 
