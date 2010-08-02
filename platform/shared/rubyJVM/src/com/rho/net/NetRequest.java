@@ -178,7 +178,7 @@ public class NetRequest
 			readHeaders(headers);
 			copyHashtable(m_OutHeaders, headers);
 			
-			if (code != IHttpConnection.HTTP_OK) 
+			if ( code >= 400 ) 
 			{
 				LOG.ERROR("Error retrieving data: " + code);
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null) 
@@ -187,12 +187,7 @@ public class NetRequest
 				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 				{
 					strRespBody = readFully(is, getResponseEncoding());
-					
-					if ( code == IHttpConnection.HTTP_MOVED_TEMPORARILY ||
-						 code == IHttpConnection.HTTP_MOVED_PERMANENTLY )
-						LOG.INFO("Response body: " + strRespBody );
-					else
-						LOG.TRACE("Response body: " + strRespBody );
+					LOG.TRACE("Response body: " + strRespBody );
 				}
 			}else
 			{
@@ -412,14 +407,15 @@ public class NetRequest
 			readHeaders(headers);
 			copyHashtable(m_OutHeaders, headers);
 			
-			if (code != IHttpConnection.HTTP_OK) 
+			if (code >= 400 ) 
 			{
 				LOG.ERROR("Error retrieving data: " + code);
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 					oSession.logout();
 				
-				if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 					strRespBody = readFully(is, getResponseEncoding());
+					LOG.TRACE("Response body: " + strRespBody );
 				
 			}else
 			{
@@ -531,13 +527,13 @@ public class NetRequest
 				code = IHttpConnection.HTTP_PARTIAL_CONTENT;
 			else
 			{
-				if (code != IHttpConnection.HTTP_OK && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
+				if (code >= 400 && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
 				{
 					LOG.ERROR("Error retrieving data: " + code);
 					if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
 						oSession.logout();
 					
-					if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 					{
 						is = m_connection.openInputStream();
 						strRespBody = readFully(is, getResponseEncoding());
