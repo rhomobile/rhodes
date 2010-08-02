@@ -153,13 +153,13 @@ ul li {
 
 li:first-child, li:first-child a {
     border-top: 0;
-    -webkit-border-top-left-radius: 8px;
-    -webkit-border-top-right-radius: 8px;
+    /*-webkit-border-top-left-radius: 8px;*/
+    /*-webkit-border-top-right-radius: 8px;*/
 }
 
 li:last-child, li:last-child a {
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
+    /*-webkit-border-bottom-left-radius: 8px;*/
+    /*-webkit-border-bottom-right-radius: 8px;*/
 }
 
 /* universal arrows */
@@ -745,6 +745,10 @@ ul.individual li a:hover {
     -webkit-appearance: none;
     width: 45%;
     border: 0;
+}
+
+.content form ul {
+    -webkit-border-radius: 8px;
 }
 
 .content form ul li {
