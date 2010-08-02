@@ -25,8 +25,8 @@ class SpecRunner < MSpecScript
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
-#    config[:files] << "spec/syncengine_spec"
-#    config[:files] << "spec/blobsync_spec"
+    config[:files] << "spec/syncengine_spec"
+    config[:files] << "spec/blobsync_spec"
     #config[:files] << "spec/bulksync_spec"
 
   end
