@@ -713,7 +713,7 @@ module Rhom
                        sql << " order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
                        sql << strLimit if strLimit
                        
-                       puts "Database query start"
+                       puts "Database query start" #: #{sql}"
                        db = ::Rho::RHO.get_src_db(get_source_name)
                        list = db.execute_sql(sql)
                        puts "Database query end"
@@ -872,8 +872,12 @@ module Rhom
                     db = ::Rho::RHO.get_src_db(src_name)
                     begin
                         db.start_transaction
+
+                        if isSchemaSrc
+                            db.insert_into_table(tableName, new_obj.vars, {:source_id=>true})
+                        end
                         
-                        if !( isSchemaSrc && !is_sync_source() )
+                        if is_sync_source() || !isSchemaSrc
                             new_obj.vars.each do |key_a,value|
                                 key = key_a.to_s
                                 next if ::Rhom::RhomObject.method_name_reserved?(key)
@@ -892,14 +896,8 @@ module Rhom
                                 fields.delete("update_type")
                                 fields.delete("attrib_type")
                                 
-                                if isSchemaSrc
-                                    db.insert_into_table(tableName, {key=>val, "object"=>obj})
-                                else
-                                    db.insert_into_table(tableName, fields)
-                                end    
+                                db.insert_into_table(tableName, fields) if !isSchemaSrc
                             end
-                        else
-                            db.insert_into_table(tableName, new_obj.vars)                            
                         end
                         
                         db.commit

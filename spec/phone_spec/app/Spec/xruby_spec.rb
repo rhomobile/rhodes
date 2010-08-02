@@ -10,7 +10,7 @@ describe "Xruby" do
   def test_method(p)
     p == 1 || p == 2
   end
-  
+
   it "if with function parameters" do
     test = false
     #if test_method 1 and test_method 2
@@ -19,6 +19,14 @@ describe "Xruby" do
     end
     
     test.should == true
+  end
+
+  #https://www.pivotaltracker.com/story/show/4528270
+  it "unary priority" do
+    s = "123"
+    #res = -s.to_i - it does not work
+    res = -(s.to_i)
+    res.should == -123
   end
   
 =begin
@@ -31,7 +39,7 @@ describe "Xruby" do
 	    res = true
 	end
 	
-	Test_equal(res,true)
+	res.should == true
 	
     cond = 'true'
     res = false
@@ -41,7 +49,7 @@ describe "Xruby" do
 	    res = false
 	end
 	
-	Test_equal(res,true)
+	res.should == true
 	
   end
 =end 
