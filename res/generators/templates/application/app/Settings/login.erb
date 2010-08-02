@@ -8,7 +8,7 @@
 
 
 <div class="content" >
-  <form class="slide" method="POST" action="<%= url_for :action => :do_login %>">
+  <form method="POST" action="<%= url_for :action => :do_login %>">
     <% if @msg %>
         <p style="color: red"><%= @msg %></p>
     <% end %>
