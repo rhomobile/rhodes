@@ -7,7 +7,7 @@
 </div>
 
 <div class="content">
-  <form class="slide" method="POST" action="<%%= url_for :action => :create %>">
+  <form method="POST" action="<%%= url_for :action => :create %>">
     <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
     <ul>
       <% attributes.each do |attribute| %>

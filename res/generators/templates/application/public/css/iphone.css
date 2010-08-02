@@ -163,12 +163,6 @@ li:last-child, li:last-child a {
 
 /* universal arrows */
 
-ul li.arrow {
-    background-image: url(/public/images/iphone/jqtouch/chevron.png);
-    background-position: right center;
-    background-repeat: no-repeat;
-}
-
 #plastic ul li.arrow, #metal ul li.arrow {
     background-image: url(/public/images/iphone/jqtouch/chevron_dg.png);
     background-position: right center;
@@ -178,6 +172,9 @@ ul li.arrow {
 /* universal links on list */
 
 ul li a, li.img a + a {
+    background-image: url(/public/images/iphone/jqtouch/chevron.png);
+    background-position: right center;
+    background-repeat: no-repeat;
     color: #000;
     text-decoration: none;
     text-overflow: ellipsis;
