@@ -16,7 +16,15 @@ describe "AsyncHttp" do
         res['status'].should == 'ok'
         res['headers']['content-type'].should ==  'text/plain'
         res['body'].should_not be_nil
-        res['body'].length.should == res['headers']['content-length'].to_i
+
+        # www.apache.org response with gzipped body if client declare 'Accept-Encoging: gzip'
+        # (our network implementation for iPhone and Android does).
+        # It means that content-length header will contain value less than
+        # body length because body we have on application level is already decoded
+        # This is why following two lines commented out
+        #res['headers']['content-length'].should == 11358
+        #res['body'].length.should == res['headers']['content-length'].to_i
+        res['body'].length.should == 11358
     end
 
     it "should http post" do
@@ -88,7 +96,7 @@ describe "AsyncHttp" do
           host = Rho::RhoConfig.config["spec_local_server_host"]
           port = Rho::RhoConfig.config["spec_local_server_port"]
           puts "+++++++++++++++++++ chunked test: #{host}:#{port}"
-          res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}"
+          res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}/chunked"
           res['status'].should == 'ok'
           res['body'].should_not be_nil
           res['body'].should == "1234567890"
