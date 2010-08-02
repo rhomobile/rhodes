@@ -16,18 +16,18 @@
       <div class="value"><%= Rhom::Rhom::client_id %></div>
     </li>
     <li class="arrow">
-      <a class="slide" href="<%= url_for :action => :reset %>">Reset Database</a>
+      <a href="<%= url_for :action => :reset %>">Reset Database</a>
     </li>
     <li class="arrow">
       <a href="<%= url_for :action => :do_sync %>">Perform Sync</a>
     </li>
     <% if SyncEngine::logged_in > 0 %>
         <li class="arrow">
-          <a class="slide" href="<%= url_for :action => :logout %>">Logout</a>
+          <a href="<%= url_for :action => :logout %>">Logout</a>
         </li>
     <% else %>
         <li class="arrow">
-          <a class="slide" href="<%= url_for :action => :login %>">Login</a>
+          <a href="<%= url_for :action => :login %>">Login</a>
         </li>
     <% end %>
   </ul>
