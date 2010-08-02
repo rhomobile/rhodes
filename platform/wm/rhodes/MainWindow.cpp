@@ -585,7 +585,14 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
     if ( strTitle.length() > 0 )
         SetWindowText(convertToStringW(strTitle).c_str());
     else
-        SetWindowText(OLE2CT(bstrTitleText));
+    {
+        LPCTSTR szTitle = OLE2CT(bstrTitleText);
+        if ( szTitle && 
+            (_tcsncmp(szTitle, _T("http:"), 5) == 0 || _tcscmp(szTitle, _T("about:blank"))==0 ))
+            return;
+
+        SetWindowText(szTitle);
+    }
 }
 
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
