@@ -116,6 +116,7 @@ class Jake
     end
     port = server.config[:Port]
     puts "LOCAL SERVER STARTED ON #{addr}:#{port}"
+    Thread.new { server.start }
     return server, addr, port
   end
 
