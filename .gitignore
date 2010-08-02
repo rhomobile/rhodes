@@ -35,7 +35,9 @@ platform/wm/**/*.pch
 
 spec/bin/*
 spec/**/bin/*
-spec/**/sim-public
+spec/**/sim-public*
+spec/**/faillog.txt
+spec/**/rholog-*.txt
 
 platform/bb/.metadata/*
 platform/bb/bin/*
