@@ -94,9 +94,9 @@ private:
     String makeCreateObjectErrorBody(int nSrcID);
     void processSingleObject();
 
-    void doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
+    void doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strError);
     void reportSyncStatus(String status, int error, String strDetails);
-    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strMessage, VectorPtr<CSyncSource*>& sources );
+    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources );
 
     boolean callNotify(const String& strUrl, const String& strBody );
 

@@ -253,9 +253,10 @@ public class SyncNotify {
     {
         SyncSource src = (SyncSource)sources.elementAt(nSrc);
 
-        fireSyncNotification( src, true, src.m_nErrCode, "");
         if ( getSync().getState() == SyncEngine.esStop )
-    		fireAllSyncNotifications(true, src.m_nErrCode, "", sources );
+    		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources );
+        else
+            fireSyncNotification( src, true, src.m_nErrCode, "");
 
         cleanCreateObjectErrors();
     }
@@ -346,11 +347,11 @@ public class SyncNotify {
     	}
     }
 
-	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strMessage, Vector/*Ptr<CSyncSource*>&*/ sources )
+	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, Vector/*Ptr<CSyncSource*>&*/ sources )
 	{
 	    for( int i = 0; i < sources.size(); i++ )
 	    {
-	    	doFireSyncNotification( (SyncSource)sources.elementAt(i), bFinish, nErrCode, strMessage );
+	    	doFireSyncNotification( (SyncSource)sources.elementAt(i), bFinish, nErrCode, strError );
 	    }
 	}
 
@@ -431,10 +432,10 @@ public class SyncNotify {
 			}
 		}
 		
-		doFireSyncNotification(src, bFinish, nErrCode, strMessage );
+		doFireSyncNotification(src, bFinish, nErrCode, "" );
 	}
 	
-	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
+	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError )
 	{
 		if ( src == null || getSync().isStoppedByUser() )
 			return; //TODO: implement all sources callback
@@ -474,7 +475,11 @@ public class SyncNotify {
 				        	
 				        	strBody += "error";				        	
 						    strBody += "&error_code=" + nErrCode;
-					        strBody += "&error_message=" + URI.urlEncode(src.m_strError);
+						    
+						    if ( strError != null && strError.length() > 0 )
+						    	strBody += "&error_message=" + URI.urlEncode(strError);
+						    else
+						    	strBody += "&error_message=" + URI.urlEncode(src.m_strError);
 				        }
 			        }
 			        else
