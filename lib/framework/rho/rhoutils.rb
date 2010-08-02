@@ -4,7 +4,7 @@ module Rho
   class RhoUtils
     @@mapSrc = nil
     @@mapSrcByIdx = nil
-    def self.load_offline_data(tables=[], dir_prefix=nil)
+    def self.load_offline_data(tables=[], dir_prefix=nil, source_map=nil)
       columns = []
       tables.each do |filename|
     
@@ -37,7 +37,9 @@ module Rho
           row = {}
           columns.each_with_index do |col,idx| 
             if col == 'source_name'
-              row['source_id'] = @@mapSrc[parts[idx]].source_id()
+              src_name = parts[idx]
+              src_name = source_map[src_name] if source_map
+              row['source_id'] = @@mapSrc[src_name].source_id()
             else
               row[col] = parts[idx]
             end
