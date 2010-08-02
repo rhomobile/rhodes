@@ -83,7 +83,7 @@
                 popSelector: '.pop',
                 preloadImages: false,
 //                slideSelector: 'body > * > ul li a',
-                slideSelector: '.slide',
+                slideSelector: 'a',
                 slideupSelector: '.slideup',
                 startupScreen: null,
                 statusBar: 'default', // other options: black-translucent, black
