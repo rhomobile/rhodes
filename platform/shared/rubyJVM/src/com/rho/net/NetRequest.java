@@ -181,8 +181,11 @@ public class NetRequest
 			if ( code >= 400 ) 
 			{
 				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null) 
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null)
+				{
+					LOG.ERROR("Unauthorize error.Client will be logged out");
 					oSession.logout();
+				}
 				
 				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 				{
@@ -410,8 +413,11 @@ public class NetRequest
 			if (code >= 400 ) 
 			{
 				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
+				if (code == IHttpConnection.HTTP_UNAUTHORIZED)
+				{
+					LOG.ERROR("Unauthorize error.Client will be logged out");
 					oSession.logout();
+				}
 				
 				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 					strRespBody = readFully(is, getResponseEncoding());
@@ -530,8 +536,11 @@ public class NetRequest
 				if (code >= 400 && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
 				{
 					LOG.ERROR("Error retrieving data: " + code);
-					if (code == IHttpConnection.HTTP_UNAUTHORIZED) 
+					if (code == IHttpConnection.HTTP_UNAUTHORIZED)
+					{
+						LOG.ERROR("Unauthorize error.Client will be logged out");
 						oSession.logout();
+					}
 					
 					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 					{
