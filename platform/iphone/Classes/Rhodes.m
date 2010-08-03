@@ -17,7 +17,7 @@ void rho_geoimpl_init();
 
 @implementation Rhodes
 
-@synthesize window, player, cookies;
+@synthesize window, player, cookies, signatureDelegate;
 
 static Rhodes *instance = NULL;
 
@@ -233,8 +233,9 @@ static Rhodes *instance = NULL;
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
-- (void)takeSignature:(NSString*) url {
+- (void)takeSignature:(NSString*)url {
 	[signatureDelegate setPostUrl:url];
+	//[signatureDelegate setImageFormat:format];
 	[signatureDelegate setParentView:window];
 	[signatureDelegate setPrevView:mainView.view];
 	@try {

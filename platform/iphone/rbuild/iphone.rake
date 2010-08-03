@@ -116,12 +116,14 @@ namespace "config" do
       $entitlements = $config["env"]["iphone"]["entitlements"]
       $configuration = $config["env"]["iphone"]["configuration"]
       $sdk = $config["env"]["iphone"]["sdk"]
+      $emulator_version = $config["env"]["iphone"]["emulator"]
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
       $entitlements = $app_config["iphone"]["entitlements"]
       $configuration = $app_config["iphone"]["configuration"]
       $sdk = $app_config["iphone"]["sdk"]
+      $emulator_version = $app_config["iphone"]["emulator"]
     end
 
     if $sdk =~ /iphonesimulator/
@@ -307,6 +309,7 @@ namespace "run" do
     end
 
     task :allspecs do
+      rm_rf basedir + "/faillog.txt"
       $dont_exit_on_failure = true
       Rake::Task['run:iphone:phone_spec'].invoke
       Rake::Task['run:iphone:framework_spec'].invoke
@@ -338,6 +341,9 @@ namespace "run" do
      `killall "iPhone Simulator"`
 
      sdkver = $sdk.gsub(/^iphonesimulator/, '')
+     # Workaround: sometimes sdkver could differ from emulator version.
+     # Example: iPhone SDK 4.0.1. In this case sdk is still iphonesimulator4.0 but version of simulator is 4.0.1
+     sdkver = $emulator_version unless $emulator_version.nil?
 
      elements = []
      binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')

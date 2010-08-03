@@ -41,6 +41,7 @@
 @property (nonatomic, retain) UIWindow *window;
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) NSMutableDictionary *cookies;
+@property (nonatomic, copy) SignatureDelegate* signatureDelegate;
 
 + (Rhodes*)sharedInstance;
 

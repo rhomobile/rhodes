@@ -470,3 +470,10 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_loadUrl
 {
     rho_rhodesapp_load_url(rho_cast<std::string>(env, str).c_str());
 }
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_onScreenOrientationChanged
+  (JNIEnv *env, jclass, jint width, jint height, jint angle)
+{
+	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
+	//RAWLOG_ERROR3("$$$$$$$$$$$$$$$$ SCREEN : [%d]x[%d] angle[%d]", width, height, angle);	
+}
