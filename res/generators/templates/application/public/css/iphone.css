@@ -3,22 +3,31 @@ body {
 }
 
 body > * {
-    background: rgb(197, 204, 211) url(/public/images/iphone/jqtouch/pinstripes.png);
+    background: #C5CCD3 url(/public/images/iphone/jqtouch/pinstripes.png);
+}
+
+body.landscape .toolbar > h1 {
+    margin-left: -125px;
+    width: 250px;
+}
+
+a {
+    text-decoration: none;
 }
 
 h1, h2 {
     font: bold 18px Helvetica;
     text-shadow: rgba(255, 255, 255, .2) 0 1px 1px;
-    color: rgb(76, 86, 108);
+    color: #4C566C;
     margin: 10px 20px 6px;
 }
 
 .toolbar {
     -webkit-box-sizing: border-box;
-    border-bottom: 1px solid #2d3642;
+    border-bottom: 1px solid #2D3642;
     padding: 10px;
     height: 45px;
-    background: url(/public/images/iphone/jqtouch/toolbar.png) #6d84a2 repeat-x;
+    background: url(/public/images/iphone/jqtouch/toolbar.png) #6D84A2 repeat-x;
 }
 
 .pageTitle > h1 {
@@ -31,18 +40,14 @@ h1, h2 {
     height: 40px;
     font-size: 20px;
     width: 150px;
-    font-weight: bold; /*text-shadow: rgba(0, 0, 0, 0.4) 0px -1px 0;*/
-    text-shadow: 1px 1px 1px #000;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px black;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #fff;
+    color: white;
 }
 
-body.landscape .toolbar > h1 {
-    margin-left: -125px;
-    width: 250px;
-}
 
 .button, .back, .cancel, .add {
     position: absolute;
@@ -58,7 +63,7 @@ body.landscape .toolbar > h1 {
     font-family: inherit;
     font-size: 12px;
     font-weight: bold;
-    color: #fff;
+    color: white;
     text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0;
     text-overflow: ellipsis;
     text-decoration: none;
@@ -71,44 +76,47 @@ body.landscape .toolbar > h1 {
     -webkit-border-image: url(/public/images/iphone/jqtouch/toolButton.png) 0 5 0 5;
 }
 
-.back {
+.leftButton, .cancel, .back {
     left: 6px;
     right: auto;
+}
+
+.back {
     padding: 0;
     max-width: 55px;
     border-width: 0 8px 0 14px;
     -webkit-border-image: url(/public/images/iphone/jqtouch/backButton.png) 0 8 0 14;
 }
 
-.leftButton, .cancel {
-    left: 6px;
-    right: auto;
-}
-
-ul {
+.content ul {
     color: black;
-    background: #fff;
+    background: white;
     border: 1px solid #436395;
     font: bold 17px Helvetica;
     padding: 0;
+    margin: 0;
+    -webkit-padding-start: 0;
 }
 
-ul li {
+.content ul li {
     color: #666;
     border-top: 1px solid #B4B4B4;
     list-style-type: none;
-    padding: 10px 10px 10px 10px;
+    padding: 10px;
+    overflow: hidden;
+    clear: both;
 }
 
-li:first-child, li:first-child a {
+.content li:first-child,
+.content li:first-child a {
     border-top: 0;
 }
 
-ul li a {
+.content ul li a {
     background-image: url(/public/images/iphone/jqtouch/chevron.png);
     background-position: right center;
     background-repeat: no-repeat;
-    color: #000;
+    color: black;
     text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -119,14 +127,15 @@ ul li a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-ul li a.active {
+.content ul li a.active {
     background: #194fdb url(/public/images/iphone/jqtouch/selection.png) 0 0 repeat-x;
-    color: #fff;
+    color: white;
 }
 
-ul li input[type="text"], ul li input[type="password"], ul li textarea, ul li select {
+.content ul li input[type="text"],
+.content ul li input[type="password"] {
     color: #777;
-    background: #fff url(../.png);
+    background: white url(../.png);
     border: 0;
     font: normal 17px Helvetica;
     padding: 0;
@@ -136,52 +145,31 @@ ul li input[type="text"], ul li input[type="password"], ul li textarea, ul li se
     -webkit-appearance: textarea;
 }
 
-ul li textarea {
-    height: 120px;
-    padding: 0;
-    text-indent: -2px;
+.content ul li > .label {
+    float: left;
+    width: 45%;
 }
 
-ul li select {
-    text-indent: 0px;
-    background: transparent url(/public/images/iphone/jqtouch/chevron.png) no-repeat 103% 3px;
-    -webkit-appearance: textfield;
-    margin-left: -6px;
-    width: 104%;
+.content ul li > .value {
+    float: right;
+    width: 45%;
 }
 
-ul li input[type="checkbox"], ul li input[type="radio"] {
-    margin: 0;
-    color: rgb(50, 79, 133);
-    padding: 10px 10px;
-}
-
-ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
-    content: attr(title);
-    font: 17px Helvetica;
-    display: block;
-    width: 246px;
-    margin: -12px 0 0 17px;
-}
-
-.content .standardButton {
-    -webkit-appearance: none;
-    -webkit-border-radius: 8px;
-    background: white;
-    color: #436395;
-    font-size: 15px;
-    font-weight: bold;
-    width: 100%;
-    height: 40px;
-    border: 1px solid black;
-    margin-top: 10px;
-}
 
 .content form input {
     -webkit-appearance: none;
     width: 45%;
     border: 0;
 }
+
+.content form {
+    padding: 5px 0 75px 0;
+    border: none;
+    width: 300px;
+    margin: 0 auto;
+    font-size: medium;
+}
+
 
 .content form ul {
     -webkit-border-radius: 8px;
@@ -202,20 +190,15 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
     display: none;
 }
 
-li > .label {
-    float: left;
-    width: 45%;
-}
-
-li > .value {
-    float: right;
-    width: 45%;
-}
-
-.content form {
-    padding: 5px 0 75px 0;
-    border: none;
-    width: 300px;
-    margin: 0 auto;
-    font-size: medium;
+.content .standardButton {
+    -webkit-appearance: none;
+    -webkit-border-radius: 8px;
+    background: white;
+    color: #436395;
+    font-size: 15px;
+    font-weight: bold;
+    width: 100%;
+    height: 40px;
+    border: 1px solid black;
+    margin-top: 10px;
 }
