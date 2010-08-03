@@ -1,10 +1,11 @@
 require 'rho/rhoapplication'
 require 'rho/rhocontroller'
+require 'rho/rho'
 
 module Rho
   class RhoController
     begin
-      if File.exist? File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator.iseq')
+      if Rho::file_exist? File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator.iseq')
         require 'rhodes_translator'
         include RhodesTranslator::Translator
         include RhodesTranslator::Binding
@@ -68,7 +69,7 @@ module Rho
       action = options[:action] if options[:action]
       action = @request['action'].nil? ? default_action : @request['action'] unless action
 
-      if $".include? "rhodes_translator" and @request['model'] != nil
+      if $".include?( "rhodes_translator") and @request['model'] != nil
         model = nil
         begin
           model = Object.const_get(@request['model'].to_sym)
@@ -152,7 +153,7 @@ module Rho
       end
 
       prepared = bind(data,metadata[action])
-
+      
       translate(prepared,action)
 
     end
@@ -173,15 +174,13 @@ module Rho
           end
         end
         def method_missing(name, *args)
-          unless name == Fixnum
-            varname = name.to_s.gsub(/\=/,"")
-            setting = (name.to_s =~ /=/)
-            if setting
-              @vars[varname.to_sym()] = args[0]
-            else
-              @vars[varname.to_sym()]
+            unless name == Fixnum
+              if name[name.length()-1] == '='
+                @vars[name.to_s.chop.to_sym()] = args[0]  
+              else
+                @vars[name]
+              end
             end
-          end
         end
         def get_binding
           binding

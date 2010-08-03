@@ -14,6 +14,7 @@ class CPosixThreadImpl : public IRhoThreadImpl
     DEFINE_LOGCLASS;
 public:
     CPosixThreadImpl();
+    ~CPosixThreadImpl();
 
     void start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority);
     void stop(unsigned int nTimeoutToKill);
@@ -25,7 +26,7 @@ private:
     pthread_cond_t m_condSync;
     common::CMutex m_mxSync;
     pthread_t m_thread;
-    bool m_started;
+    bool m_stop_wait;
 };
 
 } // namespace common

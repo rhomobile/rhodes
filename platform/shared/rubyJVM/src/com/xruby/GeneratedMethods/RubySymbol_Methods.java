@@ -1,4 +1,5 @@
 package com.xruby.GeneratedMethods;
+import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.*;
 public class RubySymbol_Methods{
@@ -33,5 +34,11 @@ klass.defineMethod( "===", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubySymbol)receiver).sym_eqq(arg);}
 });
+
+klass.defineMethod( "[]", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
+		return ((RubySymbol)receiver).array_access(args);}
+});
+klass.aliasMethod("slice","[]");
 
 }}

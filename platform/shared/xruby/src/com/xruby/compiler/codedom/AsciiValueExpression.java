@@ -7,6 +7,7 @@ package com.xruby.compiler.codedom;
 
 public class AsciiValueExpression extends Expression {
 	private int value_;
+	private String str_value_ = null;
 
 	public AsciiValueExpression(String value) {
 
@@ -36,6 +37,8 @@ public class AsciiValueExpression extends Expression {
 				return;
 
 			}
+		} else if (value.charAt(0) == '?') {
+			str_value_ = value.substring(1);
 		} else {
 			value_ = (int)value.charAt(1);
 			return;
@@ -43,6 +46,9 @@ public class AsciiValueExpression extends Expression {
 	}
 
 	public void accept(CodeVisitor visitor) {
-		visitor.visitFixnumExpression(value_);
+		if (str_value_ != null )
+			visitor.visitStringExpression(str_value_);
+		else	
+			visitor.visitFixnumExpression(value_);
 	}
 }

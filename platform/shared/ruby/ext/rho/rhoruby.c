@@ -33,6 +33,7 @@ extern void Init_WebView(void);
 extern void Init_RhoConf(void);
 extern void Init_Alert(void);
 extern void Init_Camera(void);
+extern void Init_SignatureTool(void);
 extern void Init_stringio(void);
 extern void Init_DateTimePicker(void);
 extern void Init_NativeBar(void);
@@ -155,6 +156,7 @@ void RhoRubyStart()
     Init_WebView();
     Init_RhoConf();
     Init_Alert();
+	Init_SignatureTool();
     Init_Camera();
     Init_stringio();
     Init_DateTimePicker();
@@ -417,6 +419,19 @@ struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val)
     }
 
     return oRes;
+}
+
+VALUE rho_ruby_disable_gc()
+{
+    return rb_gc_disable() == Qtrue ? Qfalse : Qtrue;
+}
+
+void  rho_ruby_enable_gc(VALUE val)
+{
+    if ( val == Qtrue )
+        rb_gc_enable();
+    else
+        rb_gc_disable();
 }
 
 void rho_ruby_holdValue(VALUE val)

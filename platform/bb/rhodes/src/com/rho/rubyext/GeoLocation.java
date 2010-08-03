@@ -138,9 +138,9 @@ public class GeoLocation extends RhoThread{
 	{
 		LOG.INFO( "Starting main routine..." );
 
-		while(!m_bStop)
+		while(!isStopping())
 		{
-			if (!m_bStop)
+			if (!isStopping())
 				checkAlive();
 			
 			wait( 10*10000);

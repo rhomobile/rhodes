@@ -17,4 +17,6 @@
     <string name="about_rhodes">Rhodes Version 1.0.0\n\nAuthor: Rhomobile\n\nSupport: all@rhomobile.com\n\n(c) Copyright (C) 2008 Rhomobile. All rights reserved.</string>
     <string name="ok">   Ok   </string>
     <string name="cancel">Cancel</string>
+    <color name="sig_bkgColor">#FFFFFF</color>
+    <color name="sig_penColor">#66009A</color>
 </resources>

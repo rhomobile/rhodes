@@ -77,7 +77,7 @@ describe "RhoFile" do
         
         (1..2).each do |n|
             res = create_file_in_cache(dir_name, "cache_test", n.to_s())
-            Test_equal( res, "saved" )
+            res.should ==  "saved"
         end
         
         res = create_file_in_cache(dir_name, "cache_test", "1")
@@ -89,7 +89,7 @@ describe "RhoFile" do
     end
 
     it "should isfileexist" do
-        File.exist?(Rho::RhoApplication::get_model_path('app', 'Spec')).should == true if System.get_property('platform') != 'Blackberry'
+        File.exist?(Rho::RhoApplication::get_model_path('app', 'spec')).should == true if System.get_property('platform') != 'Blackberry'
         File.exist?(Rho::RhoApplication::get_blob_folder()).should ==  true 
         File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')).should ==  true 
         
