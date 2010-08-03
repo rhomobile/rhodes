@@ -1,18 +1,22 @@
 body {
     margin: 0;
-    font-family: "Droid", sans-serif;
+    font-family: "Droid",sans-serif;
     color: white;
 }
 
 h1, h2 {
-    font-size: 1em; /*margin: 10px 20px 6px;*/
+    font-size: 1em;
+    /*margin: 10px 20px 6px;*/
 }
 
 /* @group Toolbar */
 
 .toolbar {
-    height: 60px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
+  	height: 60px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));
+    border-spacing: 10px;
+    display: table;
+    width: 100%;
     border-spacing: 10px;
 }
 
@@ -40,13 +44,10 @@ body.landscape .pageTitle > h1 {
 }
 
 .button, .back, .cancel, .add {
-    position: absolute;
     overflow: hidden;
-    top: 10px;
-    right: 6px;
     margin: 0;
     padding: 0 10px;
-    width: 284px;
+    width: auto;
     height: 40px;
     line-height: 35px;
     color: black;
@@ -55,15 +56,11 @@ body.landscape .pageTitle > h1 {
     text-align: center;
     text-decoration: none;
     white-space: nowrap;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white), color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
     -webkit-border-radius: 5px;
     font-size: .9em;
     border: 1px solid white;
-}
-
-.back, .leftButton, .cancel {
-    left: 6px;
-    right: auto;
+    display: table-cell;
 }
 
 .add {
@@ -104,13 +101,14 @@ ul li {
 }
 
 li:first-child, li:first-child a {
-    border-top: 0; /*-webkit-border-top-left-radius: 8px;*/
-/*-webkit-border-top-right-radius: 8px;*/
+    border-top: 0;
+    /*-webkit-border-top-left-radius: 8px;*/
+    /*-webkit-border-top-right-radius: 8px;*/
 }
 
 li:last-child, li:last-child a {
-/*-webkit-border-bottom-left-radius: 8px;*/
-/*-webkit-border-bottom-right-radius: 8px;*/
+    /*-webkit-border-bottom-left-radius: 8px;*/
+    /*-webkit-border-bottom-right-radius: 8px;*/
 }
 
 /* universal links on list */
@@ -188,6 +186,7 @@ ul li a + a + a, ul li.img a + a + a + a, ul li.img a + small + a + a + a {
     padding: 0;
 }
 
+
 /* @group Forms */
 
 ul.form li {
@@ -247,6 +246,7 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
 }
 
 /* @end */
+
 
 /* @end */
 
@@ -317,7 +317,6 @@ ul li.arrow small.counter {
     width: 45%;
     border: 0;
 }
-
 .content form ul {
     -webkit-border-radius: 8px;
 }
@@ -333,16 +332,17 @@ ul li.arrow small.counter {
     font-weight: bold;
 }
 
+
 .content form label {
     float: left;
-    display: block;
+    display:block;
     color: white;
     padding: 15px 10px 0 5px;
     margin: 0;
     width: 35%;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .content form input[type="text"],
@@ -351,13 +351,13 @@ ul li.arrow small.counter {
     height: 40px;
     margin: 10px 10px 10px 0;
     padding-left: 5px;
-    font-size: 20px;
+    font-size:20px;
     width: 150px;
     -webkit-appearance: none;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
     border: 1px solid #d6d7d6;
     -webkit-border-radius: 4px;
-    box-shadow: 0 -1px 3px #000000;
+    box-shadow:0 -1px 3px #000000;
 }
 
 li > .label {
