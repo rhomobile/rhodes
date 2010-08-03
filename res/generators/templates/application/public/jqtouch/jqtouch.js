@@ -727,6 +727,7 @@
         // Rho: add insertAsyncPage callback for transitions
         if (!window.Rho) window.Rho = {}
         window.Rho.insertAsyncPage = insertAsyncPage;
+        window.Rho.jqt = publicObj;
 
         return publicObj;
     }
