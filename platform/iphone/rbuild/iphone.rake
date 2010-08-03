@@ -309,6 +309,7 @@ namespace "run" do
     end
 
     task :allspecs do
+      rm_rf basedir + "/faillog.txt"
       $dont_exit_on_failure = true
       Rake::Task['run:iphone:phone_spec'].invoke
       Rake::Task['run:iphone:framework_spec'].invoke
