@@ -96,7 +96,7 @@ CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const
 
         m_strReqUrlW = m_uri.lpszUrlPath;
         m_strReqUrlW += m_uri.lpszExtraInfo;
-        DWORD dwFlags = INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES;
+        DWORD dwFlags = INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES|INTERNET_FLAG_NO_AUTO_REDIRECT;
         if ( m_uri.lpszScheme && wcsicmp(m_uri.lpszScheme,L"https")==0)
             dwFlags |= INTERNET_FLAG_SECURE;
 
@@ -336,14 +336,16 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
             return;
     }
 
-    if ( nCode != 200 && nCode != 206 && nCode != 416 )
+    //if ( nCode != 200 && nCode != 206 && nCode != 416 )
+    if ( nCode >= 400 && nCode != 416 )
     {
-        LOG(ERROR) + "An error occured connecting to the sync source: " + szHttpRes + " returned.";
+        LOG(ERROR) + "An error occured connecting to the server: " + szHttpRes + " returned.";
 
         // If we're unauthorized, delete any cookies that might have been
         // stored so we don't reuse them later
         if ( nCode == 401 && m_pSession ) 
         {
+            LOG(ERROR) + "Unauthorize error.Client will be logged out";
             m_pSession->logout();
         }
 	}

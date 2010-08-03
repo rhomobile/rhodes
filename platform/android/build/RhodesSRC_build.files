@@ -20,6 +20,9 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/camera/Camera.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/FileList.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCaptureCallback.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/Signature.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
@@ -49,3 +52,8 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/uri/SmsUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/TelUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/UriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/VideoUriHandler.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientNew.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientOld.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsNew.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsOld.java

@@ -6,17 +6,24 @@ public class RhoThread extends Thread
 		new RhoLogger("RhoThread");
 	
 	public final static int epNormal = 0, epHigh = 1, epLow = 2;
+    static final int TS_NONE = 0;
+    static final int TS_WAIT = 1;
+    static final int TS_STOPPING = 2;
+    //static final int TS_RUNNING = 4;
+
+    int m_nState;
+	
 	private Object m_syncObj = new Object();
-	boolean m_isInWaitState;
-	protected boolean m_bStop = false;
 	
     public RhoThread(RhoClassFactory factory)
     {
-    	m_isInWaitState = false;
+    	m_nState = TS_NONE;
     }
 
     public Object getSyncObject(){ return m_syncObj; }
-    public boolean isStopped(){return m_bStop;}
+    public boolean isStopping(){return (m_nState&TS_STOPPING) != 0;}
+    public boolean isWaiting(){return (m_nState&TS_WAIT) != 0;}
+    //public boolean isRunning(){return (m_nState&TS_RUNNING) != 0;}
     
     public void start(int ePriority)
     {
@@ -36,7 +43,7 @@ public class RhoThread extends Thread
     
     public void stop(int nTimeoutToKill)
     { 
-    	m_bStop = true;
+    	m_nState |= TS_STOPPING;
     	stopWait();
     	
 		try{
@@ -52,21 +59,23 @@ public class RhoThread extends Thread
 			
 		}catch(Exception e){
 			LOG.ERROR("stop failed", e);
+		}finally
+		{
+			m_nState &= ~TS_STOPPING;
 		}
-    	
     }
     
     public void wait(int nTimeout)
     {
 		synchronized (m_syncObj) {
 			try{
-				m_isInWaitState = true;
+				m_nState |= TS_WAIT;
 				m_syncObj.wait(nTimeout*1000);
 			}catch(Exception e)
 			{
 				LOG.ERROR("wait failed", e);
 			}finally{
-				m_isInWaitState = false;
+				m_nState &= ~TS_WAIT;
 			}
 		}
     	
@@ -75,7 +84,7 @@ public class RhoThread extends Thread
     public void stopWait()
     {
 		synchronized (m_syncObj) {
-	    	if ( m_isInWaitState )
+	    	if ( isWaiting() )
 	    		m_syncObj.notifyAll();
     	}    	
     }

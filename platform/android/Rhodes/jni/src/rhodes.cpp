@@ -8,6 +8,7 @@
 #include <sync/SyncThread.h>
 
 #include <sys/stat.h>
+#include <sys/resource.h>
 
 #include "rhodes/JNIRhodes.h"
 
@@ -287,7 +288,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_makeLink
     env->ReleaseStringUTFChars(src, strSrc);
     env->ReleaseStringUTFChars(dst, strDst);
     if (err != 0)
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Can not create symlink");
+        env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Can not create symlink");
 }
 
 static bool set_capabilities(JNIEnv *env)
@@ -343,6 +344,32 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeInitPath
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp
   (JNIEnv *env, jobject)
 {
+    jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
+    if (!clsRE)
+        return;
+
+    struct rlimit rlim;
+    if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
+    {
+        env->ThrowNew(clsRE, "Can not get maximum number of open files");
+        return;
+    }
+    if (rlim.rlim_max < (unsigned long)RHO_FD_BASE)
+    {
+        env->ThrowNew(clsRE, "Current limit of open files is less then RHO_FD_BASE");
+        return;
+    }
+    if (rlim.rlim_cur > (unsigned long)RHO_FD_BASE)
+    {
+        rlim.rlim_cur = RHO_FD_BASE;
+        rlim.rlim_max = RHO_FD_BASE;
+        if (setrlimit(RLIMIT_NOFILE, &rlim) == -1)
+        {
+            env->ThrowNew(clsRE, "Can not set maximum number of open files");
+            return;
+        }
+    }
+
     if (!set_capabilities(env)) return;
 
     // Init SQLite temp directory

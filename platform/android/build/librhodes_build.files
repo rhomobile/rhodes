@@ -2,6 +2,7 @@ platform/android/Rhodes/jni/src/RhoClassFactory.cpp
 platform/android/Rhodes/jni/src/alert.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
 platform/android/Rhodes/jni/src/camera.cpp
+platform/android/Rhodes/jni/src/signature.cpp
 platform/android/Rhodes/jni/src/datetimepicker.cpp
 platform/android/Rhodes/jni/src/fileapi.cpp
 platform/android/Rhodes/jni/src/geolocation.cpp

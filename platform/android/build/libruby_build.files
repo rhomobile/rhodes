@@ -22,6 +22,7 @@ platform/shared/ruby/eval.c
 platform/shared/ruby/ext/alert/alert_wrap.c
 platform/shared/ruby/ext/asynchttp/asynchttp_wrap.c
 platform/shared/ruby/ext/camera/camera_wrap.c
+platform/shared/ruby/ext/signature/signature_wrap.c
 platform/shared/ruby/ext/datetimepicker/datetimepicker_wrap.c
 platform/shared/ruby/ext/geolocation/geolocation_wrap.c
 platform/shared/ruby/ext/mapview/mapview_wrap.c

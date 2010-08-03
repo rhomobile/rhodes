@@ -12,6 +12,24 @@ describe "Json" do
         parsed[2]['object_value'].is_a?(Hash).should ==  true
         parsed[2]['object_value']['attrib'].should ==  "xform"
     end
+    it "should parse big json" do
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'big_test.json')
+        content = File.read(file_name)
+        
+        #GC.stress=true
+        parsed = nil
+        #(1..10).each do |i|
+            #puts "i : #{i}"
+            #GC.start
+            parsed = Rho::JSON.parse(content)
+            
+            #puts "#{parsed[0]['coupleName']}"
+        #end    
+
+        parsed.is_a?(Array).should == true
+        
+        #GC.stress=false
+    end
 
     it "should parse circular" do
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'circtest.json')
@@ -40,7 +58,7 @@ describe "Json" do
         parsed["Manufacturer List"].is_a?(Array).should ==  true 
         parsed["Category List"].is_a?(Array).should ==  true 
     end
-    
+
     it "should webservice" do
         return unless $is_network_available
             
@@ -52,7 +70,7 @@ describe "Json" do
         parsed.is_a?(Array).should ==  true
         parsed[0].is_a?(Hash).should ==  true 
     end
-    
+
     it "should generate" do
         require 'json'
         
@@ -72,11 +90,11 @@ describe "Json" do
             
         res = Rho::AsyncHttp.get( :url => 'http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=&startindex=1&endindex=10' )
         puts "res : #{res}"  
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         parsed = res['body']
-        Test_equal( parsed.is_a?(Hash), true )
-        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
+        parsed.is_a?(Hash).should ==  true
+        parsed["Manufacturer List"].is_a?(Array).should ==  true
         
         manf =  parsed["Manufacturer List"][10]["Manufacturer"]
         puts "manf : #{manf}"
@@ -85,11 +103,11 @@ describe "Json" do
         
         res = Rho::AsyncHttp.get( :url => url2 )
         puts "res : #{res}"  
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         parsed = res['body']
-        Test_equal( parsed.is_a?(Hash), true )
-        Test_equal( parsed["Manufacturer List"].is_a?(Array), true )    
+        parsed.is_a?(Hash).should ==  true
+        parsed["Manufacturer List"].is_a?(Array).should ==  true
         
     end
 
@@ -98,7 +116,7 @@ describe "Json" do
             
         res = Rho::AsyncHttp.get( :url => 'http://api.foursquare.com/v1/venues.json?geolat=37.331689&geolong=-122.030731' )
         puts "res : #{res}"  
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         #@places = Array.new
         #res['body'].each do |attributes|

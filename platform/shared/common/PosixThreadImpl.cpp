@@ -14,27 +14,8 @@ namespace common
 IMPLEMENT_LOGCLASS(CPosixThreadImpl, "RhoThread");
 
 CPosixThreadImpl::CPosixThreadImpl()
-    :m_started(false)
-{}
-
-void *runProc(void *pv)
+    :m_stop_wait(false)
 {
-    IRhoRunnable *p = static_cast<IRhoRunnable *>(pv);
-    void *pData = rho_nativethread_start();
-    p->run();
-    rho_nativethread_end(pData);
-    return 0;
-}
-
-void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority)
-{
-    {
-        common::CMutexLock lock(m_mxSync);
-        if (m_started)
-            return;
-        m_started = true;
-    }
-
 #if defined(OS_ANDROID)
     // Android has no pthread_condattr_xxx API
     pthread_cond_init(&m_condSync, NULL);
@@ -44,7 +25,24 @@ void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority eP
     pthread_cond_init(&m_condSync, &sync_details);
     pthread_condattr_destroy(&sync_details);
 #endif
+}
 
+CPosixThreadImpl::~CPosixThreadImpl()
+{
+    pthread_cond_destroy(&m_condSync);
+}
+
+void *runProc(void *pv)
+{
+    IRhoRunnable *p = static_cast<IRhoRunnable *>(pv);
+    void *pData = rho_nativethread_start();
+    p->runObject();
+    rho_nativethread_end(pData);
+    return 0;
+}
+
+void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority)
+{
     pthread_attr_t  attr;
     int return_val = pthread_attr_init(&attr);
     //return_val = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -71,28 +69,41 @@ void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
     //TODO: wait for nTimeoutToKill and kill thread
     void* status;
     pthread_join(m_thread,&status);
-
-    pthread_cond_destroy(&m_condSync);
 }
 
 void CPosixThreadImpl::wait(unsigned int nTimeout)
 {
+    struct timeval    tp;
+    struct timespec   ts;
+    unsigned long long max;
+    bool timed_wait = (int)nTimeout >= 0;
+    
+    if (timed_wait)
+    {
+        gettimeofday(&tp, NULL);
+        /* Convert from timeval to timespec */
+        ts.tv_sec  = tp.tv_sec;
+        ts.tv_nsec = tp.tv_usec * 1000;
+        ts.tv_sec += nTimeout;
+        max = ((unsigned long long)tp.tv_sec + nTimeout)*1000000 + tp.tv_usec;
+    }
+
     common::CMutexLock oLock(m_mxSync);
 
-    struct timespec   ts;
-    struct timeval    tp;
-    gettimeofday(&tp, NULL);
-    /* Convert from timeval to timespec */
-    ts.tv_sec  = tp.tv_sec;
-    ts.tv_nsec = tp.tv_usec * 1000;
-
-    if ( (unsigned)ts.tv_sec + nTimeout < (unsigned)ts.tv_sec )
-        pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex() );
-    else
+    while (!m_stop_wait)
     {
-        ts.tv_sec += nTimeout;
-        pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+        if (timed_wait) {
+            gettimeofday(&tp, NULL);
+            unsigned long long now = ((unsigned long long)tp.tv_sec)*1000000 + tp.tv_usec;
+            if (now > max)
+                break;
+            
+            pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+        }
+        else
+            pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex());
     }
+    m_stop_wait = false;
 }
 
 void CPosixThreadImpl::sleep(unsigned int nTimeout)
@@ -102,6 +113,8 @@ void CPosixThreadImpl::sleep(unsigned int nTimeout)
 
 void CPosixThreadImpl::stopWait()
 {
+    common::CMutexLock oLock(m_mxSync);
+    m_stop_wait = true;
     pthread_cond_broadcast(&m_condSync);
 }
 
