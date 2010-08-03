@@ -32,11 +32,13 @@ public class ImageCaptureCallback implements PictureCallback {
 	
 	private static final String TAG = "ImageCapture";
 
+	private ImageCapture mOwner;
 	private String callbackUrl;
 	private OutputStream osCommon;
 	private String filePath;
 
-	public ImageCaptureCallback(String u, OutputStream o, String f) {
+	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f) {
+		mOwner = owner;
 		callbackUrl = u;
 		osCommon = o;
 		filePath = f;
@@ -56,6 +58,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			osOwn.close();
 
 			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, filePath);
+			mOwner.finish();
 
 		} catch (Exception e) {
 			Logger.E(TAG, e);

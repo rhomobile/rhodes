@@ -483,6 +483,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            	getUserDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
 	            else
 	            	getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
+	            
+		    	if ( ClientRegister.getInstance() != null )
+		    		ClientRegister.getInstance().startUp();	    	
+	            
 		    }else if ( bResetClient )
 		    {
 		    	if ( !resetClientIDByNet(clientID) )
@@ -794,11 +798,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    else
 		    	getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 		
-		    if ( ClientRegister.getInstance() != null )
-		    	ClientRegister.getInstance().stopWait();
-		    
 	    	getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
 		    
+	    	if ( ClientRegister.getInstance() != null )
+	    		ClientRegister.getInstance().startUp();	    	
+	    	
 		}catch(Exception exc)
 		{
 			LOG.ERROR("Login failed.", exc);

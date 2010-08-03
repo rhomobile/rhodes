@@ -29,8 +29,16 @@ def sign (cabfile)
 end
 
 namespace "config" do
-  task :wm => ["config:common"] do
-    $config["platform"] = "wm"
+  task :set_wm_platform do
+    $current_platform = "wm" unless $current_platform
+  end
+  
+  task :set_win32_platform do
+    $current_platform = "win32" unless $current_platform
+  end
+  
+
+  task :wm => [:set_wm_platform, "config:common"] do
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
@@ -49,11 +57,11 @@ namespace "config" do
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
 
-    $app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
-    if $app_config["wm"] and $app_config["wm"]["extensions"]
-      $app_config["extensions"] += $app_config["wm"]["extensions"]
-      $app_config["wm"]["extensions"] = nil
-    end
+    #$app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
+    #if $app_config["wm"] and $app_config["wm"]["extensions"]
+    #  $app_config["extensions"] += $app_config["wm"]["extensions"]
+    #  $app_config["wm"]["extensions"] = nil
+    #end
   end
 end
 
@@ -97,11 +105,12 @@ namespace "build" do
       chdir $startdir
     end
 
-    task :devrhobundle => "win32:devrhobundle"
-  end
+    task :devrhobundle => ["config:set_wm_platform", "win32:devrhobundle"]
+    end
   
   namespace "win32" do
-    task :devrhobundle => ["wm:rhobundle"] do
+  
+    task :devrhobundle => ["config:set_win32_platform", "wm:rhobundle"] do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         mkdir_p win32rhopath
         namepath = File.join(win32rhopath,"name.txt")        
@@ -121,7 +130,7 @@ namespace "build" do
   end
 
   #desc "Build rhodes for win32"
-  task :win32 => ["config:wm", "build:win32:devrhobundle"] do
+  task :win32 => ["config:set_win32_platform", "config:wm", "build:win32:devrhobundle"] do
     chdir $config["build"]["wmpath"]
 
     args = ['/M4', 'rhodes.sln', '"debug|win32"']
@@ -263,8 +272,13 @@ namespace "run" do
   end
  
   namespace "win32" do
-  
-    task :spec => ["build:win32"] do
+
+    task :delete_db do
+        db_path = 'platform/wm/bin/win32/rhodes/Debug/rho/db'
+        rm_rf db_path if File.exists?(db_path)    
+    end
+    
+    task :spec => [:delete_db, "build:win32"] do
         #remove log file
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         win32logpath = File.join(win32rhopath,"RhoLog.txt")        

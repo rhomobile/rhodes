@@ -40,7 +40,7 @@ class ClassGeneratorForRubyProgram extends ClassGenerator {
         if (this.fileName != null) {
             cv_.visitSource(this.fileName, null);
         }
-        
+
         CgUtil.createImplicitConstructor(this.cv_, Types.RUBY_PROGRAM_TYPE);
 
         if (createMain) {

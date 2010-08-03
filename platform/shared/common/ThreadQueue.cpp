@@ -49,7 +49,7 @@ void CThreadQueue::run()
 	LOG(INFO) + "Starting main routine...";
 
 	int nLastPollInterval = getLastPollInterval();
-	while( !isStopped() )
+	while( !isStopping() )
 	{
         unsigned int nWait = m_nPollInterval > 0 ? m_nPollInterval : QUEUE_POLL_INTERVAL_INFINITE;
 
@@ -62,16 +62,18 @@ void CThreadQueue::run()
                 nWait = nWait2;
         }
 
-        if ( nWait >= 0 && !isStopped() && isNoCommands() )
+        if ( nWait >= 0 && !isStopping() && isNoCommands() )
 		{
             LOG(INFO) + "ThreadQueue blocked for " + nWait + " seconds...";
             wait(nWait);
         }
         nLastPollInterval = 0;
 
-        if ( !isStopped() )
+        if ( !isStopping() )
     		processCommands();
 	}
+
+    LOG(INFO) + "Thread shutdown";
 }
 
 boolean CThreadQueue::isNoCommands()
@@ -87,7 +89,7 @@ boolean CThreadQueue::isNoCommands()
 
 void CThreadQueue::processCommands()//throws Exception
 {
-	while(!isStopped() && !isNoCommands())
+	while(!isStopping() && !isNoCommands())
 	{
 		common::CAutoPtr<IQueueCommand> pCmd = null;
     	{

@@ -1222,8 +1222,9 @@ public class RubyString extends RubyBasic {
 
                 if (index < 0 || index >= string.length()) {
                     return RubyConstant.QNIL;
-                } else {
-                    return ObjectFactory.createFixnum(string.charAt(index));
+                } else 
+                {
+                	return ObjectFactory.createString(string.substring(index, index+1));
                 }
             }
         } else {

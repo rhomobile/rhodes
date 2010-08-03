@@ -830,8 +830,12 @@ public class DBAdapter extends RubyBasic
 		    		for ( int i = 0; i < args.size(); i++ )
 		    		{
 		    			RubyValue val = args.get(i);
-		    			if ( val instanceof RubyFixnum )
-		    				values[i] = new Long( ((RubyFixnum)val).toLong() );
+		    			if ( val == RubyConstant.QNIL )
+		    				values[i] = null;
+		    			else if ( val instanceof RubyInteger )
+		    				values[i] = new Long( ((RubyInteger)val).toLong() );
+		    			else if ( val instanceof RubyFloat )
+		    				values[i] = new Double( ((RubyFloat)val).toFloat() );
 		    			else
 		    				values[i] = val.toString();
 		    		}
@@ -1001,13 +1005,13 @@ public class DBAdapter extends RubyBasic
 			}
 		});
 		
-/*		
+		
 		klass.defineMethod("lock_db",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
 					try{
 					    DBAdapter db = (DBAdapter)receiver;
-					    db.setUnlockDB(true);
+					    //db.setUnlockDB(true);
 					    db.Lock();
 					}catch(Exception e)
 					{
@@ -1033,7 +1037,6 @@ public class DBAdapter extends RubyBasic
 				    return RubyConstant.QNIL;
 				}
 			});
-*/
 		
 		klass.defineMethod( "table_exist?", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )

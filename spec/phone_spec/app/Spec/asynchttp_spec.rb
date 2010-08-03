@@ -14,10 +14,17 @@ describe "AsyncHttp" do
         #puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == 11358
         res['headers']['content-type'].should ==  'text/plain'
         res['body'].should_not be_nil
-        res['body'].length.should == res['headers']['content-length'].to_i
+
+        # www.apache.org response with gzipped body if client declare 'Accept-Encoging: gzip'
+        # (our network implementation for iPhone and Android does).
+        # It means that content-length header will contain value less than
+        # body length because body we have on application level is already decoded
+        # This is why following two lines commented out
+        #res['headers']['content-length'].should == 11358
+        #res['body'].length.should == res['headers']['content-length'].to_i
+        res['body'].length.should == 11358
     end
 
     it "should http post" do
@@ -81,6 +88,21 @@ describe "AsyncHttp" do
         res['status'].should == 'ok'
         File.exists?(file_name).should ==  true
     end
+
+    it "should decode chunked body" do
+      return unless $is_network_available
+
+      if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'        
+          host = Rho::RhoConfig.config["spec_local_server_host"]
+          port = Rho::RhoConfig.config["spec_local_server_port"]
+          puts "+++++++++++++++++++ chunked test: #{host}:#{port}"
+          res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}/chunked"
+          res['status'].should == 'ok'
+          res['body'].should_not be_nil
+          res['body'].should == "1234567890"
+      end
+    end
+
 =begin
     def upload_withbody_test
         return unless $is_network_available
@@ -102,8 +124,8 @@ describe "AsyncHttp" do
            )
         #puts "res : #{res}"  
         
-        Test_equal(res['status'],'ok')
-        Test_equal(File.exists?(file_name), true)
+        res['status'].should == 'ok'
+        File.exists?(file_name).should == true
     end
 
     def upload_multiple_test
@@ -132,8 +154,8 @@ describe "AsyncHttp" do
         )
         #puts "res : #{res}"  
         
-        Test_equal(res['status'],'ok')
-        Test_equal(File.exists?(file_name), true)
+        res['status'].should == 'ok'
+        File.exists?(file_name).should == true
     end
 =end  
 # TODO: Fix this test!
@@ -146,13 +168,13 @@ describe "AsyncHttp" do
         
         #puts "res : #{res}"  
         
-        Test_equal(res['status'],'ok')
+        res['status'].should == 'ok'
         
         http_error = res['http_error'].to_i if res['http_error']
         if http_error == 301 || http_error == 302 #redirect
             res2 = Rho::AsyncHttp.get( :url => res['headers']['location'] )
             
-            Test_equal(res2['status'],'ok')
+            res2['status'].should == 'ok'
         end    
         
     end

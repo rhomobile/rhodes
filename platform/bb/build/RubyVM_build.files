@@ -372,14 +372,10 @@ platform\shared\rubyJVM\src\javolution\util\Index.java
 platform\shared\rubyJVM\src\javolution\util\LocalMap.java
 platform\shared\rubyJVM\src\javolution\util\ReentrantLock.java
 platform\shared\rubyJVM\src\javolution\util\StandardLog.java
-platform\shared\rubyJVM\src\org\apache\oro\io\GlobFilenameFilter.java
-platform\shared\rubyJVM\src\org\apache\oro\io\RegexFilenameFilter.java
 platform\shared\rubyJVM\src\org\apache\oro\text\GenericPatternCache.java
-platform\shared\rubyJVM\src\org\apache\oro\text\GlobCompiler.java
 platform\shared\rubyJVM\src\org\apache\oro\text\MalformedCachePatternException.java
 platform\shared\rubyJVM\src\org\apache\oro\text\PatternCache.java
 platform\shared\rubyJVM\src\org\apache\oro\text\PatternCacheLRU.java
-platform\shared\rubyJVM\src\org\apache\oro\text\PatternMatchingEngineFactory.java
 platform\shared\rubyJVM\src\org\apache\oro\text\perl\MalformedPerl5PatternException.java
 platform\shared\rubyJVM\src\org\apache\oro\text\perl\ParsedSubstitutionEntry.java
 platform\shared\rubyJVM\src\org\apache\oro\text\perl\Perl5Util.java

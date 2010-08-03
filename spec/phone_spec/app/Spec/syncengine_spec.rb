@@ -32,7 +32,15 @@ describe "SyncEngine_test" do
   end
   
   it "should update syncserver at runtime" do
+  
+    dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent')
+    dbRes.length.should == 0
+  
     saveSrv =  Rho::RhoConfig.syncserver
+    
+    SyncEngine.set_syncserver('')
+    Rho::RhoConfig.syncserver.should == ''
+    
     SyncEngine.set_syncserver('http://example.com/sources/')
     Rho::RhoConfig.syncserver.should == 'http://example.com/sources/'
     
@@ -58,10 +66,29 @@ describe "SyncEngine_test" do
 
   it "should sync Product" do
     SyncEngine.logged_in.should == 1
+    dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent, client_id')
+    puts "dbRes : #{dbRes}"
+    dbRes.length.should == 1
+    dbRes[0]['token_sent'].should == 0
+    dbRes[0]['token'].should be_nil
+    dbRes[0]['client_id'].should be_nil
   
     res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    
+    #check that clientregister did called
+    if System.get_property('device_name') == 'Win32' || System.get_property('platform') == 'Blackberry'
+        dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent, client_id')
+        dbRes.length.should == 1
+        dbRes[0]['token_sent'].should == 1
+        
+        dbRes[0]['token'].should_not be_nil
+        dbRes[0]['token'].length().should > 0
+
+        dbRes[0]['client_id'].should_not be_nil        
+        dbRes[0]['client_id'].length().should > 0
+    end
   end
 
   it "should sync Product by name" do
@@ -110,9 +137,7 @@ describe "SyncEngine_test" do
   it "should create new Product" do
     SyncEngine.logged_in.should == 1
   
-    item = Product.new
-    item.name = 'Test'
-    item.save
+    item = Product.create({:name => 'Test'})
     
     res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
