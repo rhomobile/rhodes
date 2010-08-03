@@ -233,8 +233,9 @@ static Rhodes *instance = NULL;
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
-- (void)takeSignature:(NSString*) url {
+- (void)takeSignature:(NSString*)url format:(NSString*)format {
 	[signatureDelegate setPostUrl:url];
+	[signatureDelegate setImageFormat:format];
 	[signatureDelegate setParentView:window];
 	[signatureDelegate setPrevView:mainView.view];
 	@try {

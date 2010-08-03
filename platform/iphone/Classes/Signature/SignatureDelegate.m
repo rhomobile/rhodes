@@ -26,6 +26,11 @@
 	prevView = prev_view;
 }
 
+-(void)setImageFormat:(NSString*)format {
+	imageFormat = format;
+}
+
+
 - (void)useImage:(UIImage*)theImage { 
     NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/../db/db-files"];
 
@@ -37,9 +42,21 @@
              stringByReplacingOccurrencesOfString: @":" withString: @"."];
     now = [now stringByReplacingOccurrencesOfString: @" " withString: @"_"];
     now = [now stringByReplacingOccurrencesOfString: @"+" withString: @"_"];
-    NSString *filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
-    NSString *fullname = [folder stringByAppendingPathComponent:filename];
-    NSData *pngImage = UIImagePNGRepresentation(theImage);
+
+    NSString *filename;
+    NSString *fullname;
+    NSData *pngImage;
+    
+    if (imageFormat == @"png") {
+	
+        filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
+        fullname = [folder stringByAppendingPathComponent:filename];
+        pngImage = UIImagePNGRepresentation(theImage);
+    else {
+        filename = [NSString stringWithFormat:@"Image_%@.jpg", now]; 	
+        fullname = [folder stringByAppendingPathComponent:filename];
+        pngImage = UIImageJPEGRepresentation(theImage, 1.0);
+    }
 
     int isError = ![pngImage writeToFile:fullname atomically:YES];
     rho_rhodesapp_callSignatureCallback([postUrl UTF8String], [filename UTF8String],
@@ -111,9 +128,10 @@
 */
 @end
 
-void rho_signature_take_signature(char* callback_url) {
+void rho_signature_take_signature(char* callback_url, char* image_format) {
     NSString *url = [NSString stringWithUTF8String:callback_url];
+    NSString *iformat = [NSString stringWithUTF8String:image_format];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
-                                              withObject:url waitUntilDone:NO];
+                                              withObject:url withObject:iformat waitUntilDone:NO];
 }
 

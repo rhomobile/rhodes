@@ -48,10 +48,12 @@ public class Signature {
 	private static class Picture implements Runnable {
 		private String url;
 		private Class<?> klass;
+		private String format;
 		
-		public Picture(String u, Class<?> c) {
+		public Picture(String u, Class<?> c, String form) {
 			url = u;
 			klass = c;
+			format = form;
 		}
 		
 		public void run() {
@@ -59,13 +61,14 @@ public class Signature {
 			Rhodes r = RhodesInstance.getInstance();
 			Intent intent = new Intent(r, klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "format", format);
 			r.startActivity(intent);
 		}
 	};
 	
-	public static void takeSignature(String url) {
+	public static void takeSignature(String url, String format) {
 		try {
-			Runnable runnable = new Picture(url, ImageCapture.class);
+			Runnable runnable = new Picture(url, ImageCapture.class, format);
 			Rhodes.performOnUiThread(runnable, false);
 		}
 		catch (Exception e) {

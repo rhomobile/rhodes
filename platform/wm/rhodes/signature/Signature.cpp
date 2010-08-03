@@ -24,5 +24,5 @@ extern "C" wchar_t* wce_mbtowc(const char* a);
 
 
 
-void rho_signature_take_signature(char* callback_url) {
+void rho_signature_take_signature(char* callback_url, char* image_format) {
 }
