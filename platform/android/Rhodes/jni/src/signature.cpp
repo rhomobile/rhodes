@@ -15,17 +15,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_signature_Signature_callback
 }
 
 
-RHO_GLOBAL void rho_signature_take_signature(char* callback_url)
+RHO_GLOBAL void rho_signature_take_signature(char* callback_url, char* image_format)
 {
 ///*
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
     jstring objCallback = rho_cast<jstring>(callback_url);
-    env->CallStaticVoidMethod(cls, mid, objCallback);
+    jstring objFormat = rho_cast<jstring>(image_format);
+    env->CallStaticVoidMethod(cls, mid, objCallback, objFormat);
     env->DeleteLocalRef(objCallback);
+    env->DeleteLocalRef(objFormat);
 //*/
 }
 
