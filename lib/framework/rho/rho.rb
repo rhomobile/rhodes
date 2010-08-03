@@ -714,12 +714,12 @@ module Rho
     module AsyncHttp
 
         def self.make_auth_header(args)
-          auth = args[:authorization]
+          auth = args[:authentication]
           return nil unless auth.is_a? Hash
           return nil if auth[:type].nil?
 
           raise "Authorization type #{auth[:type].inspect.to_s} is unsupported" if auth[:type].to_s != 'basic'
-          raise "Username or password should be specified for 'basic' authorization" if auth[:username].nil? or auth[:password].nil?
+          raise "Username or password should be specified for 'basic' authentication" if auth[:username].nil? or auth[:password].nil?
 
           plain = 'Basic ' + [auth[:username].to_s + ':' + auth[:password].to_s].pack('m')
           # Remove trailing \n
