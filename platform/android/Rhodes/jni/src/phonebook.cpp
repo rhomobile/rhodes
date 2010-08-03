@@ -99,6 +99,7 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
     // pb.moveToBegin();
     env->CallVoidMethod(phonebookObj, phonebookMoveToBeginMID);
 
+    VALUE valGc = rho_ruby_disable_gc();
     CHoldRubyValue hash(rho_ruby_createHash());
     // while(pb.hasNext())
     while(env->CallBooleanMethod(phonebookObj, hasNextMID))
@@ -116,6 +117,7 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
         env->DeleteLocalRef(contactObj);
     }
 
+    rho_ruby_enable_gc(valGc);
     return hash;
 }
 

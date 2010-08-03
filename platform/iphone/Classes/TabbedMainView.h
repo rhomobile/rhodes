@@ -10,7 +10,6 @@
 #import "RhoMainView.h"
 
 @interface TabbedMainView : UIViewController<RhoMainView> {
-    UIView *parent;
     UITabBarController *tabbar;
     NSArray *tabbarData;
 }
@@ -18,8 +17,7 @@
 @property (nonatomic,retain) UITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 
-//- (id)initWithParentView:(UIView*)v items:(NSArray*)items;
-//- (id)initWithParentView:(UIView*)v frame:(CGRect)frame items:(NSArray*)items;
-- (id)initWithMainView:(id<RhoMainView>)v tabs:(NSArray*)items;
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray*)items;
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @end

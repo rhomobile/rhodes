@@ -45,7 +45,7 @@ class RhomDbAdapter
   def is_ui_waitfordb
       @database.is_ui_waitfordb
   end
-  
+
   def start_transaction
       begin
         @database.start_transaction
@@ -73,6 +73,24 @@ class RhomDbAdapter
       end
   end
 
+  def lock_db
+      begin
+        @database.lock_db
+      rescue Exception => e
+        puts "exception when lock_db: #{e}"
+        raise        
+      end
+  end
+
+  def unlock_db
+      begin
+        @database.unlock_db
+      rescue Exception => e
+        puts "exception when unlock_db: #{e}"
+        raise        
+      end
+  end
+
   # execute a sql statement
   # optionally, disable the factory processing 
   # which returns the result array directly
@@ -86,7 +104,7 @@ class RhomDbAdapter
   def _execute_sql(sql, is_batch, args)      
     result = []
     if sql
-      #puts "RhomDbAdapter: Executing query - #{sql}"
+      #puts "RhomDbAdapter: Executing query - #{sql}; #{args}"
       begin
         result = @database.execute( sql, is_batch, args )
       rescue Exception => e
@@ -166,20 +184,42 @@ class RhomDbAdapter
   # this would return all columns where source_id = 2 and update_type = 'query' ordered
   # by the "object" column
   def select_from_table(table=nil,columns=nil,condition=nil,params=nil)
+  
+    raise ArgumentError if !table || !columns
     query = nil
-    if table and columns and condition
-      if params and params['distinct']
-        query = "select distinct #{columns} from #{table} where #{RhomDbAdapter.where_str(condition)}"
-      elsif params and params['order by']
-        query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition)} order by #{params['order by']}"
-      else
-        query = "select #{columns} from #{table} where #{RhomDbAdapter.where_str(condition)}"
-      end
-    elsif table and columns
-      query = "select #{columns} from #{table}"                     
+    vals = nil
+
+    if condition
+        quests,vals = make_where_params(condition,'AND') 
+        if params and params['distinct']
+            query = "select distinct #{columns} from #{table} where #{quests}"
+        elsif params and params['order by']
+            query = "select #{columns} from #{table} where #{quests} order by #{params['order by']}"
+        else
+            query = "select #{columns} from #{table} where #{quests}"
+        end
+    else
+        query = "select #{columns} from #{table}"
     end
     
-    execute_sql query
+    execute_sql query, vals
+  end
+
+  def make_where_params(condition,op)
+    raise ArgumentError if !condition || !op || op.length == 0
+    quests = ""
+    vals = []
+  
+    condition.each do |key,val|
+        if quests.length > 0
+            quests << ' ' << op << ' '
+        end
+    
+        quests << "#{key}=?"
+        vals << val
+    end
+    
+    return quests,vals
   end
 
   # inserts a single row into the database
@@ -188,21 +228,33 @@ class RhomDbAdapter
   # insert_into_table('object_values, {"source_id"=>1,"object"=>"some-object","update_type"=>'delete'})
   # this would execute the following sql:
   # insert into object_values (source_id,object,update_type) values (1,'some-object','delete');
-  def insert_into_table(table=nil,values=nil)
-    query = nil
+  def insert_into_table(table=nil,values=nil, excludes=nil)
+    raise ArgumentError if !table
+    cols,quests,vals = make_insert_params(values, excludes)
+    query = "insert into #{table} (#{cols}) values (#{quests})"
+    execute_sql query, vals
+  end
+
+  def make_insert_params(values, excludes)
+    raise ArgumentError if !values
+    
     cols = ""
-    vals = ""
-    if table and values
-      values.each do |key,val|
-        value = RhomDbAdapter.get_value_for_sql_stmt(val)+","
-        cols << "#{key},"
-        vals << value
-      end
-      cols = cols[0..cols.length - 2]
-      vals = vals[0..vals.length - 2]
-      query = "insert into #{table} (#{cols}) values (#{vals})"
+    quests = ""
+    vals = []
+  
+    values.each do |key,val|
+        next if excludes && excludes[key]
+        if cols.length > 0
+            cols << ','
+            quests << ','
+        end
+    
+        cols << "#{key}"
+        quests << '?'
+        vals << val
     end
-    execute_sql query
+    
+    return cols,quests,vals
   end
 
   # deletes rows from a table which satisfy condition (hash)
@@ -211,7 +263,10 @@ class RhomDbAdapter
   # this would execute the following sql:
   # delete from object_values where object="some-object"
   def delete_from_table(table,condition)
-    execute_sql "delete from #{table} where #{RhomDbAdapter.where_str(condition)}"
+    raise ArgumentError if !table
+    quests,vals = make_where_params(condition,'AND') 
+    query = "delete from #{table} where #{quests}"
+    execute_sql query, vals
   end
 
   # deletes all rows from a given table
@@ -244,14 +299,39 @@ class RhomDbAdapter
   # this executes the following sql:
   # update table object_values set value='Electronics' where object='some-object' and attrib='industry';
   def update_into_table(table=nil,values=nil,condition=nil)
+    raise ArgumentError if !table || !values
     query = nil
-    vals = values.nil? ? nil : RhomDbAdapter.vals_str(values)
-    if table and condition and vals
-      query = "update #{table} set #{vals} where #{RhomDbAdapter.where_str(condition)}"
-    elsif table and vals
-      query = "update #{table} set #{vals}"          
+    vals = nil
+    if condition
+        quests_set, vals_set = make_set_params(values)
+        quests_where,vals_where = make_where_params(condition,'AND') 
+        query = "update #{table} set #{quests_set} where #{quests_where}"
+        vals = vals_set + vals_where
+    else
+        quests, vals = make_set_params(values)
+        query = "update #{table} set #{quests}"
     end
-    execute_sql query
+    
+    execute_sql query, vals
   end
+  
+  def make_set_params(values)
+    raise ArgumentError if !values
+    
+    quests = ""
+    vals = []
+  
+    values.each do |key,val|
+        if quests.length > 0
+            quests << ','
+        end
+    
+        quests << "#{key}=?"
+        vals << val
+    end
+    
+    return quests,vals
+  end
+  
 end # RhomDbAdapter
 end # Rhom

@@ -26,7 +26,7 @@ Account|created_by|44e804f2-4933-4e20-271c-48fcecd9450d|1|
 Account|campaign_id|44e804f2-4933-4e20-271c-48fcecd9450d||
 Account|billing_address_city|44e804f2-4933-4e20-271c-48fcecd9450d|Gurgaon|
 Account|shipping_address_street|44e804f2-4933-4e20-271c-48fcecd9450d||
-Account|email1|44e804f2-4933-4e20-271c-48fcecd9450d|ramneek@bhasin.com|
+Account|email|44e804f2-4933-4e20-271c-48fcecd9450d|ramneek@bhasin.com|
 Account|date_modified|44e804f2-4933-4e20-271c-48fcecd9450d|2008-10-21 18:07:11|
 Account|sic_code|44e804f2-4933-4e20-271c-48fcecd9450d||
 Account|industry|44e804f2-4933-4e20-271c-48fcecd9450d|Technology|
@@ -53,7 +53,7 @@ Account|parent_id|44e804f2-4933-4e20-271c-48fcecd9450d||
 Account|created_by_name|44e804f2-4933-4e20-271c-48fcecd9450d|admin|
 Account|shipping_address_state|44e804f2-4933-4e20-271c-48fcecd9450d||
 Account|phone_fax|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-Account|description|63cf13da-cff4-99e7-f946-48fcec93f1cc|NULL|
+Account|description|63cf13da-cff4-99e7-f946-48fcec93f1cc||
 Account|ownership|63cf13da-cff4-99e7-f946-48fcec93f1cc||
 Account|date_modified|63cf13da-cff4-99e7-f946-48fcec93f1cc|2008-10-22 20:30:48|
 Account|billing_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc|Mountain View|
@@ -61,7 +61,7 @@ Account|ticker_symbol|63cf13da-cff4-99e7-f946-48fcec93f1cc||
 Account|shipping_address_street|63cf13da-cff4-99e7-f946-48fcec93f1cc||
 Account|shipping_address_city|63cf13da-cff4-99e7-f946-48fcec93f1cc||
 Account|phone_alternate|63cf13da-cff4-99e7-f946-48fcec93f1cc||
-Account|email1|63cf13da-cff4-99e7-f946-48fcec93f1cc|dan@aeroprise.com|
+Account|email|63cf13da-cff4-99e7-f946-48fcec93f1cc|dan@aeroprise.com|
 Account|shipping_address_state|63cf13da-cff4-99e7-f946-48fcec93f1cc||
 Account|billing_address_state|63cf13da-cff4-99e7-f946-48fcec93f1cc|CA|
 Account|annual_revenue|63cf13da-cff4-99e7-f946-48fcec93f1cc||

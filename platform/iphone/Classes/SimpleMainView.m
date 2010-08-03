@@ -57,7 +57,6 @@
 
 @implementation SimpleMainView
 
-@synthesize root;
 
 - (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
     UIImage *img = nil;
@@ -132,7 +131,7 @@
     }
     
     UIToolbar *tb = [UIToolbar new];
-    tb.barStyle = UIBarStyleBlackOpaque;
+    tb.barStyle = UIBarStyleBlack;//Opaque;
     
     [tb sizeToFit];
     
@@ -177,6 +176,10 @@
     
     tb.hidden = NO;
     tb.userInteractionEnabled = YES;
+    tb.autoresizesSubviews = YES;
+    tb.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+ 	
+	
     return tb;
 }
 
@@ -199,13 +202,18 @@
         return;
     
     CGRect wFrame = webView.frame;
+	wFrame.size.height += wFrame.origin.y;
+	wFrame.origin.y = 0;
     
     [toolbar removeFromSuperview];
     toolbar = [self newToolbar:items frame:wFrame];
     toolbar.tag = RHO_TAG_TOOLBAR;
+    UIView* root = self.view;
     [root addSubview:toolbar];
+	[toolbar release];
     
     CGRect tbFrame = toolbar.frame;
+	wFrame = webView.frame;
     wFrame.size.height -= tbFrame.size.height;
     webView.frame = wFrame;
 }
@@ -218,34 +226,144 @@
     w.autoresizesSubviews = YES;
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
-    w.delegate = self;
+    //w.delegate = self;
+    w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
     
     return w;
 }
 
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
-    parent = p;
-    
-    root = [[UIView alloc] initWithFrame:frame];
+	[self init];
+	
+    UIView* root = self.view;
+    root.frame = frame;
     root.userInteractionEnabled = YES;
-    
+ 	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	root.autoresizesSubviews = YES;
+   
     [webView removeFromSuperview];
     webView = w;
     if (!webView)
         webView = [self newWebView:frame];
     [root addSubview:webView];
-    CGRect wFrame = frame;
+    [webView release];
+	CGRect wFrame = frame;
     wFrame.origin.y = 0;
     webView.frame = wFrame;
     
     [self addToolbar:items];
     navbar = nil;
     
-    self.view = root;
-    
     return self;
 }
+
+
+ - (void)loadView {
+	 UIView* content = [[UIView alloc] init];
+	 //content.backgroundColor = [UIColor redColor];
+	 self.view = content;
+	 [content release];
+	 
+}
+
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	if ([self interfaceOrientation] == fromInterfaceOrientation) {
+		return;
+	}
+	int width = rho_sys_get_screen_width();
+	int height = rho_sys_get_screen_height();
+	// send after rotate message
+	//CGRect wFrame = [webView frame];
+	int angle = 0;
+	switch (fromInterfaceOrientation) {
+		case UIInterfaceOrientationPortrait: {
+			switch ([self interfaceOrientation]) {
+				case UIInterfaceOrientationLandscapeLeft: {
+					angle = 90;
+				}
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown: {
+					angle = 180;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeRight: {
+					angle = -90;
+				}
+					break;
+			}
+		}
+		break;
+		case UIInterfaceOrientationLandscapeLeft: {
+			switch ([self interfaceOrientation]) {
+				case UIInterfaceOrientationPortrait: {
+					angle = -90;
+				}
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown: {
+					angle = 90;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeRight: {
+					angle = 180;
+				}
+					break;
+			}
+		}
+		break;
+		case UIInterfaceOrientationPortraitUpsideDown: {
+			switch ([self interfaceOrientation]) {
+				case UIInterfaceOrientationPortrait: {
+					angle = 180;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeLeft: {
+					angle = -90;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeRight: {
+					angle = 90;
+				}
+					break;
+			}
+		}
+		break;
+		case UIInterfaceOrientationLandscapeRight: {
+			switch ([self interfaceOrientation]) {
+				case UIInterfaceOrientationPortrait: {
+					angle = 90;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeLeft: {
+					angle = 180;
+				}
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown: {
+					angle = -90;
+				}
+					break;
+			}
+		}
+		break;
+	}
+	if (([self interfaceOrientation] == UIInterfaceOrientationLandscapeLeft) || ([self interfaceOrientation] == UIInterfaceOrientationLandscapeRight)) {
+		int t = width;
+		width = height;
+		height = t;
+	}
+	//rho_rhodesapp_callScreenRotationCallback((int)wFrame.size.width, (int)wFrame.size.height, angle);
+	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
+}
+
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	// custom rotation code based on interfaceOrientation here...
+	return YES;
+}
+
 
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame toolbar:(NSArray*)items {
     return [self init:p webView:nil frame:frame toolbar:items];
@@ -255,22 +373,21 @@
     return [self initWithParentView:p frame:frame toolbar:nil];
 }
 
-- (id)initWithMainView:(id<RhoMainView>)v {
-    return [self initWithMainView:v toolbar:nil];
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p {
+    return [self initWithMainView:v parent:p toolbar:nil];
 }
 
-- (id)initWithMainView:(id<RhoMainView>)v toolbar:(NSArray*)items {
-    UIView *p = [v parent];
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items {
     CGRect frame = [[v view] frame];
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
     UIWebView *w = [v detachWebView];
-    return [self init:p webView:w frame:frame toolbar:items];
+    id result = [self init:p webView:w frame:frame toolbar:items];
+
 }
 
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
     // Release any cached data, images, etc that aren't in use.
 }
 
@@ -279,8 +396,9 @@
 }
 
 - (void)dealloc {
-    [root removeFromSuperview];
-    [root release];
+    //UIView* root = self.view;
+    //[root removeFromSuperview];
+    //[root release];
     [super dealloc];
 }
 
@@ -308,15 +426,6 @@
     [self reload:0];
 }
 
-// RhoMainView implementation
-
-- (UIView*)view {
-    return root;
-}
-
-- (UIView*)parent {
-    return parent;
-}
 
 - (UIWebView*)detachWebView {
     UIWebView *w = [webView retain];
@@ -382,6 +491,23 @@
     return 0;
 }
 
+- (void)addNavBar:(UINavigationBar*)navb {
+    [navbar removeFromSuperview];
+    navbar = navb;
+	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	navbar.autoresizesSubviews = YES;
+	
+	UIView* root = self.view;
+    [root addSubview:navbar];
+	[navbar release];
+    
+    CGRect nFrame = navbar.frame;
+    CGRect wFrame = webView.frame;
+    wFrame.origin.y += nFrame.size.height;
+    wFrame.size.height -= nFrame.size.height;
+    webView.frame = wFrame;
+}
+
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
     [self removeNavBar];
     
@@ -409,15 +535,8 @@
     }
     
     [nb pushNavigationItem:ni animated:NO];
-    [navbar removeFromSuperview];
-    navbar = nb;
-    [root addSubview:navbar];
-    
-    CGRect nFrame = navbar.frame;
-    CGRect wFrame = webView.frame;
-    wFrame.origin.y += nFrame.size.height;
-    wFrame.size.height -= nFrame.size.height;
-    webView.frame = wFrame;
+	
+	[self addNavBar:nb];
 }
 
 - (void)removeNavBar {

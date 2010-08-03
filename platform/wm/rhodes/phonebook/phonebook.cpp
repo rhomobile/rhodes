@@ -54,6 +54,7 @@ VALUE getallPhonebookRecords(void* pb) {
 #if defined (_WIN32_WCE)
 	if (pb) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
+        VALUE valGc = rho_ruby_disable_gc();
         CHoldRubyValue hash(rho_ruby_createHash());
 		
 		std::vector<CABRecord*> records;
@@ -69,6 +70,7 @@ VALUE getallPhonebookRecords(void* pb) {
 			records.pop_back();
 		}
 
+        rho_ruby_enable_gc(valGc);
 		return hash;
 	}
 #endif

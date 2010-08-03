@@ -13,6 +13,7 @@ import com.rho.RhoConf;
 
 import net.rim.device.api.util.*;
 import net.rim.device.api.io.http.*;
+import com.rho.FilePath;
 
 public class PushListeningThread extends Thread {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
@@ -268,10 +269,11 @@ public class PushListeningThread extends Thread {
             			op = splitOnce(ops[loop],"=");
             			if (op.length>1) {
             				op = splitOnce(op[1],",");
+            				String fileName = FilePath.join("/public/alerts/", op[0]);
             				if (op.length>1) {
-            					play_file(op[0],op[1]);
+            					play_file(fileName,op[1]);
             				} else {
-            					play_file(op[0],null);
+            					play_file(fileName,null);
             				}
             			}            			
             		}

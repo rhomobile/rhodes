@@ -17,6 +17,7 @@
 #import "LogViewController.h"
 #import "DateTimePickerDelegate.h"
 #import "PickImageDelegate.h"
+#import "SignatureDelegate.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate>
@@ -32,7 +33,8 @@
     LogViewController* logViewController;
     DateTimePickerDelegate* dateTimePickerDelegate;
     PickImageDelegate* pickImageDelegate;
-    
+	SignatureDelegate* signatureDelegate;
+	
     id<RhoMainView,NSObject> mainView;
 }
 

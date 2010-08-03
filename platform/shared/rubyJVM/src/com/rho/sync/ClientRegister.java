@@ -55,23 +55,34 @@ public class ClientRegister extends RhoThread
 		m_NetRequest = RhoClassFactory.createNetRequest();
 		m_nPollInterval = POLL_INTERVAL_SECONDS;
 		
-		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
-			start(epLow);	
+		startUp();
 	}
 	
 	public static ClientRegister getInstance(){ return m_pInstance; }
 	
+	public void startUp() 
+	{	
+		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
+		{
+			start(epLow);	
+	        stopWait();
+	    }
+	}
+	
     public void run() 
     {
     	LOG.INFO("ClientRegister start");    	
-    	while(!m_bStop) 
+    	while(!isStopping()) 
     	{
     		try
     		{
     			if ( SyncThread.getInstance() != null )
     			{
 	    			if ( doRegister(SyncThread.getSyncEngine()) )
-	    				break;
+	    			{
+	    				m_nPollInterval = POLL_INTERVAL_INFINITE;
+	    				//break;
+	    			}
     			}
     			
     		}catch(Exception exc)
@@ -83,7 +94,6 @@ public class ClientRegister extends RhoThread
 			wait(m_nPollInterval);
 		}
         LOG.INFO( "ClientRegister thread shutdown" );
-    	
     }
 
     public String getRegisterBody(String strClientID)throws Exception

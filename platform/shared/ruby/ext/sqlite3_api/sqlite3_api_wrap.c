@@ -109,7 +109,7 @@ static VALUE db_rollback(int argc, VALUE *argv, VALUE self){
 	
 	return INT2NUM(rc);
 }
-/*
+
 static VALUE db_lock(int argc, VALUE *argv, VALUE self){
 	//sqlite3 * db = NULL;
 	void **ppDB = NULL;		
@@ -139,7 +139,6 @@ static VALUE db_unlock(int argc, VALUE *argv, VALUE self){
 	
 	return INT2NUM(rc);
 }
-*/
 
 static VALUE* getColNames(sqlite3_stmt* statement, int nCount)
 {
@@ -343,8 +342,8 @@ void Init_sqlite3_api(void)
 	rb_define_method(mDatabase, "start_transaction", db_start_transaction, -1);	
 	rb_define_method(mDatabase, "commit", db_commit, -1);	
     rb_define_method(mDatabase, "rollback", db_rollback, -1);	
-//    rb_define_method(mDatabase, "lock_db", db_lock, -1);	
-//    rb_define_method(mDatabase, "unlock_db", db_unlock, -1);	
+    rb_define_method(mDatabase, "lock_db", db_lock, -1);	
+    rb_define_method(mDatabase, "unlock_db", db_unlock, -1);	
     rb_define_method(mDatabase, "destroy_tables", db_destroy_tables, -1);	
     rb_define_method(mDatabase, "table_exist?", db_is_table_exist, -1);
     rb_define_method(mDatabase, "is_ui_waitfordb", db_is_ui_waitfordb, -1);

@@ -8,7 +8,7 @@ describe "Xml" do
         doc = REXML::Document.new(file)
 
         events = REXML::XPath.each( doc, "event" )
-        Test_not_equal(events,nil)
+        events.should_not be_nil
         count = 0
         event = nil
         events.each do |e|
@@ -25,7 +25,7 @@ describe "Xml" do
 		ch_count = 0
         childs.each do |ch|
             ch_count += 1
-            Test_equal(ch.elements['title'].text, "Momba")            
+            ch.elements['title'].text.should ==  "Momba"
         end
 
         ch_count.should == 10

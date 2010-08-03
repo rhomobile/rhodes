@@ -61,19 +61,25 @@ module Rhom
                   end
                 end
               end
+
+              def object
+                @vars[:object]                
+              end
               
+              def source_id
+                @vars[:source_id]                
+              end
+
               def to_s
                   @vars.to_s if @vars
               end
               
               def method_missing(name, *args)
                 unless name == Fixnum
-                  varname = name.to_s.gsub(/\=/,"")
-                  setting = (name.to_s =~ /=/)
-                  if setting
-                    @vars[varname.to_sym()] = args[0]  
+                  if name[name.length()-1] == '='
+                    @vars[name.to_s.chop.to_sym()] = args[0]  
                   else
-                    @vars[varname.to_sym()]
+                    @vars[name]
                   end
                 end
               end
@@ -123,6 +129,10 @@ module Rhom
 
                 def get_source_name
                   self.name.to_s
+                end
+
+                def is_sync_source
+                    Rho::RhoConfig.sources[get_source_name]['sync_type'] != 'none'
                 end
               
                 def is_schema_source
@@ -231,7 +241,7 @@ module Rhom
                     nulls_cond = {}
                     if op == 'AND'
                         condition_hash.each do |key,value|
-                            if !value
+                            if value.nil?
                                 nulls_cond[key] = value
                                 condition_hash.delete(key)
                             end
@@ -279,7 +289,7 @@ module Rhom
                                 sql << strLimit if strLimit
                             end
                         else
-                            sql << "SELECT distinct object FROM object_values WHERE \n"
+                            sql << "SELECT distinct( object ) FROM object_values WHERE \n"
                             sql << "source_id=" + srcid_value 
                             sql << strLimit if strLimit
                         end
@@ -303,8 +313,7 @@ module Rhom
                             sql << " AND attrib=?" # + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(key)
                             sql << " AND source_id=?" # + srcid_value
 
-                            attrVal = db.execute_sql(sql, 
-                                obj['object'], key, get_source_id)
+                            attrVal = db.execute_sql(sql, obj['object'], key, get_source_id)
                             #puts 'attrVal: ' + attrVal.inspect  if attrVal
                             if attrVal && attrVal.length>0 && attrVal[0]['value']
                                 bSkip = true
@@ -404,7 +413,7 @@ module Rhom
                     srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
 
                     db = ::Rho::RHO.get_src_db(get_source_name)
-                    db.start_transaction
+                    db.lock_db
                     begin
                         listObjs = []
                         if condition_hash.is_a?(Hash)
@@ -424,18 +433,20 @@ module Rhom
                                 if attribs
                                     nonExistAttrs = attribs.dup
                                     nonExistAttrs.delete(obj['attrib']) if obj['attrib']
-                                    
-                                    nonExistAttrs.each do |attr|
-                                        sql << "\nUNION ALL\n" if sql.length > 0
-                                        sql << "SELECT attrib,value FROM object_values WHERE \n"
-                                        sql << "object=?" #+ obj_value
-                                        sql << " AND attrib=?" #+ ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attr)
-                                        sql << " AND source_id=?" #+ srcid_value 
-                                        
+
+                                    if nonExistAttrs.length > 0
+                                        sql << "SELECT attrib,value FROM object_values WHERE object=?"
                                         values << obj['object']
-                                        values << attr
-                                        values << get_source_id
-                                    end
+                                    
+                                        quests = ""
+                                        nonExistAttrs.each do |attr|
+                                            quests << ',' if quests.length() > 0
+                                            quests << '?'
+                                            values << attr
+                                        end
+
+                                        sql << " AND attrib IN (#{quests})"
+                                    end                                    
                                 else
                                     sql << "SELECT attrib,value FROM object_values WHERE \n"
                                     sql << "object=?"
@@ -445,6 +456,7 @@ module Rhom
                                     values << get_source_id
                                 end
                                 
+                                #puts "get attribs: #{sql}"
                                 listAttrs = sql.length > 0 ? db.execute_sql(sql,values) : []
                                 
                                 new_obj = self.new
@@ -473,7 +485,7 @@ module Rhom
                             end
                         end    
                     ensure
-                      db.commit
+                      db.unlock_db
                     end
                   
                     if order_attr
@@ -583,35 +595,111 @@ module Rhom
                     attribs = select_arr
                     attribs = attribs | condition_hash.keys if condition_hash
                   else
-                    if !is_schema_source()
-                        attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)
-                    else
-                        attribs = '*'
-                    end    
+                    attribs = '*'
                   end
 
                   if attribs and attribs.length > 0
                     sql = ""
-                    
-                    if !is_schema_source()                    
-                        sql << "SELECT * FROM (\n" if condition_hash or condition_str
-                        sql << "SELECT object, \n"
-                        #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
-                        attribs.each do |attrib|
-                          unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
-                            sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
+                    list = []
+                    if !is_schema_source()
+                      if !condition_hash && !condition_str
+                        srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                        values = [] 
+
+                        if args.first.is_a?(String)                      
+                          sql << "SELECT object FROM object_values WHERE object=?"
+                          values << where_cond['object']
+                        else  
+                          if !block_given? && order_attr
+                              if  !args[1][:dont_ignore_missed_attribs]
+                                  sql << "SELECT object FROM object_values WHERE source_id=? "
+                                  sql << " AND attrib=? ORDER BY \"value\" " + order_dir
+                                  values << get_source_id
+                                  values << order_attr
+                              end    
+                          else
+                              #it is more effective to use old find here
+                              if attribs && attribs != '*' && attribs.length() != 0 && !args[1][:dont_ignore_missed_attribs]
+                                  sql << "SELECT object FROM object_values WHERE source_id=? AND attrib=?"
+                                  values << get_source_id
+                                  values << attribs[0]
+                              else 
+                                  sql << "SELECT distinct(object) FROM object_values WHERE source_id=" << srcid_value 
+                              end    
                           end
-                        end 
-                        sql.chomp!
-                        sql.chop!
-                        sql << " FROM object_values ov \n"
-                        sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
-                        sql << "group by object\n"
-                        sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
-                        #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
-                        sql << ") WHERE " + condition_str if condition_str
-                        sql << strLimit if strLimit
-                    else
+                        end
+                        
+                        if sql.length() > 0                          
+                            sql << strLimit if strLimit
+
+                            puts "Database query start" # : #{sql}; #{values}"
+                            db = ::Rho::RHO.get_src_db(get_source_name)
+                            objects = db.execute_sql(sql, values)
+
+                            puts "Database query end" #: #{objects}"
+
+                            objects.each do |object|
+                                object_id = object['object']
+                                sql2 = "SELECT attrib,value FROM object_values WHERE object=?"
+                                values2 = []
+                                values2 << object_id
+                                
+                                if attribs && attribs != '*'    
+                                    quests = ""
+                                    attribs.each do |attr|
+                                        quests << ',' if quests.length() > 0
+                                        quests << '?'
+                                        values2 << attr
+                                    end
+
+                                    sql2 << " AND attrib IN (#{quests})"
+                                end                                    
+                               
+                                item_attribs = db.execute_sql(sql2, values2)
+
+                                new_item = {'object'=>object_id }
+                                item_attribs.each do |item|
+                                   new_item[item['attrib']] = item['value']
+                                end    
+
+                                list << new_item
+                            end    
+                         end
+                      end
+                            
+                      if sql.length() == 0
+                      
+                        if attribs == "*"
+                            attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)                            
+                        end    
+                      
+                        if attribs and attribs.length > 0                      
+                            sql << "SELECT * FROM (\n" if condition_hash or condition_str
+                            sql << "SELECT object, \n"
+                            #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
+                            attribs.each do |attrib|
+                              unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
+                                sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
+                              end
+                            end 
+                            sql.chomp!
+                            sql.chop!
+                            sql << " FROM object_values ov \n"
+                            sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
+                            sql << "group by object\n"
+                            sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
+                            #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                            sql << ") WHERE " + condition_str if condition_str
+                            sql << strLimit if strLimit
+                            
+                            puts "Database query start"
+                            db = ::Rho::RHO.get_src_db(get_source_name)
+                            list = db.execute_sql(sql)
+                            puts "Database query end"
+                        end   
+                      end  
+
+                    else #schema source
                        attribs = attribs.join(',') if attribs.is_a?(Array)
                        
                        sql << "SELECT #{attribs} FROM #{get_schema_table_name}"
@@ -624,13 +712,13 @@ module Rhom
                            
                        sql << " order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
                        sql << strLimit if strLimit
+                       
+                       puts "Database query start" #: #{sql}"
+                       db = ::Rho::RHO.get_src_db(get_source_name)
+                       list = db.execute_sql(sql)
+                       puts "Database query end"
+                       
                     end
-                    
-                    puts "Database query start"
-                    
-                    db = ::Rho::RHO.get_src_db(get_source_name)
-                    list = db.execute_sql(sql)
-                    puts "Database query end"
                     
                     if args.first != :count
                         list.each do |rowhash|
@@ -747,7 +835,7 @@ module Rhom
                         puts "del_objects : #{del_objects}"
                         del_objects.each do |obj|
                           db.delete_from_table(tableName, {'object'=>obj['object']})
-                          db.delete_from_table('changed_values', {'object'=>obj['object']})
+                          db.delete_from_table('changed_values', {'object'=>obj['object']}) if is_sync_source()
                         end
                       else
                         if is_schema_source()
@@ -756,7 +844,7 @@ module Rhom
                             db.delete_from_table(tableName, {"source_id"=>get_source_id})
                         end
                             
-                        db.delete_from_table('changed_values', {"source_id"=>get_source_id})
+                        db.delete_from_table('changed_values', {"source_id"=>get_source_id})  if is_sync_source()
                         #TODO: add delete all update_type
                       end
                       db.commit
@@ -768,6 +856,59 @@ module Rhom
                       raise    
                   end    
                       
+                end
+
+                # saves the current object to the database as a create type
+                def create(obj)  		      
+                    new_obj = self.new(obj)
+                    
+                    update_type = 'create'
+                    nSrcID = get_source_id
+                    obj = new_obj.object
+                    src_name = get_source_name
+                    db_partition = Rho::RhoConfig.sources[src_name]['partition'].to_s
+                    isSchemaSrc = is_schema_source()
+                    tableName = isSchemaSrc ? get_schema_table_name() : 'object_values'
+                    db = ::Rho::RHO.get_src_db(src_name)
+                    begin
+                        db.start_transaction
+
+                        if isSchemaSrc
+                            db.insert_into_table(tableName, new_obj.vars, {:source_id=>true})
+                        end
+                        
+                        if is_sync_source() || !isSchemaSrc
+                            new_obj.vars.each do |key_a,value|
+                                key = key_a.to_s
+                                next if ::Rhom::RhomObject.method_name_reserved?(key)
+
+                                val = value.to_s #self.inst_strip_braces(value.to_s)
+                                
+                                # add rows excluding object, source_id and update_type
+                                fields = {"source_id"=>nSrcID,
+                                          "object"=>obj,
+                                          "attrib"=>key,
+                                          "value"=>val,
+                                          "update_type"=>update_type}
+                                fields = new_obj.is_blob_attrib(db_partition, nSrcID, key) ? fields.merge!({"attrib_type" => "blob.file"}) : fields
+                                
+                                db.insert_into_table('changed_values', fields) if is_sync_source()
+                                fields.delete("update_type")
+                                fields.delete("attrib_type")
+                                
+                                db.insert_into_table(tableName, fields) if !isSchemaSrc
+                            end
+                        end
+                        
+                        db.commit
+                    rescue Exception => e
+                        puts 'create Exception: ' + e.inspect
+                        db.rollback
+                        
+                        raise    
+                    end
+                    
+                    new_obj    
                 end
                     
                 private
@@ -784,6 +925,7 @@ module Rhom
                     nil
                   end
                 end
+                
               end #class methods
 	          
 	          # if app server does not support oo in inserts. 
@@ -829,14 +971,14 @@ module Rhom
                       # first delete the record from viewable list
                       db.delete_from_table(tableName, {"object"=>obj})
                       
-                      resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) 
+                      resUpdateType =  is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) : nil 
                       if resUpdateType && resUpdateType.length > 0 
                         update_type = nil                              
                       end
                       
-                      db.delete_from_table('changed_values', {"object"=>obj, "sent"=>0})
+                      db.delete_from_table('changed_values', {"object"=>obj, "sent"=>0}) if is_inst_sync_source()
                       
-                      if update_type and attrsList and attrsList.length() > 0
+                      if is_inst_sync_source() && update_type and attrsList and attrsList.length() > 0
                         # now add delete operation
                         if is_inst_schema_source()
                             attrsList[0].each do |attrName, attrValue|
@@ -874,7 +1016,7 @@ module Rhom
                 SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
 		        #return attrib_name == "image_uri"
 		      end
-		      
+
               # saves the current object to the database as a create type
               def save
                 # iterate over each instance variable and insert create row to table
@@ -886,22 +1028,25 @@ module Rhom
 				isSchemaSrc = is_inst_schema_source()
                 begin
                     db.start_transaction
-                    
-                    if isSchemaSrc
-                        result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? LIMIT 1 OFFSET 0",obj)
-                    else
-                        result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
-                    end
 
-                    if result && result.length > 0                     
-                        resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
-                        if resUpdateType && resUpdateType.length > 0 
-                            update_type = resUpdateType[0]['update_type'] 
+			        update_type = ''
+                    if is_inst_sync_source()
+                        if isSchemaSrc
+                            result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? LIMIT 1 OFFSET 0",obj)
                         else
-        				    update_type = 'update'
-        				end    
-    				else
-    				    update_type = 'create'
+                            result = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
+                        end
+
+                        if result && result.length > 0                     
+                            resUpdateType = is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) : nil
+                            if resUpdateType && resUpdateType.length > 0 
+                                update_type = resUpdateType[0]['update_type'] 
+                            else
+        				        update_type = 'update'
+        				    end    
+    				    else
+    				        update_type = 'create'
+    				    end
     				end
     				
                     self.vars.each do |key_a,value|
@@ -937,13 +1082,16 @@ module Rhom
                             
                             if isModified
                             
-                                resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
-                                if resUpdateType && resUpdateType.length > 0 
-                                    fields['update_type'] = resUpdateType[0]['update_type'] 
-                                    db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
-                                end
+                                if is_inst_sync_source()
+                                    resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, 'sent'=>0}) 
+                                    if resUpdateType && resUpdateType.length > 0 
+                                        fields['update_type'] = resUpdateType[0]['update_type'] 
+                                        db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>key, "source_id"=>nSrcID, "sent"=>0})
+                                    end
 
-                                db.insert_into_table('changed_values', fields)
+                                    db.insert_into_table('changed_values', fields)
+                                end
+                                    
                                 if isSchemaSrc
                                     db.update_into_table(tableName, {key=>val}, {"object"=>obj})
                                 else
@@ -951,7 +1099,7 @@ module Rhom
                                 end    
                             end    
                         else
-                            db.insert_into_table('changed_values', fields)
+                            db.insert_into_table('changed_values', fields) if is_inst_sync_source()
                             fields.delete("update_type")
                             fields.delete("attrib_type")
                             
@@ -1006,7 +1154,7 @@ module Rhom
                       # then we procede with update
                       if isModified
                           # only one update at a time
-                          resUpdateType = db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) 
+                          resUpdateType = is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0}) : nil 
                           if resUpdateType && resUpdateType.length > 0 
                               update_type = resUpdateType[0]['update_type'] 
                               db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
@@ -1033,13 +1181,15 @@ module Rhom
                               end    
                             
                           end
-                            
-                          if result && result.length > 0 
-                            db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
-                          else
-                            db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
-                          end    
                           
+                          if is_inst_sync_source()  
+                              if result && result.length > 0 
+                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                              else
+                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val, "update_type"=>update_type})
+                              end    
+                          end
+                                                      
                           # update in-memory object
                           self.vars[attrib.to_sym()] = new_val
                       end
@@ -1063,6 +1213,10 @@ module Rhom
 	
               def get_inst_source_id
                 Rho::RhoConfig.sources[get_inst_source_name]['source_id'].to_s
+              end
+          
+              def is_inst_sync_source
+                  Rho::RhoConfig.sources[get_inst_source_name]['sync_type'] != 'none'
               end
           
               def is_inst_schema_source

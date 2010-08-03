@@ -1,4 +1,3 @@
-
 class MSpecScript
   # Returns the config object. Maintained at the class
   # level to easily enable simple config files. See the
@@ -29,7 +28,8 @@ class RhoSpecModule
     end
     
     def run_spec
-        puts "TEST: #{@spec_name}"
+        setting_str = $spec_settings.length()>0  ? ";#{$spec_settings}" : ""
+        puts "TEST: #{@spec_name}" + setting_str
 
         @env.instance_eval(&@spec_body) if @spec_body
     end
@@ -89,7 +89,11 @@ class MSpec
         $is_network_available = @is_network_available
         
         @@spec_files.each do |spec_file|
-            run_spec(spec_file)
+            if spec_file.is_a?(Array)
+                run_spec(spec_file[0], spec_file[1])
+            else
+                run_spec(spec_file, [{}])
+            end    
         end
         
         @code = @exc_count > 0 ? 1 : 0
@@ -108,44 +112,51 @@ class MSpec
         rescue Exception => e
             @exc_count += 1
             ntrace_index = 2 #MSpec.current && MSpec.current.tests.size() > 0 ? 2 : 1
-            @errorMessages += "<br/>FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
+            @errorMessages += "<br/>FAIL: '#{spec_name}:#{test_name}; #{$spec_settings}' failed: Error: #{e}\n" + 
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
-            puts "FAIL: '#{spec_name}:#{test_name}' failed: Error: #{e}\n" + 
+            puts "FAIL: '#{spec_name}:#{test_name}; #{$spec_settings}' failed: Error: #{e}\n" + 
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
-            #e.backtrace.each do |item|
-            #    puts item
-            #end
+            e.backtrace.each do |item|
+                puts item
+            end
+        end
+    end
+
+    def run_specs
+        @@spec_modules.each do |spec_module|
+            spec_module.run_spec
+            spec_module.run_test(spec_module.before[:all])
+            
+            spec_module.tests.each do |test_name, body|
+                spec_module.run_test(spec_module.before[:each])
+            
+                @@spec_name  = spec_module.spec_name
+                run_test(@@spec_name, test_name){spec_module.run_test(body)}
+                
+                spec_module.run_test(spec_module.after[:each])
+                
+            end
+
+            spec_module.run_test(spec_module.after[:all])
+            
+            @@spec_index += 1
         end
     end
             
-    def run_spec(spec_file)
-        spec_name = ""
+    def run_spec(spec_file, spec_settings)
+        @@spec_name = ""
         begin
             @@spec_modules = []
-            @@spec_index = 0
-            require spec_file #'Spec/' + spec_name.downcase()+'_spec'
-            
-            @@spec_modules.each do |spec_module|
-                spec_module.run_spec
-                spec_module.run_test(spec_module.before[:all])
-                
-                spec_module.tests.each do |test_name, body|
-                    spec_module.run_test(spec_module.before[:each])
-                
-                    spec_name  = spec_module.spec_name
-                    run_test(spec_name, test_name){spec_module.run_test(body)}
-                    
-                    spec_module.run_test(spec_module.after[:each])
-                    
-                end
+            require spec_file
 
-                spec_module.run_test(spec_module.after[:all])
-                
-                @@spec_index += 1
-            end
+            spec_settings.each do |settings|
+                $spec_settings = settings
+                @@spec_index = 0
+                run_specs 
+            end    
         rescue Exception => e
             @exc_count += 1
-            puts "Test '#{spec_name}' FAIL: Error: #{e}"
+            puts "Test '#{@@spec_name}; #{$spec_settings}' FAIL: Error: #{e}"
             e.backtrace.each do |item|
                 puts item
             end
@@ -335,12 +346,3 @@ class Object
   end
   
 end
-
-def Test_equal(p1,p2)
-    raise "Expected '#{p1.inspect.to_s}' equal to '#{p2.inspect.to_s}'" if p1 != p2
-end
-
-def Test_not_equal(p1,p2)
-    raise "Expected '#{p1.inspect.to_s}' not equal to '#{p2.inspect.to_s}'" if p1 == p2
-end
-

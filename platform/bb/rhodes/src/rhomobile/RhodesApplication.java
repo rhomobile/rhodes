@@ -278,7 +278,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     private boolean m_bOpenLink = false;
     private String m_strGetLink, m_strEmailMenu, m_strCallMenu;
     boolean openLink(){
-    	LOG.INFO("openLink");
+    	LOG.TRACE("openLink");
     	try{
     		m_bOpenLink = true;
     		//TODO: catch by ID?    		

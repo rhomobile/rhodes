@@ -8,6 +8,7 @@ import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import j2me.lang.StringMe;
+import com.rho.RhoConf;
 
 public class RhoSupport {
 
@@ -165,8 +166,11 @@ public class RhoSupport {
     	return m_strAppName;
 	}
 	
-    public static String createMainClassName(String required_file) {
-
+    public static String createMainClassName(String required_file) 
+    {
+    	if ( required_file.startsWith("/lib") )
+    		required_file = required_file.substring(4);
+    	
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {
             required_file = required_file.substring(0, required_file.length() - 3);
@@ -259,7 +263,12 @@ public class RhoSupport {
         }
         
         if ( strValue == null || strValue.length() == 0 )
-        	return RubyConstant.QNIL;
+        {
+        	if ( RhoConf.getInstance().isExist(name) )
+        		strValue = RhoConf.getInstance().getString(name);
+        	else
+        		return RubyConstant.QNIL;
+        }        	
         
         return ObjectFactory.createString(strValue);
     }
