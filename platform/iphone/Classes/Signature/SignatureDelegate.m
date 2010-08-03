@@ -52,6 +52,7 @@
         filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
         fullname = [folder stringByAppendingPathComponent:filename];
         pngImage = UIImagePNGRepresentation(theImage);
+    }
     else {
         filename = [NSString stringWithFormat:@"Image_%@.jpg", now]; 	
         fullname = [folder stringByAppendingPathComponent:filename];
