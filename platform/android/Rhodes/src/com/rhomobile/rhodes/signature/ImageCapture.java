@@ -56,6 +56,7 @@ public class ImageCapture extends Activity implements OnClickListener
 	private static final String TAG = "ImageCapture";
 	
 	private String callbackUrl;
+	private String imageFormat;
 	private Camera camera;
 	private boolean isPreviewRunning = false;
 	private SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
@@ -69,7 +70,7 @@ public class ImageCapture extends Activity implements OnClickListener
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		Logger.D(TAG, "$$$$$$$$$$$$$$$$$$$$$$$$  onCreate");
+		//Logger.D(TAG, "$$$$$$$$$$$$$$$$$$$$$$$$  onCreate");
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
@@ -77,6 +78,7 @@ public class ImageCapture extends Activity implements OnClickListener
 		
 		Bundle extras = getIntent().getExtras();
 		callbackUrl = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "callback");
+		imageFormat = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "format");
 		
 		surfaceView = (SignatureView) findViewById(AndroidR.id.signature_view);
 		surfaceHolder = surfaceView.getHolder();
@@ -140,30 +142,38 @@ public class ImageCapture extends Activity implements OnClickListener
 	
 	private void takeSignature() {
 		try {
+			String file_ext = "jpg";
+			String file_type = "image/jpeg";
+			Bitmap.CompressFormat compress_format = Bitmap.CompressFormat.JPEG;
+			if (imageFormat.equals("png")) {
+				file_ext = "png";
+				file_type = "image/png";
+				compress_format = Bitmap.CompressFormat.PNG;
+			}
 			String filename = "Image_" + timeStampFormat.format(new Date());
 			ContentValues values = new ContentValues(5);
 			values.put(Media.TITLE, filename);
 			values.put(Media.DISPLAY_NAME, filename);
 			values.put(Media.DATE_TAKEN, new Date().getTime());
-			values.put(Media.MIME_TYPE, "image/png");
+			values.put(Media.MIME_TYPE, file_type);
 			values.put(Media.DESCRIPTION, "Handwrited Signature");
 	
 			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
 			String dir = Rhodes.getBlobPath();
 			
-			OutputStream osCommon = getContentResolver().openOutputStream(uri);
+			//OutputStream osCommon = getContentResolver().openOutputStream(uri);
 	
 			
-			String filePath = dir + "/" + filename + ".png";
+			String filePath = dir + "/" + filename + "." + file_ext;
 			OutputStream osOwn = new FileOutputStream(filePath);
 			
 			Bitmap bitmap = surfaceView.makeBitmap();
 	
-			bitmap.compress(Bitmap.CompressFormat.PNG, 100, osCommon);		
-			osCommon.flush();
-			osCommon.close();
+			//bitmap.compress(compress_format, 100, osCommon);		
+			//osCommon.flush();
+			//osCommon.close();
 		
-			bitmap.compress(Bitmap.CompressFormat.PNG, 100, osOwn);		
+			bitmap.compress(compress_format, 100, osOwn);		
 			osOwn.flush();
 			osOwn.close();
 			
