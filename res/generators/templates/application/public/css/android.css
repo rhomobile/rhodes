@@ -6,10 +6,7 @@ body {
 
 h1, h2 {
     font-size: 1em;
-    /*margin: 10px 20px 6px;*/
 }
-
-/* @group Toolbar */
 
 .toolbar {
   	height: 60px;
@@ -22,71 +19,18 @@ h1, h2 {
 
 .pageTitle > h1 {
     display: none;
-    position: absolute;
-    overflow: hidden;
-    left: 50%;
-    top: 20px;
-    line-height: 25px;
-    margin: 1px 0 0 -75px;
-    height: 25px;
-    font-size: 20px;
-    width: 150px;
-    text-shadow: 1px 1px 1px #000;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: white;
-}
-
-body.landscape .pageTitle > h1 {
-    margin-left: -125px;
-    width: 250px;
 }
 
 .button, .back, .cancel, .add {
-    overflow: hidden;
-    margin: 0;
     padding: 0 10px;
-    width: auto;
-    height: 40px;
-    line-height: 35px;
+    line-height: 40px;
     color: black;
-    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0;
-    text-overflow: ellipsis;
     text-align: center;
-    text-decoration: none;
     white-space: nowrap;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
     -webkit-border-radius: 5px;
     font-size: .9em;
-    border: 1px solid white;
     display: table-cell;
-}
-
-.add {
-    font-size: 24px;
-    line-height: 24px;
-    font-weight: bold;
-}
-
-.whiteButton,
-.grayButton {
-    display: block;
-    border-width: 0 12px;
-    padding: 10px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-    text-decoration: inherit;
-    color: inherit;
-}
-
-/* @end */
-
-/* @group Lists */
-
-h1 + ul, h2 + ul, h3 + ul, h4 + ul, h5 + ul, h6 + ul {
-    margin-top: 0;
 }
 
 ul {
@@ -102,18 +46,9 @@ ul li {
 
 li:first-child, li:first-child a {
     border-top: 0;
-    /*-webkit-border-top-left-radius: 8px;*/
-    /*-webkit-border-top-right-radius: 8px;*/
 }
 
-li:last-child, li:last-child a {
-    /*-webkit-border-bottom-left-radius: 8px;*/
-    /*-webkit-border-bottom-right-radius: 8px;*/
-}
-
-/* universal links on list */
-
-ul li a, li.img a + a {
+ul li a {
     background-image: url("../images/android/disclosure.png");
     background-position: right center;
     background-repeat: no-repeat;
@@ -128,88 +63,11 @@ ul li a, li.img a + a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-ul li a.button {
-    background-color: #194fdb;
-    color: #fff;
-}
-
-ul li.img a + a {
-    margin: -10px 10px -20px -5px;
-    font-size: 17px;
-    font-weight: bold;
-}
-
-ul li.img a + a + a {
-    font-size: 14px;
-    font-weight: normal;
-    margin-left: -10px;
-    margin-bottom: -10px;
-    margin-top: 0;
-}
-
-ul li.img a + small + a {
-    margin-left: -5px;
-}
-
-ul li.img a + small + a + a {
-    margin-left: -10px;
-    margin-top: -20px;
-    margin-bottom: -10px;
-    font-size: 14px;
-    font-weight: normal;
-}
-
-ul li.img a + small + a + a + a {
-    margin-left: 0px !important;
-    margin-bottom: 0;
-}
-
-ul li a + a {
-    color: white;
-    font: 14px Helvetica;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    display: block;
-    margin: 0;
-    padding: 0;
-}
-
-ul li a + a + a, ul li.img a + a + a + a, ul li.img a + small + a + a + a {
-    color: #666;
-    font: 13px Helvetica;
-    margin: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    display: block;
-    padding: 0;
-}
-
-
-/* @group Forms */
-
-ul.form li {
-    padding: 7px 10px;
-}
-
-ul.form li.error {
-    border: 2px solid red;
-}
-
-ul.form li.error + li.error {
-    border-top: 0;
-}
-
-ul.form li:hover {
-    background: #fff;
-}
-
 ul li input[type="text"], ul li input[type="password"], ul li textarea, ul li select {
-    color: #777;
-    background: #fff;
+    color: black;
+    background: white;
     border: 0;
-    font: normal 17px Helvetica;
+    font-size: 17px;
     padding: 0;
     display: inline-block;
     margin-left: 0px;
@@ -245,71 +103,21 @@ ul li input[type="checkbox"]:after, ul li input[type="radio"]:after {
     margin: -12px 0 0 17px;
 }
 
-/* @end */
-
-
-/* @end */
-
-/* @group Mini Label */
-
-ul li small {
-    color: #369;
-    font: 17px Helvetica;
-    text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    display: block;
-    width: 23%;
-    float: right;
-    padding: 3px 0px;
-}
-
-ul li.arrow small {
-    padding: 0 15px;
-}
-
-ul li small.counter {
-    font-size: 17px !important;
-    line-height: 13px !important;
-    font-weight: bold;
-    background: rgb(154, 159, 170);
-    color: #fff;
-    -webkit-border-radius: 11px;
-    padding: 4px 10px 5px 10px;
-    display: inline !important;
-    width: auto;
-    margin-top: -22px;
-}
-
-ul li.arrow small.counter {
-    margin-right: 15px;
-}
-
-.info {
-    background: #dce1eb;
-    font-size: 12px;
-    line-height: 16px;
-    text-align: center;
-    text-shadow: rgba(255, 255, 255, .8) 0 1px 0;
-    color: rgb(76, 86, 108);
-    padding: 15px;
-    border-top: 1px solid rgba(76, 86, 108, .3);
-    font-weight: bold;
-}
-
-/* Rho */
 .content .standardButton {
-    -webkit-appearance: none;
+    -webkit-appearance: push-button;
     -webkit-border-radius: 8px;
-    background: white;
-    color: #436395;
-    font-size: 15px;
-    font-weight: bold;
-    width: 100%;
-    height: 40px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+    line-height: 45px;
+    height: 45px;
+    width: 284px;
     border: 1px solid black;
-    margin-top: 10px;
+    margin: 10px;
+    font-size: 17px;
+}
+
+.content form {
+    padding: 5px 0 75px 0;
+    border: none;
 }
 
 .content form input {
@@ -368,12 +176,4 @@ li > .label {
 li > .value {
     float: right;
     width: 45%;
-}
-
-.content form {
-    padding: 5px 0 75px 0;
-    border: none;
-    width: 300px;
-    margin: 0 auto;
-    font-size: medium;
 }
