@@ -107,6 +107,7 @@ public class Rhodes extends Activity {
 	
 	private static int screenWidth;
 	private static int screenHeight;
+	private static int screenOrientation;
 	
 	private static float screenPpiX;
 	private static float screenPpiY;
@@ -443,6 +444,7 @@ public class Rhodes extends Activity {
 		Display d = wm.getDefaultDisplay();
 		screenHeight = d.getHeight();
 		screenWidth = d.getWidth();
+		screenOrientation = d.getOrientation();
 		
 		DisplayMetrics metrics = new DisplayMetrics();
 		d.getMetrics(metrics);
@@ -519,7 +521,21 @@ public class Rhodes extends Activity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		Logger.T(TAG, "+++ onConfigurationChanged");
 		super.onConfigurationChanged(newConfig);
+		// check for orientarion changed
+		// Get screen width/height
+		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+		Display d = wm.getDefaultDisplay();
+		screenHeight = d.getHeight();
+		screenWidth = d.getWidth();
+		int newScreenOrientation = d.getOrientation();
+		if (newScreenOrientation != screenOrientation) {
+			onScreenOrientationChanged(screenWidth, screenHeight, 90);
+			screenOrientation = newScreenOrientation; 				
+		}
+ 		
 	}
+
+	public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
