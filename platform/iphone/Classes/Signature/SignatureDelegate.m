@@ -132,7 +132,10 @@
 void rho_signature_take_signature(char* callback_url, char* image_format) {
     NSString *url = [NSString stringWithUTF8String:callback_url];
     NSString *iformat = [NSString stringWithUTF8String:image_format];
+	Rhodes* rho = [Rhodes sharedInstance];
+	SignatureDelegate* deleg = rho.signatureDelegate; 
+	[deleg setImageFormat:iformat];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
-                                              withObject:url withObject:iformat waitUntilDone:NO];
+                                              withObject:url waitUntilDone:NO];
 }
 
