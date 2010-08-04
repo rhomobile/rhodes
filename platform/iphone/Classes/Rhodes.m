@@ -113,6 +113,7 @@ static Rhodes *instance = NULL;
 }
 
 - (void)openMapLocation:(NSString*)query {
+	[self hideSplash];
     NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
     [[UIApplication sharedApplication] openURL:url];
 }
@@ -168,6 +169,7 @@ static Rhodes *instance = NULL;
 }
 
 - (void)chooseDateTime:(DateTime*)dateTime {
+	[self hideSplash];
     dateTimePickerDelegate.dateTime = dateTime;
     [dateTimePickerDelegate setPostUrl:dateTime.url];
     //[self normalizeUrl:dateTime.url]];
@@ -181,6 +183,7 @@ static Rhodes *instance = NULL;
 -(BOOL)startCameraPicker:(PickImageDelegate*)delegateObject 
                                 sourceType:(UIImagePickerControllerSourceType)type
 {
+	[self hideSplash];
 #ifndef __IPHONE_3_0
     if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
         (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
@@ -242,15 +245,19 @@ static Rhodes *instance = NULL;
     return window;
 }
 
-- (void)setMainView:(id<RhoMainView,NSObject>)view {
-    if (mainView == view)
-        return;
-    
+- (void)hideSplash {
     if (splashViewController) {
         [splashViewController hideSplash];
         [splashViewController release];
         splashViewController = nil;
     }
+}
+
+- (void)setMainView:(id<RhoMainView,NSObject>)view {
+    if (mainView == view)
+        return;
+		
+	[self hideSplash];
     
     [mainView.view removeFromSuperview];
     [mainView release];
@@ -278,6 +285,8 @@ static Rhodes *instance = NULL;
         NSError *err;
         NSString *data = [NSString stringWithContentsOfFile:htmPath encoding:NSUTF8StringEncoding error:&err];
         [mainView loadHTMLString:data];
+		rho_splash_screen_start();
+
     }
 }
 
@@ -307,12 +316,12 @@ static Rhodes *instance = NULL;
  	mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	mainView.view.autoresizesSubviews = YES;
 	
-	[window addSubview:mainView.view];
-	
     [window makeKeyAndVisible];
 
-   [self showLoadingPage];
-    
+	[window addSubview:mainView.view];
+
+    [self showLoadingPage];
+	
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     // Init controllers

@@ -22,6 +22,7 @@
     // perform actual url loading from time to time
     int index;
     [value getValue:&index];
+    [[Rhodes sharedInstance] hideSplash];
     [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
 }
 @end
