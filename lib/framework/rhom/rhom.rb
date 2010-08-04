@@ -40,6 +40,26 @@ module Rhom
         c_id = ::Rho::RHO.get_user_db().select_from_table('client_info','client_id')[0]
         c_id.nil? ? nil : c_id['client_id']
       end
+
+      def database_client_reset
+        SyncEngine.stop_sync
+        
+        params = ["", "", 0]
+        ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET client_id=?, token=?, token_sent=?", params)
+        
+        if ( Rho::RhoConfig.exists?('bulksync_state') )
+            Rho::RhoConfig.bulksync_state='0'
+        end    
+        ::Rho::RHO.get_user_db().execute_sql("UPDATE sources SET token=0")
+        
+        ::Rho::RHO.get_db_partitions().each_value do |db|
+            db.destroy_tables(
+             :exclude => (['sources','client_info']) )
+        end
+      
+        hash_migrate = {}
+        ::Rho::RHO.init_schema_sources(hash_migrate) 
+      end
       
       def database_full_reset(reset_client_info=false)
         SyncEngine.stop_sync
@@ -68,7 +88,7 @@ module Rhom
         database_full_reset(true)
         SyncEngine.logout
       end
-      
+
         def search(args)
           searchParams = ""
           

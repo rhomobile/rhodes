@@ -77,7 +77,7 @@ class SyncSource
     boolean m_bGetAtLeastOnePage = false;
     int m_nErrCode = RhoRuby.ERR_NONE;
     String m_strError = "";
-    public boolean m_bIsSearch = false;
+    boolean m_bIsSearch = false;
     
 	//String m_strPushBody = "";
     Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
@@ -139,7 +139,7 @@ class SyncSource
         m_bGetAtLeastOnePage = false;
 
         m_nErrCode = RhoRuby.ERR_NONE;
-        m_bIsSearch = false;
+        m_bIsSearch = m_syncEngine.getState() == SyncEngine.esSearch;
         m_bSchemaSource = db.isTableExist(m_strName);
     }
 	
@@ -158,7 +158,7 @@ class SyncSource
         m_bGetAtLeastOnePage = false;
 
         m_nErrCode = RhoRuby.ERR_NONE;
-        m_bIsSearch = false;
+        m_bIsSearch = m_syncEngine.getState() == SyncEngine.esSearch;
 
         IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
         if ( !res.isEnd() )
@@ -203,7 +203,7 @@ class SyncSource
     	getNotify().fireSyncNotification(null, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 		
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
-	    m_bIsSearch = false;
+	    //m_bIsSearch = false;
 	    
 	    try{
 	        if ( isEmptyToken() )

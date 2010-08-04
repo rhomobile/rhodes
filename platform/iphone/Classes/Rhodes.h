@@ -61,6 +61,8 @@
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
 - (void)playStop;
 
+- (void)hideSplash;
+
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url;
 - (NSString*)cookie:(NSString*)url;
 
