@@ -42,6 +42,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     setState(eState);
     m_bStopByUser = false;
     m_nErrCode = RHO_ERR_NONE;
+    m_strError = "";
 
     loadAllSources();
 
@@ -63,15 +64,15 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     if ( oSrcID != null )
     	src = findSource(*oSrcID);
     
-	if ( src == null && m_sources.size() > 0 )
-    	src = m_sources.elementAt(getStartSource());
-	
 	if ( src != null )
 	{
         src->m_nErrCode = m_nErrCode;
+        src->m_strError = m_strError;
         getNotify().fireSyncNotification(src, true, src->m_nErrCode, "");
     }else
-        getNotify().fireSyncNotification(null, true, m_nErrCode, "");
+    {
+        getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
+    }
 
     stopSync();
 }
@@ -131,7 +132,6 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         }
     }
 
-    int nErrCode = 0;
     while( isContinueSync() )
     {
         int nSearchCount = 0;
@@ -159,7 +159,8 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         if ( !resp.isOK() )
         {
             stopSync();
-            nErrCode = RhoRuby.getErrorFromResponse(resp);
+            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+            m_strError = resp.getCharData();
             continue;
         }
 
@@ -183,7 +184,8 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
                 LOG(ERROR) + "Sync server send search data with incompatible version. Client version: " + convertToStringA(getProtocol().getVersion()) +
                     "; Server response version: " + convertToStringA(nVersion);
                 stopSync();
-                nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
+                m_nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
+                m_strError = resp.getCharData();
                 continue;
             }
 
@@ -191,7 +193,8 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             {
                 LOG(ERROR) + "Sync server send search data without source name.";
                 stopSync();
-                nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
+                m_nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
+                m_strError = resp.getCharData();
                 continue;
             }
 
@@ -201,12 +204,12 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             {
                 LOG(ERROR) + "Sync server send search data for unknown source name:" + strSrcName;
                 stopSync();
-                nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
+                m_nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
+                m_strError = resp.getCharData();
                 continue;
             }
 
             oSrcArr.reset(0);
-            pSrc->m_bIsSearch = true;
             pSrc->setProgressStep(nProgressStep);
             pSrc->processServerResponse_ver3(oSrcArr);
 
@@ -217,20 +220,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             break;
     }  
 
-    if ( isContinueSync() )
-    {
-        CSyncSource& src = *m_sources.elementAt(getStartSource());
-        src.m_bIsSearch = true;
-
-    	getNotify().fireSyncNotification(&src, true, RHO_ERR_NONE, RhoRuby.getMessageText("sync_completed"));
-    }
-    else if ( nErrCode != 0 )
-    {
-        CSyncSource& src = *m_sources.elementAt(getStartSource());
-        src.m_nErrCode = nErrCode;
-        src.m_bIsSearch = true;
-        getNotify().fireSyncNotification(&src, true, src.m_nErrCode, "");
-    }
+    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
 
     //update db info
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
@@ -422,7 +412,10 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
         //"}}]}"); 
 
     if ( !resp.isOK() )
+    {
         m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+        m_strError = resp.getCharData();
+    }
     /*else
     {
         processServerSources(resp.getCharData());
@@ -466,6 +459,8 @@ String CSyncEngine::requestClientIDByNet()
     }else
     {
         m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+        m_strError = resp.getCharData();
+
         if ( m_nErrCode == RHO_ERR_NONE )
             m_nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
     }
@@ -724,7 +719,7 @@ void CSyncEngine::logout()
     getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";
 
-    loadAllSources();
+    //loadAllSources();
 }
 	
 void CSyncEngine::setSyncServer(char* syncserver)
