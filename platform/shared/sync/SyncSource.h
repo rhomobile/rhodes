@@ -55,11 +55,11 @@ class CSyncSource
     Hashtable<String,String> m_hashAssociations;
     VectorPtr<net::CMultipartItem*> m_arMultipartItems;
     Vector<String>                  m_arBlobAttrs;
+    boolean m_bIsSearch;
 
 public:
     int m_nErrCode;
     String m_strError;
-    boolean m_bIsSearch;
 
 public:
     CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );
