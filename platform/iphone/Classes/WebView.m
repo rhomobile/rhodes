@@ -28,6 +28,7 @@
     id mainView = [[Rhodes sharedInstance] mainView];
     if (index == -1)
         index = [mainView activeTab];
+	[[Rhodes sharedInstance] hideSplash];
     [mainView navigateRedirect:url tab:index];
 }
 @end
