@@ -720,8 +720,7 @@
             goBack: goBack,
             goTo: goTo,
             addAnimation: addAnimation,
-            submitForm: submitForm,
-            insertAsyncPage: insertAsyncPage
+            submitForm: submitForm
         }
 
         // Rho: add insertAsyncPage callback for transitions
