@@ -14,10 +14,41 @@ namespace net
 class CURLNetRequest : public INetRequest
 {
     DEFINE_LOGCLASS;
+    
+    class CURLHolder
+    {
+    public:
+        CURLHolder();
+        ~CURLHolder();
+        
+        CURL *curl() {return m_curl;}
+        
+        curl_slist *set_options(const char *method, const String& strUrl, const String& strBody,
+                                IRhoSession* pSession, Hashtable<String,String>* pHeaders);
+        CURLcode perform();
+        
+        void cancel() {deactivate();}
+        
+        boolean sslVerifyPeer() {return m_sslVerifyPeer;}
+        void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+        
+    private:
+        void activate();
+        void deactivate();
+        
+    private:
+        CURL *m_curl;
+        CURLM *m_curlm;
+        char *errbuf[CURL_ERROR_SIZE];
+        common::CMutex m_lock;
+        int m_active;
+        
+        boolean m_bTraceCalls;
+        long timeout;
+        boolean m_sslVerifyPeer;
+    };
+    
 public:
-    CURLNetRequest();
-    ~CURLNetRequest();
-
     INetResponse *pullData(const String& strUrl, IRhoSession *oSession);
     INetResponse *pushData(const String& strUrl, const String& strBody, IRhoSession *oSession);
     INetResponse *pushFile(const String& strUrl, const String& strFileName, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
@@ -27,27 +58,20 @@ public:
     INetResponse *pullCookies(const String& strUrl, const String& strBody, IRhoSession *oSession);
     INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
 
-    boolean sslVerifyPeer() {return m_sslVerifyPeer;}
-    void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+    boolean sslVerifyPeer() {return m_curl.sslVerifyPeer();}
+    void sslVerifyPeer(boolean mode) {m_curl.sslVerifyPeer(mode);}
     
     String resolveUrl(const String& strUrl);
 
     void cancel();
-    virtual boolean isCancelled(){return m_bCancel;}
+    virtual boolean isCancelled(){return false;}
 
 private:
-    curl_slist *set_curl_options(const char *method, const String& strUrl, const String& strBody,
-                                 IRhoSession* pSession, Hashtable<String,String>* pHeaders);
-    int getResponseCode(CURLMcode err, const String& strRespBody, IRhoSession* oSession);
+    int getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession);
     String makeCookies();
     INetResponse *makeResponse(String strBody, int nErrorCode);
-    
-    boolean m_bCancel;
-    CURLM *curlm;
-    CURL *curl;
-    char *errbuf[CURL_ERROR_SIZE];
-    boolean m_bTraceCalls;
-    boolean m_sslVerifyPeer;
+
+    CURLHolder m_curl;
 };
 
 } // namespace net
