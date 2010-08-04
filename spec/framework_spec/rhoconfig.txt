@@ -17,6 +17,7 @@ LogCategories = *
 ExcludeLogCategories =
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
+MaxLogFileSize=0
 
 arbitrary_option = 'rhodes rocks!'
 sync_poll_interval=0

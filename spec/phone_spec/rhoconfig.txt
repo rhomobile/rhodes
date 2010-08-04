@@ -29,3 +29,5 @@ sync_poll_interval=0
 activate_at_startup = 1
 logserver = 'http://rhologs.heroku.com'
 logname=phone_spec
+
+bb_sim_use_deviceside=1

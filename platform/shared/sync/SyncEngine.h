@@ -46,6 +46,7 @@ private:
     int m_nSyncPageSize;
 	boolean m_bNoThreaded;
     int m_nErrCode;
+    String m_strError;
 
 public:
     CSyncEngine();
