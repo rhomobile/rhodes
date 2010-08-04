@@ -1,8 +1,7 @@
 body {
-    background: black;
-}
-
-body > * {
+    padding: 0;
+    margin: 0;
+    font-family: Helvetica;
     background: #C5CCD3 url(/public/images/iphone/jqtouch/pinstripes.png);
 }
 
