@@ -205,7 +205,7 @@ public class NetworkAccess implements INetworkAccess {
 			
 			try {
 				String url = strUrl;
-				if (!ignoreSuffix)
+				if ( RhoConf.getInstance().getBool("bb_sim_use_deviceside") || !ignoreSuffix )
 					url += URLsuffix;
                 if (url.startsWith("https"))
 					url += ";EndToEndDesired;RdHTTPS";
