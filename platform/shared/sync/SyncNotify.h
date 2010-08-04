@@ -49,6 +49,7 @@ private:
     HashtablePtr<int,CSyncNotification*> m_mapSyncNotifications;
     common::CAutoPtr<CSyncNotification> m_pSearchNotification;
 	CSyncNotification m_bulkSyncNotify;
+    CSyncNotification m_emptyNotify;
     common::CMutex m_mxSyncNotifications;
 
     net::INetRequest& getNet();
@@ -90,13 +91,19 @@ public:
 
     void enableReporting(boolean bEnable){m_bEnableReporting = bEnable;}
 
+//    const String& getNotifyBody(){ return m_strNotifyBody; }
+//    void cleanNotifyBody(){ m_strNotifyBody = ""; }
+
+    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources, int nCurSrc );
+
 private:
+    CSyncNotification* getSyncNotifyBySrc(CSyncSource& src);
+
     String makeCreateObjectErrorBody(int nSrcID);
     void processSingleObject();
 
     void doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strError);
     void reportSyncStatus(String status, int error, String strDetails);
-    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources );
 
     boolean callNotify(const String& strUrl, const String& strBody );
 

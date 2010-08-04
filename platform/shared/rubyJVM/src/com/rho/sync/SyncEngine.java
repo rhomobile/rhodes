@@ -79,6 +79,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     int m_nSyncPageSize = 2000;
     boolean m_bNoThreaded = false;
     int m_nErrCode = RhoRuby.ERR_NONE;
+    String m_strError = "";
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -123,11 +124,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 		m_NetRequest = RhoClassFactory.createNetRequest();
     }
     
-    void prepareSync(int eState)throws Exception
+    void prepareSync(int eState, SourceID oSrcID)throws Exception
     {
         setState(eState);
         m_bStopByUser = false;
         m_nErrCode = RhoRuby.ERR_NONE;
+        m_strError = "";
         
         loadAllSources();
 
@@ -145,15 +147,20 @@ public class SyncEngine implements NetRequest.IRhoSession
         }else
             m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
         
-    	if ( m_sources.size() > 0 )
-        {		    	
-	    	SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-	    	src.m_nErrCode = m_nErrCode;
-	    	
-	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
+        SyncSource src = null;
+        if ( oSrcID != null )
+        	src = findSource(oSrcID);
+        
+    	if ( src != null )
+    	{
+            src.m_nErrCode = m_nErrCode;
+            src.m_strError = m_strError;
+            getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
         }else
-        	getNotify().fireSyncNotification(null, true, m_nErrCode, "");
-
+        {
+            getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
+        }
+        
         stopSync();
     }
     
@@ -161,7 +168,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     {
 	    try
 	    {
-	        prepareSync(esSyncAllSources);
+	        prepareSync(esSyncAllSources, null);
 	
 	        if ( isContinueSync() )
 	        {
@@ -198,7 +205,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     {
 	    try
 	    {
-		    prepareSync(esSearch);
+		    prepareSync(esSearch, null);
 		    if ( !isContinueSync() )
 		    {
 		        if ( getState() != esExit )
@@ -219,7 +226,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        }
 		    }
 		
-		    int nErrCode = 0;
 		    while( isContinueSync() )
 		    {
 		        int nSearchCount = 0;
@@ -247,7 +253,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        if ( !resp.isOK() )
 		        {
 		            stopSync();
-		            nErrCode = RhoRuby.getErrorFromResponse(resp);
+		            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+		            m_strError = resp.getCharData();
 		            continue;
 		        }
 		
@@ -271,7 +278,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		                LOG.ERROR( "Sync server send search data with incompatible version. Client version: " + getProtocol().getVersion() +
 		                    "; Server response version: " + nVersion );
 		                stopSync();
-		                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_strError = resp.getCharData();
 		                continue;
 		            }
 		
@@ -279,7 +287,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            {
 		                LOG.ERROR( "Sync server send search data without source name." );
 		                stopSync();
-		                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_strError = resp.getCharData();
 		                continue;
 		            }
 		
@@ -289,12 +298,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            {
 		                LOG.ERROR("Sync server send search data for unknown source name:" + strSrcName);
 		                stopSync();
-		                nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_strError = resp.getCharData();
 		                continue;
 		            }
 		
 		            oSrcArr.reset(0);
-		            pSrc.m_bIsSearch = true;
 		            pSrc.setProgressStep(nProgressStep);
 		            pSrc.processServerResponse_ver3(oSrcArr);
 		
@@ -305,20 +314,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            break;
 		    }  
 		
-		    if ( isContinueSync() )
-		    {
-		        SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-		        src.m_bIsSearch = true;
-		
-		    	getNotify().fireSyncNotification(src, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
-		    }
-		    else if ( nErrCode != 0 )
-		    {
-		        SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-		        src.m_nErrCode = nErrCode;
-		        src.m_bIsSearch = true;
-		        getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
-		    }
+		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
 		
 		    //update db info
 		    TimeInterval endTime = TimeInterval.getCurrentTime();
@@ -358,7 +354,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 
 	    try
 	    {
-	        prepareSync(esSyncSource);
+	        prepareSync(esSyncSource, oSrcID);
 	
 	        if ( isContinueSync() )
 	        {
@@ -516,7 +512,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 */	    				
 	    
 	    if ( !resp.isOK() )
+	    {
 	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+	    	m_strError = resp.getCharData();
+	    }
 	    /*else
     	{
     		processServerSources(resp.getCharData());
@@ -549,7 +548,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    {
 	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
 	    	if ( m_nErrCode == RhoRuby.ERR_NONE )
+	    	{
 	    		m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+	    		m_strError = resp.getCharData();
+	    	}
 	    }
 	
 	    return "";
@@ -821,7 +823,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		getUserDB().executeSQL( "UPDATE client_info SET session = NULL");
 	    m_strSession = "";
 	
-	    loadAllSources();
+	    //loadAllSources();
 	}
 	
 	public void setSyncServer(String url)throws Exception

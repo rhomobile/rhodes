@@ -48,7 +48,7 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
     m_nRefreshTime = 0;
 
     m_nErrCode = RhoRuby.ERR_NONE;
-    m_bIsSearch = false;
+    m_bIsSearch = m_syncEngine.getState() == CSyncEngine::esSearch;
     m_bSchemaSource = db.isTableExist(m_strName);
 }
 
@@ -66,7 +66,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nRefreshTime = 0;
 
     m_nErrCode = RhoRuby.ERR_NONE;
-    m_bIsSearch = false;
+    m_bIsSearch = m_syncEngine.getState() == CSyncEngine::esSearch;
 
     DBResult( res, db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID) );
     if ( !res.isEnd() )
@@ -115,7 +115,7 @@ void CSyncSource::sync()
     getNotify().fireSyncNotification(null, false, RhoRuby.ERR_NONE, RhoRuby.getMessageText("syncronizing") + getName() + "...");
 
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
-    m_bIsSearch = false;
+    //m_bIsSearch = false;
 
     if ( isEmptyToken() )
         processToken(1);

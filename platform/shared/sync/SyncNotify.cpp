@@ -212,7 +212,7 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
     CSyncSource& src = *sources.elementAt(nSrc);
 
     if ( getSync().getState() == CSyncEngine::esStop )
-		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources );
+		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources, nSrc );
     else
         fireSyncNotification(&src, true, src.m_nErrCode, "");
 
@@ -294,14 +294,6 @@ void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
 	//LOG(INFO) + "Status: "+status;
 }
 
-void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources )
-{
-    for( int i = 0; i < (int)sources.size(); i++ )
-    {
-    	doFireSyncNotification( sources.elementAt(i), bFinish, nErrCode, strError );
-    }
-}
-
 void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode )
 {
     if ( getSync().getState() == CSyncEngine::esExit )
@@ -358,6 +350,33 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
     	clearBulkSyncNotification();
 }
 
+void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources, int nCurSrc )
+{
+    synchronized(m_mxSyncNotifications)
+    {
+        if ( nCurSrc >= 0 )
+        {
+            CSyncNotification* pSN = getSyncNotifyBySrc(*sources.elementAt(nCurSrc));    
+            if ( pSN != null )
+            {
+                doFireSyncNotification( sources.elementAt(nCurSrc), bFinish, nErrCode, strError );
+                return;
+            }
+        }
+
+        //find any source with notify
+        for( int i = 0; i < (int)sources.size(); i++ )
+        {
+            CSyncNotification* pSN = getSyncNotifyBySrc(*sources.elementAt(i));    
+            if ( pSN != null )
+            {
+    	        doFireSyncNotification( sources.elementAt(i), bFinish, nErrCode, strError );
+                break;
+            }
+        }
+    }
+}
+
 void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
 {
     if ( getSync().getState() == CSyncEngine::esExit )
@@ -377,6 +396,20 @@ void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int 
 	doFireSyncNotification(psrc, bFinish, nErrCode, "" );
 }
 
+CSyncNotify::CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource& src)
+{
+    CSyncNotification* pSN = null;
+	if ( src.isSearch() )
+		pSN = m_pSearchNotification;
+	else
+		pSN = m_mapSyncNotifications.get(src.getID());
+    
+	if ( pSN == null && !getSync().isNoThreadedMode() )
+        return null;
+
+    return pSN != null ? pSN : &m_emptyNotify;
+}
+
 void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strError)
 {
 	if ( psrc == null || getSync().isStoppedByUser() )
@@ -388,13 +421,8 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
     {
         synchronized(m_mxSyncNotifications)
         {
-            CSyncNotification* pSN = 0;
-			if ( src.isSearch() )
-				pSN = m_pSearchNotification;
-			else
-				pSN = m_mapSyncNotifications.get(src.getID());
-            
-			if ( pSN == 0 )
+            CSyncNotification* pSN = getSyncNotifyBySrc(src);
+	        if ( pSN == null )
                 return;
             CSyncNotification& sn = *pSN;
 

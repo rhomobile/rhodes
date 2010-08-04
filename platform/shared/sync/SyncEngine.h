@@ -46,6 +46,7 @@ private:
     int m_nSyncPageSize;
 	boolean m_bNoThreaded;
     int m_nErrCode;
+    String m_strError;
 
 public:
     CSyncEngine();
@@ -83,7 +84,7 @@ public:
 
     void loadAllSources();
     void syncAllSources();
-    void prepareSync(ESyncState eState);
+    void prepareSync(ESyncState eState, const CSourceID* oSrcID);
 
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
     int getStartSource();

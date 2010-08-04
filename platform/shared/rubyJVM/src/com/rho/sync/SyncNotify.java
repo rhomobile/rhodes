@@ -21,6 +21,8 @@ public class SyncNotify {
         String m_strUrl, m_strParams;
         boolean m_bRemoveAfterFire;
         
+        SyncNotification(){m_bRemoveAfterFire = false;}
+        
         SyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire)
         { m_strUrl = strUrl; m_strParams = strParams; m_bRemoveAfterFire = bRemoveAfterFire; }
     };
@@ -40,6 +42,7 @@ public class SyncNotify {
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
     SyncNotification m_pSearchNotification;
     SyncNotification m_bulkSyncNotify;
+    SyncNotification m_emptyNotify = new SyncNotification();
     
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
@@ -254,7 +257,7 @@ public class SyncNotify {
         SyncSource src = (SyncSource)sources.elementAt(nSrc);
 
         if ( getSync().getState() == SyncEngine.esStop )
-    		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources );
+    		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources, nSrc  );
         else
             fireSyncNotification( src, true, src.m_nErrCode, "");
 
@@ -347,14 +350,6 @@ public class SyncNotify {
     	}
     }
 
-	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, Vector/*Ptr<CSyncSource*>&*/ sources )
-	{
-	    for( int i = 0; i < sources.size(); i++ )
-	    {
-	    	doFireSyncNotification( (SyncSource)sources.elementAt(i), bFinish, nErrCode, strError );
-	    }
-	}
-
 	void fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode )
 	{
 		if ( getSync().getState() == SyncEngine.esExit )
@@ -415,7 +410,41 @@ public class SyncNotify {
 		}
     	
 	}
-	
+
+	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, Vector/*Ptr<CSyncSource*>&*/ sources, int nCurSrc )
+	{
+	    synchronized(m_mxSyncNotifications)
+	    {
+	        if ( nCurSrc >= 0 )
+	        {
+	        	SyncSource src = (SyncSource)sources.elementAt(nCurSrc);
+	            SyncNotification pSN = getSyncNotifyBySrc(src);    
+	            if ( pSN != null )
+	            {
+	            	src.m_strError = strError;
+	            	src.m_nErrCode = nErrCode;
+	            	
+	            	fireSyncNotification( src, bFinish, nErrCode, "" );
+	                return;
+	            }
+	        }
+
+	        //find any source with notify
+	        for( int i = 0; i < (int)sources.size(); i++ )
+	        {
+	        	SyncSource src = (SyncSource)sources.elementAt(i);
+	            SyncNotification pSN = getSyncNotifyBySrc(src);    
+	            if ( pSN != null )
+	            {
+	            	src.m_strError = strError;
+	            	src.m_nErrCode = nErrCode;
+	            	fireSyncNotification( src, bFinish, nErrCode, "" );
+	                break;
+	            }
+	        }
+	    }
+	}
+
 	void fireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strMessage )
 	{
 		if ( getSync().getState() == SyncEngine.esExit )
@@ -435,6 +464,20 @@ public class SyncNotify {
 		doFireSyncNotification(src, bFinish, nErrCode, "" );
 	}
 	
+	SyncNotification getSyncNotifyBySrc(SyncSource src)
+	{
+	    SyncNotification pSN = null;
+		if ( src.isSearch() )
+			pSN = m_pSearchNotification;
+		else
+			pSN = (SyncNotification)m_mapSyncNotifications.get(src.getID());
+	    
+		if ( pSN == null )//&& !getSync().isNoThreadedMode() )
+	        return null;
+
+	    return pSN != null ? pSN : m_emptyNotify;
+	}
+	
 	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError )
 	{
 		if ( src == null || getSync().isStoppedByUser() )
@@ -445,12 +488,7 @@ public class SyncNotify {
 		    boolean bRemoveAfterFire = bFinish;
 		    {
 		    	synchronized(m_mxSyncNotifications){
-			        SyncNotification sn = null;
-					if ( src.isSearch() )
-						sn = m_pSearchNotification;
-					else
-						sn = (SyncNotification)m_mapSyncNotifications.get(src.getID());
-			        
+			        SyncNotification sn = getSyncNotifyBySrc(src);
 			        if ( sn == null )
 			            return;
 			
