@@ -24,6 +24,10 @@ module Rho
         ::Rho::RhoError.err_message(code)        
     end
     
+    def unknown_client?(msg)
+       code ==  ERR_REMOTESERVER && msg && msg.downcase == 'unknown client'
+    end
+    
   end # RhoError
 end # Rho
 
