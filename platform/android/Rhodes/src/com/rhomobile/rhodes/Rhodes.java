@@ -149,10 +149,11 @@ public class Rhodes extends Activity {
 	
 	private native void initClassLoader(ClassLoader c);
 	
-	private native void nativeInitPath(String rootPath, String sqliteJournalsPath);
+	private native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
 	
 	private void initRootPath() {
-		String dataDir = getAppInfo().dataDir;
+		ApplicationInfo appInfo = getAppInfo();
+		String dataDir = appInfo.dataDir;
 		
 		rootPath = dataDir + "/rhodata/";
 		Log.d(TAG, "Root path: " + rootPath);
@@ -167,7 +168,9 @@ public class Rhodes extends Activity {
 		f = new File(sqliteJournalsPath);
 		f.mkdirs();
 		
-		nativeInitPath(rootPath, sqliteJournalsPath);
+		String apkPath = appInfo.sourceDir;
+		
+		nativeInitPath(rootPath, sqliteJournalsPath, apkPath);
 	}
 	
 	public String getRootPath() {
