@@ -9,6 +9,7 @@ JNIEnv *jnienv();
 jclass rho_find_class(JNIEnv *env, const char *c);
 
 std::string const &rho_root_path();
+std::string const &rho_apk_path();
 
 namespace details
 {

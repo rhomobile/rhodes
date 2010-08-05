@@ -87,6 +87,10 @@ class Rijndael
   def add_round_key(blockArray, roundKey)
   0.upto(3) { |i|
     0.upto(@blockWords) { |j|
+
+      if blockArray[i][j].is_a?(String) then
+         blockArray[i][j] = blockArray[i][j].unpack('C*').first
+      end
       blockArray[i][j] ^= roundKey[i][j]
     }
   }
