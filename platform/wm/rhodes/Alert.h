@@ -20,6 +20,12 @@ public:
 	class Params {
 	public:
 		enum {DLG_DEFAULT, DLG_CUSTOM};
+        struct CAlertButton
+        {
+            String m_strCaption, m_strID;
+            CAlertButton ( const String& strCaption, const String& strID ): m_strCaption(strCaption), m_strID(strID){}
+
+        };
 
 		Params (String &message)
 		{
@@ -27,7 +33,7 @@ public:
 			m_message  = message;
 		}
 
-		Params (String &title, String &message, String &icon, String &callback, Hashtable<String, String> &buttons)
+		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons)
 		{
 			m_dlgType  = DLG_CUSTOM;
 			m_title    = title;
@@ -42,7 +48,10 @@ public:
 		String m_message;
 		String m_icon;
 		String m_callback;
-		Hashtable<String, String> m_buttons;
+
+		//Hashtable<String, String> m_buttons;
+        Vector<CAlertButton> m_buttons;
+
 	};
 	
 	class CustomButton : public CButton {
