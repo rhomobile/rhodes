@@ -42,7 +42,7 @@ private:
     int m_currentTabIndex;
     String m_currentUrls[5];
 
-    String m_strAppBackUrl;
+    String m_strAppBackUrl, m_strAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
 
     common::CMutex m_mxPushCallback;

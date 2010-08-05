@@ -29,4 +29,6 @@ public interface IRhoRubyHelper {
 	public void wakeUpGeoLocation();
 	
 	public NetResponse postUrl(String url, String body);
+	public void navigateUrl(String url);
+	public void navigateBack();
 }
