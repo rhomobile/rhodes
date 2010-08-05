@@ -111,6 +111,16 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		return netCallback.m_response;
 	}
 	
+	public void navigateUrl(String url)
+	{
+		WebView.navigate(url);
+	}
+	
+	public void navigateBack()
+	{
+		RhodesApplication.getInstance().navigateBack();
+	}
+	
 	static Hashtable m_appProperties = new Hashtable(); 
 	public String getAppProperty(String name)
 	{

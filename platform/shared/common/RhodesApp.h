@@ -41,7 +41,7 @@ private:
     int m_currentTabIndex;
     String m_currentUrls[5];
 
-    String m_strAppBackUrl;
+    String m_strAppBackUrl, m_strAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
     rubyext::CGeoLocation m_oGeoLocation;
     CSplashScreen m_oSplashScreen;

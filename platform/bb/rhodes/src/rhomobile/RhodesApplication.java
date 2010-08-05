@@ -86,7 +86,8 @@ final public class RhodesApplication extends UiApplication implements SystemList
 				/*if ( m_bSkipKeyPress )
 					m_bSkipKeyPress = false;
 				else*/	
-					back();
+					//back();
+				RHODESAPP().navigateBack();
 				return true;
 			}
 
@@ -123,11 +124,12 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	_mainScreen.addCustomMenuItem(label, value);
     }
     
-	private String m_strAppBackUrl ="";
+	//private String m_strAppBackUrl ="";
 	
     public void resetMenuItems() {
     	_mainScreen.setMenuItems(new Vector());
-    	m_strAppBackUrl = "";
+    	//m_strAppBackUrl = "";
+    	RHODESAPP().setAppBackUrl("");
     }
 
     public void postUrl(String url, String body, HttpHeaders headers) {
@@ -194,7 +196,35 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		return false;
     }
    
-    void back(){
+    public void navigateBack()
+    {
+    	if ( RHODESAPP().isCloseBack() )
+    	{
+    		_mainScreen.close();
+    		return;
+    	}
+    	
+    	String url = "";
+    	if ( _history.size() <= 1 )
+    	{
+    		if ( RhoConf.getInstance().getBool("bb_disable_closebyback"))
+    			return;
+    		
+    		_mainScreen.close();
+    		return;
+       	}	
+    	int nPos = _history.size()-2;
+    	url = (String)_history.elementAt(nPos);
+    	_history.removeElementAt(nPos+1);
+
+//		this.m_oBrowserAdapter.goBack();
+    	
+    	saveCurrentLocation(url);
+    	navigateUrl(url);
+    }
+/*    
+    void back()
+    {
     	String url = m_strAppBackUrl;
     	if ( url.length() == 0)
     	{
@@ -220,7 +250,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	
     	saveCurrentLocation(url);
     	navigateUrl(url);
-    }
+    }*/
 
     String removeSemicolon(String str)
     {
@@ -673,7 +703,8 @@ final public class RhodesApplication extends UiApplication implements SystemList
 			};
 		private MenuItem backItem = new MenuItem("", 200000, 10) {
 			public void run() {
-					back();
+					//back();
+					RHODESAPP().navigateBack();
 				}
 			};
 		private MenuItem syncItem = new MenuItem("", 200000, 10) {
@@ -748,7 +779,9 @@ final public class RhodesApplication extends UiApplication implements SystemList
 			menu.add(contextMenu);
 		}
 		
-		public void addCustomMenuItem(String label, final String value) {
+		public void addCustomMenuItem(String label, final String value) 
+		{
+			final String _label = label;
 			// Is this a default item? If so, use the existing menu item we have.
     	    if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
     	    	setDefaultItemToMenuItems(label, homeItem);
@@ -772,13 +805,21 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    	menuItems = null;
     	    } else {
     	    	if ( label.equalsIgnoreCase("back") )
-    	    		m_strAppBackUrl = value;
+    	    		//m_strAppBackUrl = value;
+    	    		RHODESAPP().setAppBackUrl(value);
     	    	else
     	    	{
-					MenuItem itemToAdd = new MenuItem(label, 200000, 10) {
+					MenuItem itemToAdd = new MenuItem(label, 200000, 10) 
+					{
 						public void run() 
 						{
-							if (value != null && value.startsWith("callback:") )
+							try{
+								RHODESAPP().loadUrl(value);
+							}catch(Exception exc)
+							{
+								LOG.ERROR("Execute menu item: '" + _label + "' failed.", exc);
+							}
+/*							if (value != null && value.startsWith("callback:") )
 							{
 								String url = RHODESAPP().canonicalizeRhoUrl(value.substring(9));
 								RhoRubyHelper helper = new RhoRubyHelper();
@@ -788,7 +829,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 						    	String url = RHODESAPP().canonicalizeRhoUrl(value);
 								addToHistory(url, null );
 								navigateUrl(url);
-							}
+							}*/
 						}
 					};
 					menuItems.addElement(itemToAdd);
