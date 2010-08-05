@@ -128,10 +128,10 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    nativeInitPath
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeInitPath
-  (JNIEnv *, jobject, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 #ifdef __cplusplus
 }
