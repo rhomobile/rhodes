@@ -33,13 +33,24 @@ CAlertDialog::CAlertDialog(Params *params)
 	m_icon     = params->m_icon;
 
 	int id = ID_ALERT_DLG_BUTTON_FIRST;
-	for (Hashtable<String, String>::iterator itr = params->m_buttons.begin(); itr != params->m_buttons.end(); ++itr) {
+    for (int i = 0; i < (int)params->m_buttons.size(); i++) 
+    {
+		if(id > ID_ALERT_DLG_BUTTON_LAST) 
+        {
+			LOG(ERROR) + "too many buttons";
+			break;
+		}
+        m_buttons.addElement(CustomButton( params->m_buttons.elementAt(i).m_strCaption, 
+            params->m_buttons.elementAt(i).m_strID, id++));
+	}
+
+	/*for (Hashtable<String, String>::iterator itr = params->m_buttons.begin(); itr != params->m_buttons.end(); ++itr) {
 		if(id > ID_ALERT_DLG_BUTTON_LAST) {
 			LOG(ERROR) + "too many buttons";
 			break;
 		}
 		m_buttons.addElement(CustomButton(itr->first, itr->second, id++));
-	}
+	}*/
 }
 
 CAlertDialog::~CAlertDialog()
@@ -82,7 +93,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	unsigned int maxHeight = GetSystemMetrics(SM_CYSCREEN) - (GAP * 2);
 #else
 	int maxWidth  = CMainWindow::getScreenWidth() - (GAP * 2);
-	int maxHeight = CMainWindow::getScreenWidth() - (GAP * 2);
+	int maxHeight = CMainWindow::getScreenHeight() - (GAP * 2);
 #endif
 	int xBorderWidth = GetSystemMetrics(SM_CXEDGE);
 	int yBorderWidth = GetSystemMetrics(SM_CYEDGE);
@@ -135,6 +146,13 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	int desiredDlgWidth = iconRect.right + msgWidth + (INDENT * 2);
 
+	//space around label on buttons.
+	const int btnHIndent = 12; //horizontal
+	const int btnVIndent = 8;  //vertical
+
+	int btnsNum = m_buttons.size(); 
+	int btnsHeight =tm.tmHeight + btnVIndent;
+
 	//if desired widht is bigger than current - make dialog window bigger
 	if (desiredDlgWidth > (dlgRect.right - dlgRect.left)) {
 		// if desired width is bigger than maximum width 
@@ -147,14 +165,15 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		}
 		
 		MoveWindow(0, 0, desiredDlgWidth,
-					MAX(iconRect.bottom, msgHeight) + GetSystemMetrics(SM_CYCAPTION) + INDENT + yBorderWidth * 2);
+					MAX(iconRect.bottom, msgHeight) + GetSystemMetrics(SM_CYCAPTION) + INDENT + yBorderWidth * 2 +
+                    btnsHeight);
 	} else {
 		//TODO: centering message
 	}
 	
 	m_messageCtrl.SetWindowText(convertToStringW(m_message).c_str());
 	
-	LOG(INFO) + "iconHeight  msgHeight " + iconHeight + " "+ msgHeight;
+	//LOG(INFO) + "iconHeight  msgHeight " + iconHeight + " "+ msgHeight;
 
 	if (iconHeight > msgHeight) {
 		msgRect.left = iconRect.right + INDENT;
@@ -187,28 +206,22 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	GetClientRect(&dlgRect);
 
-	//space around label on buttons.
-	const int btnHIndent = 12; //horizontal
-	const int btnVIndent = 8;  //vertical
-
-	int btnsNum = m_buttons.size(); 
-	int btnsWidth = 0, btnsHeight =tm.tmHeight + btnVIndent;
-
-	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
-		btnsWidth += (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent + (INDENT * 2);
-	}
+	//for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
+	//	btnsWidth += (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent + (INDENT * 2);
+	//}
 
 	POINT point;
 	point.x = INDENT, point.y = (iconHeight > msgHeight ? point.y = iconHeight + 6 : msgHeight + 2) + INDENT;
 
-	unsigned int btnWidth = 0, btnHeight = 0;
+	unsigned int btnWidth = 87, btnHeight = 0;
 	btnHeight = tm.tmHeight + btnVIndent;
 
 	//if (iconHeight + msgHeight + INDENT + btnHeight + INDENT > dlgRect.) {
 	//}
 
-	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) {
-		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
+	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) 
+    {
+		//btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
 
 		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
 		itr->Create(m_hWnd, rc, 
@@ -282,7 +295,7 @@ HICON CAlertDialog::loadIcon()
 
 	for (int i = 0; i < (sizeof(iconTable)/sizeof(iconTable[0])); i++) 
 	{
-		LOG(ERROR) + "ICON == " + iconTable[i].name;
+		//LOG(ERROR) + "ICON == " + iconTable[i].name;
 		if (iconTable[i].name == m_icon)
 			iconId = iconTable[i].id;
 	}
@@ -356,7 +369,8 @@ extern "C" void alert_show_popup(rho_param *p)
 	} else if (p->type == RHO_PARAM_HASH) {
 		String title, message, callback, icon;
 		String btnId, btnTitle;
-		Hashtable<String, String> buttons;
+		//Hashtable<String, String> buttons;
+        Vector<CAlertDialog::Params::CAlertButton> buttons;
 
 		for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
 			char *name = p->v.hash->name[i];
@@ -425,7 +439,7 @@ extern "C" void alert_show_popup(rho_param *p)
 						continue;
 					}
 
-					buttons.put(btnTitle, btnId);
+                    buttons.addElement( CAlertDialog::Params::CAlertButton(btnTitle, btnId) );
 				}
 			}//buttons
 		}
