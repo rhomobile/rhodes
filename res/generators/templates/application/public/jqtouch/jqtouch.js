@@ -507,7 +507,7 @@
                     data: settings.data,
                     type: settings.method,
                     beforeSend: function(xhr) {
-                        xhr.setRequestHeader("Jqtouch", "true");
+                        xhr.setRequestHeader("Transition-Enabled", "true");
                     },
                     complete: function(xhr, status) {
                         $('.waiting').remove();
