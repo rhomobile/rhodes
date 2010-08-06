@@ -255,12 +255,14 @@ describe "Rhom::RhomObject" do
   end
   
   it "should create a record" do
-    vars = {"name"=>"some new record", "industry"=>"electronics"}
+    vars = {"name"=>"some new record", "industry"=>"electronics", "annual_revenue" => true}
     @account1 = getAccount.create(vars)
     @account2 = getAccount.find(@account1.object)
     @account2.object.should =="#{@account1.object}"
     @account2.name.should == vars['name']
     @account2.industry.should == vars['industry']
+	@account2.annual_revenue.should == vars['annual_revenue'].to_s
+	
   end
 
   it "should create a record with comma" do
