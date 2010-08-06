@@ -27,3 +27,6 @@ syncserver = '<%=syncserver%>'
 
 logserver = 'http://rhologs.heroku.com'
 logname='<%=@app_name%>'
+
+# Hides forward button and animates back button transition
+jqtouch_mode=1
