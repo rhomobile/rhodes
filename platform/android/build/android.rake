@@ -24,7 +24,7 @@ end
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_API_LEVEL = 3
+ANDROID_API_LEVEL = 4
 
 ANDROID_PERMISSIONS = {
   'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -77,6 +77,7 @@ def set_app_name_android(newname)
     doc.root.attributes['android:versionCode'] = version.to_s
     doc.root.attributes['android:versionName'] = $app_config["version"]
   end
+
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
 
   caps = ['INTERNET', 'PERSISTENT_ACTIVITY']
@@ -90,6 +91,12 @@ def set_app_name_android(newname)
   caps.uniq!
 
   manifest = doc.elements["manifest"]
+
+  manifest.elements.each('uses-sdk') { |e| manifest.delete e }
+  element = REXML::Element.new('uses-sdk')
+  element.add_attribute('android:minSdkVersion', ANDROID_API_LEVEL.to_s)
+  manifest.add element
+
   manifest.elements.each('uses-permission') { |e| manifest.delete e }
   caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
