@@ -73,9 +73,11 @@
                style:UIBarButtonItemStylePlain target:self
                action:@selector(goBack:)];
     }
-    else if ([url compare:@"forward"] == NSOrderedSame) {
-        btn = [[UIBarButtonItem alloc]
-               initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
+    else if ([url compare:@"forward"] == NSOrderedSame) 
+	{
+		if ( !rho_conf_getBool("jqtouch_mode") )
+			btn = [[UIBarButtonItem alloc]
+			   initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
                style:UIBarButtonItemStylePlain target:self
                action:@selector(goForward:)];
     }
