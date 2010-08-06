@@ -1,134 +1,90 @@
 body {
     margin: 0;
-    width:100%;
-    height:100%;
     font-family: tahoma;
+    color: black
 }
 
 a {
-    text-decoration: none;
+    color: black;
 }
 
 .pageTitle {
-    display:none;
+    text-align: center;
+    background: black;
+    color: white;
+    height: 30px;
+    border-bottom: 1px solid gray;
+}
+
+.pageTitle h1 {
+    padding: 0;
+    margin: 3px 0 0;
+    font-size: 15px;
+    font-weight: normal;
 }
 
 .toolbar {
-	width:100%;
-	height: 30px;
-	background: black;
-	border-bottom:1px solid gray;
+    margin: 10px 0;
 }
 
 .toolbar a {
-    text-decoration:none;
-    color: white;
     font-weight: bold;
-}
-
-.content {
-	width: 100%;
-	height: 100%;
-	padding:0;
-	margin:0;
+    margin-left: 5px;
 }
 
 .content ul {
-    margin: 0;
+    margin: 5px;
     padding: 0;
-    width: 100%;
 }
 
 .content ul li {
-    list-style-type:none;
-    height: 30px;
-    width: 100%;
-    border-bottom: 1px solid black;
-    margin:0;
-	padding:0;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
-	clear:both;
+    clear: both;
 }
 
 .content ul li a {
-    text-decoration:none;
-    display:block;
-    color: black;
-    height:30px;
-    line-height:30px;
+    display: block;
 }
 
-.content ul li div {
-    width: 45%;
-    line-height:30px;
-    margin: 0 5px;
-}
-.content ul li > .label {
-    float:left;
-    font-weight:bold;
-}
-.content ul li > .value {
-    float: right;
-    text-align:right;
+.content ul li .label {
+    float: left;
+    font-weight: bold;
+    text-align: right;
+    margin-right: 5px;
+    width: 30%;
 }
 
 
 .content form {
+    overflow: hidden;
     margin: 0;
-    padding:0;
-}
-
-.content form h4 {
-    background-color:black;
-    color:white;
-    display:block;
-    padding: 5px;
-    margin:0;
+    padding: 0;
 }
 
 
 .content form ul {
     margin: 0;
-    padding:0;
+    padding: 5px;
+    border: 2px solid gray;
 }
 
-.content form ul li {
-    height: 40px;
-}
-.content form ul li.textarea {
-		height:110px;
-}
 .content form ul li label {
-    float:left;
-    margin: 10px 0 0 5px;
-    width: 40%;
-
+    float: left;
+    width: 30%;
+    text-align: right;
+    margin-right: 5px;
+    line-height: 20px;
 }
 
 .content form ul li input {
-   float:right;
-   margin: 10px 5px 0 0;
-   width: 40%;
-}
-.content form ul li input[type="checkbox"] {
-   float:right;
-   margin: 10px 10px 0 0;
-   width: 15px;
-}
-.content form ul li input[type="radio"] {
-   float:right;
-   margin: 10px 10px 0 0;
-   width: 15px;
-}
-
-.content form select,
-.content form textarea{
-    float:right;
-    margin:10px;
+    width: 50%;
 }
 
 .content form input[type="submit"] {
-    float:right;
-    width: 50px;
-		margin: 10px 10px 0 0;
+    clear: both;
+    margin: 5px auto;
+    border: 1px solid black;
 }
