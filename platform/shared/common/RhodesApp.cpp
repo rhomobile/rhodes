@@ -547,7 +547,16 @@ void CRhodesApp::navigateBack()
     if ( m_strAppBackUrlOrig.length() > 0 )
         loadUrl(m_strAppBackUrlOrig);
     else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
+	{
+#ifdef OS_MACOSX
+		if (RHOCONF().getBool("jqtouch_mode"))
+		{
+			rho_webview_execute_js("window.Rho.jqt.goBack()", 0);
+			return;
+		}
+#endif		
         rho_webview_navigate_back();
+	}
 }
 
 boolean CRhodesApp::sendLog() 
