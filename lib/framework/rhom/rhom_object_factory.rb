@@ -179,10 +179,12 @@ module Rhom
                     if key.is_a?(Hash)
                         bSimpleHash = false
 
+						val_op = "="
                         val_op = key[:op] if key[:op] 
                         val_func = key[:func] if key[:func] 
                         attrib_name = key[:name] if key[:name] 
-                        
+                        op = "AND" unless op
+						
                         condition_str += ' ' + op + ' ' if condition_str.length() > 0
                         if ( val_func && val_func.length() > 0 )
                             condition_str += val_func + "(\"" + attrib_name + "\")"
