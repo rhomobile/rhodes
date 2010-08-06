@@ -13,7 +13,8 @@ public class RhodesApp
 	static RhodesApp m_pInstance;
 	
     private String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath;
-	private String m_strHomeUrl;
+	private String m_strStartUrl, m_strHomeUrl;
+	private String m_strAppBackUrl = "", m_strAppBackUrlOrig = "";
 	
     Vector/*<unsigned long>*/ m_arCallbackObjects = new Vector();
     private SplashScreen m_oSplashScreen = new SplashScreen();
@@ -27,6 +28,8 @@ public class RhodesApp
     int m_currentTabIndex = 0;
     String[] m_currentUrls = new String[5];
     
+    String getAppBackUrl(){return m_strAppBackUrl;}
+
     public static RhodesApp Create(String strRootPath)
     {
         if ( m_pInstance != null ) 
@@ -236,5 +239,70 @@ public class RhodesApp
     	{
     		LOG.ERROR("Save current location failed.", exc);
     	}
-	}    
+	}
+    
+    String getStartUrl()
+    {
+        m_strStartUrl = canonicalizeRhoUrl( RHOCONF().getString("start_path") );
+        return m_strStartUrl;
+    }
+    
+    void navigateToUrl(String url)throws Exception
+    {
+    	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+    	helper.navigateUrl(url);
+    }
+    
+    public void loadUrl(String url)throws Exception
+    {
+        boolean callback = false;
+        if (url.startsWith("callback:") )
+        {
+            callback = true;
+            url = url.substring(9);
+        }
+        url = canonicalizeRhoUrl(url);
+        if (callback)
+        {
+            getNet().pushData( url,  "rho_callback=1", null );
+        }
+        else
+            navigateToUrl(url);
+    }
+    
+    public void setAppBackUrl(String url)
+    {
+        if ( url != null && url.length() > 0 )
+        {
+            m_strAppBackUrlOrig = url;
+            m_strAppBackUrl = canonicalizeRhoUrl(url);
+        }
+        else
+        {
+            m_strAppBackUrlOrig = "";
+            m_strAppBackUrl = "";
+        }
+    }
+    
+    public boolean isCloseBack()
+    {
+    	return m_strAppBackUrlOrig.equalsIgnoreCase("close");
+    }
+    
+    public void navigateBack()
+    {
+    	try{
+	        if ( m_strAppBackUrlOrig.length() > 0 )
+	            loadUrl(m_strAppBackUrlOrig);
+	        else if ( getCurrentUrl(0).equalsIgnoreCase(getStartUrl()) )
+	        {
+	        	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+	        	helper.navigateBack();
+	        }
+    	}catch(Exception exc)
+    	{
+    		LOG.ERROR("Navigate back failed.", exc);
+    	}
+    }
+    
 }

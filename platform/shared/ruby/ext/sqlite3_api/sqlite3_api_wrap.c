@@ -267,9 +267,11 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
                     sqlite3_bind_int64(statement, i+1, NUM2LL(arg));
                     break;
                 default:
-                    //TODO: convert value to string
-                    rb_raise(rb_eArgError, "could not execute statement: not supported arg type.");
-                    break;
+					{
+						VALUE strVal = rb_funcall(arg, rb_intern("to_s"), 0);	
+	                    sqlite3_bind_text(statement, i+1, RSTRING_PTR(strVal), -1, SQLITE_TRANSIENT);	
+					}
+					break;
                 }
             }
         }
