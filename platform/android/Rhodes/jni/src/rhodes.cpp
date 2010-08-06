@@ -23,6 +23,7 @@ const char *rho_java_class[] = {
 
 static std::string g_root_path;
 static std::string g_sqlite_journals_path;
+static std::string g_apk_path;
 
 static pthread_key_t g_thrkey;
 
@@ -189,6 +190,11 @@ const char* rho_native_rhopath()
     return rho_root_path().c_str();
 }
 
+std::string const &rho_apk_path()
+{
+    return g_apk_path;
+}
+
 jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 {
     g_jvm = vm;
@@ -335,10 +341,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeInitPath
-  (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path)
+  (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path, jstring apk_path)
 {
     g_root_path = rho_cast<std::string>(env, root_path);
     g_sqlite_journals_path = rho_cast<std::string>(env, sqlite_journals_path);
+    g_apk_path = rho_cast<std::string>(env, apk_path);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Rhodes_createRhodesApp

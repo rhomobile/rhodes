@@ -144,13 +144,6 @@ INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUr
     rho_net_impl_network_indicator(0);
 
     nRespCode = getResponseCode(err, strRespBody, oSession);
-    if (nRespCode == 200)
-    {
-        RAWTRACE("RESPONSE-----");
-        RAWTRACE(strRespBody.c_str());
-        RAWTRACE("END RESPONSE-----");
-    }
-
     return makeResponse(strRespBody, nRespCode);
 }
 
@@ -319,13 +312,18 @@ int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRh
     if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
         statusCode = 500;
     
-    if (statusCode != 200) {
+    if (statusCode >= 400) {
         RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
                       (int)statusCode, strRespBody.c_str());
         if (statusCode == 401)
             if (oSession)
                 oSession->logout();
-    }
+    }else 
+	{
+		RAWTRACE("RESPONSE-----");
+		RAWTRACE(strRespBody.c_str());
+		RAWTRACE("END RESPONSE-----");
+	}
 	
 	return (int)statusCode;
 }

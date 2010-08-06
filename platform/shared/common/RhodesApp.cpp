@@ -468,9 +468,15 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 void CRhodesApp::setAppBackUrl(const String& url)
 {
     if ( url.length() > 0 )
+    {
+        m_strAppBackUrlOrig = url;
         m_strAppBackUrl = canonicalizeRhoUrl(url);
+    }
     else
+    {
+        m_strAppBackUrlOrig = "";
         m_strAppBackUrl = "";
+    }
 }
 
 String CRhodesApp::getAppTitle()
@@ -505,7 +511,7 @@ const String& CRhodesApp::getOptionsUrl()
     return m_strOptionsUrl;
 }
 
-const String& CRhodesApp::getCurrentUrl(int index)
+const String& CRhodesApp::getCurrentUrl(int /*index*/)
 { 
     return m_currentUrls[m_currentTabIndex]; 
 }
@@ -536,12 +542,21 @@ void CRhodesApp::navigateToUrl( const String& strUrl)
 
 void CRhodesApp::navigateBack()
 {
-    rho::String strAppUrl = getAppBackUrl();
+    //rho::String strAppUrl = getAppBackUrl();
 
-    if ( strAppUrl.length() > 0 )
-        rho_webview_navigate(strAppUrl.c_str(), 0);
+    if ( m_strAppBackUrlOrig.length() > 0 )
+        loadUrl(m_strAppBackUrlOrig);
     else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
+	{
+#ifdef OS_MACOSX
+		if (RHOCONF().getBool("jqtouch_mode"))
+		{
+			rho_webview_execute_js("window.Rho.jqt.goBack()", 0);
+			return;
+		}
+#endif		
         rho_webview_navigate_back();
+	}
 }
 
 boolean CRhodesApp::sendLog() 
@@ -685,18 +700,16 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 void CRhodesApp::loadUrl(String url)
 {
     boolean callback = false;
-    if (url.size() >= 9 && url.substr(0, 9) == "callback:")
+    if (String_startsWith(url, "callback:") )
     {
         callback = true;
         url = url.substr(9);
     }
-    char *s = rho_http_normalizeurl(url.c_str());
-    url = s;
-    free(s);
+    url = canonicalizeRhoUrl(url);
     if (callback)
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-        NetResponse(resp, pNetRequest->pullData( url, null ));
+        NetResponse(resp, pNetRequest->pushData( url,  "rho_callback=1", null ));
         (void)resp;
     }
     else
