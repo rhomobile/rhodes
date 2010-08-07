@@ -113,4 +113,12 @@ module ApplicationHelper
     WebView.execute_js("Rho.insertAsyncPage('<div>#{content}</div>')")
   end
 
+  def caller_request_hash_to_query
+    'caller_request=' + Rho::RhoSupport.url_encode(::JSON.generate(@request))
+  end
+
+  def caller_request_query_to_hash
+    @caller_request = Rho::JSON.parse(@params['caller_request']) if @params['caller_request']
+  end
+  
 end
