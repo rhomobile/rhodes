@@ -13,4 +13,4 @@ iphone:
   provisionprofile:
   codesignidentity:
   entitlements:
-extensions: ["extension-name-here", "second-extension-name"]
+extensions: ["json", "another-extension"]
