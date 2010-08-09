@@ -294,7 +294,7 @@ public class RhodesApp
     	try{
 	        if ( m_strAppBackUrlOrig.length() > 0 )
 	            loadUrl(m_strAppBackUrlOrig);
-	        else if ( getCurrentUrl(0).equalsIgnoreCase(getStartUrl()) )
+	        else if ( !getCurrentUrl(0).equalsIgnoreCase(getStartUrl()) )
 	        {
 	        	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
 	        	helper.navigateBack();
