@@ -171,7 +171,15 @@ end
     value1.should be_nil
     
   end
-  
+
+  it "should test string split with limit" do 
+    s = "splash_screen='delay=2;center'"  
+    key, value = s.split('=', 2)
+    
+    key.should == 'splash_screen'
+    value.should == "'delay=2;center'"
+  end                              
+
   it "should require with diff case" do
     require "Data/reqTest.rb"
     
