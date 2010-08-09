@@ -345,7 +345,7 @@ namespace "build" do
       mkdir_p sdcardpath unless File.exists?(sdcardpath)
       
       confpath = File.join( sdcardpath, "/apps/rhoconfig.txt" )
-      cp $app_path+"/rhoconfig.txt", confpath if File.exists? confpath
+      rm_rf confpath if File.exists? confpath
       
       File.open(namepath, "w") { |f| f.write($appname) }      
       
