@@ -269,7 +269,7 @@ public class HsqlDBResult implements IDBResult
         	return ObjectFactory.createFloat(Number.doubleValue(val));
 
         case Types.BOOLEAN : 
-        	return ObjectFactory.createBoolean(((Boolean) val).booleanValue());
+        	//return ObjectFactory.createBoolean(((Boolean) val).booleanValue());
         	
         case Types.NUMERIC :
         case Types.DECIMAL :
