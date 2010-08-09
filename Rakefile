@@ -304,7 +304,9 @@ def common_bundle_start(startdir, dest)
   cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true if File.exists? app + '/public'
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
-
+  app_version = "\r\napp_version='#{$app_config["version"]}'"  
+  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
+  
   unless $debug
     rm_rf $srcdir + "/apps/app/test"
     rm_rf $srcdir + "/apps/app/SpecRunner"
