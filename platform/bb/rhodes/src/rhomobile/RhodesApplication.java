@@ -468,7 +468,11 @@ final public class RhodesApplication extends UiApplication implements SystemList
     private static boolean m_bRubyInit = false;
 	public void activate()
 	{
-		rhodes_activate();
+		if (!m_bActivate)
+			rhodes_activate();
+		else
+			RhoRuby.rho_ruby_activateApp();
+		
 		super.activate();
 	}
 	
