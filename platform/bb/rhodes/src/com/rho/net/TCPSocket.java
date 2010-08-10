@@ -87,6 +87,21 @@ public class TCPSocket extends BaseSocket {
 			}
 		});
 
+		klass.defineMethod( "flush", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+					((TCPSocket)receiver).flush();
+					
+					return RubyConstant.QNIL;
+				}catch(Exception e)
+				{
+					LOG.ERROR("close failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
 		klass.defineMethod( "close", new RubyNoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyBlock block )
 			{

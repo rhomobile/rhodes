@@ -106,6 +106,10 @@ platform/android/**/default.properties
 Manifest.txt
 
 spec/framework_spec/faillog.txt
+spec/framework_spec/preverified/*
+spec/phone_spec/preverified/*
+spec/phone_spec/RhoBundle/*
+spec/phone_spec/last_bbver
 
 platform/shared/curl/lib/rhoconf.h
 .idea
@@ -116,3 +120,4 @@ platform/bb/Hsqldb/Hsqldb.jar
 platform/bb/RhoBundle/RhoBundle.jar
 platform/bb/RubyVM/RubyVM.jar
 platform/bb/rhodes/rhodes.jar
+

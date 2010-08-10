@@ -325,7 +325,8 @@ public class RubyString extends RubyBasic {
         }
     }
 
-    private Collection/*<String>*/ split(RubyString s, String delimiter, int nLimit) {
+    private Collection/*<String>*/ split(RubyString s, String delimiter, int nLimit) 
+    {
         StringParser t = new StringParser(s.toString(), delimiter);
 //        int total = t.countTokens();
         //Collection/*<String>*/ r = new ArrayList/*<String>*/(total);
@@ -337,14 +338,19 @@ public class RubyString extends RubyBasic {
         int i = 0;
         while ( t.hasMoreElements() )
         {
-        	if ( nLimit > 0 && i > nLimit )
+        	if ( nLimit > 0 && i+1 >= nLimit )
+        	{
+        		r.add(t.getRestString());	
         		break;
+        	}
+        	
         	Object res = t.nextElement();
         	
         	if ( nLimit > 0 && res == null )
         		res = "";
         	
         	r.add(res);
+        	i++;
         }
         return r;
     }

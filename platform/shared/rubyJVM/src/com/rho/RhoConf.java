@@ -2,6 +2,7 @@ package com.rho;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 import com.rho.net.NetResponse;
 import com.xruby.runtime.builtin.ObjectFactory;
@@ -12,7 +13,7 @@ import com.rho.file.SimpleFile;
 public class RhoConf {
     String      m_strConfFilePath = "";
     String      m_strRhoRootPath = "";
-    private java.util.Hashtable m_mapValues = new java.util.Hashtable();
+    private Hashtable m_mapValues = new Hashtable();
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoConf");
     
@@ -54,7 +55,27 @@ public class RhoConf {
 	        if ( oFile.isOpened() ){
 	            String strSettings = oFile.readString();
 	            oFile.close();
+	            
+	            Hashtable saved_mapValues = m_mapValues;
+	            m_mapValues = new Hashtable();	            
 	            loadFromString( strSettings );
+	            
+	            Object oldVer = m_mapValues.get("app_version");
+	            Object newVer = saved_mapValues.get("app_version");
+	            if ( oldVer != null && newVer != null && oldVer.equals(newVer))
+	            {
+	            	Enumeration vals = m_mapValues.elements();
+	            	Enumeration keys = m_mapValues.keys();
+	        		while (vals.hasMoreElements()) 
+	        		{
+	        			saved_mapValues.put(keys.nextElement(), vals.nextElement());
+	        		}
+	            }else
+	            {
+	            	oFile.delete(getConfFilePath());
+	            }
+	            
+	            m_mapValues = saved_mapValues;
 	        }
 	        
     	}catch(Exception exc){

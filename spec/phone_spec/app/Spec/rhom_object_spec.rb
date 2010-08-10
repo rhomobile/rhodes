@@ -138,7 +138,7 @@ describe "Rhom::RhomObject" do
   after(:all) do
     @helper.after_all
   end
-  
+
   #it "should set source_id attributes" do
   #  getAccount.get_source_id.should == "23"
     #getCase.get_source_id.should == "1"
@@ -253,7 +253,7 @@ describe "Rhom::RhomObject" do
     acct.name.should == 'foobarthree'
     acct.industry.should == 'entertainment'
   end
-  
+
   it "should create a record" do
     vars = {"name"=>"some new record", "industry"=>"electronics", "annual_revenue" => true}
     @account1 = getAccount.create(vars)
@@ -641,15 +641,13 @@ end
     @accts.length.should == 0
   end
 
-=begin  
-  it "should support blob file type" do
-    @acct = getAccount.new({'image_uri'=>"/db/images/mynewimage.png"})
-    @acct.name = "my new acct"
-    @acct.save
-    @res = ::Rho::RHO.get_user_db().select_from_table('object_values','*', 'attrib_type' => "blob.file")
-    @res.length.should == 1
-  end
-=end  
+  #it "should support blob file type" do
+  #  @acct = getAccount.new({'image_uri'=>"/db/images/mynewimage.png"})
+  #  @acct.name = "my new acct"
+  #  @acct.save
+  #  @res = ::Rho::RHO.get_user_db().select_from_table('object_values','*', 'attrib_type' => "blob.file")
+  #  @res.length.should == 1
+  #end
 
   it "should include only selected column" do
     @accts = getAccount.find(:all, :select => ['name'], :order => 'name', :orderdir => 'DESC' )
