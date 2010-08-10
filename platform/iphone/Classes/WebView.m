@@ -44,17 +44,6 @@
 }
 @end
 
-@interface RhoWebViewActiveTabTask : NSObject {}
-+ (void)run:(NSValue*)value;
-@end
-
-@implementation RhoWebViewActiveTabTask
-+ (void)run:(NSValue*)value {
-    int *pIndex = [value pointerValue];
-    *pIndex = [[[Rhodes sharedInstance] mainView] activeTab];
-}
-@end
-
 @interface RhoWebViewReloadTask : NSObject {}
 + (void)run:(NSValue*)value;
 @end
@@ -92,6 +81,9 @@
 
 void rho_webview_navigate(const char* url, int index) 
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
+    
     if ( !url )
     {
         RAWLOG_ERROR("WebView.navigate failed: url is nil");
@@ -105,20 +97,20 @@ void rho_webview_navigate(const char* url, int index)
 }
 
 int rho_webview_active_tab() {
-    int index;
-    id runnable = [RhoWebViewActiveTabTask class];
-    id arg = [NSValue valueWithPointer:&index];
-    [Rhodes performOnUiThread:runnable arg:arg wait:YES];
-    return index;
+    return [[[Rhodes sharedInstance] mainView] activeTab];
 }
 
 void rho_webview_refresh(int index) {
+    if (!rho_rhodesapp_check_mode())
+        return;
     id runnable = [RhoWebViewReloadTask class];
     id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
 
 const char* rho_webview_execute_js(const char* js, int index) {
+    if (!rho_rhodesapp_check_mode())
+        return "";
     id runnable = [RhoWebViewExecuteJsTask class];
     id arg1 = [NSString stringWithUTF8String:js];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
@@ -136,17 +128,23 @@ void rho_webview_set_menu_items(VALUE valMenu) {
 
 void rho_webview_navigate_back()
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
     id runnable = [RhoWebViewNavigateBackTask class];
     [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 void rho_webview_full_screen_mode(int enable)
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [Rhodes setStatusBarHidden:enable];
 }
 
 void rho_webview_set_cookie(const char *u, const char *c)
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
     id runnable = [RhoWebViewSetCookieTask class];
     NSString *url = [NSString stringWithUTF8String:u];
     NSString *cookie = [NSString stringWithUTF8String:c];
