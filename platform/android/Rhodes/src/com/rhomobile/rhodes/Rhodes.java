@@ -212,6 +212,8 @@ public class Rhodes extends Activity {
 		WebView w = new WebView(this);
 		
 		webSettings.setWebSettings(w);
+		
+		w.clearCache(true);
 
 		w.setWebViewClient(new WebViewClient() {
 			
