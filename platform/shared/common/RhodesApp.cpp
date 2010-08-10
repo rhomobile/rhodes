@@ -175,8 +175,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         if ( !resp.isOK() )
             LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
-        LOG(INFO) + "navigate to first start url";
-        navigateToUrl(getFirstStartUrl());
+        //LOG(INFO) + "navigate to first start url";
+        //navigateToUrl(getFirstStartUrl());
     }
 }
 

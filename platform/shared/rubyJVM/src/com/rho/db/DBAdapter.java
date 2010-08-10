@@ -836,8 +836,14 @@ public class DBAdapter extends RubyBasic
 		    				values[i] = new Long( ((RubyInteger)val).toLong() );
 		    			else if ( val instanceof RubyFloat )
 		    				values[i] = new Double( ((RubyFloat)val).toFloat() );
+		    			else if ( val instanceof RubyString )
+		    				values[i] = new String( ((RubyString)val).toStr() );
+		    			else if  ( val == RubyConstant.QTRUE )
+		    				values[i] = new String( "true" );
+		    			else if  ( val == RubyConstant.QFALSE )
+		    				values[i] = new String( "false" );
 		    			else
-		    				values[i] = val.toString();
+		    				values[i] = val.toStr();
 		    		}
 	    		}
 	    		
