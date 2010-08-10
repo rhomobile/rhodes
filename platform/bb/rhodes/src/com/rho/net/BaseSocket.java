@@ -205,6 +205,12 @@ public class BaseSocket extends RubyBasic {
     	return m_conn == null;
     }
 	
+	public void flush()throws IOException
+    {
+    	if (m_os != null)
+    		m_os.flush();
+    }
+	
 	public void close()throws IOException
     {
     	if ( m_conn != null )

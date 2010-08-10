@@ -132,7 +132,7 @@ module Rho
         File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
           # Skip empty or commented out lines
           next if line =~ /^\s*(#|$)/
-          parts = line.chomp.split('=')
+          parts = line.chomp.split('=', 2)
           key = parts[0]
           value = nil
           if key and defined? RHO_ME
