@@ -95,8 +95,8 @@ void CRhodesApp::run()
 
     getSplashScreen().hide();
 
-    //LOG(INFO) + "navigate to first start url";
-    //navigateToUrl(getFirstStartUrl());
+    LOG(INFO) + "navigate to first start url";
+    navigateToUrl(getFirstStartUrl());
 
     //rho_clientregister_create("iphone_client");
     
@@ -202,9 +202,9 @@ static void callback_loadserversources(void *arg, String const &strQuery)
 
 class CRhoActivateApp
 {
-    String m_strUrl, m_strFirstUrl;
+    String m_strUrl;
 public:
-    CRhoActivateApp(const String& strUrl, const String& strFirstUrl) :m_strUrl(strUrl), m_strFirstUrl(strFirstUrl) {}
+    CRhoActivateApp(const String& strUrl) :m_strUrl(strUrl) {}
     void run()
     {
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
@@ -212,14 +212,12 @@ public:
         NetResponse(resp, pNetRequest->pullData( m_strUrl, null ) );
         if ( !resp.isOK() )
             LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-
-        LOG(INFO) + "navigate to first start url";
-        RHODESAPP().navigateToUrl(m_strFirstUrl);
     }
 };
 
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
+    LOG(INFO) + "callAppActiveCallback";
     m_bDeactivationMode = !bActive;
     if (bActive)
     {
@@ -228,7 +226,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // Activation callback need to be runned in separate thread
         // Otherwise UI thread will be blocked. This can cause deadlock if user defined
         // activate callback contains code which need to hold UI thread for execute
-        rho_rhodesapp_call_in_thread( new CRhoActivateApp( strUrl, getFirstStartUrl() ) );
+        rho_rhodesapp_call_in_thread( new CRhoActivateApp( strUrl ) );
     }
     else
     {
@@ -1094,9 +1092,14 @@ void rho_rhodesapp_load_url(const char *url)
     RHODESAPP().loadUrl(url);
 }
 
-int rho_rhodesapp_deactivation_mode()
+int rho_rhodesapp_check_mode()
 {
-    return RHODESAPP().deactivationMode();
+    if (RHODESAPP().deactivationMode())
+    {
+        LOG(ERROR) + "Operation is not allowed in 'deactivation' mode";
+        return 0;
+    }
+    return 1;
 }
 
 #if defined(OS_ANDROID) && defined(RHO_LOG_ENABLED)

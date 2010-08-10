@@ -231,12 +231,16 @@ static Rhodes *instance = NULL;
 }
 
 - (void)takePicture:(NSString*) url {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [pickImageDelegate setPostUrl:url];
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
 - (void)takeSignature:(NSString*)url {
+    if (!rho_rhodesapp_check_mode())
+        return;
 	[self hideSplash];
 	[signatureDelegate setPostUrl:url];
 	//[signatureDelegate setImageFormat:format];
@@ -264,6 +268,8 @@ static Rhodes *instance = NULL;
 
 
 - (void)choosePicture:(NSString*) url {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [pickImageDelegate setPostUrl:url];
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypePhotoLibrary];

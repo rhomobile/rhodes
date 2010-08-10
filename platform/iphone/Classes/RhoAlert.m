@@ -231,6 +231,8 @@ static UIAlertView *currentAlert = nil;
 @end
 
 void alert_show_popup(rho_param *p) {
+    if (!rho_rhodesapp_check_mode())
+        return;
     if (!p || (p->type != RHO_PARAM_STRING && p->type != RHO_PARAM_HASH)) {
         RAWLOG_ERROR("Alert.show_popup - wrong arguments");
         return;
@@ -240,14 +242,20 @@ void alert_show_popup(rho_param *p) {
 }
 
 void alert_hide_popup() {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [RhoAlert hidePopup];
 }
 
 void alert_vibrate(int duration) {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [RhoAlert vibrate:duration];
 }
 
 void alert_play_file(char* file_name, char* media_type) {
+    if (!rho_rhodesapp_check_mode())
+        return;
     if (!file_name) {
         RAWLOG_ERROR("Alert.play_file - please specify file name to play");
         return;

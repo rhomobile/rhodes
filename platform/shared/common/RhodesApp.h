@@ -178,7 +178,7 @@ void rho_net_request(const char *url);
 
 void rho_rhodesapp_load_url(const char *url);
 
-int rho_rhodesapp_deactivation_mode();
+int rho_rhodesapp_check_mode();
 
 #ifdef __cplusplus
 };
