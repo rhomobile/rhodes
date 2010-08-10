@@ -91,7 +91,7 @@ public class Rhodes extends Activity {
 	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
-	private static boolean ownActivityActivated;
+	//private static boolean ownActivityActivated;
 	
 	private WebChromeClient chromeClient;
 	private RhoWebSettings webSettings;
@@ -144,6 +144,8 @@ public class Rhodes extends Activity {
 	public static native void navigateBack();
 	
 	public native void doRequest(String url);
+	
+	public native void callActivationCallback(boolean active);
 	
 	public native static void makeLink(String src, String dst);
 	
@@ -485,11 +487,12 @@ public class Rhodes extends Activity {
 	protected void onStart() {
 		super.onStart();
 		Logger.T(TAG, "+++ onStart");
-		ownActivityActivated = false;
+		//ownActivityActivated = false;
 		if (needGeoLocationRestart) {
 			GeoLocation.isKnownPosition();
 			needGeoLocationRestart = false;
 		}
+		callActivationCallback(true);
 	}
 	
 	@Override
@@ -507,10 +510,11 @@ public class Rhodes extends Activity {
 	@Override
 	protected void onStop() {
 		Logger.T(TAG, "+++ onStop");
+		callActivationCallback(false);
 		needGeoLocationRestart = GeoLocation.isAvailable();
 		GeoLocation.stop();
-		if (!ownActivityActivated)
-			stopSelf();
+		//if (!ownActivityActivated)
+		//	stopSelf();
 		super.onStop();
 	}
 		
@@ -708,7 +712,7 @@ public class Rhodes extends Activity {
 	
 	@Override
 	public void startActivity(Intent intent) {
-		ownActivityActivated = true;
+		//ownActivityActivated = true;
 		super.startActivity(intent);
 	}
 	
