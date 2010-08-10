@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_rhomobile_rhodes_Rhodes_ENABLE_PROFILING
+#define com_rhomobile_rhodes_Rhodes_ENABLE_PROFILING 0L
 #undef com_rhomobile_rhodes_Rhodes_RHO_SPLASH_VIEW
 #define com_rhomobile_rhodes_Rhodes_RHO_SPLASH_VIEW 1L
 #undef com_rhomobile_rhodes_Rhodes_RHO_MAIN_VIEW
@@ -111,6 +113,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_doRequest
 
 /*
  * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    callActivationCallback
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_callActivationCallback
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
  * Method:    makeLink
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
@@ -132,6 +142,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_initClassLoader
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_nativeInitPath
   (JNIEnv *, jobject, jstring, jstring, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_Rhodes
+ * Method:    onScreenOrientationChanged
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Rhodes_onScreenOrientationChanged
+  (JNIEnv *, jclass, jint, jint, jint);
 
 #ifdef __cplusplus
 }
