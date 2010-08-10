@@ -20,6 +20,11 @@ class StringParser implements Enumeration
 		return !m_bFinish;
 	}
 
+	public String getRestString()
+	{
+		return m_strToSplit.substring(m_nCurPos);
+	}
+	
 	public Object nextElement() 
 	{
 		if ( m_nCurPos >= m_strToSplit.length() )
