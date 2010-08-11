@@ -139,7 +139,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         String strQuery = getProtocol().getServerQueryBody("", getClientID(), getSyncPageSize());
 
         if ( strParams.length() > 0 )
-            strQuery += strParams;
+            strQuery += strParams.at(0) == '&' ? strParams : "&" + strParams;
 
         for ( int i = 0; i < (int)arSources.size(); i++ )
         {
