@@ -24,10 +24,11 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -61,13 +62,13 @@ public class SimpleMainView implements MainView {
 	
 	private class ActionHome implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhodesInstance.getInstance().getStartUrl(), 0);
+			navigate(RhodesService.getInstance().getStartUrl(), 0);
 		}
 	};
 	
 	private class ActionOptions implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhodesInstance.getInstance().getOptionsUrl(), 0);
+			navigate(RhodesService.getInstance().getOptionsUrl(), 0);
 		}
 	};
 	
@@ -79,7 +80,7 @@ public class SimpleMainView implements MainView {
 
 	private class ActionExit implements View.OnClickListener {
 		public void onClick(View v) {
-			Rhodes.exit();
+			RhodesService.exit();
 		}
 	};
 
@@ -91,9 +92,9 @@ public class SimpleMainView implements MainView {
 		}
 		
 		public void onClick(View v) {
-			Rhodes.performOnUiThread(new Runnable() {
+			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
-					Rhodes.loadUrl(ActionCustom.this.url);
+					RhodesService.loadUrl(ActionCustom.this.url);
 				}
 			}, false);
 		}
@@ -118,7 +119,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	private View createButton(Map<Object,Object> hash) {
-		Rhodes r = RhodesInstance.getInstance();
+		Context ctx = RhodesService.getInstance().getContext();
 		
 		Object actionObj = hash.get("action");
 		if (actionObj == null || !(actionObj instanceof String))
@@ -133,27 +134,27 @@ public class SimpleMainView implements MainView {
 		View.OnClickListener onClick = null;
 		
 		if (action.equalsIgnoreCase("back")) {
-			icon = r.getResources().getDrawable(AndroidR.drawable.back);
+			icon = ctx.getResources().getDrawable(AndroidR.drawable.back);
 			onClick = new ActionBack();
 		}
 		else if (action.equalsIgnoreCase("forward")) {
-			icon = r.getResources().getDrawable(AndroidR.drawable.next);
+			icon = ctx.getResources().getDrawable(AndroidR.drawable.next);
 			onClick = new ActionForward();
 		}
 		else if (action.equalsIgnoreCase("home")) {
-			icon = r.getResources().getDrawable(AndroidR.drawable.home);
+			icon = ctx.getResources().getDrawable(AndroidR.drawable.home);
 			onClick = new ActionHome();
 		}
 		else if (action.equalsIgnoreCase("options")) {
-			icon = r.getResources().getDrawable(AndroidR.drawable.options);
+			icon = ctx.getResources().getDrawable(AndroidR.drawable.options);
 			onClick = new ActionOptions();
 		}
 		else if (action.equalsIgnoreCase("refresh")) {
-			icon = r.getResources().getDrawable(AndroidR.drawable.refresh);
+			icon = ctx.getResources().getDrawable(AndroidR.drawable.refresh);
 			onClick = new ActionRefresh();
 		}
 		else if (action.equalsIgnoreCase("close") || action.equalsIgnoreCase("exit")) {
-			icon = r.getResources().getDrawable(AndroidR.drawable.exit);
+			icon = ctx.getResources().getDrawable(AndroidR.drawable.exit);
 			onClick = new ActionExit();
 		}
 		else if (action.equalsIgnoreCase("separator"))
@@ -186,12 +187,12 @@ public class SimpleMainView implements MainView {
 		
 		View button;
 		if (icon != null) {
-			ImageButton btn = new ImageButton(r);
+			ImageButton btn = new ImageButton(ctx);
 			btn.setImageDrawable(icon);
 			button = btn;
 		}
 		else {
-			Button btn = new Button(r);
+			Button btn = new Button(ctx);
 			btn.setText(label);
 			button = btn;
 		}
@@ -203,13 +204,14 @@ public class SimpleMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	private void init(MainView v, Object params) {
-		Rhodes r = RhodesInstance.getInstance();
+		RhodesService r = RhodesService.getInstance();
+		Context ctx = r.getContext();
 		
-		view = new LinearLayout(r);
+		view = new LinearLayout(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-		view.setId(Rhodes.RHO_MAIN_VIEW);
+		view.setId(RhodesService.RHO_MAIN_VIEW);
 		
 		webView = null;
 		if (v != null)
@@ -218,7 +220,7 @@ public class SimpleMainView implements MainView {
 			webView = r.createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
-		LinearLayout bottom = new LinearLayout(r);
+		LinearLayout bottom = new LinearLayout(ctx);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
 		bottom.setBackgroundColor(Color.GRAY);
 		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
@@ -281,7 +283,7 @@ public class SimpleMainView implements MainView {
 				
 				button.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
 				if (group == null) {
-					group = new LinearLayout(r);
+					group = new LinearLayout(ctx);
 					group.setGravity(gravity);
 					group.setOrientation(LinearLayout.HORIZONTAL);
 					group.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 1));
@@ -311,7 +313,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		Rhodes.navigateBack();
+		RhodesService.navigateBack();
 	}
 	
 	public void goBack() {
@@ -349,9 +351,9 @@ public class SimpleMainView implements MainView {
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
 		removeNavBar();
 		
-		Rhodes r = RhodesInstance.getInstance();
+		Context ctx = RhodesService.getInstance().getContext();
 		
-		LinearLayout top = new LinearLayout(r);
+		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);
 		top.setBackgroundColor(Color.GRAY);
 		top.setGravity(Gravity.CENTER);
@@ -361,7 +363,7 @@ public class SimpleMainView implements MainView {
 		leftButton.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1));
 		top.addView(leftButton);
 		
-		TextView label = new TextView(r);
+		TextView label = new TextView(ctx);
 		label.setText(title);
 		label.setGravity(Gravity.CENTER);
 		label.setTextSize((float)30.0);

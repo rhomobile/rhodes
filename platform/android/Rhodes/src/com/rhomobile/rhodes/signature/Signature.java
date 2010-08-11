@@ -24,23 +24,22 @@ import java.io.File;
 
 import android.content.Intent;
 
-import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class Signature {
 
 	private static final String TAG = "Signature";
 	
-	public static final String INTENT_EXTRA_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "signature.";
+	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "signature.";
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
 	private static void init() {
-		File f = new File(Rhodes.getBlobPath());
+		File f = new File(RhodesService.getBlobPath());
 		if (!f.exists())
 			f.mkdirs();
 	}
@@ -58,8 +57,8 @@ public class Signature {
 		
 		public void run() {
 			init();
-			Rhodes r = RhodesInstance.getInstance();
-			Intent intent = new Intent(r, klass);
+			RhodesService r = RhodesService.getInstance();
+			Intent intent = new Intent(r.getContext(), klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "format", format);
 			r.startActivity(intent);
@@ -69,7 +68,7 @@ public class Signature {
 	public static void takeSignature(String url, String format) {
 		try {
 			Runnable runnable = new Picture(url, ImageCapture.class, format);
-			Rhodes.performOnUiThread(runnable, false);
+			PerformOnUiThread.exec(runnable, false);
 		}
 		catch (Exception e) {
 			reportFail("takeSignature", e);

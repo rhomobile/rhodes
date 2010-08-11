@@ -18,15 +18,15 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class MapView extends MapActivity {
 
 	private static final String TAG = "MapView";
 	
-	private static final String SETTINGS_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "settings.";
-	private static final String ANNOTATIONS_PREFIX = Rhodes.INTENT_EXTRA_PREFIX + "annotations.";
+	private static final String SETTINGS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "settings.";
+	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "annotations.";
 	
 	private static MapView mc = null;
 	
@@ -62,7 +62,7 @@ public class MapView extends MapActivity {
 		
 		mc = this;
 		
-		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		
 		RelativeLayout layout = new RelativeLayout(this);
 		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -112,7 +112,7 @@ public class MapView extends MapActivity {
 			ann.subtitle = extras.getString(prefix + "subtitle");
 			ann.url = extras.getString(prefix + "url");
 			if (ann.url != null)
-				ann.url = RhodesInstance.getInstance().normalizeUrl(ann.url);
+				ann.url = RhodesService.getInstance().normalizeUrl(ann.url);
 			annotations.addElement(ann);
 		}
 		
@@ -192,6 +192,18 @@ public class MapView extends MapActivity {
 		geocoding.start();
 	}
 	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		RhodesService.getInstance().activityStarted();
+	}
+	
+	@Override
+	protected void onStop() {
+		RhodesService.getInstance().activityStopped();
+		super.onStop();
+	}
+	
 	private void doGeocoding() {
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
 			Annotation ann = annotations.elementAt(i);
@@ -207,7 +219,7 @@ public class MapView extends MapActivity {
 			if (ann.address == null)
 				continue;
 			
-			Geocoder gc = new Geocoder(RhodesInstance.getInstance());
+			Geocoder gc = new Geocoder(RhodesService.getInstance().getContext());
 			try {
 				List<Address> addrs = gc.getFromLocationName(ann.address, 1);
 				if (addrs.size() == 0)
@@ -230,7 +242,7 @@ public class MapView extends MapActivity {
 				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
 			}
 			
-			Rhodes.performOnUiThread(new Runnable() {
+			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
 					view.invalidate();
 				}
@@ -246,7 +258,7 @@ public class MapView extends MapActivity {
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
 		try {
-			Intent intent = new Intent(RhodesInstance.getInstance(), MapView.class);
+			Intent intent = new Intent(RhodesService.getInstance().getContext(), MapView.class);
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
@@ -343,7 +355,7 @@ public class MapView extends MapActivity {
 				}
 			}
 			
-			RhodesInstance.getInstance().startActivity(intent);
+			RhodesService.getInstance().startActivity(intent);
 		}
 		catch (Exception e) {
 			reportFail("create", e);
@@ -352,7 +364,7 @@ public class MapView extends MapActivity {
 	
 	public static void close() {
 		try {
-			Rhodes.performOnUiThread(new Runnable() {
+			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
 					if (mc != null) {
 						mc.finish();

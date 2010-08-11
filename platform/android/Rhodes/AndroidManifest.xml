@@ -23,7 +23,6 @@
         <activity android:name="com.rhomobile.rhodes.signature.ImageCapture" />
         <activity android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
         <activity android:name="com.rhomobile.rhodes.mapview.MapView" />
-        <service android:name="com.rhomobile.rhodes.RhodesService" />
         <uses-library android:name="com.google.android.maps" />
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
