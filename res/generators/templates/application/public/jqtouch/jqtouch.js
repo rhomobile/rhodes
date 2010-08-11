@@ -155,8 +155,8 @@
                 touchSelectors.push(jQTSettings.backSelector);
                 touchSelectors.push(jQTSettings.submitSelector);
                 $(touchSelectors.join(', ')).css('-webkit-touch-callout', 'none');
-                //                $(jQTSettings.backSelector).tap(liveTap);
-                //                $(jQTSettings.submitSelector).tap(submitParentForm);
+                $(jQTSettings.backSelector).tap(liveTap);
+                $(jQTSettings.submitSelector).tap(submitParentForm);
                 $('a').tap(liveTap); // Rho: make all links call liveTap
                 $("[type=submit]").tap(submitParentForm);
 
