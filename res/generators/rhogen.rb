@@ -33,7 +33,7 @@ module Rhogen
         name        - application name
         
       Optional:
-        syncserver  - url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")
+        syncserver  - url to the rhosync application (i.e. "http://localhost:9292/application")
         zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
     DESC
 
