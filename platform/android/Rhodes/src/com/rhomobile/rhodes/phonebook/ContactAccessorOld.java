@@ -3,7 +3,6 @@ package com.rhomobile.rhodes.phonebook;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -14,7 +13,7 @@ import android.provider.Contacts.Organizations;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
 
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
 
 @SuppressWarnings("deprecation")
 public class ContactAccessorOld implements ContactAccessor {
@@ -30,12 +29,10 @@ public class ContactAccessorOld implements ContactAccessor {
 	private static final String PB_EMAIL_ADDRESS = Phonebook.PB_EMAIL_ADDRESS;
 	private static final String PB_COMPANY_NAME = Phonebook.PB_COMPANY_NAME;
 	
-	private Activity activity;
 	private ContentResolver cr;
 	
 	public ContactAccessorOld() {
-		activity = RhodesInstance.getInstance(); 
-		cr = activity.getContentResolver();
+		cr = RhodesService.getInstance().getContext().getContentResolver();
 	}
 	
 	private void fillPhones(String id, Contact contact) {
@@ -108,7 +105,7 @@ public class ContactAccessorOld implements ContactAccessor {
 						Contacts.Organizations.CONTENT_DIRECTORY);
 	
 				String[] organizationProjection = new String[] { Organizations.COMPANY };
-				Cursor organizationCursor = activity.managedQuery(orgUri,
+				Cursor organizationCursor = cr.query(orgUri,
 						organizationProjection, "person=?", new String[] {id}, null);
 				try {
 					int organizationCursorCount = organizationCursor.getCount();
@@ -130,7 +127,7 @@ public class ContactAccessorOld implements ContactAccessor {
 						Contacts.ContactMethods.KIND,
 						Contacts.ContactMethods.DATA };
 	
-				Cursor contactCursor = activity.managedQuery(
+				Cursor contactCursor = cr.query(
 						Contacts.ContactMethods.CONTENT_URI,
 						contactProjection, "person=?", new String[] {id}, null);
 				try {
