@@ -792,6 +792,26 @@ module SyncEngine
         
         SyncEngine.do_set_syncserver(url)
     end
+    
+    def self.search(args)
+        searchParams = ""
+
+        searchParams += '&offset=' + Rho::RhoSupport.url_encode(args[:offset]) if args[:offset]
+        searchParams += '&max_results=' + Rho::RhoSupport.url_encode(args[:max_results]) if args[:max_results]
+
+        callbackParams = args[:callback_param] ? args[:callback_param] : ""
+
+        if args[:search_params]
+            args[:search_params].each do |key,value|
+              searchParams += '&' + "conditions[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
+              callbackParams += '&' + "search_params[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
+            end  
+        end
+
+        SyncEngine.dosearch( args[:source_names], args[:from] ? args[:from] : 'search',
+            searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
+            args[:callback], callbackParams )
+    end
 end
 
 #at_exit do
