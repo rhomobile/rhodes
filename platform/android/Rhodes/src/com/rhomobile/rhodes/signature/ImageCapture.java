@@ -27,30 +27,24 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
+import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.RhodesService;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.view.View.OnTouchListener;
-import android.view.MotionEvent;
 
-
-public class ImageCapture extends Activity implements OnClickListener
+public class ImageCapture extends RhoActivity implements OnClickListener
  {
 	
 	private static final String TAG = "ImageCapture";
@@ -159,7 +153,7 @@ public class ImageCapture extends Activity implements OnClickListener
 			values.put(Media.DESCRIPTION, "Handwrited Signature");
 	
 			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-			String dir = Rhodes.getBlobPath();
+			String dir = RhodesService.getBlobPath();
 			
 			//OutputStream osCommon = getContentResolver().openOutputStream(uri);
 	
