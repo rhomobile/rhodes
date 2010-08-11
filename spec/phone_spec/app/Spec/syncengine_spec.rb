@@ -138,6 +138,8 @@ describe "SyncEngine_test" do
     SyncEngine.logged_in.should == 1
   
     item = Product.create({:name => 'Test'})
+    item2 = Product.find(item.object)
+    item2.vars.should == item.vars
     
     res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
