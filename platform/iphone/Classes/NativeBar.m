@@ -91,6 +91,8 @@ static int started = 0;
 
 void create_nativebar(int bar_type, rho_param *p)
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
     rho_param *params = NULL;
     switch (p->type) {
         case RHO_PARAM_ARRAY:
@@ -171,6 +173,8 @@ void create_nativebar(int bar_type, rho_param *p)
 }
 
 void remove_nativebar() {
+    if (!rho_rhodesapp_check_mode())
+        return;
     int bar_type = NOBAR_TYPE;
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
@@ -178,6 +182,8 @@ void remove_nativebar() {
 }
 
 void nativebar_switch_tab(int index) {
+    if (!rho_rhodesapp_check_mode())
+        return;
     id runnable = [RhoNativeBarSwitchTabTask class];
     id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg wait:YES];

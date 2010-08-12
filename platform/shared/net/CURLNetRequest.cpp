@@ -285,27 +285,25 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     }
 
     rho_net_impl_network_indicator(1);
-    
-	curl_slist *hdrs = m_curl.set_options("GET", strUrl, String(), oSession, pHeaders);
+
+    curl_slist *hdrs = m_curl.set_options("GET", strUrl, String(), oSession, pHeaders);
     CURL *curl = m_curl.curl();
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oFile);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
-	
-	CURLcode err = m_curl.perform();
-	curl_slist_free_all(hdrs);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oFile);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
+
+    CURLcode err = m_curl.perform();
+    curl_slist_free_all(hdrs);
 	
     rho_net_impl_network_indicator(0);
 	
-	nRespCode = getResponseCode(err, strRespBody, oSession );
+    nRespCode = getResponseCode(err, strRespBody, oSession );
     return makeResponse(strRespBody, nRespCode);
 }
 	
 int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession )	
 {    
-	if (err != CURLE_OK) {
-		RAWLOG_ERROR1("Error when calling curl_multi_perform: %d", err);
-		return -1;
-	}
+    if (err != CURLE_OK)
+        return -1;
 	
     long statusCode = 0;
     CURL *curl = m_curl.curl();
@@ -318,14 +316,14 @@ int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRh
         if (statusCode == 401)
             if (oSession)
                 oSession->logout();
-    }else 
-	{
-		RAWTRACE("RESPONSE-----");
-		RAWTRACE(strRespBody.c_str());
-		RAWTRACE("END RESPONSE-----");
-	}
-	
-	return (int)statusCode;
+    }
+    else {
+        RAWTRACE("RESPONSE-----");
+        RAWTRACE(strRespBody.c_str());
+        RAWTRACE("END RESPONSE-----");
+    }
+
+    return (int)statusCode;
 }
 
 String CURLNetRequest::resolveUrl(const String& strUrl)
@@ -623,10 +621,17 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             if (!msg) break;
             if (msg->msg = CURLMSG_DONE) {
                 result = msg->data.result;
-                if (result == CURLE_OK)
+                switch (result)
+                {
+                case CURLE_OK:
                     RAWTRACE("Operation completed successfully");
-                else
+                    break;
+                case CURLE_OPERATION_TIMEDOUT:
+                    RAWLOG_ERROR("Operation finished by timeout");
+                    break;
+                default:
                     RAWLOG_ERROR1("Operation finished with code %d", (int)result);
+                }
             }
         }
         break;

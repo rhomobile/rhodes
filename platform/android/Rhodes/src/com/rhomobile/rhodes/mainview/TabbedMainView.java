@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -45,6 +45,7 @@ public class TabbedMainView implements MainView {
 	
 	private TabHost host;
 	private Vector<TabData> tabData;
+	private int tabIndex;
 	
 	private static class TabData {
 		public MainView view;
@@ -80,7 +81,8 @@ public class TabbedMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params) {
-		Rhodes r = RhodesInstance.getInstance();
+		RhodesService r = RhodesService.getInstance();
+		Context ctx = r.getContext();
 		
 		Vector<Object> tabs = null;
 		if (params instanceof Vector<?>)
@@ -98,18 +100,19 @@ public class TabbedMainView implements MainView {
 		
 		int size = tabs.size();
 		
-		host = new TabHost(r);
-		host.setId(Rhodes.RHO_MAIN_VIEW);
+		host = new TabHost(ctx);
+		host.setId(RhodesService.RHO_MAIN_VIEW);
 		
 		tabData = new Vector<TabData>(size);
+		tabIndex = 0;
 		
-		TabWidget tabWidget = new TabWidget(r);
+		TabWidget tabWidget = new TabWidget(ctx);
 		tabWidget.setId(android.R.id.tabs);
 		TabHost.LayoutParams lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT, Gravity.TOP);
 		host.addView(tabWidget, lpt);
 		
-		FrameLayout frame = new FrameLayout(r);
+		FrameLayout frame = new FrameLayout(ctx);
 		frame.setId(android.R.id.tabcontent);
 		FrameLayout.LayoutParams lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT, Gravity.BOTTOM);
@@ -123,10 +126,10 @@ public class TabbedMainView implements MainView {
 			
 			public void onTabChanged(String tabId) {
 				try {
-					int index = Integer.parseInt(tabId);
-					TabData data = tabData.elementAt(index);
+					tabIndex = Integer.parseInt(tabId);
+					TabData data = tabData.elementAt(tabIndex);
 					if (data.reload || !data.loaded) {
-						getView(index).navigate(data.url, index);
+						getView(tabIndex).navigate(data.url, tabIndex);
 						data.loaded = true;
 					}
 				}
@@ -226,10 +229,11 @@ public class TabbedMainView implements MainView {
 
 	public void switchTab(int index) {
 		host.setCurrentTab(index);
+		tabIndex = index;
 	}
 	
 	public int activeTab() {
-		return host.getCurrentTab();
+		return tabIndex;
 	}
 
 	public void goBack() {

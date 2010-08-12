@@ -32,7 +32,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhoLogConf;
+import com.rhomobile.rhodes.RhodesService;
 
 public class LogOptionsDialog extends Dialog implements OnClickListener {
 
@@ -60,13 +61,15 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 		saveButton.setOnClickListener(this);
 		closeButton.setOnClickListener(this);
 
+		RhoLogConf logConf = RhodesService.getInstance().getLogConf();
+		
 		includeClasses = (EditText) this.findViewById(AndroidR.id.includeClasses);
 		
-		includeClasses.setText( RhodesInstance.getLogConf().getEnabledCategories() );
+		includeClasses.setText( logConf.getEnabledCategories() );
 		
 		excludeClasses = (EditText) this.findViewById(AndroidR.id.excludeClasses);
 		
-		excludeClasses.setText( RhodesInstance.getLogConf().getDisabledCategories() );
+		excludeClasses.setText( logConf.getDisabledCategories() );
 		
 		logLevel = (Spinner) this.findViewById(AndroidR.id.loglevel);
 
@@ -76,17 +79,18 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 		
 		logLevel.setAdapter(spinnerArrayAdapter);
 		
-		logLevel.setSelection( RhodesInstance.getLogConf().getMinSeverity() );
+		logLevel.setSelection( logConf.getMinSeverity() );
 	}
 
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.logoptsSaveButton:
-			RhodesInstance.getLogConf().setMinSeverity(logLevel.getSelectedItemPosition());
-			RhodesInstance.getLogConf().setEnabledCategories(includeClasses.getText().toString());
-			RhodesInstance.getLogConf().setDisabledCategories(excludeClasses.getText().toString());
+			RhoLogConf logConf = RhodesService.getInstance().getLogConf();
+			logConf.setMinSeverity(logLevel.getSelectedItemPosition());
+			logConf.setEnabledCategories(includeClasses.getText().toString());
+			logConf.setDisabledCategories(excludeClasses.getText().toString());
 			
-			RhodesInstance.getLogConf().saveToFile();
+			logConf.saveToFile();
 			
 			dismiss();
 			break;

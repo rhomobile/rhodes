@@ -84,49 +84,6 @@
 
 
 
-/*
-
-- (void)imagePickerController:(UIImagePickerController *)picker 
-		didFinishPickingImage:(UIImage *)image 
-		editingInfo:(NSDictionary *)editingInfo 
-{ 
-    //If image editing is enabled and the user successfully picks an image, the image parameter of the 
-    //imagePickerController:didFinishPicking Image:editingInfo:method contains the edited image. 
-    //You should treat this image as the selected image, but if you want to store the original image, you can get 
-    //it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
-    [self useImage:image]; 
-    // Remove the picker interface and release the picker object. 
-    [picker dismissModalViewControllerAnimated:YES];
-    [picker.view removeFromSuperview];
-	//picker.view.hidden = YES;
-    [picker release];
-#ifdef __IPHONE_3_2
-    [popover dismissPopoverAnimated:YES];
-#endif
-} 
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
-{ 
-    // Notify view about cancel
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
-    
-    // Remove the picker interface and release the picker object. 
-    [picker dismissModalViewControllerAnimated:YES]; 
-    [picker.view removeFromSuperview];
-	//picker.view.hidden = YES;
-    [picker release]; 
-#ifdef __IPHONE_3_2
-    [popover dismissPopoverAnimated:YES];
-#endif
-} 
-
-#ifdef __IPHONE_3_2
-// UIPopoverControllerDelegate implementation
-- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
-}
-#endif // __IPHONE_3_2
-*/
 @end
 
 void rho_signature_take_signature(char* callback_url, char* image_format) {

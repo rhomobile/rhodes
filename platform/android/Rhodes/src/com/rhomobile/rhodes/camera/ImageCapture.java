@@ -26,9 +26,9 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
+import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.RhodesService;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
@@ -45,7 +45,7 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class ImageCapture extends Activity implements SurfaceHolder.Callback, OnClickListener, Camera.AutoFocusCallback
+public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback, OnClickListener, Camera.AutoFocusCallback
  {
 	
 	private static final String TAG = "ImageCapture";
@@ -187,7 +187,7 @@ public class ImageCapture extends Activity implements SurfaceHolder.Callback, On
 
 			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
 			// String filename = timeStampFormat.format(new Date());
-			String dir = Rhodes.getBlobPath();
+			String dir = RhodesService.getBlobPath();
 			
 			OutputStream osCommon = getContentResolver().openOutputStream(uri);
 			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg");
