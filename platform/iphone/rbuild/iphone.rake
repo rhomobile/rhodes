@@ -343,7 +343,7 @@ namespace "run" do
      sdkver = $sdk.gsub(/^iphonesimulator/, '')
      # Workaround: sometimes sdkver could differ from emulator version.
      # Example: iPhone SDK 4.0.1. In this case sdk is still iphonesimulator4.0 but version of simulator is 4.0.1
-     sdkver = $emulator_version unless $emulator_version.nil?
+     sdkver = $emulator_version.to_s unless $emulator_version.nil?
 
      elements = []
      binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')

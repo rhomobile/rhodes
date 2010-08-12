@@ -5,11 +5,11 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NavBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoMenu.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesInstance.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/SplashScreen.java
@@ -20,9 +20,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/camera/Camera.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/FileList.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCaptureCallback.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/Signature.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureView.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
@@ -40,6 +37,9 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessorNew.ja
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessorOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactField.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/ImageCapture.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/Signature.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java
@@ -52,6 +52,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/uri/SmsUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/TelUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/UriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/VideoUriHandler.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/util/PerformOnUiThread.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientNew.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java

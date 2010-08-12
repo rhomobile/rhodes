@@ -1,30 +1,30 @@
-<div id="pageTitle">
-	<h1><%= class_name.camelize.pluralize %></h1>
+<div class="pageTitle">
+  <h1><%= name.camelize.pluralize %></h1>
 </div>
 
-<div id="toolbar">
-    <div id="leftItem" class="regularButton"><%%= link_to "Home", Rho::RhoConfig.start_path %></div>
-    <div id="rightItem" class="regularButton"><%%= link_to "New", :controller => :<%= name.camelize %>, :action => :new %></div>
+<div class="toolbar">
+  <div class="leftItem regularButton">
+    <a href="<%%= Rho::RhoConfig.start_path %>">Home</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a class="button" href="<%%= url_for :action => :new %>">New</a>
+  </div>
 </div>
 
-<div id="content">
-    <ul>
-        <%% @<%= name.downcase.pluralize %>.each do |obj| %>
-            <% if self.attributes? %>
-            <li>
-                <a href="<%%= url_for :action => :show, :id => obj.object %>">
-                    <span class="title"><%%= obj.<%= attributes[0] %> %></span>
-                    <span class="disclosure_indicator"></span>
-                </a>
-            </li>
-            <% else %>
-            <li>
-                <a href="#">
-                    <span class="title">Some list entry...</span>
-                    <span class="disclosure_indicator"></span>
-                </a>
-            </li>
-            <% end %>
-        <%% end %>
-    </ul>
+<div class="content">
+  <ul>
+    <%% @<%= name.downcase.pluralize %>.each do |<%= name.downcase %>| %>
+    <% if self.attributes? %>
+        <li>
+          <a href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>">
+            <span class="title"><%%= <%= name.downcase %>.<%= attributes[0] %> %></span><span class="disclosure_indicator"></span>
+          </a>
+        </li>
+    <% else %>
+        <li>
+          <a href="#"><span class="title">Some list entry...</span><span class="disclosure_indicator"></span></a>
+        </li>
+    <% end %>
+    <%% end %>
+  </ul>
 </div>

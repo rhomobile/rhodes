@@ -428,12 +428,16 @@ static MapViewController *mc = nil;
 #endif
 
 void mapview_create(rho_param *p) {
+    if (!rho_rhodesapp_check_mode())
+        return;
 #ifdef __IPHONE_3_0
 	[MapViewController createMap:rho_param_dup(p)];
 #endif	
 }
 
 void mapview_close() {
+    if (!rho_rhodesapp_check_mode())
+        return;
 #ifdef __IPHONE_3_0
     [MapViewController closeMap];
 #endif

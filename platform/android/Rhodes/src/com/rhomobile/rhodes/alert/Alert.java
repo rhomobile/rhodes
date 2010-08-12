@@ -45,9 +45,9 @@ import android.widget.TextView;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class Alert {
 	
@@ -112,7 +112,7 @@ public class Alert {
 			String callback = null;
 			Vector<CustomButton> buttons = new Vector<CustomButton>();
 			
-			Rhodes r = RhodesInstance.getInstance();
+			Context ctx = RhodesService.getInstance().getContext();
 			
 			if (params instanceof String) {
 				message = (String)params;
@@ -133,11 +133,11 @@ public class Alert {
 				if (iconObj != null && (iconObj instanceof String)) {
 					String iconName = (String)iconObj;
 					if (iconName.equalsIgnoreCase("alert"))
-						icon = r.getResources().getDrawable(AndroidR.drawable.alert_alert);
+						icon = ctx.getResources().getDrawable(AndroidR.drawable.alert_alert);
 					else if (iconName.equalsIgnoreCase("question"))
-						icon = r.getResources().getDrawable(AndroidR.drawable.alert_question);
+						icon = ctx.getResources().getDrawable(AndroidR.drawable.alert_question);
 					else if (iconName.equalsIgnoreCase("info"))
-						icon = r.getResources().getDrawable(AndroidR.drawable.alert_info);
+						icon = ctx.getResources().getDrawable(AndroidR.drawable.alert_info);
 					else {
 						String iconPath = RhoFileApi.normalizePath("apps/" + iconName);
 						Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
@@ -185,17 +185,17 @@ public class Alert {
 			if (message == null)
 				return;
 			
-			Dialog dialog = new Dialog(r);
+			Dialog dialog = new Dialog(ctx);
 			dialog.setTitle(title);
 			dialog.setCancelable(false);
 			dialog.setCanceledOnTouchOutside(false);
 			
-			LinearLayout main = new LinearLayout(r);
+			LinearLayout main = new LinearLayout(ctx);
 			main.setOrientation(LinearLayout.VERTICAL);
 			main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			main.setPadding(10, 10, 10, 10);
 			
-			LinearLayout top = new LinearLayout(r);
+			LinearLayout top = new LinearLayout(ctx);
 			top.setOrientation(LinearLayout.HORIZONTAL);
 			top.setGravity(Gravity.CENTER);
 			top.setPadding(10, 10, 10, 10);
@@ -203,20 +203,20 @@ public class Alert {
 			main.addView(top);
 			
 			if (icon != null) {
-				ImageView imgView = new ImageView(r);
+				ImageView imgView = new ImageView(ctx);
 				imgView.setImageDrawable(icon);
 				imgView.setScaleType(ImageView.ScaleType.CENTER);
 				imgView.setPadding(10, 10, 10, 10);
 				top.addView(imgView);
 			}
 			
-			TextView textView = new TextView(r);
+			TextView textView = new TextView(ctx);
 			textView.setText(message);
 			textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 			textView.setGravity(Gravity.CENTER);
 			top.addView(textView);
 			
-			LinearLayout bottom = new LinearLayout(r);
+			LinearLayout bottom = new LinearLayout(ctx);
 			bottom.setOrientation(buttons.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
 			bottom.setGravity(Gravity.CENTER);
 			bottom.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
@@ -224,7 +224,7 @@ public class Alert {
 			
 			for (int i = 0, lim = buttons.size(); i < lim; ++i) {
 				CustomButton btn = buttons.elementAt(i);
-				Button button = new Button(r);
+				Button button = new Button(ctx);
 				button.setText(btn.title);
 				button.setOnClickListener(new ShowDialogListener(callback, btn.id, btn.title, dialog));
 				button.setLayoutParams(new LinearLayout.LayoutParams(
@@ -256,7 +256,7 @@ public class Alert {
 	public static void showPopup(Object params) {
 		try {
 			Logger.T(TAG, "showPopup");
-			Rhodes.performOnUiThread(new ShowDialog(params), false);
+			PerformOnUiThread.exec(new ShowDialog(params), false);
 		}
 		catch (Exception e) {
 			reportFail("showPopup", e);
@@ -266,7 +266,7 @@ public class Alert {
 	public static void hidePopup() {
 		try {
 			Logger.T(TAG, "hidePopup");
-			Rhodes.performOnUiThread(new HideDialog(), false);
+			PerformOnUiThread.exec(new HideDialog(), false);
 		}
 		catch (Exception e) {
 			reportFail("hidePopup", e);
@@ -278,8 +278,8 @@ public class Alert {
 			if (!Capabilities.VIBRATE_ENABLED)
 				throw new IllegalAccessException("VIBRATE disabled");
 			Logger.T(TAG, "vibrate: " + duration);
-			Rhodes instance = RhodesInstance.getInstance();
-			Vibrator vibrator = (Vibrator)instance.getSystemService(Context.VIBRATOR_SERVICE);
+			Context ctx = RhodesService.getInstance().getContext();
+			Vibrator vibrator = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
 			vibrator.vibrate(duration);
 		}
 		catch (Exception e) {
@@ -298,7 +298,7 @@ public class Alert {
 				}
 			});
 			fileName = RhoFileApi.normalizePath("apps/" + fileName);
-			File f = new File(RhodesInstance.getInstance().getRootPath());
+			File f = new File(RhodesService.getInstance().getRootPath());
 			f = new File(f, fileName);
 			if (!f.exists())
 				RhoFileApi.copy(fileName);
