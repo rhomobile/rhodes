@@ -1,23 +1,26 @@
-<div id="pageTitle">
-    <h1><%= class_name %></h1>
+<div class="pageTitle">
+  <h1><%= class_name %></h1>
 </div>
 
-<div id="toolbar">
-    <div id="leftItem" class="blueButton"><%%= link_to "Sync", :controller => :Settings, :action => :do_sync %></div>
-    <%% if SyncEngine::logged_in > 0 %>
-      <div id="rightItem" class="regularButton"><%%= link_to "Logout", :controller => :Settings, :action => :logout %></div>
-    <%% else %>
-      <div id="rightItem" class="regularButton"><%%= link_to "Login", :controller => :Settings, :action => :login %></div>
-    <%% end %>
+<div class="toolbar">
+  <%% if SyncEngine::logged_in > 0 %>
+      <div class="leftItem blueButton">
+        <a href="<%%= url_for :controller => :Settings, :action => :do_sync %>">Sync</a>
+      </div>
+      <div class="rightItem regularButton">
+        <a href="<%%= url_for :controller => :Settings, :action => :logout %>">Logout</a>
+      </div>
+  <%% else %>
+      <div class="rightItem regularButton">
+        <a href="<%%= url_for :controller => :Settings, :action => :login %>">Login</a>
+      </div>
+  <%% end %>
 </div>
 
-<div id="content">
-    <ul>
-        <li>
-            <a href="#">
-                <span class="title">Add Links Here...</span>
-                <span class="disclosure_indicator"></span>
-            </a>
-        </li>
-    </ul>
+<div class="content">
+  <ul>
+    <li>
+      <a href="#"><span class="title">Add link here...</span><span class="disclosure_indicator"/></a>
+    </li>
+  </ul>
 </div>

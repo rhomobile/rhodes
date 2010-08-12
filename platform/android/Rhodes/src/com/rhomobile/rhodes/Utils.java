@@ -164,12 +164,12 @@ public class Utils {
 	
 	public static boolean isAppNameChanged() {
 		try {
-			Rhodes r = RhodesInstance.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			File name = new File(r.getRootPath(), "name");
 			if (!name.exists())
 				return false;
 			
-			FileSource as = new AssetsSource(r.getResources().getAssets());
+			FileSource as = new AssetsSource(r.getContext().getResources().getAssets());
 			FileSource fs = new FileSource();
 			return !Utils.isContentsEquals(as, "name", fs, name.getPath());
 		}

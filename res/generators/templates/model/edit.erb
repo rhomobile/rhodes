@@ -1,23 +1,27 @@
-<div id="pageTitle">
-	<h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %>%></h1>
+<div class="pageTitle">
+  <h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
 </div>
 
-<div id="toolbar">
-    <div id="leftItem" class="backButton"><%%= link_to "Cancel", :action => :show, :id => @<%= name.downcase %>.object %></div>
-    <div id="rightItem" class="regularButton"><%%= link_to "Delete", :action => :delete, :id => @<%= name.downcase %>.object %></div>
+<div class="toolbar">
+  <div class="leftItem backButton">
+    <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>">Cancel</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a class="button" href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>">Delete</a>
+  </div>
 </div>
 
-<div id="content">
-    <form method="POST" action="<%%= url_for :action => :update %>">
-            <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
-            <ul>
-                <% attributes.each do |attribute| %>
-                <li>
-                    <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
-                    <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %>%>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
-                </li>
-                <% end %>
-            </ul>
-            <input type="submit" class="standardButton" value="Update" />
-    </form>
+<div class="content">
+  <form method="POST" action="<%%= url_for :action => :update %>">
+    <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
+    <ul>
+      <% attributes.each do |attribute| %>
+          <li>
+            <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
+            <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
+          </li>
+      <% end %>
+    </ul>
+    <input type="submit" class="standardButton" value="Update"/>
+  </form>
 </div>
