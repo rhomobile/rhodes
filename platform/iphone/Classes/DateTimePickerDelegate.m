@@ -29,6 +29,8 @@
     
     // size up the toolbar and set its frame
     [self.toolbar sizeToFit];
+	self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+	self.toolbar.autoresizesSubviews = YES;
     CGFloat toolbarHeight = [self.toolbar frame].size.height;
     
     // TODO: This is an approximate y-origin, figure out why it is off by 3.7
@@ -45,10 +47,12 @@
     
     // Setup label for toolbar
     self.barLabel = [[UILabel alloc] initWithFrame:toolbarFrame];
-    barLabel.text = self.dateTime.title;
-    barLabel.textColor = [UIColor whiteColor]; 
-    barLabel.backgroundColor = [UIColor clearColor];
-    barLabel.textAlignment = UITextAlignmentCenter;
+    self.barLabel.text = self.dateTime.title;
+    self.barLabel.textColor = [UIColor whiteColor]; 
+    self.barLabel.backgroundColor = [UIColor clearColor];
+    self.barLabel.textAlignment = UITextAlignmentCenter;
+	self.barLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+	self.barLabel.autoresizesSubviews = YES;
 
     UIBarButtonItem *flexItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                               target:self action:nil];
@@ -67,18 +71,19 @@
 - (void)createPicker:(UIView*)parent
 {
     self.parentView = parent;
-    CGRect parentFrame = parent.frame;
+    CGRect parentFrame = parent.bounds;
     
     // Create the picker
     if (self.pickerView == nil) {
         CGRect frame = parentFrame;
         frame.size.height = 220;
         frame.origin.y = parentFrame.origin.y + parentFrame.size.height - frame.size.height;
-        self.pickerView = [[UIDatePicker alloc] initWithFrame:frame];
+		self.pickerView = [[UIDatePicker alloc] initWithFrame:frame];
     }
     
     if (self.pickerView.superview == nil) {
-        self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+        self.pickerView.autoresizesSubviews = YES;
         
         // Determine picker type
         int mode = self.dateTime.format;
@@ -138,6 +143,13 @@
     // the date picker has finished sliding downwards, so remove it
     [self.pickerView removeFromSuperview];
     [self.barLabel removeFromSuperview];
+    [self.toolbar removeFromSuperview];
+	[self.pickerView release];
+	self.pickerView = nil;
+    [self.barLabel release];
+    self.barLabel = nil;
+    [self.toolbar release];
+    self.toolbar = nil;
 }
 
 - (void)animateDown

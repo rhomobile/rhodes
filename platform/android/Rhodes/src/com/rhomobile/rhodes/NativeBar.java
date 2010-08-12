@@ -23,6 +23,7 @@ package com.rhomobile.rhodes;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class NativeBar {
 	
@@ -46,7 +47,7 @@ public class NativeBar {
 
 		public void run() {
 			try {
-				Rhodes r = RhodesInstance.getInstance();
+				RhodesService r = RhodesService.getInstance();
 				MainView mainView = r.getMainView();
 				MainView v = null;
 				
@@ -86,7 +87,7 @@ public class NativeBar {
 		}
 		
 		public void run() {
-			RhodesInstance.getInstance().getMainView().switchTab(index);
+			RhodesService.getInstance().getMainView().switchTab(index);
 		}
 	};
 	
@@ -96,7 +97,7 @@ public class NativeBar {
 
 	public static void create(int type, Object params) {
 		try {
-			Rhodes.performOnUiThread(new CreateTask(type, params), false);
+			PerformOnUiThread.exec(new CreateTask(type, params), false);
 		}
 		catch (Exception e) {
 			reportFail("create", e);
@@ -105,7 +106,7 @@ public class NativeBar {
 	
 	public static void remove() {
 		try {
-			Rhodes.performOnUiThread(new CreateTask(NOBAR_TYPE, null), false);
+			PerformOnUiThread.exec(new CreateTask(NOBAR_TYPE, null), false);
 		}
 		catch (Exception e) {
 			reportFail("remove", e);
@@ -114,7 +115,7 @@ public class NativeBar {
 	
 	public static void switchTab(int index) {
 		try {
-			Rhodes.performOnUiThread(new SwitchTabTask(index), false);
+			PerformOnUiThread.exec(new SwitchTabTask(index), false);
 		}
 		catch (Exception e) {
 			reportFail("switchTab", e);

@@ -24,9 +24,9 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.Rhodes;
+import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.RhodesService;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,7 +34,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-public class DateTimePickerScreen extends Activity {
+public class DateTimePickerScreen extends RhoActivity {
 	
 	private static final String TAG = "DateTimePicker";
 	
@@ -76,7 +76,7 @@ public class DateTimePickerScreen extends Activity {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		
-		getWindow().setFlags(Rhodes.WINDOW_FLAGS, Rhodes.WINDOW_MASK);
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();
