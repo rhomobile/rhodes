@@ -48,6 +48,8 @@ static int started = 0;
 
 void create_navbar(rho_param *p)
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
     if (p->type != RHO_PARAM_HASH) {
         RAWLOG_ERROR("Unexpected parameter type for create_navbar, should be Hash");
         return;
@@ -113,6 +115,8 @@ void create_navbar(rho_param *p)
 
 void remove_navbar()
 {
+    if (!rho_rhodesapp_check_mode())
+        return;
     id runnable = [RhoNavBarRemoveTask class];
     [Rhodes performOnUiThread:runnable wait:YES];
 }

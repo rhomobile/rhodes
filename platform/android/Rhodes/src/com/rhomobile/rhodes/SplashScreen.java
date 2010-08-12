@@ -24,7 +24,7 @@ public class SplashScreen {
 	
 	public SplashScreen(Context ctx) {
 		AssetManager am = ctx.getResources().getAssets();
-		Rhodes r = RhodesInstance.getInstance();
+		RhodesService r = RhodesService.getInstance();
 		//boolean bc = r.isBundleChanged();
 		
 		String file = LOADING_PNG;
@@ -37,7 +37,7 @@ public class SplashScreen {
 			
 			ImageView v = new ImageView(ctx);
 			v.setImageBitmap(bitmap);
-			v.setId(Rhodes.RHO_SPLASH_VIEW);
+			v.setId(RhodesService.RHO_SPLASH_VIEW);
 			view = v;
 		}
 		catch (IOException e) {
@@ -63,7 +63,7 @@ public class SplashScreen {
 				v.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
 			}
 			
-			v.setId(Rhodes.RHO_SPLASH_VIEW);
+			v.setId(RhodesService.RHO_SPLASH_VIEW);
 			
 			view = v;
 		}

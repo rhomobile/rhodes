@@ -52,7 +52,7 @@
 
 @implementation TabbedMainView
 
-@synthesize tabbar, tabbarData;
+@synthesize tabbar, tabbarData, tabindex;
 
 
 
@@ -195,20 +195,21 @@
 }
 
 - (void)switchTab:(int)index {
-    tabbar.selectedIndex = index;
+    tabindex = index;
+    tabbar.selectedIndex = tabindex;
 }
 
 - (void)onSwitchTab {
-    int index = [self activeTab];
-    RhoTabBarData *td = [self tabData:index];
+    tabindex = tabbar.selectedIndex;
+    RhoTabBarData *td = [self tabData:tabindex];
     if (!td.loaded || td.reload) {
-        [self navigateRedirect:td.url tab:index];
+        [self navigateRedirect:td.url tab:tabindex];
         td.loaded = YES;
     }
 }
 
 - (int)activeTab {
-    return tabbar.selectedIndex;
+    return tabindex;
 }
 
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
