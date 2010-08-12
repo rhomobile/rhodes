@@ -50,7 +50,8 @@ private:
 	
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
-
+    
+    boolean m_bDeactivationMode;
 
 public:
     ~CRhodesApp(void);
@@ -64,6 +65,8 @@ public:
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
     void navigateBack();
+    
+    boolean deactivationMode() const {return m_bDeactivationMode;}
 
     const String& getRhobundleReloadUrl();
     const String& getStartUrl();
@@ -174,6 +177,8 @@ int rho_base64_decode(const char *src, int srclen, char *dst);
 void rho_net_request(const char *url);
 
 void rho_rhodesapp_load_url(const char *url);
+
+int rho_rhodesapp_check_mode();
 
 #ifdef __cplusplus
 };

@@ -20,6 +20,8 @@
  */
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.util.PerformOnUiThread;
+
 import android.net.Uri;
 import android.webkit.CookieManager;
 
@@ -41,14 +43,14 @@ public class WebView {
 		}
 		
 		public void run() {
-			Rhodes r = RhodesInstance.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			r.getMainView().navigate(url, index);
 		}
 	};
 	
 	private static class NavigateBackTask implements Runnable {
 		public void run() {
-			Rhodes r = RhodesInstance.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			r.getMainView().goBack();
 		}
 	};
@@ -61,23 +63,7 @@ public class WebView {
 		}
 		
 		public void run() {
-			RhodesInstance.getInstance().getMainView().reload(index);
-		}
-	};
-	
-	private static class IntHolder {
-		public int value;
-	};
-	
-	private static class ActiveTabTask implements Runnable {
-		private IntHolder ret;
-		
-		public ActiveTabTask(IntHolder r) {
-			ret = r;
-		}
-		
-		public void run() {
-			ret.value = RhodesInstance.getInstance().getMainView().activeTab();
+			RhodesService.getInstance().getMainView().reload(index);
 		}
 	};
 	
@@ -99,7 +85,7 @@ public class WebView {
 
 	public static void navigate(String url, int index) {
 		try {
-			Rhodes.performOnUiThread(new NavigateTask(url, index), false);
+			PerformOnUiThread.exec(new NavigateTask(url, index), false);
 		}
 		catch (Exception e) {
 			reportFail("navigate", e);
@@ -108,7 +94,7 @@ public class WebView {
 	
 	public static void navigateBack() {
 		try {
-			Rhodes.performOnUiThread(new NavigateBackTask(), false);
+			PerformOnUiThread.exec(new NavigateBackTask(), false);
 		}
 		catch (Exception e) {
 			reportFail("navigateBack", e);
@@ -117,7 +103,7 @@ public class WebView {
 	
 	public static void refresh(int index) {
 		try {
-			Rhodes.performOnUiThread(new RefreshTask(index), false);
+			PerformOnUiThread.exec(new RefreshTask(index), false);
 		}
 		catch (Exception e) {
 			reportFail("refresh", e);
@@ -126,9 +112,7 @@ public class WebView {
 	
 	public static int activeTab() {
 		try {
-			IntHolder v = new IntHolder();
-			Rhodes.performOnUiThread(new ActiveTabTask(v), true);
-			return v.value;
+			return RhodesService.getInstance().getMainView().activeTab();
 		}
 		catch (Exception e) {
 			reportFail("activeTab", e);
@@ -139,7 +123,7 @@ public class WebView {
 	
 	public static void executeJs(String js, int index) {
 		try {
-			Rhodes.performOnUiThread(new NavigateTask("javascript:" + js, index), false);
+			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index), false);
 		}
 		catch (Exception e) {
 			reportFail("executeJs", e);
@@ -148,7 +132,7 @@ public class WebView {
 	
 	public static void setCookie(String url, String cookie) {
 		try {
-			Rhodes.performOnUiThread(new SetCookieTask(url, cookie), false);
+			PerformOnUiThread.exec(new SetCookieTask(url, cookie), false);
 		}
 		catch (Exception e) {
 			reportFail("setCookie", e);

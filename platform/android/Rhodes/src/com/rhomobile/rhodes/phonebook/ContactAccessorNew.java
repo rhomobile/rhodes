@@ -3,14 +3,14 @@ package com.rhomobile.rhodes.phonebook;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhodesInstance;
+import com.rhomobile.rhodes.RhodesService;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract.CommonDataKinds.Email;
@@ -38,9 +38,9 @@ public class ContactAccessorNew implements ContactAccessor {
 	private String accType;
 	
 	public ContactAccessorNew() throws Exception {
-		Rhodes r = RhodesInstance.getInstance();
+		Context ctx = RhodesService.getInstance().getContext();
 		
-		Account[] accounts = AccountManager.get(r).getAccounts();
+		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {
 			accName = "rhodes@rhomobile.com";
 			accType = "com.rhomobile";
@@ -51,7 +51,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			accType = acnt.type;
 		}
 		
-		cr = r.getContentResolver();
+		cr = ctx.getContentResolver();
 	}
 	
 	private void fillName(String id, Contact contact) {

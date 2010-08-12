@@ -35,6 +35,7 @@ void RhoRubyInitApp();
 //void RhoRubyThreadStart();
 //void RhoRubyThreadStop();
 void rho_ruby_activateApp();
+void rho_ruby_deactivateApp();
 void rho_ruby_loadserversources(const char* szData);
 void rho_ruby_start_threadidle();
 void rho_ruby_stop_threadidle();

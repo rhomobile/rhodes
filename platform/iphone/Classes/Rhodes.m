@@ -231,12 +231,16 @@ static Rhodes *instance = NULL;
 }
 
 - (void)takePicture:(NSString*) url {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [pickImageDelegate setPostUrl:url];
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
 - (void)takeSignature:(NSString*)url {
+    if (!rho_rhodesapp_check_mode())
+        return;
 	[self hideSplash];
 	[signatureDelegate setPostUrl:url];
 	//[signatureDelegate setImageFormat:format];
@@ -264,6 +268,8 @@ static Rhodes *instance = NULL;
 
 
 - (void)choosePicture:(NSString*) url {
+    if (!rho_rhodesapp_check_mode())
+        return;
     [pickImageDelegate setPostUrl:url];
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
@@ -525,27 +531,25 @@ static Rhodes *instance = NULL;
 #endif
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-#if 0
-    if (appStarted) {
-        //rho_rhodesapp_callAppActiveCallback();
-        /*
-        RhoDelegate* callback = [[RhoDelegate alloc] init];
-        char* callbackUrl = rho_conf_getString("app_did_become_active_callback");
-        if (callbackUrl && strlen(callbackUrl) > 0) {
-            callback.postUrl = [self normalizeUrl:[NSString stringWithCString:callbackUrl
-                            encoding:[NSString defaultCStringEncoding]]];
-            [callback doCallback:@""];
-        }
-        [callback release];
-        */
-    }
-#endif // #if 0
+    RAWLOG_INFO("Application did become active");
+    rho_rhodesapp_callAppActiveCallback(1);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-	RAWLOG_INFO("Runner will resign active");
-	[self saveLastUsedTime];
+    RAWLOG_INFO("Application will resign active");
+    rho_rhodesapp_callAppActiveCallback(0);
+    [self saveLastUsedTime];
 }
+
+#ifdef __IPHONE_4_0
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    // Nothing right now
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    // Nothing right now
+}
+#endif
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
