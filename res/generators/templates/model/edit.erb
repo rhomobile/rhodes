@@ -17,7 +17,7 @@
     <ul>
       <% attributes.each do |attribute| %>
           <li>
-            <label for="<%= name.downcase % class="fieldLabel">[<%= attribute %>]"><%= humanize(attribute) %></label>
+            <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
             <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
           </li>
       <% end %>

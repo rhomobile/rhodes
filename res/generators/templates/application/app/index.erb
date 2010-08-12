@@ -3,18 +3,18 @@
 </div>
 
 <div class="toolbar">
-  <% if SyncEngine::logged_in > 0 %>
+  <%% if SyncEngine::logged_in > 0 %>
       <div class="leftItem blueButton">
-        <a href="<%= url_for :controller => :Settings, :action => :do_sync %>">Sync</a>
+        <a href="<%%= url_for :controller => :Settings, :action => :do_sync %>">Sync</a>
       </div>
       <div class="rightItem regularButton">
-        <a href="<%= url_for :controller => :Settings, :action => :logout %>">Logout</a>
+        <a href="<%%= url_for :controller => :Settings, :action => :logout %>">Logout</a>
       </div>
-  <% else %>
+  <%% else %>
       <div class="rightItem regularButton">
-        <a href="<%= url_for :controller => :Settings, :action => :login %>">Login</a>
+        <a href="<%%= url_for :controller => :Settings, :action => :login %>">Login</a>
       </div>
-  <% end %>
+  <%% end %>
 </div>
 
 <div class="content">
