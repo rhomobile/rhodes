@@ -10,7 +10,8 @@ applog: rholog.txt
 iphone:
   configuration: Debug
   sdk: iphonesimulator4.0
+  emulator: 4.0.1
   provisionprofile:
   codesignidentity:
   entitlements:
-extensions: ["extension-name-here", "second-extension-name"]
+extensions: ["json", "another-extension"]

@@ -108,7 +108,7 @@ module Rho
       #rho_info 'render content: ' + @content.length.to_s
       if xhr? and options[:use_layout_on_ajax] != true
         options[:layout] = false
-        if @request["headers"]["Jqtouch"] == "true"
+        if @request["headers"]["Transition-Enabled"] == "true"
           @content = "<div>#{@content}</div>"
         end
       elsif options[:layout].nil? or options[:layout] == true

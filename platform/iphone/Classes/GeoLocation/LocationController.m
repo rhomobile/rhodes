@@ -220,6 +220,8 @@ _TimerCallBack(CFRunLoopTimerRef timer, void* context) {
 }
 
 void geo_update() {
+    if (!rho_rhodesapp_check_mode())
+        return;
     LocationController *loc = [LocationController sharedInstance];
     [loc performSelectorOnMainThread:[loc onUpdateLocation] withObject:nil waitUntilDone:NO];
 }

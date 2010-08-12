@@ -10,6 +10,8 @@
 #import "Rhodes.h"
 
 void choose_datetime(char* callback, char* title, long initial_time, int format, char* data) {
+    if (!rho_rhodesapp_check_mode())
+        return;
     DateTime* dateTime = [[DateTime alloc] init];
     dateTime.url = [NSString stringWithUTF8String:callback];
     dateTime.title = [NSString stringWithUTF8String:title];

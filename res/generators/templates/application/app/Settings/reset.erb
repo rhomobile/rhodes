@@ -1,18 +1,17 @@
-<div id="pageTitle">
-	<h1>Reset Database</h1>
+<div class="pageTitle">
+  <h1>Reset Database</h1>
 </div>
 
-
-
-<div id="toolbar">
-    <div id="leftItem" class="regularButton"><%= link_to "Cancel", :action => :index %></div>
-    <div id="rightItem" class="blueButton"><%= link_to "Confirm", :action => :do_reset %></div>
+<div class="toolbar">
+  <div class="leftItem backButton">
+    <a href="<%= url_for :action => :index %>">Cancel</a>
+  </div>
+  <div class="button blueButton">
+    <a href="<%= url_for :action => :do_reset %>">Confirm</a>
+  </div>
 </div>
 
-
-<div id="content">
-    <div id="reset">
-          <h4>Are you sure?<br/>
-              Resetting removes all objects from your device.</h4>
-    </div>
+<div class="content">
+  <h3>Are you sure?</h3>
+  <div style="margin: 10px;">Resetting removes all objects from your device.</div>
 </div>

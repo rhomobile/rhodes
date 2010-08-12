@@ -2,6 +2,8 @@ package com.rhomobile.rhodes;
 
 import java.util.Map;
 
+import com.rhomobile.rhodes.util.PerformOnUiThread;
+
 public class NavBar {
 
 	private static final String TAG = "NavBar";
@@ -33,7 +35,7 @@ public class NavBar {
 		}
 		
 		public void run() {
-			Rhodes r = RhodesInstance.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			r.getMainView().addNavBar(title, left, right);
 			started = true;
 		}
@@ -41,7 +43,7 @@ public class NavBar {
 	
 	private static class RemoveTask implements Runnable {
 		public void run() {
-			Rhodes r = RhodesInstance.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			r.getMainView().removeNavBar();
 			started = false;
 		}
@@ -53,7 +55,7 @@ public class NavBar {
 	
 	public static void create(Map<Object, Object> params) {
 		try {
-			Rhodes.performOnUiThread(new CreateTask(params), false);
+			PerformOnUiThread.exec(new CreateTask(params), false);
 		}
 		catch (Exception e) {
 			reportFail("create", e);
@@ -62,7 +64,7 @@ public class NavBar {
 	
 	public static void remove() {
 		try {
-			Rhodes.performOnUiThread(new RemoveTask(), false);
+			PerformOnUiThread.exec(new RemoveTask(), false);
 		}
 		catch (Exception e) {
 			reportFail("remove", e);
