@@ -203,6 +203,20 @@ end
     res.should == {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
   end
 
+  it "should split with regex"  do
+    str = "http://www.abc.com/abc/servlet/SearchServlet?act=viewDetail&amp;LanguageCountry=en_US&amp;searchLang=en_US&amp;caseLang=en_US&amp;orgPrefix=NCMC&amp;caseNum=1234567&amp;seqNum=1"
+
+    ufld = str.split(/\&amp;/)
+
+    ufld[0].should == "http://www.abc.com/abc/servlet/SearchServlet?act=viewDetail"
+    ufld[1].should == "LanguageCountry=en_US"
+    ufld[2].should == "searchLang=en_US"
+    ufld[3].should == "caseLang=en_US"
+    ufld[4].should == "orgPrefix=NCMC"
+    ufld[5].should == "caseNum=1234567"
+    ufld[6].should == "seqNum=1"
+  end
+
 end
 =begin
 describe "String#split with String" do
