@@ -3,7 +3,9 @@
 </div>
 
 <div class="toolbar">
-  <a class="cancel" href="<%%= url_for :action => :index %>">Cancel</a>
+  <div class="leftItem backButton">
+    <a class="cancel" href="<%%= url_for :action => :index %>">Cancel</a>
+  </div>
 </div>
 
 <div class="content">
@@ -12,8 +14,9 @@
     <ul>
       <% attributes.each do |attribute| %>
           <li>
-            <label for="<%= name.downcase %>[<%= attribute %>]"><%= humanize(attribute) %></label>
-            <input type="text" name="<%= name.downcase %>[<%= attribute %>]" <%%= placeholder("<%= humanize(attribute) %>") %> />
+            <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
+            <input type="text" name="<%= name.downcase %>[<%= attribute %>]" <%%=
+            placeholder("<%= humanize(attribute) %>") %> />
           </li>
       <% end %>
     </ul>

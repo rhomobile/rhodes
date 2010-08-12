@@ -3,8 +3,12 @@
 </div>
 
 <div class="toolbar">
-  <a class="cancel" href="<%= url_for :action => :index %>">Cancel</a>
-  <a class="button blueButton" href="<%= url_for :action => :do_reset %>">Confirm</a>
+  <div class="leftItem backButton">
+    <a href="<%= url_for :action => :index %>">Cancel</a>
+  </div>
+  <div class="button blueButton">
+    <a href="<%= url_for :action => :do_reset %>">Confirm</a>
+  </div>
 </div>
 
 <div class="content">
