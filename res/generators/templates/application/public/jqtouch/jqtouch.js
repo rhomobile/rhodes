@@ -68,7 +68,8 @@
 
             var defaults = {
                 addGlossToIcon: true,
-                backSelector: '.back, .cancel, .goback',
+//                backSelector: '.back, .cancel, .goback',
+                backSelector: '.backButton a',  // Rho
                 cacheGetRequests: true,
                 cubeSelector: '.cube',
                 dissolveSelector: '.dissolve',

@@ -3,7 +3,12 @@
 </div>
 
 <div class="toolbar">
-  <a class="button" href="<%%= url_for :action => :new %>">New</a>
+  <div class="leftItem regularButton">
+    <a href="<%= Rho::RhoConfig.start_path %>">Home</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a class="button" href="<%%= url_for :action => :new %>">New</a>
+  </div>
 </div>
 
 <div class="content">
@@ -12,12 +17,12 @@
     <% if self.attributes? %>
         <li>
           <a href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>">
-            <%%= <%= name.downcase %>.<%= attributes[0] %> %>
+            <span class="title"><%%= <%= name.downcase %>.<%= attributes[0] %> %></span><span class="disclosure_indicator"></span>
           </a>
         </li>
     <% else %>
         <li>
-          <a href="#">Some list entry...</a>
+          <a href="#"><span class="title">Some list entry...</span><span class="disclosure_indicator"></span></a>
         </li>
     <% end %>
     <%% end %>

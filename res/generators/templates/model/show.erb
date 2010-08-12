@@ -1,19 +1,23 @@
 <div class="pageTitle">
-  <h1><%%= @<%= name.downcase %>.<%= attributes[0] %>%></h1>
+  <h1><%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
 </div>
 
 <div class="toolbar">
-  <a class="back" href="<%%= url_for :action => :index %>">Back</a>
-  <a class="button" href="<%%= url_for :action => :edit, :id => @<%= name.downcase %>.object %>">Edit</a>
+  <div class="leftItem backButton">
+    <a href="<%%= url_for :action => :index %>">Back</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a href="<%%= url_for :action => :edit, :id => @<%= name.downcase %>.object %>">Edit</a>
+  </div>
 </div>
 
 <div class="content">
-    <ul>
-        <% attributes.each do |attribute| %>
+  <ul>
+    <% attributes.each do |attribute| %>
         <li>
-            <div class="label"><%= attribute.camelize %></div>
-            <div class="value"><%%= @<%= name.downcase %>.<%= attribute %>%></div>
+          <div class="itemLabel"><%= attribute.camelize %></div>
+          <div class="itemValue"><%%= @<%= name.downcase %>.<%= attribute %> %></div>
         </li>
-        <% end %>
-    </ul>
+    <% end %>
+  </ul>
 </div>
