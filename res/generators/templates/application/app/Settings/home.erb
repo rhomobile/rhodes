@@ -3,11 +3,11 @@
 </div>
 
 <div class="toolbar">
-  <a class="button leftButton blueButton" href="<%%= url_for :action => :do_sync %>">Sync</a>
   <%% if SyncEngine::logged_in > 0 %>
-  <a class="button" href="<%%= url_for :action => :logout %>">Logout</a>
+  <a class="leftItem blueButton" href="<%%= url_for :action => :do_sync %>">Sync</a>
+  <a class="rightItem regularButton" href="<%%= url_for :action => :logout %>">Logout</a>
   <%% else %>
-  <a class="button" href="<%%= url_for :action => :login %>">Login</a>
+  <a class="rightItem regularButton" href="<%%= url_for :action => :login %>">Login</a>
   <%% end %>
 </div>
 
