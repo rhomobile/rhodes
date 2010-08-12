@@ -1,68 +1,100 @@
-/* Common css */
+a {
+    text-decoration: none;
+}
+
+.content {
+    width: inherit;
+    height: 100%;
+}
+
+.toolbar .noButton {
+    display: none;
+}
+
+.content ul {
+    -webkit-padding-start: 0;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.content ul li {
+    overflow: hidden;
+    clear: both;
+}
+
+.content ul li span {
+    display: block;
+}
+
+.content ul.settings li div.itemLabel span.title {
+    padding: 0;
+    margin: 0;
+}
 
 body {
     margin: 0;
     height: 100%;
     width: inherit;
-    font-family: "Droid",sans-serif;
+    font-family: "Droid", sans-serif;
     background: black;
     color: white;
 }
+
 h1 {
     font-size: 1em;
 }
 
-div#content {
-	background-color:black;
-	width: 100%;
-	padding:0;
-	margin:0;
+.content {
+    background-color: black;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 /* Toolbar */
 
-div#toolbar {
-  	height: 60px;
+.toolbar {
+    height: 60px;
     width: 100%;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B),color-stop(0.2, #585858),color-stop(1.0, #2B2B2B));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
     display: table;
     text-align: center;
     border-spacing: 10px;
 }
 
-div#toolbar div#leftItem,
-div#toolbar div#centerItem,
-div#toolbar div#rightItem {
+.toolbar .leftItem,
+.toolbar .centerItem,
+.toolbar .rightItem {
     display: table-cell;
 }
 
-div#toolbar a {
+.toolbar a {
     line-height: 40px;
     color: black;
     display: block;
 }
 
-div#toolbar .deleteButton,
-div#toolbar .regularButton,
-div#toolbar .blueButton,
-div#toolbar .backButton {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white),color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+.toolbar .deleteButton,
+.toolbar .regularButton,
+.toolbar .blueButton,
+.toolbar .backButton {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white), color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
     -webkit-border-radius: 5px;
     font-size: .9em;
     border: 1px solid white;
 }
 
-
 /* Header */
 
-div#pageTitle {
+.pageTitle {
     height: 25px;
-	margin:0;
+    margin: 0;
     width: 100%;
-    display:none;
+    display: none;
 }
 
-div#pageTitle h1 {
+.pageTitle h1 {
     position: absolute;
     top: 0;
     text-align: left;
@@ -72,22 +104,21 @@ div#pageTitle h1 {
     color: white;
     text-shadow: 1px 1px 1px #000;
     line-height: 25px;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999),color-stop(0.5, #848684));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999), color-stop(0.5, #848684));
 }
-
 
 /* lists */
 
-div#content ul {
-	background: black;
+.content ul {
+    background: black;
 }
 
-div#content ul li {
+.content ul li {
     border-bottom: 1px solid #666;
     font-size: 20px;
 }
 
-div#content ul li a {
+.content ul li a {
     display: block;
     text-decoration: none;
     color: white;
@@ -95,108 +126,111 @@ div#content ul li a {
     height: 100%;
     width: 100%;
     padding: 15px 0 15px 0;
-    background:url("../images/android/disclosure.png") no-repeat center right;
+    background: url("../images/android/disclosure.png") no-repeat center right;
 }
 
-div#content ul li a:hover {
-    background-color:#3399cc;
+.content ul li a:hover {
+    background-color: #3399cc;
 }
-div#content ul li a img {
+
+.content ul li a img {
     float: left;
     height: 100%;
     max-width: 100px;
 }
 
-div#content ul li span.title {
+.content ul li span.title {
     padding: 0 50px 0 10px;
 }
 
-div#content ul li span.disclosure_indicator {
+.content ul li span.disclosure_indicator {
     display: none;
 }
 
-div#content ul li div.itemLabel {
+.content ul li div.itemLabel {
     float: left;
     width: 45%;
     padding: 15px 0 15px 10px;
 }
 
-div#content ul li div.itemValue {
+.content ul li div.itemValue {
     float: right;
     width: 45%;
     padding: 15px 10px 15px 0;
 }
 
-
 /* Forms */
 
-div#content form button {
-    -webkit-appearance:push-button;
+.content form button {
+    -webkit-appearance: push-button;
     width: 300px;
     height: 40px;
     margin-left: 10px;
 }
 
-div#content form ul {
+.content form ul {
     font-size: 20px;
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-div#content form ul li {
+.content form ul li {
     border-bottom: 1px solid #666;
     display: block;
     list-style-type: none;
 }
 
-div#content form label {
+.content form label {
     float: left;
-    display:block;
+    display: block;
     color: white;
     line-height: 64px;
     padding: 0 10px 0 5px;
     margin: 0;
     width: 40%;
     overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-div#content h2 {
-	 margin: 0;
+.content h2 {
+    margin: 0;
 }
 
-div#content h2.groupTitle{
-	width:inherit;
-	margin: 0;
-	padding: 8px 0 8px 8px;
-	font-size:10px;
-	color:white;
-	background-color:#666;
+.content h2.groupTitle {
+    width: inherit;
+    margin: 0;
+    padding: 8px 0 8px 8px;
+    font-size: 10px;
+    color: white;
+    background-color: #666;
 }
-div#content form {
+
+.content form {
     background-color: black;
- }
-div#content form input[type="checkbox"] {
+}
+
+.content form input[type="checkbox"] {
     -webkit-appearance: none;
     background: url(/public/images/android/btn_check_off.png) no-repeat;
     float: right;
     height: 31px;
     width: 31px;
-    margin-top:15px;
+    margin-top: 15px;
     margin-right: 20px;
 }
-div#content form input[type="checkbox"]:checked {
+
+.content form input[type="checkbox"]:checked {
     background: url(/public/images/android/btn_check_on.png) no-repeat;
     float: right;
     height: 31px;
     width: 31px;
-    margin-top:15px;
+    margin-top: 15px;
     margin-right: 20px;
 }
 
-div#content form input[type="radio"] {
+.content form input[type="radio"] {
     background: url(/public/images/android/btn_radio_off.png) no-repeat;
     -webkit-appearance: none;
     -webkit-box-sizing: border-box;
@@ -208,89 +242,89 @@ div#content form input[type="radio"] {
     margin-right: 20px;
     margin-top: 15px;
 }
-div#content form input[type="radio"]:checked {
+
+.content form input[type="radio"]:checked {
     background: url(/public/images/android/btn_radio_on.png) no-repeat;
-    margin-top:15px;
+    margin-top: 15px;
     margin-right: 20px;
 }
 
-div#content form select {
+.content form select {
     -webkit-appearance: none;
     border: 0px;
     width: 100%;
     padding-left: 20px;
     height: 60px;
-    color:white;
+    color: white;
     background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
 }
 
-div#content form textarea {
+.content form textarea {
     -webkit-appearance: none;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
     border: 1px solid #d6d7d6;
     -webkit-border-radius: 4px;
     margin: 10px 0 2px 10px;
     font-size: 0.9em;
     padding: 5px 0 2px 2px;
-    box-shadow:0 -1px 3px #000000;
+    box-shadow: 0 -1px 3px #000000;
 }
 
-div#content form input[type="text"],
-div#content form input[type="password"] {
+.content form input[type="text"],
+.content form input[type="password"] {
     float: right;
     height: 40px;
     margin: 10px 10px 10px 0;
     padding-left: 5px;
-    font-size:26px;
+    font-size: 26px;
     width: 150px;
     -webkit-appearance: none;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6),color-stop(0.25, #efefef),color-stop(0.95, #f7f7f7),color-stop(1.0, #f7f3f7));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
     border: 1px solid #d6d7d6;
     -webkit-border-radius: 4px;
-    box-shadow:0 -1px 3px #000000;
+    box-shadow: 0 -1px 3px #000000;
 }
 
-div#content form input.standardButton {
+.content form input.standardButton {
     height: 45px;
     margin: 2px 0 2px 0;
     -webkit-border: 2px;
-    width:100%;
+    width: 100%;
 }
 
 /* Settings */
 
-div#content ul#settings {
+.content ul.settings {
     padding: 0;
     margin: 0;
 }
 
-
-div#content div#reset h4 {
-    margin:20px;
-    color:white;
+.content .reset h4 {
+    margin: 20px;
+    color: white;
 }
 
-div#content div.standardButton {
+.content div.standardButton {
     margin: 10px 10px 10px 10px;
     height: 45px;
     width: 284px;
     line-height: 45px;
-    -webkit-appearance:push-button;
+    -webkit-appearance: push-button;
 }
 
-div#content div.standardButton a {
+.content div.standardButton a {
     display: block;
     width: 100%;
     color: black;
     text-align: center;
 }
 
-div#content ul#settings li.alertMessage{
+.content ul.settings li.alertMessage {
     text-align: center;
     height: 45px;
-    line-height:45px;
+    line-height: 45px;
 }
 
-div#content ul#settings li.alertMessage span.message{
+.content ul.settings li.alertMessage span.message {
     color: red;
 }

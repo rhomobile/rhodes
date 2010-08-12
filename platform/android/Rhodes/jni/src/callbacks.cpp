@@ -37,7 +37,7 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
 RHO_GLOBAL VALUE rho_sys_has_network()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return rho_ruby_create_boolean(0);
     jmethodID mid = getJNIClassStaticMethod(env, cls, "hasNetwork", "()Z");
     if (!mid) return rho_ruby_create_boolean(0);
@@ -47,7 +47,7 @@ RHO_GLOBAL VALUE rho_sys_has_network()
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
@@ -85,7 +85,7 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     JNIEnv *env = jnienv();
 
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return 0;
@@ -165,7 +165,7 @@ RHO_GLOBAL int rho_sys_get_screen_height()
 RHO_GLOBAL void rho_sys_app_exit()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
     if (!mid) return;

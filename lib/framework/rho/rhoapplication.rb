@@ -43,6 +43,9 @@ module Rho
     def on_activate_app
     end
 
+    def on_deactivate_app
+    end
+
     # works for schema sources
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
