@@ -253,6 +253,20 @@ unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, cons
 }	
 #endif //RHO_NO_RUBY
 
+unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
+    const char* callback, const char* callback_params)
+{
+    rho_sync_stop();
+    if ( callback && *callback )
+        CSyncThread::getSyncEngine().getNotify().setSearchNotification( callback, callback_params ? callback_params : "");
+
+    rho::Vector<rho::String>& arSources = *((rho::Vector<rho::String>*)ar_sources);
+
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
+
+    return CSyncThread::getInstance()->getRetValue();
+}	
+
 void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
 {
     const char* szLastSlash = strrchr(szSrcUrl, '\\');
