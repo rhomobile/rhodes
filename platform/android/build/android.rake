@@ -1026,6 +1026,7 @@ namespace "device" do
     task :production => "package:android" do
       dexfile =  $bindir + "/classes.dex"
       apkfile =  $targetdir + "/" + $appname + ".apk"
+      finalapkfile =  $targetdir + "/" + $appname + "_signed_aligned.apk"
       signedapkfile =  $targetdir + "/" + $appname + "_signed.apk"
       resourcepkg =  $bindir + "/rhodes.ap_"
 
@@ -1078,17 +1079,18 @@ namespace "device" do
         exit 1
       end
 
-      # puts "Align APK file"
-      # args = []
-      # args << "-c"
-      # args << "-v"
-      # args << "4"
-      # args << '"' + apkfile + '"'
-      # puts Jake.run($zipalign, args)
-      # unless $?.success?
-      #   puts "Error running zipalign"
-      #   exit 1
-      # end
+      puts "Align APK file"
+      args = []
+      args << "-f"
+      args << "-v"
+      args << "4"
+      args << '"' + signedapkfile + '"'
+      args << '"' + finalapkfile + '"'
+      puts Jake.run($zipalign, args)
+      unless $?.success?
+        puts "Error running zipalign"
+        exit 1
+      end
     end
 
     task :getlog => "config:android" do
