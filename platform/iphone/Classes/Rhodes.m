@@ -342,6 +342,9 @@ static Rhodes *instance = NULL;
         
         NSLog(@"Start rhodes app");
         rho_rhodesapp_start();
+        
+        rho_rhodesapp_callAppActiveCallback(1);
+        started = YES;
     }
     @finally {
         [pool release];
@@ -350,6 +353,7 @@ static Rhodes *instance = NULL;
 
 - (void)doStartUp {
     NSLog(@"Rhodes starting application...");
+    started = NO;
     instance = self;
     application = [UIApplication sharedApplication];
     
@@ -552,6 +556,8 @@ static Rhodes *instance = NULL;
 #endif
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    if (!started)
+        return;
     RAWLOG_INFO("Application did become active");
     rho_rhodesapp_callAppActiveCallback(1);
 }
