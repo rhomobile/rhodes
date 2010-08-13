@@ -257,7 +257,6 @@ static Rhodes *instance = NULL;
 		[window addSubview:svc.view];
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startSignatureViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
-        return NO;
     }
     
 	
@@ -324,38 +323,50 @@ static Rhodes *instance = NULL;
     }
 }
 
+- (void)doRhoInit {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    @try {
+        // TODO
+        appManager = [AppManager instance]; 
+        //Configure AppManager
+        [appManager configure];
+        
+        const char *szRootPath = rho_native_rhopath();
+        rho_logconf_Init(szRootPath);
+        rho_rhodesapp_create(szRootPath);
+        
+        [self performSelectorOnMainThread:@selector(showLoadingPage) withObject:nil waitUntilDone:NO];
+        
+        rho_rhodesapp_start();
+    }
+    @finally {
+        [pool release];
+    }
+}
+
 - (void)doStartUp {
     instance = self;
     application = [UIApplication sharedApplication];
 
     [NSThread setThreadPriority:1.0];
     
-    appManager = [AppManager instance]; 
-    //Configure AppManager
-    [appManager configure];
-    
-    const char *szRootPath = rho_native_rhopath();
-    rho_logconf_Init(szRootPath);
-    rho_rhodesapp_create(szRootPath);
+    [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	window.autoresizesSubviews = YES;
-
+    window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    window.autoresizesSubviews = YES;
     
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
- 	mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	mainView.view.autoresizesSubviews = YES;
-	
+    mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    mainView.view.autoresizesSubviews = YES;
+    
     [window makeKeyAndVisible];
-
-	[window addSubview:mainView.view];
-
-    [self showLoadingPage];
-	
+    
+    [window addSubview:mainView.view];
+    
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     // Init controllers
@@ -364,14 +375,13 @@ static Rhodes *instance = NULL;
     
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
-	signatureDelegate = [[SignatureDelegate alloc] init];
-    
-    rho_rhodesapp_start();
+    signatureDelegate = [[SignatureDelegate alloc] init];
     
 #ifdef __IPHONE_3_0
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-            (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif
+    
 }
 
 #ifdef __IPHONE_3_0
