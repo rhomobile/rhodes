@@ -326,17 +326,21 @@ static Rhodes *instance = NULL;
 - (void)doRhoInit {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
-        // TODO
+        NSLog(@"Init appManager");
         appManager = [AppManager instance]; 
         //Configure AppManager
         [appManager configure];
         
         const char *szRootPath = rho_native_rhopath();
+        NSLog(@"Init logconf");
         rho_logconf_Init(szRootPath);
+        NSLog(@"Create rhodes app");
         rho_rhodesapp_create(szRootPath);
         
+        NSLog(@"Show loading page");
         [self performSelectorOnMainThread:@selector(showLoadingPage) withObject:nil waitUntilDone:NO];
         
+        NSLog(@"Start rhodes app");
         rho_rhodesapp_start();
     }
     @finally {
@@ -345,13 +349,16 @@ static Rhodes *instance = NULL;
 }
 
 - (void)doStartUp {
+    NSLog(@"Rhodes starting application...");
     instance = self;
     application = [UIApplication sharedApplication];
-
+    
     [NSThread setThreadPriority:1.0];
     
+    NSLog(@"Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
     
+    NSLog(@"Init all windows");
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -367,12 +374,15 @@ static Rhodes *instance = NULL;
     
     [window addSubview:mainView.view];
     
+    NSLog(@"Init cookies");
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     // Init controllers
+    NSLog(@"Init controllers");
     logOptionsController = [[LogOptionsController alloc] init];
     logViewController = [[LogViewController alloc] init];
     
+    NSLog(@"Init delegates");
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
     signatureDelegate = [[SignatureDelegate alloc] init];
@@ -381,7 +391,8 @@ static Rhodes *instance = NULL;
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif
-    
+
+    NSLog(@"Initialization finished");
 }
 
 #ifdef __IPHONE_3_0
