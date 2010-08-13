@@ -1000,15 +1000,32 @@ namespace "device" do
     desc "Build debug self signed for device"
     task :debug => "package:android" do
       dexfile =  $bindir + "/classes.dex"
-      apkfile =  $targetdir + "/" + $appname + "-debug.apk"
+      simple_apkfile =  $targetdir + "/" + $appname + "-tmp.apk"
+      final_apkfile =  $targetdir + "/" + $appname + "-debug.apk"
       resourcepkg =  $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
-      Jake.run($apkbuilder, [apkfile, "-z", resourcepkg, "-f", dexfile])
+      Jake.run($apkbuilder, [simple_apkfile, "-z", resourcepkg, "-f", dexfile])
       unless $?.success?
         puts "Error building APK file"
         exit 1
       end
+
+      puts "Align Debug APK file"
+      args = []
+      args << "-f"
+      args << "-v"
+      args << "4"
+      args << '"' + simple_apkfile + '"'
+      args << '"' + final_apkfile + '"'
+      puts Jake.run($zipalign, args)
+      unless $?.success?
+        puts "Error running zipalign"
+        exit 1
+      end
+      #remove temporary files
+      rm_rf simple_apkfile
+
     end
 
     task :install => :debug do
@@ -1025,13 +1042,13 @@ namespace "device" do
     desc "Build production signed for device"
     task :production => "package:android" do
       dexfile =  $bindir + "/classes.dex"
-      apkfile =  $targetdir + "/" + $appname + ".apk"
-      finalapkfile =  $targetdir + "/" + $appname + "_signed_aligned.apk"
-      signedapkfile =  $targetdir + "/" + $appname + "_signed.apk"
+      simple_apkfile =  $targetdir + "/" + $appname + "_tmp.apk"
+      final_apkfile =  $targetdir + "/" + $appname + "_signed.apk"
+      signed_apkfile =  $targetdir + "/" + $appname + "_tmp_signed.apk"
       resourcepkg =  $bindir + "/rhodes.ap_"
 
       puts "Building APK file"
-      Jake.run($apkbuilder, [apkfile, "-u", "-z", resourcepkg, "-f", dexfile])
+      Jake.run($apkbuilder, [simple_apkfile, "-u", "-z", resourcepkg, "-f", dexfile])
       unless $?.success?
         puts "Error building APK file"
         exit 1
@@ -1070,8 +1087,8 @@ namespace "device" do
       args << "-storepass"
       args << $storepass
       args << "-signedjar"
-      args << signedapkfile
-      args << apkfile
+      args << signed_apkfile
+      args << simple_apkfile
       args << "rhomobile.keystore"
       puts Jake.run($jarsigner, args)
       unless $?.success?
@@ -1084,13 +1101,16 @@ namespace "device" do
       args << "-f"
       args << "-v"
       args << "4"
-      args << '"' + signedapkfile + '"'
-      args << '"' + finalapkfile + '"'
+      args << '"' + signed_apkfile + '"'
+      args << '"' + final_apkfile + '"'
       puts Jake.run($zipalign, args)
       unless $?.success?
         puts "Error running zipalign"
         exit 1
       end
+      #remove temporary files
+      rm_rf simple_apkfile
+      rm_rf signed_apkfile
     end
 
     task :getlog => "config:android" do
