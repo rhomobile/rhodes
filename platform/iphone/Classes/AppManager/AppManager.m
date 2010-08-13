@@ -204,6 +204,7 @@ extern VALUE rho_sys_has_network();
 
 // http://www.apple.com/iphone/specs.html
 static const double RHO_IPHONE_PPI = 163.0;
+static const double RHO_IPHONE4_PPI = 326.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
 
@@ -233,10 +234,16 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
 #ifdef __IPHONE_3_2
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             *resValue = rho_ruby_create_double(RHO_IPAD_PPI);
-        else
+            return 1;
+        }
 #endif
+        UIDevice *device = [UIDevice currentDevice];
+        NSString *version = [device systemVersion];
+        if ([version length] >= 2 && [[version substringToIndex:2] isEqualToString:@"4."])
+            *resValue = rho_ruby_create_double(RHO_IPHONE4_PPI);
+        else
             *resValue = rho_ruby_create_double(RHO_IPHONE_PPI);
         
         return 1;
