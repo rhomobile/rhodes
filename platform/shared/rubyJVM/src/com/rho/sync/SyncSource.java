@@ -85,7 +85,14 @@ class SyncSource
     int m_nRefreshTime = 0;
     int m_nProgressStep = -1;
     boolean m_bSchemaSource;
-    Hashtable/*<String,String>*/ m_hashAssociations = new Hashtable();
+    
+    static class CAssociation
+    {
+        String m_strSrcName, m_strAttrib;
+        CAssociation( String strSrcName, String strAttrib ){m_strSrcName = strSrcName; m_strAttrib = strAttrib; }
+    };
+    
+    Vector/*<CAssociation>*/ m_arAssociations = new Vector();
     Vector/*Ptr<net::CMultipartItem*>*/ m_arMultipartItems = new Vector();
     Vector/*<String>*/                  m_arBlobAttrs = new Vector();
     
@@ -191,7 +198,7 @@ class SyncSource
             
             if ( strSrcName.length() > 0 )
             {
-                m_hashAssociations.put(strSrcName, tok);
+            	m_arAssociations.addElement( new CAssociation(strSrcName, tok) );
                 strSrcName = "";
             }else
                 strSrcName = tok;
@@ -626,13 +633,11 @@ class SyncSource
 	
 	void processAssociations(String strOldObject, String strNewObject)throws Exception
 	{
-    	Enumeration vals = m_hashAssociations.elements();
-    	Enumeration keys = m_hashAssociations.keys();
-		while (vals.hasMoreElements()) 
-		{
-	        SyncSource pSrc = getSync().findSourceByName((String)keys.nextElement());
+        for ( int i = 0; i < m_arAssociations.size(); i++ )
+        {
+            SyncSource pSrc = getSync().findSourceByName( ((CAssociation)m_arAssociations.elementAt(i)).m_strSrcName);
 	        if ( pSrc != null )
-	            pSrc.updateAssociation(strOldObject, strNewObject, (String)vals.nextElement());
+	            pSrc.updateAssociation(strOldObject, strNewObject, ((CAssociation)m_arAssociations.elementAt(i)).m_strAttrib);
 	    }
 	}
 

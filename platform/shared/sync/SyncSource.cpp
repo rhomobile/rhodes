@@ -99,7 +99,7 @@ void CSyncSource::parseAssociations(const String& strAssociations)
         
         if ( strSrcName.length() > 0 )
         {
-            m_hashAssociations.put(strSrcName, tok);
+            m_arAssociations.addElement( CAssociation(strSrcName, tok) );
             strSrcName = "";
         }else
             strSrcName = tok;
@@ -375,7 +375,7 @@ void CSyncSource::syncServerChanges()
         }
 
         const char* szData = resp.getCharData();
-        
+
         //const char* szData = "[{\"version\":3},{\"token\":\"35639160294387\"},{\"count\":3},{\"progress_count\":0},{\"total_count\":3},{\"metadata\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"insert\":{\"1\":{\"price\":\"199.99\",\"brand\":\"Apple\",\"name\":\"iPhone\"}}}]";
 
         PROF_START("Parse");
@@ -548,11 +548,11 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
 
 void CSyncSource::processAssociations(const String& strOldObject, const String& strNewObject)
 {
-    for ( Hashtable<String,String>::iterator it = m_hashAssociations.begin();  it != m_hashAssociations.end(); ++it )
+    for ( int i = 0; i < m_arAssociations.size(); i++ )
     {
-        CSyncSource* pSrc = getSync().findSourceByName(it->first);
+        CSyncSource* pSrc = getSync().findSourceByName(m_arAssociations.elementAt(i).m_strSrcName);
         if ( pSrc != null )
-            pSrc->updateAssociation(strOldObject, strNewObject, it->second);
+            pSrc->updateAssociation(strOldObject, strNewObject, m_arAssociations.elementAt(i).m_strAttrib);
     }
 }
 
