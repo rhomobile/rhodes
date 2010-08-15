@@ -18,7 +18,7 @@ public class SyncNotify {
 
     static class SyncNotification
     {
-        String m_strUrl, m_strParams;
+        String m_strUrl ="", m_strParams="";
         boolean m_bRemoveAfterFire;
         
         SyncNotification(){m_bRemoveAfterFire = false;}

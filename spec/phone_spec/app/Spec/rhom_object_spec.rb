@@ -721,9 +721,9 @@ if !defined? RHO_ME
     @accts[0].industry.should == "Technology"
   end
 end  
+
 end
 
-if !defined? RHO_ME  
 describe "Rhom#paginate" do
 
     before(:all) do
@@ -753,9 +753,15 @@ describe "Rhom#paginate" do
                 {:object => '527579259', :name => 'test', :address => 'bcgi7t4e3e', :industry => 'ozjdrljgm2'}]
 
     def get_expected
+if !defined? RHO_ME      
         return @expected_s if $spec_settings[:schema_model]
         
         @expected
+else
+        return @expected if $spec_settings[:schema_model]
+        
+        @expected
+end        
     end
     
     it "should support paginate with no options" do
@@ -818,4 +824,4 @@ describe "Rhom#paginate" do
       @accts3.length.should == 0
     end
 end
-end
+
