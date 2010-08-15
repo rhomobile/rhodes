@@ -612,9 +612,7 @@ module Rhom
                         values = [] 
 
                         if args.first.is_a?(String)                      
-                          #sql << "SELECT object FROM object_values WHERE object=?"
-                          #values << where_cond['object']
-                          objects = [ { 'object' => args.first } ]
+                          objects = [ { 'object' => strip_braces(args.first.to_s) } ]
                           
                         else  
                           if !block_given? && order_attr
@@ -947,7 +945,6 @@ module Rhom
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
               def destroy
-			    puts "destroy: #{self}"
                 obj = self.object #self.inst_strip_braces(self.object)
                 update_type='delete'
                 

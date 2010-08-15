@@ -52,7 +52,13 @@ class CSyncSource
     int m_nRefreshTime;
     int m_nProgressStep;
     boolean m_bSchemaSource;
-    Hashtable<String,String> m_hashAssociations;
+
+    struct CAssociation
+    {
+        String m_strSrcName, m_strAttrib;
+        CAssociation( String strSrcName, String strAttrib ){m_strSrcName = strSrcName; m_strAttrib = strAttrib; }
+    };
+    Vector<CAssociation> m_arAssociations;
     VectorPtr<net::CMultipartItem*> m_arMultipartItems;
     Vector<String>                  m_arBlobAttrs;
     boolean m_bIsSearch;
