@@ -90,15 +90,16 @@ module Rho
 			end
 
 			def select_by_name(first_last_name, &block)
-                                if @contacts.nil?
+				if @contacts.nil?
 					@contacts = find(:all).to_a.sort! do |x,y|
-						xname = (x[1]['first_name'] or " ") + " " + (x[1]['last_name'] or " ")
-						yname = (y[1]['first_name'] or " ") + " " + (y[1]['last_name'] or " ")
+						xname = (x[1]['first_name'] or "") + " " + (x[1]['last_name'] or "")
+						yname = (y[1]['first_name'] or "") + " " + (y[1]['last_name'] or "")
 						xname <=> yname
 					end
 				end
+
 				range = @contacts.bsearch_range do |x|
-					x[1]['first_name'] + " " + x[1]['last_name'] <=> first_last_name
+					(x[1]['first_name'] or "") + " " + (x[1]['last_name'] or "") <=> first_last_name
 				end
 				found = @contacts[range]
 				unless found.nil? or block.nil?
