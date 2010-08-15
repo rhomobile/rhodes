@@ -180,30 +180,7 @@ def add_extension(path,dest)
   chdir start
 end
 
-def common_bundle_start(startdir, dest)
-  app = $app_path
-  rhodeslib = "lib/framework"
-
-  rm_rf $srcdir
-  mkdir_p $srcdir
-  mkdir_p dest if not File.exists? dest
-  mkdir_p File.join($srcdir,'apps')
-
-
-  start = pwd
-  chdir rhodeslib
-
-  Dir.glob("*").each { |f| cp_r f,dest, :preserve => true }
-
-  chdir dest
-  Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
-  Dir.glob("**/erb.rb").each {|f| rm f}
-  Dir.glob("**/find.rb").each {|f| rm f}
-  $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
-
-  chdir start
-  clear_linker_settings
-
+def init_extensions(startdir, dest)
   extentries = []
   extlibs = [] 
   extpaths = $app_config["extpaths"]
@@ -232,56 +209,60 @@ def common_bundle_start(startdir, dest)
     unless extpath.nil?
       add_extension(extpath, dest)
 
-      extyml = File.join(extpath, "ext.yml")
-      if File.file? extyml
-        extconf = Jake.config(File.open(extyml))
-        entry = extconf["entry"]
-        extentries << entry unless entry.nil?
-        libs = extconf["libraries"]
-        libs = [] unless libs.is_a? Array
-        if $config["platform"] == "wm" || $config["platform"] == "win32"
-          libs.map! { |lib| lib + ".lib" }
-        else
-          libs.map! { |lib| "lib" + lib + ".a" }
-        end
-        extlibs += libs
-      end
+      if $config["platform"] != "bb"
+          extyml = File.join(extpath, "ext.yml")
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+            entry = extconf["entry"]
+            extentries << entry unless entry.nil?
+            libs = extconf["libraries"]
+            libs = [] unless libs.is_a? Array
+            if $config["platform"] == "wm" || $config["platform"] == "win32"
+              libs.map! { |lib| lib + ".lib" }
+            else
+              libs.map! { |lib| "lib" + lib + ".a" }
+            end
+            extlibs += libs
+          end
+      end    
     end
 
   end
 
-  exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
-  exists = []
-  File.new(exts, "r").read.split("\n").each do |line|
-    next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
-    exists << $1
-  end
+  if $config["platform"] != "bb"
+      exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+      exists = []
+      File.new(exts, "r").read.split("\n").each do |line|
+        next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
+        exists << $1
+      end
 
-  if exists.sort! != extentries.sort!
-    File.open(exts, "w") do |f|
-      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-      f.puts "// Generated #{Time.now.to_s}"
-      if $config["platform"] == "wm" || $config["platform"] == "win32"
-        # Add libraries through pragma
-        extlibs.each do |lib|
-          f.puts "#pragma comment(lib, \"#{lib}\")"
+      if exists.sort! != extentries.sort!
+        File.open(exts, "w") do |f|
+          f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+          f.puts "// Generated #{Time.now.to_s}"
+          if $config["platform"] == "wm" || $config["platform"] == "win32"
+            # Add libraries through pragma
+            extlibs.each do |lib|
+              f.puts "#pragma comment(lib, \"#{lib}\")"
+            end
+          end
+          extentries.each do |entry|
+            f.puts "extern void #{entry}(void);"
+          end
+          f.puts "void Init_Extensions(void) {"
+          extentries.each do |entry|
+            f.puts "    #{entry}();"
+          end
+          f.puts "}"
         end
       end
-      extentries.each do |entry|
-        f.puts "extern void #{entry}(void);"
-      end
-      f.puts "void Init_Extensions(void) {"
-      extentries.each do |entry|
-        f.puts "    #{entry}();"
-      end
-      f.puts "}"
-    end
+
+      extlibs.each { |lib| add_linker_library(lib) }
+
+      set_linker_flags
   end
-
-  extlibs.each { |lib| add_linker_library(lib) }
-
-  set_linker_flags
-
+  
   unless $app_config["constants"].nil?
     File.open("rhobuild.rb","w") do |file|
       file << "module RhoBuild\n"
@@ -297,6 +278,32 @@ def common_bundle_start(startdir, dest)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
+end
+
+def common_bundle_start(startdir, dest)
+  app = $app_path
+  rhodeslib = "lib/framework"
+
+  rm_rf $srcdir
+  mkdir_p $srcdir
+  mkdir_p dest if not File.exists? dest
+  mkdir_p File.join($srcdir,'apps')
+
+  start = pwd
+  chdir rhodeslib
+
+  Dir.glob("*").each { |f| cp_r f,dest, :preserve => true }
+
+  chdir dest
+  Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
+  Dir.glob("**/erb.rb").each {|f| rm f}
+  Dir.glob("**/find.rb").each {|f| rm f}
+  $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
+
+  chdir start
+  clear_linker_settings
+
+  init_extensions(startdir, dest)
   
   chdir startdir
   #throw "ME"

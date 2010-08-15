@@ -272,7 +272,7 @@ namespace "build" do
 
           ext_tmp_dir = File.join(ENV["TARGET_TEMP_DIR"], ext) 
           ENV['TEMP_FILES_DIR'] = ext_tmp_dir
-	  mkdir_p ext_tmp_dir unless File.directory? ext_tmp_dir
+	      mkdir_p ext_tmp_dir unless File.directory? ext_tmp_dir
 
           if RUBY_PLATFORM =~ /(win|w)32$/
             puts Jake.run('build.bat', [], extpath)
@@ -712,6 +712,24 @@ namespace "package" do
       Jake.unjar($preverified + "/RhoBundle.jar", $tmpdir)
       Jake.unjar($preverified + "/rhodes.jar", $tmpdir)
 
+      if $target_sim
+          #Changing rhoconfig.txt to work on Windows 7
+          if RUBY_PLATFORM =~ /(win|w)32$/
+	        require  'win32/registry'
+
+	        def getWindowsProductNameString
+	            Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Microsoft\Windows NT\CurrentVersion') do |reg|
+	                reg_typ, reg_val = reg.read('ProductName')
+	                return reg_val
+	            end
+	        end
+
+      	        if getWindowsProductNameString =~ /Windows 7/
+	            fixWin7SimBug($tmpdir_sim + "/apps/rhoconfig.txt")	
+	        end
+          end
+      end
+      
       if $bbver =~ /^4\.[012](\..*)$/
         max_size = 65536
         Dir.glob( $tmpdir + "/**/*" ).each do |f|
@@ -747,69 +765,12 @@ namespace "package" do
       create_alx_file('rhodesApp', $outfilebase)
     end
 
-#    desc "Package all production (all parts in one package) for simulator"
-    task :production_sim => ["build:bb:rhodes"] do
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
-      rm_rf $tmpdir_sim
-      mkdir_p $tmpdir_sim
-
-      rm_rf $targetdir
-      mkdir_p $targetdir
-
-      Jake.unjar($preverified + "/RubyVM.jar", $tmpdir_sim)
-      Jake.unjar($preverified + "/RhoBundle.jar", $tmpdir_sim)
-      Jake.unjar($preverified + "/rhodes.jar", $tmpdir_sim)
-
-      #Changing rhoconfig.txt to work on Windows 7
-      if RUBY_PLATFORM =~ /(win|w)32$/
-	require  'win32/registry'
-
-	def getWindowsProductNameString
-	    Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Microsoft\Windows NT\CurrentVersion') do |reg|
-	        reg_typ, reg_val = reg.read('ProductName')
-	        return reg_val
-	    end
-	end
-
-      	if getWindowsProductNameString =~ /Windows 7/
-	    fixWin7SimBug($tmpdir_sim + "/apps/rhoconfig.txt")	
-	end
-      end
-
-      if $bbver =~ /^4\.[012](\..*)$/
-        max_size = 65536
-        Dir.glob( $tmpdir_sim + "/**/*" ).each do |f|
-          if File.size( f ) > max_size
-            puts "File size of " + f + " is more than " + max_size.to_s + " bytes"
-            puts "There is no ability to pack this file into .cod file for BB " + $bbver
-            puts "Please reduce its size and try again"
-            $stdout.flush
-            Process.exit
-          end
-        end
-      end
-
-      Jake.jar($bindir + "/" + $outfilebase + ".jar",$builddir + "/manifest.mf",$tmpdir_sim,true)
-        
-      #runProGuard($bindir + "/" + $outfilebase + ".jar", jdehome + "/lib/net_rim_api.jar")
-      Jake.rapc($outfilebase,
-        $targetdir,
-        jdehome + "/lib/net_rim_api.jar",
-        $bindir + "/" + $outfilebase + ".jar",
-        $appname,
-        $app_config["vendor"],
-        $app_config["version"],
-        "resources/icon.png",
-        false,
-        true
-      )
-      unless $? == 0
-        puts "Error in RAPC"
-        exit 1
-      end
-      $stdout.flush
-      
-      create_alx_file('rhodesApp', $outfilebase)
+    task :set_simulator do
+        $target_sim = true
+    end
+    
+#   desc "Package all production (all parts in one package) for simulator"
+    task :production_sim => [:set_simulator, :production] do
     end
 
     task :set_dev_build do
@@ -819,11 +780,9 @@ namespace "package" do
 #    desc "Package all dev (each part in separate package)"
     task :dev => [ :set_dev_build, :rubyvm,:rhobundle,:rhodes] do
     end
+    
   end
 end
-
-
-
 
 namespace "device" do
   namespace "bb" do
@@ -936,7 +895,6 @@ namespace "run" do
         startsim
       end
       
-      #"clean:bb", 
       task :spec => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"

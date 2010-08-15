@@ -537,7 +537,7 @@ public class FastTable/*<E>*/extends FastCollection/*<E>*/implements
         int size = toIndex - fromIndex;
         FastTable table = new FastTable(size);
         
-        for( int i = fromIndex; i < size; i++ )
+        for( int i = fromIndex; i < toIndex; i++ )
         	table.add(this.get(i));
         	
         return table;

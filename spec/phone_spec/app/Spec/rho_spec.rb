@@ -217,6 +217,21 @@ end
     ufld[6].should == "seqNum=1"
   end
 
+  it "should slice array"  do
+      a = [ "a", "b", "c", "d", "e" ]
+      (a[2] +  a[0] + a[1]).should == "cab"
+      a[6].should be_nil
+      a[1, 1].should == [ "b" ]
+      a[1, 2].should == [ "b", "c" ]
+      a[1..3].should == [ "b", "c", "d" ]
+      a[4..7].should == [ "e" ]
+      a[6..10].should be_nil
+      a[-3, 3].should == [ "c", "d", "e" ]
+      # special cases
+      a[5].should be_nil
+      a[5, 1].should == []
+      a[5..10].should == []
+  end
 end
 =begin
 describe "String#split with String" do
