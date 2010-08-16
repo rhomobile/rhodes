@@ -902,7 +902,7 @@ void CRubyMutex::Lock()
 
 void CRubyMutex::Unlock()
 {
-    if ( m_valMutex == null )
+    if ( m_valMutex == null || m_nLockCount == 0)
         return;
 
     m_nLockCount--;

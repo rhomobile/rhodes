@@ -81,6 +81,4 @@ extern void  clean_objectnotify();
 extern int   get_lastsync_objectcount(int nSrcID);
 extern int   get_pagesize();
 extern void  set_pagesize(int pagesize);
-extern void  set_bulk_notification(const char *url, char* params);
-extern void  clear_bulk_notification();
 extern void  set_threaded_mode(bool b);

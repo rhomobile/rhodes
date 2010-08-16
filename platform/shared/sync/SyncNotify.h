@@ -47,8 +47,8 @@ private:
     static common::CMutex m_mxObjectNotify;
 
     HashtablePtr<int,CSyncNotification*> m_mapSyncNotifications;
+    common::CAutoPtr<CSyncNotification> m_pAllNotification;
     common::CAutoPtr<CSyncNotification> m_pSearchNotification;
-	CSyncNotification m_bulkSyncNotify;
     CSyncNotification m_emptyNotify;
     common::CMutex m_mxSyncNotifications;
     String m_strNotifyBody;
@@ -75,14 +75,11 @@ public:
     void setSearchNotification(String strUrl, String strParams );
 
     void clearSyncNotification(int source_id);
-    void clearNotification(CSyncSource& src);
 
     void onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources );
     void fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
 
-    void setBulkSyncNotification(String strUrl, String strParams );//throws Exception
     void fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode );
-    void clearBulkSyncNotification();
 
     void cleanLastSyncObjectCount();
     int incLastSyncObjectCount(int nSrcID);
@@ -95,18 +92,20 @@ public:
     const String& getNotifyBody(){ return m_strNotifyBody; }
     void cleanNotifyBody(){ m_strNotifyBody = ""; }
 
-    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources, int nCurSrc );
+    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError );
+    void reportSyncStatus(String status, int error, String strDetails);
 
 private:
-    CSyncNotification* getSyncNotifyBySrc(CSyncSource& src);
+    CSyncNotification* getSyncNotifyBySrc(CSyncSource* src);
 
     String makeCreateObjectErrorBody(int nSrcID);
     void processSingleObject();
 
-    void doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strError);
-    void reportSyncStatus(String status, int error, String strDetails);
+    void doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams);
 
     boolean callNotify(const String& strUrl, const String& strBody );
+
+    void clearNotification(CSyncSource* src);
 
 };
 
