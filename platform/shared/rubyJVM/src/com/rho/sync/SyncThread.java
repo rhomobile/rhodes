@@ -639,38 +639,6 @@ public class SyncThread extends RhoThread
 				}
 			});
 		
-		klass.getSingletonClass().defineMethod("set_bulk_notification",
-				new RubyTwoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
-						
-						try{
-							String url = arg1.toStr();
-							String params = arg2.toStr();
-							getSyncEngine().getNotify().setBulkSyncNotification(url, params);
-						}catch(Exception e)
-						{
-							LOG.ERROR("set_bulk_notification failed", e);
-							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-						}
-						return RubyConstant.QNIL;
-					}
-				});
-		klass.getSingletonClass().defineMethod("clear_bulk_notification",
-				new RubyNoArgMethod() {
-					protected RubyValue run(RubyValue receiver, RubyBlock block) {
-						try{
-							getSyncEngine().getNotify().clearBulkSyncNotification();
-						}catch(Exception e)
-						{
-							LOG.ERROR("clear_bulk_notification failed", e);
-							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-						}
-						
-						
-						return RubyConstant.QNIL;
-					}
-				});
-		
 		klass.getSingletonClass().defineMethod("set_pollinterval",
 			new RubyOneArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
