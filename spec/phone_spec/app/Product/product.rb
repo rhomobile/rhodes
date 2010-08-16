@@ -6,6 +6,11 @@ class Product
 
     enable :sync
     #set :partition, :application
+    set :sync_priority, 2 #should sync after Customer
+    
+    belongs_to :quantity, 'Customer'
+    belongs_to :sku, 'Customer'
+
 
 =begin
     include Rhom::FixedSchema
