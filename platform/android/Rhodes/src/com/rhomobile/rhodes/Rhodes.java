@@ -22,7 +22,6 @@ package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.mainview.MainView;
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -60,7 +59,6 @@ public class Rhodes extends RhoActivity {
 		if (service == null) {
 			Log.v(TAG, "Starting rhodes service...");
 			service = new RhodesService(this);
-			//startService(new Intent(this, RhodesService.class));
 		}
 		else
 			Log.v(TAG, "Rhodes service already started...");
@@ -114,12 +112,6 @@ public class Rhodes extends RhoActivity {
 		if (appMenu == null)
 			return false;
 		return appMenu.onMenuItemSelected(item);
-	}
-	
-	@Override
-	public void startActivity(Intent intent) {
-		//ownActivityActivated = true;
-		super.startActivity(intent);
 	}
 	
 	static {
