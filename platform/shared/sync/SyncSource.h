@@ -61,7 +61,6 @@ class CSyncSource
     Vector<CAssociation> m_arAssociations;
     VectorPtr<net::CMultipartItem*> m_arMultipartItems;
     Vector<String>                  m_arBlobAttrs;
-    boolean m_bIsSearch;
 
 public:
     int m_nErrCode;
@@ -77,7 +76,6 @@ public:
     String getSyncType(){ return m_strSyncType; }
 
     int getServerObjectsCount()const{ return m_nInserted+m_nDeleted; }
-    boolean isSearch()const{ return m_bIsSearch;}
 
     uint64 getToken()const{ return m_token; }
     boolean isTokenFromDB(){ return m_bTokenFromDB; }
