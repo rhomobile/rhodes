@@ -41,7 +41,7 @@ public class SyncNotify {
 
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
     SyncNotification m_pSearchNotification;
-    SyncNotification m_bulkSyncNotify;
+    SyncNotification m_pAllNotification;
     SyncNotification m_emptyNotify = new SyncNotification();
     
     Mutex m_mxSyncNotifications = new Mutex();
@@ -260,8 +260,11 @@ public class SyncNotify {
     {
         SyncSource src = (SyncSource)sources.elementAt(nSrc);
 
-        if ( getSync().getState() == SyncEngine.esStop )
-    		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources, nSrc  );
+        if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoRuby.ERR_NONE )
+        {
+            fireSyncNotification(src, true, src.m_nErrCode, "");
+    		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
+        }
         else
             fireSyncNotification( src, true, src.m_nErrCode, "");
 
@@ -275,20 +278,13 @@ public class SyncNotify {
 		
 		if ( source_id == -1 )
 		{
-			synchronized(m_mxSyncNotifications){
-				m_mapSyncNotifications.clear();
-				
-				if ( strFullUrl.length() > 0 )
-				{
-	                IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT source_id from sources order by source_id");
-	                for ( ; !res.isEnd(); res.next() )
-			    	    m_mapSyncNotifications.put( new Integer(res.getIntByIdx(0)), new SyncNotification( strFullUrl, strParams, false ) );
-				}
+			synchronized(m_mxSyncNotifications)
+			{
+				m_pAllNotification = new SyncNotification( strFullUrl, strParams, false );				
 			}
 			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );			
 		}else
 		{
-		    //clearSyncNotification(source_id);
 		    if ( strFullUrl.length() > 0 )
 		    {
 		        synchronized(m_mxSyncNotifications){
@@ -313,13 +309,6 @@ public class SyncNotify {
 	    }
 	}
 
-	void setBulkSyncNotification(String strUrl, String strParams )throws Exception
-	{
-	    String strFullUrl = getNet().resolveUrl(strUrl);
-		
-		m_bulkSyncNotify = new SyncNotification( strFullUrl, strParams, false );
-	}
-	
     public void setSyncStatusListener(ISyncStatusListener listener) 
     { 
     	synchronized(m_mxSyncNotifications){
@@ -332,7 +321,7 @@ public class SyncNotify {
     	m_bEnableReporting = bEnable;
     }
     
-    private void reportSyncStatus(String status, int error, String strDetails) 
+    public void reportSyncStatus(String status, int error, String strDetails) 
     {
     	synchronized(m_mxSyncNotifications)
     	{    	
@@ -359,93 +348,30 @@ public class SyncNotify {
 		if ( getSync().getState() == SyncEngine.esExit )
 			return;
 		
-		//TODO: show report
 		if( nErrCode != RhoRuby.ERR_NONE)
 		{
 			String strMessage = RhoRuby.getMessageText("sync_failed_for") + "bulk.";
 			reportSyncStatus(strMessage,nErrCode,"");
 		}
-		
-		try{
-		    boolean bRemoveAfterFire = bFinish;
-		    String strBody = "", strUrl;
-			synchronized(m_mxSyncNotifications)
-			{
-		        if ( m_bulkSyncNotify == null )
-		            return;
-		        
-		        strUrl = m_bulkSyncNotify.m_strUrl;
-		        strBody = "rho_callback=1";
-		        strBody += "&partition=" + partition;
-		        strBody += "&bulk_status="+status;
-		        strBody += "&status=";
-		        if ( bFinish )
-		        {
-			        if ( nErrCode == RhoRuby.ERR_NONE )
-			        	strBody += "ok";
-			        else
-			        {
-			        	if ( getSync().isStoppedByUser() )
-		                    nErrCode = RhoRuby.ERR_CANCELBYUSER;
-			        	
-			        	strBody += "error";				        	
-					    strBody += "&error_code=" + nErrCode;
-			        }
-		        }
-		        else
-		        	strBody += "in_progress";
-		        
-		        if ( m_bulkSyncNotify.m_strParams.length() > 0 )
-		            strBody += "&" + m_bulkSyncNotify.m_strParams;
-		        
-		        bRemoveAfterFire = bRemoveAfterFire && m_bulkSyncNotify.m_bRemoveAfterFire;
-			}
-			
-		    if ( bRemoveAfterFire )
-		    	clearBulkSyncNotification();
-		    
-			LOG.INFO( "Fire bulk notification.Url :" + strUrl + "; Body: " + strBody );
 
-            if ( callNotify(strUrl, strBody) )
-    	        clearBulkSyncNotification();
-		}catch(Exception exc)
-		{
-			LOG.ERROR("Fire bulk notification failed.", exc);
-		}
-    	
+	    String strParams = "";
+	    strParams += "&partition=" + partition;
+	    strParams += "&bulk_status="+status;
+	    strParams += "&sync_type=bulk";
+
+	    doFireSyncNotification( null, bFinish, nErrCode, "", strParams );
 	}
 
-	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, Vector/*Ptr<CSyncSource*>&*/ sources, int nCurSrc )
+	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError )
 	{
+	    if ( getSync().getState() == SyncEngine.esExit )
+			return;
+		
 	    synchronized(m_mxSyncNotifications)
 	    {
-	        if ( nCurSrc >= 0 )
-	        {
-	        	SyncSource src = (SyncSource)sources.elementAt(nCurSrc);
-	            SyncNotification pSN = getSyncNotifyBySrc(src);    
-	            if ( pSN != null )
-	            {
-	            	src.m_strError = strError;
-	            	src.m_nErrCode = nErrCode;
-	            	
-	            	fireSyncNotification( src, bFinish, nErrCode, "" );
-	                return;
-	            }
-	        }
-
-	        //find any source with notify
-	        for( int i = 0; i < (int)sources.size(); i++ )
-	        {
-	        	SyncSource src = (SyncSource)sources.elementAt(i);
-	            SyncNotification pSN = getSyncNotifyBySrc(src);    
-	            if ( pSN != null )
-	            {
-	            	src.m_strError = strError;
-	            	src.m_nErrCode = nErrCode;
-	            	fireSyncNotification( src, bFinish, nErrCode, "" );
-	                break;
-	            }
-	        }
+	        SyncNotification pSN = getSyncNotifyBySrc(null);    
+	        if ( pSN != null )
+	            doFireSyncNotification( null, bFinish, nErrCode, strError, "" );
 	    }
 	}
 
@@ -456,7 +382,7 @@ public class SyncNotify {
 		
 		if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 		{
-			if ( !( src != null && src.isSearch()) )
+			if ( getSync().getState() != SyncEngine.esSearch )
 			{
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
 					strMessage = RhoRuby.getMessageText("sync_failed_for") + src.getName() + ".";
@@ -465,27 +391,33 @@ public class SyncNotify {
 			}
 		}
 		
-		doFireSyncNotification(src, bFinish, nErrCode, "" );
+		doFireSyncNotification(src, bFinish, nErrCode, "", "" );
 	}
 	
 	SyncNotification getSyncNotifyBySrc(SyncSource src)
 	{
 	    SyncNotification pSN = null;
-		if ( src.isSearch() )
+		if ( getSync().getState() == SyncEngine.esSearch )
 			pSN = m_pSearchNotification;
 		else
-			pSN = (SyncNotification)m_mapSyncNotifications.get(src.getID());
-	    
+	    {
+	        if ( src != null )
+			    pSN = (SyncNotification)m_mapSyncNotifications.get( src.getID());
+
+	        if ( pSN == null )
+	            pSN = m_pAllNotification;
+	    }
+
 		if ( pSN == null && !getSync().isNoThreadedMode() )
 	        return null;
 
 	    return pSN != null ? pSN : m_emptyNotify;
 	}
 	
-	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError )
+	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError, String strParams )
 	{
-		if ( src == null || getSync().isStoppedByUser() )
-			return; //TODO: implement all sources callback
+		if ( getSync().isStoppedByUser() )
+			return;
 		
 		try{
 		    String strBody = "", strUrl;
@@ -497,19 +429,28 @@ public class SyncNotify {
 			            return;
 			
 			        strUrl = sn.m_strUrl;
-			        strBody += "total_count=" + src.getTotalCount();
-			        strBody += "&processed_count=" + src.getCurPageCount();
-			        strBody += "&processed_objects_count=" + getLastSyncObjectCount(src.getID());
-			        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
-			        strBody += "&source_id=" + src.getID();
-			        strBody += "&source_name=" + src.getName();
-			        strBody += "&rho_callback=1";
+				    strBody = "rho_callback=1";
+
+		            if ( src != null )
+		            {
+				        strBody += "&total_count=" + src.getTotalCount();
+				        strBody += "&processed_count=" + src.getCurPageCount();
+				        strBody += "&processed_objects_count=" + getLastSyncObjectCount(src.getID());
+				        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
+				        strBody += "&source_id=" + src.getID();
+				        strBody += "&source_name=" + src.getName();
+		            }
+		            
+		            if ( strParams.length() > 0 )
+		                strBody += strParams;
+		            else
+		                strBody += "&sync_type=incremental";
 			        
 			        strBody += "&status=";
 			        if ( bFinish )
 			        {
 				        if ( nErrCode == RhoRuby.ERR_NONE )
-				        	strBody += "ok";
+				        	strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";				        	
 				        else
 				        {
 				        	if ( getSync().isStoppedByUser() )
@@ -520,9 +461,12 @@ public class SyncNotify {
 						    
 						    if ( strError != null && strError.length() > 0 )
 						    	strBody += "&error_message=" + URI.urlEncode(strError);
-						    else
+						    else  if ( src != null )
 						    	strBody += "&error_message=" + URI.urlEncode(src.m_strError);
 				        }
+				        
+		                if ( src != null )
+		                    strBody += makeCreateObjectErrorBody( src.getID());
 			        }
 			        else
 			        	strBody += "in_progress";
@@ -536,7 +480,7 @@ public class SyncNotify {
 		    if ( bRemoveAfterFire )
 		    	clearNotification(src);
 		    
-			LOG.INFO( "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody );
+			LOG.INFO( "Fire notification. Source ID: " + (src != null ? src.getID().toString() : "") + "; Url :" + strUrl + "; Body: " + strBody );
 
             if ( callNotify(strUrl, strBody) )
                 clearNotification(src);
@@ -568,11 +512,11 @@ public class SyncNotify {
 
 	void clearNotification(SyncSource src)
 	{
-		LOG.INFO( "Clear notification. Source : " + src.getName());
+		LOG.INFO( "Clear notification. Source : " + (src != null ? src.getName() : "" ) );
 
 	    synchronized(m_mxSyncNotifications)
 	    {
-	        if ( src.isSearch() )
+	    	if ( getSync().getState() == SyncEngine.esSearch )
 	            m_pSearchNotification = null;
 	        else
 	            m_mapSyncNotifications.remove(src.getID());
@@ -585,21 +529,12 @@ public class SyncNotify {
 		
 		synchronized(m_mxSyncNotifications){
 			if ( source_id == -1 )//Clear all
-				m_mapSyncNotifications.clear();
+				m_pAllNotification = null;
 			else			
 				m_mapSyncNotifications.remove(new Integer(source_id));
 		}
 	}
 
-	void clearBulkSyncNotification() 
-	{
-		LOG.INFO( "Clear bulk notification." );
-		
-		synchronized(m_mxSyncNotifications){
-			m_bulkSyncNotify = null;
-		}
-	}
-	
 	void cleanLastSyncObjectCount()
 	{
 	    synchronized(m_mxSyncNotifications)

@@ -212,8 +212,11 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 {
     CSyncSource& src = *sources.elementAt(nSrc);
 
-    if ( getSync().getState() == CSyncEngine::esStop )
-		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, sources, nSrc );
+    if ( getSync().getState() == CSyncEngine::esStop && src.m_nErrCode != RHO_ERR_NONE )
+    {
+        fireSyncNotification(&src, true, src.m_nErrCode, "");
+		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
+    }
     else
         fireSyncNotification(&src, true, src.m_nErrCode, "");
 
@@ -229,25 +232,16 @@ void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strPa
 	{
 		synchronized(m_mxSyncNotifications)
         {
-		    m_mapSyncNotifications.clear();
-    		
-		    if ( strFullUrl.length() > 0 )
-		    {
-                DBResult( res, CDBAdapter::getUserDB().executeSQL("SELECT source_id from sources order by source_id") );
-                for ( ; !res.isEnd(); res.next() )
-		    	    m_mapSyncNotifications.put( res.getIntByIdx(0),new CSyncNotification( strFullUrl, strParams, false ) );
-		    }
+            m_pAllNotification = new CSyncNotification( strFullUrl, strParams, false );
 		    LOG(INFO) + " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams;
         }
 	}else
 	{
-        //clearSyncNotification(source_id);
         if ( strFullUrl.length() > 0 )
         {
             synchronized(m_mxSyncNotifications)
             {
                 m_mapSyncNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams, true ) );
-
 		        LOG(INFO) + " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams;
             }
         }
@@ -268,13 +262,6 @@ void CSyncNotify::setSearchNotification(String strUrl, String strParams )
 	        LOG(INFO) + " Done Set search notification. Url :" + strFullUrl + "; Params: " + strParams;
         }
     }
-}
-
-void CSyncNotify::setBulkSyncNotification(String strUrl, String strParams )//throws Exception
-{
-    String strFullUrl = getNet().resolveUrl(strUrl);
-	
-	m_bulkSyncNotify = CSyncNotification( strFullUrl, strParams, false );
 }
 
 extern "C" void alert_show_popup(const char* message);
@@ -299,124 +286,78 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
 {
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
-	
-	//TODO: show report
+
 	if( nErrCode != RHO_ERR_NONE)
 	{
 		String strMessage = RhoRuby.getMessageText("sync_failed_for") + "bulk.";
 		reportSyncStatus(strMessage,nErrCode,"");
 	}
-	
-    boolean bRemoveAfterFire = bFinish;
-    String strBody = "", strUrl;
-	{
-    	synchronized(m_mxSyncNotifications)
 
-        if ( m_bulkSyncNotify.m_strUrl.length() == 0 )
-            return;
-        
-        strUrl = m_bulkSyncNotify.m_strUrl;
-        strBody = "rho_callback=1";
-        strBody += "&partition=" + partition;
-        strBody += "&bulk_status="+status;
-        strBody += "&status=";
-        if ( bFinish )
-        {
-	        if ( nErrCode == RHO_ERR_NONE )
-                strBody += "ok";
-	        else
-	        {
-	        	if ( getSync().isStoppedByUser() )
-                    nErrCode = RHO_ERR_CANCELBYUSER;
-	        	
-	        	strBody += "error";				        	
-			    strBody += "&error_code=" + convertToStringA(nErrCode);
-	        }
-        }
-        else
-        	strBody += "in_progress";
-        
-        if ( m_bulkSyncNotify.m_strParams.length() > 0 )
-            strBody += "&" + m_bulkSyncNotify.m_strParams;
-        
-        bRemoveAfterFire = bRemoveAfterFire && m_bulkSyncNotify.m_bRemoveAfterFire;
-	}
-	
-    if ( bRemoveAfterFire )
-    	clearBulkSyncNotification();
-    
-	LOG(INFO) +  "Fire Bulk notification.Url :" + strUrl + "; Body: " + strBody;
-	
-    if ( callNotify(strUrl, strBody) )
-    	clearBulkSyncNotification();
+    String strParams = "";
+    strParams += "&partition=" + partition;
+    strParams += "&bulk_status="+status;
+    strParams += "&sync_type=bulk";
+
+    doFireSyncNotification( null, bFinish, nErrCode, "", strParams );
 }
 
-void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, VectorPtr<CSyncSource*>& sources, int nCurSrc )
+void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError )
 {
+    if ( getSync().getState() == CSyncEngine::esExit )
+		return;
+
     synchronized(m_mxSyncNotifications)
     {
-        if ( nCurSrc >= 0 )
-        {
-            CSyncNotification* pSN = getSyncNotifyBySrc(*sources.elementAt(nCurSrc));    
-            if ( pSN != null )
-            {
-                doFireSyncNotification( sources.elementAt(nCurSrc), bFinish, nErrCode, strError );
-                return;
-            }
-        }
-
-        //find any source with notify
-        for( int i = 0; i < (int)sources.size(); i++ )
-        {
-            CSyncNotification* pSN = getSyncNotifyBySrc(*sources.elementAt(i));    
-            if ( pSN != null )
-            {
-    	        doFireSyncNotification( sources.elementAt(i), bFinish, nErrCode, strError );
-                break;
-            }
-        }
+        CSyncNotification* pSN = getSyncNotifyBySrc(null);    
+        if ( pSN != null )
+            doFireSyncNotification( null, bFinish, nErrCode, strError, "" );
     }
 }
 
-void CSyncNotify::fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage)
+void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strMessage)
 {
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
 	
 	if( strMessage.length() > 0 || nErrCode != RHO_ERR_NONE)
 	{
-		if ( !( psrc != null && psrc->isSearch()) )
+		if ( getSync().getState() != CSyncEngine::esSearch )
         {
-	//		if ( psrc != null && strMessage.length() == 0 )
-	//			strMessage = RhoRuby.getMessageText("sync_failed_for") + psrc->getName() + ".";
+	//		if ( src != null && strMessage.length() == 0 )
+	//			strMessage = RhoRuby.getMessageText("sync_failed_for") + (*src).getName() + ".";
 			
-            reportSyncStatus(strMessage,nErrCode,psrc?psrc->m_strError:"");
+            reportSyncStatus(strMessage,nErrCode, (src != null ? (*src).m_strError : "") );
         }
 	}
 
-	doFireSyncNotification(psrc, bFinish, nErrCode, "" );
+    doFireSyncNotification(src, bFinish, nErrCode, "", "" );
 }
 
-CSyncNotify::CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource& src)
+CSyncNotify::CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
 {
     CSyncNotification* pSN = null;
-	if ( src.isSearch() )
+	if ( getSync().getState() == CSyncEngine::esSearch )
 		pSN = m_pSearchNotification;
 	else
-		pSN = m_mapSyncNotifications.get(src.getID());
-    
+    {
+        if ( src != null )
+		    pSN = m_mapSyncNotifications.get( (*src).getID());
+
+        if ( pSN == null )
+            pSN = m_pAllNotification;
+    }
+
 	if ( pSN == null && !getSync().isNoThreadedMode() )
         return null;
 
     return pSN != null ? pSN : &m_emptyNotify;
 }
 
-void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strError)
+void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams)
 {
-	if ( psrc == null || getSync().isStoppedByUser() )
-		return; //TODO: implement all sources callback
+	if ( getSync().isStoppedByUser() )
+		return;
 
-    CSyncSource& src = *psrc;
     String strBody, strUrl;
     boolean bRemoveAfterFire = bFinish;
     {
@@ -428,21 +369,27 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
             CSyncNotification& sn = *pSN;
 
             strUrl = sn.m_strUrl;
-		    strBody = "";
-            strBody = "total_count=" + convertToStringA(src.getTotalCount());
-            strBody += "&processed_count=" + convertToStringA(src.getCurPageCount());
-            //strBody += "&processed_objects_count=" + convertToStringA(getLastSyncObjectCount(src.getID()));
-            strBody += "&cumulative_count=" + convertToStringA(getLastSyncObjectCount(src.getID()));
-            strBody += "&source_id=" + convertToStringA(src.getID());
-            strBody += "&source_name=" + src.getName();
-            strBody += "&rho_callback=1";
+		    strBody = "rho_callback=1";
+
+            if ( src != null )
+            {
+                strBody += "&total_count=" + convertToStringA( (*src).getTotalCount());
+                strBody += "&processed_count=" + convertToStringA( (*src).getCurPageCount());
+                strBody += "&cumulative_count=" + convertToStringA(getLastSyncObjectCount( (*src).getID()));
+                strBody += "&source_id=" + convertToStringA( (*src).getID());
+                strBody += "&source_name=" + (*src).getName();
+            }
+
+            if ( strParams.length() > 0 )
+                strBody += strParams;
+            else
+                strBody += "&sync_type=incremental";
 
             strBody += "&status=";
-
             if ( bFinish )
             {
                 if ( nErrCode == RHO_ERR_NONE )
-	        	    strBody += "ok";
+                    strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";
 	            else
 	            {
                     if ( getSync().isStoppedByUser() )
@@ -454,11 +401,12 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
 
                     if ( strError.length() > 0 )
                         URI::urlEncode(strError,strBody);
-                    else
-                        URI::urlEncode(src.m_strError,strBody);
+                    else if ( src != null )
+                        URI::urlEncode( (*src).m_strError,strBody);
 	            }
 
-                strBody += makeCreateObjectErrorBody(src.getID());
+                if ( src != null )
+                    strBody += makeCreateObjectErrorBody( (*src).getID());
             }
             else
         	    strBody += "in_progress";
@@ -472,7 +420,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* psrc, boolean bFinish, in
     if ( bRemoveAfterFire )
         clearNotification(src);
 
-	LOG(INFO) + "Fire notification. Source ID: " + src.getID() + "; Url :" + strUrl + "; Body: " + strBody;
+    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; Url :" + strUrl + "; Body: " + strBody;
 	
     if ( callNotify(strUrl, strBody) )
         clearNotification(src);
@@ -498,16 +446,16 @@ boolean CSyncNotify::callNotify(const String& strUrl, const String& strBody )
     return false;
 }
 
-void CSyncNotify::clearNotification(CSyncSource& src)
+void CSyncNotify::clearNotification(CSyncSource* src)
 {
-	LOG(INFO) + "Clear notification. Source : " + src.getName();
+    LOG(INFO) + "Clear notification. Source : " + (src != null ? (*src).getName() : "");
 
     synchronized(m_mxSyncNotifications)
     {
-        if ( src.isSearch() )
+        if ( getSync().getState() == CSyncEngine::esSearch )
             m_pSearchNotification = null;
-        else
-            m_mapSyncNotifications.remove(src.getID());
+        else if ( src != null )
+            m_mapSyncNotifications.remove( (*src).getID());
     }
 }
 
@@ -518,19 +466,10 @@ void CSyncNotify::clearSyncNotification(int source_id)
     synchronized(m_mxSyncNotifications)
     {
         if ( source_id == -1 )//Clear all
-            m_mapSyncNotifications.clear();
+            m_pAllNotification = null;
         else
             m_mapSyncNotifications.remove(source_id);
     }
-}
-
-void CSyncNotify::clearBulkSyncNotification() 
-{
-	LOG(INFO) + "Clear bulk notification.";
-	
-	synchronized(m_mxSyncNotifications){
-		m_bulkSyncNotify = CSyncNotification();
-	}
 }
 
 void CSyncNotify::cleanLastSyncObjectCount()

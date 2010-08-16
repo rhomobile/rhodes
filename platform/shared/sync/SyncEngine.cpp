@@ -71,7 +71,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
         getNotify().fireSyncNotification(src, true, src->m_nErrCode, "");
     }else
     {
-        getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
+        getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError );
     }
 
     stopSync();
@@ -220,7 +220,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             break;
     }  
 
-    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
+    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError);
 
     //update db info
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
