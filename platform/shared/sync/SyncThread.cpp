@@ -342,16 +342,6 @@ void rho_sync_clear_notification(int source_id)
     return CSyncThread::getSyncEngine().getNotify().clearSyncNotification(source_id);
 }
 
-void rho_sync_set_bulk_notification(const char *url, char* params)
-{
-    return CSyncThread::getSyncEngine().getNotify().setBulkSyncNotification(url, params ? params : "");
-}
-
-void rho_sync_clear_bulk_notification()
-{
-    return CSyncThread::getSyncEngine().getNotify().clearBulkSyncNotification();
-}
-
 #ifndef RHO_NO_RUBY
 unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID)
 {

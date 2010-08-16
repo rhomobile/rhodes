@@ -161,7 +161,7 @@ public class SyncEngine implements NetRequest.IRhoSession
             getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
         }else
         {
-            getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
+            getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError);
         }
         
         stopSync();
@@ -317,7 +317,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            break;
 		    }  
 		
-		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_sources, getStartSource());
+		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError);
 		
 		    //update db info
 		    TimeInterval endTime = TimeInterval.getCurrentTime();
@@ -343,7 +343,6 @@ public class SyncEngine implements NetRequest.IRhoSession
     		LOG.ERROR("Search failed.", exc);
 
 	        SyncSource src = (SyncSource)m_sources.elementAt(getStartSource());
-	        src.m_bIsSearch = true;
     		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
 	    	
 	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" ); 
