@@ -440,16 +440,21 @@ LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
+	TCHAR image_uri[MAX_PATH];
+    HRESULT status;
 #if defined (_WIN32_WCE)
 	Camera camera;
-	TCHAR image_uri[MAX_PATH];
-	HRESULT status = camera.takePicture(this->m_hWnd,image_uri);
+	status = camera.takePicture(this->m_hWnd,image_uri);
+#else
+    //TODO: show browse file dialog
+    wsprintf( image_uri, L"%s", L"dashboard.PNG");
+    status = S_OK;
+#endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 
     free ((void *)lParam);
-#endif    
 	return 0;
 }
 
