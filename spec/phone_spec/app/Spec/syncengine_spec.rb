@@ -164,10 +164,6 @@ describe "SyncEngine_test" do
     res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    sleep(10) #wait till sync server update data
-    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     item3 = getProduct.find(item.object)
     item3.should be_nil
@@ -184,10 +180,6 @@ describe "SyncEngine_test" do
     item2 = getProduct.find(item.object)
     item2.vars.should == item.vars
     
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-    res['status'].should == 'complete'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    sleep(10) #wait till sync server update data    
     res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
     res['status'].should == 'complete'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
