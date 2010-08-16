@@ -20,6 +20,30 @@
 #require 'spec/spec_helper'
 require 'rho/rho'
 
+def getProduct
+    return Product_s if $spec_settings[:schema_model]
+    
+    Product
+end
+
+def getProduct_str
+    return 'Product_s' if $spec_settings[:schema_model]
+    
+    'Product'
+end
+
+def getCustomer
+    return Customer_s if $spec_settings[:schema_model]
+    
+    Customer
+end
+
+def getCustomer_str
+    return 'Customer_s' if $spec_settings[:schema_model]
+    
+    'Customer'
+end
+
 describe "SyncEngine_test" do
 
   before(:all)  do
@@ -28,9 +52,21 @@ describe "SyncEngine_test" do
     ::Rhom::Rhom.database_full_reset_and_logout
     
     SyncEngine.set_syncserver('http://rhodes-store-server.heroku.com/application')
-    
+    #SyncEngine.set_syncserver('http://localhost:9292/application')
+
+    @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>getProduct_str})
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>getCustomer_str})
   end
   
+  after(:all)  do
+      @save_sync_types.each do |src|
+        ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>src['sync_type']}, {'name'=>src['name']})
+      end
+    
+  end
+    
   it "should update syncserver at runtime" do
   
     dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent')
@@ -51,7 +87,7 @@ describe "SyncEngine_test" do
   it "should not sync without login" do
     SyncEngine.logged_in.should == 0
   
-    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
 
   end
@@ -73,11 +109,170 @@ describe "SyncEngine_test" do
     dbRes[0]['token'].should be_nil
     dbRes[0]['client_id'].should be_nil
   
-    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
-    #check that clientregister did called
+  end
+
+  it "should sync Product by name" do
+    SyncEngine.logged_in.should == 1
+
+    SyncEngine.set_notification(getProduct.get_source_id.to_i(), "/app/Settings/sync_notify", "")
+
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync_source( getProduct_str )
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+  end
+
+  it "should search Product" do
+    #TODO: add search to sync adapter
+    SyncEngine.logged_in.should == 1
+
+    _search_id = Time.now.to_i.to_s
+
+    search_res = getProduct.search(
+      :from => 'search',
+      :search_params => { :filterData => "Test", :search_id => _search_id },
+      :offset => 0,
+      :max_results => 1000,
+      :progress_step => 10,
+      :callback => '/app/Contact/search_callback',
+      :callback_param => "")
+  
+    res = ::Rho::RhoSupport::parse_query_parameters search_res
+    res['status'].should == 'complete'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+  end
+
+  it "should sync all" do
+    SyncEngine.logged_in.should == 1
+  
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+
+    res['status'].should == 'complete'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+  end
+
+  it "should create new Product" do
+    SyncEngine.logged_in.should == 1
+  
+    item = getProduct.create({:name => 'Test'})
+    item2 = getProduct.find(item.object)
+    item2.vars.should == item.vars
+
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    sleep(10) #wait till sync server update data
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    
+    item3 = getProduct.find(item.object)
+    item3.should be_nil
+  end
+
+  it "should create new Product with Customers" do
+    SyncEngine.logged_in.should == 1
+  
+    cust1 = getCustomer.create( {:first => "CustTest1"})
+    cust2 = getCustomer.create( {:first => "CustTest2"})
+    
+    @product_test_name = Rho::RhoConfig.generate_id().to_s
+    item = getProduct.create({:name => @product_test_name, :quantity => cust1.object, :sku => cust2.object})
+    item2 = getProduct.find(item.object)
+    item2.vars.should == item.vars
+    
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+    res['status'].should == 'complete'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    sleep(10) #wait till sync server update data    
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+    res['status'].should == 'complete'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    
+    prod = getProduct.find(:first, :conditions => {:name => @product_test_name})
+    prod.should_not == nil
+    prod.object.should_not == item.object
+    prod.quantity.should_not == cust1.object
+    prod.sku.should_not == cust2.object
+
+    cust11 = getCustomer.find(prod.quantity);
+    cust11.should_not == nil    
+    cust11.first.should == cust1.first
+    
+    cust22 = getCustomer.find(prod.sku);
+    cust22.should_not == nil    
+    cust22.first.should == cust2.first
+    
+  end
+  
+  it "should modify Product" do
+    SyncEngine.logged_in.should == 1
+  
+    item = getProduct.find(:first, :conditions => {:name => 'Test'})
+    item.should_not == nil
+    saved_obj = item.object
+    
+    new_sku = item.sku ? item.sku : ""
+    new_sku += "_TEST"
+    item.sku = new_sku
+    item.save
+    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    
+    item2 = getProduct.find(saved_obj)
+    item2.sku.should == new_sku
+    
+  end
+
+  it "should delete all Test Product" do
+    SyncEngine.logged_in.should == 1
+  
+    items = getProduct.find(:all, :conditions => {:name => 'Test'})
+    items.should_not == nil
+    items.each do |item|
+        item.destroy
+    end    
+
+    items = getProduct.find(:all, :conditions => {:name => @product_test_name})
+    items.should_not == nil
+    items.each do |item|
+        item.destroy
+    end    
+
+    items = getCustomer.find(:all, :conditions => {:first => "CustTest1"})
+    items.should_not == nil
+    items.each do |item|
+        item.destroy
+    end    
+
+    items = getCustomer.find(:all, :conditions => {:first => "CustTest2"})
+    items.should_not == nil
+    items.each do |item|
+        item.destroy
+    end    
+
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+    res['status'].should == 'complete'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    
+    item2 = getProduct.find(:first, :conditions => {:name => 'Test'})
+    item2.should == nil
+    item2 = getProduct.find(:first, :conditions => {:name => @product_test_name})
+    item2.should == nil
+
+    item2 = getCustomer.find(:first, :conditions => {:first => 'CustTest1'})
+    item2.should == nil
+    item2 = getCustomer.find(:first, :conditions => {:first => 'CustTest2'})
+    item2.should == nil
+    
+  end
+
+  it "should client register" do
     if System.get_property('device_name') == 'Win32' || System.get_property('platform') == 'Blackberry'
         dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent, client_id')
         dbRes.length.should == 1
@@ -90,101 +285,7 @@ describe "SyncEngine_test" do
         dbRes[0]['client_id'].length().should > 0
     end
   end
-
-  it "should sync Product by name" do
-    SyncEngine.logged_in.should == 1
-
-    SyncEngine.set_notification(Product.get_source_id.to_i(), "/app/Settings/sync_notify", "")
-
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync_source( "Product" )
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  end
-
-  it "should search Product" do
-    #TODO: add search to sync adapter
-    SyncEngine.logged_in.should == 1
-
-    _search_id = Time.now.to_i.to_s
-
-    search_res = Product.search(
-      :from => 'search',
-      :search_params => { :filterData => "Test", :search_id => _search_id },
-      :offset => 0,
-      :max_results => 1000,
-      :progress_step => 10,
-      :callback => '/app/Contact/search_callback',
-      :callback_param => "")
   
-    res = ::Rho::RhoSupport::parse_query_parameters search_res
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  end
-
-=begin  
-  it "should sync all" do
-    SyncEngine.logged_in.should == 1
-  
-    Product.set_notification("/app/Settings/sync_notify", "fixed sync_notify for Product")
-    SyncEngine.dosync
-
-    res = ::Rho::RhoSupport::parse_query_parameters C_sync_notify
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  end
-=end
-
-  it "should create new Product" do
-    SyncEngine.logged_in.should == 1
-  
-    item = Product.create({:name => 'Test'})
-    item2 = Product.find(item.object)
-    item2.vars.should == item.vars
-    
-    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  end
-  
-  it "should modify Product" do
-    SyncEngine.logged_in.should == 1
-  
-    item = Product.find(:first, :conditions => {:name => 'Test'})
-    item.should_not == nil
-    saved_obj = item.object
-    
-    new_sku = item.sku ? item.sku : ""
-    new_sku += "_TEST"
-    item.sku = new_sku
-    item.save
-    
-    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    
-    item2 = Product.find(saved_obj)
-    item2.sku.should == new_sku
-    
-  end
-
-  it "should delete all Test Product" do
-    SyncEngine.logged_in.should == 1
-  
-    items = Product.find(:all, :conditions => {:name => 'Test'})
-    items.should_not == nil
-    
-    items.each do |item|
-        item.destroy
-    end    
-
-    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    
-    item2 = Product.find(:first, :conditions => {:name => 'Test'})
-    item2.should == nil
-  end
-
   it "should logout" do
     SyncEngine.logout()
   
