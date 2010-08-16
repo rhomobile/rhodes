@@ -425,11 +425,13 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
             else
                 fd = rho_fd_counter++;
             rho_fd_data_t d;
-            d.is = is;
+            d.is = env->NewGlobalRef(is);
             d.fpath = fpath;
             d.pos = 0;
             rho_fd_map[fd] = d;
         }
+
+        env->DeleteLocalRef(is);
     }
     else
     {
@@ -491,6 +493,7 @@ RHO_GLOBAL int close(int fd)
 
     JNIEnv *env = jnienv();
     env->CallStaticVoidMethod(clsFileApi, midClose, is);
+    env->DeleteGlobalRef(is);
     return 0;
 }
 
