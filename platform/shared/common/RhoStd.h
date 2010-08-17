@@ -94,6 +94,11 @@ public:
         (*this)[i] = item;
     }
 
+    void insertElementAt(const Type& item, typename std::vector<Type>::size_type i)
+    {
+        std::vector<Type>::insert( std::vector<Type>::begin() + i, item );
+    }
+
     void removeElement(const Type& item)
     {
         for (typename std::vector<Type>::iterator it = Vector<Type>::begin();  it !=Vector<Type>::end();  )
@@ -153,9 +158,11 @@ public:
         }
     }
 
-    void removeElementAt(int nItem)
+    void removeElementAt(int nItem, boolean bDelete = true)
     {
-        delete Vector<Type>::at(nItem);
+        if ( bDelete )
+            delete Vector<Type>::at(nItem);
+
         Vector<Type>::erase( Vector<Type>::begin() + nItem );
     }
 };

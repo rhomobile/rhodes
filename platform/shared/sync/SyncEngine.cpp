@@ -314,6 +314,49 @@ void CSyncEngine::loadAllSources()
 
         m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strName, strShouldSync, getDB(strPartition), *this) );
     }
+
+    checkSourceAssociations();
+}
+
+static int findSrcIndex( VectorPtr<CSyncSource*>& sources, const String& strSrcName)
+{
+    for ( int i = 0; i < (int)sources.size(); i++)
+    {
+        if (strSrcName.compare(sources.elementAt(i)->getName()) == 0 )
+            return i;
+    }
+
+    return -1;
+}
+
+void CSyncEngine::checkSourceAssociations()
+{
+    Hashtable<String, int> hashPassed;
+    
+    for( int nCurSrc = m_sources.size()-1; nCurSrc > 0 ; )
+    {
+        CSyncSource& oCurSrc = *(m_sources.elementAt(nCurSrc));
+        if ( oCurSrc.getAssociations().size() == 0 || hashPassed.containsKey(oCurSrc.getName()) )
+            nCurSrc--;
+        else
+        {
+            int nSrc = nCurSrc;
+            for( int i = 0; i < (int)oCurSrc.getAssociations().size(); i++ )
+            {
+                const CSyncSource::CAssociation& oAssoc = oCurSrc.getAssociations().elementAt(i);
+                int nAssocSrcIndex = findSrcIndex( m_sources, oAssoc.m_strSrcName);
+                if ( nAssocSrcIndex >=0 && nAssocSrcIndex < nSrc )
+                {
+                    m_sources.removeElementAt( nSrc, false );
+                    m_sources.insertElementAt( &oCurSrc, nAssocSrcIndex );
+
+                    nSrc = nAssocSrcIndex;
+                }
+            }
+        }
+
+        hashPassed.put(oCurSrc.getName(), 1);
+    }
 }
 
 String CSyncEngine::readClientID()
@@ -617,24 +660,35 @@ int CSyncEngine::getStartSource()
             return i;
     }
 
-    return 0;
+    return -1;
+}
+
+boolean CSyncEngine::syncOneSource(int i)
+{
+    CSyncSource& src = *m_sources.elementAt(i);
+    if ( src.getSyncType().compare("bulk_sync_only")==0 )
+        return true;
+
+    if ( isSessionExist() && getState() != esStop )
+        src.sync();
+
+    getNotify().onSyncSourceEnd(i, m_sources);
+
+    return src.m_nErrCode == RHO_ERR_NONE;
 }
 
 void CSyncEngine::syncAllSources()
 {
-    //TODO: do not stop on error source
     boolean bError = false;
-    for( int i = getStartSource(); i < (int)m_sources.size() && isContinueSync(); i++ )
+
+    int nStartSrc = getStartSource();
+    if ( nStartSrc >= 0 )
+        bError = !syncOneSource(nStartSrc);
+
+    //TODO: do not stop on error source
+    for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
     {
-        CSyncSource& src = *m_sources.elementAt(i);
-        if ( src.getSyncType().compare("bulk_sync_only")==0 )
-            continue;
-
-        if ( isSessionExist() && getState() != esStop )
-            src.sync();
-
-        getNotify().onSyncSourceEnd(i, m_sources);
-        bError = src.m_nErrCode != RHO_ERR_NONE;
+        bError = !syncOneSource(i);
     }
 
     if ( !bError)
