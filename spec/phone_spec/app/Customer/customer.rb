@@ -3,5 +3,5 @@ class Customer
 
   enable :sync
 
-  set :sync_priority, 1
+  set :sync_priority, 2
 end

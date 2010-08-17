@@ -113,6 +113,7 @@ class SyncSource
 
     boolean getGetAtLeastOnePage(){ return m_bGetAtLeastOnePage; }
     int getRefreshTime(){ return m_nRefreshTime; }
+    Vector/*<CAssociation>*/ getAssociations(){ return m_arAssociations; }
     
     int getInsertedCount() { return m_nInserted; }
     int getDeletedCount() { return m_nDeleted; }
@@ -209,13 +210,17 @@ class SyncSource
 	    //m_bIsSearch = false;
 	    
 	    try{
-	        if ( isEmptyToken() )
-	            processToken(1);
-	    	
-	        boolean bSyncedServer = syncClientChanges();
-	        if ( !bSyncedServer )
-	        	syncServerChanges();
-	        
+	        if ( isTokenFromDB() && !isEmptyToken() )
+	            syncServerChanges();  //sync only server changes, which was paused before
+	        else
+	        {
+		        if ( isEmptyToken() )
+		            processToken(1);
+		    	
+		        boolean bSyncedServer = syncClientChanges();
+		        if ( !bSyncedServer )
+		        	syncServerChanges();
+	        }	        
 	    }catch(Exception exc)
 	    {
 	    	getSync().stopSync();

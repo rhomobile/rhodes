@@ -115,12 +115,17 @@ void CSyncSource::sync()
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
     //m_bIsSearch = false;
 
-    if ( isEmptyToken() )
-        processToken(1);
+    if ( isTokenFromDB() && !isEmptyToken() )
+        syncServerChanges();  //sync only server changes, which was paused before
+    else
+    {
+        if ( isEmptyToken() )
+            processToken(1);
 
-    boolean bSyncedServer = syncClientChanges();
-    if ( !bSyncedServer )
-        syncServerChanges();
+        boolean bSyncedServer = syncClientChanges();
+        if ( !bSyncedServer )
+            syncServerChanges();
+    }
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
 
@@ -546,7 +551,7 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
 
 void CSyncSource::processAssociations(const String& strOldObject, const String& strNewObject)
 {
-    for ( int i = 0; i < m_arAssociations.size(); i++ )
+    for ( int i = 0; i < (int)m_arAssociations.size(); i++ )
     {
         CSyncSource* pSrc = getSync().findSourceByName(m_arAssociations.elementAt(i).m_strSrcName);
         if ( pSrc != null )

@@ -52,12 +52,13 @@ class CSyncSource
     int m_nRefreshTime;
     int m_nProgressStep;
     boolean m_bSchemaSource;
-
+public:
     struct CAssociation
     {
         String m_strSrcName, m_strAttrib;
         CAssociation( String strSrcName, String strAttrib ){m_strSrcName = strSrcName; m_strAttrib = strAttrib; }
     };
+private:
     Vector<CAssociation> m_arAssociations;
     VectorPtr<net::CMultipartItem*> m_arMultipartItems;
     Vector<String>                  m_arBlobAttrs;
@@ -91,6 +92,7 @@ public:
     boolean getGetAtLeastOnePage(){ return m_bGetAtLeastOnePage; }
     int getRefreshTime(){ return m_nRefreshTime; }
 
+    Vector<CAssociation>& getAssociations(){ return m_arAssociations; }
 //private:
     //CSyncSource();
     CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db );

@@ -83,7 +83,6 @@ public:
     virtual const String& getContentType(){ return getProtocol().getContentType();}
 
     void loadAllSources();
-    void syncAllSources();
     void prepareSync(ESyncState eState, const CSourceID* oSrcID);
 
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
@@ -116,6 +115,10 @@ private:
 
     void initProtocol();
     void processServerSources(String strSources);
+    void checkSourceAssociations();
+
+    boolean syncOneSource(int i);
+    void syncAllSources();
 
     friend class CSyncSource;
 };
