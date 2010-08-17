@@ -108,7 +108,7 @@ private:
 	bool m_exit;
     bool m_bPause;
     int m_port;
-    String m_root;
+    String m_root, m_strRhoRoot;
     SOCKET m_listener;
     SOCKET m_sock;
     std::map<String, callback_t> m_registered;
