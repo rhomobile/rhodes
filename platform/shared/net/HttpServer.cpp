@@ -270,6 +270,7 @@ CHttpServer::CHttpServer(int port, String const &root)
     RAWTRACE("Open listening socket...");
 
     m_root = CFilePath::normalizePath(root);
+    m_strRhoRoot = m_root.substr(0, m_root.length()-5);
     m_bPause = false;
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     if (m_listener == SOCKET_ERROR) {
@@ -831,7 +832,7 @@ bool CHttpServer::send_file(String const &path)
     String fullPath = CFilePath::normalizePath(path);
     if (String_startsWith(fullPath,"/app/db/db-files") )
         fullPath = CFilePath::join( RHODESAPP().getRhoRootPath(), path.substr(4) );
-    else if (fullPath.find(m_root) != 0)
+    else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0)
         fullPath = CFilePath::join( m_root, path );
 	
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
