@@ -87,6 +87,75 @@ describe "Xml" do
     
         @events.size.should == 1
     end
+
+    class MyStreamListener1
+
+        def initialize(events)
+            @events = events
+        end
+
+        #def tag_start name, attrs
+            #puts "tag_start: #{name}; #{attrs}"
+            #@events << attrs if name == 'event'
+        #end
+        
+        def tag_start name, attrs
+            if name == 'Field'
+              case attrs['name']
+              when 'MatchCode.Customer'  then @matchcode = attrs['value']
+              when 'Pk.Customer'         then @pk = attrs['value']
+              end
+              if @matchcode && @pk
+                then
+                #@parent.add_pairs(@pk, @matchcode)
+                @events << [@pk, @matchcode]
+                @pk = nil
+              end
+            end
+        end
+                
+        def tag_end name
+            #puts "tag_end: #{name}"
+        end
+        def text text
+            #puts "text: #{text}"
+        end
+        def instruction name, instruction
+        end
+        def comment comment
+        end
+        def doctype name, pub_sys, long_name, uri
+        end
+        def doctype_end
+        end
+        def attlistdecl element_name, attributes, raw_content
+        end
+        def elementdecl content
+        end
+        def entitydecl content
+        end
+        def notationdecl content
+        end
+        def entity content
+        end
+        def cdata content
+            #puts "cdata: #{content}"
+        end
+        def xmldecl version, encoding, standalone
+        end
+    end
+
+    it "should stream parse1" do
+    
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test1.xml')
+        file = File.new(file_name)
+    
+        @events = []
+        list = MyStreamListener1.new(@events)
+        REXML::Document.parse_stream(file, list)
+    
+        @events.size.should == 1
+    end
     
     #def generate_test
         #TODO: generate_test

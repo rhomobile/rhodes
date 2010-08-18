@@ -18,10 +18,10 @@ module REXML
           when :end_document
             return
           when :start_element
-            attrs = event[2].each do |n, v|
+            event[2].each do |n, v|
               event[2][n] = @parser.unnormalize( v )
             end
-            @listener.tag_start( event[1], attrs )
+            @listener.tag_start( event[1], event[2] )
           when :end_element
             @listener.tag_end( event[1] )
           when :text
