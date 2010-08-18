@@ -613,6 +613,8 @@ void rho_syncclient_parsenotify(const char* msg, RHO_SYNC_NOTIFY* pNotify)
             convertFromStringA( value.c_str(), pNotify->error_code );
         else if ( name.compare("source_name") == 0)
             pNotify->source_name = strdup(value.c_str());
+        else if ( name.compare("sync_type") == 0)
+            pNotify->sync_type = strdup(value.c_str());
         else if ( name.compare("status") == 0)
             pNotify->status = strdup(value.c_str());
         else if ( name.compare("error_message") == 0)
