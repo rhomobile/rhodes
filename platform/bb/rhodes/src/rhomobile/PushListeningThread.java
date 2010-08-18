@@ -8,6 +8,7 @@ import javax.microedition.io.*;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
+import com.rho.Tokenizer;
 import com.rho.sync.SyncThread;
 import com.rho.RhoConf;
 
@@ -250,10 +251,21 @@ public class PushListeningThread extends Thread {
             			op = splitOnce(ops[loop],"=");
             			if(op.length <= 1 || "all".equalsIgnoreCase(op[1])) {
             				SyncThread.doSyncAllSources(false);
-            			} else if ((op[1] != null) && (op[1].length()>0)){
-            				SyncThread.doSyncSourceByUrl(op[1].trim(),false);
+            			} else if ((op[1] != null) && (op[1].length()>0))
+            			{
+            				Tokenizer stringtokenizer = new Tokenizer(op[1].trim(), ",");
+            				while (stringtokenizer.hasMoreTokens()) 
+            				{
+            					String tok = stringtokenizer.nextToken();
+            					String name = tok.trim();
+            					if (name.length() == 0) 
+            						continue;
+            					
+                				SyncThread.doSyncSourceByName(name,false);
+            				}
+            				
             			}
-            		} else if (ops[loop].startsWith("show_popup")) {
+            		} else if (ops[loop].startsWith("alert")) {
             			op = splitOnce(ops[loop],"=");
             			if (op.length>1) {
             				showPopup(op[1]);
@@ -265,7 +277,7 @@ public class PushListeningThread extends Thread {
             			} else {
             				vibrate("2500");
             			}
-            		} else if (ops[loop].startsWith("play_file")) {
+            		} else if (ops[loop].startsWith("sound")) {
             			op = splitOnce(ops[loop],"=");
             			if (op.length>1) {
             				op = splitOnce(op[1],",");

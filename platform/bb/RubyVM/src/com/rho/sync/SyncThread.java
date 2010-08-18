@@ -383,20 +383,12 @@ public class SyncThread extends RhoThread
 		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus) );
 	}
 	
-	public static void doSyncSourceByUrl(String strSrcUrl, boolean bShowStatus)
+	public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 		}
-
-			
-	    int nLastSlash = strSrcUrl.lastIndexOf('\\');
-	    if ( nLastSlash < 0 )
-	    	nLastSlash = strSrcUrl.lastIndexOf('/');
-
-	    String strName = nLastSlash >=0 ? strSrcUrl.substring(nLastSlash + 1) : strSrcUrl;
-		
-	    getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, (int)0, false ) );		
+	    getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus ) );		
 	}
 	
 	public static void stopSync()throws Exception
