@@ -28,6 +28,17 @@ describe "Xruby" do
     res = -(s.to_i)
     res.should == -123
   end
+
+  #https://www.pivotaltracker.com/story/show/4765453    
+  it "should assign hash" do
+    test = {"1"=>"a", "2"=>"b"}
+    attrs = test.each do |n, v|
+      test[n] = v
+    end
+    
+    #attrs is array of keys here
+    #attrs.is_a?(Hash).should == true
+  end
   
 =begin
   def elsif_test
