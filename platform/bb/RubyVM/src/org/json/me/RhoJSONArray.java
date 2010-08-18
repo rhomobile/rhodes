@@ -79,7 +79,7 @@ import java.util.Vector;
  * @author JSON.org
  * @version 2
  */
-public class JSONArray {
+public class RhoJSONArray {
 
 
     /**
@@ -91,16 +91,16 @@ public class JSONArray {
     /**
      * Construct an empty JSONArray.
      */
-    public JSONArray() {
+    public RhoJSONArray() {
         this.myArrayList = new Vector();
     }
 
     /**
      * Construct a JSONArray from a JSONTokener.
      * @param x A JSONTokener
-     * @throws JSONException If there is a syntax error.
+     * @throws RhoJSONException If there is a syntax error.
      */
-    public JSONArray(JSONTokener x) throws JSONException {
+    public RhoJSONArray(RhoJSONTokener x) throws RhoJSONException {
         this();
         if (x.nextClean() != '[') {
             throw x.syntaxError("A JSONArray text must start with '['");
@@ -139,10 +139,10 @@ public class JSONArray {
      * @param string     A string that begins with
      * <code>[</code>&nbsp;<small>(left bracket)</small>
      *  and ends with <code>]</code>&nbsp;<small>(right bracket)</small>.
-     *  @throws JSONException If there is a syntax error.
+     *  @throws RhoJSONException If there is a syntax error.
      */
-    public JSONArray(String string) throws JSONException {
-        this(new JSONTokener(string));
+    public RhoJSONArray(String string) throws RhoJSONException {
+        this(new RhoJSONTokener(string));
     }
 
 
@@ -150,7 +150,7 @@ public class JSONArray {
      * Construct a JSONArray from a Collection.
      * @param collection     A Collection.
      */
-    public JSONArray(Vector collection) {
+    public RhoJSONArray(Vector collection) {
         if (collection == null) {
             this.myArrayList = new Vector();
         } else {
@@ -168,12 +168,12 @@ public class JSONArray {
      * @param index
      *  The index must be between 0 and length() - 1.
      * @return An object value.
-     * @throws JSONException If there is no value for the index.
+     * @throws RhoJSONException If there is no value for the index.
      */
-    public Object get(int index) throws JSONException {
+    public Object get(int index) throws RhoJSONException {
         Object o = opt(index);
         if (o == null) {
-            throw new JSONException("JSONArray[" + index + "] not found.");
+            throw new RhoJSONException("JSONArray[" + index + "] not found.");
         }
         return o;
     }
@@ -185,10 +185,10 @@ public class JSONArray {
      *
      * @param index The index must be between 0 and length() - 1.
      * @return      The truth.
-     * @throws JSONException If there is no value for the index or if the
+     * @throws RhoJSONException If there is no value for the index or if the
      *  value is not convertable to boolean.
      */
-    public boolean getBoolean(int index) throws JSONException {
+    public boolean getBoolean(int index) throws RhoJSONException {
         Object o = get(index);
         if (o.equals(Boolean.FALSE) ||
                 (o instanceof String &&
@@ -199,7 +199,7 @@ public class JSONArray {
                 ((String)o).equalsIgnoreCase("true"))) {
             return true;
         }
-        throw new JSONException("JSONArray[" + index + "] is not a Boolean.");
+        throw new RhoJSONException("JSONArray[" + index + "] is not a Boolean.");
     }
 
 
@@ -208,16 +208,16 @@ public class JSONArray {
      *
      * @param index The index must be between 0 and length() - 1.
      * @return      The value.
-     * @throws   JSONException If the key is not found or if the value cannot
+     * @throws   RhoJSONException If the key is not found or if the value cannot
      *  be converted to a number.
      */
-    public double getDouble(int index) throws JSONException {
+    public double getDouble(int index) throws RhoJSONException {
         Object o = get(index);
         try {
         	Double v = (o instanceof Double) ? (Double)o : Double.valueOf((String)o);
             return v.doubleValue();
         } catch (Exception e) {
-            throw new JSONException("JSONArray[" + index +
+            throw new RhoJSONException("JSONArray[" + index +
                 "] is not a number.");
         }
     }
@@ -228,11 +228,11 @@ public class JSONArray {
      *
      * @param index The index must be between 0 and length() - 1.
      * @return      The value.
-     * @throws   JSONException If the key is not found or if the value cannot
+     * @throws   RhoJSONException If the key is not found or if the value cannot
      *  be converted to a number.
      *  if the value cannot be converted to a number.
      */
-    public int getInt(int index) throws JSONException {
+    public int getInt(int index) throws RhoJSONException {
         return (int)getDouble(index);
     }
 
@@ -241,15 +241,15 @@ public class JSONArray {
      * Get the JSONArray associated with an index.
      * @param index The index must be between 0 and length() - 1.
      * @return      A JSONArray value.
-     * @throws JSONException If there is no value for the index. or if the
+     * @throws RhoJSONException If there is no value for the index. or if the
      * value is not a JSONArray
      */
-    public JSONArray getJSONArray(int index) throws JSONException {
+    public RhoJSONArray getJSONArray(int index) throws RhoJSONException {
         Object o = get(index);
-        if (o instanceof JSONArray) {
-            return (JSONArray)o;
+        if (o instanceof RhoJSONArray) {
+            return (RhoJSONArray)o;
         }
-        throw new JSONException("JSONArray[" + index +
+        throw new RhoJSONException("JSONArray[" + index +
                 "] is not a JSONArray.");
     }
 
@@ -258,15 +258,15 @@ public class JSONArray {
      * Get the JSONObject associated with an index.
      * @param index subscript
      * @return      A JSONObject value.
-     * @throws JSONException If there is no value for the index or if the
+     * @throws RhoJSONException If there is no value for the index or if the
      * value is not a JSONObject
      */
-    public JSONObject getJSONObject(int index) throws JSONException {
+    public RhoJSONObject getJSONObject(int index) throws RhoJSONException {
         Object o = get(index);
-        if (o instanceof JSONObject) {
-            return (JSONObject)o;
+        if (o instanceof RhoJSONObject) {
+            return (RhoJSONObject)o;
         }
-        throw new JSONException("JSONArray[" + index +
+        throw new RhoJSONException("JSONArray[" + index +
             "] is not a JSONObject.");
     }
 
@@ -276,10 +276,10 @@ public class JSONArray {
      *
      * @param index The index must be between 0 and length() - 1.
      * @return      The value.
-     * @throws   JSONException If the key is not found or if the value cannot
+     * @throws   RhoJSONException If the key is not found or if the value cannot
      *  be converted to a number.
      */
-    public long getLong(int index) throws JSONException {
+    public long getLong(int index) throws RhoJSONException {
         return (long)getDouble(index);
     }
 
@@ -288,9 +288,9 @@ public class JSONArray {
      * Get the string associated with an index.
      * @param index The index must be between 0 and length() - 1.
      * @return      A string value.
-     * @throws JSONException If there is no value for the index.
+     * @throws RhoJSONException If there is no value for the index.
      */
-    public String getString(int index) throws JSONException {
+    public String getString(int index) throws RhoJSONException {
         return get(index).toString();
     }
 
@@ -301,7 +301,7 @@ public class JSONArray {
      * @return true if the value at the index is null, or if there is no value.
      */
     public boolean isNull(int index) {
-        return JSONObject.NULL.equals(opt(index));
+        return RhoJSONObject.NULL.equals(opt(index));
     }
 
 
@@ -311,9 +311,9 @@ public class JSONArray {
      * Warning: This method assumes that the data structure is acyclical.
      * @param separator A string that will be inserted between the elements.
      * @return a string.
-     * @throws JSONException If the array contains an invalid number.
+     * @throws RhoJSONException If the array contains an invalid number.
      */
-    public String join(String separator) throws JSONException {
+    public String join(String separator) throws RhoJSONException {
         int len = length();
         StringBuffer sb = new StringBuffer();
 
@@ -321,7 +321,7 @@ public class JSONArray {
             if (i > 0) {
                 sb.append(separator);
             }
-            sb.append(JSONObject.valueToString(this.myArrayList.elementAt(i)));
+            sb.append(RhoJSONObject.valueToString(this.myArrayList.elementAt(i)));
         }
         return sb.toString();
     }
@@ -447,9 +447,9 @@ public class JSONArray {
      * @return      A JSONArray value, or null if the index has no value,
      * or if the value is not a JSONArray.
      */
-    public JSONArray optJSONArray(int index) {
+    public RhoJSONArray optJSONArray(int index) {
         Object o = opt(index);
-        return o instanceof JSONArray ? (JSONArray)o : null;
+        return o instanceof RhoJSONArray ? (RhoJSONArray)o : null;
     }
 
 
@@ -461,9 +461,9 @@ public class JSONArray {
      * @param index The index must be between 0 and length() - 1.
      * @return      A JSONObject value.
      */
-    public JSONObject optJSONObject(int index) {
+    public RhoJSONObject optJSONObject(int index) {
         Object o = opt(index);
-        return o instanceof JSONObject ? (JSONObject)o : null;
+        return o instanceof RhoJSONObject ? (RhoJSONObject)o : null;
     }
 
 
@@ -530,7 +530,7 @@ public class JSONArray {
      * @param value A boolean value.
      * @return this.
      */
-    public JSONArray put(boolean value) {
+    public RhoJSONArray put(boolean value) {
         put(value ? Boolean.TRUE : Boolean.FALSE);
         return this;
     }
@@ -542,8 +542,8 @@ public class JSONArray {
      * @param value	A Collection value.
      * @return		this.
      */
-    public JSONArray put(Vector value) {
-        put(new JSONArray(value));
+    public RhoJSONArray put(Vector value) {
+        put(new RhoJSONArray(value));
         return this;
     }
     
@@ -552,12 +552,12 @@ public class JSONArray {
      * Append a double value. This increases the array's length by one.
      *
      * @param value A double value.
-     * @throws JSONException if the value is not finite.
+     * @throws RhoJSONException if the value is not finite.
      * @return this.
      */
-    public JSONArray put(double value) throws JSONException {
+    public RhoJSONArray put(double value) throws RhoJSONException {
         Double d = new Double(value);
-        JSONObject.testValidity(d);
+        RhoJSONObject.testValidity(d);
         put(d);
         return this;
     }
@@ -569,7 +569,7 @@ public class JSONArray {
      * @param value An int value.
      * @return this.
      */
-    public JSONArray put(int value) {
+    public RhoJSONArray put(int value) {
         put(new Integer(value));
         return this;
     }
@@ -581,7 +581,7 @@ public class JSONArray {
      * @param value A long value.
      * @return this.
      */
-    public JSONArray put(long value) {
+    public RhoJSONArray put(long value) {
         put(new Long(value));
         return this;
     }
@@ -593,8 +593,8 @@ public class JSONArray {
      * @param value	A Map value.
      * @return		this.
      */
-    public JSONArray put(Hashtable value) {
-        put(new JSONObject(value));
+    public RhoJSONArray put(Hashtable value) {
+        put(new RhoJSONObject(value));
         return this;
     }
     
@@ -606,7 +606,7 @@ public class JSONArray {
      *  JSONObject.NULL object.
      * @return this.
      */
-    public JSONArray put(Object value) {
+    public RhoJSONArray put(Object value) {
         this.myArrayList.addElement(value);
         return this;
     }
@@ -619,9 +619,9 @@ public class JSONArray {
      * @param index The subscript.
      * @param value A boolean value.
      * @return this.
-     * @throws JSONException If the index is negative.
+     * @throws RhoJSONException If the index is negative.
      */
-    public JSONArray put(int index, boolean value) throws JSONException {
+    public RhoJSONArray put(int index, boolean value) throws RhoJSONException {
         put(index, value ? Boolean.TRUE : Boolean.FALSE);
         return this;
     }
@@ -633,11 +633,11 @@ public class JSONArray {
      * @param index The subscript.
      * @param value	A Collection value.
      * @return		this.
-     * @throws JSONException If the index is negative or if the value is
+     * @throws RhoJSONException If the index is negative or if the value is
      * not finite.
      */
-    public JSONArray put(int index, Vector value) throws JSONException {
-        put(index, new JSONArray(value));
+    public RhoJSONArray put(int index, Vector value) throws RhoJSONException {
+        put(index, new RhoJSONArray(value));
         return this;
     }
 
@@ -649,10 +649,10 @@ public class JSONArray {
      * @param index The subscript.
      * @param value A double value.
      * @return this.
-     * @throws JSONException If the index is negative or if the value is
+     * @throws RhoJSONException If the index is negative or if the value is
      * not finite.
      */
-    public JSONArray put(int index, double value) throws JSONException {
+    public RhoJSONArray put(int index, double value) throws RhoJSONException {
         put(index, new Double(value));
         return this;
     }
@@ -665,9 +665,9 @@ public class JSONArray {
      * @param index The subscript.
      * @param value An int value.
      * @return this.
-     * @throws JSONException If the index is negative.
+     * @throws RhoJSONException If the index is negative.
      */
-    public JSONArray put(int index, int value) throws JSONException {
+    public RhoJSONArray put(int index, int value) throws RhoJSONException {
         put(index, new Integer(value));
         return this;
     }
@@ -680,9 +680,9 @@ public class JSONArray {
      * @param index The subscript.
      * @param value A long value.
      * @return this.
-     * @throws JSONException If the index is negative.
+     * @throws RhoJSONException If the index is negative.
      */
-    public JSONArray put(int index, long value) throws JSONException {
+    public RhoJSONArray put(int index, long value) throws RhoJSONException {
         put(index, new Long(value));
         return this;
     }
@@ -694,11 +694,11 @@ public class JSONArray {
      * @param index The subscript.
      * @param value	The Map value.
      * @return		this.
-     * @throws JSONException If the index is negative or if the the value is
+     * @throws RhoJSONException If the index is negative or if the the value is
      *  an invalid number.
      */
-    public JSONArray put(int index, Hashtable value) throws JSONException {
-        put(index, new JSONObject(value));
+    public RhoJSONArray put(int index, Hashtable value) throws RhoJSONException {
+        put(index, new RhoJSONObject(value));
         return this;
     }
     
@@ -712,19 +712,19 @@ public class JSONArray {
      *  Boolean, Double, Integer, JSONArray, JSONObject, Long, or String, or the
      *  JSONObject.NULL object.
      * @return this.
-     * @throws JSONException If the index is negative or if the the value is
+     * @throws RhoJSONException If the index is negative or if the the value is
      *  an invalid number.
      */
-    public JSONArray put(int index, Object value) throws JSONException {
-        JSONObject.testValidity(value);
+    public RhoJSONArray put(int index, Object value) throws RhoJSONException {
+        RhoJSONObject.testValidity(value);
         if (index < 0) {
-            throw new JSONException("JSONArray[" + index + "] not found.");
+            throw new RhoJSONException("JSONArray[" + index + "] not found.");
         }
         if (index < length()) {
             this.myArrayList.setElementAt(value, index);
         } else {
             while (index != length()) {
-                put(JSONObject.NULL);
+                put(RhoJSONObject.NULL);
             }
             put(value);
         }
@@ -739,13 +739,13 @@ public class JSONArray {
      * paired with the values.
      * @return A JSONObject, or null if there are no names or if this JSONArray
      * has no values.
-     * @throws JSONException If any of the names are null.
+     * @throws RhoJSONException If any of the names are null.
      */
-    public JSONObject toJSONObject(JSONArray names) throws JSONException {
+    public RhoJSONObject toJSONObject(RhoJSONArray names) throws RhoJSONException {
         if (names == null || names.length() == 0 || length() == 0) {
             return null;
         }
-        JSONObject jo = new JSONObject();
+        RhoJSONObject jo = new RhoJSONObject();
         for (int i = 0; i < names.length(); i += 1) {
             jo.put(names.getString(i), this.opt(i));
         }
@@ -782,9 +782,9 @@ public class JSONArray {
      *  representation of the object, beginning
      *  with <code>[</code>&nbsp;<small>(left bracket)</small> and ending
      *  with <code>]</code>&nbsp;<small>(right bracket)</small>.
-     * @throws JSONException
+     * @throws RhoJSONException
      */
-    public String toString(int indentFactor) throws JSONException {
+    public String toString(int indentFactor) throws RhoJSONException {
         return toString(indentFactor, 0);
     }
 
@@ -797,9 +797,9 @@ public class JSONArray {
      * @param indent The indention of the top level.
      * @return a printable, displayable, transmittable
      *  representation of the array.
-     * @throws JSONException
+     * @throws RhoJSONException
      */
-    String toString(int indentFactor, int indent) throws JSONException {
+    String toString(int indentFactor, int indent) throws RhoJSONException {
         int len = length();
         if (len == 0) {
             return "[]";
@@ -807,7 +807,7 @@ public class JSONArray {
         int i;
         StringBuffer sb = new StringBuffer("[");
         if (len == 1) {
-            sb.append(JSONObject.valueToString(this.myArrayList.elementAt(0),
+            sb.append(RhoJSONObject.valueToString(this.myArrayList.elementAt(0),
                     indentFactor, indent));
         } else {
             int newindent = indent + indentFactor;
@@ -819,7 +819,7 @@ public class JSONArray {
                 for (int j = 0; j < newindent; j += 1) {
                     sb.append(' ');
                 }
-                sb.append(JSONObject.valueToString(this.myArrayList.elementAt(i),
+                sb.append(RhoJSONObject.valueToString(this.myArrayList.elementAt(i),
                         indentFactor, newindent));
             }
             sb.append('\n');
@@ -839,9 +839,9 @@ public class JSONArray {
      * Warning: This method assumes that the data structure is acyclical.
      *
      * @return The writer.
-     * @throws JSONException
+     * @throws RhoJSONException
      */
-    public Writer write(Writer writer) throws JSONException {
+    public Writer write(Writer writer) throws RhoJSONException {
         try {
             boolean b = false;
             int     len = length();
@@ -853,19 +853,19 @@ public class JSONArray {
                     writer.write(',');
                 }
                 Object v = this.myArrayList.elementAt(i);
-                if (v instanceof JSONObject) {
-                    ((JSONObject)v).write(writer);
-                } else if (v instanceof JSONArray) {
-                    ((JSONArray)v).write(writer);
+                if (v instanceof RhoJSONObject) {
+                    ((RhoJSONObject)v).write(writer);
+                } else if (v instanceof RhoJSONArray) {
+                    ((RhoJSONArray)v).write(writer);
                 } else {
-                    writer.write(JSONObject.valueToString(v));
+                    writer.write(RhoJSONObject.valueToString(v));
                 }
                 b = true;
             }
             writer.write(']');
             return writer;
         } catch (IOException e) {
-           throw new JSONException(e);
+           throw new RhoJSONException(e);
         }
     }
 }

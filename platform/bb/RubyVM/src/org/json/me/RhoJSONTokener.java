@@ -31,7 +31,7 @@ SOFTWARE.
  * @author JSON.org
  * @version 2
  */
-public class JSONTokener {
+public class RhoJSONTokener {
 
     /**
      * The index of the next character.
@@ -50,7 +50,7 @@ public class JSONTokener {
      *
      * @param s     A source string.
      */
-    public JSONTokener(String s) {
+    public RhoJSONTokener(String s) {
         this.myIndex = 0;
         this.mySource = s;
     }
@@ -119,9 +119,9 @@ public class JSONTokener {
      * character.
      * @param c The character to match.
      * @return The character.
-     * @throws JSONException if the character does not match.
+     * @throws RhoJSONException if the character does not match.
      */
-    public char next(char c) throws JSONException {
+    public char next(char c) throws RhoJSONException {
         char n = next();
         if (n != c) {
             throw syntaxError("Expected '" + c + "' and instead saw '" +
@@ -136,11 +136,11 @@ public class JSONTokener {
      *
      * @param n     The number of characters to take.
      * @return      A string of n characters.
-     * @throws JSONException
+     * @throws RhoJSONException
      *   Substring bounds error if there are not
      *   n characters remaining in the source string.
      */
-     public String next(int n) throws JSONException {
+     public String next(int n) throws RhoJSONException {
          int i = this.myIndex;
          int j = i + n;
          if (j >= this.mySource.length()) {
@@ -154,10 +154,10 @@ public class JSONTokener {
     /**
      * Get the next char in the string, skipping whitespace
      * and comments (slashslash, slashstar, and hash).
-     * @throws JSONException
+     * @throws RhoJSONException
      * @return  A character, or 0 if there are no more characters.
      */
-    public char nextClean() throws JSONException {
+    public char nextClean() throws RhoJSONException {
         for (;;) {
             char c = next();
             if (c == '/') {
@@ -205,9 +205,9 @@ public class JSONTokener {
      *      <code>"</code>&nbsp;<small>(double quote)</small> or
      *      <code>'</code>&nbsp;<small>(single quote)</small>.
      * @return      A String.
-     * @throws JSONException Unterminated string.
+     * @throws RhoJSONException Unterminated string.
      */
-    public String nextString(char quote) throws JSONException {
+    public String nextString(char quote) throws RhoJSONException {
         char c;
         StringBuffer sb = new StringBuffer();
         for (;;) {
@@ -302,11 +302,11 @@ public class JSONTokener {
     /**
      * Get the next value. The value can be a Boolean, Double, Integer,
      * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
-     * @throws JSONException If syntax error.
+     * @throws RhoJSONException If syntax error.
      *
      * @return An object.
      */
-    public Object nextValue() throws JSONException {
+    public Object nextValue() throws RhoJSONException {
         char c = nextClean();
         String s;
 
@@ -316,10 +316,10 @@ public class JSONTokener {
                 return nextString(c);
             case '{':
                 back();
-                return new JSONObject(this);
+                return new RhoJSONObject(this);
             case '[':
                 back();
-                return new JSONArray(this);
+                return new RhoJSONArray(this);
         }
 
         /*
@@ -354,7 +354,7 @@ public class JSONTokener {
             return Boolean.FALSE;
         }
         if (s.equalsIgnoreCase("null")) {
-            return JSONObject.NULL;
+            return RhoJSONObject.NULL;
         }
 
         /*
@@ -444,8 +444,8 @@ public class JSONTokener {
      * @param message The error message.
      * @return  A JSONException object, suitable for throwing
      */
-    public JSONException syntaxError(String message) {
-        return new JSONException(message + toString());
+    public RhoJSONException syntaxError(String message) {
+        return new RhoJSONException(message + toString());
     }
 
 

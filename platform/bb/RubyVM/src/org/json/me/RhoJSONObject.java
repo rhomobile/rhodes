@@ -83,7 +83,7 @@ import java.util.Vector;
  * @author JSON.org
  * @version 2
  */
-public class JSONObject {
+public class RhoJSONObject {
 
     /**
      * JSONObject.NULL is equivalent to the value that JavaScript calls null,
@@ -141,7 +141,7 @@ public class JSONObject {
     /**
      * Construct an empty JSONObject.
      */
-    public JSONObject() {
+    public RhoJSONObject() {
         this.myHashMap = new Hashtable();
     }
 
@@ -152,9 +152,9 @@ public class JSONObject {
      * Missing keys are ignored.
      * @param jo A JSONObject.
      * @param sa An array of strings.
-     * @exception JSONException If a value is a non-finite number.
+     * @exception RhoJSONException If a value is a non-finite number.
      */
-    public JSONObject(JSONObject jo, String[] sa) throws JSONException {
+    public RhoJSONObject(RhoJSONObject jo, String[] sa) throws RhoJSONException {
         this();
         for (int i = 0; i < sa.length; i += 1) {
             putOpt(sa[i], jo.opt(sa[i]));
@@ -165,9 +165,9 @@ public class JSONObject {
     /**
      * Construct a JSONObject from a JSONTokener.
      * @param x A JSONTokener object containing the source string.
-     * @throws JSONException If there is a syntax error in the source string.
+     * @throws RhoJSONException If there is a syntax error in the source string.
      */
-    public JSONObject(JSONTokener x) throws JSONException {
+    public RhoJSONObject(RhoJSONTokener x) throws RhoJSONException {
         this();
         char c;
         String key;
@@ -227,7 +227,7 @@ public class JSONObject {
      * @param map A map object that can be used to initialize the contents of
      *  the JSONObject.
      */
-    public JSONObject(Hashtable map) {
+    public RhoJSONObject(Hashtable map) {
         if (map == null) {
             this.myHashMap = new Hashtable();
         } else {
@@ -247,10 +247,10 @@ public class JSONObject {
      * @param string    A string beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @exception JSONException If there is a syntax error in the source string.
+     * @exception RhoJSONException If there is a syntax error in the source string.
      */
-    public JSONObject(String string) throws JSONException {
-        this(new JSONTokener(string));
+    public RhoJSONObject(String string) throws RhoJSONException {
+        this(new RhoJSONTokener(string));
     }
 
 
@@ -263,19 +263,19 @@ public class JSONObject {
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
      * @return this.
-     * @throws JSONException If the value is an invalid number
+     * @throws RhoJSONException If the value is an invalid number
      *  or if the key is null.
      */
-    public JSONObject accumulate(String key, Object value)
-            throws JSONException {
+    public RhoJSONObject accumulate(String key, Object value)
+            throws RhoJSONException {
         testValidity(value);
         Object o = opt(key);
         if (o == null) {
             put(key, value);
-        } else if (o instanceof JSONArray) {
-            ((JSONArray)o).put(value);
+        } else if (o instanceof RhoJSONArray) {
+            ((RhoJSONArray)o).put(value);
         } else {
-            put(key, new JSONArray().put(o).put(value));
+            put(key, new RhoJSONArray().put(o).put(value));
         }
         return this;
     }
@@ -289,20 +289,20 @@ public class JSONObject {
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
      * @return this.
-     * @throws JSONException If the key is null or if the current value 
+     * @throws RhoJSONException If the key is null or if the current value 
      * 	associated with the key is not a JSONArray.
      */
-    public JSONObject append(String key, Object value)
-            throws JSONException {
+    public RhoJSONObject append(String key, Object value)
+            throws RhoJSONException {
         testValidity(value);
         Object o = opt(key);
         if (o == null) {
-            put(key, new JSONArray().put(value));
-        } else if (o instanceof JSONArray) {
-            throw new JSONException("JSONObject[" + key + 
+            put(key, new RhoJSONArray().put(value));
+        } else if (o instanceof RhoJSONArray) {
+            throw new RhoJSONException("JSONObject[" + key + 
             		"] is not a JSONArray.");
         } else {
-            put(key, new JSONArray().put(o).put(value));
+            put(key, new RhoJSONArray().put(o).put(value));
         }
         return this;
     }
@@ -339,12 +339,12 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      The object associated with the key.
-     * @throws   JSONException if the key is not found.
+     * @throws   RhoJSONException if the key is not found.
      */
-    public Object get(String key) throws JSONException {
+    public Object get(String key) throws RhoJSONException {
         Object o = opt(key);
         if (o == null) {
-            throw new JSONException("JSONObject[" + quote(key) +
+            throw new RhoJSONException("JSONObject[" + quote(key) +
                     "] not found.");
         }
         return o;
@@ -356,10 +356,10 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      The truth.
-     * @throws   JSONException
+     * @throws   RhoJSONException
      *  if the value is not a Boolean or the String "true" or "false".
      */
-    public boolean getBoolean(String key) throws JSONException {
+    public boolean getBoolean(String key) throws RhoJSONException {
         Object o = get(key);
         if (o.equals(Boolean.FALSE) ||
                 (o instanceof String &&
@@ -370,7 +370,7 @@ public class JSONObject {
                 ((String)o).equalsIgnoreCase("true"))) {
             return true;
         }
-        throw new JSONException("JSONObject[" + quote(key) +
+        throw new RhoJSONException("JSONObject[" + quote(key) +
                 "] is not a Boolean.");
     }
 
@@ -379,10 +379,10 @@ public class JSONObject {
      * Get the double value associated with a key.
      * @param key   A key string.
      * @return      The numeric value.
-     * @throws JSONException if the key is not found or
+     * @throws RhoJSONException if the key is not found or
      *  if the value is not a Number object and cannot be converted to a number.
      */
-    public double getDouble(String key) throws JSONException {
+    public double getDouble(String key) throws RhoJSONException {
         Object o = get(key);
         if (o instanceof Byte) {
             return (double) ((Byte)o).byteValue();
@@ -403,11 +403,11 @@ public class JSONObject {
             	
                 return Double.valueOf((String)o).doubleValue();
             } catch (Exception e) {
-                throw new JSONException("JSONObject[" + quote(key) +
+                throw new RhoJSONException("JSONObject[" + quote(key) +
                     "] is not a number.");
             }
         } 
-        throw new JSONException("JSONObject[" + quote(key) +
+        throw new RhoJSONException("JSONObject[" + quote(key) +
             "] is not a number.");
     }
 
@@ -418,10 +418,10 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      The integer value.
-     * @throws   JSONException if the key is not found or if the value cannot
+     * @throws   RhoJSONException if the key is not found or if the value cannot
      *  be converted to an integer.
      */
-    public int getInt(String key) throws JSONException {
+    public int getInt(String key) throws RhoJSONException {
         Object o = get(key);
         if (o instanceof Byte) {
             return ((Byte)o).byteValue();
@@ -438,7 +438,7 @@ public class JSONObject {
         } else if (o instanceof String) {
             return (int) getDouble(key);
         } 
-        throw new JSONException("JSONObject[" + quote(key) +
+        throw new RhoJSONException("JSONObject[" + quote(key) +
             "] is not a number.");
     }
 
@@ -448,15 +448,15 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      A JSONArray which is the value.
-     * @throws   JSONException if the key is not found or
+     * @throws   RhoJSONException if the key is not found or
      *  if the value is not a JSONArray.
      */
-    public JSONArray getJSONArray(String key) throws JSONException {
+    public RhoJSONArray getJSONArray(String key) throws RhoJSONException {
         Object o = get(key);
-        if (o instanceof JSONArray) {
-            return (JSONArray)o;
+        if (o instanceof RhoJSONArray) {
+            return (RhoJSONArray)o;
         }
-        throw new JSONException("JSONObject[" + quote(key) +
+        throw new RhoJSONException("JSONObject[" + quote(key) +
                 "] is not a JSONArray.");
     }
 
@@ -466,15 +466,15 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      A JSONObject which is the value.
-     * @throws   JSONException if the key is not found or
+     * @throws   RhoJSONException if the key is not found or
      *  if the value is not a JSONObject.
      */
-    public JSONObject getJSONObject(String key) throws JSONException {
+    public RhoJSONObject getJSONObject(String key) throws RhoJSONException {
         Object o = get(key);
-        if (o instanceof JSONObject) {
-            return (JSONObject)o;
+        if (o instanceof RhoJSONObject) {
+            return (RhoJSONObject)o;
         }
-        throw new JSONException("JSONObject[" + quote(key) +
+        throw new RhoJSONException("JSONObject[" + quote(key) +
                 "] is not a JSONObject.");
     }
 
@@ -485,10 +485,10 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      The long value.
-     * @throws   JSONException if the key is not found or if the value cannot
+     * @throws   RhoJSONException if the key is not found or if the value cannot
      *  be converted to a long.
      */
-    public long getLong(String key) throws JSONException {
+    public long getLong(String key) throws RhoJSONException {
         Object o = get(key);
         if (o instanceof Byte) {
             return ((Byte)o).byteValue();
@@ -505,7 +505,7 @@ public class JSONObject {
         } else if (o instanceof String) {
             return (long) getDouble(key);
         } 
-        throw new JSONException("JSONObject[" + quote(key) +
+        throw new RhoJSONException("JSONObject[" + quote(key) +
             "] is not a number.");
     }
 
@@ -515,9 +515,9 @@ public class JSONObject {
      *
      * @param key   A key string.
      * @return      A string which is the value.
-     * @throws   JSONException if the key is not found.
+     * @throws   RhoJSONException if the key is not found.
      */
-    public String getString(String key) throws JSONException {
+    public String getString(String key) throws RhoJSONException {
         return get(key).toString();
     }
 
@@ -540,7 +540,7 @@ public class JSONObject {
      *  the value is the JSONObject.NULL object.
      */
     public boolean isNull(String key) {
-        return JSONObject.NULL.equals(opt(key));
+        return RhoJSONObject.NULL.equals(opt(key));
     }
 
 
@@ -570,8 +570,8 @@ public class JSONObject {
      * @return A JSONArray containing the key strings, or null if the JSONObject
      * is empty.
      */
-    public JSONArray names() {
-        JSONArray ja = new JSONArray();
+    public RhoJSONArray names() {
+        RhoJSONArray ja = new RhoJSONArray();
         Enumeration  keys = keys();
         while (keys.hasMoreElements()) {
             ja.put(keys.nextElement());
@@ -599,12 +599,12 @@ public class JSONObject {
      * Produce a string from a Number.
      * @param  n A Number
      * @return A String.
-     * @throws JSONException If n is a non-finite number.
+     * @throws RhoJSONException If n is a non-finite number.
      */
     static public String numberToString(Object n)
-            throws JSONException {
+            throws RhoJSONException {
         if (n == null) {
-            throw new JSONException("Null pointer");
+            throw new RhoJSONException("Null pointer");
         }
         testValidity(n);
         return trimNumber(n.toString());
@@ -657,10 +657,10 @@ public class JSONObject {
      * @param key 	A key string.
      * @param value	A Collection value.
      * @return		this.
-     * @throws JSONException
+     * @throws RhoJSONException
      */
-    public JSONObject put(String key, Vector value) throws JSONException {
-        put(key, new JSONArray(value));
+    public RhoJSONObject put(String key, Vector value) throws RhoJSONException {
+        put(key, new RhoJSONArray(value));
         return this;
     }
 
@@ -740,9 +740,9 @@ public class JSONObject {
      * @param key   A key string.
      * @return      A JSONArray which is the value.
      */
-    public JSONArray optJSONArray(String key) {
+    public RhoJSONArray optJSONArray(String key) {
         Object o = opt(key);
-        return o instanceof JSONArray ? (JSONArray)o : null;
+        return o instanceof RhoJSONArray ? (RhoJSONArray)o : null;
     }
 
 
@@ -754,9 +754,9 @@ public class JSONObject {
      * @param key   A key string.
      * @return      A JSONObject which is the value.
      */
-    public JSONObject optJSONObject(String key) {
+    public RhoJSONObject optJSONObject(String key) {
         Object o = opt(key);
-        return o instanceof JSONObject ? (JSONObject)o : null;
+        return o instanceof RhoJSONObject ? (RhoJSONObject)o : null;
     }
 
 
@@ -826,9 +826,9 @@ public class JSONObject {
      * @param key   A key string.
      * @param value A boolean which is the value.
      * @return this.
-     * @throws JSONException If the key is null.
+     * @throws RhoJSONException If the key is null.
      */
-    public JSONObject put(String key, boolean value) throws JSONException {
+    public RhoJSONObject put(String key, boolean value) throws RhoJSONException {
         put(key, value ? Boolean.TRUE : Boolean.FALSE);
         return this;
     }
@@ -840,9 +840,9 @@ public class JSONObject {
      * @param key   A key string.
      * @param value A double which is the value.
      * @return this.
-     * @throws JSONException If the key is null or if the number is invalid.
+     * @throws RhoJSONException If the key is null or if the number is invalid.
      */
-    public JSONObject put(String key, double value) throws JSONException {
+    public RhoJSONObject put(String key, double value) throws RhoJSONException {
         put(key, new Double(value));
         return this;
     }
@@ -854,9 +854,9 @@ public class JSONObject {
      * @param key   A key string.
      * @param value An int which is the value.
      * @return this.
-     * @throws JSONException If the key is null.
+     * @throws RhoJSONException If the key is null.
      */
-    public JSONObject put(String key, int value) throws JSONException {
+    public RhoJSONObject put(String key, int value) throws RhoJSONException {
         put(key, new Integer(value));
         return this;
     }
@@ -868,9 +868,9 @@ public class JSONObject {
      * @param key   A key string.
      * @param value A long which is the value.
      * @return this.
-     * @throws JSONException If the key is null.
+     * @throws RhoJSONException If the key is null.
      */
-    public JSONObject put(String key, long value) throws JSONException {
+    public RhoJSONObject put(String key, long value) throws RhoJSONException {
         put(key, new Long(value));
         return this;
     }
@@ -882,10 +882,10 @@ public class JSONObject {
      * @param key 	A key string.
      * @param value	A Map value.
      * @return		this.
-     * @throws JSONException
+     * @throws RhoJSONException
      */
-    public JSONObject put(String key, Hashtable value) throws JSONException {
-        put(key, new JSONObject(value));
+    public RhoJSONObject put(String key, Hashtable value) throws RhoJSONException {
+        put(key, new RhoJSONObject(value));
         return this;
     }
     
@@ -898,12 +898,12 @@ public class JSONObject {
      *  types: Boolean, Double, Integer, JSONArray, JSONObject, Long, String,
      *  or the JSONObject.NULL object.
      * @return this.
-     * @throws JSONException If the value is non-finite number
+     * @throws RhoJSONException If the value is non-finite number
      *  or if the key is null.
      */
-    public JSONObject put(String key, Object value) throws JSONException {
+    public RhoJSONObject put(String key, Object value) throws RhoJSONException {
         if (key == null) {
-            throw new JSONException("Null key.");
+            throw new RhoJSONException("Null key.");
         }
         if (value != null) {
             testValidity(value);
@@ -923,9 +923,9 @@ public class JSONObject {
      *  types: Boolean, Double, Integer, JSONArray, JSONObject, Long, String,
      *  or the JSONObject.NULL object.
      * @return this.
-     * @throws JSONException If the value is a non-finite number.
+     * @throws RhoJSONException If the value is a non-finite number.
      */
-    public JSONObject putOpt(String key, Object value) throws JSONException {
+    public RhoJSONObject putOpt(String key, Object value) throws RhoJSONException {
         if (key != null && value != null) {
             put(key, value);
         }
@@ -1011,18 +1011,18 @@ public class JSONObject {
     /**
      * Throw an exception if the object is an NaN or infinite number.
      * @param o The object to test.
-     * @throws JSONException If o is a non-finite number.
+     * @throws RhoJSONException If o is a non-finite number.
      */
-    static void testValidity(Object o) throws JSONException {
+    static void testValidity(Object o) throws RhoJSONException {
         if (o != null) {
             if (o instanceof Double) {
                 if (((Double)o).isInfinite() || ((Double)o).isNaN()) {
-                    throw new JSONException(
+                    throw new RhoJSONException(
                         "JSON does not allow non-finite numbers");
                 }
             } else if (o instanceof Float) {
                 if (((Float)o).isInfinite() || ((Float)o).isNaN()) {
-                    throw new JSONException(
+                    throw new RhoJSONException(
                         "JSON does not allow non-finite numbers.");
                 }
             }
@@ -1036,13 +1036,13 @@ public class JSONObject {
      * @param names A JSONArray containing a list of key strings. This
      * determines the sequence of the values in the result.
      * @return A JSONArray of values.
-     * @throws JSONException If any of the values are non-finite numbers.
+     * @throws RhoJSONException If any of the values are non-finite numbers.
      */
-    public JSONArray toJSONArray(JSONArray names) throws JSONException {
+    public RhoJSONArray toJSONArray(RhoJSONArray names) throws RhoJSONException {
         if (names == null || names.length() == 0) {
             return null;
         }
-        JSONArray ja = new JSONArray();
+        RhoJSONArray ja = new RhoJSONArray();
         for (int i = 0; i < names.length(); i += 1) {
             ja.put(this.opt(names.getString(i)));
         }
@@ -1093,9 +1093,9 @@ public class JSONObject {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the object contains an invalid number.
+     * @throws RhoJSONException If the object contains an invalid number.
      */
-    public String toString(int indentFactor) throws JSONException {
+    public String toString(int indentFactor) throws RhoJSONException {
         return toString(indentFactor, 0);
     }
 
@@ -1111,9 +1111,9 @@ public class JSONObject {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the object contains an invalid number.
+     * @throws RhoJSONException If the object contains an invalid number.
      */
-    String toString(int indentFactor, int indent) throws JSONException {
+    String toString(int indentFactor, int indent) throws RhoJSONException {
         int          i;
         int          n = length();
         if (n == 0) {
@@ -1171,31 +1171,31 @@ public class JSONObject {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the value is or contains an invalid number.
+     * @throws RhoJSONException If the value is or contains an invalid number.
      */
-    static String valueToString(Object value) throws JSONException {
+    static String valueToString(Object value) throws RhoJSONException {
         if (value == null || value.equals(null)) {
             return "null";
         }
-        if (value instanceof JSONString) {
+        if (value instanceof RhoJSONString) {
         	Object o;
         	try {
-            	o = ((JSONString)value).toJSONString();
+            	o = ((RhoJSONString)value).toJSONString();
             } catch (Exception e) {
-            	throw new JSONException(e);
+            	throw new RhoJSONException(e);
             }
             if (o instanceof String) {
 	        	return (String)o;
 	        }
-            throw new JSONException("Bad value from toJSONString: " + o);
+            throw new RhoJSONException("Bad value from toJSONString: " + o);
         }
         if (value instanceof Float || value instanceof Double ||
             value instanceof Byte || value instanceof Short || 
             value instanceof Integer || value instanceof Long) {
             return numberToString(value);
         }
-        if (value instanceof Boolean || value instanceof JSONObject ||
-                value instanceof JSONArray) {
+        if (value instanceof Boolean || value instanceof RhoJSONObject ||
+                value instanceof RhoJSONArray) {
             return value.toString();
         }
         return quote(value.toString());
@@ -1214,16 +1214,16 @@ public class JSONObject {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the object contains an invalid number.
+     * @throws RhoJSONException If the object contains an invalid number.
      */
      static String valueToString(Object value, int indentFactor, int indent)
-            throws JSONException {
+            throws RhoJSONException {
         if (value == null || value.equals(null)) {
             return "null";
         }
         try {
-	        if (value instanceof JSONString) {
-		        Object o = ((JSONString)value).toJSONString();
+	        if (value instanceof RhoJSONString) {
+		        Object o = ((RhoJSONString)value).toJSONString();
 		        if (o instanceof String) {
 		        	return (String)o;
 		        }
@@ -1239,11 +1239,11 @@ public class JSONObject {
         if (value instanceof Boolean) {
             return value.toString();
         }
-        if (value instanceof JSONObject) {
-            return ((JSONObject)value).toString(indentFactor, indent);
+        if (value instanceof RhoJSONObject) {
+            return ((RhoJSONObject)value).toString(indentFactor, indent);
         }
-        if (value instanceof JSONArray) {
-            return ((JSONArray)value).toString(indentFactor, indent);
+        if (value instanceof RhoJSONArray) {
+            return ((RhoJSONArray)value).toString(indentFactor, indent);
         }
         return quote(value.toString());
     }
@@ -1256,9 +1256,9 @@ public class JSONObject {
       * Warning: This method assumes that the data structure is acyclical.
       *
       * @return The writer.
-      * @throws JSONException
+      * @throws RhoJSONException
       */
-     public Writer write(Writer writer) throws JSONException {
+     public Writer write(Writer writer) throws RhoJSONException {
         try {
             boolean  b = false;
             Enumeration keys = keys();
@@ -1272,10 +1272,10 @@ public class JSONObject {
                 writer.write(quote(k.toString()));
                 writer.write(':');
                 Object v = this.myHashMap.get(k);
-                if (v instanceof JSONObject) {
-                    ((JSONObject)v).write(writer);
-                } else if (v instanceof JSONArray) {
-                    ((JSONArray)v).write(writer);
+                if (v instanceof RhoJSONObject) {
+                    ((RhoJSONObject)v).write(writer);
+                } else if (v instanceof RhoJSONArray) {
+                    ((RhoJSONArray)v).write(writer);
                 } else {
                     writer.write(valueToString(v));
                 }
@@ -1284,7 +1284,7 @@ public class JSONObject {
             writer.write('}');
             return writer;
         } catch (IOException e) {
-            throw new JSONException(e);
+            throw new RhoJSONException(e);
         }
      }
 }
