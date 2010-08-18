@@ -22,8 +22,8 @@
 describe "RhoConfig" do
 
   before(:each) do
-    Rho::RhoConfig.config['start_path'] = '/app'
-    Rho::RhoConfig.config['options_path'] = '/app/Settings'
+    Rho::RhoConfig.start_path = '/app'
+    Rho::RhoConfig.options_path = '/app/Settings'
   end
   
   it "should populate configuration in sources table" do

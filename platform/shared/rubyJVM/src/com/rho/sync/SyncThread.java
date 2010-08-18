@@ -654,7 +654,7 @@ public class SyncThread extends RhoThread
 					return RubyConstant.QNIL;
 				}
 			});
-		klass.getSingletonClass().defineMethod("do_set_syncserver",
+		klass.getSingletonClass().defineMethod("set_syncserver",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{

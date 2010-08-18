@@ -1816,6 +1816,9 @@ static VALUE mRhoConf;
 
 	extern void rho_conf_set_property_by_name(char* name, char* value);
 	#define set_property_by_name rho_conf_set_property_by_name
+
+    extern VALUE rho_conf_get_property_by_name(char* property);
+    #define get_property_by_name rho_conf_get_property_by_name
 	
 	extern void rho_conf_show_log();
 	#define show_log rho_conf_show_log
@@ -1932,6 +1935,33 @@ _wrap_set_property_by_name(int argc, VALUE *argv, VALUE self) {
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_get_property_by_name(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char *","get_property_by_name", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  result = (VALUE)get_property_by_name(arg1);
+  vresult = result;
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -2265,6 +2295,7 @@ SWIGEXPORT void Init_RhoConf(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mRhoConf, "set_property_by_name", _wrap_set_property_by_name, -1);
+  rb_define_module_function(mRhoConf, "get_property_by_name", _wrap_get_property_by_name, -1);
   rb_define_module_function(mRhoConf, "show_log", _wrap_show_log, -1);
   rb_define_module_function(mRhoConf, "send_log", _wrap_send_log, -1);
   rb_define_module_function(mRhoConf, "is_property_exists", _wrap_is_property_exists, -1);
