@@ -40,7 +40,7 @@ def startmds
   args << "/c"
   args << "run.bat"
 
-  Jake.run("cmd.exe",args, mdshome,true)
+  #Jake.run("cmd.exe",args, mdshome,true)
 end 
 
 def stopmds
@@ -49,7 +49,7 @@ def stopmds
   args << "/c"
   args << "shutdown.bat"
 
-  Jake.run("cmd.exe",args, mdshome, true, true)
+  #Jake.run("cmd.exe",args, mdshome, true, true)
 end 
 
 def startsim(hidden=false)
@@ -383,7 +383,7 @@ namespace "build" do
         
       puts "Modify Capabilities.java"
       $stdout.flush
-      capabilities = File.join($builddir, "..", "..", "..", "platform", "shared", "rubyJVM", "src", "com", "rho", "Capabilities.java")
+      capabilities = File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java")
       File.open(capabilities, 'w') do |f|
         f.puts "package com.rho;"
         f.puts ""
@@ -419,7 +419,7 @@ namespace "build" do
           end
       end
         
-      exts = $startdir + "/platform/shared/rubyJVM/src/com/rho/Extensions.java"
+      exts = $startdir + "/platform/bb/RubyVM/src/com/rho/Extensions.java"
 
       File.open(exts, "w") do |f|
         f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"

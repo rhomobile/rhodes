@@ -9,7 +9,7 @@ import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
 
-public class RJSONTokener extends JSONTokener
+public class RJSONTokener extends RhoJSONTokener
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("JSON");
@@ -18,17 +18,17 @@ public class RJSONTokener extends JSONTokener
         super(s);
     }
     
-    public Object nextValue() throws JSONException {
-    	throw new JSONException("RJSONTokener should not call nextValue.");    	
+    public Object nextValue() throws RhoJSONException {
+    	throw new RhoJSONException("RJSONTokener should not call nextValue.");    	
     }
     /**
      * Get the next value. The value can be a Boolean, Double, Integer,
      * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
-     * @throws JSONException If syntax error.
+     * @throws RhoJSONException If syntax error.
      *
      * @return An object.
      */
-    public RubyValue nextRValue() throws JSONException {
+    public RubyValue nextRValue() throws RhoJSONException {
         char c = nextClean();
         String s;
 
@@ -122,7 +122,7 @@ public class RJSONTokener extends JSONTokener
         return ObjectFactory.createString(s);
     }
     
-    RubyValue parseArray(RJSONTokener x)throws JSONException
+    RubyValue parseArray(RJSONTokener x)throws RhoJSONException
     {
     	RubyArray ar = new RubyArray();
         if (x.nextClean() != '[') {
@@ -156,7 +156,7 @@ public class RJSONTokener extends JSONTokener
         }
     }
     
-    RubyValue parseObject(RJSONTokener x)throws JSONException
+    RubyValue parseObject(RJSONTokener x)throws RhoJSONException
     {
     	RubyHash hash = ObjectFactory.createHash();
     	
@@ -233,7 +233,7 @@ public class RJSONTokener extends JSONTokener
 				try {
 					String str = arg.toStr();
 					
-					String strRes = JSONObject.quote(str);
+					String strRes = RhoJSONObject.quote(str);
 					
 					return ObjectFactory.createString(strRes);
 				} catch(Exception e) {

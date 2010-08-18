@@ -6,9 +6,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONException;
-import org.json.me.JSONObject;
+import org.json.me.RhoJSONArray;
+import org.json.me.RhoJSONException;
+import org.json.me.RhoJSONObject;
 
 import j2me.lang.MathEx;
 
@@ -378,7 +378,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
 		}
 		
-		private void processCommand(MapGeocodingCommand cmd) throws IOException, JSONException {
+		private void processCommand(MapGeocodingCommand cmd) throws IOException, RhoJSONException {
 			LOG.TRACE("Processing map geocoding command (thread #" + hashCode() + "): " + cmd.description());
 			
 			if (cmd.annotation.street_address == null) {
@@ -397,22 +397,22 @@ public class GoogleMapField extends Field implements RhoMapField {
 			byte[] data = fetchData(finalUrl);
 			String response = new String(data);
 			
-			JSONObject resp = new JSONObject(response);
-			JSONObject status = resp.getJSONObject("Status");
+			RhoJSONObject resp = new RhoJSONObject(response);
+			RhoJSONObject status = resp.getJSONObject("Status");
 			int statusCode = status.getInt("code");
 			if (statusCode/100 != 2) {
 				LOG.ERROR("Error received from geocoding service: " + statusCode);
 				return;
 			}
 			
-			JSONArray placemarks = resp.getJSONArray("Placemark");
+			RhoJSONArray placemarks = resp.getJSONArray("Placemark");
 			if (placemarks.length() == 0) {
 				LOG.ERROR("Geocoding request return empty response");
 				return;
 			}
-			JSONObject placemark = placemarks.getJSONObject(0);
-			JSONObject point = placemark.getJSONObject("Point");
-			JSONArray coordinates = point.getJSONArray("coordinates");
+			RhoJSONObject placemark = placemarks.getJSONObject(0);
+			RhoJSONObject point = placemark.getJSONObject("Point");
+			RhoJSONArray coordinates = point.getJSONArray("coordinates");
 			if (coordinates.length() < 2) {
 				LOG.ERROR("Geocoding response contains less than 2 coordinates");
 				return;

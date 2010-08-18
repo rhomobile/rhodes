@@ -5,18 +5,18 @@ package org.json.me;
  * @author JSON.org
  * @version 2
  */
-public class JSONException extends Exception {
+public class RhoJSONException extends Exception {
     private Throwable cause;
 
     /**
      * Constructs a JSONException with an explanatory message.
      * @param message Detail about the reason for the exception.
      */
-    public JSONException(String message) {
+    public RhoJSONException(String message) {
         super(message);
     }
 
-    public JSONException(Throwable t) {
+    public RhoJSONException(Throwable t) {
         super(t.getMessage());
         this.cause = t;
     }
