@@ -1,25 +1,25 @@
 package com.rho.sync;
 
-import org.json.me.JSONException;
-import org.json.me.JSONObject;
+import org.json.me.RhoJSONException;
+import org.json.me.RhoJSONObject;
 import java.util.Enumeration;
 class JSONStructIterator
 {
-	JSONObject m_object;
+	RhoJSONObject m_object;
 	Enumeration m_enumKeys;
 	String m_strCurKey;
 	
-    JSONStructIterator(String szData)throws JSONException
+    JSONStructIterator(String szData)throws RhoJSONException
     {
-    	m_object = new JSONObject(szData);
+    	m_object = new RhoJSONObject(szData);
     	m_enumKeys = m_object.keys();
     	if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
     		m_strCurKey = (String)m_enumKeys.nextElement();
     }
 
-    JSONStructIterator(JSONEntry oEntry, String strName)throws JSONException
+    JSONStructIterator(JSONEntry oEntry, String strName)throws RhoJSONException
     {
-    	m_object = (JSONObject)oEntry.m_object.get(strName);
+    	m_object = (RhoJSONObject)oEntry.m_object.get(strName);
     	m_enumKeys = m_object.keys();
     	if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
     		m_strCurKey = (String)m_enumKeys.nextElement();
@@ -58,17 +58,17 @@ class JSONStructIterator
         return isEnd() ? new String() : m_strCurKey;
     }
 
-	String getCurString()throws JSONException
+	String getCurString()throws RhoJSONException
 	{
 		return m_object.getString(m_strCurKey);
 	}
     
-    JSONEntry getCurValue()throws JSONException
+    JSONEntry getCurValue()throws RhoJSONException
     {
     	if ( isEnd() )
-    		return new JSONEntry( (JSONObject)null );
+    		return new JSONEntry( (RhoJSONObject)null );
     	
-		return new JSONEntry( (JSONObject)m_object.getJSONObject(m_strCurKey) );
+		return new JSONEntry( (RhoJSONObject)m_object.getJSONObject(m_strCurKey) );
     }
 
 }

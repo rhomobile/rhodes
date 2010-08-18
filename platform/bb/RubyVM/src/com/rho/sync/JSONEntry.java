@@ -1,19 +1,19 @@
 package com.rho.sync;
-import org.json.me.JSONException;
-import org.json.me.JSONObject;
+import org.json.me.RhoJSONException;
+import org.json.me.RhoJSONObject;
 
 class JSONEntry
 {
-    JSONObject m_object;
+    RhoJSONObject m_object;
 	
-	JSONEntry(JSONObject obj)
+	JSONEntry(RhoJSONObject obj)
 	{
 	    m_object = obj;
 	}
 
-	JSONEntry(String szData)throws JSONException
+	JSONEntry(String szData)throws RhoJSONException
 	{
-	    m_object = new JSONObject(szData);
+	    m_object = new RhoJSONObject(szData);
 	}
 
 	boolean isEmpty()
@@ -28,10 +28,10 @@ class JSONEntry
 	
 	static String quoteValue(String str)
 	{
-		return JSONObject.quote(str);
+		return RhoJSONObject.quote(str);
 	}
 	
-	String getString(String name)throws JSONException
+	String getString(String name)throws RhoJSONException
 	{
 	    String szRes = null;
 	    if ( m_object.has(name))
@@ -45,7 +45,7 @@ class JSONEntry
 		return m_object.toString();
 	}
 	
-	int getInt(String name)throws JSONException
+	int getInt(String name)throws RhoJSONException
 	{
 	    int nRes = 0;
 	    if ( m_object.has(name))
@@ -54,7 +54,7 @@ class JSONEntry
 	    return nRes;
 	}
 
-	long getLong(String name)throws JSONException
+	long getLong(String name)throws RhoJSONException
 	{
 	    long nRes = 0;
 	    if ( m_object.has(name))
@@ -63,13 +63,13 @@ class JSONEntry
 	    return nRes;
 	}
 	
-	long getUInt64(String name)throws JSONException
+	long getUInt64(String name)throws RhoJSONException
 	{
 	    return getLong(name);
 	}
 
-	JSONEntry getEntry(String name)throws JSONException
+	JSONEntry getEntry(String name)throws RhoJSONException
 	{
-	    return new JSONEntry((JSONObject) m_object.get(name));
+	    return new JSONEntry((RhoJSONObject) m_object.get(name));
 	}
 }

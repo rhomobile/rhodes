@@ -53,6 +53,8 @@ platform/bb/.BB.jdw/*.files
 platform/bb/build/rholog.txt
 platform/bb/preverified
 platform/bb/build/MANIFEST.MF
+platform/bb/*/BlackBerry_App_Descriptor.xml
+platform/bb/*/deliverables
 
 platform/symbian/.metadata/*
 platform/symbian/bin/*
