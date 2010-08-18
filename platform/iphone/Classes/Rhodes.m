@@ -416,7 +416,7 @@ static Rhodes *instance = NULL;
 			} else {
 				//do sync of individual source
 				NSString* srcUrl = [url stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]];
-				rho_sync_doSyncSourceByUrl([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+				rho_sync_doSyncSourceByName([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			}
 		}
 		
@@ -438,14 +438,14 @@ static Rhodes *instance = NULL;
     
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if (aps) {
-        NSString *alert = [aps objectForKey:@"show_popup"];
+        NSString *alert = [aps objectForKey:@"alert"];
         if (alert && [alert length] > 0) {
             NSLog(@"Push Alert: %@", alert);
             rho_param *p = rho_param_str((char*)[alert UTF8String]);
             [RhoAlert showPopup:p];
             rho_param_free(p);
         }
-        NSString *sound = [aps objectForKey:@"play_file"];
+        NSString *sound = [aps objectForKey:@"sound"];
         if (sound && [sound length] > 0) {
             NSLog(@"Sound file name: %@", sound);
             [RhoAlert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];

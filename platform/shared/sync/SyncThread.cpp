@@ -267,24 +267,6 @@ unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *fro
     return CSyncThread::getInstance()->getRetValue();
 }	
 
-void rho_sync_doSyncSourceByUrl(const char* szSrcUrl)
-{
-    const char* szLastSlash = strrchr(szSrcUrl, '\\');
-    if ( !szLastSlash )
-        szLastSlash = strrchr(szSrcUrl, '/');
-
-    const char* szQuest = strrchr(szSrcUrl, '?');
-
-    rho::String strName = "";
-    if (szQuest && szLastSlash)
-        strName = rho::String(szLastSlash+1, szQuest-szLastSlash-1);
-    else
-        strName = szLastSlash ? szLastSlash + 1 : szSrcUrl;
-
-    //TODO: save query params
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, strName, (int)0, false ) );
-}	
-
 void rho_sync_set_pollinterval(int nInterval)
 {
     CSyncThread::getInstance()->setPollInterval(nInterval);
