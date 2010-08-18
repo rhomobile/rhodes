@@ -345,6 +345,18 @@ public class RhoConf {
 			}
 		});
 
+	   klass.getSingletonClass().defineMethod("get_property_by_name", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+				try {
+					String res = RhoConf.getInstance().getString(arg0.toString());
+					return ObjectFactory.createString(res);
+				} catch (Exception e) {
+					LOG.ERROR("get_property_by_name failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+	   
 	   klass.getSingletonClass().defineMethod("is_property_exists", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				try {

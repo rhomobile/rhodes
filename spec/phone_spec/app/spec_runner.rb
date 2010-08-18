@@ -3,7 +3,7 @@ require 'rhospec'
 class SpecRunner < MSpecScript
   def initialize
     config[:files] = []
-
+    
     config[:files] << "spec/asynchttp_spec"
     config[:files] << "spec/json_spec"
     config[:files] << "spec/xml_spec"
@@ -26,10 +26,8 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
     config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
-
     config[:files] << "spec/blobsync_spec"
-    #config[:files] << "spec/bulksync_spec"
-
+    config[:files] << "spec/bulksync_spec"
   end
 
   def run

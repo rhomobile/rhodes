@@ -29,7 +29,7 @@ module Rho
     
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
-      RHO.process_rhoconfig
+      #RHO.process_rhoconfig
       
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
@@ -131,6 +131,7 @@ module Rho
     end
     
     # Return the directories where we need to load configuration files
+=begin
     def self.process_rhoconfig
       begin
         File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
@@ -158,7 +159,8 @@ module Rho
         puts "Error opening rhoconfig.txt: #{e}, using defaults."
       end
     end
-
+=end
+    
     def check_source_migration(app)
 	  uniq_sources = Rho::RhoConfig::sources.values
       uniq_sources.each do |source|
@@ -620,20 +622,16 @@ module Rho
   class RhoConfig
     
     @@sources = {}
-    @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
+    #@@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
     @@max_config_srcid = 1
     
     class << self
       def method_missing(name, *args)
-      	unless name == Fixnum
-		      varname = name.to_s.gsub(/\=/,"")
-          setting = (name.to_s =~ /=/)
-          if setting
-            @@config[varname] = args[0]
-            # save changes to file
-            RhoConf.set_property_by_name(varname,args[0]) 
+        unless name == Fixnum
+          if name[name.length()-1] == '='
+            RhoConf.set_property_by_name(name.to_s.chop,args[0]) 
           else
-            @@config[varname]
+            RhoConf.get_property_by_name(name.to_s)             
           end
         end
       end
@@ -642,10 +640,10 @@ module Rho
         RhoConf.is_property_exists(name)  
       end
       
-      def reload
-        @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
-        Rho::RHO.process_rhoconfig
-      end
+      #def reload
+      #  @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
+      #  Rho::RHO.process_rhoconfig
+      #end
       
       def max_config_srcid
         @@max_config_srcid
@@ -667,13 +665,13 @@ module Rho
         @@sources
       end
       
-      def config
-        @@config
-      end
+      #def config
+      #  @@config
+      #end
       
-      def add_config(key,value)
-        @@config[key] = value if key # allow nil value
-      end
+      #def add_config(key,value)
+      #  @@config[key] = value if key # allow nil value
+      #end
 
       def add_source(modelname, new_source=nil)
         return if !modelname || modelname.length() == 0# || @@sources[modelname]
@@ -791,12 +789,6 @@ module Rho
 end # Rho
 
 module SyncEngine
-    def self.set_syncserver(url)
-        Rho::RhoConfig.syncserver = url
-        
-        SyncEngine.do_set_syncserver(url)
-    end
-    
     def self.search(args)
         searchParams = ""
 
