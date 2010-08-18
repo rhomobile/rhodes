@@ -1,0 +1,6 @@
+﻿<Entries>
+    <Entry entity="Customer" createIfNotFound="false">
+        <Field name="MatchCode.Customer" value="Testcustomer" />
+        <Field name="Pk.Customer" identifyingField="true" value="ged- testcustomer#customer1" />
+    </Entry>
+</Entries>
