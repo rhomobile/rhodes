@@ -355,7 +355,7 @@ public class SyncNotify {
 		}
 
 	    String strParams = "";
-	    strParams += "&partition=" + partition;
+	    strParams += "partition=" + partition;
 	    strParams += "&bulk_status="+status;
 	    strParams += "&sync_type=bulk";
 
@@ -429,11 +429,11 @@ public class SyncNotify {
 			            return;
 			
 			        strUrl = sn.m_strUrl;
-				    strBody = "rho_callback=1";
+				    strBody = "";
 
 		            if ( src != null )
 		            {
-				        strBody += "&total_count=" + src.getTotalCount();
+				        strBody += "total_count=" + src.getTotalCount();
 				        strBody += "&processed_count=" + src.getCurPageCount();
 				        strBody += "&processed_objects_count=" + getLastSyncObjectCount(src.getID());
 				        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
@@ -442,9 +442,9 @@ public class SyncNotify {
 		            }
 		            
 		            if ( strParams.length() > 0 )
-		                strBody += strParams;
+		            	strBody += (strBody.length() > 0 ? "&" : "") + strParams;
 		            else
-		                strBody += "&sync_type=incremental";
+		            	strBody += (strBody.length() > 0 ? "&" : "") + "sync_type=incremental";
 			        
 			        strBody += "&status=";
 			        if ( bFinish )
@@ -471,6 +471,7 @@ public class SyncNotify {
 			        else
 			        	strBody += "in_progress";
 			        
+			        strBody += "&rho_callback=1";
 			        if ( sn.m_strParams.length() > 0 )
 			            strBody += "&" + sn.m_strParams;
 			        

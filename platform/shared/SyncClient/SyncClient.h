@@ -23,6 +23,7 @@ typedef struct _RHO_SYNC_NOTIFY
     int source_id;
     char* source_name;
     char* status;
+    char* sync_type;
     int error_code;
     char* error_message;
     char* callback_params;

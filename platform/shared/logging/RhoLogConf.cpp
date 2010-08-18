@@ -228,11 +228,13 @@ void rho_conf_set_property_by_name(char* name, char* value)
     LOGCONF().loadFromConf(RHOCONF());
 }
 
+#ifndef RHO_NO_RUBY
 VALUE rho_conf_get_property_by_name(char* name)
 {
 	char* szValue = rho_conf_getString(name);
 
     return rho_ruby_create_string(szValue);
 }
+#endif //RHO_NO_RUBY
 
 }
