@@ -1,3 +1,20 @@
+## 2.1.0
+* Change empty first/last name to an emptry string for comparison, instead of being nil (jmalonzo)
+
+## 2.0.4
+* #4375895 - BB: cod files too big
+* adding search to SyncEngine class
+
+## 2.0.3
+* #4317065 - App store requires 3 icons now for iphone
+* #4356949 - iPhone simulator: rake run:iphone open simulator but there is no
+  application
+* #4394846 - Android: no application screen when go to background and switch back
+* #4365316 - build.yml should default to iPhoneSimulator 4.0
+
+## 2.0.2
+* #4223112 - fixed problem with script order in iphone build
+
 ## 2.0.1
 * #4049590 - Android 2.2, rhodes rc2: take picture hangs
 * #4103477 - Android 2.2: can't write to DB
