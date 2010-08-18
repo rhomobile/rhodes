@@ -4,6 +4,7 @@
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;
@@ -225,6 +226,13 @@ void rho_conf_set_property_by_name(char* name, char* value)
 	rho_conf_save();
 
     LOGCONF().loadFromConf(RHOCONF());
+}
+
+VALUE rho_conf_get_property_by_name(char* name)
+{
+	char* szValue = rho_conf_getString(name);
+
+    return rho_ruby_create_string(szValue);
 }
 
 }

@@ -27,36 +27,41 @@ describe "BulkSync_test" do
   
     ::Rhom::Rhom.database_full_reset_and_logout
     
-    SyncEngine.set_syncserver('http://rhodes-store-server-bulk.heroku.com/application')
+    SyncEngine.set_syncserver('http://184.73.159.63/application')
     Rho::RhoConfig.bulksync_state='0'
 
     @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
 
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
-    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'BulkTest'})
+    ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'Product'})
   end
 
   after(:all)  do
     @save_sync_types.each do |src|
         ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>src['sync_type']}, {'name'=>src['name']})
     end
+    Rho::RhoConfig.bulksync_state='1'
   end
 
   it "should login" do
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('admin', "", "/app/Settings/login_callback")
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login("", "", "/app/Settings/login_callback")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
   end
 
-  it "should sync BulkTest" do
+  it "should bulk sync" do
     SyncEngine.logged_in.should == 1
   
-    SyncEngine.set_bulk_notification("/app/Settings/bulk_sync_notify", "")
-
-    res = ::Rho::RhoSupport::parse_query_parameters Product.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+    res['status'].should == 'complete'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    
+    Rho::RhoConfig.bulksync_state.should == '1'
+    
+    items = Product.find(:all)
+    items.should_not be_nil
+    items.length().should_not == 0
   end
 
   it "should logout" do
