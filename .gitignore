@@ -29,6 +29,7 @@ platform/osx/Rhodes Debugger/build/*
 platform/iphone/*/*.link
 platform/wm/bin/*
 platform/win32/bin/*
+platform/shared/*/win32/bin/*
 platform/wm/target/*
 platform/wm/build/cleanup.js
 platform/iphone/*/rholog.txt
