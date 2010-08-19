@@ -776,7 +776,7 @@ void CSyncEngine::logout()
     //loadAllSources();
 }
 	
-void CSyncEngine::setSyncServer(char* syncserver)
+void CSyncEngine::setSyncServer(const char* syncserver)
 {
 	rho_conf_setString("syncserver", syncserver);
 	rho_conf_save();

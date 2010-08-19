@@ -56,7 +56,7 @@ void SyncBlob_UpdateCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
 
 void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
-    CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
+    //CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
     //TODO: SyncBlob_DeleteSchemaCallback
     //TODO: add to reset - set callback
 }
@@ -503,7 +503,7 @@ String strTrigger = String("CREATE TRIGGER rhodeleteSchemaTrigger BEFORE DELETE 
 "       SELECT rhoOnDeleteRecord( OLD );"
 "   END;"
 ";";
-    char* errmsg = 0;
+    //char* errmsg = 0;
     //TODO: createDeleteTrigger
 /*    int rc = sqlite3_exec(m_dbHandle, strTrigger.c_str(),  NULL, NULL, &errmsg);
 
