@@ -1,4 +1,7 @@
-//#include "stdafx.h"
+#ifdef WIN32
+#include <stdio.h>
+#include <tchar.h>
+#endif //WIN32
 
 #include "SyncClient/SyncClient.h"
 #include "sync/SyncThread.h"
