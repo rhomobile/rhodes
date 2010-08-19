@@ -1,6 +1,6 @@
 #include "SyncClient.h"
 
-#include "stdafx.h"
+//#include "stdafx.h"
 
 #include "common/RhodesAppBase.h"
 #include "sync/SyncThread.h"
@@ -12,6 +12,7 @@
 
 using namespace rho;
 using namespace rho::common;
+using namespace rho::sync;
 String getSyncTypeName( RHOM_SYNC_TYPE sync_type );
 void parseSyncNotify(const char* msg, RHO_SYNC_NOTIFY* pNotify);
 String rhom_generate_id();
@@ -107,7 +108,7 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
     rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
-    sync::CSyncThread::Create(common::rho_impl_createClassFactory());
+    CSyncThread::Create(common::rho_impl_createClassFactory());
 
 }
 
@@ -135,7 +136,7 @@ void rho_syncclient_database_full_reset_and_logout()
 
 void rho_syncclient_destroy()
 {
-    sync::CSyncThread::Destroy();
+    CSyncThread::Destroy();
 }
 
 bool rhom_method_name_isreserved(const String& strName)
@@ -762,4 +763,9 @@ char* RhoRuby_getRhoDBVersion()
     return "1.0";
 }
 
+void rho_net_impl_network_indicator(int active)
+{
+//	[UIApplication sharedApplication].networkActivityIndicatorVisible = active ? YES : NO;
+}
+	
 }

@@ -19,8 +19,11 @@
 		46B005F71033690F00D0C2F4 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B005F61033690F00D0C2F4 /* DateTime.m */; };
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C25E3A103240A400A26428 /* RhoDelegate.m */; };
+		5C0D0A2E121D28A30022E83C /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0A2B121D28A30022E83C /* RhoClassFactory.cpp */; };
+		5C0D0A2F121D28A30022E83C /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0A2D121D28A30022E83C /* RhoFileImpl.m */; };
+		5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0A30121D28BF0022E83C /* sslimpl.cpp */; };
+		5C0D0C0D121D337A0022E83C /* RhoThreadImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0C0C121D337A0022E83C /* RhoThreadImpl.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
-		5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
@@ -40,7 +43,6 @@
 		BDC6F34911F4ABBF0056C1C3 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34611F4ABBF0056C1C3 /* icon57.png */; };
 		BDC6F34A11F4ABBF0056C1C3 /* icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34711F4ABBF0056C1C3 /* icon72.png */; };
 		BDC6F34B11F4ABBF0056C1C3 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34811F4ABBF0056C1C3 /* icon114.png */; };
-		BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = BDE35A79107F900A009941C7 /* RhoFileImpl.m */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
@@ -48,7 +50,6 @@
 		BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */; };
 		BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A310B1B9E500BAAFAB /* home_btn.png */; };
 		BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A610B1BA2000BAAFAB /* icon.png */; };
-		BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB155112EE65900AE3724 /* sslimpl.cpp */; };
 		F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128ADC1069752F002F00E5 /* MapAnnotation.m */; };
 		F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
@@ -162,9 +163,13 @@
 		46B007061033776600D0C2F4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		46C25E39103240A400A26428 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
 		46C25E3A103240A400A26428 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
+		5C0D0A2B121D28A30022E83C /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = ../shared/common/iphone/RhoClassFactory.cpp; sourceTree = SOURCE_ROOT; };
+		5C0D0A2C121D28A30022E83C /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = ../shared/common/iphone/RhoClassFactory.h; sourceTree = SOURCE_ROOT; };
+		5C0D0A2D121D28A30022E83C /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoFileImpl.m; path = ../shared/common/iphone/RhoFileImpl.m; sourceTree = SOURCE_ROOT; };
+		5C0D0A30121D28BF0022E83C /* sslimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sslimpl.cpp; path = ../shared/net/iphone/sslimpl.cpp; sourceTree = SOURCE_ROOT; };
+		5C0D0A31121D28BF0022E83C /* sslimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sslimpl.h; path = ../shared/net/iphone/sslimpl.h; sourceTree = SOURCE_ROOT; };
+		5C0D0C0C121D337A0022E83C /* RhoThreadImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoThreadImpl.m; path = ../shared/common/iphone/RhoThreadImpl.m; sourceTree = SOURCE_ROOT; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
-		5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = rho/common/RhoClassFactory.cpp; sourceTree = "<group>"; };
-		5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = rho/common/RhoClassFactory.h; sourceTree = "<group>"; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		BD38E6DB115CFF14001CE05C /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
@@ -191,7 +196,6 @@
 		BDC6F34611F4ABBF0056C1C3 /* icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon57.png; sourceTree = SOURCE_ROOT; };
 		BDC6F34711F4ABBF0056C1C3 /* icon72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon72.png; sourceTree = SOURCE_ROOT; };
 		BDC6F34811F4ABBF0056C1C3 /* icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon114.png; sourceTree = SOURCE_ROOT; };
-		BDE35A79107F900A009941C7 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoFileImpl.m; sourceTree = "<group>"; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		BDFBD99E10B1B9B900BAAFAB /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = "<group>"; };
@@ -199,8 +203,6 @@
 		BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		BDFBD9A310B1B9E500BAAFAB /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
 		BDFBD9A610B1BA2000BAAFAB /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
-		BDFCB154112EE53D00AE3724 /* sslimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sslimpl.h; path = rho/net/sslimpl.h; sourceTree = "<group>"; };
-		BDFCB155112EE65900AE3724 /* sslimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sslimpl.cpp; path = rho/net/sslimpl.cpp; sourceTree = "<group>"; };
 		F5128ADB1069752F002F00E5 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
 		F5128ADC1069752F002F00E5 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
 		F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = Classes/MapView/GoogleGeocoder.h; sourceTree = SOURCE_ROOT; };
@@ -403,9 +405,9 @@
 		5C5332620FBD6ACC00F268F0 /* net */ = {
 			isa = PBXGroup;
 			children = (
+				5C0D0A30121D28BF0022E83C /* sslimpl.cpp */,
+				5C0D0A31121D28BF0022E83C /* sslimpl.h */,
 				5C5333790FC1B20000F268F0 /* NetRequestImpl.m */,
-				BDFCB154112EE53D00AE3724 /* sslimpl.h */,
-				BDFCB155112EE65900AE3724 /* sslimpl.cpp */,
 			);
 			name = net;
 			sourceTree = "<group>";
@@ -413,9 +415,10 @@
 		5C5335490FC2973900F268F0 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				5C5335C40FC2F44500F268F0 /* RhoClassFactory.cpp */,
-				5C5335C50FC2F44500F268F0 /* RhoClassFactory.h */,
-				BDE35A79107F900A009941C7 /* RhoFileImpl.m */,
+				5C0D0C0C121D337A0022E83C /* RhoThreadImpl.m */,
+				5C0D0A2B121D28A30022E83C /* RhoClassFactory.cpp */,
+				5C0D0A2C121D28A30022E83C /* RhoClassFactory.h */,
+				5C0D0A2D121D28A30022E83C /* RhoFileImpl.m */,
 				BDA401BB11495BBD00C5D4BD /* SplashScreenImpl.h */,
 				BDA401BC11495BBD00C5D4BD /* SplashScreenImpl.cpp */,
 			);
@@ -630,7 +633,6 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rhorunner" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -797,7 +799,6 @@
 				F52181130F96B13500B7F974 /* LogViewController.m in Sources */,
 				F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */,
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
-				5C5335C60FC2F44500F268F0 /* RhoClassFactory.cpp in Sources */,
 				F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */,
 				46056D221031EDA900C21967 /* DateTimePickerDelegate.m in Sources */,
 				46C25E3B103240A400A26428 /* RhoDelegate.m in Sources */,
@@ -806,8 +807,6 @@
 				F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */,
 				F5128ADD1069752F002F00E5 /* MapAnnotation.m in Sources */,
 				F5128C2C106C1FF3002F00E5 /* GoogleGeocoder.m in Sources */,
-				BDE35A7A107F900A009941C7 /* RhoFileImpl.m in Sources */,
-				BDFCB156112EE65900AE3724 /* sslimpl.cpp in Sources */,
 				BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */,
 				BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */,
 				BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */,
@@ -821,6 +820,10 @@
 				FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */,
 				FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */,
 				FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */,
+				5C0D0A2E121D28A30022E83C /* RhoClassFactory.cpp in Sources */,
+				5C0D0A2F121D28A30022E83C /* RhoFileImpl.m in Sources */,
+				5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */,
+				5C0D0C0D121D337A0022E83C /* RhoThreadImpl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -894,8 +897,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -925,6 +928,8 @@
 					"$(EXTENSIONS_LDFLAGS)",
 				);
 				PRODUCT_NAME = rhorunner;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";

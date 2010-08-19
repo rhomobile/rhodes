@@ -597,16 +597,6 @@ static Rhodes *instance = NULL;
 
 // Native functions
 
-void* rho_nativethread_start()
-{
-	return [[NSAutoreleasePool alloc] init];
-}
-
-void rho_nativethread_end(void* pData)
-{
-    NSAutoreleasePool *pool = (NSAutoreleasePool *)pData;	
-    [pool release];	
-}
 
 void rho_map_location(char* query) {
     [[Rhodes sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];

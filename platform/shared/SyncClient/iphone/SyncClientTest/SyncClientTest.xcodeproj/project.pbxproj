@@ -1,0 +1,467 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623260D0F684500981E51 /* SyncClientTestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* SyncClientTestAppDelegate.m */; };
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		5C0D0961121D0CA20022E83C /* gtest-death-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0957121D0CA20022E83C /* gtest-death-test.cc */; };
+		5C0D0962121D0CA20022E83C /* gtest-filepath.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0958121D0CA20022E83C /* gtest-filepath.cc */; };
+		5C0D0963121D0CA20022E83C /* gtest-port.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D095A121D0CA20022E83C /* gtest-port.cc */; };
+		5C0D0964121D0CA20022E83C /* gtest-test-part.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D095B121D0CA20022E83C /* gtest-test-part.cc */; };
+		5C0D0965121D0CA20022E83C /* gtest-typed-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D095C121D0CA20022E83C /* gtest-typed-test.cc */; };
+		5C0D0966121D0CA20022E83C /* gtest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D095D121D0CA20022E83C /* gtest.cc */; };
+		5C0D0968121D0D500022E83C /* SyncClientTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0967121D0D500022E83C /* SyncClientTest.cpp */; };
+		5C0D09CB121D17440022E83C /* libSyncClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D09CA121D17440022E83C /* libSyncClient.a */; };
+		5C0D0A0D121D24B40022E83C /* test_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0A0C121D24B40022E83C /* test_helper.cpp */; };
+		5C0D0BEF121D31280022E83C /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BEE121D31280022E83C /* libz.dylib */; };
+		5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */; };
+		5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0C22121D35770022E83C /* CFNetwork.framework */; };
+		5C0D0D17121DB74B0022E83C /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C0D0D13121DB74B0022E83C /* db */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5C0D098E121D11140022E83C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libSyncClient.a */;
+			remoteInfo = SyncClient;
+		};
+		5C0D0994121D11950022E83C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D /* SyncClient */;
+			remoteInfo = SyncClient;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623240D0F684500981E51 /* SyncClientTestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncClientTestAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* SyncClientTestAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncClientTestAppDelegate.m; sourceTree = "<group>"; };
+		1D6058910D05DD3D006BFB54 /* SyncClientTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SyncClientTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* SyncClientTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncClientTest_Prefix.pch; sourceTree = "<group>"; };
+		5C0D0940121D0CA20022E83C /* gtest-death-test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-death-test.h"; sourceTree = "<group>"; };
+		5C0D0941121D0CA20022E83C /* gtest-message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-message.h"; sourceTree = "<group>"; };
+		5C0D0942121D0CA20022E83C /* gtest-param-test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-param-test.h"; sourceTree = "<group>"; };
+		5C0D0943121D0CA20022E83C /* gtest-param-test.h.pump */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gtest-param-test.h.pump"; sourceTree = "<group>"; };
+		5C0D0944121D0CA20022E83C /* gtest-spi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-spi.h"; sourceTree = "<group>"; };
+		5C0D0945121D0CA20022E83C /* gtest-test-part.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-test-part.h"; sourceTree = "<group>"; };
+		5C0D0946121D0CA20022E83C /* gtest-typed-test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-typed-test.h"; sourceTree = "<group>"; };
+		5C0D0947121D0CA20022E83C /* gtest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gtest.h; sourceTree = "<group>"; };
+		5C0D0948121D0CA20022E83C /* gtest_pred_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gtest_pred_impl.h; sourceTree = "<group>"; };
+		5C0D0949121D0CA20022E83C /* gtest_prod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gtest_prod.h; sourceTree = "<group>"; };
+		5C0D094B121D0CA20022E83C /* gtest-death-test-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-death-test-internal.h"; sourceTree = "<group>"; };
+		5C0D094C121D0CA20022E83C /* gtest-filepath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-filepath.h"; sourceTree = "<group>"; };
+		5C0D094D121D0CA20022E83C /* gtest-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-internal.h"; sourceTree = "<group>"; };
+		5C0D094E121D0CA20022E83C /* gtest-linked_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-linked_ptr.h"; sourceTree = "<group>"; };
+		5C0D094F121D0CA20022E83C /* gtest-param-util-generated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-param-util-generated.h"; sourceTree = "<group>"; };
+		5C0D0950121D0CA20022E83C /* gtest-param-util-generated.h.pump */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gtest-param-util-generated.h.pump"; sourceTree = "<group>"; };
+		5C0D0951121D0CA20022E83C /* gtest-param-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-param-util.h"; sourceTree = "<group>"; };
+		5C0D0952121D0CA20022E83C /* gtest-port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-port.h"; sourceTree = "<group>"; };
+		5C0D0953121D0CA20022E83C /* gtest-string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-string.h"; sourceTree = "<group>"; };
+		5C0D0954121D0CA20022E83C /* gtest-type-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-type-util.h"; sourceTree = "<group>"; };
+		5C0D0955121D0CA20022E83C /* gtest-type-util.h.pump */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gtest-type-util.h.pump"; sourceTree = "<group>"; };
+		5C0D0957121D0CA20022E83C /* gtest-death-test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "gtest-death-test.cc"; sourceTree = "<group>"; };
+		5C0D0958121D0CA20022E83C /* gtest-filepath.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "gtest-filepath.cc"; sourceTree = "<group>"; };
+		5C0D0959121D0CA20022E83C /* gtest-internal-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gtest-internal-inl.h"; sourceTree = "<group>"; };
+		5C0D095A121D0CA20022E83C /* gtest-port.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "gtest-port.cc"; sourceTree = "<group>"; };
+		5C0D095B121D0CA20022E83C /* gtest-test-part.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "gtest-test-part.cc"; sourceTree = "<group>"; };
+		5C0D095C121D0CA20022E83C /* gtest-typed-test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "gtest-typed-test.cc"; sourceTree = "<group>"; };
+		5C0D095D121D0CA20022E83C /* gtest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gtest.cc; sourceTree = "<group>"; };
+		5C0D0967121D0D500022E83C /* SyncClientTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncClientTest.cpp; path = ../../Test/SyncClientTest.cpp; sourceTree = SOURCE_ROOT; };
+		5C0D098A121D11140022E83C /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../SyncClient/SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
+		5C0D09CA121D17440022E83C /* libSyncClient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSyncClient.a; path = "/Users/evgeny/Projects/rhodes/platform/shared/SyncClient/iphone/build/Debug-iphonesimulator/libSyncClient.a"; sourceTree = "<absolute>"; };
+		5C0D0A0C121D24B40022E83C /* test_helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_helper.cpp; path = ../../../test/test_helper.cpp; sourceTree = SOURCE_ROOT; };
+		5C0D0BEE121D31280022E83C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		5C0D0C22121D35770022E83C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		5C0D0D13121DB74B0022E83C /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../db/res/db; sourceTree = SOURCE_ROOT; };
+		8D1107310486CEB800E47090 /* SyncClientTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SyncClientTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
+				5C0D09CB121D17440022E83C /* libSyncClient.a in Frameworks */,
+				5C0D0BEF121D31280022E83C /* libz.dylib in Frameworks */,
+				5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */,
+				5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				1D3623240D0F684500981E51 /* SyncClientTestAppDelegate.h */,
+				1D3623250D0F684500981E51 /* SyncClientTestAppDelegate.m */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* SyncClientTest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D0D13121DB74B0022E83C /* db */,
+				5C0D098A121D11140022E83C /* SyncClient.xcodeproj */,
+				5C0D093C121D0C330022E83C /* shared */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+				5C0D09CA121D17440022E83C /* libSyncClient.a */,
+				5C0D0BEE121D31280022E83C /* libz.dylib */,
+				5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */,
+				5C0D0C22121D35770022E83C /* CFNetwork.framework */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* SyncClientTest_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
+				8D1107310486CEB800E47090 /* SyncClientTest-Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5C0D093C121D0C330022E83C /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D0A0C121D24B40022E83C /* test_helper.cpp */,
+				5C0D0967121D0D500022E83C /* SyncClientTest.cpp */,
+				5C0D093D121D0CA20022E83C /* gtest */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		5C0D093D121D0CA20022E83C /* gtest */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D093E121D0CA20022E83C /* include */,
+				5C0D0956121D0CA20022E83C /* src */,
+			);
+			name = gtest;
+			path = ../../../test/gtest;
+			sourceTree = SOURCE_ROOT;
+		};
+		5C0D093E121D0CA20022E83C /* include */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D093F121D0CA20022E83C /* gtest */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		5C0D093F121D0CA20022E83C /* gtest */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D0940121D0CA20022E83C /* gtest-death-test.h */,
+				5C0D0941121D0CA20022E83C /* gtest-message.h */,
+				5C0D0942121D0CA20022E83C /* gtest-param-test.h */,
+				5C0D0943121D0CA20022E83C /* gtest-param-test.h.pump */,
+				5C0D0944121D0CA20022E83C /* gtest-spi.h */,
+				5C0D0945121D0CA20022E83C /* gtest-test-part.h */,
+				5C0D0946121D0CA20022E83C /* gtest-typed-test.h */,
+				5C0D0947121D0CA20022E83C /* gtest.h */,
+				5C0D0948121D0CA20022E83C /* gtest_pred_impl.h */,
+				5C0D0949121D0CA20022E83C /* gtest_prod.h */,
+				5C0D094A121D0CA20022E83C /* internal */,
+			);
+			path = gtest;
+			sourceTree = "<group>";
+		};
+		5C0D094A121D0CA20022E83C /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D094B121D0CA20022E83C /* gtest-death-test-internal.h */,
+				5C0D094C121D0CA20022E83C /* gtest-filepath.h */,
+				5C0D094D121D0CA20022E83C /* gtest-internal.h */,
+				5C0D094E121D0CA20022E83C /* gtest-linked_ptr.h */,
+				5C0D094F121D0CA20022E83C /* gtest-param-util-generated.h */,
+				5C0D0950121D0CA20022E83C /* gtest-param-util-generated.h.pump */,
+				5C0D0951121D0CA20022E83C /* gtest-param-util.h */,
+				5C0D0952121D0CA20022E83C /* gtest-port.h */,
+				5C0D0953121D0CA20022E83C /* gtest-string.h */,
+				5C0D0954121D0CA20022E83C /* gtest-type-util.h */,
+				5C0D0955121D0CA20022E83C /* gtest-type-util.h.pump */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		5C0D0956121D0CA20022E83C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D0957121D0CA20022E83C /* gtest-death-test.cc */,
+				5C0D0958121D0CA20022E83C /* gtest-filepath.cc */,
+				5C0D0959121D0CA20022E83C /* gtest-internal-inl.h */,
+				5C0D095A121D0CA20022E83C /* gtest-port.cc */,
+				5C0D095B121D0CA20022E83C /* gtest-test-part.cc */,
+				5C0D095C121D0CA20022E83C /* gtest-typed-test.cc */,
+				5C0D095D121D0CA20022E83C /* gtest.cc */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		5C0D098B121D11140022E83C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5C0D098F121D11140022E83C /* libSyncClient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* SyncClientTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "SyncClientTest" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5C0D0995121D11950022E83C /* PBXTargetDependency */,
+			);
+			name = SyncClientTest;
+			productName = SyncClientTest;
+			productReference = 1D6058910D05DD3D006BFB54 /* SyncClientTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SyncClientTest" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 5C0D098B121D11140022E83C /* Products */;
+					ProjectRef = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* SyncClientTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		5C0D098F121D11140022E83C /* libSyncClient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSyncClient.a;
+			remoteRef = 5C0D098E121D11140022E83C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
+				5C0D0D17121DB74B0022E83C /* db in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				1D3623260D0F684500981E51 /* SyncClientTestAppDelegate.m in Sources */,
+				5C0D0961121D0CA20022E83C /* gtest-death-test.cc in Sources */,
+				5C0D0962121D0CA20022E83C /* gtest-filepath.cc in Sources */,
+				5C0D0963121D0CA20022E83C /* gtest-port.cc in Sources */,
+				5C0D0964121D0CA20022E83C /* gtest-test-part.cc in Sources */,
+				5C0D0965121D0CA20022E83C /* gtest-typed-test.cc in Sources */,
+				5C0D0966121D0CA20022E83C /* gtest.cc in Sources */,
+				5C0D0968121D0D500022E83C /* SyncClientTest.cpp in Sources */,
+				5C0D0A0D121D24B40022E83C /* test_helper.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5C0D0995121D11950022E83C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SyncClient;
+			targetProxy = 5C0D0994121D11950022E83C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SyncClientTest_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../../../../shared,
+					../../../../shared/test/gtest/include,
+					../../../../shared/test/gtest,
+				);
+				INFOPLIST_FILE = "SyncClientTest-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../build/Debug-iphonesimulator\"",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lSyncClient";
+				PRODUCT_NAME = SyncClientTest;
+				RHO_NO_RUBY = 1;
+				SYMROOT = ../build;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SyncClientTest_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../../../../shared,
+					../../../../shared/test/gtest/include,
+					../../../../shared/test/gtest,
+				);
+				INFOPLIST_FILE = "SyncClientTest-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../build/Debug-iphonesimulator\"",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-l",
+					SyncClient.a,
+				);
+				PRODUCT_NAME = SyncClientTest;
+				RHO_NO_RUBY = 1;
+				SYMROOT = ../build;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = iphoneos4.0;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PREBINDING = NO;
+				SDKROOT = iphoneos4.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "SyncClientTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SyncClientTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
