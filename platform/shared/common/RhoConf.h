@@ -70,7 +70,7 @@ char* rho_conf_getString(const char* szName);
 void  rho_conf_freeString(char* str);
 void  rho_conf_setString(const char* szName, const char* value);
 void  rho_conf_save();
-int   rho_conf_is_property_exists(char* name);
+int   rho_conf_is_property_exists(const char* name);
 
 #ifdef __cplusplus
 }

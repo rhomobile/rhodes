@@ -272,7 +272,7 @@ void rho_sync_set_pollinterval(int nInterval)
     CSyncThread::getInstance()->setPollInterval(nInterval);
 }
 	
-void rho_sync_set_syncserver(char* syncserver)
+void rho_sync_set_syncserver(const char* syncserver)
 {
     rho_sync_stop();
 
@@ -302,7 +302,7 @@ unsigned long rho_sync_login(const char *name, const char *password, const char*
 
 int rho_sync_logged_in()
 {
-	CDBAdapter& db = CDBAdapter::getUserDB();
+	//CDBAdapter& db = CDBAdapter::getUserDB();
     return CSyncThread::getSyncEngine().isLoggedIn() ? 1 : 0;
 }
 
@@ -310,7 +310,7 @@ void rho_sync_logout()
 {
     rho_sync_stop();
 
-	CDBAdapter& db = CDBAdapter::getUserDB();
+	//CDBAdapter& db = CDBAdapter::getUserDB();
     CSyncThread::getSyncEngine().logout();
 }
 

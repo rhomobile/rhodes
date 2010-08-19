@@ -3,7 +3,7 @@
 #include "common/IRhoClassFactory.h"
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
-#include "../net/sslimpl.h"
+#include "net/iphone/sslimpl.h"
 
 namespace rho {
 namespace common {

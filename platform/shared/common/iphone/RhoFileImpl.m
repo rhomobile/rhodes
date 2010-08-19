@@ -5,6 +5,12 @@
 //  Created by Dmitry Moskalchuk on 09.10.09.
 //  Copyright 2009 __MyCompanyName__. All rights reserved.
 //
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#endif
+
+#define ZIP_STD 1
 
 extern void delete_files_in_folder(const char *szFolderPath);
 
