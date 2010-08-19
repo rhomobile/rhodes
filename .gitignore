@@ -20,6 +20,8 @@ platform/iphone/RhoLib/build/*
 platform/iphone/Tests/build/*
 platform/iphone/curl/build/*
 lib/extensions/barcode/ext/barcode/platform/iphone/build/*
+platform/shared/*/iphone/*/build/*
+platform/shared/*/iphone/build/*
 platform/iphone/bin/*
 platform/iphone/Info.plist
 platform/mac/bin/*
