@@ -203,7 +203,7 @@ char* rho_conf_getString(const char* szName) {
 	return strdup(RHOCONF().getString(szName).c_str());
 }
 
-int rho_conf_is_property_exists(char* name)
+int rho_conf_is_property_exists(const char* name)
 {
     return RHOCONF().isExist(name) ? 1 : 0;
 }

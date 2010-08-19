@@ -419,7 +419,7 @@ namespace "build" do
 
       process_exclude_folders()
       
-      cp_r File.join(startdir, "res/build-tools/db"), File.join($srcdir, 'apps')
+      cp_r File.join(startdir, "platform/shared/db/res/db"), File.join($srcdir, 'apps')
       
       chdir startdir
       
@@ -521,7 +521,7 @@ namespace "build" do
   
       chdir startdir
 
-      cp_r "res/build-tools/db", $srcdir 
+      cp_r "platform/shared/db/res/db", $srcdir 
     end
   end
 end

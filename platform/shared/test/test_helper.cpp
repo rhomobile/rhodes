@@ -4,6 +4,7 @@
 #include <atlstr.h>
 #endif
 
+#ifdef OS_WINDOWS		
 extern "C" const char* rho_native_rhopath() 
 {
     static rho::String m_strRootPath;
@@ -20,13 +21,13 @@ extern "C" const char* rho_native_rhopath()
               len--;
             rootpath[len+1]=0;
         }
-
         m_strRootPath = rootpath;
         m_strRootPath += "rho/";
     }
 
     return m_strRootPath.c_str();
 }
+#endif
 
 int rho_testvprintf(const char * fmt, va_list args)
 {
