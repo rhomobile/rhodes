@@ -109,11 +109,6 @@ class Jake
   def self.run_local_server(port = 0)
     addr = localip
     server = WEBrick::HTTPServer.new :BindAddress => addr, :Port => port
-    server.mount_proc '/chunked' do |req,res|
-      res.status = 200
-      res.chunked = true
-      res.body = "1234567890"
-    end
     port = server.config[:Port]
     puts "LOCAL SERVER STARTED ON #{addr}:#{port}"
     Thread.new { server.start }
@@ -133,6 +128,10 @@ class Jake
     File.open(File.join($app_path, 'app', 'local_server.rb'), 'w') do |f|
       f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
       f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
+    end
+    if File.exists?(File.join($app_path, 'server.rb'))
+      $local_server = server
+      require File.join($app_path, 'server.rb')
     end
     begin
       Rake::Task.tasks.each { |t| t.reenable }
