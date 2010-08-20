@@ -41,6 +41,7 @@ spec/**/bin/*
 spec/**/sim-public*
 spec/**/faillog.txt
 spec/**/rholog-*.txt
+spec/**/app/local_server.rb
 
 platform/bb/.metadata/*
 platform/bb/bin/*

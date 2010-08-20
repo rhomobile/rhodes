@@ -120,24 +120,6 @@ class Jake
     return server, addr, port
   end
 
-  def self.modify_rhoconfig_txt(app_path, host, port)
-    rhoconf = File.join(app_path, 'rhoconfig.txt')
-    FileUtils.rm_f rhoconf + '.bak'
-    FileUtils.cp rhoconf, rhoconf + '.bak'
-    File.open(rhoconf, 'a+') do |f|
-      f.puts "spec_local_server_host = '#{host}'"
-      f.puts "spec_local_server_port = #{port}"
-    end
-  end
-
-  def self.restore_rhoconfig_txt(app_path)
-    rhoconf = File.join(app_path, 'rhoconfig.txt')
-    if File.exists? rhoconf + '.bak'
-      FileUtils.rm_f rhoconf
-      FileUtils.mv rhoconf + '.bak', rhoconf
-    end
-  end
-
   def self.run_spec_app(platform,appname)
     rhobuildyml = File.join(basedir,'rhobuild.yml')
     rhobuild = YAML::load_file(rhobuildyml)
@@ -148,16 +130,15 @@ class Jake
     $config = Jake.config(File.open(rhobuildyml,'r'))
 
     server, addr, port = run_local_server
-    modify_rhoconfig_txt($app_path, addr, port)
-    Kernel.at_exit do
-      restore_rhoconfig_txt($app_path)
+    File.open(File.join($app_path, 'app', 'local_server.rb'), 'w') do |f|
+      f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
+      f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
     end
     begin
       Rake::Task.tasks.each { |t| t.reenable }
       Rake::Task['run:' + platform + ':spec'].invoke
     ensure
       server.shutdown
-      restore_rhoconfig_txt($app_path)
     end
   end
 
