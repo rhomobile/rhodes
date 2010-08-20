@@ -1,3 +1,5 @@
+require 'local_server'
+
 describe "AsyncHttp" do
 
     after(:all) do
@@ -93,8 +95,8 @@ describe "AsyncHttp" do
       return unless $is_network_available
 
       if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'        
-          host = Rho::RhoConfig.config["spec_local_server_host"]
-          port = Rho::RhoConfig.config["spec_local_server_port"]
+          host = SPEC_LOCAL_SERVER_HOST
+          port = SPEC_LOCAL_SERVER_PORT
           puts "+++++++++++++++++++ chunked test: #{host}:#{port}"
           res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}/chunked"
           res['status'].should == 'ok'
