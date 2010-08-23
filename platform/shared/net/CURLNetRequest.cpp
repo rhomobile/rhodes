@@ -87,64 +87,148 @@ INetResponse *CURLNetRequest::makeResponse(String strBody, int nErrorCode)
     return resp.release();
 }
 
-static size_t curlBodyFileCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    common::CRhoFile *pFile = (common::CRhoFile*)opaque;
+    Hashtable<String,String>* pHeaders = (Hashtable<String,String>*)opaque;
     size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes (blob)", nBytes);
-    return pFile->write(ptr, nBytes);
+    String strHeader((const char *)ptr, nBytes);
+    RAWTRACE1("Received header: %s", strHeader.c_str());
+    
+    int nSep = strHeader.find(':');
+    if (nSep > 0 )
+    {		
+        String strName = String_trim(strHeader.substr(0, nSep));
+        String lName;
+        std::transform(strName.begin(), strName.end(), std::back_inserter(lName), &::tolower);
+        
+        String strValue = String_trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
+        
+        pHeaders->put(lName, strValue);
+    }
+    
+    return nBytes;
 }
 
 static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
     String *pStr = (String *)opaque;
     size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes (string)", nBytes);
+    RAWTRACE1("Received %d bytes", nBytes);
     pStr->append((const char *)ptr, nBytes);
     return nBytes;
 }
 
 INetResponse* CURLNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
+    RAWLOG_INFO1("GET url: %s", strUrl.c_str());
     return doRequest("GET", strUrl, String(), oSession, null );
 }
 
 INetResponse* CURLNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
+    RAWLOG_INFO1("POST url: %s", strUrl.c_str());
     return doRequest("POST", strUrl, strBody, oSession, null );
 }
 
 INetResponse* CURLNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
+    RAWLOG_INFO1("POST url: %s (requesting cookies)", strUrl.c_str());
     INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
     if ( pResp->isOK() )
         ((CURLNetResponseImpl*)pResp)->setCharData(pResp->getCookies());
 
     return pResp;
 }
-	
-INetResponse* CURLNetRequest::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
+
+INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl,
+                                        const String& strBody, IRhoSession *oSession,
+                                        Hashtable<String,String>* pHeaders)
 {
-    //TODO: doRequest - pHeaders
+    return doPull(method, strUrl, strBody, null, oSession, pHeaders);
+}
+
+INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
+                                     const String& strBody, common::CRhoFile *oFile,
+                                     IRhoSession* oSession, Hashtable<String,String>* pHeaders )
+{
     int nRespCode = -1;
     String strRespBody;
-
-    RAWLOG_INFO1("Request url: %s", strUrl.c_str());
+    long nStartFrom = 0;
+    if (oFile)
+        nStartFrom = oFile->size();
 
     rho_net_impl_network_indicator(1);
 
-    curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, pHeaders);
-    CURL *curl = m_curl.curl();
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+    Hashtable<String,String> h;
+    if (pHeaders)
+        h = *pHeaders;
+    
+    for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
+        String strRespChunk;
+        
+        curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
+        CURL *curl = m_curl.curl();
+        if (pHeaders) {
+            curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
+            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
+        }
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespChunk);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+        if (nStartFrom > 0)
+            curl_easy_setopt(curl, CURLOPT_RESUME_FROM, nStartFrom);
 
-    CURLcode err = m_curl.perform();
-    curl_slist_free_all(hdrs);
+        CURLcode err = m_curl.perform();
+        curl_slist_free_all(hdrs);
+        
+        long statusCode = 0;
+        if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
+            statusCode = 500;
+        if (statusCode == 206) {
+            if (oFile)
+                oFile->write(strRespChunk.c_str(), strRespChunk.size());
+            else
+                strRespBody.append(strRespChunk.c_str(), strRespChunk.size());
+            // Clear counter of attempts because 206 response does not considered to be failed attempt
+            nAttempts = 0;
+        }
+        else {
+            if (oFile) {
+                oFile->movePosToStart();
+                oFile->write(strRespChunk.c_str(), strRespChunk.size());
+            }
+            else
+                strRespBody = strRespChunk;
+        }
+        
+        if (err == CURLE_OPERATION_TIMEDOUT && strRespChunk.size() > 0) {
+            RAWTRACE("Connection was closed by timeout, but we have part of data received; try to restore connection");
+            nStartFrom = oFile ? oFile->size() : strRespBody.size();
+            continue;
+        }
+        
+        nRespCode = getResponseCode(err, strRespBody, oSession);
+        break;
+    }
 
     rho_net_impl_network_indicator(0);
 
-    nRespCode = getResponseCode(err, strRespBody, oSession);
     return makeResponse(strRespBody, nRespCode);
+}
+
+INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+{
+    int nRespCode = -1;
+    
+    RAWLOG_INFO2("Pull file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
+    
+    common::CRhoFile oFile;
+    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
+    {
+        RAWLOG_ERROR1("pullFile: cannot create file: %s", strFilePath.c_str());
+        return new CURLNetResponseImpl("", nRespCode);
+    }
+    
+    return doPull("GET", strUrl, String(), &oFile, oSession, pHeaders);
 }
 
 INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
@@ -269,37 +353,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
     nRespCode = getResponseCode(err, strRespBody, oSession);
     return makeResponse(strRespBody, nRespCode);
 }
-	
-INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
-{
-    int nRespCode = -1;
-    String strRespBody;
-	
-    RAWLOG_INFO2("Pull file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
-	
-    common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
-    {
-        RAWLOG_ERROR1("pullFile: cannot create file: %s", strFilePath.c_str());
-        return new CURLNetResponseImpl(strRespBody,nRespCode);
-    }
 
-    rho_net_impl_network_indicator(1);
-
-    curl_slist *hdrs = m_curl.set_options("GET", strUrl, String(), oSession, pHeaders);
-    CURL *curl = m_curl.curl();
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oFile);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
-
-    CURLcode err = m_curl.perform();
-    curl_slist_free_all(hdrs);
-	
-    rho_net_impl_network_indicator(0);
-	
-    nRespCode = getResponseCode(err, strRespBody, oSession );
-    return makeResponse(strRespBody, nRespCode);
-}
-	
 int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession )	
 {    
     if (err != CURLE_OK)
@@ -318,7 +372,7 @@ int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRh
                 oSession->logout();
     }
     else {
-        RAWTRACE("RESPONSE-----");
+        RAWTRACE1("RESPONSE----- (%d bytes)", strRespBody.size());
         RAWTRACE(strRespBody.c_str());
         RAWTRACE("END RESPONSE-----");
     }
@@ -421,32 +475,9 @@ static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, v
     return 0;
 }
 
-static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
-{
-    Hashtable<String,String>* pHeaders = (Hashtable<String,String>*)opaque;
-    size_t nBytes = size*nmemb;
-    String strHeader((const char *)ptr, nBytes);
-    RAWTRACE1("Received header: %s", strHeader.c_str());
-    
-    int nSep = strHeader.find(':');
-    if (nSep > 0 )
-    {		
-        String strName = String_trim(strHeader.substr(0, nSep));
-        String lName;
-        std::transform(strName.begin(), strName.end(), std::back_inserter(lName), &::tolower);
-
-        String strValue = String_trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
-    
-        pHeaders->put(lName, strValue);
-    }
-    
-    return nBytes;
-}
-
 curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const String& strUrl, const String& strBody,
                              IRhoSession* pSession, Hashtable<String,String>* pHeaders)
 {
-    curl_easy_reset(m_curl);
     curl_easy_setopt(m_curl, CURLOPT_BUFFERSIZE, CURL_MAX_WRITE_SIZE-1);
 
     if (strcasecmp(method, "GET") == 0)
@@ -468,7 +499,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_COOKIE, session.c_str());
     }
     
-    curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
+    //curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, (long)m_sslVerifyPeer);
@@ -476,7 +507,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
     // could repeated twice or more times
-    if (net::URI::isLocalHost(strUrl))
+    //if (net::URI::isLocalHost(strUrl))
         curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
     
     curl_slist *hdrs = NULL;
@@ -500,11 +531,6 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
             String strHeader = it->first + ": " + it->second;
             hdrs = curl_slist_append(hdrs, strHeader.c_str());
         }
-        
-        //set header callback
-        curl_easy_setopt(m_curl, CURLOPT_HEADERDATA, pHeaders);
-        curl_easy_setopt(m_curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
-        
     }
     
     if (!hasContentType && strcasecmp(method, "POST") == 0 && strBody.length() > 0)
@@ -539,7 +565,7 @@ CURLNetRequest::CURLHolder::CURLHolder()
     m_bTraceCalls = rho_conf_getBool("net_trace");
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
-        timeout = 180; // 3 minutes by default
+        timeout = 10; // 10 seconds by default
     m_sslVerifyPeer = true;
     
     m_curlm = curl_multi_init();
@@ -575,6 +601,10 @@ CURLcode CURLNetRequest::CURLHolder::perform()
 {
     activate();
     
+    int const CHUNK = 1;
+    
+    long noactivity = 0;
+    
     CURLcode result;
     for(;;) {
         int running;
@@ -585,7 +615,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             RAWLOG_ERROR1("curl_multi_perform error: %d", (int)err);
         }
         else {
-            if (running > 0) {
+            if (running > 0 && noactivity < timeout) {
                 RAWTRACE("we still have active transfers but no data ready at this moment; waiting...");
                 fd_set rfd, wfd, efd;
                 int n = 0;
@@ -596,15 +626,18 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                 if (err == CURLM_OK) {
                     if (n > 0) {
                         timeval tv;
-                        tv.tv_sec = 5;
+                        tv.tv_sec = CHUNK;
                         tv.tv_usec = 0;
                         int e = select(n + 1, &rfd, &wfd, &efd, &tv);
                         if (e < 0) {
                             RAWLOG_ERROR1("select (on curl handles) error: %d", errno);
                         }
                         else {
-                            if (e == 0)
+                            if (e == 0) {
                                 RAWLOG_INFO("No activity on sockets, check them again");
+                                noactivity += CHUNK;
+                            }
+                            else noactivity = 0;
                             continue;
                         }
                     }
@@ -615,25 +648,17 @@ CURLcode CURLNetRequest::CURLHolder::perform()
 
             }
         }
-        for (;;) {
-            int nmsgs;
-            CURLMsg *msg = curl_multi_info_read(m_curlm, &nmsgs);
-            if (!msg) break;
-            if (msg->msg = CURLMSG_DONE) {
-                result = msg->data.result;
-                switch (result)
-                {
-                case CURLE_OK:
-                    RAWTRACE("Operation completed successfully");
-                    break;
-                case CURLE_OPERATION_TIMEDOUT:
-                    RAWLOG_ERROR("Operation finished by timeout");
-                    break;
-                default:
-                    RAWLOG_ERROR1("Operation finished with code %d", (int)result);
-                }
-            }
-        }
+        int nmsgs;
+        CURLMsg *msg = curl_multi_info_read(m_curlm, &nmsgs);
+        result = CURLE_OK;
+        if (msg && msg->msg == CURLMSG_DONE)
+            result = msg->data.result;
+        if (result == CURLE_OK && noactivity >= timeout)
+            result = CURLE_OPERATION_TIMEDOUT;
+        if (result == CURLE_OK)
+            RAWTRACE("Operation completed successfully");
+        else
+            RAWLOG_ERROR2("Operation finished with error %d: %s", (int)result, curl_easy_strerror(result));
         break;
     }
 
