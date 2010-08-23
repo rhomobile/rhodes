@@ -5,6 +5,7 @@
 #include "curl/curl.h"
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
+#include "common/RhoFile.h"
 
 namespace rho
 {
@@ -67,6 +68,7 @@ public:
     virtual boolean isCancelled(){return false;}
 
 private:
+    INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
     int getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession);
     String makeCookies();
     INetResponse *makeResponse(String strBody, int nErrorCode);
