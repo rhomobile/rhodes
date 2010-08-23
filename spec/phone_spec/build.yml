@@ -31,5 +31,5 @@ bb:
 capabilities:
   - push
      
-extensions: ["json", "rhoxml", "rhospec"]  
+extensions: ["json", "rhoxml", "rhospec", "crypt"]  
 

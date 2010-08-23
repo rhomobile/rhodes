@@ -5,6 +5,7 @@ class SpecRunner < MSpecScript
     config[:files] = []
     
     config[:files] << "spec/asynchttp_spec"
+    config[:files] << "spec/crypt_spec"
     config[:files] << "spec/json_spec"
     config[:files] << "spec/xml_spec"
     config[:files] << "spec/rhofile_spec"
