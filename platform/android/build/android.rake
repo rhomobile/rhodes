@@ -834,24 +834,6 @@ namespace "build" do
       set_app_name_android($appname)
       generate_rjava
 
-      args = []
-      args << "-g"
-      args << "-d"
-      args << $tmpdir + '/Rhodes'
-      args << "-source"
-      args << "1.6"
-      args << "-target"
-      args << "1.6"
-      args << "-nowarn"
-      args << "-encoding"
-      args << "latin1"
-      args << File.join($app_rjava_dir, "R.java")
-      puts Jake.run(javac, args)
-      unless $?.success?
-        puts "Error compiling java code"
-        exit 1
-      end
-
       srclist = File.join($builddir, "RhodesSRC_build.files")
       newsrclist = File.join($tmpdir, "RhodesSRC_build.files")
       lines = []
@@ -863,6 +845,7 @@ namespace "build" do
           lines << line
         end
       end
+      lines << File.join($app_rjava_dir, "R.java")
       lines << $app_android_r
       lines << $app_native_libs_java
       lines << $app_capabilities_java
@@ -885,10 +868,15 @@ namespace "build" do
       args << "-target"
       args << "1.6"
       args << "-nowarn"
+      args << "-encoding"
+      args << "latin1"
       args << "-classpath"
       classpath = $androidjar
       classpath += $path_separator + $gapijar unless $gapijar.nil?
       classpath += $path_separator + "#{$tmpdir}/Rhodes"
+      Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
+        classpath += $path_separator + f
+      end
       args << classpath
       args << "@#{srclist}"
       puts Jake.run(javac, args)
