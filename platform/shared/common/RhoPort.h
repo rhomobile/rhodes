@@ -103,19 +103,9 @@ char* str_assign(char* data);
 
 #include <android/log.h>
 
-#ifdef __cplusplus
-extern "C"
-#endif
-int rho_log(const char *fmt, ...) __attribute__ ((format(printf, 1, 2)));
-
-#ifdef __cplusplus
-extern "C"
-#endif
-unsigned long long rho_cur_time();
-
 #define RHO_LOG(fmt, ...) \
-  rho_log("%s:%d: thread %08lx, time %llu: " fmt, __FILE__, __LINE__, \
-      (unsigned long)pthread_self(), rho_cur_time(), ##__VA_ARGS__)
+  __android_log_print(ANDROID_LOG_INFO, "RHO_LOG", "%s:%d: thread %08lx: " fmt, __FILE__, __LINE__, \
+      (unsigned long)pthread_self(), ##__VA_ARGS__)
 
 #else // OS_ANDROID
 #define RHO_LOG(...)
