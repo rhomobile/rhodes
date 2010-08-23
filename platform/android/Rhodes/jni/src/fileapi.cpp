@@ -123,8 +123,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
     st.size = (size_t)size;
     st.mtime = (unsigned long)mtime;
 
-    RHO_LOG("updateStatTable: %s -> type %s, size %lu, mtime %lu", path.c_str(), st.type.c_str(), (unsigned long)st.size, st.mtime);
-
     rho_stat_map.insert(std::make_pair(path, st));
 
     if (st.type == rho_type_dir)
@@ -826,7 +824,7 @@ static int stat_impl(std::string const &fpath, struct stat *buf)
     buf->st_mtime = tm;
     buf->st_ctime = tm;
 
-    RHO_LOG("stat_impl: %s: %s, size %lu, mtime: %lu", fpath.c_str(), rst->type.c_str(), (unsigned long)rst->size, rst->mtime);
+    RHO_LOG("stat_impl: %s: size %lu, mtime: %lu", fpath.c_str(), (unsigned long)rst->size, rst->mtime);
 
     return 0;
 }
