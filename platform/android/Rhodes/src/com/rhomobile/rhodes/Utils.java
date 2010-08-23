@@ -162,16 +162,16 @@ public class Utils {
 		return new File(filePath).getName();
 	}
 	
-	public static boolean isAppNameChanged() {
+	public static boolean isAppHashChanged() {
 		try {
 			RhodesService r = RhodesService.getInstance();
-			File name = new File(r.getRootPath(), "name");
-			if (!name.exists())
-				return false;
+			File hash = new File(r.getRootPath(), "hash");
+			if (!hash.exists())
+				return true;
 			
 			FileSource as = new AssetsSource(r.getContext().getResources().getAssets());
 			FileSource fs = new FileSource();
-			return !Utils.isContentsEquals(as, "name", fs, name.getPath());
+			return !Utils.isContentsEquals(as, "hash", fs, hash.getPath());
 		}
 		catch (IOException e) {
 			return true;
