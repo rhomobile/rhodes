@@ -200,7 +200,7 @@
 #define RUBY_JMP_BUF jmp_buf
 #define HAVE_STRUCT_TM_TM_ZONE 1
 #define HAVE_TM_ZONE 1
-#define HAVE_STRUCT_TM_TM_GMTOFF 1
+/* #define HAVE_STRUCT_TM_TM_GMTOFF 1 */
 #define HAVE_DAYLIGHT 1
 #define HAVE_VAR_TIMEZONE 1
 #define TYPEOF_VAR_TIMEZONE long
