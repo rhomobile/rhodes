@@ -328,19 +328,20 @@ public class RhodesService {
 			initRootPath();
 			RhoFileApi.init();
 		} catch (IOException e) {
-			Logger.E(TAG, e);
+			Log.e(TAG, e.getMessage());
 			exitApp();
 			return;
 		}
 		
-		if (Utils.isAppNameChanged()) {
+		if (Utils.isAppHashChanged()) {
 			try {
-				Logger.I(TAG, "Application name was changed, so remove files");
+				Log.i(TAG, "Application hash was changed, so remove files");
 				Utils.deleteRecursively(new File(rootPath));
+				initRootPath();
 				RhoFileApi.init();
-				RhoFileApi.copy("name");
+				RhoFileApi.copy("hash");
 			} catch (IOException e) {
-				Logger.E(TAG, e);
+				Log.e(TAG, e.getMessage());
 				exitApp();
 				return;
 			}
