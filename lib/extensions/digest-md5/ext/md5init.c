@@ -14,13 +14,13 @@ static const rb_digest_metadata_t md5 = {
     (rb_digest_hash_finish_func_t)MD5_Finish,
 };
 
+
 /*
  * A class for calculating message digests using the MD5
  * Message-Digest Algorithm by RSA Data Security, Inc., described in
  * RFC1321.
  */
-void
-Init_md5()
+void Init_md5(void)
 {
     VALUE mDigest, cDigest_Base, cDigest_MD5;
 
