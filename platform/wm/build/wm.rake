@@ -109,8 +109,35 @@ namespace "build" do
     end
   
   namespace "win32" do
+
+    task :extensions => "config:wm" do
+      $app_config["extensions"].each do |ext|
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          next unless File.exists? File.join(extpath, "build.bat")
+
+          ENV['RHO_PLATFORM'] = 'win32'
+          ENV['PWD'] = $startdir
+          ENV['RHO_ROOT'] = ENV['PWD']
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", "Debug")
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
+          ENV['VCBUILD'] = $vcbuild
+          ENV['SDK'] = $sdk
+
+          puts Jake.run("build.bat", [], extpath)
+          break
+        end
+      end
+    end
+
+#    desc "Build win32 rhobundle"
+    task :rhobundle => ["config:wm", :extensions] do
+      Rake::Task["build:bundle:noxruby"].execute
+    end
+
+
   
-    task :devrhobundle => ["config:set_win32_platform", "wm:rhobundle"] do
+    task :devrhobundle => ["config:set_win32_platform", :rhobundle] do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         mkdir_p win32rhopath
         namepath = File.join(win32rhopath,"name.txt")        
