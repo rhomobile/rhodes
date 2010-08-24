@@ -26,6 +26,7 @@ extern "C" {
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();
+void rho_sys_app_exit();
 }
 
 namespace rho {
@@ -770,7 +771,12 @@ void CRhodesApp::loadUrl(String url)
     {
         callback = true;
         url = url.substr(9);
+    }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
+    {
+        rho_sys_app_exit();
+        return;
     }
+
     url = canonicalizeRhoUrl(url);
     if (callback)
     {

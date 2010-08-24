@@ -31,4 +31,5 @@ public interface IRhoRubyHelper {
 	public NetResponse postUrl(String url, String body);
 	public void navigateUrl(String url);
 	public void navigateBack();
+	public void app_exit();
 }
