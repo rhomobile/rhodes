@@ -260,7 +260,13 @@ public class RhodesApp
         {
             callback = true;
             url = url.substring(9);
+        }else if ( url.equalsIgnoreCase("exit") || url.equalsIgnoreCase("close") )
+        {
+        	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+        	helper.app_exit();
+            return;
         }
+
         url = canonicalizeRhoUrl(url);
         if (callback)
         {
@@ -282,11 +288,6 @@ public class RhodesApp
             m_strAppBackUrlOrig = "";
             m_strAppBackUrl = "";
         }
-    }
-    
-    public boolean isCloseBack()
-    {
-    	return m_strAppBackUrlOrig.equalsIgnoreCase("close");
     }
     
     public void navigateBack()
