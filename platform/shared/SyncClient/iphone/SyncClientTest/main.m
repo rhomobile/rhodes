@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Classes/RhoSyncClient.h"
 
 const char* rho_native_rhopath() ;
 void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove )
@@ -41,6 +42,190 @@ void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSStrin
 	}
 }
 
+RhoSyncClient* sclient;
+RhomModel* product;
+
+int ResetAndLogout()
+{
+	[sclient database_full_reset_and_logout];
+	if ([sclient is_logged_in]) 
+		return 0;
+
+	return 1;
+}
+
+int shouldNotSyncWithoutLogin()
+{
+	return 1;
+}
+
+int shouldLogin()
+{
+	RhoSyncNotify* res = [sclient loginWithUser:@"" pwd:@""];
+	int nErr = res.error_code;
+	[res release];
+	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) {
+		return 0;
+	}
+	
+	return 1;
+}
+
+int shouldSyncProductByName()
+{
+	RhoSyncNotify* res = [product sync];
+	int	nErr = res.error_code;
+	[res release];
+	if ( nErr!= RHO_ERR_NONE ) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int shouldSearchProduct()
+{
+	return 1;
+}
+
+int shouldCreateNewProduct()
+{
+	NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+	[item setValue:@"Test" forKey:@"name"];							 
+	[product create:item];
+	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
+		return 0;
+
+	NSDictionary* item2 = [product find:[item valueForKey:@"object"]];
+	if ( ![item2 isEqualToDictionary: item])
+		return 0;
+
+	RhoSyncNotify* res = [product sync];
+	if ( res.error_code!= RHO_ERR_NONE )
+		return 0;
+
+	NSDictionary* item3 = [product find:[item valueForKey:@"object"]];
+	if ( item3 )
+		return 0;
+	
+	[res release];
+
+	[item3 release];
+	[item2 release];
+	[item release];
+	
+	return 1;
+}
+
+int shouldModifyProduct()
+{
+	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+	[cond setValue:@"Test" forKey:@"name"];							 
+	
+	NSMutableDictionary* item = [product find_first:cond];	
+	if ( !item )
+		return 0;
+	
+	NSString* saved_object = [NSString stringWithString: [item valueForKey:@"object"]];
+	NSMutableString* new_sku = [[NSMutableString alloc]init];
+	[new_sku appendString:[item valueForKey:@"sku"]];
+	[new_sku appendString: @"_TEST"];
+	
+	[item setValue:new_sku forKey:@"sku"];
+	[product save: item];
+	
+	RhoSyncNotify* res = [product sync];
+	if ( res.error_code!= RHO_ERR_NONE )
+		return 0;
+	
+	NSDictionary* item3 = [product find:saved_object];
+	if ( !item3 )
+		return 0;
+	
+	if ( ![[item3 valueForKey:@"sku"] isEqual: [item valueForKey:@"sku"]])
+		return 0;
+	
+	[cond release];
+	[item release];	
+	[item3 release];	
+	[res release];		
+	[new_sku release];				
+	
+	return 1;
+}
+
+int shouldDeleteAllTestProduct()
+{
+	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+	[cond setValue:@"Test" forKey:@"name"];							 
+	
+	NSMutableArray* items = [product find_all:cond];	
+	if ( !items )
+		return 0;
+	
+	for( NSDictionary* item in items)
+	{
+		[product destroy: item];
+	}
+	
+	RhoSyncNotify* res = [product sync];
+	if ( res.error_code!= RHO_ERR_NONE )
+		return 0;
+
+	NSMutableDictionary* item = [product find_first:cond];	
+	if ( item )
+		return 0;
+
+	[items release];
+	[res release];
+	
+	return 1;
+}
+
+int runObjCClientTest()
+{
+	RhomModel* customer = [[RhomModel alloc] init];
+	customer.name = @"Customer";
+	
+	product = [[RhomModel alloc] init];
+	product.name = @"Product";
+	
+	sclient = [[RhoSyncClient alloc] init];
+	NSArray* models = [NSArray arrayWithObjects:customer, product, nil];	
+	
+	[sclient addModels:models];
+	
+    sclient.threaded_mode = FALSE;
+	sclient.poll_interval = 0;
+	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+	
+	if ( !ResetAndLogout() )
+		return 0;
+
+	if ( !shouldNotSyncWithoutLogin() )
+		return 0;
+
+	if ( !shouldLogin() )
+		return 0;
+	
+	if ( !shouldSyncProductByName() )
+		return 0;
+
+	if ( !shouldSearchProduct() )
+		return 0;
+	
+	if ( !shouldCreateNewProduct() )
+		return 0;
+	
+	if ( !shouldModifyProduct() )
+		return 0;
+	
+	if ( !shouldDeleteAllTestProduct() )
+		return 0;
+	
+	return 1;
+}
+
 int runSyncClientTests();
 int main(int argc, char *argv[]) {
     
@@ -58,7 +243,8 @@ int main(int argc, char *argv[]) {
 					  [rhoRoot stringByAppendingPathComponent:dirs[0]],
 					  NO);
 	
-    int retVal = runSyncClientTests();
+    //int retVal = runSyncClientTests();
+	int retVal = runObjCClientTest();
     [pool release];
     return retVal;
 }
