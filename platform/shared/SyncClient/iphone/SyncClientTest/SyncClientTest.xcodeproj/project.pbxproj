@@ -26,6 +26,9 @@
 		5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */; };
 		5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0C22121D35770022E83C /* CFNetwork.framework */; };
 		5C0D0D17121DB74B0022E83C /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C0D0D13121DB74B0022E83C /* db */; };
+		5C7E36891222BC29003CB4C4 /* RhoSyncClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E36881222BC28003CB4C4 /* RhoSyncClient.m */; };
+		5C7E368C1222BD57003CB4C4 /* RhomModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E368B1222BD57003CB4C4 /* RhomModel.m */; };
+		5C7E375A1222E412003CB4C4 /* RhoSyncNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E37591222E412003CB4C4 /* RhoSyncNotify.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,14 +36,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libSyncClient.a */;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 		5C0D0994121D11950022E83C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* SyncClient */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 /* End PBXContainerItemProxy section */
@@ -91,6 +94,12 @@
 		5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		5C0D0C22121D35770022E83C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5C0D0D13121DB74B0022E83C /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../db/res/db; sourceTree = SOURCE_ROOT; };
+		5C7E36871222BC28003CB4C4 /* RhoSyncClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoSyncClient.h; sourceTree = "<group>"; };
+		5C7E36881222BC28003CB4C4 /* RhoSyncClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoSyncClient.m; sourceTree = "<group>"; };
+		5C7E368A1222BD57003CB4C4 /* RhomModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhomModel.h; sourceTree = "<group>"; };
+		5C7E368B1222BD57003CB4C4 /* RhomModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhomModel.m; sourceTree = "<group>"; };
+		5C7E37581222E412003CB4C4 /* RhoSyncNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoSyncNotify.h; sourceTree = "<group>"; };
+		5C7E37591222E412003CB4C4 /* RhoSyncNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoSyncNotify.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* SyncClientTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SyncClientTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,6 +126,12 @@
 			children = (
 				1D3623240D0F684500981E51 /* SyncClientTestAppDelegate.h */,
 				1D3623250D0F684500981E51 /* SyncClientTestAppDelegate.m */,
+				5C7E36871222BC28003CB4C4 /* RhoSyncClient.h */,
+				5C7E36881222BC28003CB4C4 /* RhoSyncClient.m */,
+				5C7E368A1222BD57003CB4C4 /* RhomModel.h */,
+				5C7E368B1222BD57003CB4C4 /* RhomModel.m */,
+				5C7E37581222E412003CB4C4 /* RhoSyncNotify.h */,
+				5C7E37591222E412003CB4C4 /* RhoSyncNotify.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -343,6 +358,9 @@
 				5C0D0966121D0CA20022E83C /* gtest.cc in Sources */,
 				5C0D0968121D0D500022E83C /* SyncClientTest.cpp in Sources */,
 				5C0D0A0D121D24B40022E83C /* test_helper.cpp in Sources */,
+				5C7E36891222BC29003CB4C4 /* RhoSyncClient.m in Sources */,
+				5C7E368C1222BD57003CB4C4 /* RhomModel.m in Sources */,
+				5C7E375A1222E412003CB4C4 /* RhoSyncNotify.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
