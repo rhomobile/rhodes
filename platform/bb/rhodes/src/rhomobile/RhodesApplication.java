@@ -781,15 +781,15 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		{
 			final String _label = label;
 			// Is this a default item? If so, use the existing menu item we have.
-			
-	    	if ( label.equalsIgnoreCase("back") ){
+
+			if (value.equalsIgnoreCase(RhodesApplication.LABEL_BACK)) {
+				setDefaultItemToMenuItems(label, backItem);
+			}else if ( label.equalsIgnoreCase("back") ){
 	    		RHODESAPP().setAppBackUrl(value);
 	    	}else if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
     	    	setDefaultItemToMenuItems(label, homeItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
     	    	setDefaultItemToMenuItems(label, refreshItem);
-    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_BACK)) {
-    	    	setDefaultItemToMenuItems(label, backItem);
     	    }  else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
     	    	setDefaultItemToMenuItems(label, syncItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
