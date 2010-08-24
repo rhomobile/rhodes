@@ -710,9 +710,7 @@ boolean CRhodesApp::callPushCallback(String strData)
         if ( m_strPushCallback.length() == 0 )
             return false;
 
-        String strBody = "status=ok&message=";
-        net::URI::urlEncode(strData, strBody);
-        strBody += "&rho_callback=1";
+        String strBody = strData + "&rho_callback=1";
         if ( m_strPushCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
 
