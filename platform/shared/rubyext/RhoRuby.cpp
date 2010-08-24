@@ -34,3 +34,9 @@ extern "C" char* rho_error_getErrorText(int nError)
 {
     return strdup(rho::RhoRuby.getErrorText(nError).c_str());
 }
+
+extern "C" void rho_error_freeString(char* sz)
+{
+	if(sz) 
+		free(sz);
+}
