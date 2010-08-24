@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Classes/RhoSyncClient.h"
+#import "SyncClient/iphone/RhoSyncClient.h"
 
 const char* rho_native_rhopath() ;
 void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove )
@@ -230,7 +230,6 @@ int runSyncClientTests();
 int main(int argc, char *argv[]) {
     
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    //int retVal = UIApplicationMain(argc, argv, nil, nil);
 	
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -242,6 +241,7 @@ int main(int argc, char *argv[]) {
 					[bundleRoot stringByAppendingPathComponent:dirs[0]],
 					  [rhoRoot stringByAppendingPathComponent:dirs[0]],
 					  NO);
+//    int retVal = UIApplicationMain(argc, argv, nil, nil);
 	
     //int retVal = runSyncClientTests();
 	int retVal = runObjCClientTest();

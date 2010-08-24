@@ -244,6 +244,12 @@
 		5C0D0BCC121D2EF20022E83C /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0BCA121D2EF20022E83C /* ssl.cpp */; };
 		5C0D0BCD121D2EF20022E83C /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0BCB121D2EF20022E83C /* ssl.h */; };
 		5C0D0C05121D33160022E83C /* RhoThreadImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0C04121D33160022E83C /* RhoThreadImpl.m */; };
+		5C7E399512245FF4003CB4C4 /* RhomModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7E398F12245FF4003CB4C4 /* RhomModel.h */; };
+		5C7E399612245FF4003CB4C4 /* RhomModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E399012245FF4003CB4C4 /* RhomModel.m */; };
+		5C7E399712245FF4003CB4C4 /* RhoSyncClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7E399112245FF4003CB4C4 /* RhoSyncClient.h */; };
+		5C7E399812245FF4003CB4C4 /* RhoSyncClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E399212245FF4003CB4C4 /* RhoSyncClient.m */; };
+		5C7E399912245FF4003CB4C4 /* RhoSyncNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7E399312245FF4003CB4C4 /* RhoSyncNotify.h */; };
+		5C7E399A12245FF4003CB4C4 /* RhoSyncNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E399412245FF4003CB4C4 /* RhoSyncNotify.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -484,6 +490,12 @@
 		5C0D0BCA121D2EF20022E83C /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../../net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		5C0D0BCB121D2EF20022E83C /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../../net/ssl.h; sourceTree = SOURCE_ROOT; };
 		5C0D0C04121D33160022E83C /* RhoThreadImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoThreadImpl.m; path = ../../../common/iphone/RhoThreadImpl.m; sourceTree = SOURCE_ROOT; };
+		5C7E398F12245FF4003CB4C4 /* RhomModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhomModel.h; path = ../RhomModel.h; sourceTree = SOURCE_ROOT; };
+		5C7E399012245FF4003CB4C4 /* RhomModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhomModel.m; path = ../RhomModel.m; sourceTree = SOURCE_ROOT; };
+		5C7E399112245FF4003CB4C4 /* RhoSyncClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoSyncClient.h; path = ../RhoSyncClient.h; sourceTree = SOURCE_ROOT; };
+		5C7E399212245FF4003CB4C4 /* RhoSyncClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoSyncClient.m; path = ../RhoSyncClient.m; sourceTree = SOURCE_ROOT; };
+		5C7E399312245FF4003CB4C4 /* RhoSyncNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoSyncNotify.h; path = ../RhoSyncNotify.h; sourceTree = SOURCE_ROOT; };
+		5C7E399412245FF4003CB4C4 /* RhoSyncNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoSyncNotify.m; path = ../RhoSyncNotify.m; sourceTree = SOURCE_ROOT; };
 		D2AAC07E0554694100DB518D /* libSyncClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSyncClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -519,6 +531,12 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				5C7E398F12245FF4003CB4C4 /* RhomModel.h */,
+				5C7E399012245FF4003CB4C4 /* RhomModel.m */,
+				5C7E399112245FF4003CB4C4 /* RhoSyncClient.h */,
+				5C7E399212245FF4003CB4C4 /* RhoSyncClient.m */,
+				5C7E399312245FF4003CB4C4 /* RhoSyncNotify.h */,
+				5C7E399412245FF4003CB4C4 /* RhoSyncNotify.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -993,6 +1011,9 @@
 				5C0D0BAD121D2B860022E83C /* urldata.h in Headers */,
 				5C0D0BBF121D2E8B0022E83C /* sslimpl.h in Headers */,
 				5C0D0BCD121D2EF20022E83C /* ssl.h in Headers */,
+				5C7E399512245FF4003CB4C4 /* RhomModel.h in Headers */,
+				5C7E399712245FF4003CB4C4 /* RhoSyncClient.h in Headers */,
+				5C7E399912245FF4003CB4C4 /* RhoSyncNotify.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1153,6 +1174,9 @@
 				5C0D0BBE121D2E8B0022E83C /* sslimpl.cpp in Sources */,
 				5C0D0BCC121D2EF20022E83C /* ssl.cpp in Sources */,
 				5C0D0C05121D33160022E83C /* RhoThreadImpl.m in Sources */,
+				5C7E399612245FF4003CB4C4 /* RhomModel.m in Sources */,
+				5C7E399812245FF4003CB4C4 /* RhoSyncClient.m in Sources */,
+				5C7E399A12245FF4003CB4C4 /* RhoSyncNotify.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
