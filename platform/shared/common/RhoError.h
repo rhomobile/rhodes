@@ -20,7 +20,7 @@ extern "C" {
 #endif //__cplusplus
 
 char* rho_error_getErrorText(int nError);
-inline void rho_error_freeString(char* sz){if(sz) free(sz);}
+void rho_error_freeString(char* sz);
 
 #ifdef __cplusplus
 };

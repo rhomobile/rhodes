@@ -53,6 +53,11 @@ public class PushListeningThread extends Thread {
         InputStream input = null;
         MDSPushInputStream pushInputStream=null;
         
+        //{
+        //	String test = "do_sync=AeropriseSrd,AeropriseRequest,AeropriseWorklog,AeropriseCategory,AeropriseUser\nalert=push message\nvibrate=2\nsound=welcome.mp3";
+        //	processPushMessage(test.getBytes(), test.length());
+        //}
+        
         while (!_stop)
         {
         try 
@@ -232,10 +237,25 @@ public class PushListeningThread extends Thread {
             	String msg = new String(data, 0, nLen);
             	LOG.INFO("Triger sync on PUSH message [" + msg + " ]");
 
+            	String[] op;
+            	String[] ops = split(msg,"\n");
+            	
             	if ( RhodesApp.getInstance() != null )
             	{
-            		try{
-	            		if ( RhodesApp.getInstance().callPushCallback(msg) )
+            		try
+            		{
+            			String strMsg = "";
+                    	for (int loop = 0; loop < ops.length; loop++) 
+                    	{
+                    		if ( ops[loop] == null || ops[loop].length() == 0 )
+                    			continue;
+                    		
+                    		if ( strMsg .length() > 0 )
+                    			strMsg += "&";
+                    		strMsg += ops[loop];
+                    	}
+                    	
+	            		if ( RhodesApp.getInstance().callPushCallback(strMsg) )
 	            			return;
             		}catch(Exception exc)
             		{
@@ -244,8 +264,6 @@ public class PushListeningThread extends Thread {
             		}
             	}
             	
-            	String[] op;
-            	String[] ops = split(msg,"\n");
             	for (int loop = 0; loop < ops.length; loop++) {
             		if (ops[loop].startsWith("do_sync")) {
             			op = splitOnce(ops[loop],"=");

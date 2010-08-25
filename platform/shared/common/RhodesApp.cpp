@@ -26,6 +26,7 @@ extern "C" {
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();
+void rho_sys_app_exit();
 }
 
 namespace rho {
@@ -709,9 +710,7 @@ boolean CRhodesApp::callPushCallback(String strData)
         if ( m_strPushCallback.length() == 0 )
             return false;
 
-        String strBody = "status=ok&message=";
-        net::URI::urlEncode(strData, strBody);
-        strBody += "&rho_callback=1";
+        String strBody = strData + "&rho_callback=1";
         if ( m_strPushCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
 
@@ -770,7 +769,12 @@ void CRhodesApp::loadUrl(String url)
     {
         callback = true;
         url = url.substr(9);
+    }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
+    {
+        rho_sys_app_exit();
+        return;
     }
+
     url = canonicalizeRhoUrl(url);
     if (callback)
     {
