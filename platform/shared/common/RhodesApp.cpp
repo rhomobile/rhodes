@@ -725,7 +725,7 @@ boolean CRhodesApp::callPushCallback(String strData)
         }
     }
 
-    return true;
+    return false;
 }
 
 void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)

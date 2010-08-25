@@ -439,6 +439,7 @@ static Rhodes *instance = NULL;
 				NSDictionary *aps = [userInfo objectForKey:key];
 				for (NSString* key1 in aps) 
 				{
+				    NSLog(@"Push aps item: %@", key1 );
 					if ( [strData length] > 0 )
 						[strData appendString:@"&"];					
 					
