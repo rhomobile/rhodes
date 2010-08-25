@@ -198,12 +198,6 @@ final public class RhodesApplication extends UiApplication implements SystemList
    
     public void navigateBack()
     {
-    	if ( RHODESAPP().isCloseBack() )
-    	{
-    		_mainScreen.close();
-    		return;
-    	}
-    	
     	String url = "";
     	if ( _history.size() <= 1 )
     	{
@@ -787,12 +781,15 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		{
 			final String _label = label;
 			// Is this a default item? If so, use the existing menu item we have.
-    	    if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
+
+			if (value.equalsIgnoreCase(RhodesApplication.LABEL_BACK)) {
+				setDefaultItemToMenuItems(label, backItem);
+			}else if ( label.equalsIgnoreCase("back") ){
+	    		RHODESAPP().setAppBackUrl(value);
+	    	}else if (value.equalsIgnoreCase(RhodesApplication.LABEL_HOME)) {
     	    	setDefaultItemToMenuItems(label, homeItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_REFRESH)) {
     	    	setDefaultItemToMenuItems(label, refreshItem);
-    	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_BACK)) {
-    	    	setDefaultItemToMenuItems(label, backItem);
     	    }  else if (value.equalsIgnoreCase(RhodesApplication.LABEL_SYNC)) {
     	    	setDefaultItemToMenuItems(label, syncItem);
     	    } else if (value.equalsIgnoreCase(RhodesApplication.LABEL_OPTIONS)) {
@@ -808,21 +805,16 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    } else if (label.equalsIgnoreCase(RhodesApplication.LABEL_NONE)) {
     	    	menuItems = null;
     	    } else {
-    	    	if ( label.equalsIgnoreCase("back") )
-    	    		//m_strAppBackUrl = value;
-    	    		RHODESAPP().setAppBackUrl(value);
-    	    	else
-    	    	{
-					MenuItem itemToAdd = new MenuItem(label, 200000, 10) 
+				MenuItem itemToAdd = new MenuItem(label, 200000, 10) 
+				{
+					public void run() 
 					{
-						public void run() 
+						try{
+							RHODESAPP().loadUrl(value);
+						}catch(Exception exc)
 						{
-							try{
-								RHODESAPP().loadUrl(value);
-							}catch(Exception exc)
-							{
-								LOG.ERROR("Execute menu item: '" + _label + "' failed.", exc);
-							}
+							LOG.ERROR("Execute menu item: '" + _label + "' failed.", exc);
+						}
 /*							if (value != null && value.startsWith("callback:") )
 							{
 								String url = RHODESAPP().canonicalizeRhoUrl(value.substring(9));
@@ -834,10 +826,9 @@ final public class RhodesApplication extends UiApplication implements SystemList
 								addToHistory(url, null );
 								navigateUrl(url);
 							}*/
-						}
-					};
-					menuItems.addElement(itemToAdd);
-    	    	}
+					}
+				};
+				menuItems.addElement(itemToAdd);
     	    }
 		}
 

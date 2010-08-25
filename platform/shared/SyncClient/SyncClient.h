@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/RhoError.h"
+
 typedef enum _RHOM_MODEL_TYPE { RMT_PROPERTY_BAG=1, RMT_PROPERTY_FIXEDSCHEMA=2 } RHOM_MODEL_TYPE;
 typedef enum _RHOM_SYNC_TYPE { RST_NONE = 0, RST_INCREMENTAL=1, RST_BULK_ONLY=2 } RHOM_SYNC_TYPE;
 typedef struct _RHOM_MODEL
@@ -64,7 +66,9 @@ void rho_syncclient_hash_put(unsigned long hash, const char* szKey, const char* 
 void rho_syncclient_hash_delete(unsigned long hash);
 const char* rho_syncclient_hash_get(unsigned long hash, const char* szKey);
 int rho_syncclient_hash_equal(unsigned long hash1, unsigned long hash2);
-
+int rho_syncclient_hash_size(unsigned long hash);
+void rho_syncclient_hash_enumerate(unsigned long hash, int (*enum_func)(const char* szKey, const char* szValue, void* pThis), void* pThis );
+	
 #ifdef __cplusplus
 };
 #endif //__cplusplus

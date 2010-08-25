@@ -121,6 +121,11 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		RhodesApplication.getInstance().navigateBack();
 	}
 	
+	public void app_exit()
+	{
+		RhodesApplication.getInstance().close();
+	}
+	
 	static Hashtable m_appProperties = new Hashtable(); 
 	public String getAppProperty(String name)
 	{

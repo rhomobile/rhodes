@@ -711,6 +711,24 @@ int rho_syncclient_hash_equal(unsigned long hash1, unsigned long hash2)
     return hashThis1 == hashThis2 ? 1 : 0;
 }
 
+int rho_syncclient_hash_size(unsigned long hash)
+{
+    Hashtable<String, String>& hashThis = *((Hashtable<String, String>*)hash);
+	
+	return hashThis.size();
+}
+	
+void rho_syncclient_hash_enumerate(unsigned long hash, int (*enum_func)(const char* szKey, const char* szValue, void* pThis), void* pThis )
+{
+    Hashtable<String, String>& hashThis = *((Hashtable<String, String>*)hash);
+	
+	for ( Hashtable<String,String>::iterator it = hashThis.begin();  it != hashThis.end(); ++it )
+	{
+		if ( !(*enum_func)(it->first.c_str(), it->second.c_str(), pThis) )
+			return;
+	}		
+}
+	
 }
 
 String rhom_generate_id()
