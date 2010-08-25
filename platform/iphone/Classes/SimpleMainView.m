@@ -234,7 +234,6 @@ int rho_sys_get_screen_height();
     w.autoresizesSubviews = YES;
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
-    //w.delegate = self;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
     
@@ -245,9 +244,7 @@ int rho_sys_get_screen_height();
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
 	[self init];
     
-    mainFrame = frame;
-    
-    UIView* root = self.view;
+    rootFrame = frame;
     
     assert(!webView || [webView retainCount] == 2);
     [webView removeFromSuperview];
@@ -263,18 +260,20 @@ int rho_sys_get_screen_height();
     wFrame.origin.y = 0;
     webView.frame = wFrame;
     
-    [root addSubview:webView];
-    assert([webView retainCount] == 2);
-
     [self addToolbar:items];
     self.navbar = nil;
+    
+    // DO NOT REMOVE THIS LINE!!!
+    // First call of self.view (when self.view is nil) trigger loadView
+    // and viewDidLoad which add all our subviews to the root view
+    NSLog(@"root view: %@", self.view);
     
     return self;
 }
 
 - (void)loadView {
     UIView* root = [[UIView alloc] init];
-    root.frame = mainFrame;
+    root.frame = rootFrame;
     self.view = root;
     [root release];
     assert([root retainCount] == 1);
@@ -397,13 +396,10 @@ int rho_sys_get_screen_height();
     return result;
 }
 
-/*
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
 }
-*/
 
 - (void)viewDidLoad {
     UIView *root = self.view;
@@ -412,8 +408,10 @@ int rho_sys_get_screen_height();
  	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	root.autoresizesSubviews = YES;
     
-    if (webView)
+    if (webView) {
         [root addSubview:webView];
+        webView.delegate = self;
+    }
     assert(!webView || [webView retainCount] == 2);
     if (toolbar)
         [root addSubview:toolbar];
@@ -431,6 +429,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)dealloc {
+    webView.delegate = nil;
     self.webView = nil;
     self.toolbar = nil;
     self.navbar = nil;
@@ -465,6 +464,7 @@ int rho_sys_get_screen_height();
 - (UIWebView*)detachWebView {
     UIWebView *w = [webView retain];
     [w removeFromSuperview];
+    webView.delegate = nil;
     self.webView = nil;
     
     assert(w && [w retainCount] == 1);
@@ -495,8 +495,10 @@ int rho_sys_get_screen_height();
 
 - (void)navigate:(NSString *)url tab:(int)index {
     NSString *encodedUrl = [self encodeUrl:url];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
+    //NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
+    NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:encodedUrl]];
     [webView loadRequest:request];
+    [request release];
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
@@ -617,7 +619,15 @@ int rho_sys_get_screen_height();
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
+    // Disable default context menu on touch
     [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+    
+    // Set empty application cache. Otherwise memory used by UIWebView increased rapidly
+    // and finally application got out of memory
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
+	[NSURLCache setSharedURLCache:sharedCache];
+	[sharedCache release];
+    
     // TODO
     /*
      [self inactive];
