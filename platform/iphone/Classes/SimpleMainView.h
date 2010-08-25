@@ -14,15 +14,19 @@
     UIWebView *webView;
     UIToolbar *toolbar;
     UINavigationBar *navbar;
+    CGRect mainFrame;
 }
 
+@property (nonatomic,retain) UIWebView *webView;
+@property (nonatomic,retain) UIToolbar *toolbar;
+@property (nonatomic,retain) UINavigationBar *navbar;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame;
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
 - (void)loadView;
 
 @end
