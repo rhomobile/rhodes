@@ -433,19 +433,26 @@ static Rhodes *instance = NULL;
 		NSMutableString* strData = [[NSMutableString alloc] init];
 		for (NSString* key in userInfo) 
 		{
+			if ( !key )
+				continue;
+			
 		    NSLog(@"Push item: %@", key );
 			if ( [key compare:@"aps"] == 0)
 			{
 				NSDictionary *aps = [userInfo objectForKey:key];
 				for (NSString* key1 in aps) 
 				{
+					if ( !key1 )
+						continue;
 				    NSLog(@"Push aps item: %@", key1 );
+					
 					if ( [strData length] > 0 )
 						[strData appendString:@"&"];					
 					
 					[strData appendString:key1];
-					[strData appendString:@"="];					
-					[strData appendString:[aps objectForKey:key1]];										
+					[strData appendString:@"="];
+					if ( [aps objectForKey:key1] )
+						[strData appendString:[aps objectForKey:key1]];
 				}
 				
 				continue;
@@ -455,7 +462,8 @@ static Rhodes *instance = NULL;
 				[strData appendString:@"&"];					
 			[strData appendString:key];
 			[strData appendString:@"="];					
-			[strData appendString:[userInfo objectForKey:key]];										
+			if ( [userInfo objectForKey:key] )
+				[strData appendString:[userInfo objectForKey:key]];
 		}	
 		
 //        NSString* strData = [userInfo description];

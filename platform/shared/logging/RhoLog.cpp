@@ -37,7 +37,7 @@ void LogMessage::addPrefix(const char* file, int line){
     else
         *this + LogSeverityNames[m_severity][0];
 
-    *this + " " + common::CLocalTime().toString(false) + ' ' +
+    *this + " " + common::CLocalTime().toString(true) + ' ' +
         LOGFMT("%08x") + common::CSystem().getThreadID() + ' ';
     
     if ( m_category.isEmpty() )
