@@ -433,6 +433,7 @@ static Rhodes *instance = NULL;
 		NSMutableString* strData = [[NSMutableString alloc] init];
 		for (NSString* key in userInfo) 
 		{
+		    NSLog(@"Push item: %@", key );
 			if ( [key compare:@"aps"] == 0)
 			{
 				NSDictionary *aps = [userInfo objectForKey:key];
@@ -457,8 +458,11 @@ static Rhodes *instance = NULL;
 		}	
 		
 //        NSString* strData = [userInfo description];
+        NSLog(@"Push string: %@", strData );
         const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
-        if ( rho_rhodesapp_callPushCallback(szData) )
+        int nRes = rho_rhodesapp_callPushCallback(szData);
+        [strData release];
+        if ( nRes )
             return;
     }
     
