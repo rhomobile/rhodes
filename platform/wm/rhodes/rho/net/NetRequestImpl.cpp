@@ -402,6 +402,9 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
         if ( isError() )
             break;
 
+        if ( pNetResp->getRespCode() == 200 )
+            oFile.movePosToStart();
+            
         if ( pNetResp->getRespCode() == 416 )
         {
             pNetResp->setResponseCode(206);
