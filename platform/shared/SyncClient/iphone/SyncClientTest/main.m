@@ -9,41 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "SyncClient/iphone/RhoSyncClient.h"
 
-const char* rho_native_rhopath() ;
-void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove )
-{
-	BOOL dir;
-	if(![fileManager fileExistsAtPath:source isDirectory:&dir]) {
-		//NSAssert1(0, @"Source item '%@' does not exists in bundle", source);
-		return;
-	}
-	
-	if (!remove && dir) {
-		if (![fileManager fileExistsAtPath:target])
-			[fileManager createDirectoryAtPath:target attributes:nil];
-		
-		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
-		NSString *child;
-		while (child = [enumerator nextObject]) {
-			copyFromMainBundle( fileManager, [source stringByAppendingPathComponent:child],
-							  [target stringByAppendingPathComponent:child], NO );
-		}
-	}
-	else {
-		NSError *error;
-		if ([fileManager fileExistsAtPath:target] && ![fileManager removeItemAtPath:target error:&error]) {
-			//NSAssert2(0, @"Failed to remove '%@': %@", target, [error localizedDescription]);
-			return;
-		}
-		if (![fileManager copyItemAtPath:source toPath:target error:&error]) {
-			//NSAssert3(0, @"Failed to copy '%@' to '%@': %@", source, target, [error localizedDescription]);
-			return;
-		}
-	}
-}
-
 RhoSyncClient* sclient;
 RhomModel* product;
+RhomModel* perftest;
 
 int ResetAndLogout()
 {
@@ -182,6 +150,36 @@ int shouldDeleteAllTestProduct()
 	return 1;
 }
 
+int shouldPerfomanceTest_create(int nCount)
+{
+	[perftest startBulkUpdate];	
+	for (int i = 0; i < nCount; i++) 
+	{
+		NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+		[item setValue: [NSString stringWithFormat:@"Test%d", i] forKey:@"name"];							 
+		[perftest create:item];
+	}
+	[perftest stopBulkUpdate];
+	
+	return 1;
+}
+
+int shouldPerfomanceTest_delete()
+{
+	NSMutableArray* items = [perftest find_all:NULL];	
+	if ( !items )
+		return 0;
+	
+	[perftest startBulkUpdate];
+	for( NSDictionary* item in items)
+	{
+		[perftest destroy: item];
+	}
+	[perftest stopBulkUpdate];
+	
+	return 1;
+}
+
 int runObjCClientTest()
 {
 	RhomModel* customer = [[RhomModel alloc] init];
@@ -189,19 +187,24 @@ int runObjCClientTest()
 	
 	product = [[RhomModel alloc] init];
 	product.name = @"Product";
+
+	perftest = [[RhomModel alloc] init];
+	perftest.name = @"Perftest";
+	perftest.sync_type = RST_NONE;
 	
 	sclient = [[RhoSyncClient alloc] init];
-	NSArray* models = [NSArray arrayWithObjects:customer, product, nil];	
+	NSArray* models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
 	
 	[sclient addModels:models];
 	
     sclient.threaded_mode = FALSE;
 	sclient.poll_interval = 0;
-	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
 	
 	if ( !ResetAndLogout() )
 		return 0;
 
+    sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+ 
 	if ( !shouldNotSyncWithoutLogin() )
 		return 0;
 
@@ -222,6 +225,11 @@ int runObjCClientTest()
 	
 	if ( !shouldDeleteAllTestProduct() )
 		return 0;
+
+	if ( !shouldPerfomanceTest_create(100) )
+		return 0;
+	if ( !shouldPerfomanceTest_delete() )
+		return 0;
 	
 	return 1;
 }
@@ -231,35 +239,12 @@ int main(int argc, char *argv[]) {
     
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
-	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
+	[RhoSyncClient initDatabase];
 	
-    NSString *dirs[] = {@"db"};	
-	copyFromMainBundle( fileManager,
-					[bundleRoot stringByAppendingPathComponent:dirs[0]],
-					  [rhoRoot stringByAppendingPathComponent:dirs[0]],
-					  NO);
 //    int retVal = UIApplicationMain(argc, argv, nil, nil);
 	
     //int retVal = runSyncClientTests();
 	int retVal = runObjCClientTest();
     [pool release];
     return retVal;
-}
-
-const char* rho_native_rhopath() 
-{
-	static bool loaded = FALSE;
-	static char root[FILENAME_MAX];
-	if (!loaded){
-		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-		NSString *documentsDirectory = //[paths objectAtIndex:0];
-		[ [paths objectAtIndex:0] stringByAppendingString:@"/"];
-		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
-		loaded = TRUE;
-	}
-	
-	return root;
 }
