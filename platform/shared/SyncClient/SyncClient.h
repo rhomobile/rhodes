@@ -2,6 +2,10 @@
 
 #include "common/RhoError.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+	
 typedef enum _RHOM_MODEL_TYPE { RMT_PROPERTY_BAG=1, RMT_PROPERTY_FIXEDSCHEMA=2 } RHOM_MODEL_TYPE;
 typedef enum _RHOM_SYNC_TYPE { RST_NONE = 0, RST_INCREMENTAL=1, RST_BULK_ONLY=2 } RHOM_SYNC_TYPE;
 typedef struct _RHOM_MODEL
@@ -30,11 +34,6 @@ typedef struct _RHO_SYNC_NOTIFY
     char* error_message;
     char* callback_params;
 }RHO_SYNC_NOTIFY;
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif //__cplusplus
 
 void rho_syncclient_initmodel(RHOM_MODEL* model);
 void rho_syncclient_init(RHOM_MODEL* pModels, int nModels);
@@ -68,6 +67,9 @@ const char* rho_syncclient_hash_get(unsigned long hash, const char* szKey);
 int rho_syncclient_hash_equal(unsigned long hash1, unsigned long hash2);
 int rho_syncclient_hash_size(unsigned long hash);
 void rho_syncclient_hash_enumerate(unsigned long hash, int (*enum_func)(const char* szKey, const char* szValue, void* pThis), void* pThis );
+
+void rho_syncclient_start_bulkupdate(const char* szModel);
+void rho_syncclient_stop_bulkupdate(const char* szModel);
 	
 #ifdef __cplusplus
 };

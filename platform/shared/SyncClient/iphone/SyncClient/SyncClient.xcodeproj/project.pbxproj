@@ -250,6 +250,7 @@
 		5C7E399812245FF4003CB4C4 /* RhoSyncClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E399212245FF4003CB4C4 /* RhoSyncClient.m */; };
 		5C7E399912245FF4003CB4C4 /* RhoSyncNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7E399312245FF4003CB4C4 /* RhoSyncNotify.h */; };
 		5C7E399A12245FF4003CB4C4 /* RhoSyncNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C7E399412245FF4003CB4C4 /* RhoSyncNotify.m */; };
+		5CEED3EB122586F7005483EE /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5CEED3EA122586F7005483EE /* db */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -496,6 +497,7 @@
 		5C7E399212245FF4003CB4C4 /* RhoSyncClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoSyncClient.m; path = ../RhoSyncClient.m; sourceTree = SOURCE_ROOT; };
 		5C7E399312245FF4003CB4C4 /* RhoSyncNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoSyncNotify.h; path = ../RhoSyncNotify.h; sourceTree = SOURCE_ROOT; };
 		5C7E399412245FF4003CB4C4 /* RhoSyncNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoSyncNotify.m; path = ../RhoSyncNotify.m; sourceTree = SOURCE_ROOT; };
+		5CEED3EA122586F7005483EE /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../db/res/db; sourceTree = SOURCE_ROOT; };
 		D2AAC07E0554694100DB518D /* libSyncClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSyncClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -521,6 +523,7 @@
 		0867D691FE84028FC02AAC07 /* SyncClient */ = {
 			isa = PBXGroup;
 			children = (
+				5CEED3EA122586F7005483EE /* db */,
 				5C0D080F121CFBC90022E83C /* Shared */,
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				034768DFFF38A50411DB9C8B /* Products */,
@@ -1027,6 +1030,7 @@
 				D2AAC07A0554694100DB518D /* Headers */,
 				D2AAC07B0554694100DB518D /* Sources */,
 				D2AAC07C0554694100DB518D /* Frameworks */,
+				5CEED3EC122586F7005483EE /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1054,6 +1058,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5CEED3EC122586F7005483EE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CEED3EB122586F7005483EE /* db in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D2AAC07B0554694100DB518D /* Sources */ = {
