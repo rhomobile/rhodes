@@ -45,7 +45,7 @@
 		nModel++;
 	}
 	
-    rho_syncclient_init(rhom_models, 2);	
+    rho_syncclient_init(rhom_models, models.count);	
 }
 
 - (void) database_full_reset_and_logout
@@ -104,4 +104,67 @@
 	return [[RhoSyncNotify alloc] init: &oNotify];
 }
 
+void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove );
+const char* rho_native_rhopath() ;
++ (void) initDatabase
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
+	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
+	
+    NSString *dirs[] = {@"db"};	
+	copyFromMainBundle( fileManager,
+					   [bundleRoot stringByAppendingPathComponent:dirs[0]],
+					   [rhoRoot stringByAppendingPathComponent:dirs[0]],
+					   NO);
+}
+
 @end
+
+const char* rho_native_rhopath() 
+{
+	static bool loaded = FALSE;
+	static char root[FILENAME_MAX];
+	if (!loaded){
+		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+		NSString *documentsDirectory = //[paths objectAtIndex:0];
+		[ [paths objectAtIndex:0] stringByAppendingString:@"/"];
+		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
+		loaded = TRUE;
+	}
+	
+	return root;
+}
+
+void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove )
+{
+	BOOL dir;
+	if(![fileManager fileExistsAtPath:source isDirectory:&dir]) {
+		//NSAssert1(0, @"Source item '%@' does not exists in bundle", source);
+		return;
+	}
+	
+	if (!remove && dir) {
+		if (![fileManager fileExistsAtPath:target])
+			[fileManager createDirectoryAtPath:target attributes:nil];
+		
+		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
+		NSString *child;
+		while (child = [enumerator nextObject]) {
+			copyFromMainBundle( fileManager, [source stringByAppendingPathComponent:child],
+							   [target stringByAppendingPathComponent:child], NO );
+		}
+	}
+	else {
+		NSError *error;
+		if ([fileManager fileExistsAtPath:target] && ![fileManager removeItemAtPath:target error:&error]) {
+			//NSAssert2(0, @"Failed to remove '%@': %@", target, [error localizedDescription]);
+			return;
+		}
+		if (![fileManager copyItemAtPath:source toPath:target error:&error]) {
+			//NSAssert3(0, @"Failed to copy '%@' to '%@': %@", source, target, [error localizedDescription]);
+			return;
+		}
+	}
+}
