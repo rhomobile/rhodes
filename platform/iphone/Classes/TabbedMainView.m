@@ -63,8 +63,6 @@
 
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
-    UIView* parent = p;
-    
     CGRect frame = [[v view] frame];
     
     tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
@@ -156,9 +154,9 @@
     return tabbar.view;
 }
 
-
 - (UIWebView*)detachWebView {
-    return [[self subView:[self activeTab]] detachWebView];
+    int n = [self activeTab];
+    return [[self subView:n] detachWebView];
 }
 
 - (void)loadHTMLString:(NSString *)data {
