@@ -14,7 +14,7 @@
     UIWebView *webView;
     UIToolbar *toolbar;
     UINavigationBar *navbar;
-    CGRect mainFrame;
+    CGRect rootFrame;
 }
 
 @property (nonatomic,retain) UIWebView *webView;
