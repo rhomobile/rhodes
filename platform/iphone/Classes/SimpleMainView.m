@@ -245,8 +245,9 @@ int rho_sys_get_screen_height();
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
 	[self init];
     
+    mainFrame = frame;
+    
     UIView* root = self.view;
-    root.frame = frame;
     
     assert(!webView || [webView retainCount] == 2);
     [webView removeFromSuperview];
@@ -273,6 +274,7 @@ int rho_sys_get_screen_height();
 
 - (void)loadView {
     UIView* root = [[UIView alloc] init];
+    root.frame = mainFrame;
     self.view = root;
     [root release];
     assert([root retainCount] == 1);
