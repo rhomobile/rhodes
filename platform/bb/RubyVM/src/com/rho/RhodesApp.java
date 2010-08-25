@@ -149,9 +149,7 @@ public class RhodesApp
             if ( m_strPushCallback.length() == 0 )
                 return false;
         	
-            String strBody = "status=ok&message=";
-            strBody += URI.urlEncode(strData);
-            strBody += "&rho_callback=1";
+            String strBody = strData + "&rho_callback=1";
             if ( m_strPushCallbackParams.length() > 0 )
                 strBody += "&" + m_strPushCallbackParams;
 
@@ -260,7 +258,13 @@ public class RhodesApp
         {
             callback = true;
             url = url.substring(9);
+        }else if ( url.equalsIgnoreCase("exit") || url.equalsIgnoreCase("close") )
+        {
+        	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+        	helper.app_exit();
+            return;
         }
+
         url = canonicalizeRhoUrl(url);
         if (callback)
         {
@@ -282,11 +286,6 @@ public class RhodesApp
             m_strAppBackUrlOrig = "";
             m_strAppBackUrl = "";
         }
-    }
-    
-    public boolean isCloseBack()
-    {
-    	return m_strAppBackUrlOrig.equalsIgnoreCase("close");
     }
     
     public void navigateBack()

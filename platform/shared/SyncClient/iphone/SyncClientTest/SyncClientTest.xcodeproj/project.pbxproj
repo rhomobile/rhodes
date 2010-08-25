@@ -33,14 +33,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libSyncClient.a */;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 		5C0D0994121D11950022E83C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* SyncClient */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 /* End PBXContainerItemProxy section */

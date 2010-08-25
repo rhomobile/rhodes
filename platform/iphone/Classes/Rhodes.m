@@ -430,9 +430,47 @@ static Rhodes *instance = NULL;
     RAWLOG_INFO("Processing PUSH message...");
 	
     {
-        NSString* strData = [userInfo description];
+		NSMutableString* strData = [[NSMutableString alloc] init];
+		for (NSString* key in userInfo) 
+		{
+			if ( !key )
+				continue;
+			
+		    NSLog(@"Push item: %@", key );
+			if ( [key compare:@"aps"] == 0)
+			{
+				NSDictionary *aps = [userInfo objectForKey:key];
+				for (NSString* key1 in aps) 
+				{
+					if ( !key1 )
+						continue;
+					
+					if ( [strData length] > 0 )
+						[strData appendString:@"&"];					
+					
+					[strData appendString:key1];
+					[strData appendString:@"="];
+					if ( [aps objectForKey:key1] )
+						[strData appendString:[aps objectForKey:key1]];
+				}
+				
+				continue;
+			}
+
+			if ( [strData length] > 0 )
+				[strData appendString:@"&"];					
+			[strData appendString:key];
+			[strData appendString:@"="];					
+			if ( [userInfo objectForKey:key] )
+				[strData appendString:[userInfo objectForKey:key]];
+		}	
+		
+//        NSString* strData = [userInfo description];
+        NSLog(@"Push string: %@", strData );
         const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
-        if ( rho_rhodesapp_callPushCallback(szData) )
+        int nRes = rho_rhodesapp_callPushCallback(szData);
+        [strData release];
+        if ( nRes )
             return;
     }
     
