@@ -21,6 +21,9 @@
 #define RHO_TAG_TOOLBAR 2
 #define RHO_TAG_NAVBAR 3
 
+int rho_sys_get_screen_width();
+int rho_sys_get_screen_height();
+
 @interface RhoToolbarButtonItemAction : NSObject
 {
     NSString *url;
@@ -57,6 +60,7 @@
 
 @implementation SimpleMainView
 
+@synthesize webView, toolbar, navbar;
 
 - (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
     UIImage *img = nil;
@@ -181,7 +185,7 @@
     tb.autoresizesSubviews = YES;
     tb.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
  	
-	
+	assert([tb retainCount] == 1);
     return tb;
 }
 
@@ -194,11 +198,13 @@
     }
     
     [toolbar removeFromSuperview];
-    toolbar = nil;
+    assert(!toolbar || [toolbar retainCount] == 1);
+    self.toolbar = nil;
 }
 
 - (void)addToolbar:(NSArray*)items {
     [self removeToolbar];
+    assert(!toolbar);
     
     if (!items)
         return;
@@ -207,12 +213,12 @@
 	wFrame.size.height += wFrame.origin.y;
 	wFrame.origin.y = 0;
     
-    [toolbar removeFromSuperview];
     toolbar = [self newToolbar:items frame:wFrame];
+    assert([toolbar retainCount] == 1);
     toolbar.tag = RHO_TAG_TOOLBAR;
     UIView* root = self.view;
     [root addSubview:toolbar];
-	[toolbar release];
+    assert([toolbar retainCount] == 2);
     
     CGRect tbFrame = toolbar.frame;
 	wFrame = webView.frame;
@@ -232,43 +238,45 @@
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
     
+    assert([w retainCount] == 1);
     return w;
 }
 
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
 	[self init];
-	
+    
     UIView* root = self.view;
     root.frame = frame;
-    root.userInteractionEnabled = YES;
- 	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	root.autoresizesSubviews = YES;
-   
+    
+    assert(!webView || [webView retainCount] == 2);
     [webView removeFromSuperview];
+    assert(!webView || [webView retainCount] == 1);
+    self.webView = nil;
     webView = w;
+    assert(!webView || [webView retainCount] == 1);
     if (!webView)
         webView = [self newWebView:frame];
-    [root addSubview:webView];
-    [webView release];
+    assert(webView && [webView retainCount] == 1);
+    
 	CGRect wFrame = frame;
     wFrame.origin.y = 0;
     webView.frame = wFrame;
     
+    [root addSubview:webView];
+    assert([webView retainCount] == 2);
+
     [self addToolbar:items];
-    navbar = nil;
+    self.navbar = nil;
     
     return self;
 }
 
-
- - (void)loadView {
-	 UIView* content = [[UIView alloc] init];
-	 //content.backgroundColor = [UIColor redColor];
-	 self.view = content;
-	 [content release];
-	 
+- (void)loadView {
+    UIView* root = [[UIView alloc] init];
+    self.view = root;
+    [root release];
+    assert([root retainCount] == 1);
 }
-
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -384,23 +392,46 @@
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
     UIWebView *w = [v detachWebView];
     id result = [self init:p webView:w frame:frame toolbar:items];
-
+    return result;
 }
 
+/*
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
 }
+*/
+
+- (void)viewDidLoad {
+    UIView *root = self.view;
+    
+    root.userInteractionEnabled = YES;
+ 	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	root.autoresizesSubviews = YES;
+    
+    if (webView)
+        [root addSubview:webView];
+    assert(!webView || [webView retainCount] == 2);
+    if (toolbar)
+        [root addSubview:toolbar];
+    assert(!toolbar || [toolbar retainCount] == 2);
+    if (navbar)
+        [root addSubview:navbar];
+    assert(!navbar || [navbar retainCount] == 2);
+}
 
 - (void)viewDidUnload {
     [super viewDidUnload];
+    assert(!webView || [webView retainCount] == 1);
+    assert(!toolbar || [toolbar retainCount] == 1);
+    assert(!navbar || [navbar retainCount] == 1);
 }
 
 - (void)dealloc {
-    //UIView* root = self.view;
-    //[root removeFromSuperview];
-    //[root release];
+    self.webView = nil;
+    self.toolbar = nil;
+    self.navbar = nil;
     [super dealloc];
 }
 
@@ -432,8 +463,9 @@
 - (UIWebView*)detachWebView {
     UIWebView *w = [webView retain];
     [w removeFromSuperview];
-    webView = nil;
+    self.webView = nil;
     
+    assert(w && [w retainCount] == 1);
     return w;
 }
 
@@ -494,14 +526,17 @@
 }
 
 - (void)addNavBar:(UINavigationBar*)navb {
-    [navbar removeFromSuperview];
+    [self removeNavBar];
+    
     navbar = navb;
+    assert([navbar retainCount] == 1);
+    NSLog(@"navbar retain count: %d", [navbar retainCount]);
 	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	navbar.autoresizesSubviews = YES;
 	
 	UIView* root = self.view;
     [root addSubview:navbar];
-	[navbar release];
+    assert([navbar retainCount] == 2);
     
     CGRect nFrame = navbar.frame;
     CGRect wFrame = webView.frame;
@@ -511,8 +546,6 @@
 }
 
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
-    [self removeNavBar];
-    
     UINavigationBar *nb = [[UINavigationBar alloc] initWithFrame:CGRectZero];
     nb.tag = RHO_TAG_NAVBAR;
     [nb sizeToFit];
@@ -533,7 +566,6 @@
             [ni setLeftBarButtonItem:button];
         else
             [ni setRightBarButtonItem:button];
-
     }
     
     [nb pushNavigationItem:ni animated:NO];
@@ -549,9 +581,10 @@
         wFrame.size.height += nFrame.size.height;
         webView.frame = wFrame;
     }
-    
+
     [navbar removeFromSuperview];
-    navbar = nil;
+    assert(!navbar || [navbar retainCount] == 1);
+    self.navbar = nil;
 }
 
 // UIWebViewDelegate imlementation
