@@ -452,7 +452,7 @@ static Rhodes *instance = NULL;
 					[strData appendString:key1];
 					[strData appendString:@"="];
 					if ( [aps objectForKey:key1] )
-						[strData appendString:[aps objectForKey:key1]];
+						[strData appendString:[NSString stringWithFormat:@"%@", [aps objectForKey:key1]]];
 				}
 				
 				continue;
@@ -461,9 +461,10 @@ static Rhodes *instance = NULL;
 			if ( [strData length] > 0 )
 				[strData appendString:@"&"];					
 			[strData appendString:key];
-			[strData appendString:@"="];					
+			[strData appendString:@"="];
 			if ( [userInfo objectForKey:key] )
-				[strData appendString:[userInfo objectForKey:key]];
+				[strData appendString:[NSString stringWithFormat:@"%@", [userInfo objectForKey:key]]];
+
 		}	
 		
 //        NSString* strData = [userInfo description];
