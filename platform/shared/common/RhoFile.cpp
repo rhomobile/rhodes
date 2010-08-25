@@ -25,11 +25,12 @@ bool CRhoFile::open( const char* szFilePath, EOpenModes eMode ){
     if ( eMode == OpenForAppend || eMode == OpenForReadWrite ){
         m_file = fopen(szFilePath,"r+b");
 
+        if ( !m_file && !isFileExist(szFilePath) )
+            m_file = fopen(szFilePath,"wb");
+
         if ( eMode == OpenForAppend )
             movePosToEnd();
 
-        if ( !m_file && !isFileExist(szFilePath) )
-            m_file = fopen(szFilePath,"wb");
     }else if ( eMode == OpenReadOnly )
         m_file = fopen(szFilePath,"rb");
     else if ( eMode == OpenForWrite )
@@ -122,7 +123,12 @@ void CRhoFile::movePosToEnd(){
     if ( !isOpened() )
         return;
 
-    fseek(m_file,0,SEEK_END);
+    int nRes = fseek(m_file,0,SEEK_END);
+    fpos_t pos = 0;
+    int nRes2 = fgetpos(m_file, &pos );
+
+    if ( !nRes2 )
+        nRes2 = 0;
 }
 
 void CRhoFile::setPosTo(int nPos){
