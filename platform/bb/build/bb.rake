@@ -151,16 +151,16 @@ namespace "config" do
     
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"
-    $rhobundledir =  $app_path + "/RhoBundle"
+    $tmpdir =  $bindir +"/tmp"
+    $tmpdir_sim =  $bindir +"/tmp_sim"
+    $rhobundledir =  $bindir + "/RhoBundle"
     $srcdir =  $bindir + "/RhoBundle"
-    $preverified = $app_path + "/preverified"
+    $preverified = $bindir + "/preverified"
     $targetdir = $bindir + "/target/" + $bbver
     $rubyVMdir = $app_path + "/RubyVM"
     $excludelib = ['**/rational.rb','**/dateOrig.rb']
     $excludeextlib = ['rexml/parsers/baseparser.rb', 'rexml/set.rb']
     $compileERB = $app_path + "/build/compileERB.rb"
-    $tmpdir =  $bindir +"/tmp"
-    $tmpdir_sim =  $bindir +"/tmp_sim"
 
     $assetfolder = $app_path + "/public-" + "bb-" + $bbver
 
@@ -878,7 +878,7 @@ namespace "clean" do
 #    desc "Clean all"
     task :all => [:preverified,:packaged,:tempdir] do
       rm_rf $bindir
-      rm_rf $rhobundledir
+      #rm_rf $rhobundledir
     end
 
   end
