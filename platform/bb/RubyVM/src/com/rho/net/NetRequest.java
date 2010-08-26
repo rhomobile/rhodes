@@ -528,6 +528,9 @@ public class NetRequest
 			
 			m_nCurDownloadSize = 0;
 			readHeaders(headers);
+
+			if ( code == IHttpConnection.HTTP_OK )
+				file.seek(0);
 			
 			if ( code == IHttpConnection.HTTP_RANGENOTSATISFY )
 				code = IHttpConnection.HTTP_PARTIAL_CONTENT;

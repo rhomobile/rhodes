@@ -20,12 +20,11 @@
 		5C0D0965121D0CA20022E83C /* gtest-typed-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D095C121D0CA20022E83C /* gtest-typed-test.cc */; };
 		5C0D0966121D0CA20022E83C /* gtest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D095D121D0CA20022E83C /* gtest.cc */; };
 		5C0D0968121D0D500022E83C /* SyncClientTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0967121D0D500022E83C /* SyncClientTest.cpp */; };
-		5C0D09CB121D17440022E83C /* libSyncClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D09CA121D17440022E83C /* libSyncClient.a */; };
 		5C0D0A0D121D24B40022E83C /* test_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0A0C121D24B40022E83C /* test_helper.cpp */; };
 		5C0D0BEF121D31280022E83C /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BEE121D31280022E83C /* libz.dylib */; };
 		5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */; };
 		5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0C22121D35770022E83C /* CFNetwork.framework */; };
-		5C0D0D17121DB74B0022E83C /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C0D0D13121DB74B0022E83C /* db */; };
+		5CF986DA1226B99D00734E8B /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5CF986D91226B99D00734E8B /* db */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,14 +32,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libSyncClient.a */;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 		5C0D0994121D11950022E83C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C0D098A121D11140022E83C /* SyncClient.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* SyncClient */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 /* End PBXContainerItemProxy section */
@@ -85,12 +84,11 @@
 		5C0D095D121D0CA20022E83C /* gtest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gtest.cc; sourceTree = "<group>"; };
 		5C0D0967121D0D500022E83C /* SyncClientTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncClientTest.cpp; path = ../../Test/SyncClientTest.cpp; sourceTree = SOURCE_ROOT; };
 		5C0D098A121D11140022E83C /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../SyncClient/SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
-		5C0D09CA121D17440022E83C /* libSyncClient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSyncClient.a; path = "/Users/evgeny/Projects/rhodes/platform/shared/SyncClient/iphone/build/Debug-iphonesimulator/libSyncClient.a"; sourceTree = "<absolute>"; };
 		5C0D0A0C121D24B40022E83C /* test_helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_helper.cpp; path = ../../../test/test_helper.cpp; sourceTree = SOURCE_ROOT; };
 		5C0D0BEE121D31280022E83C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		5C0D0C22121D35770022E83C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		5C0D0D13121DB74B0022E83C /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../db/res/db; sourceTree = SOURCE_ROOT; };
+		5CF986D91226B99D00734E8B /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../db/res/db; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* SyncClientTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SyncClientTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,7 +100,6 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
-				5C0D09CB121D17440022E83C /* libSyncClient.a in Frameworks */,
 				5C0D0BEF121D31280022E83C /* libz.dylib in Frameworks */,
 				5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */,
 				5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */,
@@ -132,7 +129,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				5C0D0D13121DB74B0022E83C /* db */,
+				5CF986D91226B99D00734E8B /* db */,
 				5C0D098A121D11140022E83C /* SyncClient.xcodeproj */,
 				5C0D093C121D0C330022E83C /* shared */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -140,7 +137,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				5C0D09CA121D17440022E83C /* libSyncClient.a */,
 				5C0D0BEE121D31280022E83C /* libz.dylib */,
 				5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */,
 				5C0D0C22121D35770022E83C /* CFNetwork.framework */,
@@ -322,7 +318,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
-				5C0D0D17121DB74B0022E83C /* db in Resources */,
+				5CF986DA1226B99D00734E8B /* db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
