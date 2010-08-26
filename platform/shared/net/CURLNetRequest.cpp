@@ -565,7 +565,7 @@ CURLNetRequest::CURLHolder::CURLHolder()
     m_bTraceCalls = rho_conf_getBool("net_trace");
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
-        timeout = 10; // 10 seconds by default
+        timeout = 30; // 30 seconds by default
     m_sslVerifyPeer = true;
     
     m_curlm = curl_multi_init();
