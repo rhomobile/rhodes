@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+# First iteration, just alias rhogen
+system("#{File.expand_path(File.dirname(__FILE__))}/rhogen #{ARGV.join(' ')}")

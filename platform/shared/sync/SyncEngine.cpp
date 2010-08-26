@@ -146,10 +146,10 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
             if ( pSrc != null )
             {
-                strQuery += "&source[][name]=" + pSrc->getName();
+                strQuery += "&sources[][name]=" + pSrc->getName();
 
                 if ( !pSrc->isTokenFromDB() && pSrc->getToken() > 1 )
-                    strQuery += "&source[][token]=" + convertToStringA(pSrc->getToken());
+                    strQuery += "&sources[][token]=" + convertToStringA(pSrc->getToken());
             }
         }
 
