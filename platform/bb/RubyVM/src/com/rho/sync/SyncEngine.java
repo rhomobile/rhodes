@@ -243,10 +243,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
 		            if ( pSrc != null )
 		            {
-		                strQuery += "&source[][name]=" + pSrc.getName();
+		                strQuery += "&sources[][name]=" + pSrc.getName();
 		
 		                if ( !pSrc.isTokenFromDB() && pSrc.getToken() > 1 )
-		                    strQuery += "&source[][token]=" + pSrc.getToken();
+		                    strQuery += "&sources[][token]=" + pSrc.getToken();
 		            }
 		        }
 		

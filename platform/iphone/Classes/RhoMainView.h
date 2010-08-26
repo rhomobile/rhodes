@@ -11,7 +11,6 @@
 @protocol RhoMainView
 
 - (UIView*)view;
-- (UIView*)parent;
 
 - (UIWebView*)detachWebView;
 
