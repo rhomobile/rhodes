@@ -286,7 +286,7 @@ int rho_sys_get_screen_height();
     [self addToolbar:items];
     self.navbar = nil;
 	nativeView = nil;
-	nativeViewType = @"";
+	nativeViewType = nil;
 	nativeViewView = nil;
     
    // DO NOT REMOVE THIS LINE!!!
@@ -508,14 +508,15 @@ int rho_sys_get_screen_height();
 }
 
 - (void)loadHTMLString:(NSString *)data {
+	[self restoreWebView];
     [webView loadHTMLString:data baseURL:[NSURL URLWithString:@""]];
 }
 
 - (void)back:(int)index {
-	if (nativeViewView != nil) {
+	//if (nativeViewView != nil) {
 		[self restoreWebView];
 		//[webView setNeedsDisplay];
-	}
+	//}
 	//else {
 		[webView goBack];
 	//}
@@ -538,6 +539,7 @@ int rho_sys_get_screen_height();
 
 -(void)restoreWebView {
 	UIView *root = self.view;
+	self.nativeViewType = nil;
 	if (nativeViewView != nil) {
 		CGRect rect = [nativeViewView frame];
 		[nativeViewView removeFromSuperview];
@@ -552,70 +554,93 @@ int rho_sys_get_screen_height();
 	}
 }
 
-- (BOOL)processForNativeView:(NSString*)url {
+- (NSString*)processForNativeView:(NSString*)url {
+
 	//stringWithUTF8String
 	NSRange range = [url rangeOfString:@":"];
+	NSRange callback_range = [url rangeOfString:@"call_stay_native:"];
 	UIView *root = self.view;
-	
-	if((range.location >= 0) && (range.length > 0)) {
-		NSString* protocol = [url substringToIndex:range.location];
-		NSString* navto = [url substringFromIndex:(range.location+1)];
-		if (protocol == nativeViewType) {
-			// just navigate
-			if (nativeView != nil) {
-				[nativeView navigate:navto];
+	if ((callback_range.location == 0) && (callback_range.length > 0)) {
+		NSString* cleared_url = [url substringFromIndex:callback_range.length];
+		return cleared_url;
+	}
+	else {
+		if((range.location >= 0) && (range.length > 0)) {
+			NSString* protocol = [url substringToIndex:range.location];
+			NSString* navto = [url substringFromIndex:(range.location+1)];
+			if ([protocol compare:self.nativeViewType] == NSOrderedSame) {
+				// just navigate
+				if (nativeView != nil) {
+					[nativeView navigate:navto];
+				}
+				return nil;
 			}
-			return YES;
+			else {
+				// try to make native view
+				id<NativeViewOC,NSObject> nv = [RhoNativeViewManagerOC getNativeView:protocol];
+				if (nv != nil) {
+					[self restoreWebView];
+					nativeView = nv;
+					self.nativeViewType = [[NSString alloc] initWithString:protocol] ;
+					// replace webView with NativeView
+					nativeViewView = [nativeView getView];
+					if (nativeViewView != nil) {
+						CGRect rect = [webView frame];
+						[webView removeFromSuperview];
+						nativeViewView.frame = rect;
+						//w.userInteractionEnabled = YES;
+						//w.multipleTouchEnabled = YES;
+						nativeViewView.autoresizesSubviews = YES;
+						nativeViewView.clipsToBounds = NO;
+						//w.delegate = self;
+						nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+						[root addSubview:nativeViewView];
+					}
+					[nativeView navigate:navto];
+					return nil;
+				}
+				else {
+					[self restoreWebView];
+					return url;
+				}
+			}
 		}
 		else {
-			// try to make native view
-			id<NativeViewOC,NSObject> nv = [RhoNativeViewManagerOC getNativeView:protocol];
-			if (nv != nil) {
-				[self restoreWebView];
-				nativeView = nv;
-				nativeViewType = protocol;
-				// replace webView with NativeView
-				nativeViewView = [nativeView getView];
-				if (nativeViewView != nil) {
-					CGRect rect = [webView frame];
-					[webView removeFromSuperview];
-					nativeViewView.frame = rect;
-					//w.userInteractionEnabled = YES;
-					//w.multipleTouchEnabled = YES;
-					nativeViewView.autoresizesSubviews = YES;
-					nativeViewView.clipsToBounds = NO;
-					//w.delegate = self;
-					nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-					[root addSubview:nativeViewView];
-				}
-				[nativeView navigate:navto];
-				return YES;
-			}
+			[self restoreWebView];
+			return url;
 		}
+
 	}
-	[self restoreWebView];
-	return NO;
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
     NSString *encodedUrl = [self encodeUrl:url];
-	if ([self processForNativeView:encodedUrl]) {
+	NSString* cleared_url = [self processForNativeView:encodedUrl];
+	if (cleared_url == nil) {
 		return;
 	}
-   //NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
-    NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:encodedUrl]];
-    [webView loadRequest:request];
-    [request release];
+	else {
+		//NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
+		NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:cleared_url]];
+		[webView loadRequest:request];
+		[request release];
+	}
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
     NSString *encodedUrl = [self encodeUrl:url];
-	if ([self processForNativeView:encodedUrl]) {
+	NSString* cleared_url = [self processForNativeView:encodedUrl];
+	if (cleared_url == nil) {
 		return;
 	}
-    NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
-    NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, encodedUrl];
-    [self navigate:redirect tab:index];
+	else {
+		NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
+		NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
+		//[self navigate:redirect tab:index];
+		NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:redirect]];
+		[webView loadRequest:request];
+		[request release];
+	}
 }
 
 - (void)reload:(int)index {
