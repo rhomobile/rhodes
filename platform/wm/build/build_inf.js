@@ -241,7 +241,7 @@ function main() {
 	output_file = fso.CreateTextFile(args(0));
 
     var sources = new Object();
-    sources['db'] = ["db","..\\..\\..\\res\\build-tools\\db"];
+    sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
     //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
     sources['lib']= ["lib",args(4)+"/lib"];
     sources['apps']= ["apps",args(4)+"/apps"];
