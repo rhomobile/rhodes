@@ -60,7 +60,24 @@ int rho_sys_get_screen_height();
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar, navbar;
+@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView;
+
+
+-(CGRect)getContentRect {
+	if (nativeViewView != nil) {
+		return nativeViewView.frame;
+	}
+	return webView.frame;
+}
+
+-(void)setContentRect:(CGRect)rect {
+	if (nativeViewView != nil) {
+		nativeViewView.frame = rect;
+		return;
+	}
+	webView.frame = rect;
+}
+
 
 - (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
     UIImage *img = nil;
@@ -191,10 +208,10 @@ int rho_sys_get_screen_height();
 
 - (void)removeToolbar {
     if (toolbar) {
-        CGRect wFrame = webView.frame;
+        CGRect wFrame = [self getContentRect];
         CGRect tbFrame = toolbar.frame;
         wFrame.size.height += tbFrame.size.height;
-        webView.frame = wFrame;
+        [self setContentRect:wFrame];
     }
     
     [toolbar removeFromSuperview];
@@ -209,7 +226,7 @@ int rho_sys_get_screen_height();
     if (!items)
         return;
     
-    CGRect wFrame = webView.frame;
+    CGRect wFrame = [self getContentRect];
 	wFrame.size.height += wFrame.origin.y;
 	wFrame.origin.y = 0;
     
@@ -221,9 +238,9 @@ int rho_sys_get_screen_height();
     assert([toolbar retainCount] == 2);
     
     CGRect tbFrame = toolbar.frame;
-	wFrame = webView.frame;
+	wFrame = [self getContentRect];
     wFrame.size.height -= tbFrame.size.height;
-    webView.frame = wFrame;
+    [self setContentRect:wFrame];
 }
 
 - (UIWebView*)newWebView:(CGRect)frame {
@@ -234,6 +251,7 @@ int rho_sys_get_screen_height();
     w.autoresizesSubviews = YES;
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
+    //w.delegate = self;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
     
@@ -245,6 +263,8 @@ int rho_sys_get_screen_height();
 	[self init];
     
     rootFrame = frame;
+    
+    UIView* root = self.view;
     
     assert(!webView || [webView retainCount] == 2);
     [webView removeFromSuperview];
@@ -260,14 +280,20 @@ int rho_sys_get_screen_height();
     wFrame.origin.y = 0;
     webView.frame = wFrame;
     
+    [root addSubview:webView];
+    assert([webView retainCount] == 2);
+
     [self addToolbar:items];
     self.navbar = nil;
+	nativeView = nil;
+	nativeViewType = @"";
+	nativeViewView = nil;
     
-    // DO NOT REMOVE THIS LINE!!!
+   // DO NOT REMOVE THIS LINE!!!
     // First call of self.view (when self.view is nil) trigger loadView
     // and viewDidLoad which add all our subviews to the root view
     NSLog(@"root view: %@", self.view);
-    
+
     return self;
 }
 
@@ -408,11 +434,16 @@ int rho_sys_get_screen_height();
  	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	root.autoresizesSubviews = YES;
     
-    if (webView) {
-        [root addSubview:webView];
-        webView.delegate = self;
-    }
-    assert(!webView || [webView retainCount] == 2);
+	if (nativeView) {
+          [root addSubview:[nativeView getView]];
+	}
+	else {
+		if (webView)
+			[root addSubview:webView];
+                         webView.delegate = self;
+	}
+	assert(!nativeView || [nativeView retainCount] == 2);
+	assert(!webView || [webView retainCount] == 2);
     if (toolbar)
         [root addSubview:toolbar];
     assert(!toolbar || [toolbar retainCount] == 2);
@@ -423,13 +454,16 @@ int rho_sys_get_screen_height();
 
 - (void)viewDidUnload {
     [super viewDidUnload];
+    //assert(!nativeView || [nativeView retainCount] == 1);
     assert(!webView || [webView retainCount] == 1);
     assert(!toolbar || [toolbar retainCount] == 1);
     assert(!navbar || [navbar retainCount] == 1);
 }
 
 - (void)dealloc {
-    webView.delegate = nil;
+     webView.delegate = nil;
+    nativeView = nil;
+    nativeViewView = nil;
     self.webView = nil;
     self.toolbar = nil;
     self.navbar = nil;
@@ -443,6 +477,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)goForward:(id)sender {
+	[self restoreWebView];
     [self forward:0];
 }
 
@@ -462,8 +497,9 @@ int rho_sys_get_screen_height();
 
 
 - (UIWebView*)detachWebView {
-    UIWebView *w = [webView retain];
-    [w removeFromSuperview];
+	[self restoreWebView];
+	UIWebView *w = [webView retain];
+	[w removeFromSuperview];
     webView.delegate = nil;
     self.webView = nil;
     
@@ -476,10 +512,17 @@ int rho_sys_get_screen_height();
 }
 
 - (void)back:(int)index {
-    [webView goBack];
+	if (nativeViewView != nil) {
+		[self restoreWebView];
+		//[webView setNeedsDisplay];
+	}
+	//else {
+		[webView goBack];
+	//}
 }
 
 - (void)forward:(int)index {
+	[self restoreWebView];
     [webView goForward];
 }
 
@@ -493,9 +536,73 @@ int rho_sys_get_screen_height();
     return encodedUrl;
 }
 
+-(void)restoreWebView {
+	UIView *root = self.view;
+	if (nativeViewView != nil) {
+		CGRect rect = [nativeViewView frame];
+		[nativeViewView removeFromSuperview];
+		nativeViewView = nil;
+		
+		webView.frame = rect;
+		[root addSubview:webView];
+	}
+	if (nativeView != nil) {
+		[RhoNativeViewManagerOC destroyNativeView:nativeView];
+		nativeView = nil;
+	}
+}
+
+- (BOOL)processForNativeView:(NSString*)url {
+	//stringWithUTF8String
+	NSRange range = [url rangeOfString:@":"];
+	UIView *root = self.view;
+	
+	if((range.location >= 0) && (range.length > 0)) {
+		NSString* protocol = [url substringToIndex:range.location];
+		NSString* navto = [url substringFromIndex:(range.location+1)];
+		if (protocol == nativeViewType) {
+			// just navigate
+			if (nativeView != nil) {
+				[nativeView navigate:navto];
+			}
+			return YES;
+		}
+		else {
+			// try to make native view
+			id<NativeViewOC,NSObject> nv = [RhoNativeViewManagerOC getNativeView:protocol];
+			if (nv != nil) {
+				[self restoreWebView];
+				nativeView = nv;
+				nativeViewType = protocol;
+				// replace webView with NativeView
+				nativeViewView = [nativeView getView];
+				if (nativeViewView != nil) {
+					CGRect rect = [webView frame];
+					[webView removeFromSuperview];
+					nativeViewView.frame = rect;
+					//w.userInteractionEnabled = YES;
+					//w.multipleTouchEnabled = YES;
+					nativeViewView.autoresizesSubviews = YES;
+					nativeViewView.clipsToBounds = NO;
+					//w.delegate = self;
+					nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+					[root addSubview:nativeViewView];
+				}
+				[nativeView navigate:navto];
+				return YES;
+			}
+		}
+	}
+	[self restoreWebView];
+	return NO;
+}
+
 - (void)navigate:(NSString *)url tab:(int)index {
     NSString *encodedUrl = [self encodeUrl:url];
-    //NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
+	if ([self processForNativeView:encodedUrl]) {
+		return;
+	}
+   //NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
     NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:encodedUrl]];
     [webView loadRequest:request];
     [request release];
@@ -503,13 +610,21 @@ int rho_sys_get_screen_height();
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
     NSString *encodedUrl = [self encodeUrl:url];
+	if ([self processForNativeView:encodedUrl]) {
+		return;
+	}
     NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
     NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, encodedUrl];
     [self navigate:redirect tab:index];
 }
 
 - (void)reload:(int)index {
-    [webView reload];
+	if (nativeViewView != nil) {
+		[nativeViewView setNeedsDisplay];
+	}
+	else {
+		[webView reload];
+	}
 }
 
 - (void)executeJs:(NSString*)js tab:(int)index {
@@ -529,6 +644,7 @@ int rho_sys_get_screen_height();
     return 0;
 }
 
+
 - (void)addNavBar:(UINavigationBar*)navb {
     [self removeNavBar];
     
@@ -543,10 +659,10 @@ int rho_sys_get_screen_height();
     assert([navbar retainCount] == 2);
     
     CGRect nFrame = navbar.frame;
-    CGRect wFrame = webView.frame;
+    CGRect wFrame = [self getContentRect];
     wFrame.origin.y += nFrame.size.height;
     wFrame.size.height -= nFrame.size.height;
-    webView.frame = wFrame;
+    [self setContentRect:wFrame];
 }
 
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
@@ -580,10 +696,10 @@ int rho_sys_get_screen_height();
 - (void)removeNavBar {
     if (navbar) {
         CGRect nFrame = navbar.frame;
-        CGRect wFrame = webView.frame;
+        CGRect wFrame = [self getContentRect];
         wFrame.origin.y -= nFrame.size.height;
         wFrame.size.height += nFrame.size.height;
-        webView.frame = wFrame;
+        [self setContentRect:wFrame];
     }
 
     [navbar removeFromSuperview];
