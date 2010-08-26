@@ -67,8 +67,8 @@ void rho_syncclient_processmodels(RHOM_MODEL* pModels, int nModels)
 
         if ( !res.isEnd() )
         {
-            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema_version=?, associations=?, blob_attribs=?",
-                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, "", "", "" );
+            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
+                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, "", "", "", model.name );
                 
         }else //new model
         {
@@ -272,25 +272,36 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 
     if (!isSchemaSrc)
     {
-        for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
-        {
-            if ( sql.length() > 0 )
-                sql += "\nINTERSECT\n";
+		if (hashCond.size() == 0) {
+			sql = "SELECT object FROM object_values WHERE source_id=?";
+			arValues.addElement(strSrcID);
+		}else
+		{
+			for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
+			{
+				if ( sql.length() > 0 )
+					sql += "\nINTERSECT\n";
 
-            sql += "SELECT object FROM object_values WHERE attrib=? AND source_id=? AND value=?";
-            arValues.addElement(it->first); 
-            arValues.addElement(strSrcID);
-            arValues.addElement(it->second);
-        }
+				sql += "SELECT object FROM object_values WHERE attrib=? AND source_id=? AND value=?";
+				arValues.addElement(it->first); 
+				arValues.addElement(strSrcID);
+				arValues.addElement(it->second);
+			}
+		}
     }else
     {
-        for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
-        {
-            if (it != hashCond.begin())
-                sql += " AND ";
-            sql += it->first + "=?" ;
-            arValues.addElement(it->second);
-        }
+		sql = "SELECT object FROM " + src_name;		
+		if (hashCond.size() != 0) 
+		{
+			sql += " WHERE ";
+			for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
+			{
+				if (it != hashCond.begin())
+					sql += " AND ";
+				sql += it->first + "=?" ;
+				arValues.addElement(it->second);
+			}
+		}
     }
 
     DBResult( res1, db.executeSQLEx(sql.c_str(), arValues ) );
@@ -322,6 +333,36 @@ unsigned long rho_syncclient_find_first(const char* szModel, unsigned long hash 
     return rhom_find( szModel, hash, 1 );
 }
 
+void rho_syncclient_start_bulkupdate(const char* szModel)
+{
+    String src_name = szModel;
+    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name) );
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+    String db_partition = res.getStringByIdx(0);
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+	
+    db.startTransaction();
+}
+	
+void rho_syncclient_stop_bulkupdate(const char* szModel)
+{
+    String src_name = szModel;
+    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name) );
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+    String db_partition = res.getStringByIdx(0);
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+	
+    db.endTransaction();
+}
+	
 void rho_syncclient_itemdestroy( const char* szModel, unsigned long hash )
 {
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);

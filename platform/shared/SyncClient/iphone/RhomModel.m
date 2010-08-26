@@ -49,11 +49,17 @@
     rho_syncclient_create_object([name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
 								 item);
     const char* szValue = rho_syncclient_hash_get(item, "object");
-	[data setValue: [NSString stringWithUTF8String: szValue] forKey:@"object"];
+	if ( szValue )
+		[data setValue: [NSString stringWithUTF8String: szValue] forKey:@"object"];
+	else
+		[data setValue: @"" forKey:@"object"];
 	
     szValue = rho_syncclient_hash_get(item, "source_id");
-	[data setValue: [NSString stringWithUTF8String: szValue] forKey:@"source_id"];
-
+	if ( szValue )
+		[data setValue: [NSString stringWithUTF8String: szValue] forKey:@"source_id"];
+	else 
+		[data setValue: @"" forKey:@"source_id"];
+	
 	rho_syncclient_hash_delete(item);
 }
 
@@ -103,13 +109,16 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 - (NSMutableArray *) find_all: (NSDictionary *)cond
 {
     unsigned long condhash = rho_syncclient_hash_create();
-	for (NSString* key in cond) 
+	if ( cond )
 	{
-		rho_syncclient_hash_put(condhash, 
+		for (NSString* key in cond) 
+		{
+			rho_syncclient_hash_put(condhash, 
 								[key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
 								[[cond objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
 								);
-	}	
+		}	
+	}
 	
     unsigned long items = rho_syncclient_find_all([name cStringUsingEncoding:[NSString defaultCStringEncoding]], condhash );
     rho_syncclient_hash_delete(condhash);
@@ -163,6 +172,16 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 		item );
 	
     rho_syncclient_hash_delete(item);		
+}
+
+- (void) startBulkUpdate
+{
+	rho_syncclient_start_bulkupdate([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+}
+
+- (void) stopBulkUpdate
+{
+	rho_syncclient_stop_bulkupdate([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
 @end
