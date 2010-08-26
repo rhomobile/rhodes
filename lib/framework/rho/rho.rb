@@ -799,7 +799,7 @@ module SyncEngine
 
         if args[:search_params]
             args[:search_params].each do |key,value|
-              searchParams += '&' + "conditions[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
+              searchParams += '&' + "search[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
               callbackParams += '&' + "search_params[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
             end  
         end
