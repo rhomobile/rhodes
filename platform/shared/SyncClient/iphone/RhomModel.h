@@ -28,4 +28,8 @@
 - (NSMutableArray *) find_all: (NSDictionary *)cond;
 - (void) save: (NSDictionary *)data;
 - (void) destroy: (NSDictionary *)data;
+
+- (void) startBulkUpdate;
+- (void) stopBulkUpdate;
+
 @end
