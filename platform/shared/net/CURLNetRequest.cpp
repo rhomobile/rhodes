@@ -634,7 +634,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                         }
                         else {
                             if (e == 0) {
-                                RAWLOG_INFO("No activity on sockets, check them again");
+                                RAWTRACE("No activity on sockets, check them again");
                                 noactivity += CHUNK;
                             }
                             else noactivity = 0;
