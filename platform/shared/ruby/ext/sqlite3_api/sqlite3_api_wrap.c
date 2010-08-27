@@ -20,6 +20,7 @@ extern int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sql
 extern void rho_db_lock(void* pDB);
 extern void rho_db_unlock(void* pDB);
 extern int  rho_db_is_table_exist(void* pDB, const char* szTableName);
+extern VALUE ruby_db_execute(int argc, VALUE *argv, VALUE self);
 
 static VALUE db_allocate(VALUE klass)
 {
@@ -143,14 +144,14 @@ static VALUE db_unlock(int argc, VALUE *argv, VALUE self){
 static VALUE* getColNames(sqlite3_stmt* statement, int nCount)
 {
     int nCol = 0;
-    VALUE* res = malloc(sizeof(VALUE)*nCount);
-
+    VALUE* res = (VALUE*)malloc(sizeof(VALUE)*nCount);
+	
 	for(;nCol<nCount;nCol++)
     {
 		const char* szColName = sqlite3_column_name(statement,nCol);
 		res[nCol] = rb_str_new2(szColName);
     }
-
+	
     return res;
 }
 
@@ -158,14 +159,14 @@ static VALUE db_destroy_tables(int argc, VALUE *argv, VALUE self)
 {
 	void **ppDB = NULL;		
     int rc = 0;
-
+	
 	if ((argc < 2) || (argc > 2))
 		rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc);
-
+	
 	Data_Get_Struct(self, void *, ppDB);
-
+	
     rc = rho_db_destroy_tables(*ppDB, argv[0], argv[1]);
-
+	
     return INT2NUM(rc);
 }
 
@@ -174,15 +175,15 @@ static VALUE db_is_table_exist(int argc, VALUE *argv, VALUE self)
 	void **ppDB = NULL;		
     int rc = 0;
     const char * szTableName = 0;
-
+	
 	if ((argc < 1) || (argc > 1))
 		rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc);
-
+	
 	Data_Get_Struct(self, void *, ppDB);
     szTableName = RSTRING_PTR(argv[0]);
-
+	
     rc = rho_db_is_table_exist(*ppDB, szTableName);
-
+	
     return rc ? Qtrue : Qfalse;
 }
 
@@ -190,14 +191,14 @@ static VALUE db_is_ui_waitfordb(int argc, VALUE *argv, VALUE self)
 {
 	void **ppDB = NULL;		
     int rc = 0;
-
+	
 	if (argc > 0)
 		rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc);
-
+	
 	Data_Get_Struct(self, void *, ppDB);
-
+	
     rc = rho_db_is_ui_waitfordb(*ppDB);
-
+	
     return rc == 0 ? Qfalse : Qtrue;
 }
 
@@ -231,11 +232,14 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     }
     else
     {
-        //nRes = rho_db_prepare_statement(*ppDB, sql, -1, &statement);
-        nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL);
+        rho_db_lock(*ppDB);
+
+        nRes = rho_db_prepare_statement(*ppDB, sql, -1, &statement);
+        //nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL);
         if ( nRes != SQLITE_OK)
         {
             szErrMsg = (char *)sqlite3_errmsg(db);
+            rho_db_unlock(*ppDB);
 
             rb_raise(rb_eArgError, "could not prepare statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
         }
@@ -276,7 +280,6 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
             }
         }
 
-        rho_db_lock(*ppDB);
 	    while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
 		    int nCount = sqlite3_data_count(statement);
 		    int nCol = 0;
@@ -317,7 +320,9 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
     }
 
     if ( statement )
-        sqlite3_finalize(statement);
+        //sqlite3_finalize(statement);
+        sqlite3_reset(statement);
+
     if ( colNames )
         free(colNames);
 

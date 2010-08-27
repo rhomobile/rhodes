@@ -51,10 +51,7 @@
 }
 
 - (UIView*)getView {
-	//UIView* view = [[UIView alloc] init];
-	//view.backgroundColor = [UIColor redColor];
-	//return view;
-	return mNativeView->getView();
+	return ((UIView*)mNativeView->getView());
 }
 - (void)navigate:(NSString*)url {
 	mNativeView->navigate([url UTF8String]);

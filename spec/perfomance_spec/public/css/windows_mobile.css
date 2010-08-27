@@ -1,0 +1,212 @@
+body {
+    margin: 0;
+    width:100%;
+    height:100%;
+    font-family: tahoma;
+}
+
+/* page title */
+div#pageTitle {
+    display:none;
+}
+
+/* toolbar */
+div#toolbar {
+	width:100%;
+	height: 30px;
+	background: black;
+	border-bottom:1px solid gray;
+}
+div#toolbar a {
+    text-decoration:none;
+    color: white;
+    font-weight: bold;
+}
+
+div#toolbar div#leftItem,div#toolbar div#rightItem {
+    margin-top:6px;
+}
+div#toolbar div#leftItem {
+    float:left;
+    width: 40px;
+    margin-left:5px;
+}
+div#toolbar div#rightItem {
+    float:right;
+    text-align: right;
+    width: 40px;
+    margin-right:5px;
+}
+
+div#toolbar .noButton {
+    display:hidden;
+}
+
+
+/* content */
+div#content {
+	width: 100%;
+	height: 100%;
+	padding:0;
+	margin:0;
+}
+
+div#content h2.groupTitle{
+	width:inherit;
+	margin: 0;
+	padding: 4px;
+	margin:0;
+	font-size:10px;
+	color:white;
+	background-color:black;
+}
+
+
+/* Lists */
+div#content ul {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+div#content ul li {
+    list-style-type:none;
+    height: 30px;
+    width: 100%;
+    border-bottom: 1px solid black;
+    margin:0;
+	padding:0;
+    overflow: hidden;
+	clear:both;
+}
+
+div#content ul li a span.title {
+  	margin: 0 5px 0 5px;
+    padding: 0;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 30px;
+    height: 30px;
+    display:block;
+}
+
+div#content ul li a {
+    text-decoration:none;
+    display:block;
+    color: black;
+    height:30px;
+    line-height:30px;
+}
+
+div#content ul li a span.disclosure_indicator {
+    display:none;
+    height:0;
+    visibility:hidden;
+}
+
+div#content ul li div {
+    width: 45%;
+    line-height:30px;
+    margin: 0 5px;
+}
+div#content ul li div.itemLabel {
+    float:left;
+    font-weight:bold;
+}
+div#content ul li div.itemValue {
+    float: right;
+    text-align:right;
+}
+
+
+/* Settings */
+
+div#content ul#settings li {
+	height:60px;
+}
+div#content ul#settings li div {
+  line-height:60px;
+	margin:0;
+}
+
+div#content ul#settings li span.clientID {
+    font-size:60%;
+    float:right;
+		display:block;
+		height:20px;
+}
+div#content ul#settings li.alertMessage{
+    text-align: center;
+}
+div#content ul#settings li.alertMessage span.message{
+    color: red;
+    line-height: 60px;
+}
+
+div#content ul#settings li div.itemLabel span.title {
+	padding-top:5px;
+}
+/* reset */
+div#content div#reset  {
+    padding:10px;
+}
+
+/* forms */
+div#content form {
+    margin: 0;
+    padding:0;
+}
+
+div#content form h4 {
+    background-color:black;
+    color:white;
+    display:block;
+    padding: 5px;
+    margin:0;
+}
+
+
+div#content form ul {
+    margin: 0;
+    padding:0;
+}
+
+div#content form ul li {
+    height: 40px;
+}
+div#content form ul li.textarea {
+		height:110px;
+}
+div#content form ul li label {
+    float:left;
+    margin: 10px 0 0 5px;
+    width: 40%;
+
+}
+
+div#content form ul li input {
+   float:right;
+   margin: 10px 5px 0 0;
+   width: 40%;
+}
+div#content form ul li input[type="checkbox"] {
+   float:right;
+   margin: 10px 10px 0 0;
+   width: 15px;
+}
+div#content form ul li input[type="radio"] {
+   float:right;
+   margin: 10px 10px 0 0;
+   width: 15px;
+}
+
+div#content form select,
+div#content form textarea{
+    float:right;
+    margin:10px;
+}
+div#content form input[type="submit"] {
+    float:right;
+    width: 50px;
+		margin: 10px 10px 0 0;
+}
