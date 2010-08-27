@@ -10,7 +10,6 @@
 		46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46056D151031DC7E00C21967 /* datetimepicker_wrap.c */; };
 		46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */; };
 		46AF502F103DE480006E02E1 /* nativebar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46AF502D103DE480006E02E1 /* nativebar_wrap.c */; };
-		5C40CF381226FCB4007298DA /* sqlite3_api_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C40CF371226FCB4007298DA /* sqlite3_api_wrap.cpp */; };
 		5C40CF66122703E6007298DA /* sqlite3_api_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C40CF65122703E6007298DA /* sqlite3_api_wrap.c */; };
 		5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527B0FD3E3C100CB43FD /* rhoruby.c */; };
 		5C76527F0FD3E3C100CB43FD /* rhoruby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C76527C0FD3E3C100CB43FD /* rhoruby.h */; };
@@ -123,7 +122,6 @@
 		46056D151031DC7E00C21967 /* datetimepicker_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = datetimepicker_wrap.c; path = ../../shared/ruby/ext/datetimepicker/datetimepicker_wrap.c; sourceTree = SOURCE_ROOT; };
 		46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoconf_wrap.c; path = ../../shared/ruby/ext/rhoconf/rhoconf_wrap.c; sourceTree = SOURCE_ROOT; };
 		46AF502D103DE480006E02E1 /* nativebar_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nativebar_wrap.c; sourceTree = "<group>"; };
-		5C40CF371226FCB4007298DA /* sqlite3_api_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_api_wrap.cpp; path = ext/sqlite3_api/sqlite3_api_wrap.cpp; sourceTree = "<group>"; };
 		5C40CF65122703E6007298DA /* sqlite3_api_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_api_wrap.c; path = ext/sqlite3_api/sqlite3_api_wrap.c; sourceTree = "<group>"; };
 		5C76527B0FD3E3C100CB43FD /* rhoruby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoruby.c; path = ext/rho/rhoruby.c; sourceTree = "<group>"; };
 		5C76527C0FD3E3C100CB43FD /* rhoruby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoruby.h; path = ext/rho/rhoruby.h; sourceTree = "<group>"; };
@@ -528,7 +526,6 @@
 			isa = PBXGroup;
 			children = (
 				5C40CF65122703E6007298DA /* sqlite3_api_wrap.c */,
-				5C40CF371226FCB4007298DA /* sqlite3_api_wrap.cpp */,
 			);
 			name = sqlite3;
 			sourceTree = "<group>";
@@ -758,7 +755,6 @@
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
 				FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */,
-				5C40CF381226FCB4007298DA /* sqlite3_api_wrap.cpp in Sources */,
 				5C40CF66122703E6007298DA /* sqlite3_api_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
