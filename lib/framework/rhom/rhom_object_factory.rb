@@ -283,7 +283,6 @@ module Rhom
                         end
                     end
                     
-                    srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                     strLimit = nil
                     if !order_attr 
                         strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
@@ -293,6 +292,8 @@ module Rhom
                     db = ::Rho::RHO.get_src_db(get_source_name)
                     listObjs = []
                     if op == 'OR' && condition_hash.length > 1
+                        srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+					
                         mapObjs = {}
                         bStop = false 
                         condition_hash.each do |key,value|
@@ -451,7 +452,7 @@ module Rhom
                       #attribs = SyncEngine.get_src_attrs(nSrcID)
                     end
 
-                    srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                    #srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
 
                     db = ::Rho::RHO.get_src_db(get_source_name)
                     db.lock_db
@@ -504,13 +505,15 @@ module Rhom
                                 #new_obj.vars.merge!({:object=>"#{obj['object']}"})
                                 
                                 if attribs && obj['attrib']
-                                    new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
+                                    #new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
+									new_obj.vars[obj['attrib'].to_sym()] = obj['value'] if obj['value']
                                 end
                                 
                                 listAttrs.each do |attrValHash|
                                   attrName = attrValHash['attrib']
                                   attrVal = attrValHash['value']
-                                  new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
+                                  #new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
+								  new_obj.vars[attrName.to_sym()] = attrVal if attrVal
                                   
                                   #nonExistAttrs.delete(attrName) if nonExistAttrs
                                 end
@@ -647,7 +650,7 @@ module Rhom
                     if !is_schema_source()
                       objects = nil
                       if !condition_hash && !condition_str
-                        srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                        #srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                         values = [] 
 
                         if args.first.is_a?(String)                      
