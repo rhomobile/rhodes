@@ -90,7 +90,7 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
     const char * szErrMsg = sqlite3_errmsg(m_dbHandle);
     int nErrCode = sqlite3_errcode(m_dbHandle);
 
-    res.setErrorCode(nErrCode);
+    res.getDBError().setError(nErrCode, szErrMsg);
     if ( nErrCode == SQLITE_CONSTRAINT && res.getReportNonUnique() )
         return true;
 
@@ -447,9 +447,22 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     open( dbOldName, m_strDbVer, false );
 }
 
-void CDBAdapter::createSchema()
+void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
 {
     char* errmsg = 0;
+    int rc = sqlite3_exec(m_dbHandle, szSql,  NULL, NULL, &errmsg);
+	
+    if ( rc != SQLITE_OK )
+        LOG(ERROR)+"execute batch failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
+	
+	error.setError(rc, errmsg);
+	
+    if ( errmsg )
+        sqlite3_free(errmsg);
+}
+	
+void CDBAdapter::createSchema()
+{
     CFilePath oPath(m_strDbPath);
 
     String strSqlScript;
@@ -461,15 +474,10 @@ void CDBAdapter::createSchema()
         return;
     }
 
-    int rc = sqlite3_exec(m_dbHandle, strSqlScript.c_str(),  NULL, NULL, &errmsg);
-
-    if ( rc != SQLITE_OK )
-        LOG(ERROR)+"createSchema failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
-
-    if ( errmsg )
-        sqlite3_free(errmsg);
-
-    if ( rc == SQLITE_OK )
+	CDBError dbError;
+	executeBatch(strSqlScript.c_str(), dbError);
+	
+    if ( dbError.isOK() )
         createTriggers();
 }
 
