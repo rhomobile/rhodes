@@ -544,7 +544,7 @@ int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt *
     {
         rc = sqlite3_prepare_v2(m_dbHandle, szSql, nByte, ppStmt, NULL);
         if ( rc == SQLITE_OK )
-            m_mapStatements.put(szSql, st);
+            m_mapStatements.put(szSql, *ppStmt);
     }
 
     return rc;
