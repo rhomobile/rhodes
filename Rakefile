@@ -327,7 +327,7 @@ def common_bundle_start(startdir, dest)
 
   chdir File.join($srcdir,'apps')
 
-  replace_platform = $config['blatform']
+  replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
   Dir.glob("**/*.#{replace_platform}.*").each do |file|
     oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
