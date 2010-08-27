@@ -52,7 +52,7 @@ module Rhom
               def initialize(obj=nil)
                 @vars = {}
                 self.rhom_init(@vars)
-                self.vars[:object] = "#{generate_id()}"
+                self.vars[:object] = "#{generate_id()}" unless obj && obj[:object]
                 self.vars[:source_id] = self.get_inst_source_id.to_i
                 
                 if obj
@@ -239,6 +239,39 @@ module Rhom
                     sql
                 end
 
+                def makeCondWhereEx(key,value,srcid_value)
+                    sql = ""
+
+					vals = []
+
+                    val_op = '='
+                    val_func = ''
+                    attrib_name = ''
+                    if key.is_a?(Hash)
+                        val_op = key[:op] if key[:op] 
+                        val_func = key[:func] if key[:func] 
+                        attrib_name = key[:name] if key[:name] 
+                    else
+                        attrib_name = key
+                    end
+                    
+                    sql << "attrib=?"
+					vals << attrib_name
+                    sql << " AND source_id=?"
+					vals << srcid_value					
+                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                    
+                    if val_op == 'IN' or val_op == 'in'
+                        sql << val_op + " ( ? )"
+						vals << value						
+                    else
+                        sql << val_op + " ?"
+						vals << value
+                    end
+
+                    return sql, vals
+                end
+
                 def find_objects(condition_hash, op, limit, offset, order_attr)
                     nulls_cond = {}
                     if op == 'AND'
@@ -250,16 +283,17 @@ module Rhom
                         end
                     end
                     
-                    srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                     strLimit = nil
                     if !order_attr 
                         strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
                     end
                     
-                    puts "non-null select start"
+                    #puts "non-null select start"
                     db = ::Rho::RHO.get_src_db(get_source_name)
                     listObjs = []
                     if op == 'OR' && condition_hash.length > 1
+                        srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+					
                         mapObjs = {}
                         bStop = false 
                         condition_hash.each do |key,value|
@@ -283,22 +317,28 @@ module Rhom
                         
                     else
                         sql = ""
+						vals = []
                         if condition_hash.length > 0
                             condition_hash.each do |key,value|
                                 sql << "\nINTERSECT\n" if sql.length > 0 
                                 sql << "SELECT object FROM object_values WHERE \n"
-                                sql << makeCondWhere(key,value,srcid_value)
+								
+                                sqlCond, valCond = makeCondWhereEx(key,value,get_source_id)
+								sql << sqlCond
+								vals = vals + valCond
+								
                                 sql << strLimit if strLimit
                             end
                         else
                             sql << "SELECT distinct( object ) FROM object_values WHERE \n"
-                            sql << "source_id=" + srcid_value 
+                            sql << "source_id=?"
+							vals << get_source_id
                             sql << strLimit if strLimit
                         end
                                             
-                        listObjs = db.execute_sql(sql)
+                        listObjs = db.execute_sql(sql, vals)
                     end
-                    puts "non-null select end : #{listObjs.length}"
+                    #puts "non-null select end : #{listObjs.length}"
                     
                     nIndex = -1
                     res = []
@@ -370,7 +410,7 @@ module Rhom
                 end
                                 
                 def find_bycondhash(args, &block)                
-                    puts 'find_bycondhash start'
+                    #puts 'find_bycondhash start'
                     
                     condition_hash = {}
                     select_arr = nil
@@ -412,7 +452,7 @@ module Rhom
                       #attribs = SyncEngine.get_src_attrs(nSrcID)
                     end
 
-                    srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                    #srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
 
                     db = ::Rho::RHO.get_src_db(get_source_name)
                     db.lock_db
@@ -460,18 +500,20 @@ module Rhom
                                 
                                 #puts "get attribs: #{sql}"
                                 listAttrs = sql.length > 0 ? db.execute_sql(sql,values) : []
-                                
-                                new_obj = self.new
-                                new_obj.vars.merge!({:object=>"#{obj['object']}"})
+								
+                                new_obj = self.new({:object=>"#{obj['object']}"})
+                                #new_obj.vars.merge!({:object=>"#{obj['object']}"})
                                 
                                 if attribs && obj['attrib']
-                                    new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
+                                    #new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
+									new_obj.vars[obj['attrib'].to_sym()] = obj['value'] if obj['value']
                                 end
                                 
                                 listAttrs.each do |attrValHash|
                                   attrName = attrValHash['attrib']
                                   attrVal = attrValHash['value']
-                                  new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
+                                  #new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
+								  new_obj.vars[attrName.to_sym()] = attrVal if attrVal
                                   
                                   #nonExistAttrs.delete(attrName) if nonExistAttrs
                                 end
@@ -504,7 +546,7 @@ module Rhom
                         ret_list = ret_list.slice(offset,limit)
                     end
 
-                    puts "find_bycondhash end: #{ret_list.length} objects"
+                    #puts "find_bycondhash end: #{ret_list.length} objects"
 
                     return nCount if args.first == :count
 
@@ -520,7 +562,7 @@ module Rhom
                 def find(*args, &block)
                   raise ::Rhom::RecordNotFound if args[0].nil? or args.length == 0
 
-                  puts "Inside find: args - #{args.inspect}"
+                  #puts "Inside find: args - #{args.inspect}"
                   
                   ret_list = []
                   conditions = {}
@@ -608,7 +650,7 @@ module Rhom
                     if !is_schema_source()
                       objects = nil
                       if !condition_hash && !condition_str
-                        srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
+                        #srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                         values = [] 
 
                         if args.first.is_a?(String)                      
@@ -625,21 +667,21 @@ module Rhom
                           else
                               #it is more effective to use old find here
                               if attribs && attribs != '*' && attribs.length() != 0 && !args[1][:dont_ignore_missed_attribs]
-                                  sql << "SELECT object FROM object_values WHERE source_id=? AND attrib=?"
-                                  values << get_source_id
-                                  values << attribs[0]
+                                  #sql << "SELECT object FROM object_values WHERE source_id=? AND attrib=?"
+                                  #values << get_source_id
+                                  #values << attribs[0]
                               else 
-                                  sql << "SELECT distinct(object) FROM object_values WHERE source_id=" << srcid_value 
+                                  #sql << "SELECT distinct(object) FROM object_values WHERE source_id=" << srcid_value 
                               end    
                           end
                           
                           if sql.length() > 0                          
                             sql << strLimit if strLimit
 
-                            puts "Database query start" # : #{sql}; #{values}"
+                            #puts "Database query start" # : #{sql}; #{values}"
                             objects = db.execute_sql(sql, values)
 
-                            puts "Database query end" #: #{objects}"
+                            #puts "Database query end" #: #{objects}"
                           end
                                                   
                         end
@@ -674,6 +716,8 @@ module Rhom
                                 end    
                             end    
                          end
+						 
+                         #puts "Processing rhom objects end1, #{list.length} objects"
                       end
                             
                       if objects.nil?
@@ -730,9 +774,9 @@ module Rhom
                     if args.first != :count
                         list.each do |rowhash|
                           # always return object field with surrounding '{}'
-                          rowhash[:object] = "#{rowhash['object']}"
+                          #rowhash[:object] = "#{rowhash['object']}"
                           #rowhash[:source_id] = nSrcID
-                          new_obj = self.new
+                          new_obj = self.new({:object=>"#{rowhash['object']}"})
                           #new_obj.vars.merge!(rowhash)
                           
                           rowhash.each do |attrName, attrVal|
@@ -742,7 +786,7 @@ module Rhom
                           ret_list << new_obj
                         end
                         
-                        puts "Processing rhom objects end, #{ret_list.length} objects"
+                        #puts "Processing rhom objects end, #{ret_list.length} objects"
                     end
                   else
                       puts "Processing rhom objects end, no attributes found."

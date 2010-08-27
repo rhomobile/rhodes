@@ -245,7 +245,8 @@ public:
 
     DBResultPtr executeSQLEx( const char* szSt, Vector<String>& arValues);
     DBResultPtr executeSQL( const char* szSt);
-
+	void        executeBatch(const char* szSql, CDBError& error);
+	
     void startTransaction();
     void endTransaction();
     void rollback();
@@ -253,8 +254,11 @@ public:
     void setBulkSyncDB(String fDataName);
 
     void createDeleteTrigger(const String& strTable);
-private:
+	
+    virtual DBResultPtr prepareStatement( const char* szSt );
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
+	
+private:
 
     void checkDBVersion(String& strVer);
     CDBVersion readDBVersion();//throws Exception
@@ -264,8 +268,6 @@ private:
     boolean checkDbError(int rc);
     boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);
     sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
-
-    virtual DBResultPtr prepareStatement( const char* szSt );
 
     boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
     void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);
