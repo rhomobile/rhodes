@@ -36,6 +36,7 @@ platform/shared/ruby/ext/rhoconf/rhoconf_wrap.c
 platform/shared/ruby/ext/ringtones/ringtones_wrap.c
 platform/shared/ruby/ext/socket/socket.c
 platform/shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c
+platform/shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.cpp
 platform/shared/ruby/ext/stringio/stringio.c
 platform/shared/ruby/ext/strscan/strscan.c
 platform/shared/ruby/ext/syncengine/syncengine_wrap.c
