@@ -273,7 +273,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
     if (!isSchemaSrc)
     {
 		if (hashCond.size() == 0) {
-			sql = "SELECT object FROM object_values WHERE source_id=?";
+			sql = "SELECT distinct(object) FROM object_values WHERE source_id=?";
 			arValues.addElement(strSrcID);
 		}else
 		{
