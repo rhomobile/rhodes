@@ -1,0 +1,41 @@
+/* Common CSS */
+
+a{
+	text-decoration:none;
+}
+
+div#content {
+    width: inherit;
+    height: 100%;
+}
+
+/* Toolbar */
+
+div#toolbar .noButton {
+    display:hidden;
+}
+
+
+/* Lists */
+
+div#content ul {
+    -webkit-padding-start: 0;
+    margin: 0;
+		padding:0;
+		list-style-type:none;
+}
+
+div#content ul li {
+    overflow:hidden;
+		clear:both;
+}
+
+div#content ul li span {
+    display:block;
+}
+
+
+div#content ul#settings li div.itemLabel span.title{
+  padding: 0;
+	margin:0;
+}
