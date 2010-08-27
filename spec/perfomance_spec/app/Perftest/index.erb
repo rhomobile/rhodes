@@ -1,0 +1,21 @@
+<div class="toolbar">
+	<h1 id="pageTitle">
+		Perfomance test(1000 records)
+	</h1>
+</div>
+
+<ul id="home" selected="true" title="System Tests">
+    <li><a href="/app/Perftest/start">Start tests...</a></li>
+</ul>
+
+<% if @test_results %>
+<%@color = "#00ff00"%>
+
+<ul id="perftest" title="PerfomanceTests" selected="true">
+	<% @test_results.each do |result| %>
+		<li style="color:<%=@color%>"><%=result['name']%> (ms): <%=result['time']%></li>
+    <% end %>
+</ul>
+
+<% end %>
+
