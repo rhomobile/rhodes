@@ -10,11 +10,15 @@
 #ifndef _RHO_NATIVE_VIEW_MANAGER_
 #define _RHO_NATIVE_VIEW_MANAGER_
 
-class UIView;
 
 class NativeView {
 public:
-	virtual UIView* getView() = 0;
+	// that function must return native object provided view functionality :
+	// UIView* for iPhone
+	// jobject for Android - jobect must be android.view.View class type
+	// HWND for Windows Mobile 
+	virtual void* getView() = 0;
+	
 	virtual void navigate(const char* url) = 0;
 };
 

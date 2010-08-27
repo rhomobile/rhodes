@@ -241,7 +241,6 @@
 		FA291E9711FF2EF70096AC39 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature/SignatureViewController.m; sourceTree = "<group>"; };
 		FA4981B311FFC53C00488CB2 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature/SignatureView.h; sourceTree = "<group>"; };
 		FA4981B411FFC53C00488CB2 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature/SignatureView.m; sourceTree = "<group>"; };
-		FAD45E8C122566CB00141873 /* RhoNativeViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoNativeViewManager.h; sourceTree = "<group>"; };
 		FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RhoNativeViewManager.mm; sourceTree = "<group>"; };
 		FAD45EAF122571EE00141873 /* RhoNativeViewManagerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoNativeViewManagerOC.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -488,7 +487,6 @@
 				BDB373651144220F006EA6DA /* SimpleMainView.m */,
 				BD38E753115D1AAC001CE05C /* TabbedMainView.h */,
 				BD38E754115D1AAC001CE05C /* TabbedMainView.m */,
-				FAD45E8C122566CB00141873 /* RhoNativeViewManager.h */,
 				FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */,
 				FAD45EAF122571EE00141873 /* RhoNativeViewManagerOC.h */,
 			);
