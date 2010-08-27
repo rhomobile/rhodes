@@ -80,9 +80,11 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean m_bNoThreaded = false;
     int m_nErrCode = RhoRuby.ERR_NONE;
     String m_strError = "";
+    boolean m_bIsSearch;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
+    boolean isSearch(){ return m_bIsSearch; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel(); } }
@@ -130,6 +132,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     void prepareSync(int eState, SourceID oSrcID)throws Exception
     {
         setState(eState);
+        m_bIsSearch =  eState == esSearch;
         m_bStopByUser = false;
         m_nErrCode = RhoRuby.ERR_NONE;
         m_strError = "";
@@ -273,7 +276,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
 		            {
 		                nVersion = oSrcArr.getCurItem().getInt("version");
-		                oJsonArr.next();
+		                oSrcArr.next();
 		            }
 		
 		            if ( nVersion != getProtocol().getVersion() )
@@ -286,6 +289,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 		                continue;
 		            }
 		
+		            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("token"))
+		            {
+		                oSrcArr.next();
+		            }
+		            
 		            if ( !oSrcArr.getCurItem().hasName("source") )
 		            {
 		                LOG.ERROR( "Sync server send search data without source name." );

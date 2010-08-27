@@ -504,15 +504,15 @@ class SyncSource
 	        return;
 	    }
 
-	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("source") )
-	    {
-	        //skip it. it uses in search only
-	        oJsonArr.next();
-	    }
-
 	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("token"))
 	    {
 	        processToken(oJsonArr.getCurItem().getUInt64("token"));
+	        oJsonArr.next();
+	    }
+
+	    if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("source") )
+	    {
+	        //skip it. it uses in search only
 	        oJsonArr.next();
 	    }
 
