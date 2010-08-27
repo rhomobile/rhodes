@@ -382,7 +382,7 @@ public class SyncNotify {
 		
 		if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
 		{
-			if ( getSync().getState() != SyncEngine.esSearch )
+			if ( !getSync().isSearch() )
 			{
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
 					strMessage = RhoRuby.getMessageText("sync_failed_for") + src.getName() + ".";
@@ -397,7 +397,7 @@ public class SyncNotify {
 	SyncNotification getSyncNotifyBySrc(SyncSource src)
 	{
 	    SyncNotification pSN = null;
-		if ( getSync().getState() == SyncEngine.esSearch )
+		if ( getSync().isSearch() )
 			pSN = m_pSearchNotification;
 		else
 	    {
@@ -517,7 +517,7 @@ public class SyncNotify {
 
 	    synchronized(m_mxSyncNotifications)
 	    {
-	    	if ( getSync().getState() == SyncEngine.esSearch )
+	    	if ( getSync().isSearch() )
 	            m_pSearchNotification = null;
 	        else
 	            m_mapSyncNotifications.remove(src.getID());
