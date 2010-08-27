@@ -9,12 +9,30 @@ namespace rho{
 namespace db{
 
 class CDBAdapter;
+	
+class CDBError
+{
+	int m_rc;
+	String m_strError;
+		
+public:
+	CDBError() : m_rc(SQLITE_OK){}
+	
+	void setError( int rc, const char* szError){ m_rc = rc; m_strError = szError ? szError : ""; }
+	boolean isOK(){ return m_rc == SQLITE_OK; }
+	boolean isSuccessfulCode(){return m_rc == SQLITE_OK || m_rc == SQLITE_ROW || m_rc == SQLITE_DONE; }
+		
+	int getCode(){ return m_rc;}
+	const String& getError(){ return m_strError;}
+};	
+	
 class CDBResult
 {
     CDBAdapter* m_pDB;
     sqlite3_stmt* m_dbStatement;
     boolean m_bReportNonUnique;
-    int     m_nErrorCode;
+    CDBError m_dbError;
+	
 public:
     CDBResult(sqlite3_stmt* st,CDBAdapter* pDB);
     CDBResult();
@@ -24,10 +42,12 @@ public:
     sqlite3_stmt* getStatement(){ return m_dbStatement; }
     boolean getReportNonUnique(){ return m_bReportNonUnique; }
     void setReportNonUnique(boolean bSet){ m_bReportNonUnique = bSet; }
-    boolean isNonUnique(){ return m_nErrorCode==SQLITE_CONSTRAINT; }
-    boolean isError(){ return m_nErrorCode!=SQLITE_OK; }
-    int     getErrorCode(){ return m_nErrorCode; }
-    void    setErrorCode(int nError){ m_nErrorCode=nError; }
+    boolean isNonUnique(){ return m_dbError.getCode()==SQLITE_CONSTRAINT; }
+	
+	CDBError& getDBError(){ return m_dbError; }
+//    boolean isError(){ return m_dbError.getCode()!=SQLITE_OK; }
+//    int     getErrorCode(){ return m_dbError.getCode(); }
+//    void    setErrorCode(int nError){ m_nErrorCode=nError; }
 
     virtual bool isEnd(){ return m_dbStatement == null; }
     void next()

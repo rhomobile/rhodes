@@ -1,5 +1,5 @@
 --- 
-name: phone_spec
+name: perfomance_spec
 bbver: 5.0
 sdk: /Users/crystax/work/rhomobile/rhodes
 applog: rholog.txt
@@ -8,29 +8,15 @@ vendor: rhomobile
 sdkversion: 1.4
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 iphone: 
-  emulator: 4.0.2
-  sdk: iphonesimulator4.0
+  sdk: iphonesimulator3.0
   entitlements: ""
   codesignidentity: ""
   configuration: Debug
-  extensions: ["barcode"]
-  
 android:
   mapping: enabled
   capabilities:
     - network_state
     - pim
-    
-  extensions: ["barcode"]
-  
 wm:
-  extensions: ["barcode"]
-  
 bb:
-  extensions: ["barcode"]
-      
-capabilities:
-  - push
-     
-extensions: ["json", "rhoxml", "rhospec", "crypt"]  
 

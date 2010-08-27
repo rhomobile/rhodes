@@ -7,7 +7,7 @@ namespace db{
 CDBResult::CDBResult(sqlite3_stmt* st,CDBAdapter* pDB) : m_pDB(pDB), m_dbStatement(st)
 {
     m_bReportNonUnique=false;
-    m_nErrorCode=0;
+    //m_nErrorCode=0;
 
     if ( m_pDB )
         m_pDB->Lock();
@@ -16,7 +16,7 @@ CDBResult::CDBResult(sqlite3_stmt* st,CDBAdapter* pDB) : m_pDB(pDB), m_dbStateme
 CDBResult::CDBResult() : m_pDB(null), m_dbStatement(null)
 {
     m_bReportNonUnique=false;
-    m_nErrorCode=0;
+    //m_nErrorCode=0;
 }
 
 CDBResult::~CDBResult(void)
