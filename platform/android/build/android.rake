@@ -521,6 +521,8 @@ namespace "build" do
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
+      args << "-D__NEW__" if USE_STLPORT
+      args << "-I#{$stlport_includes}" if USE_STLPORT
 
       cc_build 'libruby', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1

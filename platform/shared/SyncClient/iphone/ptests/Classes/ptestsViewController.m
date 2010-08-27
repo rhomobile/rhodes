@@ -71,8 +71,25 @@
 	}	
 }
 
+- (void) testReadByOne
+{
+	for (int i = 0; i < nCount; i++) 
+	{
+		NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+		[cond setValue:[NSString stringWithFormat:@"Test%d", i] forKey:@"name"];							 
+		
+		NSMutableDictionary* item = [perftest find_first:cond];	
+		if (item) {
+			[item release];
+		}
+		
+		[cond release];
+	}	
+}
+
 - (void) testUpdate
 {
+	[perftest startBulkUpdate];		
 	for (int i = 0; i < nCount; i++) 
 	{
 		NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
@@ -94,6 +111,7 @@
 		[item release];		
 		[new_name release];				
 	}
+	[perftest stopBulkUpdate];	
 }
 
 - (void) testDelete
@@ -119,28 +137,37 @@
 	NSLog(@"starting test");	
 	double startTime;
 	NSString* result = [[NSString alloc]initWithString:@""];
-	NSArray* ops = [NSArray arrayWithObjects:@"create", @"read", @"update", @"delete", nil];
+	NSArray* ops = [NSArray arrayWithObjects:@"create", @"read all", @"read by one", @"update", @"delete", nil];
 	
 	[self beforeTests];
+	
+	result = [result stringByAppendingString:@"1000 records\n"];
+	
 	for(NSString* op in ops) 
 	{
 		startTime = CACurrentMediaTime();
-		NSLog(@"testing %@ records op", op);	
+		//NSLog(@"testing %@ records op", op);	
 		
 		//put calls to appropriate test methods here
 		//sleep(rand() % 2 + 1);
 		if ( [op isEqualToString:@"create"])
 			[self testCreate];
-		else if ( [op isEqualToString:@"read"])
+		else if ( [op isEqualToString:@"read all"])
 			[self testRead];
+		else if ( [op isEqualToString:@"read by one"])
+			[self testReadByOne];
 		else if ( [op isEqualToString:@"update"])
 			[self testUpdate];
 		else if ( [op isEqualToString:@"delete"])
 			[self testDelete];
 		
+//		result = [result stringByAppendingString:
+//				  [NSString stringWithFormat:@"- to %@ 1000 records took %f milisecons\n",
+//				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
 		result = [result stringByAppendingString:
-				  [NSString stringWithFormat:@"- to %@ 1000 records took %f milisecons\n",
+				  [NSString stringWithFormat:@"%@ (ms): %f\n",
 				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
+		
 	}
 	
 	NSLog(@"test is done");
