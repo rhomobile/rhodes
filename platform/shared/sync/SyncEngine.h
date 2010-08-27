@@ -47,6 +47,7 @@ private:
 	boolean m_bNoThreaded;
     int m_nErrCode;
     String m_strError;
+    boolean m_bIsSearch;
 
 public:
     CSyncEngine();
@@ -68,6 +69,7 @@ public:
 
     void setState(ESyncState eState){ m_syncState = eState; }
     ESyncState getState()const{ return m_syncState; }
+    boolean isSearch()const{ return m_bIsSearch; }
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); if(m_NetRequest) m_NetRequest->cancel();} }

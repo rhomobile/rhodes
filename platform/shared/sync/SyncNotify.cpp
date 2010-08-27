@@ -321,7 +321,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
 	
 	if( strMessage.length() > 0 || nErrCode != RHO_ERR_NONE)
 	{
-		if ( getSync().getState() != CSyncEngine::esSearch )
+		if ( !getSync().isSearch() )
         {
 	//		if ( src != null && strMessage.length() == 0 )
 	//			strMessage = RhoRuby.getMessageText("sync_failed_for") + (*src).getName() + ".";
@@ -336,7 +336,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
 CSyncNotify::CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
 {
     CSyncNotification* pSN = null;
-	if ( getSync().getState() == CSyncEngine::esSearch )
+	if ( getSync().isSearch() )
 		pSN = m_pSearchNotification;
 	else
     {
@@ -453,7 +453,7 @@ void CSyncNotify::clearNotification(CSyncSource* src)
 
     synchronized(m_mxSyncNotifications)
     {
-        if ( getSync().getState() == CSyncEngine::esSearch )
+        if ( getSync().isSearch() )
             m_pSearchNotification = null;
         else if ( src != null )
             m_mapSyncNotifications.remove( (*src).getID());

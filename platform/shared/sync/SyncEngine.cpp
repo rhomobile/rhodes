@@ -40,6 +40,7 @@ void CSyncEngine::initProtocol()
 void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
 {
     setState(eState);
+    m_bIsSearch =  eState == esSearch;
     m_bStopByUser = false;
     m_nErrCode = RHO_ERR_NONE;
     m_strError = "";
@@ -176,7 +177,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
             {
                 nVersion = oSrcArr.getCurItem().getInt("version");
-                oJsonArr.next();
+                oSrcArr.next();
             }
 
             if ( nVersion != getProtocol().getVersion() )
@@ -187,6 +188,11 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
                 m_nErrCode = RHO_ERR_UNEXPECTEDSERVERRESPONSE;
                 m_strError = resp.getCharData();
                 continue;
+            }
+
+            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("token"))
+            {
+                oSrcArr.next();
             }
 
             if ( !oSrcArr.getCurItem().hasName("source") )
