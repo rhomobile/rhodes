@@ -827,7 +827,7 @@ namespace rho {
 		
 	}
 	
-    /*static*/ String getRhoDBVersion()
+    /*static*/ String _CRhoAppAdapter::getRhoDBVersion()
 	{
 		return "1.0";
 	}
