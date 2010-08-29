@@ -25,7 +25,8 @@ static String getMessageText(const char* szName);
 static String getErrorText(int nError);
 static int    getErrorFromResponse(net::INetResponse& resp);
 static void   loadServerSources(const String& strSources);
-
+static String getRhoDBVersion();
+	
 };
 extern const _CRhoAppAdapter& RhoAppAdapter;
 }

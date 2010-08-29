@@ -5,7 +5,10 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#include "common/RhoAppAdapter.h"
+#ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
+#endif //RHO_NO_RUBY
 
 namespace rho{
 namespace db{
@@ -13,6 +16,7 @@ IMPLEMENT_LOGCLASS(CDBAdapter,"DB");
 HashtablePtr<String,CDBAdapter*> CDBAdapter::m_mapDBPartitions;
 
 using namespace rho::common;
+using namespace rho;	
 
 static int onDBBusy(void* data,int nTry)
 {
@@ -759,7 +763,7 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
     }
 
-    rho::String strVer = RhoRuby_getRhoDBVersion(); 
+    rho::String strVer = RhoAppAdapter.getRhoDBVersion(); 
     pDB->open(szDBPath,strVer, false);
 
     *ppDB = pDB;
