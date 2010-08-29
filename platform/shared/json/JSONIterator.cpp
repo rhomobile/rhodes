@@ -1,8 +1,9 @@
 #include "JSONIterator.h"
 
 #include "json/json.h"
+#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
-
+#endif //RHO_NO_RUBY
 #if defined(OS_WINCE) || defined (OS_WINDOWS)
 #define rho_atoi64 _atoi64
 #elif defined(OS_SYMBIAN)
