@@ -14,8 +14,7 @@ platform/shared/net/HttpServer.cpp
 platform/shared/net/URI.cpp
 platform/shared/net/ssl.cpp
 platform/shared/rubyext/GeoLocation.cpp
-platform/shared/rubyext/RhoRuby.cpp
+platform/shared/rubyext/RhoAppAdapter.cpp
 platform/shared/rubyext/System.cpp
-platform/shared/rubyext/RhoRuby.cpp
 platform/shared/statistic/RhoProfiler.cpp
 platform/shared/unzip/unzip.cpp
