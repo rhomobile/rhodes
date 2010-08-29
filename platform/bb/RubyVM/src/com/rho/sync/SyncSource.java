@@ -34,7 +34,7 @@ import java.util.Hashtable;
 
 import com.rho.FilePath;
 import com.rho.TimeInterval;
-import com.rho.RhoRuby;
+import com.rho.RhoAppAdapter;
 import com.rho.net.NetRequest.MultipartItem;
 
 class SyncSource
@@ -75,7 +75,7 @@ class SyncSource
     
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount, m_nAttribCounter=0;
     boolean m_bGetAtLeastOnePage = false;
-    int m_nErrCode = RhoRuby.ERR_NONE;
+    int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "";
     
 	//String m_strPushBody = "";
@@ -144,7 +144,7 @@ class SyncSource
         m_nTotalCount = 0;
         m_bGetAtLeastOnePage = false;
 
-        m_nErrCode = RhoRuby.ERR_NONE;
+        m_nErrCode = RhoAppAdapter.ERR_NONE;
         m_bSchemaSource = db.isTableExist(m_strName);
     }
 	
@@ -162,7 +162,7 @@ class SyncSource
         m_nTotalCount = 0;
         m_bGetAtLeastOnePage = false;
 
-        m_nErrCode = RhoRuby.ERR_NONE;
+        m_nErrCode = RhoAppAdapter.ERR_NONE;
 
         IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
         if ( !res.isEnd() )
@@ -204,7 +204,7 @@ class SyncSource
     
 	void sync() throws Exception
 	{
-    	getNotify().reportSyncStatus(RhoRuby.getMessageText("syncronizing") + getName() + "...", m_nErrCode, m_strError );
+    	getNotify().reportSyncStatus(RhoAppAdapter.getMessageText("syncronizing") + getName() + "...", m_nErrCode, m_strError );
     	
 	    TimeInterval startTime = TimeInterval.getCurrentTime();
 	    //m_bIsSearch = false;
@@ -326,7 +326,7 @@ class SyncSource
 	            if ( !resp.isOK() )
 	            {
 	                getSync().setState(SyncEngine.esStop);
-	                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+	                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
 	            }
 	        }else
 	        {
@@ -334,7 +334,7 @@ class SyncSource
 	            if ( !resp.isOK() )
 	            {
 	                getSync().setState(SyncEngine.esStop);
-	                m_nErrCode = RhoRuby.ERR_REMOTESERVER;
+	                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
 	            }
 	        }
 	    }
@@ -461,13 +461,13 @@ class SyncSource
 		        if ( !resp.isOK() )
 		        {
 		            getSync().stopSync();
-		            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+		            m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 		            m_strError = resp.getCharData();
 		            continue;
 		        }
 		    }catch(Exception exc)
 		    {
-		    	m_nErrCode = RhoRuby.getNetErrorCode(exc);
+		    	m_nErrCode = RhoAppAdapter.getNetErrorCode(exc);
 		    	throw exc;
 		    }
 
@@ -500,7 +500,7 @@ class SyncSource
 	        LOG.ERROR("Sync server send data with incompatible version. Client version: " + getProtocol().getVersion() +
 	            "; Server response version: " + nVersion + ". Source name: " + getName() );
 	        getSync().stopSync();
-	        m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+	        m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
 	        return;
 	    }
 
@@ -544,13 +544,13 @@ class SyncSource
 	    {
 	        CJSONEntry oJsonErr = oJsonArr.getCurItem().getEntry("source-error");
 	        m_strError = oJsonErr.getString("message");
-	        m_nErrCode = RhoRuby.ERR_CUSTOMSYNCSERVER;
+	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
 	        getSync().stopSync();
 	        return;
 	    }*/
 
 	    //if ( getServerObjectsCount() == 0 )
-	    //    getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+	    //    getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
 
 	    if ( getToken() == 0 )
 	    {
@@ -593,7 +593,7 @@ class SyncSource
 
 		PROF.START("Data1");
 	    if ( getCurPageCount() > 0 )
-	        getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+	        getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
 		PROF.STOP("Data1");
 	}
 	
@@ -620,7 +620,7 @@ class SyncSource
 
 	        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
 	        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-	            getNotify().fireSyncNotification(this, false, RhoRuby.ERR_NONE, "");
+	            getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
 	        
 	        if ( getDB().isUIWaitDB() )
 	        {
@@ -928,12 +928,12 @@ class SyncSource
 	        if ( !resp.isOK() )
 	        {
 	        	getSync().stopSync();
-	        	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+	        	m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 	        	return false;
 	        }
 	    }catch(Exception exc)
 	    {
-	    	m_nErrCode = RhoRuby.getNetErrorCode(exc);
+	    	m_nErrCode = RhoAppAdapter.getNetErrorCode(exc);
 	    	throw exc;
 	    }
         
