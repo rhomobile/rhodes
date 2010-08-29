@@ -747,6 +747,12 @@ describe "Rhom#paginate" do
                 {:object => '3788304956', :name => 'c2z5izd8w9', :address => '6rd9nv8dml', :industry => 'hxua4d6ttl'},
                 {:object => '7480317731', :name => '79nqr7ekzr', :address => 'emv1tezmdf', :industry => '1zg7f7q6ib'},
                 {:object => '9897778878', :name => 'n5qx54qcye', :address => 'stzc1x7upn', :industry => '9kdinrjlcx'}]
+                
+    @expected_b = [
+                {:object => '5277763718', :name => 'c1ekv44ald', :address => 'kohrans65v', :industry => 'ml2ghjs1yk'},
+                {:object => '7480317731', :name => '79nqr7ekzr', :address => 'emv1tezmdf', :industry => '1zg7f7q6ib'},
+                {:object => '9897778878', :name => 'n5qx54qcye', :address => 'stzc1x7upn', :industry => '9kdinrjlcx'}]
+                
     @expected_s = [
                 {:object => '8763523348', :name => '39afj8vbj6', :address => 'x7jincp3xj', :industry => 'sge128jo9o'},
                 {:object => '3119932988', :name => '9ayg49v9tx', :address => 'go72f9az69', :industry => 'rwyk7udigr'},
@@ -760,11 +766,13 @@ if !defined? RHO_ME
 else
         return @expected if $spec_settings[:schema_model]
         
-        @expected
+        @expected_b
 end        
     end
     
     it "should support paginate with no options" do
+      return if defined? RHO_ME and !$spec_settings[:schema_model]
+      
       3.times do |x|
         @accts = getAccount.paginate(:page => x)
         @accts.length.should == 10

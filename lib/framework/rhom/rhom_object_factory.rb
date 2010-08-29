@@ -316,9 +316,10 @@ module Rhom
                         end
                         
                     else
-                        sql = ""
-						vals = []
                         if condition_hash.length > 0
+                            sql = ""
+						    vals = []
+                        
                             condition_hash.each do |key,value|
                                 sql << "\nINTERSECT\n" if sql.length > 0 
                                 sql << "SELECT object FROM object_values WHERE \n"
@@ -329,14 +330,22 @@ module Rhom
 								
                                 sql << strLimit if strLimit
                             end
+                            
+                            listObjs = db.execute_sql(sql, vals)
+
                         else
+                            sql = ""
+						    vals = []
+                        
                             sql << "SELECT distinct( object ) FROM object_values WHERE \n"
                             sql << "source_id=?"
 							vals << get_source_id
                             sql << strLimit if strLimit
+                            
+                            listObjs = db.execute_sql(sql, vals)
+                            
                         end
                                             
-                        listObjs = db.execute_sql(sql, vals)
                     end
                     #puts "non-null select end : #{listObjs.length}"
                     
