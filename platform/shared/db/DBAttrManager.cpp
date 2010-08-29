@@ -2,7 +2,9 @@
 #include "DBAdapter.h"
 #include "common/StringConverter.h"
 #include "common/Tokenizer.h"
+#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
+#endif //RHO_NO_RUBY
 
 namespace rho{
 namespace db{
