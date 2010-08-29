@@ -263,10 +263,10 @@ module Rhom
                     
                     if val_op == 'IN' or val_op == 'in'
                         sql << val_op + " ( ? )"
-						vals << value						
+						vals << value.to_s						
                     else
                         sql << val_op + " ?"
-						vals << value
+						vals << value.to_s
                     end
 
                     return sql, vals

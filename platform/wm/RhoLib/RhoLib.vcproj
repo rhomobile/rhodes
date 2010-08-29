@@ -998,11 +998,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\rubyext\RhoRuby.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\rubyext\RhoRuby.h"
+				RelativePath="..\..\shared\rubyext\RhoAppAdapter.cpp"
 				>
 			</File>
 			<File
