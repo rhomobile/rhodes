@@ -3,6 +3,7 @@
 #include "common/IRhoClassFactory.h"
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoAppAdapter.h"
 #include "net/INetRequest.h"
 #include "sync/ClientRegister.h"
 #include "sync/SyncThread.h"
@@ -196,7 +197,7 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 
 static void callback_loadserversources(void *arg, String const &strQuery)
 {
-    rho_ruby_loadserversources(strQuery.c_str());
+    RhoAppAdapter.loadServerSources(strQuery);
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }

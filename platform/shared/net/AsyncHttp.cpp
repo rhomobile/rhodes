@@ -2,6 +2,7 @@
 #include "common/StringConverter.h"
 #include "net/URI.h"
 #include "common/RhodesApp.h"
+#include "common/RhoAppAdapter.h"
 
 namespace rho
 {
@@ -221,7 +222,7 @@ void CAsyncHttp::CHttpCommand::callNotify(rho::net::INetResponse* pResp, int nEr
         else
         {
     	    m_strResBody += "error&error_code=";
-            m_strResBody += convertToStringA(RhoRuby.getErrorFromResponse(resp));
+            m_strResBody += convertToStringA(RhoAppAdapter.getErrorFromResponse(resp));
             if ( resp.isResponseRecieved())
 	            m_strResBody += "&http_error=" + convertToStringA(resp.getRespCode());
         }
