@@ -827,6 +827,10 @@ namespace rho {
 		
 	}
 	
+    /*static*/ String getRhoDBVersion()
+	{
+		return "1.0";
+	}
 }
 
 extern "C" 

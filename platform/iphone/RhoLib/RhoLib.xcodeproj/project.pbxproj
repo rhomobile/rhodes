@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */; };
+		5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */; };
 		5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */; };
 		5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335510FC2977600F268F0 /* RhoThread.cpp */; };
 		5C5335550FC2977600F268F0 /* RhoThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335520FC2977600F268F0 /* RhoThread.h */; };
@@ -73,6 +74,7 @@
 
 /* Begin PBXFileReference section */
 		5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoAppAdapter.cpp; path = ../../shared/rubyext/RhoAppAdapter.cpp; sourceTree = SOURCE_ROOT; };
+		5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoAppAdapter.h; path = ../../shared/common/RhoAppAdapter.h; sourceTree = SOURCE_ROOT; };
 		5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoThreadImpl.h; path = ../../shared/common/IRhoThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		5C5335510FC2977600F268F0 /* RhoThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThread.cpp; path = ../../shared/common/RhoThread.cpp; sourceTree = SOURCE_ROOT; };
 		5C5335520FC2977600F268F0 /* RhoThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThread.h; path = ../../shared/common/RhoThread.h; sourceTree = SOURCE_ROOT; };
@@ -200,6 +202,7 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */,
 				5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */,
 				5C663BE811F3712C005F60AF /* RhodesAppBase.h */,
 				5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */,
@@ -334,6 +337,7 @@
 				5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */,
 				5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */,
 				5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */,
+				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

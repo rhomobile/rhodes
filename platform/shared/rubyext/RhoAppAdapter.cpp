@@ -33,4 +33,9 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
     rho_ruby_loadserversources(strSources.c_str());
 }
 
+/*static*/ String _CRhoAppAdapter::getRhoDBVersion()
+{
+	return rho_ruby_getRhoDBVersion();
+}
+	
 }

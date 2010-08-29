@@ -3,7 +3,9 @@
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
 
+#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
+#endif //RHO_NO_RUBY
 #include "sync/ClientRegister.h"
 
 namespace rho {
