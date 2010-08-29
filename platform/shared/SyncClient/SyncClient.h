@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/RhoError.h"
+#include "RhoError.h"
 
 #ifdef __cplusplus
 extern "C" {

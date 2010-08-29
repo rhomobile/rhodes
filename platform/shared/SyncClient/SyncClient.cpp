@@ -7,8 +7,8 @@
 #include "common/RhoFile.h"
 #include "common/Tokenizer.h"
 #include "common/RhoConf.h"
-#include "common/RhoError.h"
 #include "common/RhoTime.h"
+#include "common/RhoAppAdapter.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -795,16 +795,45 @@ String getSyncTypeName( RHOM_SYNC_TYPE sync_type )
     return "none";
 }
 
+namespace rho {
+	const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
+	
+	/*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
+	{
+		return String();
+	}
+	
+	/*static*/ String _CRhoAppAdapter::getErrorText(int nError)
+	{
+		return String();
+	}
+	
+	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(net::INetResponse& resp)
+	{
+		if ( !resp.isResponseRecieved())
+			return ERR_NETWORK;
+		
+		if ( resp.isUnathorized() )
+			return ERR_UNATHORIZED;
+		
+		if ( !resp.isOK() )
+			return ERR_REMOTESERVER;
+		
+		return ERR_NONE;
+	}
+	
+	/*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
+	{
+		
+	}
+	
+}
+
 extern "C" 
 {
 extern "C" void alert_show_popup(const char* message)
 {
 
-}
-
-void rho_ruby_loadserversources(const char* szData)
-{
-    //TODO: loadserversources     : see rho.rb
 }
 
 const char* rho_ruby_getMessageText(const char* szName)
