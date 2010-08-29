@@ -21,8 +21,6 @@
 		5C0D082B121CFCAA0022E83C /* SyncSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D081F121CFCAA0022E83C /* SyncSource.h */; };
 		5C0D082C121CFCAA0022E83C /* SyncThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0820121CFCAA0022E83C /* SyncThread.cpp */; };
 		5C0D082D121CFCAA0022E83C /* SyncThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0821121CFCAA0022E83C /* SyncThread.h */; };
-		5C0D0831121CFD670022E83C /* RhoRuby.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D082F121CFD670022E83C /* RhoRuby.cpp */; };
-		5C0D0832121CFD670022E83C /* RhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0830121CFD670022E83C /* RhoRuby.h */; };
 		5C0D0837121CFDAD0022E83C /* INetRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0834121CFDAD0022E83C /* INetRequest.h */; };
 		5C0D0838121CFDAD0022E83C /* URI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0835121CFDAD0022E83C /* URI.cpp */; };
 		5C0D0839121CFDAD0022E83C /* URI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0836121CFDAD0022E83C /* URI.h */; };
@@ -268,8 +266,6 @@
 		5C0D081F121CFCAA0022E83C /* SyncSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncSource.h; path = ../../../sync/SyncSource.h; sourceTree = SOURCE_ROOT; };
 		5C0D0820121CFCAA0022E83C /* SyncThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncThread.cpp; path = ../../../sync/SyncThread.cpp; sourceTree = SOURCE_ROOT; };
 		5C0D0821121CFCAA0022E83C /* SyncThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncThread.h; path = ../../../sync/SyncThread.h; sourceTree = SOURCE_ROOT; };
-		5C0D082F121CFD670022E83C /* RhoRuby.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoRuby.cpp; path = ../../../rubyext/RhoRuby.cpp; sourceTree = SOURCE_ROOT; };
-		5C0D0830121CFD670022E83C /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../../../rubyext/RhoRuby.h; sourceTree = SOURCE_ROOT; };
 		5C0D0834121CFDAD0022E83C /* INetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INetRequest.h; path = ../../../net/INetRequest.h; sourceTree = SOURCE_ROOT; };
 		5C0D0835121CFDAD0022E83C /* URI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = URI.cpp; path = ../../../net/URI.cpp; sourceTree = SOURCE_ROOT; };
 		5C0D0836121CFDAD0022E83C /* URI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URI.h; path = ../../../net/URI.h; sourceTree = SOURCE_ROOT; };
@@ -554,7 +550,6 @@
 				5C0D0850121CFE350022E83C /* json */,
 				5C0D083F121CFE060022E83C /* logging */,
 				5C0D0833121CFD860022E83C /* net */,
-				5C0D082E121CFCB80022E83C /* rubyext */,
 				5C0D0815121CFC730022E83C /* sync */,
 				5C0D0810121CFC3F0022E83C /* SyncClient */,
 			);
@@ -587,15 +582,6 @@
 				5C0D0821121CFCAA0022E83C /* SyncThread.h */,
 			);
 			name = sync;
-			sourceTree = "<group>";
-		};
-		5C0D082E121CFCB80022E83C /* rubyext */ = {
-			isa = PBXGroup;
-			children = (
-				5C0D082F121CFD670022E83C /* RhoRuby.cpp */,
-				5C0D0830121CFD670022E83C /* RhoRuby.h */,
-			);
-			name = rubyext;
 			sourceTree = "<group>";
 		};
 		5C0D0833121CFD860022E83C /* net */ = {
@@ -899,7 +885,6 @@
 				5C0D0829121CFCAA0022E83C /* SyncProtocol_3.h in Headers */,
 				5C0D082B121CFCAA0022E83C /* SyncSource.h in Headers */,
 				5C0D082D121CFCAA0022E83C /* SyncThread.h in Headers */,
-				5C0D0832121CFD670022E83C /* RhoRuby.h in Headers */,
 				5C0D0837121CFDAD0022E83C /* INetRequest.h in Headers */,
 				5C0D0839121CFDAD0022E83C /* URI.h in Headers */,
 				5C0D083E121CFDD20022E83C /* CURLNetRequest.h in Headers */,
@@ -1081,7 +1066,6 @@
 				5C0D0827121CFCAA0022E83C /* SyncNotify.cpp in Sources */,
 				5C0D082A121CFCAA0022E83C /* SyncSource.cpp in Sources */,
 				5C0D082C121CFCAA0022E83C /* SyncThread.cpp in Sources */,
-				5C0D0831121CFD670022E83C /* RhoRuby.cpp in Sources */,
 				5C0D0838121CFDAD0022E83C /* URI.cpp in Sources */,
 				5C0D083D121CFDD20022E83C /* CURLNetRequest.cpp in Sources */,
 				5C0D0848121CFE2B0022E83C /* RhoLog.cpp in Sources */,
