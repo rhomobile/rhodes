@@ -15,6 +15,26 @@
 
 void rho_geoimpl_init();
 
+static BOOL app_started = NO;
+
+@interface RhoActivateTask : NSObject {}
++ (void)run;
+@end
+
+@implementation RhoActivateTask
+
++ (void)run {
+    if (!app_started) {
+        [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
+        return;
+    }
+    RAWLOG_INFO("Application did become active");
+    rho_rhodesapp_callAppActiveCallback(1);
+}
+
+@end
+
+
 @implementation Rhodes
 
 @synthesize window, player, cookies, signatureDelegate;
@@ -344,7 +364,7 @@ static Rhodes *instance = NULL;
         rho_rhodesapp_start();
         
         rho_rhodesapp_callAppActiveCallback(1);
-        started = YES;
+        app_started = YES;
     }
     @finally {
         [pool release];
@@ -353,7 +373,6 @@ static Rhodes *instance = NULL;
 
 - (void)doStartUp {
     NSLog(@"Rhodes starting application...");
-    started = NO;
     instance = self;
     application = [UIApplication sharedApplication];
     
@@ -596,10 +615,8 @@ static Rhodes *instance = NULL;
 #endif
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    if (!started)
-        return;
-    RAWLOG_INFO("Application did become active");
-    rho_rhodesapp_callAppActiveCallback(1);
+    id runnable = [RhoActivateTask class];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
