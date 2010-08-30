@@ -172,6 +172,8 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
         {
             CJSONArrayIterator oSrcArr(oJsonArr.getCurItem());
+            if (oSrcArr.isEnd())
+                break;
 
             int nVersion = 0;
             if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
