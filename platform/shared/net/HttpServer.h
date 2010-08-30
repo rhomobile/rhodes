@@ -73,8 +73,7 @@ public:
     void register_uri(String const &uri, callback_t const &callback);
     
     bool run();
-	void stop();
-    void pause(bool bPause){m_bPause = bPause;}
+    void stop();
 
     bool send_response(String const &response) {return send_response_impl(response, false);}
     bool send_response_body(String const &data) {return send_response_impl(data, true);}
@@ -85,6 +84,7 @@ public:
     String create_response(String const &reason, HeaderList const &headers, String const &body);
     
 private:
+    bool init();
     bool process(SOCKET sock);
     bool parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body);
     bool parse_startline(String const &line, String &method, String &uri, String &query);
@@ -106,7 +106,6 @@ private:
     
 private:
 	bool m_exit;
-    bool m_bPause;
     int m_port;
     String m_root, m_strRhoRoot;
     SOCKET m_listener;
