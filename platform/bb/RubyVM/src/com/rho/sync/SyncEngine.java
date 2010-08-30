@@ -271,7 +271,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
 		        {
 		            JSONArrayIterator oSrcArr = oJsonArr.getCurArrayIter();//new JSONArrayIterator(oJsonArr.getCurItem());
-		
+		            if (oSrcArr.isEnd())
+		            	break;
+		            
 		            int nVersion = 0;
 		            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
 		            {
