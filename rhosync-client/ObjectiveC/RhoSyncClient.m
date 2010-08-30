@@ -16,6 +16,13 @@
 @synthesize poll_interval;
 @synthesize sync_server;
 
+- (id) init
+{
+	self = [super init];
+	
+	return self;
+}
+
 - (void) setSyncServer:(NSString *)server
 {
 	rho_sync_set_syncserver([server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -23,11 +30,13 @@
 
 - (void) setThreadedMode:(BOOL)mode
 {
+	threaded_mode = mode;
 	rho_sync_set_threaded_mode(mode ? 1 : 0);
 }
 
 - (void) setPollInterval:(int)interval
 {
+	poll_interval = interval;
 	rho_sync_set_pollinterval(interval);
 }
 
@@ -46,6 +55,9 @@
 	}
 	
     rho_syncclient_init(rhom_models, models.count);	
+	
+    [self setThreadedMode:FALSE];
+	[self setPollInterval: 0];
 }
 
 - (void) database_full_reset_and_logout
