@@ -102,7 +102,12 @@ void CRhodesApp::run()
 
     //rho_clientregister_create("iphone_client");
     
-    m_httpServer->run();
+    while (!m_bExit) {
+        m_httpServer->run();
+        if (m_bExit)
+            break;
+        wait(-1);
+    }
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
@@ -127,6 +132,7 @@ void CRhodesApp::stopApp()
     {
         m_bExit = true;
 		m_httpServer->stop();
+        stopWait();
         stop(2000);
     }
 
@@ -223,7 +229,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     m_bDeactivationMode = !bActive;
     if (bActive)
     {
-        m_httpServer->pause(false);
+        this->stopWait();
+        
         String strUrl = m_strHomeUrl + "/system/activateapp";
         // Activation callback need to be runned in separate thread
         // Otherwise UI thread will be blocked. This can cause deadlock if user defined
@@ -243,7 +250,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         NetResponse(resp,getNet().pullData( strUrl, null ));
         if ( !resp.isOK() )
             LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        m_httpServer->pause(true);
+        m_httpServer->stop();
     }
 }
 
