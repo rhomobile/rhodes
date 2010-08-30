@@ -14,13 +14,13 @@ end
 $app_basedir = pwd
 chdir File.dirname(__FILE__)
 
-require 'lib/build/jake.rb'
+require File.join(pwd, 'lib/build/jake.rb')
 
-load 'platform/bb/build/bb.rake'
-load 'platform/android/build/android.rake'
-load 'platform/iphone/rbuild/iphone.rake'
-load 'platform/wm/build/wm.rake'
-load 'platform/linux/tasks/linux.rake'
+load File.join(pwd, 'platform/bb/build/bb.rake')
+load File.join(pwd, 'platform/android/build/android.rake')
+load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
+load File.join(pwd, 'platform/wm/build/wm.rake')
+load File.join(pwd, 'platform/linux/tasks/linux.rake')
 
 def get_dir_hash(dir, init = nil)
   hash = init
