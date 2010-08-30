@@ -8,7 +8,7 @@
 
 #import "ptestsViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "SyncClient/iphone/RhoSyncClient.h"
+#import "../../../RhoSyncClient.h"
 
 @implementation ptestsViewController
 

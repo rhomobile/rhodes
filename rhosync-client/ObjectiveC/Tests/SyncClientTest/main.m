@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SyncClient/iphone/RhoSyncClient.h"
+#import "../../RhoSyncClient.h"
 
 RhoSyncClient* sclient;
 RhomModel* product;
@@ -197,8 +197,8 @@ int runObjCClientTest()
 	
 	[sclient addModels:models];
 	
-    sclient.threaded_mode = FALSE;
-	sclient.poll_interval = 0;
+    //sclient.threaded_mode = FALSE;
+	//sclient.poll_interval = 0;
 	
 	if ( !ResetAndLogout() )
 		return 0;
