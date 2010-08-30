@@ -577,7 +577,7 @@ void rho_syncclient_create_object(const char* szModel, unsigned long hash)
 
     String update_type = "create";
     int nSrcID = res.getIntByIdx(0);
-    String obj = rhom_generate_id();
+    String obj = hashObject.containsKey("object") ? hashObject.get("object") : rhom_generate_id();
 
     String db_partition = res.getStringByIdx(1);
     bool isSchemaSrc = res.getStringByIdx(2).length() > 0;
