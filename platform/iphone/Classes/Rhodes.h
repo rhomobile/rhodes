@@ -36,7 +36,6 @@
 	SignatureDelegate* signatureDelegate;
 	
     id<RhoMainView,NSObject> mainView;
-    BOOL started;
 }
 
 @property (nonatomic, retain) UIWindow *window;
