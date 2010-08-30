@@ -12,6 +12,7 @@
 		2899E5220DE3E06400AC0155 /* ptestsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* ptestsViewController.xib */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		28D7ACF80DDB3853001CB0EB /* ptestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* ptestsViewController.m */; };
+		5C2CE5BC122C39C8005EDBC4 /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C2CE5BB122C39C8005EDBC4 /* db */; };
 		5CF985F61226B28900734E8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF985F51226B28900734E8B /* CFNetwork.framework */; };
 		5CF985FC1226B2A300734E8B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF985FB1226B2A300734E8B /* Foundation.framework */; };
 		5CF986021226B2C400734E8B /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF986011226B2C400734E8B /* libsqlite3.0.dylib */; };
@@ -20,20 +21,19 @@
 		5CF986101226B30C00734E8B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF9860F1226B30C00734E8B /* UIKit.framework */; };
 		5CF986431226B33E00734E8B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF986421226B33E00734E8B /* CoreGraphics.framework */; };
 		5CF986471226B37300734E8B /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF986461226B37300734E8B /* libstdc++.6.dylib */; };
-		5CF986E01226B9C100734E8B /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5CF986DF1226B9C100734E8B /* db */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C12A9C01226A599000516FD /* PBXContainerItemProxy */ = {
+		5C2CE41C122AFFD7005EDBC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5C12A9BC1226A599000516FD /* SyncClient.xcodeproj */;
+			containerPortal = 5C2CE418122AFFD7005EDBC4 /* SyncClient.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
-		5C12A9C91226A5ED000516FD /* PBXContainerItemProxy */ = {
+		5C2CE41E122AFFE3005EDBC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5C12A9BC1226A599000516FD /* SyncClient.xcodeproj */;
+			containerPortal = 5C2CE418122AFFD7005EDBC4 /* SyncClient.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = SyncClient;
@@ -50,7 +50,8 @@
 		28D7ACF70DDB3853001CB0EB /* ptestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ptestsViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* ptests_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptests_Prefix.pch; sourceTree = "<group>"; };
-		5C12A9BC1226A599000516FD /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../SyncClient/SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
+		5C2CE418122AFFD7005EDBC4 /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../../SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
+		5C2CE5BB122C39C8005EDBC4 /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../../platform/shared/db/res/db; sourceTree = SOURCE_ROOT; };
 		5CF985F51226B28900734E8B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5CF985FB1226B2A300734E8B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5CF986011226B2C400734E8B /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
@@ -59,7 +60,6 @@
 		5CF9860F1226B30C00734E8B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5CF986421226B33E00734E8B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		5CF986461226B37300734E8B /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		5CF986DF1226B9C100734E8B /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../db/res/db; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* ptests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ptests-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -104,8 +104,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				5CF986DF1226B9C100734E8B /* db */,
-				5C12A9BC1226A599000516FD /* SyncClient.xcodeproj */,
+				5C2CE5BB122C39C8005EDBC4 /* db */,
+				5C2CE418122AFFD7005EDBC4 /* SyncClient.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -149,10 +149,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		5C12A9BD1226A599000516FD /* Products */ = {
+		5C2CE419122AFFD7005EDBC4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5C12A9C11226A599000516FD /* libSyncClient.a */,
+				5C2CE41D122AFFD7005EDBC4 /* libSyncClient.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -171,7 +171,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				5C12A9CA1226A5ED000516FD /* PBXTargetDependency */,
+				5C2CE41F122AFFE3005EDBC4 /* PBXTargetDependency */,
 			);
 			name = ptests;
 			productName = ptests;
@@ -190,8 +190,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 5C12A9BD1226A599000516FD /* Products */;
-					ProjectRef = 5C12A9BC1226A599000516FD /* SyncClient.xcodeproj */;
+					ProductGroup = 5C2CE419122AFFD7005EDBC4 /* Products */;
+					ProjectRef = 5C2CE418122AFFD7005EDBC4 /* SyncClient.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -202,11 +202,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		5C12A9C11226A599000516FD /* libSyncClient.a */ = {
+		5C2CE41D122AFFD7005EDBC4 /* libSyncClient.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libSyncClient.a;
-			remoteRef = 5C12A9C01226A599000516FD /* PBXContainerItemProxy */;
+			remoteRef = 5C2CE41C122AFFD7005EDBC4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -218,7 +218,7 @@
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				2899E5220DE3E06400AC0155 /* ptestsViewController.xib in Resources */,
-				5CF986E01226B9C100734E8B /* db in Resources */,
+				5C2CE5BC122C39C8005EDBC4 /* db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,10 +238,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C12A9CA1226A5ED000516FD /* PBXTargetDependency */ = {
+		5C2CE41F122AFFE3005EDBC4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SyncClient;
-			targetProxy = 5C12A9C91226A5ED000516FD /* PBXContainerItemProxy */;
+			targetProxy = 5C2CE41E122AFFE3005EDBC4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -255,7 +255,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ptests_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../../../../shared;
+				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "ptests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -266,7 +266,7 @@
 				PRODUCT_NAME = ptests;
 				RHO_NO_RUBY = 1;
 				SDKROOT = iphoneos4.0;
-				SYMROOT = ../build;
+				SYMROOT = ../../../build;
 			};
 			name = Debug;
 		};
@@ -277,7 +277,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ptests_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../../../../shared;
+				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "ptests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -287,7 +287,7 @@
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = ptests;
 				SDKROOT = iphoneos4.0;
-				SYMROOT = ../build;
+				SYMROOT = ../../../build;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

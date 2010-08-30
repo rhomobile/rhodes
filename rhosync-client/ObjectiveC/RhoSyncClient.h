@@ -22,6 +22,7 @@
 @property(assign, setter=setSyncServer) NSString* sync_server;
 
 + (void) initDatabase;
+- (id) init;
 - (void) addModels:(NSArray*)models;
 - (void) database_full_reset_and_logout;
 - (BOOL) is_logged_in;
