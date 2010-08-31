@@ -786,12 +786,18 @@ void CSyncEngine::logout()
 	
 void CSyncEngine::setSyncServer(const char* syncserver)
 {
-	rho_conf_setString("syncserver", syncserver);
-	rho_conf_save();
+	String strOldSrv = RHOCONF().getString("syncserver");
+	String strNewSrv = syncserver ? syncserver : "";
+	
+	if ( strOldSrv.compare(strNewSrv) != 0)
+	{
+		rho_conf_setString("syncserver", syncserver);
+		rho_conf_save();
+		
+		getUserDB().executeSQL("DELETE FROM client_info");
 
-    getUserDB().executeSQL("DELETE FROM client_info");
-
-	logout();
+		logout();
+	}
 }
 
 static String getHostFromUrl( const String& strUrl )
