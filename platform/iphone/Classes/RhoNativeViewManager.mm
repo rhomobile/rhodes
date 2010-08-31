@@ -195,6 +195,10 @@ static RhoNativeViewManagerOC *instance = NULL;
 	[sharedInstance.mProviders removeObjectForKey:viewType];
 }
 
++(UIWebView*)getWebViewObject:(int)tab_index {
+	return nil;
+}
+
 
 @end
 
@@ -209,4 +213,12 @@ void RhoNativeViewManager::registerViewType(const char* viewType, NativeViewFact
 void RhoNativeViewManager::unregisterViewType(const char* viewType) {
 	NSString* s = [[NSString alloc] initWithUTF8String:viewType];
 	[RhoNativeViewManagerOC unregisterViewType:s];
+}
+
+// that function return native object used for display Web content :
+// UIWebView* for iPhone
+// jobject for Android - jobect is android.webkit.WebView class type
+// HWND for Windows Mobile 
+void* RhoNativeViewManager::getWebViewObject(int tab_index) {
+	return [RhoNativeViewManagerOC getWebViewObject:tab_index];
 }

@@ -32,6 +32,12 @@ class RhoNativeViewManager {
 public: 
 	static void registerViewType(const char* viewType, NativeViewFactory* factory);
 	static void unregisterViewType(const char* viewType);
+
+	// that function return native object used for display Web content :
+	// UIWebView* for iPhone
+	// jobject for Android - jobect is android.webkit.WebView class type
+	// HWND for Windows Mobile 
+	static void* getWebViewObject(int tab_index);
 };
 
 #endif

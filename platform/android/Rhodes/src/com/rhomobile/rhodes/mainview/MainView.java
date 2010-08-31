@@ -28,6 +28,8 @@ import android.webkit.WebView;
 public interface MainView {
 
 	public View getView();
+
+	public WebView getWebView(int tab_index);
 	
 	public WebView detachWebView();
 	
