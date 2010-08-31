@@ -8,11 +8,10 @@ vendor: rhomobile
 sdkversion: 1.4
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 iphone: 
-  emulator: 4.0.2
   sdk: iphonesimulator4.0
   entitlements: ""
   codesignidentity: ""
-  configuration: Debug
+  configuration: Release
   extensions: ["barcode"]
   
 android:
