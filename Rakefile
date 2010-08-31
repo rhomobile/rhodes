@@ -760,3 +760,30 @@ task :rdocpush => :rdoc do
   puts "Pushing RDOC. This may take a while"
   `scp -r html/* dev@dev.rhomobile.com:dev.rhomobile.com/rhodes/`
 end
+
+namespace "build" do
+    #    desc "Build rhosync-client package"
+    task :rhosync_client do
+
+        bin_dir = "rhosync-client-bin"
+        src_dir = bin_dir + "/src"        
+        shared_dir = bin_dir + "/src/platform/shared"        
+        
+        rm_rf bin_dir
+        mkdir_p bin_dir
+        mkdir_p src_dir
+
+        cp_r 'rhosync-client', src_dir, :preserve => true
+        mkdir_p shared_dir
+        
+        Dir.glob("platform/shared/*").each do |f|
+            next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
+                f == "platform/shared/stlport"        
+ 
+            puts f                
+            cp_r f, shared_dir #, :preserve => true                        
+        end
+        
+        #TODO: zip src_dir
+    end
+end

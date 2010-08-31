@@ -1,6 +1,7 @@
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
+#include "net/URI.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 #include <algorithm>
@@ -64,40 +65,6 @@ static bool isfile(String const &path)
 {
     struct stat st;
     return stat(path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
-}
-
-static String decode(String const &url)
-{
-    String ret;
-    for (const char *s = url.c_str(); *s != '\0'; ++s) {
-        if (*s != '%') {
-            ret.push_back(*s);
-            continue;
-        }
-        
-        unsigned int c1 = (unsigned char)*++s;
-        if (c1 >= (unsigned char)'0' && c1 <= (unsigned char)'9')
-            c1 = c1 - (unsigned char)'0';
-        else if (c1 >= (unsigned char)'a' && c1 <= (unsigned char)'f')
-            c1 = c1 - (unsigned char)'a' + 10;
-        else if (c1 >= (unsigned char)'A' && c1 <= (unsigned char)'F')
-            c1 = c1 - (unsigned char)'A' + 10;
-        else
-            break;
-        unsigned int c2 = (unsigned char)*++s;
-        if (c2 >= (unsigned char)'0' && c2 <= (unsigned char)'9')
-            c2 = c2 - (unsigned char)'0';
-        else if (c2 >= (unsigned char)'a' && c2 <= (unsigned char)'f')
-            c2 = c2 - (unsigned char)'a' + 10;
-        else if (c2 >= (unsigned char)'A' && c2 <= (unsigned char)'F')
-            c2 = c2 - (unsigned char)'A' + 10;
-        else
-            break;
-        
-        char c = (char)((c1 << 4) | c2);
-        ret.push_back(c);
-    }
-    return ret;
 }
 
 static bool isindex(String const &uri)
@@ -702,7 +669,7 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
     }
     
     uri.assign(s, e);
-    uri = decode(uri);
+    uri = URI::urlDecode(uri);
     
     query.clear();
     if (*e == '?') {

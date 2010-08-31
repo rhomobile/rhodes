@@ -42,6 +42,7 @@
 	if ( data->callback_params )	
 		callback_params = [NSString stringWithUTF8String: data->callback_params];
 	
+	rho_syncclient_free_syncnotify(data);
 	return self;
 }
 
