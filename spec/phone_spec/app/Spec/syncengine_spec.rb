@@ -49,7 +49,7 @@ describe "SyncEngine_test" do
   before(:all)  do
     SyncEngine.set_threaded_mode(false)
   
-    ::Rhom::Rhom.database_full_reset_and_logout
+    ::Rhom::Rhom.database_fullclient_reset_and_logout
     
     SyncEngine.set_syncserver('http://rhodes-store-server.heroku.com/application')
     #SyncEngine.set_syncserver('http://localhost:9292/application')
