@@ -124,5 +124,17 @@ public class GeoLocation {
 		
 		return false;
 	}
+	
+	public static void setTimeout(int nsec) {
+		try {
+			checkState();
+			Logger.T(TAG, "setTimeout");
+			init();
+			locImpl.setTimeout(nsec);
+		}
+		catch (Exception e) {
+			reportFail("setTimeout", e);
+		}
+	}
 
 }

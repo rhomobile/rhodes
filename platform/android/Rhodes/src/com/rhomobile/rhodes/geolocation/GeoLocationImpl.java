@@ -22,6 +22,7 @@ package com.rhomobile.rhodes.geolocation;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Context;
 import android.location.Location;
@@ -41,7 +42,11 @@ public class GeoLocationImpl implements LocationListener {
 	private double latitude = 0;
 	private boolean determined = false;
 	
+	private int timeout = 10*60;
+	private Thread thCancel = null;
+	
 	private native void geoCallback();
+	private native void geoCallbackError();
 	
 	public GeoLocationImpl() {
 		setCurrentGpsLocation(null);
@@ -80,8 +85,13 @@ public class GeoLocationImpl implements LocationListener {
 				Logger.T(TAG, "latitude: " + new Double(latitude).toString());
 			}
 			
-			if (determined != prevDetermined || latitude != prevLat || longitude != prevLon)
+			if (determined != prevDetermined || latitude != prevLat || longitude != prevLon) {
+				if (thCancel != null) {
+					thCancel.interrupt();
+					thCancel = null;
+				}
 				geoCallback();
+			}
 			
 		} catch (Exception e) {
 			determined = false;
@@ -131,5 +141,29 @@ public class GeoLocationImpl implements LocationListener {
 	public synchronized boolean isKnownPosition() {
 		return determined;
 	}
-	
+
+	public synchronized void setTimeout(int nsec) {
+		timeout = nsec;
+		if (thCancel != null) {
+			thCancel.interrupt();
+			thCancel = null;
+		}
+		thCancel = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(timeout*1000);
+					if (!isKnownPosition())
+						PerformOnUiThread.exec(new Runnable() {
+							public void run() {
+								geoCallbackError();
+							}
+						}, false);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		thCancel.start();
+	}
 }
