@@ -767,6 +767,7 @@ namespace "build" do
       args << "-I#{$appincdir}"
       args << "-I#{srcdir}/../include"
       args << "-I#{$shareddir}"
+      args << "-I#{$shareddir}/common"
       args << "-I#{$shareddir}/sqlite"
       args << "-I#{$shareddir}/curl/include"
       args << "-I#{$shareddir}/ruby/include"
@@ -859,12 +860,17 @@ namespace "build" do
       lines << $app_native_libs_java
       lines << $app_capabilities_java
       if File.exists? File.join($extensionsdir, "ext_build.files")
+        puts 'ext_build.files found ! Addditional files for compilation :'
         File.open(File.join($extensionsdir, "ext_build.files")) do |f|
           while line = f.gets
+	    puts 'java file : ' + line
             lines << line
           end
         end
+      else
+        puts 'ext_build.files not found - no additional java files for compilation'
       end
+
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
