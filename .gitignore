@@ -39,6 +39,7 @@ rhosync-client/ObjectiveC/Tests/SyncClientTest/build/*
 rhosync-client/ObjectiveC/Tests/build/*
 rhosync-client/ObjectiveC/build/*
 rhosync-client/build/*
+rhosync-client/Samples/ObjectiveC/store/build/*
 
 spec/bin/*
 spec/**/bin/*
