@@ -770,6 +770,7 @@ namespace "build" do
         shared_dir = bin_dir + "/src/platform/shared"        
         
         rm_rf bin_dir
+        rm    "rhosync-client.zip" if File.exists? "rhosync-client.zip"
         mkdir_p bin_dir
         mkdir_p src_dir
 
@@ -783,7 +784,13 @@ namespace "build" do
             puts f                
             cp_r f, shared_dir #, :preserve => true                        
         end
+   
+        startdir = pwd
+        chdir src_dir
+        puts `zip -r #{File.join(startdir, "rhosync-client")} *`
+                
+        chdir startdir
         
-        #TODO: zip src_dir
+        rm_rf bin_dir
     end
 end
