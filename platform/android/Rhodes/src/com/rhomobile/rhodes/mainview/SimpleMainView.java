@@ -107,6 +107,11 @@ public class SimpleMainView implements MainView {
 	public View getView() {
 		return view;
 	}
+
+	public WebView getWebView(int tab_index) {
+		return webView;
+	}
+
 	
 	public WebView detachWebView() {
 		WebView v = null;
