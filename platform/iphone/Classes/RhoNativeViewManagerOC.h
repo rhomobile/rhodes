@@ -40,5 +40,6 @@
 
 +(void)registerViewType:(NSString*)viewType factory:(id)factory;
 +(void)unregisterViewType:(NSString*)viewType;
++(UIWebView*)getWebViewObject:(int)tab_index;
 
 @end

@@ -202,6 +202,10 @@ public class TabbedMainView implements MainView {
 	public View getView() {
 		return host;
 	}
+
+	public WebView getWebView(int tab_index) {
+		return getView(tab_index).getWebView(-1);
+	}
 	
 	public WebView detachWebView() {
 		return getView(activeTab()).detachWebView();
