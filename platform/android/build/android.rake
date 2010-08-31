@@ -267,9 +267,16 @@ namespace "config" do
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
     $jarbin = File.join( $java, "jar" + $exe_ext )
-    $keystoredir = File.expand_path('~') + "/.rhomobile"
-    $keystore = $keystoredir + "/keystore"
-    $storepass = "81719ef3a881469d96debda3112854eb"
+
+    $keystore = nil
+    $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
+    $keystore = $config["env"]["android"]["production"]["certificate"] if $keystore.nil? and !$config["env"].nil? and !$config["env"]["android"].nil? and !$config["env"]["android"]["production"].nil?
+    $keystore = File.join(File.expand_path('~'), ".rhomobile", "keystore") if $keystore.nil?
+
+    $storepass = nil
+    $storepass = $app_config["android"]["production"]["password"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
+    $storepass = $config["env"]["android"]["production"]["password"] if $storepass.nil? and !$config["env"].nil? and !$config["env"]["android"].nil? and !$config["env"]["android"]["production"].nil?
+    $storepass = "81719ef3a881469d96debda3112854eb" if $storepass.nil?
     $keypass = $storepass
 
     # Detect android targets
@@ -1046,7 +1053,7 @@ namespace "device" do
 
       if not File.exists? $keystore
         puts "Generating private keystore..."
-        mkdir_p $keystoredir
+        mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
 
         args = []
         args << "-genkey"
