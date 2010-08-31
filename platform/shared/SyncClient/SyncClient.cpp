@@ -9,6 +9,7 @@
 #include "common/RhoConf.h"
 #include "common/RhoTime.h"
 #include "common/RhoAppAdapter.h"
+#include "net/URI.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -89,6 +90,7 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
 
     //create db and db-files folder
     CRhoFile::createFolder( (strDbPath + "db/db-files").c_str());
+    CRhoFile::createFolder( (strDbPath + "apps").c_str());
 
     for( int i = 0; i < nModels; i++ )
     {
@@ -640,8 +642,8 @@ void rho_syncclient_parsenotify(const char* msg, RHO_SYNC_NOTIFY* pNotify)
 		    continue;
 
         CTokenizer oValueTok( tok, "=" );
-        String name = oValueTok.nextToken();
-        String value = oValueTok.nextToken();
+        String name = net::URI::urlDecode(oValueTok.nextToken());
+        String value = net::URI::urlDecode(oValueTok.nextToken());
 
         if ( name.compare("total_count") == 0)
             convertFromStringA( value.c_str(), pNotify->total_count );

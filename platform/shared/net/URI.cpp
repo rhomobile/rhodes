@@ -141,6 +141,45 @@ String URI::urlEncode(const String& fullPath)
         strRes += fullPath;
 }
 
+/*static*/String URI::urlDecode(const String& fullPath)
+{
+	String res;
+	urlDecode(fullPath, res);
+	return res;
+}
+	
+/*static*/ void URI::urlDecode(const String &url, String& ret )
+{
+	for (const char *s = url.c_str(); *s != '\0'; ++s) {
+		if (*s != '%') {
+			ret.push_back(*s);
+			continue;
+		}
+			
+		unsigned int c1 = (unsigned char)*++s;
+		if (c1 >= (unsigned char)'0' && c1 <= (unsigned char)'9')
+			c1 = c1 - (unsigned char)'0';
+		else if (c1 >= (unsigned char)'a' && c1 <= (unsigned char)'f')
+			c1 = c1 - (unsigned char)'a' + 10;
+		else if (c1 >= (unsigned char)'A' && c1 <= (unsigned char)'F')
+			c1 = c1 - (unsigned char)'A' + 10;
+		else
+			break;
+		unsigned int c2 = (unsigned char)*++s;
+		if (c2 >= (unsigned char)'0' && c2 <= (unsigned char)'9')
+			c2 = c2 - (unsigned char)'0';
+		else if (c2 >= (unsigned char)'a' && c2 <= (unsigned char)'f')
+			c2 = c2 - (unsigned char)'a' + 10;
+		else if (c2 >= (unsigned char)'A' && c2 <= (unsigned char)'F')
+			c2 = c2 - (unsigned char)'A' + 10;
+		else
+			break;
+			
+		char c = (char)((c1 << 4) | c2);
+		ret.push_back(c);
+	}
+}
+	
 //"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly");
 //"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
 //"rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
