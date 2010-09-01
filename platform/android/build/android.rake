@@ -270,14 +270,19 @@ namespace "config" do
 
     $keystore = nil
     $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
-    $keystore = $config["env"]["android"]["production"]["certificate"] if $keystore.nil? and !$config["env"].nil? and !$config["env"]["android"].nil? and !$config["env"]["android"]["production"].nil?
+    $keystore = $config["android"]["production"]["certificate"] if $keystore.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
     $keystore = File.join(File.expand_path('~'), ".rhomobile", "keystore") if $keystore.nil?
 
     $storepass = nil
     $storepass = $app_config["android"]["production"]["password"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
-    $storepass = $config["env"]["android"]["production"]["password"] if $storepass.nil? and !$config["env"].nil? and !$config["env"]["android"].nil? and !$config["env"]["android"]["production"].nil?
+    $storepass = $config["android"]["production"]["password"] if $storepass.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
     $storepass = "81719ef3a881469d96debda3112854eb" if $storepass.nil?
     $keypass = $storepass
+
+    $storealias = nil
+    $storealias = $app_config["android"]["production"]["alias"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
+    $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
+    $storealias = "rhomobile.keystore" if $storealias.nil?
 
     # Detect android targets
     if $androidtargets.nil?
@@ -1064,7 +1069,7 @@ namespace "device" do
         args = []
         args << "-genkey"
         args << "-alias"
-        args << "rhomobile.keystore"
+        args << $storealias
         args << "-keyalg"
         args << "RSA"
         args << "-validity"
@@ -1092,7 +1097,7 @@ namespace "device" do
       args << "-signedjar"
       args << signed_apkfile
       args << simple_apkfile
-      args << "rhomobile.keystore"
+      args << $storealias
       puts Jake.run($jarsigner, args)
       unless $?.success?
         puts "Error running jarsigner"
