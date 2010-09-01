@@ -703,7 +703,7 @@ void CSyncEngine::syncAllSources()
     	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 }
 
-void CSyncEngine::login(String name, String password, String callback)
+void CSyncEngine::login(String name, String password, const CSyncNotification& oNotify)
 {
 //    processServerSources("{\"sources\":{ \"Product\":{}, \"Customer\":{}}}");
 /*
@@ -723,7 +723,7 @@ void CSyncEngine::login(String name, String password, String callback)
     int nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
     if ( nErrCode != RhoAppAdapter.ERR_NONE )
     {
-        getNotify().callLoginCallback(callback, nErrCode, resp.getCharData());
+        getNotify().callLoginCallback(oNotify, nErrCode, resp.getCharData());
         return;
     }
 
@@ -731,7 +731,7 @@ void CSyncEngine::login(String name, String password, String callback)
     if ( strSession.length() == 0 )
     {
     	LOG(ERROR) + "Return empty session.";
-    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
+    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
         return;
     }
 
@@ -741,7 +741,7 @@ void CSyncEngine::login(String name, String password, String callback)
     else
         getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 
-    getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_NONE, "" );
+    getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 	
     PROF_STOP("Login");
 
