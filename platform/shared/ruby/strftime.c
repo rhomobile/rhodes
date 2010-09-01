@@ -65,6 +65,10 @@
 #endif
 #include <math.h>
 
+#ifdef OS_ANDROID
+char *rho_timezone();
+#endif
+
 /* defaults: season to taste */
 #define SYSV_EXT	1	/* stuff in System V ascftime routine */
 #define SUNOS_EXT	1	/* stuff in SunOS strftime routine */
@@ -505,7 +509,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 				off = -timezone / 60;
 #endif
 #else /* !HAVE_VAR_TIMEZONE */
-#ifdef HAVE_GETTIMEOFDAY
+#if defined(HAVE_GETTIMEOFDAY) && !defined(OS_ANDROID)
 				gettimeofday(&tv, &zone);
 				off = -zone.tz_minuteswest;
 #else
@@ -546,6 +550,9 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 				tp = "UTC";
 				break;
 			}
+#ifdef OS_ANDROID
+      tp = rho_timezone();
+#else
 #ifdef HAVE_TZNAME
 			i = (daylight && timeptr->tm_isdst > 0); /* 0 or 1 */
 			tp = tzname[i];
@@ -567,6 +574,7 @@ rb_strftime(char *s, size_t maxsize, const char *format, const struct tm *timept
 #endif /* HAVE_TM_NAME */
 #endif /* HAVE_TM_ZONE */
 #endif /* HAVE_TZNAME */
+#endif /* OS_ANDROID */
 			i = strlen(tp);
 			break;
 
