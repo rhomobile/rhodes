@@ -255,8 +255,12 @@ String CSyncNotification::toString()const
 {
 	if ( m_cCallback )
 		return "C_Callback";
-		
-	return "Url :" + m_strUrl + "; Params: " + m_strParams;
+	
+	String strRes = "Url :";
+	strRes += m_strUrl;
+	strRes += "; Params: ";
+	strRes += m_strParams;
+	return strRes;
 }
 	
 void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
