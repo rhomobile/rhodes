@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 
 public class Rhodes extends RhoActivity {
 
@@ -55,10 +56,12 @@ public class Rhodes extends RhoActivity {
 		
 		instance = this;
 		
+		FrameLayout v = new FrameLayout(this);
+		
 		RhodesService service = RhodesService.getInstance();
 		if (service == null) {
 			Log.v(TAG, "Starting rhodes service...");
-			service = new RhodesService(this);
+			service = new RhodesService(this, v);
 		}
 		else
 			Log.v(TAG, "Rhodes service already started...");
@@ -76,8 +79,8 @@ public class Rhodes extends RhoActivity {
 		if (RhodesService.ENABLE_LOADING_INDICATION)
 			this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
-		setContentView(service.getRootWindow(),
-				new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		service.setRootWindow(v);
+		setContentView(v, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
 	
 	@Override
