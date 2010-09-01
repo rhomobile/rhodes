@@ -7,6 +7,11 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
 
+#ifdef RHO_LOG
+#undef RHO_LOG
+#endif
+#define RHO_LOG(...)
+
 #ifdef RHO_NOT_IMPLEMENTED
 #undef RHO_NOT_IMPLEMENTED
 #endif
