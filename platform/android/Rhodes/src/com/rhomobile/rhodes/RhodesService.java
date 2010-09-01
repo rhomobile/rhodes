@@ -36,13 +36,13 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 
 public class RhodesService {
 	
@@ -114,7 +114,7 @@ public class RhodesService {
 	
 	private SplashScreen splashScreen = null;
 	
-	private FrameLayout outerFrame;
+	private ViewGroup outerFrame = null;
 	private MainView mainView;
 	
 	private native void initClassLoader(ClassLoader c);
@@ -310,15 +310,20 @@ public class RhodesService {
 		return mainView;
 	}
 	
-	public View getRootWindow() {
-		return outerFrame;
+	public void setRootWindow(ViewGroup rootWindow) {
+		if (rootWindow == outerFrame)
+			return;
+		if (outerFrame != null)
+			outerFrame.removeAllViews();
+		outerFrame = rootWindow;
+		outerFrame.addView(mainView.getView());
 	}
 	
 	public static boolean isCreated() {
 		return instance != null;
 	}
 	
-	public RhodesService(Context c) {
+	public RhodesService(Context c, ViewGroup rootWindow) {
 		ctx = c;
 		instance = this;
 		
@@ -361,7 +366,7 @@ public class RhodesService {
 		
 		initWebStuff();
 		
-		outerFrame = new FrameLayout(ctx);
+		outerFrame = rootWindow;
 		
 		Logger.I("Rhodes", "Loading...");
 		showSplashScreen();
@@ -409,22 +414,6 @@ public class RhodesService {
 	public void exitApp() {
 		Process.killProcess(Process.myPid());
 	}
-	
-	/*
-	public void onActivate(boolean activate) {
-		if (activate) {
-			if (needGeoLocationRestart) {
-				GeoLocation.isKnownPosition();
-				needGeoLocationRestart = false;
-			}
-		}
-		else {
-			needGeoLocationRestart = GeoLocation.isAvailable();
-			GeoLocation.stop();
-		}
-		callActivationCallback(activate);
-	}
-	*/
 	
 	public void activityStarted() {
 		if (activitiesActive == 0) {
