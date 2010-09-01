@@ -26,7 +26,7 @@
     int index;
     [value getValue:&index];
     id mainView = [[Rhodes sharedInstance] mainView];
-    if (index == -1)
+    if (index < 0)
         index = [mainView activeTab];
 	[[Rhodes sharedInstance] hideSplash];
     [mainView navigateRedirect:url tab:index];
@@ -52,7 +52,10 @@
 + (void)run:(NSValue*)value {
     int index;
     [value getValue:&index];
-    [[[Rhodes sharedInstance] mainView] reload:index];
+    id mainView = [[Rhodes sharedInstance] mainView];
+    if (index < 0)
+        index = [mainView activeTab];
+    [mainView reload:index];
 }
 @end
 
@@ -64,7 +67,10 @@
 + (void)run:(NSString*)js :(NSValue*)value {
     int index;
     [value getValue:&index];
-    [[[Rhodes sharedInstance] mainView] executeJs:js tab:index];
+    id mainView = [[Rhodes sharedInstance] mainView];
+    if (index < 0)
+        index = [mainView activeTab];
+    [mainView executeJs:js tab:index];
 }
 @end
 
