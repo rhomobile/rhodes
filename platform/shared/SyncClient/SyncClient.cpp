@@ -14,7 +14,19 @@
 using namespace rho;
 using namespace rho::common;
 using namespace rho::sync;
-String getSyncTypeName( RHOM_SYNC_TYPE sync_type );
+const char* getSyncTypeName( RHOM_SYNC_TYPE sync_type )
+{
+    switch( sync_type)
+    {
+		case RST_INCREMENTAL:
+			return "incremental";
+		case RST_BULK_ONLY:
+			return "bulk_only";
+    }
+	
+    return "none";
+}
+
 void parseSyncNotify(const char* msg, RHO_SYNC_NOTIFY* pNotify);
 String rhom_generate_id();
 
@@ -784,18 +796,6 @@ String rhom_generate_id()
     return convertToStringA(g_base_temp_id);
 }
 
-String getSyncTypeName( RHOM_SYNC_TYPE sync_type )
-{
-    switch( sync_type)
-    {
-    case RST_INCREMENTAL:
-        return "incremental";
-    case RST_BULK_ONLY:
-        return "bulk_only";
-    }
-
-    return "none";
-}
 
 namespace rho {
 	const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
@@ -829,7 +829,7 @@ namespace rho {
 		
 	}
 	
-    /*static*/ String _CRhoAppAdapter::getRhoDBVersion()
+    /*static*/ const char* _CRhoAppAdapter::getRhoDBVersion()
 	{
 		return "1.0";
 	}
@@ -850,11 +850,6 @@ const char* rho_ruby_getMessageText(const char* szName)
 const char* rho_ruby_getErrorText(int nError)
 {
     return "";
-}
-
-char* RhoRuby_getRhoDBVersion()
-{
-    return "1.0";
 }
 
 void rho_net_impl_network_indicator(int active)
