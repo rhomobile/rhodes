@@ -125,6 +125,8 @@ void store_thr_jnienv(JNIEnv *env)
 JNIEnv *jnienv()
 {
     JNIEnv *env = (JNIEnv *)pthread_getspecific(g_thrkey);
+    if (!env)
+        RAWLOG_ERROR("JNIEnv is not set for this thread!!!");
     return env;
 }
 

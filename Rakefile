@@ -14,13 +14,13 @@ end
 $app_basedir = pwd
 chdir File.dirname(__FILE__)
 
-require 'lib/build/jake.rb'
+require File.join(pwd, 'lib/build/jake.rb')
 
-load 'platform/bb/build/bb.rake'
-load 'platform/android/build/android.rake'
-load 'platform/iphone/rbuild/iphone.rake'
-load 'platform/wm/build/wm.rake'
-load 'platform/linux/tasks/linux.rake'
+load File.join(pwd, 'platform/bb/build/bb.rake')
+load File.join(pwd, 'platform/android/build/android.rake')
+load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
+load File.join(pwd, 'platform/wm/build/wm.rake')
+load File.join(pwd, 'platform/linux/tasks/linux.rake')
 
 def get_dir_hash(dir, init = nil)
   hash = init
@@ -327,8 +327,10 @@ def common_bundle_start(startdir, dest)
 
   chdir File.join($srcdir,'apps')
 
-  Dir.glob("**/*.#{$config['platform']}.*").each do |file|
-    oldfile = file.gsub(Regexp.new(Regexp.escape('.') + $config['platform'] + Regexp.escape('.')),'.')
+  replace_platform = $config['platform']
+  replace_platform = "bb6" if $bb6
+  Dir.glob("**/*.#{replace_platform}.*").each do |file|
+    oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
     rm oldfile if File.exists? oldfile
     mv file,oldfile
   end
@@ -336,6 +338,7 @@ def common_bundle_start(startdir, dest)
   Dir.glob("**/*.wm.*").each { |f| rm f }
   Dir.glob("**/*.iphone.*").each { |f| rm f }
   Dir.glob("**/*.bb.*").each { |f| rm f }
+  Dir.glob("**/*.bb6.*").each { |f| rm f }
   Dir.glob("**/*.android.*").each { |f| rm f }
   Dir.glob("**/.svn").each { |f| rm_rf f }
   Dir.glob("**/CVS").each { |f| rm_rf f }
@@ -756,4 +759,38 @@ Rake::Task["rerdoc"].comment=nil
 task :rdocpush => :rdoc do
   puts "Pushing RDOC. This may take a while"
   `scp -r html/* dev@dev.rhomobile.com:dev.rhomobile.com/rhodes/`
+end
+
+namespace "build" do
+    #    desc "Build rhosync-client package"
+    task :rhosync_client do
+
+        bin_dir = "rhosync-client-bin"
+        src_dir = bin_dir + "/src"        
+        shared_dir = bin_dir + "/src/platform/shared"        
+        
+        rm_rf bin_dir
+        rm    "rhosync-client.zip" if File.exists? "rhosync-client.zip"
+        mkdir_p bin_dir
+        mkdir_p src_dir
+
+        cp_r 'rhosync-client', src_dir, :preserve => true
+        mkdir_p shared_dir
+        
+        Dir.glob("platform/shared/*").each do |f|
+            next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
+                f == "platform/shared/stlport"        
+ 
+            puts f                
+            cp_r f, shared_dir #, :preserve => true                        
+        end
+   
+        startdir = pwd
+        chdir src_dir
+        puts `zip -r #{File.join(startdir, "rhosync-client")} *`
+                
+        chdir startdir
+        
+        rm_rf bin_dir
+    end
 end

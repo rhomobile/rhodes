@@ -1,0 +1,22 @@
+--- 
+name: perfomance_spec
+bbver: 5.0
+sdk: /Users/crystax/work/rhomobile/rhodes
+applog: rholog.txt
+version: 1.0.0
+vendor: rhomobile
+sdkversion: 1.4
+wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
+iphone: 
+  sdk: iphonesimulator3.0
+  entitlements: ""
+  codesignidentity: ""
+  configuration: Debug
+android:
+  mapping: enabled
+  capabilities:
+    - network_state
+    - pim
+wm:
+bb:
+

@@ -2,8 +2,9 @@
 #include "RhoFile.h"
 #include "RhoFilePath.h"
 #include "StringConverter.h"
+#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
-
+#endif //RHO_NO_RUBY
 static const char* CONF_FILENAME = "apps/rhoconfig.txt";
 
 namespace rho{

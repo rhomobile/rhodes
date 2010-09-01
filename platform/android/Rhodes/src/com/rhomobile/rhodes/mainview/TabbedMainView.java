@@ -31,8 +31,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
@@ -111,13 +113,13 @@ public class TabbedMainView implements MainView {
 		TabHost.LayoutParams lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT, Gravity.TOP);
 		host.addView(tabWidget, lpt);
-		
+
 		FrameLayout frame = new FrameLayout(ctx);
 		frame.setId(android.R.id.tabcontent);
 		FrameLayout.LayoutParams lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT, Gravity.BOTTOM);
 		// TODO: detect tab widget height and use it here instead of hardcoded value
-		lpf.setMargins(0, 64, 0, 0);
+		//lpf.setMargins(0, 128, 0, 0);
 		host.addView(frame, lpf);
 		
 		host.setup();
@@ -140,6 +142,9 @@ public class TabbedMainView implements MainView {
 		});
 		
 		TabHost.TabSpec spec;
+		DisplayMetrics metrics = new DisplayMetrics();
+		WindowManager wm = (WindowManager)RhodesService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+		wm.getDefaultDisplay().getMetrics(metrics);
 		
 		for (int i = 0; i < size; ++i) {
 			Object param = tabs.elementAt(i);
@@ -177,7 +182,9 @@ public class TabbedMainView implements MainView {
 				String iconPath = RhoFileApi.normalizePath(icon);
 				Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 				if (bitmap != null)
+					bitmap.setDensity(metrics.DENSITY_MEDIUM);//Bitmap.DENSITY_NONE);
 					drawable = new BitmapDrawable(bitmap);
+					drawable.setTargetDensity(metrics);
 			}
 			if (drawable == null)
 				spec.setIndicator(label);
@@ -197,10 +204,27 @@ public class TabbedMainView implements MainView {
 			tabData.addElement(data);
 			host.addTab(spec);
 		}
+		
+		host.requestLayout();
+		
+		tabWidget.measure(host.getWidth(), host.getHeight());
+		int hh = tabWidget.getMeasuredHeight();
+		if (hh < 64) {
+			hh = 64;
+		}
+		lpf.setMargins(0, hh, 0, 0);
+		host.updateViewLayout(frame, lpf);
+		
+	
+	
 	}
 
 	public View getView() {
 		return host;
+	}
+
+	public WebView getWebView(int tab_index) {
+		return getView(tab_index).getWebView(-1);
 	}
 	
 	public WebView detachWebView() {

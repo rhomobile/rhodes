@@ -310,15 +310,15 @@ final public class RhodesApplication extends UiApplication implements SystemList
             {
 		        Version.SoftVersion ver = Version.getSoftVersion();
 		        if ( ver.nMajor > 4 )
-		        	m_strGetLink = RhoRuby.getMessageText("open_link_menu");
+		        	m_strGetLink = RhoAppAdapter.getMessageText("open_link_menu");
 		        else
-		        	m_strGetLink = RhoRuby.getMessageText("get_link_menu");
+		        	m_strGetLink = RhoAppAdapter.getMessageText("get_link_menu");
             }
 
             if (m_strEmailMenu==null)
-            	m_strEmailMenu = RhoRuby.getMessageText("email_menu");
+            	m_strEmailMenu = RhoAppAdapter.getMessageText("email_menu");
             if (m_strCallMenu==null)
-            	m_strCallMenu = RhoRuby.getMessageText("call_menu");
+            	m_strCallMenu = RhoAppAdapter.getMessageText("call_menu");
             
 	    	Menu menu = _mainScreen.getMenu(0);
 	        int size = menu.getSize();
@@ -610,7 +610,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	        add(_labelStatus = new LabelField(status != null ? status : "", Field.FIELD_HCENTER));
 	        add(new LabelField(""));
 	        
-	        ButtonField hideButton = new ButtonField( RhoRuby.getMessageText("hide"), Field.FIELD_HCENTER );
+	        ButtonField hideButton = new ButtonField( RhoAppAdapter.getMessageText("hide"), Field.FIELD_HCENTER );
 			hideButton.setChangeListener( new HideListener(this) );
 			add(hideButton);
 	    }
@@ -834,13 +834,13 @@ final public class RhodesApplication extends UiApplication implements SystemList
 
 		void updateMenuItemsLabel()
 		{
-	    	homeItem.setText(RhoRuby.getMessageText("home_menu"));
-	    	refreshItem.setText(RhoRuby.getMessageText("refresh_menu"));
-	    	backItem.setText(RhoRuby.getMessageText("back_menu"));
-	    	syncItem.setText(RhoRuby.getMessageText("sync_menu"));
-	    	optionsItem.setText(RhoRuby.getMessageText("options_menu"));
-	    	logItem.setText(RhoRuby.getMessageText("log_menu"));
-	    	closeItem.setText(RhoRuby.getMessageText("close_menu"));
+	    	homeItem.setText(RhoAppAdapter.getMessageText("home_menu"));
+	    	refreshItem.setText(RhoAppAdapter.getMessageText("refresh_menu"));
+	    	backItem.setText(RhoAppAdapter.getMessageText("back_menu"));
+	    	syncItem.setText(RhoAppAdapter.getMessageText("sync_menu"));
+	    	optionsItem.setText(RhoAppAdapter.getMessageText("options_menu"));
+	    	logItem.setText(RhoAppAdapter.getMessageText("log_menu"));
+	    	closeItem.setText(RhoAppAdapter.getMessageText("close_menu"));
 		}
 		
 		private void setDefaultItemToMenuItems(String label, MenuItem item) {

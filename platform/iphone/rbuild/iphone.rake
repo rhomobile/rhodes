@@ -116,22 +116,32 @@ namespace "config" do
       $entitlements = $config["env"]["iphone"]["entitlements"]
       $configuration = $config["env"]["iphone"]["configuration"]
       $sdk = $config["env"]["iphone"]["sdk"]
-      $emulator_version = $config["env"]["iphone"]["emulator"]
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
       $entitlements = $app_config["iphone"]["entitlements"]
       $configuration = $app_config["iphone"]["configuration"]
       $sdk = $app_config["iphone"]["sdk"]
-      $emulator_version = $app_config["iphone"]["emulator"]
     end
 
     if $sdk =~ /iphonesimulator/
-      $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
-        $sdk.gsub(/iphonesimulator/,"") + ".sdk"
+      sdkver = $sdk.gsub(/iphonesimulator/,"")
+      $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + sdkver + ".sdk"
     else
-      $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" +
-        $sdk.gsub(/iphoneos/,"") + ".sdk"
+      sdkver = $sdk.gsub(/iphoneos/,"")
+      $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + sdkver + ".sdk"
+    end
+
+    $emulator_version = nil
+    plist = File.join($sdkroot, 'System/Library/CoreServices/SystemVersion.plist')
+    if File.exists? plist
+      File.open(plist, 'r') do |f|
+        while line = f.gets
+          next unless line =~ /<string>(#{sdkver.gsub('.', '\.')}[^<]*)<\/string>/
+          $emulator_version = $1
+          break unless $emulator_version.nil?
+        end
+      end
     end
 
     unless File.exists? $homedir + "/.profile"

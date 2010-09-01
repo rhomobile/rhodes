@@ -35,6 +35,7 @@ platform\bb\RubyVM\src\com\rho\RhoLogger.java
 platform\bb\RubyVM\src\com\rho\RhoLogOutputSink.java
 platform\bb\RubyVM\src\com\rho\RhoProfiler.java
 platform\bb\RubyVM\src\com\rho\RhoRuby.java
+platform\bb\RubyVM\src\com\rho\RhoAppAdapter.java
 platform\bb\RubyVM\src\com\rho\RhoThread.java
 platform\bb\RubyVM\src\com\rho\ThreadQueue.java
 platform\bb\RubyVM\src\com\rho\RhoParams.java

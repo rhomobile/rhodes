@@ -225,7 +225,7 @@ void rho_ruby_loadserversources(const char* szData)
     rb_funcall(framework, loadServerSources_mid, 1, rb_str_new2(szData) );
 }
 
-char* RhoRuby_getRhoDBVersion()
+const char* rho_ruby_getRhoDBVersion()
 {
     VALUE moduleRhodes = rb_const_get(rb_cObject, rb_intern("Rhodes"));
     VALUE valVer = rb_const_get(moduleRhodes, rb_intern("DBVERSION"));

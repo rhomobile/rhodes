@@ -3,7 +3,7 @@ package com.rho.sync;
 import com.rho.Mutex;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.rho.RhoRuby;
+import com.rho.RhoAppAdapter;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -260,7 +260,7 @@ public class SyncNotify {
     {
         SyncSource src = (SyncSource)sources.elementAt(nSrc);
 
-        if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoRuby.ERR_NONE )
+        if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
         {
             fireSyncNotification(src, true, src.m_nErrCode, "");
     		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
@@ -325,15 +325,15 @@ public class SyncNotify {
     {
     	synchronized(m_mxSyncNotifications)
     	{    	
-	    	if (m_syncStatusListener != null && (m_bEnableReporting || error == RhoRuby.ERR_SYNCVERSION) ) {
+	    	if (m_syncStatusListener != null && (m_bEnableReporting || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
 	    		
-	    		if ( error == RhoRuby.ERR_SYNCVERSION )
-	    			status = RhoRuby.getErrorText(error);
+	    		if ( error == RhoAppAdapter.ERR_SYNCVERSION )
+	    			status = RhoAppAdapter.getErrorText(error);
 	    		else
 	    		{
 		    		if ( strDetails.length() == 0 )
-		    			strDetails = RhoRuby.getErrorText(error);
-		    		status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
+		    			strDetails = RhoAppAdapter.getErrorText(error);
+		    		status += (strDetails.length() > 0 ? RhoAppAdapter.getMessageText("details") + strDetails: "");
 	    		}
 	    		
 	        	LOG.INFO("Status: "+status);
@@ -348,9 +348,9 @@ public class SyncNotify {
 		if ( getSync().getState() == SyncEngine.esExit )
 			return;
 		
-		if( nErrCode != RhoRuby.ERR_NONE)
+		if( nErrCode != RhoAppAdapter.ERR_NONE)
 		{
-			String strMessage = RhoRuby.getMessageText("sync_failed_for") + "bulk.";
+			String strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + "bulk.";
 			reportSyncStatus(strMessage,nErrCode,"");
 		}
 
@@ -380,12 +380,12 @@ public class SyncNotify {
 		if ( getSync().getState() == SyncEngine.esExit )
 			return;
 		
-		if( strMessage.length() > 0 || nErrCode != RhoRuby.ERR_NONE)
+		if( strMessage.length() > 0 || nErrCode != RhoAppAdapter.ERR_NONE)
 		{
-			if ( getSync().getState() != SyncEngine.esSearch )
+			if ( !getSync().isSearch() )
 			{
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
-					strMessage = RhoRuby.getMessageText("sync_failed_for") + src.getName() + ".";
+					strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + src.getName() + ".";
 				
 				reportSyncStatus(strMessage,nErrCode,src!= null?src.m_strError:"");
 			}
@@ -397,7 +397,7 @@ public class SyncNotify {
 	SyncNotification getSyncNotifyBySrc(SyncSource src)
 	{
 	    SyncNotification pSN = null;
-		if ( getSync().getState() == SyncEngine.esSearch )
+		if ( getSync().isSearch() )
 			pSN = m_pSearchNotification;
 		else
 	    {
@@ -449,12 +449,12 @@ public class SyncNotify {
 			        strBody += "&status=";
 			        if ( bFinish )
 			        {
-				        if ( nErrCode == RhoRuby.ERR_NONE )
+				        if ( nErrCode == RhoAppAdapter.ERR_NONE )
 				        	strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";				        	
 				        else
 				        {
 				        	if ( getSync().isStoppedByUser() )
-		                        nErrCode = RhoRuby.ERR_CANCELBYUSER;
+		                        nErrCode = RhoAppAdapter.ERR_CANCELBYUSER;
 				        	
 				        	strBody += "error";				        	
 						    strBody += "&error_code=" + nErrCode;
@@ -517,7 +517,7 @@ public class SyncNotify {
 
 	    synchronized(m_mxSyncNotifications)
 	    {
-	    	if ( getSync().getState() == SyncEngine.esSearch )
+	    	if ( getSync().isSearch() )
 	            m_pSearchNotification = null;
 	        else
 	            m_mapSyncNotifications.remove(src.getID());
