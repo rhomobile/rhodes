@@ -17,6 +17,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Location"
 
+int rho_rhodesapp_check_mode();
+
 static const CFTimeInterval kTimeOutInSeconds = 25;
 static void _TimerCallBack(CFRunLoopTimerRef timer, void* context);
 

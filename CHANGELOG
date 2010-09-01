@@ -1,5 +1,5 @@
 ## 2.1.0
-* Change empty first/last name to an emptry string for comparison, instead of being nil (jmalonzo)
+* Change empty first/last name to an empty string for comparison, instead of being nil (jmalonzo)
 
 ## 2.0.4
 * #4375895 - BB: cod files too big

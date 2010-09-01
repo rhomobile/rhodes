@@ -1,6 +1,7 @@
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
+#include "net/URI.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 #include <algorithm>
@@ -64,40 +65,6 @@ static bool isfile(String const &path)
 {
     struct stat st;
     return stat(path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
-}
-
-static String decode(String const &url)
-{
-    String ret;
-    for (const char *s = url.c_str(); *s != '\0'; ++s) {
-        if (*s != '%') {
-            ret.push_back(*s);
-            continue;
-        }
-        
-        unsigned int c1 = (unsigned char)*++s;
-        if (c1 >= (unsigned char)'0' && c1 <= (unsigned char)'9')
-            c1 = c1 - (unsigned char)'0';
-        else if (c1 >= (unsigned char)'a' && c1 <= (unsigned char)'f')
-            c1 = c1 - (unsigned char)'a' + 10;
-        else if (c1 >= (unsigned char)'A' && c1 <= (unsigned char)'F')
-            c1 = c1 - (unsigned char)'A' + 10;
-        else
-            break;
-        unsigned int c2 = (unsigned char)*++s;
-        if (c2 >= (unsigned char)'0' && c2 <= (unsigned char)'9')
-            c2 = c2 - (unsigned char)'0';
-        else if (c2 >= (unsigned char)'a' && c2 <= (unsigned char)'f')
-            c2 = c2 - (unsigned char)'a' + 10;
-        else if (c2 >= (unsigned char)'A' && c2 <= (unsigned char)'F')
-            c2 = c2 - (unsigned char)'A' + 10;
-        else
-            break;
-        
-        char c = (char)((c1 << 4) | c2);
-        ret.push_back(c);
-    }
-    return ret;
 }
 
 static bool isindex(String const &uri)
@@ -267,39 +234,8 @@ static VALUE create_request_hash(String const &application, String const &model,
 CHttpServer::CHttpServer(int port, String const &root)
     :m_exit(false), m_port(port), verbose(true)
 {
-    RAWTRACE("Open listening socket...");
-
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
-    m_bPause = false;
-    m_listener = socket(AF_INET, SOCK_STREAM, 0);
-    if (m_listener == SOCKET_ERROR) {
-        RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
-        return;
-    }
-    
-    int enable = 1;
-    if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
-        RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
-        return;
-    }
-    
-    struct sockaddr_in sa;
-    memset(&sa, 0, sizeof(sa));
-    sa.sin_family = AF_INET;
-    sa.sin_port = htons((uint16_t)m_port);
-    sa.sin_addr.s_addr = INADDR_ANY;
-    if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
-        RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
-        return;
-    }
-    
-    if (listen(m_listener, 128) == SOCKET_ERROR) {
-        RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
-        return;
-    }
-    
-    RAWTRACE1("Listen for connections on port %d", m_port);
 }
 
 CHttpServer::~CHttpServer()
@@ -338,9 +274,47 @@ CHttpServer::callback_t CHttpServer::registered(String const &uri)
 
 extern "C" void rb_gc(void);
 
+bool CHttpServer::init()
+{
+    RAWTRACE("Open listening socket...");
+    
+    if (m_listener != INVALID_SOCKET)
+        closesocket(m_listener);
+    m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    if (m_listener == INVALID_SOCKET) {
+        RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
+        return false;
+    }
+    
+    int enable = 1;
+    if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
+        RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
+        return false;
+    }
+    
+    struct sockaddr_in sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sin_family = AF_INET;
+    sa.sin_port = htons((uint16_t)m_port);
+    sa.sin_addr.s_addr = INADDR_ANY;
+    if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
+        RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
+        return false;
+    }
+    
+    if (listen(m_listener, 128) == SOCKET_ERROR) {
+        RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
+        return false;
+    }
+    
+    RAWTRACE1("Listen for connections on port %d", m_port);
+    return true;
+}
+
 bool CHttpServer::run()
 {
-    if (m_listener == INVALID_SOCKET)
+    RAWTRACE("Start HTTP server");
+    if (!init())
         return false;
     
     for(;;) {
@@ -350,6 +324,7 @@ bool CHttpServer::run()
         rho_ruby_stop_threadidle();
 		if (m_exit) {
 			RAWTRACE("Stop HTTP server");
+            m_exit = false;
 			return true;
 		}
         if (conn == INVALID_SOCKET) {
@@ -357,16 +332,12 @@ bool CHttpServer::run()
             if (RHO_NET_ERROR_CODE == EINTR)
                 continue;
 #endif
-            
             RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
             return false;
         }
 
-        bool bProcessed = false;
-        if (!m_bPause){
-            RAWTRACE("Connection accepted, process it...");
-            bProcessed = process(conn);
-        }
+        RAWTRACE("Connection accepted, process it...");
+        bool bProcessed = process(conn);
 
         RAWTRACE("Close connected socket");
         closesocket(conn);
@@ -374,8 +345,6 @@ bool CHttpServer::run()
         if ( bProcessed )
             rb_gc();
     }
-    
-    return true;
 }
 
 typedef Vector<char> ByteVector;
@@ -700,7 +669,7 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
     }
     
     uri.assign(s, e);
-    uri = decode(uri);
+    uri = URI::urlDecode(uri);
     
     query.clear();
     if (*e == '?') {

@@ -4,7 +4,9 @@
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
+#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
+#endif /RHO_NO_RUBY
 
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;

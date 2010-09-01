@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5C2F10BB116146930054AC80 /* RhoRuby.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C2F10B9116146930054AC80 /* RhoRuby.cpp */; };
-		5C2F10BC116146930054AC80 /* RhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C2F10BA116146930054AC80 /* RhoRuby.h */; };
+		5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */; };
+		5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */; };
 		5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */; };
 		5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335510FC2977600F268F0 /* RhoThread.cpp */; };
 		5C5335550FC2977600F268F0 /* RhoThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335520FC2977600F268F0 /* RhoThread.h */; };
@@ -16,7 +16,6 @@
 		5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59BF4C115B4BC300E96ADE /* unzip.h */; };
 		5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */; };
 		5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C663BE811F3712C005F60AF /* RhodesAppBase.h */; };
-		5C663BEC11F3712C005F60AF /* RhoError.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C663BE911F3712C005F60AF /* RhoError.h */; };
 		5C6855E910A02EAA008DA047 /* RhodesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6855E610A02EAA008DA047 /* RhodesApp.cpp */; };
 		5C6855EA10A02EAA008DA047 /* RhodesApp.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6855E710A02EAA008DA047 /* RhodesApp.h */; };
 		5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B448A0F946589003CB43A /* RhoConf.cpp */; };
@@ -74,8 +73,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5C2F10B9116146930054AC80 /* RhoRuby.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoRuby.cpp; path = ../../shared/rubyext/RhoRuby.cpp; sourceTree = SOURCE_ROOT; };
-		5C2F10BA116146930054AC80 /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../../shared/rubyext/RhoRuby.h; sourceTree = SOURCE_ROOT; };
+		5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoAppAdapter.cpp; path = ../../shared/rubyext/RhoAppAdapter.cpp; sourceTree = SOURCE_ROOT; };
+		5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoAppAdapter.h; path = ../../shared/common/RhoAppAdapter.h; sourceTree = SOURCE_ROOT; };
 		5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoThreadImpl.h; path = ../../shared/common/IRhoThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		5C5335510FC2977600F268F0 /* RhoThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoThread.cpp; path = ../../shared/common/RhoThread.cpp; sourceTree = SOURCE_ROOT; };
 		5C5335520FC2977600F268F0 /* RhoThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoThread.h; path = ../../shared/common/RhoThread.h; sourceTree = SOURCE_ROOT; };
@@ -83,7 +82,6 @@
 		5C59BF4C115B4BC300E96ADE /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = ../../shared/unzip/unzip.h; sourceTree = SOURCE_ROOT; };
 		5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesAppBase.cpp; path = ../../shared/common/RhodesAppBase.cpp; sourceTree = SOURCE_ROOT; };
 		5C663BE811F3712C005F60AF /* RhodesAppBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesAppBase.h; path = ../../shared/common/RhodesAppBase.h; sourceTree = SOURCE_ROOT; };
-		5C663BE911F3712C005F60AF /* RhoError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoError.h; path = ../../shared/common/RhoError.h; sourceTree = SOURCE_ROOT; };
 		5C6855E610A02EAA008DA047 /* RhodesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesApp.cpp; path = ../../shared/common/RhodesApp.cpp; sourceTree = SOURCE_ROOT; };
 		5C6855E710A02EAA008DA047 /* RhodesApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesApp.h; path = ../../shared/common/RhodesApp.h; sourceTree = SOURCE_ROOT; };
 		5C6B448A0F946589003CB43A /* RhoConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConf.cpp; path = ../../shared/common/RhoConf.cpp; sourceTree = SOURCE_ROOT; };
@@ -204,9 +202,9 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */,
 				5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */,
 				5C663BE811F3712C005F60AF /* RhodesAppBase.h */,
-				5C663BE911F3712C005F60AF /* RhoError.h */,
 				5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */,
 				5CA2DE8E11B01EF000B868D5 /* ThreadQueue.cpp */,
 				5CA2DE8F11B01EF000B868D5 /* ThreadQueue.h */,
@@ -262,8 +260,7 @@
 		5C798931113BD10C005F8736 /* rubyext */ = {
 			isa = PBXGroup;
 			children = (
-				5C2F10B9116146930054AC80 /* RhoRuby.cpp */,
-				5C2F10BA116146930054AC80 /* RhoRuby.h */,
+				5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */,
 				5CECDBB2113FE3620084A75B /* System.cpp */,
 				5C798932113BD148005F8736 /* GeoLocation.cpp */,
 				5C798933113BD148005F8736 /* GeoLocation.h */,
@@ -337,11 +334,10 @@
 				5C798935113BD148005F8736 /* GeoLocation.h in Headers */,
 				BD8DF8891147C8090041A968 /* SplashScreen.h in Headers */,
 				5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */,
-				5C2F10BC116146930054AC80 /* RhoRuby.h in Headers */,
 				5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */,
 				5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */,
 				5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */,
-				5C663BEC11F3712C005F60AF /* RhoError.h in Headers */,
+				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,11 +403,11 @@
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
 				BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */,
 				5C59BF4D115B4BC300E96ADE /* unzip.cpp in Sources */,
-				5C2F10BB116146930054AC80 /* RhoRuby.cpp in Sources */,
 				5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */,
 				5CA2DE9011B01EF000B868D5 /* ThreadQueue.cpp in Sources */,
 				5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */,
 				5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */,
+				5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

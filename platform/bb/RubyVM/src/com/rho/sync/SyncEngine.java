@@ -24,7 +24,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
 import com.rho.RhoProfiler;
-import com.rho.RhoRuby;
+import com.rho.RhoAppAdapter;
 import com.rho.TimeInterval;
 import com.rho.db.*;
 import com.rho.net.*;
@@ -78,11 +78,13 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean m_bStopByUser = false;
     int m_nSyncPageSize = 2000;
     boolean m_bNoThreaded = false;
-    int m_nErrCode = RhoRuby.ERR_NONE;
+    int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "";
+    boolean m_bIsSearch;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
+    boolean isSearch(){ return m_bIsSearch; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel(); } }
@@ -130,8 +132,9 @@ public class SyncEngine implements NetRequest.IRhoSession
     void prepareSync(int eState, SourceID oSrcID)throws Exception
     {
         setState(eState);
+        m_bIsSearch =  eState == esSearch;
         m_bStopByUser = false;
-        m_nErrCode = RhoRuby.ERR_NONE;
+        m_nErrCode = RhoAppAdapter.ERR_NONE;
         m_strError = "";
         
         loadAllSources();
@@ -140,7 +143,7 @@ public class SyncEngine implements NetRequest.IRhoSession
         if ( isSessionExist()  )
         {
             m_clientID = loadClientID();
-            if ( m_nErrCode == RhoRuby.ERR_NONE )
+            if ( m_nErrCode == RhoAppAdapter.ERR_NONE )
             {
                 getNotify().cleanLastSyncObjectCount();
        	        doBulkSync();
@@ -148,7 +151,7 @@ public class SyncEngine implements NetRequest.IRhoSession
                 return;
             }
         }else
-            m_nErrCode = RhoRuby.ERR_CLIENTISNOTLOGGEDIN;
+            m_nErrCode = RhoAppAdapter.ERR_CLIENTISNOTLOGGEDIN;
         
         SyncSource src = null;
         if ( oSrcID != null )
@@ -243,10 +246,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
 		            if ( pSrc != null )
 		            {
-		                strQuery += "&source[][name]=" + pSrc.getName();
+		                strQuery += "&sources[][name]=" + pSrc.getName();
 		
 		                if ( !pSrc.isTokenFromDB() && pSrc.getToken() > 1 )
-		                    strQuery += "&source[][token]=" + pSrc.getToken();
+		                    strQuery += "&sources[][token]=" + pSrc.getToken();
 		            }
 		        }
 		
@@ -256,7 +259,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        if ( !resp.isOK() )
 		        {
 		            stopSync();
-		            m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+		            m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 		            m_strError = resp.getCharData();
 		            continue;
 		        }
@@ -268,12 +271,14 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
 		        {
 		            JSONArrayIterator oSrcArr = oJsonArr.getCurArrayIter();//new JSONArrayIterator(oJsonArr.getCurItem());
-		
+		            if (oSrcArr.isEnd())
+		            	break;
+		            
 		            int nVersion = 0;
 		            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
 		            {
 		                nVersion = oSrcArr.getCurItem().getInt("version");
-		                oJsonArr.next();
+		                oSrcArr.next();
 		            }
 		
 		            if ( nVersion != getProtocol().getVersion() )
@@ -281,16 +286,21 @@ public class SyncEngine implements NetRequest.IRhoSession
 		                LOG.ERROR( "Sync server send search data with incompatible version. Client version: " + getProtocol().getVersion() +
 		                    "; Server response version: " + nVersion );
 		                stopSync();
-		                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
 		                m_strError = resp.getCharData();
 		                continue;
 		            }
 		
+		            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("token"))
+		            {
+		                oSrcArr.next();
+		            }
+		            
 		            if ( !oSrcArr.getCurItem().hasName("source") )
 		            {
 		                LOG.ERROR( "Sync server send search data without source name." );
 		                stopSync();
-		                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
 		                m_strError = resp.getCharData();
 		                continue;
 		            }
@@ -301,7 +311,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            {
 		                LOG.ERROR("Sync server send search data for unknown source name:" + strSrcName);
 		                stopSync();
-		                m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+		                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
 		                m_strError = resp.getCharData();
 		                continue;
 		            }
@@ -342,7 +352,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    } catch(Exception exc) {
     		LOG.ERROR("Search failed.", exc);
 
-    		getNotify().fireAllSyncNotifications(true, RhoRuby.ERR_RUNTIME, "");
+    		getNotify().fireAllSyncNotifications(true, RhoAppAdapter.ERR_RUNTIME, "");
 	    }
 		    
     }
@@ -364,14 +374,14 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	                src.sync();
 	
-				    getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoRuby.ERR_NONE ? RhoRuby.getMessageText("sync_completed") : "");
+				    getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoAppAdapter.ERR_NONE ? RhoAppAdapter.getMessageText("sync_completed") : "");
 	            }else
 	            {
 //                    LOG.ERROR( "Sync one source : Unknown Source " + oSrcID.toString() );
 	            
 		        	src = new SyncSource(this, getUserDB());
 			    	//src.m_strError = "Unknown sync source.";
-			    	src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+			    	src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
 		        	
 	    	    	throw new RuntimeException("Sync one source : Unknown Source " + oSrcID.toString() );
 	            }
@@ -380,8 +390,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    } catch(Exception exc) {
     		LOG.ERROR("Sync source " + oSrcID.toString() + " failed.", exc);
 	    	
-	    	if ( src != null && src.m_nErrCode == RhoRuby.ERR_NONE )
-	    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+	    	if ( src != null && src.m_nErrCode == RhoAppAdapter.ERR_NONE )
+	    		src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
 	    	
 	    	getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" ); 
 	    }
@@ -533,7 +543,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if ( strSources.length() > 0 )
 	    {
 	        if (isNoThreadedMode())
-	            RhoRuby.loadserversources(strSources);            
+	            RhoAppAdapter.loadServerSources(strSources);            
 	        else
 	        {
 	        	NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
@@ -562,7 +572,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    
 	    if ( !resp.isOK() )
 	    {
-	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
+	    	m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 	    	m_strError = resp.getCharData();
 	    }
 	    /*else
@@ -595,10 +605,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            return oJsonObject.getString("client_id");
 	    }else
 	    {
-	    	m_nErrCode = RhoRuby.getErrorFromResponse(resp);
-	    	if ( m_nErrCode == RhoRuby.ERR_NONE )
+	    	m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
+	    	if ( m_nErrCode == RhoAppAdapter.ERR_NONE )
 	    	{
-	    		m_nErrCode = RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE;
+	    		m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
 	    		m_strError = resp.getCharData();
 	    	}
 	    }
@@ -618,7 +628,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        return;
 
 		LOG.INFO("Bulk sync: start");
-		getNotify().fireBulkSyncNotification(false, "start", "", RhoRuby.ERR_NONE);
+		getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);
 		
 	    for (int i = 0; i < (int)m_arPartitions.size() && isContinueSync(); i++)
 	        loadBulkPartition( (String)m_arPartitions.elementAt(i));
@@ -626,7 +636,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if (isContinueSync())
 	    {
 	    	RhoConf.getInstance().setInt("bulksync_state", 1, true);
-	        getNotify().fireBulkSyncNotification(true, "", "", RhoRuby.ERR_NONE);
+	        getNotify().fireBulkSyncNotification(true, "", "", RhoAppAdapter.ERR_NONE);
 	    }
 	}
 
@@ -638,7 +648,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
 	    String strDataUrl = "", strCmd = "";
 
-	    getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoRuby.ERR_NONE);
+	    getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
 	    
 	    while(strCmd.length() == 0&&isContinueSync())
 	    {	    
@@ -647,7 +657,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        {
 	    	    LOG.ERROR( "Bulk sync failed: server return an error." );
 	    	    stopSync();
-	    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_REMOTESERVER);
+	    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
 	    	    return;
 	        }
 
@@ -673,14 +683,14 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if ( strCmd.compareTo("nop") == 0)
 	    {
 		    LOG.INFO("Bulk sync return no data.");
-		    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_NONE);		    
+		    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_NONE);		    
 		    return;
 	    }
 
         if ( !isContinueSync() )
             return;
 
-	    getNotify().fireBulkSyncNotification(false, "download", strPartition, RhoRuby.ERR_NONE);
+	    getNotify().fireBulkSyncNotification(false, "download", strPartition, RhoAppAdapter.ERR_NONE);
 	    
 	    String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.data");
 	    String strHsqlDataUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.data";
@@ -691,7 +701,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    {
 			    LOG.ERROR("Bulk sync failed: cannot download database file: " + resp1.getRespCode() );
 			    stopSync();
-			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_REMOTESERVER);
+			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
 			    return;
 		    }
 	    }
@@ -708,19 +718,19 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    {
 			    LOG.ERROR("Bulk sync failed: cannot download database file.");
 			    stopSync();
-			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoRuby.ERR_REMOTESERVER);
+			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
 			    return;
 		    }
 	    }
 	    
 		LOG.INFO("Bulk sync: start change db");
-		getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoRuby.ERR_NONE);
+		getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
 		
 	    dbPartition.setBulkSyncDB(fDataName, fScriptName);
 	    processServerSources("{\"partition\":\"" + strPartition + "\"}");
 	    
 		LOG.INFO("Bulk sync: end change db");
-		getNotify().fireBulkSyncNotification(false, "", strPartition, RhoRuby.ERR_NONE);
+		getNotify().fireBulkSyncNotification(false, "", strPartition, RhoAppAdapter.ERR_NONE);
 	}
 	
 	String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)throws Exception
@@ -771,14 +781,14 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    getNotify().onSyncSourceEnd(i, m_sources);
     	}catch(Exception exc)
     	{
-	    	if ( src.m_nErrCode == RhoRuby.ERR_NONE )
-	    		src.m_nErrCode = RhoRuby.ERR_RUNTIME;
+	    	if ( src.m_nErrCode == RhoAppAdapter.ERR_NONE )
+	    		src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
 	    	
 	    	setState(esStop);
     		throw exc;
     	}finally{
     		getNotify().onSyncSourceEnd( i, m_sources );
-    		bError = src.m_nErrCode != RhoRuby.ERR_NONE;
+    		bError = src.m_nErrCode != RhoAppAdapter.ERR_NONE;
     	}
     	
 	    return !bError;
@@ -799,7 +809,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 
 	    if ( !bError)
-	    	getNotify().fireSyncNotification(null, true, RhoRuby.ERR_NONE, RhoRuby.getMessageText("sync_completed"));
+	    	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 	}
 	
 	void login(String name, String password, String callback)
@@ -819,8 +829,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    try{
 				
 			    resp = getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this );
-			    int nErrCode = RhoRuby.getErrorFromResponse(resp);
-			    if ( nErrCode != RhoRuby.ERR_NONE )
+			    int nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
+			    if ( nErrCode != RhoAppAdapter.ERR_NONE )
 			    {
 			        getNotify().callLoginCallback(callback, nErrCode, resp.getCharData());
 			        return;
@@ -828,7 +838,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    }catch(IOException exc)
 		    {
 				LOG.ERROR("Login failed.", exc);
-		    	getNotify().callLoginCallback(callback, RhoRuby.getNetErrorCode(exc), "" );
+		    	getNotify().callLoginCallback(callback, RhoAppAdapter.getNetErrorCode(exc), "" );
 		    	return;
 		    }
 		    
@@ -836,7 +846,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    if ( strSession == null || strSession.length() == 0 )
 		    {
 		    	LOG.ERROR("Return empty session.");
-		    	getNotify().callLoginCallback(callback, RhoRuby.ERR_UNEXPECTEDSERVERRESPONSE, "" );
+		    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
 		        return;
 		    }
 		    
@@ -846,7 +856,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    else
 		    	getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 		
-	    	getNotify().callLoginCallback(callback, RhoRuby.ERR_NONE, "" );
+	    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_NONE, "" );
 		    
 	    	if ( ClientRegister.getInstance() != null )
 	    		ClientRegister.getInstance().startUp();	    	
@@ -854,7 +864,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		}catch(Exception exc)
 		{
 			LOG.ERROR("Login failed.", exc);
-	    	getNotify().callLoginCallback(callback, RhoRuby.ERR_RUNTIME, "" );
+	    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_RUNTIME, "" );
 		}
 	}
 

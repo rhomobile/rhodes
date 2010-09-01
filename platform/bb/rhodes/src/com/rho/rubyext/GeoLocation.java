@@ -12,7 +12,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.rho.net.NetRequest;
-import com.rho.RhoRuby;
+import com.rho.RhoAppAdapter;
 import j2me.lang.MathEx;
 
 public class GeoLocation extends RhoThread{
@@ -241,7 +241,7 @@ public class GeoLocation extends RhoThread{
 	        	String strFullUrl = netRequest.resolveUrl(m_strUrl);
 	        	String strBody = "rho_callback=1";
 	        	if (bError && isAvailable() )
-	        		strBody += "&status=error&error_code=" + RhoRuby.ERR_GEOLOCATION;
+	        		strBody += "&status=error&error_code=" + RhoAppAdapter.ERR_GEOLOCATION;
 	        	else	
 	        		strBody += "&status=ok";
 	        		

@@ -70,7 +70,7 @@ VALUE rho_ruby_create_integer(__int64 i);
 VALUE rho_ruby_create_double(double d);
 void rho_ruby_add_to_array(VALUE ar, VALUE val);
 
-char* RhoRuby_getRhoDBVersion();
+const char* rho_ruby_getRhoDBVersion();
 
 typedef void rho_hash_eachstr_func(const char*, const char*, void*);
 void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func *, void* data);

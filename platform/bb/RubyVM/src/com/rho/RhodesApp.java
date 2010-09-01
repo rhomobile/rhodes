@@ -163,7 +163,7 @@ public class RhodesApp
             }
         }
 
-        return true;
+        return false;
     }
  
     public void setScreenRotationNotification(String strUrl, String strParams)throws Exception
