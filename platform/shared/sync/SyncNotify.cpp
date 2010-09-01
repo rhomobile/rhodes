@@ -251,6 +251,14 @@ CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bR
         m_strUrl = RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
+String CSyncNotification::toString()const
+{
+	if ( m_cCallback )
+		return "C_Callback";
+		
+	return "Url :" + m_strUrl + "; Params: " + m_strParams;
+}
+	
 void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
 {
     LOG(INFO) + "Set search notification." + (pNotify ? pNotify->toString() : "");
