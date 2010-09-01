@@ -32,13 +32,7 @@ struct CSyncNotification
     CSyncNotification(RHOC_CALLBACK callback, void* callback_data, boolean bRemoveAfterFire) : 
         m_cCallback(callback), m_cCallbackData(callback_data), m_bRemoveAfterFire(false){}
 
-    String toString()const
-    {
-        if ( m_cCallback )
-            return "C_Callback";
-
-        return "Url :" + m_strUrl + "; Params: " + m_strParams;
-    }
+    String toString()const;
 
 };
 
