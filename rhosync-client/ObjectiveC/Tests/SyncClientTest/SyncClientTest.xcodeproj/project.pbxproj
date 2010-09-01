@@ -15,8 +15,9 @@
 		5C0D0BEF121D31280022E83C /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BEE121D31280022E83C /* libz.dylib */; };
 		5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */; };
 		5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0D0C22121D35770022E83C /* CFNetwork.framework */; };
-		5C2CE391122AFD3D005EDBC4 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C2CE390122AFD3D005EDBC4 /* libstdc++.dylib */; };
 		5C2CE4FA122C3090005EDBC4 /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C2CE4F6122C3090005EDBC4 /* db */; };
+		5C581124122E4EDB00264A98 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C581123122E4EDB00264A98 /* libstdc++.6.dylib */; };
+		5C581133122E4F4E00264A98 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C581132122E4F4E00264A98 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +49,9 @@
 		5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		5C0D0C22121D35770022E83C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5C2CE323122AF5A4005EDBC4 /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../../SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
-		5C2CE390122AFD3D005EDBC4 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/gcc/arm-apple-darwin10/4.0.1/libstdc++.dylib"; sourceTree = SDKROOT; };
 		5C2CE4F6122C3090005EDBC4 /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../../platform/shared/db/res/db; sourceTree = SOURCE_ROOT; };
+		5C581123122E4EDB00264A98 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		5C581132122E4F4E00264A98 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* SyncClientTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SyncClientTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -64,7 +66,8 @@
 				5C0D0BEF121D31280022E83C /* libz.dylib in Frameworks */,
 				5C0D0BF3121D314B0022E83C /* libsqlite3.0.dylib in Frameworks */,
 				5C0D0C23121D35770022E83C /* CFNetwork.framework in Frameworks */,
-				5C2CE391122AFD3D005EDBC4 /* libstdc++.dylib in Frameworks */,
+				5C581124122E4EDB00264A98 /* libstdc++.6.dylib in Frameworks */,
+				5C581133122E4F4E00264A98 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +95,8 @@
 				5C0D0BEE121D31280022E83C /* libz.dylib */,
 				5C0D0BF2121D314B0022E83C /* libsqlite3.0.dylib */,
 				5C0D0C22121D35770022E83C /* CFNetwork.framework */,
-				5C2CE390122AFD3D005EDBC4 /* libstdc++.dylib */,
+				5C581123122E4EDB00264A98 /* libstdc++.6.dylib */,
+				5C581132122E4F4E00264A98 /* QuartzCore.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -259,11 +263,7 @@
 				GCC_PREFIX_HEADER = SyncClientTest_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "SyncClientTest-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../build/Debug-iphonesimulator\"",
-					"\"$(SDKROOT)/usr/lib/gcc/arm-apple-darwin10/4.0.1\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = SyncClientTest;
