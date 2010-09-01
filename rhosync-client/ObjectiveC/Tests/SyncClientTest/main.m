@@ -245,6 +245,12 @@ int main(int argc, char *argv[]) {
 	
     //int retVal = runSyncClientTests();
 	int retVal = runObjCClientTest();
+	
+	if (retVal)
+		NSLog(@"SUCCESS");
+	else
+		NSLog(@"FAILURE");
+	
     [pool release];
     return retVal;
 }
