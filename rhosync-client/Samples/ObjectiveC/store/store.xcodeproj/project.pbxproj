@@ -32,14 +32,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C84C0F2122D0DA100B0873C /* SyncClient.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libSyncClient.a */;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 		5C84C0F8122D0DAC00B0873C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C84C0F2122D0DA100B0873C /* SyncClient.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* SyncClient */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = SyncClient;
 		};
 /* End PBXContainerItemProxy section */
@@ -286,7 +286,7 @@
 				GCC_PREFIX_HEADER = store_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "store-Info.plist";
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = store;
 				SYMROOT = ../../../build;
@@ -302,7 +302,7 @@
 				GCC_PREFIX_HEADER = store_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "store-Info.plist";
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = store;
 				SYMROOT = ../../../build;

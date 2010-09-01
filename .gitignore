@@ -23,7 +23,7 @@ lib/extensions/barcode/ext/barcode/platform/iphone/build/*
 platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/iphone/bin/*
-platform/iphone/Info.plist
+#platform/iphone/Info.plist
 platform/mac/bin/*
 platform/osx/Rhodes Debugger/build/*
 platform/iphone/*/*.link
@@ -124,8 +124,8 @@ spec/phone_spec/last_bbver
 
 platform/shared/curl/lib/rhoconf.h
 .idea
-*.plist
-Info.plist
+#*.plist
+#Info.plist
 
 platform/bb/Hsqldb/Hsqldb.jar
 platform/bb/RhoBundle/RhoBundle.jar
