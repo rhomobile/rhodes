@@ -768,8 +768,8 @@ namespace "build" do
         bin_dir = "rhosync-client-bin"
         src_dir = bin_dir + "/src"        
         shared_dir = bin_dir + "/src/platform/shared"        
-        ver = File.read("rhosync-client/version").gsub(".", "_")
-        zip_name = "rhosync-client"+ver+".zip"
+        ver = File.read("rhosync-client/version") #.gsub(".", "_")
+        zip_name = "rhosync-client-"+ver+".zip"
         rm_rf bin_dir
         rm    zip_name if File.exists? zip_name
         mkdir_p bin_dir
