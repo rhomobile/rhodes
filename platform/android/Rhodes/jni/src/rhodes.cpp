@@ -492,3 +492,20 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCa
 {
     rho_rhodesapp_callAppActiveCallback(active);
 }
+
+RHO_GLOBAL char *rho_timezone()
+{
+    static char *tz = NULL;
+    if (!tz)
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+        if (!cls) return NULL;
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "getTimezoneStr", "()Ljava/lang/String;");
+        if (!mid) return NULL;
+        jstring s = (jstring)env->CallStaticObjectMethod(cls, mid);
+        std::string tzs = rho_cast<std::string>(env, s);
+        tz = strdup(tzs.c_str());
+    }
+    return tz;
+}
