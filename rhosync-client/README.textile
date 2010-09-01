@@ -11,7 +11,7 @@ h2. STARTING A RhoSync-Client APPLICATION
 
 Install RhoSync-Client:
 
-  download rhosync-client_version.zip and follow instructions: http://wiki.rhomobile.com/index.php/RhoSync-Client
+  Download rhosync-client-1.0.0.zip from http://github.com/rhomobile/rhodes/downloads and follow instructions: http://wiki.rhomobile.com/index.php/RhoSync-Client
 
 h2. MORE RESOURCES
 
