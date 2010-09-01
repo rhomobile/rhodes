@@ -232,7 +232,7 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_exit(false), m_port(port), verbose(true)
+    :m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
@@ -317,6 +317,8 @@ bool CHttpServer::run()
     if (!init())
         return false;
     
+    m_exit = false;
+    
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
@@ -324,7 +326,6 @@ bool CHttpServer::run()
         rho_ruby_stop_threadidle();
 		if (m_exit) {
 			RAWTRACE("Stop HTTP server");
-            m_exit = false;
 			return true;
 		}
         if (conn == INVALID_SOCKET) {
