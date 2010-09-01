@@ -937,6 +937,10 @@ namespace "run" do
         $stdout.flush
         
       end
+
+      task :phone_spec do
+        Jake.run_spec_app('bb', 'phone_spec')
+      end
   end
   
   desc "Builds everything, loads and starts bb sim and mds"
