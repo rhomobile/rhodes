@@ -19,7 +19,17 @@
     <%% elsif System::get_property('platform') == 'ANDROID' %>
         <link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'Blackberry' %>
-        <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
+        <%% if System::get_property('os_version') =~ /^6\.0/  %>
+          <link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
+          <!-- Percentage doesnt work here? Set body height to screen height - toolbar height -->
+          <style>
+            body {
+              height: <%%= System::get_property('screen_height').to_i - 62 %>px;
+            }
+          </style>
+        <%% else %>
+          <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
+        <%% end %>
     <%% else %>
         <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
     <%% end %>

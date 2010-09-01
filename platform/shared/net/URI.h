@@ -14,6 +14,9 @@ public:
 
     static void urlEncode(const String& fullPath, String& strRes);
     static String urlEncode(const String& fullPath);
+    static String urlDecode(const String& url);	
+	static void urlDecode(const String &url, String& ret );
+	
     String getPath();
     String getQueryString();
     String getScheme();

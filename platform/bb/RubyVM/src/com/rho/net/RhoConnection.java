@@ -657,7 +657,7 @@ public class RhoConnection implements IHttpConnection {
 				showGeoLocation();
 				return true;
 			}else if ( model.equalsIgnoreCase("loadserversources") ){
-				RhoRuby.loadserversources(postData.toString());
+				RhoAppAdapter.loadServerSources(postData.toString());
 				return true;
 			}
 

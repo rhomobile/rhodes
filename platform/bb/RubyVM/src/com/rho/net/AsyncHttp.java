@@ -237,11 +237,11 @@ public class AsyncHttp extends ThreadQueue
     	    }catch(IOException exc)
     	    {
     	    	LOG.ERROR("command failed: " + m_eCmd + "url: " + m_params.getString("url"), exc);
-    	    	callNotify(null, RhoRuby.ERR_NETWORK);
+    	    	callNotify(null, RhoAppAdapter.ERR_NETWORK);
     	    }catch(Exception exc)
     	    {
     	    	LOG.ERROR("command crashed: " + m_eCmd + "url: " + m_params.getString("url"), exc);
-    	    	callNotify(null, RhoRuby.ERR_RUNTIME);
+    	    	callNotify(null, RhoAppAdapter.ERR_RUNTIME);
     	    }
         }
         
@@ -265,7 +265,7 @@ public class AsyncHttp extends ThreadQueue
                 else
                 {
             	    m_strResBody += "error&error_code=";
-                    m_strResBody += RhoRuby.getErrorFromResponse(resp);
+                    m_strResBody += RhoAppAdapter.getErrorFromResponse(resp);
                     //if ( resp.isResponseRecieved())
         	            m_strResBody += "&http_error=" + resp.getRespCode();
                 }

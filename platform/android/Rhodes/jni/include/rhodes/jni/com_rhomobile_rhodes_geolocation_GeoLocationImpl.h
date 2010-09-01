@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallback
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_rhomobile_rhodes_geolocation_GeoLocationImpl
+ * Method:    geoCallbackError
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackError
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

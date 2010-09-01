@@ -3,11 +3,11 @@ require "lib/rhodes.rb"
 
 Gem::Specification.new do |s|
   s.name = %q{rhodes}
-  s.version = '2.0.0'
+  s.version = '2.1.0'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2009-03-31}
+  s.date = %q{2010-08-30}
   s.description = %q{Rhodes mobile framework}
   s.email = %q{dev@rhomobile.com}
   s.extra_rdoc_files = ["README.textile", "LICENSE"]
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency('activesupport', '~> 2.3.5')
   s.add_development_dependency('rdoc', '>= 2.4.3')
   s.executables << 'rhogen'
+  s.executables << 'rhodes'
   s.executables << 'upgrade-rhodes-app'
   s.executables << 'rhodes-setup'
   s.executables << 'set-rhodes-sdk'

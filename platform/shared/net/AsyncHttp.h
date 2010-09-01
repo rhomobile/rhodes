@@ -5,7 +5,6 @@
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
 #include "common/ThreadQueue.h"
-#include "rubyext/RhoRuby.h"
 #include "common/rhoparams.h"
 
 namespace rho

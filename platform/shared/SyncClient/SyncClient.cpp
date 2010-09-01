@@ -7,8 +7,9 @@
 #include "common/RhoFile.h"
 #include "common/Tokenizer.h"
 #include "common/RhoConf.h"
-#include "common/RhoError.h"
 #include "common/RhoTime.h"
+#include "common/RhoAppAdapter.h"
+#include "net/URI.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -67,8 +68,8 @@ void rho_syncclient_processmodels(RHOM_MODEL* pModels, int nModels)
 
         if ( !res.isEnd() )
         {
-            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema_version=?, associations=?, blob_attribs=?",
-                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, "", "", "" );
+            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
+                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, "", "", "", model.name );
                 
         }else //new model
         {
@@ -89,6 +90,7 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
 
     //create db and db-files folder
     CRhoFile::createFolder( (strDbPath + "db/db-files").c_str());
+    CRhoFile::createFolder( (strDbPath + "apps").c_str());
 
     for( int i = 0; i < nModels; i++ )
     {
@@ -272,25 +274,36 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 
     if (!isSchemaSrc)
     {
-        for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
-        {
-            if ( sql.length() > 0 )
-                sql += "\nINTERSECT\n";
+		if (hashCond.size() == 0) {
+			sql = "SELECT distinct(object) FROM object_values WHERE source_id=?";
+			arValues.addElement(strSrcID);
+		}else
+		{
+			for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
+			{
+				if ( sql.length() > 0 )
+					sql += "\nINTERSECT\n";
 
-            sql += "SELECT object FROM object_values WHERE attrib=? AND source_id=? AND value=?";
-            arValues.addElement(it->first); 
-            arValues.addElement(strSrcID);
-            arValues.addElement(it->second);
-        }
+				sql += "SELECT object FROM object_values WHERE attrib=? AND source_id=? AND value=?";
+				arValues.addElement(it->first); 
+				arValues.addElement(strSrcID);
+				arValues.addElement(it->second);
+			}
+		}
     }else
     {
-        for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
-        {
-            if (it != hashCond.begin())
-                sql += " AND ";
-            sql += it->first + "=?" ;
-            arValues.addElement(it->second);
-        }
+		sql = "SELECT object FROM " + src_name;		
+		if (hashCond.size() != 0) 
+		{
+			sql += " WHERE ";
+			for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
+			{
+				if (it != hashCond.begin())
+					sql += " AND ";
+				sql += it->first + "=?" ;
+				arValues.addElement(it->second);
+			}
+		}
     }
 
     DBResult( res1, db.executeSQLEx(sql.c_str(), arValues ) );
@@ -322,6 +335,36 @@ unsigned long rho_syncclient_find_first(const char* szModel, unsigned long hash 
     return rhom_find( szModel, hash, 1 );
 }
 
+void rho_syncclient_start_bulkupdate(const char* szModel)
+{
+    String src_name = szModel;
+    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name) );
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+    String db_partition = res.getStringByIdx(0);
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+	
+    db.startTransaction();
+}
+	
+void rho_syncclient_stop_bulkupdate(const char* szModel)
+{
+    String src_name = szModel;
+    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name) );
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+    String db_partition = res.getStringByIdx(0);
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+	
+    db.endTransaction();
+}
+	
 void rho_syncclient_itemdestroy( const char* szModel, unsigned long hash )
 {
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
@@ -536,7 +579,7 @@ void rho_syncclient_create_object(const char* szModel, unsigned long hash)
 
     String update_type = "create";
     int nSrcID = res.getIntByIdx(0);
-    String obj = rhom_generate_id();
+    String obj = hashObject.containsKey("object") ? hashObject.get("object") : rhom_generate_id();
 
     String db_partition = res.getStringByIdx(1);
     bool isSchemaSrc = res.getStringByIdx(2).length() > 0;
@@ -599,8 +642,8 @@ void rho_syncclient_parsenotify(const char* msg, RHO_SYNC_NOTIFY* pNotify)
 		    continue;
 
         CTokenizer oValueTok( tok, "=" );
-        String name = oValueTok.nextToken();
-        String value = oValueTok.nextToken();
+        String name = net::URI::urlDecode(oValueTok.nextToken());
+        String value = net::URI::urlDecode(oValueTok.nextToken());
 
         if ( name.compare("total_count") == 0)
             convertFromStringA( value.c_str(), pNotify->total_count );
@@ -754,16 +797,49 @@ String getSyncTypeName( RHOM_SYNC_TYPE sync_type )
     return "none";
 }
 
+namespace rho {
+	const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
+	
+	/*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
+	{
+		return String();
+	}
+	
+	/*static*/ String _CRhoAppAdapter::getErrorText(int nError)
+	{
+		return String();
+	}
+	
+	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(net::INetResponse& resp)
+	{
+		if ( !resp.isResponseRecieved())
+			return ERR_NETWORK;
+		
+		if ( resp.isUnathorized() )
+			return ERR_UNATHORIZED;
+		
+		if ( !resp.isOK() )
+			return ERR_REMOTESERVER;
+		
+		return ERR_NONE;
+	}
+	
+	/*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
+	{
+		
+	}
+	
+    /*static*/ String _CRhoAppAdapter::getRhoDBVersion()
+	{
+		return "1.0";
+	}
+}
+
 extern "C" 
 {
 extern "C" void alert_show_popup(const char* message)
 {
 
-}
-
-void rho_ruby_loadserversources(const char* szData)
-{
-    //TODO: loadserversources     : see rho.rb
 }
 
 const char* rho_ruby_getMessageText(const char* szName)
