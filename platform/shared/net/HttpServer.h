@@ -71,6 +71,8 @@ public:
     ~CHttpServer();
     
     void register_uri(String const &uri, callback_t const &callback);
+
+    bool started() const {return !m_exit;}
     
     bool run();
     void stop();
@@ -105,7 +107,7 @@ private:
     callback_t registered(String const &uri);
     
 private:
-	bool m_exit;
+    bool m_exit;
     int m_port;
     String m_root, m_strRhoRoot;
     SOCKET m_listener;

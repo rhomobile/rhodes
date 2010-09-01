@@ -131,7 +131,7 @@ void CRhodesApp::stopApp()
     if (!m_bExit)
     {
         m_bExit = true;
-		m_httpServer->stop();
+        m_httpServer->stop();
         stopWait();
         stop(2000);
     }
@@ -152,7 +152,7 @@ public:
 private:
     virtual void run()
     {
-        m_cb->run();
+        m_cb->run(*this);
         delete this;
     }
 
@@ -175,7 +175,7 @@ public:
       :m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
     {}
 
-    void run()
+    void run(common::CRhoThread &)
     {
         common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
         common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
@@ -213,8 +213,10 @@ class CRhoActivateApp
     String m_strUrl;
 public:
     CRhoActivateApp(const String& strUrl) :m_strUrl(strUrl) {}
-    void run()
+    void run(common::CRhoThread &thisThread)
     {
+        while (!rho_is_local_server_started())
+            thisThread.wait(1);
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
         common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
         NetResponse(resp, pNetRequest->pullData( m_strUrl, null ) );
@@ -226,7 +228,6 @@ public:
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
     LOG(INFO) + "callAppActiveCallback";
-    m_bDeactivationMode = !bActive;
     if (bActive)
     {
         this->stopWait();
@@ -246,11 +247,13 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // However, blocking UI thread can cause problem with API refering to UI (such as WebView.navigate etc)
         // To fix this problem, new mode 'deactivation' introduced. When this mode active, no UI operations allowed.
         // All such operation will throw exception in ruby code when calling in 'deactivate' mode.
+        m_bDeactivationMode = true;
         String strUrl = m_strHomeUrl + "/system/deactivateapp";
         NetResponse(resp,getNet().pullData( strUrl, null ));
         if ( !resp.isOK() )
             LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         m_httpServer->stop();
+        m_bDeactivationMode = false;
     }
 }
 
@@ -794,6 +797,13 @@ void CRhodesApp::loadUrl(String url)
         navigateToUrl(url);
 }
 
+boolean CRhodesApp::isLocalServerStarted()
+{
+    if (!m_httpServer)
+        return false;
+    return m_httpServer->started();
+}
+
 } //namespace common
 } //namespace rho
 
@@ -1112,6 +1122,11 @@ int rho_rhodesapp_check_mode()
         return 0;
     }
     return 1;
+}
+
+int rho_is_local_server_started()
+{
+    return RHODESAPP().isLocalServerStarted();
 }
 
 #if defined(OS_ANDROID) && defined(RHO_LOG_ENABLED)
