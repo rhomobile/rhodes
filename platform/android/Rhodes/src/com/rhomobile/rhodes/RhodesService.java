@@ -508,23 +508,33 @@ public class RhodesService {
 	
 	private static boolean hasNetwork() {
 		if (!Capabilities.NETWORK_STATE_ENABLED) {
-			Logger.E(TAG, "Capability NETWORK_STATE disabled");
+			Logger.E(TAG, "HAS_NETWORK: Capability NETWORK_STATE disabled");
 			return false;
 		}
 		
 		Context ctx = RhodesService.getInstance().getContext();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
+		{
+			Logger.E(TAG, "HAS_NETWORK: cannot create ConnectivityManager");
 			return false;
-		
+		}
+		 
 		NetworkInfo[] info = conn.getAllNetworkInfo();
 		if (info == null)
+		{
+			Logger.E(TAG, "HAS_NETWORK: cannot issue getAllNetworkInfo");
 			return false;
+		}
 		
-		for (int i = 0, lim = info.length; i < lim; ++i) {
+		for (int i = 0, lim = info.length; i < lim; ++i) 
+		{
+		    //Logger.I(TAG, "HAS_NETWORK: " + info[i].toString() );
 			if (info[i].getState() == NetworkInfo.State.CONNECTED)
 				return true;
 		}
+
+    	Logger.I(TAG, "HAS_NETWORK: all networks are disconnected");
 		
 		return false;
 	}
