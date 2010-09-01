@@ -26,7 +26,7 @@ struct CSyncNotification
     void*         m_cCallbackData;
 
     boolean m_bRemoveAfterFire;
-    CSyncNotification(){m_bRemoveAfterFire = false;}
+    CSyncNotification(): m_cCallback(0), m_cCallbackData(0){m_bRemoveAfterFire = false;}
 
     CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire);
     CSyncNotification(RHOC_CALLBACK callback, void* callback_data, boolean bRemoveAfterFire) : 
