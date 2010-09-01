@@ -198,14 +198,6 @@
 #define RUBY_SETJMP(env) _setjmp(env)
 #define RUBY_LONGJMP(env,val) _longjmp(env,val)
 #define RUBY_JMP_BUF jmp_buf
-#define HAVE_STRUCT_TM_TM_ZONE 1
-#define HAVE_TM_ZONE 1
-/* #define HAVE_STRUCT_TM_TM_GMTOFF 1 */
-#define HAVE_DAYLIGHT 1
-#define HAVE_VAR_TIMEZONE 1
-#define TYPEOF_VAR_TIMEZONE long
-#define HAVE_TIMEZONE 1
-#define TIMEZONE_VOID 1
 #define NEGATIVE_TIME_T 1
 #define POSIX_SIGNAL 1
 #define GETPGRP_VOID 1
@@ -284,5 +276,13 @@ typedef unsigned long rlim_t;
 #  define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
 #  define HAVE_BACKTRACE 1
 #  define HAVE_LOG2 1
+#  define HAVE_STRUCT_TM_TM_GMTOFF 1
+#  define HAVE_STRUCT_TM_TM_ZONE 1
+#  define HAVE_TM_ZONE 1
+#  define HAVE_DAYLIGHT 1
+#  define HAVE_VAR_TIMEZONE 1
+#  define TYPEOF_VAR_TIMEZONE long
+#  define HAVE_TIMEZONE 1
+#  define TIMEZONE_VOID 1
 #endif // OS_ANDROID
 
