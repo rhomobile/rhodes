@@ -734,13 +734,15 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
         return;
     }
-
-    DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
-    if ( !res.isEnd() )
-        getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
-    else
-        getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
-
+	
+	{
+		DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
+		if ( !res.isEnd() )
+			getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
+		else
+			getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
+	}
+	
     getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 	
     PROF_STOP("Login");
