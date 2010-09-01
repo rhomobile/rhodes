@@ -1,4 +1,4 @@
-platform/android/Rhodes/src/com/rhomobile/rhodes/nativeview\RhoNativeViewManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/nativeview/RhoNativeViewManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/AndroidR.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
