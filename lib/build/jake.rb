@@ -156,7 +156,9 @@ class Jake
         if line =~ /^I/
           $getdump = false
         else
-          $faillog << line
+          if !$faillog.include?(line)
+            $faillog << line
+          end
         end
       end
 
@@ -170,7 +172,10 @@ class Jake
       end
 
       if line =~ /\| FAIL:/
-        $faillog << line.gsub(/I.*APP\|/,"\n\n***")
+        line = line.gsub(/I.*APP\|/,"\n\n***")
+        if !$faillog.include?(line)
+          $faillog << line
+        end
         $getdump = true
       end
       
