@@ -3,6 +3,7 @@
 #include "net/URI.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoAppAdapter.h"
+#include "common/RhodesApp.h"
 
 namespace rho {
 namespace sync {
@@ -134,7 +135,7 @@ void CSyncNotify::fireObjectsNotification()
             return;
     }
 
-    callNotify(strUrl, strBody);
+    callNotify( CSyncNotification(strUrl,"",false), strBody);
 }
 
 void CSyncNotify::onObjectChanged(int nSrcID, const String& strObject, int nType)
@@ -223,44 +224,39 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
     cleanCreateObjectErrors();
 }
 
-void CSyncNotify::setSyncNotification(int source_id, String strUrl, String strParams )
+void CSyncNotify::setSyncNotification(int source_id, CSyncNotification* pNotify )
 {
-	LOG(INFO) + "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams;
-    String strFullUrl = getNet().resolveUrl(strUrl);
+    LOG(INFO) + "Set notification. Source ID: " + source_id + ";" + (pNotify ? pNotify->toString() : "");
 
 	if ( source_id == -1 )
 	{
 		synchronized(m_mxSyncNotifications)
         {
-            m_pAllNotification = new CSyncNotification( strFullUrl, strParams, false );
-		    LOG(INFO) + " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams;
+            m_pAllNotification = pNotify;
         }
 	}else
 	{
-        if ( strFullUrl.length() > 0 )
+        synchronized(m_mxSyncNotifications)
         {
-            synchronized(m_mxSyncNotifications)
-            {
-                m_mapSyncNotifications.put(source_id,new CSyncNotification( strFullUrl, strParams, true ) );
-		        LOG(INFO) + " Done Set notification. Source ID: " + source_id + "; Url :" + strFullUrl + "; Params: " + strParams;
-            }
+            m_mapSyncNotifications.put( source_id, pNotify );
         }
     }
 }
 
-void CSyncNotify::setSearchNotification(String strUrl, String strParams )
+CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire) : 
+    m_strParams(strParams), m_bRemoveAfterFire(bRemoveAfterFire),
+    m_cCallback(null), m_cCallbackData(null)
 {
-	LOG(INFO) + "Set search notification. Url :" + strUrl + "; Params: " + strParams;
-    String strFullUrl = getNet().resolveUrl(strUrl);
+    if ( strUrl .length() > 0 )
+        m_strUrl = RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
+}
 
-    if ( strFullUrl.length() > 0 )
+void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
+{
+    LOG(INFO) + "Set search notification." + (pNotify ? pNotify->toString() : "");
+    synchronized(m_mxSyncNotifications)
     {
-        synchronized(m_mxSyncNotifications)
-        {
-            m_pSearchNotification = new CSyncNotification( strFullUrl, strParams, true );
-
-	        LOG(INFO) + " Done Set search notification. Url :" + strFullUrl + "; Params: " + strParams;
-        }
+        m_pSearchNotification = pNotify;
     }
 }
 
@@ -333,7 +329,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
     doFireSyncNotification(src, bFinish, nErrCode, "", "" );
 }
 
-CSyncNotify::CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
+CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
 {
     CSyncNotification* pSN = null;
 	if ( getSync().isSearch() )
@@ -358,17 +354,17 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 	if ( getSync().isStoppedByUser() )
 		return;
 
-    String strBody, strUrl;
+    CSyncNotification* pSN = null;
+    String strBody;
     boolean bRemoveAfterFire = bFinish;
     {
         synchronized(m_mxSyncNotifications)
         {
-            CSyncNotification* pSN = getSyncNotifyBySrc(src);
+            pSN = getSyncNotifyBySrc(src);
 	        if ( pSN == null )
                 return;
             CSyncNotification& sn = *pSN;
 
-            strUrl = sn.m_strUrl;
 		    strBody = "";
 
             if ( src != null )
@@ -421,21 +417,28 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
     if ( bRemoveAfterFire )
         clearNotification(src);
 
-    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; Url :" + strUrl + "; Body: " + strBody;
+    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; " + (pSN ? pSN->toString() : "");
 	
-    if ( callNotify(strUrl, strBody) )
+    if ( callNotify(*pSN, strBody) )
         clearNotification(src);
 }
 
-boolean CSyncNotify::callNotify(const String& strUrl, const String& strBody )
+boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& strBody )
 {
     if ( getSync().isNoThreadedMode() )
     {
         m_strNotifyBody = strBody;
         return false;
     }
+    if ( oNotify.m_cCallback )
+    {
+        int nRet = (*oNotify.m_cCallback)(strBody.c_str(), oNotify.m_cCallbackData);
+        return nRet == 1;
+    }
+    if ( oNotify.m_strUrl.length() == 0 )
+        return true;
 
-    NetResponse(resp,getNet().pushData( strUrl, strBody, null ));
+    NetResponse(resp,getNet().pushData( oNotify.m_strUrl, strBody, null ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else
@@ -504,7 +507,7 @@ int CSyncNotify::getLastSyncObjectCount(int nSrcID)
     return nCount;
 }
 
-void CSyncNotify::callLoginCallback(String callback, int nErrCode, String strMessage)
+void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCode, String strMessage)
 {
 	//try{
     String strBody = "error_code=" + convertToStringA(nErrCode);
@@ -512,11 +515,9 @@ void CSyncNotify::callLoginCallback(String callback, int nErrCode, String strMes
     URI::urlEncode(strMessage, strBody);
     strBody += "&rho_callback=1";
 
-    String strUrl = getNet().resolveUrl(callback);
-    
-	LOG(INFO) + "Login callback: " + callback + ". Body: "+ strBody;
+    LOG(INFO) + "Login callback: " + oNotify.toString() + ". Body: "+ strBody;
 
-    callNotify(strUrl, strBody);
+    callNotify(oNotify, strBody);
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Call Login callback failed.", exc);

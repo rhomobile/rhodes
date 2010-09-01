@@ -72,7 +72,9 @@ public:
     {
     public:
 	    String m_strName, m_strPassword;
-        CSyncLoginCommand(String name, String password, String callback) : CSyncCommand(CSyncThread::scLogin,callback,false)
+        CSyncNotification m_oNotify;
+        CSyncLoginCommand(String name, String password, const CSyncNotification& oNotify) : 
+            CSyncCommand(CSyncThread::scLogin,"",false), m_oNotify(oNotify)
 	    {
 		    m_strName = name;
 		    m_strPassword = password;
@@ -134,7 +136,6 @@ unsigned long rho_sync_doSyncSourceByID(int nSrcID);
 unsigned long rho_sync_doSyncSourceByName(const char* szSrcName);
 
 unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
-unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 
 unsigned long rho_sync_login(const char *login, const char *password, const char* callback);
 int rho_sync_logged_in();
@@ -156,6 +157,10 @@ int rho_sync_get_lastsync_objectcount(int nSrcID);
 void rho_sync_set_threaded_mode(int b);
 char* rho_sync_create_string(const char* szStr);
 void rho_sync_free_string(char* szStr);
+
+unsigned long rho_sync_login_c(const char *name, const char *password, RHOC_CALLBACK callback, void* callback_data);
+unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, RHOC_CALLBACK callback, void* callback_data);
+void rho_sync_set_notification_c(int source_id, RHOC_CALLBACK callback, void* callback_data);
 
 #ifdef __cplusplus
 };
