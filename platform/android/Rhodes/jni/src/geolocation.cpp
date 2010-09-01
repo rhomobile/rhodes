@@ -14,6 +14,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_ge
     rho_geo_callcallback();
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackError
+  (JNIEnv *, jobject)
+{
+    RAWTRACE("Call geo callback error");
+    rho_geo_callcallback_error();
+}
+
 RHO_GLOBAL double rho_geo_latitude()
 {
     JNIEnv *env = jnienv();
@@ -46,6 +53,12 @@ RHO_GLOBAL int rho_geo_known_position()
 
 RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
 {
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setTimeout", "(I)V");
+    if (!mid) return;
+    return env->CallStaticVoidMethod(cls, mid, nTimeoutSec);
 }
 
 RHO_GLOBAL int rho_geo_is_available()

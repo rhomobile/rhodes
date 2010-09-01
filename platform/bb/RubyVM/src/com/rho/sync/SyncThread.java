@@ -25,6 +25,7 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.RhoAppAdapter;
 import com.rho.RhoRuby;
 import com.rho.RhoThread;
 import com.rho.TimeInterval;
@@ -307,7 +308,7 @@ public class SyncThread extends RhoThread
 		boolean bShowStatus = oSyncCmd.m_bShowStatus && !this.isNoThreadedMode();
 		m_oSyncEngine.getNotify().enableReporting(bShowStatus);
 		if (bShowStatus)
-			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
+			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 	}	
 	
 	void processCommand(SyncCommand oSyncCmd)throws Exception
@@ -386,7 +387,7 @@ public class SyncThread extends RhoThread
 	public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
-			m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
+			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 		}
 	    getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus ) );		
 	}
@@ -514,7 +515,7 @@ public class SyncThread extends RhoThread
 					}catch(Exception e)
 					{
 						LOG.ERROR("SyncEngine.login", e);
-						RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
+						RhoRuby.raise_RhoError(RhoAppAdapter.ERR_RUNTIME);
 					}
 					
 					return getInstance().getRetValue();
@@ -554,7 +555,7 @@ public class SyncThread extends RhoThread
 						}catch(Exception e)
 						{
 							LOG.ERROR("SyncEngine.login", e);
-							RhoRuby.raise_RhoError(RhoRuby.ERR_RUNTIME);
+							RhoRuby.raise_RhoError(RhoAppAdapter.ERR_RUNTIME);
 						}
 						
 						return getInstance().getRetValue();

@@ -5,7 +5,10 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#include "common/RhoAppAdapter.h"
+#ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
+#endif //RHO_NO_RUBY
 
 namespace rho{
 namespace db{
@@ -13,6 +16,7 @@ IMPLEMENT_LOGCLASS(CDBAdapter,"DB");
 HashtablePtr<String,CDBAdapter*> CDBAdapter::m_mapDBPartitions;
 
 using namespace rho::common;
+using namespace rho;	
 
 static int onDBBusy(void* data,int nTry)
 {
@@ -90,7 +94,7 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
     const char * szErrMsg = sqlite3_errmsg(m_dbHandle);
     int nErrCode = sqlite3_errcode(m_dbHandle);
 
-    res.setErrorCode(nErrCode);
+    res.getDBError().setError(nErrCode, szErrMsg);
     if ( nErrCode == SQLITE_CONSTRAINT && res.getReportNonUnique() )
         return true;
 
@@ -447,9 +451,22 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     open( dbOldName, m_strDbVer, false );
 }
 
-void CDBAdapter::createSchema()
+void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
 {
     char* errmsg = 0;
+    int rc = sqlite3_exec(m_dbHandle, szSql,  NULL, NULL, &errmsg);
+	
+    if ( rc != SQLITE_OK )
+        LOG(ERROR)+"execute batch failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
+	
+	error.setError(rc, errmsg);
+	
+    if ( errmsg )
+        sqlite3_free(errmsg);
+}
+	
+void CDBAdapter::createSchema()
+{
     CFilePath oPath(m_strDbPath);
 
     String strSqlScript;
@@ -461,15 +478,10 @@ void CDBAdapter::createSchema()
         return;
     }
 
-    int rc = sqlite3_exec(m_dbHandle, strSqlScript.c_str(),  NULL, NULL, &errmsg);
-
-    if ( rc != SQLITE_OK )
-        LOG(ERROR)+"createSchema failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
-
-    if ( errmsg )
-        sqlite3_free(errmsg);
-
-    if ( rc == SQLITE_OK )
+	CDBError dbError;
+	executeBatch(strSqlScript.c_str(), dbError);
+	
+    if ( dbError.isOK() )
         createTriggers();
 }
 
@@ -536,7 +548,7 @@ int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt *
     {
         rc = sqlite3_prepare_v2(m_dbHandle, szSql, nByte, ppStmt, NULL);
         if ( rc == SQLITE_OK )
-            m_mapStatements.put(szSql, st);
+            m_mapStatements.put(szSql, *ppStmt);
     }
 
     return rc;
@@ -751,7 +763,7 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
     }
 
-    rho::String strVer = RhoRuby_getRhoDBVersion(); 
+    rho::String strVer = RhoAppAdapter.getRhoDBVersion(); 
     pDB->open(szDBPath,strVer, false);
 
     *ppDB = pDB;

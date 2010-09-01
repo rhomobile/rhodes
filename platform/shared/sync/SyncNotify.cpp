@@ -1,8 +1,8 @@
 #include "SyncNotify.h"
 #include "SyncEngine.h"
 #include "net/URI.h"
-#include "rubyext/RhoRuby.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoAppAdapter.h"
 
 namespace rho {
 namespace sync {
@@ -212,7 +212,7 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 {
     CSyncSource& src = *sources.elementAt(nSrc);
 
-    if ( getSync().getState() == CSyncEngine::esStop && src.m_nErrCode != RHO_ERR_NONE )
+    if ( getSync().getState() == CSyncEngine::esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
     {
         fireSyncNotification(&src, true, src.m_nErrCode, "");
 		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
@@ -266,9 +266,9 @@ void CSyncNotify::setSearchNotification(String strUrl, String strParams )
 
 extern "C" void alert_show_popup(const char* message);
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
-    if ( error == RHO_ERR_SYNCVERSION )
+    if ( error == RhoAppAdapter.ERR_SYNCVERSION )
     {
-        status = RhoRuby.getErrorText(error);
+        status = RhoAppAdapter.getErrorText(error);
         alert_show_popup(status.c_str());
         return;
     }
@@ -287,9 +287,9 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
 
-	if( nErrCode != RHO_ERR_NONE)
+	if( nErrCode != RhoAppAdapter.ERR_NONE)
 	{
-		String strMessage = RhoRuby.getMessageText("sync_failed_for") + "bulk.";
+		String strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + "bulk.";
 		reportSyncStatus(strMessage,nErrCode,"");
 	}
 
@@ -319,9 +319,9 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
 	
-	if( strMessage.length() > 0 || nErrCode != RHO_ERR_NONE)
+	if( strMessage.length() > 0 || nErrCode != RhoAppAdapter.ERR_NONE)
 	{
-		if ( getSync().getState() != CSyncEngine::esSearch )
+		if ( !getSync().isSearch() )
         {
 	//		if ( src != null && strMessage.length() == 0 )
 	//			strMessage = RhoRuby.getMessageText("sync_failed_for") + (*src).getName() + ".";
@@ -336,7 +336,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
 CSyncNotify::CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
 {
     CSyncNotification* pSN = null;
-	if ( getSync().getState() == CSyncEngine::esSearch )
+	if ( getSync().isSearch() )
 		pSN = m_pSearchNotification;
 	else
     {
@@ -388,12 +388,12 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
             strBody += "&status=";
             if ( bFinish )
             {
-                if ( nErrCode == RHO_ERR_NONE )
+                if ( nErrCode == RhoAppAdapter.ERR_NONE )
                     strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";
 	            else
 	            {
                     if ( getSync().isStoppedByUser() )
-                        nErrCode = RHO_ERR_CANCELBYUSER;
+                        nErrCode = RhoAppAdapter.ERR_CANCELBYUSER;
 
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);
@@ -453,7 +453,7 @@ void CSyncNotify::clearNotification(CSyncSource* src)
 
     synchronized(m_mxSyncNotifications)
     {
-        if ( getSync().getState() == CSyncEngine::esSearch )
+        if ( getSync().isSearch() )
             m_pSearchNotification = null;
         else if ( src != null )
             m_mapSyncNotifications.remove( (*src).getID());

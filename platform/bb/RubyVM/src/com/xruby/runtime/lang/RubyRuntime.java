@@ -11,11 +11,17 @@ import java.io.PrintStream;
 import com.xruby.runtime.builtin.*;
 import com.xruby.GeneratedMethods.*; 
 import com.rho.RhoClassFactory;
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.rho.StringScanner;
 
 import com.rho.Extensions;
 
-public class RubyRuntime {
+public class RubyRuntime 
+{
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("RubyRuntime");
+	
     public static RubyClass ObjectClass;
     public static RubyClass ModuleClass;
     public static RubyClass ClassClass;
@@ -123,21 +129,21 @@ public class RubyRuntime {
 		          try {
 		            wrapperClass = Class.forName(ext_class);
 		          } catch (ClassNotFoundException exc) {  
-		        	//LOG.ERROR("Extension class [" + ext_class + "] not exist !",exc);    	
+		        	  LOG.ERROR("Extension class [" + ext_class + "] not exist !",exc);    	
 		          }
 		          if (wrapperClass != null) {
 		        	Runnable ext_run = null;
 		        	try {
 		        		ext_run = (Runnable)wrapperClass.newInstance();
 		        	} catch (Exception e) {
-		            	  //LOG.ERROR("Extension class [" + ext_class + "] not instantiated !",e);    	
+		            	  LOG.ERROR("Extension class [" + ext_class + "] not instantiated !",e);    	
 		      		
 		        	}
 			        if (ext_run != null ) {
 			        	ext_run.run();
 			        }
 			        else {
-		            	  //LOG.ERROR("Extension class [" + ext_class + "] not implemented Runnable interface !");    	
+		            	  LOG.ERROR("Extension class [" + ext_class + "] not implemented Runnable interface !");    	
 			        }
 		          }
 			}

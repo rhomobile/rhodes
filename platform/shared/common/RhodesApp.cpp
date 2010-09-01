@@ -3,6 +3,7 @@
 #include "common/IRhoClassFactory.h"
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoAppAdapter.h"
 #include "net/INetRequest.h"
 #include "sync/ClientRegister.h"
 #include "sync/SyncThread.h"
@@ -101,7 +102,12 @@ void CRhodesApp::run()
 
     //rho_clientregister_create("iphone_client");
     
-    m_httpServer->run();
+    while (!m_bExit) {
+        m_httpServer->run();
+        if (m_bExit)
+            break;
+        wait(-1);
+    }
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
@@ -126,6 +132,7 @@ void CRhodesApp::stopApp()
     {
         m_bExit = true;
 		m_httpServer->stop();
+        stopWait();
         stop(2000);
     }
 
@@ -196,7 +203,7 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 
 static void callback_loadserversources(void *arg, String const &strQuery)
 {
-    rho_ruby_loadserversources(strQuery.c_str());
+    RhoAppAdapter.loadServerSources(strQuery);
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
@@ -222,7 +229,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     m_bDeactivationMode = !bActive;
     if (bActive)
     {
-        m_httpServer->pause(false);
+        this->stopWait();
+        
         String strUrl = m_strHomeUrl + "/system/activateapp";
         // Activation callback need to be runned in separate thread
         // Otherwise UI thread will be blocked. This can cause deadlock if user defined
@@ -242,7 +250,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         NetResponse(resp,getNet().pullData( strUrl, null ));
         if ( !resp.isOK() )
             LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        m_httpServer->pause(true);
+        m_httpServer->stop();
     }
 }
 
@@ -725,7 +733,7 @@ boolean CRhodesApp::callPushCallback(String strData)
         }
     }
 
-    return true;
+    return false;
 }
 
 void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
