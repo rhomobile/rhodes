@@ -1,0 +1,23 @@
+h1. RhoSync-Client
+
+The "RhoSync-Client":http://github.com/rhomobile/rhodes/rhosync-client is a framework for building client application for RhoSync.
+
+RhoSync-Client is available as an open source product under the MIT license.  For developers interested a commercial license is still "available":http://rhomobile.com/products/rhodes/license/.
+
+h2. INTRODUCTION  
+
+
+h2. STARTING A RhoSync-Client APPLICATION
+
+Install RhoSync-Client:
+
+  download rhosync-client_version.zip and follow instructions: http://wiki.rhomobile.com/index.php/RhoSync-Client
+
+h2. MORE RESOURCES
+
+The "RhoSync-Client Developer Reference": http://wiki.rhomobile.com/index.php/RhoSync-Client
+
+For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
+
+For questions on licensing contact "our sales team":mailto:sales@rhomobile.com
+

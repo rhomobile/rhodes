@@ -768,13 +768,19 @@ namespace "build" do
         bin_dir = "rhosync-client-bin"
         src_dir = bin_dir + "/src"        
         shared_dir = bin_dir + "/src/platform/shared"        
-        
+        ver = File.read("rhosync-client/version").gsub(".", "_")
+        zip_name = "rhosync-client"+ver+".zip"
         rm_rf bin_dir
-        rm    "rhosync-client.zip" if File.exists? "rhosync-client.zip"
+        rm    zip_name if File.exists? zip_name
         mkdir_p bin_dir
         mkdir_p src_dir
 
         cp_r 'rhosync-client', src_dir, :preserve => true
+        
+        mv src_dir+"/rhosync-client/license", src_dir
+        mv src_dir+"/rhosync-client/README.textile", src_dir
+        mv src_dir+"/rhosync-client/version", src_dir
+        
         Dir.glob(src_dir+"/rhosync-client/**/*").each do |f|
 		    #puts f
             rm_rf f if f.index("/build/") || f.index(".DS_Store")         
@@ -790,10 +796,9 @@ namespace "build" do
             #puts f                
             cp_r f, shared_dir #, :preserve => true                        
         end
-   
         startdir = pwd
         chdir src_dir
-        puts `zip -r #{File.join(startdir, "rhosync-client")} *`
+        puts `zip -r #{File.join(startdir, zip_name)} *`
                 
         chdir startdir
         
