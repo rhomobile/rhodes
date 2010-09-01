@@ -107,6 +107,8 @@ public:
 
     void loadUrl(String url);
 
+    boolean isLocalServerStarted();
+
 protected:
     virtual void run();
 
@@ -179,6 +181,8 @@ void rho_net_request(const char *url);
 void rho_rhodesapp_load_url(const char *url);
 
 int rho_rhodesapp_check_mode();
+
+int rho_is_local_server_started();
 
 #ifdef __cplusplus
 };
