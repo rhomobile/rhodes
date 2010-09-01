@@ -14,6 +14,15 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
+static int getIndex(NSValue *value)
+{
+    int index;
+    [value getValue:&index];
+    if (index < 0)
+        index = [[[Rhodes sharedInstance] mainView] activeTab];
+    return index;
+}
+
 @interface RhoWebViewNavigateTask : NSObject {}
 + (void)run:(NSString*)url :(NSValue*)index;
 @end
@@ -23,13 +32,9 @@
     // Workaround:
     // Navigation MUST be done through 'redirect_to' - otherwise WebView does not
     // perform actual url loading from time to time
-    int index;
-    [value getValue:&index];
-    id mainView = [[Rhodes sharedInstance] mainView];
-    if (index < 0)
-        index = [mainView activeTab];
 	[[Rhodes sharedInstance] hideSplash];
-    [mainView navigateRedirect:url tab:index];
+    int index = getIndex(value);
+    [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
 }
 @end
 
@@ -50,12 +55,8 @@
 
 @implementation RhoWebViewReloadTask
 + (void)run:(NSValue*)value {
-    int index;
-    [value getValue:&index];
-    id mainView = [[Rhodes sharedInstance] mainView];
-    if (index < 0)
-        index = [mainView activeTab];
-    [mainView reload:index];
+    int index = getIndex(value);
+    [[[Rhodes sharedInstance] mainView] reload:index];
 }
 @end
 
@@ -65,12 +66,8 @@
 
 @implementation RhoWebViewExecuteJsTask
 + (void)run:(NSString*)js :(NSValue*)value {
-    int index;
-    [value getValue:&index];
-    id mainView = [[Rhodes sharedInstance] mainView];
-    if (index < 0)
-        index = [mainView activeTab];
-    [mainView executeJs:js tab:index];
+    int index = getIndex(value);
+    [[[Rhodes sharedInstance] mainView] executeJs:js tab:index];
 }
 @end
 
