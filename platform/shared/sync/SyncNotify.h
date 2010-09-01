@@ -4,6 +4,8 @@
 #include "logging/RhoLog.h"
 #include "common/AutoPointer.h"
 
+typedef int (*RHOC_CALLBACK)(const char* szNotify, void* callback_data);
+
 namespace rho {
 namespace db {
     class CDBAdapter;
@@ -16,19 +18,33 @@ namespace net {
 namespace sync {
 class CSyncEngine;
 class CSyncSource;
+
+struct CSyncNotification
+{
+    String m_strUrl, m_strParams;
+    RHOC_CALLBACK m_cCallback;
+    void*         m_cCallbackData;
+
+    boolean m_bRemoveAfterFire;
+    CSyncNotification(){m_bRemoveAfterFire = false;}
+
+    CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire);
+    CSyncNotification(RHOC_CALLBACK callback, void* callback_data, boolean bRemoveAfterFire) : 
+        m_cCallback(callback), m_cCallbackData(callback_data), m_bRemoveAfterFire(false){}
+
+    String toString()const
+    {
+        if ( m_cCallback )
+            return "C_Callback";
+
+        return "Url :" + m_strUrl + "; Params: " + m_strParams;
+    }
+
+};
+
 class CSyncNotify
 {
     DEFINE_LOGCLASS;
-
-    struct CSyncNotification
-    {
-        String m_strUrl, m_strParams;
-        boolean m_bRemoveAfterFire;
-        CSyncNotification(){m_bRemoveAfterFire = false;}
-
-        CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire) : 
-            m_strUrl(strUrl), m_strParams(strParams), m_bRemoveAfterFire(bRemoveAfterFire){}
-    };
 
 public:
     enum ENotifyType{ enNone, enDelete, enUpdate, enCreate };
@@ -71,8 +87,8 @@ public:
     void cleanCreateObjectErrors();
 
     //Sync notifications
-    void setSyncNotification(int source_id, String strUrl, String strParams );
-    void setSearchNotification(String strUrl, String strParams );
+    void setSyncNotification(int source_id, CSyncNotification* pNotify);
+    void setSearchNotification(CSyncNotification* pNotify);
 
     void clearSyncNotification(int source_id);
 
@@ -85,7 +101,7 @@ public:
     int incLastSyncObjectCount(int nSrcID);
     int getLastSyncObjectCount(int nSrcID);
 
-    void callLoginCallback(String callback, int nErrCode, String strMessage);
+    void callLoginCallback(const CSyncNotification& oNotify, int nErrCode, String strMessage);
 
     void enableReporting(boolean bEnable){m_bEnableReporting = bEnable;}
 
@@ -103,7 +119,7 @@ private:
 
     void doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams);
 
-    boolean callNotify(const String& strUrl, const String& strBody );
+    boolean callNotify(const CSyncNotification& oNotify, const String& strBody );
 
     void clearNotification(CSyncSource* src);
 

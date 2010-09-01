@@ -61,7 +61,7 @@ public:
     void doSyncSource(const CSourceID& oSrcID);
     void doSearch(rho::Vector<rho::String>& arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
 
-    void login(String name, String password, String callback);
+    void login(String name, String password, const CSyncNotification& oNotify);
     boolean isLoggedIn();
     String loadSession();
     void logout();
