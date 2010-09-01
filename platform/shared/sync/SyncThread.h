@@ -158,9 +158,9 @@ void rho_sync_set_threaded_mode(int b);
 char* rho_sync_create_string(const char* szStr);
 void rho_sync_free_string(char* szStr);
 
-unsigned long rho_sync_login_c(const char *name, const char *password, RHOC_CALLBACK callback, void* callback_data);
-unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, RHOC_CALLBACK callback, void* callback_data);
-void rho_sync_set_notification_c(int source_id, RHOC_CALLBACK callback, void* callback_data);
+unsigned long rho_sync_login_c(const char *name, const char *password, /*RHOC_CALLBACK*/void* callback, void* callback_data);
+unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, /*RHOC_CALLBACK*/void* callback, void* callback_data);
+void rho_sync_set_notification_c(int source_id, /*RHOC_CALLBACK*/void* callback, void* callback_data);
 
 #ifdef __cplusplus
 };
