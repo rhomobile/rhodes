@@ -2,8 +2,10 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -586,4 +588,12 @@ public class RhodesService {
 	public static void exit() {
 		RhodesService.getInstance().exitApp();
 	}
+	
+	public static String getTimezoneStr() {
+		Calendar cal = Calendar.getInstance();
+		TimeZone tz = cal.getTimeZone();
+		return tz.getDisplayName();
+	}
+	
+	
 }
