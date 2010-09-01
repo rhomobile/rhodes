@@ -236,6 +236,7 @@ CHttpServer::CHttpServer(int port, String const &root)
 {
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
+	m_exit = true;
 }
 
 CHttpServer::~CHttpServer()
