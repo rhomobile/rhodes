@@ -775,13 +775,19 @@ namespace "build" do
         mkdir_p src_dir
 
         cp_r 'rhosync-client', src_dir, :preserve => true
+        Dir.glob(src_dir+"/rhosync-client/**/*").each do |f|
+		    #puts f
+            rm_rf f if f.index("/build/") || f.index(".DS_Store")         
+ 
+        end
+		
         mkdir_p shared_dir
         
         Dir.glob("platform/shared/*").each do |f|
             next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
                 f == "platform/shared/stlport"        
  
-            puts f                
+            #puts f                
             cp_r f, shared_dir #, :preserve => true                        
         end
    
