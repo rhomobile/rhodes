@@ -720,7 +720,10 @@ task :gem do
   
   puts "Building manifest"
   out = ""
-  Dir.glob("**/*") {|fname| out << fname + "\n" if File.file? fname}
+  Dir.glob("**/*") do |fname| 
+    # TODO: create exclusion list
+    out << fname + "\n" if File.file? fname and not fname =~ /rhosync-client/
+  end
   File.open("Manifest.txt",'w') {|f| f.write(out)}
 
   puts "Loading gemspec"
