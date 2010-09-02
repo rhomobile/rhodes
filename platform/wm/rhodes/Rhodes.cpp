@@ -491,9 +491,9 @@ extern "C" void Init_openssl(void)
 {
 }
 
-extern "C" void Init_digest(void)
-{
-}
+//extern "C" void Init_digest(void)
+//{
+//}
 
 extern "C" void Init_fcntl(void)
 {
