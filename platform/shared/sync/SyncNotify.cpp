@@ -251,6 +251,18 @@ CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bR
         m_strUrl = RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
+String CSyncNotification::toString()const
+{
+	if ( m_cCallback )
+		return "C_Callback";
+	
+	String strRes = "Url :";
+	strRes += m_strUrl;
+	strRes += "; Params: ";
+	strRes += m_strParams;
+	return strRes;
+}
+	
 void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
 {
     LOG(INFO) + "Set search notification." + (pNotify ? pNotify->toString() : "");
@@ -354,16 +366,16 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 	if ( getSync().isStoppedByUser() )
 		return;
 
-    CSyncNotification* pSN = null;
+    CSyncNotification oSN;
     String strBody;
     boolean bRemoveAfterFire = bFinish;
     {
         synchronized(m_mxSyncNotifications)
         {
-            pSN = getSyncNotifyBySrc(src);
+            CSyncNotification* pSN = getSyncNotifyBySrc(src);
 	        if ( pSN == null )
                 return;
-            CSyncNotification& sn = *pSN;
+            oSN = *pSN;
 
 		    strBody = "";
 
@@ -408,18 +420,15 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         	    strBody += "in_progress";
 
             strBody += "&rho_callback=1";
-            if ( sn.m_strParams.length() > 0 )
-                strBody += "&" + sn.m_strParams;
+            if ( oSN.m_strParams.length() > 0 )
+                strBody += "&" + oSN.m_strParams;
 
-            bRemoveAfterFire = bRemoveAfterFire && sn.m_bRemoveAfterFire;
+            bRemoveAfterFire = bRemoveAfterFire && oSN.m_bRemoveAfterFire;
         }
     }
-    if ( bRemoveAfterFire )
-        clearNotification(src);
-
-    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; " + (pSN ? pSN->toString() : "");
+    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; " + oSN.toString();
 	
-    if ( callNotify(*pSN, strBody) )
+    if ( callNotify(oSN, strBody) || bRemoveAfterFire)
         clearNotification(src);
 }
 

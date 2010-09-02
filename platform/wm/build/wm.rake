@@ -325,6 +325,10 @@ namespace "run" do
         $stdout.flush
         chdir $startdir
     end
+
+    task :phone_spec do
+      Jake.run_spec_app('win32', 'phone_spec')
+    end
     
   end
   

@@ -12,9 +12,9 @@ iphone:
   entitlements: ""
   codesignidentity: ""
   configuration: Release
-  extensions: ["digest", "fcntl", "digest-md5", "digest-sha1", "test-libs"]   
+  extensions: ["fcntl", "digest-sha1"]   
   
 android:    
   extensions: ["digest"]
 
-extensions: ["mspec", "fileutils"]
+extensions: ["mspec", "fileutils", "digest", "digest-md5", "test-libs"]
