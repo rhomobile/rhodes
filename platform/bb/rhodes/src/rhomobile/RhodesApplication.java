@@ -665,14 +665,17 @@ final public class RhodesApplication extends UiApplication implements SystemList
     			return;
     		}
     		
-    		if ( m_nOrientation != nOrientation )
-    		{
+    		if ( m_nOrientation != nOrientation && m_bRubyInit )
+	    	{
     			try{
     				RhodesApp.getInstance().callScreenRotationCallback(x, y, m_nOrientation==1 ? 90 : -90);
     			}catch(Exception exc)
     			{
     				LOG.ERROR("Screen rotation callback failed.", exc);
     			}
+    			
+        		//this.invalidate();
+        		//this.updateDisplay();
     		}
     		
     		m_nOrientation = nOrientation;
