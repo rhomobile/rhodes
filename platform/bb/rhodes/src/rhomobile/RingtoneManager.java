@@ -15,15 +15,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.RubyHash;
 import com.xruby.runtime.builtin.RubyString;
-import com.xruby.runtime.lang.RubyBasic;
-import com.xruby.runtime.lang.RubyBlock;
-import com.xruby.runtime.lang.RubyClass;
-import com.xruby.runtime.lang.RubyConstant;
-import com.xruby.runtime.lang.RubyException;
-import com.xruby.runtime.lang.RubyNoArgMethod;
-import com.xruby.runtime.lang.RubyOneArgMethod;
-import com.xruby.runtime.lang.RubyRuntime;
-import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.lang.*;
 
 public class RingtoneManager extends RubyBasic {
 
@@ -68,7 +60,7 @@ public class RingtoneManager extends RubyBasic {
 		}
 	}
 
-	public static void initMethods(RubyClass klass) {
+	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("get_all_ringtones", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				HashSet mediaDirs = new HashSet();
