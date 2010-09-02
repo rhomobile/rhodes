@@ -183,6 +183,11 @@ end
     value.should == "'delay=2;center'"
   end                              
 
+  it "should test string split without parameters" do 
+    res = "Revision: 18805".split[1]
+    res.should == "18805"
+  end
+   
   it "should require with diff case" do
     require "Data/reqTest.rb"
     
