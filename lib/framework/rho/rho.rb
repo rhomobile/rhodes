@@ -98,6 +98,11 @@ module Rho
       if (APPLICATIONS[appname].nil?)
         require 'application' #RhoApplication::get_app_path(appname)+'application'
         APPLICATIONS[appname] = Object.const_get('AppApplication').new
+        unless APPLICATIONS[appname].initialized?
+          msg = "RhoApplication was not correctly initialized (forget to call 'super' in AppApplication.initialize ?)"
+          puts msg
+          raise msg
+        end
       end
       APPLICATIONS[appname]
     end
