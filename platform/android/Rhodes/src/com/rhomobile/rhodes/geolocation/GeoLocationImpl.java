@@ -42,14 +42,43 @@ public class GeoLocationImpl implements LocationListener {
 	private double latitude = 0;
 	private boolean determined = false;
 	
-	private int timeout = 10*60;
-	private Thread thCancel = null;
+	private static int TIMEOUT_STOP = -1;
+	
+	private int timeout = 10*60*1000; // 10 minutes
+	private Thread thCancel = new Thread(new Runnable() {
+		public void run() {
+			Logger.T(TAG, "Cancel thread started");
+			for (;;) {
+				if (timeout < 0)
+					break;
+				try {
+					Logger.T(TAG, "Waiting (" + timeout + "ms)...");
+					Thread.sleep(timeout);
+				}
+				catch (InterruptedException e) {
+					Logger.T(TAG, "Cancel thread interrupted");
+					continue;
+				}
+				if (!isKnownPosition()) {
+					Logger.T(TAG, "Position is still unknown, inform about this");
+					PerformOnUiThread.exec(new Runnable() {
+						public void run() {
+							geoCallbackError();
+						}
+					}, false);
+				}
+				timeout = 2147483647;
+			}
+			Logger.T(TAG, "Cancel thread stopped");
+		}
+	});
 	
 	private native void geoCallback();
 	private native void geoCallbackError();
 	
 	public GeoLocationImpl() {
 		setCurrentGpsLocation(null);
+		thCancel.start();
 	}
 
 	private void setCurrentGpsLocation(Location location) {
@@ -86,10 +115,6 @@ public class GeoLocationImpl implements LocationListener {
 			}
 			
 			if (determined != prevDetermined || latitude != prevLat || longitude != prevLon) {
-				if (thCancel != null) {
-					thCancel.interrupt();
-					thCancel = null;
-				}
 				geoCallback();
 			}
 			
@@ -120,6 +145,10 @@ public class GeoLocationImpl implements LocationListener {
 	}
 	
 	public synchronized void stop() {
+		// Stop thCancel thread
+		timeout = TIMEOUT_STOP;
+		thCancel.interrupt();
+		
 		if (locationManager == null)
 			return;
 		locationManager.removeUpdates(this);
@@ -143,27 +172,7 @@ public class GeoLocationImpl implements LocationListener {
 	}
 
 	public synchronized void setTimeout(int nsec) {
-		timeout = nsec;
-		if (thCancel != null) {
-			thCancel.interrupt();
-			thCancel = null;
-		}
-		thCancel = new Thread(new Runnable() {
-			public void run() {
-				try {
-					Thread.sleep(timeout*1000);
-					if (!isKnownPosition())
-						PerformOnUiThread.exec(new Runnable() {
-							public void run() {
-								geoCallbackError();
-							}
-						}, false);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		thCancel.start();
+		timeout = nsec*1000;
+		thCancel.interrupt();
 	}
 }
