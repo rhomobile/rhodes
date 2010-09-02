@@ -128,14 +128,14 @@ class SpecRunner < MSpecScript
     end
 
     # LIBRARIES
-    unless System.get_property('platform') == 'WINDOWS'    
-        specs = app_folder + "spec/library/**/*_spec.iseq"
-        Dir.glob(specs) do |file|
-          file.gsub!(app_folder,"")
-          file.gsub!(/\.iseq/,"")
-          config[:files] << file
-        end
-    end 
+    specs = app_folder + "spec/library/**/*_spec.iseq"
+    Dir.glob(specs) do |file|
+      next if file =~ /sha1/      
+    
+      file.gsub!(app_folder,"")
+      file.gsub!(/\.iseq/,"")
+      config[:files] << file
+    end
   end
 
   def run
