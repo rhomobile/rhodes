@@ -983,7 +983,8 @@ void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id,
 
 void rho_rhodesapp_callAppActiveCallback(int nActive)
 {
-    RHODESAPP().callAppActiveCallback(nActive!=0);
+	if ( rho::common::CRhodesApp::getInstance() )
+		RHODESAPP().callAppActiveCallback(nActive!=0);
 }
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
