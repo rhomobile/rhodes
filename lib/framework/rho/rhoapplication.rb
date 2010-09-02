@@ -34,10 +34,15 @@ module Rho
 	      NativeBar.create(TOOLBAR_TYPE, @@toolbar)
       else
         NativeBar.create(NOBAR_TYPE, [])
-	  end
+      end
 	  
-	  ::Rho::RHO.get_instance().check_source_migration(self)
-          
+      ::Rho::RHO.get_instance().check_source_migration(self)
+
+      @initialized = true
+    end
+
+    def initialized?
+      @initialized
     end
     
     def on_activate_app
