@@ -103,7 +103,7 @@ public class RubyRuntime
     public static RubyClass AlertClass;    
     public static RubyClass DateTimePickerClass;
     public static RubyClass NativeBarClass;
-    public static RubyClass RingtoneManagerClass;
+    public static RubyModule RingtoneManagerClass;
     public static RubyClass MediaErrorClass;
     public static RubyClass MutexClass;
     public static RubyClass TCPSocketClass;
@@ -311,7 +311,8 @@ public class RubyRuntime
         AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
         NativeBarClass = RubyAPI.defineClass("NativeBar", RubyRuntime.NativeBarClass);
-        RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
+        //RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
+        RingtoneManagerClass = rhoModule.defineModule("RingtoneManager");
         MediaErrorClass = RubyAPI.defineClass("MediaError", RubyRuntime.ObjectClass);
         MutexClass = RubyAPI.defineClass("Mutex", RubyRuntime.ObjectClass);
         TCPSocketClass = RubyAPI.defineClass("TCPSocket", RubyRuntime.ObjectClass);
