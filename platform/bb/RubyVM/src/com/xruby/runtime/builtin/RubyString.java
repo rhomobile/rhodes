@@ -1081,7 +1081,7 @@ public class RubyString extends RubyBasic {
     public RubyValue split(RubyArray args) {
         RubyValue r = (null == args) ? GlobalVariables.get("$;") : args.get(0);
         int nLimit = 0;
-        if ( args.size() > 1 )
+        if ( args != null && args.size() > 1 )
         	nLimit = args.get(1).toInt();
         
         Collection/*<String>*/ splitResult;
