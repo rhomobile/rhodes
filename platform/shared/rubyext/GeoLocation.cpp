@@ -112,11 +112,11 @@ void CGeoLocation::setPingTimeoutSec( int nTimeout )
 	if (nNewTimeout == 0)
 		nNewTimeout = getDefaultPingTimeoutSec();
 	
-	if ( nNewTimeout != m_nGeoPingTimeoutSec)
-	{
+	//if ( nNewTimeout != m_nGeoPingTimeoutSec)
+	//{
 		m_nGeoPingTimeoutSec = nNewTimeout;
 		rho_geoimpl_settimeout(m_nGeoPingTimeoutSec);
-	}
+	//}
 }
 
 int CGeoLocation::getGeoTimeoutSec()

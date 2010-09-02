@@ -127,6 +127,11 @@ public class GeoLocation {
 	
 	public static void setTimeout(int nsec) {
 		try {
+			if (nsec < 0) {
+				Logger.E(TAG, "setTimeout: wrong parameter: " + nsec);
+				return;
+			}
+			
 			checkState();
 			Logger.T(TAG, "setTimeout");
 			init();
