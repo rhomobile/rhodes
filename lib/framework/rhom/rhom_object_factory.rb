@@ -74,6 +74,10 @@ module Rhom
                   @vars.to_s if @vars
               end
               
+              def to_json(*args) 
+                @vars.to_json(*args) if @vars
+              end
+              
               def method_missing(name, *args)
                 unless name == Fixnum
                   if name[name.length()-1] == '='
