@@ -7,8 +7,8 @@ describe "MapView" do
     state.should be_nil
 
     MapView.create :settings => {:map_type => 'roadmap', :region => [37, -122, 10, 10]}
-    w = 2
-    w = 5 if System::get_property('platform') == 'ANDROID'
+    w = 5
+    #w = 5 if System::get_property('platform') == 'ANDROID'
     sleep w
 
     state = MapView.state
