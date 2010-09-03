@@ -1,4 +1,14 @@
 ## 2.1.0
+* iPhone 4 support
+* Barcode recognize for all platforms
+* Signature capture for iPhone and Android
+* AsyncHttp support https basic authentication with parameters
+* Push Notification: blackberry support array of sources for sync; push callback receive hash of values
+* Activate application support on all platforms; When activate app will NOT navigate to hone page
+* ZipAlign apk for Android
+* Fix Crypt extension issues
+* Digest, DigestMD5 supported on windows and windows mobile
+* Add DateTime picker Ajax example
 * Change empty first/last name to an empty string for comparison, instead of being nil (jmalonzo)
 
 ## 2.0.4
