@@ -45,9 +45,9 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
 
 	create_folder(pszFilename);
 
-    LPCTSTR szExt = wcsrchr(pszFilename, '.');
+    //LPCTSTR szExt = wcsrchr(pszFilename, '.');
     TCHAR filename[256];
-	generate_filename(filename,szExt);
+	generate_filename(filename,L".jpg");
 
     // Set the SHCAMERACAPTURE structure.
     ZeroMemory(&shcc, sizeof(shcc));
