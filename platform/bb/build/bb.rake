@@ -152,7 +152,6 @@ namespace "config" do
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"
     $tmpdir =  $bindir +"/tmp"
-    $tmpdir_sim =  $bindir +"/tmp_sim"
     $rhobundledir =  $bindir + "/RhoBundle"
     $srcdir =  $bindir + "/RhoBundle"
     $preverified = $bindir + "/preverified"
@@ -183,9 +182,7 @@ namespace "config" do
     
     mkdir_p $bindir unless File.exists? $bindir
     rm_rf $tmpdir
-    rm_rf $tmpdir_sim
     mkdir_p $tmpdir unless File.exists? $tmpdir
-    mkdir_p $tmpdir_sim unless File.exists? $tmpdir_sim
     mkdir_p  $targetdir if not FileTest.exists?  $targetdir
 
     File.open("#{$app_path}/last_bbver", "w") {|f| f.write($bbver)}
@@ -726,8 +723,8 @@ namespace "package" do
 	            end
 	        end
 
-      	        if getWindowsProductNameString =~ /Windows 7/
-	            fixWin7SimBug($tmpdir_sim + "/apps/rhoconfig.txt")	
+      	    if getWindowsProductNameString =~ /Windows 7/
+	            fixWin7SimBug($tmpdir + "/apps/rhoconfig.txt")	
 	        end
           end
       end
@@ -868,11 +865,6 @@ namespace "clean" do
 #    desc "Clean temp dir"
     task :tempdir => "config:bb" do
       rm_rf $tmpdir
-    end
-
-#    desc "Clean temp simulator dir"
-    task :tempdir_sim => "config:bb" do
-      rm_rf $tmpdir_sim
     end
 
 #    desc "Clean all"
