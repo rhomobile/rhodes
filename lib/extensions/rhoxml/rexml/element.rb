@@ -1,7 +1,7 @@
 require "rexml/parent"
 require "rexml/namespace"
 require "rexml/attribute"
-#require "rexml/cdata"
+require "rexml/cdata"
 require "rexml/xpath"
 #require "rexml/parseexception"
 
