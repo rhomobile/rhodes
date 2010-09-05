@@ -31,6 +31,21 @@ describe "Xml" do
         ch_count.should == 10
     end
 
+    it "should parse CDATA" do
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'testCDATA.xml')
+
+        file = File.new(file_name)
+        doc = REXML::Document.new(file)
+    
+		persons = REXML::XPath.each( doc, "//person/" )
+		firstname=""
+        persons.each do |ch|
+            firstname = ch.elements['firstname'].text
+        end
+
+        firstname.should == "Sample bold <b</b>Tag"    
+    end
+    
     class MyStreamListener
 
         def initialize(events)
