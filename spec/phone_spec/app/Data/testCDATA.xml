@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<persons>
+    <person>
+        <firstname>Sample</firstname>
+        <lastname>Sample</lastname>
+    </person>
+    <person>
+        <firstname><![CDATA[Sample bold <b</b>Tag]]></firstname>
+        <lastname>Sample</lastname>
+    </person>
+</persons>
