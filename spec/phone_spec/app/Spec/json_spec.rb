@@ -59,6 +59,15 @@ describe "Json" do
         parsed["Category List"].is_a?(Array).should ==  true 
     end
 
+    it "should parse many times" do
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'perftest.json')
+        content = File.read(file_name)
+        
+        (1..100).each do |i|
+            Rho::JSON.parse(content)
+        end    
+    end
+
     it "should webservice" do
         return unless $is_network_available
             
