@@ -13,11 +13,28 @@
 
 @synthesize lblMessage, indicator, homePage;
 
-- (void)loginComplete:(NSString*) errorMessage {
+
+- (void)syncAllComplete:(RhoSyncNotify*) notify
+{
+	if ( [notify.status compare:@"in_progress"] == 0)
+	{
+	}else if ([notify.status compare:@"complete"] == 0)
+	{
+		[[self navigationController] pushViewController:homePage animated:YES];
+		[ [SyncEngine sharedInstance].syncClient clearNotification];		
+	}else if ([notify.status compare:@"error"] == 0)
+	{
+	}
+}
+
+- (void)loginComplete:(NSString*) errorMessage 
+{
 	NSLog(@"Login error message: \"%@\"", errorMessage);
 	[indicator stopAnimating];
-	if ([SyncEngine sharedInstance].loginState == logged_in) {
-		[[self navigationController] pushViewController:homePage animated:YES];
+	if ([SyncEngine sharedInstance].loginState == logged_in) 
+	{
+		[ [SyncEngine sharedInstance].syncClient setNotification: @selector(syncAllComplete:) target:self];
+		[ [SyncEngine sharedInstance].syncClient syncAll];
 	} else {
 		lblMessage.text = errorMessage;
 		self.navigationItem.hidesBackButton = false;

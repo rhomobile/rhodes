@@ -8,7 +8,7 @@
 
 #import "storeAppDelegate.h"
 #import "RootViewController.h"
-
+#import "SyncEngine.h"
 
 @implementation storeAppDelegate
 
@@ -61,11 +61,9 @@
 }
 
 
-- (void)applicationWillTerminate:(UIApplication *)application {
-    /*
-     Called when the application is about to terminate.
-     See also applicationDidEnterBackground:.
-     */
+- (void)applicationWillTerminate:(UIApplication *)application 
+{
+	[SyncEngine destroy];	
 }
 
 

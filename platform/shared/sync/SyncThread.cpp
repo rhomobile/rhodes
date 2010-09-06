@@ -99,8 +99,8 @@ int CSyncThread::getLastPollInterval()
 
 void CSyncThread::processCommands()//throws Exception
 {
-    if ( isNoCommands() )
-        addQueueCommand(new CSyncCommand(scNone,false));
+    if ( isNoCommands() && getPollInterval() )
+        addQueueCommand(new CSyncCommand(scSyncAll,false));
 
     CThreadQueue::processCommands();
 }
@@ -118,13 +118,6 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
     CSyncCommand& oSyncCmd = *((CSyncCommand*)pCmd);
     switch(oSyncCmd.m_nCmdCode)
     {
-    case scNone:
-        if ( getPollInterval() )
-        {
-            checkShowStatus(oSyncCmd);
-            m_oSyncEngine.doSyncAllSources();
-        }
-        break;
     case scSyncAll:
         checkShowStatus(oSyncCmd);
         m_oSyncEngine.doSyncAllSources();
@@ -148,7 +141,7 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
     		CSyncLoginCommand& oLoginCmd = (CSyncLoginCommand&)oSyncCmd;
 
             checkShowStatus(oSyncCmd);
-            m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_oNotify );
+            m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, *oLoginCmd.m_pNotify );
     	}
         break;
     }
@@ -297,7 +290,8 @@ void rho_sync_set_syncserver(const char* syncserver)
 unsigned long rho_sync_login(const char *name, const char *password, const char* callback)
 {
     rho_sync_stop();
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, CSyncNotification(callback, "", false) ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, 
+		new CSyncNotification(callback, "", false) ) );
 
     return CSyncThread::getInstance()->getRetValue();
 }
@@ -305,7 +299,8 @@ unsigned long rho_sync_login(const char *name, const char *password, const char*
 unsigned long rho_sync_login_c(const char *name, const char *password, /*RHOC_CALLBACK*/void* callback, void* callback_data)
 {
     rho_sync_stop();
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, CSyncNotification((RHOC_CALLBACK)callback,callback_data,false)) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, 
+		new CSyncNotification((RHOC_CALLBACK)callback,callback_data,false)) );
 
     return CSyncThread::getInstance()->getRetValue();
 }
