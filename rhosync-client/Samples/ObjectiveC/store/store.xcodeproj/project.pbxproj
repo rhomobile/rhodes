@@ -63,6 +63,7 @@
 		5C84C12D122D0FF600B0873C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C84C15B122D105400B0873C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5C84C15F122D107900B0873C /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../../platform/shared/db/res/db; sourceTree = SOURCE_ROOT; };
+		5C95B3181233EAD8008E7E7E /* libSyncClient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSyncClient.a; path = "/Users/evgeny/Projects/rhodes/rhosync-client/build/Debug-iphonesimulator/libSyncClient.a"; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* store-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "store-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		F503FEA1122C67740052508A /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		F503FEA2122C67740052508A /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
@@ -131,6 +132,7 @@
 				5C84C118122D0F6300B0873C /* libsqlite3.dylib */,
 				5C84C12D122D0FF600B0873C /* libz.dylib */,
 				5C84C15B122D105400B0873C /* CFNetwork.framework */,
+				5C95B3181233EAD8008E7E7E /* libSyncClient.a */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -286,6 +288,10 @@
 				GCC_PREFIX_HEADER = store_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "store-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../build/Debug-iphonesimulator\"",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = store;
@@ -302,6 +308,10 @@
 				GCC_PREFIX_HEADER = store_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "store-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../build/Debug-iphonesimulator\"",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = store;

@@ -15,7 +15,7 @@
 
 static SyncEngine *sharedInst = nil;
 
-+ (id)sharedInstance
++ (void)create
 {
     @synchronized( self ) {
         if ( sharedInst == nil ) {
@@ -23,6 +23,19 @@ static SyncEngine *sharedInst = nil;
             [[self alloc] init];
         }
     }
+}
+
++ (void)destroy
+{
+	if ( sharedInst ) 
+	{	
+		[sharedInst dealloc];
+		sharedInst = nil;
+	}
+}
+
++ (id)sharedInstance
+{
     return sharedInst;
 }
 
@@ -51,10 +64,20 @@ static SyncEngine *sharedInst = nil;
 		[sclient addModels:models];
 		
 		sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+		sclient.threaded_mode = TRUE;
 		
 		loginState = [sclient is_logged_in] ? logged_in : logged_out;
 	}
 	return sharedInst;
+}
+
+- (void)dealloc 
+{
+    [customer release];
+    [product release];
+    [sclient release];
+	
+    [super dealloc];
 }
 
 - (RhoSyncClient*) getSClient

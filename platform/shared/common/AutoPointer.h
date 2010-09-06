@@ -51,6 +51,9 @@ public:
     CAutoPtr( const CAutoPtr& orig){ *this = orig; }
     CAutoPtr& operator=( const CAutoPtr& orig)
     {
+        if ( CBaseAutoPointer<PTRTYPE>::m_ptr ) 
+            FreePtr(); 
+
         CBaseAutoPointer<PTRTYPE>::m_ptr = orig.m_ptr;
         const_cast<CAutoPtr&>(orig).m_ptr = 0;
         return *this;

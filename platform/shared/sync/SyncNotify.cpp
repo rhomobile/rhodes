@@ -251,6 +251,12 @@ CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bR
         m_strUrl = RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
+CSyncNotification::~CSyncNotification()
+{
+    if ( m_cCallbackData )
+		rho_free_callbackdata(m_cCallbackData);
+}
+	
 String CSyncNotification::toString()const
 {
 	if ( m_cCallback )
@@ -366,16 +372,15 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 	if ( getSync().isStoppedByUser() )
 		return;
 
-    CSyncNotification oSN;
+    CSyncNotification* pSN;
     String strBody;
     boolean bRemoveAfterFire = bFinish;
     {
         synchronized(m_mxSyncNotifications)
         {
-            CSyncNotification* pSN = getSyncNotifyBySrc(src);
+            pSN = getSyncNotifyBySrc(src);
 	        if ( pSN == null )
                 return;
-            oSN = *pSN;
 
 		    strBody = "";
 
@@ -420,15 +425,15 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         	    strBody += "in_progress";
 
             strBody += "&rho_callback=1";
-            if ( oSN.m_strParams.length() > 0 )
-                strBody += "&" + oSN.m_strParams;
+            if ( pSN->m_strParams.length() > 0 )
+                strBody += "&" + pSN->m_strParams;
 
-            bRemoveAfterFire = bRemoveAfterFire && oSN.m_bRemoveAfterFire;
+            bRemoveAfterFire = bRemoveAfterFire && pSN->m_bRemoveAfterFire;
         }
     }
-    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; " + oSN.toString();
+    LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; " + pSN->toString();
 	
-    if ( callNotify(oSN, strBody) || bRemoveAfterFire)
+    if ( callNotify(*pSN, strBody) || bRemoveAfterFire)
         clearNotification(src);
 }
 
