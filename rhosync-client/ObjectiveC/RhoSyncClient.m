@@ -10,6 +10,55 @@
 
 #include "sync/SyncThread.h"
 
+@interface CCallbackData : NSObject {
+}
+
+@property(assign) NSThread* targetThread;
+@property SEL     targetMethod;
+@property(assign) id      targetObject;
+
+- (id) init: (SEL) selector target: (id) target thread: (NSThread*) thread;
+@end
+
+@implementation CCallbackData
+@synthesize targetThread;
+@synthesize targetMethod;
+@synthesize targetObject;
+- (id) init: (SEL) selector target: (id) target thread: (NSThread*) thread
+{
+	self = [super init];
+	
+	targetMethod = selector;
+	targetObject = target;
+	targetThread = thread;
+	return self;
+}
+
+@end
+
+int callback_impl(const char* szNotify, void* data)
+{
+    RHO_SYNC_NOTIFY oNotify = {0};
+    rho_syncclient_parsenotify(szNotify, &oNotify);
+	
+	RhoSyncNotify* notify =  [[RhoSyncNotify alloc] init: &oNotify];
+	
+	CCallbackData* callbackObj = data;
+	
+	[ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:FALSE];
+
+	//[notify release];
+	//[callbackObj release];
+	
+	return 0;
+}
+
+void rho_free_callbackdata(void* pData)
+{
+	CCallbackData* callbackObj = pData;
+	[callbackObj release];
+}
+
 @implementation RhoSyncClient
 
 @synthesize threaded_mode;
@@ -23,8 +72,17 @@
 	return self;
 }
 
+- (void)dealloc 
+{
+	rho_syncclient_destroy();
+	
+	[sync_server release];
+    [super dealloc];
+}
+
 - (void) setSyncServer:(NSString *)server
 {
+	sync_server = [server retain];
 	rho_sync_set_syncserver([server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
@@ -80,6 +138,31 @@
 	rho_sync_free_string(res);
 	
 	return [[RhoSyncNotify alloc] init: &oNotify];
+}
+
+- (void) loginWithUser: (NSString*) user pwd:(NSString*) pwd callback:(SEL) callback target:(id)target
+{
+	rho_sync_login_c( [user cStringUsingEncoding:[NSString defaultCStringEncoding]],
+					[pwd cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+					 callback_impl, [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] 
+				   );
+}
+
++ (void) setNotification: (SEL) callback target:(id)target
+{
+	rho_sync_set_notification_c(-1, callback_impl, 
+      [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] );
+}
+
+- (void) setNotification: (SEL) callback target:(id)target
+{
+	rho_sync_set_notification_c(-1, callback_impl, 
+	  [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] );
+}
+
+- (void) clearNotification
+{
+	rho_sync_clear_notification(-1);
 }
 
 - (RhoSyncNotify*) syncAll

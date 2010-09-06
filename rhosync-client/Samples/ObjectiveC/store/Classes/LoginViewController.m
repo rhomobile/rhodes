@@ -14,41 +14,24 @@
 
 @synthesize txtLogin, txtPassword, waitPage;
 
-- (void)loginThreadMainRoutine:(WaitLoginController*) waitView {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
-
-	if ( [[SyncEngine sharedInstance].syncClient is_logged_in] )
-	{
-		sleep(1);
-		[SyncEngine sharedInstance].loginState = logged_in;	
-		[waitView performSelectorOnMainThread:@selector(loginComplete:) withObject:@"no errors" waitUntilDone:false];
-		[pool release];  // Release the objects in the pool.
-		return;	
-	}
-	
-	NSLog(@"login: %@, password: %@", txtLogin.text, txtPassword.text);
-	
-	RhoSyncNotify* res = [ [SyncEngine sharedInstance].syncClient loginWithUser:txtLogin.text pwd:txtPassword.text];
-	if ( res.error_code != RHO_ERR_NONE || ![[SyncEngine sharedInstance].syncClient is_logged_in]) 
+- (void)loginComplete:(RhoSyncNotify*) notify
+{
+	if ( notify.error_code != RHO_ERR_NONE || ![[SyncEngine sharedInstance].syncClient is_logged_in]) 
 		[SyncEngine sharedInstance].loginState = failed;	
 	else
-	{
 		[SyncEngine sharedInstance].loginState = logged_in;	
-		[res release];
-		
-		res = [[SyncEngine sharedInstance].syncClient syncAll];
-	}
-
-	[waitView performSelectorOnMainThread:@selector(loginComplete:) withObject:[res error_message] waitUntilDone:false];
+	 
+	[waitPage loginComplete: [notify error_message] ];	
 	
-	[pool release];  // Release the objects in the pool.
+	[notify release];
 }
 
 - (IBAction)doLogin:(id)sender 
 {
 	[SyncEngine sharedInstance].loginState = in_progress;	
 	[[self navigationController] pushViewController:waitPage animated:YES];
-	[NSThread detachNewThreadSelector:@selector(loginThreadMainRoutine:) toTarget:self withObject:waitPage];	
+	
+	[ [SyncEngine sharedInstance].syncClient loginWithUser:txtLogin.text pwd:txtPassword.text callback:@selector(loginComplete:) target:self];	
 }
 
 /*

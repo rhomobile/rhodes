@@ -72,14 +72,16 @@ public:
     {
     public:
 	    String m_strName, m_strPassword;
-        CSyncNotification m_oNotify;
-        CSyncLoginCommand(String name, String password, const CSyncNotification& oNotify) : 
-            CSyncCommand(CSyncThread::scLogin,"",false), m_oNotify(oNotify)
+        common::CAutoPtr<CSyncNotification> m_pNotify;
+        CSyncLoginCommand(String name, String password, CSyncNotification* pNotify) : 
+            CSyncCommand(CSyncThread::scLogin,"",false)
 	    {
 		    m_strName = name;
 		    m_strPassword = password;
+			m_pNotify = pNotify;
 	    }
     };
+	
     class CSyncSearchCommand : public CSyncCommand
     {
     public:

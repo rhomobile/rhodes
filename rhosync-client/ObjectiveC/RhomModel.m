@@ -9,6 +9,7 @@
 #import "RhomModel.h"
 #import "SyncClient/SyncClient.h"
 #include "sync/SyncThread.h"
+#import "RhoSyncClient.h"
 
 @implementation RhomModel
 
@@ -32,6 +33,13 @@
 	rho_sync_free_string(res);
 	
 	return [[RhoSyncNotify alloc] init: &oNotify];
+}
+
+- (void) sync: (SEL) callback target:(id)target
+{
+	[RhoSyncClient setNotification:callback target:target];
+
+	rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);	 
 }
 
 - (void) create: (NSMutableDictionary *) data

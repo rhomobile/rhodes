@@ -1148,4 +1148,9 @@ unsigned long long rho_cur_time()
 }
 #endif
 
+void rho_free_callbackdata(void* pData)
+{
+	//It is used in SyncClient.
+}
+	
 } //extern "C"

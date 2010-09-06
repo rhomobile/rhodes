@@ -34,6 +34,7 @@ struct CSyncNotification
 
     String toString()const;
 
+	~CSyncNotification();
 };
 
 class CSyncNotify

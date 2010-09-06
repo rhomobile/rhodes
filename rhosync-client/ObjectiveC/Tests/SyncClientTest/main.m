@@ -12,6 +12,7 @@
 RhoSyncClient* sclient;
 RhomModel* product;
 RhomModel* perftest;
+NSArray* models;
 
 int ResetAndLogout()
 {
@@ -193,10 +194,14 @@ int runObjCClientTest()
 	perftest.sync_type = RST_NONE;
 	
 	sclient = [[RhoSyncClient alloc] init];
-	NSArray* models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
+	models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
+	[product release];
+	[perftest release];
+	[customer release];
 	
 	[sclient addModels:models];
 	
+	//[models release];
     //sclient.threaded_mode = FALSE;
 	//sclient.poll_interval = 0;
 	
@@ -246,6 +251,10 @@ int main(int argc, char *argv[]) {
     //int retVal = runSyncClientTests();
 	int retVal = runObjCClientTest();
 	
+	[models release];
+//	[product release];
+//	[perftest release];
+	[sclient release];
 	if (retVal)
 		NSLog(@"SUCCESS");
 	else
