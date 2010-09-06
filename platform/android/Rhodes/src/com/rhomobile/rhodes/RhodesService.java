@@ -23,6 +23,7 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.ChromeClientOld;
 import com.rhomobile.rhodes.webview.RhoWebSettings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -62,9 +63,13 @@ public class RhodesService {
 		return instance;
 	}
 	
-	private Context ctx;
+	private Activity ctx;
 	
 	public Context getContext() {
+		return ctx;
+	}
+	
+	public Activity getMainActivity() {
 		return ctx;
 	}
 	
@@ -90,7 +95,7 @@ public class RhodesService {
 		return uiThreadId;
 	}
 	
-	public void setInfo(Context c, long id, Handler handler) {
+	public void setInfo(Activity c, long id, Handler handler) {
 		ctx = c;
 		uiThreadId = id;
 		uiHandler = handler;
@@ -325,7 +330,7 @@ public class RhodesService {
 		return instance != null;
 	}
 	
-	public RhodesService(Context c, ViewGroup rootWindow) {
+	public RhodesService(Activity c, ViewGroup rootWindow) {
 		ctx = c;
 		instance = this;
 		
