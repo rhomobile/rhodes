@@ -93,7 +93,6 @@ public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback,
 		public void onPictureTaken(byte[] data, Camera c) {
 			Logger.D(TAG, "PICTURE CALLBACK RAW");
 			camera.startPreview();
-			startAutoFocusIfExist();
 		}
 	};
 
@@ -107,7 +106,8 @@ public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback,
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_CENTER:
 		case KeyEvent.KEYCODE_CAMERA:
-			takePicture();
+			takePictureWithAutofocus();
+			cameraButton.setVisibility(View.INVISIBLE);
 			return true;
 		case KeyEvent.KEYCODE_BACK:
 			return super.onKeyDown(keyCode, event);
@@ -148,7 +148,6 @@ public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback,
 			camera.setParameters(p);
 			camera.setPreviewDisplay(holder);
 			camera.startPreview();
-			startAutoFocusIfExist();
 			isPreviewRunning = true;
 		} catch (Exception e) {
 			Logger.E(TAG, e.getMessage());
@@ -165,11 +164,16 @@ public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback,
 
 	public void onClick(View v) {
 		if (v.getId() == AndroidR.id.cameraButton) {
-			takePicture();
+			takePictureWithAutofocus();
 			cameraButton.setVisibility(View.INVISIBLE);
 			
 		}
 	}
+
+	private void takePictureWithAutofocus() {
+		startAutoFocus();
+	}
+
 	
 	private void takePicture() {
 		if (!mIsActive) {
@@ -199,14 +203,15 @@ public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback,
 		mIsActive = false;
 	}
 
-                        private void startAutoFocusIfExist() {
+	private void startAutoFocus() {
 		//this only from API v.5 and higher
 		//String focus_mode = camera.getParameters().getFocusMode();
 		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
-			camera.autoFocus(this);
+		camera.autoFocus(this);
 		//}
-                        }
+	}
 
 	public void onAutoFocus (boolean success, Camera camera) {
+		takePicture();
 	}
 }
