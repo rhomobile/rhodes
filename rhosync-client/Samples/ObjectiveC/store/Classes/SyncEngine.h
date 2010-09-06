@@ -24,6 +24,9 @@ enum LoginState {
 	RhoSyncClient* sclient;
 }
 
++ (void)create;
++ (void)destroy;
+
 + (SyncEngine *)sharedInstance;
 
 @property enum LoginState loginState;
@@ -31,6 +34,9 @@ enum LoginState {
 @property(readonly, getter=getSClient) RhoSyncClient* syncClient;
 
 @property(readonly) RhomModel* product;
+
+- (void)dealloc;
+
 @end
 
 

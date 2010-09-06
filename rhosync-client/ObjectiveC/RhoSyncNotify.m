@@ -32,18 +32,38 @@
 	error_code = data->error_code;	
 
 	if ( data->source_name )
-		source_name = [NSString stringWithUTF8String: data->source_name];
+		source_name = [[NSString alloc] initWithUTF8String: data->source_name];
 	if ( data->status )
-		status = [NSString stringWithUTF8String: data->status];
+		status = [[NSString alloc] initWithUTF8String: data->status];
 	if ( data->sync_type )
-		sync_type = [NSString stringWithUTF8String: data->sync_type];
+		sync_type = [[NSString alloc] initWithUTF8String: data->sync_type];
 	if ( data->error_message )	
-		error_message = [NSString stringWithUTF8String: data->error_message];
+		error_message = [[NSString alloc] initWithUTF8String: data->error_message];
 	if ( data->callback_params )	
-		callback_params = [NSString stringWithUTF8String: data->callback_params];
+		callback_params = [[NSString alloc] initWithUTF8String: data->callback_params];
 	
 	rho_syncclient_free_syncnotify(data);
 	return self;
+}
+
+- (void)dealloc 
+{
+	if ( source_name )
+		[source_name release];
+	
+	if ( status )
+		[status release];
+	
+	if ( sync_type )
+		[sync_type release];
+	
+	if (error_message)
+		[error_message release];
+	
+	if (callback_params)
+		[callback_params release];
+	
+    [super dealloc];
 }
 
 @end

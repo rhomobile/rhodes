@@ -21,6 +21,7 @@
 - (id) init;
 
 - (RhoSyncNotify*) sync;
+- (void) sync: (SEL) callback target:(id)target;
 
 - (void) create: (NSMutableDictionary *) data;
 - (NSMutableDictionary *) find: (NSString*)object_id;

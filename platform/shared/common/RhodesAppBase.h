@@ -59,6 +59,8 @@ const char* rho_native_rhopath();
 const char* rho_rhodesapp_getplatform();
 int rho_unzip_file(const char* szZipPath);
 
+void rho_free_callbackdata(void* pData);
+	
 #ifdef __cplusplus
 };
 #endif //__cplusplus
