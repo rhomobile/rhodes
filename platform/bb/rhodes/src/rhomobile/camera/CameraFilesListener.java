@@ -26,8 +26,8 @@ public class CameraFilesListener implements FileSystemJournalListener {
 	private Hashtable _exists;
 	
 	private final String[] _folders = {
-			"file://store/home/user/pictures/",
-			"file://sdcard/blackberry/pictures/"
+			"file:///store/home/user/pictures/",
+			"file:///sdcard/blackberry/pictures/"
 	};
 	
 	public CameraFilesListener(CameraScreen screen) {
