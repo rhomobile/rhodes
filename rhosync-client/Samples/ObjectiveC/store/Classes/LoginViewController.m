@@ -12,7 +12,16 @@
 
 @implementation LoginViewController
 
-@synthesize txtLogin, txtPassword, waitPage;
+@synthesize txtLogin, txtPassword, waitPage, indexPage;
+
+- (void)viewDidLoad 
+{
+	if ( [SyncEngine sharedInstance].loginState == logged_in )
+		[[self navigationController] pushViewController:indexPage animated:YES];
+	else
+		[super viewDidLoad];
+
+}
 
 - (void)loginComplete:(RhoSyncNotify*) notify
 {
