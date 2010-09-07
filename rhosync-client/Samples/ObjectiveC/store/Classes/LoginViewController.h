@@ -8,17 +8,21 @@
 
 #import <UIKit/UIKit.h>
 #import "WaitLoginController.h"
+#import "RootViewController.h"
 
 @class RhoSyncNotify;
 @interface LoginViewController : UIViewController {
 	IBOutlet UITextField* txtLogin;
 	IBOutlet UITextField* txtPassword;
 	IBOutlet WaitLoginController *waitPage;
+	IBOutlet RootViewController *indexPage;
+	
 }
 
 @property (retain, nonatomic) IBOutlet UITextField* txtLogin;
 @property (retain, nonatomic) IBOutlet UITextField* txtPassword;
 @property (nonatomic, retain) IBOutlet WaitLoginController* waitPage;
+@property (nonatomic, retain) IBOutlet RootViewController* indexPage;
 
 - (IBAction)doLogin:(id)sender;
 - (void)loginComplete:(RhoSyncNotify*) notify;
