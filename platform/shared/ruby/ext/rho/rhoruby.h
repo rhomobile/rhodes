@@ -57,7 +57,7 @@ VALUE rho_ruby_disable_gc();
 void  rho_ruby_enable_gc(VALUE val);
 
 VALUE callFramework(VALUE hashReq);
-VALUE callServeIndex(char* index_name);
+VALUE callServeIndex(char* index_name, VALUE hashReq);
 
 void RhoRubyStop();
 
