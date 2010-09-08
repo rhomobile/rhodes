@@ -10,7 +10,6 @@ applog: rholog.txt
 iphone:
   configuration: Debug
   sdk: iphonesimulator4.0
-  emulator: 4.0.1
   provisionprofile:
   codesignidentity:
   entitlements:
