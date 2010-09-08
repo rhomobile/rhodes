@@ -117,7 +117,7 @@ public class RhoRuby {
 		return null;
 	}
 
-	public static RubyValue processIndexRequest(String strIndexArg ){
+	public static RubyValue processIndexRequest(String strIndexArg, RubyValue hashReq ){
 		
 		String strIndex = strIndexArg.replace('\\', '/');
 /*		int nAppsIndex = strIndex.indexOf("/apps/");
@@ -127,7 +127,8 @@ public class RhoRuby {
 				RhoSupport.setCurAppPath( strIndex.substring(nAppsIndex, endIndex+1));
 		}*/
 		
-		RubyValue value = RubyAPI.callPublicOneArgMethod(receiver, ObjectFactory.createString(strIndex), null, serveIndexID);
+		RubyValue value = RubyAPI.callPublicTwoArgMethod(receiver, 
+				ObjectFactory.createString(strIndex), hashReq, null, serveIndexID);
 		
 		return value;
 	}
@@ -152,7 +153,9 @@ public class RhoRuby {
 		//return value.toString();
 	}
 	
-	public static RubyValue processRequest(Properties reqHash, Properties reqHeaders, Properties resHeaders )throws IOException{
+	public static RubyValue processRequest(Properties reqHash, 
+			Properties reqHeaders, Properties resHeaders, String strIndex )throws IOException
+	{
 		RubyHash rh = ObjectFactory.createHash();
 		for( int i = 0; i < reqHash.size(); i++ ){
 			if ( reqHash.getValueAt(i) != null)
@@ -174,7 +177,7 @@ public class RhoRuby {
 		
 		addHashToHash( rh, "headers", headers );
 		
-		RubyValue res = callFramework(rh); 
+		RubyValue res = strIndex != null? processIndexRequest(strIndex, rh) : callFramework(rh); 
 		return res; 
 	}
 	

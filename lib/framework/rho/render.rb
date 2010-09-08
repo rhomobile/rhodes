@@ -22,10 +22,10 @@ module Rho
       @layout.nil? ? 'layout' : @layout
     end
 
-    def self.renderfile(filename)
+    def self.renderfile(filename, req = {}, res = {})
       res = ""
       if File.extname(filename) == '.iseq'
-        res = render_index(filename)
+        res = (RhoController.new).inst_render_index(filename, req, res)
       else
         res = IO.read(filename)
       end
@@ -34,19 +34,23 @@ module Rho
       res
     end
 
-    def inst_render_index(filename)
+    def inst_render_index(filename, req, res)
       rho_info 'inst_render_index'
-      @request, @response = {}
-      @params = {}
+      @request, @response = req, res
+      @params = RhoSupport::query_params req
+      
+      #@request, @response = {}
+      #@params = {}
       require 'rho/rhoviewhelpers'
-      layout = File.dirname(filename) + "/layout_erb.iseq"
+      
       @content = eval_compiled_file(filename, getBinding() )
-      @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
+      if !xhr?
+          rho_info 'index layout' 
+          layout = File.dirname(filename) + "/layout_erb.iseq"
+          @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
+      end
+          
       @content
-    end
-
-    def self.render_index(filename)
-      (RhoController.new).inst_render_index(filename)
     end
 
     def getBinding
