@@ -915,8 +915,11 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         }
         
         RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
-        
-        VALUE data = callServeIndex((char *)fullPath.c_str());
+
+        VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
+                                        method, uri, query, headers, body);
+
+        VALUE data = callServeIndex((char *)fullPath.c_str(), req);
         String reply(getStringFromValue(data), getStringLenFromValue(data));
         rho_ruby_releaseValue(data);
 
