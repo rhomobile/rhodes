@@ -511,10 +511,10 @@ VALUE callFramework(VALUE hashReq) {
     return callres;
 }
 
-VALUE callServeIndex(char* index_name) {
+VALUE callServeIndex(char* index_name, VALUE hashReq) {
     VALUE callres;
     //RhoSetCurAppPath(index_name);
-    callres = rb_funcall(framework, framework_mid2, 1, RhoPreparePath(rb_str_new2(index_name)));
+    callres = rb_funcall(framework, framework_mid2, 2, RhoPreparePath(rb_str_new2(index_name)), hashReq);
     
     if (TYPE(callres)!=T_STRING) {
         RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
