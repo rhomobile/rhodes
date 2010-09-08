@@ -125,6 +125,17 @@ public class NetRequest
 		return "";
 	}
 	
+	void handleCookie(IRhoSession oSession) throws Exception
+	{
+		if ( oSession != null )
+		{
+			String strSession = oSession.getSession();
+			LOG.INFO("Cookie : " + (strSession != null ? strSession : "") );
+			if ( strSession != null && strSession.length() > 0 && !strSession.equals("rho_empty") )
+				m_connection.setRequestProperty("Cookie", strSession );
+		}
+	}
+	
 	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
     {
 		String strRespBody = null;
@@ -138,14 +149,7 @@ public class NetRequest
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
 			LOG.INFO("connection done");
 			
-			if ( oSession != null )
-			{
-				String strSession = oSession.getSession();
-				LOG.INFO("Cookie : " + (strSession != null ? strSession : "") );
-				if ( strSession != null && strSession.length() > 0 )
-					m_connection.setRequestProperty("Cookie", strSession );
-			}
-			
+			handleCookie(oSession);
 			//m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
 			
@@ -256,7 +260,11 @@ public class NetRequest
 		NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
 		if ( resp.isOK() )
 		{
-			resp.setCharData(resp.getCookies());
+			String strCookie = resp.getCookies();
+			if ( strCookie == null || strCookie.length() == 0 )
+				strCookie = "rho_empty";
+			
+			resp.setCharData(strCookie);
 			LOG.INFO("pullCookies: " + resp.getCharData() );
 		}
 		
@@ -341,13 +349,8 @@ public class NetRequest
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
 			
-			if ( oSession != null )
-			{
-				String strSession = oSession.getSession();
-				if ( strSession != null && strSession.length() > 0 )
-					m_connection.setRequestProperty("Cookie", strSession );
-			}
-			
+			handleCookie(oSession);
+
 			m_connection.setRequestProperty("Connection", "keep-alive");
 			m_connection.setRequestProperty("content-type", szMultipartContType);
 			writeHeaders(headers);
@@ -502,13 +505,8 @@ public class NetRequest
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
 			
-			if (oSession!= null)
-			{
-				String strSession = oSession.getSession();
-				if ( strSession != null && strSession.length() > 0 )
-					m_connection.setRequestProperty("Cookie", strSession );
-			}
-			
+			handleCookie(oSession);
+
 			m_connection.setRequestProperty("Connection", "keep-alive");
 			
 			if ( nStartPos > 0 || m_nMaxPacketSize > 0 )
