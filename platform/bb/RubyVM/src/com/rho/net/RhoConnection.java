@@ -631,12 +631,15 @@ public class RhoConnection implements IHttpConnection {
 				return false;
 
 			int nPos = findIndex(uri.getPath());
-			if ( nPos >= 0 ){
+			if ( nPos >= 0 )
+			{
 				String url = uri.getPath();// + (nPos == 0 ? ".iseq" : "");
-				RubyValue res = RhoRuby.processIndexRequest(url);//erb-compiled should load from class
-				processResponse(res);
+				Properties reqHash = new Properties();
+				this.doDispatch(reqHash, url);
+			//	RubyValue res = RhoRuby.processIndexRequest(url);//erb-compiled should load from class
+				//processResponse(res);
 				
-				RhodesApp.getInstance().keepLastVisitedUrl(url_external);
+				//RhodesApp.getInstance().keepLastVisitedUrl(url_external);
 				return true;
 			}
 			
@@ -747,7 +750,18 @@ public class RhoConnection implements IHttpConnection {
 		}
 		reqHash.setProperty( "application",application);
 		reqHash.setProperty( "model", model);
+		
+		doDispatch( reqHash, null);
 
+		if ( actionid !=null && actionid.length() > 2 && 
+				 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' )
+				SyncThread.getInstance().addobjectnotify_bysrcname( model, actionid);
+		
+		return true;
+	}
+	
+	void doDispatch( Properties reqHash, String strIndex)throws IOException
+	{	
 		reqHash.setProperty("request-method", this.method);
 		reqHash.setProperty("request-uri", uri.getPath());
 		reqHash.setProperty("request-query", uri.getQueryString());
@@ -757,16 +771,11 @@ public class RhoConnection implements IHttpConnection {
 			reqHash.setProperty("request-body", postData.toString());
 		}
 		
-		RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders);
+		RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders, strIndex);
 		processResponse(res);
 		
-		if ( actionid !=null && actionid.length() > 2 && 
-			 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' )
-			SyncThread.getInstance().addobjectnotify_bysrcname( model, actionid);
-
 		RhodesApp.getInstance().keepLastVisitedUrl(url_external);
 		LOG.INFO("dispatch end");
-		return true;
 	}
 	
 	public void processRequest()  throws IOException{

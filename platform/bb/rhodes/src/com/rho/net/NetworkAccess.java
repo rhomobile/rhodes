@@ -24,7 +24,7 @@ public class NetworkAccess implements INetworkAccess {
 		new RhoLogger("NetworkAccess");
 
 	private static String URLsuffix = "";
-	private static String WIFIsuffix;
+	private static String WIFIsuffix = "";
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
 	private static long  m_nMaxPacketSize = 0;
@@ -33,22 +33,20 @@ public class NetworkAccess implements INetworkAccess {
 	{
 		networkConfigured = false;
 		bes = false;
-		URLsuffix = null;
-
+		URLsuffix = "";
+		WIFIsuffix = "";
+		
 		String strDeviceside = ";deviceside=true";
 		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
 			strDeviceside = "";
 
-		if (DeviceInfo.isSimulator()) {
-			if (com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1) {
-				URLsuffix = "";
-				WIFIsuffix = ";interface=wifi";
-			} else {
-				URLsuffix = ";deviceside=true";
-				WIFIsuffix = ";interface=wifi;deviceside=true";
-			}
+		if (DeviceInfo.isSimulator()) 
+		{
+			URLsuffix = strDeviceside;
+			WIFIsuffix = ";interface=wifi";
 			networkConfigured = true;
-		}else{
+		}else
+		{
 			ServiceBook sb = ServiceBook.getSB();
 			if (sb != null) {
 				ServiceRecord[] wifis = sb.findRecordsByCid("WPTCP");
@@ -56,7 +54,7 @@ public class NetworkAccess implements INetworkAccess {
 					if (/*srs[i].isDisabled() ||*/ !wifis[i].isValid())
 						continue;
 					
-					WIFIsuffix = ";interface=wifi" + strDeviceside; 
+					WIFIsuffix = ";interface=wifi";// + strDeviceside; 
 						//";deviceside=true;ConnectionUID=" + 
 						//wifis[i].getUid();
 					
@@ -114,7 +112,7 @@ public class NetworkAccess implements INetworkAccess {
 			networkConfigured = true;
 		}
 
-		LOG.INFO("Postfix: " + URLsuffix);
+		LOG.INFO("Postfix: " + URLsuffix + ";Wifi: " + WIFIsuffix);
 	}
 
 	/*public IHttpConnection doLocalRequest(String strUrl, String strBody)
@@ -183,75 +181,63 @@ public class NetworkAccess implements INetworkAccess {
 		return (SocketConnection)baseConnect(strUrl, ignoreSuffix);
 	}
 	
+	private Connection doConnect(String urlArg, boolean bThrowIOException) throws IOException
+	{
+		Connection conn = null;		
+		try 
+		{
+			String url = new String(urlArg);
+            if (url.startsWith("https"))
+				url += ";EndToEndDesired;RdHTTPS";
+			
+			LOG.INFO("Connect to url: " + url);
+            conn = Connector.open(url, Connector.READ_WRITE, true);
+		} catch (java.io.InterruptedIOException ioe) 
+		{
+			LOG.ERROR("Connector.open InterruptedIOException", ioe );
+			if (conn != null)
+				conn.close();
+			conn = null;
+			throw ioe;			
+		} catch (IOException ioe) 
+		{
+			LOG.ERROR("Connector.open exception", ioe );
+			
+            String strMsg = ioe.getMessage(); 
+			boolean bTimeout = strMsg != null && (strMsg.indexOf("timed out") >= 0 || strMsg.indexOf("Timed out") >= 0);
+			
+			if ( bTimeout || bThrowIOException )				
+			{				
+				if (conn != null)
+					conn.close();
+				conn = null;
+				throw ioe;
+			}
+		}catch(Exception exc)
+		{
+			throw new IOException("Could not open network connection.");
+		}
+		
+		return conn;
+	}
+	
 	public Connection baseConnect(String strUrl, boolean ignoreSuffix) throws IOException 
 	{
 		Connection conn = null;
 		
 		//Try wifi first
-		if ( WIFIsuffix != null && isWifiActive() ){
-			try {
-				LOG.INFO(strUrl + WIFIsuffix);
-				conn = Connector.open(strUrl + WIFIsuffix);
-			} catch (IOException ioe) {
-				LOG.INFO("WIFI connection failed: " + ioe.getMessage() );
-			}
+		if ( WIFIsuffix != null && isWifiActive() )
+		{
+			conn = doConnect(strUrl + WIFIsuffix + URLsuffix, false);
+			if ( conn == null )
+				conn = doConnect(strUrl + WIFIsuffix, false);				
 		}
 		
-		if ( conn == null ){
-			/*int nStatus = net.rim.device.api.system.RadioInfo.getNetworkService();
-			if ( ( nStatus & net.rim.device.api.system.RadioInfo.NETWORK_SERVICE_DATA) == 0) {
-				throw new IOException("Network Data Service Not Available");
-			}*/
-			
-			try {
-				String url = strUrl;
-				//if ( RhoConf.getInstance().getBool("bb_sim_use_deviceside") || !ignoreSuffix )
-					url += URLsuffix;
-                if (url.startsWith("https"))
-					url += ";EndToEndDesired;RdHTTPS";
-					
-				LOG.INFO(url);
-                conn = Connector.open(url, Connector.READ_WRITE, true);
-			} catch (java.io.InterruptedIOException ioe) {
-				LOG.ERROR("Connector.open InterruptedIOException", ioe );
-				if (conn != null)
-					conn.close();
-				conn = null;
-				throw ioe;			
-			} catch (IOException ioe) {
-                String strMsg = ioe.getMessage(); 
-				
-		    	boolean bTimeout = strMsg != null && (strMsg.indexOf("timed out") >= 0 || strMsg.indexOf("Timed out") >= 0);
-				
-				if ( !bTimeout && URLsuffix.length() > 0 )				{
-					LOG.ERROR("Connector.open exception", ioe );
-					
-					try{
-                        String url = strUrl;
-						if (url.startsWith("https"))
-							url += ";EndToEndDesired;RdHTTPS";
-						
-						LOG.INFO(url);
-						conn = Connector.open(url, Connector.READ_WRITE, true);					
-					} catch (IOException ioe2) {
-						LOG.ERROR("Connector.open exception", ioe2 );
-						if (conn != null)
-							conn.close();
-						conn = null;
-						throw ioe2;
-					}
-				}else
-				{				
-					LOG.ERROR("Connector.open exception", ioe );
-					if (conn != null)
-						conn.close();
-					conn = null;
-					throw ioe;
-				}
-			}catch(Exception exc)
-			{
-				throw new IOException("Could not open network connection.");
-			}
+		if ( conn == null )
+		{
+			conn = doConnect(strUrl + URLsuffix, false);
+			if ( conn == null )
+				conn = doConnect(strUrl, true);				
 		}
 		
 		return conn;

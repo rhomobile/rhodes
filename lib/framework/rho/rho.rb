@@ -469,26 +469,26 @@ module Rho
       end 
     end
     
-    def serve_index(index_name)
+    def serve_index(index_name, req)
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
       begin
         puts 'inside RHO.serve_index: ' + index_name
         res = init_response
-        res['request-body'] = RhoController::renderfile(index_name)
+        res['request-body'] = RhoController::renderfile(index_name, req, res)
         return send_response(res)
       rescue Exception => e
         return send_error(e)
       end
     end
 
-    def serve_index_hash(index_name)
+    def serve_index_hash(index_name, req)
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
       begin
         puts 'inside RHO.serve_index: ' + index_name
         res = init_response
-        res['request-body'] = RhoController::renderfile(index_name)
+        res['request-body'] = RhoController::renderfile(index_name, req, res)
         return send_response_hash(res)
       rescue Exception => e
         return send_error(e, 500, true)
