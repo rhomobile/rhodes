@@ -43,4 +43,3 @@ The "Rhodes Developer Reference":http://wiki.rhomobile.com/index.php/Rhodes for 
 For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
 
 For questions on licensing contact "our sales team":mailto:sales@rhomobile.com
-
