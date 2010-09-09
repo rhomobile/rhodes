@@ -15,28 +15,33 @@ CThreadQueue::~CThreadQueue(void)
 {
 }
 
+void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
+{
+    synchronized(m_mxStackCommands);
+
+	boolean bExist = false;
+    if ( isSkipDuplicateCmd() )
+    {
+	    for ( int i = 0; i < (int)m_stackCommands.size(); i++ )
+	    {
+		    if ( m_stackCommands.get(i)->equals(*pCmd) )
+		    {
+			    bExist = true;
+			    break;
+		    }
+	    }
+    }
+
+	if ( !bExist )
+		m_stackCommands.add(pCmd);
+
+}
+
 void CThreadQueue::addQueueCommand(IQueueCommand* pCmd)
 { 
     LOG(INFO) + "addCommand: " + pCmd->toString();
-	{
-        synchronized(m_mxStackCommands);
 
-		boolean bExist = false;
-        if ( isSkipDuplicateCmd() )
-        {
-		    for ( int i = 0; i < (int)m_stackCommands.size(); i++ )
-		    {
-			    if ( m_stackCommands.get(i)->equals(*pCmd) )
-			    {
-				    bExist = true;
-				    break;
-			    }
-		    }
-        }
-
-		if ( !bExist )
-    		m_stackCommands.add(pCmd);
-	}
+    addQueueCommandInt(pCmd);
 
     if ( isNoThreadedMode()  )
         processCommands();

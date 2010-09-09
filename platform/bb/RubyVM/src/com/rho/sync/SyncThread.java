@@ -124,7 +124,8 @@ public class SyncThread extends RhoThread
 	
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
     void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
-	
+    int  getPollInterval(){ return m_nPollInterval;}
+    
 	public static SyncThread Create(RhoClassFactory factory)throws Exception
 	{
 	    if ( m_pInstance != null) 
@@ -170,12 +171,8 @@ public class SyncThread extends RhoThread
     public static SyncThread getInstance(){ return m_pInstance; }
     public static SyncEngine getSyncEngine(){ return m_pInstance!= null ? m_pInstance.m_oSyncEngine : null; }
 
-    void addSyncCommand(SyncCommand oSyncCmd)
-    { 
-		if ( RhoConf.getInstance().getString("syncserver").length() == 0 )
-			return;
-		
-    	LOG.INFO( "addSyncCommand: " + oSyncCmd.m_nCmdCode );
+    protected void addSyncCommandInt(SyncCommand oSyncCmd)
+    {
     	synchronized(m_mxStackCommands)
     	{
     		boolean bExist = false;
@@ -191,6 +188,13 @@ public class SyncThread extends RhoThread
     		if ( !bExist )
     			m_stackCommands.add(oSyncCmd);
     	}
+    }
+    
+    void addSyncCommand(SyncCommand oSyncCmd)
+    { 
+    	LOG.INFO( "addSyncCommand: " + oSyncCmd.m_nCmdCode );
+    	addSyncCommandInt(oSyncCmd);
+    	
         if ( isNoThreadedMode()  )
         {
         	try{
@@ -288,9 +292,9 @@ public class SyncThread extends RhoThread
 	
 	void processCommands()throws Exception
 	{
-		if ( isNoCommands() )
-			addSyncCommand(new SyncCommand(scNone, false));
-    	
+	    if ( isNoCommands() && getPollInterval()>0 )
+	        addSyncCommandInt(new SyncCommand(scSyncAll,false));
+		
 		while(!isNoCommands())
 		{
 			SyncCommand oSyncCmd = null;
@@ -315,13 +319,6 @@ public class SyncThread extends RhoThread
 	{
 	    switch(oSyncCmd.m_nCmdCode)
 	    {
-	    case scNone:
-	        if ( m_nPollInterval > 0 )
-	        {
-	        	checkShowStatus(oSyncCmd);
-	            m_oSyncEngine.doSyncAllSources();
-	        }
-	        break;
 	    case scSyncAll:
 	    	checkShowStatus(oSyncCmd);
 	        m_oSyncEngine.doSyncAllSources();
