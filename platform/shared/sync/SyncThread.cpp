@@ -99,8 +99,8 @@ int CSyncThread::getLastPollInterval()
 
 void CSyncThread::processCommands()//throws Exception
 {
-    if ( isNoCommands() && getPollInterval() )
-        addQueueCommand(new CSyncCommand(scSyncAll,false));
+    if ( isNoCommands() && getPollInterval()>0 )
+        addQueueCommandInt(new CSyncCommand(scSyncAll,false));
 
     CThreadQueue::processCommands();
 }

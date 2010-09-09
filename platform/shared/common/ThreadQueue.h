@@ -57,6 +57,8 @@ protected:
 
     virtual void processCommands();
 
+    void addQueueCommandInt(IQueueCommand* pCmd);
+
     boolean isNoCommands();
 };
 
