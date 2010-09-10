@@ -8,6 +8,9 @@ JNIEnv *jnienv();
 
 jclass rho_find_class(JNIEnv *env, const char *c);
 
+void *rho_nativethread_start();
+void rho_nativethread_end(void *);
+
 std::string const &rho_root_path();
 std::string const &rho_apk_path();
 
