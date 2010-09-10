@@ -906,6 +906,13 @@ namespace "build" do
       end
 
       files = []
+      Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
+        puts Jake.run($jarbin, ["xf", f], File.join($tmpdir, "Rhodes"))
+        unless $?.success?
+          puts "Error running jar (xf)"
+          exit 1
+        end
+      end
       Dir.glob(File.join($tmpdir, "Rhodes", "*")).each do |f|
         relpath = Pathname.new(f).relative_path_from(Pathname.new(File.join($tmpdir, "Rhodes"))).to_s
         files << relpath
