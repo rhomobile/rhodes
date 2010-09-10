@@ -721,7 +721,9 @@ module Rho
     module AsyncHttp
 
         def self.make_auth_header(args)
-          auth = args[:authentication]
+          auth = args[:authentication] if args.has_key?(:authentication)
+          auth = args [:authorization] if args.has_key?(:authorization)
+          
           return nil unless auth.is_a? Hash
           return nil if auth[:type].nil?
 
