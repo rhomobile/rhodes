@@ -768,7 +768,7 @@ namespace "build" do
     #    desc "Build rhosync-client package"
     task :rhosync_client do
 
-        ver = File.read("rhosync-client/version") #.gsub(".", "_")
+        ver = File.read("rhosync-client/version").chomp #.gsub(".", "_")
         zip_name = "rhosync-client-"+ver+".zip"
 
         bin_dir = "rhosync-client-bin"
