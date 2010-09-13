@@ -1577,6 +1577,14 @@
 					</File>
 				</Filter>
 				<Filter
+					Name="bluetooth"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\bluetooth\bluetooth_wrap.c"
+						>
+					</File>
+				</Filter>
+				<Filter
 					Name="stringio"
 					>
 					<File
