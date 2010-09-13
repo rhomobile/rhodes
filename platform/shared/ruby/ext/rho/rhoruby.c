@@ -348,18 +348,21 @@ VALUE rho_ruby_create_byte_array(unsigned char* buf, int length) {
 	return ar;
 }
 
-int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length) {
+int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length) 
+{
+    int size = 0;
+	int i = 0;
+
 	if (TYPE(array_value) != T_ARRAY) {
 		return -1;
 	}
-	int size = RARRAY_LEN(array_value);
+	size = RARRAY_LEN(array_value);
 	if (buf == NULL) {
 		return size;
 	}
 	if (size > max_length) {
 		size = max_length;
 	}
-	int i;
 	for (i = 0; i < size; i++) {
 		VALUE item = rb_ary_entry( array_value, i);
 		long n = rb_num2ll(item);
