@@ -130,6 +130,10 @@ static Rhodes *instance = NULL;
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(runRunnable:) withObject:args waitUntilDone:wait];
 }
 
+- (BOOL)isRotationLocked {
+    return rotationLocked;
+}
+
 - (void)openMapLocation:(NSString*)query {
 	[self hideSplash];
     NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
@@ -282,7 +286,6 @@ static Rhodes *instance = NULL;
 	
 }
 
-
 - (void)choosePicture:(NSString*) url {
     if (!rho_rhodesapp_check_mode())
         return;
@@ -355,6 +358,8 @@ static Rhodes *instance = NULL;
         rho_rhodesapp_create(szRootPath);
         app_created = YES;
         
+        rotationLocked = rho_conf_getBool("disable_screen_rotation");
+        
         NSLog(@"Show loading page");
         [self performSelectorOnMainThread:@selector(showLoadingPage) withObject:nil waitUntilDone:NO];
         
@@ -370,6 +375,7 @@ static Rhodes *instance = NULL;
     NSLog(@"Rhodes starting application...");
     instance = self;
     application = [UIApplication sharedApplication];
+    rotationLocked = YES;
     
     [NSThread setThreadPriority:1.0];
     

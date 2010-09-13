@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "RhoViewController.h"
 
-@interface LogViewController : UIViewController <UIScrollViewDelegate, UITextViewDelegate> {
+@interface LogViewController : RhoViewController <UIScrollViewDelegate, UITextViewDelegate> {
 	UITextView *textView;
 
 @public
