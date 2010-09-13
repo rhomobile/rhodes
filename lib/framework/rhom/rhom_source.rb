@@ -52,25 +52,27 @@ module Rhom
     class << self
       include ::Rhom::RhomObject
       def find(*args)
-        list = []
-        if args.first == :all
+        if args.first == :all || args.first == :first
+          list = []
+        
           results = ::Rho::RHO.get_src_db().select_from_table('sources', '*')
           
           results.each do |result|
             list << RhomSource.new(result)
           end
-        else
+          
+          if args.first == :first
+            return list.length > 0 ? list[0] : nil
+          end 
+        
+          list
+          
+        else 
           result = ::Rho::RHO.get_src_db().select_from_table('sources', '*', 
                                                             {"source_id" => strip_braces(args.first)}).first
-          puts 'result: ' + result.inspect
-          list << RhomSource.new(result)
+          RhomSource.new(result)
         end
         
-        if args.first == :first
-            return list.length > 0 ? list[0] : nil
-        end 
-        
-        list
       end
       
       def find_all_ashash
