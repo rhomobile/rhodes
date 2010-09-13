@@ -36,6 +36,7 @@
 	SignatureDelegate* signatureDelegate;
 	
     id<RhoMainView,NSObject> mainView;
+    BOOL rotationLocked;
 }
 
 @property (nonatomic, retain) UIWindow *window;
@@ -49,6 +50,8 @@
 
 + (CGRect)applicationFrame;
 + (void)setStatusBarHidden:(BOOL)v;
+
+- (BOOL)isRotationLocked;
 
 //+ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view;
 
