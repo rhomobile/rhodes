@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RhoViewController.h"
 
-
-@interface SplashViewController : UIViewController {
+@interface SplashViewController : RhoViewController {
     IBOutlet UIImageView *splashView;
     
 @public
