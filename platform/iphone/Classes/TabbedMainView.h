@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
+#import "RhoViewController.h"
 
-@interface TabbedMainView : UIViewController<RhoMainView> {
+@interface TabbedMainView : RhoViewController<RhoMainView> {
     UITabBarController *tabbar;
     NSArray *tabbarData;
     int tabindex;
@@ -20,6 +21,5 @@
 @property (nonatomic,assign) int tabindex;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray*)items;
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @end
