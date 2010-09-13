@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
+#import "RhoViewController.h"
 #include "RhoNativeViewManagerOC.h"
 
-@interface SimpleMainView : UIViewController <RhoMainView, UIWebViewDelegate> {
+@interface SimpleMainView : RhoViewController <RhoMainView, UIWebViewDelegate> {
 
     UIWebView *webView;
     UIToolbar *toolbar;
@@ -31,7 +32,6 @@
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame;
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
 - (void)loadView;
 

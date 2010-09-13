@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "RhoViewController.h"
 
-@interface LogOptionsController : UIViewController <UIScrollViewDelegate, UITextViewDelegate, UIPickerViewDelegate> {
+@interface LogOptionsController : RhoViewController <UIScrollViewDelegate, UITextViewDelegate, UIPickerViewDelegate> {
 	UITableView	*tableView;
 	UITextView *textViewEnabledCategories;
 	UITextView *textViewDisabledCategories;
