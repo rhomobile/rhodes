@@ -394,14 +394,6 @@ int rho_sys_get_screen_height();
 	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
 }
 
-
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	// custom rotation code based on interfaceOrientation here...
-	return YES;
-}
-
-
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame toolbar:(NSArray*)items {
     return [self init:p webView:nil frame:frame toolbar:items];
 }

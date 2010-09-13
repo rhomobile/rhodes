@@ -11,10 +11,11 @@
 #import <MapKit/MKAnnotation.h>
 #import <MapKit/MKReverseGeocoder.h>
 #import "GoogleGeocoder.h"
+#import "RhoViewController.h"
 
 #include "ruby/ext/rho/rhoruby.h"
 
-@interface MapViewController : UIViewController <MKReverseGeocoderDelegate,MKMapViewDelegate> {
+@interface MapViewController : RhoViewController <MKReverseGeocoderDelegate,MKMapViewDelegate> {
     MKMapView *mapView;
     MKReverseGeocoder *geoCoder;
     GoogleGeocoder* ggeoCoder;
