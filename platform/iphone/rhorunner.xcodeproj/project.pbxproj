@@ -69,6 +69,8 @@
 		FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */; };
 		FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9711FF2EF70096AC39 /* SignatureViewController.m */; };
 		FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4981B411FFC53C00488CB2 /* SignatureView.m */; };
+		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
+		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
 		FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */; };
 /* End PBXBuildFile section */
 
@@ -241,6 +243,9 @@
 		FA291E9711FF2EF70096AC39 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature/SignatureViewController.m; sourceTree = "<group>"; };
 		FA4981B311FFC53C00488CB2 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature/SignatureView.h; sourceTree = "<group>"; };
 		FA4981B411FFC53C00488CB2 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature/SignatureView.m; sourceTree = "<group>"; };
+		FACC20C8123A60F40088A447 /* Bluetooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bluetooth.h; path = Bluetooth/Bluetooth.h; sourceTree = "<group>"; };
+		FACC20C9123A60F40088A447 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
+		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RhoNativeViewManager.mm; sourceTree = "<group>"; };
 		FAD45EAF122571EE00141873 /* RhoNativeViewManagerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoNativeViewManagerOC.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -268,6 +273,7 @@
 				BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */,
 				46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */,
 				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
+				FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +283,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FACC20C4123A60800088A447 /* Bluetooth */,
 				FA291E9111FF2CAD0096AC39 /* Signature */,
 				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
 				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
@@ -333,6 +340,7 @@
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
+				FACC20FF123A759A0088A447 /* GameKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -602,6 +610,15 @@
 			name = Signature;
 			sourceTree = "<group>";
 		};
+		FACC20C4123A60800088A447 /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				FACC20C8123A60F40088A447 /* Bluetooth.h */,
+				FACC20C9123A60F40088A447 /* Bluetooth.m */,
+			);
+			name = Bluetooth;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -830,6 +847,7 @@
 				5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */,
 				5C0D0C0D121D337A0022E83C /* RhoThreadImpl.m in Sources */,
 				FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */,
+				FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

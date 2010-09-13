@@ -1110,6 +1110,13 @@ void rho_net_request(const char *url)
     request->pullData(url, null);
 }
 
+void rho_net_request_with_data(const char *url, const char *str_body) {
+    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho_impl_createClassFactory();
+    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
+    request->pushData(url, str_body, null);
+}
+	
+	
 void rho_rhodesapp_load_url(const char *url)
 {
     RHODESAPP().loadUrl(url);
