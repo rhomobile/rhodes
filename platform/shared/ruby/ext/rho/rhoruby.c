@@ -34,6 +34,7 @@ extern void Init_RhoConf(void);
 extern void Init_Alert(void);
 extern void Init_Camera(void);
 extern void Init_SignatureTool(void);
+extern void Init_RhoBluetooth(void);
 extern void Init_stringio(void);
 extern void Init_DateTimePicker(void);
 extern void Init_NativeBar(void);
@@ -158,6 +159,7 @@ void RhoRubyStart()
     Init_RhoConf();
     Init_Alert();
 	Init_SignatureTool();
+	Init_RhoBluetooth();	
     Init_Camera();
     Init_stringio();
     Init_DateTimePicker();
@@ -336,6 +338,37 @@ void rho_ruby_add_to_array(VALUE ar, VALUE val)
 {
     rb_ary_push(ar,val);
 }
+
+VALUE rho_ruby_create_byte_array(unsigned char* buf, int length) {
+	VALUE ar = rb_ary_new2(length);
+	int i;
+	for (i = 0 ; i < length; i++) {
+		rb_ary_push(ar,rb_ll2inum(buf[i]));
+	}
+	return ar;
+}
+
+int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length) {
+	if (TYPE(array_value) != T_ARRAY) {
+		return -1;
+	}
+	int size = RARRAY_LEN(array_value);
+	if (buf == NULL) {
+		return size;
+	}
+	if (size > max_length) {
+		size = max_length;
+	}
+	int i;
+	for (i = 0; i < size; i++) {
+		VALUE item = rb_ary_entry( array_value, i);
+		long n = rb_num2ll(item);
+		buf[i] = (unsigned char)n;
+	}
+	return size;
+}
+
+
 
 VALUE rho_ruby_createHash() {
     return rb_hash_new();
