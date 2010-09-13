@@ -116,6 +116,7 @@
 		F5E363080EB7A0DB00226287 /* newline.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363070EB7A0DB00226287 /* newline.c */; };
 		F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */; };
 		FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA291E8811FF2BF90096AC39 /* signature_wrap.c */; };
+		FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FACC2098123A5F300088A447 /* bluetooth_wrap.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -229,6 +230,7 @@
 		F5E363070EB7A0DB00226287 /* newline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newline.c; path = ../../shared/ruby/newline.c; sourceTree = SOURCE_ROOT; };
 		F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mapview_wrap.c; path = ../../shared/ruby/ext/mapview/mapview_wrap.c; sourceTree = SOURCE_ROOT; };
 		FA291E8811FF2BF90096AC39 /* signature_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = signature_wrap.c; path = ext/signature/signature_wrap.c; sourceTree = "<group>"; };
+		FACC2098123A5F300088A447 /* bluetooth_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bluetooth_wrap.c; path = ext/bluetooth/bluetooth_wrap.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -479,6 +481,7 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				FACC2097123A5F0B0088A447 /* Bluetooth */,
 				FA291E8011FF2A5F0096AC39 /* signature */,
 				5C8EE86311220EBB0005C20D /* asynchttp */,
 				5CF8DBBE10B1D40400247AB4 /* socket */,
@@ -593,6 +596,14 @@
 				FA291E8811FF2BF90096AC39 /* signature_wrap.c */,
 			);
 			name = signature;
+			sourceTree = "<group>";
+		};
+		FACC2097123A5F0B0088A447 /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				FACC2098123A5F300088A447 /* bluetooth_wrap.c */,
+			);
+			name = Bluetooth;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -756,6 +767,7 @@
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
 				FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */,
 				5C40CF66122703E6007298DA /* sqlite3_api_wrap.c in Sources */,
+				FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

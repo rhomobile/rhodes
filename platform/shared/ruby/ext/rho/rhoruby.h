@@ -69,7 +69,10 @@ VALUE rho_ruby_create_boolean(unsigned char b);
 VALUE rho_ruby_create_integer(__int64 i);
 VALUE rho_ruby_create_double(double d);
 void rho_ruby_add_to_array(VALUE ar, VALUE val);
-
+	
+VALUE rho_ruby_create_byte_array(unsigned char* buf, int length);	
+int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length);
+	
 const char* rho_ruby_getRhoDBVersion();
 
 typedef void rho_hash_eachstr_func(const char*, const char*, void*);

@@ -1150,6 +1150,25 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
+		<Filter
+			Name="bluetooth"
+			>
+			<File
+				RelativePath=".\bluetooth\Bluetooth.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\bluetooth\Bluetooth.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 		<Global
