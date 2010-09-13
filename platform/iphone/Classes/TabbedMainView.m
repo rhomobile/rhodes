@@ -54,14 +54,6 @@
 
 @synthesize tabbar, tabbarData, tabindex;
 
-
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	// custom rotation code based on interfaceOrientation here...
-	return YES;
-}
-
-
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
     CGRect frame = [[v view] frame];
     

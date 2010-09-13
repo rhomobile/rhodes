@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
+#import "RhoViewController.h"
 
 @class SignatureDelegate;
 
-@interface SignatureViewController : UIViewController {
+@interface SignatureViewController : RhoViewController {
 	UIView *signatureView; 
 	UIToolbar *toolbar;
 	SignatureDelegate* signatureDelegate;
@@ -19,7 +20,6 @@
 
 - (id)initWithRect:(CGRect)rect delegate:(SignatureDelegate*)delegate;
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)loadView;
 
 @end
