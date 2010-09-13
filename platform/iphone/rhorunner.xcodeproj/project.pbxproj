@@ -27,6 +27,7 @@
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
+		BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD6A6229123E46BB0093E03C /* RhoViewController.m */; };
 		BD97AC211160EE8F006960F9 /* RhoAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* RhoAlert.m */; };
 		BD97AC3F1160F8A5006960F9 /* RingtoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC3E1160F8A5006960F9 /* RingtoneManager.m */; };
 		BD97ACA711610666006960F9 /* DateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97ACA611610666006960F9 /* DateTimePicker.m */; };
@@ -180,6 +181,8 @@
 		BD38E754115D1AAC001CE05C /* TabbedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabbedMainView.m; sourceTree = "<group>"; };
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
+		BD6A6228123E46BB0093E03C /* RhoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoViewController.h; sourceTree = "<group>"; };
+		BD6A6229123E46BB0093E03C /* RhoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoViewController.m; sourceTree = "<group>"; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BD97AC1F1160EE8F006960F9 /* RhoAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoAlert.h; sourceTree = "<group>"; };
 		BD97AC201160EE8F006960F9 /* RhoAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoAlert.m; sourceTree = "<group>"; };
@@ -283,13 +286,12 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FACC20C4123A60800088A447 /* Bluetooth */,
-				FA291E9111FF2CAD0096AC39 /* Signature */,
 				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
 				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
 				BDC6F34811F4ABBF0056C1C3 /* icon114.png */,
 				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
 				BD97AC1E1160EE7A006960F9 /* Alert */,
+				FACC20C4123A60800088A447 /* Bluetooth */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				46056CEE1031CFB700C21967 /* DateTimePicker */,
@@ -302,6 +304,7 @@
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				5C5332610FBD6AC700F268F0 /* rho */,
 				BD97AC3C1160F87D006960F9 /* Ringtones */,
+				FA291E9111FF2CAD0096AC39 /* Signature */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 				BD38E76D115D1C3C001CE05C /* WebView */,
 				46C25E39103240A400A26428 /* RhoDelegate.h */,
@@ -310,6 +313,8 @@
 				BDB373C411444A8F006EA6DA /* Rhodes.m */,
 				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
 				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
+				BD6A6228123E46BB0093E03C /* RhoViewController.h */,
+				BD6A6229123E46BB0093E03C /* RhoViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -847,6 +852,7 @@
 				5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */,
 				5C0D0C0D121D337A0022E83C /* RhoThreadImpl.m in Sources */,
 				FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */,
+				BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */,
 				FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
