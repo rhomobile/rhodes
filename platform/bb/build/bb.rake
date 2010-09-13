@@ -493,6 +493,7 @@ namespace "build" do
       mkdir_p $tmpdir
     end
 
+   
 #    desc "Build rhodes"
     task :rhodes => [ :rubyvm, :rhobundle ] do
       javac = $config["env"]["paths"]["java"] + "/javac.exe"
@@ -516,6 +517,15 @@ namespace "build" do
         vsrcdir = $tmpdir + "/vsrc"
         mkdir_p vsrcdir
         cp_r $builddir + "/../rhodes/platform/common/.", vsrcdir
+        #ar_bbver = $bbver.split('.')
+        [ "4.7", "5.0" ].each do |ver|
+            if $bbver > ver    
+                if File.exist?( $builddir + "/../rhodes/platform/" + ver )
+                  cp_r $builddir + "/../rhodes/platform/" + ver + "/.", vsrcdir, :remove_destination => true
+                end
+            end
+        end
+        
         if File.exist?( $builddir + "/../rhodes/platform/" + $bbver )
           cp_r $builddir + "/../rhodes/platform/" + $bbver + "/.", vsrcdir, :remove_destination => true
         end
