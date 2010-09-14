@@ -52,6 +52,7 @@ private:
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
     
     boolean m_bDeactivationMode;
+    int m_activateCounter;
 
 public:
     ~CRhodesApp(void);
