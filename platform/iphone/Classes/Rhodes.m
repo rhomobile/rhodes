@@ -23,10 +23,6 @@ static BOOL app_created = NO;
 
 @implementation RhoActivateTask
 + (void)run {
-    if (!app_created) {
-        [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
-        return;
-    }
     rho_rhodesapp_callAppActiveCallback(1);
 }
 @end
@@ -343,6 +339,20 @@ static Rhodes *instance = NULL;
     }
 }
 
+- (void)doRhoActivate {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    @try {
+        NSLog(@"doRhoActivate thread started");
+        while (!app_created)
+            [NSThread sleepForTimeInterval:0.1];
+        [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
+    }
+    @finally {
+        NSLog(@"doRhoActivate thread finished");
+        [pool release];
+    }
+}
+
 - (void)doRhoInit {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
@@ -617,7 +627,12 @@ static Rhodes *instance = NULL;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     RAWLOG_INFO("Application did become active");
-    [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
+    if (!app_created) {
+        NSLog(@"Application is not created yet so postpone activation callback");
+        [NSThread detachNewThreadSelector:@selector(doRhoActivate) toTarget:self withObject:nil];
+    }
+    else
+        [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
