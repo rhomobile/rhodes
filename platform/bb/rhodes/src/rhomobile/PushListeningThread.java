@@ -46,6 +46,26 @@ public class PushListeningThread extends Thread {
         }
     }
 
+    public static boolean isMDSPushEnabled()
+    {
+    	if ( !RhoConf.getInstance().isExist("push_options") )
+    		return true;
+    	
+    	String strOptions = RhoConf.getInstance().getString("push_options");
+    	
+    	return strOptions.indexOf("mds") >= 0;
+    }
+
+    public static boolean isPushServiceEnabled()
+    {
+    	if ( !RhoConf.getInstance().isExist("push_options") )
+    		return true;
+    	
+    	String strOptions = RhoConf.getInstance().getString("push_options");
+    	
+    	return strOptions.indexOf("push_service") >= 0;
+    }
+    
     public void run()
     {
 
@@ -179,7 +199,7 @@ public class PushListeningThread extends Thread {
         }
     }
     
-    private String[] split(String original, String separator) {
+    private static String[] split(String original, String separator) {
 		Vector nodes = new Vector();
 		// Parse nodes into vector
 		int index = original.indexOf(separator);
@@ -202,7 +222,7 @@ public class PushListeningThread extends Thread {
 		return result;
 	}
    
-    private String[] splitOnce(String original, String separator) {
+    private static String[] splitOnce(String original, String separator) {
 		String[] result;
     	int index = original.indexOf(separator);
     	if (index>=0) {
@@ -216,19 +236,19 @@ public class PushListeningThread extends Thread {
     	return result;
     }
     
-    private void showPopup(String message) {
+    private static void showPopup(String message) {
     	com.rho.rubyext.Alert.showPopup(message);
 	}
     
-    private void vibrate(String duration) {
+    private static void vibrate(String duration) {
     	com.rho.rubyext.Alert.vibrate(duration);
     }
 
-    private void play_file(String file_name, String media_type) {
+    private static void play_file(String file_name, String media_type) {
     	com.rho.rubyext.Alert.play_file(file_name, media_type);
     }
    
-    private void processPushMessage(final byte[] data, int nLen)
+    public static void processPushMessage(final byte[] data, int nLen)
     {
        /* Application.getApplication().invokeLater(new Runnable() 
         {
