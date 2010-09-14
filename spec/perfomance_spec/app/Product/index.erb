@@ -1,0 +1,25 @@
+<div class="pageTitle">
+  <h1>Products</h1>
+</div>
+
+<div class="toolbar">
+  <div class="leftItem regularButton">
+    <a href="<%= Rho::RhoConfig.start_path %>">Home</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a href="<%= url_for :action => :new %>">New</a>
+  </div>
+</div>
+
+<div class="content">
+  <ul>
+    <% $products.each do |product| %>
+        <li>
+          <a href="<%= url_for :action => :async_show, :id => product.object, :query => {:product_id => product.object} %>">
+            <span class="title"><%= product.name %></span><span class="disclosure_indicator"></span>
+          </a>
+        </li>
+
+    <% end %>
+  </ul>
+</div>
