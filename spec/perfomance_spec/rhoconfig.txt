@@ -11,7 +11,7 @@ rhobundle_zip_url = nil
 rhobundle_zip_pwd = nil
 
 # Rhodes runtime properties
-MinSeverity  = 3
+MinSeverity  = 1
 LogToOutput = 1
 LogCategories = *
 ExcludeLogCategories =
