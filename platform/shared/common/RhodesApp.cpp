@@ -56,6 +56,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath) : CRhodesAppBase(strRootPath)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
+    m_activateCounter = 0;
 
     m_ptrFactory = rho_impl_createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
@@ -91,9 +92,6 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
-
-    //LOG(INFO) + "activate app";
-    //rho_ruby_activateApp();
 
     getSplashScreen().hide();
 
@@ -230,7 +228,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     LOG(INFO) + "callAppActiveCallback";
     if (bActive)
     {
-        this->stopWait();
+        if (m_activateCounter++ > 0)
+            this->stopWait();
         
         String strUrl = m_strHomeUrl + "/system/activateapp";
         // Activation callback need to be runned in separate thread
