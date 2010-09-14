@@ -46,6 +46,7 @@ src\com\rho\rubyext\System.java
 src\com\rho\rubyext\WebView.java
 src\com\rho\rubyext\XMLParser.java
 src\com\rho\Version.java
+src\com\rho\RhodesApplicationPlatform.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraFilesListener.java
 src\rhomobile\camera\CameraScreen.java

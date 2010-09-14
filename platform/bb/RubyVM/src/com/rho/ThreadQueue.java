@@ -20,6 +20,7 @@ public abstract class ThreadQueue extends RhoThread
     {
         public abstract boolean equals(IQueueCommand cmd);
         public abstract String toString();
+        public abstract void execute();
     };
 
     RhoClassFactory m_ptrFactory;
@@ -37,7 +38,7 @@ public abstract class ThreadQueue extends RhoThread
     public RhoClassFactory getFactory(){ return m_ptrFactory; }
 
     int getLastPollInterval(){ return 0;}
-    public abstract void processCommand(IQueueCommand pCmd);
+    //public abstract void processCommand(IQueueCommand pCmd);
     boolean isSkipDuplicateCmd() { return false; }
 
     public ThreadQueue(RhoClassFactory factory)
@@ -135,6 +136,11 @@ public abstract class ThreadQueue extends RhoThread
 	    }
     }
 
+    public void processCommand(IQueueCommand pCmd)
+    {
+    	pCmd.execute();
+    }
+    
     public void setPollInterval(int nInterval)
     { 
         m_nPollInterval = nInterval; 
