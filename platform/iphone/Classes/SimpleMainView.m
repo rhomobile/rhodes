@@ -251,7 +251,7 @@ int rho_sys_get_screen_height();
     w.autoresizesSubviews = YES;
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
-    //w.delegate = self;
+    w.delegate = self;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
     
@@ -429,10 +429,9 @@ int rho_sys_get_screen_height();
 	if (nativeView) {
           [root addSubview:[nativeView getView]];
 	}
-	else {
-		if (webView)
-			[root addSubview:webView];
-                         webView.delegate = self;
+	else if (webView) {
+        [root addSubview:webView];
+        webView.delegate = self;
 	}
 	assert(!nativeView || [nativeView retainCount] == 2);
 	assert(!webView || [webView retainCount] == 2);
@@ -453,7 +452,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)dealloc {
-     webView.delegate = nil;
+    webView.delegate = nil;
     nativeView = nil;
     nativeViewView = nil;
     self.webView = nil;
