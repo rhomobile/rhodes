@@ -155,7 +155,7 @@ public class AsyncHttp extends ThreadQueue
     	    m_valBody = RhoRuby.create_string(resp.getCharData());
     	}
         
-        void execute()
+        public void execute()
         {
             NetResponse resp = null;
      	    try
