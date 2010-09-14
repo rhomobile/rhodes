@@ -52,7 +52,7 @@ import com.xruby.runtime.lang.RubyProgram;
 /**
  *
  */
-final public class RhodesApplication extends UiApplication implements SystemListener, ISyncStatusListener//, FileSystemListener
+final public class RhodesApplication extends RhodesApplicationPlatform implements SystemListener, ISyncStatusListener
 {
 	// Menu Labels
 	public static final String LABEL_HOME = "Home";
@@ -69,6 +69,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhodesApplication");
 	
+
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
@@ -402,6 +403,7 @@ final public class RhodesApplication extends UiApplication implements SystemList
     void doClose(){   	
     	LOG.TRACE("Rhodes DO CLOSE ***--------------------------***");
 
+    	onPlatformClose();
     	if ( _pushListeningThread != null )
     		_pushListeningThread.stop();
 		
@@ -512,6 +514,8 @@ final public class RhodesApplication extends UiApplication implements SystemList
 		        	navigateHome();
 		        }    
 		
+		    	onPlatformActivate();	    		
+
 		    	LOG.TRACE("Rhodes end activate ***--------------------------***");
     		}
     		
@@ -1001,10 +1005,11 @@ final public class RhodesApplication extends UiApplication implements SystemList
 	        
 	    	try {
 	    		RhoClassFactory.getNetworkAccess().configure();
+	    		
 	    	} catch(IOException exc) {
 	    		LOG.ERROR(exc.getMessage());
 	    	}
-	    	
+
 	        PrimaryResourceFetchThread.Create(this);
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
 	        
@@ -1209,10 +1214,13 @@ final public class RhodesApplication extends UiApplication implements SystemList
     	    		return;
     	    	}
     	    	
-    	    	if (com.rho.Capabilities.ENABLE_PUSH)
+    	    	if ( com.rho.Capabilities.ENABLE_PUSH  )
     	    	{
-	    	    	_pushListeningThread = new PushListeningThread();
-	    	    	_pushListeningThread.start();
+    	    		if ( PushListeningThread.isMDSPushEnabled() )
+    	    		{
+		    	    	_pushListeningThread = new PushListeningThread();
+		    	    	_pushListeningThread.start();
+    	    		}
     	    	}
     	    	
         		while( !m_bExit )

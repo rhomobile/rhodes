@@ -89,6 +89,42 @@ describe "RhoError" do
 
 end
 
+describe "RhomSource" do
+
+  it "should find first source" do
+    src = Rhom::RhomSource.find(:first)
+    src.should_not be_nil
+  end
+
+  it "should find all source" do
+    srcs = Rhom::RhomSource.find(:all)
+    srcs.should_not be_nil
+    
+    srcs.length.should > 1
+  end
+  
+  it "should find Product_s source" do
+    src = Rhom::RhomSource.find(Product_s.get_source_id)
+    src.should_not be_nil
+    
+    src.get_lastsync_objectcount.should == 0
+    src.source_id.should == 1
+    src.name.should == "Product_s"
+    src.last_updated.year.should == 1970
+    src.last_inserted_size.should == 0
+    src.last_deleted_size.should == 0
+    src.last_sync_duration.should == 0
+    src.last_sync_success.should == false
+    src.distinct_objects.should == 0
+    src.backend_refresh_time.year.should == 1970
+    src.partition.should == "user"
+    src.schema.length.should > 0
+    src.schema_version.length.should > 0
+    
+  end
+
+end
+
 describe "RhoRuby" do
 
   it "should compute string to_f to test flt_rounds" do
