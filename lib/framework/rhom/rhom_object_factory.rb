@@ -423,7 +423,7 @@ module Rhom
                 end
                                 
                 def find_bycondhash(args, &block)                
-                    #puts 'find_bycondhash start'
+                    puts 'find_bycondhash start'
                     
                     condition_hash = {}
                     select_arr = nil
@@ -559,7 +559,7 @@ module Rhom
                         ret_list = ret_list.slice(offset,limit)
                     end
 
-                    #puts "find_bycondhash end: #{ret_list.length} objects"
+                    puts "find_bycondhash end: #{ret_list.length} objects"
 
                     return nCount if args.first == :count
 
