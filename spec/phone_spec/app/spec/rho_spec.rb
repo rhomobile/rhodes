@@ -110,13 +110,13 @@ describe "RhomSource" do
     src.get_lastsync_objectcount.should == 0
     src.source_id.should == 1
     src.name.should == "Product_s"
-    src.last_updated.year.should == 1970
+    src.last_updated.year.should > 1960
     src.last_inserted_size.should == 0
     src.last_deleted_size.should == 0
     src.last_sync_duration.should == 0
     src.last_sync_success.should == false
     src.distinct_objects.should == 0
-    src.backend_refresh_time.year.should == 1970
+    src.backend_refresh_time.year.should > 1960
     src.partition.should == "user"
     src.schema.length.should > 0
     src.schema_version.length.should > 0
