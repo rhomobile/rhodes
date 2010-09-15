@@ -145,16 +145,34 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 	}
 
-	if (contentChanged) {
+//#define RHO_DONT_COPY_ON_START
+	
+    if (contentChanged) {
         NSString *dirs[] = {@"apps", @"lib", @"db", @"hash", @"name"};
+#ifdef RHO_DONT_COPY_ON_START
+        NSError *error;
+#endif
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
             BOOL remove = nameChanged;
             if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
                 remove = NO;
+            NSString *src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
+            NSLog(@"src: %@", src);
+            NSString *dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
+            NSLog(@"dst: %@", dst);
+#ifdef RHO_DONT_COPY_ON_START
+            if (remove)
+                [fileManager removeItemAtPath:dst error:&error];
+            if ([dirs[i] isEqualToString:@"hash"] || [dirs[i] isEqualToString:@"name"])
+                [fileManager copyItemAtPath:src toPath:dst error:&error];
+            else
+                [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
+#else
             [self copyFromMainBundle:fileManager
                             fromPath:[bundleRoot stringByAppendingPathComponent:dirs[i]]
                               toPath:[rhoRoot stringByAppendingPathComponent:dirs[i]]
                               remove:remove];
+#endif
         }
 	}
 
