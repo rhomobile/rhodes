@@ -13,7 +13,7 @@
 
 
 
-@interface BluetoothManager : NSObject <GKPeerPickerControllerDelegate, GKSessionDelegate> {
+@interface RhoBluetoothManager : NSObject <GKPeerPickerControllerDelegate, GKSessionDelegate> {
 	GKSession		*session;
 
 	NSString* connectionCallbackURL; 
@@ -35,7 +35,7 @@
 @property(nonatomic, retain) NSMutableArray	 *packets;
 
 
-+ (BluetoothManager*)sharedInstance;
++ (RhoBluetoothManager*)sharedInstance;
 
 // Peer Picker Related Methods
 - (void)startPicker:(NSString*)callback;
