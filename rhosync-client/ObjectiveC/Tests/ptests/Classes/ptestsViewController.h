@@ -12,10 +12,13 @@
 @interface ptestsViewController : UIViewController {
 	IBOutlet UITextView *txtResult;
 	IBOutlet UIButton *btnStart;
+	IBOutlet UIButton *btnBench;	
 	IBOutlet UIActivityIndicatorView *indicator;
 	
 	RhoSyncClient* sclient;
 	RhomModel* perftest;
+	RhomModel* product;
+	NSString* result;
 	int nCount;
 	BOOL tests_initialized;
 }
@@ -25,6 +28,7 @@
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *indicator;
 
 - (IBAction)runTest:(id)sender;
+- (IBAction)runBench:(id)sender;
 
 @end
 
