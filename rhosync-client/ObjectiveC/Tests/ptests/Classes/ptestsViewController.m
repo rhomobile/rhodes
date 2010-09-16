@@ -31,9 +31,13 @@
 	perftest = [[RhomModel alloc] init];
 	perftest.name = @"Perftest";
 	perftest.sync_type = RST_NONE;
+
+	product = [[RhomModel alloc] init];
+	product.name = @"Product";
+	product.sync_type = RST_INCREMENTAL;
 	
 	sclient = [[RhoSyncClient alloc] init];
-	NSArray* models = [NSArray arrayWithObjects: perftest, nil];	
+	NSArray* models = [NSArray arrayWithObjects: perftest, product, nil];	
 	
 	[sclient addModels:models];
 	
@@ -41,6 +45,7 @@
 	sclient.poll_interval = 0;
 	
 	[sclient database_full_reset_and_logout];
+	sclient.bulksync_state = 1;
 	
 	nCount = 1000;
 	
@@ -58,6 +63,92 @@
 		[item release];
 	}
 	[perftest stopBulkUpdate];
+}
+
+- (void) createTestData
+{
+	[product startBulkUpdate];	
+	for (int i = 0; i < 100; i++) 
+	{
+		for (int j = 0; j < 100; j++) 
+		{
+			NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+			[item setValue: [NSString stringWithFormat:@"Name%d", i] forKey:@"name"];							 
+			[item setValue: [NSString stringWithFormat:@"HTC%d", i] forKey:@"brand"];							 
+			
+			[item setValue: [NSString stringWithFormat:@"%d", i] forKey:@"price"];							 
+			
+			[product create:item];
+			
+			[item release];
+		}
+	}
+	[product stopBulkUpdate];
+	
+}
+
+- (void) benchSearch
+{
+	double startTime = CACurrentMediaTime();	
+	[self createTestData];
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Prepare data(100000)", (CACurrentMediaTime()-startTime)*1000.0 ]];
+	
+	startTime = CACurrentMediaTime();	
+	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+	[cond setValue:[NSString stringWithFormat:@"HTC3"] forKey:@"brand"];							 
+	
+	NSMutableDictionary* item = [product find_first:cond];	
+	if (item) {
+		[item release];
+	}
+	
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
+}
+
+- (void) benchCreate
+{
+	double startTime = CACurrentMediaTime();	
+	
+	NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+	[item setValue: [NSString stringWithFormat:@"Name00"] forKey:@"name"];							 
+	[item setValue: [NSString stringWithFormat:@"HTC00"] forKey:@"brand"];							 
+	[item setValue: [NSString stringWithFormat:@"0"] forKey:@"price"];							 
+	
+	[product create:item];
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Create 1 item", (CACurrentMediaTime()-startTime)*1000.0 ]];
+
+	startTime = CACurrentMediaTime();		
+	[product sync];
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Sync 1 item", (CACurrentMediaTime()-startTime)*1000.0 ]];
+}
+
+- (void) benchBulkSync
+{
+	double startTime = CACurrentMediaTime();	
+	
+	sclient.sync_server = @"http://store-bulk.rhohub.com/application";
+	
+	RhoSyncNotify* res = [sclient loginWithUser:@"" pwd:@""];
+	[res release];
+	sclient.bulksync_state = 0;
+
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Reset and login", (CACurrentMediaTime()-startTime)*1000.0 ]];
+	
+	startTime = CACurrentMediaTime();	
+	[sclient syncAll];
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Bulk sync", (CACurrentMediaTime()-startTime)*1000.0 ]];
 }
 
 - (void) testRead
@@ -136,7 +227,7 @@
 	
 	NSLog(@"starting test");	
 	double startTime;
-	NSString* result = [[NSString alloc]initWithString:@""];
+	result = [[NSString alloc]initWithString:@""];
 	NSArray* ops = [NSArray arrayWithObjects:@"create", @"read all", @"read by one", @"update", @"delete", nil];
 	
 	[self beforeTests];
@@ -160,17 +251,63 @@
 			[self testUpdate];
 		else if ( [op isEqualToString:@"delete"])
 			[self testDelete];
-		
+
 //		result = [result stringByAppendingString:
 //				  [NSString stringWithFormat:@"- to %@ 1000 records took %f milisecons\n",
 //				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
 		result = [result stringByAppendingString:
 				  [NSString stringWithFormat:@"%@ (ms): %f\n",
 				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
-		
 	}
 	
 	NSLog(@"test is done");
+	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
+    
+	[pool release];  // Release the objects in the pool.
+}
+
+- (void)testThreadMainRoutineBench
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
+	
+	NSLog(@"starting test");	
+	double startTime;
+	result = [[NSString alloc]initWithString:@""];
+	NSArray* ops = [NSArray arrayWithObjects: @"Create bench", @"Search bench", @"Bulk bench", nil];//, @"bench_", @"read by one", @"update", @"delete", nil];
+	[self beforeTests];
+	
+	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+	
+	RhoSyncNotify* res = [sclient loginWithUser:@"" pwd:@""];
+	int nErr = res.error_code;
+	[res release];
+	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) 
+	{
+    	result = [result stringByAppendingString:@"ERROR: cannot login\n"];		
+	}else 
+	{
+		[sclient syncAll];
+		for(NSString* op in ops) 
+		{
+			startTime = CACurrentMediaTime();
+		
+			if ( [op isEqualToString:@"Search bench"])
+				[self benchSearch];
+			else if ( [op isEqualToString:@"Create bench"])
+				[self benchCreate];
+			else if ( [op isEqualToString:@"Bulk bench"])
+				[self benchBulkSync];
+		
+			NSLog(@"bench %@ is done", op);
+		
+			result = [result stringByAppendingString:
+				  [NSString stringWithFormat:@"%@ (ms): %f\n",
+				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
+		}
+	}
+	
+	NSLog(@"BENCH results:");
+	NSLog(result);
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
     
 	[pool release];  // Release the objects in the pool.
@@ -180,6 +317,12 @@
 	[btnStart setEnabled:NO];
 	[indicator startAnimating];	
 	[NSThread detachNewThreadSelector:@selector(testThreadMainRoutine) toTarget:self withObject:nil];
+}
+
+- (IBAction)runBench:(id)sender {
+	[btnStart setEnabled:NO];
+	[indicator startAnimating];	
+	[NSThread detachNewThreadSelector:@selector(testThreadMainRoutineBench) toTarget:self withObject:nil];
 }
 
 /*
