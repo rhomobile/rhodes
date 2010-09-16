@@ -131,7 +131,7 @@ public class TabbedMainView implements MainView {
 					tabIndex = Integer.parseInt(tabId);
 					TabData data = tabData.elementAt(tabIndex);
 					if (data.reload || !data.loaded) {
-						getView(tabIndex).navigate(data.url, tabIndex);
+						RhodesService.loadUrl(data.url);
 						data.loaded = true;
 					}
 				}
