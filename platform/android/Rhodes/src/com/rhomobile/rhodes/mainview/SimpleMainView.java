@@ -291,15 +291,17 @@ public class SimpleMainView implements MainView {
 					group = new LinearLayout(ctx);
 					group.setGravity(gravity);
 					group.setOrientation(LinearLayout.HORIZONTAL);
-					group.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 1));
+					group.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, FILL_PARENT, 1));
 					bottom.addView(group);
 				}
 				group.addView(button);
 			}
 			
 			// Last group should have gravity RIGHT
-			if (group != null)
+			if (group != null) {
 				group.setGravity(Gravity.RIGHT);
+				bottom.requestLayout();
+			}
 		}
 		
 		webView.requestFocus();
