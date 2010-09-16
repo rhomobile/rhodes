@@ -128,7 +128,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  */
 - (void) configure {
 	
-//#define RHO_DONT_COPY_ON_START
+#define RHO_DONT_COPY_ON_START
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
