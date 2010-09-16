@@ -271,7 +271,7 @@ namespace "config" do
     $keystore = nil
     $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
     $keystore = $config["android"]["production"]["certificate"] if $keystore.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
-    $keystore = File.join(File.expand_path('~'), ".rhomobile", "keystore") if $keystore.nil?
+    $keystore = File.expand_path(File.join(ENV['HOME'], ".rhomobile", "keystore")) if $keystore.nil?
 
     $storepass = nil
     $storepass = $app_config["android"]["production"]["password"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
