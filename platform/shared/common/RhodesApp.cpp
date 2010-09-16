@@ -614,7 +614,7 @@ const String& CRhodesApp::getRhobundleReloadUrl()
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
 {
-    rho_webview_navigate(strUrl.c_str(), 0);
+    rho_webview_navigate(strUrl.c_str(), -1);
 }
 
 void CRhodesApp::navigateBack()
