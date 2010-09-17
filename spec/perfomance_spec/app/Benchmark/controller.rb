@@ -14,7 +14,7 @@ class BenchmarkController < Rho::RhoController
 	(0..100).each do |i|
 	    attrs = {'brand'=>"HTC#{i}", 'name'=>"Name#{i}"}
 		
-	    (0..10).each do |j|		
+	    (0..100).each do |j|		
 	        attrs['price'] = j.to_s
     		Product.create( attrs )
 	    end
@@ -24,85 +24,67 @@ class BenchmarkController < Rho::RhoController
   end
   
   def search_test
-	puts "search_test"  
-
     ::Rhom::Rhom.database_fullclient_reset_and_logout
-	create_test_data
-
-    puts "search_test1"
+	
     time = Time.now.to_f
+	create_test_data
+	
+	$bench_results << "   Prepare data(100000) (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+	
+	time = Time.now.to_f
 	
 	$products = Product.find(:all, :conditions => {'brand' => 'HTC3'})
 	
-	@time = ((Time.now.to_f - time) * 10**3 ).to_i
-	
-	render :action => :search_results
+	$bench_results << "   Search (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
   end
 
   def create_test
-	puts "create_test"
-
-    SyncEngine.set_threaded_mode(false)
-    ::Rhom::Rhom.database_fullclient_reset_and_logout
-    SyncEngine.set_syncserver('http://rhodes-store-server.heroku.com/application')
-    SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")	
-    SyncEngine.set_threaded_mode(true)    
-    Rho::RhoConfig.bulksync_state='1'
-    
-    puts "create_test1"
     time = Time.now.to_f
 	
 	Product.create( {'brand'=>"HTC", 'name'=>"NameTest", "price"=>'1'} )
+	$bench_results << "   Create 1 item (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+    time = Time.now.to_f
 	Product.sync
-	
-	@time = ((Time.now.to_f - time) * 10**3 ).to_i
-	
-	render :action => :create_results
+	$bench_results << "   Sync 1 item (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 	
   end
 
   def bulk_test
-    puts "bulk_test"
-    
+    time = Time.now.to_f
+  
     SyncEngine.set_threaded_mode(false)
     ::Rhom::Rhom.database_fullclient_reset_and_logout
     SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
     SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")	
-    SyncEngine.set_threaded_mode(true)    
     Rho::RhoConfig.bulksync_state='0'    
+	$bench_results << "   Reset and login(ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 
-    puts "bulk_test1"
     time = Time.now.to_f
     
     SyncEngine.dosync
     
-	@time = ((Time.now.to_f - time) * 10**3 ).to_i
+	$bench_results << "   Bulk sync(ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 	
-	render :action => :bulk_results
-    
   end
   
-  def start__
-    @count = 1000
-	@bench_results = []
-	#test = { 'search' => :search_test, 'create' => :create_test}
-	test = { 'create' => :create_test}
+  def start
+	test = { 'Create bench' => :create_test, 'Search bench' => :search_test, 'Bulk bench' => :bulk_test}
+	$bench_results = ""
 	
     SyncEngine.set_threaded_mode(false)
-    ::Rhom::Rhom.database_full_reset_and_logout
+    ::Rhom::Rhom.database_fullclient_reset_and_logout
     SyncEngine.set_syncserver('http://rhodes-store-server.heroku.com/application')
     SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")	
-    SyncEngine.set_threaded_mode(true)    
+    Rho::RhoConfig.bulksync_state='1'
     
-	#create_test_data
-	
 	test.each do |name, func|
 	    time = Time.now.to_f
 		self.send func
-		time = ((Time.now.to_f - time) * 10**3 ).to_i
-		@bench_results << {'name'=> name, 'time'=>"#{time}"}
+		$bench_results << "#{name} (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"		
 	end
 	
+	puts "BENCH results: \n#{$bench_results }"
 	render :action => :index
   end
   

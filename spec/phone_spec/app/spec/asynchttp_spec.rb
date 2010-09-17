@@ -5,6 +5,9 @@ describe "AsyncHttp" do
     after(:all) do
         file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
         File.delete(file_name) if File.exists?(file_name)
+		
+		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
+		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
     end
 
     it "should http get" do
@@ -60,7 +63,7 @@ describe "AsyncHttp" do
         
         server = 'http://rhologs.heroku.com'
         
-        file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
         File.exists?(file_name).should ==  true
 
         res = Rho::AsyncHttp.upload_file(
@@ -77,7 +80,7 @@ describe "AsyncHttp" do
         
         server = 'http://rhologs.heroku.com'
         
-        file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
         File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
 
         res = Rho::AsyncHttp.upload_file(

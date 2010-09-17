@@ -10,7 +10,9 @@
 #import "SimpleMainView.h"
 #import "Rhodes.h"
 #import "AppManager.h"
-#import "logging/RhoLog.h"
+
+#include "common/RhodesApp.h"
+#include "logging/RhoLog.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "TabbedMainView"
@@ -193,7 +195,8 @@
     tabindex = tabbar.selectedIndex;
     RhoTabBarData *td = [self tabData:tabindex];
     if (!td.loaded || td.reload) {
-        [self navigateRedirect:td.url tab:tabindex];
+        const char *s = [td.url UTF8String];
+        rho_rhodesapp_load_url(s);
         td.loaded = YES;
     }
 }

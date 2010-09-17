@@ -271,7 +271,7 @@ namespace "config" do
     $keystore = nil
     $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
     $keystore = $config["android"]["production"]["certificate"] if $keystore.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
-    $keystore = File.join(File.expand_path('~'), ".rhomobile", "keystore") if $keystore.nil?
+    $keystore = File.expand_path(File.join(ENV['HOME'], ".rhomobile", "keystore")) if $keystore.nil?
 
     $storepass = nil
     $storepass = $app_config["android"]["production"]["password"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
@@ -1227,11 +1227,13 @@ namespace "run" do
     end
 
     task :phone_spec do
-      Jake.run_spec_app('android','phone_spec')
+      exit 1 if Jake.run_spec_app('android','phone_spec')
+      exit 0
     end
 
     task :framework_spec do
-      Jake.run_spec_app('android','framework_spec')
+      exit 1 if Jake.run_spec_app('android','framework_spec')
+      exit 0
     end
     
     task :emulator => "device:android:debug" do
@@ -1261,7 +1263,12 @@ namespace "run" do
       puts "Waiting for emulator to get started" unless running
       puts "Emulator is up and running" if running
       $stdout.flush
+      # Kick the server to make sure things don't hang
+      puts `"#{$adb}" kill-server`
+      puts `"#{$adb}" start-server`
+
       puts `"#{$adb}" -e wait-for-device`
+
     end
     
     def  load_app_and_run

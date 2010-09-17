@@ -97,9 +97,9 @@ describe "Json" do
         require 'json'
 
         prod = Product.create("test"=>"123")
-        parsed = Product.find(:all)
+        parsed = Product.find(prod.object)
         gen_content = ::JSON.generate(parsed)
-        gen_content.should == "[{\"source_id\":#{prod.source_id},\"object\":\"#{prod.object}\",\"test\":\"123\"}]"
+        gen_content.should == "{\"source_id\":#{prod.source_id},\"object\":\"#{prod.object}\",\"test\":\"123\"}"
         
     end    
     
