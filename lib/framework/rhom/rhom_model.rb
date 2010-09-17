@@ -55,9 +55,15 @@ module Rhom
     
     def belongs_to(name, owner)
   	  BaseModel.model_params ||= {}
-  	  BaseModel.model_params['belongs_to'] ||= {}
-  	  
-  	  BaseModel.model_params['belongs_to'][name.to_s] = owner.to_s
+  	  BaseModel.model_params['belongs_to'] ||= []
+
+      if owner.is_a?(Array)    	  
+        owner.each do |src|        
+            BaseModel.model_params['belongs_to'] << {name.to_s => src.to_s}
+        end
+      else
+  	    BaseModel.model_params['belongs_to'] << {name.to_s => owner.to_s}
+  	  end  
     end
     
     def index(name,cols)
