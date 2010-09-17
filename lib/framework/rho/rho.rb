@@ -235,7 +235,10 @@ module Rho
           @db_partitions[partition] = nil unless @db_partitions[partition]
           
           if source['belongs_to']
-            source['belongs_to'].each do |attrib, src_name|    
+            source['belongs_to'].each do |hash_pair|    
+                attrib = hash_pair.keys[0]
+                src_name = hash_pair.values[0]
+                
                 associationsSrc = find_src_byname(uniq_sources, src_name)
                 if !associationsSrc
                     puts ( "Error: belongs_to '#{source['name']}' : source name '#{src_name}' does not exist."  )

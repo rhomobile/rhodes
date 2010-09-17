@@ -8,7 +8,7 @@ class Product
     #set :partition, :application
     set :sync_priority, 1  #sync engine should reorder sources
     
-    belongs_to :quantity, 'Customer'
+    belongs_to :quantity, ['Customer']
     belongs_to :sku, 'Customer'
 
 
