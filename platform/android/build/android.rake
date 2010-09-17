@@ -1261,7 +1261,12 @@ namespace "run" do
       puts "Waiting for emulator to get started" unless running
       puts "Emulator is up and running" if running
       $stdout.flush
+      # Kick the server to make sure things don't hang
+      puts `"#{$adb}" kill-server`
+      puts `"#{$adb}" start-server`
+      
       puts `"#{$adb}" -e wait-for-device`
+      
     end
     
     def  load_app_and_run
