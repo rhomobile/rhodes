@@ -9,6 +9,7 @@
 #import "RhoSyncClient.h"
 
 #include "sync/SyncThread.h"
+#include "common/RhoConf.h"
 
 @interface CCallbackData : NSObject {
 }
@@ -64,6 +65,7 @@ void rho_free_callbackdata(void* pData)
 @synthesize threaded_mode;
 @synthesize poll_interval;
 @synthesize sync_server;
+@synthesize bulksync_state;
 
 - (id) init
 {
@@ -96,6 +98,16 @@ void rho_free_callbackdata(void* pData)
 {
 	poll_interval = interval;
 	rho_sync_set_pollinterval(interval);
+}
+
+- (void) setBulkSyncState:(int)state
+{
+	rho_conf_setInt("bulksync_state", state);
+}
+
+- (int) getBulkSyncState
+{
+	return rho_conf_getInt("bulksync_state");
 }
 
 - (void) addModels: (NSArray*)models
