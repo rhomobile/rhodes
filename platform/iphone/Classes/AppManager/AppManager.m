@@ -83,8 +83,9 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	}
 	
 	if (!remove && dir) {
+        NSError *error;
 		if (![fileManager fileExistsAtPath:target])
-			[fileManager createDirectoryAtPath:target attributes:nil];
+			[fileManager createDirectoryAtPath:target withIntermediateDirectories:YES attributes:nil error:&error];
 		
 		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
 		NSString *child;
@@ -107,6 +108,8 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 }
 
 - (BOOL)isContentsEqual:(NSFileManager*)fileManager first:(NSString*)filePath1 second:(NSString*)filePath2 {
+    NSLog(@"filePath1: %@", filePath1);
+    NSLog(@"filePath2: %@", filePath2);
     if (![fileManager fileExistsAtPath:filePath1] || ![fileManager fileExistsAtPath:filePath2])
         return NO;
     
@@ -125,6 +128,8 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
  */
 - (void) configure {
 	
+#define RHO_DONT_COPY_ON_START
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
@@ -132,7 +137,9 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
 	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
+#ifndef RHO_DONT_COPY_ON_START
     BOOL hasOldName = [fileManager fileExistsAtPath:filePathOld];
+#endif
     BOOL nameChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 
     BOOL contentChanged;
@@ -144,18 +151,67 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 	}
-
-	if (contentChanged) {
+	
+    if (contentChanged) {
+#ifdef RHO_DONT_COPY_ON_START
+        NSError *error;
+        // Create symlink to "lib"
+        NSString *src = [bundleRoot stringByAppendingPathComponent:@"lib"];
+        NSLog(@"src: %@", src);
+        NSString *dst = [rhoRoot stringByAppendingPathComponent:@"lib"];
+        NSLog(@"dst: %@", dst);
+        [fileManager removeItemAtPath:dst error:&error];
+        [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
+        
+        NSString *dirs[] = {@"apps", @"db"};
+        for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
+            // Create directory
+            src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
+            NSLog(@"src: %@", src);
+            dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
+            NSLog(@"dst: %@", dst);
+            if (![fileManager fileExistsAtPath:dst])
+                [fileManager createDirectoryAtPath:dst withIntermediateDirectories:YES attributes:nil error:&error];
+            
+            // And make symlinks from its content
+            NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
+            for (int i = 0, lim = [subelements count]; i < lim; ++i) {
+                NSString *child = [subelements objectAtIndex:i];
+                NSString *fchild = [src stringByAppendingPathComponent:child];
+                NSLog(@"src: %@", fchild);
+                NSString *target = [dst stringByAppendingPathComponent:child];
+                NSLog(@"dst: %@", target);
+                [fileManager removeItemAtPath:target error:&error];
+                if ([child isEqualToString:@"rhoconfig.txt"])
+                    [fileManager copyItemAtPath:fchild toPath:target error:&error];
+                else
+                    [fileManager createSymbolicLinkAtPath:target withDestinationPath:fchild error:&error];
+            }
+        }
+        
+        // Finally, copy "hash" and "name" files
+        NSString *items[] = {@"hash", @"name"};
+        for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
+            NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
+            NSLog(@"src: %@", src);
+            NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
+            NSLog(@"dst: %@", dst);
+            [fileManager removeItemAtPath:dst error:&error];
+            [fileManager copyItemAtPath:src toPath:dst error:&error];
+        }
+#else
         NSString *dirs[] = {@"apps", @"lib", @"db", @"hash", @"name"};
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
             BOOL remove = nameChanged;
             if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
                 remove = NO;
-            [self copyFromMainBundle:fileManager
-                            fromPath:[bundleRoot stringByAppendingPathComponent:dirs[i]]
-                              toPath:[rhoRoot stringByAppendingPathComponent:dirs[i]]
-                              remove:remove];
+            NSString *src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
+            NSLog(@"src: %@", src);
+            NSString *dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
+            NSLog(@"dst: %@", dst);
+            [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
         }
+#endif
 	}
 
 	rho_logconf_Init(rho_native_rhopath());
