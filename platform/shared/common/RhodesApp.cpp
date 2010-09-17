@@ -337,8 +337,8 @@ static void callback_redirect_to(void *arg, String const &strQuery )
 
     if ( strUrl.length() == 0 )
         strUrl = "/app/";
-
-    rho_http_redirect(arg, strUrl.c_str());
+	
+    rho_http_redirect(arg, (rho::net::URI::urlDecode(strUrl)).c_str());
 }
 
 static void callback_map(void *arg, String const &query )
@@ -614,7 +614,7 @@ const String& CRhodesApp::getRhobundleReloadUrl()
 
 void CRhodesApp::navigateToUrl( const String& strUrl)
 {
-    rho_webview_navigate(strUrl.c_str(), 0);
+    rho_webview_navigate(strUrl.c_str(), -1);
 }
 
 void CRhodesApp::navigateBack()

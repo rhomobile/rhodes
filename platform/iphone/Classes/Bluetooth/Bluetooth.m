@@ -35,14 +35,14 @@
 #define kMaxPacketSize 1024
 
 
-@implementation BluetoothManager
+@implementation RhoBluetoothManager
 
 
-static BluetoothManager *instance = NULL;
+static RhoBluetoothManager *instance = NULL;
 
-+ (BluetoothManager*)sharedInstance {
++ (RhoBluetoothManager*)sharedInstance {
 	if (instance == NULL) {
-		instance = [[BluetoothManager alloc] init];
+		instance = [[RhoBluetoothManager alloc] init];
 		instance.session = nil;
 		instance.deviceName = [[UIDevice currentDevice] name];
 		instance.connectedDeviceName = nil;
@@ -343,16 +343,16 @@ int rho_bluetooth_is_bluetooth_available() {
 }
 
 void rho_bluetooth_off_bluetooth() {
-	[[BluetoothManager sharedInstance] doBluetoothOff];
+	[[RhoBluetoothManager sharedInstance] doBluetoothOff];
 }
 
 void rho_bluetooth_set_device_name(const char* device_name) {
 	NSString* newname = [NSString stringWithUTF8String:device_name];
-	[BluetoothManager sharedInstance].deviceName = newname;
+	[RhoBluetoothManager sharedInstance].deviceName = newname;
 }
 
 const char* rho_bluetooth_get_device_name() {
-	return [[BluetoothManager sharedInstance].deviceName UTF8String];
+	return [[RhoBluetoothManager sharedInstance].deviceName UTF8String];
 }
 
 const char* rho_bluetooth_get_last_error() {
@@ -362,37 +362,37 @@ const char* rho_bluetooth_get_last_error() {
 const char* rho_bluetooth_create_session(const char* role, const char* callback_url) {
 	//NSString* role = [NSString stringWithUTF8String:role];
 	NSString* callback = [NSString stringWithUTF8String:callback_url];
-	[[BluetoothManager sharedInstance] startConnect:callback];
+	[[RhoBluetoothManager sharedInstance] startConnect:callback];
 	return BTC_OK;
 }
 
 void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
 	NSString* callback = [NSString stringWithUTF8String:callback_url];
-	[BluetoothManager sharedInstance].sessionCallbackURL = callback;
+	[RhoBluetoothManager sharedInstance].sessionCallbackURL = callback;
 }
 
 void rho_bluetooth_session_disconnect(const char* connected_device_name) {
-	[[BluetoothManager sharedInstance] doDisconnect];
+	[[RhoBluetoothManager sharedInstance] doDisconnect];
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name) {
-	return [[BluetoothManager sharedInstance] getPacketsSize]; 
+	return [[RhoBluetoothManager sharedInstance] getPacketsSize]; 
 }
 
 const char* rho_bluetooth_session_read_string(const char* connected_device_name) {
-	NSString* s = [[BluetoothManager sharedInstance] readString];
+	NSString* s = [[RhoBluetoothManager sharedInstance] readString];
 	return [s UTF8String];
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
 	NSString* s = [NSString stringWithUTF8String:str];
-	[[BluetoothManager sharedInstance] sendString:s];
+	[[RhoBluetoothManager sharedInstance] sendString:s];
 }
 
 VALUE rho_bluetooth_session_read_data(const char* connected_device_name) {
-	int size = [[BluetoothManager sharedInstance] getPacketsSize];
+	int size = [[RhoBluetoothManager sharedInstance] getPacketsSize];
 	unsigned char* buf = malloc(size);
-	[[BluetoothManager sharedInstance] readFromPackets:buf length:size];
+	[[RhoBluetoothManager sharedInstance] readFromPackets:buf length:size];
 	VALUE val = rho_ruby_create_byte_array(buf, size);
 	free(buf);
 	return val;
@@ -405,7 +405,7 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 	}
 	unsigned char* buf = malloc(size);
 	size = rho_ruby_unpack_byte_array(data, buf, size);
-	[[BluetoothManager sharedInstance] sendData:buf length:size];
+	[[RhoBluetoothManager sharedInstance] sendData:buf length:size];
 	free(buf);
 }
 

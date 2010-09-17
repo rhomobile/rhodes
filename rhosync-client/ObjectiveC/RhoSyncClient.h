@@ -17,6 +17,7 @@
 @property(setter=setThreadedMode) BOOL threaded_mode;
 @property(setter=setPollInterval) int  poll_interval;
 @property(assign, setter=setSyncServer) NSString* sync_server;
+@property(setter=setBulkSyncState, getter=getBulkSyncState) int bulksync_state;
 
 + (void) initDatabase;
 + (void) setNotification: (SEL) callback target:(id)target;

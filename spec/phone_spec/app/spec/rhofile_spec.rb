@@ -2,10 +2,13 @@ describe "RhoFile" do
     
     before(:all) do
         clear()
+		
+		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
+		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
     end
     
     it "should write" do
-        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.txt')
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'temp.txt')
         File.delete(file_name) if File.exists?(file_name)
         File.exists?(file_name).should ==  false
 
@@ -31,11 +34,11 @@ describe "RhoFile" do
     end
 
     it "should binary read/write" do
-        file_testname = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.png')
+        file_testname = File.join(Rho::RhoApplication::get_model_path('app', 'Data'), 'test.png')
         test_content = File.binread(file_testname)
         File.size(file_testname).should == test_content.length
     
-        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.png')
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'temp.png')
         File.delete(file_name) if File.exists?(file_name)
         File.exists?(file_name).should ==  false
 
@@ -72,7 +75,7 @@ describe "RhoFile" do
     end
 
     it "should dir" do
-        dir_name = Rho::RhoApplication::get_model_path('app', 'cache')
+        dir_name = Rho::RhoApplication::get_app_path('cache')
         Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
         
         (1..2).each do |n|
@@ -123,11 +126,11 @@ describe "RhoFile" do
     
     def clear
         (1..2).each do |n|
-    	    file_name = File.join(Rho::RhoApplication::get_model_path('app', 'cache'), "cache_test"+ n.to_s())
+    	    file_name = File.join(Rho::RhoApplication::get_app_path('cache'), "cache_test"+ n.to_s())
             File.delete(file_name) if File.exists?(file_name)
         end
     
-        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'temp.txt')
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'temp.txt')
         File.delete(file_name) if File.exists?(file_name)
     end
 end    
