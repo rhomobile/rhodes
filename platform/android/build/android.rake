@@ -1227,11 +1227,13 @@ namespace "run" do
     end
 
     task :phone_spec do
-      Jake.run_spec_app('android','phone_spec')
+      exit 1 if Jake.run_spec_app('android','phone_spec')
+      exit 0
     end
 
     task :framework_spec do
-      Jake.run_spec_app('android','framework_spec')
+      exit 1 if Jake.run_spec_app('android','framework_spec')
+      exit 0
     end
     
     task :emulator => "device:android:debug" do
@@ -1264,9 +1266,9 @@ namespace "run" do
       # Kick the server to make sure things don't hang
       puts `"#{$adb}" kill-server`
       puts `"#{$adb}" start-server`
-      
+
       puts `"#{$adb}" -e wait-for-device`
-      
+
     end
     
     def  load_app_and_run
