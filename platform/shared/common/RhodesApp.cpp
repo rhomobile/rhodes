@@ -95,9 +95,6 @@ void CRhodesApp::run()
 
     getSplashScreen().hide();
 
-    LOG(INFO) + "navigate to first start url";
-    navigateToUrl(getFirstStartUrl());
-
     //rho_clientregister_create("iphone_client");
     
     while (!m_bExit) {
@@ -215,6 +212,15 @@ public:
     {
         while (!rho_is_local_server_started())
             thisThread.wait(1);
+
+        static bool navigated = false;
+        if (!navigated)
+        {
+            LOG(INFO) + "navigate to first start url";
+            RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
+            navigated = true;
+        }
+
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
         common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
         NetResponse(resp, pNetRequest->pullData( m_strUrl, null ) );
