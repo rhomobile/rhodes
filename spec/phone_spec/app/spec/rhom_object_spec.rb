@@ -538,7 +538,7 @@ if !defined? RHO_ME
   end
 end
 
-  it "should find with advanced conditions" do
+  it "should find with advanced OR conditions" do
     query = '%IND%'    
     @accts = getAccount.find( :all, 
        :conditions => { 
@@ -549,6 +549,69 @@ end
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
+  end
+
+  it "should NOT find with advanced OR conditions" do
+    query = '%IND33%'    
+    @accts = getAccount.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+        :op => 'OR', :select => ['name','industry'])
+  
+    @accts.length.should == 0
+  end
+
+  it "should find with advanced AND conditions" do
+    query = '%IND%'    
+    query2 = '%chnolo%' #LIKE is case insensitive by default   
+    @accts = getAccount.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query,
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query2
+       }, 
+       :op => 'AND', 
+       :select => ['name','industry'])
+  
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+
+  it "should NOT find with advanced AND conditions" do
+    query = '%IND123%'    
+    query2 = '%chnolo%'     #LIKE is case insensitive by default   
+    @accts = getAccount.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query2}, 
+        :op => 'AND', :select => ['name','industry'])
+  
+    @accts.length.should == 0
+  end
+
+  it "should count with advanced AND conditions" do
+    query = '%IND%'    
+    query2 = '%chnolo%'     #LIKE is case insensitive by default   
+    nCount = getAccount.find( :count, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query2}, 
+        :op => 'AND' )
+  
+    nCount.should == 1
+  end
+
+  it "should count 0 with advanced AND conditions" do
+    query = '%IND123%'    
+    query2 = '%chnolo%'     #LIKE is case insensitive by default   
+    nCount = getAccount.find( :count, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query2}, 
+        :op => 'AND')
+  
+    nCount.should == 0
   end
 
   it "should find with group of advanced conditions" do
