@@ -1,0 +1,35 @@
+<div class="pageTitle">
+  <h1>Customers</h1>
+</div>
+
+<div class="toolbar">
+  <div class="leftItem regularButton">
+    <a href="<%= Rho::RhoConfig.start_path %>">Home</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a href="<%= url_for :action => :new %>">New</a>
+  </div>
+</div>
+
+<div class="content">
+  <form method="POST" action="<%= url_for(:action => :search) %>">
+    <ul>
+      <li>
+        <label for="query" class="fieldLabel">Query</label>
+        <input type="text" name="query" <%= placeholder( "Query" ) %>/>
+      </li>
+    </ul>
+    <input type="submit" class="standardButton" value="Search"/>
+  </form>
+  <ul>
+    <% @customers.each do |customer| %>
+
+        <li>
+          <a href="<%= url_for :action => :show, :id => customer.object %>">
+            <%= customer.first %>
+          </a>
+        </li>
+
+    <% end %>
+  </ul>
+</div>
