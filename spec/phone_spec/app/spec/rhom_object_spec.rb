@@ -776,6 +776,13 @@ if !defined? RHO_ME
     @accts[0].industry.should == "Technology"
   end
 
+  it "should support simple sql conditions" do
+    @accts = getAccount.find(:all, :conditions => ["name = ?", "'Mobio India'"])
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+
   it "should support complex sql conditions arg" do
     @accts = getAccount.find(:all, :conditions => "name like 'Mobio%'")
     @accts.length.should == 1
