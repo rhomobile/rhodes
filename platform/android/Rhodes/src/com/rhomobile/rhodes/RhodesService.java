@@ -202,6 +202,7 @@ public class RhodesService {
 					return true;
 			}
 			catch (Exception ex) {
+				Logger.E(TAG, ex.getMessage());
 				continue;
 			}
 		}
