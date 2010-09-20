@@ -366,7 +366,7 @@ bool receive_request_test(ByteVector &request, int attempt)
 			data += "Host";
 			break;
 		case 3:
-			data += ": localhost\r\n";
+			data += ": 127.0.0.1\r\n";
 			data += "Content-Length: 4\r\n";
 			break;
 		case 4:
@@ -519,7 +519,7 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
     snprintf(buf, sizeof(buf), "%d", m_port);
     
     HeaderList headers;
-    headers.push_back(Header("Host", String("localhost:") + buf));
+    headers.push_back(Header("Host", String("127.0.0.1:") + buf));
     headers.push_back(Header("Connection", "close"));
     std::copy(hdrs.begin(), hdrs.end(), std::back_inserter(headers));
     
