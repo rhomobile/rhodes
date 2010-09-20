@@ -2484,9 +2484,10 @@ public class Expression {
         String likeStr = isRightArgFixedConstant
                          ? (String) eArg2.getValue(session, Types.VARCHAR)
                          : null;
-        boolean ignoreCase = eArg.dataType == Types.VARCHAR_IGNORECASE
-                             || eArg2.dataType == Types.VARCHAR_IGNORECASE;
-
+        //RHO
+        //boolean ignoreCase = eArg.dataType == Types.VARCHAR_IGNORECASE
+        //                     || eArg2.dataType == Types.VARCHAR_IGNORECASE;
+        boolean ignoreCase = true;                  
         likeObject.setParams(session, likeStr, ignoreCase);
 
         if (!isRightArgFixedConstant) {

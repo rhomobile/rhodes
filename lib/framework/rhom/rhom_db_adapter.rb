@@ -107,6 +107,7 @@ class RhomDbAdapter
       #puts "RhomDbAdapter: Executing query - #{sql}; #{args}"
       begin
         result = @database.execute( sql, is_batch, args )
+        #puts "result : #{result}"
       rescue Exception => e
         puts "exception when running query: #{e}"
         raise
