@@ -20,6 +20,8 @@
  */
 package com.rhomobile.rhodes.uri;
 
+import java.util.Map;
+
 import com.rhomobile.rhodes.Logger;
 
 import android.content.Context;
@@ -38,8 +40,7 @@ public class MailUriHandler implements UriHandler {
 	}
 	
 	public boolean handle(String url) {
-		Uri uri = Uri.parse(url);
-		if (!uri.getScheme().equals("mailto"))
+		if (!MailTo.isMailTo(url))
 			return false;
 	
 		Logger.D(TAG, "This is 'mailto' uri, handle it");
@@ -52,11 +53,18 @@ public class MailUriHandler implements UriHandler {
 		String s = muri.getTo();
 		if (s != null) intent.putExtra(Intent.EXTRA_EMAIL, new String[]{s});
 		
+		s = muri.getCc();
+		if (s != null) intent.putExtra(Intent.EXTRA_CC, new String[]{s});
+		
 		s = muri.getSubject();
 		if (s != null) intent.putExtra(Intent.EXTRA_SUBJECT, s);
 		
 		s = muri.getBody();
 		if (s != null) intent.putExtra(Intent.EXTRA_TEXT, s);
+		
+		Map<String,String> headers = muri.getHeaders();
+		s = headers.get("bcc");
+		if (s != null) intent.putExtra(Intent.EXTRA_BCC, new String[]{s});
 		
 		ctx.startActivity(Intent.createChooser(intent, "Send e-mail..."));
 		return true;
