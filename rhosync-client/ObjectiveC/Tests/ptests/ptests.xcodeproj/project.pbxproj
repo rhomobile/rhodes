@@ -264,6 +264,7 @@
 				GCC_PREFIX_HEADER = ptests_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "ptests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../build/Debug-iphonesimulator\"",
@@ -286,6 +287,7 @@
 				GCC_PREFIX_HEADER = ptests_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "ptests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../build/Debug-iphonesimulator\"",

@@ -111,7 +111,7 @@ int   rho_logconf_getSeverity();
 
 void rho_logconf_setEnabledCategories(const char* categories);
 void rho_logconf_setDisabledCategories(const char* categories);
-void rho_logconf_setSeveity(int nLevel);
+void rho_logconf_setSeverity(int nLevel);
 	
 void rho_logconf_saveSettings();
 void rho_logconf_freeString(char* str);

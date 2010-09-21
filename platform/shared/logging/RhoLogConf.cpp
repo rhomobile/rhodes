@@ -209,7 +209,7 @@ void rho_logconf_setDisabledCategories(const char* categories) {
 	LOGCONF().setDisabledCategories(categories);
 }
 
-void rho_logconf_setSeveity(int nLevel) {
+void rho_logconf_setSeverity(int nLevel) {
 	LOGCONF().setMinSeverity(nLevel);
 }
 

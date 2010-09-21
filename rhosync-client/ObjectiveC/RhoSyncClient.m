@@ -10,6 +10,7 @@
 
 #include "sync/SyncThread.h"
 #include "common/RhoConf.h"
+#include "logging/RhoLogConf.h"
 
 @interface CCallbackData : NSObject {
 }
@@ -108,6 +109,30 @@ void rho_free_callbackdata(void* pData)
 - (int) getBulkSyncState
 {
 	return rho_conf_getInt("bulksync_state");
+}
+
+- (void) setConfigString: (NSString*)name param: (NSString*) param
+{
+	if( [name compare:@"MinSeverity"] == 0)
+		rho_logconf_setSeverity([param intValue]);
+	else	
+		rho_conf_setString([name cStringUsingEncoding:[NSString defaultCStringEncoding]],
+					   [param cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+}
+
+- (NSString*) getConfigString: (NSString*)name
+{
+	NSString* ret;
+	char* res = rho_conf_getString([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	if ( res )
+	{
+		ret = [NSString stringWithUTF8String:res];
+		rho_conf_freeString(res);
+	}else {
+		ret = [NSString stringWithUTF8String:""];
+	}
+
+	return ret;
 }
 
 - (void) addModels: (NSArray*)models
