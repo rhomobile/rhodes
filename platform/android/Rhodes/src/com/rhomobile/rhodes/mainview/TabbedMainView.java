@@ -162,7 +162,7 @@ public class TabbedMainView implements MainView {
 				throw new IllegalArgumentException("'action' should be String");
 			
 			String label = (String)labelObj;
-			String action = r.normalizeUrl((String)actionObj);
+			String action = (String)actionObj;
 			String icon = null;
 			boolean reload = false;
 			
