@@ -216,6 +216,8 @@ public class RhodesService {
 	}
 	
 	public void hideSplashScreen() {
+		PerformOnUiThread.exec(new Runnable() {
+					public void run() {
 		if (splashScreen != null) {
 			splashScreen.hide(outerFrame);
 			splashScreen = null;
@@ -223,6 +225,8 @@ public class RhodesService {
 		View view = mainView.getView();
 		view.setVisibility(View.VISIBLE);
 		view.requestFocus();
+		}
+				}, false);
 	}
 	
 	public WebView createWebView() {
