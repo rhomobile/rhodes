@@ -161,7 +161,7 @@
 	text = textViewDisabledCategories.text;
 	categories = [text cStringUsingEncoding:[NSString defaultCStringEncoding]]; 	
 	rho_logconf_setDisabledCategories(categories);
-	rho_logconf_setSeveity(selectedRow);
+	rho_logconf_setSeverity(selectedRow);
 	rho_logconf_saveSettings();
 	
 	[self dismissModalViewControllerAnimated:YES]; 
