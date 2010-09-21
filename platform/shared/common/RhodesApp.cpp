@@ -93,7 +93,6 @@ void CRhodesApp::run()
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
 
-    getSplashScreen().hide();
 
     //rho_clientregister_create("iphone_client");
     
@@ -220,6 +219,7 @@ public:
             RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
             navigated = true;
         }
+	  //  RHODESAPP().getSplashScreen().hide();
 
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
         common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
