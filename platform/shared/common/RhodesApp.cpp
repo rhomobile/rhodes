@@ -96,7 +96,11 @@ void CRhodesApp::run()
     getSplashScreen().hide();
 
     //rho_clientregister_create("iphone_client");
-    
+#if defined( OS_WINCE ) || defined( OS_WINDOWS )
+    LOG(INFO) + "navigate to first start url";
+    RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
+#endif
+
     while (!m_bExit) {
         m_httpServer->run();
         if (m_bExit)
