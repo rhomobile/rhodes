@@ -28,7 +28,7 @@ class BenchmarkController < Rho::RhoController
   def search_test
     SyncEngine.set_threaded_mode(false)
     ::Rhom::Rhom.database_fullclient_reset_and_logout
-    SyncEngine.set_syncserver('http://localhost:9292/application')
+    SyncEngine.set_syncserver('http://192.168.0.62:9292/application')
     SyncEngine.login('', '', "")	
     Rho::RhoConfig.bulksync_state='1'
     $bench_results = "" unless $bench_results
@@ -74,6 +74,17 @@ class BenchmarkController < Rho::RhoController
 	Product.sync
 	$bench_results << "   Sync 1 item (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 
+    time = Time.now.to_f
+	@products = Product.find(:all, :conditions => {'name' => 'NameTest'})
+	
+	$bench_results << "   Search (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
+	
+    render :action => :products
+    
+	$bench_results << "   Render (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
 	puts "BENCH results: \n#{$bench_results }"
 	render :action => :index
 	
@@ -87,7 +98,7 @@ class BenchmarkController < Rho::RhoController
     ::Rhom::Rhom.database_fullclient_reset_and_logout
     #SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
     #SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")	
-    SyncEngine.set_syncserver('http://localhost:9292/application')
+    SyncEngine.set_syncserver('http://192.168.0.62:9292/application')
     SyncEngine.login('', '', "")	
     
     Rho::RhoConfig.bulksync_state='0'    
@@ -98,6 +109,18 @@ class BenchmarkController < Rho::RhoController
     SyncEngine.dosync
     
 	$bench_results << "   Bulk sync(ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
+	
+	@customers = Customer.find(:all, :conditions => {'JobTitle' => 'PerfManager'})
+	
+	$bench_results << "   Search (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
+	
+    render :action => :customers
+    
+	$bench_results << "   Render (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 
 	puts "BENCH results: \n#{$bench_results }"
 	render :action => :index
