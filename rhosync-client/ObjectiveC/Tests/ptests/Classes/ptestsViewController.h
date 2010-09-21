@@ -12,12 +12,15 @@
 @interface ptestsViewController : UIViewController {
 	IBOutlet UITextView *txtResult;
 	IBOutlet UIButton *btnStart;
-	IBOutlet UIButton *btnBench;	
+	IBOutlet UIButton *btnBenchSearch;	
+	IBOutlet UIButton *btnBenchCreate;		
+	IBOutlet UIButton *btnBenchBulk;			
 	IBOutlet UIActivityIndicatorView *indicator;
 	
 	RhoSyncClient* sclient;
 	RhomModel* perftest;
 	RhomModel* product;
+	RhomModel* customer;
 	NSString* result;
 	int nCount;
 	BOOL tests_initialized;

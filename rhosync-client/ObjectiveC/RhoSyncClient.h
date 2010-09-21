@@ -38,4 +38,7 @@
 
 - (RhoSyncNotify*) search: (NSArray*)models from: (NSString*) from params: (NSString*)params sync_changes: (BOOL) sync_changes progress_step: (int) progress_step;
 
+- (void) setConfigString: (NSString*)name param: (NSString*) param;
+- (NSString*) getConfigString: (NSString*)name;
+
 @end

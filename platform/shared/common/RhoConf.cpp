@@ -210,7 +210,8 @@ int rho_conf_is_property_exists(const char* name)
 }
 
 void rho_conf_freeString(char* str) {
-	free(str);
+	if ( str )
+		free(str);
 }
 
 void rho_conf_setString(const char* szName, const char* value){
