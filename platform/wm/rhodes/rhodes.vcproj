@@ -1141,13 +1141,6 @@
 			<File
 				RelativePath=".\signature\Signature.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -1160,13 +1153,6 @@
 			<File
 				RelativePath=".\bluetooth\Bluetooth.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 	</Files>
