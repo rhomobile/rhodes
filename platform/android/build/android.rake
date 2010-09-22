@@ -1260,19 +1260,45 @@ namespace "run" do
       end
 
       running = is_emulator_running
+
       if !running
+        # Start the emulator, check on it every 5 seconds until it's running
         Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") }
-        puts "Waiting for emulator to get started"
+        puts "Waiting up to 180 seconds for emulator..."
+        startedWaiting = Time.now
+        adbRestarts = 1
+        while (Time.now - startedWaiting < 180 )
+          sleep 5
+          now = Time.now
+          emulatorState = `"#{$adb}" -e get-state`
+          if emulatorState =~ /unknown/
+            printf("%.2fs: ",(now - startedWaiting))
+            if (now - startedWaiting) > (60 * adbRestarts)
+              # Restart the adb server every 60 seconds to prevent eternal waiting
+              puts "Appears hung, restarting adb server"
+              puts `"#{$adb}" kill-server`
+              puts `"#{$adb}" start-server`
+              adbRestarts += 1
+            else
+              puts "Still waiting..."
+            end
+          else
+            puts "Success"
+            puts "Device is ready after " + (Time.now - startedWaiting).to_s + " seconds"
+            break
+          end
+        end
+
+        if !is_emulator_running
+          puts "Emulator still isn't up and running, giving up"
+          exit 1
+        end
+
       else
         puts "Emulator is up and running"
       end
 
       $stdout.flush
-
-      puts "Began waiting for the device at " + `date`
-      puts `"#{$adb}" -e wait-for-device`
-      puts "Device is ready at " + `date`
-
     end
     
     def  load_app_and_run
