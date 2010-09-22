@@ -682,8 +682,16 @@ namespace "build" do
               gapi_already_enabled = true
             else
               ANDROID_PERMISSIONS.keys.each do |k|
-                re = /^\s*#\s*define\s+RHO_CAP_#{k.upcase}_ENABLED\s+true\s*$/
-                caps_already_enabled[k] = true if line =~ re
+                if line =~ /^\s*#\s*define\s+RHO_CAP_#{k.upcase}_ENABLED\s+(.*)\s*$/
+                  value = $1.strip
+                  if value == 'true'
+                    caps_already_enabled[k] = true
+                  elsif value == 'false'
+                    caps_already_enabled[k] = false
+                  else
+                    raise "Unknown value for the RHO_CAP_#{k.upcase}_ENABLED: #{value}"
+                  end
+                end
               end
             end
           end
