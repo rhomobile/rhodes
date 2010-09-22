@@ -28,7 +28,7 @@ class BenchmarkController < Rho::RhoController
   def search_test
     SyncEngine.set_threaded_mode(false)
     ::Rhom::Rhom.database_fullclient_reset_and_logout
-    SyncEngine.set_syncserver('http://192.168.0.62:9292/application')
+    SyncEngine.set_syncserver('http://localhost:9292/application')
     SyncEngine.login('', '', "")	
     Rho::RhoConfig.bulksync_state='1'
     $bench_results = "" unless $bench_results
@@ -134,19 +134,28 @@ class BenchmarkController < Rho::RhoController
       
 	time = Time.now.to_f
   
-    res = Rho::AsyncHttp.get( :url => 'http://rhostore.heroku.com/customers.json' )
-    parsed = res['body']
-
-	$bench_results << "   Download and parse (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
-
+    res = Rho::AsyncHttp.get( :url => 'http://localhost:5000/test' )
+	$bench_results << "   Download (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+	
 	time = Time.now.to_f
     
-    parsed.each do |srcHash|
-        values = srcHash['customer']    
-        
+    #parsed = res['body']
+    parsed = Rho::JSON.parse(res['body'])
+
+	$bench_results << "   Parse JSON(ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
+
+	db = Rho::RHO.get_src_db('Customer')
+	db.start_transaction
+    
+    parsed.each do |id, values|
+        #values = srcHash['customer']    
+        values['object'] = id
         Customer.create(values)
     end
-    
+	db.commit
+	    
 	$bench_results << "   Insert to DB (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 
 	time = Time.now.to_f
