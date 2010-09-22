@@ -1,6 +1,8 @@
 class Case_s
     include Rhom::FixedSchema
 
+    enable :full_update
+
     set :schema_version, '1.0'
 
     property :status, :string
