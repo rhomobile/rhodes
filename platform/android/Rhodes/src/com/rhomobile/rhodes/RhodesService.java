@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -99,6 +100,7 @@ public class RhodesService {
 		ctx = c;
 		uiThreadId = id;
 		uiHandler = handler;
+		RhoBluetoothManager.sharedInstance();
 	}
 	
 	private Handler uiHandler;
