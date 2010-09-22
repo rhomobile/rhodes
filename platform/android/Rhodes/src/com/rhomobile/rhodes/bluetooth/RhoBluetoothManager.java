@@ -1,9 +1,14 @@
 package com.rhomobile.rhodes.bluetooth;
 
+import java.security.BasicPermission;
+import java.security.Permission;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.pm.FeatureInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -82,6 +87,10 @@ public class RhoBluetoothManager {
 	//private BluetoothChat mChat;
 	
 	public RhoBluetoothManager () {
+		if(D) Log.d(TAG, "RhoBluetoothManager()");
+	}
+	
+	public void init() {
 		// constructor
 		mActivity = RhodesService.getInstance().getMainActivity();
 		mDeviceName = "BADNAME";
@@ -108,6 +117,7 @@ public class RhoBluetoothManager {
                 mDeviceName = mBluetoothAdapter.getName();
             }
 		}
+		
 	}
 	
     /**
@@ -140,7 +150,7 @@ public class RhoBluetoothManager {
         Log.d(TAG, "setupSession()");
 
         // Initialize the BluetoothChatService to perform bluetooth connections
-        mSession = new RhoBluetoothSession(mActivity, mHandler);
+        mSession = new RhoBluetoothSession(mActivity, null);
         
         //mInputStringsArrayAdapter = new ArrayAdapter<String>(mActivity, R.layout.message);
 
@@ -189,70 +199,7 @@ public class RhoBluetoothManager {
 	   if (D) Log.d(TAG, "TOAST: " + message);
    }
    
-   public class RhoHandler extends Handler{
-       public void handleMessage(Message msg) {
-           if(D) Log.i(TAG, "mHandler::handleMessage");
-           switch (msg.what) {
-           case MESSAGE_STATE_CHANGE:
-               if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-               switch (msg.arg1) {
-               case RhoBluetoothSession.STATE_CONNECTED:
-                   if(D) Log.i(TAG, "STATE_CONNECTED!");
-                   //Log.d(TAG, "setupSession()");
-                   //mTitle.setText(R.string.title_connected_to);
-                   //mTitle.append(mConnectedDeviceName);
-                   //mConversationArrayAdapter.clear();
-                   //mInputStringsArrayAdapter.clear();
-                   mInput.setLength(0);
-                   fireCreateSessionCallback(BTC_OK, mConnectedDeviceName);
-                   break;
-               case RhoBluetoothSession.STATE_CONNECTING:
-                   //mTitle.setText(R.string.title_connecting);
-                   break;
-               case RhoBluetoothSession.STATE_LISTEN:
-               case RhoBluetoothSession.STATE_NONE:
-                   //mTitle.setText(R.string.title_not_connected);
-               	fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_DISCONNECT);
-                   break;
-               }
-               break;
-           case MESSAGE_WRITE:
-               if(D) Log.i(TAG, "MESSAGE_WRITE: " + msg.arg1);
-               byte[] writeBuf = (byte[]) msg.obj;
-               // construct a string from the buffer
-               String writeMessage = new String(writeBuf);
-               //mConversationArrayAdapter.add("Me:  " + writeMessage);
-               break;
-           case MESSAGE_READ:
-               if(D) Log.i(TAG, "MESSAGE_READ: " + msg.arg1);
-               byte[] readBuf = (byte[]) msg.obj;
-               // construct a string from the valid bytes in the buffer
-               String readMessage = new String(readBuf, 0, msg.arg1);
-               //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-               //mInputStringsArrayAdapter.add(readMessage);
-               mInput.append(readMessage);
-               fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_INPUT_DATA_RECEIVED);
-               break;
-           case MESSAGE_DEVICE_NAME:
-               if(D) Log.i(TAG, "DEVICE_NAME: " + msg.arg1);
-               // save the connected device's name
-               mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-               //Toast.makeText(getApplicationContext(), "Connected to "
-               //               + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-               break;
-           case MESSAGE_TOAST:
-               //Toast.makeText(mActivity.getApplicationContext(), msg.getData().getString(TOAST),
-               //               Toast.LENGTH_SHORT).show();
-               if (D) Log.d(TAG, "TOAST: " + msg.getData().getString(TOAST));
-               break;
-           }
-       }
-	   
-   }
-   
-   
-    // The Handler that gets information back from the BluetoothChatService
-    private Handler mHandler = null;
+ 
 	   
     public static void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (ourInstance != null) {
@@ -306,12 +253,42 @@ public class RhoBluetoothManager {
 	   
 	public static RhoBluetoothManager sharedInstance() {
 		if (ourInstance == null) {
-			String className;
+			PackageManager pm = RhodesService.getInstance().getContext().getPackageManager();
+			String className = "RhoBluetoothManager";
 			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-			if (sdkVersion < Build.VERSION_CODES.ECLAIR)
+			if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
+				if(D) Log.d(TAG, "sharedInstance - old version of System - NO Bluetooth !");
 				className = "RhoBluetoothManagerOld";
-			else
-				className = "RhoBluetoothManager";
+			}
+			else {
+				// check feature
+				FeatureInfo[] fs = pm.getSystemAvailableFeatures();
+				int i;
+				className = "RhoBluetoothManagerOld";
+				for (i = 0; i < fs.length; i++) {
+					if (fs[i] != null)
+						if (fs[i].name != null)
+							if (fs[i].name.equals(PackageManager.FEATURE_BLUETOOTH)) {
+								if(D) Log.d(TAG, "sharedInstance - found Bluetooth feature in device !");
+								className = "RhoBluetoothManager";
+							}
+				}
+				// check permission
+				//if (pm.checkPermission(android.Manifest.permission.BLUETOOTH, RhodesService.getInstance().getMainActivity().getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+				try {
+					BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		            if (!bluetoothAdapter.isEnabled()) {
+						if(D) Log.d(TAG, "sharedInstance - Bluetooth is not enabled !");
+		            	className = "RhoBluetoothManagerOld";
+		            }
+					if(D) Log.d(TAG, "sharedInstance - Bluetooth permission is active !");
+				}
+				catch (SecurityException e) {
+					if(D) Log.d(TAG, "sharedInstance - Bluetooth permission is INACTIVE !");
+					className = "RhoBluetoothManagerOld";
+				}
+				
+			}
 			
 			try {
 				String pkgname = RhoBluetoothManager.class.getPackage().getName();
@@ -319,6 +296,7 @@ public class RhoBluetoothManager {
 				Class<? extends RhoBluetoothManager> klass =
 					Class.forName(fullName).asSubclass(RhoBluetoothManager.class);
 				ourInstance = klass.newInstance();
+				ourInstance.init();
 			}
 			catch (Exception e) {
 				throw new IllegalStateException(e);
