@@ -22,6 +22,7 @@ package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.mainview.MainView;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 
 public class Rhodes extends RhoActivity {
 
@@ -120,4 +122,10 @@ public class Rhodes extends RhoActivity {
 	static {
 		NativeLibraries.load();
 	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	
 }

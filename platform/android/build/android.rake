@@ -34,7 +34,8 @@ ANDROID_PERMISSIONS = {
   'phone' => ['CALL_PHONE', 'READ_PHONE_STATE'],
   'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS', 'GET_ACCOUNTS'],
   'record_audio' => 'RECORD_AUDIO',
-  'vibrate' => 'VIBRATE'
+  'vibrate' => 'VIBRATE',
+  'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH']
 }
 
 def set_app_name_android(newname)
@@ -1243,6 +1244,7 @@ namespace "run" do
 
     def  run_emulator
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
+      puts `"#{$adb}" kill-server`
       puts `"#{$adb}" start-server`
 
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
@@ -1258,17 +1260,45 @@ namespace "run" do
       end
 
       running = is_emulator_running
-      Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") } unless running
 
-      puts "Waiting for emulator to get started" unless running
-      puts "Emulator is up and running" if running
+      if !running
+        # Start the emulator, check on it every 5 seconds until it's running
+        Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") }
+        puts "Waiting up to 180 seconds for emulator..."
+        startedWaiting = Time.now
+        adbRestarts = 1
+        while (Time.now - startedWaiting < 180 )
+          sleep 5
+          now = Time.now
+          emulatorState = `"#{$adb}" -e get-state`
+          if emulatorState =~ /unknown/
+            printf("%.2fs: ",(now - startedWaiting))
+            if (now - startedWaiting) > (60 * adbRestarts)
+              # Restart the adb server every 60 seconds to prevent eternal waiting
+              puts "Appears hung, restarting adb server"
+              puts `"#{$adb}" kill-server`
+              puts `"#{$adb}" start-server`
+              adbRestarts += 1
+            else
+              puts "Still waiting..."
+            end
+          else
+            puts "Success"
+            puts "Device is ready after " + (Time.now - startedWaiting).to_s + " seconds"
+            break
+          end
+        end
+
+        if !is_emulator_running
+          puts "Emulator still isn't up and running, giving up"
+          exit 1
+        end
+
+      else
+        puts "Emulator is up and running"
+      end
+
       $stdout.flush
-      # Kick the server to make sure things don't hang
-      puts `"#{$adb}" kill-server`
-      puts `"#{$adb}" start-server`
-
-      puts `"#{$adb}" -e wait-for-device`
-
     end
     
     def  load_app_and_run
