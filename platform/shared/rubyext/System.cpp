@@ -65,4 +65,9 @@ void rho_sys_set_screen_rotation_notification(const char *url, const char* param
 	RHODESAPP().setScreenRotationNotification(url, params);
 }
 
+void rho_sys_unzip_file(const char *url)
+{
+    rho_unzip_file(url);
+}
+
 } //extern "C"
