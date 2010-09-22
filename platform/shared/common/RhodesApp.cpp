@@ -93,10 +93,13 @@ void CRhodesApp::run()
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
 
-    getSplashScreen().hide();
 
     //rho_clientregister_create("iphone_client");
-    
+#if defined( OS_WINCE ) || defined( OS_WINDOWS )
+    LOG(INFO) + "navigate to first start url";
+    RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
+#endif
+
     while (!m_bExit) {
         m_httpServer->run();
         if (m_bExit)
@@ -220,6 +223,7 @@ public:
             RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
             navigated = true;
         }
+	  //  RHODESAPP().getSplashScreen().hide();
 
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
         common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
