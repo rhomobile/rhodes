@@ -7,6 +7,9 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "fileapi"
+
 #ifdef RHO_LOG
 #undef RHO_LOG
 #endif
@@ -107,6 +110,17 @@ static func_unlink_t real_unlink;
 static func_write_t real_write;
 
 struct stat librhodes_st;
+
+static bool has_pending_exception()
+{
+    JNIEnv *env = jnienv();
+    if (env->ExceptionCheck())
+    {
+        RAWLOG_ERROR("ERROR!!! Pending exception exist!");
+        return true;
+    }
+    return false;
+}
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
   (JNIEnv *env, jclass, jstring pathObj, jstring type, jlong size, jlong mtime)
@@ -397,6 +411,11 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     //RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
 
     bool java_way = need_java_way(fpath);
+    if (java_way && has_pending_exception())
+    {
+        errno = EFAULT;
+        return -1;
+    }
     if (java_way && (oflag & (O_WRONLY | O_RDWR)))
     {
         //RHO_LOG("open: %s: copy from Android package", path);
@@ -404,6 +423,11 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         jstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath).c_str());
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj);
         env->DeleteLocalRef(relPathObj);
+        if (has_pending_exception())
+        {
+            errno = EFAULT;
+            return -1;
+        }
 
         java_way = false;
     }
@@ -416,7 +440,6 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         jobject is = env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj);
         env->DeleteLocalRef(relPathObj);
 
-        fd = -1;
         if (is != NULL)
         {
             scoped_lock_t guard(rho_fd_mtx);
@@ -432,6 +455,11 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
             d.fpath = fpath;
             d.pos = 0;
             rho_fd_map[fd] = d;
+        }
+        else
+        {
+            errno = EFAULT;
+            fd = -1;
         }
 
         env->DeleteLocalRef(is);
@@ -478,6 +506,12 @@ RHO_GLOBAL int close(int fd)
     if (fd < RHO_FD_BASE)
         return real_close(fd);
 
+    if (has_pending_exception())
+    {
+        errno = EFAULT;
+        return -1;
+    }
+
     jobject is = NULL;
     {
         scoped_lock_t guard(rho_fd_mtx);
@@ -508,6 +542,12 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
         ssize_t ret = real_read(fd, buf, count);
         RHO_LOG("read: fd %d: return %ld bytes (native)", fd, (long)ret);
         return ret;
+    }
+
+    if (has_pending_exception())
+    {
+        errno = EFAULT;
+        return -1;
     }
 
     jobject is = NULL;
@@ -668,6 +708,12 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         return ret;
     }
 
+    if (has_pending_exception())
+    {
+        errno = EFAULT;
+        return -1;
+    }
+
     jobject is = NULL;
     loff_t pos = 0;
 
@@ -802,6 +848,13 @@ RHO_GLOBAL int ftruncate(int fd, off_t offset)
 static int stat_impl(std::string const &fpath, struct stat *buf)
 {
     RHO_LOG("stat_impl: %s", fpath.c_str());
+
+    if (has_pending_exception())
+    {
+        errno = EFAULT;
+        return -1;
+    }
+
     rho_stat_t *rst = rho_stat(fpath);
     if (!rst)
     {

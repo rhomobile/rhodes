@@ -159,6 +159,16 @@ namespace "config" do
       exit 1
     end
 
+    errfmt = "WARNING!!! Path to Android %s contain spaces! It will not work because of the Google toolchain restrictions. Move it to another location and reconfigure rhodes."
+    if $androidsdkpath =~ /\s/
+      puts(errfmt % "SDK")
+      exit 1
+    end
+    if $androidndkpath =~ /\s/
+      puts(errfmt % "NDK")
+      exit 1
+    end
+
     $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
