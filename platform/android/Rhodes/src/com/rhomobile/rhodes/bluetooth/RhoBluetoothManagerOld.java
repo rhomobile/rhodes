@@ -21,9 +21,18 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 
 public class RhoBluetoothManagerOld extends RhoBluetoothManager {
-   public RhoBluetoothManagerOld () {
+
+    private static final String TAG = "RhoBluetoothManagerOld";
+    private static final boolean D = true;
+
+	
+	public RhoBluetoothManagerOld () {
+		if(D) Log.d(TAG, "RhoBluetoothManagerOld()");
    }
 	
+   public void init(){		
+   }
+   
    private void sendMessage(String message) {
    }
 	
