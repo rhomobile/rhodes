@@ -1243,6 +1243,7 @@ namespace "run" do
 
     def  run_emulator
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
+      puts `"#{$adb}" kill-server`
       puts `"#{$adb}" start-server`
 
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
@@ -1258,16 +1259,18 @@ namespace "run" do
       end
 
       running = is_emulator_running
-      Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") } unless running
+      if !running
+        Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") }
+        puts "Waiting for emulator to get started"
+      else
+        puts "Emulator is up and running"
+      end
 
-      puts "Waiting for emulator to get started" unless running
-      puts "Emulator is up and running" if running
       $stdout.flush
-      # Kick the server to make sure things don't hang
-      puts `"#{$adb}" kill-server`
-      puts `"#{$adb}" start-server`
 
+      puts "Began waiting for the device at " + `date`
       puts `"#{$adb}" -e wait-for-device`
+      puts "Device is ready at " + `date`
 
     end
     
