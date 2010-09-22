@@ -672,9 +672,9 @@ namespace "build" do
 
       gapi_already_enabled = false
       caps_already_enabled = {}
-      ANDROID_PERMISSIONS.keys.each do |k|
-        caps_already_enabled[k] = false
-      end
+      #ANDROID_PERMISSIONS.keys.each do |k|
+      #  caps_already_enabled[k] = false
+      #end
       if File.file? genconfig_h
         File.open(genconfig_h, 'r') do |f|
           while line = f.gets
@@ -697,7 +697,7 @@ namespace "build" do
       caps_enabled = {}
       ANDROID_PERMISSIONS.keys.each do |k|
         caps_enabled[k] = $app_config["capabilities"].index(k) != nil
-        regenerate = true if caps_enabled[k] != caps_already_enabled[k]
+        regenerate = true if caps_already_enabled[k].nil? or caps_enabled[k] != caps_already_enabled[k]
       end
 
       if regenerate
