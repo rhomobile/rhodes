@@ -23,6 +23,7 @@
         <activity android:name="com.rhomobile.rhodes.signature.ImageCapture" />
         <activity android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
         <activity android:name="com.rhomobile.rhodes.mapview.MapView" />
+        <activity android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity" />
         <uses-library android:name="com.google.android.maps" />
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
@@ -37,4 +38,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 </manifest> 
