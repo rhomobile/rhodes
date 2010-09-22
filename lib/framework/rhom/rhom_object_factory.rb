@@ -758,9 +758,9 @@ module Rhom
                             sql << ") WHERE " + condition_str if condition_str
                             sql << strLimit if strLimit
                             
-                            puts "Database query start"
+                            #puts "Database query start"
                             list = db.execute_sql(sql)
-                            puts "Database query end"
+                            #puts "Database query end"
                         end   
                       end  
 
@@ -778,9 +778,9 @@ module Rhom
                        sql << " order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
                        sql << strLimit if strLimit
                        
-                       puts "Database query start" #: #{sql}"
+                       #puts "Database query start" #: #{sql}"
                        list = db.execute_sql(sql)
-                       puts "Database query end"
+                       #puts "Database query end"
                        
                     end
                     
@@ -1122,14 +1122,21 @@ module Rhom
                         end
                             
                         if resValue && resValue.length > 0 
-                            oldValue = isSchemaSrc ? resValue[0][key] : resValue[0]['value']
-                            
-                            isModified = oldValue != val
-                            if isModified && val && oldValue.nil? && val.to_s().length == 0
-                              isModified = false
-                            end  
-                            if isModified && oldValue && val.nil? && oldValue.to_s().length == 0
-                              isModified = false
+                        
+                            isModified = false
+
+                            if is_inst_full_update
+                              isModified = true
+                            else
+                                oldValue = isSchemaSrc ? resValue[0][key] : resValue[0]['value']
+                                
+                                isModified = oldValue != val
+                                if isModified && val && oldValue.nil? && val.to_s().length == 0
+                                  isModified = false
+                                end  
+                                if isModified && oldValue && val.nil? && oldValue.to_s().length == 0
+                                  isModified = false
+                                end
                             end
                             
                             if isModified
@@ -1185,21 +1192,34 @@ module Rhom
                 tableName = is_inst_schema_source() ? get_inst_schema_table_name() : 'object_values'
                 begin
                     db.start_transaction
+                    
+                    if is_inst_full_update
+                        attrs.each do |attrib,val|
+                            self.vars[attrib.to_sym()] = val    
+                        end    
+                        attrs = self.vars
+                    end
+                    
                     attrs.each do |attrib,val|
                       attrib = attrib.to_s.gsub(/@/,"")
                       next if ::Rhom::RhomObject.method_name_reserved?(attrib)
-                      
-                      old_val = self.send attrib.to_sym unless ::Rhom::RhomObject.method_name_reserved?(attrib)
-                      
+
                       # Don't save objects with braces to database
                       new_val = val.to_s #self.inst_strip_braces(val.to_s)
+                      isModified = false
                       
-                      isModified = old_val != new_val
-                      if isModified && new_val && old_val.nil? && new_val.to_s().length == 0
-                        isModified = false
-                      end  
-                      if isModified && old_val && new_val.nil? && old_val.to_s().length == 0
-                        isModified = false
+                      if is_inst_full_update
+                          isModified = true
+                      else
+                          old_val = self.send attrib.to_sym unless ::Rhom::RhomObject.method_name_reserved?(attrib)
+                          
+                          isModified = old_val != new_val
+                          if isModified && new_val && old_val.nil? && new_val.to_s().length == 0
+                            isModified = false
+                          end  
+                          if isModified && old_val && new_val.nil? && old_val.to_s().length == 0
+                            isModified = false
+                          end
                       end
                       
                       # if the object's value doesn't match the database record
@@ -1243,7 +1263,7 @@ module Rhom
                           end
                                                       
                           # update in-memory object
-                          self.vars[attrib.to_sym()] = new_val
+                          self.vars[attrib.to_sym()] = new_val unless is_inst_full_update
                       end
                     end
                     
@@ -1276,6 +1296,10 @@ module Rhom
               end
               def get_inst_schema_table_name
                  get_inst_source_name()
+              end
+
+              def is_inst_full_update
+                 Rho::RhoConfig.sources[get_inst_source_name]['full_update']
               end
               
               def inst_strip_braces(str=nil)
