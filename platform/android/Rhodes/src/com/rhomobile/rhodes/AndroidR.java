@@ -73,6 +73,11 @@ public final class AndroidR {
         public static final int sig_clearButton=R.id.sig_clearButton;
         public static final int sig_okButton=R.id.sig_okButton;
         public static final int signature_view=R.id.signature_view;
+        public static final int title_paired_devices=R.id.title_paired_devices;
+        public static final int paired_devices=R.id.paired_devices;
+        public static final int title_new_devices=R.id.title_new_devices;
+        public static final int new_devices=R.id.new_devices;
+        public static final int button_scan=R.id.button_scan;
     }
     public static final class layout {
         public static final int camera=R.layout.camera;
@@ -83,6 +88,8 @@ public final class AndroidR {
         public static final int logoptions=R.layout.logoptions;
         public static final int logview=R.layout.logview;
         public static final int datetime=R.layout.datetime;
+        public static final int bt_device_list=R.layout.bt_device_list;
+        public static final int bt_device_name=R.layout.bt_device_name;
     }
     public static final class menu {
         public static final int options=R.menu.options;
@@ -103,5 +110,12 @@ public final class AndroidR {
         public static final int refresh=R.string.refresh;
         public static final int sync=R.string.sync;
         public static final int to_top=R.string.to_top;
+        public static final int scanning=R.string.scanning;
+        public static final int select_device=R.string.select_device;
+        public static final int none_paired=R.string.none_paired;
+        public static final int none_found=R.string.none_found;
+        public static final int title_paired_devices=R.string.title_paired_devices;
+        public static final int title_other_devices=R.string.title_other_devices;
+        public static final int button_scan=R.string.button_scan;
     }
 }

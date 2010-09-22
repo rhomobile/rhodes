@@ -19,4 +19,12 @@
     <string name="cancel">Cancel</string>
     <color name="sig_bkgColor">#FFFFFF</color>
     <color name="sig_penColor">#66009A</color>
+    <!--  RhoBluetoothDeviceListActivity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
 </resources>

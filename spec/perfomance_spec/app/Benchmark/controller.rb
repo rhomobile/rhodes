@@ -127,19 +127,43 @@ class BenchmarkController < Rho::RhoController
 	
   end
   
-  def start
-	#test = { 'Create bench' => :create_test, 'Search bench' => :search_test, 'Bulk bench' => :bulk_test}
-	test = { 'Search bench' => :search_test}
-	$bench_results = ""
+  def asynchttp_test
+    $bench_results = "" unless $bench_results  
+    
+    ::Rhom::Rhom.database_fullclient_reset_and_logout
+      
+	time = Time.now.to_f
+  
+    res = Rho::AsyncHttp.get( :url => 'http://rhostore.heroku.com/customers.json' )
+    parsed = res['body']
+
+	$bench_results << "   Download and parse (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
+    
+    parsed.each do |srcHash|
+        values = srcHash['customer']    
+        
+        Customer.create(values)
+    end
+    
+	$bench_results << "   Insert to DB (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
 	
-	test.each do |name, func|
-	    time = Time.now.to_f
-		self.send func
-		$bench_results << "#{name} (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"		
-	end
+	@customers = Customer.find(:all, :conditions => {'JobTitle' => 'PerfManager'})
 	
+	$bench_results << "   Search (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
+	time = Time.now.to_f
+	
+    render :action => :customers
+    
+	$bench_results << "   Render (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
+
 	puts "BENCH results: \n#{$bench_results }"
 	render :action => :index
+    
   end
   
 end

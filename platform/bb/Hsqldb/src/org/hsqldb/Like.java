@@ -85,7 +85,7 @@ class Like {
     private char[]   cLike;
     private int[]    wildCardType;
     private int      iLen;
-    private boolean  isIgnoreCase;
+    private boolean  isIgnoreCase = true;
     private int      iFirstWildCard;
     private boolean  isNull;
     Character        escapeChar;
@@ -96,7 +96,7 @@ class Like {
 
     Like(Character escape, boolean collation) {
         escapeChar   = escape;
-        hasCollation = collation;
+        hasCollation = true;//collation;
     }
 
     /**
@@ -107,7 +107,7 @@ class Like {
      */
     void setParams(Session session, String s, boolean ignorecase) {
 
-        isIgnoreCase = ignorecase;
+        //isIgnoreCase = ignorecase;
 
         normalize(session, s);
 

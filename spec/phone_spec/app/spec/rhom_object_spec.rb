@@ -43,6 +43,12 @@ def getCase
     Case
 end
 
+def getCase_str
+    return 'Case_s' if $spec_settings[:schema_model]
+    
+    'Case'
+end
+
 def clean_db_data
     #Rhom::Rhom.database_full_reset(true)
     ::Rho::RHO.get_user_db().start_transaction
@@ -65,6 +71,7 @@ class Test_Helper
         ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
         
         Rho::RhoConfig.sources[getAccount_str()]['sync_type'] = 'incremental' if $spec_settings[:sync_model]
+        Rho::RhoConfig.sources[getCase_str()]['sync_type'] = 'incremental' if $spec_settings[:sync_model]
         clean_db_data
 
         @source_map = nil
@@ -143,7 +150,7 @@ describe "Rhom::RhomObject" do
   #  getAccount.get_source_id.should == "23"
     #getCase.get_source_id.should == "1"
   #end
-  
+
   it "should dynamically assign values" do
     account = getAccount.new
     account.name = 'hello name'
@@ -235,12 +242,21 @@ describe "Rhom::RhomObject" do
   end
 
   it "should update attribs while save" do
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+  
     acct = getAccount.find(:first)
     obj_id = acct.object
     acct.name = 'soccer'
     acct.save
     acct2 = getAccount.find(obj_id)
     acct2.name.should == 'soccer'
+    
+    if $spec_settings[:sync_model]    
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 1
+    end    
+    
   end
   
   it "should create records with no attribs in database" do
@@ -366,6 +382,11 @@ describe "Rhom::RhomObject" do
     @new_acct = getAccount.find("44e804f2-4933-4e20-271c-48fcecd9450d")
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Technology"
+
+    if $spec_settings[:sync_model]    
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 1
+    end    
   end
   
   it "should fully update a record" do
@@ -379,6 +400,63 @@ describe "Rhom::RhomObject" do
     
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Electronics"
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 2
+    end
+  end
+
+  it "should empty attrib in a record" do
+    new_attributes = {"name"=>""}
+    @account = getAccount.find("44e804f2-4933-4e20-271c-48fcecd9450d")
+    @account.name.should_not == ""
+    @account.update_attributes(new_attributes)
+    @new_acct = getAccount.find("44e804f2-4933-4e20-271c-48fcecd9450d")
+    @new_acct.name.should == ""
+    @new_acct.industry.should == "Technology"
+
+    if $spec_settings[:sync_model]    
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 1
+    end    
+    
+  end
+
+  it "should update a record with full mode" do
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+  
+    new_attributes = {"created_by_name"=>"evgeny"}
+    @case = getCase.find("41a4e1f1-2c0c-7e51-0495-4900dc4c072c")
+    @case.update_attributes(new_attributes)
+    @new_case = getCase.find("41a4e1f1-2c0c-7e51-0495-4900dc4c072c")
+    @new_case.created_by_name.should == "evgeny"
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 17
+    end    
+    
+  end
+  
+  it "should save a record with full mode" do
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+  
+    #new_attributes = {"created_by_name"=>"evgeny"}
+    @case = getCase.find("41a4e1f1-2c0c-7e51-0495-4900dc4c072c")
+    @case.created_by_name = "evgeny"
+    @case.save
+    
+    @new_case = getCase.find("41a4e1f1-2c0c-7e51-0495-4900dc4c072c")
+    @new_case.created_by_name.should == "evgeny"
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 17
+    end    
+    
   end
   
   it "should set <something>_type_<something> or <something>_object_<something> field for a record" do
@@ -614,12 +692,22 @@ end
     nCount.should == 0
   end
 
+  it "should search with LIKE" do
+    query2 = '%CHNolo%'     #LIKE is case insensitive by default   
+    nCount = getAccount.find( :count, 
+       :conditions => { 
+        {:name=>'industry', :op=>'LIKE'} => query2}
+    )
+  
+    nCount.should_not == 0
+  end
+
   it "should find with group of advanced conditions" do
     query = '%IND%'    
     cond1 = {
        :conditions => { 
-            {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
-            {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+            {:name=>'name', :op=>'LIKE'} => query, 
+            {:name=>'industry', :op=>'LIKE'} => query}, 
        :op => 'OR'
     }
     cond2 = {
