@@ -134,7 +134,7 @@ class BenchmarkController < Rho::RhoController
       
 	time = Time.now.to_f
   
-    res = Rho::AsyncHttp.get( :url => 'http://localhost:5000/test' )
+    res = Rho::AsyncHttp.get( :url => 'http://rhodes-perftest-json.heroku.com/test' )
 	$bench_results << "   Download (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 	
 	time = Time.now.to_f
