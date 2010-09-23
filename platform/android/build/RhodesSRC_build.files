@@ -1,5 +1,7 @@
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothDeviceListActivity.java 
+platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/IRhoBluetoothManager.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManager.java 
+platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerNew.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerOld.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothSession.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/UUIDHelper.java
