@@ -109,10 +109,10 @@ public class System {
 		});
 		klass.getSingletonClass().defineMethod("exit", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				synchronized(RhodesApplication.getInstance().getEventLock()) {
+				//synchronized(RhodesApplication.getInstance().getEventLock()) {
 					RhodesApplication.getInstance().close();
 					return RubyConstant.QNIL;
-				}
+				//}
 			}
 		});
 	}

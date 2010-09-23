@@ -1826,6 +1826,9 @@ static VALUE mRhoConf;
 	extern int rho_conf_send_log();
 	#define send_log rho_conf_send_log
 
+	extern void rho_conf_clean_log();
+	#define clean_log rho_conf_clean_log
+
 	extern int rho_conf_is_property_exists(char* name);
 	#define is_property_exists rho_conf_is_property_exists
 	
@@ -1989,6 +1992,18 @@ _wrap_send_log(int argc, VALUE *argv, VALUE self) {
   result = (int)send_log();
   vresult = SWIG_From_int((int)(result));
   return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_clean_log(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  clean_log();
+  return Qnil;
 fail:
   return Qnil;
 }
@@ -2298,6 +2313,7 @@ SWIGEXPORT void Init_RhoConf(void) {
   rb_define_module_function(mRhoConf, "get_property_by_name", _wrap_get_property_by_name, -1);
   rb_define_module_function(mRhoConf, "show_log", _wrap_show_log, -1);
   rb_define_module_function(mRhoConf, "send_log", _wrap_send_log, -1);
+  rb_define_module_function(mRhoConf, "clean_log", _wrap_clean_log, -1);
   rb_define_module_function(mRhoConf, "is_property_exists", _wrap_is_property_exists, -1);
 }
 

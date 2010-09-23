@@ -398,6 +398,20 @@ public class RhoConf {
 			    
 			}
 		});
+
+		klass.getSingletonClass().defineMethod("clean_log",	new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					RhoLogger.clearLog();
+					return RubyConstant.QNIL;
+				}catch(Exception e)
+				{
+					LOG.ERROR("clean_log failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			    
+			}
+		});
 		
 	}
 }
