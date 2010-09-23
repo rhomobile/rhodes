@@ -70,6 +70,9 @@ namespace net
 SSLImpl::SSLImpl()
 {
     JNIEnv *env = jnienv();
+    if (!env) {
+       return;
+    }
     cls = getJNIClass(RHODES_JAVA_CLASS_SSLIMPL);
     if (!cls) return;
     midConstructor = getJNIClassMethod(env, cls, "<init>", "()V");
