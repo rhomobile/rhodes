@@ -13,6 +13,9 @@
 	extern int rho_conf_send_log();
 	#define send_log rho_conf_send_log
 
+	extern void rho_conf_clean_log();
+	#define clean_log rho_conf_clean_log
+
 	extern int rho_conf_is_property_exists(char* name);
 	#define is_property_exists rho_conf_is_property_exists
 	
@@ -25,4 +28,5 @@ extern void set_property_by_name(char* name, char* value);
 extern VALUE get_property_by_name(char* name);
 extern void show_log();
 extern int send_log();
+extern void clean_log();
 extern int is_property_exists(char* name);
