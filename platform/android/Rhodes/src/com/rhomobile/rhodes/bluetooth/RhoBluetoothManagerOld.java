@@ -20,7 +20,7 @@ import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 
-public class RhoBluetoothManagerOld extends RhoBluetoothManager {
+public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 
     private static final String TAG = "RhoBluetoothManagerOld";
     private static final boolean D = true;
@@ -32,6 +32,10 @@ public class RhoBluetoothManagerOld extends RhoBluetoothManager {
 	
    public void init(){		
    }
+   
+	public void setDeviceName(String device_name) {
+	}
+   
    
    private void sendMessage(String message) {
    }
@@ -73,57 +77,58 @@ public class RhoBluetoothManagerOld extends RhoBluetoothManager {
 	
 	
 	
-	public static int is_bluetooth_available() {
+	public int is_bluetooth_available() {
 		return 0;
 	}
 	
-	public static void off_bluetooth() {
+	public void off_bluetooth() {
 	}
 	
-	public static void set_device_name(String device_name) {
+	public void set_device_name(String device_name) {
 	}
 
-	public static String get_device_name() {
+	public String get_device_name() {
 		return "";
 	}
 	
-	public static String get_last_error() {
-		return BTC_ERROR;
+	public String get_last_error() {
+		return RhoBluetoothManager.BTC_ERROR;
 	}
 	
-	public static String create_session(String role, String callback_url) {
-		return BTC_ERROR;
+	public String create_session(String role, String callback_url) {
+		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+		return RhoBluetoothManager.BTC_ERROR;
 	}
 	
 	public void fireCreateSessionCallback(String status, String connected_device_name) {
 	}
 
 	
-	public static void session_set_callback(String connected_device_name, String callback_url) {
+	public void session_set_callback(String connected_device_name, String callback_url) {
 	}
 	
 	public void fireSessionCallback(String connected_device_name, String event_type) {
 	}
 	
-	public static void session_disconnect(String connected_device_name) {
+	public void session_disconnect(String connected_device_name) {
 	}
 	
-	public static int session_get_status(String connected_device_name) {
+	public int session_get_status(String connected_device_name) {
 		return -1;
 	}
 
-	public static String session_read_string(String connected_device_name) {
+	public String session_read_string(String connected_device_name) {
 		return "";
 	}
 
-	public static void session_write_string(String connected_device_name, String str) {
+	public void session_write_string(String connected_device_name, String str) {
 	}
 	
-	public static int session_read_data(String connected_device_name, Byte[] buf, int max_length) {
+	public int session_read_data(String connected_device_name, Byte[] buf, int max_length) {
 		return 0;
 	}
 
-	public static void session_write_data(String connected_device_name, Byte[] buf, int length) {
+	public void session_write_data(String connected_device_name, Byte[] buf, int length) {
 	}
 
 
