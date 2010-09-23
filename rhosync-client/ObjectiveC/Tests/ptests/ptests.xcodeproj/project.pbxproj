@@ -13,6 +13,7 @@
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		28D7ACF80DDB3853001CB0EB /* ptestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* ptestsViewController.m */; };
 		5C2CE5BC122C39C8005EDBC4 /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C2CE5BB122C39C8005EDBC4 /* db */; };
+		5C2DEBA3124B423600B8357E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C2DEBA2124B423600B8357E /* CoreData.framework */; };
 		5CF985F61226B28900734E8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF985F51226B28900734E8B /* CFNetwork.framework */; };
 		5CF985FC1226B2A300734E8B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF985FB1226B2A300734E8B /* Foundation.framework */; };
 		5CF986021226B2C400734E8B /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CF986011226B2C400734E8B /* libsqlite3.0.dylib */; };
@@ -52,6 +53,7 @@
 		32CA4F630368D1EE00C91783 /* ptests_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptests_Prefix.pch; sourceTree = "<group>"; };
 		5C2CE418122AFFD7005EDBC4 /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../../SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
 		5C2CE5BB122C39C8005EDBC4 /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../../platform/shared/db/res/db; sourceTree = SOURCE_ROOT; };
+		5C2DEBA2124B423600B8357E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		5CF985F51226B28900734E8B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5CF985FB1226B2A300734E8B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5CF986011226B2C400734E8B /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
@@ -76,6 +78,7 @@
 				5CF986101226B30C00734E8B /* UIKit.framework in Frameworks */,
 				5CF986431226B33E00734E8B /* CoreGraphics.framework in Frameworks */,
 				5CF986471226B37300734E8B /* libstdc++.6.dylib in Frameworks */,
+				5C2DEBA3124B423600B8357E /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +122,7 @@
 				5CF9860F1226B30C00734E8B /* UIKit.framework */,
 				5CF986421226B33E00734E8B /* CoreGraphics.framework */,
 				5CF986461226B37300734E8B /* libstdc++.6.dylib */,
+				5C2DEBA2124B423600B8357E /* CoreData.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";

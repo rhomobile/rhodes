@@ -107,17 +107,18 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		
 		
         // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mBluetoothIsEnabled) {
+			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         
-        if (mBluetoothAdapter != null) { 
-            if (mBluetoothAdapter.isEnabled()) {
-                if (mSession == null) {
-                	setupSession();
-                }
-                mDeviceName = mBluetoothAdapter.getName();
-            }
+        	if (mBluetoothAdapter != null) { 
+            	if (mBluetoothAdapter.isEnabled()) {
+            		if (mSession == null) {
+                		setupSession();
+                	}
+                	mDeviceName = mBluetoothAdapter.getName();
+            	}
+			}
 		}
-		
 	}
 	
 	public void setDeviceName(String device_name) {
