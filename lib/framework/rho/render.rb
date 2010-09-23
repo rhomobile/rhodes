@@ -48,6 +48,10 @@ module Rho
           rho_info 'index layout' 
           layout = File.dirname(filename) + "/layout_erb.iseq"
           @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
+	  else
+          if @request["headers"]["Transition-Enabled"] == "true"
+			  @content = "<div>#{@content}</div>"
+          end
       end
           
       @content
