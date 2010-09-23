@@ -116,6 +116,8 @@ void rho_logconf_setSeverity(int nLevel);
 void rho_logconf_saveSettings();
 void rho_logconf_freeString(char* str);
 
+void rho_conf_clean_log();
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus

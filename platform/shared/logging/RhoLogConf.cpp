@@ -230,6 +230,11 @@ void rho_conf_set_property_by_name(char* name, char* value)
     LOGCONF().loadFromConf(RHOCONF());
 }
 
+void rho_conf_clean_log()
+{
+    LOGCONF().clearLog();
+}
+
 #ifndef RHO_NO_RUBY
 VALUE rho_conf_get_property_by_name(char* name)
 {
