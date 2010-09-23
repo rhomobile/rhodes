@@ -117,6 +117,11 @@ describe "url_for and link_to" do
       @c.link_to("Invate",:action => :invite, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}).should == "<a href=\"/application/model/invite?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com\" >Invate</a>"
     end
 
+    it "should generate link with a action" do
+      res = @c.url_for :controller => :Settings, :action => :login
+      res.should == "/application/Settings/login"
+    end
+        
 end #describe "url_for and link_to"
 
 describe "redirect" do
