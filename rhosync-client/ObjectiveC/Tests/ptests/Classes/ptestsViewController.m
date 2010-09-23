@@ -9,6 +9,7 @@
 #import "ptestsViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "../../../RhoSyncClient.h"
+#import <CoreData/CoreData.h>
 
 @implementation ptestsViewController
 
@@ -97,7 +98,7 @@
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
 	[self beforeTests];
 	
-	sclient.sync_server = @"http://192.168.0.93:9292/application";
+	sclient.sync_server = @"http://192.168.0.84:9292/application";
 	RhoSyncNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	[res release];
 	
@@ -191,7 +192,7 @@
 	
 	double startTime = CACurrentMediaTime();	
 	
-	sclient.sync_server = @"http://192.168.0.93:9292/application";
+	sclient.sync_server = @"http://192.168.0.84:9292/application";
 	RhoSyncNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	//sclient.sync_server = @"http://184.73.159.63/application";
 	//RhoSyncNotify* res = [sclient loginWithUser:@"smladenova" pwd:@"password"];
@@ -223,6 +224,87 @@
 			   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
 	
 	NSLog(@"BENCH bulk results: \n%@", result);
+	
+	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
+	[pool release];  // Release the objects in the pool.
+}
+
+- (NSPersistentStore*) createStore
+{
+    static NSManagedObjectContext *moc = nil;
+	
+    if (moc == nil) 
+		moc = [[NSManagedObjectContext alloc] init];
+	
+    NSPersistentStoreCoordinator *coordinator =	[[NSPersistentStoreCoordinator alloc] init];
+    [moc setPersistentStoreCoordinator: coordinator];
+	
+    NSString *STORE_TYPE = NSSQLiteStoreType;
+	
+    NSError *error = nil;
+    //NSURL *url = [applicationLogDirectory() URLByAppendingPathComponent:STORE_FILENAME];
+	NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:"test.db"] autorelease]];	
+	
+    NSPersistentStore *newStore = [coordinator addPersistentStoreWithType:STORE_TYPE
+															configuration:nil
+																	  URL:url
+																  options:nil
+																	error:&error];
+	
+    if (newStore == nil) {
+        NSLog(@"Store Configuration Failure\n%@",
+			  ([error localizedDescription] != nil) ?
+			  [error localizedDescription] : @"Unknown Error");
+    }
+    return newStore;
+}
+
+- (void) benchAsyncHttpSync
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
+	
+	double startTime = CACurrentMediaTime();	
+	
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+	NSError *error = nil;
+	NSHTTPURLResponse* response;
+	NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:"http://192.168.0.62:5000/test"] autorelease]];
+	[request setURL:url];
+	[request setHTTPMethod:@"GET"];
+	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;	
+	
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Download", (CACurrentMediaTime()-startTime)*1000.0 ]];
+
+	startTime = CACurrentMediaTime();	
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Parse JSON", (CACurrentMediaTime()-startTime)*1000.0 ]];
+
+	startTime = CACurrentMediaTime();	
+	
+	NSPersistentStore* store = [self createStore];
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Insert to DB", (CACurrentMediaTime()-startTime)*1000.0 ]];
+	
+	startTime = CACurrentMediaTime();	
+	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];							 
+	
+	NSMutableArray* items = [customer find_all:cond];	
+	if (items) {
+		[items release];
+	}
+	
+	result = [result stringByAppendingString:
+			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
+			   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
+	
+	NSLog(@"BENCH asynchttp sync results: \n%@", result);
 	
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
 	[pool release];  // Release the objects in the pool.
@@ -409,6 +491,8 @@
 		[NSThread detachNewThreadSelector:@selector(benchCreate) toTarget:self withObject:nil];
 	else if ( sender == btnBenchBulk)		
 		[NSThread detachNewThreadSelector:@selector(benchBulkSync) toTarget:self withObject:nil];
+	else if ( sender == btnBenchAsyncHttp )
+		[NSThread detachNewThreadSelector:@selector(benchAsyncHttpSync) toTarget:self withObject:nil];
 }
 
 /*
