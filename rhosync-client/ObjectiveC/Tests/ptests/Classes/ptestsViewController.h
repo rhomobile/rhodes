@@ -15,6 +15,7 @@
 	IBOutlet UIButton *btnBenchSearch;	
 	IBOutlet UIButton *btnBenchCreate;		
 	IBOutlet UIButton *btnBenchBulk;			
+	IBOutlet UIButton *btnBenchAsyncHttp;				
 	IBOutlet UIActivityIndicatorView *indicator;
 	
 	RhoSyncClient* sclient;
