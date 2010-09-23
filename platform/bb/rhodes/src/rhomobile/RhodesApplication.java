@@ -1159,8 +1159,14 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	    navigateUrl(strStartPage);
     }
     
-    public void close() {
-    	_mainScreen.close();
+    public void close() 
+    {
+    	this.invokeLater(new Runnable() {
+            public void run() 
+            {
+				_mainScreen.close();
+            }
+    	});
     }
 
     public void processConnection(HttpConnection connection, Object e) 
