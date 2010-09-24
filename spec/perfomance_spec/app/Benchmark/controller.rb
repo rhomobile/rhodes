@@ -146,13 +146,13 @@ class BenchmarkController < Rho::RhoController
 
 	time = Time.now.to_f
 
-	db = Rho::RHO.get_src_db('Customer')
+	db = Rho::RHO.get_src_db('Benchmark')
 	db.start_transaction
     
     parsed.each do |id, values|
         #values = srcHash['customer']    
         values['object'] = id
-        Customer.create(values)
+        Benchmark.create(values)
     end
 	db.commit
 	    
@@ -160,7 +160,7 @@ class BenchmarkController < Rho::RhoController
 
 	time = Time.now.to_f
 	
-	@customers = Customer.find(:all, :conditions => {'JobTitle' => 'PerfManager'})
+	@customers = Benchmark.find(:all, :conditions => {'JobTitle' => 'PerfManager'})
 	
 	$bench_results << "   Search (ms): #{((Time.now.to_f - time) * 10**3 ).to_i}\n"
 
