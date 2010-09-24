@@ -1207,6 +1207,17 @@ namespace "run" do
         log_name  = $app_path + '/RhoLog.txt'
         File.delete(log_name) if File.exist?(log_name)
         
+        # Failsafe to prevent eternal hangs
+        Thread.new {
+          sleep 1000
+
+          # OS X:
+          `killall -9 emulator`
+
+          # Windows should be something like this, needs testing and verification
+          #`taskkill /F /IM emulator.exe`
+        }
+
         load_app_and_run
 
         Jake.before_run_spec
