@@ -1207,6 +1207,19 @@ namespace "run" do
         log_name  = $app_path + '/RhoLog.txt'
         File.delete(log_name) if File.exist?(log_name)
         
+        # Failsafe to prevent eternal hangs
+        Thread.new {
+          sleep 1000
+
+          if RUBY_PLATFORM =~ /darwin/
+            # OS X:
+            `killall -9 emulator`
+          else
+            # Windows
+            `taskkill /F /IM emulator.exe`
+          end
+        }
+
         load_app_and_run
 
         Jake.before_run_spec
