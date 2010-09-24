@@ -1211,11 +1211,13 @@ namespace "run" do
         Thread.new {
           sleep 1000
 
-          # OS X:
-          `killall -9 emulator`
-
-          # Windows should be something like this, needs testing and verification
-          #`taskkill /F /IM emulator.exe`
+          if RUBY_PLATFORM =~ /darwin/
+            # OS X:
+            `killall -9 emulator`
+          else
+            # Windows
+            `taskkill /F /IM emulator.exe`
+          end
         }
 
         load_app_and_run
