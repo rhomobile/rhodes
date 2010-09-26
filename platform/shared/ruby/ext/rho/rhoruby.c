@@ -43,6 +43,7 @@ extern void Init_RingtoneManager(void);
 extern void Init_socket(void);
 extern void Init_AsyncHttp(void);
 extern void Init_NavBar(void);
+extern void Init_Event(void);
 extern void Init_Extensions(void);
 
 //RhoSupport extension
@@ -158,8 +159,8 @@ void RhoRubyStart()
     Init_WebView();
     Init_RhoConf();
     Init_Alert();
-	Init_SignatureTool();
-	Init_RhoBluetooth();	
+    Init_SignatureTool();
+    Init_RhoBluetooth();	
     Init_Camera();
     Init_stringio();
     Init_DateTimePicker();
@@ -169,6 +170,7 @@ void RhoRubyStart()
     Init_RingtoneManager();
     Init_socket();
     Init_NavBar();
+    Init_Event();
     Init_Extensions();
 
 #ifdef ENABLE_RUBY_VM_STAT
