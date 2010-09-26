@@ -5,11 +5,12 @@ describe "AsyncHttp" do
     after(:all) do
         file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
         File.delete(file_name) if File.exists?(file_name)
-		
-		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
-		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
-    end
 
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
+        File.delete(file_name) if File.exists?(file_name)		
+    end
+    
+    
     it "should http get" do
         return unless $is_network_available
         
@@ -79,9 +80,12 @@ describe "AsyncHttp" do
         return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
+		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
+		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
         
-        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
-        File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
+        file_name = File.join(dir_name, 'test_log.txt')
+        puts " file_name : #{file_name}"
+        File.open(file_name, "w"){|f| puts "OK"; f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
 
         res = Rho::AsyncHttp.upload_file(
           :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
@@ -108,7 +112,27 @@ describe "AsyncHttp" do
       end
     end
 
-=begin
+    it "should send custom command" do
+        return unless $is_network_available
+        
+        res = Rho::AsyncHttp.get(
+          :url => 'http://www.apache.org/licenses/LICENSE-2.0',
+          :http_command => 'PUT' )
+        
+        #puts "res : #{res}"  
+        res['http_error'].should == '405'
+        res['body'].index('The requested method PUT is not allowed for the URL').should_not be_nil
+        
+        res = Rho::AsyncHttp.post(
+          :url => 'http://www.apache.org/licenses/LICENSE-2.0',
+          :http_command => 'PUT' )
+        
+        #puts "res : #{res}"  
+        res['http_error'].should == '405'
+        res['body'].index('The requested method PUT is not allowed for the URL').should_not be_nil
+        
+    end    
+    
     def upload_withbody_test
         return unless $is_network_available
         
@@ -162,7 +186,7 @@ describe "AsyncHttp" do
         res['status'].should == 'ok'
         File.exists?(file_name).should == true
     end
-=end  
+
 # TODO: Fix this test!
 =begin
     def httpsget_test

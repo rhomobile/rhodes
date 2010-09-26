@@ -941,8 +941,10 @@ namespace "run" do
       end
 
       task :phone_spec do
-        Jake.run_spec_app('bb', 'phone_spec')
+        exit 1 if Jake.run_spec_app('bb','phone_spec')
+        exit 0
       end
+
   end
   
   desc "Builds everything, loads and starts bb sim and mds"
