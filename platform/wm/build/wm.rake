@@ -327,7 +327,13 @@ namespace "run" do
     end
 
     task :phone_spec do
-      Jake.run_spec_app('win32', 'phone_spec')
+      exit 1 if Jake.run_spec_app('win32','phone_spec')
+      exit 0
+    end
+
+    task :framework_spec do
+      exit 1 if Jake.run_spec_app('win32','framework_spec')
+      exit 0
     end
     
   end
