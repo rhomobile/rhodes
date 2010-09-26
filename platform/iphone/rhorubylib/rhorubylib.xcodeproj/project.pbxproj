@@ -23,6 +23,7 @@
 		5CF8DBCB10B1D45C00247AB4 /* sockport.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC510B1D45C00247AB4 /* sockport.h */; };
 		BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD28516011608C9A003DE4E9 /* ringtones_wrap.c */; };
 		BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD9E5E0F1186B44B0053049C /* navbar_wrap.c */; };
+		BDB09B78124FB174004B628C /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BDB09B77124FB174004B628C /* event_wrap.c */; };
 		D38F7B5F110647510030B1F4 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = D38F7B5E110647510030B1F4 /* extensions.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F5177F180EE5B624000EA1A0 /* system_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5177F170EE5B624000EA1A0 /* system_wrap.c */; };
@@ -136,6 +137,7 @@
 		5CF8DBC510B1D45C00247AB4 /* sockport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sockport.h; path = ext/socket/sockport.h; sourceTree = "<group>"; };
 		BD28516011608C9A003DE4E9 /* ringtones_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ringtones_wrap.c; path = ext/ringtones/ringtones_wrap.c; sourceTree = "<group>"; };
 		BD9E5E0F1186B44B0053049C /* navbar_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = navbar_wrap.c; path = ext/navbar/navbar_wrap.c; sourceTree = "<group>"; };
+		BDB09B77124FB174004B628C /* event_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = event_wrap.c; path = ext/event/event_wrap.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D38F7B5E110647510030B1F4 /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = ext/rho/extensions.c; sourceTree = "<group>"; };
 		F516687F0FFD39D80079F023 /* alert_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alert_wrap.c; path = ../../shared/ruby/ext/alert/alert_wrap.c; sourceTree = SOURCE_ROOT; };
@@ -343,6 +345,14 @@
 			name = navbar;
 			sourceTree = "<group>";
 		};
+		BDB09B76124FB14C004B628C /* event */ = {
+			isa = PBXGroup;
+			children = (
+				BDB09B77124FB174004B628C /* event_wrap.c */,
+			);
+			name = event;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -481,6 +491,7 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				BDB09B76124FB14C004B628C /* event */,
 				FACC2097123A5F0B0088A447 /* Bluetooth */,
 				FA291E8011FF2A5F0096AC39 /* signature */,
 				5C8EE86311220EBB0005C20D /* asynchttp */,
@@ -664,7 +675,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "rhorubylib" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* rhorubylib */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -768,6 +786,7 @@
 				FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */,
 				5C40CF66122703E6007298DA /* sqlite3_api_wrap.c in Sources */,
 				FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */,
+				BDB09B78124FB174004B628C /* event_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

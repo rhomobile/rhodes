@@ -194,6 +194,10 @@ void Init_NativeBar()
 {
 }
 
+void Init_Event()
+{
+}
+
 void Init_MapView()
 {
 }

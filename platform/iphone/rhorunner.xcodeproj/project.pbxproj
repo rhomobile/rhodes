@@ -26,6 +26,8 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
+		BD486F59124FB66600F8A93F /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = BD486F58124FB66600F8A93F /* Event.m */; };
+		BD486FE212505FE000F8A93F /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD486FE112505FE000F8A93F /* EventKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD6A6229123E46BB0093E03C /* RhoViewController.m */; };
 		BD97AC211160EE8F006960F9 /* RhoAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* RhoAlert.m */; };
@@ -179,6 +181,9 @@
 		BD38E6DB115CFF14001CE05C /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
 		BD38E753115D1AAC001CE05C /* TabbedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabbedMainView.h; sourceTree = "<group>"; };
 		BD38E754115D1AAC001CE05C /* TabbedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabbedMainView.m; sourceTree = "<group>"; };
+		BD486F57124FB66600F8A93F /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = Event/Event.h; sourceTree = "<group>"; };
+		BD486F58124FB66600F8A93F /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Event.m; path = Event/Event.m; sourceTree = "<group>"; };
+		BD486FE112505FE000F8A93F /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD6A6228123E46BB0093E03C /* RhoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoViewController.h; sourceTree = "<group>"; };
@@ -277,6 +282,7 @@
 				46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */,
 				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
 				FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */,
+				BD486FE212505FE000F8A93F /* EventKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +301,7 @@
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				46056CEE1031CFB700C21967 /* DateTimePicker */,
+				BD486F50124FB61800F8A93F /* Event */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
 				F547F3D10F9CEB05007C2CD2 /* Log */,
 				BDB3735D11441FE0006EA6DA /* MainView */,
@@ -346,6 +353,7 @@
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
 				FACC20FF123A759A0088A447 /* GameKit.framework */,
+				BD486FE112505FE000F8A93F /* EventKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -463,6 +471,15 @@
 				BD38E6DB115CFF14001CE05C /* WebView.m */,
 			);
 			name = WebView;
+			sourceTree = "<group>";
+		};
+		BD486F50124FB61800F8A93F /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				BD486F57124FB66600F8A93F /* Event.h */,
+				BD486F58124FB66600F8A93F /* Event.m */,
+			);
+			name = Event;
 			sourceTree = "<group>";
 		};
 		BD97AC1E1160EE7A006960F9 /* Alert */ = {
@@ -660,6 +677,7 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rhorunner" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -854,6 +872,7 @@
 				FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */,
 				BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */,
 				FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */,
+				BD486F59124FB66600F8A93F /* Event.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -918,7 +937,7 @@
 				SDKROOT = iphonesimulator4.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
+				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Debug;
 		};
@@ -962,7 +981,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
+				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Release;
 		};
@@ -1109,7 +1128,7 @@
 				PRODUCT_NAME = rhorunner;
 				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
+				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
 			name = Distribution;
 		};
