@@ -7,6 +7,7 @@
 //
 
 #import "Event.h"
+#import "Rhodes.h"
 
 #include "ruby.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -24,21 +25,38 @@
 
 static VALUE dateToRuby(NSDate *date)
 {
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    unsigned unitFlags = NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit;
+    NSDateComponents *dateComponents = [gregorian components:unitFlags fromDate:date];
+    unitFlags = NSHourCalendarUnit|NSMinuteCalendarUnit|NSSecondCalendarUnit;
+    NSDateComponents *timeComponents = [gregorian components:unitFlags fromDate:date];
+    
+    int year = [dateComponents year];
+    int month = [dateComponents month];
+    int day = [dateComponents day];
+    int hour = [timeComponents hour];
+    int minute = [timeComponents minute];
+    int second = [timeComponents second];
+    
+    [gregorian release];
+    
     ID id_mktime = rb_intern("mktime");
-    NSTimeInterval ti = [date timeIntervalSinceReferenceDate];
-    CFGregorianDate gDate = CFAbsoluteTimeGetGregorianDate(ti, NULL);
-    VALUE rDate = rb_funcall(rb_cTime, id_mktime, 7, INT2FIX(gDate.year), INT2FIX(gDate.month), INT2FIX(gDate.day),
-                             INT2FIX(gDate.hour), INT2FIX(gDate.minute), INT2FIX(gDate.second), INT2FIX(0));
+    VALUE rDate = rb_funcall(rb_cTime, id_mktime, 7, INT2FIX(year), INT2FIX(month), INT2FIX(day),
+                             INT2FIX(hour), INT2FIX(minute), INT2FIX(second), INT2FIX(0));
     return rDate;
 }
 
 static NSDate *dateFromRuby(VALUE rDate)
 {
+    if (TYPE(rDate) == T_STRING) {
+        // Convert to time
+        ID id_parse = rb_intern("parse");
+        rDate = rb_funcall(rb_cTime, id_parse, 1, rDate);
+    }
+    
     VALUE cDate = rb_class_of(rDate);
     if (!rb_equal(cDate, rb_cTime))
         rb_raise(rb_eArgError, "Wrong type of parameter: %s (Time expected)", rb_class2name(cDate));
-    
-    CFGregorianDate gDate;
     
     ID id_gmtime = rb_intern("gmtime");
     ID id_year = rb_intern("year");
@@ -51,26 +69,36 @@ static NSDate *dateFromRuby(VALUE rDate)
     // Get GM time
     rDate = rb_funcall(rDate, id_gmtime, 0);
     
-    VALUE year = rb_funcall(rDate, id_year, 0);
-    VALUE month = rb_funcall(rDate, id_month, 0);
-    VALUE day = rb_funcall(rDate, id_day, 0);
-    VALUE hour = rb_funcall(rDate, id_hour, 0);
-    VALUE minute = rb_funcall(rDate, id_min, 0);
-    VALUE second = rb_funcall(rDate, id_sec, 0);
+    int year = FIX2INT(rb_funcall(rDate, id_year, 0));
+    int month = FIX2INT(rb_funcall(rDate, id_month, 0));
+    int day = FIX2INT(rb_funcall(rDate, id_day, 0)) + 1;
+    int hour = FIX2INT(rb_funcall(rDate, id_hour, 0));
+    int minute = FIX2INT(rb_funcall(rDate, id_min, 0));
+    int second = FIX2INT(rb_funcall(rDate, id_sec, 0));
     
-    gDate.year = FIX2INT(year);
-    gDate.month = FIX2INT(month);
-    gDate.day = FIX2INT(day);
-    gDate.hour = FIX2INT(hour);
-    gDate.minute = FIX2INT(minute);
-    gDate.second = FIX2INT(second);
+    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+    [dateComponents setYear:year];
+    [dateComponents setMonth:month];
+    [dateComponents setDay:day];
+    [dateComponents setHour:hour];
+    [dateComponents setMinute:minute];
+    [dateComponents setSecond:second];
     
-    NSDate *date = [NSDate dateWithTimeIntervalSinceReferenceDate:CFGregorianDateGetAbsoluteTime(gDate, NULL)];
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    
+    NSDate *date = [gregorian dateFromComponents:dateComponents];
+    
+    [gregorian release];
+    [dateComponents release];
+    
     return date;
 }
 
 static VALUE event2ruby(EKEvent *event)
 {
+    if (!event)
+        return Qnil;
+    
     VALUE rEvent = rho_ruby_createHash();
     const char *eid = [event.eventIdentifier UTF8String];
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ID), rb_str_new2(eid));
@@ -86,6 +114,15 @@ static VALUE event2ruby(EKEvent *event)
     
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_START_DATE), dateToRuby(event.startDate));
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_END_DATE), dateToRuby(event.endDate));
+    rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_LAST_MODIFIED), dateToRuby(event.lastModifiedDate));
+    if (event.location) {
+        const char *location = [event.location UTF8String];
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_LOCATION), rb_str_new2(location));
+    }
+    if (event.notes) {
+        const char *notes = [event.notes UTF8String];
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(notes));
+    }
     
     return rEvent;
 }
@@ -98,10 +135,9 @@ VALUE event_fetch(VALUE start_date, VALUE end_date)
     NSDate *start = dateFromRuby(start_date);
     NSDate *finish = dateFromRuby(end_date);
     
-    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     NSPredicate *pred = [eventStore predicateForEventsWithStartDate:start endDate:finish calendars:nil];
     NSArray *events = [eventStore eventsMatchingPredicate:pred];
-    [eventStore release];
     
     VALUE ret = rho_ruby_create_array();
     
@@ -120,9 +156,8 @@ VALUE event_fetch_by_id(const char *eid)
 #if !defined(__IPHONE_4_0)
     return rho_ruby_get_NIL();
 #else
-    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
-    [eventStore release];
     
     return event2ruby(event);
 #endif
@@ -134,10 +169,10 @@ void event_save(VALUE rEvent)
     if (!NIL_P(rId))
         Check_Type(rId, T_STRING);
 
-    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     
     EKEvent *event = nil;
-    if (NIL_P(rId)) {
+    if (NIL_P(rId) || strlen(RSTRING_PTR(rId)) == 0) {
         // New event
         event = [EKEvent eventWithEventStore:eventStore];
         event.calendar = [eventStore defaultCalendarForNewEvents];
@@ -161,9 +196,14 @@ void event_save(VALUE rEvent)
     if (!NIL_P(rEndDate))
         event.endDate = dateFromRuby(rEndDate);
     
+    VALUE rLocation = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_LOCATION));
+    if (!NIL_P(rLocation)) {
+        Check_Type(rLocation, T_STRING);
+        event.location = [NSString stringWithUTF8String:RSTRING_PTR(rLocation)];
+    }
+    
     NSError *err;
     BOOL saved = [eventStore saveEvent:event span:EKSpanThisEvent error:&err];
-    [eventStore release];
     
     if (!saved)
         rb_raise(rb_eRuntimeError, "Event save failed: %s", [[err localizedDescription] UTF8String]);
@@ -171,11 +211,10 @@ void event_save(VALUE rEvent)
 
 void event_delete(const char *eid)
 {
-    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
     NSError *err;
     BOOL removed = [eventStore removeEvent:event span:EKSpanThisEvent error:&err];
-    [eventStore release];
     
     if (!removed)
         rb_raise(rb_eRuntimeError, "Event was not removed: %s", [[err localizedDescription] UTF8String]);
