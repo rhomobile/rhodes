@@ -1,10 +1,10 @@
 platform/android/Rhodes/jni/src/RhoClassFactory.cpp
 platform/android/Rhodes/jni/src/alert.cpp
+platform/android/Rhodes/jni/src/bluetooth.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
 platform/android/Rhodes/jni/src/camera.cpp
-platform/android/Rhodes/jni/src/bluetooth.cpp
-platform/android/Rhodes/jni/src/signature.cpp
 platform/android/Rhodes/jni/src/datetimepicker.cpp
+platform/android/Rhodes/jni/src/event.cpp
 platform/android/Rhodes/jni/src/fileapi.cpp
 platform/android/Rhodes/jni/src/geolocation.cpp
 platform/android/Rhodes/jni/src/logconf.cpp
@@ -18,6 +18,7 @@ platform/android/Rhodes/jni/src/phonebook.cpp
 platform/android/Rhodes/jni/src/rhoconf.cpp
 platform/android/Rhodes/jni/src/rhodes.cpp
 platform/android/Rhodes/jni/src/ringtones.cpp
+platform/android/Rhodes/jni/src/signature.cpp
 platform/android/Rhodes/jni/src/socketimpl.cpp
 platform/android/Rhodes/jni/src/splashscreen.cpp
 platform/android/Rhodes/jni/src/sslimpl.cpp
