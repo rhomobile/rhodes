@@ -72,11 +72,16 @@ static NSDate *dateFromRuby(VALUE rDate)
 static VALUE event2ruby(EKEvent *event)
 {
     VALUE rEvent = rho_ruby_createHash();
-    rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ID), rb_str_new2([event.eventIdentifier UTF8String]));
-    rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_TITLE), rb_str_new2([event.title UTF8String]));
+    const char *eid = [event.eventIdentifier UTF8String];
+    rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ID), rb_str_new2(eid));
+    if (event.title) {
+        const char *title = [event.title UTF8String];
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_TITLE), rb_str_new2(title));
+    }
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_CANCELED), rho_ruby_create_boolean(event.status == EKEventStatusCanceled));
     if (event.organizer) {
-        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ORGANIZER), rb_str_new2([event.organizer.name UTF8String]));
+        const char *oname = [event.organizer.name UTF8String];
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ORGANIZER), rb_str_new2(oname));
     }
     
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_START_DATE), dateToRuby(event.startDate));
@@ -162,4 +167,16 @@ void event_save(VALUE rEvent)
     
     if (!saved)
         rb_raise(rb_eRuntimeError, "Event save failed: %s", [[err localizedDescription] UTF8String]);
+}
+
+void event_delete(const char *eid)
+{
+    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
+    NSError *err;
+    BOOL removed = [eventStore removeEvent:event span:EKSpanThisEvent error:&err];
+    [eventStore release];
+    
+    if (!removed)
+        rb_raise(rb_eRuntimeError, "Event was not removed: %s", [[err localizedDescription] UTF8String]);
 }
