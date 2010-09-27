@@ -319,6 +319,11 @@ VALUE rho_ruby_create_string(const char* szVal)
     return rb_str_new2(szVal);
 }
 
+VALUE rho_ruby_create_string_withlen(int len)
+{
+    return rb_str_new("", len);
+}
+
 VALUE rho_ruby_create_boolean(unsigned char b)
 {
     return b ? Qtrue : Qfalse;
