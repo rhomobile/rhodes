@@ -21,10 +21,10 @@ platform/shared/ruby/error.c
 platform/shared/ruby/eval.c
 platform/shared/ruby/ext/alert/alert_wrap.c
 platform/shared/ruby/ext/asynchttp/asynchttp_wrap.c
-platform/shared/ruby/ext/camera/camera_wrap.c
 platform/shared/ruby/ext/bluetooth/bluetooth_wrap.c
-platform/shared/ruby/ext/signature/signature_wrap.c
+platform/shared/ruby/ext/camera/camera_wrap.c
 platform/shared/ruby/ext/datetimepicker/datetimepicker_wrap.c
+platform/shared/ruby/ext/event/event_wrap.c
 platform/shared/ruby/ext/geolocation/geolocation_wrap.c
 platform/shared/ruby/ext/mapview/mapview_wrap.c
 platform/shared/ruby/ext/nativebar/nativebar_wrap.c
@@ -35,6 +35,7 @@ platform/shared/ruby/ext/rho/rhoruby.c
 platform/shared/ruby/ext/rho/rhosupport.c
 platform/shared/ruby/ext/rhoconf/rhoconf_wrap.c
 platform/shared/ruby/ext/ringtones/ringtones_wrap.c
+platform/shared/ruby/ext/signature/signature_wrap.c
 platform/shared/ruby/ext/socket/socket.c
 platform/shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c
 platform/shared/ruby/ext/stringio/stringio.c
