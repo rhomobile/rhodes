@@ -131,6 +131,24 @@ static VALUE event2ruby(EKEvent *event)
     }
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ATTENDEES), rAttendees);
     
+    if (event.recurrenceRule) {
+        VALUE rRecurrence = rb_hash_new();
+        const char *s;
+        switch (event.recurrenceRule.frequency) {
+            case EKRecurrenceFrequencyDaily: s = RUBY_EV_RECURRENCE_FREQUENCY_DAILY; break;
+            case EKRecurrenceFrequencyWeekly: s = RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY; break;
+            case EKRecurrenceFrequencyMonthly: s = RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY; break;
+            case EKRecurrenceFrequencyYearly: s = RUBY_EV_RECURRENCE_FREQUENCY_YEARLY; break;
+            default: s = "undefined";
+        }
+        rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_FREQUENCY), rb_str_new2(s));
+        
+        int interval = event.recurrenceRule.interval;
+        rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL), INT2FIX(interval));
+        
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_RECURRENCE), rRecurrence);
+    }
+    
     return rEvent;
 }
 
@@ -213,6 +231,34 @@ void event_save(VALUE rEvent)
     if (!NIL_P(rNotes)) {
         Check_Type(rNotes, T_STRING);
         event.notes = [NSString stringWithUTF8String:RSTRING_PTR(rNotes)];
+    }
+    
+    VALUE rRecurrence = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_RECURRENCE));
+    if (!NIL_P(rRecurrence)) {
+        Check_Type(rRecurrence, T_HASH);
+        VALUE rFrequency = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_FREQUENCY));
+        Check_Type(rFrequency, T_STRING);
+        const char *frequency = RSTRING_PTR(rFrequency);
+        
+        EKRecurrenceFrequency freq;
+        if (strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_DAILY) == 0)
+            freq = EKRecurrenceFrequencyDaily;
+        else if (strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY) == 0)
+            freq = EKRecurrenceFrequencyWeekly;
+        else if (strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY) == 0)
+            freq = EKRecurrenceFrequencyMonthly;
+        else if (strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_YEARLY) == 0)
+            freq = EKRecurrenceFrequencyYearly;
+        else
+            rb_raise(rb_eArgError, "Wrong recurrence frequency: %s", frequency);
+        
+        VALUE rInterval = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL));
+        rInterval = rb_funcall(rInterval, rb_intern("to_i"), 0);
+        int interval = NUM2INT(rInterval);
+        
+        EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:freq interval:interval end:nil];
+        event.recurrenceRule = rule;
+        [rule release];
     }
     
     NSError *err;

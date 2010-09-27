@@ -20,6 +20,12 @@ extern "C" {
 #define RUBY_EV_LOCATION "location"
 #define RUBY_EV_NOTES "notes"
 #define RUBY_EV_RECURRENCE "recurrence"
+#define RUBY_EV_RECURRENCE_FREQUENCY "frequency"
+#define RUBY_EV_RECURRENCE_FREQUENCY_DAILY "daily"
+#define RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY "weekly"
+#define RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY "monthly"
+#define RUBY_EV_RECURRENCE_FREQUENCY_YEARLY "yearly"
+#define RUBY_EV_RECURRENCE_INTERVAL "interval"
 
 #ifdef __cplusplus
 }
