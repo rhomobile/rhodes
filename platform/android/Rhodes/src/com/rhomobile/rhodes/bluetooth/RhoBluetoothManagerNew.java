@@ -91,10 +91,12 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		//if (pm.checkPermission(android.Manifest.permission.BLUETOOTH, RhodesService.getInstance().getMainActivity().getPackageName()) != PackageManager.PERMISSION_GRANTED) {
 		try {
 			BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (!bluetoothAdapter.isEnabled()) {
-				if(D) Log.d(TAG, "sharedInstance - Bluetooth is not enabled !");
-				mBluetoothIsEnabled = false;
-            }
+			if (bluetoothAdapter != null) {
+				if (!bluetoothAdapter.isEnabled()) {
+					if(D) Log.d(TAG, "sharedInstance - Bluetooth is not enabled !");
+					mBluetoothIsEnabled = false;
+				}
+			}
 			if(D) Log.d(TAG, "sharedInstance - Bluetooth permission is active !");
 		}
 		catch (SecurityException e) {
