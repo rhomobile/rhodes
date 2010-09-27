@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import com.rho.net.NetResponse;
-import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.net.NetRequest.MultipartItem;
 import com.rho.file.SimpleFile;
@@ -275,6 +275,75 @@ public class RhoConf {
 		}
    }
    
+   private static long readToBuffer(java.io.InputStream is, byte[] buf, StringBuffer res, long limit)throws Exception
+   {
+	   long nTotal = 0;
+	   while(nTotal < limit)
+	   {
+			long nRead = is.read(buf);
+			if ( nRead < 0 )
+				break;
+			if ( nTotal + nRead > limit )
+				nRead = limit - nTotal; 
+					
+			nTotal += nRead; 
+			res.append(new String(buf,0,(int)nRead));
+	   }
+	   
+	   return nTotal;
+   }
+   
+   static RubyString getLogText_ruby(long limit)throws Exception
+	{
+		StringBuffer res = new StringBuffer(); 
+    	SimpleFile oFile = null;
+    	RhoLogConf logConf = RhoLogger.getLogConf();
+	    boolean bOldSaveToFile = logConf.isLogToFile();
+	    logConf.setLogToFile(false);
+	    java.io.InputStream is = null;
+    	try{
+	        oFile = RhoClassFactory.createFile();
+	        oFile.open( logConf.getLogFilePath(), true, false);
+	        
+	        if ( oFile.isOpened() )
+	        {
+	            long nFileSize = oFile.length();
+	            long nPos = logConf.getLogTextPos();
+	            long nMaxSize = nFileSize > nPos ? nFileSize : nPos; 
+	            if ( limit <= 0 || limit > nMaxSize)
+	                limit = nMaxSize;
+
+	            res = new StringBuffer((int)limit);
+	            is = oFile.getInputStream();
+	            byte[] buf = new byte[8096];
+	            if ( limit <= nPos )
+	            {
+	                is.skip(nPos-limit);
+	                readToBuffer(is, buf, res, limit);
+	            }else
+	            {
+	            	is.skip(nFileSize-(limit-nPos));
+	                long nRead = readToBuffer(is, buf, res, limit);
+	                
+	                oFile.close();
+	                oFile.open( logConf.getLogFilePath(), true, false);
+	                is = oFile.getInputStream();
+	                readToBuffer(is, buf, res, limit-nRead);
+	            }
+	            
+	        }
+	        
+    	}finally
+    	{
+    		if ( oFile != null )
+    			try{ oFile.close(); }catch(IOException exc2){}
+    		
+    		logConf.setLogToFile(bOldSaveToFile);
+    	}
+		
+		return ObjectFactory.createString(res);
+	}
+   
    public static boolean sendLog()
    {
 		com.rho.net.NetRequest nq = RhoClassFactory.createNetRequest();
@@ -407,6 +476,30 @@ public class RhoConf {
 				}catch(Exception e)
 				{
 					LOG.ERROR("clean_log failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			    
+			}
+		});
+
+		klass.getSingletonClass().defineMethod("read_log",	new RubyNoOrOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) {
+				try{
+					return getLogText_ruby(0);
+				}catch(Exception e)
+				{
+					LOG.ERROR("read_log failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			    
+			}
+			
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
+				try{
+					return getLogText_ruby(arg.toInt());
+				}catch(Exception e)
+				{
+					LOG.ERROR("read_log failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			    

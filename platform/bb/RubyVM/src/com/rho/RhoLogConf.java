@@ -126,6 +126,9 @@ public class RhoLogConf {
 	public String getLogText(){
 		String res = "";
     	SimpleFile oFile = null;
+	    boolean bOldSaveToFile = isLogToFile();
+	    setLogToFile(false);
+    	
     	try{
 	        oFile = RhoClassFactory.createFile();
 	        oFile.open( getLogFilePath(), true, false);
@@ -138,9 +141,12 @@ public class RhoLogConf {
     	}catch(Exception exc){
     		if ( oFile != null )
     			try{ oFile.close(); }catch(IOException exc2){}
+    	}finally
+    	{
+    		setLogToFile(bOldSaveToFile);
     	}
 		
 		return res;
 	}
-    
+
 }
