@@ -1275,8 +1275,15 @@ namespace "run" do
 
     def  run_emulator
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
-      puts `"#{$adb}" kill-server`
-      puts `"#{$adb}" start-server`
+
+      #puts `"#{$adb}" kill-server`
+      #puts `"#{$adb}" start-server`
+
+      Jake.run($adb, ['kill-server'])	
+      #Jake.run($adb, ['start-server'])	
+      Thread.new { system("adb start-server") }
+      puts 'Sleep fo 2 sec. for waiting "adb start-server"'
+      sleep 2
 
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
       system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
