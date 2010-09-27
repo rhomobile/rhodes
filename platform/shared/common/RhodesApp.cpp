@@ -456,29 +456,42 @@ const char* CRhodesApp::getFreeListeningPort()
     
     if (noerrors)
     {
+        int listenPort = rho_conf_getInt("local_server_port");
+        if (listenPort < 0)
+            listenPort = 0;
+        if (listenPort > 65535)
+            listenPort = 0;
         memset((void *) &serv_addr, 0, sizeof(serv_addr));
 #if defined(OS_MACOSX)
         serv_addr.sin_len = sizeof(serv_addr);
 #endif
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        serv_addr.sin_port = htons(8080);
+        serv_addr.sin_port = htons((short)listenPort);
         
-        LOG(INFO) + "Trying to bind on 8080 port...";
+        LOG(INFO) + "Trying to bind of " + listenPort + " port...";
 
         if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
         {
-            // Fill serv_addr again but with dynamically selected port
+            if (listenPort != 0)
+            {
+                // Fill serv_addr again but with dynamically selected port
 #if defined(OS_MACOSX)
-            serv_addr.sin_len = sizeof(serv_addr);
+                serv_addr.sin_len = sizeof(serv_addr);
 #endif
-            serv_addr.sin_family = AF_INET;
-            serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-            serv_addr.sin_port = htons(0);
+                serv_addr.sin_family = AF_INET;
+                serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+                serv_addr.sin_port = htons(0);
+
+                LOG(INFO) + "Trying to bind on dynamic port...";
             
-            LOG(INFO) + "Trying to bind on dynamic port...";
-            
-            if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
+                if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
+                {
+                    LOG(WARNING) + "Unable to bind";
+                    noerrors = 0;
+                }
+            }
+            else
             {
                 LOG(WARNING) + "Unable to bind";
                 noerrors = 0;
