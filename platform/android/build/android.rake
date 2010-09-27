@@ -1281,7 +1281,8 @@ namespace "run" do
 
       Jake.run($adb, ['kill-server'])	
       #Jake.run($adb, ['start-server'])	
-      Thread.new { system("adb start-server") }
+      adb_start_server = $adb + ' start-server'
+      Thread.new { system(adb_start_server) }
       puts 'Sleep fo 2 sec. for waiting "adb start-server"'
       sleep 2
 
