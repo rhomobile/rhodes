@@ -668,6 +668,10 @@ module Rho
       def send_log
         RhoConf.send_log
       end
+
+      def read_log(limit=0)
+        RhoConf.read_log(limit)
+      end
       
       def sources
         @@sources

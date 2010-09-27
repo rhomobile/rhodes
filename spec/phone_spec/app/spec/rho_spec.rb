@@ -69,6 +69,18 @@ describe "RhoConfig" do
     Rho::RhoConfig.reload
     Rho::RhoConfig.start_path.should == oldpath
   end  
+  
+  it "should read log" do
+    log_text = Rho::RhoConfig.read_log
+    log_text.length.should > 0
+  
+    log_text = Rho::RhoConfig.read_log(20000)
+    log_text.length.should <= 20000
+    
+    log_text = Rho::RhoConfig.read_log(1000)
+    log_text.length.should == 1000
+  end  
+  
 end
 
 describe "RhoError" do

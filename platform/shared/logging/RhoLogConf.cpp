@@ -32,16 +32,28 @@ LogSettings::~LogSettings(){
     delete m_pOutputSink;
 }
 
-void LogSettings::getLogTextW(StringW& strTextW){
+void LogSettings::getLogTextW(StringW& strTextW)
+{
+    boolean bOldSaveToFile = isLogToFile();
+    setLogToFile(false);
+
     common::CRhoFile oFile;
     if ( oFile.open( getLogFilePath().c_str(), common::CRhoFile::OpenReadOnly) )
         oFile.readStringW(strTextW);
+
+    setLogToFile(bOldSaveToFile);
 }
 
-void LogSettings::getLogText(String& strText){
+void LogSettings::getLogText(String& strText)
+{
+    boolean bOldSaveToFile = isLogToFile();
+    setLogToFile(false);
+
     common::CRhoFile oFile;
     if ( oFile.open( getLogFilePath().c_str(), common::CRhoFile::OpenReadOnly) )
         oFile.readString(strText);
+
+    setLogToFile(bOldSaveToFile);
 }
 
 int LogSettings::getLogTextPos()
@@ -241,6 +253,44 @@ VALUE rho_conf_get_property_by_name(char* name)
 	char* szValue = rho_conf_getString(name);
 
     return rho_ruby_create_string(szValue);
+}
+
+VALUE rho_conf_read_log(int limit)
+{
+    VALUE res = rho_ruby_create_string("");
+    bool bOldSaveToFile = LOGCONF().isLogToFile();
+    LOGCONF().setLogToFile(false);
+
+    rho::common::CRhoFile oFile;
+    if ( oFile.open( LOGCONF().getLogFilePath().c_str(), rho::common::CRhoFile::OpenReadOnly) )
+    {
+        int nFileSize = oFile.size();
+        int nPos = LOGCONF().getLogTextPos();
+        int nMaxSize = nFileSize > nPos ? nFileSize : nPos;
+        if ( limit <= 0 || limit > nMaxSize)
+            limit = nMaxSize;
+
+        res = rho_ruby_create_string_withlen(limit);
+        char* szStr = getStringFromValue(res);
+
+        if ( limit <= nPos )
+        {
+            oFile.setPosTo(nPos-limit);
+            oFile.readData(szStr,0,limit);
+        }else
+        {
+            oFile.setPosTo(nFileSize-(limit-nPos));
+            int nRead = oFile.readData(szStr,0,limit);
+
+            oFile.setPosTo(0);
+            oFile.readData(szStr,nRead,limit-nRead);
+        }
+
+    }
+
+    LOGCONF().setLogToFile(bOldSaveToFile);
+
+    return res;
 }
 #endif //RHO_NO_RUBY
 
