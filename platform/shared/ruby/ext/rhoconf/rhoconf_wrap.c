@@ -1829,6 +1829,9 @@ static VALUE mRhoConf;
 	extern void rho_conf_clean_log();
 	#define clean_log rho_conf_clean_log
 
+	extern VALUE rho_conf_read_log(int limit);
+	#define read_log rho_conf_read_log
+
 	extern int rho_conf_is_property_exists(char* name);
 	#define is_property_exists rho_conf_is_property_exists
 	
@@ -1905,6 +1908,58 @@ SWIGINTERNINLINE VALUE
 SWIG_From_int  (int value)
 {    
   return SWIG_From_long  (value);
+}
+
+
+SWIGINTERN VALUE
+SWIG_ruby_failed(void)
+{
+  return Qnil;
+} 
+
+
+/*@SWIG:D:\Install\swigwin\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
+{
+  VALUE obj = args[0];
+  VALUE type = TYPE(obj);
+  long *res = (long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
+  return obj;
+}
+/*@SWIG@*/
+
+SWIGINTERN int
+SWIG_AsVal_long (VALUE obj, long* val)
+{
+  VALUE type = TYPE(obj);
+  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
+    long v;
+    VALUE a[2];
+    a[0] = obj;
+    a[1] = (VALUE)(&v);
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+      if (val) *val = v;
+      return SWIG_OK;
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (VALUE obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
 }
 
 SWIGINTERN VALUE
@@ -2004,6 +2059,35 @@ _wrap_clean_log(int argc, VALUE *argv, VALUE self) {
   }
   clean_log();
   return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_read_log(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  {
+    arg1 = 0;
+  }
+  if ((argc < 0) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  if (argc > 0) {
+    ecode1 = SWIG_AsVal_int(argv[0], &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","read_log", 1, argv[0] ));
+    } 
+    arg1 = (int)(val1);
+  }
+  result = (VALUE)read_log(arg1);
+  vresult = result;
+  return vresult;
 fail:
   return Qnil;
 }
@@ -2314,6 +2398,7 @@ SWIGEXPORT void Init_RhoConf(void) {
   rb_define_module_function(mRhoConf, "show_log", _wrap_show_log, -1);
   rb_define_module_function(mRhoConf, "send_log", _wrap_send_log, -1);
   rb_define_module_function(mRhoConf, "clean_log", _wrap_clean_log, -1);
+  rb_define_module_function(mRhoConf, "read_log", _wrap_read_log, -1);
   rb_define_module_function(mRhoConf, "is_property_exists", _wrap_is_property_exists, -1);
 }
 

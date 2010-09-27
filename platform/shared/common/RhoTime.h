@@ -54,7 +54,7 @@ public:
                         locTime->tm_hour, locTime->tm_min, locTime->tm_sec, (int)tv.tv_usec/1000 );
 #else
             SYSTEMTIME st; 
-            GetSystemTime( &st ); 
+            GetLocalTime( &st ); 
 
             if (inFileFormat)
                 nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d%03d", st.wMonth, st.wDay, st.wYear,
