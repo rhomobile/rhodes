@@ -2033,11 +2033,13 @@ SWIGEXPORT void Init_Event(void) {
   rb_define_const(mEvent, "TITLE", SWIG_FromCharPtr("title"));
   rb_define_const(mEvent, "CANCELED", SWIG_FromCharPtr("canceled"));
   rb_define_const(mEvent, "ORGANIZER", SWIG_FromCharPtr("organizer"));
+  rb_define_const(mEvent, "ATTENDEES", SWIG_FromCharPtr("attendees"));
   rb_define_const(mEvent, "START_DATE", SWIG_FromCharPtr("start_date"));
   rb_define_const(mEvent, "END_DATE", SWIG_FromCharPtr("end_date"));
   rb_define_const(mEvent, "LAST_MODIFIED", SWIG_FromCharPtr("last_modified"));
   rb_define_const(mEvent, "LOCATION", SWIG_FromCharPtr("location"));
   rb_define_const(mEvent, "NOTES", SWIG_FromCharPtr("notes"));
+  rb_define_const(mEvent, "RECURRENCE", SWIG_FromCharPtr("recurrence"));
   rb_define_module_function(mEvent, "fetch", _wrap_fetch, -1);
   rb_define_module_function(mEvent, "save", _wrap_save, -1);
   rb_define_module_function(mEvent, "delete", _wrap_delete, -1);

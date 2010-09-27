@@ -123,6 +123,13 @@ static VALUE event2ruby(EKEvent *event)
         const char *notes = [event.notes UTF8String];
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(notes));
     }
+    VALUE rAttendees = rb_ary_new();
+    for (int i = 0, lim = [event.attendees count]; i < lim; ++i) {
+        EKParticipant *participant = [event.attendees objectAtIndex:i];
+        const char *name = [participant.name UTF8String];
+        rb_ary_push(rAttendees, rb_str_new2(name));
+    }
+    rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ATTENDEES), rAttendees);
     
     return rEvent;
 }
@@ -202,8 +209,14 @@ void event_save(VALUE rEvent)
         event.location = [NSString stringWithUTF8String:RSTRING_PTR(rLocation)];
     }
     
+    VALUE rNotes = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_NOTES));
+    if (!NIL_P(rNotes)) {
+        Check_Type(rNotes, T_STRING);
+        event.notes = [NSString stringWithUTF8String:RSTRING_PTR(rNotes)];
+    }
+    
     NSError *err;
-    BOOL saved = [eventStore saveEvent:event span:EKSpanThisEvent error:&err];
+    BOOL saved = [eventStore saveEvent:event span:EKSpanFutureEvents error:&err];
     
     if (!saved)
         rb_raise(rb_eRuntimeError, "Event save failed: %s", [[err localizedDescription] UTF8String]);
@@ -214,7 +227,7 @@ void event_delete(const char *eid)
     EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
     NSError *err;
-    BOOL removed = [eventStore removeEvent:event span:EKSpanThisEvent error:&err];
+    BOOL removed = [eventStore removeEvent:event span:EKSpanFutureEvents error:&err];
     
     if (!removed)
         rb_raise(rb_eRuntimeError, "Event was not removed: %s", [[err localizedDescription] UTF8String]);
