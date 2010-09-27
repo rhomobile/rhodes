@@ -18,6 +18,9 @@ extern void event_delete(const char *id);
 %rename(ORGANIZER) RUBY_EV_ORGANIZER;
 %rename(START_DATE) RUBY_EV_START_DATE;
 %rename(END_DATE) RUBY_EV_END_DATE;
+%rename(LAST_MODIFIED) RUBY_EV_LAST_MODIFIED;
+%rename(LOCATION) RUBY_EV_LOCATION;
+%rename(NOTES) RUBY_EV_NOTES;
 %include "event.h"
 
 %typemap(check) VALUE {

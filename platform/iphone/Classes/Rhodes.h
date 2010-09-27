@@ -9,6 +9,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#ifdef __IPHONE_4_0
+#import <EventKit/EventKit.h>
+#endif
 #import "AppManager.h"
 #import "RhoMainView.h"
 
@@ -34,6 +37,9 @@
     DateTimePickerDelegate* dateTimePickerDelegate;
     PickImageDelegate* pickImageDelegate;
 	SignatureDelegate* signatureDelegate;
+#ifdef __IPHONE_4_0
+    EKEventStore *eventStore;
+#endif
 	
     id<RhoMainView,NSObject> mainView;
     BOOL rotationLocked;
@@ -43,6 +49,9 @@
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) NSMutableDictionary *cookies;
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
+#ifdef __IPHONE_4_0
+@property (nonatomic, readonly) EKEventStore *eventStore;
+#endif
 
 + (Rhodes*)sharedInstance;
 
