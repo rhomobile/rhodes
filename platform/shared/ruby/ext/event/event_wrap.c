@@ -1552,6 +1552,8 @@ extern VALUE event_fetch_by_id(const char *id);
 #define fetch_by_id event_fetch_by_id
 extern void event_save(VALUE event);
 #define save event_save
+extern void event_delete(const char *id);
+#define delete event_delete
 
 
 SWIGINTERN swig_type_info*
@@ -1737,6 +1739,30 @@ _wrap_save(int argc, VALUE *argv, VALUE self) {
   save(arg1);
   return Qnil;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_delete(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  delete((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -2011,5 +2037,6 @@ SWIGEXPORT void Init_Event(void) {
   rb_define_const(mEvent, "END_DATE", SWIG_FromCharPtr("end_date"));
   rb_define_module_function(mEvent, "fetch", _wrap_fetch, -1);
   rb_define_module_function(mEvent, "save", _wrap_save, -1);
+  rb_define_module_function(mEvent, "delete", _wrap_delete, -1);
 }
 
