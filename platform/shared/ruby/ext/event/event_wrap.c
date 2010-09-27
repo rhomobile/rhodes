@@ -2040,6 +2040,12 @@ SWIGEXPORT void Init_Event(void) {
   rb_define_const(mEvent, "LOCATION", SWIG_FromCharPtr("location"));
   rb_define_const(mEvent, "NOTES", SWIG_FromCharPtr("notes"));
   rb_define_const(mEvent, "RECURRENCE", SWIG_FromCharPtr("recurrence"));
+  rb_define_const(mEvent, "RECURRENCE_FREQUENCY", SWIG_FromCharPtr("frequency"));
+  rb_define_const(mEvent, "RECURRENCE_FREQUENCY_DAILY", SWIG_FromCharPtr("daily"));
+  rb_define_const(mEvent, "RECURRENCE_FREQUENCY_WEEKLY", SWIG_FromCharPtr("weekly"));
+  rb_define_const(mEvent, "RECURRENCE_FREQUENCY_MONTHLY", SWIG_FromCharPtr("monthly"));
+  rb_define_const(mEvent, "RECURRENCE_FREQUENCY_YEARLY", SWIG_FromCharPtr("yearly"));
+  rb_define_const(mEvent, "RECURRENCE_INTERVAL", SWIG_FromCharPtr("interval"));
   rb_define_module_function(mEvent, "fetch", _wrap_fetch, -1);
   rb_define_module_function(mEvent, "save", _wrap_save, -1);
   rb_define_module_function(mEvent, "delete", _wrap_delete, -1);
