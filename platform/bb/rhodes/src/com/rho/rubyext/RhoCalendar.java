@@ -2,10 +2,7 @@ package com.rho.rubyext;
 
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
-import com.xruby.runtime.builtin.RubyArray;
-import com.xruby.runtime.builtin.RubyString;
-import com.xruby.runtime.builtin.RubyHash;
-import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 
 import javax.microedition.pim.*;
@@ -37,6 +34,11 @@ public class RhoCalendar extends RubyBasic {
 	static final RubyString RUBY_EV_RECURRENCE_FREQUENCY_YEARLY  = ObjectFactory.createString( "yearly");
 	static final RubyString RUBY_EV_RECURRENCE_INTERVAL  = ObjectFactory.createString( "interval");
 	
+	static final RubySymbol RUBY_FIND_type = ObjectFactory.createSymbol("find_type");
+	static final RubySymbol RUBY_FIND_include_repeating = ObjectFactory.createSymbol("include_repeating");
+	static final RubySymbol RUBY_FIND_start_date = ObjectFactory.createSymbol("start_date");
+	static final RubySymbol RUBY_FIND_end_date = ObjectFactory.createSymbol("end_date");
+	
 	public static class EVRecord extends RubyBasic {
 
 		Event m_event;
@@ -52,35 +54,31 @@ public class RhoCalendar extends RubyBasic {
 		
 	}
 	
-	public RhoCalendar(RubyClass arg0) 
+	public RhoCalendar(RubyClass arg0) throws Exception
 	{
 		super(arg0);
 		
-		try {
-			m_eventList = (EventList) PIM.getInstance().openPIMList(
-					PIM.EVENT_LIST, PIM.READ_WRITE);
-		} catch (PIMException e) {
-			new RubyException(e.getMessage());
-		}
+		m_eventList = (EventList) PIM.getInstance().openPIMList(
+				PIM.EVENT_LIST, PIM.READ_WRITE);
 	}
+	
     //@RubyAllocMethod
-    public static RhoCalendar alloc(RubyValue receiver) {
+    public static RhoCalendar alloc(RubyValue receiver)throws Exception 
+    {
     	return new RhoCalendar(RubyRuntime.CalendarClass);
     }
 
-	public static RubyValue openCalendar() {
+	public static RubyValue openCalendar()throws Exception 
+	{
 		RhoCalendar pb = alloc(null);
 		return pb;
 	}
-	public static RubyValue closeCalendar(RubyValue arg0) {
-		try {
-			RhoCalendar pb = (RhoCalendar)arg0;
-			pb.m_eventList.close();
-			pb.m_eventList = null;
-		} catch (PIMException e) {
-			new RubyException(e.getMessage());
-		}
-		
+	
+	public static RubyValue closeCalendar(RubyValue arg0)throws Exception 
+	{
+		RhoCalendar pb = (RhoCalendar)arg0;
+		pb.m_eventList.close();
+		pb.m_eventList = null;
 		return RubyConstant.QNIL;
 	}
 
@@ -183,44 +181,68 @@ public class RhoCalendar extends RubyBasic {
 		return RubyConstant.QTRUE;
 	}
 	
-	public static RubyValue getallCalendarEvents(RubyValue arg0) {
-		RhoCalendar pb = (RhoCalendar)arg0;
+	public static RubyValue findCalendarEvents(RubyArray args) throws Exception
+	{
+		RhoCalendar pb = (RhoCalendar)args.get(0);
+		RubyHash params = (RubyHash) args.get(1);
 		RubyHash res = ObjectFactory.createHash();
+		RubyValue val = params.get(RUBY_FIND_type);
+		String strSearchType = val != null && val != RubyConstant.QNIL ? val.toStr() : "starting"; 
+		int nSearchType = EventList.STARTING;
+		if ( strSearchType.equalsIgnoreCase("occurring") )
+			nSearchType = EventList.OCCURRING;
+		else if (strSearchType.equalsIgnoreCase("ending"))
+			nSearchType = EventList.ENDING;
+
+		val = params.get(RUBY_FIND_include_repeating);
+		boolean bIncludeRepeating = val == RubyConstant.QFALSE ? false : true;
+		RubyTime start = (RubyTime)params.get(RUBY_FIND_start_date);
+		RubyTime end = (RubyTime)params.get(RUBY_FIND_end_date);
 		
-		try {
-			java.util.Enumeration events = pb.m_eventList.items();
-			while (events.hasMoreElements()) {
-				Event event = (Event) events.nextElement();
-				RubyHash record = pb.getEVRecord( event );
-				res.add(record.get(RUBY_EV_ID), record);
-			}
-			
-		} catch (PIMException e) {
-			new RubyException(e.getMessage());
+		java.util.Enumeration events = pb.m_eventList.items(
+				nSearchType, start.getTime(), end.getTime(), !bIncludeRepeating);
+		
+		while (events.hasMoreElements()) {
+			Event event = (Event) events.nextElement();
+			RubyHash record = pb.getEVRecord( event );
+			res.add(record.get(RUBY_EV_ID), record);
 		}
 		
 		return res;
 	}
 
-	private Event findEventByID(RubyValue arg0, RubyValue arg1 ){
+	public static RubyValue getallCalendarEvents(RubyValue arg0)throws Exception 
+	{
+		RhoCalendar pb = (RhoCalendar)arg0;
+		RubyHash res = ObjectFactory.createHash();
+		
+		java.util.Enumeration events = pb.m_eventList.items();
+		while (events.hasMoreElements()) {
+			Event event = (Event) events.nextElement();
+			RubyHash record = pb.getEVRecord( event );
+			res.add(record.get(RUBY_EV_ID), record);
+		}
+		
+		return res;
+	}
+	
+	private Event findEventByID(RubyValue arg0, RubyValue arg1 )throws Exception
+	{
 		Event event = null;
 		
-		try {
-			Event matching = m_eventList.createEvent();
-			String id = arg1.toString();
-			id = id.substring(1, id.length()-1);
-			matching.addString(Event.UID, Event.ATTR_NONE, id);
-			java.util.Enumeration events = m_eventList.items(matching);
-			if (events.hasMoreElements())
-				event = (Event) events.nextElement();
-		} catch (PIMException e) {
-			new RubyException(e.getMessage());
-		}
+		Event matching = m_eventList.createEvent();
+		String id = arg1.toString();
+		id = id.substring(1, id.length()-1);
+		matching.addString(Event.UID, Event.ATTR_NONE, id);
+		java.util.Enumeration events = m_eventList.items(matching);
+		if (events.hasMoreElements())
+			event = (Event) events.nextElement();
 			
 		return event;
 	}
 	
-	public static RubyValue getCalendarEvent(RubyValue arg0, RubyValue arg1) {
+	public static RubyValue getCalendarEvent(RubyValue arg0, RubyValue arg1)throws Exception 
+	{
 		RhoCalendar pb = (RhoCalendar)arg0;
 		RubyHash record = ObjectFactory.createHash();
 		
@@ -231,7 +253,8 @@ public class RhoCalendar extends RubyBasic {
 		return record;
 	}
 
-	public static RubyValue openCalendarEvent(RubyValue arg0, RubyValue arg1) {
+	public static RubyValue openCalendarEvent(RubyValue arg0, RubyValue arg1)throws Exception 
+	{
 		RhoCalendar pb = (RhoCalendar)arg0;
 		Event event = pb.findEventByID(arg0,arg1);
 		if ( event != null )
@@ -267,13 +290,10 @@ public class RhoCalendar extends RubyBasic {
 			event.addDate(field, Event.ATTR_NONE, nValue);
 	}
 	
-	public static RubyValue saveEvent(RubyValue arg0, RubyValue arg1) {
+	public static RubyValue saveEvent(RubyValue arg0, RubyValue arg1)throws Exception 
+	{
 		EVRecord record = (EVRecord)arg1;
-		try {
-			record.m_event.commit();
-		} catch (PIMException e) {
-			new RubyException(e.getMessage());
-		}
+		record.m_event.commit();
 		
 		return RubyConstant.QTRUE;
 	}
@@ -287,19 +307,17 @@ public class RhoCalendar extends RubyBasic {
 		return RubyConstant.QNIL;
 	}
 
-	public static RubyValue addEvent(RubyValue arg0, RubyValue arg1) {
+	public static RubyValue addEvent(RubyValue arg0, RubyValue arg1)throws Exception 
+	{
 		return saveEvent(arg0, arg1);
 	}
 	
-	public static RubyValue deleteEvent(RubyValue arg0, RubyValue arg1) {
+	public static RubyValue deleteEvent(RubyValue arg0, RubyValue arg1)throws Exception 
+	{
 		RhoCalendar pb = (RhoCalendar)arg0;
 		EVRecord record = (EVRecord)arg1;
 
-		try {
-			pb.m_eventList.removeEvent(record.m_event);
-		} catch (PIMException e) {
-			new RubyException(e.getMessage());
-		}
+		pb.m_eventList.removeEvent(record.m_event);
 			
 		return RubyConstant.QTRUE;
 	}
@@ -307,8 +325,16 @@ public class RhoCalendar extends RubyBasic {
 	public static void initMethods( RubyClass klass)
 	{
 		klass.defineAllocMethod(new RubyNoArgMethod(){
-			protected RubyValue run(RubyValue receiver, RubyBlock block )	{
-				return RhoCalendar.alloc(receiver);}
+			protected RubyValue run(RubyValue receiver, RubyBlock block )	
+			{
+				try {
+					return RhoCalendar.alloc(receiver);
+				} catch(Exception e) {
+					LOG.ERROR("alloc Calendar failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
+			}
 		});
 		
 		klass.getSingletonClass().defineMethod("openCalendar", new RubyNoArgMethod() {
@@ -346,6 +372,19 @@ public class RhoCalendar extends RubyBasic {
 					
 			}
 		});
+		klass.getSingletonClass().defineMethod("findCalendarEvents", new RubyVarArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) 
+			{
+				try {
+					return RhoCalendar.findCalendarEvents(args);
+				} catch(Exception e) {
+					LOG.ERROR("findCalendarEvents failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
+			}
+		});
+		
 		klass.getSingletonClass().defineMethod("openCalendarEvent", new RubyTwoArgMethod() 
 		{
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 

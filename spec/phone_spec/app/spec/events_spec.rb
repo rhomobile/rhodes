@@ -22,7 +22,7 @@ describe "Events" do
     event['notes'] = 'notes1'
     event['reminder'] = 60
     event['privacy'] = 'private'
-    start_date = Time.now
+    start_date = Time.now+600
     end_date = Time.now+3600
     event['start_date'] = start_date
     event['end_date'] = end_date
@@ -57,6 +57,17 @@ describe "Events" do
     #puts "id: #{@id}"
   end
 
+  it "should find by dates" do
+    start = Time.now
+    end_time = start + 3600
+
+    events = Rho::RhoEvent.find(:all, :start_date => start, :end_date => end_time, :find_type => 'starting', 
+        :include_repeating => true )
+        
+    events.should_not be_nil
+    events.size.should == 1 
+  end
+    
   it "should update" do
     #puts "id: #{@id}"
     
