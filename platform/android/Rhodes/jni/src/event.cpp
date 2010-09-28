@@ -8,6 +8,9 @@
 
 static jobject dateFromRuby(VALUE rDate)
 {
+    if (NIL_P(rDate))
+        return NULL;
+
     RAWLOG_INFO("dateFromRuby (1)");
     if (TYPE(rDate) == T_STRING)
     {
@@ -46,6 +49,11 @@ static jobject dateFromRuby(VALUE rDate)
 
 static VALUE dateToRuby(jobject jDate)
 {
+    if (!jDate)
+        return Qnil;
+
+    RAWLOG_INFO("dateToRuby (1)");
+
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_DATE);
     if (!cls) return Qnil;
@@ -62,6 +70,8 @@ static VALUE dateToRuby(jobject jDate)
     jmethodID midSeconds = getJNIClassMethod(env, cls, "getSeconds", "()I");
     if (!midSeconds) return Qnil;
 
+    RAWLOG_INFO("dateToRuby (2)");
+
     int year = env->CallIntMethod(jDate, midYear) + 1900;
     int month = env->CallIntMethod(jDate, midMonth) + 1;
     int day = env->CallIntMethod(jDate, midDay);
@@ -69,8 +79,11 @@ static VALUE dateToRuby(jobject jDate)
     int minute = env->CallIntMethod(jDate, midMinutes);
     int second = env->CallIntMethod(jDate, midSeconds);
 
+    RAWLOG_INFO("dateToRuby (3)");
     VALUE rDate = rb_funcall(rb_cTime, rb_intern("mktime"), 7, INT2FIX(year), INT2FIX(month), INT2FIX(day),
-            INT2FIX(hour), INT2FIX(minute), INT2FIX(second));
+            INT2FIX(hour), INT2FIX(minute), INT2FIX(second), INT2FIX(0));
+
+    RAWLOG_INFO("dateToRuby (4)");
     return rDate;
 }
 
@@ -112,6 +125,9 @@ static bool initEventStuff(JNIEnv *env)
 
 static jobject eventFromRuby(VALUE rEvent)
 {
+    if (NIL_P(rEvent))
+        return NULL;
+
     JNIEnv *env = jnienv();
     if (!initEventStuff(env))
         return NULL;
@@ -163,34 +179,48 @@ static jobject eventFromRuby(VALUE rEvent)
 
 static VALUE eventToRuby(jobject jEvent)
 {
-    JNIEnv *env = jnienv();
-    if (!initEventStuff(env))
+    if (!jEvent)
         return Qnil;
 
+    RAWLOG_INFO("eventToRuby (1)");
+    JNIEnv *env = jnienv();
+    if (!initEventStuff(env))
+    {
+        RAWLOG_INFO("eventToRuby (1.1)");
+        return Qnil;
+    }
+
+    RAWLOG_INFO("eventToRuby (2)");
     VALUE rEvent = rb_hash_new();
 
+    RAWLOG_INFO("eventToRuby (3)");
     jstring jId = (jstring)env->GetObjectField(jEvent, fidId);
     std::string s = rho_cast<std::string>(env, jId);
     env->DeleteLocalRef(jId);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ID), rb_str_new2(s.c_str()));
 
+    RAWLOG_INFO("eventToRuby (4)");
     jstring jTitle = (jstring)env->GetObjectField(jEvent, fidTitle);
     s = rho_cast<std::string>(env, jTitle);
     env->DeleteLocalRef(jTitle);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_TITLE), rb_str_new2(s.c_str()));
 
+    RAWLOG_INFO("eventToRuby (5)");
     jobject jStartDate = env->GetObjectField(jEvent, fidStartDate);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_START_DATE), dateToRuby(jStartDate));
     env->DeleteLocalRef(jStartDate);
 
+    RAWLOG_INFO("eventToRuby (6)");
     jobject jEndDate = env->GetObjectField(jEvent, fidEndDate);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_END_DATE), dateToRuby(jEndDate));
     env->DeleteLocalRef(jEndDate);
 
+    RAWLOG_INFO("eventToRuby (7)");
     jobject jLastModified = env->GetObjectField(jEvent, fidLastModified);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_LAST_MODIFIED), dateToRuby(jLastModified));
     env->DeleteLocalRef(jLastModified);
 
+    RAWLOG_INFO("eventToRuby (8)");
     jstring jLocation = (jstring)env->GetObjectField(jEvent, fidLocation);
     if (jLocation)
     {
@@ -199,6 +229,7 @@ static VALUE eventToRuby(jobject jEvent)
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_LOCATION), rb_str_new2(s.c_str()));
     }
 
+    RAWLOG_INFO("eventToRuby (9)");
     jstring jNotes = (jstring)env->GetObjectField(jEvent, fidNotes);
     if (jNotes)
     {
@@ -207,6 +238,7 @@ static VALUE eventToRuby(jobject jEvent)
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(s.c_str()));
     }
 
+    RAWLOG_INFO("eventToRuby: return");
     return rEvent;
 }
 

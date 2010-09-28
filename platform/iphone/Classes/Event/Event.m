@@ -33,7 +33,7 @@ static VALUE dateToRuby(NSDate *date)
     
     int year = [dateComponents year];
     int month = [dateComponents month];
-    int day = [dateComponents day];
+    int day = [dateComponents day] - 1;
     int hour = [timeComponents hour];
     int minute = [timeComponents minute];
     int second = [timeComponents second];
