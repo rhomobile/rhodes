@@ -3,17 +3,25 @@ require 'bsearch'
 module Rho
 	class RhoEvent
 		class << self
-			def find(param)
+			def find(*args)
+                raise ::Rhom::RecordNotFound if args[0].nil? or args.length == 0			
+                
 				pb = Calendar::openCalendar
 				if pb.nil?
 					puts "Can't open calendar"
 					return nil
-				elsif param == :all or param == 'all'
-					records = Calendar::getallCalendarEvents(pb)
+				elsif args.first == :all
+				
+                    if args.length > 1
+                        records = Calendar::findCalendarEvents(pb, args[1])
+                    else
+    					records = Calendar::getallCalendarEvents(pb)
+    				end
+    					
 					Calendar::closeCalendar(pb)
 					return records
 				else
-					record = Calendar::getCalendarEvent(pb,param)
+					record = Calendar::getCalendarEvent(pb,args.first)
 					Calendar::closeCalendar(pb)
 					return record
 				end
