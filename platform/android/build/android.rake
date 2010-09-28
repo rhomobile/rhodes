@@ -35,7 +35,8 @@ ANDROID_PERMISSIONS = {
   'pim' => ['READ_CONTACTS', 'WRITE_CONTACTS', 'GET_ACCOUNTS'],
   'record_audio' => 'RECORD_AUDIO',
   'vibrate' => 'VIBRATE',
-  'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH']
+  'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
+  'calendar' => 'READ_CALENDAR'
 }
 
 def set_app_name_android(newname)
