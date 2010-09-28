@@ -141,6 +141,47 @@ public class RhoCalendar extends RubyBasic {
 		
 		return record;
 	}
+
+	public static RubyValue setEventValue(RubyArray ar) 
+	{
+		if ( ar.get(0) == RubyConstant.QNIL || ar.get(0) == null )
+			return RubyConstant.QFALSE;
+		
+		EVRecord record = (EVRecord)ar.get(0);
+		RubyString strKey = ar.get(1).toRubyString();
+		RubyValue val = ar.get(2);
+		Event event = record.m_event;
+		
+		if ( strKey.opEql(RUBY_EV_ID) == RubyConstant.QTRUE )
+			return RubyConstant.QFALSE;
+
+		if ( strKey.opEql(RUBY_EV_TITLE) == RubyConstant.QTRUE )
+			setStringField(event, Event.SUMMARY, val );
+		else if ( strKey.opEql(RUBY_EV_NOTES) == RubyConstant.QTRUE )
+			setStringField(event, Event.NOTE, val );
+		else if ( strKey.opEql(RUBY_EV_REMINDER) == RubyConstant.QTRUE )
+			setIntField(event, Event.ALARM, val );
+		else if ( strKey.opEql(RUBY_EV_PRIVACY) == RubyConstant.QTRUE )
+		{
+			String strValue = val.toStr();
+			int nClass = Event.CLASS_PUBLIC;
+			if ( strValue.equalsIgnoreCase("confidential"))
+				nClass = Event.CLASS_CONFIDENTIAL;
+			else if ( strValue.equalsIgnoreCase("private"))
+				nClass = Event.CLASS_PRIVATE;
+			
+			setIntField(event, Event.CLASS, ObjectFactory.createInteger(nClass) );
+		}else if ( strKey.opEql(RUBY_EV_END_DATE) == RubyConstant.QTRUE )
+			setDateField(event, Event.END, val );
+		else if ( strKey.opEql(RUBY_EV_START_DATE) == RubyConstant.QTRUE )
+			setDateField(event, Event.START, val );
+		else if ( strKey.opEql(RUBY_EV_LAST_MODIFIED) == RubyConstant.QTRUE )
+			setDateField(event, Event.REVISION, val );
+		else if ( strKey.opEql(RUBY_EV_LOCATION) == RubyConstant.QTRUE )
+			setStringField(event, Event.LOCATION, val );
+		
+		return RubyConstant.QTRUE;
+	}
 	
 	public static RubyValue getallCalendarEvents(RubyValue arg0) {
 		RhoCalendar pb = (RhoCalendar)arg0;
@@ -199,35 +240,33 @@ public class RhoCalendar extends RubyBasic {
 		return RubyConstant.QNIL;
 	}
 	
-	public static RubyValue setEventValue(RubyArray ar) 
+	private static void setStringField(Event event, int field, RubyValue val)
 	{
-		if ( ar.get(0) == RubyConstant.QNIL || ar.get(0) == null )
-			return RubyConstant.QFALSE;
-		
-		EVRecord record = (EVRecord)ar.get(0);
-		RubyString strKey = ar.get(1).toRubyString();
-		String strValue = ar.get(2).toStr();
-		Event event = record.m_event;
-		int field = 0, index = 0, attributes = Event.ATTR_NONE;
-		if ( strKey.opEql(RUBY_EV_ID) == RubyConstant.QTRUE )
-			return RubyConstant.QFALSE;
-
-		if ( strKey.opEql(RUBY_EV_TITLE) == RubyConstant.QTRUE )
-			field = Event.SUMMARY;
-		
-		if ( index == -1 )
-			event.addString(field, attributes, strValue);
-		else if ( event.countValues(field) > 0 ){
-			//event.removeValue(field, index);
-			//event.addString(field, attributes, strValue);
-			event.setString(field, index, attributes, strValue);
-		}
+		String strValue = val.toStr();
+		if ( event.countValues(field) > 0 )
+			event.setString(field, 0, Event.ATTR_NONE, strValue);
 		else
-			event.addString(field, attributes, strValue);
-		
-		return RubyConstant.QTRUE;
+			event.addString(field, Event.ATTR_NONE, strValue);
 	}
 
+	private static void setIntField(Event event, int field, RubyValue val)
+	{
+		int nValue = val.toInt();
+		if ( event.countValues(field) > 0 )
+			event.setInt(field, 0, Event.ATTR_NONE, nValue);
+		else
+			event.addInt(field, Event.ATTR_NONE, nValue);
+	}
+
+	private static void setDateField(Event event, int field, RubyValue val)
+	{
+		long nValue = val.toRubyTime().getTime();
+		if ( event.countValues(field) > 0 )
+			event.setDate(field, 0, Event.ATTR_NONE, nValue);
+		else
+			event.addDate(field, Event.ATTR_NONE, nValue);
+	}
+	
 	public static RubyValue saveEvent(RubyValue arg0, RubyValue arg1) {
 		EVRecord record = (EVRecord)arg1;
 		try {
