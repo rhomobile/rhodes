@@ -27,6 +27,8 @@ public class RhoCalendar extends RubyBasic {
 	static final RubyString RUBY_EV_LAST_MODIFIED = ObjectFactory.createString("last_modified");
 	static final RubyString RUBY_EV_LOCATION  = ObjectFactory.createString( "location");
 	static final RubyString RUBY_EV_NOTES  = ObjectFactory.createString( "notes");
+	static final RubyString RUBY_EV_REMINDER  = ObjectFactory.createString( "reminder");
+	static final RubyString RUBY_EV_PRIVACY  = ObjectFactory.createString( "privacy");	
 	static final RubyString RUBY_EV_RECURRENCE  = ObjectFactory.createString( "recurrence");
 	static final RubyString RUBY_EV_RECURRENCE_FREQUENCY  = ObjectFactory.createString( "frequency");
 	static final RubyString RUBY_EV_RECURRENCE_FREQUENCY_DAILY  = ObjectFactory.createString( "daily");
@@ -85,18 +87,56 @@ public class RhoCalendar extends RubyBasic {
 	RubyHash getEVRecord( Event event )
 	{
 		RubyHash record = ObjectFactory.createHash();
-		
-		if ( m_eventList.isSupportedField(Event.UID) &&
-			 event.countValues(Event.UID) > 0 ){
-			String strValue = "{" + event.getString(Event.UID, 0) + "}";
-			record.add(RUBY_EV_ID, ObjectFactory.createString(strValue));			
-		}
-		
-		if ( m_eventList.isSupportedField(Event.SUMMARY) && event.countValues(Event.SUMMARY) > 0 )
+		int[] arFields = event.getFields();
+		for ( int i = 0; i < arFields.length; i++)
 		{
-			String strValue = event.getString(Event.SUMMARY, 0);
-			if ( strValue.length() > 0 )
-				record.add(RUBY_EV_TITLE, ObjectFactory.createString(strValue));			
+			switch(arFields[i])
+			{
+			case Event.UID:
+				record.add(RUBY_EV_ID, ObjectFactory.createString(
+						"{" + event.getString(Event.UID, 0) + "}" ));
+				break;
+			
+			case Event.SUMMARY:
+				record.add(RUBY_EV_TITLE, ObjectFactory.createString(event.getString(Event.SUMMARY, 0)));
+				break;
+			
+			case Event.NOTE:
+				record.add(RUBY_EV_NOTES, ObjectFactory.createString(event.getString(Event.NOTE, 0)));
+				break;
+				
+			case Event.ALARM:
+				record.add(RUBY_EV_REMINDER, ObjectFactory.createInteger(event.getInt(Event.ALARM, 0)));
+				break;
+
+			case Event.CLASS:
+			{
+				int nClass = event.getInt(Event.CLASS, 0);
+				String strValue = "public";
+				if ( nClass == Event.CLASS_CONFIDENTIAL )
+					strValue = "confidential";
+				else if ( nClass == Event.CLASS_PRIVATE )
+					strValue = "private";
+				
+				record.add(RUBY_EV_PRIVACY, ObjectFactory.createString(strValue));
+				break;
+			}
+		
+			case Event.END:
+				record.add(RUBY_EV_END_DATE, ObjectFactory.createTime(event.getDate(Event.END, 0)));	
+				break;
+			case Event.START:
+				record.add(RUBY_EV_START_DATE, ObjectFactory.createTime(event.getDate(Event.START, 0)));	
+				break;
+			case Event.REVISION:
+				record.add(RUBY_EV_LAST_MODIFIED, ObjectFactory.createTime(event.getDate(Event.REVISION, 0)));
+				break;
+				
+			case Event.LOCATION:
+				record.add(RUBY_EV_LOCATION, ObjectFactory.createString(event.getString(Event.LOCATION, 0)));
+				break;
+
+			}
 		}
 		
 		return record;
