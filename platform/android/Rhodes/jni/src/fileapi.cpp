@@ -7,9 +7,6 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
 
-#undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "fileapi"
-
 #ifdef RHO_LOG
 #undef RHO_LOG
 #endif
@@ -116,7 +113,7 @@ static bool has_pending_exception()
     JNIEnv *env = jnienv();
     if (env->ExceptionCheck())
     {
-        RAWLOG_ERROR("ERROR!!! Pending exception exist!");
+        __android_log_print(ANDROID_LOG_ERROR, "fileapi", "ERROR!!! Pending exception exist!");
         return true;
     }
     return false;
