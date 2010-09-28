@@ -45,6 +45,8 @@ src\com\rho\rubyext\GeoLocation.java
 src\com\rho\rubyext\System.java
 src\com\rho\rubyext\WebView.java
 src\com\rho\rubyext\XMLParser.java
+src\com\rho\rubyext\RhoPhonebook.java
+src\com\rho\rubyext\RhoCalendar.java
 src\com\rho\Version.java
 src\com\rho\RhodesApplicationPlatform.java
 src\rhomobile\camera\Camera.java
@@ -66,7 +68,6 @@ src\rhomobile\mapview\RhoMapField.java
 src\rhomobile\NativeBar.java
 src\rhomobile\PushListeningThread.java
 src\rhomobile\RhodesApplication.java
-src\rhomobile\RhoPhonebook.java
 src\rhomobile\RingtoneManager.java
 src\rhomobile\SecondaryResourceFetchThread.java
 src\rhomobile\Utilities.java

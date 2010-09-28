@@ -92,7 +92,9 @@ public class RubyRuntime
     public static RubyModule SyncEngineClass;
     public static RubyClass StringScannerClass;
     public static RubyClass PhonebookClass;
+    public static RubyClass CalendarClass;    
     public static RubyClass PBRecordClass;
+    public static RubyClass EVRecordClass;    
     public static RubyClass GeoLocationClass;
     public static RubyModule AsyncHttpModule;
     public static RubyClass SystemClass;
@@ -299,7 +301,9 @@ public class RubyRuntime
         StringScanner.initMethods(StringScannerClass);
 
         PhonebookClass = RubyAPI.defineClass("Phonebook", RubyRuntime.ObjectClass);
+        CalendarClass = RubyAPI.defineClass("Calendar", RubyRuntime.ObjectClass);        
         PBRecordClass = RubyAPI.defineClass("PBRecord", RubyRuntime.ObjectClass);
+        EVRecordClass = RubyAPI.defineClass("EVRecord", RubyRuntime.ObjectClass);        
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);
         RubyModule rhoModule = RubyAPI.defineModule("Rho"); 
         AsyncHttpModule = rhoModule.defineModule("AsyncHttp");
