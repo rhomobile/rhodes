@@ -23,10 +23,11 @@ describe "Events" do
     event['reminder'] = 60
     event['privacy'] = 'private'
     start_date = Time.now
-    end_date = Time.now+1000
+    end_date = Time.now+3600
     event['start_date'] = start_date
     event['end_date'] = end_date
-    
+
+    puts "event: #{event}"    
     Rho::RhoEvent.create!(event)
 
     newevents = Rho::RhoEvent.find(:all)
@@ -37,18 +38,22 @@ describe "Events" do
     diff.size.should == 1 
     diff.keys.size.should ==  1 
     c = diff[diff.keys.first]
+    puts "c: #{c}"
+    
+    @id = c['id']
+        
     c['title'].should == title
     c['location'].should == 'loc1'
     c['notes'].should == 'notes1'
     c['reminder'].should == 60
     c['privacy'].should == 'private'
-    #c['start_date'].should == start_date
-    #c['end_date'].should == end_date
+    c['start_date'].should == start_date
+    c['end_date'].should == end_date
     
     #@revision = c['revision']
     #c['revision'].should_not be_nil
 
-    @id = c['id']
+
     #puts "id: #{@id}"
   end
 
@@ -56,7 +61,7 @@ describe "Events" do
     #puts "id: #{@id}"
     
     start_date = Time.now
-    end_date = Time.now+1000
+    end_date = Time.now+1800
     
     Rho::RhoEvent.update_attributes( 'id' => @id, 'title' => "RANDOM", 'location' => 'loc2', 'notes' => 'notes2', 
         'reminder' => 100, 'privacy' => 'confidential', 'start_date' => start_date, 'end_date' => end_date )
@@ -70,8 +75,8 @@ describe "Events" do
     event['notes'].should == 'notes2'
     event['reminder'].should == 100
     event['privacy'].should == 'confidential'
-    #event['start_date'].should == start_date
-    #event['end_date'].should == end_date
+    event['start_date'].should == start_date
+    event['end_date'].should == end_date
     #@revision.should_not == event['revision']
   end
 
