@@ -4,6 +4,10 @@ import java.util.Date;
 
 public class Event {
 	
+	public Event(String eid) {
+		id = eid;
+	}
+	
 	public String id;
 	public String title;
 	public Date startDate;
