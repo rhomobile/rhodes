@@ -1,21 +1,13 @@
 require 'rho/rhoevent'
 
-class Hash
-  def diff(rhs)
-    diff = {}
-    self.each do |k,v|
-      next if rhs.has_key?(k) and rhs[k] == v
-      diff[k] = v
-    end
-    rhs.each do |k,v|
-      next if self.has_key?(k) and self[k] == v
-      diff[k] = v
-    end
-    diff
-  end
-end
-
 describe "Events" do
+
+  before(:all) do
+    events = Rho::RhoEvent.find(:all)
+    events.each do |key, val|
+        Rho::RhoEvent.destroy(key)
+    end    
+  end
 
   it "should create" do
     title = 'Random'
@@ -26,17 +18,35 @@ describe "Events" do
 
     event = {}
     event['title'] = title
+    event['location'] = 'loc1'
+    event['notes'] = 'notes1'
+    event['reminder'] = 60
+    event['privacy'] = 'private'
+    start_date = Time.now
+    end_date = Time.now+1000
+    event['start_date'] = start_date
+    event['end_date'] = end_date
+    
     Rho::RhoEvent.create!(event)
 
     newevents = Rho::RhoEvent.find(:all)
     #puts "newevents: #{newevents.inspect.to_s}"
     newevents.should_not be_nil
 
-    diff = newevents.diff(events)
+    diff = newevents #.diff(events)
     diff.size.should == 1 
     diff.keys.size.should ==  1 
     c = diff[diff.keys.first]
     c['title'].should == title
+    c['location'].should == 'loc1'
+    c['notes'].should == 'notes1'
+    c['reminder'].should == 60
+    c['privacy'].should == 'private'
+    #c['start_date'].should == start_date
+    #c['end_date'].should == end_date
+    
+    #@revision = c['revision']
+    #c['revision'].should_not be_nil
 
     @id = c['id']
     #puts "id: #{@id}"
@@ -44,18 +54,30 @@ describe "Events" do
 
   it "should update" do
     #puts "id: #{@id}"
-    Rho::RhoEvent.update_attributes 'id' => @id, 'title' => "RANDOM"
+    
+    start_date = Time.now
+    end_date = Time.now+1000
+    
+    Rho::RhoEvent.update_attributes( 'id' => @id, 'title' => "RANDOM", 'location' => 'loc2', 'notes' => 'notes2', 
+        'reminder' => 100, 'privacy' => 'confidential', 'start_date' => start_date, 'end_date' => end_date )
 
     event = Rho::RhoEvent.find(@id)
     #puts "event: #{event.inspect.to_s}"
     event.should_not be_nil
 
     event['title'].should ==  'RANDOM' 
+    event['location'].should == 'loc2'
+    event['notes'].should == 'notes2'
+    event['reminder'].should == 100
+    event['privacy'].should == 'confidential'
+    #event['start_date'].should == start_date
+    #event['end_date'].should == end_date
+    #@revision.should_not == event['revision']
   end
 
   it "should remove" do
     events = Rho::RhoEvent.find(:all)
-    puts "events: #{events.inspect.to_s}"
+    #puts "events: #{events.inspect.to_s}"
     events.should_not be_nil
     events.size.should >= 1 
 
