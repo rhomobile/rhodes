@@ -1,5 +1,7 @@
-package rhomobile;
+package com.rho.rubyext;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.builtin.RubyHash;
@@ -10,6 +12,8 @@ import javax.microedition.pim.*;
 
 //@RubyLevelClass(name="Phonebook")
 public class RhoPhonebook extends RubyBasic {
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("Phonebook");
 
 	private ContactList m_contactList;
 
@@ -339,13 +343,6 @@ public class RhoPhonebook extends RubyBasic {
 		return RubyConstant.QTRUE;
 	}
 
-	public static RubyValue getfirstPhonebookRecord(RubyValue arg0) {
-		return RubyConstant.QNIL;
-	}
-	public static RubyValue getnextPhonebookRecord(RubyValue arg0) {
-		return RubyConstant.QNIL;
-	}
-	
 	public static void initMethods( RubyClass klass){
 		klass.defineAllocMethod(new RubyNoArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyBlock block )	{
@@ -353,63 +350,123 @@ public class RhoPhonebook extends RubyBasic {
 		});
 		
 		klass.getSingletonClass().defineMethod("openPhonebook", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) {
-				return RhoPhonebook.openPhonebook();
+			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.openPhonebook();
+				} catch(Exception e) {
+					LOG.ERROR("openPhonebook failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("closePhonebook", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
-				return RhoPhonebook.closePhonebook(arg0);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.closePhonebook(arg0);
+				} catch(Exception e) {
+					LOG.ERROR("closePhonebook failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("getallPhonebookRecords", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
-				return RhoPhonebook.getallPhonebookRecords(arg0);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.getallPhonebookRecords(arg0);
+				} catch(Exception e) {
+					LOG.ERROR("getallPhonebookRecords failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("openPhonebookRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
-				return RhoPhonebook.openPhonebookRecord(arg0, arg1);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.openPhonebookRecord(arg0, arg1);
+				} catch(Exception e) {
+					LOG.ERROR("openPhonebookRecord failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("getPhonebookRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
-				return RhoPhonebook.getPhonebookRecord(arg0, arg1);
-			}
-		});
-		klass.getSingletonClass().defineMethod("getfirstPhonebookRecord", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
-				return RhoPhonebook.getfirstPhonebookRecord(arg0);
-			}
-		});
-		klass.getSingletonClass().defineMethod("getnextPhonebookRecord", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
-				return RhoPhonebook.getnextPhonebookRecord(arg0);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.getPhonebookRecord(arg0, arg1);
+				} catch(Exception e) {
+					LOG.ERROR("getPhonebookRecord failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("createRecord", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
-				return RhoPhonebook.createRecord(arg0);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.createRecord(arg0);
+				} catch(Exception e) {
+					LOG.ERROR("createRecord failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("setRecordValue", new RubyVarArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyArray ar, RubyBlock block) {
-				return RhoPhonebook.setRecordValue(ar);
+			protected RubyValue run(RubyValue receiver, RubyArray ar, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.setRecordValue(ar);
+				} catch(Exception e) {
+					LOG.ERROR("setRecordValue failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("addRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
-				return RhoPhonebook.addRecord(arg0, arg1);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.addRecord(arg0, arg1);
+				} catch(Exception e) {
+					LOG.ERROR("addRecord failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("saveRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
-				return RhoPhonebook.saveRecord(arg0, arg1);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.saveRecord(arg0, arg1);
+				} catch(Exception e) {
+					LOG.ERROR("saveRecord failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		klass.getSingletonClass().defineMethod("deleteRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
-				return RhoPhonebook.deleteRecord(arg0, arg1);
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			{
+				try {
+					return RhoPhonebook.deleteRecord(arg0, arg1);
+				} catch(Exception e) {
+					LOG.ERROR("deleteRecord failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
 			}
 		});
 		
