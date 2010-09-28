@@ -8,7 +8,8 @@ import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.io.http.HttpHeaders;
 import com.rho.rubyext.Alert;
 import rhomobile.NativeBar;
-import rhomobile.RhoPhonebook;
+import com.rho.rubyext.RhoPhonebook;
+import com.rho.rubyext.RhoCalendar;
 import rhomobile.RhodesApplication;
 import rhomobile.RingtoneManager;
 import com.rho.rubyext.WebView;
@@ -38,6 +39,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	  
 	public void initRubyExtensions(){
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
+        RhoCalendar.initMethods(RubyRuntime.CalendarClass);
         Camera.initMethods(RubyRuntime.CameraClass);
         WebView.initMethods(RubyRuntime.WebViewClass);
         RhoConf.initMethods(RubyRuntime.RhoConfClass);
