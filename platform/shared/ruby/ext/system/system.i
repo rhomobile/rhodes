@@ -30,6 +30,9 @@ extern void rho_sys_app_exit();
 #define unzip_file rho_sys_unzip_file
 extern int rho_sys_unzip_file(const char *path);
 
+#define set_sleeping rho_sys_set_sleeping
+extern int rho_sys_set_sleeping(int sleeping);
+
 %}
 
 %typemap(in) (int nparams, char** param_names, char** param_values)
@@ -66,3 +69,4 @@ extern void set_push_notification( const char *url, const char* params);
 extern void set_screen_rotation_notification(const char *url, const char* params);
 extern void exit();
 extern void unzip_file( const char *path );
+extern int set_sleeping( int sleeping );

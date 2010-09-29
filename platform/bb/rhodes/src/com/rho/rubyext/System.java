@@ -13,6 +13,7 @@ import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
 import com.rho.RhoRubyHelper;
 import net.rim.device.api.system.DeviceInfo;
+import net.rim.device.api.system.Backlight;
 
 public class System {
 
@@ -115,6 +116,26 @@ public class System {
 				//}
 			}
 		});
+		
+		klass.getSingletonClass().defineMethod( "set_sleeping", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
+			{
+				try {
+					RubyValue ret = !Backlight.isEnabled() ? RubyConstant.QTRUE : RubyConstant.QFALSE;
+					
+					if ( arg1 != RubyConstant.QTRUE )
+						Backlight.enable(true, 255);
+					else
+						Backlight.enable(false, Backlight.getTimeoutDefault());
+					
+					return ret;
+				} catch(Exception e) {
+					LOG.ERROR("set_sleeping failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
 	}
     
     //@RubyLevelMethod(name="get_property", module=true)
