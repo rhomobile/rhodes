@@ -1847,6 +1847,12 @@ extern int rho_sys_unzip_file(const char *path);
 #define set_sleeping rho_sys_set_sleeping
 extern int rho_sys_set_sleeping(int sleeping);
 
+	#if !defined(bool)
+	#define bool int
+	#define true  1
+	#define false 0
+	#endif
+
 
 
 SWIGINTERN swig_type_info*
@@ -1972,6 +1978,26 @@ SWIGINTERNINLINE VALUE
 SWIG_From_int  (int value)
 {    
   return SWIG_From_long  (value);
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_bool (VALUE obj, bool *val)
+{
+  if (obj == Qtrue) {
+    if (val) *val = true;
+    return SWIG_OK;
+  } else if (obj == Qfalse) {
+    if (val) *val = false;
+    return SWIG_OK;
+  } else {
+    int res = 0;
+    if (SWIG_AsVal_int (obj, &res) == SWIG_OK) {    
+      if (val) *val = res ? true : false;
+      return SWIG_OK;
+    }
+  }  
+  return SWIG_TypeError;
 }
 
 SWIGINTERN VALUE
@@ -2234,8 +2260,8 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_set_sleeping(int argc, VALUE *argv, VALUE self) {
-  int arg1 ;
-  int val1 ;
+  bool arg1 ;
+  bool val1 ;
   int ecode1 = 0 ;
   int result;
   VALUE vresult = Qnil;
@@ -2243,11 +2269,11 @@ _wrap_set_sleeping(int argc, VALUE *argv, VALUE self) {
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  ecode1 = SWIG_AsVal_bool(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","set_sleeping", 1, argv[0] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "bool","set_sleeping", 1, argv[0] ));
   } 
-  arg1 = (int)(val1);
+  arg1 = (bool)(val1);
   result = (int)set_sleeping(arg1);
   vresult = SWIG_From_int((int)(result));
   return vresult;
