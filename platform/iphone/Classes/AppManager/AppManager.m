@@ -256,6 +256,13 @@ int rho_sys_get_screen_height()
     return rect.size.height;
 }
 
+int rho_sys_set_sleeping(int sleeping)
+{
+	int ret = [[UIApplication sharedApplication] isIdleTimerDisabled] ? 0 : 1;
+	[[UIApplication sharedApplication] setIdleTimerDisabled: (!sleeping ? YES : NO)];
+    return ret;
+}
+
 extern VALUE rho_sys_has_network();
 
 // http://www.apple.com/iphone/specs.html
