@@ -70,11 +70,11 @@ void rho_sys_unzip_file(const char *url)
     rho_unzip_file(url);
 }
 
-//#ifndef OS_MACOSX
+#ifndef OS_MACOSX
 int rho_sys_set_sleeping(int sleeping)
 {
     return 1;
 }
-//#endif //OS_MACOSX
+#endif //OS_MACOSX
 
 } //extern "C"
