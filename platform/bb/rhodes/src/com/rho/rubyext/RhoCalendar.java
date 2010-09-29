@@ -1,7 +1,11 @@
 package com.rho.rubyext;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.Version;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 
@@ -33,6 +37,11 @@ public class RhoCalendar extends RubyBasic {
 	static final RubyString RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY  = ObjectFactory.createString( "monthly");
 	static final RubyString RUBY_EV_RECURRENCE_FREQUENCY_YEARLY  = ObjectFactory.createString( "yearly");
 	static final RubyString RUBY_EV_RECURRENCE_INTERVAL  = ObjectFactory.createString( "interval");
+	static final RubyString RUBY_EV_RECURRENCE_COUNT  = ObjectFactory.createString( "count");
+	static final RubyString RUBY_EV_RECURRENCE_END  = ObjectFactory.createString( "end_date");
+	static final RubyString RUBY_EV_RECURRENCE_MONTHS  = ObjectFactory.createString( "months");	
+	static final RubyString RUBY_EV_RECURRENCE_WEEKS  = ObjectFactory.createString( "weeks");	
+	static final RubyString RUBY_EV_RECURRENCE_DAYS  = ObjectFactory.createString( "days");	
 	
 	static final RubySymbol RUBY_FIND_type = ObjectFactory.createSymbol("find_type");
 	static final RubySymbol RUBY_FIND_include_repeating = ObjectFactory.createSymbol("include_repeating");
@@ -137,6 +146,88 @@ public class RhoCalendar extends RubyBasic {
 			}
 		}
 		
+		RepeatRule rl = event.getRepeat();
+		if ( rl != null )
+		{
+			RubyHash recurrent = ObjectFactory.createHash();
+			arFields = rl.getFields();
+			for ( int i = 0; i < arFields.length; i++)
+			{
+				switch(arFields[i])
+				{
+				case RepeatRule.COUNT:
+					recurrent.add(RUBY_EV_RECURRENCE_COUNT, ObjectFactory.createInteger(rl.getInt(RepeatRule.COUNT)));
+					break;
+				case RepeatRule.END:
+					recurrent.add(RUBY_EV_RECURRENCE_END, ObjectFactory.createTime(rl.getDate(RepeatRule.END)));
+					break;
+				case RepeatRule.FREQUENCY:
+				{
+					RubyString strValue = RUBY_EV_RECURRENCE_FREQUENCY_DAILY;
+					int nFreq = rl.getInt(RepeatRule.FREQUENCY);
+					if ( nFreq == RepeatRule.WEEKLY )
+						strValue = RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY;
+					else if ( nFreq == RepeatRule.YEARLY )
+						strValue = RUBY_EV_RECURRENCE_FREQUENCY_YEARLY;
+					else if ( nFreq == RepeatRule.MONTHLY )
+						strValue = RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY;
+					
+					recurrent.add(RUBY_EV_RECURRENCE_FREQUENCY, strValue);
+					break;
+				}
+
+				case RepeatRule.INTERVAL:
+					recurrent.add(RUBY_EV_RECURRENCE_INTERVAL, ObjectFactory.createInteger(rl.getInt(RepeatRule.INTERVAL)));
+					break;
+				case RepeatRule.MONTH_IN_YEAR:
+				{
+					Version.SoftVersion ver = Version.getSoftVersion();
+					//THIS IS BUG in BB < 5.0 : return month -1. January just crash get events
+					int[] arMonths = {RepeatRule.JANUARY, RepeatRule.FEBRUARY, RepeatRule.MARCH, RepeatRule.APRIL, RepeatRule.MAY, RepeatRule.JUNE, RepeatRule.JULY,
+							RepeatRule.AUGUST, RepeatRule.SEPTEMBER, RepeatRule.OCTOBER, RepeatRule.NOVEMBER, RepeatRule.DECEMBER};
+					int nMonths = rl.getInt(RepeatRule.MONTH_IN_YEAR); 
+					RubyArray months = ObjectFactory.createArray(arMonths.length, ObjectFactory.createInteger(0));
+					for ( int m = 0; m < arMonths.length; m++ )
+					{
+						if ( (nMonths&arMonths[m]) != 0 )
+							months.set(m + (ver.nMajor < 5 ? 1 : 0), ObjectFactory.createInteger(1));
+					}
+					recurrent.add( RUBY_EV_RECURRENCE_MONTHS, months);
+					break;
+					
+				}
+				case RepeatRule.WEEK_IN_MONTH:
+				{
+					int[] arWeeks = {RepeatRule.FIRST, RepeatRule.SECOND, RepeatRule.THIRD, RepeatRule.FOURTH, RepeatRule.FIFTH};
+					int nWeeks = rl.getInt(RepeatRule.WEEK_IN_MONTH); 
+					RubyArray weeks = ObjectFactory.createArray(arWeeks.length, ObjectFactory.createInteger(0));
+					for ( int m = 0; m < arWeeks.length; m++ )
+					{
+						if ( (nWeeks&arWeeks[m]) != 0 )
+							weeks.set(m, ObjectFactory.createInteger(1));
+					}
+					recurrent.add( RUBY_EV_RECURRENCE_WEEKS, weeks);
+					break;
+				}
+				case RepeatRule.DAY_IN_WEEK:
+				{
+					int[] arDays = {RepeatRule.MONDAY, RepeatRule.TUESDAY, RepeatRule.WEDNESDAY, RepeatRule.THURSDAY, RepeatRule.FRIDAY, RepeatRule.SATURDAY, RepeatRule.SUNDAY};
+					int nDays = rl.getInt(RepeatRule.DAY_IN_WEEK); 
+					RubyArray days = ObjectFactory.createArray(arDays.length, ObjectFactory.createInteger(0));
+					for ( int m = 0; m < arDays.length; m++ )
+					{
+						if ( (nDays&arDays[m]) != 0 )
+							days.set(m, ObjectFactory.createInteger(1));
+					}
+					recurrent.add( RUBY_EV_RECURRENCE_DAYS, days);
+					break;
+				}
+				}
+			}
+			
+			record.add( RUBY_EV_RECURRENCE, recurrent); 
+		}
+		
 		return record;
 	}
 
@@ -177,6 +268,70 @@ public class RhoCalendar extends RubyBasic {
 			setDateField(event, Event.REVISION, val );
 		else if ( strKey.opEql(RUBY_EV_LOCATION) == RubyConstant.QTRUE )
 			setStringField(event, Event.LOCATION, val );
+		else if ( strKey.opEql(RUBY_EV_RECURRENCE) == RubyConstant.QTRUE )
+		{
+			RubyHash recurrent = (RubyHash)val;
+			RepeatRule rl = new RepeatRule(); 
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_COUNT) == RubyConstant.QTRUE )
+				rl.setInt(RepeatRule.COUNT, recurrent.get(RUBY_EV_RECURRENCE_COUNT).toInt());
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_END) == RubyConstant.QTRUE )
+				rl.setDate(RepeatRule.END, recurrent.get(RUBY_EV_RECURRENCE_END).toRubyTime().getTime());
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_FREQUENCY) == RubyConstant.QTRUE )
+			{
+				RubyString strValue = (RubyString)recurrent.get(RUBY_EV_RECURRENCE_FREQUENCY); 
+				int nFreq = RepeatRule.WEEKLY;
+				if ( strValue.opEql(RUBY_EV_RECURRENCE_FREQUENCY_YEARLY) == RubyConstant.QTRUE   )
+					nFreq = RepeatRule.YEARLY;
+				else if ( strValue.opEql(RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY)  == RubyConstant.QTRUE )
+					nFreq = RepeatRule.MONTHLY;
+				else if ( strValue.opEql(RUBY_EV_RECURRENCE_FREQUENCY_DAILY)  == RubyConstant.QTRUE )
+					nFreq = RepeatRule.DAILY;
+				
+				rl.setInt(RepeatRule.FREQUENCY, nFreq);
+			}
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_INTERVAL) == RubyConstant.QTRUE )
+				rl.setInt(RepeatRule.INTERVAL, recurrent.get(RUBY_EV_RECURRENCE_INTERVAL).toInt());
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_MONTHS) == RubyConstant.QTRUE )
+			{
+				int[] arMonths = {RepeatRule.JANUARY, RepeatRule.FEBRUARY, RepeatRule.MARCH, RepeatRule.APRIL, RepeatRule.MAY, RepeatRule.JUNE, RepeatRule.JULY,
+						RepeatRule.AUGUST, RepeatRule.SEPTEMBER, RepeatRule.OCTOBER, RepeatRule.NOVEMBER, RepeatRule.DECEMBER};
+				int nMonths = 0; 
+				RubyArray months = (RubyArray)recurrent.get(RUBY_EV_RECURRENCE_MONTHS); 
+				for ( int m = 0; m < months.size(); m++ )
+				{
+					if ( months.get(m).toInt() != 0 )
+						nMonths |= arMonths[m]; 
+				}
+				rl.setInt(RepeatRule.MONTH_IN_YEAR, nMonths);
+			}
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_WEEKS) == RubyConstant.QTRUE )
+			{
+				int[] arWeeks = {RepeatRule.FIRST, RepeatRule.SECOND, RepeatRule.THIRD, RepeatRule.FOURTH, RepeatRule.FIFTH};
+				int nWeeks = 0; 
+				RubyArray weeks = (RubyArray)recurrent.get(RUBY_EV_RECURRENCE_WEEKS);
+				for ( int m = 0; m < weeks.size(); m++ )
+				{
+					if ( weeks.get(m).toInt() != 0 )
+						nWeeks |= arWeeks[m]; 
+				}
+				rl.setInt(RepeatRule.WEEK_IN_MONTH, nWeeks);
+			}
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_DAYS) == RubyConstant.QTRUE )
+			{
+				int[] arDays = {RepeatRule.MONDAY, RepeatRule.TUESDAY, RepeatRule.WEDNESDAY, RepeatRule.THURSDAY, RepeatRule.FRIDAY, RepeatRule.SATURDAY, RepeatRule.SUNDAY};
+				int nDays = 0; 
+				RubyArray days = (RubyArray)recurrent.get(RUBY_EV_RECURRENCE_DAYS);
+				for ( int m = 0; m < days.size(); m++ )
+				{
+					if ( days.get(m).toInt() != 0 )
+						nDays |= arDays[m]; 
+				}
+				rl.setInt(RepeatRule.DAY_IN_WEEK, nDays);
+			}
+
+			event.setRepeat(null);
+			event.setRepeat(rl);
+		}
 		
 		return RubyConstant.QTRUE;
 	}

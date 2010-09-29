@@ -91,6 +91,44 @@ describe "Events" do
     #@revision.should_not == event['revision']
   end
 
+  it "should update recurrence" do
+    recValues = {'frequency'=>'daily', "interval"=>2 }
+    Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
+    event = Rho::RhoEvent.find(@id)
+    #puts "event: #{event.inspect.to_s}"
+    event.should_not be_nil
+    event['recurrence'].should == recValues
+
+    recValues = {"frequency"=>"yearly", "interval"=>1, "end_date"=>Time.now + 60000, "days"=>[0, 0, 1, 0, 0, 0, 0], "months"=>[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "weeks"=>[0, 0, 0, 0, 1]}
+    Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
+    event = Rho::RhoEvent.find(@id)
+    #puts "event: #{event.inspect.to_s}"
+    event.should_not be_nil
+    event['recurrence'].should == recValues
+
+    recValues = {"frequency"=>"weekly", "interval"=>4, "end_date"=>Time.now + 60000, "days"=>[1, 1, 1, 1, 0, 0, 0]}
+    Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
+    event = Rho::RhoEvent.find(@id)
+    #puts "event: #{event.inspect.to_s}"
+    event.should_not be_nil
+    event['recurrence'].should == recValues
+
+    recValues = {"frequency"=>"weekly", "interval"=>5, "days"=>[0, 1, 1, 0, 0, 0, 1]}
+    Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
+    event = Rho::RhoEvent.find(@id)
+    #puts "event: #{event.inspect.to_s}"
+    event.should_not be_nil
+    event['recurrence'].should == recValues
+
+    recValues =  {"frequency"=>"monthly", "interval"=>9, "days"=>[0, 0, 1, 0, 0, 0, 0], "weeks"=>[0, 0, 0, 0, 1]}
+    Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
+    event = Rho::RhoEvent.find(@id)
+    #puts "event: #{event.inspect.to_s}"
+    event.should_not be_nil
+    event['recurrence'].should == recValues
+
+  end
+
   it "should remove" do
     events = Rho::RhoEvent.find(:all)
     #puts "events: #{events.inspect.to_s}"
