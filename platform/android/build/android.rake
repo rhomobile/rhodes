@@ -81,7 +81,7 @@ def set_app_name_android(newname)
 
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
 
-  caps = ['INTERNET', 'PERSISTENT_ACTIVITY']
+  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK']
   $app_config["capabilities"].each do |cap|
     cap = ANDROID_PERMISSIONS[cap]
     next if cap.nil?
