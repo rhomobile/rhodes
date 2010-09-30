@@ -15,5 +15,5 @@ public class Event {
 	public Date lastModified;
 	public String location;
 	public String notes;
-	
+	public String privacy;
 }

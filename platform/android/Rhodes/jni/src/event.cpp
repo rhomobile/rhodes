@@ -95,6 +95,7 @@ static jfieldID fidEndDate;
 static jfieldID fidLastModified;
 static jfieldID fidLocation;
 static jfieldID fidNotes;
+static jfieldID fidPrivacy;
 
 static bool initEventStuff(JNIEnv *env)
 {
@@ -118,6 +119,8 @@ static bool initEventStuff(JNIEnv *env)
     if (!fidLocation) return false;
     fidNotes = getJNIClassField(env, clsEvent, "notes", "Ljava/lang/String;");
     if (!fidNotes) return false;
+    fidPrivacy = getJNIClassField(env, clsEvent, "privacy", "Ljava/lang/String;");
+    if (!fidPrivacy) return false;
 
     initialized = true;
     return true;
@@ -172,6 +175,13 @@ static jobject eventFromRuby(VALUE rEvent)
     {
         Check_Type(rNotes, T_STRING);
         env->SetObjectField(jEvent, fidNotes, env->NewStringUTF(RSTRING_PTR(rNotes)));
+    }
+
+    VALUE rPrivacy = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_PRIVACY));
+    if (!NIL_P(rPrivacy))
+    {
+        Check_Type(rPrivacy, T_STRING);
+        env->SetObjectField(jEvent, fidPrivacy, env->NewStringUTF(RSTRING_PTR(rPrivacy)));
     }
 
     return jEvent;
@@ -236,6 +246,15 @@ static VALUE eventToRuby(jobject jEvent)
         s = rho_cast<std::string>(env, jNotes);
         env->DeleteLocalRef(jNotes);
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(s.c_str()));
+    }
+
+    RAWLOG_INFO("eventToRuby (10)");
+    jstring jPrivacy = (jstring)env->GetObjectField(jEvent, fidPrivacy);
+    if (jPrivacy)
+    {
+        s = rho_cast<std::string>(env, jPrivacy);
+        env->DeleteLocalRef(jPrivacy);
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_PRIVACY), rb_str_new2(s.c_str()));
     }
 
     RAWLOG_INFO("eventToRuby: return");
@@ -303,9 +322,13 @@ RHO_GLOBAL VALUE event_fetch_by_id(const char *id)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/event/Event;");
     if (!mid) return Qnil;
 
+    RAWLOG_INFO("event_fetch_by_id (1)");
     jstring jId = rho_cast<jstring>(env, id);
+    RAWLOG_INFO("event_fetch_by_id (2)");
     jobject jEvent = env->CallStaticObjectMethod(cls, mid, jId);
+    RAWLOG_INFO("event_fetch_by_id (3)");
     VALUE rEvent = eventToRuby(jEvent);
+    RAWLOG_INFO("event_fetch_by_id (4)");
     env->DeleteLocalRef(jId);
     env->DeleteLocalRef(jEvent);
     return rEvent;

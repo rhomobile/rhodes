@@ -123,13 +123,6 @@ static VALUE event2ruby(EKEvent *event)
         const char *notes = [event.notes UTF8String];
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(notes));
     }
-    VALUE rAttendees = rb_ary_new();
-    for (int i = 0, lim = [event.attendees count]; i < lim; ++i) {
-        EKParticipant *participant = [event.attendees objectAtIndex:i];
-        const char *name = [participant.name UTF8String];
-        rb_ary_push(rAttendees, rb_str_new2(name));
-    }
-    rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ATTENDEES), rAttendees);
     
     if (event.recurrenceRule) {
         VALUE rRecurrence = rb_hash_new();
