@@ -131,19 +131,24 @@ static jobject eventFromRuby(VALUE rEvent)
     if (NIL_P(rEvent))
         return NULL;
 
+    RAWLOG_INFO("eventFromRuby (1)");
     JNIEnv *env = jnienv();
     if (!initEventStuff(env))
         return NULL;
 
-    jobject jEvent = env->NewObject(clsEvent, getJNIClassMethod(env, clsEvent, "<init>", "()V"));
-
+    RAWLOG_INFO("eventFromRuby (2)");
     VALUE rId = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_ID));
-    if (!NIL_P(rId))
-    {
-        Check_Type(rId, T_STRING);
-        env->SetObjectField(jEvent, fidId, env->NewStringUTF(RSTRING_PTR(rId)));
-    }
-    
+    if (NIL_P(rId))
+        rId = rb_str_new2("");
+    Check_Type(rId, T_STRING);
+
+    RAWLOG_INFO("eventFromRuby (3)");
+    jmethodID mid = getJNIClassMethod(env, clsEvent, "<init>", "(Ljava/lang/String;)V");
+    if (!mid) return NULL;
+    jobject jEvent = env->NewObject(clsEvent, mid, env->NewStringUTF(RSTRING_PTR(rId)));
+    if (!jEvent) return NULL;
+
+    RAWLOG_INFO("eventFromRuby (4)");
     VALUE rTitle = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_TITLE));
     if (!NIL_P(rTitle))
     {
@@ -151,18 +156,22 @@ static jobject eventFromRuby(VALUE rEvent)
         env->SetObjectField(jEvent, fidTitle, env->NewStringUTF(RSTRING_PTR(rTitle)));
     }
 
+    RAWLOG_INFO("eventFromRuby (5)");
     VALUE rStartDate = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_START_DATE));
     if (!NIL_P(rStartDate))
         env->SetObjectField(jEvent, fidStartDate, dateFromRuby(rStartDate));
 
+    RAWLOG_INFO("eventFromRuby (6)");
     VALUE rEndDate = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_END_DATE));
     if (!NIL_P(rEndDate))
         env->SetObjectField(jEvent, fidEndDate, dateFromRuby(rEndDate));
 
+    RAWLOG_INFO("eventFromRuby (7)");
     VALUE rLastModified = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_LAST_MODIFIED));
     if (!NIL_P(rLastModified))
         env->SetObjectField(jEvent, fidLastModified, dateFromRuby(rLastModified));
 
+    RAWLOG_INFO("eventFromRuby (8)");
     VALUE rLocation = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_LOCATION));
     if (!NIL_P(rLocation))
     {
@@ -170,6 +179,7 @@ static jobject eventFromRuby(VALUE rEvent)
         env->SetObjectField(jEvent, fidLocation, env->NewStringUTF(RSTRING_PTR(rLocation)));
     }
 
+    RAWLOG_INFO("eventFromRuby (9)");
     VALUE rNotes = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_NOTES));
     if (!NIL_P(rNotes))
     {
@@ -177,6 +187,7 @@ static jobject eventFromRuby(VALUE rEvent)
         env->SetObjectField(jEvent, fidNotes, env->NewStringUTF(RSTRING_PTR(rNotes)));
     }
 
+    RAWLOG_INFO("eventFromRuby (10)");
     VALUE rPrivacy = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_PRIVACY));
     if (!NIL_P(rPrivacy))
     {
@@ -184,6 +195,7 @@ static jobject eventFromRuby(VALUE rEvent)
         env->SetObjectField(jEvent, fidPrivacy, env->NewStringUTF(RSTRING_PTR(rPrivacy)));
     }
 
+    RAWLOG_INFO("eventFromRuby: return");
     return jEvent;
 }
 
