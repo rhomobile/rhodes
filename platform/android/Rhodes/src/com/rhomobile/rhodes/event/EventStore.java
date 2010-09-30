@@ -6,6 +6,7 @@ import java.util.Vector;
 import android.database.Cursor;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.net.Uri;
 
 import com.rhomobile.rhodes.Capabilities;
@@ -40,6 +41,22 @@ public class EventStore {
 		return RhodesService.getInstance().getContext().getContentResolver();
 	}
 	
+	private static long getDefaultCalendarId() {
+		final Cursor calendarCursor = getContentResolver().query(
+				Uri.parse("content://" + AUTHORITY + "/calendars"),
+				new String[] {"_id"},
+				null, null, null);
+		try {
+			if (!calendarCursor.moveToFirst())
+				throw new RuntimeException("No calendars found!");
+			long id = calendarCursor.getLong(0);
+			return id;
+		}
+		finally {
+			calendarCursor.close();
+		}
+	}
+	
 	public static Vector<Event> fetch(Date startDate, Date endDate) {
 		try {
 			checkCapabilities();
@@ -48,7 +65,10 @@ public class EventStore {
 			
 			Vector<Event> ret = new Vector<Event>();
 			
-			final Cursor calendarCursor = getContentResolver().query(
+			ContentResolver r = getContentResolver();
+			
+			/*
+			final Cursor calendarCursor = r.query(
 					Uri.parse("content://" + AUTHORITY + "/calendars"),
 					new String[] {"_id", "displayName", "selected"},
 					null, null, null);
@@ -59,14 +79,15 @@ public class EventStore {
 					boolean selected = !calendarCursor.getString(2).equals("0");
 					
 					Logger.D(TAG, "Calendar: id: " + id + ", name: " + displayName + ", selected: " + selected);
+					*/
 					
 					Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
 					ContentUris.appendId(builder, startDate.getTime());
 					ContentUris.appendId(builder, endDate.getTime());
 					
-					final Cursor eventCursor = getContentResolver().query(builder.build(),
+					final Cursor eventCursor = r.query(builder.build(),
 							new String[] {"event_id", "title", "begin", "end", "eventLocation", "description", "visibility"},
-							"Calendars._id=" + id,
+							null, //"Calendars._id=" + id,
 							null, "startDay ASC, startMinute ASC");
 					try {
 						while (eventCursor.moveToNext()) {
@@ -95,11 +116,13 @@ public class EventStore {
 					finally {
 						eventCursor.close();
 					}
+					/*
 				}
 			}
 			finally {
 				calendarCursor.close();
 			}
+			*/
 			
 			return ret;
 		}
@@ -115,8 +138,10 @@ public class EventStore {
 			
 			Logger.D(TAG, "fetch(id)");
 			
+			ContentResolver r = getContentResolver();
+			
 			Uri uri = ContentUris.withAppendedId(Uri.parse("content://" + AUTHORITY + "/events"), Long.parseLong(id));
-			final Cursor eventCursor = getContentResolver().query(uri,
+			final Cursor eventCursor = r.query(uri,
 					new String[] {"title", "dtstart", "dtend", "eventLocation", "description", "visibility"},
 					null, null, null);
 			try {
@@ -158,7 +183,44 @@ public class EventStore {
 			checkCapabilities();
 			
 			Logger.D(TAG, "save(event)");
-			// TODO:
+			
+			Uri uri = Uri.parse("content://" + AUTHORITY + "/events");
+			ContentValues values = new ContentValues();
+			values.put("title", event.title);
+			values.put("dtstart", event.startDate.getTime());
+			values.put("dtend", event.endDate.getTime());
+			if (event.location != null)
+				values.put("eventLocation", event.location);
+			if (event.notes !=  null)
+				values.put("description", event.notes);
+			if (event.privacy != null)
+			{
+				int visibility = 0;
+				if (event.privacy.equalsIgnoreCase("confidential"))
+					visibility = 1;
+				else if (event.privacy.equalsIgnoreCase("private"))
+					visibility = 2;
+				else if (event.privacy.equalsIgnoreCase("public"))
+					visibility = 3;
+				values.put("visibility", visibility);
+			}
+
+			long calendarId = getDefaultCalendarId();
+			values.put("calendar_id", calendarId);
+			
+			ContentResolver r = getContentResolver();
+					
+			if (event.id == null || event.id.equalsIgnoreCase("")) {
+				Logger.D(TAG, "Insert new event...");
+				Uri euri = r.insert(uri, values);
+				event.id = Long.toString(ContentUris.parseId(euri));
+				Logger.D(TAG, "Event id of event is " + event.id);
+			}
+			else {
+				Logger.D(TAG, "Update event...");
+				r.update(uri, values, "_id=?", new String[] {event.id});
+				Logger.D(TAG, "Event updated");
+			}
 		}
 		catch (Exception e) {
 			reportFail("save", e);
@@ -170,7 +232,10 @@ public class EventStore {
 			checkCapabilities();
 			
 			Logger.D(TAG, "delete(id)");
-			// TODO:
+			
+			Uri uri = Uri.parse("content://" + AUTHORITY + "/events");
+			int rows = getContentResolver().delete(uri, "_id=?", new String[] {id});
+			Logger.D(TAG, String.format("%d rows deleted", rows));
 		}
 		catch (Exception e) {
 			reportFail("delete", e);
