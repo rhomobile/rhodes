@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.os.Build;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
@@ -17,9 +18,15 @@ public class EventStore {
 	
 	private static final String TAG = "EventStore";
 	
-	//private static final String CALENDAR_PROVIDER = "com.android.calendar";
-	private static final String AUTHORITY = "com.android.calendar";
-	//private static final Uri CONTENT_URI = Uri.parse("content://com.android.calendar");
+	private static final String AUTHORITY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? "com.android.calendar" : "calendar";
+	private static final Uri EVENTS_URI = Uri.parse("content://" + AUTHORITY + "/events");
+	
+	private static final String EVENTS_TITLE = "title";
+	private static final String EVENTS_START_DATE = "dtstart";
+	private static final String EVENTS_END_DATE = "dtend";
+	private static final String EVENTS_LOCATION = "eventLocation";
+	private static final String EVENTS_NOTES = "description";
+	private static final String EVENTS_PRIVACY = "visibility";
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
@@ -67,62 +74,51 @@ public class EventStore {
 			
 			ContentResolver r = getContentResolver();
 			
+			Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
+			ContentUris.appendId(builder, startDate.getTime());
+			ContentUris.appendId(builder, endDate.getTime());
+			
+			final Cursor eventCursor = r.query(builder.build(),
+					new String[] {"event_id", EVENTS_TITLE, "begin", "end", EVENTS_LOCATION,
+						EVENTS_NOTES, EVENTS_PRIVACY},
+					null, //"Calendars._id=" + id,
+					null, "startDay ASC, startMinute ASC");
 			/*
-			final Cursor calendarCursor = r.query(
-					Uri.parse("content://" + AUTHORITY + "/calendars"),
-					new String[] {"_id", "displayName", "selected"},
-					null, null, null);
+			String where = String.format("(%s >= ? or %s >= ?) and (%s <= ? or %s <= ?)",
+					EVENTS_START_DATE, EVENTS_END_DATE, EVENTS_START_DATE, EVENTS_END_DATE);
+			final Cursor eventCursor = r.query(EVENTS_URI,
+					new String[] {EVENTS_ID, EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
+						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
+					where, new String[] {Long.toString(startDate.getTime()), Long.toString(endDate.getTime())},
+					null);
+			*/
 			try {
-				while (calendarCursor.moveToNext()) {
-					String id = calendarCursor.getString(0);
-					String displayName = calendarCursor.getString(1);
-					boolean selected = !calendarCursor.getString(2).equals("0");
+				while (eventCursor.moveToNext()) {
+					String eid = eventCursor.getString(0);
+					Event event = new Event(eid);
 					
-					Logger.D(TAG, "Calendar: id: " + id + ", name: " + displayName + ", selected: " + selected);
-					*/
-					
-					Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
-					ContentUris.appendId(builder, startDate.getTime());
-					ContentUris.appendId(builder, endDate.getTime());
-					
-					final Cursor eventCursor = r.query(builder.build(),
-							new String[] {"event_id", "title", "begin", "end", "eventLocation", "description", "visibility"},
-							null, //"Calendars._id=" + id,
-							null, "startDay ASC, startMinute ASC");
-					try {
-						while (eventCursor.moveToNext()) {
-							String eid = eventCursor.getString(0);
-							Event event = new Event(eid);
-							
-							event.title = eventCursor.getString(1);
-							event.startDate = new Date(eventCursor.getLong(2));
-							event.endDate = new Date(eventCursor.getLong(3));
-							event.location = eventCursor.getString(4);
-							event.notes = eventCursor.getString(5);
-							switch (eventCursor.getInt(6)) {
-							case 1: event.privacy = "confidential"; break;
-							case 2: event.privacy = "private"; break;
-							case 3: event.privacy = "public"; break;
-							}
-							
-							Logger.D(TAG, "Event: id: " + event.id +
-									", title: " + event.title +
-									", begin: " + dateToString(event.startDate) +
-									", end: " + dateToString(event.endDate));
-							
-							ret.add(event);
-						}
+					event.title = eventCursor.getString(1);
+					event.startDate = new Date(eventCursor.getLong(2));
+					event.endDate = new Date(eventCursor.getLong(3));
+					event.location = eventCursor.getString(4);
+					event.notes = eventCursor.getString(5);
+					switch (eventCursor.getInt(6)) {
+					case 1: event.privacy = "confidential"; break;
+					case 2: event.privacy = "private"; break;
+					case 3: event.privacy = "public"; break;
 					}
-					finally {
-						eventCursor.close();
-					}
-					/*
+					
+					Logger.D(TAG, "Event: id: " + event.id +
+							", title: " + event.title +
+							", begin: " + dateToString(event.startDate) +
+							", end: " + dateToString(event.endDate));
+					
+					ret.add(event);
 				}
 			}
 			finally {
-				calendarCursor.close();
+				eventCursor.close();
 			}
-			*/
 			
 			return ret;
 		}
@@ -140,9 +136,10 @@ public class EventStore {
 			
 			ContentResolver r = getContentResolver();
 			
-			Uri uri = ContentUris.withAppendedId(Uri.parse("content://" + AUTHORITY + "/events"), Long.parseLong(id));
+			Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
 			final Cursor eventCursor = r.query(uri,
-					new String[] {"title", "dtstart", "dtend", "eventLocation", "description", "visibility"},
+					new String[] {EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
+						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
 					null, null, null);
 			try {
 				if (!eventCursor.moveToFirst()) {
@@ -184,25 +181,24 @@ public class EventStore {
 			
 			Logger.D(TAG, "save(event)");
 			
-			Uri uri = Uri.parse("content://" + AUTHORITY + "/events");
 			ContentValues values = new ContentValues();
-			values.put("title", event.title);
-			values.put("dtstart", event.startDate.getTime());
-			values.put("dtend", event.endDate.getTime());
+			values.put(EVENTS_TITLE, event.title);
+			values.put(EVENTS_START_DATE, event.startDate.getTime());
+			values.put(EVENTS_END_DATE, event.endDate.getTime());
 			if (event.location != null)
-				values.put("eventLocation", event.location);
+				values.put(EVENTS_LOCATION, event.location);
 			if (event.notes !=  null)
-				values.put("description", event.notes);
+				values.put(EVENTS_NOTES, event.notes);
 			if (event.privacy != null)
 			{
-				int visibility = 0;
+				int privacy = 0;
 				if (event.privacy.equalsIgnoreCase("confidential"))
-					visibility = 1;
+					privacy = 1;
 				else if (event.privacy.equalsIgnoreCase("private"))
-					visibility = 2;
+					privacy = 2;
 				else if (event.privacy.equalsIgnoreCase("public"))
-					visibility = 3;
-				values.put("visibility", visibility);
+					privacy = 3;
+				values.put(EVENTS_PRIVACY, privacy);
 			}
 
 			long calendarId = getDefaultCalendarId();
@@ -212,13 +208,14 @@ public class EventStore {
 					
 			if (event.id == null || event.id.equalsIgnoreCase("")) {
 				Logger.D(TAG, "Insert new event...");
-				Uri euri = r.insert(uri, values);
+				Uri euri = r.insert(EVENTS_URI, values);
 				event.id = Long.toString(ContentUris.parseId(euri));
 				Logger.D(TAG, "Event id of event is " + event.id);
 			}
 			else {
 				Logger.D(TAG, "Update event...");
-				r.update(uri, values, "_id=?", new String[] {event.id});
+				Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(event.id));
+				r.update(uri, values, null, null);
 				Logger.D(TAG, "Event updated");
 			}
 		}
@@ -233,8 +230,7 @@ public class EventStore {
 			
 			Logger.D(TAG, "delete(id)");
 			
-			Uri uri = Uri.parse("content://" + AUTHORITY + "/events");
-			int rows = getContentResolver().delete(uri, "_id=?", new String[] {id});
+			int rows = getContentResolver().delete(EVENTS_URI, "_id=?", new String[] {id});
 			Logger.D(TAG, String.format("%d rows deleted", rows));
 		}
 		catch (Exception e) {
