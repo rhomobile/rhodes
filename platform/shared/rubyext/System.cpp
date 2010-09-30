@@ -70,11 +70,13 @@ void rho_sys_unzip_file(const char *url)
     rho_unzip_file(url);
 }
 
-#ifndef OS_MACOSX
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+  // implemented in platform code
+#else
 int rho_sys_set_sleeping(int sleeping)
 {
     return 1;
 }
-#endif //OS_MACOSX
+#endif //defined(OS_MACOSX) || defined(OS_ANDROID)
 
 } //extern "C"
