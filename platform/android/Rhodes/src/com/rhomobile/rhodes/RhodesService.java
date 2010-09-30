@@ -34,7 +34,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.Process;
+import android.os.PowerManager.WakeLock;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -156,6 +158,48 @@ public class RhodesService {
 	
 	private String rootPath = null;
 	private native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
+	
+	static PowerManager.WakeLock wakeLockObject = null;
+	static boolean wakeLockEnabled = false;
+	
+	public static int rho_sys_set_sleeping(int enable) {
+		Logger.I(TAG, "rho_sys_set_sleeping("+enable+")");
+		int wasEnabled = 1;
+		if (wakeLockObject != null) {
+			wasEnabled = 0;
+		}
+		if (enable != 0) {
+			// disable lock device
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					if (wakeLockObject != null) {
+						wakeLockObject.release();
+						wakeLockObject = null;
+						wakeLockEnabled = false;
+					}
+				}
+			}, false);
+		}
+		else {
+			// lock device from sleep
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					if (wakeLockObject == null) {
+						PowerManager pm = (PowerManager)getInstance().getContext().getSystemService(Context.POWER_SERVICE);
+						if (pm != null) {
+							wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
+							wakeLockObject.acquire();
+							wakeLockEnabled = true;
+						}
+						else {
+							Logger.E(TAG, "rho_sys_set_sleeping() - Can not get PowerManager !!!");
+						}
+					}
+				}
+			}, false);
+		}
+		return wasEnabled;
+	}
 	
 	private void initRootPath() {
 		ApplicationInfo appInfo = getAppInfo();
@@ -426,6 +470,15 @@ public class RhodesService {
 	}
 
 	public void exitApp() {
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (wakeLockObject != null) {
+					wakeLockObject.release();
+					wakeLockObject = null;
+					wakeLockEnabled = false;
+				}
+			}
+		}, false);
 		Process.killProcess(Process.myPid());
 	}
 	
@@ -435,12 +488,38 @@ public class RhodesService {
 				GeoLocation.isKnownPosition();
 				needGeoLocationRestart = false;
 			}
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					if (wakeLockEnabled) {
+						if (wakeLockObject == null) {
+							PowerManager pm = (PowerManager)getInstance().getContext().getSystemService(Context.POWER_SERVICE);
+							if (pm != null) {
+								Logger.I(TAG, "activityStarted() restore wakeLock object");
+								wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
+								wakeLockObject.acquire();
+							}
+							else {
+								Logger.E(TAG, "activityStarted() - Can not get PowerManager !!!");
+							}
+						}
+					}
+				}
+			}, false);
 			callActivationCallback(true);
 		}
 		++activitiesActive;
 	}
 	
 	public void activityStopped() {
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (wakeLockObject != null) {
+					Logger.I(TAG, "activityStopped() temporary destroy wakeLock object");
+					wakeLockObject.release();
+					wakeLockObject = null;
+				}
+			}
+		}, false);
 		--activitiesActive;
 		if (activitiesActive == 0) {
 			needGeoLocationRestart = GeoLocation.isAvailable();
