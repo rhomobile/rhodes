@@ -135,6 +135,16 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     return 0;
 }
 
+
+RHO_GLOBAL int rho_sys_set_sleeping(int sleeping) {
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "rho_sys_set_sleeping", "(I)I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid, sleeping);
+}
+
 RHO_GLOBAL VALUE rho_sys_get_locale()
 {
     VALUE res;
