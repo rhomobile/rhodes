@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Vector;
 
 import android.database.Cursor;
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
@@ -41,21 +40,6 @@ public class EventStore {
 		return RhodesService.getInstance().getContext().getContentResolver();
 	}
 	
-	private static Cursor performFetch(long start, long end, String[] projection,
-			String selection, String[] selectionArgs, String sortOrder) {
-		
-		ContentResolver r = getContentResolver();
-		
-		Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
-		ContentUris.appendId(builder, start);
-		ContentUris.appendId(builder, end);
-		
-		Uri uri = builder.build();
-		Logger.D(TAG, "Query uri: " + uri.toString());
-		
-		return r.query(uri, projection, selection, selectionArgs, sortOrder);
-	}
-	
 	public static Vector<Event> fetch(Date startDate, Date endDate) {
 		try {
 			checkCapabilities();
@@ -70,24 +54,35 @@ public class EventStore {
 					null, null, null);
 			try {
 				while (calendarCursor.moveToNext()) {
-					String id = calendarCursor.getString(calendarCursor.getColumnIndexOrThrow("_id"));
-					String displayName = calendarCursor.getString(calendarCursor.getColumnIndexOrThrow("displayName"));
-					boolean selected = !calendarCursor.getString(calendarCursor.getColumnIndexOrThrow("selected")).equals("0");
+					String id = calendarCursor.getString(0);
+					String displayName = calendarCursor.getString(1);
+					boolean selected = !calendarCursor.getString(2).equals("0");
 					
 					Logger.D(TAG, "Calendar: id: " + id + ", name: " + displayName + ", selected: " + selected);
 					
-					final Cursor eventCursor = performFetch(startDate.getTime(), endDate.getTime(),
-							new String[] {"_id", "title", "begin", "end"},
+					Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
+					ContentUris.appendId(builder, startDate.getTime());
+					ContentUris.appendId(builder, endDate.getTime());
+					
+					final Cursor eventCursor = getContentResolver().query(builder.build(),
+							new String[] {"event_id", "title", "begin", "end", "eventLocation", "description", "visibility"},
 							"Calendars._id=" + id,
 							null, "startDay ASC, startMinute ASC");
 					try {
 						while (eventCursor.moveToNext()) {
-							String eid = eventCursor.getString(eventCursor.getColumnIndexOrThrow("_id"));
+							String eid = eventCursor.getString(0);
 							Event event = new Event(eid);
 							
-							event.title = eventCursor.getString(eventCursor.getColumnIndexOrThrow("title"));
-							event.startDate = new Date(eventCursor.getLong(eventCursor.getColumnIndexOrThrow("begin")));
-							event.endDate = new Date(eventCursor.getLong(eventCursor.getColumnIndexOrThrow("end")));
+							event.title = eventCursor.getString(1);
+							event.startDate = new Date(eventCursor.getLong(2));
+							event.endDate = new Date(eventCursor.getLong(3));
+							event.location = eventCursor.getString(4);
+							event.notes = eventCursor.getString(5);
+							switch (eventCursor.getInt(6)) {
+							case 1: event.privacy = "confidential"; break;
+							case 2: event.privacy = "private"; break;
+							case 3: event.privacy = "public"; break;
+							}
 							
 							Logger.D(TAG, "Event: id: " + event.id +
 									", title: " + event.title +
@@ -122,13 +117,29 @@ public class EventStore {
 			
 			Uri uri = ContentUris.withAppendedId(Uri.parse("content://" + AUTHORITY + "/events"), Long.parseLong(id));
 			final Cursor eventCursor = getContentResolver().query(uri,
-					new String[] {"title", "dtstart", "dtend"},
+					new String[] {"title", "dtstart", "dtend", "eventLocation", "description", "visibility"},
 					null, null, null);
 			try {
+				if (!eventCursor.moveToFirst()) {
+					Logger.D(TAG, "fetch(id): result set is empty");
+					return null;
+				}
 				Event event = new Event(id);
-				event.title = eventCursor.getString(eventCursor.getColumnIndexOrThrow("title"));
-				event.startDate = new Date(eventCursor.getLong(eventCursor.getColumnIndexOrThrow("dtstart")));
-				event.endDate = new Date(eventCursor.getLong(eventCursor.getColumnIndexOrThrow("dtend")));
+				event.title = eventCursor.getString(0);
+				event.startDate = new Date(eventCursor.getLong(1));
+				event.endDate = new Date(eventCursor.getLong(2));
+				event.location = eventCursor.getString(3);
+				event.notes = eventCursor.getString(4);
+				switch (eventCursor.getInt(5)) {
+				case 1: event.privacy = "confidential"; break;
+				case 2: event.privacy = "private"; break;
+				case 3: event.privacy = "public"; break;
+				}
+				
+				Logger.D(TAG, "Event: id: " + event.id +
+						", title: " + event.title +
+						", begin: " + dateToString(event.startDate) +
+						", end: " + dateToString(event.endDate));
 				
 				return event;
 			}
