@@ -101,15 +101,13 @@ describe "AsyncHttp" do
     it "should decode chunked body" do
       return unless $is_network_available
 
-      if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'        
-          host = SPEC_LOCAL_SERVER_HOST
-          port = SPEC_LOCAL_SERVER_PORT
-          puts "+++++++++++++++++++ chunked test: #{host}:#{port}"
-          res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}/chunked"
-          res['status'].should == 'ok'
-          res['body'].should_not be_nil
-          res['body'].should == "1234567890"
-      end
+      host = SPEC_LOCAL_SERVER_HOST
+      port = SPEC_LOCAL_SERVER_PORT
+      puts "+++++++++++++++++++ chunked test: #{host}:#{port}"
+      res = Rho::AsyncHttp.get :url => "http://#{host}:#{port}/chunked"
+      res['status'].should == 'ok'
+      res['body'].should_not be_nil
+      res['body'].should == "1234567890"
     end
 
     it "should send custom command" do
