@@ -563,7 +563,7 @@ namespace "build" do
         args << "-classpath"
         args << $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar"
         args << "-bootclasspath"
-        args << jde + "/lib/net_rim_api.jar"
+        args << jdehome + "/lib/net_rim_api.jar"
         args << "-source"
         args << "1.3"
         args << "-target"
