@@ -205,7 +205,6 @@ namespace "config" do
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
-      $rubypath = "res/build-tools/RhoRuby.exe"
 
       # Add PATH to cygwin1.dll
       ENV['CYGWIN'] = 'nodosfilewarning'
@@ -220,11 +219,6 @@ namespace "config" do
       $exe_ext = ""
       $path_separator = ":"
       # TODO: add ruby executable for Linux
-      if RUBY_PLATFORM =~ /darwin/
-        $rubypath = "res/build-tools/RubyMac"
-      else
-        $rubypath = "res/build-tools/rubylinux"
-      end
     end
 
     puts "+++ Looking for platform..." if USE_TRACES

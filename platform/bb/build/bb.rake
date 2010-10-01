@@ -96,7 +96,8 @@ def stopsim
 end
 
 def manualsign
-  java = $config["env"]["paths"]["java"] + "/java.exe"
+  jpath = $config["env"]["paths"]["java"]
+  java = jpath && jpath.length() > 0 ? File.join(jpath, "java" ) : "java"
   jde = $config["env"]["paths"][$bbver]["jde"]
 
   args = []
@@ -111,7 +112,8 @@ def manualsign
 end
 
 def autosign
-  java = $config["env"]["paths"]["java"] + "/java.exe"
+  jpath = $config["env"]["paths"]["java"]
+  java = jpath && jpath.length() > 0 ? File.join(jpath, "java" ) : "java"
   jde = $config["env"]["paths"][$bbver]["jde"]
 
   args = []
@@ -144,7 +146,7 @@ namespace "config" do
   
   task :bb => [:set_bb_platform, "config:common"] do
 
-    $rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
+    #$rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
 
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
@@ -202,7 +204,7 @@ namespace "build" do
     
       startdir = pwd
       chdir $tmpdir
-      puts Jake.run(jdehome + "/bin/preverify.exe",args)
+      puts Jake.run(File.join(jdehome,"bin/preverify"),args)
       chdir startdir
       
       unless $? == 0
@@ -216,9 +218,10 @@ namespace "build" do
 #    desc "Build rhoBundle"
     #XXX change to ns build, rhobundle
     task :rhobundle => :rubyvm do
-      java = $config["env"]["paths"]["java"] + "/java.exe"
+	  jpath = $config["env"]["paths"]["java"]  
+      java = jpath && jpath.length()>0 ? File.join( jpath, "java") : "jar"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
-      jarexe =  $config["env"]["paths"]["java"] + "/jar.exe"
+      jarexe =  jpath && jpath.length()>0 ? File.join( jpath, "jar" ) : "jar"
       
       #common bundle task goes here#
       Rake::Task["build:bundle:xruby"].execute
@@ -237,8 +240,8 @@ namespace "build" do
       
       ENV["RHO_ROOT"] = $startdir
       
-      ENV["JAVA_EXE"] = $config["env"]["paths"]["java"] + "/java.exe"
-      ENV["JAVAC_EXE"] = $config["env"]["paths"]["java"] + "/javac.exe"
+      ENV["JAVA_EXE"] = java
+      ENV["JAVAC_EXE"] = jpath && jpath.length()>0 ? File.join( jpath, "javac") : "javac"
       ENV["JDE_HOME"] = jdehome
       ENV["JAR_EXE"] = jarexe
 	
@@ -444,11 +447,17 @@ namespace "build" do
     
 #    desc "Build RubyVM"
     task :rubyvm => [:gensources, "config:bb"] do
-      javac = $config["env"]["paths"]["java"] + "/javac.exe"
+	  jpath = $config["env"]["paths"]["java"]
+      javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
-      rubyvmfiles = File.readlines($builddir + '/RubyVM_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
+#java -jar /Users/evgeny/Desktop/BBEclipse/plugins/net.rim.ejde.componentpack6.0.0_6.0.0.29/components/bin/rapc.jar -convertpng -quiet library=deliverables/Standard/6.0.0/RubyVM deliverables/Standard/6.0.0/RubyVM.rapc -exepath=/Users/evgeny/Desktop/BBEclipse/plugins/net.rim.ejde.componentpack6.0.0_6.0.0.29/components/bin/ -sourceroot=/Users/evgeny/Projects/rhodes/platform/bb/RubyVM/src:/Users/evgeny/Projects/rhodes/platform/bb/RubyVM/res -import=/Users/evgeny/Desktop/BBEclipse/plugins/net.rim.ejde.componentpack6.0.0_6.0.0.29/components/lib/net_rim_api.jar /Users/evgeny/Projects/rhodes/platform/bb/RubyVM/bin
+      rubyvmfiles = File.readlines($builddir + '/RubyVM_build.files').map { |l| l.strip! }
+        #f = File.new($builddir + '/RubyVM_build.files', "wb")
+        #f.write(rubyvmfiles)
+        #f.close        
 
+	  
       if not uptodate?($preverified + '/RubyVM.jar',rubyvmfiles)
 
         mkdir_p $tmpdir + "/RubyVM" if not FileTest.exists? $tmpdir + "/RubyVM"
@@ -466,6 +475,8 @@ namespace "build" do
         args << "-target"
         args << "1.3"
         args << "-nowarn"
+        args << "-sourcepath"		
+        args << "#{$startdir}"				
         args << "@#{$builddir}/RubyVM_build.files"
         puts Jake.run(javac,args)
         unless $? == 0
@@ -496,13 +507,13 @@ namespace "build" do
    
 #    desc "Build rhodes"
     task :rhodes => [ :rubyvm, :rhobundle ] do
-      javac = $config["env"]["paths"]["java"] + "/javac.exe"
-      jde =  $config["env"]["paths"][$bbver]["jde"]
+	  jpath = $config["env"]["paths"]["java"]
+      javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       sources = Dir.glob($builddir + "/../rhodes/resources/**/*") |
-      File.readlines($builddir + '/hsqldb_build.files').map { |l| l.gsub!(/\\/,'/').strip! } |
-      File.readlines($builddir +'/rhodes_build.files').map { |l| l.gsub!(/\\/,'/').strip! }
+      File.readlines($builddir + '/hsqldb_build.files').map { |l| l.strip! } |
+      File.readlines($builddir +'/rhodes_build.files').map { |l| l.strip! }
 
       sources.delete(nil)
 
@@ -666,9 +677,10 @@ namespace "package" do
     end
     
     def runProGuard(target_jar, lib_jar)
+	  jpath = $config["env"]["paths"]["java"]
+      javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
-      java = $config["env"]["paths"]["java"] + "/java.exe"
-      jde = $config["env"]["paths"][$bbver]["jde"]
+	  
       proguard =  File.join( $startdir, '/res/build-tools/proguard-4.5.1.jar' )
       out_jar = File.join( File.dirname(target_jar), File.basename(target_jar, File.extname(target_jar) ) + "_out.jar" )
       puts "****out jar: #{out_jar}"
