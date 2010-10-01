@@ -264,11 +264,14 @@ class Jake
   end
   
   def self.unjar(src,targetdir)
-    if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-    else
-      cmd =  $config["env"]["paths"]["java"] + "/jar"
-    end
+    jpath = $config["env"]["paths"]["java"]   
+    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
+  
+#    if RUBY_PLATFORM =~ /(win|w)32$/
+#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
+#    else
+#      cmd =  $config["env"]["paths"]["java"] + "/jar"
+#    end
 
       p = Pathname.new(src)
     src = p.realpath
@@ -284,12 +287,16 @@ class Jake
     puts run(cmd,args)
     chdir currentdir
   end
+  
   def self.jarfilelist(target)
-    if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-    else
-      cmd =  $config["env"]["paths"]["java"] + "/jar"
-    end
+    jpath = $config["env"]["paths"]["java"]   
+    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
+  
+#    if RUBY_PLATFORM =~ /(win|w)32$/
+#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
+#    else
+#      cmd =  $config["env"]["paths"]["java"] + "/jar"
+#    end
     target.gsub!(/"/,"")
 
     args = []
@@ -303,11 +310,10 @@ class Jake
   end
 
   def self.jar(target,manifest,files,isfolder=false)
-    if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-    else
-      cmd =  $config["env"]["paths"]["java"] + "/jar"
-    end
+    jpath = $config["env"]["paths"]["java"]   
+    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
+    #cmd +=  ".exe" if RUBY_PLATFORM =~ /(win|w)32$/
+	
     target.gsub!(/"/,"")
     
     args = []

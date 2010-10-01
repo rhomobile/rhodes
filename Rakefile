@@ -63,9 +63,16 @@ namespace "config" do
     
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
+      $rubypath = "res/build-tools/RhoRuby.exe"
     else
       $all_files_mask = "*"
+      if RUBY_PLATFORM =~ /darwin/
+        $rubypath = "res/build-tools/RubyMac"
+      else
+        $rubypath = "res/build-tools/rubylinux"
+      end
     end
+	
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
 
