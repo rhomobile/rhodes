@@ -1278,10 +1278,10 @@ namespace "run" do
 
       Jake.run($adb, ['kill-server'])	
       #Jake.run($adb, ['start-server'])	
-      adb_start_server = $adb + ' start-server'
-      Thread.new { system(adb_start_server) }
-      puts 'Sleep for 2 sec. waiting for "adb start-server"'
-      sleep 2
+      #adb_start_server = $adb + ' start-server'
+      Thread.new { Jake.run($adb, ['start-server']) }
+      puts 'Sleep for 5 sec. waiting for "adb start-server"'
+      sleep 5
 
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
       system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
@@ -1308,6 +1308,7 @@ namespace "run" do
           now = Time.now
           emulatorState = ""
           Jake.run2($adb,["-e", "get-state"],{:system => false, :hideerrors => :false}) do |line|
+            puts "RET: " + line
             emulatorState += line
           end
           if emulatorState =~ /unknown/
@@ -1316,7 +1317,7 @@ namespace "run" do
               # Restart the adb server every 60 seconds to prevent eternal waiting
               puts "Appears hung, restarting adb server"
               Jake.run($adb, ['kill-server'])
-              Thread.new { system(adb_start_server) }
+              Thread.new { Jake.run($adb, ['start-server']) }
               adbRestarts += 1
             else
               puts "Still waiting..."
