@@ -38,6 +38,7 @@ src\com\rho\IRhoLogSink.java
 src\com\rho\IRhoRubyHelper.java
 src\com\rho\Mutex.java
 src\com\rho\RhodesApp.java
+platform\bb\RubyVM\src\com\rho\RhoAppAdapter.java
 src\com\rho\SplashScreen.java
 src\com\rho\net\IHttpConnection.java
 src\com\rho\net\INetworkAccess.java
