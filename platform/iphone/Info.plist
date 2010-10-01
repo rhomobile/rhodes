@@ -12,12 +12,12 @@
 	<string>icon.png</string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>icon57</string>
-		<string>icon72</string>
-		<string>icon114</string>
+		<string>icon57.png</string>
+		<string>icon72.png</string>
+		<string>icon114.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>com.rhomobile.rhosyncclient</string>
+	<string>com.rhomobile.brian</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
