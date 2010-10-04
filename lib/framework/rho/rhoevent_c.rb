@@ -24,6 +24,7 @@ module Rho
         ret
       else
         id = args.first.to_s
+        id = $1 if id.is_a?(String) and id =~ /^{(.*)}$/
         Rho::Calendar.fetch(id)
       end
     end
@@ -33,6 +34,7 @@ module Rho
     end
 
     def self.destroy(id)
+      id = $1 if id.is_a?(String) and id =~ /^{(.*)}$/
       Rho::Calendar.delete(id)
     end
 

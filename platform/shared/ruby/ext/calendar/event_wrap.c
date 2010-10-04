@@ -1854,6 +1854,7 @@ SWIGEXPORT void Init_RhoEvent(void) {
   rb_define_const(mRhoEvent, "LOCATION", SWIG_FromCharPtr("location"));
   rb_define_const(mRhoEvent, "NOTES", SWIG_FromCharPtr("notes"));
   rb_define_const(mRhoEvent, "PRIVACY", SWIG_FromCharPtr("privacy"));
+  rb_define_const(mRhoEvent, "REMINDER", SWIG_FromCharPtr("reminder"));
   rb_define_const(mRhoEvent, "RECURRENCE", SWIG_FromCharPtr("recurrence"));
   rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY", SWIG_FromCharPtr("frequency"));
   rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY_DAILY", SWIG_FromCharPtr("daily"));
