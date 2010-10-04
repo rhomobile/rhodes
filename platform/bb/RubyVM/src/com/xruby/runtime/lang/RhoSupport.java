@@ -170,6 +170,8 @@ public class RhoSupport {
     {
     	if ( required_file.startsWith("/lib") )
     		required_file = required_file.substring(4);
+    	else if ( required_file.startsWith("/RhoBundle") )
+    		required_file = required_file.substring(10);
     	
         //remove ".rb" if has one
         if (required_file.endsWith(".rb")) {
