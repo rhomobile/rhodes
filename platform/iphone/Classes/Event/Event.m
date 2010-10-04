@@ -40,8 +40,7 @@ static VALUE dateToRuby(NSDate *date)
     
     [gregorian release];
     
-    ID id_mktime = rb_intern("mktime");
-    VALUE rDate = rb_funcall(rb_cTime, id_mktime, 7, INT2FIX(year), INT2FIX(month), INT2FIX(day),
+    VALUE rDate = rb_funcall(rb_cTime, rb_intern("utc"), 7, INT2FIX(year), INT2FIX(month), INT2FIX(day),
                              INT2FIX(hour), INT2FIX(minute), INT2FIX(second), INT2FIX(0));
     return rDate;
 }
