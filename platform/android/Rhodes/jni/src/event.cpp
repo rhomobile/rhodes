@@ -299,7 +299,7 @@ RHO_GLOBAL VALUE event_fetch(VALUE start_date, VALUE end_date)
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
     if (!cls) return Qnil;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/util/Date;Ljava/util/Date;)Ljava/util/Vector;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/util/Date;Ljava/util/Date;)Ljava/lang/Object;");
     if (!mid) return Qnil;
 
     RHO_TRACE("event_fetch (1)");
@@ -307,11 +307,20 @@ RHO_GLOBAL VALUE event_fetch(VALUE start_date, VALUE end_date)
     RHO_TRACE("event_fetch (2)");
     jobject jEndDate = date_cast<jobject>(end_date);
     RHO_TRACE("event_fetch (3)");
-    jobject jEvents = env->CallStaticObjectMethod(cls, mid, jStartDate, jEndDate);
+    jobject jRet = env->CallStaticObjectMethod(cls, mid, jStartDate, jEndDate);
     RHO_TRACE("event_fetch (4)");
     env->DeleteLocalRef(jStartDate);
     env->DeleteLocalRef(jEndDate);
-    if (!jEvents) return Qnil;
+
+    jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
+    if (!clsString) return Qnil;
+    if (env->IsInstanceOf(jRet, clsString))
+    {
+        std::string error = rho_cast<std::string>(env, (jstring)jRet);
+        env->DeleteLocalRef(jRet);
+        rb_raise(rb_eRuntimeError, "Can't fetch events: %s", error.c_str());
+        return Qnil;
+    }
 
     jclass clsVector = getJNIClass(RHODES_JAVA_CLASS_VECTOR);
     if (!clsVector) return Qnil;
@@ -324,10 +333,10 @@ RHO_GLOBAL VALUE event_fetch(VALUE start_date, VALUE end_date)
     VALUE ret = rb_ary_new();
 
     RHO_TRACE("event_fetch (6)");
-    for (int i = 0, lim = env->CallIntMethod(jEvents, midSize); i != lim; ++i)
+    for (int i = 0, lim = env->CallIntMethod(jRet, midSize); i != lim; ++i)
     {
         RHO_TRACE("event_fetch (6.1)");
-        jobject jEvent = env->CallObjectMethod(jEvents, midGet, i);
+        jobject jEvent = env->CallObjectMethod(jRet, midGet, i);
         RHO_TRACE("event_fetch (6.2)");
         VALUE rEvent = event_cast<VALUE>(jEvent);
         RHO_TRACE("event_fetch (6.3)");
@@ -338,7 +347,7 @@ RHO_GLOBAL VALUE event_fetch(VALUE start_date, VALUE end_date)
     }
 
     RHO_TRACE("event_fetch (7)");
-    env->DeleteLocalRef(jEvents);
+    env->DeleteLocalRef(jRet);
 
     return ret;
 }
@@ -348,18 +357,30 @@ RHO_GLOBAL VALUE event_fetch_by_id(const char *id)
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
     if (!cls) return Qnil;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/event/Event;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return Qnil;
+    jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
+    if (!clsString) return Qnil;
 
     RHO_TRACE("event_fetch_by_id (1)");
     jstring jId = rho_cast<jstring>(env, id);
     RHO_TRACE("event_fetch_by_id (2)");
-    jobject jEvent = env->CallStaticObjectMethod(cls, mid, jId);
+    jobject jRet = env->CallStaticObjectMethod(cls, mid, jId);
     RHO_TRACE("event_fetch_by_id (3)");
-    VALUE rEvent = event_cast<VALUE>(jEvent);
+    if (env->IsInstanceOf(jRet, clsString))
+    {
+        RHO_TRACE("event_fetch_by_id (3.1)");
+        std::string error = rho_cast<std::string>(env, (jstring)jRet);
+        RHO_TRACE("event_fetch_by_id (3.2)");
+        env->DeleteLocalRef(jRet);
+        RHO_TRACE("event_fetch_by_id (3.3)");
+        rb_raise(rb_eRuntimeError, "Can't fetch event with id %s: %s", id, error.c_str());
+        return Qnil;
+    }
+    VALUE rEvent = event_cast<VALUE>(jRet);
     RHO_TRACE("event_fetch_by_id (4)");
     env->DeleteLocalRef(jId);
-    env->DeleteLocalRef(jEvent);
+    env->DeleteLocalRef(jRet);
     return rEvent;
 }
 
