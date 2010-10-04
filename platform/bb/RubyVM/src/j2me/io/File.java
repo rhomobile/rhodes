@@ -41,11 +41,12 @@ public class File {
     
     public File(String path) 
     {
-        _path = path;
+        _path = path.replace('\\', '/');
         
         try
         {
             m_strFullPath = _path;
+            
             if ( m_strFullPath != null && m_strFullPath.length() > 0 && !m_strFullPath.startsWith("file:")) 
             	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
         	
@@ -58,7 +59,7 @@ public class File {
 
     public File(String path, String mode) 
     {
-        _path = path;
+        _path = path.replace('\\', '/');
         
         try
         {
@@ -79,8 +80,8 @@ public class File {
    
     public String getParent() {
         int index = _path.lastIndexOf('/');
-        if ( index < 0 )
-        	index = _path.lastIndexOf('\\');
+        //if ( index < 0 )
+        //	index = _path.lastIndexOf('\\');
         
         if (index < prefixLength) {
             if ((prefixLength > 0) && (_path.length() > prefixLength))
@@ -96,8 +97,8 @@ public class File {
     		return "";
     	
         int index = _path.lastIndexOf('/');
-        if ( index < 0 )
-        	index = _path.lastIndexOf('\\');
+        //if ( index < 0 )
+        //	index = _path.lastIndexOf('\\');
 
         if ( index < 0 )
         	return _path;
