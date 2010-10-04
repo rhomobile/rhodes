@@ -10,9 +10,3 @@
 #ifdef __IPHONE_4_0
 #import <EventKit/EventKit.h>
 #endif
-
-@interface Event : NSObject {
-
-}
-
-@end
