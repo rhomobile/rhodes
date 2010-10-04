@@ -11,7 +11,7 @@
 
 #include "ruby.h"
 #include "ruby/ext/rho/rhoruby.h"
-#include "ruby/ext/event/event.h"
+#include "ruby/ext/calendar/event.h"
 
 #include "logging/RhoLogConf.h"
 #include "logging/RhoLog.h"
@@ -94,7 +94,7 @@ static NSDate *dateFromRuby(VALUE rDate)
     return date;
 }
 
-static VALUE event2ruby(EKEvent *event)
+static VALUE eventToRuby(EKEvent *event)
 {
     if (!event)
         return Qnil;
@@ -145,49 +145,11 @@ static VALUE event2ruby(EKEvent *event)
     return rEvent;
 }
 
-VALUE event_fetch(VALUE start_date, VALUE end_date)
-{
-#if !defined(__IPHONE_4_0)
-    return rho_ruby_get_NIL();
-#else
-    NSDate *start = dateFromRuby(start_date);
-    NSDate *finish = dateFromRuby(end_date);
-    
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
-    NSPredicate *pred = [eventStore predicateForEventsWithStartDate:start endDate:finish calendars:nil];
-    NSArray *events = [eventStore eventsMatchingPredicate:pred];
-    
-    VALUE ret = rho_ruby_create_array();
-    
-    for (int i = 0, lim = [events count]; i != lim; ++i) {
-        EKEvent *event = [events objectAtIndex:i];
-        VALUE rEvent = event2ruby(event);
-        rho_ruby_add_to_array(ret, rEvent);
-    }
-    
-    return ret;
-#endif
-}
-
-VALUE event_fetch_by_id(const char *eid)
-{
-#if !defined(__IPHONE_4_0)
-    return rho_ruby_get_NIL();
-#else
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
-    EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
-    
-    return event2ruby(event);
-#endif
-}
-
-void event_save(VALUE rEvent)
+static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
 {
     VALUE rId = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_ID));
     if (!NIL_P(rId))
         Check_Type(rId, T_STRING);
-
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     
     EKEvent *event = nil;
     if (NIL_P(rId) || strlen(RSTRING_PTR(rId)) == 0) {
@@ -254,15 +216,63 @@ void event_save(VALUE rEvent)
         [rule release];
     }
     
+    return event;
+}
+
+VALUE event_fetch(VALUE start_date, VALUE end_date)
+{
+#if !defined(__IPHONE_4_0)
+    return rho_ruby_get_NIL();
+#else
+    NSDate *start = dateFromRuby(start_date);
+    NSDate *finish = dateFromRuby(end_date);
+    
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    NSPredicate *pred = [eventStore predicateForEventsWithStartDate:start endDate:finish calendars:nil];
+    NSArray *events = [eventStore eventsMatchingPredicate:pred];
+    
+    VALUE ret = rho_ruby_create_array();
+    
+    for (int i = 0, lim = [events count]; i != lim; ++i) {
+        EKEvent *event = [events objectAtIndex:i];
+        VALUE rEvent = eventToRuby(event);
+        rho_ruby_add_to_array(ret, rEvent);
+    }
+    
+    return ret;
+#endif
+}
+
+VALUE event_fetch_by_id(const char *eid)
+{
+#if !defined(__IPHONE_4_0)
+    return rho_ruby_get_NIL();
+#else
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
+    
+    return eventToRuby(event);
+#endif
+}
+
+void event_save(VALUE rEvent)
+{
+#if defined(__IPHONE_4_0)
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+
+    EKEvent *event = eventFromRuby(eventStore, rEvent);
+    
     NSError *err;
     BOOL saved = [eventStore saveEvent:event span:EKSpanFutureEvents error:&err];
     
     if (!saved)
         rb_raise(rb_eRuntimeError, "Event save failed: %s", [[err localizedDescription] UTF8String]);
+#endif
 }
 
 void event_delete(const char *eid)
 {
+#if defined(__IPHONE_4_0)
     EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
     NSError *err;
@@ -270,4 +280,5 @@ void event_delete(const char *eid)
     
     if (!removed)
         rb_raise(rb_eRuntimeError, "Event was not removed: %s", [[err localizedDescription] UTF8String]);
+#endif
 }

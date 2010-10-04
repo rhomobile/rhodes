@@ -1,8 +1,6 @@
-%module Calendar
+%module "Rho::Calendar"
 %{
 #include "ext/rho/rhoruby.h"
-extern VALUE openCalendar();
-extern void closeCalendar(VALUE c);
 
 extern VALUE event_fetch(VALUE start_date, VALUE end_date);
 #define fetch event_fetch
@@ -13,26 +11,6 @@ extern void event_save(VALUE event);
 extern void event_delete(const char *id);
 #define delete event_delete
 %}
-
-%ignore RUBY_EVENT_H;
-%rename(ID) RUBY_EV_ID;
-%rename(TITLE) RUBY_EV_TITLE;
-%rename(CANCELED) RUBY_EV_CANCELED;
-%rename(ORGANIZER) RUBY_EV_ORGANIZER;
-%rename(START_DATE) RUBY_EV_START_DATE;
-%rename(END_DATE) RUBY_EV_END_DATE;
-%rename(LAST_MODIFIED) RUBY_EV_LAST_MODIFIED;
-%rename(LOCATION) RUBY_EV_LOCATION;
-%rename(NOTES) RUBY_EV_NOTES;
-%rename(PRIVACY) RUBY_EV_PRIVACY;
-%rename(RECURRENCE) RUBY_EV_RECURRENCE;
-%rename(RECURRENCE_FREQUENCY) RUBY_EV_RECURRENCE_FREQUENCY;
-%rename(RECURRENCE_FREQUENCY_DAILY) RUBY_EV_RECURRENCE_FREQUENCY_DAILY;
-%rename(RECURRENCE_FREQUENCY_WEEKLY) RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY;
-%rename(RECURRENCE_FREQUENCY_MONTHLY) RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY;
-%rename(RECURRENCE_FREQUENCY_YEARLY) RUBY_EV_RECURRENCE_FREQUENCY_YEARLY;
-%rename(RECURRENCE_INTERVAL) RUBY_EV_RECURRENCE_INTERVAL;
-%include "event.h"
 
 %typemap(check) VALUE {
     VALUE cTime = rb_class_of($1);
@@ -51,6 +29,3 @@ extern void save(VALUE event);
 
 extern void delete(const char *id);
 
-
-extern VALUE openCalendar();
-extern void closeCalendar(VALUE c);
