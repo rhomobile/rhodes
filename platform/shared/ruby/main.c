@@ -194,6 +194,14 @@ void Init_NativeBar()
 {
 }
 
+void Init_RhoEvent()
+{
+}
+
+void Init_Calendar()
+{
+}
+
 void Init_MapView()
 {
 }
