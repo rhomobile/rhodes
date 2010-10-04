@@ -1,6 +1,9 @@
-%module Event
+%module Calendar
 %{
 #include "ext/rho/rhoruby.h"
+extern VALUE openCalendar();
+extern void closeCalendar(VALUE c);
+
 extern VALUE event_fetch(VALUE start_date, VALUE end_date);
 #define fetch event_fetch
 extern VALUE event_fetch_by_id(const char *id);
@@ -48,3 +51,6 @@ extern void save(VALUE event);
 
 extern void delete(const char *id);
 
+
+extern VALUE openCalendar();
+extern void closeCalendar(VALUE c);
