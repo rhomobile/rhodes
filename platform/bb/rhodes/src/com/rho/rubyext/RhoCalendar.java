@@ -21,7 +21,7 @@ public class RhoCalendar extends RubyBasic {
 	static final RubyString RUBY_EV_ID  = ObjectFactory.createString("id");
 	static final RubyString RUBY_EV_TITLE = ObjectFactory.createString("title");
 	static final RubyString RUBY_EV_CANCELED = ObjectFactory.createString("canceled");
-	static final RubyString RUBY_EV_ORGINIZER = ObjectFactory.createString("organizer");
+	static final RubyString RUBY_EV_ORGANIZER = ObjectFactory.createString("organizer");
 	static final RubyString RUBY_EV_ATTENDEES = ObjectFactory.createString("attendees");
 	static final RubyString RUBY_EV_START_DATE = ObjectFactory.createString("start_date");
 	static final RubyString RUBY_EV_END_DATE = ObjectFactory.createString("end_date");
@@ -387,7 +387,8 @@ public class RhoCalendar extends RubyBasic {
 		
 		Event matching = m_eventList.createEvent();
 		String id = arg1.toString();
-		id = id.substring(1, id.length()-1);
+		if (id != null && id.startsWith("{") && id.endsWith("}"))
+			id = id.substring(1, id.length()-1);
 		matching.addString(Event.UID, Event.ATTR_NONE, id);
 		java.util.Enumeration events = m_eventList.items(matching);
 		if (events.hasMoreElements())
@@ -477,6 +478,25 @@ public class RhoCalendar extends RubyBasic {
 		return RubyConstant.QTRUE;
 	}
 
+	public static void initConstants( RubyModule module)
+	{
+		module.setConstant("ID", RUBY_EV_ID);
+		module.setConstant("TITLE", RUBY_EV_TITLE);
+		module.setConstant("START_DATE", RUBY_EV_START_DATE);
+		module.setConstant("END_DATE", RUBY_EV_END_DATE);
+		module.setConstant("LOCATION", RUBY_EV_LOCATION);
+		module.setConstant("NOTES", RUBY_EV_NOTES);
+		module.setConstant("PRIVACY", RUBY_EV_PRIVACY);
+		module.setConstant("REMINDER", RUBY_EV_REMINDER);
+		module.setConstant("RECURRENCE", RUBY_EV_RECURRENCE);
+		module.setConstant("RECURRENCE_FREQUENCY", RUBY_EV_RECURRENCE_FREQUENCY);
+		module.setConstant("RECURRENCE_FREQUENCY_DAILY", RUBY_EV_RECURRENCE_FREQUENCY_DAILY);
+		module.setConstant("RECURRENCE_FREQUENCY_WEEKLY", RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY);
+		module.setConstant("RECURRENCE_FREQUENCY_MONTHLY", RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY);
+		module.setConstant("RECURRENCE_FREQUENCY_YEARLY", RUBY_EV_RECURRENCE_FREQUENCY_YEARLY);
+		module.setConstant("RECURRENCE_INTERVAL", RUBY_EV_RECURRENCE_INTERVAL);
+	}
+	
 	public static void initMethods( RubyClass klass)
 	{
 		klass.defineAllocMethod(new RubyNoArgMethod(){
