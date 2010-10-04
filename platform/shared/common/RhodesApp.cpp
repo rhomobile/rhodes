@@ -321,6 +321,13 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
 }
 
+void CRhodesApp::callBluetoothCallback(String strCallbackUrl, const char* body) {
+	strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+	String strBody = body;
+	strBody += "&rho_callback=1";
+	NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+}
+
 void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, const String &title)
 {
     if ( strCallbackUrl.length() == 0 )
@@ -996,6 +1003,10 @@ void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char*
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
+}
+
+void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char* body) {
+	RHODESAPP().callBluetoothCallback(strCallbackUrl, body);
 }
 
 void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id, const char *title)
