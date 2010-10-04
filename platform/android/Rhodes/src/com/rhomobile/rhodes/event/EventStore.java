@@ -64,7 +64,7 @@ public class EventStore {
 		}
 	}
 	
-	public static Vector<Event> fetch(Date startDate, Date endDate) {
+	public static Object fetch(Date startDate, Date endDate) {
 		try {
 			checkCapabilities();
 			
@@ -83,6 +83,8 @@ public class EventStore {
 						EVENTS_NOTES, EVENTS_PRIVACY},
 					null, //"Calendars._id=" + id,
 					null, "startDay ASC, startMinute ASC");
+			if (eventCursor == null)
+				throw new RuntimeException("Calendar provider not found");
 			/*
 			String where = String.format("(%s >= ? or %s >= ?) and (%s <= ? or %s <= ?)",
 					EVENTS_START_DATE, EVENTS_END_DATE, EVENTS_START_DATE, EVENTS_END_DATE);
@@ -124,11 +126,12 @@ public class EventStore {
 		}
 		catch (Exception e) {
 			reportFail("fetch(start, end)", e);
-			return null;
+			String error = e.getMessage();
+			return error == null ? "unknown" : error;
 		}
 	}
 	
-	public static Event fetch(String id) {
+	public static Object fetch(String id) {
 		try {
 			checkCapabilities();
 			
@@ -141,6 +144,9 @@ public class EventStore {
 					new String[] {EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
 						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
 					null, null, null);
+			if (eventCursor == null)
+				throw new RuntimeException("Calendar provider not found");
+			
 			try {
 				if (!eventCursor.moveToFirst()) {
 					Logger.D(TAG, "fetch(id): result set is empty");
@@ -171,7 +177,8 @@ public class EventStore {
 		}
 		catch (Exception e) {
 			reportFail("fetch(id)", e);
-			return null;
+			String error = e.getMessage();
+			return error == null ? "unknown" : error;
 		}
 	}
 	

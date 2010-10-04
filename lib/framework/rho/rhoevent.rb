@@ -3,6 +3,10 @@ require 'time'
 
 module Rho
 	module RhoEvent
+    # These values determined experimentally on iPhone
+    MIN_TIME = Time.utc(2007, 'jan', 1, 0, 0, 0)
+    MAX_TIME = Time.utc(2030, 'dec', 31, 23, 59, 59)
+
     def self.find(*args)
       raise ::Rhom::RecordNotFound if args[0].nil? or args.length == 0			
 
@@ -14,10 +18,16 @@ module Rho
           start = params[:start_date]
           finish = params[:end_date]
         end
-        start = Time.mktime(1900, 'jan', 1, 0, 0, 0, 0) if start.nil?
-        finish = Time.mktime(2200, 'dec', 31, 23, 59, 59, 0) if finish.nil?
+        start = MIN_TIME if start.nil? or start < MIN_TIME
+        finish = MAX_TIME if finish.nil? or finish > MAX_TIME
 
-        Rho::Calendar.fetch(start, finish)
+        events = Rho::Calendar.fetch(start, finish)
+
+        ret = {}
+        events.each do |e|
+          ret[e[Rho::RhoEvent::ID]] = e
+        end
+        ret
       else
         id = args.first.to_s
         Rho::Calendar.fetch(id)
