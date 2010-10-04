@@ -197,7 +197,8 @@
 		
 	view = [self clientView];
 	visibleRect = [[[self scrollView] contentView] bounds];
-	
+	visibleRect.origin.y -= 235;
+
 	lines = [self lineIndices];
 
 	location += NSMinY(visibleRect);
@@ -403,7 +404,7 @@
 		
 		yinset = [view textContainerInset].height;        
         visibleRect = [[[self scrollView] contentView] bounds];
-
+		visibleRect.origin.y -= 235;
         textAttributes = [self textAttributes];
 		
 		lines = [self lineIndices];
