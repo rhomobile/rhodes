@@ -157,6 +157,7 @@ using namespace ATL;
 
 #include "tcmalloc/rhomem.h"
 #include "logging/RhoLog.h"
+//#include <afxwin.h>
 
 #if defined(OS_WINDOWS)
 #include <atlapp.h>
