@@ -411,11 +411,13 @@ CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
             break;
         }
 
-        if (!pDownloadBuffer)
-            pDownloadBuffer = new char[nDownloadBufferSize];
+        if ( pNetResp->isOK() )
+        {
+            if (!pDownloadBuffer)
+                pDownloadBuffer = new char[nDownloadBufferSize];
 
-        readInetFile(m_hRequest,pNetResp, &oFile, pDownloadBuffer, nDownloadBufferSize);
-
+            readInetFile(m_hRequest,pNetResp, &oFile, pDownloadBuffer, nDownloadBufferSize);
+        }
     }while(0);
 
     if (pDownloadBuffer)
