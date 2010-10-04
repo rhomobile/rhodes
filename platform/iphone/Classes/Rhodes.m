@@ -31,6 +31,9 @@ static BOOL app_created = NO;
 @implementation Rhodes
 
 @synthesize window, player, cookies, signatureDelegate;
+#ifdef __IPHONE_4_0
+@synthesize eventStore;
+#endif
 
 static Rhodes *instance = NULL;
 
@@ -424,6 +427,10 @@ static Rhodes *instance = NULL;
 #ifdef __IPHONE_3_0
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+#endif
+    
+#ifdef __IPHONE_4_0
+    eventStore = [[EKEventStore alloc] init];
 #endif
 
     NSLog(@"Initialization finished");
