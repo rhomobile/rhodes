@@ -19,10 +19,16 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Event"
 
-@implementation Event
+static void calendar_check()
+{
+#if defined(__IPHONE_4_0)
+    NSString *version = [[UIDevice currentDevice] systemVersion];
+    if ([version hasPrefix:@"3."] || [version hasPrefix:@"2."])
+#endif
+        rb_raise(rb_eRuntimeError, "No calendar support on this device");
+}
 
-@end
-
+#ifdef __IPHONE_4_0
 static VALUE dateToRuby(NSDate *date)
 {
     NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -217,12 +223,13 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
     
     return event;
 }
+#endif // __IPHONE_4_0
 
 VALUE event_fetch(VALUE start_date, VALUE end_date)
 {
-#if !defined(__IPHONE_4_0)
-    return rho_ruby_get_NIL();
-#else
+    calendar_check();
+    
+#if defined(__IPHONE_4_0)
     NSDate *start = dateFromRuby(start_date);
     NSDate *finish = dateFromRuby(end_date);
     
@@ -244,9 +251,9 @@ VALUE event_fetch(VALUE start_date, VALUE end_date)
 
 VALUE event_fetch_by_id(const char *eid)
 {
-#if !defined(__IPHONE_4_0)
-    return rho_ruby_get_NIL();
-#else
+    calendar_check();
+    
+#if defined(__IPHONE_4_0)
     EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
     
@@ -256,6 +263,8 @@ VALUE event_fetch_by_id(const char *eid)
 
 void event_save(VALUE rEvent)
 {
+    calendar_check();
+    
 #if defined(__IPHONE_4_0)
     EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
 
@@ -271,6 +280,8 @@ void event_save(VALUE rEvent)
 
 void event_delete(const char *eid)
 {
+    calendar_check();
+    
 #if defined(__IPHONE_4_0)
     EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
