@@ -33,6 +33,12 @@ module Rho
           puts "Can't find event " + properties['id']
         else
           properties.each do |key,value|
+            if key == 'start_date' or key == 'end_date'
+              value = Time.parse(value) if value.is_a? String
+            end
+            if key == 'reminder' and value.is_a?(String) and value.empty?
+              next
+            end
             Calendar::setEventValue(record,key,value)
           end
           Calendar::addEvent(pb,record)
