@@ -19,6 +19,7 @@ extern "C" {
 #define RUBY_EV_LOCATION "location"
 #define RUBY_EV_NOTES "notes"
 #define RUBY_EV_PRIVACY "privacy"
+#define RUBY_EV_REMINDER "reminder"
 #define RUBY_EV_RECURRENCE "recurrence"
 #define RUBY_EV_RECURRENCE_FREQUENCY "frequency"
 #define RUBY_EV_RECURRENCE_FREQUENCY_DAILY "daily"
