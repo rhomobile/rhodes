@@ -55,7 +55,7 @@ public class RubyFile extends RubyIO {
     public static RubyValue exist_question(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
         boolean bExist = false;
-        if ( fileName.startsWith("/apps"))
+        if ( fileName.startsWith("/apps") || fileName.startsWith("/lib") || fileName.startsWith("/RhoBundle") )
         	bExist = RhoSupport.findClass(fileName)!=null;
 
         if ( !bExist )
@@ -138,13 +138,15 @@ public class RubyFile extends RubyIO {
         String fileName = arg.toStr();
         File file = new File(fileName);
         String parent = file.getParent();
-        if (parent == null) {
-            return ObjectFactory.createString(StringMe.matches(fileName, "\\/+") ? "/" : ".");
-        }
+        
+        return ObjectFactory.createString(parent != null ? parent : "/");
+        //if (parent == null) {
+        //    return ObjectFactory.createString(StringMe.matches(fileName, "\\/+") ? "/" : ".");
+        //}
 
         //Java's File.getParent() always converts '/' to '\\' on windows. This is not
         //what we want, so here we hack the result with replace().
-        return ObjectFactory.createString(parent.replace('\\', '/'));
+        //return ObjectFactory.createString(parent.replace('\\', '/'));
     }
 
     //@RubyLevelMethod(name="mtime", singleton=true)
