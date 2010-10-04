@@ -292,7 +292,6 @@ private:
 
 #endif // OS_WINDOWS
 
-
 extern "C" int rho_bluetooth_is_bluetooth_available();
 
 extern "C" void rho_bluetooth_off_bluetooth();
@@ -318,6 +317,5 @@ extern "C" void rho_bluetooth_session_write_string(const char* connected_device_
 extern "C" VALUE rho_bluetooth_session_read_data(const char* connected_device_name);
 
 extern "C" void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data);
-
 
 

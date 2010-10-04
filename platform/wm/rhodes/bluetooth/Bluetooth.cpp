@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 
-#ifndef OS_WINDOWS
 
 
 #if defined(_WIN32_WCE)
@@ -17,6 +16,7 @@
 
 #include "../Utils.h"
 
+#ifndef OS_WINDOWS
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)
