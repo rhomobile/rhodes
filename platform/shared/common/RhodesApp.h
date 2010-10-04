@@ -85,6 +85,7 @@ public:
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
+	void callBluetoothCallback(String strCallbackUrl, const char* body);
     void callAppActiveCallback(boolean bActive);
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
 
@@ -161,6 +162,7 @@ void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* st
 void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
   const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
+void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char* body);
 void rho_rhodesapp_callAppActiveCallback(int nActive);
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
