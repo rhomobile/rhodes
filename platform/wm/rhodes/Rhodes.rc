@@ -207,6 +207,21 @@ BEGIN
     LTEXT           "Time:",IDC_TIME_STATIC,7,3,27,8
 END
 
+IDD_BLUETOOTH_DISCOVER DIALOG  0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    LISTBOX         IDC_BT_LIST,7,34,145,77,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CTEXT           "Please wait while searching devices ...",IDC_BT_STATIC,7,19,144,8
+END
+
+IDD_BLUETOOTH_DISCOVERED DIALOG  0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    CTEXT           "Wait for connection ...",IDC_STATIC,10,49,130,16
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -266,6 +281,22 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 162
         TOPMARGIN, 1
+    END
+
+    IDD_BLUETOOTH_DISCOVER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
+    END
+
+    IDD_BLUETOOTH_DISCOVERED, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
     END
 END
 #endif    // APSTUDIO_INVOKED

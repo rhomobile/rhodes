@@ -39,6 +39,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	  
 	public void initRubyExtensions(){
         RhoPhonebook.initMethods(RubyRuntime.PhonebookClass);
+        RhoCalendar.initConstants(RubyRuntime.EventModule);
         RhoCalendar.initMethods(RubyRuntime.CalendarClass);
         Camera.initMethods(RubyRuntime.CameraClass);
         WebView.initMethods(RubyRuntime.WebViewClass);

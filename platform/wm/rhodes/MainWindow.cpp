@@ -25,6 +25,8 @@
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
+#include "bluetooth/Bluetooth.h"
+
 
 #include <hash_map>
 
@@ -530,6 +532,28 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 	return 0;
 }
+
+LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
+	dlg->openDialog(RhoBluetoothManager::getInstance());
+	return 0;
+}
+
+LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
+	dlg->openDialog(RhoBluetoothManager::getInstance());
+	return 0;
+}
+
+LRESULT CMainWindow::OnBluetoothCallback(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	char* callback_url = (char*)wParam;
+	char* body = (char*)lParam;
+	rho_rhodesapp_callBluetoothCallback(callback_url, body);
+	delete callback_url;
+	delete body;
+	return 0;
+}	
+
 
 LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
