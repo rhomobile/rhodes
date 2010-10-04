@@ -10,7 +10,6 @@ describe "AsyncHttp" do
         File.delete(file_name) if File.exists?(file_name)		
     end
     
-    
     it "should http get" do
         return unless $is_network_available
         
@@ -38,7 +37,7 @@ describe "AsyncHttp" do
         
         #TODO: post_test
     end
-    
+
     it "should http download" do
         return unless $is_network_available
 
@@ -56,7 +55,32 @@ describe "AsyncHttp" do
         res['headers']['content-type'].should == 'image/jpeg'
 
         File.exists?(file_name).should == true
-        File.size(file_name).should == res['headers']['content-length'].to_i
+        orig_len = File.size(file_name)
+        orig_len.should == res['headers']['content-length'].to_i
+
+        #check that in case of one more download, files keeps the same        
+        res = Rho::AsyncHttp.download_file(
+          :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
+          :filename => file_name )
+        #puts "res : #{res}"  
+        
+        res['status'].should == 'ok'
+        res['headers']['content-length'].to_i.should ==  0
+        #res['headers']['content-type'].should == 'image/jpeg'
+
+        File.exists?(file_name).should == true
+        File.size(file_name).should == orig_len
+
+        #check that in case of network error, files keeps the same        
+        res = Rho::AsyncHttp.download_file(
+          :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21__BAD.jpg',
+          :filename => file_name )
+        #puts "res : #{res}"  
+        res['status'].should == 'error'
+        res['http_error'].should == '404'
+
+        File.exists?(file_name).should == true
+        File.size(file_name).should == orig_len
     end
 
     it "should http upload" do
