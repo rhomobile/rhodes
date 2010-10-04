@@ -19,7 +19,7 @@ class SpecRunner < MSpecScript
           {:schema_model=>false, :sync_model=>true}, {:schema_model=>false, :sync_model=>false} ] ]
 
     config[:files] << "spec/contacts_spec" unless System.get_property('device_name') == 'Win32'
-    config[:files] << "spec/events_spec" if System.get_property('platform') == 'Blackberry'    
+    config[:files] << "spec/events_spec" unless System.get_property('platform') == 'WINDOWS'
     
     config[:files] << "spec/barcode_spec" unless System.get_property('device_name') == 'Win32'            
     config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
