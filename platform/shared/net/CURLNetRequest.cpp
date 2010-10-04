@@ -53,7 +53,7 @@ public:
 
     virtual boolean isOK()
     {
-        return m_nRespCode == 200;
+        return m_nRespCode == 200 || m_nRespCode == 206;
     }
     
     virtual boolean isUnathorized()
@@ -183,7 +183,11 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         long statusCode = 0;
         if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
             statusCode = 500;
-        if (statusCode == 206) {
+		
+		if (statusCode == 416 )
+		{
+			//Do nothing, file is already loaded
+		}else if (statusCode == 206) {
             if (oFile)
                 oFile->write(strRespChunk.c_str(), strRespChunk.size());
             else
@@ -222,7 +226,7 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     RAWLOG_INFO2("Pull file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
     
     common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForWrite) ) 
+    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
     {
         RAWLOG_ERROR1("pullFile: cannot create file: %s", strFilePath.c_str());
         return new CURLNetResponseImpl("", nRespCode);
@@ -356,14 +360,18 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
 
 int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession )	
 {    
-    if (err != CURLE_OK)
-        return -1;
+    //if (err != CURLE_OK)
+    //    return -1;
 	
     long statusCode = 0;
     CURL *curl = m_curl.curl();
     if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
         statusCode = 500;
     
+	if (statusCode == 416) {
+		statusCode = 206;
+	}
+	
     if (statusCode >= 400) {
         RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
                       (int)statusCode, strRespBody.c_str());
@@ -658,7 +666,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             result = msg->data.result;
         if (result == CURLE_OK && noactivity >= timeout)
             result = CURLE_OPERATION_TIMEDOUT;
-        if (result == CURLE_OK)
+        if (result == CURLE_OK || result == CURLE_PARTIAL_FILE)
             RAWTRACE("Operation completed successfully");
         else
             RAWLOG_ERROR2("Operation finished with error %d: %s", (int)result, curl_easy_strerror(result));
