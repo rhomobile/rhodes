@@ -1532,10 +1532,10 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    Init_Calendar
-#define SWIG_name    "Rho::Calendar"
+#define SWIG_init    Init_RhoEvent
+#define SWIG_name    "Rho::RhoEvent"
 
-static VALUE mCalendar;
+static VALUE mRhoEvent;
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
@@ -1543,18 +1543,6 @@ static VALUE mCalendar;
 
 #define SWIG_as_voidptr(a) (void *)((const void *)(a)) 
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
-
-
-#include "ext/rho/rhoruby.h"
-
-extern VALUE event_fetch(VALUE start_date, VALUE end_date);
-#define fetch event_fetch
-extern VALUE event_fetch_by_id(const char *id);
-#define fetch_by_id event_fetch_by_id
-extern void event_save(VALUE event);
-#define save event_save
-extern void event_delete(const char *id);
-#define delete event_delete
 
 
 SWIGINTERN swig_type_info*
@@ -1570,179 +1558,28 @@ SWIG_pchar_descriptor(void)
 }
 
 
-SWIGINTERN int
-SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
 {
-  if (TYPE(obj) == T_STRING) {
-    
-
-
-    char *cstr = STR2CSTR(obj);
-    
-    size_t size = RSTRING_LEN(obj) + 1;
-    if (cptr)  {
-      if (alloc) {
-	if (*alloc == SWIG_NEWOBJ) {
-	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
-	} else {
-	  *cptr = cstr;
-	  *alloc = SWIG_OLDOBJ;
-	}
-      }
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, (long)(size));
     }
-    if (psize) *psize = size;
-    return SWIG_OK;
   } else {
-    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-    if (pchar_descriptor) {
-      void* vptr = 0;
-      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
-	if (cptr) *cptr = (char *)vptr;
-	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
-	if (alloc) *alloc = SWIG_OLDOBJ;
-	return SWIG_OK;
-      }
-    }
-  }  
-  return SWIG_TypeError;
+    return Qnil;
+  }
 }
 
 
-
-
-SWIGINTERN VALUE
-_wrap_fetch__SWIG_0(int argc, VALUE *argv, VALUE self) {
-  VALUE arg1 = (VALUE) 0 ;
-  VALUE arg2 = (VALUE) 0 ;
-  VALUE result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  arg1 = argv[0];
-  arg2 = argv[1];
-  {
-    VALUE cTime = rb_class_of(arg1);
-    if (!rb_equal(cTime, rb_cTime))
-    rb_raise(rb_eArgError, "Time expected");
-  }
-  {
-    VALUE cTime = rb_class_of(arg2);
-    if (!rb_equal(cTime, rb_cTime))
-    rb_raise(rb_eArgError, "Time expected");
-  }
-  result = (VALUE)fetch(arg1,arg2);
-  vresult = result;
-  return vresult;
-fail:
-  return Qnil;
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
-
-
-SWIGINTERN VALUE
-_wrap_fetch__SWIG_1(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  VALUE result;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fetch_by_id" "', argument " "1"" of type '" "char const *""'");
-  }
-  arg1 = (char *)(buf1);
-  result = (VALUE)fetch_by_id((char const *)arg1);
-  vresult = result;
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return vresult;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE _wrap_fetch(int nargs, VALUE *args, VALUE self) {
-  int argc;
-  VALUE argv[2];
-  int ii;
-  
-  argc = nargs;
-  if (argc > 2) SWIG_fail;
-  for (ii = 0; (ii < argc); ii++) {
-    argv[ii] = args[ii];
-  }
-  if (argc == 1) {
-    int _v;
-    int res = SWIG_AsCharPtrAndSize(argv[0], 0, NULL, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      return _wrap_fetch__SWIG_1(nargs, args, self);
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    _v = (argv[0] != 0);
-    if (_v) {
-      _v = (argv[1] != 0);
-      if (_v) {
-        return _wrap_fetch__SWIG_0(nargs, args, self);
-      }
-    }
-  }
-  
-fail:
-  rb_raise(rb_eArgError, "No matching function for overloaded 'fetch'");
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_save(int argc, VALUE *argv, VALUE self) {
-  VALUE arg1 = (VALUE) 0 ;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  arg1 = argv[0];
-  {
-    Check_Type(arg1, T_HASH);
-  }
-  save(arg1);
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_delete(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete" "', argument " "1"" of type '" "char const *""'");
-  }
-  arg1 = (char *)(buf1);
-  delete((char const *)arg1);
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-}
-
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
@@ -1994,12 +1831,12 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C"
 #endif
-SWIGEXPORT void Init_Calendar(void) {
+SWIGEXPORT void Init_RhoEvent(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mCalendar = rb_define_module("Rho");
-  mCalendar = rb_define_module_under(mCalendar, "Calendar");
+  mRhoEvent = rb_define_module("Rho");
+  mRhoEvent = rb_define_module_under(mRhoEvent, "RhoEvent");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -2007,8 +1844,22 @@ SWIGEXPORT void Init_Calendar(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mCalendar, "fetch", _wrap_fetch, -1);
-  rb_define_module_function(mCalendar, "save", _wrap_save, -1);
-  rb_define_module_function(mCalendar, "delete", _wrap_delete, -1);
+  rb_define_const(mRhoEvent, "ID", SWIG_FromCharPtr("id"));
+  rb_define_const(mRhoEvent, "TITLE", SWIG_FromCharPtr("title"));
+  rb_define_const(mRhoEvent, "CANCELED", SWIG_FromCharPtr("canceled"));
+  rb_define_const(mRhoEvent, "ORGANIZER", SWIG_FromCharPtr("organizer"));
+  rb_define_const(mRhoEvent, "START_DATE", SWIG_FromCharPtr("start_date"));
+  rb_define_const(mRhoEvent, "END_DATE", SWIG_FromCharPtr("end_date"));
+  rb_define_const(mRhoEvent, "LAST_MODIFIED", SWIG_FromCharPtr("last_modified"));
+  rb_define_const(mRhoEvent, "LOCATION", SWIG_FromCharPtr("location"));
+  rb_define_const(mRhoEvent, "NOTES", SWIG_FromCharPtr("notes"));
+  rb_define_const(mRhoEvent, "PRIVACY", SWIG_FromCharPtr("privacy"));
+  rb_define_const(mRhoEvent, "RECURRENCE", SWIG_FromCharPtr("recurrence"));
+  rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY", SWIG_FromCharPtr("frequency"));
+  rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY_DAILY", SWIG_FromCharPtr("daily"));
+  rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY_WEEKLY", SWIG_FromCharPtr("weekly"));
+  rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY_MONTHLY", SWIG_FromCharPtr("monthly"));
+  rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY_YEARLY", SWIG_FromCharPtr("yearly"));
+  rb_define_const(mRhoEvent, "RECURRENCE_INTERVAL", SWIG_FromCharPtr("interval"));
 }
 

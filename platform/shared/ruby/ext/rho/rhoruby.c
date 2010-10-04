@@ -43,7 +43,8 @@ extern void Init_RingtoneManager(void);
 extern void Init_socket(void);
 extern void Init_AsyncHttp(void);
 extern void Init_NavBar(void);
-extern void Init_Event(void);
+extern void Init_RhoEvent(void);
+extern void Init_Calendar(void);
 extern void Init_Extensions(void);
 
 //RhoSupport extension
@@ -170,7 +171,8 @@ void RhoRubyStart()
     Init_RingtoneManager();
     Init_socket();
     Init_NavBar();
-    Init_Event();
+    Init_RhoEvent();
+    Init_Calendar();
     Init_Extensions();
 
 #ifdef ENABLE_RUBY_VM_STAT
