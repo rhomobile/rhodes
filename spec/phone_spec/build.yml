@@ -18,7 +18,6 @@ android:
   mapping: enabled
   capabilities:
     - network_state
-    - pim
     
   extensions: ["barcode"]
   
@@ -29,7 +28,9 @@ bb:
   extensions: ["barcode"]
       
 capabilities:
+  - pim
   - push
+  - calendar
      
 extensions: ["json", "rhoxml", "rhospec", "crypt"]  
 
