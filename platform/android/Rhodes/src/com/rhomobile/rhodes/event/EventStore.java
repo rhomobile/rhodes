@@ -175,7 +175,7 @@ public class EventStore {
 		}
 	}
 	
-	public static void save(Event event) {
+	public static String save(Event event) {
 		try {
 			checkCapabilities();
 			
@@ -218,13 +218,17 @@ public class EventStore {
 				r.update(uri, values, null, null);
 				Logger.D(TAG, "Event updated");
 			}
+			
+			return null;
 		}
 		catch (Exception e) {
 			reportFail("save", e);
+			String error = e.getMessage();
+			return error == null ? "unknown" : error;
 		}
 	}
 	
-	public static void delete(String id) {
+	public static String delete(String id) {
 		try {
 			checkCapabilities();
 			
@@ -232,9 +236,13 @@ public class EventStore {
 			
 			int rows = getContentResolver().delete(EVENTS_URI, "_id=?", new String[] {id});
 			Logger.D(TAG, String.format("%d rows deleted", rows));
+			
+			return null;
 		}
 		catch (Exception e) {
 			reportFail("delete", e);
+			String error = e.getMessage();
+			return error == null ? "unknown" : error;
 		}
 	}
 	
