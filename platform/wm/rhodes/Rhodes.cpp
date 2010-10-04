@@ -503,6 +503,14 @@ extern "C" void Init_NavBar(void)
 {
 }
 
+extern "C" void Init_RhoEvent()
+{
+}
+
+extern "C" void Init_Calendar()
+{
+}
+
 /*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	char buf[255] = {0};
