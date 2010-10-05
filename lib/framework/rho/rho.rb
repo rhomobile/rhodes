@@ -333,7 +333,7 @@ module Rho
                 #TODO: support column type
             end
 
-            strCols += ",object varchar(255) PRIMARY KEY"
+            strCols += ",\"object\" varchar(255) PRIMARY KEY"
             strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
           end
 
