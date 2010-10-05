@@ -523,6 +523,9 @@ int CSyncNotify::getLastSyncObjectCount(int nSrcID)
 
 void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCode, String strMessage)
 {
+	if ( getSync().isStoppedByUser() )
+		return;
+
 	//try{
     String strBody = "error_code=" + convertToStringA(nErrCode);
     strBody += "&error_message=";

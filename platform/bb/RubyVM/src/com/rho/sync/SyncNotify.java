@@ -577,6 +577,9 @@ public class SyncNotify {
 	void callLoginCallback(String callback, int nErrCode, String strMessage)
 	{
 		try{
+			if ( getSync().isStoppedByUser() )
+				return;
+			
 		    String strBody = "error_code=" + nErrCode;
 	        strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
 	        strBody += "&rho_callback=1";

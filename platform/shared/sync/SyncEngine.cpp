@@ -717,6 +717,7 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
         " \"belongs_to\":{\"brand\":\"Customer\"}}}}");//, \"schema_version\":\"1.0\"
 */
     PROF_START("Login");
+    m_bStopByUser = false;
 	//try {
 
     NetResponse( resp, getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this ) );
@@ -734,7 +735,10 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
         return;
     }
-	
+
+   	if ( isStoppedByUser() )
+        return;
+
 	{
 		DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
 		if ( !res.isEnd() )
@@ -780,6 +784,10 @@ String CSyncEngine::loadSession()
 
 void CSyncEngine::logout()
 {
+    m_bStopByUser = true;
+    if(m_NetRequest) 
+        m_NetRequest->cancel();
+
     getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";
 

@@ -825,6 +825,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        " \"belongs_to\":{\"brand\":\"Customer\"}}}}");//, \"schema_version\":\"1.0\"
 	        */
 		    NetResponse resp = null;
+		    m_bStopByUser = false;
 		    
 		    try{
 				
@@ -849,6 +850,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
 		        return;
 		    }
+		    
+		    if ( isStoppedByUser() )
+		    	return;
 		    
 		    IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
 		    if ( !res.isEnd() )
@@ -892,6 +896,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	public void logout()throws Exception
 	{
+	    m_bStopByUser = true;
+	    if(m_NetRequest!=null) 
+	        m_NetRequest.cancel();
+		
 		getUserDB().executeSQL( "UPDATE client_info SET session = NULL");
 	    m_strSession = "";
 	
