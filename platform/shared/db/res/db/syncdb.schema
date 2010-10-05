@@ -1,44 +1,44 @@
 CREATE TABLE client_info (
- client_id VARCHAR(255) default NULL,
- session VARCHAR(255) default NULL,
- token VARCHAR(255) default NULL,
- token_sent BIGINT default 0,
- reset BIGINT default 0,
- port VARCHAR(10) default NULL,
- last_sync_success VARCHAR(100) default NULL);
+ "client_id" VARCHAR(255) default NULL,
+ "session" VARCHAR(255) default NULL,
+ "token" VARCHAR(255) default NULL,
+ "token_sent" BIGINT default 0,
+ "reset" BIGINT default 0,
+ "port" VARCHAR(10) default NULL,
+ "last_sync_success" VARCHAR(100) default NULL);
 CREATE TABLE object_values (
- source_id BIGINT default NULL,
- attrib varchar(255) default NULL,
- object varchar(255) default NULL,
- value varchar default NULL);
+ "source_id" BIGINT default NULL,
+ "attrib" varchar(255) default NULL,
+ "object" varchar(255) default NULL,
+ "value" varchar default NULL);
 CREATE TABLE changed_values (
- source_id BIGINT default NULL,
- attrib varchar(255) default NULL,
- object varchar(255) default NULL,
- value varchar default NULL,
- attrib_type varchar(255) default NULL,
- update_type varchar(255) default NULL,
- sent BIGINT default 0);
+ "source_id" BIGINT default NULL,
+ "attrib" varchar(255) default NULL,
+ "object" varchar(255) default NULL,
+ "value" varchar default NULL,
+ "attrib_type" varchar(255) default NULL,
+ "update_type" varchar(255) default NULL,
+ "sent" BIGINT default 0);
 CREATE TABLE sources (
- source_id BIGINT PRIMARY KEY,
- name VARCHAR(255) default NULL,
- token BIGINT default NULL,
- sync_priority BIGINT,
- partition VARCHAR(255),
- sync_type VARCHAR(255),
- metadata varchar default NULL, 
- last_updated BIGINT default 0,
- last_inserted_size BIGINT default 0,
- last_deleted_size BIGINT default 0,
- last_sync_duration BIGINT default 0,
- last_sync_success BIGINT default 0,
- backend_refresh_time BIGINT default 0,
- source_attribs varchar default NULL,
- schema varchar default NULL,
- schema_version varchar default NULL,
- associations varchar default NULL,
- blob_attribs varchar default NULL);
-CREATE INDEX by_src_id on object_values (source_id);
-CREATE UNIQUE INDEX by_src_object ON object_values (object, attrib, source_id);
-CREATE INDEX by_src_value ON object_values (attrib, source_id, value);
+ "source_id" BIGINT PRIMARY KEY,
+ "name" VARCHAR(255) default NULL,
+ "token" BIGINT default NULL,
+ "sync_priority" BIGINT,
+ "partition" VARCHAR(255),
+ "sync_type" VARCHAR(255),
+ "metadata" varchar default NULL, 
+ "last_updated" BIGINT default 0,
+ "last_inserted_size" BIGINT default 0,
+ "last_deleted_size" BIGINT default 0,
+ "last_sync_duration" BIGINT default 0,
+ "last_sync_success" BIGINT default 0,
+ "backend_refresh_time" BIGINT default 0,
+ "source_attribs" varchar default NULL,
+ "schema" varchar default NULL,
+ "schema_version" varchar default NULL,
+ "associations" varchar default NULL,
+ "blob_attribs" varchar default NULL);
+CREATE INDEX by_src_id on object_values ("source_id");
+CREATE UNIQUE INDEX by_src_object ON object_values ("object", "attrib", "source_id");
+CREATE INDEX by_src_value ON object_values ("attrib", "source_id", "value");
 
