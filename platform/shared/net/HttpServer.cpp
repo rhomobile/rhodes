@@ -154,6 +154,7 @@ static String get_mime_type(String const &path)
         {".torrent",	8,	"application/x-bittorrent"      },
         {".wav",		4,	"audio/x-wav"                   },
         {".mp3",		4,	"audio/x-mp3"                   },
+        {".mp4",        4,  "video/mp4"                     },
         {".mid",		4,	"audio/mid"                     },
         {".m3u",		4,	"audio/x-mpegurl"               },
         {".ram",		4,	"audio/x-pn-realaudio"          },
