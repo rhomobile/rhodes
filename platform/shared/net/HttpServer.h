@@ -72,7 +72,7 @@ public:
     
     void register_uri(String const &uri, callback_t const &callback);
 
-    bool started() const {return !m_exit;}
+    bool started() const {return m_active;}
     
     bool run();
     void stop();
@@ -87,6 +87,7 @@ public:
     
 private:
     bool init();
+    void close_listener();
     bool process(SOCKET sock);
     bool parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body);
     bool parse_startline(String const &line, String &method, String &uri, String &query);
@@ -107,7 +108,7 @@ private:
     callback_t registered(String const &uri);
     
 private:
-    bool m_exit;
+    bool m_active;
     int m_port;
     String m_root, m_strRhoRoot;
     SOCKET m_listener;

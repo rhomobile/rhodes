@@ -232,22 +232,28 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_port(port), verbose(true)
+    :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
-	m_exit = true;
 }
 
 CHttpServer::~CHttpServer()
 {
 }
 
+void CHttpServer::close_listener()
+{
+    SOCKET l = m_listener;
+    m_listener = INVALID_SOCKET;
+    closesocket(l);
+}
+
 void CHttpServer::stop()
 {
-	m_exit = true;
-	RAWTRACE("Close listening socket");
-	closesocket(m_listener);
+    m_active = false;
+    RAWTRACE("Close listening socket");
+    close_listener();
 }
 
 void CHttpServer::register_uri(String const &uri, CHttpServer::callback_t const &callback)
@@ -279,8 +285,7 @@ bool CHttpServer::init()
 {
     RAWTRACE("Open listening socket...");
     
-    if (m_listener != INVALID_SOCKET)
-        closesocket(m_listener);
+    close_listener();
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     if (m_listener == INVALID_SOCKET) {
         RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
@@ -290,6 +295,7 @@ bool CHttpServer::init()
     int enable = 1;
     if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
+        close_listener();
         return false;
     }
     
@@ -300,11 +306,13 @@ bool CHttpServer::init()
     sa.sin_addr.s_addr = INADDR_ANY;
     if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
         RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
+        close_listener();
         return false;
     }
     
     if (listen(m_listener, 128) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
+        close_listener();
         return false;
     }
     
@@ -318,17 +326,17 @@ bool CHttpServer::run()
     if (!init())
         return false;
     
-    m_exit = false;
+    m_active = true;
     
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
         SOCKET conn = accept(m_listener, NULL, NULL);
         rho_ruby_stop_threadidle();
-		if (m_exit) {
-			RAWTRACE("Stop HTTP server");
-			return true;
-		}
+        if (!m_active) {
+            RAWTRACE("Stop HTTP server");
+            return true;
+        }
         if (conn == INVALID_SOCKET) {
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
             if (RHO_NET_ERROR_CODE == EINTR)
