@@ -236,10 +236,12 @@ public:
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
     LOG(INFO) + "callAppActiveCallback";
+    int stop = !rho_conf_getBool("dont_stop_local_server_in_background");
     if (bActive)
     {
-        if (m_activateCounter++ > 0)
-            this->stopWait();
+        if (stop)
+            if (m_activateCounter++ > 0)
+                this->stopWait();
         
         String strUrl = m_strHomeUrl + "/system/activateapp";
         // Activation callback need to be runned in separate thread
@@ -261,7 +263,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         NetResponse(resp,getNet().pullData( strUrl, null ));
         if ( !resp.isOK() )
             LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        m_httpServer->stop();
+        if (stop)
+            m_httpServer->stop();
         m_bDeactivationMode = false;
     }
 }
