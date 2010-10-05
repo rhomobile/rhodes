@@ -90,8 +90,8 @@ describe "Events" do
     event['notes'].should == 'notes2'
     event['reminder'].should == 100 if System::get_property('platform') == 'Blackberry'
     event['privacy'].should == 'confidential' unless System::get_property('platform') == 'APPLE'
-    event['start_date'].should == start_date
-    event['end_date'].should == end_date
+    event['start_date'].should.to_s == start_date.to_s
+    event['end_date'].should.to_s == end_date.to_s
     #@revision.should_not == event['revision']
   end
 
@@ -106,11 +106,15 @@ describe "Events" do
       event.should_not be_nil
       event['recurrence'].should == recValues
 
-      recValues = {"frequency"=>"yearly", "interval"=>1, "end_date"=>Time.now + 60000, "days"=>[0, 0, 1, 0, 0, 0, 0], "months"=>[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "weeks"=>[0, 0, 0, 0, 1]}
+      recValues = {"frequency"=>"yearly", "interval"=>1, "end_date"=>Time.now + 60000, "days"=>[0, 0, 1, 0, 0, 0, 0], "months"=>[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "weeks"=>[0, 0, 1, 0, 0]}
       Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
       event = Rho::RhoEvent.find(@id)
       #puts "event: #{event.inspect.to_s}"
       event.should_not be_nil
+      event['recurrence']['end_date'].to_s.should == recValues['end_date'].to_s
+      event['recurrence']['end_date'] = ''
+      recValues['end_date'] = ''
+      #event['recurrence']['days'] = recValues['days']
       event['recurrence'].should == recValues
 
       recValues = {"frequency"=>"weekly", "interval"=>4, "end_date"=>Time.now + 60000, "days"=>[1, 1, 1, 1, 0, 0, 0]}
@@ -118,6 +122,9 @@ describe "Events" do
       event = Rho::RhoEvent.find(@id)
       #puts "event: #{event.inspect.to_s}"
       event.should_not be_nil
+      event['recurrence']['end_date'].to_s.should == recValues['end_date'].to_s
+      event['recurrence']['end_date'] = ''
+      recValues['end_date'] = ''
       event['recurrence'].should == recValues
 
       recValues = {"frequency"=>"weekly", "interval"=>5, "days"=>[0, 1, 1, 0, 0, 0, 1]}
@@ -127,7 +134,7 @@ describe "Events" do
       event.should_not be_nil
       event['recurrence'].should == recValues
 
-      recValues =  {"frequency"=>"monthly", "interval"=>9, "days"=>[0, 0, 1, 0, 0, 0, 0], "weeks"=>[0, 0, 0, 0, 1]}
+      recValues =  {"frequency"=>"monthly", "interval"=>9, "days"=>[0, 0, 1, 0, 0, 0, 0], "weeks"=>[0, 0, 1, 0, 0]}
       Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
       event = Rho::RhoEvent.find(@id)
       #puts "event: #{event.inspect.to_s}"
