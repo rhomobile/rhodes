@@ -1067,7 +1067,9 @@ public class Table extends BaseTable {
     int getColumnNr(String c) throws HsqlException {
 
         int i = findColumn(c);
-
+        if (i == -1)
+        	i = findColumn(c.toLowerCase());
+        
         if (i == -1) {
             throw Trace.error(Trace.COLUMN_NOT_FOUND, c);
         }
