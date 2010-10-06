@@ -77,6 +77,8 @@ module Rho
 
     # Returns true if the request's header contains "XMLHttpRequest".
     def xml_http_request?
+      return false if !@request || !@request['headers'] || !@request['headers']['X-Requested-With']
+       
       not /XMLHttpRequest/i.match(@request['headers']['X-Requested-With']).nil?
     end
     alias xhr? :xml_http_request?
