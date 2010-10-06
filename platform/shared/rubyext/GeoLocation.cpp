@@ -91,10 +91,13 @@ void CGeoLocation::setGeoCallback(const char *url, char* params, int timeout_sec
     else
         m_Notify = CGeoNotification(url?url:"",params?params:"");
 
-    setPingTimeoutSec(timeout_sec);
+    if ( url && *url )
+    {
+        setPingTimeoutSec(timeout_sec);
 
-    if ( !rho_geo_is_available() )
-        callGeoCallback(true, true);
+        if ( !rho_geo_is_available() )
+            callGeoCallback(true, true);
+    }
 }
 
 int CGeoLocation::getDefaultPingTimeoutSec()
