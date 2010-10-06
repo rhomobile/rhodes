@@ -594,9 +594,7 @@ module Rho
           puts 'show error: ' + @@current_exception.inspect
           body = RhoController::renderfile(err_page)
           
-          if ( hash )
-            return send_response_hash(init_response(200,"OK",body))
-          end
+          return send_response_hash(init_response(200,"OK",body)) if hash
       
           return send_response(init_response(200,"OK",body))
       end
