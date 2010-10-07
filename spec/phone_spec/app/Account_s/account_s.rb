@@ -2,7 +2,7 @@ class Account_s
     include Rhom::FixedSchema
 
     set :schema_version, '1.0'
-    
+
     property :billing_address_country, :string
     property :assigned_user_id, :string
     property :website, :string
@@ -46,5 +46,8 @@ class Account_s
     property :last_checked, :string
     property :acct_object,  :string
     
-     property :address,  :string
+    property :address,  :string
+     
+    property :propOne,  :string
+    property :TwoProps,  :string
 end
