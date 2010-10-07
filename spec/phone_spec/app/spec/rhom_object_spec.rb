@@ -423,6 +423,19 @@ describe "Rhom::RhomObject" do
     
   end
 
+  it "should create a record diff case name" do
+    item = getAccount.create( 'propOne'=>'1', 'TwoProps'=>'2')
+    item.propOne.should == '1'
+    item.TwoProps.should == '2'
+    
+    item2 = getAccount.find(item.object)
+    item.vars.should == item2.vars    
+    
+    item2.propOne.should == '1'
+    item2.TwoProps.should == '2'
+    
+  end
+  
   it "should update a record with full mode" do
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 0
@@ -608,13 +621,11 @@ describe "Rhom::RhomObject" do
     @accts[0].industry.should == "Technology"
   end
 
-if !defined? RHO_ME
   it "should find with SQL multiple conditions" do
     @acct = getAccount.find(:first, :conditions => [ "name = ? AND industry = ?", "'Mobio India'", "'Technology'" ])
     @acct.name.should == "Mobio India"
     @acct.industry.should == "Technology"
   end
-end
 
   it "should find with advanced OR conditions" do
     query = '%IND%'    
@@ -855,8 +866,6 @@ end
     @accts[0].industry.should == "Technology"
   end
 
-if !defined? RHO_ME  
-  
   it "should support sql conditions arg" do
     @accts = getAccount.find(:all, :conditions => "name = 'Mobio India'")
     @accts.length.should == 1
@@ -891,7 +900,6 @@ if !defined? RHO_ME
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
-end  
 
 end
 

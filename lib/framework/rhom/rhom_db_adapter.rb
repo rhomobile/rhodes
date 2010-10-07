@@ -250,7 +250,7 @@ class RhomDbAdapter
             quests << ','
         end
     
-        cols << "#{key}"
+        cols << "\"#{key}\""
         quests << '?'
         vals << val
     end

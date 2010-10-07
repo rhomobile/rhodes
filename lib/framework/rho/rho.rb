@@ -333,7 +333,7 @@ module Rho
                 #TODO: support column type
             end
 
-            strCols += ",object varchar(255) PRIMARY KEY"
+            strCols += ",\"object\" varchar(255) PRIMARY KEY"
             strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
           end
 
@@ -594,9 +594,7 @@ module Rho
           puts 'show error: ' + @@current_exception.inspect
           body = RhoController::renderfile(err_page)
           
-          if ( hash )
-            return send_response_hash(init_response(200,"OK",body))
-          end
+          return send_response_hash(init_response(200,"OK",body)) if hash
       
           return send_response(init_response(200,"OK",body))
       end

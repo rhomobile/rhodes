@@ -26,7 +26,7 @@ public class HsqlDBRowResult extends HsqlDBResult {
 	
 	public String getColName(int nCol){
 		Object col = m_table.columnList.get(nCol);
-		return ((Column)col).columnName.name.toLowerCase();
+		return ((Column)col).columnName.name;//.toLowerCase();
 	}
 
 	//Object[] getItem(int nItem){
