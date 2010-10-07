@@ -101,7 +101,7 @@ private:
     
     bool dispatch(String const &uri, Route &route);
     
-    bool send_file(String const &path);
+    bool send_file(String const &path, HeaderList const &hdrs);
     
     bool send_response_impl(String const &data, bool continuation);
     
