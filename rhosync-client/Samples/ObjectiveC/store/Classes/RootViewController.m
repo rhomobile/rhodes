@@ -95,7 +95,8 @@
 	if (!arItems)
 		arItems = [[SyncEngine sharedInstance].product find_all:nil];
 	
-    return [arItems count];
+	//warning here because this may be dictionary or an array when called.
+    return (NSUInteger)[arItems count];
 }
 
 // Customize the appearance of table view cells.
@@ -113,7 +114,7 @@
 		}
 		
 		// Configure the cell.
-		NSDictionary* item = [arItems objectAtIndex: indexPath.row ];
+		NSDictionary* item = [(NSMutableArray *)arItems objectAtIndex: indexPath.row ];
 		cell.textLabel.text = [item valueForKey:@"name"];
 	} else if([arItems isKindOfClass:NSClassFromString(@"NSDictionary")]) {
 		
@@ -121,7 +122,7 @@
 		if(cell == nil)
 			cell = [self reuseTableViewCellWithIdentifier:ColumnCellIdentifier];
 		
-		NSString *key = [[arItems allKeys] objectAtIndex:indexPath.row];
+		NSString *key = [[(NSDictionary *)arItems allKeys] objectAtIndex:indexPath.row];
 		
 		UILabel *lbl = (UILabel *)[cell viewWithTag:NAME_TAG];
 		lbl.text = key;
@@ -181,7 +182,7 @@
 	
 	if([arItems isKindOfClass:NSClassFromString(@"NSMutableArray")]) {
 		//Get the dictionary of the selected data source.
-		NSDictionary *dictionary = [arItems objectAtIndex:indexPath.row];
+		NSDictionary *dictionary = [(NSMutableArray *)arItems objectAtIndex:indexPath.row];
 	
 		
 		//Prepare to tableview.
