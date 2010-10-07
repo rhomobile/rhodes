@@ -9,8 +9,26 @@
 #import "RootViewController.h"
 #import "SyncEngine.h"
 
+#define ROW_HEIGHT 40
+#define CELL_WIDTH 320.0
+#define LABEL_HEIGHT 20
+
+//Lets define the dimensions of the two columns
+//Set the column offset and the width.
+#define NAME_OFFSET 10.0
+#define NAME_WIDTH 150.0
+#define NAME_TAG 1
+
+#define TEXT_OFFSET 160.0
+#define TEXT_WIDTH 160.0
+#define TEXT_TAG 2
+
+
 @implementation RootViewController
 
+@synthesize CurrentLevel;
+@synthesize CurrentTitle;
+@synthesize arItems;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -19,9 +37,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-	self.navigationItem.title = @"Home";
-	self.navigationItem.hidesBackButton = true;
-		
+
+	if(CurrentLevel == 0) {
+		self.navigationItem.title = @"Home";
+		self.navigationItem.hidesBackButton = true;
+	} else {
+		self.navigationItem.title = CurrentTitle;
+		self.navigationItem.hidesBackButton = false;
+	}
+
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
@@ -78,16 +102,33 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString *CellIdentifier = @"Cell";
+    static NSString *ColumnCellIdentifier = @"ColumnCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
+    UITableViewCell *cell; 
     
-	// Configure the cell.
-	NSDictionary* item = [arItems objectAtIndex: [indexPath indexAtPosition:1] ];
-	cell.textLabel.text = [item valueForKey:@"brand"];
-	
+	if([arItems isKindOfClass:NSClassFromString(@"NSMutableArray")]) {
+		cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+		if (cell == nil) {
+			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+		}
+		
+		// Configure the cell.
+		NSDictionary* item = [arItems objectAtIndex: indexPath.row ];
+		cell.textLabel.text = [item valueForKey:@"name"];
+	} else if([arItems isKindOfClass:NSClassFromString(@"NSDictionary")]) {
+		
+		cell = [tableView dequeueReusableCellWithIdentifier:ColumnCellIdentifier];
+		if(cell == nil)
+			cell = [self reuseTableViewCellWithIdentifier:ColumnCellIdentifier];
+		
+		NSString *key = [[arItems allKeys] objectAtIndex:indexPath.row];
+		
+		UILabel *lbl = (UILabel *)[cell viewWithTag:NAME_TAG];
+		lbl.text = key;
+		
+		UILabel *lblText = (UILabel *)[cell viewWithTag:TEXT_TAG];
+		lblText.text = [arItems valueForKey:key];
+	}
     return cell;
 }
 
@@ -137,13 +178,28 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-	/*
-	 <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-	 [self.navigationController pushViewController:detailViewController animated:YES];
-	 [detailViewController release];
-	 */
+	
+	if([arItems isKindOfClass:NSClassFromString(@"NSMutableArray")]) {
+		//Get the dictionary of the selected data source.
+		NSDictionary *dictionary = [arItems objectAtIndex:indexPath.row];
+	
+		
+		//Prepare to tableview.
+		RootViewController *rvController = [[RootViewController alloc] initWithNibName:@"RootViewController" bundle:[NSBundle mainBundle]];
+		
+		//Increment the Current View
+		rvController.CurrentLevel += 1;
+		
+		//Set the title;
+		rvController.CurrentTitle = [dictionary objectForKey:@"name"];
+		
+		//Push the new table view on the stack
+		[self.navigationController pushViewController:rvController animated:YES];
+		
+		rvController.arItems = dictionary;
+		
+		[rvController release];
+	}
 }
 
 
@@ -167,6 +223,51 @@
     [super dealloc];
 }
 
+
+#pragma mark -
+#pragma mark Custom Cell
+-(UITableViewCell *)reuseTableViewCellWithIdentifier:(NSString *)identifier {
+	
+	//Rectangle which will be used to create labels and table view cell.
+	CGRect cellRectangle;
+	
+	//Returns a rectangle with the coordinates and dimensions.
+	cellRectangle = CGRectMake(0.0, 0.0, CELL_WIDTH, ROW_HEIGHT);
+	
+	//Initialize a UITableViewCell with the rectangle we created.
+	UITableViewCell *cell = [[[UITableViewCell alloc] initWithFrame:cellRectangle reuseIdentifier:identifier] autorelease];
+	
+	//Now we have to create the two labels.
+	UILabel *label;
+	
+	//Create a rectangle container for the number text.
+	cellRectangle = CGRectMake(NAME_OFFSET, (ROW_HEIGHT - LABEL_HEIGHT) / 2.0, NAME_WIDTH, LABEL_HEIGHT);
+	
+	//Initialize the label with the rectangle.
+	label = [[UILabel alloc] initWithFrame:cellRectangle];
+	
+	//Mark the label with a tag
+	label.tag = NAME_TAG;
+	
+	//Add the label as a sub view to the cell.
+	[cell.contentView addSubview:label];
+	[label release];
+	
+	//Create a rectangle container for the custom text.
+	cellRectangle = CGRectMake(TEXT_OFFSET, (ROW_HEIGHT - LABEL_HEIGHT) / 2.0, TEXT_WIDTH, LABEL_HEIGHT);
+	
+	//Initialize the label with the rectangle.
+	label = [[UILabel alloc] initWithFrame:cellRectangle];
+	
+	//Mark the label with a tag
+	label.tag = TEXT_TAG;
+	
+	//Add the label as a sub view to the cell.
+	[cell.contentView addSubview:label];
+	[label release];
+	
+	return cell;
+}
 
 @end
 
