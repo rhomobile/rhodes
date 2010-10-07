@@ -9,7 +9,15 @@
 #import <UIKit/UIKit.h>
 
 @interface RootViewController : UITableViewController {
-	NSMutableArray* arItems;
+	NSObject* arItems;
+	NSString *CurrentTitle;
+	NSInteger CurrentLevel;
 }
+
+@property (nonatomic, retain) NSObject *arItems;
+@property (nonatomic, retain) NSString *CurrentTitle;
+@property (nonatomic, readwrite) NSInteger CurrentLevel;
+
+-(UITableViewCell *)reuseTableViewCellWithIdentifier:(NSString *)identifier;
 
 @end

@@ -1960,7 +1960,9 @@ public class Expression {
                 if (tableName == null || tableName.equals(filterName)) {
                     Table table = f.getTable();
                     int   i     = table.findColumn(columnName);
-
+                    if (i == -1)
+                    	i = table.findColumn(columnNameOrig);
+                    
                     if (i != -1) {
                         tableFilter = f;
                         columnIndex = i;
