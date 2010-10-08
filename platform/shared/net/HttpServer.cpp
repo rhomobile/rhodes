@@ -48,8 +48,12 @@ using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
 
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+static size_t const FILE_BUF_SIZE = 64*1024;
+#else
 static size_t const FILE_BUF_SIZE = 256*1024;
-    
+#endif
+
 static bool isid(String const &s)
 {
     return s.size() > 2 && s[0] == '{' && s[s.size() - 1] == '}';
