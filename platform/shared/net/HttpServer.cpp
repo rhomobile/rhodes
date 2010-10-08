@@ -16,6 +16,8 @@
 #endif
 #define EAGAIN EWOULDBLOCK
 
+char *strerror(int errnum ){return "";}
+
 #endif
 
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
