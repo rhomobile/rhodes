@@ -16,12 +16,13 @@ module Rho
         finish = MAX_TIME if finish.nil? or finish > MAX_TIME
 
         events = Rho::Calendar.fetch(start, finish)
-
-        ret = {}
-        events.each do |e|
-          ret[e[Rho::RhoEvent::ID]] = e
-        end
-        ret
+        #puts "events : #{events}"
+        #ret = {}
+        #events.each do |e|
+        #  ret[e[Rho::RhoEvent::ID]] = e
+        #end
+        #ret
+        events
       else
         id = args.first.to_s
         id = $1 if id.is_a?(String) and id =~ /^{(.*)}$/
