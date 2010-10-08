@@ -113,7 +113,7 @@ public class RhoCalendar extends RubyBasic {
 				break;
 				
 			case Event.ALARM:
-				record.add(RUBY_EV_REMINDER, ObjectFactory.createInteger(event.getInt(Event.ALARM, 0)));
+				record.add(RUBY_EV_REMINDER, ObjectFactory.createInteger(event.getInt(Event.ALARM, 0)/60));
 				break;
 
 			case Event.CLASS:
@@ -249,7 +249,10 @@ public class RhoCalendar extends RubyBasic {
 		else if ( strKey.opEql(RUBY_EV_NOTES) == RubyConstant.QTRUE )
 			setStringField(event, Event.NOTE, val );
 		else if ( strKey.opEql(RUBY_EV_REMINDER) == RubyConstant.QTRUE )
-			setIntField(event, Event.ALARM, val );
+		{
+			int nValue = val.toInt()*60;
+			setIntField(event, Event.ALARM, ObjectFactory.createInteger(nValue) );
+		}
 		else if ( strKey.opEql(RUBY_EV_PRIVACY) == RubyConstant.QTRUE )
 		{
 			String strValue = val.toStr();
@@ -340,7 +343,7 @@ public class RhoCalendar extends RubyBasic {
 	{
 		RhoCalendar pb = (RhoCalendar)args.get(0);
 		RubyHash params = (RubyHash) args.get(1);
-		RubyHash res = ObjectFactory.createHash();
+		RubyArray res = new RubyArray();
 		RubyValue val = params.get(RUBY_FIND_type);
 		String strSearchType = val != null && val != RubyConstant.QNIL ? val.toStr() : "starting"; 
 		int nSearchType = EventList.STARTING;
@@ -360,7 +363,7 @@ public class RhoCalendar extends RubyBasic {
 		while (events.hasMoreElements()) {
 			Event event = (Event) events.nextElement();
 			RubyHash record = pb.getEVRecord( event );
-			res.add(record.get(RUBY_EV_ID), record);
+			res.add(record);
 		}
 		
 		return res;
@@ -369,13 +372,13 @@ public class RhoCalendar extends RubyBasic {
 	public static RubyValue getallCalendarEvents(RubyValue arg0)throws Exception 
 	{
 		RhoCalendar pb = (RhoCalendar)arg0;
-		RubyHash res = ObjectFactory.createHash();
+		RubyArray res = new RubyArray();
 		
 		java.util.Enumeration events = pb.m_eventList.items();
 		while (events.hasMoreElements()) {
 			Event event = (Event) events.nextElement();
 			RubyHash record = pb.getEVRecord( event );
-			res.add(record.get(RUBY_EV_ID), record);
+			res.add(record);
 		}
 		
 		return res;

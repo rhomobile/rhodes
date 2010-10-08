@@ -831,6 +831,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OutlookApp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Rhodes.cpp"
 				>
 			</File>
@@ -957,6 +961,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OutlookApp.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -1042,6 +1050,10 @@
 			<Filter
 				Name="rubyext"
 				>
+				<File
+					RelativePath=".\rho\rubyext\calendar.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\rho\rubyext\GeoLocationImpl.cpp"
 					>
