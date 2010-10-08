@@ -157,7 +157,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	if (desiredDlgWidth > (dlgRect.right - dlgRect.left)) {
 		// if desired width is bigger than maximum width 
 		// - recalculate dialog window with wrapped text 
-		if (desiredDlgWidth >= maxWidth) {
+		if (desiredDlgWidth >= (int)maxWidth) {
 			msgWidth = maxWidth - (iconRect.right + INDENT*2 + xBorderWidth*2);
 			msgHeight = (((m_message.length() * tm.tmAveCharWidth) / msgWidth) + 1) 
 						* (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
