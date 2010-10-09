@@ -16,6 +16,9 @@ platform/bb/rhodes/src/com/rho/RhoRubyHelper.java
 platform/bb/rhodes/src/com/rho/Version.java
 platform/bb/rhodes/src/com/rho/BrowserAdapter.java
 platform/bb/rhodes/src/com/rho/IBrowserAdapter.java
+platform/bb/rhodes/src/rhomobile/bluetooth/BluetoothManager.java
+platform/bb/rhodes/src/rhomobile/bluetooth/BluetoothScreen.java
+platform/bb/rhodes/src/rhomobile/bluetooth/BluetoothPort.java
 platform/bb/rhodes/src/rhomobile/camera/Camera.java
 platform/bb/rhodes/src/rhomobile/camera/CameraScreen.java
 platform/bb/rhodes/src/rhomobile/camera/CameraFilesListener.java

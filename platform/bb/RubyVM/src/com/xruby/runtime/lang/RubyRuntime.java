@@ -101,6 +101,7 @@ public class RubyRuntime
     public static RubyClass SystemClass;
     public static RubyModule JSONClass;
     public static RubyClass CameraClass;
+    public static RubyClass RhoBluetoothClass;
     public static RubyClass WebViewClass;
     public static RubyClass RhoConfClass;
     public static RubyClass AlertClass;    
@@ -313,6 +314,7 @@ public class RubyRuntime
 		SystemClass = RubyAPI.defineClass("System", RubyRuntime.ObjectClass);
         JSONClass = rhoModule.defineModule("JSON" );//, RubyRuntime.ObjectClass);
         CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);
+        RhoBluetoothClass = RubyAPI.defineClass("RhoBluetooth", RubyRuntime.ObjectClass);
         WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);
         RhoConfClass = RubyAPI.defineClass("RhoConf", RubyRuntime.ObjectClass);
         AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
