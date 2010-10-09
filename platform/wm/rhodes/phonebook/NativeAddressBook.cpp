@@ -2,6 +2,7 @@
 
 #include "ext/phonebook/phonebook.h" 
 #include "NativeAddressBook.h"
+#include "OutlookApp.h"
 #include <common/RhoStd.h>
 
 #define INITGUID
@@ -184,20 +185,26 @@ int CABOutlookRecord::remove() {
 //=============================================================================
 
 CNativeAddressBook::CNativeAddressBook() :
-m_openedOutlookAB(false), m_outlookApp(NULL), m_outlookItems(NULL), m_hSim(0) {
+    m_outlookItems(NULL), m_hSim(0) 
+{
 }
 
-CNativeAddressBook::~CNativeAddressBook() {
-	if (m_openedOutlookAB)
-		closeOutlookAB();
+CNativeAddressBook::~CNativeAddressBook() 
+{
+	if(m_outlookItems) {
+		m_outlookItems->Release();
+	}
 
 	if (m_hSim)
 		closeSimAB();
 }
 
-int CNativeAddressBook::openAB() {
+int CNativeAddressBook::openAB() 
+{
 	initSimAB();
-	return initOutlookAB();
+
+    COutlookApp* pApp = COutlookApp::Create();
+	return pApp->getApp() != 0;
 }
 
 int CNativeAddressBook::getAllRecords(std::vector<CABRecord*>& records) {
@@ -231,66 +238,14 @@ int CNativeAddressBook::deleteRecord(CABRecord* record) {
 
 //=============================================================================
 
-int CNativeAddressBook::initOutlookAB() {
-	m_openedOutlookAB = false;
-
-    HRESULT hr = CoInitializeEx( NULL, 0);
-	// subsequent valid calls return S_FALSE
-    /*if (hr != S_OK) {
-        // CoInitializeEx failed.
-        LOG(ERROR) + "CoInitializeEx failed.";
-        return false;  // Replace with specific error handling.;
-    }*/
-
-    IUnknown* pUnknown = NULL;
-    hr = CoCreateInstance(__uuidof(Application),//CLSID_Application, 
-        NULL, CLSCTX_INPROC_SERVER, 
-        IID_IUnknown, 
-        (void **)&pUnknown);
-    if (hr != S_OK) {
-        // CoCreateInstance failed.
-        LOG(ERROR) + "CoCreateInstance failed.";
-        CoUninitialize();
-        return false;  // Replace with specific error handling.;
-    }
-
-    hr = pUnknown->QueryInterface(__uuidof(IPOutlookApp)/*IID_IPOutlookApp*/, (void**)&m_outlookApp); 
-    if (hr != S_OK) {
-        // QueryInterface failed.
-        LOG(ERROR) + "QueryInterface failed.";
-        CoUninitialize();
-        return false;  // Replace with specific error handling.;
-    }
-
-    hr = m_outlookApp->Logon(NULL);
-    if (hr != S_OK) {
-        // Logon failed.
-        LOG(ERROR) + "Logon failed.";
-        m_outlookApp->Release();
-        CoUninitialize();
-        return false;  // Replace with specific error handling.;
-    }
-
-    m_openedOutlookAB = true;
-    return m_openedOutlookAB;
-}
-
-int CNativeAddressBook::closeOutlookAB() {
-	if(m_outlookItems) {
-		m_outlookItems->Release();
-	}
-	if(m_outlookApp) {
-		m_outlookApp->Release();
-		CoUninitialize();
-	}
-	return 1;
-}
-
-bool CNativeAddressBook::getOutlookItems() {
-	if( (m_outlookApp!=NULL)&&(m_outlookItems==NULL)) {
+bool CNativeAddressBook::getOutlookItems() 
+{
+    IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
+	if( (pApp!=NULL)&&(m_outlookItems==NULL)) 
+    {
 		//
 		IFolder* polFolder;
-		HRESULT res = m_outlookApp->GetDefaultFolder(olFolderContacts, &polFolder);
+		HRESULT res = pApp->GetDefaultFolder(olFolderContacts, &polFolder);
 		if (res != S_OK) {
 			// QueryInterface failed.
 			LOG(ERROR) + "GetDefaultFolder failed.";
@@ -310,8 +265,12 @@ bool CNativeAddressBook::getOutlookItems() {
 	return true;
 }
 
-int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records) {
-	if(m_outlookApp && getOutlookItems()) { 
+int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records) 
+{
+    IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
+
+	if(pApp && getOutlookItems()) 
+    { 
 		int size; 
 		m_outlookItems->get_Count(&size);
 
@@ -331,8 +290,12 @@ int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records) {
 	return 1;
 }
 
-CABRecord* CNativeAddressBook::getOutlookRecord(long oid) {
-	if(m_outlookApp && getOutlookItems()) { 
+CABRecord* CNativeAddressBook::getOutlookRecord(long oid) 
+{
+    IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
+
+	if(pApp && getOutlookItems()) 
+    { 
 		DWORD index;
 		if(S_OK==GetItemIndexFromOid(m_outlookItems,oid,&index)) {
 			IContact * pContact;
@@ -351,8 +314,12 @@ CABRecord* CNativeAddressBook::getOutlookRecord(long oid) {
 	return NULL;
 }
 
-int CNativeAddressBook::addOutlookRecord(CABOutlookRecord* record) {
-	if(m_outlookApp && getOutlookItems()) { 
+int CNativeAddressBook::addOutlookRecord(CABOutlookRecord* record) 
+{
+    IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
+
+	if(pApp && getOutlookItems()) 
+    { 
 		if(SUCCEEDED(m_outlookItems->Add((IDispatch**)&record->m_pContact))) {
 			record->save();
 		}

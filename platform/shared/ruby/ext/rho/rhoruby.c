@@ -313,6 +313,36 @@ VALUE rho_ruby_get_NIL()
     return Qnil;
 }
 
+int rho_ruby_is_NIL(VALUE val)
+{
+    return NIL_P(val);
+}
+
+int rho_ruby_get_bool(VALUE val)
+{
+    return val == Qtrue;
+}
+
+long rho_ruby_get_int(VALUE val)
+{
+    return NUM2LONG(val);
+}
+
+time_t rho_ruby_get_time(VALUE rDate)
+{
+    VALUE res, cDate;
+    if (TYPE(rDate) == T_STRING) {
+        rDate = rb_funcall(rb_cTime, rb_intern("parse"), 1, rDate);
+    }
+    
+    cDate = rb_class_of(rDate);
+    if (!rb_equal(cDate, rb_cTime))
+        rb_raise(rb_eArgError, "Wrong type of parameter: %s (Time expected)", rb_class2name(cDate));
+
+    res = rb_funcall(rDate, rb_intern("to_i"), 0, NULL);
+    return NUM2LONG(res);
+}
+
 VALUE rho_ruby_create_array()
 {
     return rb_ary_new();
@@ -326,6 +356,11 @@ VALUE rho_ruby_create_string(const char* szVal)
 VALUE rho_ruby_create_string_withlen(int len)
 {
     return rb_str_new("", len);
+}
+
+VALUE rho_ruby_create_time(long t)
+{
+    return rb_time_new(t,0);
 }
 
 VALUE rho_ruby_create_boolean(unsigned char b)
@@ -394,6 +429,11 @@ VALUE addIntToHash(VALUE hash, const char* key, int val) {
     return rb_hash_aset(hash, rb_str_new2(key), INT2FIX(val));
 }
 
+VALUE addBoolToHash(VALUE hash, const char* key, int val)
+{
+    return rb_hash_aset(hash, rb_str_new2(key), (val ? Qtrue : Qfalse) );
+}
+
 VALUE addStrToHash(VALUE hash, const char* key, const char* val) {
     return rb_hash_aset(hash, rb_str_new2(key), rb_str_new2(val));
 }
@@ -404,6 +444,11 @@ VALUE addStrToHashLen(VALUE hash, const char* key, const char* val, int len) {
 
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val) {
     return rb_hash_aset(hash, rb_str_new2(key), val);	
+}
+
+VALUE rho_ruby_hash_aref(VALUE hash, const char* key)
+{
+    return rb_hash_aref( hash, rb_str_new2(key));
 }
 
 char* getStringFromValue(VALUE val){
@@ -525,6 +570,11 @@ void rho_ruby_lock_mutex(VALUE val)
 void rho_ruby_unlock_mutex(VALUE val)
 {
     rb_mutex_unlock(val);
+}
+
+void rho_ruby_raise_runtime(const char* szText)
+{
+    rb_raise(rb_eRuntimeError, szText );
 }
 
 VALUE rho_ruby_main_thread()
