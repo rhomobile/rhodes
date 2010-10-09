@@ -1668,6 +1668,30 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="calendar"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\calendar\calendar.i"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\calendar\calendar_wrap.c"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\calendar\event.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\calendar\event.i"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\calendar\event_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"
