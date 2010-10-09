@@ -49,6 +49,9 @@ src\com\rho\rubyext\RhoPhonebook.java
 src\com\rho\rubyext\RhoCalendar.java
 src\com\rho\Version.java
 src\com\rho\RhodesApplicationPlatform.java
+src\rhomobile\bluetooth\BluetoothManager.java
+src\rhomobile\bluetooth\BluetoothScreen.java
+src\rhomobile\bluetooth\BluetoothPort.java
 src\rhomobile\camera\Camera.java
 src\rhomobile\camera\CameraFilesListener.java
 src\rhomobile\camera\CameraScreen.java
