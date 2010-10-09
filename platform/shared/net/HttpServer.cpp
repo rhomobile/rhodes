@@ -16,6 +16,8 @@
 #endif
 #define EAGAIN EWOULDBLOCK
 
+char *strerror(int errnum ){return "";}
+
 #endif
 
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
@@ -48,8 +50,12 @@ using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
 
-static size_t const FILE_BUF_SIZE = 65536;
-    
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+static size_t const FILE_BUF_SIZE = 64*1024;
+#else
+static size_t const FILE_BUF_SIZE = 256*1024;
+#endif
+
 static bool isid(String const &s)
 {
     return s.size() > 2 && s[0] == '{' && s[s.size() - 1] == '}';
@@ -807,7 +813,41 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     return true;
 }
 
-bool CHttpServer::send_file(String const &path)
+static bool parse_range(HttpHeaderList const &hdrs, size_t *pbegin, size_t *pend)
+{
+    for (HttpHeaderList::const_iterator it = hdrs.begin(), lim = hdrs.end(); it != lim; ++it) {
+        if (strcasecmp(it->name.c_str(), "range") != 0)
+            continue;
+        
+        const char *s = strstr(it->value.c_str(), "bytes=");
+        if (!s)
+            continue;
+        
+        s += 6; // size of "bytes=" string
+        
+        char *e;
+        
+        size_t begin = strtoul(s, &e, 10);
+        if (s == e)
+            begin = 0;
+        
+        if (*e != '-') // error
+            continue;
+        
+        s = e+1;
+        size_t end = strtoul(s, &e, 10);
+        if (s == e)
+            end = (size_t)-1;
+        
+        *pbegin = begin;
+        *pend = end;
+        return true;
+    }
+    
+    return false;
+}
+
+bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 {
     String fullPath = CFilePath::normalizePath(path);
     if (String_startsWith(fullPath,"/app/db/db-files") )
@@ -843,20 +883,68 @@ bool CHttpServer::send_file(String const &path)
     // Content length
     char buf[FILE_BUF_SIZE];
     
-    size_t fileSize = st.st_size;
-    snprintf(buf, sizeof(buf), "%lu", (unsigned long)fileSize);
+    String start_line;
+    
+    size_t file_size = st.st_size;
+    size_t range_begin = 0, range_end = file_size;
+    size_t content_size = file_size;
+    if (parse_range(hdrs, &range_begin, &range_end))
+    {
+        if (range_end >= file_size)
+            range_end = file_size - 1;
+        if (range_begin >= range_end)
+            range_begin = range_end - 1;
+        content_size = range_end - range_begin + 1;
+        
+        snprintf(buf, sizeof(buf), "bytes %lu-%lu/%lu", (unsigned long)range_begin,
+                 (unsigned long)range_end, (unsigned long)file_size);
+        headers.push_back(Header("Content-Range", buf));
+        
+        if (fseek(fp, range_begin, SEEK_SET) == -1) {
+            RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
+            fclose(fp);
+            return false;
+        }
+        
+        start_line = "206 Partial Content";
+    }
+    else {
+        start_line = "200 OK";
+    }
+
+    
+    snprintf(buf, sizeof(buf), "%lu", (unsigned long)content_size);
     headers.push_back(Header("Content-Length", buf));
     
     // Send headers
-    if (!send_response(create_response("200 OK", headers))) {
+    if (!send_response(create_response(start_line, headers))) {
         RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
         fclose(fp);
         return false;
     }
     
     // Send body
-    while (!feof(fp)) {
-        size_t n = fread(buf, 1, sizeof(buf), fp);
+    for (size_t start = range_begin; start < range_end + 1;) {
+        size_t need_to_read = range_end - start + 1;
+        if (need_to_read == 0)
+            break;
+        
+        if (need_to_read > sizeof(buf))
+            need_to_read = sizeof(buf);
+        size_t n = fread(buf, 1, need_to_read, fp);
+        if (n < 0) {
+            RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
+            fclose(fp);
+            return false;
+        }
+        if (n == 0) {
+            RAWLOG_ERROR("End of file reached, but we expect data");
+            fclose(fp);
+            return false;
+        }
+        
+        start += n;
+        
         if (!send_response_body(String(buf, n))) {
             RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
@@ -944,7 +1032,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
-    return send_file(uri);
+    return send_file(uri, headers);
 }
 
 } // namespace net
