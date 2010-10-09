@@ -96,12 +96,8 @@ public:
 
 protected:
 	//outlook
-	bool m_openedOutlookAB;
-	IPOutlookApp* m_outlookApp;
 	IPOutlookItemCollection* m_outlookItems;
 
-	int initOutlookAB();
-	int closeOutlookAB();
 	bool getOutlookItems();
 	int getAllOutlookRecords(std::vector<CABRecord*>& records);
 	CABRecord* getOutlookRecord(long oid);
