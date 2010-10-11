@@ -886,7 +886,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     String start_line;
     
     size_t file_size = st.st_size;
-    size_t range_begin = 0, range_end = file_size;
+    size_t range_begin = 0, range_end = file_size - 1;
     size_t content_size = file_size;
     if (parse_range(hdrs, &range_begin, &range_end))
     {
@@ -938,7 +938,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
             return false;
         }
         if (n == 0) {
-            RAWLOG_ERROR("End of file reached, but we expect data");
+            RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
             fclose(fp);
             return false;
         }
