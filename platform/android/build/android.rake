@@ -262,6 +262,7 @@ namespace "config" do
     $app_rjava_dir = File.join $tmpdir
     $app_native_libs_java = File.join $tmpdir, "NativeLibraries.java"
     $app_capabilities_java = File.join $tmpdir, "Capabilities.java"
+    $app_push_java = File.join $tmpdir, "Push.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = #"cmd /c " + 
@@ -456,6 +457,11 @@ namespace "config" do
       $app_config["android"]["capabilities"] = nil
     end
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
+
+    $push_sender = nil
+    $push_sender = $config["android"]["push"]["sender"] if !$config["android"].nil? and !$config["android"]["push"].nil?
+    $push_sender = $app_config["android"]["push"]["sender"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
+    $push_sender = "support@rhomobile.com" if $push_sender.nil?
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
@@ -819,6 +825,16 @@ namespace "build" do
         end
         f.puts "}"
       end
+
+      # Generate Push.java
+      puts "app_push_java: #{$app_push_java.inspect}"
+      File.open($app_push_java, "w") do |f|
+        f.puts "package #{JAVA_PACKAGE_NAME};"
+        f.puts "public class Push {"
+        f.puts "  public static final String SENDER = \"#{$push_sender}\";"
+        f.puts "};"
+      end
+
     end
 
     task :gen_java_ext => "config:android" do
@@ -941,11 +957,12 @@ namespace "build" do
       lines << $app_android_r
       lines << $app_native_libs_java
       lines << $app_capabilities_java
+      lines << $app_push_java
       if File.exists? File.join($extensionsdir, "ext_build.files")
         puts 'ext_build.files found ! Addditional files for compilation :'
         File.open(File.join($extensionsdir, "ext_build.files")) do |f|
           while line = f.gets
-	    puts 'java file : ' + line
+            puts 'java file : ' + line
             lines << line
           end
         end
