@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -33,10 +34,10 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
-import android.os.PowerManager.WakeLock;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -455,6 +456,15 @@ public class RhodesService {
 		uriHandlers.addElement(new SmsUriHandler(ctx));
 		uriHandlers.addElement(new VideoUriHandler(ctx));
 		
+		try {
+			if (Capabilities.PUSH_ENABLED)
+				PushService.register();
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.getMessage());
+			exitApp();
+			return;
+		}
+		
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
@@ -470,6 +480,13 @@ public class RhodesService {
 	}
 
 	public void exitApp() {
+		try {
+			if (Capabilities.PUSH_ENABLED)
+				PushService.unregister();
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.getMessage());
+		}
+		
 		PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				if (wakeLockObject != null) {
@@ -685,6 +702,39 @@ public class RhodesService {
 		TimeZone tz = cal.getTimeZone();
 		return tz.getDisplayName();
 	}
+
+	public native void setPushRegistrationId(String id);
 	
+	private native void callPushCallback(String data);
+	
+	public void handlePushMessage(Intent intent) {
+		Logger.D(TAG, "Receive PUSH message");
+		
+		Bundle extras = intent.getExtras();
+		if (extras == null) {
+			Logger.W(TAG, "Empty PUSH message received");
+			return;
+		}
+		
+		StringBuilder builder = new StringBuilder();
+		
+		Set<String> keys = extras.keySet();
+		for (String key : keys) {
+			Logger.D(TAG, "PUSH item: " + key);
+			Object value = extras.get(key);
+			if (builder.length() > 0)
+				builder.append("&");
+			builder.append(key);
+			builder.append("=");
+			if (value != null)
+				builder.append(value.toString());
+		}
+		
+		String data = builder.toString();
+		Logger.D(TAG, "Received PUSH message: " + data);
+		callPushCallback(data);
+		
+		// TODO: handle alers/sounds/vibrate events
+	}
 	
 }
