@@ -32,7 +32,7 @@ public class PushService {
 		Context ctx = RhodesService.getInstance().getContext();
 		Intent registrationIntent = new Intent(C2DM_INTENT_PREFIX + "REGISTER");
 		registrationIntent.putExtra("app", PendingIntent.getBroadcast(ctx, 0, new Intent(), 0));
-		registrationIntent.putExtra("sender", "support@rhomobile.com");
+		registrationIntent.putExtra("sender", Push.SENDER);
 		ctx.startService(registrationIntent);
 	}
 	

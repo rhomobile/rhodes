@@ -708,6 +708,8 @@ public class RhodesService {
 	private native void callPushCallback(String data);
 	
 	public void handlePushMessage(Intent intent) {
+		Logger.D(TAG, "Receive PUSH message");
+		
 		Bundle extras = intent.getExtras();
 		if (extras == null) {
 			Logger.W(TAG, "Empty PUSH message received");
