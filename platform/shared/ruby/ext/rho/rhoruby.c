@@ -451,6 +451,11 @@ VALUE rho_ruby_hash_aref(VALUE hash, const char* key)
     return rb_hash_aref( hash, rb_str_new2(key));
 }
 
+VALUE rho_ruby_array_get(VALUE ar, int nIndex)
+{
+    return rb_ary_entry( ar, nIndex);
+}
+
 char* getStringFromValue(VALUE val){
     return RSTRING_PTR(val);
 }

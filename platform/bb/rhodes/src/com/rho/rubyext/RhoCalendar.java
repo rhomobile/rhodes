@@ -42,6 +42,7 @@ public class RhoCalendar extends RubyBasic {
 	static final RubyString RUBY_EV_RECURRENCE_MONTHS  = ObjectFactory.createString( "months");	
 	static final RubyString RUBY_EV_RECURRENCE_WEEKS  = ObjectFactory.createString( "weeks");	
 	static final RubyString RUBY_EV_RECURRENCE_DAYS  = ObjectFactory.createString( "days");	
+	static final RubyString RUBY_EV_RECURRENCE_DAYOFMONTH = ObjectFactory.createString( "day_of_month");
 	
 	static final RubySymbol RUBY_FIND_type = ObjectFactory.createSymbol("find_type");
 	static final RubySymbol RUBY_FIND_include_repeating = ObjectFactory.createSymbol("include_repeating");
@@ -222,6 +223,9 @@ public class RhoCalendar extends RubyBasic {
 					recurrent.add( RUBY_EV_RECURRENCE_DAYS, days);
 					break;
 				}
+				case RepeatRule.DAY_IN_MONTH:
+					recurrent.add(RUBY_EV_RECURRENCE_DAYOFMONTH, ObjectFactory.createInteger(rl.getInt(RepeatRule.DAY_IN_MONTH)));
+					break;
 				}
 			}
 			
@@ -331,6 +335,8 @@ public class RhoCalendar extends RubyBasic {
 				}
 				rl.setInt(RepeatRule.DAY_IN_WEEK, nDays);
 			}
+			if ( recurrent.has_key(RUBY_EV_RECURRENCE_DAYOFMONTH) == RubyConstant.QTRUE )
+				rl.setInt(RepeatRule.DAY_IN_MONTH, recurrent.get(RUBY_EV_RECURRENCE_DAYOFMONTH).toInt());
 
 			event.setRepeat(null);
 			event.setRepeat(rl);
