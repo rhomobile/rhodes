@@ -294,13 +294,17 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
     return rEvent;
 }
 
-RHO_GLOBAL VALUE event_fetch(VALUE start_date, VALUE end_date)
+RHO_GLOBAL VALUE event_fetch(VALUE rParams)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
     if (!cls) return Qnil;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/util/Date;Ljava/util/Date;)Ljava/lang/Object;");
     if (!mid) return Qnil;
+
+    VALUE start_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_START_DATE));
+    VALUE end_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_END_DATE));
+    //TODO: VALUE include_repeating = rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating));
 
     RHO_TRACE("event_fetch (1)");
     jobject jStartDate = date_cast<jobject>(start_date);
