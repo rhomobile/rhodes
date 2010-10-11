@@ -225,11 +225,14 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
 }
 #endif // __IPHONE_4_0
 
-VALUE event_fetch(VALUE start_date, VALUE end_date)
+VALUE event_fetch(VALUE rParams)
 {
     calendar_check();
     
 #if defined(__IPHONE_4_0)
+    VALUE start_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_START_DATE));
+    VALUE end_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_END_DATE));
+    //TODO: VALUE include_repeating = rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating));
     NSDate *start = dateFromRuby(start_date);
     NSDate *finish = dateFromRuby(end_date);
     
