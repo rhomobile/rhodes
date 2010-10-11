@@ -30,20 +30,25 @@ public class BluetoothScreen extends MainScreen {
 	
 	
 	public BluetoothScreen(int type, String[] devices, BluetoothScreenCallback callback) {
+		BluetoothManager.rhoLogInfo("BluetoothScreen()");
 		mCallback = callback;
 		mFields = new LabelField[0];
 		setTitle(TITLE);
 		if (type == BLUETOOTH_SCREEN_TYPE_UNSUPPORTED) {
+			BluetoothManager.rhoLogInfo("  TYPE_UNSUPPORTED");
 			add(new LabelField(UNSUPPORTED));
 			return;
 		}
 		if (type == BLUETOOTH_SCREEN_TYPE_SERVER) {
+			BluetoothManager.rhoLogInfo("  TYPE_SERVER");
 			add(new LabelField(WAIT_FOR_CONNECT));
 			return;
 		}
 		if (type == BLUETOOTH_SCREEN_TYPE_CLIENT) {
+			BluetoothManager.rhoLogInfo("  TYPE_CLIENT");
 			if (devices.length <= 0) {
 				add(new LabelField(NO_DEVICES));
+				BluetoothManager.rhoLogInfo("  NO_DEVICES");
 				return;
 			}
 
@@ -53,6 +58,7 @@ public class BluetoothScreen extends MainScreen {
 			mFields = new LabelField[devices.length];
 			for (i = 0; i < devices.length; i++) {
 				LabelField lg = new LabelField(devices[i], Field.FOCUSABLE | Field.USE_ALL_WIDTH);
+				BluetoothManager.rhoLogInfo("    DEVICE["+String.valueOf(i)+"]="+devices[i]);
 				mFields[i] = lg;
 				add(lg);
 			}
@@ -102,6 +108,11 @@ public class BluetoothScreen extends MainScreen {
 		}
 		mIsClosedBySelect = false;
         return super.onClose();
+    }
+    
+    public void closeSilent() {
+		mIsClosedBySelect = true;
+		BluetoothManager.rhoPopScreen(this);
     }
 	
 
