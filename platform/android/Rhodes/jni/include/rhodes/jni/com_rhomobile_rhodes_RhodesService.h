@@ -149,6 +149,22 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientati
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
   (JNIEnv *, jobject, jstring, jstring, jstring);
 
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    setPushRegistrationId
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    callPushCallback
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
+  (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif
