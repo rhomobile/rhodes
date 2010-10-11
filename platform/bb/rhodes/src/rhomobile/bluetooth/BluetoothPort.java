@@ -25,7 +25,49 @@ public class BluetoothPort implements BluetoothSerialPortListener {
     private byte[] _receiveBuffer = new byte[1024];
 	private String mConnectedDeviceName = "";
 	
+	private ConnectionListenThread mListenThread = null;
+	
+	private class ConnectionListenThread extends Thread {
+		private BluetoothPort Port;
+		private byte[] data;
+		public ConnectionListenThread(BluetoothPort port) {
+			Port = port;
+			data = new byte[1];
+		}
+		
+		public void run() {
+			while (true) {
+				try {
+					sleep(50);
+				}
+				catch (Exception e) {
+					
+				}
+				try {
+					if (Port.mPort != null) {
+						int readed = Port.mPort.read(data, 0, 1);
+						if (readed > 0) {
+							mReadedData.writeByteArray(data, 0, 1);
+						}
+						// ok
+						Port.deviceConnected(true);
+						Port.mListenThread = null;
+						BluetoothManager.getInstance().closeBluetoothScreenSilent();
+						interrupt();
+					}
+				}
+				catch (Exception e) {
+					// port not ready
+				}
+				
+			}
+		}
+	}
+	
+	
+	
 	public void disconnect() {
+		BluetoothManager.rhoLogInfo("BluetoothPort.disconnect()");
 		if (mPort != null) {
 			mPort.disconnect();
 			mPort.close();
@@ -33,6 +75,10 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 		}
 		else {
 			mListener.onBluetoothPortError();
+		}
+		if (mListenThread != null) {
+			mListenThread.interrupt();
+			mListenThread = null;
 		}
 	}
 	
@@ -63,6 +109,12 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 	}
 
 	
+	public void startListenThread() {
+		//mListenThread = new ConnectionListenThread(this);
+		//mListenThread.start();
+		deviceConnected(true);
+	}
+	
     public BluetoothPort(BluetoothSerialPortInfo info, BluetoothPortListener listener)
     {
         // Fill a 1k array with the a character.
@@ -80,21 +132,24 @@ public class BluetoothPort implements BluetoothSerialPortListener {
         {
             if(info == null)
             {
+        		BluetoothManager.rhoLogInfo("BluetoothPort.BluetoothPort() server init");
                 // Open a port to listen for incoming connections.
-                mPort = new BluetoothSerialPort("btspp", BluetoothSerialPort.BAUD_115200, BluetoothSerialPort.DATA_FORMAT_PARITY_NONE | BluetoothSerialPort.DATA_FORMAT_STOP_BITS_1 | BluetoothSerialPort.DATA_FORMAT_DATA_BITS_8, BluetoothSerialPort.FLOW_CONTROL_NONE, 1024, 1024, this);
+                mPort = new BluetoothSerialPort(BluetoothSerialPort.DEFAULT_UUID, "btspp", BluetoothSerialPort.BAUD_9600, BluetoothSerialPort.DATA_FORMAT_PARITY_NONE | BluetoothSerialPort.DATA_FORMAT_STOP_BITS_1 | BluetoothSerialPort.DATA_FORMAT_DATA_BITS_8, BluetoothSerialPort.FLOW_CONTROL_NONE, 1024, 1024, this);
         		mConnectedDeviceName = "unknown";//mPort.toString();
-                //_deviceName = "unknown";
             }
             else
             {
                 // Connect to the selected device.
-                mPort = new BluetoothSerialPort(info, BluetoothSerialPort.BAUD_115200, BluetoothSerialPort.DATA_FORMAT_PARITY_NONE | BluetoothSerialPort.DATA_FORMAT_STOP_BITS_1 | BluetoothSerialPort.DATA_FORMAT_DATA_BITS_8, BluetoothSerialPort.FLOW_CONTROL_NONE, 1024, 1024, this);
+        		BluetoothManager.rhoLogInfo("BluetoothPort.BluetoothPort() client init");
+                mPort = new BluetoothSerialPort(info, BluetoothSerialPort.BAUD_9600, BluetoothSerialPort.DATA_FORMAT_PARITY_NONE | BluetoothSerialPort.DATA_FORMAT_STOP_BITS_1 | BluetoothSerialPort.DATA_FORMAT_DATA_BITS_8, BluetoothSerialPort.FLOW_CONTROL_NONE, 1024, 1024, this);
                 mConnectedDeviceName = info.getDeviceName();
             }
         }
         catch(IOException ex)
         {
-            Status.show("Error: " + ex.getMessage());
+    		BluetoothManager.rhoLogInfo("BluetoothPort.BluetoothPort() ERROR!");
+    		mListener.onBluetoothPortError();
+            //Status.show("Error: " + ex.getMessage());
         }
 
     }
@@ -102,6 +157,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
     // Invoked when a connection is established.
     public void deviceConnected(boolean success)
     {
+		BluetoothManager.rhoLogInfo("BluetoothPort.deviceConnected("+String.valueOf(success)+")");
     	if (success) {
     	}
     	mListener.onBluetoothPortConnected(success);
@@ -110,18 +166,21 @@ public class BluetoothPort implements BluetoothSerialPortListener {
     // Invoked when a connection is closed.
     public void deviceDisconnected()
     {
+		BluetoothManager.rhoLogInfo("BluetoothPort.deviceDisconnected()");
     	mListener.onBluetoothPortDisconnect();
     }
 
     // Invoked when the drt state changes.
     public void dtrStateChange(boolean high)
     {
+		BluetoothManager.rhoLogInfo("BluetoothPort.dtrStateChange("+String.valueOf(high)+")");
         //Status.show("DTR: " + high);
     }
 
     // Invoked when data has been received.
     public void dataReceived(int length)
     {
+		BluetoothManager.rhoLogInfo("BluetoothPort.dataReceived("+String.valueOf(length)+")");
         int len;
         try
         {
@@ -152,6 +211,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
     // Invoked after all data in the buffer has been sent.
     public void dataSent()
     {
+		BluetoothManager.rhoLogInfo("BluetoothPort.dataSent()");
         // Set the _dataSent flag to true to allow more data to be written.
         mIsDataSent = true;
 
@@ -163,6 +223,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
     // Sends the data currently in the DataBuffer.
     private void sendData()
     {
+		BluetoothManager.rhoLogInfo("BluetoothPort.sendData()");
         // Ensure we have data to send.
     	synchronized (mWritedData) {
 	        if (mWritedData.getArrayLength() > 0)
@@ -182,17 +243,20 @@ public class BluetoothPort implements BluetoothSerialPortListener {
                         // Write out the data in the DataBuffer and reset the DataBuffer.
                         mPort.write(mWritedData.getArray(), 0, mWritedData.getArrayLength());
                         mWritedData.reset();
+                		BluetoothManager.rhoLogInfo("BluetoothPort.sendData() data was sended");
 	                }
 	                catch (IOException ioex)
 	                {
 	                    // Reset _dataSent to true so we can attempt another data write.
 	                    mIsDataSent = true;
 	                    //System.out.println("Failed to write data. Exception: " + ioex.toString());
+                		BluetoothManager.rhoLogError("BluetoothPort.sendData() ERROR during send data");
 	                    mListener.onBluetoothPortError();
 	                }
 	            }
 	            else
 	            {
+            		BluetoothManager.rhoLogInfo("BluetoothPort.sendData() data can not send now - wait");
 	                //System.out.println("Can't send data right now, data will be sent after dataSent notify call.");
 	            }
 	        }
