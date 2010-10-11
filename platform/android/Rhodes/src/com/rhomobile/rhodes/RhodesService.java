@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -33,6 +34,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
@@ -701,14 +703,36 @@ public class RhodesService {
 		return tz.getDisplayName();
 	}
 
-	public void setPushRegistrationId(String id) {
-		// TODO:
-		Logger.D(TAG, "PUSH registration id: " + id);
-	}
+	public native void setPushRegistrationId(String id);
+	
+	private native void callPushCallback(String data);
 	
 	public void handlePushMessage(Intent intent) {
-		// TODO:
-		Logger.D(TAG, "PUSH receive message");
+		Bundle extras = intent.getExtras();
+		if (extras == null) {
+			Logger.W(TAG, "Empty PUSH message received");
+			return;
+		}
+		
+		StringBuilder builder = new StringBuilder();
+		
+		Set<String> keys = extras.keySet();
+		for (String key : keys) {
+			Logger.D(TAG, "PUSH item: " + key);
+			Object value = extras.get(key);
+			if (builder.length() > 0)
+				builder.append("&");
+			builder.append(key);
+			builder.append("=");
+			if (value != null)
+				builder.append(value.toString());
+		}
+		
+		String data = builder.toString();
+		Logger.D(TAG, "Received PUSH message: " + data);
+		callPushCallback(data);
+		
+		// TODO: handle alers/sounds/vibrate events
 	}
 	
 }
