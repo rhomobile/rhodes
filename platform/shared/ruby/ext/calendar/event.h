@@ -27,6 +27,12 @@ extern "C" {
 #define RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY "monthly"
 #define RUBY_EV_RECURRENCE_FREQUENCY_YEARLY "yearly"
 #define RUBY_EV_RECURRENCE_INTERVAL "interval"
+#define RUBY_EV_RECURRENCE_COUNT  "count"
+#define RUBY_EV_RECURRENCE_END  "end_date"
+#define RUBY_EV_RECURRENCE_DAYOFMONTH "day_of_month"
+#define RUBY_EV_RECURRENCE_MONTHS  "months"
+#define RUBY_EV_RECURRENCE_DAYS  "days"
+#define RUBY_FETCH_include_repeating "include_repeating"
 
 #ifdef __cplusplus
 }
