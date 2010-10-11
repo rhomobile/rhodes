@@ -20,6 +20,8 @@ def get_api_level(version)
   ANDROID_MARKET_VERSION_TO_API_LEVEL[version]
 end
 
+JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
+
 # Here is place were android platform should be specified.
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
@@ -36,8 +38,52 @@ ANDROID_PERMISSIONS = {
   'record_audio' => 'RECORD_AUDIO',
   'vibrate' => 'VIBRATE',
   'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
-  'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR']
+  'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
+  'push' => proc do |manifest| add_push(manifest) end
 }
+
+def add_push(manifest)
+  element = REXML::Element.new('permission')
+  element.add_attribute('android:name', "#{$app_package_name}.permission.C2D_MESSAGE")
+  element.add_attribute('android:protectionLevel', 'signature')
+  manifest.add element
+
+  element = REXML::Element.new('uses-permission')
+  element.add_attribute('android:name', "#{$app_package_name}.permission.C2D_MESSAGE")
+  manifest.add element
+
+  element = REXML::Element.new('uses-permission')
+  element.add_attribute('android:name', "com.google.android.c2dm.permission.RECEIVE")
+  manifest.add element
+
+  receiver = REXML::Element.new('receiver')
+  receiver.add_attribute('android:name', "#{JAVA_PACKAGE_NAME}.PushReceiver")
+  receiver.add_attribute('android:permission', "com.google.android.c2dm.permission.SEND")
+
+  action = REXML::Element.new('action')
+  action.add_attribute('android:name', "com.google.android.c2dm.intent.RECEIVE")
+  category = REXML::Element.new('category')
+  category.add_attribute('android:name', $app_package_name)
+
+  ie = REXML::Element.new('intent-filter')
+  ie.add_element(action)
+  ie.add_element(category)
+  receiver.add_element(ie)
+
+  action = REXML::Element.new('action')
+  action.add_attribute('android:name', "com.google.android.c2dm.intent.REGISTRATION")
+  category = REXML::Element.new('category')
+  category.add_attribute('android:name', $app_package_name)
+  
+  ie = REXML::Element.new('intent-filter')
+  ie.add_element(action)
+  ie.add_element(category)
+  receiver.add_element(ie)
+
+  manifest.elements.each('application') do |app|
+    app.add receiver
+  end
+end
 
 def set_app_name_android(newname)
   puts "set_app_name"
@@ -82,10 +128,15 @@ def set_app_name_android(newname)
 
   doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
 
+  caps_proc = []
   caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK']
   $app_config["capabilities"].each do |cap|
     cap = ANDROID_PERMISSIONS[cap]
     next if cap.nil?
+    if cap.is_a? Proc
+      caps_proc << cap
+      next
+    end
     cap = [cap] if cap.is_a? String
     cap = [] unless cap.is_a? Array
     caps += cap
@@ -99,11 +150,23 @@ def set_app_name_android(newname)
   element.add_attribute('android:minSdkVersion', ANDROID_API_LEVEL.to_s)
   manifest.add element
 
+  # Clear C2DM stuff
+  doc.elements.delete "manifest/application/receiver[@android:name='com.rhomobile.rhodes.PushReceiver']"
+  manifest.elements.each('permission') do |e|
+    name = e.attribute('name', 'android')
+    next if name.nil?
+    manifest.delete(e) if name.to_s =~ /\.C2D_MESSAGE$/
+  end
+
   manifest.elements.each('uses-permission') { |e| manifest.delete e }
   caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
     element.add_attribute('android:name', "android.permission.#{cap}")
     manifest.add element
+  end
+
+  caps_proc.each do |p|
+    p.call manifest
   end
 
   File.open($appmanifest, "w") { |f| doc.write f, 2 }
@@ -749,7 +812,7 @@ namespace "build" do
 
       # Generate Capabilities.java
       File.open($app_capabilities_java, "w") do |f|
-        f.puts "package com.rhomobile.rhodes;"
+        f.puts "package #{JAVA_PACKAGE_NAME};"
         f.puts "public class Capabilities {"
         ANDROID_PERMISSIONS.keys.sort.each do |k|
           f.puts "  public static boolean #{k.upcase}_ENABLED = true;"
@@ -760,7 +823,7 @@ namespace "build" do
 
     task :gen_java_ext => "config:android" do
       File.open($app_native_libs_java, "w") do |f|
-        f.puts "package com.rhomobile.rhodes;"
+        f.puts "package #{JAVA_PACKAGE_NAME};"
         f.puts "public class NativeLibraries {"
         f.puts "  public static void load() {"
         f.puts "    // Load native .so libraries"
@@ -1180,7 +1243,7 @@ def run_application (target_flag)
   args << "-a"
   args << "android.intent.action.MAIN"
   args << "-n"
-  args << $app_package_name + "/com.rhomobile.rhodes.Rhodes"
+  args << $app_package_name + "/#{JAVA_PACKAGE_NAME}.Rhodes"
   Jake.run($adb, args)
 end
 
