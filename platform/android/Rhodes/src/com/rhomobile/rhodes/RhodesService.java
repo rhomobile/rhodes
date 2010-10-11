@@ -36,7 +36,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
-import android.os.PowerManager.WakeLock;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -455,6 +454,15 @@ public class RhodesService {
 		uriHandlers.addElement(new SmsUriHandler(ctx));
 		uriHandlers.addElement(new VideoUriHandler(ctx));
 		
+		try {
+			if (Capabilities.PUSH_ENABLED)
+				PushService.register();
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.getMessage());
+			exitApp();
+			return;
+		}
+		
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
@@ -470,6 +478,13 @@ public class RhodesService {
 	}
 
 	public void exitApp() {
+		try {
+			if (Capabilities.PUSH_ENABLED)
+				PushService.unregister();
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.getMessage());
+		}
+		
 		PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				if (wakeLockObject != null) {
@@ -685,6 +700,15 @@ public class RhodesService {
 		TimeZone tz = cal.getTimeZone();
 		return tz.getDisplayName();
 	}
+
+	public void setPushRegistrationId(String id) {
+		// TODO:
+		Logger.D(TAG, "PUSH registration id: " + id);
+	}
 	
+	public void handlePushMessage(Intent intent) {
+		// TODO:
+		Logger.D(TAG, "PUSH receive message");
+	}
 	
 }

@@ -25,6 +25,18 @@
         <activity android:name="com.rhomobile.rhodes.mapview.MapView" />
         <activity android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity" />
         <uses-library android:name="com.google.android.maps" />
+        <receiver android:name="com.rhomobile.rhodes.PushReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+          <!-- Receive the actual message -->
+          <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            <category android:name="com.rhomobile.rhodes" />
+          </intent-filter>
+          <!-- Receive the registration id -->
+          <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+            <category android:name="com.rhomobile.rhodes" />
+          </intent-filter>
+        </receiver>
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -42,5 +54,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <user-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <permission android:name="com.rhomobile.rhodes.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.rhomobile.rhodes.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 </manifest> 
