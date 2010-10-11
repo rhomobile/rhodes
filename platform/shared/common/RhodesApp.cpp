@@ -547,8 +547,12 @@ void CRhodesApp::initAppUrls()
 {
     CRhodesAppBase::initAppUrls(); 
     m_currentTabIndex = 0;
-    
+
+#if defined( OS_WINCE ) || defined( OS_WINDOWS )
+    m_strHomeUrl = "http://localhost:";
+#else
     m_strHomeUrl = "http://127.0.0.1:";
+#endif
     m_strHomeUrl += getFreeListeningPort();
 
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
