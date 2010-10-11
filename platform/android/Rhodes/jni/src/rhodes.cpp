@@ -6,11 +6,13 @@
 #include <logging/RhoLogConf.h>
 #include <common/RhodesApp.h>
 #include <sync/SyncThread.h>
+#include <sync/ClientRegister.h>
 
 #include <sys/stat.h>
 #include <sys/resource.h>
 
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/RhoClassFactory.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
@@ -491,6 +493,20 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCa
   (JNIEnv *, jobject, jboolean active)
 {
     rho_rhodesapp_callAppActiveCallback(active);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
+  (JNIEnv *env, jobject, jstring jId)
+{
+    std::string id = rho_cast<std::string>(env, jId);
+    rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, id.c_str());
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
+  (JNIEnv *env, jobject, jstring jData)
+{
+    std::string data = rho_cast<std::string>(env, jData);
+    rho_rhodesapp_callPushCallback(data.c_str());
 }
 
 RHO_GLOBAL char *rho_timezone()
