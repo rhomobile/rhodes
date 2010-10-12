@@ -931,8 +931,8 @@ void RhoDiscoverDlg::updateDeviceListFromManager() {
 	for (i = 0; i < count; ++i) {
 		RhoDeviceInfo devInfo;
 		mBtManager->GetDeviceInfo(&devInfo, i);		
-		SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_ADDSTRING,0,(LPARAM) devInfo.szDeviceNameAddr);
-		SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_SETITEMDATA, i, (LPARAM) i);
+		int index = SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_ADDSTRING,0,(LPARAM) devInfo.szDeviceNameAddr);
+		SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM) i);
 	}
 
 	SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_SETCURSEL, 0,0);
