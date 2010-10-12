@@ -112,7 +112,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 	public void startListenThread() {
 		//mListenThread = new ConnectionListenThread(this);
 		//mListenThread.start();
-		deviceConnected(true);
+		//deviceConnected(true);
 	}
 	
     public BluetoothPort(BluetoothSerialPortInfo info, BluetoothPortListener listener)
