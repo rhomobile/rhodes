@@ -1,6 +1,7 @@
 package rhomobile.bluetooth;
 
 import rhomobile.RhodesApplication;
+
 import net.rim.device.api.bluetooth.BluetoothSerialPort;
 import net.rim.device.api.bluetooth.BluetoothSerialPortInfo;
 import net.rim.device.api.io.http.HttpHeaders;
@@ -8,6 +9,8 @@ import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.container.MainScreen;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyFixnum;
@@ -18,7 +21,8 @@ import com.xruby.runtime.lang.*;
 
 public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.BluetoothScreenCallback, BluetoothPort.BluetoothPortListener {
 	
-	
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("Bluetooth");
 	
 
 	public static String BT_OK = "OK";
@@ -42,14 +46,15 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	private BluetoothPort mPort = null;
 
 
-	/*
-	BluetoothManager(RubyClass c) {
-		super(c);
-		ourBluetoothManager = this;
-		init();
-	}
-	*/
 	
+	public static void rhoLogInfo(String msg) {
+		LOG.INFO(msg);
+		//LOG.ERROR(msg);
+	}
+	
+	public static void rhoLogError(String msg) {
+		LOG.ERROR(msg);
+	}
 	
 	public static BluetoothManager getInstance() {
 		if (ourBluetoothManager == null) {
@@ -61,6 +66,8 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	
 	private void init() {
 		mLocalDeviceName = "Blackberry device";//DeviceInfo.getDeviceName();
+		mScreen = null;
+		mPort = null;
 	}
 	
 	private void freeAll() {
@@ -98,17 +105,37 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
         });
 	}
 	
+	public void closeBluetoothScreenSilent() {
+		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
+		final BluetoothScreen scr = mScreen;
+		mScreen = null;
+		if (scr != null) {
+			app.invokeLater(new Runnable() 
+	        {
+	            public void run() 
+	            {
+					if (scr != null) {
+						scr.closeSilent();
+					}
+	            }
+	        });
+		}
+	}
+	
 	// BluetoothScreenCallback
 	public void onBluetoothScreenCancel() {
+		rhoLogInfo("onBluetoothScreenCancel()");
 		if (mPort != null) {
 			mPort.disconnect();
 			mPort = null;
 		}
 		fireCreateSessionCallback(BT_CANCEL, "");
+		mScreen = null;
 	}
 	
 	// BluetoothScreenCallback
 	public void onBluetoothScreenSelect(int index) {
+		rhoLogInfo("onBluetoothScreenSelect("+String.valueOf(index)+")");
 		UiApplication app = UiApplication.getUiApplication();
 		final int i = index;
         app.invokeLater(new Runnable() 
@@ -118,7 +145,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
         		getInstance().mPort = new BluetoothPort(mDevices[i], getInstance());
             }
         });
-		
+		mScreen = null;
 	}
 	
 	// BluetoothPortListener
@@ -144,6 +171,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		else {
 			fireCreateSessionCallback(BT_ERROR, mPort.getConnectedDeviceName());
 		}
+		closeBluetoothScreenSilent();
 	}
 	
 	private void fireCreateSessionCallback(String status, String connected_device_name) {
@@ -152,7 +180,11 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		body += "&connected_device_name=";
 		body += connected_device_name;
 		if (mCreateSessionCallback != null) {
+			rhoLogInfo("fire Create Session Callback status="+status+", connected_device_name="+connected_device_name);
 			fireRhodeCallback(mCreateSessionCallback, body);
+		}
+		else {
+			rhoLogError("fire Create Session Callback ERROR - Create Session callback not defined");
 		}
 	}
 
@@ -162,7 +194,11 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		body += "&event_type=";
 		body += event_type;
 		if (mSessionCallback != null) {
+			rhoLogInfo("fire Session Callback connected_device_name="+connected_device_name+", event="+event_type);
 			fireRhodeCallback(mSessionCallback, body);
+		}
+		else {
+			rhoLogError("fire Session Callback ERROR - Session callback not defined");
 		}
 	}
 	
@@ -179,6 +215,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static void off_bluetooth() {
+		rhoLogInfo("off_bluetooth()");
 		getInstance().freeAll();
 		ourBluetoothManager = null;
 	}
@@ -195,6 +232,8 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static String create_session(String role, String callback_url) {
+		rhoLogInfo("create_session("+role+", "+callback_url+")");
+		getInstance().mCreateSessionCallback = callback_url;
 		if (BT_ROLE_CLIENT.equals(role)) {
 			// client
 			if (is_bluetooth_available() != 0) {
@@ -217,22 +256,27 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 			if (is_bluetooth_available() != 0) {
 				getInstance().mPort = new BluetoothPort(null, getInstance());
 				getInstance().mScreen = new BluetoothScreen(BluetoothScreen.BLUETOOTH_SCREEN_TYPE_SERVER, null, getInstance());
+				rhoPushScreen(getInstance().mScreen);
+				getInstance().mPort.startListenThread();
 			}
 			else {
 				getInstance().mScreen = new BluetoothScreen(BluetoothScreen.BLUETOOTH_SCREEN_TYPE_UNSUPPORTED, null, getInstance());
+				rhoPushScreen(getInstance().mScreen);
 			}
-			rhoPushScreen(getInstance().mScreen);
 		}
 		return BT_OK;
 	}
 
 	public static void session_set_callback(String connected_device_name, String callback_url) {
+		rhoLogInfo("session_set_callback("+connected_device_name+", "+callback_url+")");
 		getInstance().mSessionCallback = callback_url;
 	}
 	
 	public static void session_disconnect(String connected_device_name) {
+		rhoLogInfo("session_disconnect("+connected_device_name+")");
 		if (getInstance().mPort != null) {
 			getInstance().mPort.disconnect();
+			getInstance().mPort = null;
 		}
 		else {
 			getInstance().fireSessionCallback("", BT_ERROR);
@@ -240,8 +284,11 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static int session_get_status(String connected_device_name) {
+		rhoLogInfo("session_get_status("+connected_device_name+")");
 		if (getInstance().mPort != null) {
-			return getInstance().mPort.getStatus();
+			int status = getInstance().mPort.getStatus();
+			rhoLogInfo("session_get_status() return = "+String.valueOf(status));
+			return status; 
 		}
 		else {
 			getInstance().fireSessionCallback("", BT_ERROR);
@@ -250,9 +297,12 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static String session_read_string(String connected_device_name) {
+		rhoLogInfo("session_read_string("+connected_device_name+")");
 		if (getInstance().mPort != null) {
 			byte[] data = getInstance().mPort.readData(); 
-			return new String(data,0,data.length);
+			String str = new String(data,0,data.length);
+			rhoLogInfo("session_read_string() return = ["+str+"]");
+			return str;
 		}
 		else {
 			getInstance().fireSessionCallback("", BT_ERROR);
@@ -261,6 +311,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static void session_write_string(String connected_device_name, String str) {
+		rhoLogInfo("session_write_string("+connected_device_name+", "+str+")");
 		if (getInstance().mPort != null) {
 			byte[] data = str.getBytes();
 			getInstance().mPort.writeData(data);
@@ -271,6 +322,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static byte[] session_read_data(String connected_device_name) {
+		rhoLogInfo("session_read_data()");
 		if (getInstance().mPort != null) {
 			return getInstance().mPort.readData();
 		}
@@ -282,6 +334,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	}
 	
 	public static void session_write_data(String connected_device_name, byte[] data) {
+		rhoLogInfo("session_write_data()");
 		if (getInstance().mPort != null) {
 			getInstance().mPort.writeData(data);
 		}
