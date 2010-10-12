@@ -134,7 +134,7 @@ describe "Events" do
       event['recurrence'].should == recValues
 
 #{"frequency"=>"weekly", "interval"=>1, "days"=>[0, 0, 0, 0, 0, 0, 1]}}]
-      recValues = {"frequency"=>"weekly", "interval"=>5, "days"=>[0, 1, 1, 0, 0, 0, 1], "count"=>10}
+      recValues = {"frequency"=>"weekly", "interval"=>5, "days"=>[0, 1, 1, 0, 0, 0, 1] }#, "count"=>10}
       Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
       event = Rho::RhoEvent.find(@id)
       #puts "event: #{event.inspect.to_s}"
