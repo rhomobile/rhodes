@@ -48,8 +48,8 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 
 	
 	public static void rhoLogInfo(String msg) {
-		//LOG.INFO(msg);
-		LOG.ERROR(msg);
+		LOG.INFO(msg);
+		//LOG.ERROR(msg);
 	}
 	
 	public static void rhoLogError(String msg) {
