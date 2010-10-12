@@ -39,7 +39,7 @@ static VALUE dateToRuby(NSDate *date)
     
     int year = [dateComponents year];
     int month = [dateComponents month];
-    int day = [dateComponents day] - 1;
+    int day = [dateComponents day];// - 1;
     int hour = [timeComponents hour];
     int minute = [timeComponents minute];
     int second = [timeComponents second];
@@ -76,7 +76,7 @@ static NSDate *dateFromRuby(VALUE rDate)
     
     int year = FIX2INT(rb_funcall(rDate, id_year, 0));
     int month = FIX2INT(rb_funcall(rDate, id_month, 0));
-    int day = FIX2INT(rb_funcall(rDate, id_day, 0)) + 1;
+    int day = FIX2INT(rb_funcall(rDate, id_day, 0));// + 1;
     int hour = FIX2INT(rb_funcall(rDate, id_hour, 0));
     int minute = FIX2INT(rb_funcall(rDate, id_min, 0));
     int second = FIX2INT(rb_funcall(rDate, id_sec, 0));
