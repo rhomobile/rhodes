@@ -375,7 +375,8 @@
                 {
                     if (animation.name == "slide") {
                         var css = {webkitTransitionDuration: null,
-                            webkitTransitionTimingFunction: null};
+                            webkitTransitionTimingFunction: null,
+                            webkitTransform: null};
                         toPage.css(css);
                         fromPage.css(css);
                     }
