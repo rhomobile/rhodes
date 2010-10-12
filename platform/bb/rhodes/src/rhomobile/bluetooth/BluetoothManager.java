@@ -255,8 +255,8 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 			// server
 			if (is_bluetooth_available() != 0) {
 				getInstance().mPort = new BluetoothPort(null, getInstance());
-				//getInstance().mScreen = new BluetoothScreen(BluetoothScreen.BLUETOOTH_SCREEN_TYPE_SERVER, null, getInstance());
-				//rhoPushScreen(getInstance().mScreen);
+				getInstance().mScreen = new BluetoothScreen(BluetoothScreen.BLUETOOTH_SCREEN_TYPE_SERVER, null, getInstance());
+				rhoPushScreen(getInstance().mScreen);
 				getInstance().mPort.startListenThread();
 			}
 			else {
