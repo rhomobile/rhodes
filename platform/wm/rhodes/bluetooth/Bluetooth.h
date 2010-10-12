@@ -156,7 +156,7 @@ public:
 
 private:
 	RhoBluetoothManager* mBtManager;
-	CRhoBluetoothDiscoverDlg dlg;
+	CRhoBluetoothDiscoveredDlg dlg;
 	HCURSOR hCurs;
 	int mShowCursor;
 };
