@@ -1288,9 +1288,11 @@ namespace "run" do
 
           if RUBY_PLATFORM =~ /darwin/
             # OS X:
+            `killall -9 adb`
             `killall -9 emulator`
           else
             # Windows
+            `taskkill /F /IM adb.exe`
             `taskkill /F /IM emulator.exe`
           end
         }
@@ -1326,9 +1328,19 @@ namespace "run" do
             sleep(5) unless end_spec
         end
 
-        #TODO: stop app
         Jake.process_spec_results(start)        
         
+        # stop app
+        if RUBY_PLATFORM =~ /darwin/
+          # OS X:
+          `killall -9 adb`
+          `killall -9 emulator`
+        else
+          # Windows
+          `taskkill /F /IM adb.exe`
+          `taskkill /F /IM emulator.exe`
+        end
+
         $stdout.flush
         
     end
