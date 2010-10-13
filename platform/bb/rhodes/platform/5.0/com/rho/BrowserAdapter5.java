@@ -7,6 +7,7 @@ import net.rim.device.api.system.Application;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.io.InputConnection;
 
+import com.rho.RhoLogger;
 import com.rho.RhodesApp;
 import com.rho.net.URI;
 
@@ -95,6 +96,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 	
 	private void createBrowserField()
 	{
+		LOG.INFO("Use BrowserField5");
 		m_oBrowserField = new BrowserField(m_oConfig);
 		m_oBrowserField.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ALLOW_POPUPS, true);
 		m_oController = new RhoProtocolController(m_oBrowserField);
