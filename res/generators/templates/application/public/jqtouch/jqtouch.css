@@ -11,15 +11,11 @@ body {
     -webkit-user-select: none;
     -webkit-text-size-adjust: none;
     font-family: Helvetica;
-/*   -webkit-perspective: 800; */
-/*   -webkit-transform-style: preserve-3d; */
 }
 .selectable, input, textarea {
     -webkit-user-select: auto;
 }
 body > * {
-/*   -webkit-backface-visibility: hidden; */
-/*   -webkit-transform: translate3d(0,0,0) rotate(0) scale(1); */
     -webkit-box-sizing: border-box;
     display: none;
     position: absolute;
