@@ -299,19 +299,19 @@ RHO_GLOBAL VALUE event_fetch(VALUE rParams)
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
     if (!cls) return Qnil;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/util/Date;Ljava/util/Date;)Ljava/lang/Object;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/util/Date;Ljava/util/Date;Z)Ljava/lang/Object;");
     if (!mid) return Qnil;
 
     VALUE start_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_START_DATE));
     VALUE end_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_END_DATE));
-    //TODO: VALUE include_repeating = rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating));
+    VALUE include_repeating = rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating));
 
     RHO_TRACE("event_fetch (1)");
     jobject jStartDate = date_cast<jobject>(start_date);
     RHO_TRACE("event_fetch (2)");
     jobject jEndDate = date_cast<jobject>(end_date);
     RHO_TRACE("event_fetch (3)");
-    jobject jRet = env->CallStaticObjectMethod(cls, mid, jStartDate, jEndDate);
+    jobject jRet = env->CallStaticObjectMethod(cls, mid, jStartDate, jEndDate, (jboolean)rho_ruby_get_bool(include_repeating));
     RHO_TRACE("event_fetch (4)");
     env->DeleteLocalRef(jStartDate);
     env->DeleteLocalRef(jEndDate);

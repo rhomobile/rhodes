@@ -3,13 +3,23 @@ require 'rho/rhoevent'
 describe "Events" do
 
   before(:all) do
-    events = Rho::RhoEvent.find(:all)
-    events.each do |event|
-      Rho::RhoEvent.destroy(event['id'])
-    end    
+    $calendar_supported = true
+    begin
+      events = Rho::RhoEvent.find(:all)
+    rescue => e
+      $calendar_supported = false
+      puts "Calendar is not supported: #{e.to_s}"
+    end
+    if $calendar_supported
+      events.each do |event|
+        Rho::RhoEvent.destroy(event['id'])
+      end    
+    end
   end
 
   it "should create" do
+    return unless $calendar_supported
+
     title = 'Random'
 
     events = Rho::RhoEvent.find(:all)
@@ -52,6 +62,8 @@ describe "Events" do
   end
 
   it "should find by dates" do
+    return unless $calendar_supported
+
     start = Time.now
     end_time = start + 3600
 
@@ -63,6 +75,8 @@ describe "Events" do
   end
     
   it "should update" do
+    return unless $calendar_supported
+
     #puts "id: #{@id}"
     
     start_date = Time.now
@@ -88,6 +102,8 @@ describe "Events" do
   end
 
   it "should update recurrence" do
+    return unless $calendar_supported
+
     # https://www.pivotaltracker.com/story/show/5484747
     # https://www.pivotaltracker.com/story/show/5484751
     if System::get_property('platform') == 'Blackberry' ||System.get_property('platform') == 'WINDOWS'
@@ -162,6 +178,8 @@ describe "Events" do
   end
 
   it "should remove" do
+    return unless $calendar_supported
+
     events = Rho::RhoEvent.find(:all)
     #puts "events: #{events.inspect.to_s}"
     events.should_not be_nil
