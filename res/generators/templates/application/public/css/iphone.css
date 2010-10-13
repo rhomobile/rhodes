@@ -203,7 +203,7 @@ h1 {
     padding: 15px 0 15px 0;
 }
 
-.content ul li a:hover {
+.content ul li a:active {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(5, 140, 245)), to(rgb(1, 95, 230)));
 }
 
