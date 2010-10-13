@@ -64,7 +64,7 @@ public class EventStore {
 		}
 	}
 	
-	public static Object fetch(Date startDate, Date endDate) {
+	public static Object fetch(Date startDate, Date endDate, boolean includeRepeating) {
 		try {
 			checkCapabilities();
 			
@@ -74,26 +74,31 @@ public class EventStore {
 			
 			ContentResolver r = getContentResolver();
 			
-			Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
-			ContentUris.appendId(builder, startDate.getTime());
-			ContentUris.appendId(builder, endDate.getTime());
-			
-			final Cursor eventCursor = r.query(builder.build(),
-					new String[] {"event_id", EVENTS_TITLE, "begin", "end", EVENTS_LOCATION,
-						EVENTS_NOTES, EVENTS_PRIVACY},
-					null, //"Calendars._id=" + id,
-					null, "startDay ASC, startMinute ASC");
+			Cursor eventCursor;
+			if (includeRepeating) {
+				Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
+				ContentUris.appendId(builder, startDate.getTime());
+				ContentUris.appendId(builder, endDate.getTime());
+				
+				eventCursor = r.query(builder.build(),
+						new String[] {"event_id", EVENTS_TITLE, "begin", "end", EVENTS_LOCATION,
+							EVENTS_NOTES, EVENTS_PRIVACY},
+						null, //"Calendars._id=" + id,
+						null, "startDay ASC, startMinute ASC");
+			}
+			else {
+				String where = String.format("(%s >= ? and %s <= ?) or (%s >= ? and %s <= ?)",
+						EVENTS_START_DATE, EVENTS_START_DATE, EVENTS_END_DATE, EVENTS_END_DATE);
+				String start = Long.toString(startDate.getTime());
+				String end = Long.toString(endDate.getTime());
+				eventCursor = r.query(EVENTS_URI,
+					new String[] {"_id", EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
+						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
+					where, new String[] {start, end, start, end},
+					null);
+			}
 			if (eventCursor == null)
 				throw new RuntimeException("Calendar provider not found");
-			/*
-			String where = String.format("(%s >= ? or %s >= ?) and (%s <= ? or %s <= ?)",
-					EVENTS_START_DATE, EVENTS_END_DATE, EVENTS_START_DATE, EVENTS_END_DATE);
-			final Cursor eventCursor = r.query(EVENTS_URI,
-					new String[] {EVENTS_ID, EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
-						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
-					where, new String[] {Long.toString(startDate.getTime()), Long.toString(endDate.getTime())},
-					null);
-			*/
 			try {
 				while (eventCursor.moveToNext()) {
 					String eid = eventCursor.getString(0);
