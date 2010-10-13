@@ -1,6 +1,7 @@
 ## 2.2.0
 * Bluetooth for all platforms
 * Calendar support for all platforms
+* Push support for Android
 * Enable\Disable rotation flag implemented for iPhone
 * Enable\Disable screen sleep for Blackberry, iPhone and Android
 
