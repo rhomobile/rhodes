@@ -232,7 +232,8 @@ VALUE event_fetch(VALUE rParams)
 #if defined(__IPHONE_4_0)
     VALUE start_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_START_DATE));
     VALUE end_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_END_DATE));
-    //TODO: VALUE include_repeating = rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating));
+    int include_repeating = rho_ruby_get_bool(rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating)));
+    
     NSDate *start = dateFromRuby(start_date);
     NSDate *finish = dateFromRuby(end_date);
     
@@ -244,6 +245,8 @@ VALUE event_fetch(VALUE rParams)
     
     for (int i = 0, lim = [events count]; i != lim; ++i) {
         EKEvent *event = [events objectAtIndex:i];
+        if (!include_repeating && event.recurrenceRule)
+            continue;
         VALUE rEvent = eventToRuby(event);
         rho_ruby_add_to_array(ret, rEvent);
     }
