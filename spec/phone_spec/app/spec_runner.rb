@@ -19,7 +19,8 @@ class SpecRunner < MSpecScript
           {:schema_model=>false, :sync_model=>true}, {:schema_model=>false, :sync_model=>false} ] ]
 
     config[:files] << "spec/contacts_spec" unless System.get_property('device_name') == 'Win32'
-    config[:files] << "spec/events_spec"  unless System.get_property('device_name') == 'Win32'
+    # Disable events specs on Android because emulator doesn't contain Calendar provider
+    config[:files] << "spec/events_spec"  unless System.get_property('device_name') == 'Win32' or System.get_property('platform') == 'ANDROID'
     
     config[:files] << "spec/barcode_spec" unless System.get_property('device_name') == 'Win32'            
     config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
