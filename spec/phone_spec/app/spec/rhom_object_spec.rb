@@ -433,7 +433,50 @@ describe "Rhom::RhomObject" do
     
     item2.propOne.should == '1'
     item2.TwoProps.should == '2'
+
+    new_attributes  = {'propOne'=>'4', 'TwoProps'=>'3'}
+    item2.update_attributes(new_attributes)
+
+    item3 = getAccount.find(item.object)
+    item3.propOne.should == new_attributes['propOne']
+    item3.TwoProps.should == new_attributes['TwoProps']
+  end
+
+  it "should make new record diff case name" do
+    new_attributes  = {'propOne'=>'1', 'TwoProps'=>'2'}
+    item = getAccount.new( new_attributes )
+    item.propOne.should == '1'
+    item.TwoProps.should == '2'
+    item.save
     
+    item2 = getAccount.find(item.object)
+    item.vars.should == item2.vars    
+    
+    item2.propOne.should == '1'
+    item2.TwoProps.should == '2'
+    
+    item2.propOne = '3'
+    item2.TwoProps = '4'
+    item2.save
+
+    item3 = getAccount.find(item.object)
+    item3.propOne.should == item2.propOne
+    item3.TwoProps.should == item2.TwoProps
+    
+  end
+  
+  it "should update a record  diff case name" do
+    new_attributes = {"name"=>"Mobio US"}
+    @account = getAccount.find("44e804f2-4933-4e20-271c-48fcecd9450d")
+    @account.update_attributes(new_attributes)
+    @new_acct = getAccount.find("44e804f2-4933-4e20-271c-48fcecd9450d")
+    @new_acct.name.should == "Mobio US"
+    @new_acct.industry.should == "Technology"
+
+    if $spec_settings[:sync_model]    
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 1
+    end    
   end
   
   it "should update a record with full mode" do
