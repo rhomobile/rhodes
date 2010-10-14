@@ -10,7 +10,7 @@ end
 module Rho
 	module RhoEvent
     # These values determined experimentally on iPhone
-    MIN_TIME = Time.utc(2007, 'jan', 1, 0, 0, 0)
+    MIN_TIME = Time.utc(2008, 'jan', 1, 0, 0, 0)
     MAX_TIME = Time.utc(2030, 'dec', 31, 23, 59, 59)
     
     #TODO: update examples    
