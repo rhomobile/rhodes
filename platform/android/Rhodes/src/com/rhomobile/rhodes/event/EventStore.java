@@ -246,7 +246,15 @@ public class EventStore {
 			
 			Logger.D(TAG, "delete(id)");
 			
-			int rows = getContentResolver().delete(EVENTS_URI, "_id=?", new String[] {id});
+			ContentResolver r = getContentResolver();
+			int rows;
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+				Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
+				rows = getContentResolver().delete(uri, null, null);
+			}
+			else {
+				rows = r.delete(EVENTS_URI, "_id=?", new String[] {id});
+			}
 			Logger.D(TAG, String.format("%d rows deleted", rows));
 			
 			return null;
