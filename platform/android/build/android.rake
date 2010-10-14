@@ -1286,14 +1286,13 @@ namespace "run" do
         Thread.new {
           sleep 1000
 
-          if RUBY_PLATFORM =~ /darwin/
-            # OS X:
-            `killall -9 adb`
-            `killall -9 emulator`
-          else
+          if RUBY_PLATFORM =~ /windows|cygwin|mingw/
             # Windows
             `taskkill /F /IM adb.exe`
             `taskkill /F /IM emulator.exe`
+          else
+            `killall -9 adb`
+            `killall -9 emulator`
           end
         }
 
@@ -1331,14 +1330,13 @@ namespace "run" do
         Jake.process_spec_results(start)        
         
         # stop app
-        if RUBY_PLATFORM =~ /darwin/
-          # OS X:
-          `killall -9 adb`
-          `killall -9 emulator`
-        else
+        if RUBY_PLATFORM =~ /windows|cygwin|mingw/
           # Windows
           `taskkill /F /IM adb.exe`
           `taskkill /F /IM emulator.exe`
+        else
+          `killall -9 adb`
+          `killall -9 emulator`
         end
 
         $stdout.flush
