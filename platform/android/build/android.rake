@@ -929,7 +929,7 @@ namespace "build" do
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
       mkdir_p destdir unless File.exists? destdir
       cp_r libname, destdir
-      Jake.run($stripbin, [File.join(destdir, File.basename(libname))])
+      cc_run($stripbin, [File.join(destdir, File.basename(libname))])
     end
 
  #   desc "Build Rhodes for android"
@@ -1082,7 +1082,7 @@ namespace "package" do
     args = ["uf", resourcepkg]
     # Strip them all to decrease size
     Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
-      Jake.run($stripbin, [lib])
+      cc_run($stripbin, [lib])
       args << "lib/armeabi/#{File.basename(lib)}"
     end
     puts Jake.run($jarbin, args, $tmpdir)
@@ -1098,7 +1098,7 @@ end
 def get_app_log(appname, device, silent = false)
   pkgname = 'com.rhomobile.' + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')
-  Jake.run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
+  cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
   puts "RhoLog.txt stored to " + $app_path unless silent
   return true
 end
@@ -1301,27 +1301,14 @@ namespace "run" do
         Jake.before_run_spec
         start = Time.now
 
-        puts "\nWaiting for log, up to 60 seconds"
-        while (Time.now - start < 60 )
-          sleep 5
-          printf("%.2fs: ",(Time.now - start))
-
-          get_app_log($appname, false, true)
-
-          if File.exist?(log_name)
-            puts "Success"
-            puts "Log found after " + (Time.now - start).to_s + " seconds"
-            break
-          end
-
+        puts "waiting for log"
+      
+        while !File.exist?(log_name)
+            get_app_log($appname, false, true)
+            sleep(1)
         end
 
-        if !File.exist?(log_name)
-          puts "Log still doesn't exist, giving up"
-          exit 1
-        end
-
-        puts "\nLog found, begin to read log"
+        puts "start read log"
         
         end_spec = false
         while !end_spec do
@@ -1376,12 +1363,13 @@ namespace "run" do
 
       Jake.run($adb, ['kill-server'])	
       #Jake.run($adb, ['start-server'])	
+      #adb_start_server = $adb + ' start-server'
       Thread.new { Jake.run($adb, ['start-server']) }
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
 
-      # Create the avd if it doesn't exist already
-      Jake.run($androidbin,['create','avd','--name',$avdname,'--target',$avdtarget,'--sdcard','32M','--skin','HVGA']) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
+      system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
       if $use_geomapping
         avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
@@ -1396,7 +1384,7 @@ namespace "run" do
 
       if !running
         # Start the emulator, check on it every 5 seconds until it's running
-        Thread.new { Jake.run($emulator,['-avd',$avdname]) }
+        Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") }
         puts "Waiting up to 180 seconds for emulator..."
         startedWaiting = Time.now
         adbRestarts = 1
@@ -1464,13 +1452,8 @@ namespace "run" do
         count += 1
       end
 
-      if !done
-        puts "Unable to load package into emulator, giving up"
-        exit 1
-      else
-        puts "Loading complete, starting application.."
-        run_application("-e")
-      end
+      puts "Loading complete, starting application.." if done
+      run_application("-e") if done
     end
 
     desc "build and install on device"
