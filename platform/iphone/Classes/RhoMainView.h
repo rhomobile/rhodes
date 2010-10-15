@@ -32,4 +32,6 @@
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right;
 - (void)removeNavBar;
 
+- (UIWebView*)getWebView:(int)tab_index;
+
 @end
