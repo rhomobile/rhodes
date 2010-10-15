@@ -104,6 +104,7 @@ extern int _zbar_verbosity;
 
 #else
 
+/*
 # ifdef __GNUC__
 #  define zprintf(level, format, args...) do {                          \
             fprintf(stderr, "%s: " format, __func__ , ##args);          \
@@ -115,6 +116,19 @@ extern int _zbar_verbosity;
             ZFLUSH                                                      \
     } while(0)
 # endif
+*/
+
+// Disable console output
+# ifdef __GNUC__
+#  define zprintf(level, format, args...) do {                          \
+    } while(0)
+# else
+#  define zprintf(level, format, ...) do {                              \
+    } while(0)
+# endif
+
+
+
 
 #endif
 
