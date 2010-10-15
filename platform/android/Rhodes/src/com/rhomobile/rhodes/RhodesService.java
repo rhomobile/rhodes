@@ -686,6 +686,11 @@ public class RhodesService {
 		else if (name.equalsIgnoreCase("device_name")) {
 			return Build.DEVICE;
 		}
+		else if (name.equalsIgnoreCase("is_emulator")) 
+		{
+		    String strDevice = Build.DEVICE;
+			return new Boolean(strDevice != null && strDevice.equalsIgnoreCase("generic"));
+		}
 		else if (name.equalsIgnoreCase("os_version")) {
 			return Build.VERSION.RELEASE;
 		}
