@@ -339,6 +339,18 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 		return 1;
 	}
 
+	if (strcasecmp("is_emulator",szPropName) == 0)
+    {
+        bool bEmulator = false;
+#ifdef OS_WINDOWS
+        bEmulator = true;
+#else
+
+#endif
+        *resValue = rho_ruby_create_boolean(bEmulator?1:0);
+        return 1;
+    }
+
     return 0;
 }
 
