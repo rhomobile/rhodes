@@ -172,6 +172,10 @@ public class System {
     		return ObjectFactory.createString(DeviceInfo.getDeviceName());
     	if ( strPropName.equalsIgnoreCase("os_version") )
     		return ObjectFactory.createString(DeviceInfo.getSoftwareVersion());
+    	if ( strPropName.equalsIgnoreCase("rhodes_port") )
+    		return ObjectFactory.createInteger(0);
+    	if ( strPropName.equalsIgnoreCase("is_emulator") )
+    		return ObjectFactory.createBoolean(DeviceInfo.isSimulator());
     	
     	return RubyConstant.QNIL;
     }
