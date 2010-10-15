@@ -205,6 +205,14 @@
     return tabindex;
 }
 
+- (UIWebView*)getWebView:(int)tab_index {
+	if (tab_index == -1) {
+		tab_index = [self activeTab];
+	}
+	return [[self subView:tab_index] getWebView:-1];
+}
+
+
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
     [[self subView:[self activeTab]] addNavBar:title left:left right:right];
 }
