@@ -22,4 +22,6 @@
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray*)items;
 
+- (UIWebView*)getWebView:(int)tab_index;
+
 @end

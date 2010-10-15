@@ -660,6 +660,10 @@ int rho_sys_get_screen_height();
     return 0;
 }
 
+- (UIWebView*)getWebView:(int)tab_index {
+	return webView;
+}
+
 
 - (void)addNavBar:(UINavigationBar*)navb {
     [self removeNavBar];
