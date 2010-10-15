@@ -244,7 +244,7 @@ class Jake
                     Process.kill( 9, f.pid ) 
                 end    
             else
-                puts line
+                puts "RET: " + line
                 $stdout.flush
             end    
           end
