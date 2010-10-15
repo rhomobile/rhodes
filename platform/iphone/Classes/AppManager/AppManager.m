@@ -320,7 +320,15 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         NSString *version = [[UIDevice currentDevice] systemVersion];
         *resValue = rho_ruby_create_string([version UTF8String]);
         return 1;
+    }else if (strcasecmp("is_emulator", szPropName) == 0) {
+        int bSim = 0; 
+#if TARGET_IPHONE_SIMULATOR
+		bSim = 1;
+#endif		
+		*resValue = rho_ruby_create_boolean(bSim);
+        return 1;
     }
+	
     /*
     // Removed because it's possibly dangerous: Apple could reject application
     // used such approach from its AppStore
