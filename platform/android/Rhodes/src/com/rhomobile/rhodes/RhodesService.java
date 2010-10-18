@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
@@ -710,7 +711,7 @@ public class RhodesService {
 
 	public native void setPushRegistrationId(String id);
 	
-	private native void callPushCallback(String data);
+	private native boolean callPushCallback(String data);
 	
 	public void handlePushMessage(Intent intent) {
 		Logger.D(TAG, "Receive PUSH message");
@@ -724,6 +725,10 @@ public class RhodesService {
 		StringBuilder builder = new StringBuilder();
 		
 		Set<String> keys = extras.keySet();
+		// Remove system related keys
+		keys.remove("collapse_key");
+		keys.remove("from");
+		
 		for (String key : keys) {
 			Logger.D(TAG, "PUSH item: " + key);
 			Object value = extras.get(key);
@@ -737,9 +742,32 @@ public class RhodesService {
 		
 		String data = builder.toString();
 		Logger.D(TAG, "Received PUSH message: " + data);
-		callPushCallback(data);
+		if (callPushCallback(data))
+			return;
 		
-		// TODO: handle alers/sounds/vibrate events
+		String alert = extras.getString("alert");
+		if (alert != null) {
+			Logger.D(TAG, "PUSH: Alert: " + alert);
+			Alert.showPopup(alert);
+		}
+		String sound = extras.getString("sound");
+		if (sound != null) {
+			Logger.D(TAG, "PUSH: Sound file name: " + sound);
+			Alert.playFile("/public/alerts/" + sound, null);
+		}
+		String vibrate = extras.getString("vibrate");
+		if (vibrate != null) {
+			Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
+			int duration;
+			try {
+				duration = Integer.parseInt(vibrate);
+			}
+			catch (NumberFormatException e) {
+				duration = 5;
+			}
+			Logger.D(TAG, "Vibrate " + duration + " seconds");
+			Alert.vibrate(duration);
+		}
 	}
 	
 }
