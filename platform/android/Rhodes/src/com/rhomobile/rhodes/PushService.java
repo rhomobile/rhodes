@@ -27,7 +27,7 @@ public class PushService {
 		
 		checkCapabilities();
 		
-		Logger.D(TAG, "Register for PUSH messages");
+		Logger.D(TAG, "Register for PUSH messages (use \"" + Push.SENDER + "\" as sender)");
 		
 		Context ctx = RhodesService.getInstance().getContext();
 		Intent registrationIntent = new Intent(C2DM_INTENT_PREFIX + "REGISTER");
