@@ -29,8 +29,9 @@ public class EventStore {
 	private static final String EVENTS_PRIVACY = "visibility";
 	
 	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-		e.printStackTrace();
+		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e != null ? e.getMessage() : "null exception");
+		if ( e != null )
+		    e.printStackTrace();
 	}
 	
 	private static String dateToString(Date date) {
