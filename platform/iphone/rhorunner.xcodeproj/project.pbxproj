@@ -27,7 +27,6 @@
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD486F59124FB66600F8A93F /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = BD486F58124FB66600F8A93F /* Event.m */; };
-		BD486FE212505FE000F8A93F /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD486FE112505FE000F8A93F /* EventKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD6A6229123E46BB0093E03C /* RhoViewController.m */; };
 		BD97AC211160EE8F006960F9 /* RhoAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* RhoAlert.m */; };
@@ -183,7 +182,6 @@
 		BD38E754115D1AAC001CE05C /* TabbedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabbedMainView.m; sourceTree = "<group>"; };
 		BD486F57124FB66600F8A93F /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = Event/Event.h; sourceTree = "<group>"; };
 		BD486F58124FB66600F8A93F /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Event.m; path = Event/Event.m; sourceTree = "<group>"; };
-		BD486FE112505FE000F8A93F /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD6A6228123E46BB0093E03C /* RhoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoViewController.h; sourceTree = "<group>"; };
@@ -282,7 +280,6 @@
 				46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */,
 				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
 				FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */,
-				BD486FE212505FE000F8A93F /* EventKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +350,6 @@
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
 				FACC20FF123A759A0088A447 /* GameKit.framework */,
-				BD486FE112505FE000F8A93F /* EventKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -915,7 +911,6 @@
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
-				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -930,7 +925,6 @@
 				);
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -963,19 +957,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreGraphics,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -991,72 +972,23 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../shared;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
@@ -1086,45 +1018,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
 				PRODUCT_NAME = rhorunner;
 				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1139,6 +1032,7 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1147,19 +1041,17 @@
 				IBC_FLATTEN_NIBS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1175,28 +1067,23 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../shared;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
