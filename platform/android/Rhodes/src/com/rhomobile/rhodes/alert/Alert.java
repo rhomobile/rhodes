@@ -282,7 +282,7 @@ public class Alert {
 			Logger.T(TAG, "vibrate: " + duration);
 			Context ctx = RhodesService.getInstance().getContext();
 			Vibrator vibrator = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
-			vibrator.vibrate(duration*1000);
+			vibrator.vibrate(duration);
 		}
 		catch (Exception e) {
 			reportFail("vibrate", e);

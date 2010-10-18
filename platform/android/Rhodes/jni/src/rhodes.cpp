@@ -420,6 +420,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncAllSources
     rho_sync_doSyncAllSources(show_status_popup);
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
+  (JNIEnv *env, jobject, jstring sourceObj)
+{
+    std::string source = rho_cast<std::string>(env, sourceObj);
+    rho_sync_doSyncSourceByName(source.c_str());
+}
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getOptionsUrl
   (JNIEnv *env, jobject)
 {
