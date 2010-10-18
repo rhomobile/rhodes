@@ -21,6 +21,7 @@
 package com.rhomobile.rhodes.alert;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Map;
 import java.util.Vector;
 
@@ -54,6 +55,7 @@ public class Alert {
 	private static final String TAG = "Alert";
 	
 	private static Dialog currentAlert = null;
+	private static MediaPlayer currentMP = null;
 	
 	private static native void doCallback(String url, String id, String title);
 	
@@ -290,7 +292,12 @@ public class Alert {
 	public static void playFile(String fileName, String mediaType) {
 		try {
 			Logger.T(TAG, "playFile: " + fileName + " (" + mediaType + ")");
+			
+			if (currentMP != null)
+				currentMP.release();
+			
 			MediaPlayer mp = new MediaPlayer();
+			currentMP = mp;
 			mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 				public boolean onError(MediaPlayer mp, int what, int extra) {
 					Logger.E(TAG, "Error when playing file : " + what + ", " + extra);
@@ -302,9 +309,14 @@ public class Alert {
 			f = new File(f, fileName);
 			if (!f.exists())
 				RhoFileApi.copy(fileName);
+			
 			String source = f.getCanonicalPath();
 			Logger.T(TAG, "Final file name: " + source);
-			mp.setDataSource(source);
+			//mp.setDataSource(source);
+			
+			FileInputStream fs = new FileInputStream(f);
+			mp.setDataSource(fs.getFD());
+			
 			mp.prepare();
 			mp.start();
 		} catch (Exception e) {
