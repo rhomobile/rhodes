@@ -136,6 +136,7 @@ public class RhodesService {
 	private native void startRhodesApp();
 	
 	public native void doSyncAllSources(boolean v);
+	public native void doSyncSource(String source);
 	
 	public native String getOptionsUrl();
 	public native String getStartUrl();
@@ -767,6 +768,23 @@ public class RhodesService {
 			}
 			Logger.D(TAG, "Vibrate " + duration + " seconds");
 			Alert.vibrate(duration);
+		}
+		
+		String syncSources = extras.getString("do_sync");
+		if (syncSources != null) {
+			Logger.D(TAG, "PUSH: Sync:");
+			boolean syncAll = false;
+			for (String source : syncSources.split(",")) {
+				Logger.D(TAG, "url = " + source);
+				if (source.equalsIgnoreCase("all"))
+					syncAll = true;
+				else {
+					doSyncSource(source.trim());
+				}
+			}
+			
+			if (syncAll)
+				doSyncAllSources(true);
 		}
 	}
 	
