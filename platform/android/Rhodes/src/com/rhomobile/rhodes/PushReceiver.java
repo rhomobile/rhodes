@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -47,12 +48,25 @@ public class PushReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
-		if (action.equals(PushService.C2DM_INTENT_PREFIX + "REGISTRATION"))
-			handleRegistration(context, intent);
-		else if (action.equals(PushService.C2DM_INTENT_PREFIX + "RECEIVE"))
-			handleMessage(context, intent);
+		if (action.equals(PushService.C2DM_INTENT_PREFIX + "REGISTRATION")) {
+			try {
+				handleRegistration(context, intent);
+			}
+			catch (Exception e) {
+				Log.e(TAG, "Can't handle PUSH registration: " + e.getMessage());
+			}
+		}
+		else if (action.equals(PushService.C2DM_INTENT_PREFIX + "RECEIVE")) {
+			try {
+				handleMessage(context, intent);
+			}
+			catch (Exception e) {
+				Log.e(TAG, "Can't handle PUSH message: " + e.getMessage());
+			}
+		}
 		else
 			Log.w(TAG, "Unknown action received (PUSH): " + action);
+		setResult(Activity.RESULT_OK, null /* data */, null /* extra */);
 	}
 
 }
