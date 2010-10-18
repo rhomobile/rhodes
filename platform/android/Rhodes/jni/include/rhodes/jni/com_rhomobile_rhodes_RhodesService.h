@@ -160,9 +160,9 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrati
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    callPushCallback
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

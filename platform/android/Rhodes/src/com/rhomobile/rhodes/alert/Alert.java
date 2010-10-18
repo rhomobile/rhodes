@@ -283,7 +283,7 @@ public class Alert {
 			vibrator.vibrate(duration);
 		}
 		catch (Exception e) {
-			reportFail("showPopup", e);
+			reportFail("vibrate", e);
 		}
 	}
 	
