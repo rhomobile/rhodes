@@ -47,6 +47,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncAllSources
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    doSyncSource
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    getOptionsUrl
  * Signature: ()Ljava/lang/String;
  */
