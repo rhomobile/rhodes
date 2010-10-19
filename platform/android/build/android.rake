@@ -200,6 +200,9 @@ namespace "config" do
     $use_geomapping = 'false' if $use_geomapping.nil?
     $use_geomapping = get_boolean($use_geomapping.to_s)
 
+    $use_google_addon_api = false
+    $use_google_addon_api = true if $use_geomapping
+
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
@@ -354,6 +357,15 @@ namespace "config" do
     $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
     $storealias = "rhomobile.keystore" if $storealias.nil?
 
+    $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
+    $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
+    if $app_config["android"] and $app_config["android"]["capabilities"]
+      $app_config["capabilities"] += $app_config["android"]["capabilities"]
+      $app_config["android"]["capabilities"] = nil
+    end
+    $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
+    $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
+
     # Detect android targets
     if $androidtargets.nil?
       $androidtargets = {}
@@ -366,7 +378,7 @@ namespace "config" do
           id = $1
         end
 
-        if $use_geomapping
+        if $use_google_addon_api
           if line =~ /:Google APIs:([0-9]+)/
             apilevel = $1
             $androidtargets[apilevel.to_i] = id.to_i
@@ -381,7 +393,7 @@ namespace "config" do
     end
 
     # Detect Google API add-on path
-    if $use_geomapping
+    if $use_google_addon_api
       puts "+++ Looking for Google APIs add-on..." if USE_TRACES
       napilevel = ANDROID_API_LEVEL
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
@@ -410,7 +422,7 @@ namespace "config" do
         end
       end
       if $gapijar.nil?
-        puts "+++ No Google APIs add-on found (which is required because 'mapping' enabled in build.yml)"
+        puts "+++ No Google APIs add-on found (which is required because appropriate capabilities enabled in build.yml)"
         exit 1
       else
         puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
@@ -420,7 +432,7 @@ namespace "config" do
     $emuversion = get_market_version($found_api_level) if $emuversion.nil?
     $emuversion = $emuversion.to_s
     $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-    $avdname += "ext" if $use_geomapping
+    $avdname += "ext" if $use_google_addon_api
     $avdtarget = $androidtargets[get_api_level($emuversion)]
 
     setup_ndk($androidndkpath, ANDROID_API_LEVEL)
@@ -449,14 +461,6 @@ namespace "config" do
     #  $app_config["extensions"] += $app_config["android"]["extensions"]
     #  $app_config["android"]["extensions"] = nil
     #end
-
-    $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
-    $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
-    if $app_config["android"] and $app_config["android"]["capabilities"]
-      $app_config["capabilities"] += $app_config["android"]["capabilities"]
-      $app_config["android"]["capabilities"] = nil
-    end
-    $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
 
     $push_sender = nil
     $push_sender = $config["android"]["push"]["sender"] if !$config["android"].nil? and !$config["android"]["push"].nil?
@@ -1371,7 +1375,7 @@ namespace "run" do
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
       system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
-      if $use_geomapping
+      if $use_google_addon_api
         avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
         avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
         unless avd_using_gapi
