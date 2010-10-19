@@ -189,6 +189,7 @@
 - (void)switchTab:(int)index {
     tabindex = index;
     tabbar.selectedIndex = tabindex;
+	[self onSwitchTab];
 }
 
 - (void)onSwitchTab {
@@ -199,6 +200,7 @@
         rho_rhodesapp_load_url(s);
         td.loaded = YES;
     }
+	[[[self subView:tabindex] view] setNeedsDisplay];
 }
 
 - (int)activeTab {
