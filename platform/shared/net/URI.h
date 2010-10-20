@@ -21,6 +21,8 @@ public:
     String getQueryString();
     String getScheme();
     String getPathSpecificPart();
+    String getLastNamePart();
+
 /*
 	struct CParsedCookie 
     {
