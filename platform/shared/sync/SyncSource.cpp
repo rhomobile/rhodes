@@ -11,7 +11,6 @@
 #include "common/RhoAppAdapter.h"
 #include "json/JSONIterator.h"
 #include "statistic/RhoProfiler.h"
-#include "net/URI.h"
 
 namespace rho {
 namespace sync {
@@ -799,36 +798,43 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
 
 String CSyncSource::makeFileName(const CAttrValue& value)//throws Exception
 {
-	String strExt = "";
+	String strExt = ".bin";
 
-    URI uri(value.m_strValue);    
-    String strQuest = uri.getQueryString();
-
-    if (strQuest.length() > 0)
-    {
-		int nExt = strQuest.find("extension=");
-		if ( nExt >= 0 )
-        {
-			int nExtEnd = strQuest.find("&", nExt);
-			if (nExtEnd < 0 )
-				nExtEnd = strQuest.length();
-			
-			strExt = strQuest.substr(nExt+10, nExtEnd);
-		}
+    const char* url = value.m_strValue.c_str();
+    const char* quest = strchr(url,'?');
+    char szExt[20];
+    szExt[0] = 0;
+    if (quest){
+        const char* extStart = strstr(quest,"extension=");
+        if ( extStart ){
+            const char* extEnd = strstr(extStart,"&");
+            if (extEnd){
+                int nExtLen = extEnd-(extStart+10);
+                strncpy(szExt,extStart+10,nExtLen);
+                szExt[nExtLen] = 0;
+            }
+            else
+                strcpy(szExt,extStart+10);
+        }
     }
 
-    if ( strExt.length() == 0 )
-    {
-        String strFileName = uri.getLastNamePart();
-        int nExt = strFileName.find_last_of('.');
-		if ( nExt >= 0 )
-            strExt = strFileName.substr(nExt);
+    if ( !szExt[0] ){
+        const char* dot = strrchr(url,'.');
+        //TODO: process :http://img.lenta.ru/news/2009/03/11/acid/picture.jpg?test=.img
+        if (dot){
+            if (quest){
+                if(quest>dot){
+                    strncpy(szExt,dot,quest-dot);
+                    szExt[quest-dot] = 0;
+                }
+            }
+            else
+                strcpy(szExt,dot);
+        }
     }
 
-    if ( strExt.length() == 0 )
-        strExt = ".bin";
-    else if ( strExt.at(0) != '.' )    
-        strExt = "." + strExt;
+    if ( szExt[0] )
+        strExt = szExt;
 
     String fName = RHODESAPPBASE().getBlobsDirPath() + "/id_" + CLocalTime().toString(true,true) + strExt;
 	
