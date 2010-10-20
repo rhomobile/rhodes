@@ -891,6 +891,42 @@ class SyncSource
 	
 	private String makeFileName(CAttrValue value)throws Exception
 	{
+		String strExt = "";
+
+	    URI uri = new URI(value.m_strValue);    
+	    String strQuest = uri.getQueryString();
+
+	    if (strQuest != null && strQuest.length() > 0)
+	    {
+			int nExt = strQuest.indexOf("extension=");
+			if ( nExt >= 0 )
+	        {
+				int nExtEnd = strQuest.indexOf("&", nExt);
+				if (nExtEnd < 0 )
+					nExtEnd = strQuest.length();
+				
+				strExt = strQuest.substring(nExt+10, nExtEnd);
+			}
+	    }
+
+	    if ( strExt.length() == 0 )
+	    {
+	        String strFileName = uri.getLastNamePart();
+	        int nExt = strFileName != null ? strFileName.lastIndexOf('.') : -1;
+			if ( nExt >= 0 )
+	            strExt = strFileName.substring(nExt);
+	    }
+
+	    if ( strExt.length() == 0 )
+	        strExt = ".bin";
+	    else if ( strExt.charAt(0) != '.' )    
+	        strExt = "." + strExt;
+
+		String fName = RhodesApp.getInstance().getBlobsDirPath() + "/id_" + TimeInterval.getCurrentTime().toULong() + strExt;
+		
+		return  fName;
+		
+/*		
 		String strExt = ".bin";
 		URI uri = new URI(value.m_strValue);
 		int nDot = uri.getPath().lastIndexOf('.');
@@ -909,7 +945,7 @@ class SyncSource
 		
 		String fName = RhodesApp.getInstance().getBlobsDirPath() + "/id_" + TimeInterval.getCurrentTime().toULong() + strExt;
 		
-		return fName;
+		return fName;*/
 	}
 	
 	boolean downloadBlob(CAttrValue value)throws Exception
