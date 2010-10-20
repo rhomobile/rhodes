@@ -69,23 +69,6 @@ String URI::getPathSpecificPart()
     return String(m_strUrl.c_str(), szQuest-m_strUrl.c_str());
 }
 
-String URI::getLastNamePart()
-{
-    int nQuest = m_strUrl.find_last_of('?');
-    String strRes = m_strUrl;
-    if (nQuest>=0)
-        strRes = m_strUrl.substr(0, nQuest);
-
-    int nSlash = strRes.find_last_of('/');
-    if ( nSlash < 0 )
-        nSlash = strRes.find_last_of('\\');
-
-    if ( nSlash >= 0 )
-        strRes = strRes.substr(nSlash+1);
-    
-    return strRes;
-}
-
 static void toHexString(int i, String& strRes, int radix)
 {
     char buf[33];
