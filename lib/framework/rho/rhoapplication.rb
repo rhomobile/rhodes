@@ -10,6 +10,7 @@ module Rho
   	TOOLBAR_TYPE = 0
   	TABBAR_TYPE = 1
   	NOBAR_TYPE = 2
+  	SPLITTABBAR_TYPE = 3
   	
   	@@toolbar = [{:action => :back}, {:action => :forward}, {:action => :separator},
       {:action => :home}, {:action => :refresh}, {:action => :options} ]
