@@ -10,6 +10,7 @@
 #import "Rhodes.h"
 #import "SimpleMainView.h"
 #import "TabbedMainView.h"
+#import "SplittedMainView.h"
 
 //#include "common/rhoparams.h"
 #include "logging/RhoLog.h"
@@ -63,11 +64,32 @@ static int started = 0;
 			}
 			started = 1;
 			break;
-		case TABBAR_TYPE:
+		case TABBAR_TYPE: {
 			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
 			started = 1;
 			[r setMainView:view];
 			[view release];
+		}
+			break;
+		case SPLITTABBAR_TYPE: {
+			
+			BOOL is_iPad = NO;
+			{
+				NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
+				if ([model hasPrefix:@"iPad"]) {
+					is_iPad = YES;
+				}
+			}
+			if (is_iPad) {
+				view = [[SplittedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+			}
+			else {
+				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+			}
+			started = 1;
+			[r setMainView:view];
+			[view release];
+			}
 			break;
 		default:
 			RAWLOG_ERROR1("Unknown bar type passed: %d", type);
@@ -123,6 +145,7 @@ void create_nativebar(int bar_type, rho_param *p)
     
     int size = params->v.array->size;
     NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
+
     for (int i = 0; i < size; ++i) {
         rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
