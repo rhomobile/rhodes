@@ -836,6 +836,21 @@ import com.rho.Tokenizer;
 	return schemespec.toString();	    
   }
   
+  public String getLastNamePart()
+  {
+	int nSlash = m_path.lastIndexOf('/');
+	if ( nSlash < 0 )
+	    nSlash = m_path.lastIndexOf('\\');
+	
+	String strRes;
+	if ( nSlash >= 0 )
+	    strRes = m_path.substring(nSlash+1);
+	else
+		strRes = m_path;
+	
+	return strRes;
+  }
+  
   public String getUserinfo() {
     return m_userinfo;
   }
