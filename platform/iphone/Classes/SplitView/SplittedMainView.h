@@ -11,11 +11,22 @@
 #import "RhoViewController.h"
 
 
-@interface SplittedMainView : UISplitViewController<RhoMainView> {
+@interface RhoUISplitView : UIView {
+	int leftWidth;
+}
+@property (nonatomic,assign) int leftWidth;
 
+- (void)layoutSubviews;
+
+@end
+
+
+@interface SplittedMainView : UIViewController<RhoMainView> {
+	NSArray* viewControllers;
 
 }
 
+@property (nonatomic,retain) NSArray *viewControllers;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray*)items;
 
