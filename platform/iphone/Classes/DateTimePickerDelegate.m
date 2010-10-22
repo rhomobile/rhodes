@@ -105,6 +105,9 @@
 
         //CGSize pickerSize = CGSizeMake(parentFrame.size.width, parentFrame.size.height/2);
         CGSize pickerSize = [pickerView sizeThatFits:pickerView.frame.size];
+		if (pickerSize.width < parentFrame.size.width) {
+			pickerSize.width = parentFrame.size.width;
+		}
         CGRect pickerFrame = CGRectMake(parentFrame.origin.x,
                                         parentFrame.origin.y + parentFrame.size.height - pickerSize.height,
                                         pickerSize.width,
