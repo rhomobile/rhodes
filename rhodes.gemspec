@@ -3,7 +3,7 @@ require "lib/rhodes.rb"
 
 Gem::Specification.new do |s|
   s.name = %q{rhodes}
-  s.version = '2.2.1'
+  s.version = '2.2.2.beta.1'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
