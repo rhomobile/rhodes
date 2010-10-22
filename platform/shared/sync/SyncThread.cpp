@@ -316,6 +316,7 @@ void rho_sync_logout()
     rho_sync_stop();
 
 	//CDBAdapter& db = CDBAdapter::getUserDB();
+    CSyncThread::getSyncEngine().stopSyncByUser();
     CSyncThread::getSyncEngine().logout();
 }
 

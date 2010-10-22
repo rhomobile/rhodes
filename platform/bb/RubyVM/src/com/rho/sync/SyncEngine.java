@@ -896,7 +896,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	public void logout()throws Exception
 	{
-	    m_bStopByUser = true;
 	    if(m_NetRequest!=null) 
 	        m_NetRequest.cancel();
 		
