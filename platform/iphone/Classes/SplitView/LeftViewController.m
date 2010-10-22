@@ -98,6 +98,8 @@
     }
     self.itemsData = tabs;
     [tabs release];
+	
+	self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
 	[self.tableView reloadData];
 	[self setSelection:0];
@@ -156,6 +158,10 @@
 - (void)setSelection:(int)index {
 	NSIndexPath* path = [NSIndexPath indexPathForRow:index inSection:0];
 	[self performSelectorOnMainThread:@selector(setSelectionCommand:) withObject:path waitUntilDone:NO];	
+}
+
+- (int)getPreferredWidth {
+	return 320;
 }
 
 
