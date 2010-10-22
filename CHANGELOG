@@ -1,3 +1,6 @@
+## 2.2.2
+* #5822056 - bad login locks up the app
+
 ## 2.2.1
 * #5681741 - Android push: support alert,sync,sound,vibrate commands
 
