@@ -22,4 +22,6 @@
 - (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)p;
 - (void)setSelection:(int)index;
 
+- (int)getPreferredWidth;
+
 @end
