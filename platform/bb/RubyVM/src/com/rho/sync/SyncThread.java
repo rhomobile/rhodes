@@ -584,6 +584,7 @@ public class SyncThread extends RhoThread
 
 					try{
 						stopSync();
+						getSyncEngine().stopSyncByUser();
 					    getSyncEngine().logout();
 					}catch(Exception e)
 					{

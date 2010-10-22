@@ -784,7 +784,6 @@ String CSyncEngine::loadSession()
 
 void CSyncEngine::logout()
 {
-    m_bStopByUser = true;
     if(m_NetRequest) 
         m_NetRequest->cancel();
 
