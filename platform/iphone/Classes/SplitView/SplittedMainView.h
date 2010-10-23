@@ -21,7 +21,7 @@
 @end
 
 
-@interface SplittedMainView : UIViewController<RhoMainView> {
+@interface SplittedMainView : RhoViewController<RhoMainView> {
 	NSArray* viewControllers;
 
 }
