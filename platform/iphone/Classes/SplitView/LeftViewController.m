@@ -59,7 +59,7 @@
 
 @implementation LeftViewController
 
-@synthesize itemsData;
+@synthesize itemsData, preferredSize, myFont;
 
 - (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)parent {
 	self = [self initWithStyle:UITableViewStylePlain];
@@ -75,6 +75,11 @@
     
     NSString *initUrl = nil;
     
+	self.myFont = [UIFont fontWithName:@"Helvetica-Bold" size:20.0];
+	[self.myFont release];
+	
+	self.preferredSize = 0;
+	
     for (int i = 0; i < count; ++i) {
         int index = i*4 - 1;
         NSString *label = [items objectAtIndex:++index];
@@ -93,9 +98,20 @@
 			NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
 			td.image = [UIImage imageWithContentsOfFile:imagePath];
             [tabs addObject:td];
-            [td release];
-        }
+
+			CGSize textSize = [label sizeWithFont:myFont];
+			int pref_size = td.image.size.width + textSize.width + 32;
+			if (self.preferredSize < pref_size) {
+				self.preferredSize = pref_size;
+			}
+            
+			
+			[td release];
+        
+		}
     }
+
+
     self.itemsData = tabs;
     [tabs release];
 	
@@ -132,7 +148,9 @@
     
 	cell.imageView.image = [[self.itemsData objectAtIndex:indexPath.row] image];
 	cell.textLabel.text = [NSString stringWithFormat:[[self.itemsData objectAtIndex:indexPath.row] title], indexPath.section, indexPath.row];
-    
+    cell.textLabel.font = myFont; 
+	
+	
     return cell;
 }
 
@@ -153,6 +171,7 @@
 - (void)setSelectionCommand:(NSIndexPath*)index {
 
 	[self.tableView selectRowAtIndexPath:index animated:YES scrollPosition:UITableViewScrollPositionNone];
+
 }
 
 - (void)setSelection:(int)index {
@@ -161,7 +180,7 @@
 }
 
 - (int)getPreferredWidth {
-	return 320;
+	return self.preferredSize;
 }
 
 

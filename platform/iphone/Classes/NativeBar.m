@@ -71,7 +71,7 @@ static int started = 0;
 			[view release];
 		}
 			break;
-		case SPLITTABBAR_TYPE: {
+		case VTABBAR_TYPE: {
 			
 			BOOL is_iPad = NO;
 			{
