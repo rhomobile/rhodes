@@ -169,7 +169,7 @@ module Rho
     def check_source_migration(app)
 	  uniq_sources = Rho::RhoConfig::sources.values
       uniq_sources.each do |source|
-          next unless source['migrate_version']
+          next unless source.has_key?('migrate_version')
           
           db = ::Rho::RHO.get_src_db(source['name'])	  
           
@@ -318,7 +318,7 @@ module Rho
           
           call_migrate = false
           if db.table_exist?(source['name'])
-            next unless hash_migrate[ source['name'] ]
+            next unless hash_migrate.has_key?(source['name'])
             call_migrate = true 
           end
           
@@ -393,7 +393,7 @@ module Rho
         start_id = Rho::RhoConfig.max_config_srcid()+2 if start_id < Rho::RhoConfig.max_config_srcid
         
         uniq_sources.each do |source|
-          puts "init_db_sources : #{source}"
+          puts "init_db_sources(#{source['name']}) : #{source}"
           name = source['name']
           sync_priority = source['sync_priority']
           partition = source['partition']
@@ -403,7 +403,6 @@ module Rho
           blob_attribs = process_blob_attribs(source, db)
           
           attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
-
           if attribs && attribs.size > 0 
             if attribs[0]['sync_priority'].to_i != sync_priority.to_i
                 db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
@@ -448,6 +447,8 @@ module Rho
           end
           
         end
+        
+        puts "Migrate schema sources: #{hash_migrate}"
     end
     
     def serve(req)
