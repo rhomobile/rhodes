@@ -735,9 +735,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)throws Exception
 	{
-	    FilePath oUrlPath = new FilePath(strDataUrl);
-	    String strNewName = oUrlPath.getBaseName();
+	    URI uriData = new URI(strDataUrl);
+	    String strNewName = URI.urlEscapeSymbols( 
+	    		URI.urlDecode( uriData.getLastNamePart() ) );
+		
 	    String strOldName = RhoConf.getInstance().getString("bulksync_filename");
+	    
 	    if ( strOldName.length() > 0 && strNewName.compareTo(strOldName) != 0 )
 	    {
 	        FilePath oFilePath = new FilePath(strDbPath);
