@@ -734,8 +734,36 @@ int rho_sys_get_screen_height();
     NSURL *url = [request URL];
     if (!url)
         return NO;
-    if (![url.scheme isEqualToString:@"http"] && ![url.scheme isEqualToString:@"https"]) {
+    
+    BOOL external = NO;
+    
+    NSString *scheme = url.scheme;
+    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])
+        external = YES;
+    else {
+        NSString *ps = [url query];
+        NSArray *parameters = [ps componentsSeparatedByString:@"&"];
+        for (int i = 0, lim = [parameters count]; i < lim; ++i) {
+            NSString *param = [parameters objectAtIndex:i];
+            NSArray *nv = [param componentsSeparatedByString:@"="];
+            int size = [nv count];
+            if (size == 0 || size > 2)
+                continue;
+            NSString *name = [nv objectAtIndex:0];
+            NSString *value = nil;
+            if (size == 2)
+                value = [nv objectAtIndex:1];
+            
+            if ([name isEqualToString:@"rho_open_target"] && [value isEqualToString:@"_blank"]) {
+                external = YES;
+                break;
+            }
+        }
+    }
+    
+    if (external) {
         // This is not http url so try to open external application for it
+        RAWLOG_INFO1("Open url in external application: %s", [[url absoluteString] UTF8String]);
         [[UIApplication sharedApplication] openURL:url];
         return NO;
     }
