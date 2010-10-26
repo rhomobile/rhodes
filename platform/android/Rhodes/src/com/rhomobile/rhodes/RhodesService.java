@@ -105,7 +105,7 @@ public class RhodesService {
 		ctx = c;
 		uiThreadId = id;
 		uiHandler = handler;
-		RhoBluetoothManager.sharedInstance();
+		//RhoBluetoothManager.sharedInstance();
 	}
 	
 	private Handler uiHandler;
