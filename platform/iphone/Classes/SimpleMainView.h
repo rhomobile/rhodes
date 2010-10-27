@@ -37,4 +37,6 @@
 
 - (UIWebView*)getWebView:(int)tab_index;
 
++ (void) disableHiddenOnStart;
+
 @end
