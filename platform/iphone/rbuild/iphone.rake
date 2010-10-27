@@ -394,7 +394,7 @@ namespace "run" do
      elements << e
 
      File.open(xmlplist, 'w') do |f|
-       f.puts "<?xml version=\"1.0\" encoding=\"UTF-8'\"?>"
+       f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
        f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
        f.puts "<plist version=\"1.0\">"
        f.puts "<dict>"
