@@ -669,16 +669,15 @@ task :set_version, [:version] do |t,args|
 
     f.write origfile
   end
-
   ["lib/rhodes.rb","lib/framework/rhodes.rb","lib/framework/version.rb"].each do |versionfile|
   
     File.open(versionfile,"r") { |f| origfile = f.read }
     File.open(versionfile,"w") do |f|
-      origfile.gsub!(/VERSION = '(\d+\.\d+\.*\d*)'/, "VERSION = '#{verstring}'")
-      origfile.gsub!(/DBVERSION = '(\d+\.\d+\.*\d*)'/, "DBVERSION = '#{verstring}'")
+      origfile.gsub!(/^\s*VERSION = '(\d+\.\d+\.*\d*)'/, "VERSION = '#{verstring}'")      
       f.write origfile
     end
   end
+
   Rake::Task[:get_version].invoke  
 end
 
