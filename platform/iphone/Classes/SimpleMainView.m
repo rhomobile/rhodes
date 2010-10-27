@@ -63,6 +63,13 @@ int rho_sys_get_screen_height();
 @synthesize webView, toolbar, navbar, nativeViewType, nativeViewView;
 
 
+static BOOL makeHiddenUntilLoadContent = YES;
+
+
++ (void) disableHiddenOnStart {
+	makeHiddenUntilLoadContent = NO;
+}
+
 -(CGRect)getContentRect {
 	if (nativeViewView != nil) {
 		return nativeViewView.frame;
@@ -254,7 +261,7 @@ int rho_sys_get_screen_height();
     w.delegate = self;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
-    
+	
     assert([w retainCount] == 1);
     return w;
 }
@@ -300,7 +307,11 @@ int rho_sys_get_screen_height();
 - (void)loadView {
     UIView* root = [[UIView alloc] init];
     root.frame = rootFrame;
+	if (makeHiddenUntilLoadContent) {
+		root.hidden = YES;
+	}
     self.view = root;
+	
     [root release];
     assert([root retainCount] == 1);
 }
@@ -605,6 +616,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
+	[SimpleMainView disableHiddenOnStart];
     NSString *encodedUrl = [self encodeUrl:url];
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
 	if (cleared_url == nil) {
@@ -619,6 +631,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
+	[SimpleMainView disableHiddenOnStart];
     NSString *encodedUrl = [self encodeUrl:url];
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
 	if (cleared_url == nil) {
@@ -644,6 +657,12 @@ int rho_sys_get_screen_height();
 }
 
 - (void)executeJs:(NSString*)js tab:(int)index {
+	[SimpleMainView disableHiddenOnStart];
+	if (self.view.hidden) {
+		[[Rhodes sharedInstance] hideSplash];
+		self.view.hidden = NO;
+		[self.view.superview bringSubviewToFront:self.view];
+    }
     RAWLOG_INFO1("Executing JS: %s", [js UTF8String]);
     [webView stringByEvaluatingJavaScriptFromString:js];
 }
@@ -791,7 +810,12 @@ int rho_sys_get_screen_height();
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
 	[NSURLCache setSharedURLCache:sharedCache];
 	[sharedCache release];
-    
+	
+	if (self.view.hidden) {
+		[[Rhodes sharedInstance] hideSplash];
+		self.view.hidden = NO;
+		[self.view.superview bringSubviewToFront:self.view];
+    }
     // TODO
     /*
      [self inactive];
@@ -817,6 +841,11 @@ int rho_sys_get_screen_height();
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     // TODO
+	if (self.view.hidden) {
+		[[Rhodes sharedInstance] hideSplash];
+		self.view.hidden = NO;
+		[self.view.superview bringSubviewToFront:self.view];
+    }
 }
 
 @end

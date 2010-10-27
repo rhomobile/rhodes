@@ -309,7 +309,7 @@ static Rhodes *instance = NULL;
     if (mainView == view)
         return;
 		
-	[self hideSplash];
+	//[self hideSplash];
     
     [mainView.view removeFromSuperview];
     [mainView release];
@@ -321,12 +321,15 @@ static Rhodes *instance = NULL;
     return mainView;
 }
 
-- (void) showLoadingPage 
+
+
+// make splash screen
+- (void) showLoadingPagePre 
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *pngPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
+    NSString *pngPath = [SplashViewController detectLoadingImage];//[NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
     if ([fileManager fileExistsAtPath:pngPath]) {
@@ -337,10 +340,27 @@ static Rhodes *instance = NULL;
         NSError *err;
         NSString *data = [NSString stringWithContentsOfFile:htmPath encoding:NSUTF8StringEncoding error:&err];
         [mainView loadHTMLString:data];
-		rho_splash_screen_start();
-
     }
 }
+
+// execute rho_splash_screen_start(); - we can do it only after Rhodes initialization
+- (void) showLoadingPagePost
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *pngPath = [SplashViewController detectLoadingImage];//[NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
+    NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
+    
+    if ([fileManager fileExistsAtPath:pngPath]) {
+		rho_splash_screen_start();
+    }
+    else if ([fileManager fileExistsAtPath:htmPath]) {
+		rho_splash_screen_start();
+		
+    }
+}
+
 
 - (void)doRhoActivate {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -374,7 +394,7 @@ static Rhodes *instance = NULL;
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
         
         NSLog(@"Show loading page");
-        [self performSelectorOnMainThread:@selector(showLoadingPage) withObject:nil waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(showLoadingPagePost) withObject:nil waitUntilDone:NO];
         
         NSLog(@"Start rhodes app");
         rho_rhodesapp_start();
@@ -401,16 +421,19 @@ static Rhodes *instance = NULL;
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     window.autoresizesSubviews = YES;
-    
+
+
     mainView = nil;
     self.mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
     mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     mainView.view.autoresizesSubviews = YES;
     
-    [window makeKeyAndVisible];
-    
     [window addSubview:mainView.view];
-    
+
+	[self showLoadingPagePre];
+	
+    [window makeKeyAndVisible];
+	
     NSLog(@"Init cookies");
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
