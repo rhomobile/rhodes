@@ -673,7 +673,7 @@ task :set_version, [:version] do |t,args|
   
     File.open(versionfile,"r") { |f| origfile = f.read }
     File.open(versionfile,"w") do |f|
-      origfile.gsub!(/^\s*VERSION = '(\d+\.\d+\.*\d*)'/, "VERSION = '#{verstring}'")      
+      origfile.gsub!(/^(\s*VERSION) = '(\d+\.\d+\.*\d*)'/, '\1 = \''+ verstring + "'")     
       f.write origfile
     end
   end
