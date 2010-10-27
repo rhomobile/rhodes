@@ -57,23 +57,27 @@ public class RhoBluetoothManager {
 	   
 	public static IRhoBluetoothManager sharedInstance() {
 		if (ourInstance == null) {
-			String className = "RhoBluetoothManagerNew";
-			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-			if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
-				if(D) Log.d(TAG, "sharedInstance - old version of System - NO Bluetooth !");
-				className = "RhoBluetoothManagerOld";
-			}
-			try {
-				String pkgname = RhoBluetoothManager.class.getPackage().getName();
-				String fullName = pkgname + "." + className;
-				Class<? extends IRhoBluetoothManager> klass =
-					Class.forName(fullName).asSubclass(IRhoBluetoothManager.class);
-				ourInstance = klass.newInstance();
-				ourInstance.init();
-			}
-			catch (Exception e) {
-				throw new IllegalStateException(e);
-			}
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					String className = "RhoBluetoothManagerNew";
+					int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+					if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
+						if(D) Log.d(TAG, "sharedInstance - old version of System - NO Bluetooth !");
+						className = "RhoBluetoothManagerOld";
+					}
+					try {
+						String pkgname = RhoBluetoothManager.class.getPackage().getName();
+						String fullName = pkgname + "." + className;
+						Class<? extends IRhoBluetoothManager> klass =
+							Class.forName(fullName).asSubclass(IRhoBluetoothManager.class);
+						ourInstance = klass.newInstance();
+						ourInstance.init();
+					}
+					catch (Exception e) {
+						throw new IllegalStateException(e);
+					}
+				}
+		   },true);
 		}
 		return ourInstance;
 	}

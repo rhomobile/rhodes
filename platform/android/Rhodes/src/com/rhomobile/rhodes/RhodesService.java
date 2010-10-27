@@ -17,6 +17,7 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
+import com.rhomobile.rhodes.uri.ExternalHttpHandler;
 import com.rhomobile.rhodes.uri.MailUriHandler;
 import com.rhomobile.rhodes.uri.SmsUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
@@ -104,7 +105,7 @@ public class RhodesService {
 		ctx = c;
 		uiThreadId = id;
 		uiHandler = handler;
-		RhoBluetoothManager.sharedInstance();
+		//RhoBluetoothManager.sharedInstance();
 	}
 	
 	private Handler uiHandler;
@@ -453,6 +454,7 @@ public class RhodesService {
 		isCameraAvailable = true;
 		
 		// Register custom uri handlers here
+		uriHandlers.addElement(new ExternalHttpHandler(ctx));
 		uriHandlers.addElement(new MailUriHandler(ctx));
 		uriHandlers.addElement(new TelUriHandler(ctx));
 		uriHandlers.addElement(new SmsUriHandler(ctx));

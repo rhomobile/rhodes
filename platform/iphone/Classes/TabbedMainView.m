@@ -57,6 +57,7 @@
 @synthesize tabbar, tabbarData, tabindex;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
+	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
     
     tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];

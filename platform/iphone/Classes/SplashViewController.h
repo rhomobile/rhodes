@@ -20,5 +20,6 @@
 - (void)showSplash:(NSString *)imagePath;
 - (void)hideSplash;
 - (void)bringToFront;
++ (NSString*)detectLoadingImage;
 
 @end

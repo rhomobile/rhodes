@@ -14,10 +14,13 @@
 @interface LeftViewController : UITableViewController {
 	SplittedMainView* splittedView;
     NSArray *itemsData;
-	
+	int preferredSize;
+	UIFont* myFont;
 }
 
 @property (nonatomic,retain) NSArray *itemsData;
+@property (nonatomic,assign) int preferredSize;
+@property (nonatomic,retain) UIFont *myFont;
 
 - (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)p;
 - (void)setSelection:(int)index;
