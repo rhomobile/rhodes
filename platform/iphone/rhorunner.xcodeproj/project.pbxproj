@@ -674,6 +674,7 @@
 			buildPhases = (
 				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
 				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
+				FA4207711277930A00BDE415 /* Copy Loading images */,
 				BDFBD98F10B1B98100BAAFAB /* Resources */,
 				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -851,6 +852,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\nfor i in `ls -1 ${RHO_SOURCE_DIR}`\ndo\n  echo \"rm -Rf $RHO_TARGET_DIR/$i\"\n  rm -Rf ${RHO_TARGET_DIR}/$i\ndone\necho \"cp -Rf $RHO_SOURCE_DIR/* $RHO_TARGET_DIR\"\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
+		};
+		FA4207711277930A00BDE415 /* Copy Loading images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Loading images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../..\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\n\nif [ -e ${RHO_SOURCE_DIR}/Default.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Portrait.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Landscape.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
