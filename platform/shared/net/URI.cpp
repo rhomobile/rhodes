@@ -110,6 +110,42 @@ static void toHexString(int i, String& strRes, int radix)
     strRes += (buf+f+1);
 }
 
+/*static*/ String URI::urlEscapeSymbols(const String& url)
+{
+    String res;
+    urlEscapeSymbols(url, res);
+    return res;
+}
+
+/*static*/ void URI::urlEscapeSymbols(const String& fullPath, String& strRes)
+{
+    int len = fullPath.length();
+
+    char c;
+    boolean bFound = false;
+    for  (int index=0; index < len ; index++)
+    {
+        c = fullPath.at(index);
+        if ( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+             c == '_' || c == '.') 
+        {
+            if ( bFound ) 
+                strRes += c;
+        }else 
+        {
+            if ( !bFound )
+            {
+                strRes += fullPath.substr(0,index);
+                bFound = true;
+            }
+            strRes += '_';
+        }
+    }
+
+    if ( !bFound )
+        strRes += fullPath;
+}
+
 String URI::urlEncode(const String& fullPath)
 {
     String res;

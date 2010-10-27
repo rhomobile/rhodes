@@ -33,6 +33,8 @@
 @synthesize leftWidth;
 
 - (void)layoutSubviews {
+	//[super layoutSubviews];
+	
 	CGRect my_frame = self.bounds;
 	UIView* leftView = [[self subviews] objectAtIndex:0];
 	UIView* rightView = [[self subviews] objectAtIndex:1];
@@ -58,7 +60,6 @@
 	leftView.frame = left_frame;
 	rightView.frame = right_frame;
 	
-	//[super layoutSubviews];
 }
 
 
@@ -123,8 +124,8 @@
 	[rightView release];
 	
 	
-	[self.view layoutSubviews];
-	[self.view setNeedsLayout];
+	//[self.view layoutSubviews];
+	//[self.view setNeedsLayout];
 	
     return self;
 }
@@ -147,10 +148,12 @@
 
 
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+/*
+ - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // MUST return YES to allow all orientations
     return YES;
 }
+ */
 
 
 - (RightViewController*)getRightViewController {

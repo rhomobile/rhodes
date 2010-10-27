@@ -1,3 +1,10 @@
+## 2.2.3
+* #5817512 - Fix issue with migration Schema model in case if old model does not have schema_version
+* #5866549 - Fix NativeBar.switch on iPhone when 'callback:' uri used
+
+## 2.2.2
+* #5822056 - bad login locks up the app
+
 ## 2.2.1
 * #5681741 - Android push: support alert,sync,sound,vibrate commands
 
