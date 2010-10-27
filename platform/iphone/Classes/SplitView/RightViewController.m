@@ -96,7 +96,7 @@
             SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent frame:rect];
             
 			subController.title = label;
-			subController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+			//subController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
             
 			td.view = subController;
             
@@ -111,6 +111,7 @@
     [tabs release];
 	
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	self.view.autoresizesSubviews = YES;
 	
     self.tabindex = 0;
     if (initUrl){
@@ -215,9 +216,9 @@
 	[cur_v.view removeFromSuperview];
 	[self.view addSubview:new_v.view];
 	[self.view setNeedsLayout];
-	[self.view layoutSubviews];
-	[self.view.superview setNeedsLayout];
-	[new_v.view setNeedsDisplay];
+	//[self.view layoutSubviews];
+	//[self.view.superview setNeedsLayout];
+	//[new_v.view setNeedsDisplay];
 }
 
 - (void)switchTab:(int)index {
