@@ -28,6 +28,26 @@
     
     UIImage *img = [[UIImage alloc] initWithContentsOfFile:imagePath];
     splashView.image = img;
+	
+	
+	{
+		CGRect scrnFrame = [[UIScreen mainScreen] bounds];
+		float scale = [[UIScreen mainScreen] scale];
+
+		int image_width = (int)[img size].width; 
+		int image_height = (int)[img size].height;
+		
+		CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+		
+		int scrnWidth = (int)(scrnFrame.size.width*scale+0.5);
+		int scrnHeight = (int)(scrnFrame.size.height*scale+0.5);
+		
+		if ((image_width != scrnWidth) || (image_height != scrnHeight)) {
+			// scale to app frame
+			splashView.frame = appFrame;
+		}
+	}
+	
     [parentView bringSubviewToFront:splashView];
     //rho_splash_screen_start();
 }
@@ -76,8 +96,9 @@
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
+	float scale = [[UIScreen mainScreen] scale];
 	
-	BOOL is_HiResolution = (frame.size.width > 500);
+	BOOL is_HiResolution = ((frame.size.width*scale) > 500);
 	BOOL is_iPad = NO;
 	
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
