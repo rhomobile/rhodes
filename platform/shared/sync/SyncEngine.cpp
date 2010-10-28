@@ -641,9 +641,8 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
 String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)
 {
-    URI uriData(strDataUrl);
-    String strNewName = URI::urlEscapeSymbols( 
-        URI::urlDecode( uriData.getLastNamePart() ) );
+    CFilePath oUrlPath(strDataUrl);
+	String strNewName = oUrlPath.getBaseName();
     
     String strOldName = RHOCONF().getString("bulksync_filename");
 
