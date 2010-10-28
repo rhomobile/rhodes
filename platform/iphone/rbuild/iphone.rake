@@ -545,6 +545,10 @@ namespace "clean" do
   namespace "iphone" do
 #    desc "Clean rhodes binaries"
     task :rhodes => ["config:iphone"] do 
+
+      app_path = File.join($app_path, 'bin', 'target', 'iOS')
+      rm_rf app_path
+
       chdir $config["build"]["iphonepath"]
     
       args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
@@ -581,7 +585,7 @@ namespace "clean" do
         end
       end
     end
-    
+
 #    desc "Clean rhobundle"
     task :rhobundle => ["config:iphone"] do
       rm_rf $bindir
@@ -591,10 +595,40 @@ namespace "clean" do
   end
 end
 
+
+
+
 namespace "device" do
   namespace "iphone" do
     desc "Builds and signs iphone for production"
-    task :production => ["config:iphone", "build:iphone:rhodes"]
+    task :production => ["config:iphone", "build:iphone:rhodes"] do
+    
+    #copy build results to app folder
+    
+    app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk)
+    
+    iphone_path = $config["build"]["iphonepath"]    
+    if $sdk =~ /iphonesimulator/
+       iphone_path = File.join(iphone_path, 'build', $configuration+'-iphonesimulator')
+    else 
+       iphone_path = File.join(iphone_path, 'build', $configuration+'-iphoneos')
+    end
+    appname = $app_config["name"]
+    if appname == nil
+       appname = 'rhorunner'
+    end
+    src_file = File.join(iphone_path, 'rhorunner.app')
+    dst_file = File.join(app_path, appname+'.app')
+    
+    rm_rf dst_file
+    rm_rf app_path
+
+    mkdir_p app_path
+
+    puts 'copy result build package to application target folder ...'    
+    cp_r src_file, dst_file 
+
+    end
   end
 
 end
