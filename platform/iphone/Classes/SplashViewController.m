@@ -32,15 +32,19 @@
 	
 	{
 		CGRect scrnFrame = [[UIScreen mainScreen] bounds];
-		float scale = [[UIScreen mainScreen] scale];
+		float scales = 1;//[[UIScreen mainScreen] scale];
+#ifdef __IPHONE_4_0
+		scales = [[UIScreen mainScreen] scale];
+#endif
+		
 
 		int image_width = (int)[img size].width; 
 		int image_height = (int)[img size].height;
 		
 		CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 		
-		int scrnWidth = (int)(scrnFrame.size.width*scale+0.5);
-		int scrnHeight = (int)(scrnFrame.size.height*scale+0.5);
+		int scrnWidth = (int)(scrnFrame.size.width*scales+0.5);
+		int scrnHeight = (int)(scrnFrame.size.height*scales+0.5);
 		
 		if ((image_width != scrnWidth) || (image_height != scrnHeight)) {
 			// scale to app frame
@@ -96,9 +100,12 @@
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
-	float scale = [[UIScreen mainScreen] scale];
+	float scales = 1;//[[UIScreen mainScreen] scale];
+#ifdef __IPHONE_4_0
+	scales = [[UIScreen mainScreen] scale];
+#endif
 	
-	BOOL is_HiResolution = ((frame.size.width*scale) > 500);
+	BOOL is_HiResolution = ((frame.size.width*scales) > 500);
 	BOOL is_iPad = NO;
 	
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
