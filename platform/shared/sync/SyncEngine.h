@@ -106,6 +106,8 @@ public:
 
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
     void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
+
+    void applyChangedValues(db::CDBAdapter& db);
 private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);
