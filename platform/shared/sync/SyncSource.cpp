@@ -188,7 +188,7 @@ void CSyncSource::doSyncClientChanges()
     for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
     {
         String strBody1;
-        makePushBody_Ver3(strBody1, arUpdateTypes[i]);
+        makePushBody_Ver3(strBody1, arUpdateTypes[i], true);
         if (strBody1.length() > 0)
         {
             strBody += "," + strBody1;
@@ -214,7 +214,7 @@ void CSyncSource::doSyncClientChanges()
     if ( bSend )
     {
         LOG(INFO) + "Push client changes to server. Source: " + getName() + "Size :" + strBody.length();
-        LOG(TRACE) + "Push body: " + strBody;		
+        LOG(INFO) + "Push body: " + strBody;		
 
         if ( m_arMultipartItems.size() > 0 )
         {
@@ -277,7 +277,7 @@ static void escapeDoubleQuotes(String& str)
 //{"source_name":"SampleAdapter","client_id":1,"update":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 //{"source_name":"SampleAdapter","client_id":1,"delete":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 //{"source_name":"SampleAdapter","client_id":1,"delete":{"3":{"brand":"HTC","name":"Fuze","price":"299.99"}},"create":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}},"update":{"2":{"brand":"Android","name":"G2","price":"99.99"}}}
-void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType)
+void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType, boolean isSync)
 {
     getDB().Lock();
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
@@ -311,7 +311,12 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         }
 
         if ( strBody.length() == 0 )
-            strBody += "\"" + strUpdateType + "\":{";
+        {
+            if ( !isSync )
+                strBody += "{";
+            else
+                strBody += "\"" + strUpdateType + "\":{";
+        }
 
         if ( strObject.compare(strCurObject) != 0 )
         {
@@ -348,8 +353,37 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         strBody += "}";
     }
 
-    getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), strUpdateType.c_str() );
+    if ( isSync )
+        getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), strUpdateType.c_str() );
+
     getDB().Unlock();
+}
+
+void CSyncSource::applyChangedValues()
+{
+    String strBody = "";
+    makePushBody_Ver3(strBody, "create", false);
+    if ( strBody.length() > 0 )
+    {
+        CJSONEntry oEntry(strBody.c_str());
+        processSyncCommand("insert", oEntry );
+    }
+
+    strBody = "";
+    makePushBody_Ver3(strBody, "delete", false);
+    if ( strBody.length() > 0 )
+    {
+        CJSONEntry oEntry(strBody.c_str());
+        processSyncCommand("delete", oEntry );
+    }
+
+    strBody = "";
+    makePushBody_Ver3(strBody, "update", false);
+    if ( strBody.length() > 0 )
+    {
+        CJSONEntry oEntry(strBody.c_str());
+        processSyncCommand("insert", oEntry );
+    }
 }
 
 void CSyncSource::syncServerChanges()
@@ -382,6 +416,7 @@ void CSyncSource::syncServerChanges()
 
         //const char* szData = "[{\"version\":3},{\"token\":\"35639160294387\"},{\"count\":3},{\"progress_count\":0},{\"total_count\":3},{\"metadata\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"insert\":{\"1\":{\"price\":\"199.99\",\"brand\":\"Apple\",\"name\":\"iPhone\"}}}]";
 
+        LOG(INFO) + szData;
         PROF_START("Parse");
         CJSONArrayIterator oJsonArr(szData);
         PROF_STOP("Parse");
@@ -535,6 +570,9 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
             }
         }
 
+        if ( getSyncType().compare("none") == 0 )
+            continue;
+
         int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
         if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
             getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
@@ -625,16 +663,21 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
             strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
             getDB().executeSQLEx(strSqlUpdate.c_str(), vecValues);
 
-            // oo conflicts
-            for( int i = 0; i < (int)vecAttrs.size(); i++ )
+            if ( getSyncType().compare("none") != 0 )
             {
-                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
-                    strObject, vecAttrs.elementAt(i), getID() );
+                // oo conflicts
+                for( int i = 0; i < (int)vecAttrs.size(); i++ )
+                {
+                    getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
+                        strObject, vecAttrs.elementAt(i), getID() );
+                }
+                //
             }
-            //
         }
 
-        getNotify().onObjectChanged(getID(),strObject, CSyncNotify::enUpdate);
+        if ( getSyncType().compare("none") != 0 )
+            getNotify().onObjectChanged(getID(),strObject, CSyncNotify::enUpdate);
+
         m_nInserted++;
     }else if (strCmd.compare("delete") == 0)
     {
@@ -680,14 +723,17 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
             }
         }
 
-        getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
-        // oo conflicts
-        for( int i = 0; i < (int)vecAttrs.size(); i++ )
+        if ( getSyncType().compare("none") != 0 )
         {
-            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", 
-                strObject, vecAttrs.elementAt(i), getID() );
+            getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
+            // oo conflicts
+            for( int i = 0; i < (int)vecAttrs.size(); i++ )
+            {
+                getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", 
+                    strObject, vecAttrs.elementAt(i), getID() );
+            }
+            //
         }
-        //
 
         m_nDeleted++;
     }else if ( strCmd.compare("links") == 0 )
@@ -768,21 +814,30 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
                 SET value=? WHERE object=? and attrib=? and source_id=?", 
                 oAttrValue.m_strValue, strObject, oAttrValue.m_strAttrib, getID() );
 
-            // oo conflicts
-            getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
-                strObject, oAttrValue.m_strAttrib, getID() );
-            //
+            if ( getSyncType().compare("none") != 0 )
+            {
+                // oo conflicts
+                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
+                    strObject, oAttrValue.m_strAttrib, getID() );
+                //
+            }
         }
 
-        getNotify().onObjectChanged(getID(),strObject, CSyncNotify::enUpdate);
+        if ( getSyncType().compare("none") != 0 )
+           getNotify().onObjectChanged(getID(),strObject, CSyncNotify::enUpdate);
+
         m_nInserted++;
     }else if (strCmd.compare("delete") == 0)
     {
         getDB().executeSQL("DELETE FROM object_values where object=? and attrib=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID() );
-        getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
-        // oo conflicts
-        getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID() );
-        //
+
+        if ( getSyncType().compare("none") != 0 )
+        {
+            getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
+            // oo conflicts
+            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID() );
+            //
+        }
 
         m_nDeleted++;
     }else if ( strCmd.compare("links") == 0 )
