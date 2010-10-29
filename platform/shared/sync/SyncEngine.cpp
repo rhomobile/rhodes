@@ -302,6 +302,22 @@ CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
     return findSource(CSourceID(strSrcName));
 }
 
+void CSyncEngine::applyChangedValues(db::CDBAdapter& db)
+{
+    DBResult( resSrc , db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" ) );
+    for ( ; !resSrc.isEnd(); resSrc.next() )
+    {
+        int nSrcID = resSrc.getIntByIdx(0);
+        DBResult( res, db.executeSQL("SELECT source_id,sync_type,name, partition from sources WHERE source_id=?", nSrcID) );
+        if ( res.isEnd() )
+            continue;
+
+        CSyncSource src( res.getIntByIdx(0), res.getStringByIdx(2), "none", db, *this );
+
+        src.applyChangedValues();
+    }
+}
+
 void CSyncEngine::loadAllSources()
 {
     m_sources.removeAllElements();
