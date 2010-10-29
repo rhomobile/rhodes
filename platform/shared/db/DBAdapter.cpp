@@ -1,5 +1,6 @@
 #include "DBAdapter.h"
 #include "sync/SyncThread.h"
+#include "sync/SyncEngine.h"
 
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
@@ -412,6 +413,41 @@ void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbT
     }
 }
 
+void CDBAdapter::copyChangedValues(CDBAdapter& db)
+{
+    copyTable("changed_values", *this, db );
+    {
+        Vector<int> arOldSrcs;
+        {
+            DBResult( resSrc , db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" ) );
+            for ( ; !resSrc.isEnd(); resSrc.next() )
+                arOldSrcs.addElement( resSrc.getIntByIdx(0) );
+        }
+        for( int i = 0; i < arOldSrcs.size(); i++)
+        {
+            int nOldSrcID = arOldSrcs.elementAt(i);
+
+            DBResult( res, executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID) );
+            if ( !res.isEnd() )
+            {
+                String strSrcName = res.getStringByIdx(0);
+
+                DBResult( res2, db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName) );
+                if ( !res2.isEnd() )
+                {
+                    if ( nOldSrcID != res2.getIntByIdx(0) )
+                        db.executeSQL("UPDATE changed_values SET source_id=? WHERE source_id=?", res2.getIntByIdx(0), nOldSrcID);
+
+                    continue;
+                }
+            }
+
+            //source not exist in new partition, remove this changes
+            db.executeSQL("DELETE FROM changed_values WHERE source_id=?", nOldSrcID);
+        }
+    }
+}
+
 void CDBAdapter::setBulkSyncDB(String fDataName)
 {
     CDBAdapter db(m_strDbPartition.c_str(), true);
@@ -421,22 +457,32 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     db.startTransaction();
 
     copyTable("client_info", *this, db );
+    copyChangedValues(db);
 
     //update User partition
     if ( m_strDbPartition.compare(USER_PARTITION_NAME())==0 )
     {
         //copy all NOT user sources from current db to bulk db
+        startTransaction();
         executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
         copyTable("sources", *this, db );
+        rollback();
     }else
     {
         //remove all m_strDbPartition sources from user db
         //copy all sources from bulk db to user db
         CDBAdapter& dbUser  = getDB(USER_PARTITION_NAME());
+        dbUser.startTransaction();
         dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
 
         copyTable("sources", db, dbUser );
+
+        dbUser.endTransaction();
     }
+
+    getDBPartitions().put(m_strDbPartition.c_str(), &db);
+    sync::CSyncThread::getInstance()->getSyncEngine().applyChangedValues(db);
+    getDBPartitions().put(m_strDbPartition.c_str(), this);
 
     db.endTransaction();
     db.close();

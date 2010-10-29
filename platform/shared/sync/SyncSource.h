@@ -101,7 +101,7 @@ public:
     boolean isPendingClientChanges();
 
     void syncServerChanges();
-    void makePushBody_Ver3(String& strBody, const String& strUpdateType);
+    void makePushBody_Ver3(String& strBody, const String& strUpdateType, boolean isSync);
 
     void processToken(uint64 token);
 
@@ -130,6 +130,8 @@ public:
     void parseAssociations(const String& strAssociations);
     void processAssociations(const String& strOldObject, const String& strNewObject);
     void updateAssociation(const String& strOldObject, const String& strNewObject, const String& strAttrib);
+
+    void applyChangedValues();
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();
