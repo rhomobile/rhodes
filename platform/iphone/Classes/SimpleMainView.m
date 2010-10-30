@@ -259,7 +259,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
     w.delegate = self;
-    w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
 	
     assert([w retainCount] == 1);
@@ -279,7 +279,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     self.webView = nil;
     webView = w;
     assert(!webView || [webView retainCount] == 1);
-    if (!webView)
+	if (!webView)
         webView = [self newWebView:frame];
     assert(webView && [webView retainCount] == 1);
     
@@ -310,6 +310,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (makeHiddenUntilLoadContent) {
 		root.hidden = YES;
 	}
+    root.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    root.autoresizesSubviews = YES;
+	
+	
     self.view = root;
 	
     [root release];
@@ -418,7 +422,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items {
-    CGRect frame = [[v view] frame];
+    CGRect frame = [[v view] bounds];
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
     UIWebView *w = [v detachWebView];
     id result = [self init:p webView:w frame:frame toolbar:items];
@@ -816,6 +820,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		self.view.hidden = NO;
 		[self.view.superview bringSubviewToFront:self.view];
     }
+	
+	
     // TODO
     /*
      [self inactive];
