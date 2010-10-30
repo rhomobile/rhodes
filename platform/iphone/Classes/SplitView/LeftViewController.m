@@ -64,10 +64,6 @@
 - (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)parent {
 	self = [self initWithStyle:UITableViewStylePlain];
 	
-    //UITableView* tv = [[UITableView alloc] init];
-    //self.tableView = tv;
-	
-	
 	splittedView = parent;
 
     int count = [items count]/4;
@@ -115,13 +111,20 @@
     self.itemsData = tabs;
     [tabs release];
 	
-	self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight;
 
 	[self.tableView reloadData];
 	[self setSelection:0];
 	
 	return self;
 }
+
+/*
+- (void)loadView {
+	UITableView* tv = [[UITableView alloc] initWithFrame:CGRectMake(0,0, 100, 100) style:UITableViewStylePlain];
+	self.view = tv;
+}
+ */
 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -156,8 +159,7 @@
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // MUST return YES to allow all orientations
-    return YES;
+	return YES;
 }
 
 

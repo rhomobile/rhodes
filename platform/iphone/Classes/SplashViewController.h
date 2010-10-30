@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "RhoViewController.h"
 
+
+@interface RhoSplashImageView : UIImageView {
+	
+}
+@end
+
 @interface SplashViewController : RhoViewController {
     IBOutlet UIImageView *splashView;
     
@@ -17,9 +23,9 @@
 }
 
 - (id)initWithParentView:(UIView*)v;
-- (void)showSplash:(NSString *)imagePath;
 - (void)hideSplash;
 - (void)bringToFront;
-+ (NSString*)detectLoadingImage;
++ (NSString*)detectLoadingImage:(CGRect)myframe rotation_to_left:(BOOL*)rotation_to_left;
++ (BOOL)hasLoadingImage;
 
 @end
