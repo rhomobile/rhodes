@@ -74,7 +74,7 @@
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
     
-	self = [self init];
+	self = [self initWithNibName:nil bundle:nil];
 
 	RightViewController *rightView = NULL;
 	LeftViewController *leftView = NULL;
@@ -88,20 +88,19 @@
 									  initWithItems:items
 									  parent:self];
 
-	RhoUISplitView* rv = [[RhoUISplitView alloc] init];
+	//RhoUISplitView* rv = [[RhoUISplitView alloc] init];
 	
-	CGRect parent_frame = [[v view] frame];
-	rv.frame = parent_frame;
 	
-	self.view = rv;
-    self.view.hidden = NO;
-    self.view.userInteractionEnabled = YES;
-    self.view.autoresizesSubviews = YES;
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	
+	CGRect parent_frame = [[v view] bounds];
+	self.view.frame = parent_frame;
+	
 	
 	self.viewControllers = [NSArray arrayWithObjects:leftView, rightView, nil];
 	[self.view addSubview:leftView.view];
 	[self.view addSubview:rightView.view];
+
+	
 	
 	
 	//create and set the split view delegate
@@ -116,7 +115,7 @@
 	//}
 	
 
-	
+	RhoUISplitView* rv = (RhoUISplitView*)self.view;
 	rv.leftWidth = [leftView getPreferredWidth];
 
 	
@@ -134,14 +133,22 @@
 
 
 - (void)loadView {
-	[super loadView];
+	RhoUISplitView* rv = [[RhoUISplitView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    rv.hidden = NO;
+    rv.userInteractionEnabled = YES;
+    rv.autoresizesSubviews = YES;
+    rv.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+
+	self.view = rv;
+	[rv release];
 }
 
+/*
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
 }
-
+*/
 
 
 
@@ -154,7 +161,6 @@
     return YES;
 }
  */
-
 
 - (RightViewController*)getRightViewController {
 	RightViewController* rvc = (RightViewController*)[self.viewControllers objectAtIndex:1];

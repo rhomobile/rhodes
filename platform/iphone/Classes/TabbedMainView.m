@@ -58,12 +58,15 @@
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
 	[SimpleMainView disableHiddenOnStart];
-    CGRect frame = [[v view] frame];
+    CGRect frame = [[v view] bounds];
     
     tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
     tabbar.delegate = [Rhodes sharedInstance];
     tabbar.view.frame = frame;
     tabbar.selectedIndex = 0;
+    //tabbar.tabBar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    //tabbar.tabBar.autoresizesSubviews = YES;
+	
     
     CGRect childFrame = frame;
     CGRect tbFrame = tabbar.tabBar.frame;

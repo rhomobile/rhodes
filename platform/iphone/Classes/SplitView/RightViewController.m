@@ -67,10 +67,10 @@
 @synthesize itemsData, tabindex;
 
 - (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)parent {
-	self = [self init];
-	self.view = [[UIView alloc] init];
-	
+	self = [self initWithNibName:nil bundle:nil];
+
 	CGRect rect = CGRectMake(0,0,200,200);//self.view.frame;
+	
 
     int count = [items count]/4;
 
@@ -110,7 +110,7 @@
     self.itemsData = tabs;
     [tabs release];
 	
-	self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	self.view.autoresizesSubviews = YES;
 	
     self.tabindex = 0;
@@ -132,9 +132,15 @@
 }
 
 
+- (void)loadView {
+	CGRect rect = CGRectMake(0,0,200,200);//self.view.frame;
+	UIView* v = [[UIView alloc] initWithFrame:rect];;
+	self.view = v;
+	[v release];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // MUST return YES to allow all orientations
-    return YES;
+	return YES;
 }
 
 
@@ -248,6 +254,7 @@
 
 
 - (void)dealloc {
+	[itemsData release];
     [super dealloc];
 }
 
