@@ -214,7 +214,7 @@ void CSyncSource::doSyncClientChanges()
     if ( bSend )
     {
         LOG(INFO) + "Push client changes to server. Source: " + getName() + "Size :" + strBody.length();
-        LOG(INFO) + "Push body: " + strBody;		
+        LOG(TRACE) + "Push body: " + strBody;		
 
         if ( m_arMultipartItems.size() > 0 )
         {
@@ -416,7 +416,7 @@ void CSyncSource::syncServerChanges()
 
         //const char* szData = "[{\"version\":3},{\"token\":\"35639160294387\"},{\"count\":3},{\"progress_count\":0},{\"total_count\":3},{\"metadata\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"insert\":{\"1\":{\"price\":\"199.99\",\"brand\":\"Apple\",\"name\":\"iPhone\"}}}]";
 
-        LOG(INFO) + szData;
+        //LOG(INFO) + szData;
         PROF_START("Parse");
         CJSONArrayIterator oJsonArr(szData);
         PROF_STOP("Parse");
