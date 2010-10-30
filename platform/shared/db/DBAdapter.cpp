@@ -142,6 +142,28 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
     getAttrMgr().load(*this);
+
+    //copy client_info table
+    if ( !bTemp && !bExist && CRhoFile::isFileExist((strDbPath+"_oldver").c_str()) )
+    {
+        LOG(INFO) + "Copy client_info table from old database";
+        CDBAdapter db(m_strDbPartition.c_str(), true);
+        db.open( strDbPath+"_oldver", m_strDbVer, true );
+        copyTable( "client_info", db, *this );
+        {
+            DBResult( res, executeSQL( "SELECT client_id FROM client_info" ));
+            if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
+            {
+                LOG(INFO) + "Set reset=1 in client_info";
+                executeSQL( "UPDATE client_info SET reset=1" );
+            }
+        }
+        db.close();
+
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver-journal").c_str());
+    }
+
 }
 
 boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer )
@@ -190,7 +212,6 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
         return true;
     }
 
-
     return false;
 }
 
@@ -221,8 +242,11 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 	{
         LOG(INFO) + "Reset database because version is changed.";
 
-        CRhoFile::deleteFile(m_strDbPath.c_str());
-        CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver-journal").c_str());
+
+        CRhoFile::renameFile( m_strDbPath.c_str(), (m_strDbPath+"_oldver").c_str());
+        CRhoFile::renameFile((m_strDbPath+"-journal").c_str(), (m_strDbPath+"_oldver-journal").c_str());
 
         CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
