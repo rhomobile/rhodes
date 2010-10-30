@@ -9,6 +9,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#import "SplitView/SplittedMainView.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
@@ -302,19 +303,62 @@ static Rhodes *instance = NULL;
         [splashViewController hideSplash];
         [splashViewController release];
         splashViewController = nil;
+		
+		[window addSubview:mainView.view];
+		[window bringSubviewToFront:mainView.view];
     }
 }
 
 - (void)setMainView:(id<RhoMainView,NSObject>)view {
     if (mainView == view)
         return;
-		
+
+	UIViewController* sv = mainView;
 	//[self hideSplash];
     
-    [mainView.view removeFromSuperview];
-    [mainView release];
+	// Special hack for solve problem with VerticalTabBar on iPad
+	// When we switch from VerticalTabBar to any View - autorotation is disabled and application switch to Portrait orientation
+	// But there are no problme on iPhone 4.1 and above
+	//I think this is special iPad 3.2 problem
+    BOOL isVerticalTab = NO;
+	if ([mainView isKindOfClass:[SplittedMainView class]]) {
+		BOOL is_iPad = NO;
+		
+		NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
+		if ([model hasPrefix:@"iPad"]) {
+			is_iPad = YES;
+		}
+		
+		isVerticalTab = is_iPad;
+	}
+	
+	UIWindow* www = window;
+	if (isVerticalTab) {
+		
+		window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+		window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+		window.autoresizesSubviews = YES;
+		
+		
+		mainView = nil;
+	}
+	else {
+		[mainView.view removeFromSuperview];
+		[mainView release];
+	}
+	
     mainView = [view retain];
     [window addSubview:mainView.view];
+	//[window bringSubviewToFront:mainView.view];
+	
+	if (isVerticalTab) {
+		[window makeKeyAndVisible];
+
+		[sv.view removeFromSuperview];
+		[sv release];
+		[www release];
+	}
+	
 }
 
 - (id<RhoMainView,NSObject>)mainView {
@@ -324,35 +368,33 @@ static Rhodes *instance = NULL;
 
 
 // make splash screen
-- (void) showLoadingPagePre 
+// return YES if SplashScreen maked 
+- (BOOL) showLoadingPagePre 
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *pngPath = [SplashViewController detectLoadingImage];//[NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
-    if ([fileManager fileExistsAtPath:pngPath]) {
+    if ([SplashViewController hasLoadingImage]) {
         splashViewController = [[SplashViewController alloc] initWithParentView:window];
-        [splashViewController showSplash:pngPath];
     }
     else if ([fileManager fileExistsAtPath:htmPath]) {
         NSError *err;
         NSString *data = [NSString stringWithContentsOfFile:htmPath encoding:NSUTF8StringEncoding error:&err];
         [mainView loadHTMLString:data];
     }
+	return [SplashViewController hasLoadingImage];
 }
 
 // execute rho_splash_screen_start(); - we can do it only after Rhodes initialization
 - (void) showLoadingPagePost
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *pngPath = [SplashViewController detectLoadingImage];//[NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
-    if ([fileManager fileExistsAtPath:pngPath]) {
+    if (splashViewController != nil) {
 		rho_splash_screen_start();
     }
     else if ([fileManager fileExistsAtPath:htmPath]) {
@@ -408,7 +450,7 @@ static Rhodes *instance = NULL;
     NSLog(@"Rhodes starting application...");
     instance = self;
     application = [UIApplication sharedApplication];
-    rotationLocked = YES;
+    rotationLocked = NO;
     
     [NSThread setThreadPriority:1.0];
     
@@ -421,18 +463,21 @@ static Rhodes *instance = NULL;
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     window.autoresizesSubviews = YES;
-
-
+	
     mainView = nil;
-    self.mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
+    mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
     mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     mainView.view.autoresizesSubviews = YES;
     
-    [window addSubview:mainView.view];
-
-	[self showLoadingPagePre];
+	BOOL is_splash_screen_maked = [self showLoadingPagePre];
+	
+	if (!is_splash_screen_maked) {
+		[window addSubview:mainView.view];
+	}
 	
     [window makeKeyAndVisible];
+	
+	CGRect rrr = [application statusBarFrame];
 	
     NSLog(@"Init cookies");
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
