@@ -244,7 +244,7 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
 
-	NSString *pngLoadingPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
+	//NSString *pngLoadingPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
 	NSString *pngDefaultPath = [NSString stringWithFormat:@"%@/Default.png", resourcePath];
 	NSString *pngDefault2xPath = [NSString stringWithFormat:@"%@/Default@2x.png", resourcePath];
 	NSString *pngDefaultPortraitPath = [NSString stringWithFormat:@"%@/Default-Portrait.png", resourcePath];
@@ -254,7 +254,7 @@
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
 	
 	return (
-			([fileManager fileExistsAtPath:pngLoadingPath]) ||
+			//([fileManager fileExistsAtPath:pngLoadingPath]) ||
 			([fileManager fileExistsAtPath:pngDefaultPath]) ||
 			([fileManager fileExistsAtPath:pngDefault2xPath]) ||
 			([fileManager fileExistsAtPath:pngDefaultPortraitPath]) ||
