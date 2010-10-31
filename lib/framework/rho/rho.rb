@@ -197,6 +197,8 @@ module Rho
                 arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                     {'partition'=>str_partition} )
                 arSrcs.each do |src|
+                    src['schema'] = '<empty_schema>' if src && !src['schema'] && db.table_exist?(src['name'])
+                    
                     Rho::RhoConfig::sources()[ src['name'] ] = src
                 end
                 
