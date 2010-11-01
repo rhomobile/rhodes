@@ -11,7 +11,6 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.alert.Alert;
-import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -126,6 +125,10 @@ public class RhodesService {
 	
 	public void post(Runnable r) {
 		uiHandler.post(r);
+	}
+	
+	public void post(Runnable r, int delay) {
+		uiHandler.postDelayed(r, delay);
 	}
 	
 	private static int screenWidth;
@@ -273,13 +276,19 @@ public class RhodesService {
 		
 		return false;
 	}
+
+  private static int mGeoLocationInactivityTimeout;
+
+  public static int getGeoLocationInactivityTimeout() {
+    return mGeoLocationInactivityTimeout;
+  }
 	
 	public static SplashScreen showSplashScreen(Context ctx, ViewGroup myOuterFrame) {
 		SplashScreen splashScreen = new SplashScreen(ctx);
 		splashScreen.start(myOuterFrame);
 		return splashScreen;
-	}
-	
+  }
+
 	public void hideSplashScreen() {
 		PerformOnUiThread.exec(new Runnable() {
 					public void run() {
@@ -527,6 +536,10 @@ public class RhodesService {
 		
 		// TODO: detect camera availability
 		isCameraAvailable = true;
+		
+		mGeoLocationInactivityTimeout = RhoConf.getInt("geo_location_inactivity_timeout");
+		if (mGeoLocationInactivityTimeout == 0)
+			mGeoLocationInactivityTimeout = 25*1000; // 25s
 		
 		// Register custom uri handlers here
 		uriHandlers.addElement(new ExternalHttpHandler(ctx));

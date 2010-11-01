@@ -27,6 +27,16 @@ public class PerformOnUiThread implements Runnable {
 		}
 	}
 	
+	public static void exec(Runnable r, int delay) {
+		try {
+			RhodesService rhodes = RhodesService.getInstance();
+			rhodes.post(r, delay);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "exec failed: " + e.getMessage());
+		}
+	}
+	
 	public static void exec(Runnable r, boolean wait) {
 		try {
 			RhodesService rhodes = RhodesService.getInstance();
