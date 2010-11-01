@@ -80,7 +80,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean m_bNoThreaded = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "";
-    boolean m_bIsSearch;
+    boolean m_bIsSearch, m_bIsSchemaChanged;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -95,6 +95,9 @@ public class SyncEngine implements NetRequest.IRhoSession
     String getClientID(){ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
     boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
+    
+    void setSchemaChanged(boolean bChanged){ m_bIsSchemaChanged = bChanged; }
+    boolean isSchemaChanged(){ return m_bIsSchemaChanged; }
     
     DBAdapter getUserDB(){ return DBAdapter.getUserDB(); }
     DBAdapter getDB(String strPartition){ return DBAdapter.getDB(strPartition); }
@@ -136,6 +139,7 @@ public class SyncEngine implements NetRequest.IRhoSession
         m_bStopByUser = false;
         m_nErrCode = RhoAppAdapter.ERR_NONE;
         m_strError = "";
+        m_bIsSchemaChanged = false;
         
         loadAllSources();
 

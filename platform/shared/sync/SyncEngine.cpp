@@ -44,6 +44,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     m_bStopByUser = false;
     m_nErrCode = RhoAppAdapter.ERR_NONE;
     m_strError = "";
+    m_bIsSchemaChanged = false;
 
     loadAllSources();
 
