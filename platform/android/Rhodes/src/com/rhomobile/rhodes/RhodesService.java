@@ -79,6 +79,15 @@ public class RhodesService {
 		return ctx;
 	}
 	
+	public static void platformLog(String _tag, String _message) {
+		StringBuilder s = new StringBuilder();
+		s.append("ms[");
+		s.append(System.currentTimeMillis());
+		s.append("] ");
+		s.append(_message);
+		android.util.Log.v(_tag, s.toString());
+	}
+	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
@@ -260,9 +269,10 @@ public class RhodesService {
 		return false;
 	}
 	
-	private void showSplashScreen() {
-		splashScreen = new SplashScreen(ctx);
-		splashScreen.start(outerFrame);
+	public static SplashScreen showSplashScreen(Context ctx, ViewGroup myOuterFrame) {
+		SplashScreen splashScreen = new SplashScreen(ctx);
+		splashScreen.start(myOuterFrame);
+		return splashScreen;
 	}
 	
 	public void hideSplashScreen() {
@@ -277,6 +287,50 @@ public class RhodesService {
 		view.requestFocus();
 		}
 				}, false);
+	}
+	
+	public static WebView createLoadingWebView(Context ctx) {
+		WebView w = new WebView(ctx);
+		
+		//webSettings.setWebSettings(w);
+		
+		w.clearCache(true);
+
+		w.setWebViewClient(new WebViewClient() {
+			
+			private boolean splashHidden = false;
+			private boolean setupExecuted = false;
+			
+			@Override
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				super.onPageStarted(view, url, favicon);
+			}
+			
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				RhodesService rs = RhodesService.getInstance();
+				if (rs != null) {
+					if (!splashHidden && url.startsWith("http://")) {
+						rs.hideSplashScreen();
+						splashHidden = true;
+					}
+				}
+				//if (ENABLE_LOADING_INDICATION)
+				Rhodes.getInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				super.onPageFinished(view, url);
+				if (!setupExecuted) {
+					Rhodes.runPosponedSetup();
+					setupExecuted = true;
+				}
+				
+			}
+
+		});
+		
+		//w.setWebChromeClient(chromeClient);
+		
+		return w;
+	
 	}
 	
 	public WebView createWebView() {
@@ -314,7 +368,7 @@ public class RhodesService {
 					hideSplashScreen();
 					splashHidden = true;
 				}
-				if (ENABLE_LOADING_INDICATION)
+				//if (ENABLE_LOADING_INDICATION)
 					r.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
 			}
@@ -385,9 +439,14 @@ public class RhodesService {
 		return instance != null;
 	}
 	
-	public RhodesService(Activity c, ViewGroup rootWindow) {
+	public RhodesService(Activity c, ViewGroup rootWindow, SplashScreen splash_s) {
+	
 		ctx = c;
 		instance = this;
+		outerFrame = rootWindow;
+
+		//showSplashScreen();
+		splashScreen = splash_s;
 		
 		initClassLoader(ctx.getClassLoader());
 
@@ -427,11 +486,10 @@ public class RhodesService {
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 		
 		initWebStuff();
-		
-		outerFrame = rootWindow;
-		
+
 		Logger.I("Rhodes", "Loading...");
-		showSplashScreen();
+		//showSplashScreen();
+		splashScreen.rho_start();
 		
 		// Increase WebView rendering priority
 		WebView w = new WebView(ctx);
