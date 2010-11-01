@@ -22,11 +22,15 @@ package com.rhomobile.rhodes.geolocation;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class GeoLocation {
 
 	private static final String TAG = "GeoLocation";
 	private static GeoLocationImpl locImpl = null;
+	
+	private static int mInactivityTimerId = 0;
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
@@ -37,13 +41,26 @@ public class GeoLocation {
 			throw new IllegalAccessException("Capability GPS disabled");
 	}
 	
+	private static void updateInactivityTimer() {
+		final int id = ++mInactivityTimerId;
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				if (id != mInactivityTimerId)
+					return;
+				GeoLocation.stop();
+			}
+		}, RhodesService.getGeoLocationInactivityTimeout());
+	}
+	
 	private static void init() {
 		if (locImpl != null)
 			return;
 		
 		synchronized (TAG) {
-			if (locImpl == null)
+			if (locImpl == null) {
 				locImpl = new GeoLocationImpl();
+				updateInactivityTimer();
+			}
 		}
 	}
 	
@@ -88,7 +105,8 @@ public class GeoLocation {
 			checkState();
 			Logger.T(TAG, "getLatitude");
 			init();
-			return locImpl.GetLatitude();
+			updateInactivityTimer();
+			return locImpl.getLatitude();
 		}
 		catch (Exception e) {
 			reportFail("getLatitude", e);
@@ -102,7 +120,8 @@ public class GeoLocation {
 			checkState();
 			Logger.T(TAG, "getLongitude");
 			init();
-			return locImpl.GetLongitude();
+			updateInactivityTimer();
+			return locImpl.getLongitude();
 		}
 		catch (Exception e) {
 			reportFail("getLongitude", e);
@@ -116,6 +135,7 @@ public class GeoLocation {
 			checkState();
 			Logger.T(TAG, "isKnownPosition");
 			init();
+			updateInactivityTimer();
 			return locImpl.isKnownPosition();
 		}
 		catch (Exception e) {
