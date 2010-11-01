@@ -286,7 +286,7 @@ class SyncSource
 	    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
 	    {
 	        String strBody1;
-	        strBody1 = makePushBody_Ver3(arUpdateTypes[i]);
+	        strBody1 = makePushBody_Ver3(arUpdateTypes[i], true);
 	        if (strBody1.length() > 0)
 	        {
 	            strBody += "," + strBody1;
@@ -360,7 +360,7 @@ class SyncSource
 	//{"source_name":"SampleAdapter","client_id":1,"update":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 	//{"source_name":"SampleAdapter","client_id":1,"delete":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}}}
 	//{"source_name":"SampleAdapter","client_id":1,"delete":{"3":{"brand":"HTC","name":"Fuze","price":"299.99"}},"create":{"1":{"brand":"Apple","name":"iPhone","price":"199.99"}},"update":{"2":{"brand":"Android","name":"G2","price":"99.99"}}}
-	String makePushBody_Ver3( String strUpdateType)throws DBException
+	String makePushBody_Ver3( String strUpdateType, boolean isSync)throws DBException
 	{
 		String strBody = "";
 	    getDB().Lock();
@@ -394,7 +394,12 @@ class SyncSource
 	        }
 
 	        if ( strBody.length() == 0 )
-	            strBody += "\"" + strUpdateType + "\":{";
+	        {
+	            if ( !isSync )
+	                strBody += "{";
+	            else
+	                strBody += "\"" + strUpdateType + "\":{";
+	        }
 
 	        if ( strObject.compareTo(strCurObject) != 0 )
 	        {
@@ -431,12 +436,38 @@ class SyncSource
 	        strBody += "}";
 	    }
 
-	    getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), strUpdateType );
+	    if ( isSync )	    
+	    	getDB().executeSQL("UPDATE changed_values SET sent=1 WHERE source_id=? and update_type=? and sent=0", getID(), strUpdateType );
+	    
 	    getDB().Unlock();
 	    
 	    return strBody;
 	}
 
+	void applyChangedValues()throws Exception
+	{
+	    String strBody = makePushBody_Ver3("create", false);
+	    if ( strBody != null && strBody.length() > 0 )
+	    {
+	        JSONEntry oEntry = new JSONEntry(strBody);
+	        processSyncCommand("insert", oEntry );
+	    }
+
+	    strBody = makePushBody_Ver3("delete", false);
+	    if ( strBody != null && strBody.length() > 0 )
+	    {
+	        JSONEntry oEntry = new JSONEntry(strBody);
+	        processSyncCommand("delete", oEntry );
+	    }
+
+	    strBody = makePushBody_Ver3("update", false);
+	    if ( strBody != null && strBody.length() > 0 )
+	    {
+	        JSONEntry oEntry = new JSONEntry(strBody);
+	        processSyncCommand("insert", oEntry );
+	    }
+	}
+	
 	void syncServerChanges()throws Exception
 	{
 		LOG.INFO("Sync server changes source ID :" + getID() );
@@ -618,6 +649,9 @@ class SyncSource
 	            }
 	        }
 
+	        if ( getSyncType().compareTo("none") == 0 )
+	        	continue;
+	        
 	        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
 	        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
 	            getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
@@ -707,16 +741,21 @@ class SyncSource
 	            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
 	            getDB().executeSQLEx(strSqlUpdate, vecValues);
 
-	            // oo conflicts
-	            for( int i = 0; i < (int)vecAttrs.size(); i++ )
+	            if ( getSyncType().compareTo("none") != 0 )
 	            {
-	                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
-	                    strObject, vecAttrs.elementAt(i), getID() );
+		            // oo conflicts
+		            for( int i = 0; i < (int)vecAttrs.size(); i++ )
+		            {
+		                getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
+		                    strObject, vecAttrs.elementAt(i), getID() );
+		            }
+		            //
 	            }
-	            //
 	        }
 
-	        getNotify().onObjectChanged(getID(),strObject, SyncNotify.enUpdate);
+	        if ( getSyncType().compareTo("none") != 0 )	        
+	        	getNotify().onObjectChanged(getID(),strObject, SyncNotify.enUpdate);
+	        
 	        m_nInserted++;
 	    }else if (strCmd.compareTo("delete") == 0)
 	    {
@@ -762,15 +801,18 @@ class SyncSource
 	            }
 	        }
 	        
-	        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enDelete);
-	        // oo conflicts
-	        for( int i = 0; i < (int)vecAttrs.size(); i++ )
+	        if ( getSyncType().compareTo("none") != 0 )
 	        {
-	            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", 
-	                strObject, vecAttrs.elementAt(i), getID() );
+		        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enDelete);
+		        // oo conflicts
+		        for( int i = 0; i < (int)vecAttrs.size(); i++ )
+		        {
+		            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", 
+		                strObject, vecAttrs.elementAt(i), getID() );
+		        }
+		        //
 	        }
-	        //
-
+	        
 	        m_nDeleted++;
 	    }else if ( strCmd.compareTo("links") == 0 )
 	    {
@@ -860,22 +902,30 @@ class SyncSource
                     "SET value=? WHERE object=? and attrib=? and source_id=?", 
                      oAttrValue.m_strValue, strObject, oAttrValue.m_strAttrib, getID() );
 
-	            // oo conflicts
-	            getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
-	                    strObject, oAttrValue.m_strAttrib, getID() );
-	            //
+	            if ( getSyncType().compareTo("none") != 0 )
+	            {
+		            // oo conflicts
+		            getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and sent>1", 
+		                    strObject, oAttrValue.m_strAttrib, getID() );
+		            //
+	            }
 	        }
 
-	        getNotify().onObjectChanged(getID(),strObject, SyncNotify.enUpdate);
+	        if ( getSyncType().compareTo("none") != 0 )	        
+	        	getNotify().onObjectChanged(getID(),strObject, SyncNotify.enUpdate);
+	        
 	        m_nInserted++;
 	    }else if (strCmd.compareTo("delete") == 0)
 	    {
 	        getDB().executeSQL("DELETE FROM object_values where object=? and attrib=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID() );
-	        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enDelete);
-	        // oo conflicts
-	        getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID() );
-	        //
-
+	        
+	        if ( getSyncType().compareTo("none") != 0 )
+	        {
+		        getNotify().onObjectChanged(getID(), strObject, SyncNotify.enDelete);
+		        // oo conflicts
+		        getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID() );
+		        //
+	        }
 	        m_nDeleted++;
 	    }else if ( strCmd.compareTo("links") == 0 )
 	    {

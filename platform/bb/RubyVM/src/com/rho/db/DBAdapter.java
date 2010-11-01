@@ -29,6 +29,8 @@ public class DBAdapter extends RubyBasic
 	
     static String USER_PARTITION_NAME(){return "user";}
     static Hashtable/*Ptr<String,CDBAdapter*>&*/ getDBPartitions(){ return  m_mapDBPartitions; }
+    String m_strClientInfoInsert = "";
+    Object[] m_dataClientInfo = null;
     
 	DBAdapter(RubyClass c) {
 		super(c);
@@ -98,6 +100,11 @@ public class DBAdapter extends RubyBasic
 		Object[] values = { new Integer(arg1)};
 		return executeSQL(strStatement,values);
 	}
+	public IDBResult executeSQL(String strStatement, int arg1, int arg2)throws DBException{
+		Object[] values = { new Integer(arg1), new Integer(arg2)};
+		return executeSQL(strStatement,values);
+	}
+	
 	public IDBResult executeSQL(String strStatement, long arg1)throws DBException{
 		Object[] values = { new Long(arg1)};
 		return executeSQL(strStatement,values);
@@ -453,6 +460,32 @@ public class DBAdapter extends RubyBasic
 
 		if ( bRhoReset || bAppReset )
 		{
+			IDBStorage db = null;
+			try
+			{
+			    db = RhoClassFactory.createDBStorage();
+				if ( db.isDbFileExists(m_strDBPath) )
+				{
+					db.open( m_strDBPath, "" );
+			    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false);
+			    	if ( !res.isEnd() )
+			    	{
+			    		m_strClientInfoInsert = createInsertStatement(res, "client_info");
+			    		m_dataClientInfo = res.getCurData();
+			    	}
+				}
+			}catch(Exception exc)
+			{
+				LOG.ERROR("Copy client_info table failed.", exc);
+			}catch(Throwable e)
+			{
+				LOG.ERROR("Copy client_info table crashed.", e);
+			}finally
+			{
+				if (db != null )
+					try{ db.close(); }catch(Exception e){}
+			}
+		
 			m_dbStorage.deleteAllFiles(m_strDBPath);
 			
 			String fName = makeBlobFolderName();
@@ -497,13 +530,15 @@ public class DBAdapter extends RubyBasic
 		}
 	}
 	
-    private void openDB(String strDBName)throws Exception
+    private void openDB(String strDBName, boolean bTemp)throws Exception
     {
     	if ( m_bIsOpen )
     		return;
     	
 		initFilePaths(strDBName);
-		checkDBVersion();
+	    if ( !bTemp )
+	    	checkDBVersion();
+	    
 		m_dbStorage.open(m_strDBPath, getSqlScript() );
 		
 		//executeSQL("CREATE INDEX by_src ON object_values (source_id)", null);
@@ -514,6 +549,24 @@ public class DBAdapter extends RubyBasic
 		m_dbStorage.setDbCallback(new DBCallback(this));
 		
 		m_dbAdapters.addElement(this);
+
+	    //copy client_info table
+        if ( !bTemp && m_strClientInfoInsert != null && m_strClientInfoInsert.length() > 0 &&
+        	 m_dataClientInfo != null )
+        {
+            LOG.INFO("Copy client_info table from old database");
+    		
+        	m_dbStorage.executeSQL(m_strClientInfoInsert, m_dataClientInfo, false );
+        	
+            IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
+            if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
+            {
+                LOG.INFO("Set reset=1 in client_info");
+                executeSQL( "UPDATE client_info SET reset=1" );
+            }
+        	
+        }
+		
     }
     
 	private String createInsertStatement(IDBResult res, String tableName)
@@ -693,34 +746,77 @@ public class DBAdapter extends RubyBasic
 	    }
     }
     
+    void copyChangedValues(DBAdapter db)throws DBException
+    {
+        copyTable("changed_values", m_dbStorage, db.m_dbStorage );
+        {
+            Vector/*<int>*/ arOldSrcs = new Vector();
+            {
+                IDBResult resSrc = db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" );
+                for ( ; !resSrc.isEnd(); resSrc.next() )
+                    arOldSrcs.addElement( new Integer(resSrc.getIntByIdx(0)) );
+            }
+            for( int i = 0; i < arOldSrcs.size(); i++)
+            {
+                int nOldSrcID = ((Integer)arOldSrcs.elementAt(i)).intValue();
+
+                IDBResult res = executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID);
+                if ( !res.isEnd() )
+                {
+                    String strSrcName = res.getStringByIdx(0);
+                    IDBResult res2 = db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName );
+                    if ( !res2.isEnd() )
+                    {
+                        if ( nOldSrcID != res2.getIntByIdx(0) )
+                        {
+                            db.executeSQL("UPDATE changed_values SET source_id=? WHERE source_id=?", res2.getIntByIdx(0), nOldSrcID);
+                        }
+                        continue;
+                    }
+                }
+
+                //source not exist in new partition, remove this changes
+                db.executeSQL("DELETE FROM changed_values WHERE source_id=?", nOldSrcID);
+            }
+        }
+    }
+    
     public void setBulkSyncDB(String fDbName, String fScriptName)
     {
-		IDBStorage db = null;
+		DBAdapter db = null;
 		try{
-		    db = RhoClassFactory.createDBStorage();	    
-			db.open( fDbName, "" );
-
+			db = (DBAdapter)alloc(null); 
+    		db.openDB(fDbName, true);
+    		db.setDbPartition(m_strDbPartition);
+			
 		    db.startTransaction();
 			
-		    copyTable("client_info", this.m_dbStorage, db );
+		    copyTable("client_info", m_dbStorage, db.m_dbStorage );
+		    copyChangedValues(db);
 		    
 		    //update User partition
 		    if ( m_strDbPartition.compareTo(USER_PARTITION_NAME()) == 0 )
 		    {
 		        //copy all NOT user sources from current db to bulk db
+		    	startTransaction();
 		        executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
-		        copyTable("sources", this.m_dbStorage, db );
+		        copyTable("sources", m_dbStorage, db.m_dbStorage );
+		        rollback();
 		    }else
 		    {
 		        //remove all m_strDbPartition sources from user db
 		        //copy all sources from bulk db to user db
 		        DBAdapter dbUser  = getDB(USER_PARTITION_NAME());
+		        dbUser.startTransaction();
 		        dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
-
-		        copyTable("sources", db, dbUser.m_dbStorage );
+		        copyTable("sources", db.m_dbStorage, dbUser.m_dbStorage );
+		        dbUser.endTransaction();
 		    }
-			
-		    db.commit();
+		    getDBPartitions().put(m_strDbPartition, db);
+		    com.rho.sync.SyncThread.getSyncEngine().applyChangedValues(db);
+		    getDBPartitions().put(m_strDbPartition, this);
+		    
+		    db.endTransaction();
 		    db.close();
 
 		    m_dbStorage.close();
@@ -769,12 +865,8 @@ public class DBAdapter extends RubyBasic
 				}
 			}
 			
-			try {
-				if ( db != null)
-					db.close();
-			} catch (DBException e1) {
-				LOG.ERROR("closing of DB caused exception: " + e1.getMessage());
-			}
+			if ( db != null)
+				db.close();
     		
 			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 		}
@@ -932,7 +1024,7 @@ public class DBAdapter extends RubyBasic
 		    	{
 		    		String szDbName = arg1.toStr();
 		    		String szDbPartition = arg2.toStr();
-		    		((DBAdapter)receiver).openDB(szDbName);
+		    		((DBAdapter)receiver).openDB(szDbName, false);
 		    		((DBAdapter)receiver).setDbPartition(szDbPartition);
 		    		
 		    		DBAdapter.getDBPartitions().put(szDbPartition, receiver);
