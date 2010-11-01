@@ -272,8 +272,9 @@ public class Jsr75File implements SimpleFile
     	if ( strRoot == null )
     		throw new IOException("Could not find storage");
     	
-    	if ( strDir != null && strDir.length() > 0 ){
-    		String strDirPath = FilePath.join(strRoot, strDir);
+    	if ( strDir != null && strDir.length() > 0 )
+    	{
+    		String strDirPath = strDir.startsWith(strRoot) ? strDir : FilePath.join(strRoot, strDir);
     		strDirPath = FilePath.join(strDirPath, "/");
     		createDir( strDirPath );
     		return strDirPath;
