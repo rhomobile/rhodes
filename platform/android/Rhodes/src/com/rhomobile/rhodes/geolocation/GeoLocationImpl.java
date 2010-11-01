@@ -107,23 +107,22 @@ public class GeoLocationImpl implements LocationListener {
 				determined = false;
 			}
 
-			Logger.T(TAG, "gps enabled: " + new Boolean(locationManager.isProviderEnabled(PROVIDER)).toString());
-			Logger.T(TAG, "determined: " + new Boolean(determined).toString());
+			Logger.T(TAG, "gps enabled: " + Boolean.toString(locationManager.isProviderEnabled(PROVIDER)));
+			Logger.T(TAG, "determined: " + Boolean.toString(determined));
 			if (determined) {
-				Logger.T(TAG, "longitude: " + new Double(longitude).toString());
-				Logger.T(TAG, "latitude: " + new Double(latitude).toString());
+				Logger.T(TAG, "longitude: " + Double.toString(longitude));
+				Logger.T(TAG, "latitude: " + Double.toString(latitude));
 			}
 			
 			if (determined != prevDetermined || latitude != prevLat || longitude != prevLon) {
 				geoCallback();
 			}
-			
 		} catch (Exception e) {
 			determined = false;
 			Logger.E(TAG, e.getMessage());
 		}
 	}
-
+	
 	public void onLocationChanged(Location location) {
 		Logger.T(TAG, "onLocationChanged");
 		setCurrentGpsLocation(location);
@@ -159,11 +158,11 @@ public class GeoLocationImpl implements LocationListener {
 		return available;
 	}
 	
-	public synchronized double GetLatitude() {
+	public synchronized double getLatitude() {
 		return latitude;
 	}
 
-	public synchronized double GetLongitude() {
+	public synchronized double getLongitude() {
 		return longitude;
 	}
 
