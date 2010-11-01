@@ -402,7 +402,12 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
             if ( bFinish )
             {
                 if ( nErrCode == RhoAppAdapter.ERR_NONE )
-                    strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";
+                {
+                    if ( getSync().isSchemaChanged() )
+                        strBody += "schema_changed";
+                    else
+                        strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";
+                }
 	            else
 	            {
                     if ( getSync().isStoppedByUser() )
