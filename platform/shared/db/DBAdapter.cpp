@@ -176,6 +176,14 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
         return true;
     }
 
+    if ( (dbVer.m_strRhoVer.find("2.0") == 0||dbVer.m_strRhoVer.find("2.1") == 0||dbVer.m_strRhoVer.find("2.2") == 0)&& 
+         (strRhoDBVer.find("2.0")==0||strRhoDBVer.find("2.1")==0||strRhoDBVer.find("2.2")==0) )
+    {
+        LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
+        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+        return true;
+    }
+
     //1.2.x -> 1.5.x,1.4.x
     if ( (dbVer.m_strRhoVer.find("1.2") == 0)&& (strRhoDBVer.find("1.5")==0||strRhoDBVer.find("1.4")==0) )
     {
