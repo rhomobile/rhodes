@@ -7,7 +7,9 @@ public class RhoActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		RhodesService.getInstance().activityStarted();
+		if (RhodesService.getInstance() != null) {
+			RhodesService.getInstance().activityStarted();
+		}
 	}
 	
 	@Override

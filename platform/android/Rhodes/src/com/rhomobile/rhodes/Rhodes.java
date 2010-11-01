@@ -20,7 +20,11 @@
  */
 package com.rhomobile.rhodes;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -31,6 +35,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -47,11 +52,19 @@ public class Rhodes extends RhoActivity {
 	}
 	
 	private RhoMenu appMenu = null;
+	
+	private ViewGroup mOuterFrame = null;
+	private Bundle mSavedBundle = null;
+	private SplashScreen mSplashScreen = null;
+	private Handler mHandler = null;
 		
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		RhodesService.platformLog("Rhodes", "onStart()");
+		
 		super.onCreate(savedInstanceState);
+		mHandler = new Handler();
 
 		// Here Log should be used, not Logger. It is because Logger is not initialized yet.
 		Log.v(TAG, "+++ onCreate");
@@ -59,30 +72,78 @@ public class Rhodes extends RhoActivity {
 		instance = this;
 		
 		FrameLayout v = new FrameLayout(this);
+		mOuterFrame = v;
+		
+		mSplashScreen = RhodesService.showSplashScreen(this, mOuterFrame);
+		mSavedBundle = savedInstanceState;
+
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+
+		
+		this.requestWindowFeature(Window.FEATURE_PROGRESS);
+
+		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
+		
+		setContentView(mOuterFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+
+
+	}
+	
+	public void onStart() {
+		super.onStart();
+		RhodesService.platformLog("Rhodes", "onStart()");
+	}
+	
+	public void onCreatePosponed() {
+		RhodesService.platformLog("Rhodes", "onCreatePosponed()");
 		
 		RhodesService service = RhodesService.getInstance();
 		if (service == null) {
 			Log.v(TAG, "Starting rhodes service...");
-			service = new RhodesService(this, v);
+			service = new RhodesService(this, mOuterFrame, mSplashScreen);
 		}
 		else
 			Log.v(TAG, "Rhodes service already started...");
 		
 		Thread ct = Thread.currentThread();
 		ct.setPriority(Thread.MAX_PRIORITY);
-		service.setInfo(this, ct.getId(), new Handler());
+		service.setInfo(this, ct.getId(), mHandler);
 
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 
 		boolean disableScreenRotation = RhoConf.getBool("disable_screen_rotation");
 		this.setRequestedOrientation(disableScreenRotation ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
 			ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 		
-		if (RhodesService.ENABLE_LOADING_INDICATION)
-			this.requestWindowFeature(Window.FEATURE_PROGRESS);
+		//if (RhodesService.ENABLE_LOADING_INDICATION)
+		//	this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
-		service.setRootWindow(v);
-		setContentView(v, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		service.setRootWindow(mOuterFrame);
+	
+		RhodesService.getInstance().activityStarted();
+		
+		if (mTimerPostponeCreate != null) {
+			mTimerPostponeCreate.cancel();
+			mTimerPostponeCreate = null;
+		}
+	}
+	
+	private Timer mTimerPostponeCreate = null;
+	
+	public void onResume() {
+		RhodesService.platformLog("Rhodes", "onResume()");
+		
+		super.onResume();
+
+	}
+	
+	public static void runPosponedSetup() {
+		final Rhodes r = Rhodes.getInstance();
+		r.mHandler.post( new Runnable() {
+				public void run() {
+					RhodesService.platformLog("Rhodes", "postponed Create UIThread.run()");
+					r.onCreatePosponed();
+				}
+			});
 	}
 	
 	@Override
