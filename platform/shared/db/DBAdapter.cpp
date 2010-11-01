@@ -513,7 +513,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     }
 
     getDBPartitions().put(m_strDbPartition.c_str(), &db);
-    sync::CSyncThread::getInstance()->getSyncEngine().applyChangedValues(db);
+    sync::CSyncThread::getSyncEngine().applyChangedValues(db);
     getDBPartitions().put(m_strDbPartition.c_str(), this);
 
     db.endTransaction();
