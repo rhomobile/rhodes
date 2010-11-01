@@ -600,26 +600,33 @@ class SyncSource
 	        JSONEntry oCmds = oJsonArr.getCurItem();
 	        PROF.START("Data");
 
-	        getDB().startTransaction();
-	        if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
+	        if ( oCmds.hasName("schema-changed") )
 	        {
-	            String strMetadata = oCmds.getString("metadata");
-	            getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
+	            getSync().stopSync();    
+	            getSync().setSchemaChanged(true);
+	        }else
+	        {
+		        getDB().startTransaction();
+		        if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
+		        {
+		            String strMetadata = oCmds.getString("metadata");
+		            getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
+		        }
+		        if ( oCmds.hasName("links") && getSync().isContinueSync() )
+		            processSyncCommand("links", oCmds.getEntry("links") );
+		        if ( oCmds.hasName("delete") && getSync().isContinueSync() )
+		            processSyncCommand("delete", oCmds.getEntry("delete") );
+		        if ( oCmds.hasName("insert") && getSync().isContinueSync() )
+		            processSyncCommand("insert", oCmds.getEntry("insert") );
+	
+		        PROF.STOP("Data");
+	
+			    PROF.START("DB");
+		        getDB().endTransaction();
+		        PROF.STOP("DB");
+	
+		        getNotify().fireObjectsNotification();
 	        }
-	        if ( oCmds.hasName("links") && getSync().isContinueSync() )
-	            processSyncCommand("links", oCmds.getEntry("links") );
-	        if ( oCmds.hasName("delete") && getSync().isContinueSync() )
-	            processSyncCommand("delete", oCmds.getEntry("delete") );
-	        if ( oCmds.hasName("insert") && getSync().isContinueSync() )
-	            processSyncCommand("insert", oCmds.getEntry("insert") );
-
-	        PROF.STOP("Data");
-
-		    PROF.START("DB");
-	        getDB().endTransaction();
-	        PROF.STOP("DB");
-
-	        getNotify().fireObjectsNotification();
 	    }
 
 		PROF.START("Data1");
