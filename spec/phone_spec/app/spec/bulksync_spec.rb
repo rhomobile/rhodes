@@ -97,12 +97,14 @@ describe "BulkSync_test" do
     items2.should_not be_nil
     items2.length().should_not == 0
 
+    bFound22 = false
     items2.each do |item|
-        item.sku.should == '22'
+        bFound22 = item.sku == '22' if !bFound22
         
         item.sku = '44'
         item.save
     end    
+    bFound22.should == true
 
     Rho::RhoConfig.bulksync_state='0'
     res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
