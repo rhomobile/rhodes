@@ -422,7 +422,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items {
-    CGRect frame = [[v view] bounds];
+    CGRect frame = [[v view] frame];
+	frame.origin.x = 0;
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
     UIWebView *w = [v detachWebView];
     id result = [self init:p webView:w frame:frame toolbar:items];

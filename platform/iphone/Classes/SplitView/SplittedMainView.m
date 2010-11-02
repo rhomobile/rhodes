@@ -92,7 +92,7 @@
 	
 	
 	
-	CGRect parent_frame = [[v view] bounds];
+	CGRect parent_frame = [[v view] frame];
 	self.view.frame = parent_frame;
 	
 	
