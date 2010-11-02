@@ -332,6 +332,8 @@ static Rhodes *instance = NULL;
 		isVerticalTab = is_iPad;
 	}
 	
+	CGRect main_frame = mainView.view.frame;
+	
 	UIWindow* www = window;
 	if (isVerticalTab) {
 		
@@ -339,7 +341,7 @@ static Rhodes *instance = NULL;
 		window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 		window.autoresizesSubviews = YES;
 		
-		
+		//view.view.frame = main_frame;
 		mainView = nil;
 	}
 	else {
@@ -358,6 +360,7 @@ static Rhodes *instance = NULL;
 		[sv release];
 		[www release];
 	}
+	[window layoutSubviews];
 	
 }
 
