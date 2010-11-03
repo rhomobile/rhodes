@@ -198,28 +198,39 @@ public class RhodesApplicationPlatform extends UiApplication implements PushAppl
 	        {
 	            public void run()
 	            {
-	
-					m_PushMessageThread = new PushMessageThread();
-					String strAppName = RhoConf.getInstance().getString("push_service_appname");
-					String strUrl = RhoConf.getInstance().getString("push_service_url");
-					int nPort = RhoConf.getInstance().getInt("push_service_port");
-					byte btServiceType = RhoConf.getInstance().getString("push_service_type").equalsIgnoreCase("BPAS") ?
-							PushApplicationDescriptor.SERVER_TYPE_BPAS : PushApplicationDescriptor.SERVER_TYPE_NONE;
-					
-					PushApplicationDescriptor pad = new PushApplicationDescriptor(
-							strAppName, nPort, strUrl, btServiceType, 
-							ApplicationDescriptor.currentApplicationDescriptor());
-					
-					PushApplicationStatus status = PushApplicationRegistry.getStatus(pad);
-			
-					LOG.INFO("registerPushService status : " + status.toString());
-			
-					if (status.getStatus() != PushApplicationStatus.STATUS_ACTIVE && status.getStatus() != PushApplicationStatus.STATUS_PENDING)
+	                try
+	                {
+					    m_PushMessageThread = new PushMessageThread();
+					    String strAppName = RhoConf.getInstance().getString("push_service_appname");
+    			        String strUrl = RhoConf.getInstance().getString("push_service_url");
+					    if ( strAppName != null && strAppName.length() > 0 && strUrl != null && strUrl.length() > 0 )
+					    {
+					        int nPort = RhoConf.getInstance().getInt("push_service_port");
+					        byte btServiceType = RhoConf.getInstance().getString("push_service_type").equalsIgnoreCase("BPAS") ?
+							        PushApplicationDescriptor.SERVER_TYPE_BPAS : PushApplicationDescriptor.SERVER_TYPE_NONE;
+        					
+					        PushApplicationDescriptor pad = new PushApplicationDescriptor(
+							        strAppName, nPort, strUrl, btServiceType, 
+							        ApplicationDescriptor.currentApplicationDescriptor());
+        					
+					        PushApplicationStatus status = PushApplicationRegistry.getStatus(pad);
+        			
+					        LOG.INFO("registerPushService status : " + status.toString());
+        			
+					        if (status.getStatus() != PushApplicationStatus.STATUS_ACTIVE && status.getStatus() != PushApplicationStatus.STATUS_PENDING)
+					        {
+        						
+						        LOG.INFO("registerPushService registering push");
+        						
+						        PushApplicationRegistry.registerApplication(pad);
+					        }
+					    }
+					}catch(Exception exc)
 					{
-						
-						LOG.INFO("registerPushService registering push");
-						
-						PushApplicationRegistry.registerApplication(pad);
+	                    LOG.ERROR("registerPushService failed.", exc);					
+					}catch(Throwable t)
+					{
+					    LOG.ERROR("registerPushService crashed.", t);
 					}
 	            }
 	        });
