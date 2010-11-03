@@ -66,7 +66,7 @@
 	
 	splittedView = parent;
 
-    int count = [items count]/4;
+    int count = [items count]/5;
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
@@ -77,7 +77,7 @@
 	self.preferredSize = 0;
 	
     for (int i = 0; i < count; ++i) {
-        int index = i*4 - 1;
+        int index = i*5 - 1;
         NSString *label = [items objectAtIndex:++index];
         NSString *url = [items objectAtIndex:++index];
         NSString *icon = [items objectAtIndex:++index];
