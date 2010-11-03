@@ -34,9 +34,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -165,6 +167,10 @@ public class SimpleMainView implements MainView {
 		else if (action.equalsIgnoreCase("separator"))
 			return null;
 		
+		DisplayMetrics metrics = new DisplayMetrics();
+		WindowManager wm = (WindowManager)RhodesService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+		wm.getDefaultDisplay().getMetrics(metrics);
+		
 		Object iconObj = hash.get("icon");
 		if (iconObj != null) {
 			if (!(iconObj instanceof String))
@@ -174,6 +180,7 @@ public class SimpleMainView implements MainView {
 			Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 			if (bitmap == null)
 				throw new IllegalArgumentException("Can't find icon: " + iconPath);
+			bitmap.setDensity(metrics.DENSITY_MEDIUM);
 			icon = new BitmapDrawable(bitmap);
 		}
 		
