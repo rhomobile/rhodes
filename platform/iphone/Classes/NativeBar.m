@@ -157,6 +157,7 @@ void create_nativebar(int bar_type, rho_param *p)
         const char *action = NULL;
         const char *icon = NULL;
         const char *reload = NULL;
+        const char *colored_icon = NULL;
         
         for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
             const char *name = hash->v.hash->name[j];
@@ -174,6 +175,8 @@ void create_nativebar(int bar_type, rho_param *p)
                 icon = value->v.string;
             else if (strcasecmp(name, "reload") == 0)
                 reload = value->v.string;
+            else if (strcasecmp(name, "colored_icon") == 0)
+                colored_icon = value->v.string;
         }
         
         if (label == NULL && bar_type == TOOLBAR_TYPE)
@@ -188,6 +191,7 @@ void create_nativebar(int bar_type, rho_param *p)
         [items addObject:[NSString stringWithUTF8String:action]];
         [items addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
         [items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
+        [items addObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")]];
     }
     
     id runnable = [RhoNativeBarCreateTask class];
