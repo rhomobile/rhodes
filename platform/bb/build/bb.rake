@@ -911,7 +911,7 @@ namespace "run" do
         startsim
       end
       
-      task :spec => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
+      task :spec => ["run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"
         rm_rf jde + "/simulator/sdcard/Rho"
