@@ -169,6 +169,11 @@ CJSONEntry::CJSONEntry(struct json_object * obj) : m_rootObject(null)
     m_object = obj;
 }
 
+CJSONEntry::CJSONEntry(const CJSONEntry& oCopy) : m_rootObject(null)
+{
+    m_object = oCopy.m_object;
+}
+
 CJSONEntry::CJSONEntry(const char* szData) : m_rootObject(null)
 {
     m_rootObject = json_tokener_parse(const_cast<char*>(szData));

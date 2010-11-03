@@ -17,6 +17,10 @@ RHO_GLOBAL void create_nativebar(int bar_type, rho_param *p)
         RAWLOG_ERROR("Unexpected parameter type, should be Array or Hash");
         return;
     }
+    // check for iPad SplitTabBar type -> redirect to TabBar
+    if (bar_type == 3) {
+        bar_type = 1;
+    }
 
     jobject paramsObj = RhoValueConverter(env).createObject(p);
     env->CallStaticVoidMethod(clsNativeBar, midCreate, bar_type, paramsObj);

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
@@ -16,6 +17,7 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
+import com.rhomobile.rhodes.uri.ExternalHttpHandler;
 import com.rhomobile.rhodes.uri.MailUriHandler;
 import com.rhomobile.rhodes.uri.SmsUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
@@ -77,6 +79,15 @@ public class RhodesService {
 		return ctx;
 	}
 	
+	public static void platformLog(String _tag, String _message) {
+		StringBuilder s = new StringBuilder();
+		s.append("ms[");
+		s.append(System.currentTimeMillis());
+		s.append("] ");
+		s.append(_message);
+		android.util.Log.v(_tag, s.toString());
+	}
+	
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
@@ -103,7 +114,7 @@ public class RhodesService {
 		ctx = c;
 		uiThreadId = id;
 		uiHandler = handler;
-		RhoBluetoothManager.sharedInstance();
+		//RhoBluetoothManager.sharedInstance();
 	}
 	
 	private Handler uiHandler;
@@ -135,6 +146,7 @@ public class RhodesService {
 	private native void startRhodesApp();
 	
 	public native void doSyncAllSources(boolean v);
+	public native void doSyncSource(String source);
 	
 	public native String getOptionsUrl();
 	public native String getStartUrl();
@@ -257,9 +269,10 @@ public class RhodesService {
 		return false;
 	}
 	
-	private void showSplashScreen() {
-		splashScreen = new SplashScreen(ctx);
-		splashScreen.start(outerFrame);
+	public static SplashScreen showSplashScreen(Context ctx, ViewGroup myOuterFrame) {
+		SplashScreen splashScreen = new SplashScreen(ctx);
+		splashScreen.start(myOuterFrame);
+		return splashScreen;
 	}
 	
 	public void hideSplashScreen() {
@@ -274,6 +287,50 @@ public class RhodesService {
 		view.requestFocus();
 		}
 				}, false);
+	}
+	
+	public static WebView createLoadingWebView(Context ctx) {
+		WebView w = new WebView(ctx);
+		
+		//webSettings.setWebSettings(w);
+		
+		w.clearCache(true);
+
+		w.setWebViewClient(new WebViewClient() {
+			
+			private boolean splashHidden = false;
+			private boolean setupExecuted = false;
+			
+			@Override
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				super.onPageStarted(view, url, favicon);
+			}
+			
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				RhodesService rs = RhodesService.getInstance();
+				if (rs != null) {
+					if (!splashHidden && url.startsWith("http://")) {
+						rs.hideSplashScreen();
+						splashHidden = true;
+					}
+				}
+				//if (ENABLE_LOADING_INDICATION)
+				Rhodes.getInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				super.onPageFinished(view, url);
+				if (!setupExecuted) {
+					Rhodes.runPosponedSetup();
+					setupExecuted = true;
+				}
+				
+			}
+
+		});
+		
+		//w.setWebChromeClient(chromeClient);
+		
+		return w;
+	
 	}
 	
 	public WebView createWebView() {
@@ -311,7 +368,7 @@ public class RhodesService {
 					hideSplashScreen();
 					splashHidden = true;
 				}
-				if (ENABLE_LOADING_INDICATION)
+				//if (ENABLE_LOADING_INDICATION)
 					r.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
 			}
@@ -382,9 +439,14 @@ public class RhodesService {
 		return instance != null;
 	}
 	
-	public RhodesService(Activity c, ViewGroup rootWindow) {
+	public RhodesService(Activity c, ViewGroup rootWindow, SplashScreen splash_s) {
+	
 		ctx = c;
 		instance = this;
+		outerFrame = rootWindow;
+
+		//showSplashScreen();
+		splashScreen = splash_s;
 		
 		initClassLoader(ctx.getClassLoader());
 
@@ -424,11 +486,10 @@ public class RhodesService {
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 		
 		initWebStuff();
-		
-		outerFrame = rootWindow;
-		
+
 		Logger.I("Rhodes", "Loading...");
-		showSplashScreen();
+		//showSplashScreen();
+		splashScreen.rho_start();
 		
 		// Increase WebView rendering priority
 		WebView w = new WebView(ctx);
@@ -451,6 +512,7 @@ public class RhodesService {
 		isCameraAvailable = true;
 		
 		// Register custom uri handlers here
+		uriHandlers.addElement(new ExternalHttpHandler(ctx));
 		uriHandlers.addElement(new MailUriHandler(ctx));
 		uriHandlers.addElement(new TelUriHandler(ctx));
 		uriHandlers.addElement(new SmsUriHandler(ctx));
@@ -686,6 +748,11 @@ public class RhodesService {
 		else if (name.equalsIgnoreCase("device_name")) {
 			return Build.DEVICE;
 		}
+		else if (name.equalsIgnoreCase("is_emulator")) 
+		{
+		    String strDevice = Build.DEVICE;
+			return new Boolean(strDevice != null && strDevice.equalsIgnoreCase("generic"));
+		}
 		else if (name.equalsIgnoreCase("os_version")) {
 			return Build.VERSION.RELEASE;
 		}
@@ -705,7 +772,7 @@ public class RhodesService {
 
 	public native void setPushRegistrationId(String id);
 	
-	private native void callPushCallback(String data);
+	private native boolean callPushCallback(String data);
 	
 	public void handlePushMessage(Intent intent) {
 		Logger.D(TAG, "Receive PUSH message");
@@ -719,6 +786,10 @@ public class RhodesService {
 		StringBuilder builder = new StringBuilder();
 		
 		Set<String> keys = extras.keySet();
+		// Remove system related keys
+		keys.remove("collapse_key");
+		keys.remove("from");
+		
 		for (String key : keys) {
 			Logger.D(TAG, "PUSH item: " + key);
 			Object value = extras.get(key);
@@ -732,9 +803,49 @@ public class RhodesService {
 		
 		String data = builder.toString();
 		Logger.D(TAG, "Received PUSH message: " + data);
-		callPushCallback(data);
+		if (callPushCallback(data))
+			return;
 		
-		// TODO: handle alers/sounds/vibrate events
+		String alert = extras.getString("alert");
+		if (alert != null) {
+			Logger.D(TAG, "PUSH: Alert: " + alert);
+			Alert.showPopup(alert);
+		}
+		String sound = extras.getString("sound");
+		if (sound != null) {
+			Logger.D(TAG, "PUSH: Sound file name: " + sound);
+			Alert.playFile("/public/alerts/" + sound, null);
+		}
+		String vibrate = extras.getString("vibrate");
+		if (vibrate != null) {
+			Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
+			int duration;
+			try {
+				duration = Integer.parseInt(vibrate);
+			}
+			catch (NumberFormatException e) {
+				duration = 5;
+			}
+			Logger.D(TAG, "Vibrate " + duration + " seconds");
+			Alert.vibrate(duration);
+		}
+		
+		String syncSources = extras.getString("do_sync");
+		if (syncSources != null) {
+			Logger.D(TAG, "PUSH: Sync:");
+			boolean syncAll = false;
+			for (String source : syncSources.split(",")) {
+				Logger.D(TAG, "url = " + source);
+				if (source.equalsIgnoreCase("all"))
+					syncAll = true;
+				else {
+					doSyncSource(source.trim());
+				}
+			}
+			
+			if (syncAll)
+				doSyncAllSources(true);
+		}
 	}
 	
 }

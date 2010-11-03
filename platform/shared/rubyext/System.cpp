@@ -50,6 +50,12 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (strcasecmp("full_browser",szPropName) == 0) 
         return rho_ruby_create_boolean(1);
 
+	if (strcasecmp("rhodes_port",szPropName) == 0) 
+        return rho_ruby_create_integer(atoi(RHODESAPP().getFreeListeningPort()));
+
+	if (strcasecmp("is_emulator",szPropName) == 0) 
+        return rho_ruby_create_boolean(0);
+
     RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
 
     return rho_ruby_get_NIL();

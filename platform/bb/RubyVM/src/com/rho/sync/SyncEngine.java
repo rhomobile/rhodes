@@ -80,7 +80,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean m_bNoThreaded = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "";
-    boolean m_bIsSearch;
+    boolean m_bIsSearch, m_bIsSchemaChanged;
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -95,6 +95,9 @@ public class SyncEngine implements NetRequest.IRhoSession
     String getClientID(){ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
     boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
+    
+    void setSchemaChanged(boolean bChanged){ m_bIsSchemaChanged = bChanged; }
+    boolean isSchemaChanged(){ return m_bIsSchemaChanged; }
     
     DBAdapter getUserDB(){ return DBAdapter.getUserDB(); }
     DBAdapter getDB(String strPartition){ return DBAdapter.getDB(strPartition); }
@@ -136,6 +139,7 @@ public class SyncEngine implements NetRequest.IRhoSession
         m_bStopByUser = false;
         m_nErrCode = RhoAppAdapter.ERR_NONE;
         m_strError = "";
+        m_bIsSchemaChanged = false;
         
         loadAllSources();
 
@@ -416,6 +420,22 @@ public class SyncEngine implements NetRequest.IRhoSession
 	SyncSource findSourceByName(String strSrcName)
 	{
 		return findSource(new SourceID(strSrcName));		
+	}
+	
+	public void applyChangedValues(DBAdapter db)throws Exception
+	{
+	    IDBResult resSrc = db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" );
+	    for ( ; !resSrc.isEnd(); resSrc.next() )
+	    {
+	        int nSrcID = resSrc.getIntByIdx(0);
+	        IDBResult res = db.executeSQL("SELECT source_id,sync_type,name, partition from sources WHERE source_id=?", nSrcID);
+	        if ( res.isEnd() )
+	            continue;
+
+	        SyncSource src = new SyncSource( res.getIntByIdx(0), res.getStringByIdx(2), "none", db, this );
+
+	        src.applyChangedValues();
+	    }
 	}
 	
 	void loadAllSources()throws DBException
@@ -896,7 +916,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	public void logout()throws Exception
 	{
-	    m_bStopByUser = true;
 	    if(m_NetRequest!=null) 
 	        m_NetRequest.cancel();
 		

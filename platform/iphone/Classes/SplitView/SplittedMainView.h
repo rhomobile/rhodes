@@ -1,16 +1,41 @@
 //
-//  RhoMainView.h
+//  TabbedMainView.h
 //  rhorunner
 //
-//  Created by Dmitry Moskalchuk on 07.03.10.
-//  Copyright 2010 Rhomobile Inc. All rights reserved.
+//  Created by Dmitry Moskalchuk on 26.03.10.
+//  Copyright 2010 Rhomobile. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import "RhoMainView.h"
+#import "RhoViewController.h"
 
-@protocol RhoMainView
 
-- (UIView*)view;
+@interface RhoUISplitView : UIView {
+	int leftWidth;
+}
+@property (nonatomic,assign) int leftWidth;
+
+- (void)layoutSubviews;
+
+@end
+
+
+@interface SplittedMainView : RhoViewController<RhoMainView> {
+	NSArray* viewControllers;
+
+}
+
+@property (nonatomic,retain) NSArray *viewControllers;
+
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray*)items;
+
+
+
+
+
+
+//- (UIView*)view;
 
 - (UIWebView*)detachWebView;
 
@@ -33,5 +58,8 @@
 - (void)removeNavBar;
 
 - (UIWebView*)getWebView:(int)tab_index;
+
+
+
 
 @end

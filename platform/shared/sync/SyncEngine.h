@@ -47,7 +47,7 @@ private:
 	boolean m_bNoThreaded;
     int m_nErrCode;
     String m_strError;
-    boolean m_bIsSearch;
+    boolean m_bIsSearch, m_bIsSchemaChanged;
 
 public:
     CSyncEngine();
@@ -80,6 +80,9 @@ public:
     String getClientID()const{ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
     boolean isSessionExist(){ return m_strSession.length() > 0; }
+
+    void setSchemaChanged(boolean bChanged){ m_bIsSchemaChanged = bChanged; }
+    boolean isSchemaChanged(){ return m_bIsSchemaChanged; }
 //IRhoSession
     virtual const String& getSession(){ return m_strSession; }
     virtual const String& getContentType(){ return getProtocol().getContentType();}
@@ -106,6 +109,8 @@ public:
 
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
     void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
+
+    void applyChangedValues(db::CDBAdapter& db);
 private:
  
     CSyncSource* findSource(const CSourceID& oSrcID);

@@ -271,6 +271,7 @@ private:
 
     boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
     void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);
+    void copyChangedValues(CDBAdapter& db);
 };
 
 }

@@ -20,7 +20,9 @@
  */
 package com.rhomobile.rhodes.datetime;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
@@ -82,7 +84,29 @@ public class DateTimePickerScreen extends RhoActivity {
 		Bundle extras = this.getIntent().getExtras();
 		
 		_callback = extras.getString(INTENT_EXTRA_PREFIX + "callback");
-		_init = new Date(extras.getLong(INTENT_EXTRA_PREFIX + "init")*1000);
+		
+		long milliseconds = extras.getLong(INTENT_EXTRA_PREFIX + "init")*((long)1000);
+		
+		_init = new Date(milliseconds);
+
+		Calendar c = new GregorianCalendar();
+		c.setTimeInMillis(milliseconds);
+
+		int year = c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH);
+		int day = c.get(Calendar.DAY_OF_MONTH);
+		int hours = c.get(Calendar.HOUR_OF_DAY);
+		int minutes = c.get(Calendar.MINUTE);
+		int seconds = c.get(Calendar.SECOND);
+		
+		_init.setYear(year);
+		_init.setMonth(month);
+		_init.setDate(day);
+		_init.setHours(hours);
+		_init.setMinutes(minutes);
+		
+		
+		
 		_fmt = extras.getInt(INTENT_EXTRA_PREFIX + "fmt");
 		_opaque = extras.getByteArray(INTENT_EXTRA_PREFIX + "opaque");
 		
@@ -96,9 +120,9 @@ public class DateTimePickerScreen extends RhoActivity {
 		_okButton.setOnClickListener(mOkListener);
 		_cancelButton.setOnClickListener(mCancelListener);
 		
-		_datePicker.init(_init.getYear() + 1900, _init.getMonth(), _init.getDay(), null);
-		_timePicker.setCurrentHour(_init.getHours());
-		_timePicker.setCurrentMinute(_init.getMinutes());
+		_datePicker.init(year, month, day, null);
+		_timePicker.setCurrentHour(hours);
+		_timePicker.setCurrentMinute(minutes);
 		
 		switch (_fmt) {
 		case FORMAT_DATE:
@@ -121,7 +145,7 @@ public class DateTimePickerScreen extends RhoActivity {
 	
 	private void sendResult(String callback, Date result, byte[] opaque) {
 		this.setFieldsEnabled(false);
-		long res = result == null ? 0 : result.getTime()/1000;
+		long res = result == null ? 0 : result.getTime()/((long)1000);
 		Logger.D(TAG, "Return result: " + res);
 		DateTimePicker.callback(callback, res, opaque, result == null);
 		finish();

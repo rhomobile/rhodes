@@ -110,6 +110,7 @@ public:
     void loadUrl(String url);
 
     boolean isLocalServerStarted();
+    const char* getFreeListeningPort();
 
 protected:
     virtual void run();
@@ -117,7 +118,6 @@ protected:
     void initHttpServer();
     void initAppUrls();
 
-    const char* getFreeListeningPort();
     net::INetRequest& getNet(){ return *m_NetRequest; }
 };
 
