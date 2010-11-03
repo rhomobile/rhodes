@@ -1,6 +1,7 @@
 package rhomobile;
 
 import j2me.util.LinkedList;
+import j2me.util.StringParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,8 @@ import java.util.Vector;
 
 import javax.microedition.io.HttpConnection;
 
+import net.rim.blackberry.api.browser.Browser;
+import net.rim.blackberry.api.browser.BrowserSession;
 import net.rim.device.api.browser.field.RenderingOptions;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
@@ -1348,6 +1351,27 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         	{
         		RhoRuby.rho_ruby_activateApp();
         		return;
+        	}
+        	
+        	URI uri = new URI(_url);
+        	String query = uri.getQueryString();
+        	if (query != null) {
+        		StringParser tok = new StringParser(query, "&");
+        		while (tok.hasMoreElements()) {
+        			String pair = (String)tok.nextElement();
+        			StringParser nv = new StringParser(pair, "=");
+        			String name = (String)nv.nextElement();
+        			String value = (String)nv.nextElement();
+        			if (name == null || value == null)
+        				continue;
+        			
+        			if (name.equals("rho_open_target") && value.equals("_blank")) {
+        				BrowserSession session = Browser.getDefaultSession();
+        				session.showBrowser();
+        				session.displayPage(_url);
+        				return;
+        			}
+        		}
         	}
         	
     		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData, null);

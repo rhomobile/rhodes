@@ -836,6 +836,21 @@ import com.rho.Tokenizer;
 	return schemespec.toString();	    
   }
   
+  public String getLastNamePart()
+  {
+	int nSlash = m_path.lastIndexOf('/');
+	if ( nSlash < 0 )
+	    nSlash = m_path.lastIndexOf('\\');
+	
+	String strRes;
+	if ( nSlash >= 0 )
+	    strRes = m_path.substring(nSlash+1);
+	else
+		strRes = m_path;
+	
+	return strRes;
+  }
+  
   public String getUserinfo() {
     return m_userinfo;
   }
@@ -1199,6 +1214,71 @@ import com.rho.Tokenizer;
 	  return sb.toString();
   }
 
+  static public String urlDecode(String fullPath )
+  {
+	  StringBuffer sb = new StringBuffer();
+	  int len = fullPath.length();
+	  
+	  for  (int index=0; index < len ; index++)
+	  {
+    	char c1 = fullPath.charAt(index);
+		if (c1 != '%') 
+		{
+			sb.append(c1);
+			continue;
+		}
+		index++;
+		c1 = fullPath.charAt(index);
+		
+		if (c1 >= '0' && c1 <= '9')
+			c1 = (char)(c1 - '0');
+		else if (c1 >= 'a' && c1 <= 'f')
+			c1 = (char)(c1 - 'a' + 10);
+		else if (c1 >= 'A' && c1 <= 'F')
+			c1 = (char)(c1 - 'A' + 10);
+		else
+			break;
+		
+		index++;
+		char c2 = fullPath.charAt(index);
+		if (c2 >= '0' && c2 <= '9')
+			c2 = (char)(c2 - '0');
+		else if (c2 >= 'a' && c2 <= 'f')
+			c2 = (char)(c2 - 'a' + 10);
+		else if (c2 >= 'A' && c2 <= 'F')
+			c2 = (char)(c2 - 'A' + 10);
+		else
+			break;
+			
+		char c = (char)((c1 << 4) | c2);
+		sb.append(c);
+	}
+	  
+	return sb.toString();
+  }
+  
+  static public String urlEscapeSymbols(String fullPath)
+  {
+	  StringBuffer sb = new StringBuffer();
+	  int len = fullPath.length();
+	  
+	  char c;
+      for  (int index=0; index < len ; index++)
+      {
+          c = fullPath.charAt(index);
+          if ( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+               c == '_' || c == '.') 
+          {
+              sb.append(c);
+          }else 
+          {
+        	  sb.append('_');;
+          }
+      }
+
+      return sb.toString();
+  }
+  
   static public String ampEncode(String fullPath)
   {
 	  StringBuffer sb = new StringBuffer();

@@ -27,7 +27,6 @@
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD486F59124FB66600F8A93F /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = BD486F58124FB66600F8A93F /* Event.m */; };
-		BD486FE212505FE000F8A93F /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD486FE112505FE000F8A93F /* EventKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		BD5B744B113BE2DB00C6070A /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B7449113BE2DB00C6070A /* SplashViewController.m */; };
 		BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD6A6229123E46BB0093E03C /* RhoViewController.m */; };
 		BD97AC211160EE8F006960F9 /* RhoAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = BD97AC201160EE8F006960F9 /* RhoAlert.m */; };
@@ -72,6 +71,10 @@
 		FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */; };
 		FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9711FF2EF70096AC39 /* SignatureViewController.m */; };
 		FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4981B411FFC53C00488CB2 /* SignatureView.m */; };
+		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
+		FACA4C791270AC0900777CFF /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C731270AC0900777CFF /* RightViewController.m */; };
+		FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C751270AC0900777CFF /* SplittedMainView.m */; };
+		FACA4C7B1270AC0900777CFF /* SplitViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C771270AC0900777CFF /* SplitViewDelegate.m */; };
 		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
 		FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */; };
@@ -183,7 +186,6 @@
 		BD38E754115D1AAC001CE05C /* TabbedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabbedMainView.m; sourceTree = "<group>"; };
 		BD486F57124FB66600F8A93F /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = Event/Event.h; sourceTree = "<group>"; };
 		BD486F58124FB66600F8A93F /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Event.m; path = Event/Event.m; sourceTree = "<group>"; };
-		BD486FE112505FE000F8A93F /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		BD5B7448113BE2DB00C6070A /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		BD5B7449113BE2DB00C6070A /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		BD6A6228123E46BB0093E03C /* RhoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoViewController.h; sourceTree = "<group>"; };
@@ -251,6 +253,14 @@
 		FA291E9711FF2EF70096AC39 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature/SignatureViewController.m; sourceTree = "<group>"; };
 		FA4981B311FFC53C00488CB2 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature/SignatureView.h; sourceTree = "<group>"; };
 		FA4981B411FFC53C00488CB2 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature/SignatureView.m; sourceTree = "<group>"; };
+		FACA4C701270AC0900777CFF /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
+		FACA4C711270AC0900777CFF /* LeftViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeftViewController.m; path = SplitView/LeftViewController.m; sourceTree = "<group>"; };
+		FACA4C721270AC0900777CFF /* RightViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RightViewController.h; path = SplitView/RightViewController.h; sourceTree = "<group>"; };
+		FACA4C731270AC0900777CFF /* RightViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RightViewController.m; path = SplitView/RightViewController.m; sourceTree = "<group>"; };
+		FACA4C741270AC0900777CFF /* SplittedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplittedMainView.h; path = SplitView/SplittedMainView.h; sourceTree = "<group>"; };
+		FACA4C751270AC0900777CFF /* SplittedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplittedMainView.m; path = SplitView/SplittedMainView.m; sourceTree = "<group>"; };
+		FACA4C761270AC0900777CFF /* SplitViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplitViewDelegate.h; path = SplitView/SplitViewDelegate.h; sourceTree = "<group>"; };
+		FACA4C771270AC0900777CFF /* SplitViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplitViewDelegate.m; path = SplitView/SplitViewDelegate.m; sourceTree = "<group>"; };
 		FACC20C8123A60F40088A447 /* Bluetooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bluetooth.h; path = Bluetooth/Bluetooth.h; sourceTree = "<group>"; };
 		FACC20C9123A60F40088A447 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
@@ -282,7 +292,6 @@
 				46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */,
 				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
 				FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */,
-				BD486FE212505FE000F8A93F /* EventKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +362,6 @@
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
 				FACC20FF123A759A0088A447 /* GameKit.framework */,
-				BD486FE112505FE000F8A93F /* EventKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -512,6 +520,7 @@
 		BDB3735D11441FE0006EA6DA /* MainView */ = {
 			isa = PBXGroup;
 			children = (
+				FACA4C6E1270ABCD00777CFF /* SplitView */,
 				BDB37363114420DE006EA6DA /* RhoMainView.h */,
 				BDB373641144220F006EA6DA /* SimpleMainView.h */,
 				BDB373651144220F006EA6DA /* SimpleMainView.m */,
@@ -632,6 +641,21 @@
 			name = Signature;
 			sourceTree = "<group>";
 		};
+		FACA4C6E1270ABCD00777CFF /* SplitView */ = {
+			isa = PBXGroup;
+			children = (
+				FACA4C701270AC0900777CFF /* LeftViewController.h */,
+				FACA4C711270AC0900777CFF /* LeftViewController.m */,
+				FACA4C721270AC0900777CFF /* RightViewController.h */,
+				FACA4C731270AC0900777CFF /* RightViewController.m */,
+				FACA4C741270AC0900777CFF /* SplittedMainView.h */,
+				FACA4C751270AC0900777CFF /* SplittedMainView.m */,
+				FACA4C761270AC0900777CFF /* SplitViewDelegate.h */,
+				FACA4C771270AC0900777CFF /* SplitViewDelegate.m */,
+			);
+			name = SplitView;
+			sourceTree = "<group>";
+		};
 		FACC20C4123A60800088A447 /* Bluetooth */ = {
 			isa = PBXGroup;
 			children = (
@@ -650,6 +674,7 @@
 			buildPhases = (
 				5C0442920EFBE79D0014E5C6 /* Create RhoBundle */,
 				BD4D7DCE10AE2DA4003DCE59 /* Copy RhoBundle */,
+				FA4207711277930A00BDE415 /* Copy Loading images */,
 				BDFBD98F10B1B98100BAAFAB /* Resources */,
 				5C61F2BD1022321A0013E321 /* Move alerts to root of app */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -828,6 +853,20 @@
 			shellPath = /bin/sh;
 			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../../bin/RhoBundle\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\nfor i in `ls -1 ${RHO_SOURCE_DIR}`\ndo\n  echo \"rm -Rf $RHO_TARGET_DIR/$i\"\n  rm -Rf ${RHO_TARGET_DIR}/$i\ndone\necho \"cp -Rf $RHO_SOURCE_DIR/* $RHO_TARGET_DIR\"\ncp -Rf ${RHO_SOURCE_DIR}/* ${RHO_TARGET_DIR}";
 		};
+		FA4207711277930A00BDE415 /* Copy Loading images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Loading images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "RHO_SOURCE_DIR=${TARGET_BUILD_DIR}/../..\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\n\nif [ -e ${RHO_SOURCE_DIR}/Default.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Portrait.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Landscape.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\nfi";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -873,6 +912,10 @@
 				BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */,
 				FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */,
 				BD486F59124FB66600F8A93F /* Event.m in Sources */,
+				FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */,
+				FACA4C791270AC0900777CFF /* RightViewController.m in Sources */,
+				FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */,
+				FACA4C7B1270AC0900777CFF /* SplitViewDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -915,7 +958,6 @@
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
-				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -930,11 +972,10 @@
 				);
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphoneos4.1;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -963,23 +1004,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreGraphics,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
 				PRODUCT_NAME = rhorunner;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
@@ -991,72 +1019,23 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../shared;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
-				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
@@ -1086,47 +1065,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "$(EXTENSIONS_LDFLAGS)";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.0][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.1][arch=*]" = (
-					"-framework",
-					MapKit,
-					"-framework",
-					CFNetwork,
-					"$(EXTENSIONS_LDFLAGS)",
-				);
 				PRODUCT_NAME = rhorunner;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
 			};
@@ -1139,6 +1079,7 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1147,19 +1088,17 @@
 				IBC_FLATTEN_NIBS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1175,28 +1114,23 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../shared;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"-framework",
-					CFNetwork,
-					"-lrhorubylib",
-					"-lrhosynclib",
-					"-ltcmalloc",
-					"-lrholib",
-					"-lrhoextlib",
+					"$(EXTENSIONS_LDFLAGS)",
+					"-weak_framework",
+					EventKit,
 				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;

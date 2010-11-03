@@ -57,17 +57,29 @@
 @synthesize tabbar, tabbarData, tabindex;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
+	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
     
+	
     tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
     tabbar.delegate = [Rhodes sharedInstance];
     tabbar.view.frame = frame;
     tabbar.selectedIndex = 0;
+    //tabbar.tabBar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    //tabbar.tabBar.autoresizesSubviews = YES;
+	
     
-    CGRect childFrame = frame;
+    CGRect childFrame = [[v view] bounds];
+	childFrame.origin.x = 0;
+	childFrame.origin.y = 0;
     CGRect tbFrame = tabbar.tabBar.frame;
-    childFrame.size.height -= tbFrame.size.height;
-    
+	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	//if ((orientation == UIInterfaceOrientationLandscapeLeft)) {
+		//childFrame.size.width -= tbFrame.size.height;
+    //}
+	//else {
+		childFrame.size.height -= tbFrame.size.height;
+	//}
     int count = [items count]/4;
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
@@ -105,6 +117,8 @@
     tabbar.viewControllers = views;
     tabbar.customizableViewControllers = NO;
     tabbar.view.hidden = NO;
+    tabbar.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    tabbar.view.autoresizesSubviews = YES;
     
     self.tabbarData = tabs;
     [tabs release];
@@ -189,6 +203,7 @@
 - (void)switchTab:(int)index {
     tabindex = index;
     tabbar.selectedIndex = tabindex;
+	[self onSwitchTab];
 }
 
 - (void)onSwitchTab {
@@ -199,11 +214,20 @@
         rho_rhodesapp_load_url(s);
         td.loaded = YES;
     }
+	[[[self subView:tabindex] view] setNeedsDisplay];
 }
 
 - (int)activeTab {
     return tabindex;
 }
+
+- (UIWebView*)getWebView:(int)tab_index {
+	if (tab_index == -1) {
+		tab_index = [self activeTab];
+	}
+	return [[self subView:tab_index] getWebView:-1];
+}
+
 
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
     [[self subView:[self activeTab]] addNavBar:title left:left right:right];

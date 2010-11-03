@@ -17,6 +17,7 @@ class CJSONEntry
 public:
     CJSONEntry(struct json_object * obj);
     CJSONEntry(const char* szData);
+    CJSONEntry(const CJSONEntry& oCopy);
     CJSONEntry() : m_rootObject(null){}
     ~CJSONEntry();
 

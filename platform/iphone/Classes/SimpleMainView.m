@@ -63,6 +63,13 @@ int rho_sys_get_screen_height();
 @synthesize webView, toolbar, navbar, nativeViewType, nativeViewView;
 
 
+static BOOL makeHiddenUntilLoadContent = YES;
+
+
++ (void) disableHiddenOnStart {
+	makeHiddenUntilLoadContent = NO;
+}
+
 -(CGRect)getContentRect {
 	if (nativeViewView != nil) {
 		return nativeViewView.frame;
@@ -252,9 +259,9 @@ int rho_sys_get_screen_height();
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
     w.delegate = self;
-    w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
-    
+	
     assert([w retainCount] == 1);
     return w;
 }
@@ -272,7 +279,7 @@ int rho_sys_get_screen_height();
     self.webView = nil;
     webView = w;
     assert(!webView || [webView retainCount] == 1);
-    if (!webView)
+	if (!webView)
         webView = [self newWebView:frame];
     assert(webView && [webView retainCount] == 1);
     
@@ -300,7 +307,15 @@ int rho_sys_get_screen_height();
 - (void)loadView {
     UIView* root = [[UIView alloc] init];
     root.frame = rootFrame;
+	if (makeHiddenUntilLoadContent) {
+		root.hidden = YES;
+	}
+    root.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    root.autoresizesSubviews = YES;
+	
+	
     self.view = root;
+	
     [root release];
     assert([root retainCount] == 1);
 }
@@ -408,6 +423,7 @@ int rho_sys_get_screen_height();
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items {
     CGRect frame = [[v view] frame];
+	frame.origin.x = 0;
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
     UIWebView *w = [v detachWebView];
     id result = [self init:p webView:w frame:frame toolbar:items];
@@ -605,6 +621,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
+	[SimpleMainView disableHiddenOnStart];
     NSString *encodedUrl = [self encodeUrl:url];
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
 	if (cleared_url == nil) {
@@ -619,6 +636,7 @@ int rho_sys_get_screen_height();
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
+	[SimpleMainView disableHiddenOnStart];
     NSString *encodedUrl = [self encodeUrl:url];
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
 	if (cleared_url == nil) {
@@ -644,6 +662,12 @@ int rho_sys_get_screen_height();
 }
 
 - (void)executeJs:(NSString*)js tab:(int)index {
+	[SimpleMainView disableHiddenOnStart];
+	if (self.view.hidden) {
+		[[Rhodes sharedInstance] hideSplash];
+		self.view.hidden = NO;
+		[self.view.superview bringSubviewToFront:self.view];
+    }
     RAWLOG_INFO1("Executing JS: %s", [js UTF8String]);
     [webView stringByEvaluatingJavaScriptFromString:js];
 }
@@ -658,6 +682,10 @@ int rho_sys_get_screen_height();
 
 - (int)activeTab {
     return 0;
+}
+
+- (UIWebView*)getWebView:(int)tab_index {
+	return webView;
 }
 
 
@@ -730,8 +758,36 @@ int rho_sys_get_screen_height();
     NSURL *url = [request URL];
     if (!url)
         return NO;
-    if (![url.scheme isEqualToString:@"http"] && ![url.scheme isEqualToString:@"https"]) {
+    
+    BOOL external = NO;
+    
+    NSString *scheme = url.scheme;
+    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])
+        external = YES;
+    else {
+        NSString *ps = [url query];
+        NSArray *parameters = [ps componentsSeparatedByString:@"&"];
+        for (int i = 0, lim = [parameters count]; i < lim; ++i) {
+            NSString *param = [parameters objectAtIndex:i];
+            NSArray *nv = [param componentsSeparatedByString:@"="];
+            int size = [nv count];
+            if (size == 0 || size > 2)
+                continue;
+            NSString *name = [nv objectAtIndex:0];
+            NSString *value = nil;
+            if (size == 2)
+                value = [nv objectAtIndex:1];
+            
+            if ([name isEqualToString:@"rho_open_target"] && [value isEqualToString:@"_blank"]) {
+                external = YES;
+                break;
+            }
+        }
+    }
+    
+    if (external) {
         // This is not http url so try to open external application for it
+        RAWLOG_INFO1("Open url in external application: %s", [[url absoluteString] UTF8String]);
         [[UIApplication sharedApplication] openURL:url];
         return NO;
     }
@@ -759,7 +815,14 @@ int rho_sys_get_screen_height();
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
 	[NSURLCache setSharedURLCache:sharedCache];
 	[sharedCache release];
-    
+	
+	if (self.view.hidden) {
+		[[Rhodes sharedInstance] hideSplash];
+		self.view.hidden = NO;
+		[self.view.superview bringSubviewToFront:self.view];
+    }
+	
+	
     // TODO
     /*
      [self inactive];
@@ -785,6 +848,11 @@ int rho_sys_get_screen_height();
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     // TODO
+	if (self.view.hidden) {
+		[[Rhodes sharedInstance] hideSplash];
+		self.view.hidden = NO;
+		[self.view.superview bringSubviewToFront:self.view];
+    }
 }
 
 @end

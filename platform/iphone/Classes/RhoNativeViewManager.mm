@@ -12,7 +12,7 @@
 
 #import "RhoNativeViewManagerOC.h"
 #import "RhoNativeViewManager.h" 
-
+#import "Rhodes.h"
 
 
 	
@@ -196,11 +196,12 @@ static RhoNativeViewManagerOC *instance = NULL;
 }
 
 +(UIWebView*)getWebViewObject:(int)tab_index {
-	return nil;
+	return [[[Rhodes sharedInstance] mainView] getWebView:tab_index];
 }
 
 
 @end
+
 
 
 
@@ -222,3 +223,4 @@ void RhoNativeViewManager::unregisterViewType(const char* viewType) {
 void* RhoNativeViewManager::getWebViewObject(int tab_index) {
 	return [RhoNativeViewManagerOC getWebViewObject:tab_index];
 }
+

@@ -44,6 +44,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     m_bStopByUser = false;
     m_nErrCode = RhoAppAdapter.ERR_NONE;
     m_strError = "";
+    m_bIsSchemaChanged = false;
 
     loadAllSources();
 
@@ -300,6 +301,22 @@ CSyncSource* CSyncEngine::findSource(const CSourceID& oSrcID)
 CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
 {
     return findSource(CSourceID(strSrcName));
+}
+
+void CSyncEngine::applyChangedValues(db::CDBAdapter& db)
+{
+    DBResult( resSrc , db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" ) );
+    for ( ; !resSrc.isEnd(); resSrc.next() )
+    {
+        int nSrcID = resSrc.getIntByIdx(0);
+        DBResult( res, db.executeSQL("SELECT source_id,sync_type,name, partition from sources WHERE source_id=?", nSrcID) );
+        if ( res.isEnd() )
+            continue;
+
+        CSyncSource src( res.getIntByIdx(0), res.getStringByIdx(2), "none", db, *this );
+
+        src.applyChangedValues();
+    }
 }
 
 void CSyncEngine::loadAllSources()
@@ -642,8 +659,10 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)
 {
     CFilePath oUrlPath(strDataUrl);
-    String strNewName = oUrlPath.getBaseName();
+	String strNewName = oUrlPath.getBaseName();
+    
     String strOldName = RHOCONF().getString("bulksync_filename");
+
     if ( strOldName.length() > 0 && strNewName.compare(strOldName) != 0 )
     {
         CFilePath oFilePath(strDbPath);
@@ -784,7 +803,6 @@ String CSyncEngine::loadSession()
 
 void CSyncEngine::logout()
 {
-    m_bStopByUser = true;
     if(m_NetRequest) 
         m_NetRequest->cancel();
 

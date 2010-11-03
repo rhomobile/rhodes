@@ -420,6 +420,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncAllSources
     rho_sync_doSyncAllSources(show_status_popup);
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
+  (JNIEnv *env, jobject, jstring sourceObj)
+{
+    std::string source = rho_cast<std::string>(env, sourceObj);
+    rho_sync_doSyncSourceByName(source.c_str());
+}
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getOptionsUrl
   (JNIEnv *env, jobject)
 {
@@ -502,11 +509,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrat
     rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, id.c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
   (JNIEnv *env, jobject, jstring jData)
 {
     std::string data = rho_cast<std::string>(env, jData);
-    rho_rhodesapp_callPushCallback(data.c_str());
+    return (jboolean)rho_rhodesapp_callPushCallback(data.c_str());
 }
 
 RHO_GLOBAL char *rho_timezone()
