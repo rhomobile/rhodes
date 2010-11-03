@@ -27,7 +27,6 @@ import com.rhomobile.rhodes.Logger;
 import android.content.Context;
 import android.content.Intent;
 import android.net.MailTo;
-import android.net.Uri;
 
 public class MailUriHandler implements UriHandler {
 	

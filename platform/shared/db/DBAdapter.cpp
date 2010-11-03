@@ -1,5 +1,6 @@
 #include "DBAdapter.h"
 #include "sync/SyncThread.h"
+#include "sync/SyncEngine.h"
 
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
@@ -141,12 +142,42 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
     getAttrMgr().load(*this);
+
+    //copy client_info table
+    if ( !bTemp && !bExist && CRhoFile::isFileExist((strDbPath+"_oldver").c_str()) )
+    {
+        LOG(INFO) + "Copy client_info table from old database";
+        CDBAdapter db(m_strDbPartition.c_str(), true);
+        db.open( strDbPath+"_oldver", m_strDbVer, true );
+        copyTable( "client_info", db, *this );
+        {
+            DBResult( res, executeSQL( "SELECT client_id FROM client_info" ));
+            if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
+            {
+                LOG(INFO) + "Set reset=1 in client_info";
+                executeSQL( "UPDATE client_info SET reset=1" );
+            }
+        }
+        db.close();
+
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver-journal").c_str());
+    }
+
 }
 
 boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer )
 {
     LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
     if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (strRhoDBVer.find("1.5")==0||strRhoDBVer.find("1.4")==0) )
+    {
+        LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
+        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+        return true;
+    }
+
+    if ( (dbVer.m_strRhoVer.find("2.0") == 0||dbVer.m_strRhoVer.find("2.1") == 0||dbVer.m_strRhoVer.find("2.2") == 0)&& 
+         (strRhoDBVer.find("2.0")==0||strRhoDBVer.find("2.1")==0||strRhoDBVer.find("2.2")==0) )
     {
         LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
         writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
@@ -189,7 +220,6 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
         return true;
     }
 
-
     return false;
 }
 
@@ -220,8 +250,11 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 	{
         LOG(INFO) + "Reset database because version is changed.";
 
-        CRhoFile::deleteFile(m_strDbPath.c_str());
-        CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
+        CRhoFile::deleteFile( (m_strDbPath+"_oldver-journal").c_str());
+
+        CRhoFile::renameFile( m_strDbPath.c_str(), (m_strDbPath+"_oldver").c_str());
+        CRhoFile::renameFile((m_strDbPath+"-journal").c_str(), (m_strDbPath+"_oldver-journal").c_str());
 
         CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
@@ -412,6 +445,41 @@ void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbT
     }
 }
 
+void CDBAdapter::copyChangedValues(CDBAdapter& db)
+{
+    copyTable("changed_values", *this, db );
+    {
+        Vector<int> arOldSrcs;
+        {
+            DBResult( resSrc , db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" ) );
+            for ( ; !resSrc.isEnd(); resSrc.next() )
+                arOldSrcs.addElement( resSrc.getIntByIdx(0) );
+        }
+        for( int i = 0; i < arOldSrcs.size(); i++)
+        {
+            int nOldSrcID = arOldSrcs.elementAt(i);
+
+            DBResult( res, executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID) );
+            if ( !res.isEnd() )
+            {
+                String strSrcName = res.getStringByIdx(0);
+
+                DBResult( res2, db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName) );
+                if ( !res2.isEnd() )
+                {
+                    if ( nOldSrcID != res2.getIntByIdx(0) )
+                        db.executeSQL("UPDATE changed_values SET source_id=? WHERE source_id=?", res2.getIntByIdx(0), nOldSrcID);
+
+                    continue;
+                }
+            }
+
+            //source not exist in new partition, remove this changes
+            db.executeSQL("DELETE FROM changed_values WHERE source_id=?", nOldSrcID);
+        }
+    }
+}
+
 void CDBAdapter::setBulkSyncDB(String fDataName)
 {
     CDBAdapter db(m_strDbPartition.c_str(), true);
@@ -421,22 +489,32 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     db.startTransaction();
 
     copyTable("client_info", *this, db );
+    copyChangedValues(db);
 
     //update User partition
     if ( m_strDbPartition.compare(USER_PARTITION_NAME())==0 )
     {
         //copy all NOT user sources from current db to bulk db
+        startTransaction();
         executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
         copyTable("sources", *this, db );
+        rollback();
     }else
     {
         //remove all m_strDbPartition sources from user db
         //copy all sources from bulk db to user db
         CDBAdapter& dbUser  = getDB(USER_PARTITION_NAME());
+        dbUser.startTransaction();
         dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
 
         copyTable("sources", db, dbUser );
+
+        dbUser.endTransaction();
     }
+
+    getDBPartitions().put(m_strDbPartition.c_str(), &db);
+    sync::CSyncThread::getSyncEngine().applyChangedValues(db);
+    getDBPartitions().put(m_strDbPartition.c_str(), this);
 
     db.endTransaction();
     db.close();

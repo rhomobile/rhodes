@@ -216,7 +216,7 @@ class RhomDbAdapter
             quests << ' ' << op << ' '
         end
     
-        quests << "#{key}=?"
+        quests << "\"#{key}\"=?"
         vals << val
     end
     
@@ -327,7 +327,7 @@ class RhomDbAdapter
             quests << ','
         end
     
-        quests << "#{key}=?"
+        quests << "\"#{key}\"=?"
         vals << val
     end
     

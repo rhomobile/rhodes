@@ -19,4 +19,6 @@ public interface IDBStorage {
 	public abstract void setDbCallback(IDBCallback callback);
 	
 	public abstract String[] getAllTableNames()throws DBException;
+	
+	public boolean isDbFileExists(String strPath);
 }

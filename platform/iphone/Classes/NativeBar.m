@@ -10,6 +10,7 @@
 #import "Rhodes.h"
 #import "SimpleMainView.h"
 #import "TabbedMainView.h"
+#import "SplittedMainView.h"
 
 //#include "common/rhoparams.h"
 #include "logging/RhoLog.h"
@@ -63,11 +64,32 @@ static int started = 0;
 			}
 			started = 1;
 			break;
-		case TABBAR_TYPE:
+		case TABBAR_TYPE: {
 			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
 			started = 1;
 			[r setMainView:view];
 			[view release];
+		}
+			break;
+		case VTABBAR_TYPE: {
+			
+			BOOL is_iPad = NO;
+			{
+				NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
+				if ([model hasPrefix:@"iPad"]) {
+					is_iPad = YES;
+				}
+			}
+			if (is_iPad) {
+				view = [[SplittedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+			}
+			else {
+				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+			}
+			started = 1;
+			[r setMainView:view];
+			[view release];
+			}
 			break;
 		default:
 			RAWLOG_ERROR1("Unknown bar type passed: %d", type);
@@ -123,6 +145,7 @@ void create_nativebar(int bar_type, rho_param *p)
     
     int size = params->v.array->size;
     NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
+
     for (int i = 0; i < size; ++i) {
         rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
@@ -169,7 +192,7 @@ void create_nativebar(int bar_type, rho_param *p)
     
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
-    [Rhodes performOnUiThread:runnable arg:arg1 arg:items wait:YES];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:items wait:NO];
 }
 
 void remove_nativebar() {
@@ -178,7 +201,7 @@ void remove_nativebar() {
     int bar_type = NOBAR_TYPE;
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
-    [Rhodes performOnUiThread:runnable arg:arg1 arg:nil wait:YES];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:nil wait:NO];
 }
 
 void nativebar_switch_tab(int index) {
@@ -186,7 +209,7 @@ void nativebar_switch_tab(int index) {
         return;
     id runnable = [RhoNativeBarSwitchTabTask class];
     id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
-    [Rhodes performOnUiThread:runnable arg:arg wait:YES];
+    [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
 
 VALUE nativebar_started() {

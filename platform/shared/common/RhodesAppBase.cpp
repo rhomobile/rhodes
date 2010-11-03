@@ -56,7 +56,8 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
         strncmp("javascript:", strUrl.c_str(), 11 ) == 0 ||
         strncmp("mailto:", strUrl.c_str(), 7) == 0 ||
         strncmp("tel:", strUrl.c_str(), 4) == 0 ||
-        strncmp("wtai:", strUrl.c_str(), 5) == 0
+        strncmp("wtai:", strUrl.c_str(), 5) == 0 ||
+        strncmp("sms:", strUrl.c_str(), 4) == 0
         )
         return strUrl;
 

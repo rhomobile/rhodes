@@ -132,3 +132,7 @@ platform/bb/RhoBundle/RhoBundle.jar
 platform/bb/RubyVM/RubyVM.jar
 platform/bb/rhodes/rhodes.jar
 
+# XCode 4 specific files
+*.xcworkspace
+xcuserdata
+
