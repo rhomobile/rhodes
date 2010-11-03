@@ -43,6 +43,10 @@ namespace "build" do
 
     simulator = $sdk =~ /iphonesimulator/
 
+    if $configuration == 'Distribution'
+       $configuration = 'Release'
+    end
+
     chdir iphone_path
     args = ['build', '-target', 'Barcode', '-configuration', $configuration, '-sdk', $sdk]
 

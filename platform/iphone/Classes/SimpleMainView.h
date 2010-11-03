@@ -35,4 +35,8 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
 - (void)loadView;
 
+- (UIWebView*)getWebView:(int)tab_index;
+
++ (void) disableHiddenOnStart;
+
 @end

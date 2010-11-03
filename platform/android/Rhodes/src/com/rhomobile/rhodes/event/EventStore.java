@@ -29,8 +29,9 @@ public class EventStore {
 	private static final String EVENTS_PRIVACY = "visibility";
 	
 	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-		e.printStackTrace();
+		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e != null ? e.getMessage() : "null exception");
+		if ( e != null )
+		    e.printStackTrace();
 	}
 	
 	private static String dateToString(Date date) {
@@ -246,7 +247,15 @@ public class EventStore {
 			
 			Logger.D(TAG, "delete(id)");
 			
-			int rows = getContentResolver().delete(EVENTS_URI, "_id=?", new String[] {id});
+			ContentResolver r = getContentResolver();
+			int rows;
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+				Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
+				rows = getContentResolver().delete(uri, null, null);
+			}
+			else {
+				rows = r.delete(EVENTS_URI, "_id=?", new String[] {id});
+			}
 			Logger.D(TAG, String.format("%d rows deleted", rows));
 			
 			return null;

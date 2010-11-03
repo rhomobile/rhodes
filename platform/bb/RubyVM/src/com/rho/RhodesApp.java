@@ -112,7 +112,8 @@ public class RhodesApp
     {
     	return strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
     		strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
-    		 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:");    
+    		 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:") ||
+    		 strUrl.startsWith("sms:");    
     }
     
     public String canonicalizeRhoUrl(String url) 

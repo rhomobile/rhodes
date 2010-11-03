@@ -39,6 +39,12 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 		return strDbName;
 	}
 	
+	public boolean isDbFileExists(String strPath)
+	{
+		String strDbName = getNameNoExt(strPath);
+		return m_fs.exists(strDbName + ".data");
+	}
+	
 	public void open(String strPath, String strSqlScript) throws DBException 
 	{
 		try{

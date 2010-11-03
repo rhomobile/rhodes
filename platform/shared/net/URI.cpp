@@ -69,6 +69,23 @@ String URI::getPathSpecificPart()
     return String(m_strUrl.c_str(), szQuest-m_strUrl.c_str());
 }
 
+String URI::getLastNamePart()
+{
+    int nQuest = m_strUrl.find_last_of('?');
+    String strRes = m_strUrl;
+    if (nQuest>=0)
+        strRes = m_strUrl.substr(0, nQuest);
+
+    int nSlash = strRes.find_last_of('/');
+    if ( nSlash < 0 )
+        nSlash = strRes.find_last_of('\\');
+
+    if ( nSlash >= 0 )
+        strRes = strRes.substr(nSlash+1);
+    
+    return strRes;
+}
+
 static void toHexString(int i, String& strRes, int radix)
 {
     char buf[33];
@@ -91,6 +108,42 @@ static void toHexString(int i, String& strRes, int radix)
         buf[f--]= '-';
 
     strRes += (buf+f+1);
+}
+
+/*static*/ String URI::urlEscapeSymbols(const String& url)
+{
+    String res;
+    urlEscapeSymbols(url, res);
+    return res;
+}
+
+/*static*/ void URI::urlEscapeSymbols(const String& fullPath, String& strRes)
+{
+    int len = fullPath.length();
+
+    char c;
+    boolean bFound = false;
+    for  (int index=0; index < len ; index++)
+    {
+        c = fullPath.at(index);
+        if ( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+             c == '_' || c == '.') 
+        {
+            if ( bFound ) 
+                strRes += c;
+        }else 
+        {
+            if ( !bFound )
+            {
+                strRes += fullPath.substr(0,index);
+                bFound = true;
+            }
+            strRes += '_';
+        }
+    }
+
+    if ( !bFound )
+        strRes += fullPath;
 }
 
 String URI::urlEncode(const String& fullPath)
