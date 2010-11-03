@@ -116,8 +116,11 @@
 
 - (UIImage*)makeUIImage {
 	
-	CGRect bound_box = CGPathGetBoundingBox(mPath);
-	CGRect rect = self.frame;
+	CGRect bound_box = self.bounds;
+	if (!CGPathIsEmpty(mPath)) {
+		bound_box = CGPathGetBoundingBox(mPath);
+	}
+	CGRect rect = self.bounds;
 	if (rect.size.width < (bound_box.origin.x+bound_box.size.width)) {
 		rect.size.width = (bound_box.origin.x+bound_box.size.width)+2;
 	}
@@ -134,18 +137,21 @@
 	CGContextFillRect(context, rect);
 	
 	// draw signature
-	CGContextSetLineWidth(context, 3);
-	CGContextTranslateCTM (context, 0, rect.size.height);
-	CGContextScaleCTM(context, 1, -1);
-	CGContextBeginPath(context);
-	CGContextAddPath(context,mPath);
-	CGContextDrawPath(context, kCGPathStroke);
+	if (!CGPathIsEmpty(mPath)) {
+		CGContextSetLineWidth(context, 3);
+		CGContextTranslateCTM (context, 0, rect.size.height);
+		CGContextScaleCTM(context, 1, -1);
+		CGContextBeginPath(context);
+		CGContextAddPath(context,mPath);
+		CGContextDrawPath(context, kCGPathStroke);
+	}
 	
 	CGImageRef cg_image = CGBitmapContextCreateImage(context);
 	UIImage* ui_image = [[UIImage alloc] initWithCGImage:cg_image];// scale:1 orientation:UIImageOrientationDownMirrored];
-    [cg_image release];
+    
+	CGImageRelease(cg_image);
 
-	[context release];
+	CGContextRelease(context);
 	
 	return ui_image;
 }

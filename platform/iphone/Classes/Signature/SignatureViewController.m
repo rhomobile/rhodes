@@ -70,7 +70,9 @@
 	srect.origin.y = 0;
 	trect.origin.x = 0;
 	trect.origin.y = srect.origin.y+srect.size.height;
+	trect.size.width = srect.size.width;
 	toolbar.frame = trect;
+	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
 	
 	signatureView = [[SignatureView alloc] initWithFrame:CGRectZero];
 	signatureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
