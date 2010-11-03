@@ -85,8 +85,36 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	webView.frame = rect;
 }
 
+- (UIBarButtonItem*)makeUIBarButtonWithCustomImage:(UIImage*)image name:(NSString*)name target:(id)target action:(SEL)action colored_icon:(BOOL)colored_icon {
+    UIBarButtonItem *btn = nil;
+	//load the image
+	if (image == nil) {
+		image = [UIImage imageNamed:name];
+	}
+	
+	if (!colored_icon) {
+		btn = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:target action:action];
+		return btn;
+	}
+	
+	//create the button and assign the image
+	UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+	[button setImage:image forState:UIControlStateNormal];
+	[button addTarget:target action:action forControlEvents:UIControlEventTouchDown];	
+	
+	//set the frame of the button to the size of the image (see note below)
+	button.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+	
+	//create a UIBarButtonItem with the button as a custom view
+	btn = [[UIBarButtonItem alloc] initWithCustomView:button];	
+	
+	btn.target = target;
+	btn.action = action;
+	
+	return btn;
+}
 
-- (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon {
+- (UIBarButtonItem*)newButton:(NSString*)url label:(NSString*)label icon:(NSString*)icon  colored_icon:(BOOL)colored_icon{
     UIImage *img = nil;
     if ([icon length] > 0) {
         NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
@@ -95,38 +123,24 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
     UIBarButtonItem *btn = nil;
     
+	
     if ([url compare:@"back"] == NSOrderedSame) {
-        btn = [[UIBarButtonItem alloc]
-               initWithImage:(img ? img : [UIImage imageNamed:@"back_btn.png"])
-               style:UIBarButtonItemStylePlain target:self
-               action:@selector(goBack:)];
+        btn = [self makeUIBarButtonWithCustomImage:img name:@"back_btn.png" target:self action:@selector(goBack:) colored_icon:colored_icon];
     }
     else if ([url compare:@"forward"] == NSOrderedSame) 
 	{
 		if ( !rho_conf_getBool("jqtouch_mode") )
-			btn = [[UIBarButtonItem alloc]
-			   initWithImage:(img ? img : [UIImage imageNamed:@"forward_btn.png"])
-               style:UIBarButtonItemStylePlain target:self
-               action:@selector(goForward:)];
+			btn = [self makeUIBarButtonWithCustomImage:img name:@"forward_btn.png" target:self action:@selector(goForward:) colored_icon:colored_icon];
     }
     else if ([url compare:@"home"] == NSOrderedSame) {
-        btn = [[UIBarButtonItem alloc]
-               initWithImage:(img ? img : [UIImage imageNamed:@"home_btn.png"])
-               style:UIBarButtonItemStylePlain target:self
-               action:@selector(goHome:)];
+        btn = [self makeUIBarButtonWithCustomImage:img name:@"home_btn.png" target:self action:@selector(goHome:) colored_icon:colored_icon];
     }
     else if ([url compare:@"options"] == NSOrderedSame) {
-        btn = [[UIBarButtonItem alloc]
-               initWithImage:(img ? img : [UIImage imageNamed:@"gears.png"])
-               style:UIBarButtonItemStylePlain target:self
-               action:@selector(goOptions:)];
+        btn = [self makeUIBarButtonWithCustomImage:img name:@"gears.png" target:self action:@selector(goOptions:) colored_icon:colored_icon];
     }
     else if ([url compare:@"refresh"] == NSOrderedSame) {
         if (img)
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:img
-                   style:UIBarButtonItemStylePlain target:self
-                   action:@selector(onRefresh:)];
+            btn = [self makeUIBarButtonWithCustomImage:img name:nil target:self action:@selector(onRefresh:) colored_icon:colored_icon];
         else
             btn = [[UIBarButtonItem alloc]
                    initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
@@ -140,9 +154,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     else {
         id action = [[RhoToolbarButtonItemAction alloc] init:url];
         if (img) {
-            btn = [[UIBarButtonItem alloc]
-                   initWithImage:img style:UIBarButtonItemStylePlain
-                   target:action action:@selector(onAction:)];
+            btn = [self makeUIBarButtonWithCustomImage:img name:nil target:action action:@selector(onAction:) colored_icon:colored_icon];
         }
         else if ([label length] > 0) {
             btn = [[UIBarButtonItem alloc]
@@ -155,7 +167,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (UIToolbar*)newToolbar:(NSArray*)items frame:(CGRect)mainFrame {
-    if ([items count] % 4 != 0) {
+    if ([items count] % 5 != 0) {
         RAWLOG_ERROR("Illegal arguments for createNewToolbar");
         return nil;
     }
@@ -177,13 +189,16 @@ static BOOL makeHiddenUntilLoadContent = YES;
                               target:nil action:nil];
     
     NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]/4];
-    for(int i = 0, lim = [items count]/4; i < lim; i++) {
-        int index = i*4 - 1;
+    for(int i = 0, lim = [items count]/5; i < lim; i++) {
+        int index = i*5 - 1;
         NSString *label = (NSString*)[items objectAtIndex:++index];
         NSString *url = (NSString*)[items objectAtIndex:++index];
         NSString *icon = (NSString*)[items objectAtIndex:++index];
-        //NSString *reload = (NSString*)[items objectAtIndex:++index];
+        NSString *reload = (NSString*)[items objectAtIndex:++index];
+		NSString *colored_icon = (NSString*)[items objectAtIndex:++index];  
         
+		reload = nil;
+		
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
             [tb release];
@@ -191,7 +206,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
             return nil;
         }
         
-        UIBarButtonItem *btn = [self newButton:url label:label icon:icon];
+        UIBarButtonItem *btn = [self newButton:url label:label icon:icon colored_icon:[colored_icon isEqualToString:@"true"]];
         
         if (btn) {
             [btns addObject:fixed];

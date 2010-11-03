@@ -80,26 +80,29 @@
 	//else {
 		childFrame.size.height -= tbFrame.size.height;
 	//}
-    int count = [items count]/4;
+    int count = [items count]/5;
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
     
     for (int i = 0; i < count; ++i) {
-        int index = i*4 - 1;
+        int index = i*5 - 1;
         NSString *label = [items objectAtIndex:++index];
         NSString *url = [items objectAtIndex:++index];
         NSString *icon = [items objectAtIndex:++index];
         NSString *reload = [items objectAtIndex:++index];
+        NSString *colored_icon = [items objectAtIndex:++index];
         
+		colored_icon = nil;
+		
         if (!initUrl)
             initUrl = url;
         
         if (label && url && icon) {
             RhoTabBarData *td = [[RhoTabBarData alloc] init];
             td.url = url;
-            td.reload = [reload isEqualToString:@"true"];
+			td.reload = [reload isEqualToString:@"true"];
             
             SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
             subController.title = label;
