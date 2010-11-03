@@ -316,9 +316,17 @@
                 }
             }
 
+            var href = $el.attr("href");
+
             // User clicked an internal link, fullscreen mode
             if (target == '_webapp') {
-                window.location = $el.attr('href');
+                window.location = href;
+            }
+            // User clicked on a link that contains a protocol other than http.
+            else if (href.indexOf(":") != -1 &&
+                     href.indexOf("http:") != 0 &&
+                     href.indexOf("https:") != 0) {
+                window.location = href;
             }
             // User clicked a back button
             else if ($el.is(jQTSettings.backSelector)) {
