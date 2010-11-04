@@ -33,6 +33,9 @@ extern int rho_sys_unzip_file(const char *path);
 #define set_sleeping rho_sys_set_sleeping
 extern int rho_sys_set_sleeping(int sleeping);
 
+#define run_app rho_sys_run_app
+extern void rho_sys_run_app(const char* appname, VALUE params);
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -76,3 +79,4 @@ extern void set_screen_rotation_notification(const char *url, const char* params
 extern void exit();
 extern void unzip_file( const char *path );
 extern int set_sleeping( bool sleeping );
+extern void run_app(const char *appname, VALUE params);

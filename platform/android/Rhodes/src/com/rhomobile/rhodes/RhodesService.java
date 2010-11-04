@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -30,7 +31,10 @@ import com.rhomobile.rhodes.webview.RhoWebSettings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -768,6 +772,29 @@ public class RhodesService {
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = cal.getTimeZone();
 		return tz.getDisplayName();
+	}
+	
+	public static void runApplication(String appName, Map<Object, Object> params) {
+		try {
+			Context ctx = RhodesService.getInstance().getContext();
+			PackageManager mgr = ctx.getPackageManager();
+			PackageInfo info = mgr.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
+			if (info.activities.length == 0) {
+				Logger.E(TAG, "No activities found for application " + appName);
+				return;
+			}
+			ActivityInfo ainfo = info.activities[0];
+			String className = ainfo.name;
+			if (className.startsWith("."))
+				className = ainfo.packageName + className;
+
+			Intent intent = new Intent();
+			intent.setClassName(appName, className);
+			ctx.startActivity(intent);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "Can't run application " + appName + ": " + e.getMessage());
+		}
 	}
 
 	public native void setPushRegistrationId(String id);
