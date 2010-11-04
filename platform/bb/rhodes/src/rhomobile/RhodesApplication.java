@@ -36,7 +36,6 @@ import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
 import net.rim.device.api.math.Fixed32;
-
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
 
 import com.rho.*;
@@ -381,8 +380,12 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
      **************************************************************************/
     public static void main(String[] args)
     {
-		_instance = new RhodesApplication();
+    	LOG.INFO_EVENT("main start");
+    	
 		try{
+			_instance = new RhodesApplication();
+			LOG.INFO_EVENT( "RhodesApplication created" );
+			
 			_instance.enterEventDispatcher();
 		}catch(Exception exc)
 		{
@@ -478,9 +481,21 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	private boolean m_bActivate = false;
 	private void rhodes_activate()
 	{
+		if ( !m_bStartupFinish )
+		{
+	        this.invokeLater( new Runnable() { 
+	            public void run() 
+	            {
+	            	//LOG.INFO_EVENT("Activate wait till Startup finish");
+	            	rhodes_activate(); 
+	            }
+	        }, 100, false );
+	        return;
+		}
+		
 		m_bActivate = true;
 		//DO NOT DO ANYTHING before doStartupWork 
-		doStartupWork();
+		//doStartupWork();
 		showSplashScreen();
     	LOG.TRACE("Rhodes start activate ***--------------------------***");
 
@@ -956,6 +971,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     			try{is.close();}catch(IOException exc){}
     		is = null;
     	}
+    	
+    	pushScreen(_mainScreen);
     }
     
     public void showLogScreen()
@@ -965,9 +982,10 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	    UiApplication.getUiApplication().pushScreen(screen);
     }
     
+    boolean m_bStartupFinish = false;
     private void doStartupWork() 
     {
-    	if (_mainScreen!=null)
+/*    	if (_mainScreen!=null)
     		return;
     	
     	if ( com.rho.Capabilities.RUNAS_SERVICE && ApplicationManager.getApplicationManager().inStartup() )// || isWaitForSDCardAtStartup() )
@@ -980,31 +998,44 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
             } );
             
             return;
-    	}
+    	}*/
     	
     	try{
-    		if ( com.rho.Capabilities.RUNAS_SERVICE )
-    		{
+    	    if ( com.rho.Capabilities.RUNAS_SERVICE )
+    	    {
+    	    	while( ApplicationManager.getApplicationManager().inStartup() )
+    	    	{
+    	    		LOG.INFO_EVENT("inStartup");
+    	    		Thread.sleep(1000);
+    	    	}
+    	    	
     			if ( !Jsr75File.isSDCardExist() )
+    			{
+    				LOG.INFO_EVENT("isSDCardExist");
     				Thread.sleep(5000); //Wait till SDCard may appear
-    		}
-    		
+    			}
+    	    }
+    	    
         	RhoLogger.InitRhoLog();
-	    	
+        	
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
 	    	
 	        RhodesApp.Create(RhoConf.getInstance().getRhoRootPath());
-	        
+        	
 	    	CKeyListener list = new CKeyListener();
 	    	CTrackwheelListener wheel = new CTrackwheelListener();
 	    	this._history = new Vector();
 	
-	        _mainScreen = new CMainScreen();
-	        _mainScreen.addKeyListener(list);
-	        _mainScreen.addTrackwheelListener(wheel);
-	
-	        pushScreen(_mainScreen);
-	        createBrowserControl();
+	    	synchronized (Application.getEventLock()) 
+	    	{	    	
+		        _mainScreen = new CMainScreen();
+		        _mainScreen.addKeyListener(list);
+		        _mainScreen.addTrackwheelListener(wheel);
+		        //pushScreen(_mainScreen);
+		        createBrowserControl();
+	    	}
+	    	
+	    	LOG.INFO_EVENT("createBrowserControl" );
 	        
 	    	try {
 	    		RhoClassFactory.getNetworkAccess().configure();
@@ -1012,17 +1043,37 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	    	} catch(IOException exc) {
 	    		LOG.ERROR(exc.getMessage());
 	    	}
-
-	        PrimaryResourceFetchThread.Create(this);
+	    	LOG.INFO_EVENT("getNetworkAccess");
+	    	
+	        //PrimaryResourceFetchThread.Create(this);
 	        LOG.INFO("RHODES STARTUP COMPLETED: ***----------------------------------*** " );
 	        
+	        m_bStartupFinish = true;
 	        if ( com.rho.Capabilities.RUNAS_SERVICE && !m_bActivate &&
 	        	 RhoConf.getInstance().getBool("activate_at_startup"))
-	        	rhodes_activate();
+	        {
+		        this.invokeLater( new Runnable() { 
+		            public void run() 
+		            {
+		            	rhodes_activate(); 
+		            }
+		        });
+	        	
+	        }
     	}catch(Exception exc)
     	{
     		LOG.ERROR("doStartupWork failed", exc);
+    		
+    		LOG.ERROR_EVENT("doStartupWork failed", exc);
+    	}catch(Throwable exc)
+    	{
+    		LOG.ERROR("doStartupWork crashed.", exc);
+    		
+    		LOG.ERROR_EVENT("doStartupWork failed", exc);
+    		
+    		return;
     	}
+
     }
     
     public void executeJavascript(String strJavascript)
@@ -1090,7 +1141,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         }else
         	m_oBrowserAdapter = new BrowserAdapter(_mainScreen, this, RhoConf.getInstance().getBool("bb_loadimages_async"));
     }
-    
+    /*
     private void invokeStartupWork() {
         // I think this can get called twice
         // 1) Directly from startup, if the app starts while the BB is up - e.g. after download
@@ -1111,16 +1162,16 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         	}else
         		doStartupWork();
         }
-    }
+    }*/
 
     //----------------------------------------------------------------------
     // SystemListener methods
 
     public void powerUp() {
-        LOG.INFO_OUT(" POWER UP ***----------------------------------*** " );
+    	LOG.INFO_EVENT("POWER UP" );
         if ( com.rho.Capabilities.RUNAS_SERVICE)
         {
-        	invokeStartupWork();
+        	//invokeStartupWork();
         	this.requestBackground();
         }
     }
@@ -1140,12 +1191,17 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         LOG.INFO_OUT(" Construct RhodesApplication() ***----------------------------------*** " );
         m_activateHooks = new Hashtable();
         this.addSystemListener(this);
+        PrimaryResourceFetchThread.Create(this);
+        
         //this.addFileSystemListener(this);
-        if ( com.rho.Capabilities.RUNAS_SERVICE && ApplicationManager.getApplicationManager().inStartup() ) {
+/*        if ( com.rho.Capabilities.RUNAS_SERVICE && ApplicationManager.getApplicationManager().inStartup() ) 
+        {
+        	EventLogger.logEvent(0x4c9d3452d87922f2L, "inStartup".getBytes());
+        	
             LOG.INFO_OUT("We are in the phone startup, don't start Rhodes yet, leave it to power up call");
         } else {
             invokeStartupWork();
-        }
+        }*/
     }
 
     public void refreshCurrentPage(){
@@ -1207,6 +1263,12 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     		
             public void run() 
             {
+            	_application.doStartupWork();
+            	if (!_application.m_bStartupFinish)
+            	{
+            		return;
+            	}
+            	
         		LOG.INFO( "Starting HttpServerThread main routine..." );
             	//wait(80);
     	    	try{
