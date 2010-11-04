@@ -2,8 +2,11 @@ package com.rho;
 
 import java.util.Calendar;
 
+import net.rim.device.api.system.EventLogger;
+
 public class RhoLogger {
 	public static final boolean RHO_STRIP_LOG = false;
+	public static final long EVENT_GUID = 0x4c9c8411d87982f2L;
 
 	private static final int L_TRACE = 0;
 	private static final int L_INFO = 1;
@@ -28,6 +31,11 @@ public class RhoLogger {
 
 	public static RhoLogConf getLogConf(){
 		return m_oLogConf;
+	}
+	
+	static
+	{
+	    EventLogger.register(EVENT_GUID, "RHODESAPP", EventLogger.VIEWER_STRING);
 	}
 	
 	public String getLogCategory(){ return m_category; }
@@ -145,14 +153,20 @@ public class RhoLogger {
 		if (m_strMessage.length() > 0 || m_strMessage.charAt(m_strMessage.length() - 1) != '\n')
 			m_strMessage += '\n';
 			
-	    synchronized( m_SinkLock ){
-	    	getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
-		    if ( (isSimulator() || m_severity == L_FATAL) && e != null ){
-				//TODO: redirect printStackTrace to our log
-				//e.printStackTrace();
+		if ( bOutputOnly )
+		{
+			System.out.print(m_strMessage);
+			System.out.flush();
+		}else
+		{
+		    synchronized( m_SinkLock ){
+		    	getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
+			    if ( (isSimulator() || m_severity == L_FATAL) && e != null ){
+					//TODO: redirect printStackTrace to our log
+					//e.printStackTrace();
+			    }
 		    }
-	    }
-
+		}
 	    if ( m_severity == L_FATAL )
 	    	processFatalError();
 	}
@@ -167,7 +181,6 @@ public class RhoLogger {
     		throw new RuntimeException();
     	
     	System.exit(0);
-		
 	}
 	
 	public void TRACE(String message) {
@@ -182,10 +195,14 @@ public class RhoLogger {
 	}
 	
 	public void INFO_OUT(String message) {
-		//logMessage( L_INFO, message, null, true);
-		//TODO: INFO_OUT
-		System.out.print(m_category + ": " + message + "\n");
-		System.out.flush();
+		logMessage( L_INFO, message, null, true);
+	}
+
+	public void INFO_EVENT(String message) 
+	{
+    	EventLogger.logEvent(EVENT_GUID, (m_category + ": " + message).getBytes());
+		
+		INFO_OUT(message);
 	}
 	
 	public void WARNING(String message) {
@@ -201,13 +218,20 @@ public class RhoLogger {
 		logMessage( L_ERROR, message, e );
 	}
 	public void ERROR_OUT(String message,Throwable e) {
-		//logMessage( L_ERROR, message, e, true );
-		System.out.print(m_category + ": " + message + ". " + ( e != null ? e.getClass().getName() : "Exception") + 
-				(e != null ? e.getMessage() : "" ) +"\n");
+		logMessage( L_ERROR, message, e, true );
+		//System.out.print(m_category + ": " + message + ". " + ( e != null ? e.getClass().getName() : "Exception") + 
+		//		(e != null ? e.getMessage() : "" ) +"\n");
 		if ( e != null )
 			e.printStackTrace();
 		
 		System.out.flush();
+	}
+
+	public void ERROR_EVENT(String message,Throwable e) 
+	{
+		ERROR_OUT(message, e);
+		
+    	EventLogger.logEvent(EVENT_GUID, m_strMessage.getBytes());
 	}
 	
 	public void FATAL(String message) {
@@ -239,12 +263,11 @@ public class RhoLogger {
 	    }
 	}
 	
-    public static void InitRhoLog()throws Exception{
-    	
+    public static void InitRhoLog()throws Exception
+    {
     	m_sysInfo = RhoClassFactory.createRhoRubyHelper();
-    	
         RhoConf.InitRhoConf();
-    	
+        
         //Set defaults
     	m_oLogConf.setLogPrefix(true);		
     	
@@ -270,7 +293,6 @@ public class RhoLogger {
     	//
     	//m_oLogConf.saveToFile("");
     	//
-	    	
     	RhoConf.getInstance().loadConf();
     	m_oLogConf.loadFromConf(RhoConf.getInstance());
     }
