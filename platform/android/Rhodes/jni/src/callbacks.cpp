@@ -182,3 +182,15 @@ RHO_GLOBAL void rho_sys_app_exit()
     env->CallStaticVoidMethod(cls, mid);
 }
 
+RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "runApplication", "(Ljava/lang/String;Ljava/util/Map;)V");
+    if (!mid) return;
+    // TODO: convert ruby hash (params) to java map (jParams)
+    jobject jParams = NULL;
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(appname), jParams);
+}
+
