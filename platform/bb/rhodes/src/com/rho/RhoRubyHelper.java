@@ -132,7 +132,9 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		RhodesApplication.getInstance().close();
 	}
 	
-	static Hashtable m_appProperties = new Hashtable(); 
+	static Hashtable m_appProperties = new Hashtable();
+	static CodeModuleGroup m_groupRhodes = null;
+	static boolean m_bGroupsInited = false;
 	public String getAppProperty(String name)
 	{
 		String strRes = null;
@@ -142,25 +144,31 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 				strRes = (String)m_appProperties.get(name);
 			else	
 			{
-				CodeModuleGroup[] codeModule = CodeModuleGroup.loadAll();
-
-				if ( codeModule != null )
+				if (!m_bGroupsInited)
 				{
-					String moduleName = ApplicationDescriptor
-					   .currentApplicationDescriptor().getModuleName();
-					
-					for(int i = 0; i < codeModule.length; i++) 
+					m_bGroupsInited = true;
+					CodeModuleGroup[] codeModule = CodeModuleGroup.loadAll();
+	
+					if ( codeModule != null )
 					{
-						String module = codeModule[i].getName();
-						if( module.indexOf( moduleName ) != -1)
+						String moduleName = ApplicationDescriptor
+						   .currentApplicationDescriptor().getModuleName();
+						
+						for(int i = 0; i < codeModule.length; i++) 
 						{
-							CodeModuleGroup group = codeModule[i];
-							if ( group != null )
-								strRes = group.getProperty(name);
-							break;
+							String module = codeModule[i].getName();
+							if( module.indexOf( moduleName ) != -1)
+							{
+								m_groupRhodes = codeModule[i];
+								break;
+							}
 						}
 					}
 				}
+				
+				if (m_groupRhodes != null)				
+					strRes = m_groupRhodes.getProperty(name);
+				
 /*				
 				CodeModuleGroup[] allGroups = CodeModuleGroupManager.loadAll();
 				if ( allGroups != null )
