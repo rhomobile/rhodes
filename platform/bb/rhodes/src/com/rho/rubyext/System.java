@@ -135,6 +135,34 @@ public class System {
 				}
 			}
 		});
+
+		klass.getSingletonClass().defineMethod( "run_app", new RubyTwoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block )
+			{
+				try {
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("run_app failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+
+		klass.getSingletonClass().defineMethod( "open_url", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
+			{
+				try 
+				{
+		    		RhoRubyHelper helper = new RhoRubyHelper();
+		    		helper.open_url(arg1.toStr());
+					
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("run_app failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
 		
 	}
     

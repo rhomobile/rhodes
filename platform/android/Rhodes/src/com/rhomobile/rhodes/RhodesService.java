@@ -39,6 +39,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -794,6 +795,21 @@ public class RhodesService {
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "Can't run application " + appName + ": " + e.getMessage());
+		}
+	}
+
+	public static void openExternalUrl(String url) {
+		try {
+			Context ctx = RhodesService.getInstance().getContext();
+            Uri uri = Uri.parse(url);			
+            
+		    Intent intent = new Intent(Intent.ACTION_VIEW);
+		    intent.setData(uri);
+    		
+		    ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "Can't open url :" + url + ": " + e.getMessage());
 		}
 	}
 

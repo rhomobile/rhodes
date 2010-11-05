@@ -194,3 +194,12 @@ RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
     env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(appname), jParams);
 }
 
+RHO_GLOBAL void rho_sys_open_url(const char *url)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
+}

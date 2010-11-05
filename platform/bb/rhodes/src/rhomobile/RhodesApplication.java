@@ -1428,9 +1428,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         				continue;
         			
         			if (name.equals("rho_open_target") && value.equals("_blank")) {
-        				BrowserSession session = Browser.getDefaultSession();
-        				session.showBrowser();
-        				session.displayPage(_url);
+    		    		RhoRubyHelper helper = new RhoRubyHelper();
+    		    		helper.open_url(_url);
         				return;
         			}
         		}
