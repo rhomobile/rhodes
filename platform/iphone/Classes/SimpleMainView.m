@@ -739,7 +739,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         NSString *action = [btn objectAtIndex:0];
         NSString *label = [btn objectAtIndex:1];
         NSString *icon = [btn objectAtIndex:2];
-        UIBarButtonItem *button = [self newButton:action label:label icon:icon];
+        UIBarButtonItem *button = [self newButton:action label:label icon:icon colored_icon:NO];
         
         if (btn == left)
             [ni setLeftBarButtonItem:button];
