@@ -266,13 +266,23 @@ int rho_sys_set_sleeping(int sleeping)
 void rho_sys_app_exit() {
     exit(EXIT_SUCCESS);
 }
-
-void rho_sys_run_app(char* appname, VALUE params) 
+void rho_sys_open_url(const char* url) ;
+void rho_sys_run_app(const char* appname, VALUE params) 
 {
+	rho_sys_open_url(appname);
 }
 
-void rho_sys_open_url(char* url) 
+void rho_sys_open_url(const char* url) 
 {
+	NSString* strUrl = [NSString stringWithUTF8String:url];
+	BOOL res = FALSE;
+	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]])
+		res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
+	
+	if ( res)
+		RAWLOG_INFO("rho_sys_open_url suceeded.");	
+	else
+		RAWLOG_INFO("rho_sys_open_url faled.");	
 }
 
 extern VALUE rho_sys_has_network();
