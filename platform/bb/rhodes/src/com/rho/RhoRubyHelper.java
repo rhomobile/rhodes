@@ -2,6 +2,8 @@ package com.rho;
 
 import java.util.Hashtable;
 
+import net.rim.blackberry.api.browser.Browser;
+import net.rim.blackberry.api.browser.BrowserSession;
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.CodeModuleGroup;
 import net.rim.device.api.system.DeviceInfo;
@@ -130,6 +132,13 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	public void app_exit()
 	{
 		RhodesApplication.getInstance().close();
+	}
+
+	public void open_url(String url)
+	{
+		BrowserSession session = Browser.getDefaultSession();
+		session.showBrowser();
+		session.displayPage(url);
 	}
 	
 	static Hashtable m_appProperties = new Hashtable();

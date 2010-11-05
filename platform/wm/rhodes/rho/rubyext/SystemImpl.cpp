@@ -400,6 +400,11 @@ void rho_sys_run_app(const char *appname, VALUE params)
     rho_wmsys_run_app(appname, 0);
 }
 
+void rho_sys_open_url(const char* url)
+{
+    rho_wmsys_run_app(url, 0);
+}
+
 void rho_wmsys_run_app(const char* szPath, const char* szParams )
 {
     SHELLEXECUTEINFO se = {0};

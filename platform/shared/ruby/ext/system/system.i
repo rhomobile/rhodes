@@ -36,6 +36,9 @@ extern int rho_sys_set_sleeping(int sleeping);
 #define run_app rho_sys_run_app
 extern void rho_sys_run_app(const char* appname, VALUE params);
 
+#define open_url rho_sys_open_url
+extern void rho_sys_open_url(const char* url);
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -80,3 +83,4 @@ extern void exit();
 extern void unzip_file( const char *path );
 extern int set_sleeping( bool sleeping );
 extern void run_app(const char *appname, VALUE params);
+extern void open_url(const char *url);
