@@ -589,16 +589,29 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 // event handlers
 //
 // **************************************************************************
+extern "C" void rho_wmsys_run_app(const char* szPath, const char* szParams );
 
 void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL,
                                               VARIANT * /*pvtFlags*/, VARIANT * pvtTargetFrameName,
                                               VARIANT * /*pvtPostData*/, VARIANT * /*pvtHeaders*/,
-                                              VARIANT_BOOL * /*pvbCancel*/)
+                                              VARIANT_BOOL * pvbCancel)
 {
     USES_CONVERSION;
     LPCTSTR szURL = OLE2CT(V_BSTR(pvtURL));
 
-    LOG(TRACE) + "OnBeforeNavigate2: " + szURL ;
+    LOG(TRACE) + "OnBeforeNavigate2: " + szURL;
+
+    if ( wcsstr(szURL, L"rho_open_target=_blank") != 0)
+    {
+        LOG(INFO) + "Open external browser: " + szURL;
+#ifdef OS_WINCE
+        rho_wmsys_run_app(convertToStringA(szURL).c_str(), 0 );
+#else
+        rho_wmsys_run_app(convertToStringA(szURL).c_str(), 0 );
+#endif
+        *pvbCancel = VARIANT_TRUE;
+    }
+
 /*
     String strTitle = RHOCONF().getString("title_text");
     if ( strTitle.length() > 0 )
@@ -718,7 +731,6 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
 
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
-	LOG(INFO) + "Show loading page";
     USES_CONVERSION;
 	
 	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
@@ -741,6 +753,24 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
     //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
+#if defined (_WIN32_WCE)
+    //TEST
+    CComPtr<IDispatch> pDispDoc;
+    m_spIWebBrowser2->get_Document(&pDispDoc);
+
+    CComPtr<IPIEHTMLDocument3> pDoc;
+    pDispDoc.QueryInterface(&pDoc);
+
+    CComPtr<IPIEHTMLElementCollection> pColl;
+    pDoc->getElementsByTagName(CComBSTR("meta"), &pColl);
+    long size = 0;
+    pColl->get_length(&size);
+
+    if ( size > 0 )
+    {
+    }
+    //TEST
+#endif	
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
