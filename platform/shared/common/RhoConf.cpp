@@ -44,11 +44,11 @@ void RhoSettings::loadFromString(const char* szSettings)
         int len = 0;
 
         const char* end = strchr(start,'\n');
-        if (end){
-            if ( end > start && *(end-1) == '\r' )
-                len = end-start-1;
-            else
-                len = end-start;
+        if (end)
+        {
+            len = end-start;
+            while(start[len-1] == '\r' && len > 0 )
+                len--;
         }else {
             len = (int)strlen(start);
         }
