@@ -343,7 +343,12 @@ namespace "build" do
       
       namepath = File.join(sdcardpath,"name.txt")        
       old_appname = File.read(namepath) if File.exists?(namepath)
-      rm_rf sdcardpath if old_appname != $appname
+      if old_appname != $appname
+        rm_rf sdcardpath 
+        #This is eclipse bag : it creates rho folder under simulator
+        rm_rf $config["env"]["paths"][$bbver]["jde"] +"/simulator/Rho/rhodes"
+      end
+        
       mkdir_p sdcardpath unless File.exists?(sdcardpath)
       
       confpath = File.join( sdcardpath, "/apps/rhoconfig.txt" )
