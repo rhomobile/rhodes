@@ -27,7 +27,6 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 
-
 #include <hash_map>
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -511,15 +510,30 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 	if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
-	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) {
-		if (m_alertDialog == NULL) {
-			m_alertDialog = new CAlertDialog(params);
-			m_alertDialog->DoModal();
-			delete m_alertDialog;
-			m_alertDialog = NULL;
-		} else {
-			LOG(WARNING) + "Trying to show alert dialog while it exists.";
-		}
+	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) 
+    {
+        if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
+            MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), MB_ICONWARNING | MB_OK);
+        else if (params->m_buttons.size() == 2 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0 &&
+            strcasecmp(params->m_buttons[1].m_strCaption.c_str(), "cancel") == 0)
+        {
+            int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), 
+                    MB_ICONWARNING | MB_OKCANCEL);
+            int nBtn = nRes == IDCANCEL ? 1 : 0;
+            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+        }
+        else
+        {
+		    if (m_alertDialog == NULL) 
+            {
+			    m_alertDialog = new CAlertDialog(params);
+			    m_alertDialog->DoModal();
+			    delete m_alertDialog;
+			    m_alertDialog = NULL;
+		    } else {
+			    LOG(WARNING) + "Trying to show alert dialog while it exists.";
+		    }
+        }
 	}
 
     delete params;
@@ -756,7 +770,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
     //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
-#if defined (_WIN32_WCE)
+/*#if defined (_WIN32_WCE)
     //TEST
     CComPtr<IDispatch> pDispDoc;
     m_spIWebBrowser2->get_Document(&pDispDoc);
@@ -773,7 +787,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
     {
     }
     //TEST
-#endif	
+#endif	*/
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
@@ -902,6 +916,9 @@ void CMainWindow::createCustomMenu()
 	CMenu sub;
 	CMenu popup;
 	
+    if (!m_browser.m_hWnd)
+        return;
+
 	VERIFY(menu.CreateMenu());
 	VERIFY(popup.CreatePopupMenu());
 	menu.AppendMenu(MF_POPUP, (UINT) popup.m_hMenu, _T(""));
