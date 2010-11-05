@@ -394,4 +394,36 @@ void rho_sys_app_exit()
 	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 }
 
+void rho_wmsys_run_app(const char* szPath, const char* szParams );
+void rho_sys_run_app(const char *appname, VALUE params)
+{
+    rho_wmsys_run_app(appname, 0);
+}
+
+void rho_wmsys_run_app(const char* szPath, const char* szParams )
+{
+    SHELLEXECUTEINFO se = {0};
+    se.cbSize = sizeof(SHELLEXECUTEINFO);
+    se.fMask = SEE_MASK_NOCLOSEPROCESS;
+    se.lpVerb = L"Open";
+
+    StringW strAppNameW;
+    convertToStringW(szPath, strAppNameW);
+    for(int i = 0; i<(int)strAppNameW.length();i++)
+    {
+        if ( strAppNameW.at(i) == '/' )
+            strAppNameW.at(i) = '\\';
+    }
+    se.lpFile = strAppNameW.c_str();
+
+    StringW strParamsW;
+    if ( szParams && *szParams )
+    {
+        convertToStringW(szParams, strParamsW);
+        se.lpParameters = strParamsW.c_str();
+    }
+
+    ShellExecuteEx(&se);
+}
+
 } //extern "C"

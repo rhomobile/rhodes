@@ -503,25 +503,6 @@ extern "C" void Init_NavBar(void)
 {
 }
 
-extern "C" void rho_sys_run_app(const char *appname, VALUE params)
-{
-    SHELLEXECUTEINFO se = {0};
-    se.cbSize = sizeof(SHELLEXECUTEINFO);
-    se.fMask = SEE_MASK_NOCLOSEPROCESS;
-    se.lpVerb = L"Open";
-
-    StringW strAppNameW;
-    convertToStringW(appname, strAppNameW);
-    for(int i = 0; i<(int)strAppNameW.length();i++)
-    {
-        if ( strAppNameW.at(i) == '/' )
-            strAppNameW.at(i) = '\\';
-    }
-    se.lpFile = strAppNameW.c_str();
-
-    ShellExecuteEx(&se);
-}
-
 //extern "C" void Init_RhoEvent()
 //{
 //}
