@@ -81,7 +81,7 @@ public class Alert
     			mgr.add(tf);
     		}
     		
-    		HorizontalFieldManager lfm = new HorizontalFieldManager();
+    		HorizontalFieldManager lfm = new HorizontalFieldManager(Manager.FIELD_HCENTER| Manager.FIELD_VCENTER);
     		mgr.add(lfm);
 
     		Bitmap bmp = null;
@@ -102,7 +102,8 @@ public class Alert
     		LabelField lf = new LabelField(msg, Field.FIELD_HCENTER | Field.FIELD_VCENTER);
     		lfm.add(lf);
     		
-    		hfm = new HorizontalFieldManager();
+    		hfm = new HorizontalFieldManager(Manager.FIELD_HCENTER| Manager.FIELD_VCENTER);
+    		hfm.setPadding(10, 0, 0, 10);
     		mgr.add(hfm);
     	}
     	
