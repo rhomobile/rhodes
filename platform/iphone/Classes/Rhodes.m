@@ -760,7 +760,3 @@ void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 void rho_conf_show_log() {
     [[Rhodes sharedInstance] showLog];
 }
-
-void rho_sys_app_exit() {
-    exit(EXIT_SUCCESS);
-}

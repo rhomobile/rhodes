@@ -263,6 +263,18 @@ int rho_sys_set_sleeping(int sleeping)
     return ret;
 }
 
+void rho_sys_app_exit() {
+    exit(EXIT_SUCCESS);
+}
+
+void rho_sys_run_app(char* appname, VALUE params) 
+{
+}
+
+void rho_sys_open_url(char* url) 
+{
+}
+
 extern VALUE rho_sys_has_network();
 
 // http://www.apple.com/iphone/specs.html
