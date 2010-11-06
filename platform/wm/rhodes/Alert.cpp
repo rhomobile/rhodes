@@ -328,7 +328,7 @@ void CAlert::showPopup(CAlertDialog::Params *params)
 	::PostMessage(main_wnd, WM_ALERT_SHOW_POPUP, 0, (LPARAM ) params);
 }
 
-#if defined(_WIN32_WCE)
+#if _WIN32_WCE > 0x501
 void CAlert::vibrate()
 {
     CVibrate::getCVibrate().toggle();
@@ -337,6 +337,7 @@ void CAlert::vibrate()
 void CAlert::playFile(String fileName)
 {
     rho::String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
+
     HSOUND hSound;
     
     rho::String::size_type pos = 0;
@@ -449,13 +450,13 @@ extern "C" void alert_show_popup(rho_param *p)
 }
 
 extern "C" void alert_vibrate(void*) {
-#if defined(_WIN32_WCE)
+#if _WIN32_WCE > 0x501
     CAlert::vibrate();
 #endif
 }
 
 extern "C" void alert_play_file(char* file_name, ...) {
-#if defined(_WIN32_WCE)
+#if _WIN32_WCE > 0x501
     CAlert::playFile(file_name);
 #endif
 }
