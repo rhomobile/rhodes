@@ -15,7 +15,10 @@
 
 #include "ruby/ext/rho/rhoruby.h"
 
-@interface MapViewController : RhoViewController <MKReverseGeocoderDelegate,MKMapViewDelegate> {
+
+ 
+
+@interface MapViewController : RhoViewController <MKMapViewDelegate, MKReverseGeocoderDelegate> {
     MKMapView *mapView;
     MKReverseGeocoder *geoCoder;
     GoogleGeocoder* ggeoCoder;
@@ -28,13 +31,15 @@
     MKCoordinateRegion region;
     NSString *region_center;
     CLLocationDegrees region_radius;
-    NSString *gapikey;  
+    NSString *gapikey;
+	UIView* savedMainView;
     //IBOutlet UISegmentedControl *mapType;
 }
 
 // 
 @property (copy) NSString *region_center;
-@property (copy) NSString *gapikey; 
+@property (copy) NSString *gapikey;
+@property (nonatomic,retain) UIView *savedMainView;
 
 + (void)createMap:(rho_param*)params;
 + (void)closeMap;

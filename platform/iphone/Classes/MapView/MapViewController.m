@@ -9,6 +9,7 @@
 #import "MapAnnotation.h"
 #import "MapViewController.h"
 #import "Rhodes.h"
+#import "RhoMainView.h"
 
 #include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -17,6 +18,10 @@
 #define DEFAULT_LOGCATEGORY "MapView"
 
 static MapViewController *mc = nil;
+
+
+
+
 
 @interface RhoCreateMapTask : NSObject {}
 + (void)run:(NSValue*)value;
@@ -31,7 +36,15 @@ static MapViewController *mc = nil;
     MapViewController* map = [[MapViewController alloc] init];
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
-    [window addSubview:map.view];
+	map.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	map.view.autoresizesSubviews = YES;
+	
+	UIView* v = [[[Rhodes sharedInstance] mainView] view];
+	map.savedMainView = v;
+	[map.savedMainView retain];
+    [map.savedMainView removeFromSuperview];
+	//map.savedMainView.hidden = YES;
+	[window addSubview:map.view];
     
     mc = map;
 }
@@ -53,7 +66,7 @@ static MapViewController *mc = nil;
 
 @implementation MapViewController
 
-@synthesize region_center, gapikey;
+@synthesize region_center, gapikey, savedMainView;
 
 + (void)createMap:(rho_param *)params {
     id runnable = [RhoCreateMapTask class];
@@ -80,7 +93,21 @@ static MapViewController *mc = nil;
 
 - (void)close {
     [self dismissModalViewControllerAnimated:YES]; 
-	self.view.hidden = YES;
+    
+	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+
+	CGRect frame = self.view.bounds;
+	
+	self.savedMainView.frame = frame;
+	
+
+	[window addSubview:self.savedMainView];
+	[window layoutSubviews];
+	[self.view removeFromSuperview];
+	//self.view.hidden = YES;
+
+	[self.savedMainView release];
+	self.savedMainView = nil;
 }
 
 - (void)setSettings:(rho_param*)p {
@@ -274,6 +301,7 @@ static MapViewController *mc = nil;
     rho_param_free(p);
 }
 
+
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -281,28 +309,49 @@ static MapViewController *mc = nil;
     //Initialize the toolbar
     toolbar = [[UIToolbar alloc] init];
     toolbar.barStyle = UIBarStyleBlack;
-    [toolbar sizeToFit];
-    CGFloat toolbarHeight = [toolbar frame].size.height;
-    CGRect rootViewBounds = self.view.bounds;
-    CGFloat rootViewHeight = CGRectGetHeight(rootViewBounds);
-    CGFloat rootViewWidth = CGRectGetWidth(rootViewBounds);
-    CGRect rectArea = CGRectMake(0, rootViewHeight - toolbarHeight, rootViewWidth, toolbarHeight);
-    [toolbar setFrame:rectArea];
     UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
                                initWithTitle:@"Close" style:UIBarButtonItemStyleBordered 
                                target:self action:@selector(close_clicked:)];
     [toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
-    [self.view addSubview:toolbar];
+
+    [toolbar sizeToFit];
+	
+	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | 
+	UIViewAutoresizingFlexibleWidth;
+	toolbar.autoresizesSubviews = YES;
+	
+    CGFloat toolbarHeight = [toolbar frame].size.height;
+
+	//RhoMainView* rw = [[Rhodes sharedInstance] mainView];
+    CGRect rootViewBounds = [[[Rhodes sharedInstance] mainView] view].bounds;
+	
+	self.view.frame = rootViewBounds;
+	
+    CGFloat rootViewHeight = rootViewBounds.size.height;
+	//CGFloat rootViewHeight = CGRectGetHeight(rootViewBounds);
+    CGFloat rootViewWidth = CGRectGetWidth(rootViewBounds);
+    CGRect rectArea = CGRectMake(0, rootViewHeight - toolbarHeight, rootViewWidth, toolbarHeight);
+    toolbar.frame = rectArea;
+    
+	
+	[self.view addSubview:toolbar];
     [closeButton release];
     
     CGRect rectMapArea = CGRectMake(0, 0, rootViewWidth, rootViewHeight - toolbarHeight);
-    mapView=[[MKMapView alloc] initWithFrame:rectMapArea];
+    mapView =[[MKMapView alloc] initWithFrame:rectMapArea];
+	mapView.frame = rectMapArea;
     mapView.delegate=self;
 
     mapView.showsUserLocation=showsUserLocation;
     mapView.scrollEnabled=scrollEnabled;
     mapView.zoomEnabled=zoomEnabled;
     mapView.mapType=mapType;
+	
+    mapView.autoresizesSubviews = YES;
+    mapView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	
+	
+	
     
     /*Geocoder Stuff*/
     [ggeoCoder start];
@@ -318,6 +367,8 @@ static MapViewController *mc = nil;
     }
     
     [self.view insertSubview:mapView atIndex:0];
+	[self.view layoutSubviews];
+	
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view 
