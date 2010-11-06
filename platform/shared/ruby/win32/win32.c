@@ -4725,6 +4725,7 @@ rb_w32_utime(const char *path, const struct utimbuf *times)
     return ret;
 }
 
+#ifndef _WIN32_WCE
 int
 rb_w32_mkdir(const char *path, int mode)
 {
@@ -4742,6 +4743,7 @@ rb_w32_mkdir(const char *path, int mode)
     );
     return ret;
 }
+#endif //#ifndef _WIN32_WCE
 
 int
 rb_w32_rmdir(const char *path)
