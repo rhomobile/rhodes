@@ -52,3 +52,7 @@ int _mkdir(const char * dir)
 	return rc==TRUE ? 0 : -1;
 }
 
+int rb_w32_mkdir(const char *path, int mode)
+{
+    return _mkdir(path);
+}

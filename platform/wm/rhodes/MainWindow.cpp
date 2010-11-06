@@ -4,8 +4,8 @@
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
-#include <soundfile.h>
-#include <nled.h>
+//#include <soundfile.h>
+//#include <nled.h>
 #endif
 #include <string>
 #if defined(OS_WINDOWS)
