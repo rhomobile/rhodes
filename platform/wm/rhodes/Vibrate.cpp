@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-#if defined(_WIN32_WCE)
-
+#if _WIN32_WCE > 0x501
 #include <nled.h>
 #include "Vibrate.h"
 #include <common/RhodesApp.h>
