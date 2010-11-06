@@ -3,7 +3,7 @@
 
 #include "ext/rho/rhoruby.h"
 
-#if defined(_WIN32_WCE)
+#if _WIN32_WCE > 0x501
 
 #include "logging/RhoLog.h"
 #include "common/RhoMutexLock.h"
@@ -36,6 +36,7 @@ class CRingtoneManager
     static CMutex m_mxRMLocker;
 
     HSOUND m_hSound;
+
 };
 #endif
 

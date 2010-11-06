@@ -35,6 +35,7 @@
 
 #if defined (_WIN32_WCE)
 // NOTE - this is value is not strongly correlated to the Windows CE OS version being targeted
+#undef WINVER
 #define WINVER _WIN32_WCE
 #else
 // Modify the following defines if you have to target a platform prior to the ones specified below.
