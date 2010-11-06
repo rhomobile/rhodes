@@ -270,11 +270,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     w.scalesPageToFit = YES;
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
-    w.autoresizesSubviews = YES;
     w.clipsToBounds = NO;
     w.dataDetectorTypes = UIDataDetectorTypeNone;
     w.delegate = self;
-    w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    w.autoresizesSubviews = YES;
+    //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
 	
     assert([w retainCount] == 1);
@@ -302,6 +303,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
     wFrame.origin.y = 0;
     webView.frame = wFrame;
     
+    webView.autoresizesSubviews = YES;
+    webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	
     [root addSubview:webView];
     assert([webView retainCount] == 2);
 
@@ -727,6 +731,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
     UINavigationBar *nb = [[UINavigationBar alloc] initWithFrame:CGRectZero];
     nb.tag = RHO_TAG_NAVBAR;
+	nb.autoresizesSubviews = YES;
+    nb.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [nb sizeToFit];
     
     UINavigationItem *ni = [[UINavigationItem alloc] initWithTitle:title];
