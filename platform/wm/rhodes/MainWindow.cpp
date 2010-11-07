@@ -288,15 +288,18 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	HDC hdcMem = CreateCompatibleDC(hDC);
 	SelectObject(hdcMem, hbitmap);
-    int nLeft =0, nTop=0, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight;
+
+    CRect rcClient;
+    GetClientRect(&rcClient);
+    int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight;
     if (splash.isFlag(CSplashScreen::HCENTER) )
-		nLeft = (GetSystemMetrics(SM_CXSCREEN)-nWidth)/2;
+        nLeft = (rcClient.Width()-nWidth)/2;
 	if (splash.isFlag(CSplashScreen::VCENTER) )
-		nTop = (GetSystemMetrics(SM_CYSCREEN)-nHeight)/2;
+        nTop = (rcClient.Height()-nHeight)/2;
 	if (splash.isFlag(CSplashScreen::VZOOM) )
-		nHeight = GetSystemMetrics(SM_CYSCREEN);
+		nHeight = rcClient.Height();
 	if (splash.isFlag(CSplashScreen::HZOOM) )
-		nWidth = GetSystemMetrics(SM_CXSCREEN);
+		nWidth = rcClient.Width();
 
 	StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
 		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
