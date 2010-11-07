@@ -527,7 +527,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     // Add Keep-Alive header
     hdrs = curl_slist_append(hdrs, "Connection: Keep-Alive");
 
-    if (strcasecmp(method, "POST") == 0) {
+    if (strBody.size()>0) {
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, strBody.size());
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, strBody.c_str());
     }
@@ -544,7 +544,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         }
     }
     
-    if (!hasContentType && strcasecmp(method, "POST") == 0 && strBody.length() > 0)
+    if (!hasContentType && /*strcasecmp(method, "POST") == 0 &&*/ strBody.length() > 0)
     {
         String strHeader = "Content-Type: ";
         if ( pSession )

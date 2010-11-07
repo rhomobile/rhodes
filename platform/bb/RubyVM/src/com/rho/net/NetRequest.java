@@ -162,7 +162,8 @@ public class NetRequest
 
 				writeHeaders(headers);
 				LOG.INFO("writeHeaders done");
-				m_connection.setRequestMethod(IHttpConnection.POST);
+				//m_connection.setRequestMethod(IHttpConnection.POST);
+				m_connection.setRequestMethod(strMethod);
 				
 				os = m_connection.openOutputStream();
 				os.write(strBody.getBytes(), 0, strBody.length());
