@@ -28,6 +28,7 @@
 
 - (void)switchTab:(int)index;
 - (int)activeTab;
+- (void)setTabBadge:(int)index val:(char*)val;
 
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right;
 - (void)removeNavBar;
