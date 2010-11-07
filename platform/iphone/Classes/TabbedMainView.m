@@ -108,7 +108,8 @@
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
             subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
-            //[subController navigateRedirect:url tab:0];
+            subController.tabBarItem.badgeValue = nil;
+	    //[subController navigateRedirect:url tab:0];
             
             [tabs addObject:td];
             [views addObject:subController];
@@ -207,6 +208,19 @@
     tabindex = index;
     tabbar.selectedIndex = tabindex;
 	[self onSwitchTab];
+}
+
+- (void)setTabBadge:(int)index val:(char*)val {
+  RAWLOG_INFO2("setTabBadge: %d = %s",index,val); 
+  if(!strcmp(val,""))
+  {
+          [self subView:index].tabBarItem.badgeValue = nil;
+  }
+  else
+  {
+          [self subView:index].tabBarItem.badgeValue = [NSString stringWithCString:val length:strlen(val)];
+  }
+  RAWLOG_INFO("returning setTabBadge");
 }
 
 - (void)onSwitchTab {
