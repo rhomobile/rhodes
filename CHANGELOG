@@ -1,3 +1,16 @@
+## 2.2.4
+* Launch external browser
+* Open any url (http, file etc), and run external application associated with it
+* Keep RhoSync session while rhodes schema changed
+* Keep local changes while make bulk sync with RhoSync server
+* Remove blank screen before loading.png and before showing index page and support loading.png for different screen sizes
+* Fix issues with mailto:, tel: and sms: url while using jqtouch
+* Support rotation of map on iPhone
+* Support color icons for iPhone toolbar
+* Implement tabbar for iPad at left side
+* Support Windows Mobile 5.0
+* Remove 3 sec delay at application start on Blackberry 
+
 ## 2.2.3
 * #5817512 - Fix issue with migration Schema model in case if old model does not have schema_version
 * #5866549 - Fix NativeBar.switch on iPhone when 'callback:' uri used
