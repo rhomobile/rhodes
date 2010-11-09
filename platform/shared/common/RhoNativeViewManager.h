@@ -13,6 +13,7 @@
 
 class NativeView {
 public:
+	virtual ~NativeView(){}
 	// that function must return native object provided view functionality :
 	// UIView* for iPhone
 	// jobject for Android - jobect must be android.view.View class type
@@ -24,9 +25,12 @@ public:
 
 class NativeViewFactory {
 public:
+	virtual ~NativeViewFactory(){}
 	virtual NativeView* getNativeView(const char* viewType) = 0;
 	virtual void destroyNativeView(NativeView* nativeView) = 0;
 };
+
+
 
 class RhoNativeViewManager {
 public: 
@@ -38,6 +42,19 @@ public:
 	// jobject for Android - jobect is android.webkit.WebView class type
 	// HWND for Windows Mobile 
 	static void* getWebViewObject(int tab_index);
+};
+
+
+class RhoNativeViewRunnable {
+public:
+	virtual ~RhoNativeViewRunnable(){}
+	virtual void run() = 0;
+};
+
+
+class RhoNativeViewUtil {
+public: 
+	static void executeInUIThread_WM(RhoNativeViewRunnable* command);
 };
 
 #endif

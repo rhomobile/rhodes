@@ -11,6 +11,7 @@
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 #include "Alert.h"
+#include "RhoNativeViewManagerWM.h"
 
 #if defined(OS_WINDOWS)
 #include "menubar.h"
@@ -31,6 +32,7 @@ static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DAT
 static UINT WM_BLUETOOTH_DISCOVER      = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_DISCOVER");
 static UINT WM_BLUETOOTH_DISCOVERED    = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_DISCOVERED");
 static UINT WM_BLUETOOTH_CALLBACK	   = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_CALLBACK");
+static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 
 
 class CMainWindow :
@@ -49,6 +51,8 @@ public:
     //
 	void Navigate2(BSTR URL);
     void Navigate(BSTR URL);
+
+	HWND getWebViewHWND();
 	
 	//char* GetCurrentLocation() { return m_current_url; }
 
@@ -78,7 +82,7 @@ public:
         MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         //MESSAGE_HANDLER(WM_SETTEXT, OnSetText)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		//MESSAGE_HANDLER(WM_PAINT, OnPaint)
         COMMAND_ID_HANDLER(IDM_EXIT, OnExitCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE_BACK, OnNavigateBackCommand)
         COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
@@ -100,6 +104,7 @@ public:
 		MESSAGE_HANDLER(WM_BLUETOOTH_DISCOVER, OnBluetoothDiscover);
 		MESSAGE_HANDLER(WM_BLUETOOTH_DISCOVERED, OnBluetoothDiscovered);
 		MESSAGE_HANDLER(WM_BLUETOOTH_CALLBACK, OnBluetoothCallback);
+		MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
     END_MSG_MAP()
 	
 private:
@@ -136,6 +141,7 @@ private:
 	LRESULT OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnBluetoothCallback (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 public:
     BEGIN_SINK_MAP(CMainWindow)
@@ -166,12 +172,25 @@ private:
     static rho::StringW getRhodesAppName();
 	void createCustomMenu(void);
 
+	// return cleared URL or empty string
+	String processForNativeView(String url);
+	void restoreWebView();
+	void hideWebView();
+	void showWebView();
+
+private:
+	NativeViewFactory* mNativeViewFactory;
+	NativeView* mNativeView;
+	String mNativeViewType;
+
+
 private:
     // Represents the PIEWebBrowser control contained in the main application.
     // window. m_browser is used to manage the control and its associated 
     // "AtlAxWin" window. (AtlAxWin is a window class that ATL uses to support 
     // containment of controls in windows.)
     CAxWindow m_browser;
+	bool mIsBrowserViewHided;
 
     // cached copy of hosted control's IWebBrowser2 interface pointer
     CComPtr<IWebBrowser2> m_spIWebBrowser2;
