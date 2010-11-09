@@ -1183,6 +1183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RhoNativeViewManagerWM.h"
+				>
+			</File>
+			<File
 				RelativePath=".\RingtoneManager.h"
 				>
 			</File>
@@ -1355,6 +1359,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="NativeViewmanager"
+			>
+			<File
+				RelativePath=".\RhoNativeViewManager.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
