@@ -239,9 +239,10 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     int stop = !rho_conf_getBool("dont_stop_local_server_in_background");
     if (bActive)
     {
-        if (stop)
-            if (m_activateCounter++ > 0)
-                this->stopWait();
+        // Restart server each time when we go to foreground
+        m_httpServer->stop();
+        if (m_activateCounter++ > 0)
+            this->stopWait();
         
         String strUrl = m_strHomeUrl + "/system/activateapp";
         // Activation callback need to be runned in separate thread
