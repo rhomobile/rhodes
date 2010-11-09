@@ -1025,6 +1025,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MetaHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MetaHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\menubar.cpp"
 				>
 			</File>

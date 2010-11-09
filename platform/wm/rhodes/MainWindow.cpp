@@ -26,7 +26,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
-
+#include "MetaHandler.h"
 #include <hash_map>
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -908,25 +908,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	if (m_pageCounter > 2) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
-    //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
-/*#if defined (_WIN32_WCE)
-    //TEST
-    CComPtr<IDispatch> pDispDoc;
-    m_spIWebBrowser2->get_Document(&pDispDoc);
-
-    CComPtr<IPIEHTMLDocument3> pDoc;
-    pDispDoc.QueryInterface(&pDoc);
-
-    CComPtr<IPIEHTMLElementCollection> pColl;
-    pDoc->getElementsByTagName(CComBSTR("meta"), &pColl);
-    long size = 0;
-    pColl->get_length(&size);
-
-    if ( size > 0 )
-    {
-    }
-    //TEST
-#endif	*/
+    
+    CMetaHandler oHandler(m_spIWebBrowser2);
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
