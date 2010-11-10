@@ -799,12 +799,30 @@ public class RhodesService {
 	}
 	
 	public static boolean isAppInstalled(String appName) {
-		// TODO:
-		return false;
+		try {
+			try {
+				RhodesService.getInstance().getContext().getPackageManager().getPackageInfo(appName, 0);
+				return true;
+			}
+			catch (NameNotFoundException ne) {
+				return false;
+			}
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "Can't check is app " + appName + " installed: " + e.getMessage());
+			return false;
+		}
 	}
 	
 	public static void uninstallApplication(String appName) {
-		// TODO:
+		try {
+			Uri packageUri = Uri.parse("package:" + appName);
+			Intent intent = new Intent(Intent.ACTION_DELETE, packageUri);
+			RhodesService.getInstance().startActivity(intent);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "Can't uninstall application " + appName + ": " + e.getMessage());
+		}
 	}
 
 	public static void openExternalUrl(String url) {
