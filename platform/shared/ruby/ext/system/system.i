@@ -39,6 +39,12 @@ extern void rho_sys_run_app(const char* appname, VALUE params);
 #define open_url rho_sys_open_url
 extern void rho_sys_open_url(const char* url);
 
+#define app_installed rho_sys_is_app_installed
+extern int rho_sys_is_app_installed(const char *appname);
+
+#define app_uninstall rho_sys_app_uninstall
+extern void rho_sys_app_uninstall(const char *appname);
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -84,3 +90,6 @@ extern void unzip_file( const char *path );
 extern int set_sleeping( bool sleeping );
 extern void run_app(const char *appname, VALUE params);
 extern void open_url(const char *url);
+%predicate app_installed(const char *appname);
+extern int app_installed(const char *appname);
+extern void app_uninstall(const char *appname);
