@@ -797,6 +797,15 @@ public class RhodesService {
 			Logger.E(TAG, "Can't run application " + appName + ": " + e.getMessage());
 		}
 	}
+	
+	public static boolean isAppInstalled(String appName) {
+		// TODO:
+		return false;
+	}
+	
+	public static void uninstallApplication(String appName) {
+		// TODO:
+	}
 
 	public static void openExternalUrl(String url) {
 		try {
