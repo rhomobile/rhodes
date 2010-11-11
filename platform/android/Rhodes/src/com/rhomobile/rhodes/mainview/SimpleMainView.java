@@ -26,6 +26,7 @@ import java.util.Vector;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Context;
@@ -41,12 +42,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class SimpleMainView implements MainView {
 
+	private final static String TAG = "SimpleMainView";	
+	
 	private static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	private static final int FILL_PARENT = ViewGroup.LayoutParams.FILL_PARENT;
 	
@@ -55,6 +59,27 @@ public class SimpleMainView implements MainView {
 			back(0);
 		}
 	};
+	
+	public class MyView extends LinearLayout {
+		public MyView(Context ctx) {
+			super(ctx);
+		}
+		
+		protected void onSizeChanged (int w, int h, int oldw, int oldh) {
+			super.onSizeChanged(w, h, oldw, oldh);
+			StringBuilder msg = new StringBuilder();
+			msg.append(" Main Window :: onSizeChanged() old [ ");
+			msg.append(w);
+			msg.append(" x ");
+			msg.append(h);
+			msg.append(" ]  new [ ");
+			msg.append(oldw);
+			msg.append(" x ");
+			msg.append(oldh);
+			msg.append(" ]");
+			RhodesService.platformLog("SimpleMainView.View", msg.toString());
+		}
+	}
 	
 	private class ActionForward implements View.OnClickListener {
 		public void onClick(View v) {
@@ -82,6 +107,7 @@ public class SimpleMainView implements MainView {
 
 	private class ActionExit implements View.OnClickListener {
 		public void onClick(View v) {
+			restoreWebView();
 			RhodesService.exit();
 		}
 	};
@@ -104,7 +130,10 @@ public class SimpleMainView implements MainView {
 	
 	private LinearLayout view;
 	private WebView webView;
+	private RhoNativeViewManager.RhoNativeView mNativeView = null;
+	private View mNativeViewView = null;
 	private LinearLayout navBar = null;
+	private LinearLayout toolBar = null;
 	
 	public View getView() {
 		return view;
@@ -114,8 +143,148 @@ public class SimpleMainView implements MainView {
 		return webView;
 	}
 
+	public void setNativeView(RhoNativeViewManager.RhoNativeView nview) {
+		restoreWebView();
+		mNativeView = nview;
+		mNativeViewView = mNativeView.getView();
+		if (mNativeViewView != null) {
+			view.removeView(webView);
+			//int view_index = 0;
+			//if (navBar != null) {
+				//view_index = 1;
+			//}
+			if (navBar != null) {
+				view.removeView(navBar);
+			}
+			if (toolBar != null) {
+				view.removeView(toolBar);
+			}
+			int index = 0;
+			if (navBar != null) {
+				view.addView(navBar, index);
+				index++;
+			}
+			view.addView( mNativeViewView, index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+			index++;
+			if (toolBar != null) {
+				view.addView(toolBar, index);
+			}
+			
+			//view.bringChildToFront(mNativeViewView);
+			//view.requestLayout();
+		}
+		else {
+			mNativeView = null;
+			mNativeViewView = null;
+		}
+	}
+	
+	public void restoreWebView() {
+		if (mNativeView != null) {
+			view.removeView(mNativeViewView);
+			mNativeViewView = null;
+			//int view_index = 0;
+			//if (navBar != null) {
+				//view_index = 1;
+			//}
+			
+			if (navBar != null) {
+				view.removeView(navBar);
+			}
+			if (toolBar != null) {
+				view.removeView(toolBar);
+			}
+			
+			int index = 0;
+			if (navBar != null) {
+				view.addView(navBar, index);
+				index++;
+			}
+			view.addView( webView, index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+			index++;
+			if (toolBar != null) {
+				view.addView(toolBar, index);
+			}
+
+			//view.bringChildToFront(webView);
+
+			mNativeView.destroyView();
+			mNativeView = null;
+			//view.requestLayout();
+		}
+	}
+	
+
+    private String processForNativeView(String _url) {
+    	StringBuilder s = new StringBuilder("processForNativeView : [");
+    	s.append(_url);
+    	s.append("]");
+    	RhodesService.platformLog(TAG, s.toString());
+    	
+    	
+    	
+    	
+    	String url = _url;
+    	String callback_prefix = "call_stay_native";
+
+    	// find protocol:navto pairs
+
+    	int last = -1;
+    	int cur = url.indexOf(":", last+1);
+    	while (cur > 0) {
+    		String protocol = url.substring(last+1, cur);
+    		String navto = url.substring(cur+1, url.length());
+    		
+    		if (callback_prefix.equals(protocol)) {
+    			// navigate but still in native view
+    			String cleared_url = url.substring(callback_prefix.length()+1, url.length());
+    			return cleared_url;
+    		}
+    		// check protocol for nativeView
+    		RhoNativeViewManager.RhoNativeView nvf = RhoNativeViewManager.getNativeViewByteType(protocol);
+    		if (nvf != null) {
+    			// we should switch to NativeView
+    			//restoreWebView();
+    			if (mNativeView != null) {
+    				if ( !protocol.equals(mNativeView.getViewType()) ) {
+        				setNativeView(nvf);
+    				}
+    			}
+    			else {
+    				setNativeView(nvf);
+    			}
+    			if (mNativeView != null) {
+	    			mNativeView.navigate(navto);
+	   				return "";
+    			}
+    		}
+    		last = cur;
+    		int c1 = url.indexOf(":", last+1);
+    		int c2 = url.indexOf("/", last+1);
+    		if ((c1 < c2)) {
+    			if (c1 <= 0) {
+    				cur = c2;
+    			}
+    			else {
+    				cur = c1;
+    			}
+    		}
+    		else {
+    			if (c2 <= 0) {
+    				cur = c1;
+    			}
+    			else {
+    				cur = c2;
+    			}
+    		}
+    	}
+    	restoreWebView();
+    	return url;
+    }
+	
 	
 	public WebView detachWebView() {
+		restoreWebView();
 		WebView v = null;
 		if (webView != null) {
 			view.removeView(webView);
@@ -219,7 +388,7 @@ public class SimpleMainView implements MainView {
 		RhodesService r = RhodesService.getInstance();
 		Context ctx = r.getContext();
 		
-		view = new LinearLayout(ctx);
+		view = new MyView(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
@@ -237,6 +406,8 @@ public class SimpleMainView implements MainView {
 		bottom.setBackgroundColor(Color.GRAY);
 		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
 		view.addView(bottom);
+		
+		toolBar = bottom;
 		
 		Vector<Object> buttons = null;
 		if (params != null) {
@@ -331,19 +502,29 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void goBack() {
+		restoreWebView();
 		webView.goBack();
 	}
 
 	public void forward(int index) {
+		restoreWebView();
 		webView.goForward();
 	}
 
 	public void navigate(String url, int index) {
-		webView.loadUrl(url);
+		String cleared_url = processForNativeView(url);
+		if (cleared_url.length() > 0) {
+			webView.loadUrl(url);
+		}
 	}
 	
 	public void reload(int index) {
-		webView.reload();
+		if (mNativeViewView != null) {
+			mNativeViewView.invalidate();
+		}
+		else {
+			webView.reload();
+		}
 	}
 	
 	public String currentLocation(int index) {
@@ -359,6 +540,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void loadData(String data, int index) {
+		restoreWebView();
 		webView.loadData(data, "text/html", "utf-8");
 	}
 

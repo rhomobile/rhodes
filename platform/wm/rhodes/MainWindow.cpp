@@ -387,13 +387,20 @@ String CMainWindow::processForNativeView(String _url) {
 		
 		if (callback_prefix.compare(protocol) == 0) {
 			// navigate but still in native view
-			String cleared_url = url.substr(callback_prefix.size(), url.size() - callback_prefix.size());
+			String cleared_url = url.substr(callback_prefix.size()+1, url.size() - callback_prefix.size());
 			return cleared_url;
 		}
 		// check protocol for nativeView
 		NativeViewFactory* nvf = RhoNativeViewManagerWM::getFactoryByViewType(protocol.c_str());
 		if (nvf != NULL) {
 			// we should switch to NativeView
+			if (mNativeView != NULL) {
+				if (protocol.compare(mNativeViewType) == 0) {
+					mNativeView->navigate(navto.c_str());
+					return "";
+				}
+			}
+
 			restoreWebView();
 			NativeView* nv = nvf->getNativeView(protocol.c_str());
 			if (nv != NULL) {
