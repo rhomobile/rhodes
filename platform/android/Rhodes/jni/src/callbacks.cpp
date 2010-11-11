@@ -203,3 +203,23 @@ RHO_GLOBAL void rho_sys_open_url(const char *url)
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
 }
+
+RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "isAppInstalled", "(Ljava/lang/String;)Z");
+    if (!mid) return 0;
+    return (int)env->CallStaticBooleanMethod(cls, mid, env->NewStringUTF(appname));
+}
+
+RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "uninstallApplication", "(Ljava/lang/String;)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(appname));
+}

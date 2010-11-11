@@ -220,6 +220,10 @@ public :
 		return m_appWindow.m_hWnd;
 	}
 
+	HWND GetWebViewWindow() {
+		return m_appWindow.getWebViewHWND();
+	}
+
     void RunMessageLoop( ) throw( )
     {
         MSG msg;
@@ -402,13 +406,17 @@ private:
 };
 
 CRhodesModule _AtlModule;
+HINSTANCE rhoApplicationHINSTANCE = 0;
+
 //
 bool g_restartOnExit = false;
 //
-extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
+extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
 	INITCOMMONCONTROLSEX ctrl;
+
+	rhoApplicationHINSTANCE = hInstance;
 	
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
@@ -421,6 +429,11 @@ extern "C" int WINAPI _tWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstan
 extern "C" HWND getMainWnd() {
 	return _AtlModule.GetManWindow();
 }
+
+extern "C" HWND getWebViewWnd() {
+	return _AtlModule.GetWebViewWindow();
+}
+
 
 extern "C" const char* rho_native_rhopath() 
 {

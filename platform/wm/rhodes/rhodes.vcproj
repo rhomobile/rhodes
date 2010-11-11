@@ -1025,6 +1025,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MetaHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MetaHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\menubar.cpp"
 				>
 			</File>
@@ -1180,6 +1188,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RhoNativeViewManagerWM.h"
 				>
 			</File>
 			<File
@@ -1355,6 +1367,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="NativeViewmanager"
+			>
+			<File
+				RelativePath=".\RhoNativeViewManager.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter

@@ -178,6 +178,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
     [tb sizeToFit];
     
     CGFloat tbHeight = [tb frame].size.height;
+	// hack for do not reduce height of toolbar in Landscape mode
+	if (tbHeight < 44) {
+		tbHeight = 44;
+	}
+	
     CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
                                 CGRectGetHeight(mainFrame) - tbHeight,
                                 CGRectGetWidth(mainFrame),
@@ -718,13 +723,24 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	navbar.autoresizesSubviews = YES;
 	
 	UIView* root = self.view;
-    [root addSubview:navbar];
-    assert([navbar retainCount] == 2);
     
     CGRect nFrame = navbar.frame;
+
+	CGFloat nvHeight = nFrame.size.height;
+	// hack for do not reduce height of navbar in Landscape mode
+	if (nvHeight < 44) {
+		nvHeight = 44;
+	}
+	nFrame.size.height = nvHeight;
+	navbar.frame = nFrame;
+	
     CGRect wFrame = [self getContentRect];
     wFrame.origin.y += nFrame.size.height;
     wFrame.size.height -= nFrame.size.height;
+
+    [root addSubview:navbar];
+    assert([navbar retainCount] == 2);
+
     [self setContentRect:wFrame];
 }
 

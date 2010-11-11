@@ -26,7 +26,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
-
+#include "MetaHandler.h"
 #include <hash_map>
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -55,6 +55,11 @@ int CMainWindow::m_screenHeight;
 
 CMainWindow::CMainWindow()
 {
+	mIsBrowserViewHided = false;
+	mNativeView = NULL;
+	mNativeViewFactory = NULL;
+	mNativeViewType = "";
+
 	m_bLoading = true;
 #if defined(_WIN32_WCE)
     memset(&m_sai, 0, sizeof(m_sai));
@@ -73,11 +78,21 @@ CMainWindow::~CMainWindow()
 }
 
 void CMainWindow::Navigate2(BSTR URL) {
-  m_spIWebBrowser2->Navigate2(&CComVariant(URL), NULL, &CComVariant(L"_self"), NULL, NULL);
+	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
+	if (!cleared_url.empty()) {
+		StringW cw = convertToStringW(cleared_url);
+		BSTR cleared_url_bstr = SysAllocString(cw.c_str());
+		m_spIWebBrowser2->Navigate2(&CComVariant(cleared_url_bstr), NULL, &CComVariant(L"_self"), NULL, NULL);
+	}
 }
 
 void CMainWindow::Navigate(BSTR URL) {
-  m_spIWebBrowser2->Navigate(URL, NULL, &CComVariant(L"_self"), NULL, NULL);
+	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
+	if (!cleared_url.empty()) {
+		StringW cw = convertToStringW(cleared_url);
+		BSTR cleared_url_bstr = SysAllocString(cw.c_str());
+		m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
+	}
 }
 
 // **************************************************************************
@@ -223,6 +238,23 @@ LRESULT CMainWindow::OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     return TRUE;
 }
 
+HWND CMainWindow::getWebViewHWND() {
+	return m_browser.m_hWnd;
+}
+
+void CMainWindow::hideWebView() {
+	//::ShowWindow(m_browser.m_hWnd, SW_HIDE);
+	m_browser.ShowWindow(SW_HIDE);
+	mIsBrowserViewHided = true;
+	//m_browser.DestroyWindow();
+}
+
+void CMainWindow::showWebView() {
+	//::ShowWindow(m_browser.m_hWnd, SW_SHOW);
+	m_browser.ShowWindow(SW_SHOW);
+	mIsBrowserViewHided = false;
+}
+
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 #if defined (_WIN32_WCE)
@@ -339,6 +371,99 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
+// return true if NativeView was created
+String CMainWindow::processForNativeView(String _url) {
+
+	String url = _url.c_str();
+	String callback_prefix = "call_stay_native";
+
+	// find protocol:navto pairs
+
+	int last = -1;
+	int cur = url.find_first_of(':', last+1);
+	while (cur > 0) {
+		String protocol = url.substr(last+1, cur - last - 1);
+		String navto = url.substr(cur+1, url.size() - cur);
+		
+		if (callback_prefix.compare(protocol) == 0) {
+			// navigate but still in native view
+			String cleared_url = url.substr(callback_prefix.size(), url.size() - callback_prefix.size());
+			return cleared_url;
+		}
+		// check protocol for nativeView
+		NativeViewFactory* nvf = RhoNativeViewManagerWM::getFactoryByViewType(protocol.c_str());
+		if (nvf != NULL) {
+			// we should switch to NativeView
+			restoreWebView();
+			NativeView* nv = nvf->getNativeView(protocol.c_str());
+			if (nv != NULL) {
+				mNativeView = nv;
+				mNativeViewFactory = nvf;
+				mNativeViewType = protocol;
+
+				HWND nvh = (HWND)mNativeView->getView();
+
+
+				
+
+				::SetParent(nvh, m_hWnd);
+
+				RECT rect;
+				::GetWindowRect(getWebViewHWND(),&rect);
+
+				int x = 0;
+				int y = 0;
+				int w = rect.right - rect.left;
+				int h = rect.bottom - rect.top;
+
+				::SetWindowPos(nvh, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW);
+
+				nv->navigate(navto.c_str());
+				
+				::ShowWindow(nvh, SW_SHOWNORMAL);
+				hideWebView();
+
+				return "";
+			}
+			restoreWebView();
+			return url;
+		}
+		last = cur;
+		int c1 = url.find_first_of(':', last+1);
+		int c2 = url.find_first_of('/', last+1);
+		if ((c1 < c2)) {
+			if (c1 <= 0) {
+				cur = c2;
+			}
+			else {
+				cur = c1;
+			}
+		}
+		else {
+			if (c2 <= 0) {
+				cur = c1;
+			}
+			else {
+				cur = c2;
+			}
+		}
+	}
+	restoreWebView();
+	return url;
+}
+
+
+void CMainWindow::restoreWebView() {
+	if (mNativeView != NULL) {
+		mNativeViewFactory->destroyNativeView(mNativeView);
+		mNativeView = NULL;
+		mNativeViewFactory = NULL;
+		mNativeViewType = "";
+		showWebView();
+	}
+}
+
+
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
@@ -376,6 +501,7 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	restoreWebView();
     m_spIWebBrowser2->GoBack();
     return 0;
 }
@@ -412,6 +538,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+
     if (m_spIWebBrowser2)
         m_spIWebBrowser2->Refresh();
     return 0;
@@ -569,6 +696,14 @@ LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	return 0;
 }
 
+LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	RhoNativeViewRunnable* command = (RhoNativeViewRunnable*)wParam;
+	if (command != NULL) {
+		command->run();
+	}
+	return 0;
+}	
+
 LRESULT CMainWindow::OnBluetoothCallback(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	char* callback_url = (char*)wParam;
 	char* body = (char*)lParam;
@@ -665,7 +800,8 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
 {
     USES_CONVERSION;
 	if (!m_bLoading)
-		m_browser.ShowWindow(SW_SHOW);
+		if (!mIsBrowserViewHided) 
+			m_browser.ShowWindow(SW_SHOW);
     LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
 }
 
@@ -772,25 +908,8 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 	if (m_pageCounter > 2) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
-    //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, FALSE));
-/*#if defined (_WIN32_WCE)
-    //TEST
-    CComPtr<IDispatch> pDispDoc;
-    m_spIWebBrowser2->get_Document(&pDispDoc);
-
-    CComPtr<IPIEHTMLDocument3> pDoc;
-    pDispDoc.QueryInterface(&pDoc);
-
-    CComPtr<IPIEHTMLElementCollection> pColl;
-    pDoc->getElementsByTagName(CComBSTR("meta"), &pColl);
-    long size = 0;
-    pColl->get_length(&size);
-
-    if ( size > 0 )
-    {
-    }
-    //TEST
-#endif	*/
+    
+    CMetaHandler oHandler(m_spIWebBrowser2);
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
