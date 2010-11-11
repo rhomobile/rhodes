@@ -5,6 +5,10 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
 
+//#ifdef OS_WINCE
+//#include <cfgmgrapi.h>
+//#endif
+
 #ifdef OS_WINCE__
 #include <tapi.h>
 #include <tsp.h>
@@ -429,6 +433,40 @@ void rho_wmsys_run_app(const char* szPath, const char* szParams )
     }
 
     ShellExecuteEx(&se);
+}
+
+int rho_sys_is_app_installed(const char *appname)
+{
+#ifdef OS_WINCE
+/*    LPCWSTR wszFavoriteXml = 
+L"<wap-provisioningdoc>"
+L"<characteristic-query type=\"UnInstall\" recursive=\"true\">"
+L"</characteristic-query>"
+L"</wap-provisioningdoc>";
+
+<wap-provisioningdoc> 
+   <characteristic type="UnInstall"> 
+      <characteristic type="My Application"> 
+         <parm name="uninstall" value="1"/>    
+      </characteristic> 
+   </characteristic> 
+</wap-provisioningdoc>
+
+
+    HRESULT hr         = E_FAIL;
+    LPWSTR wszOutput   = NULL;
+    // Process the XML.
+    hr = DMProcessConfigXML(wszFavoriteXml, CFGFLAG_PROCESS, &wszOutput);
+    
+    // The caller must delete the XML returned from DMProcessConfigXML.
+    delete [] wszOutput;    */
+#endif
+
+    return 0;
+}
+
+void rho_sys_app_uninstall(const char *appname)
+{
 }
 
 } //extern "C"
