@@ -272,6 +272,23 @@ void rho_sys_run_app(const char* appname, VALUE params)
 	rho_sys_open_url(appname);
 }
 
+
+int rho_sys_is_app_installed(const char *appname) {
+	NSString* app_name = [NSString stringWithUTF8String:appname];
+	app_name = [app_name stringByAppendingString:@":check_for_exist"];
+	NSURL* nsurl = [NSURL URLWithString:app_name];
+	if ([[UIApplication sharedApplication] canOpenURL:nsurl]) {
+		return 1;
+	}
+	return 0;
+}
+
+void rho_sys_app_uninstall(const char *appname) {
+	NSLog(@"ALERT: Uninstall of applications is unsupported on iOS platfrom !!!");	
+}
+
+
+
 void rho_sys_open_url(const char* url) 
 {
 	NSString* strUrl = [NSString stringWithUTF8String:url];
