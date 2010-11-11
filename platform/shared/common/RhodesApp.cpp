@@ -240,9 +240,11 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     if (bActive)
     {
         // Restart server each time when we go to foreground
-        m_httpServer->stop();
         if (m_activateCounter++ > 0)
+        {
+            m_httpServer->stop();
             this->stopWait();
+        }
         
         String strUrl = m_strHomeUrl + "/system/activateapp";
         // Activation callback need to be runned in separate thread
