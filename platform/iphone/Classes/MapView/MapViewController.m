@@ -36,15 +36,17 @@ static MapViewController *mc = nil;
     MapViewController* map = [[MapViewController alloc] init];
     [map setParams:[value pointerValue]];
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
-	map.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	map.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	map.view.autoresizesSubviews = YES;
 	
 	UIView* v = [[[Rhodes sharedInstance] mainView] view];
 	map.savedMainView = v;
 	[map.savedMainView retain];
+	//[window layoutSubviews];
     [map.savedMainView removeFromSuperview];
 	//map.savedMainView.hidden = YES;
 	[window addSubview:map.view];
+	//[window layoutSubviews];
     
     mc = map;
 }
@@ -96,14 +98,15 @@ static MapViewController *mc = nil;
     
 	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 
-	CGRect frame = self.view.bounds;
+	//CGRect frame = self.view.bounds;
 	
-	self.savedMainView.frame = frame;
+	//self.savedMainView.frame = frame;
 	
 
 	[window addSubview:self.savedMainView];
-	[window layoutSubviews];
 	[self.view removeFromSuperview];
+	//[self.savedMainView layoutSubviews];
+	//[window layoutSubviews];
 	//self.view.hidden = YES;
 
 	[self.savedMainView release];
@@ -314,16 +317,21 @@ static MapViewController *mc = nil;
                                target:self action:@selector(close_clicked:)];
     [toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
 
-    [toolbar sizeToFit];
 	
 	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | 
 	UIViewAutoresizingFlexibleWidth;
 	toolbar.autoresizesSubviews = YES;
+    [toolbar sizeToFit];
 	
     CGFloat toolbarHeight = [toolbar frame].size.height;
+	// hack for do not reduce height of toolbar in Landscape mode
+	if (toolbarHeight < 44) {
+		toolbarHeight = 44;
+	}
 
 	//RhoMainView* rw = [[Rhodes sharedInstance] mainView];
-    CGRect rootViewBounds = [[[Rhodes sharedInstance] mainView] view].bounds;
+    
+	CGRect rootViewBounds = [[[Rhodes sharedInstance] mainView] view].frame;//bounds;
 	
 	self.view.frame = rootViewBounds;
 	
@@ -348,7 +356,7 @@ static MapViewController *mc = nil;
     mapView.mapType=mapType;
 	
     mapView.autoresizesSubviews = YES;
-    mapView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
 	
 	
@@ -367,7 +375,7 @@ static MapViewController *mc = nil;
     }
     
     [self.view insertSubview:mapView atIndex:0];
-	[self.view layoutSubviews];
+	//[[self.view superview] layoutSubviews];
 	
 }
 
@@ -380,11 +388,14 @@ static MapViewController *mc = nil;
     id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
     [mainView navigateRedirect:url tab:[mainView activeTab]];
     [self dismissModalViewControllerAnimated:YES]; 
-    self.view.hidden = YES;
+    [self close];
+	//mc = nil;
+    //self.view.hidden = YES;
 }
 
 - (void) close_clicked:(id)sender {
     [self close];
+	//mc = nil;
 }
 
 - (void)didReceiveMemoryWarning {
