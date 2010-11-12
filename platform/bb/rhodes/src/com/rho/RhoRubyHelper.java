@@ -160,8 +160,7 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	
 					if ( codeModule != null )
 					{
-						String moduleName = ApplicationDescriptor
-						   .currentApplicationDescriptor().getModuleName();
+						String moduleName = getModuleName();
 						
 						for(int i = 0; i < codeModule.length; i++) 
 						{
