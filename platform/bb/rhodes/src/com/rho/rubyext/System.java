@@ -12,6 +12,10 @@ import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
 import com.rho.RhoRubyHelper;
+
+import net.rim.device.api.system.ApplicationDescriptor;
+import net.rim.device.api.system.ApplicationManager;
+import net.rim.device.api.system.CodeModuleManager;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.Backlight;
 
@@ -136,10 +140,61 @@ public class System {
 			}
 		});
 
+		klass.getSingletonClass().defineMethod( "app_installed?", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
+			{
+				try 
+				{
+					String app_name = arg1.toStr();
+					int nHandle = CodeModuleManager.getModuleHandle(app_name);
+					
+					return nHandle != 0 ? RubyConstant.QTRUE : RubyConstant.QFALSE;
+				} catch(Exception e) {
+					LOG.ERROR("run_app failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+
+		klass.getSingletonClass().defineMethod( "app_uninstall", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
+			{
+				try 
+				{
+					String app_name = arg1.toStr();
+					int nHandle = CodeModuleManager.getModuleHandle(app_name);
+					if ( nHandle == 0 )
+						LOG.ERROR("Cannot find application: " + app_name);
+					else
+					{
+						int nCode = CodeModuleManager.deleteModuleEx(nHandle, true);
+						LOG.INFO("CodeModuleManager.deleteModuleEx return code: " + nCode);
+						
+						if ( nCode == CodeModuleManager.CMM_OK_MODULE_MARKED_FOR_DELETION ) 
+						{
+							LOG.INFO("Device need to be restarted.");
+							CodeModuleManager.promptForResetIfRequired(); 
+						}
+						
+					}
+					
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("run_app failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
 		klass.getSingletonClass().defineMethod( "run_app", new RubyTwoArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block )
 			{
 				try {
+					String app_name = arg1.toStr();
+					ApplicationManager appMan = ApplicationManager.getApplicationManager();
+					
+					appMan.launch(app_name);
+					
 					return RubyConstant.QNIL;
 				} catch(Exception e) {
 					LOG.ERROR("run_app failed", e);
