@@ -184,7 +184,7 @@ function fill_extensions_files(exts) {
 	}
 }
 
-function pinf(platform,es,exts,name,vendor) {
+function pinf(platform,es,exts,name,vendor,show_shortcat) {
 
 	p("[Version]");
 	p("Signature=\"$Windows NT$\"");
@@ -204,7 +204,9 @@ function pinf(platform,es,exts,name,vendor) {
 	p("BuildMax=0xE0000000");
 	p("");
 	p("[DefaultInstall]");
-	p("CEShortcuts=Shortcuts");
+	if (show_shortcat){
+	    p("CEShortcuts=Shortcuts");
+	}
 	p("AddReg=RegKeys");
 	p("CopyFiles=CopyToInstallDir"+get_copyfiles_sections(es));
 	p("");
@@ -213,23 +215,27 @@ function pinf(platform,es,exts,name,vendor) {
 	get_source_disks_names(es);
 	p("");
 	p("[SourceDisksFiles]");
-	p("\"rhodes.exe\"=1");
+	p("\"" + name + ".exe\"=1");
 	fill_extensions_source_disk_files(exts);
 	var f = get_source_disks_files(es);
 	p("");
 	p("[DestinationDirs]");
-	p("Shortcuts=0,%CE2%\Start Menu");
+	if (show_shortcat){
+    	p("Shortcuts=0,%CE2%\Start Menu");
+    }
 	p("CopyToInstallDir=0,\"%InstallDir%\"");
 	get_destination_dirs(es);
 	p("");
 	p("[CopyToInstallDir]");
-	p("\"rhodes.exe\",\"rhodes.exe\",,0");
+	p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
 	fill_extensions_files(exts);
 	p("");
 	fill_copyfiles_sections(es,f);
-	p("");
-	p("[Shortcuts]");
-	p("\""+name+"\",0,\"rhodes.exe\",%CE11%");
+	if (show_shortcat){
+	    p("");
+	    p("[Shortcuts]");
+	    p("\""+name+"\",0,\"" + name + ".exe\",%CE11%");
+	}
 	p("");
 	p("[RegKeys]");
 	p("");
@@ -248,7 +254,7 @@ function main() {
 
 	var es = expand_sources(sources);
 	var exts = expand_extensions(args(1));
-	pinf(args(1),es,exts,args(2),args(3));
+	pinf(args(1),es,exts,args(2),args(3), args(5) == "0");
 
 	output_file.Close();
 }
