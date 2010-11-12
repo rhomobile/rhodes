@@ -130,10 +130,8 @@ public class Rhodes extends RhoActivity {
 	private Timer mTimerPostponeCreate = null;
 	
 	public void onResume() {
-		RhodesService.platformLog("Rhodes", "onResume()");
-		
 		super.onResume();
-
+		RhodesService.platformLog("Rhodes", "onResume()");
 	}
 	
 	public static void runPosponedSetup() {
