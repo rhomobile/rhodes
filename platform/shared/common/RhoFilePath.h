@@ -19,6 +19,17 @@ public:
         return m_szPath;
     }
 
+    String getFolderName(){ 
+        const char* base = findLastSlash();
+        if (base)
+        {
+            String strRes = m_szPath;
+            return strRes.substr(0, base-m_szPath);
+        }
+
+        return m_szPath;
+    }
+
     String makeFullPath(const char* szFileName){
         String res = m_szPath;
         if ( res.length() > 0 && !findLastSlash() )

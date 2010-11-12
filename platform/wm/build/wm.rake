@@ -178,11 +178,14 @@ namespace "device" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 	
+	  out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+      cp  out_dir + "rhodes.exe", out_dir + $appname + ".exe" 
+	
       chdir $builddir
       
       cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
-      args = ['build_inf.js', $appname + ".inf", 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"']
+      args = ['build_inf.js', $appname + ".inf", 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app]
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
@@ -208,8 +211,10 @@ namespace "device" do
       mv $appname + ".inf", $targetdir
       mv $appname + ".cab", $targetdir
 
-	if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
-       		sign $targetdir + '/' +  $appname + ".cab";
+      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + " " + $appname + "/" + $appname + ".exe") }
+            
+	  if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
+        sign $targetdir + '/' +  $appname + ".cab";
 	  end
 	  
       rm_f "cleanup.js"
@@ -247,7 +252,7 @@ namespace "run" do
     task :dev => ["device:wm:production"] do
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/rhodes.exe" ]
+	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
 	  puts "\nStarting application on the device"
 	  puts "Please, connect you device via ActiveSync.\n\n"
 	  Jake.run(detool,args)
@@ -257,7 +262,7 @@ namespace "run" do
     task :emu => ["device:wm:production"] do
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/rhodes.exe" ]
+	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  Jake.run(detool,args)
     end
