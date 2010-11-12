@@ -5,6 +5,7 @@ import j2me.util.StringParser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -13,6 +14,7 @@ import javax.microedition.io.HttpConnection;
 
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.browser.BrowserSession;
+import net.rim.blackberry.api.invoke.Invoke;
 import net.rim.device.api.browser.field.RenderingOptions;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
@@ -37,6 +39,7 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.Manager;
 import net.rim.device.api.math.Fixed32;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
+import net.rim.blackberry.api.invoke.MessageArguments;
 
 import com.rho.*;
 //import com.rho.db.DBAdapter;
@@ -1407,6 +1410,40 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
             m_oFetchThread.addCommand(this);
     	}
     	
+    	static class RhoTextMessage implements javax.wireless.messaging.TextMessage
+    	{
+    		String m_strAddress = "", m_strBody = "";
+    		RhoTextMessage(String strAddr, String strBody)
+    		{
+    			super();
+    			
+    			m_strAddress = strAddr;
+    			m_strBody = strBody;
+    		}
+			public String getPayloadText() {
+				return m_strBody;
+			}
+
+			public void setPayloadText(String arg0) 
+			{
+				m_strBody = arg0;
+			}
+
+			public String getAddress() {
+				return m_strAddress;
+			}
+
+			public Date getTimestamp() {
+				return null;
+			}
+
+			public void setAddress(String addr) 
+			{
+				m_strAddress = addr;	
+			}
+    		
+    	};
+    	
         void processCommand()throws IOException
         {
         	if ( m_bActivateApp )
@@ -1416,6 +1453,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         	}
         	
         	URI uri = new URI(_url);
+        	String strMsgBody = "";
         	String query = uri.getQueryString();
         	if (query != null) {
         		StringParser tok = new StringParser(query, "&");
@@ -1432,9 +1470,23 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     		    		helper.open_url(_url);
         				return;
         			}
+        			
+        			if (name.equals("body")) 
+        			{
+        				strMsgBody = value;
+        			}
         		}
         	}
-        	
+
+        	if ( uri.getScheme().equalsIgnoreCase("sms"))
+        	{
+        		RhoTextMessage msg = new RhoTextMessage(uri.getPath(), URI.urlDecode(strMsgBody) );
+        		
+        		MessageArguments args = new MessageArguments( msg ); 
+        		Invoke.invokeApplication(Invoke.APP_TYPE_MESSAGES, args);
+        		return;
+        	}
+
     		HttpConnection connection = Utilities.makeConnection(_url, _requestHeaders, _postData, null);
     		
     		if ( m_bInternalRequest )
