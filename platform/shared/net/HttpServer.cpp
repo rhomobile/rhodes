@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <arpa/inet.h>
+
 #if !defined(OS_WINCE)
 #include <common/stat.h>
 #else
@@ -258,9 +260,31 @@ void CHttpServer::close_listener()
 
 void CHttpServer::stop()
 {
+    // WARNING!!! It is not enough to just close listener on Android
+    // to stop server. By unknown reason accept does not unblock if
+    // it was closed in another thread. However, on iPhone it works
+    // right. To work around this, we create dummy sockect and connect
+    // to the listener. This surely unblock accept on listener and,
+    // therefore, stop server thread (because m_active set to false).
     m_active = false;
+    RAWTRACE("Stopping server...");
+    SOCKET conn = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sin_family = AF_INET;
+    sa.sin_port = htons((uint16_t)m_port);
+    sa.sin_addr.s_addr = inet_addr("127.0.0.1");
+    int err = connect(conn, (struct sockaddr *)&sa, sizeof(sa));
+    if (err == SOCKET_ERROR)
+        RAWLOG_ERROR1("Stopping server: can not connect to listener: %d", RHO_NET_ERROR_CODE);
+    else
+        RAWTRACE("Stopping server: command sent");
+    closesocket(conn);
+    /*
     RAWTRACE("Close listening socket");
     close_listener();
+    RAWTRACE("Listening socket closed");
+    */
 }
 
 void CHttpServer::register_uri(String const &uri, CHttpServer::callback_t const &callback)
@@ -338,7 +362,9 @@ bool CHttpServer::run()
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
+        //RAWTRACE("Before accept...");
         SOCKET conn = accept(m_listener, NULL, NULL);
+        //RAWTRACE("After accept...");
         rho_ruby_stop_threadidle();
         if (!m_active) {
             RAWTRACE("Stop HTTP server");
