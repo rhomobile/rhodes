@@ -361,7 +361,21 @@ class Jake
         f.write "MIDlet-1: " + title + "," + icon + ",\n"
         puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! service_enabled: #{$service_enabled}"
         $stdout.flush
-        f.write "RIM-MIDlet-Flags-1: 1\n" if $service_enabled
+        
+          if $service_enabled      
+            if $hidden_app == "0"
+                f.write "RIM-MIDlet-Flags-1: 1\n" 
+            else
+                f.write "RIM-MIDlet-Flags-1: 3\n" 
+            end    
+          else
+            if $hidden_app == "0"
+                f.write "RIM-MIDlet-Flags-1: 0\n" 
+            else
+                f.write "RIM-MIDlet-Flags-1: 2\n" 
+            end    
+          end
+        
       end
 
       f.close

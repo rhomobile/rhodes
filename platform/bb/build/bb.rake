@@ -373,7 +373,21 @@ namespace "build" do
       f.write "MIDlet-Name: rhodes\n"
       f.write "MicroEdition-Profile: MIDP-2.0\n"
       f.write "MIDlet-Jar-Size: 0\n"
-      f.write "RIM-MIDlet-Flags-1: 1\n" if $service_enabled
+      
+      if $service_enabled      
+        if $hidden_app == "0"
+            f.write "RIM-MIDlet-Flags-1: 1\n" 
+        else
+            f.write "RIM-MIDlet-Flags-1: 3\n" 
+        end    
+      else
+        if $hidden_app == "0"
+            f.write "RIM-MIDlet-Flags-1: 0\n" 
+        else
+            f.write "RIM-MIDlet-Flags-1: 2\n" 
+        end    
+      end
+      
       f.close
     
     end
@@ -674,6 +688,7 @@ namespace "package" do
         $stdout.flush
         
         create_alx_file('rhodesApp', $outfilebase)
+        
       else
         puts 'rhodes .cod files are up to date'
         $stdout.flush
@@ -787,6 +802,8 @@ namespace "package" do
         exit 1
       end
       $stdout.flush
+
+      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $outfilebase ) }
       
       create_alx_file('rhodesApp', $outfilebase)
     end
