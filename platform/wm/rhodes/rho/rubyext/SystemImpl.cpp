@@ -2,12 +2,13 @@
 
 #include "common/RhoPort.h"
 #include "common/StringConverter.h"
+#include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
 
-//#ifdef OS_WINCE
-//#include <cfgmgrapi.h>
-//#endif
+#ifdef OS_WINCE
+#include <cfgmgrapi.h>
+#endif
 
 #ifdef OS_WINCE__
 #include <tapi.h>
@@ -398,26 +399,28 @@ void rho_sys_app_exit()
 	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 }
 
-void rho_wmsys_run_app(const char* szPath, const char* szParams );
-void rho_sys_run_app(const char *appname, VALUE params)
-{
-    rho_wmsys_run_app(appname, 0);
-}
-
-void rho_sys_open_url(const char* url)
-{
-    rho_wmsys_run_app(url, 0);
-}
+void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 
 void rho_wmsys_run_app(const char* szPath, const char* szParams )
+{
+    StringW strAppNameW;
+    convertToStringW(szPath, strAppNameW);
+
+    StringW strParamsW;
+    if ( szParams && *szParams )
+        convertToStringW(szParams, strParamsW);
+
+    rho_wmsys_run_appW(strAppNameW.c_str(), strParamsW.c_str() );
+}
+
+void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
 {
     SHELLEXECUTEINFO se = {0};
     se.cbSize = sizeof(SHELLEXECUTEINFO);
     se.fMask = SEE_MASK_NOCLOSEPROCESS;
     se.lpVerb = L"Open";
 
-    StringW strAppNameW;
-    convertToStringW(szPath, strAppNameW);
+    StringW strAppNameW = szPath;
     for(int i = 0; i<(int)strAppNameW.length();i++)
     {
         if ( strAppNameW.at(i) == '/' )
@@ -425,48 +428,117 @@ void rho_wmsys_run_app(const char* szPath, const char* szParams )
     }
     se.lpFile = strAppNameW.c_str();
 
-    StringW strParamsW;
     if ( szParams && *szParams )
+        se.lpParameters = szParams;
+
+    if ( !ShellExecuteEx(&se) )
+        LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
+
+    if(se.hProcess)
+        CloseHandle(se.hProcess); 
+}
+
+void rho_sys_open_url(const char* url)
+{
+    rho_wmsys_run_app(url, 0);
+}
+
+void rho_sys_run_app(const char *appname, VALUE params)
+{
+    CFilePath oPath(appname);
+    String strAppName = oPath.getFolderName();
+
+    StringW strKeyPath = L"Software\\Apps\\";
+    strKeyPath += convertToStringW(strAppName);
+
+    CRegKey oKey;
+    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
+    if ( res != ERROR_SUCCESS )
     {
-        convertToStringW(szParams, strParamsW);
-        se.lpParameters = strParamsW.c_str();
+        LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
+    }else
+    {
+        TCHAR szBuf[256];
+        ULONG nChars = 255;
+
+        res = oKey.QueryStringValue(L"InstallDir", szBuf, &nChars );
+        if ( res != ERROR_SUCCESS )
+            LOG(ERROR) + "Cannot red registry key: InstallDir; Code:" + res;
+        else
+        {
+            StringW strFullPath = szBuf;
+            if ( strFullPath[strFullPath.length()-1] != '/' && strFullPath[strFullPath.length()-1] != '\\' )
+                strFullPath += L"\\";
+
+            StringW strBaseName;
+            convertToStringW(oPath.getBaseName(), strBaseName);
+            strFullPath += strBaseName;
+
+            rho_wmsys_run_appW(strFullPath.c_str(), 0);
+        }
     }
 
-    ShellExecuteEx(&se);
+
 }
 
 int rho_sys_is_app_installed(const char *appname)
 {
+    int nRet = 0;
+    CFilePath oPath(appname);
+    String strAppName = oPath.getFolderName();
+    
+    StringW strRequest = 
+        L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
+        L"<characteristic-query type=\"";
+    strRequest += convertToStringW(strAppName) + L"\"/>"
+        L"</characteristic></wap-provisioningdoc>"; 
+
 #ifdef OS_WINCE
-/*    LPCWSTR wszFavoriteXml = 
-L"<wap-provisioningdoc>"
-L"<characteristic-query type=\"UnInstall\" recursive=\"true\">"
-L"</characteristic-query>"
-L"</wap-provisioningdoc>";
-
-<wap-provisioningdoc> 
-   <characteristic type="UnInstall"> 
-      <characteristic type="My Application"> 
-         <parm name="uninstall" value="1"/>    
-      </characteristic> 
-   </characteristic> 
-</wap-provisioningdoc>
-
-
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
-    // Process the XML.
-    hr = DMProcessConfigXML(wszFavoriteXml, CFGFLAG_PROCESS, &wszOutput);
-    
-    // The caller must delete the XML returned from DMProcessConfigXML.
-    delete [] wszOutput;    */
+    hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+    if (FAILED(hr) || !wszOutput )
+        LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
+    else
+    {
+        StringW strResp = L"<characteristic type=\"";
+        strResp += convertToStringW(strAppName) + L"\">";
+        nRet = wcsstr(wszOutput, strResp.c_str()) != 0 ? 1 : 0;
+    }
+
+    if ( wszOutput )
+        sys_free( wszOutput );
 #endif
 
-    return 0;
+    return nRet;
 }
 
 void rho_sys_app_uninstall(const char *appname)
 {
+    CFilePath oPath(appname);
+    String strAppName = oPath.getFolderName();
+    
+    StringW strRequest = 
+        L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
+        L"<characteristic type=\"";
+    strRequest += convertToStringW(strAppName) + L"\">"
+        L"<parm name=\"uninstall\" value=\"1\"/>"
+        L"</characteristic>"
+        L"</characteristic></wap-provisioningdoc>";
+
+#ifdef OS_WINCE
+    HRESULT hr         = E_FAIL;
+    LPWSTR wszOutput   = NULL;
+    hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+    if (FAILED(hr) || !wszOutput )
+        LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
+    else
+    {
+    }
+
+    if ( wszOutput )
+        sys_free( wszOutput );
+#endif
 }
 
 } //extern "C"

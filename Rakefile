@@ -106,6 +106,9 @@ namespace "config" do
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     $app_config["extensions"] = extensions
+    
+    $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
+    
   end
 
   out = `javac -version 2>&1`
