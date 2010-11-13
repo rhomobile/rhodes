@@ -916,7 +916,7 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
     
-    CMetaHandler oHandler(m_spIWebBrowser2);
+    //CMetaHandler oHandler(m_spIWebBrowser2);
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)
