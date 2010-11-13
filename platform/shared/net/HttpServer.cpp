@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
 #include <arpa/inet.h>
+#endif
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
