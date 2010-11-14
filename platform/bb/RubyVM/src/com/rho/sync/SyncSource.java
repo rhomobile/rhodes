@@ -210,7 +210,7 @@ class SyncSource
 	    //m_bIsSearch = false;
 	    
 	    try{
-	        if ( isTokenFromDB() && !isEmptyToken() )
+	        if ( isTokenFromDB() && getToken() > 1 )
 	            syncServerChanges();  //sync only server changes, which was paused before
 	        else
 	        {
@@ -314,29 +314,36 @@ class SyncSource
 	        LOG.INFO( "Push client changes to server. Source: " + getName() + "Size :" + strBody.length() );
 	        LOG.TRACE("Push body: " + strBody);		
 
-	        if ( m_arMultipartItems.size() > 0 )
-	        {
-	            MultipartItem oItem = new MultipartItem();
-	            oItem.m_strBody = strBody;
-	            //oItem.m_strContentType = getProtocol().getContentType();
-	            oItem.m_strName = "cud";
-	            m_arMultipartItems.addElement(oItem);
-
-	            NetResponse resp = getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, getSync(), null );
-	            if ( !resp.isOK() )
-	            {
-	                getSync().setState(SyncEngine.esStop);
-	                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
-	            }
-	        }else
-	        {
-	            NetResponse resp = getNet().pushData( getProtocol().getClientChangesUrl(), strBody, getSync());
-	            if ( !resp.isOK() )
-	            {
-	                getSync().setState(SyncEngine.esStop);
-	                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
-	            }
-	        }
+	        try{
+		        if ( m_arMultipartItems.size() > 0 )
+		        {
+		            MultipartItem oItem = new MultipartItem();
+		            oItem.m_strBody = strBody;
+		            //oItem.m_strContentType = getProtocol().getContentType();
+		            oItem.m_strName = "cud";
+		            m_arMultipartItems.addElement(oItem);
+	
+		            NetResponse resp = getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, getSync(), null );
+		            if ( !resp.isOK() )
+		            {
+		                getSync().setState(SyncEngine.esStop);
+		                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
+		            }
+		        }else
+		        {
+		            NetResponse resp = getNet().pushData( getProtocol().getClientChangesUrl(), strBody, getSync());
+		            if ( !resp.isOK() )
+		            {
+		                getSync().setState(SyncEngine.esStop);
+		                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
+		            }
+		        }
+		    }catch(Exception exc)
+		    {
+		    	m_nErrCode = RhoAppAdapter.getNetErrorCode(exc);
+		    	throw exc;
+		    }
+		        
 	    }
 
 	    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
