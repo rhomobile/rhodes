@@ -116,7 +116,7 @@ void CSyncSource::sync()
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
     //m_bIsSearch = false;
 
-    if ( isTokenFromDB() && !isEmptyToken() )
+    if ( isTokenFromDB() && getToken() > 1 )
         syncServerChanges();  //sync only server changes, which was paused before
     else
     {
@@ -229,7 +229,7 @@ void CSyncSource::doSyncClientChanges()
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
-                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
+                m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
             }
         }else
         {
@@ -237,7 +237,7 @@ void CSyncSource::doSyncClientChanges()
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
-                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
+                m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
             }
         }
     }
