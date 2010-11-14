@@ -66,6 +66,10 @@ describe "SyncEngine_test" do
       end
     
   end
+  
+  after (:each) do
+    Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku.com/application'
+  end
     
   it "should update syncserver at runtime" do
   
@@ -197,6 +201,34 @@ describe "SyncEngine_test" do
     cust22 = getCustomer.find(prod.sku);
     cust22.should_not == nil    
     cust22.first.should == cust2.first
+    
+  end
+
+  it "should process error sync" do
+
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
+    records.length.should == 0
+    
+    cust1 = getCustomer.create( {:first => "CustTest1"})
+
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
+    records.length.should_not == 0
+
+    Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku2.com/application'
+    res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
+    res['status'].should == 'error'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NETWORK
+
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
+    records.length.should_not == 0
+
+    Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku.com/application'
+    res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
+    records.length.should == 0
     
   end
   
