@@ -581,7 +581,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
         {
     	    LOG(ERROR) + "Bulk sync failed: server return an error.";
     	    stopSync();
-    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
+    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp));
     	    return;
         }
 
@@ -626,7 +626,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
         {
 	        LOG(ERROR) + "Bulk sync failed: cannot download database file.";
 	        stopSync();
-	        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
+	        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
 	        return;
         }
     }
