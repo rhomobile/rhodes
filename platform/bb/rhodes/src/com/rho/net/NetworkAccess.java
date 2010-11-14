@@ -205,8 +205,9 @@ public class NetworkAccess implements INetworkAccess {
 			
             String strMsg = ioe.getMessage(); 
 			boolean bTimeout = strMsg != null && (strMsg.indexOf("timed out") >= 0 || strMsg.indexOf("Timed out") >= 0);
+			boolean bDNS = strMsg != null && (strMsg.equalsIgnoreCase("Error trying to resolve") || strMsg.indexOf("DNS") >= 0);
 			
-			if ( bTimeout || bThrowIOException )				
+			if ( bTimeout || bDNS || bThrowIOException )				
 			{				
 				if (conn != null)
 					conn.close();
@@ -236,7 +237,7 @@ public class NetworkAccess implements INetworkAccess {
 		if ( conn == null )
 		{
 			conn = doConnect(strUrl + URLsuffix, false);
-			if ( conn == null )
+			if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
 				conn = doConnect(strUrl, true);				
 		}
 		

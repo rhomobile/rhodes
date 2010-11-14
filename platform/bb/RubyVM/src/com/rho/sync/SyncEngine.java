@@ -677,7 +677,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        {
 	    	    LOG.ERROR( "Bulk sync failed: server return an error." );
 	    	    stopSync();
-	    	    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
+	    	    getNotify().fireBulkSyncNotification(true, "", strPartition,RhoAppAdapter.getErrorFromResponse(resp));
 	    	    return;
 	        }
 
@@ -721,7 +721,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    {
 			    LOG.ERROR("Bulk sync failed: cannot download database file: " + resp1.getRespCode() );
 			    stopSync();
-			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
+			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
 			    return;
 		    }
 	    }
@@ -738,7 +738,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    {
 			    LOG.ERROR("Bulk sync failed: cannot download database file.");
 			    stopSync();
-			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_REMOTESERVER);
+			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
 			    return;
 		    }
 	    }
