@@ -311,7 +311,16 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     splash.start();
 #ifdef _WIN32_WCE	
     StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
-    HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
+
+	StringW path_wm_W = pathW.substr(0, pathW.length() - 3);
+	String wm_png = "wm.png";
+	path_wm_W.append(convertToStringW(wm_png));
+
+    HBITMAP hbitmap = SHLoadImageFile(path_wm_W.c_str());
+	if (!hbitmap) {
+		hbitmap = SHLoadImageFile(pathW.c_str());
+	}
+		
 	if (!hbitmap)
 		return 0;
 
