@@ -266,12 +266,6 @@ int rho_sys_set_sleeping(int sleeping)
 void rho_sys_app_exit() {
     exit(EXIT_SUCCESS);
 }
-void rho_sys_open_url(const char* url) ;
-void rho_sys_run_app(const char* appname, VALUE params) 
-{
-	rho_sys_open_url(appname);
-}
-
 
 int rho_sys_is_app_installed(const char *appname) {
 	NSString* app_name = [NSString stringWithUTF8String:appname];
@@ -301,6 +295,14 @@ void rho_sys_open_url(const char* url)
 	else
 		RAWLOG_INFO("rho_sys_open_url faled.");	
 }
+
+void rho_sys_run_app(const char* appname, VALUE params) 
+{
+	NSString* app_name = [NSString stringWithUTF8String:appname];
+	app_name = [app_name stringByAppendingString:@":"];
+	rho_sys_open_url([app_name UTF8String]);
+}
+
 
 extern VALUE rho_sys_has_network();
 
