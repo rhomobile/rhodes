@@ -10,7 +10,7 @@
 				<string>rhodes</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>com.rhomobile.rhodes</string>
+			<string>com.rhomobile.rhosyncclient</string>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
@@ -28,7 +28,7 @@
 		<string>icon114.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>com.rhomobile.rhodes</string>
+	<string>com.rhomobile.rhosyncclient</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
