@@ -146,12 +146,17 @@ def set_default_images
       ibak = File.join(ipath, defname + '.bak')
       imag = File.join(ipath, defname + '.png')
       appimage = File.join($app_path, 'app', name + '.png')
+      appsimage = File.join($app_path, 'app', name + '.iphone.png')
       if File.exists? imag
         cp imag, ibak unless File.exists? ibak
       end
       #bundlei = File.join($srcdir, defname + '.png')
       #cp appimage, bundlei unless !File.exist? appimage
-      cp appimage, imag unless !File.exists? appimage
+      if File.exists? appsimage
+          cp appsimage, imag
+      else
+          cp appimage, imag unless !File.exists? appimage
+      end
     end
   rescue => e
     puts "WARNING!!! Can not change default image: #{e.to_s}"
