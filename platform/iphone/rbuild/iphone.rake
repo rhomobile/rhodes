@@ -14,13 +14,79 @@ def set_app_name(newname)
     else
       buf << line
     end
-
     nextline = true if line =~ /CFBundleDisplayName/
-    
   end
-  
   File.open(fname,"w") { |f| f.write(buf) }
+end
 
+def set_app_bundle_identifier(newname)
+  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  nextline = false
+  replaced = false
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+    if nextline and not replaced
+      return if line =~ /#{newname}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
+      puts "set bundle identifier"
+      replaced = true
+    else
+      buf << line
+    end
+    nextline = true if line =~ /CFBundleIdentifier/
+  end
+  File.open(fname,"w") { |f| f.write(buf) }
+end
+
+def set_app_url_scheme(newname)
+  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  nextline = false
+  nextnextline = false
+  replaced = false
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+    if nextline and not replaced
+      return if line =~ /#{newname}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
+      puts "set URL Scheme"
+      replaced = true
+    else
+      if nextnextline
+          nextline = true
+      end
+      buf << line
+    end
+    nextnextline = true if line =~ /CFBundleURLSchemes/
+  end
+  File.open(fname,"w") { |f| f.write(buf) }
+end
+
+def set_app_url_name(newname)
+  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  nextline = false
+  replaced = false
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+    if nextline and not replaced
+      return if line =~ /#{newname}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
+      puts "set URL name"
+      replaced = true
+    else
+      buf << line
+    end
+    nextline = true if line =~ /CFBundleURLName/
+  end
+  File.open(fname,"w") { |f| f.write(buf) }
+end
+
+def make_app_info
+  fname = File.join($app_path, 'bin', 'target', 'iOS', $sdk,'app_info.txt')
+  buf = ""
+  urlscheme = 'rhodes'
+  urlscheme = $app_config["iphone"]["BundleURLScheme"] unless $app_config["iphone"]["BundleURLScheme"].nil?
+  buf << urlscheme
+  File.open(fname,"w") { |f| f.write(buf) }
 end
 
 ICONS = ['icon', 'icon57', 'icon72', 'icon114']
@@ -268,6 +334,12 @@ namespace "build" do
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
+      set_app_bundle_identifier($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      set_app_url_name($app_config["iphone"]["BundleURLName"]) unless $app_config["iphone"]["BundleURLName"].nil?
+ 
+            
+
       set_app_icon
       set_default_images
 
@@ -282,6 +354,10 @@ namespace "build" do
       chdir $startdir
       
       set_app_name("Rhodes") unless $app_config["name"].nil?
+      set_app_bundle_identifier("com.rhomobile.rhodes") unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_app_url_scheme("rhodes") unless $app_config["iphone"]["BundleURLScheme"].nil?
+      set_app_url_name("com.rhomobile.rhodes") unless $app_config["iphone"]["BundleURLName"].nil?
+      
       restore_default_images
       restore_app_icon
 
@@ -626,7 +702,8 @@ namespace "device" do
     mkdir_p app_path
 
     puts 'copy result build package to application target folder ...'    
-    cp_r src_file, dst_file 
+    cp_r src_file, dst_file
+    make_app_info 
 
     end
   end
