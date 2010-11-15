@@ -921,7 +921,11 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	try {
     		RubyProgram obj = new xruby.version.main();
 	    	String pngname = "/apps/app/loading.png";
-	    	is = obj.getClass().getResourceAsStream(pngname);
+	    	String pngbbname = "/apps/app/loading.bb.png";
+	    	is = obj.getClass().getResourceAsStream(pngbbname);
+	    	if (is == null) {
+		    	is = obj.getClass().getResourceAsStream(pngname);
+	    	}
 	    	if ( is != null )
 	    	{
 		    	int size = is.available();
