@@ -336,7 +336,7 @@ namespace "build" do
       set_app_name($app_config["name"]) unless $app_config["name"].nil?
       set_app_bundle_identifier($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
       set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
-      set_app_url_name($app_config["iphone"]["BundleURLName"]) unless $app_config["iphone"]["BundleURLName"].nil?
+      set_app_url_name($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
  
             
 
@@ -354,9 +354,9 @@ namespace "build" do
       chdir $startdir
       
       set_app_name("Rhodes") unless $app_config["name"].nil?
-      set_app_bundle_identifier("com.rhomobile.rhodes") unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_app_bundle_identifier("com.rhomobile.rhosyncclient") unless $app_config["iphone"]["BundleIdentifier"].nil?
       set_app_url_scheme("rhodes") unless $app_config["iphone"]["BundleURLScheme"].nil?
-      set_app_url_name("com.rhomobile.rhodes") unless $app_config["iphone"]["BundleURLName"].nil?
+      set_app_url_name("com.rhomobile.rhosyncclient") unless $app_config["iphone"]["BundleIdentifier"].nil?
       
       restore_default_images
       restore_app_icon
