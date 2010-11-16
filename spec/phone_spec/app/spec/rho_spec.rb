@@ -299,6 +299,17 @@ if !defined? RHO_ME
     res.to_s.should == "2010-08-16"
   end
 end
+
+  it "should call Float.to_f"  do
+    ftest = 0.34
+    ftest.is_a?(Float).should == true
+    
+    fres = ftest.to_f
+    fres.is_a?(Float).should == true
+    
+    fres.should == ftest
+    
+  end
     
 end
 =begin
