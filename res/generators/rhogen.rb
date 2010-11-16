@@ -81,6 +81,11 @@ module Rhogen
       template.source = 'app/loading.html'
       template.destination = "#{name}/app/loading.html"
     end
+
+    file :loadingpng do |file|
+      file.source = 'app/loading.png'
+      file.destination = "#{name}/app/loading.png"
+    end
     
     directory :helpers do |directory|
       directory.source = 'app/helpers'
