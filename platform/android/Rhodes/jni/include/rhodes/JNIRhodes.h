@@ -35,8 +35,6 @@ jfieldID getJNIClassStaticField(JNIEnv *env, jclass cls, const char *name, const
 jmethodID getJNIClassMethod(JNIEnv *env, jclass cls, const char *name, const char *signature);
 jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, const char *signature);
 
-VALUE convertJavaMapToRubyHash(jobject objMap);
-
 #define RHO_NOT_IMPLEMENTED RAWLOG_ERROR3("WARNING: Call not implemented function: \"%s\" (defined here: %s:%d)", __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
 #define RHO_LOG_CALLBACK RAWLOG_INFO1("Callback \"%s\" called", __PRETTY_FUNCTION__)
@@ -61,6 +59,23 @@ public:
 
     jobject createObject(rho_param *p);
 };
+
+namespace details
+{
+
+template <>
+struct rho_cast_helper<VALUE, jobject>
+{
+    VALUE operator()(JNIEnv *env, jobject obj);
+};
+
+template <>
+struct rho_cast_helper<jobject, VALUE>
+{
+    jobject operator()(JNIEnv *env, VALUE value);
+};
+
+} // namespace details
 
 #endif // RHO_JNI_RHODES_57d3a700b706402190ead97fd1383bee
 
