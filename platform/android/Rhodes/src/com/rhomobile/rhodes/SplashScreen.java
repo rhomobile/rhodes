@@ -37,7 +37,7 @@ public class SplashScreen {
 			RhodesService.platformLog(TAG, "Splash Screen Image REAL DRAWING !");
 			super.onDraw(canvas);
 			if (!setupExecuted) {
-				Rhodes.runPosponedSetup();
+				Rhodes.runPostponedSetup();
 				setupExecuted = true;
 			}
 		}
