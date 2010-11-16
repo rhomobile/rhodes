@@ -50,6 +50,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 public :
 	bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( ) {
 		m_nRestarting = 1;
+        m_bRhoGalleryApp = false;
 		TCHAR szTokens[] = _T("-/");
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
         getRhoRootPath();
@@ -58,6 +59,10 @@ public :
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
+			}
+
+			if (WordCmpI(lpszToken, _T("rhogallery_app"))==0) {
+				m_bRhoGalleryApp = true;
 			}
 
 #if defined(OS_WINDOWS)
@@ -130,6 +135,12 @@ public :
 		}
 
 		rho_logconf_Init(m_strRootPath.c_str());
+        if ( RHOCONF().getBool("rhogallery_only_app") && !m_bRhoGalleryApp)
+        {
+            LOG(INFO) + "This is RhoGallery only app and can be started only from RhoGallery.";
+            return S_FALSE;
+        }
+
 		LOG(INFO) + "Rhodes started";
 
 #ifdef OS_WINDOWS
@@ -403,6 +414,8 @@ private:
     CMainWindow m_appWindow;
     rho::String m_strRootPath;
 	int m_nRestarting;
+
+    bool m_bRhoGalleryApp;
 };
 
 CRhodesModule _AtlModule;
