@@ -847,7 +847,6 @@ namespace "build" do
       end
 
       # Generate Push.java
-      puts "app_push_java: #{$app_push_java.inspect}"
       File.open($app_push_java, "w") do |f|
         f.puts "package #{JAVA_PACKAGE_NAME};"
         f.puts "public class Push {"
