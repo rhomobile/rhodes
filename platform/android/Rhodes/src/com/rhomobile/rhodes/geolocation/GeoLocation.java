@@ -47,20 +47,18 @@ public class GeoLocation {
 			public void run() {
 				if (id != mInactivityTimerId)
 					return;
+				Logger.D(TAG, "Stop geolocation service by timeout");
 				GeoLocation.stop();
 			}
 		}, RhodesService.getGeoLocationInactivityTimeout());
 	}
 	
-	private static void init() {
-		if (locImpl != null)
-			return;
-		
+	private static GeoLocationImpl getImpl() {
 		synchronized (TAG) {
-			if (locImpl == null) {
+			if (locImpl == null)
 				locImpl = new GeoLocationImpl();
-				updateInactivityTimer();
-			}
+			updateInactivityTimer();
+			return locImpl;
 		}
 	}
 	
@@ -87,8 +85,7 @@ public class GeoLocation {
 			boolean result = false;
 			if (locImpl != null) {
 				checkState();
-				init();
-				result = locImpl.isAvailable();
+				result = getImpl().isAvailable();
 			}
 			Logger.T(TAG, "Geo location service is " + (result ? "" : "not ") + "available");
 			return result;
@@ -104,9 +101,7 @@ public class GeoLocation {
 		try {
 			checkState();
 			Logger.T(TAG, "getLatitude");
-			init();
-			updateInactivityTimer();
-			return locImpl.getLatitude();
+			return getImpl().getLatitude();
 		}
 		catch (Exception e) {
 			reportFail("getLatitude", e);
@@ -119,9 +114,7 @@ public class GeoLocation {
 		try {
 			checkState();
 			Logger.T(TAG, "getLongitude");
-			init();
-			updateInactivityTimer();
-			return locImpl.getLongitude();
+			return getImpl().getLongitude();
 		}
 		catch (Exception e) {
 			reportFail("getLongitude", e);
@@ -134,9 +127,7 @@ public class GeoLocation {
 		try {
 			checkState();
 			Logger.T(TAG, "isKnownPosition");
-			init();
-			updateInactivityTimer();
-			return locImpl.isKnownPosition();
+			return getImpl().isKnownPosition();
 		}
 		catch (Exception e) {
 			reportFail("isKnownPosition", e);
@@ -154,8 +145,7 @@ public class GeoLocation {
 			
 			checkState();
 			Logger.T(TAG, "setTimeout");
-			init();
-			locImpl.setTimeout(nsec);
+			getImpl().setTimeout(nsec);
 		}
 		catch (Exception e) {
 			reportFail("setTimeout", e);
