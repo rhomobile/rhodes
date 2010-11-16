@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -821,8 +823,23 @@ public class RhodesService {
 				if (params instanceof String) {
 					startParams.putInt((String)params, 1);
 				}
-				// TODO: pass another types (such as Map etc)
-				intent.putExtra("params", startParams);
+				else if (params instanceof List<?>) {
+					for (Object obj : (List<?>)params) {
+						startParams.putInt(obj.toString(), 1);
+					}
+				}
+				else if (params instanceof Map<?,?>) {
+					Map<?,?> mp = (Map<?,?>)params;
+					for (Iterator<?> it = mp.keySet().iterator(); it.hasNext();) {
+						Object key = it.next();
+						Object value = mp.get(key);
+						startParams.putString(key.toString(), value == null ? null : value.toString());
+					}
+				}
+				else
+					throw new IllegalArgumentException("Unknown type of incoming parameter");
+
+				intent.putExtras(startParams);
 			}
 			ctx.startActivity(intent);
 		}
