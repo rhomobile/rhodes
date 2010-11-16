@@ -13,4 +13,7 @@ iphone:
   provisionprofile:
   codesignidentity:
   entitlements:
+  BundleIdentifier: com.rhomobile.<%=@app_name%>
+  BundleURLScheme: <%=@app_name%>
+
 extensions: ["json", "another-extension"]
