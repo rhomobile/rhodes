@@ -277,17 +277,17 @@ public class RhodesService {
 		return false;
 	}
 
-  private static int mGeoLocationInactivityTimeout;
+	private static int mGeoLocationInactivityTimeout;
 
-  public static int getGeoLocationInactivityTimeout() {
-    return mGeoLocationInactivityTimeout;
-  }
+	public static int getGeoLocationInactivityTimeout() {
+		return mGeoLocationInactivityTimeout;
+	}
 	
 	public static SplashScreen showSplashScreen(Context ctx, ViewGroup myOuterFrame) {
 		SplashScreen splashScreen = new SplashScreen(ctx);
 		splashScreen.start(myOuterFrame);
 		return splashScreen;
-  }
+	}
 
 	public void hideSplashScreen() {
 		PerformOnUiThread.exec(new Runnable() {
