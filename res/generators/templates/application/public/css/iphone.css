@@ -408,3 +408,99 @@ h1 {
     margin: 0 8px;
     color: #565E70;
 }
+
+
+
+/* Override some styles provided by iphone.css to make them match the real iPhone more closely. */
+
+.toolbar {
+	background: -webkit-gradient( linear, left top, left bottom, color-stop(0, rgb(176,188,205)), color-stop(0.5, rgb(136,155,179)), color-stop(0.51, rgb(129,149,175)), color-stop(1, rgb(109,132,162)));
+	border-top: 1px solid #CDD5Df;
+	border-bottom: 1px solid #2D3642;
+}
+
+.toolbar a { font-weight: bold; }
+
+.pageTitle { width: 50%; margin:0 auto; }
+
+.pageTitle h1 {
+	text-shadow: rgba(0,0,0,0.6) 0px -1px 0;
+	width: 50%;  /* Should match pageTitle's width. */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+}
+
+/* --- Controls the switcher buttons, trying to emulate the native switcher control. --- */
+
+/* Use the following pattern in your HTML code to implement it:
+
+  <div class="switcher">
+	<div class="ls-button ls-pressed ls-left"><a href="#">Left Button</a></div>
+	<div class="ls-button ls-center"><a href="#">Center Button</a></div>
+	<div class="ls-button ls-right ls-disabled"><a href="#">Right Button</a></div>
+  </div>
+  
+  */
+
+/* Use on the div containing your button options. */
+.switcher {
+	text-align:center;
+	position:relative;
+	position:relative;
+	width:250px;
+	margin:0 auto;
+	padding-top:10px;
+	height:30px;
+}
+
+/* All button divs must contain an <a> tag with the button's label in it. */
+.switcher a {
+	color:#fff;
+	text-shadow: rgba(0,0,0,0.5) 0px -1px 0;
+	font-weight:bold;
+	font-size:smaller;
+}
+
+	/* Include the .ls-button style on each button div. */
+	.switcher .ls-button {
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(171,185,202)), color-stop(0.5, rgb(130,151,175)), color-stop(0.51, rgb(118,139,167)), color-stop(1, rgb(120,141,169)));
+		width:80px;  /* NOTE: If you only want to use 2 buttons, increase width to something more like 125px, and change margin to 0 -3px. */
+		height:15px;
+		display:inline-block;
+		padding-bottom:8px;
+		margin:0 -2px;
+		border:1px solid #000;
+		text-align:center;
+	}
+
+	/* Indicates the currently active (pressed) button. */
+	.switcher .ls-pressed {
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(142,164,193)), color-stop(0.5, rgb(88,119,162)), color-stop(0.51, rgb(71,105,153)), color-stop(1, rgb(74,108,152)));
+	}
+
+	.switcher .ls-left {
+		-webkit-border-top-left-radius: 4px;
+		-webkit-border-bottom-left-radius: 4px;
+	}
+
+	.switcher .ls-center {
+		border-right:none;
+		border-left:none;
+	}
+
+	.switcher .ls-right {
+		-webkit-border-top-right-radius: 4px;
+		-webkit-border-bottom-right-radius: 4px;
+	}
+
+	/* If an option should not be available, you can use the .ls-disabled class to gray it out. */
+	.switcher .ls-disabled {
+		background:-webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(158,158,158)), color-stop(0.95, rgb(204,204,204)))
+	}
+
+	/* However, even with disabled classes you must still include an <a> tag. Just have it go href="#" */
+	.switcher .ls-disabled a {
+		color:#f0f0f0;
+	}
+
