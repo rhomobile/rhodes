@@ -91,7 +91,8 @@
                 submitSelector: '.submit',
                 swapSelector: '.swap',
                 useAnimations: true,
-                useFastTouch: true // Experimental.
+//                useFastTouch: true // Experimental.
+                useFastTouch: false // Rho: default to false for this feature. May cause double-click bug.
             };
             jQTSettings = $.extend({}, defaults, options);
 
