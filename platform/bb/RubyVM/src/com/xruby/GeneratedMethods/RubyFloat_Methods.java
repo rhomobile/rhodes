@@ -1,5 +1,6 @@
 package com.xruby.GeneratedMethods;
 import com.xruby.runtime.lang.*;
+import com.xruby.runtime.builtin.RubyBignum;
 import com.xruby.runtime.builtin.RubyFixnum;
 import com.xruby.runtime.builtin.RubyFloat;
 public class RubyFloat_Methods{
@@ -76,6 +77,10 @@ klass.defineMethod( "infinite?", new RubyNoArgMethod(){
 klass.defineMethod( "**", new RubyOneArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyFloat)receiver).pow(arg);}
+});
+klass.defineMethod( "to_f", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyFloat)receiver).to_f();}
 });
 
 }}

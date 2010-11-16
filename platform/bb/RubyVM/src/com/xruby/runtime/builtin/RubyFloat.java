@@ -91,6 +91,11 @@ public class RubyFloat extends RubyNumeric {
 		return ObjectFactory.createFixnum((long)this.value_);
 	}
 	
+	////@RubyLevelMethod(name="to_f")
+	public RubyFloat to_f() {
+		return this;
+	}
+	
 	//@RubyLevelMethod(name="coerce")
 	public RubyArray coerce(RubyValue v) {
 		return new RubyArray(v.toRubyFloat(), this);
