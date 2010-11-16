@@ -192,8 +192,9 @@ public class System {
 				try {
 					String app_name = arg1.toStr();
 					ApplicationManager appMan = ApplicationManager.getApplicationManager();
+					String strParams = arg2 != null && arg2 != RubyConstant.QNIL ? arg2.toStr() : "";
 					
-					appMan.launch(app_name);
+					appMan.launch(app_name + (strParams.length() > 0 ? "?" + strParams : "") );
 					
 					return RubyConstant.QNIL;
 				} catch(Exception e) {

@@ -451,6 +451,20 @@ void rho_sys_run_app(const char *appname, VALUE params)
     StringW strKeyPath = L"Software\\Apps\\";
     strKeyPath += convertToStringW(strAppName);
 
+    StringW strParamsW;
+    if ( params && !rho_ruby_is_NIL(params) )
+    {
+        convertToStringW(getStringFromValue(params), strParamsW);
+
+        int nPos = strParamsW.find(L"rhogallery_app");
+        if ( nPos >= 0 )
+        {
+            if ( nPos == 0 || (nPos > 0 && strParamsW.at(nPos-1)!= '-' ) )
+                strParamsW.insert(nPos, L"-");
+        }
+
+    }
+
     CRegKey oKey;
     LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
     if ( res != ERROR_SUCCESS )
@@ -463,7 +477,7 @@ void rho_sys_run_app(const char *appname, VALUE params)
 
         res = oKey.QueryStringValue(L"InstallDir", szBuf, &nChars );
         if ( res != ERROR_SUCCESS )
-            LOG(ERROR) + "Cannot red registry key: InstallDir; Code:" + res;
+            LOG(ERROR) + "Cannot read registry key: InstallDir; Code:" + res;
         else
         {
             StringW strFullPath = szBuf;
@@ -474,7 +488,7 @@ void rho_sys_run_app(const char *appname, VALUE params)
             convertToStringW(oPath.getBaseName(), strBaseName);
             strFullPath += strBaseName;
 
-            rho_wmsys_run_appW(strFullPath.c_str(), 0);
+            rho_wmsys_run_appW(strFullPath.c_str(), strParamsW.c_str());
         }
     }
 
