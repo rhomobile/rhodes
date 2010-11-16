@@ -150,6 +150,22 @@ def set_app_name_android(newname)
   element.add_attribute('android:minSdkVersion', ANDROID_API_LEVEL.to_s)
   manifest.add element
 
+  # Remove category LAUNCHER from all activities if hidden_app is set
+  hidden_app = get_boolean($app_config['hidden_app'])
+  if hidden_app
+    manifest.elements.each('application') do |app|
+      app.elements.each('activity') do |activity|
+        activity.elements.each('intent-filter') do |intf|
+          intf.elements.each('category') do |c|
+            name = c.attribute('name', 'android')
+            next if name.nil?
+            intf.delete(c) if name.to_s == 'android.intent.category.LAUNCHER'
+          end
+        end
+      end
+    end
+  end
+
   # Clear C2DM stuff
   doc.elements.delete "manifest/application/receiver[@android:name='com.rhomobile.rhodes.PushReceiver']"
   manifest.elements.each('permission') do |e|
