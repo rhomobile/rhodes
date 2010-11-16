@@ -13,7 +13,7 @@ RHO_GLOBAL VALUE rho_ringtone_manager_get_all()
 
     jobject obj = env->CallStaticObjectMethod(cls, mid);
     if (!obj) return Qnil;
-    return convertJavaMapToRubyHash(obj);
+    return rho_cast<VALUE>(obj);
 }
 
 RHO_GLOBAL void rho_ringtone_manager_stop()
