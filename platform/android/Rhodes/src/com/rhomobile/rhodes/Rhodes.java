@@ -21,10 +21,8 @@
 package com.rhomobile.rhodes;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 import com.rhomobile.rhodes.mainview.MainView;
-import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -68,11 +66,11 @@ public class Rhodes extends RhoActivity {
 		super.onCreate(savedInstanceState);
 		mHandler = new Handler();
 		
-		if (savedInstanceState != null)
-			mStartParams = savedInstanceState.getBundle("params");
-
 		// Here Log should be used, not Logger. It is because Logger is not initialized yet.
 		Log.v(TAG, "+++ onCreate");
+		
+		mStartParams = getIntent().getExtras();
+		Log.d(TAG, "start parameters: " + mStartParams);
 		
 		instance = this;
 		
