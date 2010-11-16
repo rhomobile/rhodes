@@ -378,6 +378,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     {
     	_mainScreen.invalidate();
     }
+    
+    static boolean m_bRhoGalleryApp = false;
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -386,6 +388,14 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	LOG.INFO_EVENT("main start");
     	
 		try{
+			if ( args != null )
+			{
+				for( int i = 0; i < args.length; i++)
+				{
+					if ( args[i].equals("rhogallery_app") )
+						m_bRhoGalleryApp = true;
+				}
+			}
 			_instance = new RhodesApplication();
 			LOG.INFO_EVENT( "RhodesApplication created" );
 			
@@ -1025,6 +1035,13 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	    
         	RhoLogger.InitRhoLog();
         	
+            if ( RhoConf.getInstance().getBool("rhogallery_only_app") && !m_bRhoGalleryApp)
+            {
+                LOG.INFO("This is RhoGallery only app and can be started only from RhoGallery.");
+                System.exit(0);
+                return;
+            }
+            
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
 	    	
 	        RhodesApp.Create(RhoConf.getInstance().getRhoRootPath());
