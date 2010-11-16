@@ -324,7 +324,7 @@ public class RhodesService {
 				Rhodes.getInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
 				if (!setupExecuted) {
-					Rhodes.runPosponedSetup();
+					Rhodes.runPostponedSetup();
 					setupExecuted = true;
 				}
 				
@@ -444,7 +444,7 @@ public class RhodesService {
 		return instance != null;
 	}
 	
-	public RhodesService(Activity c, ViewGroup rootWindow, SplashScreen splash_s) {
+	public RhodesService(Activity c, ViewGroup rootWindow, SplashScreen splash_s, Object params) {
 	
 		ctx = c;
 		instance = this;
@@ -479,6 +479,18 @@ public class RhodesService {
 		}
 		
 		createRhodesApp();
+		
+		boolean rhoGalleryApp = false;
+		if (params != null && params instanceof Bundle) {
+			Bundle startParams = (Bundle)params;
+			String v = startParams.getString("rhogallery_app");
+			if (v != null && v.equals("1"))
+				rhoGalleryApp = true;
+		}
+		if (!rhoGalleryApp && RhoConf.getBool("rhogallery_only_app")) {
+			Logger.E(TAG, "This is RhoGallery only app and can be started only from RhoGallery");
+			exitApp();
+		}
 		
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))
@@ -775,7 +787,7 @@ public class RhodesService {
 		return tz.getDisplayName();
 	}
 	
-	public static void runApplication(String appName, Map<Object, Object> params) {
+	public static void runApplication(String appName, Object params) {
 		try {
 			Context ctx = RhodesService.getInstance().getContext();
 			PackageManager mgr = ctx.getPackageManager();
@@ -791,6 +803,14 @@ public class RhodesService {
 
 			Intent intent = new Intent();
 			intent.setClassName(appName, className);
+			if (params != null) {
+				Bundle startParams = new Bundle();
+				if (params instanceof String) {
+					startParams.putInt((String)params, 1);
+				}
+				// TODO: pass another types (such as Map etc)
+				intent.putExtra("params", startParams);
+			}
 			ctx.startActivity(intent);
 		}
 		catch (Exception e) {

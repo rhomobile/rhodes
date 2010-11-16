@@ -57,6 +57,8 @@ public class Rhodes extends RhoActivity {
 	private Bundle mSavedBundle = null;
 	private SplashScreen mSplashScreen = null;
 	private Handler mHandler = null;
+	
+	private Object mStartParams = null;
 		
 	/** Called when the activity is first created. */
 	@Override
@@ -65,6 +67,9 @@ public class Rhodes extends RhoActivity {
 		
 		super.onCreate(savedInstanceState);
 		mHandler = new Handler();
+		
+		if (savedInstanceState != null)
+			mStartParams = savedInstanceState.getBundle("params");
 
 		// Here Log should be used, not Logger. It is because Logger is not initialized yet.
 		Log.v(TAG, "+++ onCreate");
@@ -100,7 +105,7 @@ public class Rhodes extends RhoActivity {
 		RhodesService service = RhodesService.getInstance();
 		if (service == null) {
 			Log.v(TAG, "Starting rhodes service...");
-			service = new RhodesService(this, mOuterFrame, mSplashScreen);
+			service = new RhodesService(this, mOuterFrame, mSplashScreen, mStartParams);
 		}
 		else
 			Log.v(TAG, "Rhodes service already started...");
@@ -134,7 +139,7 @@ public class Rhodes extends RhoActivity {
 		RhodesService.platformLog("Rhodes", "onResume()");
 	}
 	
-	public static void runPosponedSetup() {
+	public static void runPostponedSetup() {
 		final Rhodes r = Rhodes.getInstance();
 		r.mHandler.post( new Runnable() {
 				public void run() {

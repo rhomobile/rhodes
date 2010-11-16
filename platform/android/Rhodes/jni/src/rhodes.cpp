@@ -223,51 +223,6 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     return jversion;
 }
 
-VALUE convertJavaMapToRubyHash(jobject objMap)
-{
-    jclass clsMap = getJNIClass(RHODES_JAVA_CLASS_MAP);
-    if (!clsMap) return Qnil;
-    jclass clsSet = getJNIClass(RHODES_JAVA_CLASS_SET);
-    if (!clsSet) return Qnil;
-    jclass clsIterator = getJNIClass(RHODES_JAVA_CLASS_ITERATOR);
-    if (!clsIterator) return Qnil;
-
-    JNIEnv *env = jnienv();
-
-    jmethodID midGet = getJNIClassMethod(env, clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
-    if (!midGet) return Qnil;
-    jmethodID midKeySet = getJNIClassMethod(env, clsMap, "keySet", "()Ljava/util/Set;");
-    if (!midKeySet) return Qnil;
-    jmethodID midIterator = getJNIClassMethod(env, clsSet, "iterator", "()Ljava/util/Iterator;");
-    if (!midIterator) return Qnil;
-    jmethodID midHasNext = getJNIClassMethod(env, clsIterator, "hasNext", "()Z");
-    if (!midHasNext) return Qnil;
-    jmethodID midNext = getJNIClassMethod(env, clsIterator, "next", "()Ljava/lang/Object;");
-    if (!midNext) return Qnil;
-
-    jobject objSet = env->CallObjectMethod(objMap, midKeySet);
-    if (!objSet) return Qnil;
-    jobject objIterator = env->CallObjectMethod(objSet, midIterator);
-    if (!objIterator) return Qnil;
-                                  
-    CHoldRubyValue retval(rho_ruby_createHash());
-    while(env->CallBooleanMethod(objIterator, midHasNext))
-    {
-        jstring objKey = (jstring)env->CallObjectMethod(objIterator, midNext);
-        if (!objKey) return Qnil;
-        jstring objValue = (jstring)env->CallObjectMethod(objMap, midGet, objKey);
-        if (!objValue) return Qnil;
-
-        std::string const &strKey = rho_cast<std::string>(objKey);
-        std::string const &strValue = rho_cast<std::string>(objValue);
-        addStrToHash(retval, strKey.c_str(), strValue.c_str());
-
-        env->DeleteLocalRef(objKey);
-        env->DeleteLocalRef(objValue);
-    }
-    return retval;
-}
-
 namespace details
 {
 
@@ -282,6 +237,118 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
 jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
     return env->NewStringUTF(s);
+}
+
+static rho::common::CMutex rho_cast_java_ruby_mtx;
+
+static jclass clsString;
+static jclass clsMap;
+static jclass clsSet;
+static jclass clsIterator;
+
+static jmethodID midMapGet;
+static jmethodID midMapKeySet;
+static jmethodID midSetIterator;
+static jmethodID midIteratorHasNext;
+static jmethodID midIteratorNext;
+
+static bool rho_cast_java_ruby_init(JNIEnv *env)
+{
+    static rho::common::CMutex rho_fd_mtx;
+    static bool initialized = false;
+    if (initialized)
+        return true;
+
+    rho::common::CMutexLock guard(rho_cast_java_ruby_mtx);
+    if (initialized)
+        return true;
+
+    clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
+    if (!clsString) return false;
+    clsMap = getJNIClass(RHODES_JAVA_CLASS_MAP);
+    if (!clsMap) return false;
+    clsSet = getJNIClass(RHODES_JAVA_CLASS_SET);
+    if (!clsSet) return false;
+    clsIterator = getJNIClass(RHODES_JAVA_CLASS_ITERATOR);
+    if (!clsIterator) return false;
+
+    midMapGet = getJNIClassMethod(env, clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    if (!midMapGet) return false;
+    midMapKeySet = getJNIClassMethod(env, clsMap, "keySet", "()Ljava/util/Set;");
+    if (!midMapKeySet) return false;
+    midSetIterator = getJNIClassMethod(env, clsSet, "iterator", "()Ljava/util/Iterator;");
+    if (!midSetIterator) return false;
+    midIteratorHasNext = getJNIClassMethod(env, clsIterator, "hasNext", "()Z");
+    if (!midIteratorHasNext) return false;
+    midIteratorNext = getJNIClassMethod(env, clsIterator, "next", "()Ljava/lang/Object;");
+    if (!midIteratorNext) return false;
+
+    initialized = true;
+    return true;
+}
+
+static VALUE convertJavaMapToRubyHash(JNIEnv *env, jobject objMap)
+{
+    jobject objSet = env->CallObjectMethod(objMap, midMapKeySet);
+    if (!objSet) return Qnil;
+    jobject objIterator = env->CallObjectMethod(objSet, midSetIterator);
+    if (!objIterator) return Qnil;
+                                  
+    CHoldRubyValue retval(rho_ruby_createHash());
+    while(env->CallBooleanMethod(objIterator, midIteratorHasNext))
+    {
+        jstring objKey = (jstring)env->CallObjectMethod(objIterator, midIteratorNext);
+        if (!objKey) return Qnil;
+        jstring objValue = (jstring)env->CallObjectMethod(objMap, midMapGet, objKey);
+        if (!objValue) return Qnil;
+
+        std::string const &strKey = rho_cast<std::string>(objKey);
+        std::string const &strValue = rho_cast<std::string>(objValue);
+        addStrToHash(retval, strKey.c_str(), strValue.c_str());
+
+        env->DeleteLocalRef(objKey);
+        env->DeleteLocalRef(objValue);
+    }
+    return retval;
+}
+
+jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
+{
+    if (!rho_cast_java_ruby_init(env))
+    {
+        env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Java <=> Ruby conversion initialization failed");
+        return NULL;
+    }
+
+    if (NIL_P(value))
+        return NULL;
+
+    if (TYPE(value) == T_STRING)
+        return env->NewStringUTF(RSTRING_PTR(value));
+
+    RAWLOG_ERROR("rho_cast<jobject, VALUE>: unknown type of value");
+    return NULL;
+}
+
+VALUE rho_cast_helper<VALUE, jobject>::operator()(JNIEnv *env, jobject obj)
+{
+    if (!rho_cast_java_ruby_init(env))
+    {
+        env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Java <=> Ruby conversion initialization failed");
+        return Qnil;
+    }
+
+    if (!obj)
+        return Qnil;
+
+    if (env->IsInstanceOf(obj, clsString))
+        return rho_ruby_create_string(rho_cast<std::string>(env, (jstring)obj).c_str());
+
+    if (env->IsInstanceOf(obj, clsMap))
+        return convertJavaMapToRubyHash(env, obj);
+
+    RAWLOG_ERROR("rho_cast<VALUE, jobject>: unknown type of value");
+    return Qnil;
 }
 
 } // namespace details
