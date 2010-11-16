@@ -167,7 +167,7 @@ def set_app_name_android(newname)
   end
 
   # Clear C2DM stuff
-  doc.elements.delete "manifest/application/receiver[@android:name='com.rhomobile.rhodes.PushReceiver']"
+  doc.elements.delete "manifest/application/receiver[@android:name='#{JAVA_PACKAGE_NAME}.PushReceiver']"
   manifest.elements.each('permission') do |e|
     name = e.attribute('name', 'android')
     next if name.nil?
@@ -266,7 +266,9 @@ namespace "config" do
     $libs = File.join($androidpath, "Rhodes", "libs")
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
-    $app_package_name = "com.rhomobile." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
+    $vendor = $app_config["vendor"]
+    $vendor = "rhomobile" if $vendor.nil?
+    $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
@@ -1115,7 +1117,7 @@ namespace "package" do
 end
 
 def get_app_log(appname, device, silent = false)
-  pkgname = 'com.rhomobile.' + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
+  pkgname = "com.#{$vendor}." + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')
   cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
   puts "RhoLog.txt stored to " + $app_path unless silent
@@ -1153,6 +1155,10 @@ namespace "device" do
       end
       #remove temporary files
       rm_rf simple_apkfile
+
+      File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
+        f.puts $app_package_name
+      end
 
     end
 
@@ -1239,6 +1245,10 @@ namespace "device" do
       #remove temporary files
       rm_rf simple_apkfile
       rm_rf signed_apkfile
+
+      File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
+        f.puts $app_package_name
+      end
     end
 
     task :getlog => "config:android" do
