@@ -11,12 +11,15 @@
 #include "common/RhodesApp.h"
 #import "SplitView/SplittedMainView.h"
 
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
 
 void rho_geoimpl_init();
 
 static BOOL app_created = NO;
+
 
 @interface RhoActivateTask : NSObject {}
 + (void)run;
@@ -31,7 +34,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate;
+@synthesize window, player, cookies, signatureDelegate, start_parameters;
 #ifdef __IPHONE_4_0
 @synthesize eventStore;
 #endif
@@ -665,14 +668,48 @@ static Rhodes *instance = NULL;
 
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
+
+	// store start parameter
+	NSString* start_parameter = [NSString stringWithUTF8String:""];
+	if (url != nil) {
+		NSString* url_str = [url absoluteString];
+		if (url_str != nil) {
+			NSRange range = [url_str rangeOfString:@":"];
+			if ((range.location >= 0) && (range.length > 0)) {
+				start_parameter = [url_str substringFromIndex:range.location + 1];
+			}
+		}
+	}	
+	self.start_parameters = [NSString stringWithUTF8String:[start_parameter UTF8String]];
+	
+	
 	[self doStartUp];
 	[self processDoSync:launchOptions];
+	
+	BOOL rhogallery_only = rho_conf_getBool("rhogallery_only_app");
+	
+	// check for only from gallery app
+	if (rhogallery_only) {
+		if ([start_parameter compare:@"rhogallery_app"] != NSOrderedSame) {
+			NSLog(@"ALERT ! Application should be executed only from RhoGallery application !!!");
+			exit(EXIT_SUCCESS);
+		}
+	}
 	return NO;
 }
 #endif
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	self.start_parameters = [NSString stringWithUTF8String:""];
+
 	[self doStartUp];
+	BOOL rhogallery_only = rho_conf_getBool("rhogallery_only_app");
+	if (rhogallery_only) {
+		NSLog(@"ALERT ! Application should be executed only from RhoGallery application !!!");
+		exit(EXIT_SUCCESS);
+	}
 }
 
 #ifdef __IPHONE_3_0
@@ -744,9 +781,41 @@ static Rhodes *instance = NULL;
         [mainView performSelector:sel];
 }
 
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    if (!url) {  return NO; }
+	/*
+    NSString *URLString = [url absoluteString];
+    [[NSUserDefaults standardUserDefaults] setObject:URLString forKey:@"url"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+	//NSString* msg = @"handleOpenURL: ";
+	//msg = [msg stringByAppendingString:URLString];
+	
+	UIAlertView *alert = [[[UIAlertView alloc]
+						   initWithTitle:@"handleOpenURL:"
+						   message:URLString
+						   delegate:self
+						   cancelButtonTitle:@"Close"
+						   otherButtonTitles:nil] autorelease];
+    
+    [alert show];
+	*/
+    return YES;
+}
+
+
+
 @end
 
 // Native functions
+
+const char* rho_sys_get_start_params() {
+	if ([Rhodes sharedInstance].start_parameters == nil) {
+		return "";
+	}
+    return [[Rhodes sharedInstance].start_parameters UTF8String];
+}
 
 
 void rho_map_location(char* query) {
