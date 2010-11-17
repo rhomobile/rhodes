@@ -138,7 +138,7 @@ void CAsyncHttp::CHttpCommand::execute()
                     if ( strBody.length() > 0 )
                     {
                         pItem->m_strBody = strBody;
-                        pItem->m_strContentType = oItem.getString("content_type", "application/x-www-form-urlencoded");
+                        pItem->m_strContentType = oItem.getString("content_type", "");
                     }
                     else
                     {
