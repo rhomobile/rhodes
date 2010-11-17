@@ -609,7 +609,7 @@ class SyncSource
 
 	        if ( oCmds.hasName("schema-changed") )
 	        {
-	            getSync().stopSync();    
+	            //getSync().stopSync();    
 	            getSync().setSchemaChanged(true);
 	        }else
 	        {
