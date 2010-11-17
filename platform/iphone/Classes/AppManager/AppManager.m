@@ -300,6 +300,16 @@ void rho_sys_run_app(const char* appname, VALUE params)
 {
 	NSString* app_name = [NSString stringWithUTF8String:appname];
 	app_name = [app_name stringByAppendingString:@":"];
+
+	if (params != 0) {
+		//if (TYPE(params) == T_STRING) {
+			char* parameter = getStringFromValue(params);
+			if (parameter != NULL) {
+				NSString* param = [NSString stringWithUTF8String:(const char*)parameter];
+				app_name = [app_name stringByAppendingString:param];
+			}
+		//}
+	}
 	rho_sys_open_url([app_name UTF8String]);
 }
 
