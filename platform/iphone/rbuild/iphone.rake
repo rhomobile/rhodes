@@ -1,13 +1,24 @@
 #
 
+
+def extract_value_from_strings(line)
+   pre_str = '<string>'
+   post_str = '</string>'
+   pre_index = line.index(pre_str)
+   post_index = line.index(post_str)
+   return line.slice( pre_index + pre_str.length, post_index - (pre_index + pre_str.length))
+end
+
 def set_app_name(newname)
+  ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
   nextline = false
   replaced = false
   buf = ""
   File.new(fname,"r").read.each_line do |line|
     if nextline and not replaced
-      return if line =~ /#{newname}/
+      ret_value = extract_value_from_strings(line)
+      return ret_value if line =~ /#{newname}/
       buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
       puts "set name"
       replaced = true
@@ -17,16 +28,42 @@ def set_app_name(newname)
     nextline = true if line =~ /CFBundleDisplayName/
   end
   File.open(fname,"w") { |f| f.write(buf) }
+  return ret_value
 end
 
-def set_app_bundle_identifier(newname)
+def set_app_version(newversion)
+  ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
   nextline = false
   replaced = false
   buf = ""
   File.new(fname,"r").read.each_line do |line|
     if nextline and not replaced
-      return if line =~ /#{newname}/
+      ret_value = extract_value_from_strings(line)
+      return if line =~ /#{newversion}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newversion}</string>")
+      puts "set name"
+      replaced = true
+    else
+      buf << line
+    end
+    nextline = true if line =~ /CFBundleVersion/
+  end
+  File.open(fname,"w") { |f| f.write(buf) }
+  return ret_value
+end
+
+
+def set_app_bundle_identifier(newname)
+  ret_value = ''
+  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  nextline = false
+  replaced = false
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+    if nextline and not replaced
+      ret_value = extract_value_from_strings(line)
+      return ret_value if line =~ /#{newname}/
       buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
       puts "set bundle identifier"
       replaced = true
@@ -36,9 +73,11 @@ def set_app_bundle_identifier(newname)
     nextline = true if line =~ /CFBundleIdentifier/
   end
   File.open(fname,"w") { |f| f.write(buf) }
+  return ret_value
 end
 
 def set_app_url_scheme(newname)
+  ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
   nextline = false
   nextnextline = false
@@ -46,7 +85,8 @@ def set_app_url_scheme(newname)
   buf = ""
   File.new(fname,"r").read.each_line do |line|
     if nextline and not replaced
-      return if line =~ /#{newname}/
+      ret_value = extract_value_from_strings(line)
+      return ret_value if line =~ /#{newname}/
       buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
       puts "set URL Scheme"
       replaced = true
@@ -59,16 +99,19 @@ def set_app_url_scheme(newname)
     nextnextline = true if line =~ /CFBundleURLSchemes/
   end
   File.open(fname,"w") { |f| f.write(buf) }
+  return ret_value
 end
 
 def set_app_url_name(newname)
+  ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
   nextline = false
   replaced = false
   buf = ""
   File.new(fname,"r").read.each_line do |line|
     if nextline and not replaced
-      return if line =~ /#{newname}/
+      ret_value = extract_value_from_strings(line)
+      return ret_value if line =~ /#{newname}/
       buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
       puts "set URL name"
       replaced = true
@@ -78,12 +121,14 @@ def set_app_url_name(newname)
     nextline = true if line =~ /CFBundleURLName/
   end
   File.open(fname,"w") { |f| f.write(buf) }
+  return ret_value
 end
 
 def make_app_info
-  fname = File.join($app_path, 'bin', 'target', 'iOS', $sdk,'app_info.txt')
+  fname = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration, 'app_info.txt')
   buf = ""
   urlscheme = 'rhodes'
+  urlscheme = $app_config["name"] unless $app_config["name"].nil?
   urlscheme = $app_config["iphone"]["BundleURLScheme"] unless $app_config["iphone"]["BundleURLScheme"].nil?
   buf << urlscheme
   File.open(fname,"w") { |f| f.write(buf) }
@@ -338,15 +383,28 @@ namespace "build" do
 #    desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
   
-      set_app_name($app_config["name"]) unless $app_config["name"].nil?
-      set_app_bundle_identifier($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
-      set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
-      set_app_url_name($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      saved_name = ''
+      saved_version = ''
+      saved_identifier = ''
+      saved_url_scheme = ''
+      saved_url_name = ''
+
+      saved_name = set_app_name($app_config["name"]) unless $app_config["name"].nil?
+      saved_version = set_app_version($app_config["version"]) unless $app_config["version"].nil?
+      saved_identifier = set_app_bundle_identifier($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      saved_url_name = set_app_url_name($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
  
             
 
       set_app_icon
       set_default_images
+
+      if $entitlements == ""
+          if $configuration == "Distribution"
+              $entitlements = "Entitlements.plist"
+          end
+      end
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
 
@@ -358,10 +416,11 @@ namespace "build" do
 
       chdir $startdir
       
-      set_app_name("Rhodes") unless $app_config["name"].nil?
-      set_app_bundle_identifier("com.rhomobile.rhosyncclient") unless $app_config["iphone"]["BundleIdentifier"].nil?
-      set_app_url_scheme("rhodes") unless $app_config["iphone"]["BundleURLScheme"].nil?
-      set_app_url_name("com.rhomobile.rhosyncclient") unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_app_name(saved_name) unless $app_config["name"].nil?
+      set_app_version(saved_version) unless $app_config["version"].nil?
+      set_app_bundle_identifier(saved_identifier) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
       
       restore_default_images
       restore_app_icon
@@ -686,7 +745,7 @@ namespace "device" do
     
     #copy build results to app folder
     
-    app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk)
+    app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
     
     iphone_path = $config["build"]["iphonepath"]    
     if $sdk =~ /iphonesimulator/
