@@ -599,3 +599,7 @@ RHO_GLOBAL char *rho_timezone()
     }
     return tz;
 }
+
+RHO_GLOBAL const char* rho_sys_get_start_params() {
+    return "";
+}
