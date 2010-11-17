@@ -37,6 +37,7 @@
     DateTimePickerDelegate* dateTimePickerDelegate;
     PickImageDelegate* pickImageDelegate;
 	SignatureDelegate* signatureDelegate;
+	NSString* start_parameters;
 #ifdef __IPHONE_4_0
     EKEventStore *eventStore;
 #endif
@@ -52,6 +53,7 @@
 #ifdef __IPHONE_4_0
 @property (nonatomic, readonly) EKEventStore *eventStore;
 #endif
+@property (nonatomic, retain) NSString* start_parameters;
 
 + (Rhodes*)sharedInstance;
 
