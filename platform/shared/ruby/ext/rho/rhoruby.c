@@ -457,6 +457,12 @@ VALUE rho_ruby_array_get(VALUE ar, int nIndex)
 }
 
 char* getStringFromValue(VALUE val){
+    if (val == 0) {
+        return NULL;
+    }
+    if (TYPE(val) != T_STRING) {
+        return NULL;
+    }
     return RSTRING_PTR(val);
 }
 
