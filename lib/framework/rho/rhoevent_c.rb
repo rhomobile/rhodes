@@ -30,6 +30,7 @@ module Rho
     end
 
     def self.create!(event)
+      event['id'] = nil #indicate that event should be created
       Rho::Calendar.save(event)
     end
 
