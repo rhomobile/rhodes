@@ -18,8 +18,10 @@
 #define DEFAULT_LOGCATEGORY "Location"
 
 int rho_rhodesapp_check_mode();
+int rho_conf_getInt(const char *);
 
-static const CFTimeInterval kTimeOutInSeconds = 25;
+#define RHO_GEO_LOCATION_INACTIVITY_TIMEOUT 25
+static CFTimeInterval timeOutInSeconds = RHO_GEO_LOCATION_INACTIVITY_TIMEOUT;
 static void _TimerCallBack(CFRunLoopTimerRef timer, void* context);
 
 // This is a singleton class, see below
@@ -49,7 +51,7 @@ static LocationController *sharedLC = nil;
 	}
 	if (_timer==NULL) {
 		_timer = CFRunLoopTimerCreate(NULL,
-									  CFAbsoluteTimeGetCurrent() + kTimeOutInSeconds,
+									  CFAbsoluteTimeGetCurrent() + timeOutInSeconds,
 									  0,		// interval
 									  0,		// flags
 									  0,		// order
@@ -60,7 +62,7 @@ static LocationController *sharedLC = nil;
 			return false;
         CFRunLoopAddTimer(CFRunLoopGetCurrent(), _timer, kCFRunLoopCommonModes);
 	} else {
-		CFRunLoopTimerSetNextFireDate(_timer, CFAbsoluteTimeGetCurrent() + kTimeOutInSeconds);
+		CFRunLoopTimerSetNextFireDate(_timer, CFAbsoluteTimeGetCurrent() + timeOutInSeconds);
 	}
 	
 	[_locationManager startUpdatingLocation];
@@ -72,6 +74,10 @@ static LocationController *sharedLC = nil;
 }
 
 - (void) initLocationManager {
+    int timeout = rho_conf_getInt("geo_location_inactivity_timeout");
+    if (timeout == 0)
+        timeout = RHO_GEO_LOCATION_INACTIVITY_TIMEOUT;
+    timeOutInSeconds = timeout;
     self._locationManager = [[[CLLocationManager alloc] init] autorelease];
     self._locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self._locationManager.delegate = self; // Tells the location manager to send updates to this object
