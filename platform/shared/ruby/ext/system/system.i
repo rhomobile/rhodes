@@ -36,6 +36,9 @@ extern int rho_sys_set_sleeping(int sleeping);
 #define run_app rho_sys_run_app
 extern void rho_sys_run_app(const char* appname, VALUE params);
 
+#define get_start_params rho_sys_get_start_params
+extern const char* rho_sys_get_start_params();
+
 #define open_url rho_sys_open_url
 extern void rho_sys_open_url(const char* url);
 
@@ -89,6 +92,7 @@ extern void exit();
 extern void unzip_file( const char *path );
 extern int set_sleeping( bool sleeping );
 extern void run_app(const char *appname, VALUE params);
+extern const char* get_start_params();
 extern void open_url(const char *url);
 %predicate app_installed(const char *appname);
 extern int app_installed(const char *appname);
