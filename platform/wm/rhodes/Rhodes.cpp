@@ -458,6 +458,11 @@ extern "C" void rho_conf_show_log()
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
 
+extern "C" const char* rho_sys_get_start_params() {
+    return "";
+}
+
+
 //Hook for ruby call to refresh web view
 
 extern "C" void rho_net_impl_network_indicator(int active)
