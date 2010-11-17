@@ -72,7 +72,7 @@ static NSDate *dateFromRuby(VALUE rDate)
     ID id_sec = rb_intern("sec");
     
     // Get GM time
-    rDate = rb_funcall(rDate, id_gmtime, 0);
+    //rDate = rb_funcall(rDate, id_gmtime, 0);
     
     int year = FIX2INT(rb_funcall(rDate, id_year, 0));
     int month = FIX2INT(rb_funcall(rDate, id_month, 0));
