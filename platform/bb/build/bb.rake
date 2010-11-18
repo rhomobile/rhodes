@@ -149,7 +149,7 @@ namespace "config" do
     #$rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
 
     $bbver = $app_config["bbver"].to_s
-    #$bb6 = true if $bbver == "6.0"
+    $bb6 = true if $bbver == "6.0"
     
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"
