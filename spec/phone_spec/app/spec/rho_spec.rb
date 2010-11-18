@@ -150,9 +150,14 @@ describe "RhoRuby" do
   it "split should have nil" do
     line = "Account|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||\n"
     parts = line.chomp.split('|')
-    
+
+    parts.should == ['Account','parent_name','44e804f2-4933-4e20-271c-48fcecd9450d']
     parts[3].should be_nil
     parts[4].should be_nil
+  end
+
+  it "should empty fields when limit isn't given" do
+    "1,2,,3,4,,".split(',').should == ["1", "2", "", "3", "4"]
   end
   
   it "should call to_a on string" do
@@ -310,16 +315,44 @@ end
     fres.should == ftest
     
   end
+
+  it "splits between characters when its argument is an empty string" do
+    "hi!".split("").should == ["h", "i", "!"]
+    #"hi!".split("", -1).should == ["h", "i", "!", ""]
+    "hi!".split("", 2).should == ["h", "i!"]
+  end
+
+  it "should split empty string"  do
+    block = nil
+    if block.nil?
+        buffer = []
+    else
+        buffer = block.split('')
+    end
     
-end
-=begin
-describe "String#split with String" do
+    buffer.should_not be_nil
+    buffer.should == []
+    buffer.length.should == 0
+  end
+
+  it "should split empty string1"  do
+  
+    block = '' if block.nil?
+    buffer = block.split('')
+    
+    buffer.should_not be_nil
+    buffer.should == []
+    buffer.length.should == 0
+  end
+    
   it "returns an array of substrings based on splitting on the given string" do
     "mellow yellow".split("ello").should == ["m", "w y", "w"]
   end
-  
+
   it "suppresses trailing empty fields when limit isn't given or 0" do
     "1,2,,3,4,,".split(',').should == ["1", "2", "", "3", "4"]
+    "1,2,,3,4".split(',').should == ["1", "2", "", "3", "4"]
+    
     "1,2,,3,4,,".split(',', 0).should == ["1", "2", "", "3", "4"]
     "  a  b  c\nd  ".split("  ").should == ["", "a", "b", "c\nd"]
     "hai".split("hai").should == []
@@ -357,6 +390,10 @@ describe "String#split with String" do
     "  a  b  c\nd  ".split("  ", -1).should == ["", "a", "b", "c\nd", ""]
     ",".split(",", -1).should == ["", ""]
   end
+end
+
+=begin
+describe "String#split with String" do
   
   it "defaults to $; when string isn't given or nil" do
     begin
@@ -387,12 +424,6 @@ describe "String#split with String" do
 
     "\t\n a\t\tb \n\r\r\nc\v\vd\v ".split(' ').should == ["a", "b", "c", "d"]
     "a\x00a b".split(' ').should == ["a\x00a", "b"]
-  end
-  
-  it "splits between characters when its argument is an empty string" do
-    "hi!".split("").should == ["h", "i", "!"]
-    "hi!".split("", -1).should == ["h", "i", "!", ""]
-    "hi!".split("", 2).should == ["h", "i!"]
   end
   
   it "doesn't set $~" do
