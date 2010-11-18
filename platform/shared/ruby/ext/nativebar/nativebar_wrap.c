@@ -1555,7 +1555,8 @@ extern void nativebar_switch_tab(int index);
 #define switch_tab nativebar_switch_tab
 extern VALUE nativebar_started();
 #define started nativebar_started
-
+extern void nativebar_set_tab_badge(int index,char* val);
+#define set_tab_badge nativebar_set_tab_badge
 
 #include <limits.h>
 #ifndef LLONG_MIN
@@ -1678,6 +1679,29 @@ _wrap_switch_tab(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = (int)(val1);
   switch_tab(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+SWIGINTERN VALUE
+_wrap_set_tab_badge(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char* arg2 = 0;
+  int val1 ;
+  int ecode1 = 0 ;
+
+  if ((argc < 2) || (argc > 2)) {
+	  rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_tab_badge" "', argument " "1"" of type '" "int""'");
+  }
+  arg1 = (int)(val1);
+  arg2 = getStringFromValue(argv[1]);
+  set_tab_badge(arg1,arg2);
   return Qnil;
 fail:
   return Qnil;
@@ -1970,5 +1994,6 @@ SWIGEXPORT void Init_NativeBar(void) {
   rb_define_module_function(mNativeBar, "remove", _wrap_remove, -1);
   rb_define_module_function(mNativeBar, "switch_tab", _wrap_switch_tab, -1);
   rb_define_module_function(mNativeBar, "started", _wrap_started, -1);
+  rb_define_module_function(mNativeBar, "set_tab_badge", _wrap_set_tab_badge, -1);
 }
 
