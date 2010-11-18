@@ -13,6 +13,8 @@ class StringParser implements Enumeration
 	{
 		m_strToSplit = strToSplit;
 		m_strDelim = strDelim;
+		
+		m_bFinish = !(m_strToSplit != null && m_strToSplit.length() > 0); 
 	}
 	
 	public boolean hasMoreElements() 
