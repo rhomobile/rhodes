@@ -1109,13 +1109,25 @@ public class RubyString extends RubyBasic {
             if ( !( bSkipFirstEmptyItem && 0 == i && (str == null || str.equals(""))) )
             {
                 //To conform ruby's behavior, discard the first empty element
-            	if (str == null)
-            		a.add(RubyConstant.QNIL);
-            	else
+            	//if (str == null)
+            	//	a.add(RubyConstant.QNIL);
+            	//else
             		a.add(ObjectFactory.createString(str));
             }
             ++i;
         }
+        
+        if ( nLimit == 0 )
+        {
+	        for( i = a.size()-1; i >=0 ;i--)
+	        {
+	        	if ( ((RubyString)a.get(i)).length()>0 )
+	        		break;
+	        	
+	        	a.delete_at(i);
+	        }
+        }
+        
         return a;
     }
 
