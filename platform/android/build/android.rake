@@ -268,6 +268,7 @@ namespace "config" do
     $appname = "Rhodes" if $appname.nil?
     $vendor = $app_config["vendor"]
     $vendor = "rhomobile" if $vendor.nil?
+    $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
