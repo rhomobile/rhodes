@@ -111,6 +111,22 @@ static int started = 0;
 }
 @end
 
+@interface RhoNativeBarSetTabBadgeTask : NSObject {}          
+ + (void)run:(NSValue*)value :(NSValue*)val;                  
+@end                                                          
+                                                              
+@implementation RhoNativeBarSetTabBadgeTask                   
++ (void)run:(NSValue*)value :(NSValue*)val                    
+{
+  int index;
+  char* badge_val=[val pointerValue];
+  [value getValue:&index];
+  RAWLOG_INFO1("RhoNativeBarSetTabBadgeTask %d",index);
+  RAWLOG_INFO1("RhoNativeBarSetTabBadgeTask %s",badge_val);
+  [[[Rhodes sharedInstance] mainView] setTabBadge:index val:badge_val];
+}
+@end
+
 void create_nativebar(int bar_type, rho_param *p)
 {
     if (!rho_rhodesapp_check_mode())
@@ -214,6 +230,17 @@ void nativebar_switch_tab(int index) {
     id runnable = [RhoNativeBarSwitchTabTask class];
     id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg wait:NO];
+}
+
+void nativebar_set_tab_badge(int index, char *val)
+{
+        RAWLOG_INFO2("set_tab_badge called: %d : %s",index,val);
+        id runnable = [RhoNativeBarSetTabBadgeTask class];
+        id arg1 = [NSValue valueWithBytes:&index objCType:@encode(int)];
+        id arg2 = [NSValue valueWithBytes:&val objCType:@encode(char*)];
+        [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:YES];
+
+        RAWLOG_INFO("set_tab_badge done");
 }
 
 VALUE nativebar_started() {

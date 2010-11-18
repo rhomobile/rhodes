@@ -60,3 +60,6 @@ RHO_GLOBAL VALUE nativebar_started()
 
     return rho_ruby_create_boolean(env->CallStaticBooleanMethod(cls, mid));
 }
+
+RHO_GLOBAL void nativebar_set_tab_badge(int index,char *val) {
+}

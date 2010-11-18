@@ -10,6 +10,8 @@ extern void nativebar_switch_tab(int index);
 #define switch_tab nativebar_switch_tab
 extern VALUE nativebar_started();
 #define started nativebar_started
+extern void nativebar_set_tab_badge(int index,char *val);
+#define set_tab_badge nativebar_set_tab_badge
 %}
 
 %typemap(in) (rho_param *p) {
@@ -24,3 +26,4 @@ extern void create(int bar_type, rho_param *p);
 extern void remove();
 extern void switch_tab(int index);
 extern VALUE started();
+extern void set_tab_badge(int index,char* val);
