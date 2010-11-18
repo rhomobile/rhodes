@@ -30,3 +30,5 @@ logname='<%=@app_name%>'
 
 # Hides forward button and animates back button transition
 jqtouch_mode=1
+
+splash_screen='zoom'
