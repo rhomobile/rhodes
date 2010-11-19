@@ -1033,6 +1033,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SyncStatusDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SyncStatusDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\menubar.cpp"
 				>
 			</File>
