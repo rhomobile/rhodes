@@ -478,6 +478,10 @@ extern "C" void remove_nativebar() {
 	//TODO: Implement me!
 }
 
+extern "C" void nativebar_set_tab_badge(int index,char* val)
+{
+}
+
 extern "C" void nativebar_switch_tab(int index) {
 	//TODO: Implement me!
 }
