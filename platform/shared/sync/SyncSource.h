@@ -66,6 +66,7 @@ private:
 public:
     int m_nErrCode;
     String m_strError;
+    String m_strErrorType;
 
 public:
     CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );

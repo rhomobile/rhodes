@@ -463,6 +463,7 @@ public class SyncNotify {
 				        	
 				        	strBody += "error";				        	
 						    strBody += "&error_code=" + nErrCode;
+						    strBody += "&error_type=" + (src != null ? src.m_strErrorType : "");
 						    
 						    if ( strError != null && strError.length() > 0 )
 						    	strBody += "&error_message=" + URI.urlEncode(strError);
