@@ -415,6 +415,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);
+                    strBody += "&error_type=" + (src != null ? (*src).m_strErrorType : String());
 		            strBody += "&error_message=";
 
                     if ( strError.length() > 0 )
