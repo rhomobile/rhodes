@@ -51,6 +51,9 @@
 	#define clear_bulk_notification rho_sync_clear_bulk_notification
 	extern void rho_sync_set_threaded_mode(int b);
 	#define set_threaded_mode rho_sync_set_threaded_mode
+
+	extern void rho_sync_enable_status_popup(int b);
+	#define enable_status_popup rho_sync_enable_status_popup
 	
 	#if !defined(bool)
 	#define bool int
@@ -82,3 +85,4 @@ extern int   get_lastsync_objectcount(int nSrcID);
 extern int   get_pagesize();
 extern void  set_pagesize(int pagesize);
 extern void  set_threaded_mode(bool b);
+extern void  enable_status_popup(bool b);

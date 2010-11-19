@@ -278,22 +278,27 @@ void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
     }
 }
 
-extern "C" void alert_show_popup(const char* message);
-void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) {
-    if ( error == RhoAppAdapter.ERR_SYNCVERSION )
-    {
-        status = RhoAppAdapter.getErrorText(error);
-        alert_show_popup(status.c_str());
-        return;
-    }
-    //TODO: reportStatus
-	//if (m_statusListener != null) {
-	//	if ( strDetails.length() == 0 )
-	//		strDetails = RhoRuby.getErrorText(error);
-    //    status += (strDetails.length() > 0 ? RhoRuby.getMessageText("details") + strDetails: "");
-	//	m_statusListener.reportStatus( status, error);
-	//}
-	//LOG(INFO) + "Status: "+status;
+void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
+{
+	synchronized(m_mxSyncNotifications)
+	{    	
+    	if (/*m_syncStatusListener != null && */(isReportingEnabled() || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
+    		
+    		if ( error == RhoAppAdapter.ERR_SYNCVERSION )
+    			status = RhoAppAdapter.getErrorText(error);
+    		else
+    		{
+	    		if ( strDetails.length() == 0 )
+	    			strDetails = RhoAppAdapter.getErrorText(error);
+	    		status += (strDetails.length() > 0 ? RhoAppAdapter.getMessageText("details") + strDetails: "");
+    		}
+    		
+        	LOG(INFO) + "Status: "+status;
+    		
+        	//m_syncStatusListener.reportStatus( status, error);
+            alert_show_status(status.c_str());
+    	}
+	}
 }
 
 void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode )
@@ -337,8 +342,8 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
 	{
 		if ( !getSync().isSearch() )
         {
-	//		if ( src != null && strMessage.length() == 0 )
-	//			strMessage = RhoRuby.getMessageText("sync_failed_for") + (*src).getName() + ".";
+			if ( src != null && strMessage.length() == 0 )
+				strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + (*src).getName() + ".";
 			
             reportSyncStatus(strMessage,nErrCode, (src != null ? (*src).m_strError : "") );
         }

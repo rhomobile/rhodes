@@ -7,6 +7,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
 #include "sync/ClientRegister.h"
+#include "common/RhoAppAdapter.h"
 
 namespace rho {
 namespace sync {
@@ -109,8 +110,9 @@ void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
 {
 	boolean bShowStatus = oSyncCmd.m_bShowStatus;
 	m_oSyncEngine.getNotify().enableReporting(bShowStatus);
-	//if (bShowStatus)
-		//m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
+	if (m_oSyncEngine.getNotify().isReportingEnabled())
+        alert_show_status(RhoAppAdapter.getMessageText("syncronizing_data").c_str());
+        //m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 }	
 
 void CSyncThread::processCommand(IQueueCommand* pCmd)
@@ -396,6 +398,11 @@ char* rho_sync_create_string(const char* szStr)
 void rho_sync_free_string(char* szStr)
 {
     return free(szStr);
+}
+
+void rho_sync_enable_status_popup(int b)
+{
+    return CSyncThread::getSyncEngine().getNotify().enableStatusPopup(b == 0 ? false : true);
 }
 
 }

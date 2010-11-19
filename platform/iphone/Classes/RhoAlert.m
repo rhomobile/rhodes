@@ -230,6 +230,12 @@ static UIAlertView *currentAlert = nil;
 
 @end
 
+void alert_show_status(const char* szMessage)
+{
+    //TODO: add button:  rho_ruby_getMessageText("hide");
+    //show new status dialog or update text
+}
+
 void alert_show_popup(rho_param *p) {
     if (!rho_rhodesapp_check_mode())
         return;

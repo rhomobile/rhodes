@@ -1864,6 +1864,9 @@ static VALUE mSyncEngine;
 	#define clear_bulk_notification rho_sync_clear_bulk_notification
 	extern void rho_sync_set_threaded_mode(int b);
 	#define set_threaded_mode rho_sync_set_threaded_mode
+
+	extern void rho_sync_enable_status_popup(int b);
+	#define enable_status_popup rho_sync_enable_status_popup
 	
 	#if !defined(bool)
 	#define bool int
@@ -2584,6 +2587,27 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_enable_status_popup(int argc, VALUE *argv, VALUE self) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_bool(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "bool","enable_status_popup", 1, argv[0] ));
+  } 
+  arg1 = (bool)(val1);
+  enable_status_popup(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2877,5 +2901,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "get_pagesize", _wrap_get_pagesize, -1);
   rb_define_module_function(mSyncEngine, "set_pagesize", _wrap_set_pagesize, -1);
   rb_define_module_function(mSyncEngine, "set_threaded_mode", _wrap_set_threaded_mode, -1);
+  rb_define_module_function(mSyncEngine, "enable_status_popup", _wrap_enable_status_popup, -1);
 }
 

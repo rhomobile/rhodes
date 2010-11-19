@@ -47,6 +47,7 @@ public class SyncNotify {
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
     boolean m_bEnableReporting = false;
+    boolean m_bEnableReportingGlobal = true;
     String m_strNotifyBody = "";
     
     SyncEngine getSync(){ return m_syncEngine; }
@@ -54,7 +55,11 @@ public class SyncNotify {
 
 	String getNotifyBody(){ return m_strNotifyBody; }
 	void cleanNotifyBody(){ m_strNotifyBody = ""; }
-	
+
+    boolean isReportingEnabled(){return m_bEnableReporting&&m_bEnableReportingGlobal;}
+    void enableReporting(boolean bEnable) {	m_bEnableReporting = bEnable; }
+    void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
+    
     SyncNotify( SyncEngine syncEngine ) 
     {
     	m_syncEngine = syncEngine;
@@ -316,16 +321,11 @@ public class SyncNotify {
     	}
     }
     
-    void enableReporting(boolean bEnable)
-    {
-    	m_bEnableReporting = bEnable;
-    }
-    
     public void reportSyncStatus(String status, int error, String strDetails) 
     {
     	synchronized(m_mxSyncNotifications)
     	{    	
-	    	if (m_syncStatusListener != null && (m_bEnableReporting || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
+	    	if (m_syncStatusListener != null && (isReportingEnabled() || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
 	    		
 	    		if ( error == RhoAppAdapter.ERR_SYNCVERSION )
 	    			status = RhoAppAdapter.getErrorText(error);
