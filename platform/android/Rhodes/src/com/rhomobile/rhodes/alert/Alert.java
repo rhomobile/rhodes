@@ -55,6 +55,7 @@ public class Alert {
 	private static final String TAG = "Alert";
 	
 	private static Dialog currentAlert = null;
+	private static TextView s_textView = null;
 	private static MediaPlayer currentMP = null;
 	
 	private static native void doCallback(String url, String id, String title);
@@ -108,7 +109,7 @@ public class Alert {
 
 		@SuppressWarnings("unchecked")
 		public void run() {
-			String title = "Alert";
+			String title = "";//"Alert";
 			String message = null;
 			Drawable icon = null;
 			String callback = null;
@@ -116,9 +117,16 @@ public class Alert {
 			
 			Context ctx = RhodesService.getInstance().getContext();
 			
-			if (params instanceof String) {
+			if (params instanceof String) 
+			{
 				message = (String)params;
 				buttons.addElement(new CustomButton("OK"));
+				
+				if ( currentAlert != null )
+				{
+				    s_textView.setText(message);
+				    return;
+				}
 			}
 			else if (params instanceof Map<?,?>) {
 				Map<Object, Object> hash = (Map<Object, Object>)params;
@@ -213,6 +221,7 @@ public class Alert {
 			}
 			
 			TextView textView = new TextView(ctx);
+			s_textView = textView;
 			textView.setText(message);
 			textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 			textView.setGravity(Gravity.CENTER);

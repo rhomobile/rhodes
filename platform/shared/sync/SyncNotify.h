@@ -54,6 +54,7 @@ private:
     String m_strSingleObjectSrcName, m_strSingleObjectID;
     Hashtable<int,int> m_hashSrcObjectCount;
     boolean m_bEnableReporting;
+    boolean m_bEnableReportingGlobal;
 
     static common::CMutex m_mxObjectNotify;
 
@@ -67,7 +68,7 @@ private:
     net::INetRequest& getNet();
     CSyncEngine& getSync(){ return m_syncEngine; }
 public:
-    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false){}
+    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), m_bEnableReportingGlobal(false){}
 
     //Object notifications
     void fireObjectsNotification();
@@ -98,7 +99,9 @@ public:
 
     void callLoginCallback(const CSyncNotification& oNotify, int nErrCode, String strMessage);
 
+    boolean isReportingEnabled(){return m_bEnableReporting&&m_bEnableReportingGlobal;}
     void enableReporting(boolean bEnable){m_bEnableReporting = bEnable;}
+    void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
 
     const String& getNotifyBody(){ return m_strNotifyBody; }
     void cleanNotifyBody(){ m_strNotifyBody = ""; }
@@ -122,3 +125,5 @@ private:
 
 }
 }
+
+extern "C" void alert_show_status(const char* message);

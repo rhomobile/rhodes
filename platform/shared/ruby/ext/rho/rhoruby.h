@@ -102,6 +102,7 @@ struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val);
 const char* rho_ruby_getMessageText(const char* szName);
 const char* rho_ruby_getErrorText(int nError);
 const char* rho_ruby_internal_getErrorText(int nError);
+const char* rho_ruby_internal_getMessageText(const char* szName);
 
 VALUE rho_ruby_create_mutex();
 void rho_ruby_destroy_mutex(VALUE val);
