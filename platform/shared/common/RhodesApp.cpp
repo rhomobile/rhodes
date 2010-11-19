@@ -390,6 +390,14 @@ static void callback_getrhomessage(void *arg, String const &strQuery)
         int nError = atoi(strError.c_str());
 
         strMsg = rho_ruby_internal_getErrorText(nError);
+    }else
+    {
+        size_t nErrorPos = strQuery.find("msgid=");
+        if ( nErrorPos != String::npos )
+        {
+            String strName = strQuery.substr(nErrorPos+6);
+            strMsg = rho_ruby_internal_getMessageText(strName.c_str());
+        }
     }
 
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -402,7 +410,7 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
         strUrl += "error=" + convertToStringA(nError);
     else if ( szName && *szName )
     {
-        strUrl = "msgid=";
+        strUrl += "msgid=";
         strUrl += szName;
     }
 
@@ -1062,7 +1070,7 @@ const char* rho_ruby_getErrorText(int nError)
 
 const char* rho_ruby_getMessageText(const char* szName)
 {
-    return "";//RHODESAPP().getRhoMessage( 0, szName).c_str();
+    return RHODESAPP().getRhoMessage( 0, szName).c_str();
 }
 
 int rho_rhodesapp_isrubycompiler()

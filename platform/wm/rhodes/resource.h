@@ -21,6 +21,8 @@
 #define IDD_BLUETOOTH_DISCOVER          120
 #define IDR_BLUETOOTH_DISCOVER          120
 #define IDD_BLUETOOTH_DISCOVERED        121
+#define IDD_DIALOG1                     122
+#define IDD_SYNCSTATUS                  122
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
@@ -29,7 +31,8 @@
 #define IDC_EDIT1                       1006
 #define IDC_MSGCLASSES                  1006
 #define IDC_EDIT2                       1007
-#define IDC_MSGEXCLUDE                  1007
+#define IDC_MSGEXCLUDE                  1008
+#define IDC_SYNCSTATUS                  1009
 #define IDC_BUTTON2                     1010
 #define IDC_DATE_CTRL                   1012
 #define IDC_TIME_CTRL                   1013
@@ -72,7 +75,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        120
+#define _APS_NEXT_RESOURCE_VALUE        123
 #define _APS_NEXT_COMMAND_VALUE         40030
 #define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           111

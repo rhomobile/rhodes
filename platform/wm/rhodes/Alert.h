@@ -19,7 +19,7 @@ public:
 	 */
 	class Params {
 	public:
-		enum {DLG_DEFAULT, DLG_CUSTOM};
+		enum {DLG_DEFAULT, DLG_CUSTOM, DLG_STATUS};
         struct CAlertButton
         {
             String m_strCaption, m_strID;
@@ -33,9 +33,9 @@ public:
 			m_message  = message;
 		}
 
-		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons)
+		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType = DLG_STATUS)
 		{
-			m_dlgType  = DLG_CUSTOM;
+			m_dlgType  = dlgType;
 			m_title    = title;
 			m_message  = message;
 			m_icon     = icon;
