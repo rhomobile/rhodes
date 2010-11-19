@@ -311,7 +311,7 @@ public class SyncThread extends RhoThread
 	{
 		boolean bShowStatus = oSyncCmd.m_bShowStatus && !this.isNoThreadedMode();
 		m_oSyncEngine.getNotify().enableReporting(bShowStatus);
-		if (bShowStatus)
+		if (m_oSyncEngine.getNotify().isReportingEnabled())
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 	}	
 	
@@ -810,7 +810,23 @@ public class SyncThread extends RhoThread
 							getSyncEngine().setNonThreadedMode(!bThreadMode);
 						}catch(Exception e)
 						{
-							LOG.ERROR("set_pagesize failed", e);
+							LOG.ERROR("set_threaded_mode failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
+
+		klass.getSingletonClass().defineMethod("enable_status_popup",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							boolean bEnable = arg1 == RubyConstant.QTRUE;
+							getSyncEngine().getNotify().enableStatusPopup(bEnable);
+						}catch(Exception e)
+						{
+							LOG.ERROR("enable_status_popup failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
 						

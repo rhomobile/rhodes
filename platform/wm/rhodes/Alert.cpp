@@ -10,6 +10,7 @@
 #include "Alert.h"
 #include "MainWindow.h"
 #include "Vibrate.h"
+#include "common/RhoAppAdapter.h"
 
 extern "C" HWND getMainWnd();
 
@@ -362,6 +363,15 @@ void CAlert::playFile(String fileName)
 }
 
 #endif //_WIN32_WCE
+
+extern "C" void alert_show_status(const char* szMessage)
+{
+    String message = szMessage ? szMessage : "";
+    Vector<CAlertDialog::Params::CAlertButton> buttons;
+    //buttons.addElement( CAlertDialog::Params::CAlertButton(RhoAppAdapter.getMessageText("hide"), "") );
+
+    CAlert::showPopup(new CAlertDialog::Params(String(), message, String(), String(), buttons, CAlertDialog::Params::DLG_STATUS ));
+}
 
 extern "C" void alert_show_popup(rho_param *p)
 {

@@ -12,6 +12,7 @@
 #include "common/RhodesApp.h"
 #include "Alert.h"
 #include "RhoNativeViewManagerWM.h"
+#include "SyncStatusDlg.h"
 
 #if defined(OS_WINDOWS)
 #include "menubar.h"
@@ -225,4 +226,6 @@ private:
 
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
 	CAlertDialog *m_alertDialog;
+
+    CSyncStatusDlg m_SyncStatusDlg;
 };

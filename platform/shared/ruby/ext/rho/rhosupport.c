@@ -561,10 +561,23 @@ static void Init_RhoJSON()
     rb_define_singleton_method(rb_RhoJSON, "quote_value", rho_json_quote_value, 1);
 }
 
+static VALUE rb_RhoMessages;
+static ID get_message_mid;
 const char* rho_ruby_internal_getMessageText(const char* szName)
 {
-    return "";
-    //TODO: rho_ruby_getMessageText
+    VALUE callres, strVal;
+    const char* szValue;
+    if ( !rb_RhoMessages )
+    {
+        rb_RhoMessages = rb_const_get(rb_RhoModule,rb_intern("RhoMessages"));
+        CONST_ID(get_message_mid, "get_message");
+    }
+
+    callres = rb_funcall(rb_RhoMessages, get_message_mid, 1, rb_str_new2(szName) );
+    strVal = rb_funcall(callres, rb_intern("to_s"), 0);
+    szValue = RSTRING_PTR(strVal);
+
+    return szValue;
 }
 
 static VALUE rb_RhoError;

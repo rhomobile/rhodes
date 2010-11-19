@@ -74,15 +74,9 @@ IDR_MAIN_MENU MENU
 BEGIN
     POPUP ""
     BEGIN
-        //MENUITEM "Forward",                     IDM_FORWARD
-        //MENUITEM "Home",                        IDM_HOME
-        //MENUITEM "Open URL...",                 IDM_OPENURL
         MENUITEM "Refresh",                     IDM_REFRESH
-        //MENUITEM "Stop",                        IDM_STOP
-        //MENUITEM "Sync",                        IDM_SYNC
         MENUITEM "Options",                     IDM_OPTIONS
         MENUITEM "Log...",                      IDM_LOG
-        //MENUITEM "Reload RhoBundle",            IDM_RELOADRHOBUNDLE
         MENUITEM "Fullscreen",                  ID_FULLSCREEN
         MENUITEM "Exit",                        IDM_EXIT
     END
@@ -222,6 +216,13 @@ BEGIN
     CTEXT           "Wait for connection ...",IDC_STATIC,10,49,130,16
 END
 
+IDD_SYNCSTATUS DIALOG 2, 50, 157, 44
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CTEXT           "Static",IDC_SYNCSTATUS,7,7,143,24
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -297,6 +298,14 @@ BEGIN
         RIGHTMARGIN, 164
         TOPMARGIN, 3
         BOTTOMMARGIN, 179
+    END
+
+    IDD_SYNCSTATUS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 37
     END
 END
 #endif    // APSTUDIO_INVOKED
