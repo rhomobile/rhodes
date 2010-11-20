@@ -15,18 +15,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_alert_Alert_doCallback
         rho_cast<std::string>(env, id).c_str(), rho_cast<std::string>(env, title).c_str());
 }
 
-RHO_GLOBAL void alert_show_status(const char* szMessage)
+RHO_GLOBAL void alert_show_status(const char* szMessage, const char* szHide)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_ALERT);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "showPopup", "(Ljava/lang/Object;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "showStatusPopup", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
-    //TODO: add button
-    //rho_ruby_getMessageText("hide");
+    RAWLOG_INFO("alert_show_status");
+
     jstring strMsg = rho_cast<jstring>(szMessage);
-    env->CallStaticVoidMethod(cls, mid, strMsg);
+    jstring strHide = rho_cast<jstring>(szHide);
+    env->CallStaticVoidMethod(cls, mid, strMsg, strHide);
     env->DeleteLocalRef(strMsg);
 }
 
