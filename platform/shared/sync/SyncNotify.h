@@ -64,6 +64,7 @@ private:
     CSyncNotification m_emptyNotify;
     common::CMutex m_mxSyncNotifications;
     String m_strNotifyBody;
+    String m_strStatusHide;
 
     net::INetRequest& getNet();
     CSyncEngine& getSync(){ return m_syncEngine; }
@@ -108,7 +109,7 @@ public:
 
     void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError );
     void reportSyncStatus(String status, int error, String strDetails);
-
+    void showStatusPopup(const String& status);
 private:
     CSyncNotification* getSyncNotifyBySrc(CSyncSource* src);
 
@@ -126,4 +127,4 @@ private:
 }
 }
 
-extern "C" void alert_show_status(const char* message);
+extern "C" void alert_show_status(const char* message, const char* szHide);
