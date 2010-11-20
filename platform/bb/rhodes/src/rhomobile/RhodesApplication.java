@@ -332,6 +332,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	        {
 	            MenuItem item = menu.getItem(i);
 	            String label = item.toString();
+	            //LOG.INFO("*******openLink: " + label);
 	            
 	            if( label.equalsIgnoreCase(m_strGetLink) 
 	                ||label.startsWith(m_strEmailMenu) || label.startsWith(m_strCallMenu))
