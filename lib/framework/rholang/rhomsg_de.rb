@@ -15,7 +15,7 @@ module Rho
 	  'log_menu' => "Log",
 	  'close_menu' => "Close",
       'get_link_menu' => "Link abrufen",
-      'open_link_menu' => "Open Link",
+      'open_link_menu' => "Link öffnen",
       'email_menu' => "Email",
       'call_menu' => "Call",
       'sms_menu' => "SMS",
