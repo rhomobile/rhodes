@@ -99,6 +99,33 @@ public class Alert {
 		}
 		
 	};
+
+	private static class ShowStatusDialog implements Runnable 
+	{
+	    private String m_strMessage;
+        private String m_strHide;
+        
+		public ShowStatusDialog(String strMessage, String strHide) 
+		{
+			m_strMessage = strMessage;
+			m_strHide = strHide;
+		}
+		
+		@SuppressWarnings("unchecked")
+		public void run() 
+		{
+			if ( currentAlert != null )
+			{
+			    s_textView.setText(m_strMessage);
+			    return;
+			}
+			
+			Vector<CustomButton> buttons = new Vector<CustomButton>();
+			buttons.addElement(new CustomButton(m_strHide));
+			
+			makeDialog( "", m_strMessage, null, buttons, null);
+        }
+    }
 	
 	private static class ShowDialog implements Runnable {
 		private Object params;
@@ -121,12 +148,6 @@ public class Alert {
 			{
 				message = (String)params;
 				buttons.addElement(new CustomButton("OK"));
-				
-				if ( currentAlert != null )
-				{
-				    s_textView.setText(message);
-				    return;
-				}
 			}
 			else if (params instanceof Map<?,?>) {
 				Map<Object, Object> hash = (Map<Object, Object>)params;
@@ -192,64 +213,71 @@ public class Alert {
 				}
 			}
 			
-			if (message == null)
-				return;
-			
-			Dialog dialog = new Dialog(ctx);
-			dialog.setTitle(title);
-			dialog.setCancelable(false);
-			dialog.setCanceledOnTouchOutside(false);
-			
-			LinearLayout main = new LinearLayout(ctx);
-			main.setOrientation(LinearLayout.VERTICAL);
-			main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-			main.setPadding(10, 10, 10, 10);
-			
-			LinearLayout top = new LinearLayout(ctx);
-			top.setOrientation(LinearLayout.HORIZONTAL);
-			top.setGravity(Gravity.CENTER);
-			top.setPadding(10, 10, 10, 10);
-			top.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-			main.addView(top);
-			
-			if (icon != null) {
-				ImageView imgView = new ImageView(ctx);
-				imgView.setImageDrawable(icon);
-				imgView.setScaleType(ImageView.ScaleType.CENTER);
-				imgView.setPadding(10, 10, 10, 10);
-				top.addView(imgView);
-			}
-			
-			TextView textView = new TextView(ctx);
-			s_textView = textView;
-			textView.setText(message);
-			textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-			textView.setGravity(Gravity.CENTER);
-			top.addView(textView);
-			
-			LinearLayout bottom = new LinearLayout(ctx);
-			bottom.setOrientation(buttons.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-			bottom.setGravity(Gravity.CENTER);
-			bottom.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-			main.addView(bottom);
-			
-			for (int i = 0, lim = buttons.size(); i < lim; ++i) {
-				CustomButton btn = buttons.elementAt(i);
-				Button button = new Button(ctx);
-				button.setText(btn.title);
-				button.setOnClickListener(new ShowDialogListener(callback, btn.id, btn.title, dialog));
-				button.setLayoutParams(new LinearLayout.LayoutParams(
-						lim > 3 ? LayoutParams.FILL_PARENT : LayoutParams.WRAP_CONTENT,
-						LayoutParams.WRAP_CONTENT, 1));
-				bottom.addView(button);
-			}
-			
-			dialog.setContentView(main);
-			dialog.show();
-			
-			currentAlert = dialog;
+            makeDialog( title, message, icon, buttons, callback);
 		}
 	};
+
+	private static void makeDialog( String title, String message, Drawable icon, Vector<CustomButton> buttons, String callback)
+	{
+		if (message == null)
+			return;
+
+        Context ctx = RhodesService.getInstance().getContext();
+        
+		Dialog dialog = new Dialog(ctx);
+		dialog.setTitle(title);
+		dialog.setCancelable(false);
+		dialog.setCanceledOnTouchOutside(false);
+		
+		LinearLayout main = new LinearLayout(ctx);
+		main.setOrientation(LinearLayout.VERTICAL);
+		main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		main.setPadding(10, 10, 10, 10);
+		
+		LinearLayout top = new LinearLayout(ctx);
+		top.setOrientation(LinearLayout.HORIZONTAL);
+		top.setGravity(Gravity.CENTER);
+		top.setPadding(10, 10, 10, 10);
+		top.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		main.addView(top);
+		
+		if (icon != null) {
+			ImageView imgView = new ImageView(ctx);
+			imgView.setImageDrawable(icon);
+			imgView.setScaleType(ImageView.ScaleType.CENTER);
+			imgView.setPadding(10, 10, 10, 10);
+			top.addView(imgView);
+		}
+		
+		TextView textView = new TextView(ctx);
+		s_textView = textView;
+		textView.setText(message);
+		textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		textView.setGravity(Gravity.CENTER);
+		top.addView(textView);
+		
+		LinearLayout bottom = new LinearLayout(ctx);
+		bottom.setOrientation(buttons.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+		bottom.setGravity(Gravity.CENTER);
+		bottom.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		main.addView(bottom);
+		
+		for (int i = 0, lim = buttons.size(); i < lim; ++i) {
+			CustomButton btn = buttons.elementAt(i);
+			Button button = new Button(ctx);
+			button.setText(btn.title);
+			button.setOnClickListener(new ShowDialogListener(callback, btn.id, btn.title, dialog));
+			button.setLayoutParams(new LinearLayout.LayoutParams(
+					lim > 3 ? LayoutParams.FILL_PARENT : LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT, 1));
+			bottom.addView(button);
+		}
+		
+		dialog.setContentView(main);
+		dialog.show();
+		
+		currentAlert = dialog;
+	}
 	
 	private static class HideDialog implements Runnable {
 		public void run() {
@@ -281,6 +309,16 @@ public class Alert {
 		}
 		catch (Exception e) {
 			reportFail("hidePopup", e);
+		}
+	}
+
+	public static void showStatusPopup(String message, String hide) {
+		try {
+			Logger.I(TAG, "showStatusPopup");
+			PerformOnUiThread.exec(new ShowStatusDialog(message, hide), false);
+		}
+		catch (Exception e) {
+			reportFail("showStatusPopup", e);
 		}
 	}
 	
