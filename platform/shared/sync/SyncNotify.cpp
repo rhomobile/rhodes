@@ -278,6 +278,17 @@ void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
     }
 }
 
+void CSyncNotify::showStatusPopup(const String& status)
+{
+    if (isReportingEnabled())
+    {
+        if ( m_strStatusHide.length() == 0 )
+            m_strStatusHide = RhoAppAdapter.getMessageText("hide");
+
+        alert_show_status(status.c_str(), m_strStatusHide.c_str());
+    }
+}
+
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
 {
 	synchronized(m_mxSyncNotifications)
@@ -288,7 +299,7 @@ void CSyncNotify::reportSyncStatus(String status, int error, String strDetails)
     			status = RhoAppAdapter.getErrorText(error);
     		else
     		{
-	    		if ( strDetails.length() == 0 )
+	    		if ( strDetails.length() == 0 && error != RhoAppAdapter.ERR_NONE)
 	    			strDetails = RhoAppAdapter.getErrorText(error);
 	    		status += (strDetails.length() > 0 ? RhoAppAdapter.getMessageText("details") + strDetails: "");
     		}
@@ -296,7 +307,7 @@ void CSyncNotify::reportSyncStatus(String status, int error, String strDetails)
         	LOG(INFO) + "Status: "+status;
     		
         	//m_syncStatusListener.reportStatus( status, error);
-            alert_show_status(status.c_str());
+            showStatusPopup(status);
     	}
 	}
 }
