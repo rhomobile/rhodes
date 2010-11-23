@@ -79,7 +79,7 @@ module Rho
           params.merge!(parse_query_parameters(req['request-query']))				
         end
         unless req['headers'].nil? or req['headers']['Content-Type'].nil?
-          if 'application/x-www-form-urlencoded'.eql? req['headers']['Content-Type']
+          unless req['headers']['Content-Type'].index('application/x-www-form-urlencoded').nil?
             params.merge!(parse_query_parameters(req['request-body']))
           end	
         end
