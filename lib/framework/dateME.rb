@@ -24,9 +24,14 @@ class Time
         
         strRes += __makeTwoDigit(mon()) + '/' + __makeTwoDigit(mday()) + '/' + year().to_s + ', ' + __makeTwoDigit(nHour) + ':' + __makeTwoDigit(min()) + strPM;
         return strRes 
+    elsif fmt == "%Y%m%dT%H%M%S.000 GMT"
+        strRes = year().to_s() +  __makeTwoDigit(mon()) + __makeTwoDigit(mday()) + "T" + __makeTwoDigit(hour()) + __makeTwoDigit(min()) + __makeTwoDigit(sec()) +
+            ".000 GMT"
+        
+        return strRes 
     end
     
-    DateTime.new(self.localtime).strftime(fmt)
+    DateTime.new(self).strftime(fmt)
   end
 
 end

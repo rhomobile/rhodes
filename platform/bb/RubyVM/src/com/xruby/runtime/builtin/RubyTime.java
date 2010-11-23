@@ -81,12 +81,28 @@ public class RubyTime extends RubyBasic {
         return (long)((t1 - t2) * 1000000);
     }
 
+	private String get2FixedDigit(int nDigit){
+		if ( nDigit > 9 )
+			return Integer.toString(nDigit);
+			
+		return "0" + Integer.toString(nDigit);
+	}
+
     public String toString() {
         //SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US);
         //sdf.setCalendar(date_);
     	//return sdf.format(date_.getTime()).replace("GMT", "UTC");
-    	String strDate = date_.getTime().toString();
-        StringMe.replaceAll(strDate, "GMT", "UTC");
+    	//String strDate = date_.getTime().toString();
+        //StringMe.replaceAll(strDate, "GMT", "UTC");
+    	
+    	String strDate = date_.get(Calendar.YEAR) + "-" + 
+    	  get2FixedDigit(date_.get(Calendar.MONTH)+1) + "-" +
+    	  get2FixedDigit(date_.get(Calendar.DATE)) + " " + 
+    	  get2FixedDigit(date_.get(Calendar.HOUR_OF_DAY)) + ":" +
+    	  get2FixedDigit(date_.get(Calendar.MINUTE)) + ":" + 
+    	  get2FixedDigit(date_.get(Calendar.SECOND)) + " " +
+    	  date_.getTimeZone().toString();
+    	  
         return strDate;
     }
 
