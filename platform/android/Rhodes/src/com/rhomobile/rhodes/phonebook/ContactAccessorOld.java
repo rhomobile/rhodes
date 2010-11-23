@@ -20,6 +20,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	
 	//private static final String TAG = "ContactsAccessorOld";
 	
+	/*
 	private static final String PB_ID = Phonebook.PB_ID;
 	private static final String PB_FIRST_NAME = Phonebook.PB_FIRST_NAME;
 	private static final String PB_LAST_NAME = Phonebook.PB_LAST_NAME;
@@ -28,7 +29,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	private static final String PB_BUSINESS_NUMBER = Phonebook.PB_BUSINESS_NUMBER;
 	private static final String PB_EMAIL_ADDRESS = Phonebook.PB_EMAIL_ADDRESS;
 	private static final String PB_COMPANY_NAME = Phonebook.PB_COMPANY_NAME;
-	
+	*/
 	private ContentResolver cr;
 	
 	public ContactAccessorOld() {
@@ -48,13 +49,13 @@ public class ContactAccessorOld implements ContactAccessor {
 			for (int i = 0, lim = cursor.getCount(); i < lim; ++i) {
 				switch (cursor.getInt(typeColumn)) {
 				case Phones.TYPE_WORK:
-					contact.setField(PB_BUSINESS_NUMBER, cursor.getString(numColumn));
+					contact.setFieldInner(Phonebook.PB_I_BUSINESS_NUMBER, cursor.getString(numColumn));
 					break;
 				case Phones.TYPE_HOME:
-					contact.setField(PB_HOME_NUMBER, cursor.getString(numColumn));
+					contact.setFieldInner(Phonebook.PB_I_HOME_NUMBER, cursor.getString(numColumn));
 					break;
 				case Phones.TYPE_MOBILE:
-					contact.setField(PB_MOBILE_NUMBER, cursor.getString(numColumn));
+					contact.setFieldInner(Phonebook.PB_I_MOBILE_NUMBER, cursor.getString(numColumn));
 					break;
 				}
 				cursor.moveToNext();
@@ -81,18 +82,18 @@ public class ContactAccessorOld implements ContactAccessor {
 	
 				//contact.setField(PB_COMPANY_NAME, cursor.getString(cursor.getColumnIndex(People.COMPANY)));
 	
-				contact.setField(PB_FIRST_NAME, "");
-				contact.setField(PB_LAST_NAME, "");
+				contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, "");
+				contact.setFieldInner(Phonebook.PB_I_LAST_NAME, "");
 				String name = cursor.getString(cursor.getColumnIndex(People.NAME));
 				if (name != null) {
 					String[] names = name.split(" ");
 	
 					if (names.length == 1) {
-						contact.setField(PB_FIRST_NAME, names[0]);
+						contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
 					}
 					else if (names.length > 1) {
-						contact.setField(PB_FIRST_NAME, names[0]);
-						contact.setField(PB_LAST_NAME, name.replaceFirst(names[0] + " ", ""));
+						contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
+						contact.setFieldInner(Phonebook.PB_I_LAST_NAME, name.replaceFirst(names[0] + " ", ""));
 					}
 				}
 	
@@ -115,7 +116,7 @@ public class ContactAccessorOld implements ContactAccessor {
 								.getColumnIndex(Organizations.COMPANY);
 		
 						if (numberColumn != -1)
-							contact.setField(PB_COMPANY_NAME,
+							contact.setFieldInner(Phonebook.PB_I_COMPANY_NAME,
 									organizationCursor.getString(numberColumn));
 					}
 				}
@@ -141,7 +142,7 @@ public class ContactAccessorOld implements ContactAccessor {
 						for (int j = 0; j < contactCursorCount; j++) {
 							switch (contactCursor.getInt(typeColumn)) {
 							case Contacts.ContactMethods.TYPE_HOME:
-								contact.setField(PB_EMAIL_ADDRESS, contactCursor.getString(numberColumn));
+								contact.setFieldInner(Phonebook.PB_I_EMAIL_ADDRESS, contactCursor.getString(numberColumn));
 								break;
 							}
 							contactCursor.moveToNext();
@@ -151,8 +152,8 @@ public class ContactAccessorOld implements ContactAccessor {
 				finally {
 					contactCursor.close();
 				}
-	
-				contacts.put(contact.getField(PB_ID), contact);
+				contact.makeAllFilled();
+				contacts.put(contact.getField(Phonebook.PB_I_ID), contact);
 			} while (cursor.moveToNext());
 		}
 		finally {
@@ -166,8 +167,8 @@ public class ContactAccessorOld implements ContactAccessor {
 		String rbID = contact.id();
 		Uri uri = null;
 
-		String firstName = contact.getField(PB_FIRST_NAME);
-		String lastName = contact.getField(PB_LAST_NAME);
+		String firstName = contact.getField(Phonebook.PB_I_FIRST_NAME);
+		String lastName = contact.getField(Phonebook.PB_I_LAST_NAME);
 		String name = firstName + " " + lastName;
 
 		boolean isNew = false;
@@ -200,10 +201,10 @@ public class ContactAccessorOld implements ContactAccessor {
 
 		contact.setId(pathLeaf);
 
-		String[] phones = {PB_MOBILE_NUMBER, PB_HOME_NUMBER, PB_BUSINESS_NUMBER};
+		int[] phones = {Phonebook.PB_I_MOBILE_NUMBER, Phonebook.PB_I_HOME_NUMBER, Phonebook.PB_I_BUSINESS_NUMBER};
 		int[] types = {Phones.TYPE_MOBILE, Phones.TYPE_HOME, Phones.TYPE_WORK};
 		for (int i = 0; i < phones.length; ++i) {
-			String phName = phones[i];
+			int phName = phones[i];
 			String value = contact.getField(phName);
 			if (value == null)
 				continue;
@@ -223,13 +224,13 @@ public class ContactAccessorOld implements ContactAccessor {
 		}
 		
 		// add email
-		if (contact.getField(PB_EMAIL_ADDRESS) != null) {
+		if (contact.getField(Phonebook.PB_I_EMAIL_ADDRESS) != null) {
 			ContentValues email = new ContentValues();
 			email.put(Contacts.ContactMethods.PERSON_ID, pathLeaf);
 			email.put(Contacts.ContactMethods.KIND,
 					Contacts.ContactMethods.TYPE_HOME);
 
-			email.put(Contacts.ContactMethods.DATA, contact.getField(PB_EMAIL_ADDRESS));
+			email.put(Contacts.ContactMethods.DATA, contact.getField(Phonebook.PB_I_EMAIL_ADDRESS));
 
 			email.put(Contacts.ContactMethods.TYPE,
 					Contacts.ContactMethods.CONTENT_EMAIL_ITEM_TYPE);
@@ -242,7 +243,7 @@ public class ContactAccessorOld implements ContactAccessor {
 			}
 		}
 		// add organization
-		if (contact.getField(PB_COMPANY_NAME) != null) {
+		if (contact.getField(Phonebook.PB_I_COMPANY_NAME) != null) {
 			Uri orgUri = Uri.withAppendedPath(uri,
 					Contacts.Organizations.CONTENT_DIRECTORY);
 
@@ -252,7 +253,7 @@ public class ContactAccessorOld implements ContactAccessor {
 					Contacts.Organizations.TYPE_WORK);
 
 			company.put(Contacts.Organizations.COMPANY, contact
-					.getField(PB_COMPANY_NAME));
+					.getField(Phonebook.PB_I_COMPANY_NAME));
 
 			Uri companyUpdate = cr.insert(orgUri, company);
 

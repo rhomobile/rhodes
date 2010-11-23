@@ -3,24 +3,40 @@ require 'bsearch'
 module Rho
 	class RhoContact
 		class << self
-			def find(param)
-				pb = Phonebook::openPhonebook
+                        def open_phonebook()
+                        	return Phonebook::openPhonebook
+                        end 
+                        def close_phonebook(phonebook)
+                        	Phonebook::closePhonebook(phonebook)
+                        end  
+			def find(param, properties_list = nil, phonebook = nil)
+                                pb = phonebook
+                                if phonebook == nil
+					pb = Phonebook::openPhonebook
+                                end 
 				if pb.nil?
 					puts "Can't open phonebook"
 					return nil
 				elsif param == :all or param == 'all'
 					records = Phonebook::getallPhonebookRecords(pb)
-					Phonebook::closePhonebook(pb)
+					if phonebook == nil
+						Phonebook::closePhonebook(pb)
+					end
 					return records
 				else
 					record = Phonebook::getPhonebookRecord(pb,param)
-					Phonebook::closePhonebook(pb)
+					if phonebook == nil
+						Phonebook::closePhonebook(pb)
+					end
 					return record
 				end
 			end
 
-			def create!(properties)
-				pb = Phonebook::openPhonebook
+			def create!(properties, phonebook = nil)
+                                pb = phonebook
+                                if phonebook == nil
+					pb = Phonebook::openPhonebook
+                                end 
 				unless pb.nil?
 					record = Phonebook::createRecord(pb)
 					if record.nil?
@@ -31,12 +47,17 @@ module Rho
 						end
 						Phonebook::addRecord(pb,record)
 					end
-					Phonebook::closePhonebook(pb)
+					if phonebook == nil
+						Phonebook::closePhonebook(pb)
+					end
 				end
 			end
 
-			def destroy(recordId)
-				pb = Phonebook::openPhonebook
+			def destroy(recordId, phonebook = nil)
+                                pb = phonebook
+                                if phonebook == nil
+					pb = Phonebook::openPhonebook
+                                end 
 				unless pb.nil?
 					record = Phonebook::openPhonebookRecord(pb,recordId)
 					if record.nil?
@@ -44,12 +65,17 @@ module Rho
 					else
 						Phonebook::deleteRecord(pb,record)
 					end
-					Phonebook::closePhonebook(pb)
+					if phonebook == nil
+						Phonebook::closePhonebook(pb)
+					end
 				end
 			end
 
-			def update_attributes(properties)
-				pb = Phonebook::openPhonebook
+			def update_attributes(properties, phonebook = nil)
+                                pb = phonebook
+                                if phonebook == nil
+					pb = Phonebook::openPhonebook
+                                end 
 				unless pb.nil?
 					record = Phonebook::openPhonebookRecord(pb,properties['id'])
 					if record.nil?
@@ -60,7 +86,9 @@ module Rho
 						end
 						Phonebook::saveRecord(pb,record)
 					end
-					Phonebook::closePhonebook(pb)
+					if phonebook == nil
+						Phonebook::closePhonebook(pb)
+					end
 				end
 			end
 
