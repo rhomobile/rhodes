@@ -1,4 +1,5 @@
 #include "common/RhoAppAdapter.h"
+#include "sync/SyncThread.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 namespace rho {
@@ -6,11 +7,17 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
 {
+    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() )
+        return String();
+
     return rho_ruby_getMessageText(szName);
 }
 
 /*static*/ String _CRhoAppAdapter::getErrorText(int nError)
 {
+    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() )
+        return String();
+
     return rho_ruby_getErrorText(nError);
 }
 
