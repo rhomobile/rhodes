@@ -435,9 +435,13 @@ namespace "config" do
         puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
         if apilevel > napilevel
-          napilevel = apilevel
-          $gapijar = File.join(dir, 'libs', 'maps.jar')
-          $found_api_level = apilevel
+          
+	  sgapijar = File.join(dir, 'libs', 'maps.jar')
+          if File.exists? sgapijar
+            napilevel = apilevel
+            $gapijar = sgapijar
+            $found_api_level = apilevel
+          end
         end
       end
       if $gapijar.nil?
