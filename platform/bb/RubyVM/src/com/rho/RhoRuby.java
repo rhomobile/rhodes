@@ -30,6 +30,7 @@ public class RhoRuby {
 	public static final RubyID raiseRhoError = RubyID.intern("raise_rhoerror");
 	public static final RubyID initApp = RubyID.intern("init_app");
 	public static final RubyID activateApp = RubyID.intern("activate_app");
+	public static final RubyID deactivateApp = RubyID.intern("deactivate_app");
 	
 //	public static final RubyID getStartPath = RubyID.intern("get_start_path");
 //	public static final RubyID getOptionsPath = RubyID.intern("get_options_path");
@@ -82,6 +83,10 @@ public class RhoRuby {
 		RubyAPI.callPublicNoArgMethod(receiver, null, activateApp);
 	}
 
+	public static void rho_ruby_deactivateApp(){
+		RubyAPI.callPublicNoArgMethod(receiver, null, deactivateApp);
+	}
+	
 	public static boolean rho_ruby_isValid(){
 		return receiver!= null && receiver != RubyConstant.QNIL;
 	}

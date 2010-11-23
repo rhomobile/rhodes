@@ -588,6 +588,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
     	
+    	RhoRuby.rho_ruby_deactivateApp();
+    	
 //		SyncEngine.stop(null);
 		GeoLocation.stop();
 		RingtoneManager.stop();
