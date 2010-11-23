@@ -110,7 +110,8 @@ void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
 {
 	boolean bShowStatus = oSyncCmd.m_bShowStatus;
 	m_oSyncEngine.getNotify().enableReporting(bShowStatus);
-    m_oSyncEngine.getNotify().showStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
+    if (m_oSyncEngine.getNotify().isReportingEnabled())
+        m_oSyncEngine.getNotify().showStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
     //m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
 }	
 
