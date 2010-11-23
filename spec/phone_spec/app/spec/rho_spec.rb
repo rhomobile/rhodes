@@ -294,17 +294,6 @@ end
       a[5..10].should == []
   end
 
-if !defined? RHO_ME
-  it "should commercial date"  do
-    Date.today.cweek
-    res = Date.commercial(2010, 33, 1)
-    puts "Date.commercial(2010, 33, 1) : #{res}"
-    res.year.should == 2010
-    
-    res.to_s.should == "2010-08-16"
-  end
-end
-
   it "should call Float.to_f"  do
     ftest = 0.34
     ftest.is_a?(Float).should == true
