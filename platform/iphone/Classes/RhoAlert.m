@@ -233,6 +233,38 @@ static UIAlertView *currentAlert = nil;
 void alert_show_status(const char* szMessage, const char* szHide)
 {
     //show new status dialog or update text
+    if (!rho_rhodesapp_check_mode())
+        return;
+	
+	rho_param* p = rho_param_hash(3);
+	
+	rho_param* p_title_key = rho_param_str("title");
+	rho_param* p_title_value = rho_param_str("");
+
+	rho_param* p_message_key = rho_param_str("message");
+	rho_param* p_message_value = rho_param_str(szMessage);
+	
+	rho_param* p_buttons_key = rho_param_str("buttons");
+	rho_param* p_buttons_value = rho_param_array(1);
+	
+	rho_param* p_button_value = rho_param_str(szHide);
+	
+	p_buttons_value->v.array->value[0] = p_button_value;
+	
+	p->v.hash->name[0] = p_title_key->v.string;
+	p->v.hash->value[0] = p_title_value;
+	
+	p->v.hash->name[1] = p_message_key->v.string;
+	p->v.hash->value[1] = p_message_value;
+	
+	p->v.hash->name[2] = p_buttons_key->v.string;
+	p->v.hash->value[2] = p_buttons_value;
+	
+    [RhoAlert showPopup:p];
+	
+	rho_param_free(p);
+	
+	
 }
 
 void alert_show_popup(rho_param *p) {
@@ -243,7 +275,9 @@ void alert_show_popup(rho_param *p) {
         return;
 	}
     
-    [RhoAlert showPopup:p];
+	
+	alert_show_status("Some message", "Close Status");
+    //[RhoAlert showPopup:p];
 }
 
 void alert_hide_popup() {
