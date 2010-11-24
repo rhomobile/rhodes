@@ -166,6 +166,9 @@ static BOOL is_current_alert_status = NO;
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    currentAlert = nil;
+	is_current_alert_status = NO;
+
     if (!callback)
         return;
     
@@ -178,8 +181,6 @@ static BOOL is_current_alert_status = NO;
     
     rho_rhodesapp_callPopupCallback([callback UTF8String], [itemId UTF8String], [itemTitle UTF8String]);
     [self release];
-    currentAlert = nil;
-	is_current_alert_status = NO;
 }
 
 @end
