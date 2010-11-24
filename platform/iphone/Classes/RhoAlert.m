@@ -18,6 +18,7 @@
 #define DEFAULT_LOGCATEGORY "Alert"
 
 static UIAlertView *currentAlert = nil;
+static BOOL is_current_alert_status = NO;
 
 @interface RhoAlertShowPopupTask : NSObject<UIAlertViewDelegate> {
     NSString *callback;
@@ -54,6 +55,8 @@ static UIAlertView *currentAlert = nil;
     NSString *title = @"Alert";
     NSString *message = nil;
     
+	is_current_alert_status = NO;
+	
     self.buttons = [NSMutableArray arrayWithCapacity:1];
     rho_param *p = [v pointerValue];
     if (p->type == RHO_PARAM_STRING) {
@@ -131,11 +134,20 @@ static UIAlertView *currentAlert = nil;
                     [buttons addObject:btn];
                 }
             }
+			else if (strcasecmp(name, "status_type") == 0) {
+				is_current_alert_status = YES;
+            }
+			
 
         }
     }
     rho_param_free(p);
     
+	if ((currentAlert != nil) && (is_current_alert_status)) {
+		currentAlert.message = message;
+		return;
+	}
+	
     UIAlertView *alert = [[[UIAlertView alloc]
                   initWithTitle:title
                   message:message
@@ -167,6 +179,7 @@ static UIAlertView *currentAlert = nil;
     rho_rhodesapp_callPopupCallback([callback UTF8String], [itemId UTF8String], [itemTitle UTF8String]);
     [self release];
     currentAlert = nil;
+	is_current_alert_status = NO;
 }
 
 @end
@@ -181,6 +194,7 @@ static UIAlertView *currentAlert = nil;
         return;
     [currentAlert dismissWithClickedButtonIndex:-1 animated:NO];
     currentAlert = nil;
+	is_current_alert_status = NO;
 }
 @end
 
@@ -236,7 +250,7 @@ void alert_show_status(const char* szMessage, const char* szHide)
     if (!rho_rhodesapp_check_mode())
         return;
 	
-	rho_param* p = rho_param_hash(3);
+	rho_param* p = rho_param_hash(4);
 	
 	rho_param* p_title_key = rho_param_str("title");
 	rho_param* p_title_value = rho_param_str("");
@@ -246,6 +260,9 @@ void alert_show_status(const char* szMessage, const char* szHide)
 	
 	rho_param* p_buttons_key = rho_param_str("buttons");
 	rho_param* p_buttons_value = rho_param_array(1);
+
+	rho_param* p_status_key = rho_param_str("status_type");
+	rho_param* p_status_value = rho_param_str("true");
 	
 	rho_param* p_button_value = rho_param_str(szHide);
 	
@@ -259,6 +276,9 @@ void alert_show_status(const char* szMessage, const char* szHide)
 	
 	p->v.hash->name[2] = p_buttons_key->v.string;
 	p->v.hash->value[2] = p_buttons_value;
+
+	p->v.hash->name[3] = p_status_key->v.string;
+	p->v.hash->value[3] = p_status_value;
 	
     [RhoAlert showPopup:p];
 	
