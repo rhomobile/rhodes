@@ -151,8 +151,8 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
 
 void CSyncThread::setPollInterval(int nInterval)
 { 
-    if ( nInterval == 0 )
-        m_oSyncEngine.stopSync();
+//    if ( nInterval == 0 )
+//        m_oSyncEngine.stopSync();
 
     CThreadQueue::setPollInterval(nInterval);
 }
