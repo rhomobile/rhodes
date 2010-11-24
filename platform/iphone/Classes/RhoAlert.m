@@ -296,8 +296,8 @@ void alert_show_popup(rho_param *p) {
 	}
     
 	
-	alert_show_status("Some message", "Close Status");
-    //[RhoAlert showPopup:p];
+	//alert_show_status("Some message", "Close Status");
+    [RhoAlert showPopup:p];
 }
 
 void alert_hide_popup() {
