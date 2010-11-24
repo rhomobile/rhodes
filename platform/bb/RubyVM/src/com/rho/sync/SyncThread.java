@@ -365,8 +365,8 @@ public class SyncThread extends RhoThread
 	public void setPollInterval(int nInterval)
 	{ 
 	    m_nPollInterval = nInterval; 
-	    if ( m_nPollInterval == 0 )
-	        m_oSyncEngine.stopSync();
+	    //if ( m_nPollInterval == 0 )
+	    //    m_oSyncEngine.stopSync();
 	
 	    addSyncCommand(new SyncCommand(scChangePollInterval, false)); 
 	}
