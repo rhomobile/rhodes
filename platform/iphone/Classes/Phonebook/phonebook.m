@@ -11,10 +11,19 @@
 #include "ruby/ext/phonebook/phonebook.h"
 #include "phonebook.h"
 
+#include "logging/RhoLog.h"
+
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "phonebook"
+
+#define logging_enable NO
+
 static int _getProperty(char* property);
 static CFStringRef getAddressPartValue(ABRecordRef record, const char* property) ;
 
 void* openPhonebook() {
+	if (logging_enable) RAWLOG_INFO("phonebook :: openPhonebook");
 	
 	LocalPhonebook* phonebook = CFAllocatorAllocate(NULL, sizeof(LocalPhonebook), 0);
 	
@@ -33,11 +42,15 @@ void* openPhonebook() {
 }
 
 void  closePhonebook(void* pb) {
+	if (logging_enable) RAWLOG_INFO("phonebook :: closePhonebook");
 	if (pb) {
 		LocalPhonebook* phonebook = pb;
 		// Free array of pb records
 		if	(phonebook->_people) {
 			CFRelease(phonebook->_people);
+		}
+		if (phonebook->_ab) {
+			CFRelease(phonebook->_ab);
 		}
 		// Free the memory in use by context.
 		CFAllocatorDeallocate(NULL, pb);
@@ -45,6 +58,7 @@ void  closePhonebook(void* pb) {
 }
 
 static void _getAllPeople(LocalPhonebook* phonebook) {
+	if (logging_enable) RAWLOG_INFO("phonebook :: getAllPeople START");
 	if (phonebook->_ab) {
 		if	(phonebook->_people) {
 			CFRelease(phonebook->_people);
@@ -55,6 +69,7 @@ static void _getAllPeople(LocalPhonebook* phonebook) {
 			phonebook->_index = 0;
 		}
 	}
+	if (logging_enable) RAWLOG_INFO("phonebook :: getAllPeople FINISH");
 }
 
 
@@ -315,6 +330,7 @@ static VALUE _getRecordByIndex(CFArrayRef people, CFIndex index, ABRecordID* pre
 
 VALUE getallPhonebookRecords(void* pb) {
 	if (pb) {
+		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;
 		
 		VALUE hash = rho_ruby_createHash();
@@ -334,6 +350,7 @@ VALUE getallPhonebookRecords(void* pb) {
         rho_ruby_releaseValue(hash);		
         
         rho_ruby_enable_gc(valGc);
+		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords FINISH");
 		return hash; 
 	}
 	return rho_ruby_get_NIL();	
