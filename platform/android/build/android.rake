@@ -458,6 +458,8 @@ namespace "config" do
     $avdname += "ext" if $use_google_addon_api
     $avdtarget = $androidtargets[get_api_level($emuversion)]
 
+    $appavdname = $app_config["android"]["emulator"]
+
     setup_ndk($androidndkpath, ANDROID_API_LEVEL)
     
     $stlport_includes = File.join $shareddir, "stlport", "stlport"
@@ -1402,6 +1404,9 @@ namespace "run" do
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
 
+      if $appavdname != nil
+        $avdname = $appavdname
+      end
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M --skin HVGA"
       system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
