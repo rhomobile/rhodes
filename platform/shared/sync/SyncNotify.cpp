@@ -280,13 +280,12 @@ void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
 
 void CSyncNotify::showStatusPopup(const String& status)
 {
-    if (isReportingEnabled())
-    {
-        if ( m_strStatusHide.length() == 0 )
-            m_strStatusHide = RhoAppAdapter.getMessageText("hide");
+    LOG(INFO) + "Status: "+status;
 
-        alert_show_status(status.c_str(), m_strStatusHide.c_str());
-    }
+    if ( m_strStatusHide.length() == 0 )
+        m_strStatusHide = RhoAppAdapter.getMessageText("hide");
+
+    alert_show_status(status.c_str(), m_strStatusHide.c_str());
 }
 
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
@@ -296,18 +295,19 @@ void CSyncNotify::reportSyncStatus(String status, int error, String strDetails)
     	if (/*m_syncStatusListener != null && */(isReportingEnabled() || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
     		
     		if ( error == RhoAppAdapter.ERR_SYNCVERSION )
+            {
     			status = RhoAppAdapter.getErrorText(error);
-    		else
+                showStatusPopup(status);
+            }
+    		else if ( isReportingEnabled() )
     		{
 	    		if ( strDetails.length() == 0 && error != RhoAppAdapter.ERR_NONE)
 	    			strDetails = RhoAppAdapter.getErrorText(error);
 	    		status += (strDetails.length() > 0 ? RhoAppAdapter.getMessageText("details") + strDetails: "");
+
+        	    //m_syncStatusListener.reportStatus( status, error);
+                showStatusPopup(status);
     		}
-    		
-        	LOG(INFO) + "Status: "+status;
-    		
-        	//m_syncStatusListener.reportStatus( status, error);
-            showStatusPopup(status);
     	}
 	}
 }
