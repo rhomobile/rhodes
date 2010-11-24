@@ -7,7 +7,7 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
 {
-    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() )
+    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
         return String();
 
     return rho_ruby_getMessageText(szName);
@@ -15,7 +15,7 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ String _CRhoAppAdapter::getErrorText(int nError)
 {
-    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() )
+    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
         return String();
 
     return rho_ruby_getErrorText(nError);
