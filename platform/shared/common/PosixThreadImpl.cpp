@@ -71,7 +71,7 @@ void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
     pthread_join(m_thread,&status);
 }
 
-void CPosixThreadImpl::wait(unsigned int nTimeout)
+int CPosixThreadImpl::wait(unsigned int nTimeout)
 {
     struct timeval    tp;
     struct timespec   ts;
@@ -89,7 +89,7 @@ void CPosixThreadImpl::wait(unsigned int nTimeout)
     }
 
     common::CMutexLock oLock(m_mxSync);
-
+    int nRet = 0;
     while (!m_stop_wait)
     {
         if (timed_wait) {
@@ -98,12 +98,14 @@ void CPosixThreadImpl::wait(unsigned int nTimeout)
             if (now > max)
                 break;
             
-            pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts);
+            nRet = pthread_cond_timedwait(&m_condSync, m_mxSync.getNativeMutex(), &ts) == ETIMEDOUT ? 1 : 0;
         }
         else
             pthread_cond_wait(&m_condSync, m_mxSync.getNativeMutex());
     }
     m_stop_wait = false;
+
+    return nRet;
 }
 
 void CPosixThreadImpl::sleep(unsigned int nTimeout)

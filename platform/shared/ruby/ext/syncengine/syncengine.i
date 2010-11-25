@@ -20,8 +20,11 @@
 	#define set_notification rho_sync_set_notification
 	extern void rho_sync_clear_notification(int source_id);
 	#define clear_notification rho_sync_clear_notification
-	extern void rho_sync_set_pollinterval(int interval);
+	extern int rho_sync_set_pollinterval(int interval);
 	#define set_pollinterval rho_sync_set_pollinterval
+	extern int rho_sync_get_pollinterval();
+	#define get_pollinterval rho_sync_get_pollinterval
+	
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
 	extern VALUE rho_sync_get_attrs(const char* szPartition, int source_id);
@@ -74,7 +77,8 @@ extern void logout();
 extern void stop_sync();
 extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
-extern void set_pollinterval(int interval);
+extern int set_pollinterval(int interval);
+extern int get_pollinterval();
 extern void set_syncserver(char* syncserver);
 extern VALUE get_src_attrs(const char* szPartition, int source_id);
 extern VALUE is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);

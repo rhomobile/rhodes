@@ -119,7 +119,7 @@ private:
     virtual void processCommand(IQueueCommand* pCmd);
     virtual boolean isSkipDuplicateCmd() { return true; }
 
-    virtual void processCommands();
+    virtual void onTimeout();
 
     void checkShowStatus(CSyncCommand& oSyncCmd);
 };
@@ -144,7 +144,7 @@ int rho_sync_logged_in();
 void rho_sync_logout();
 void rho_sync_set_notification(int source_id, const char *url, char* params);
 void rho_sync_clear_notification(int source_id);
-void rho_sync_set_pollinterval(int nInterval);
+int rho_sync_set_pollinterval(int nInterval);
 void rho_sync_set_syncserver(const char* syncserver);
 void rho_sync_setobjectnotify_url(const char* szUrl);
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
@@ -163,6 +163,8 @@ void rho_sync_free_string(char* szStr);
 unsigned long rho_sync_login_c(const char *name, const char *password, /*RHOC_CALLBACK*/void* callback, void* callback_data);
 unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, /*RHOC_CALLBACK*/void* callback, void* callback_data);
 void rho_sync_set_notification_c(int source_id, /*RHOC_CALLBACK*/void* callback, void* callback_data);
+
+void rho_sync_stop();
 
 #ifdef __cplusplus
 };
