@@ -17,6 +17,8 @@ CThreadQueue::~CThreadQueue(void)
 
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
+    LOG(INFO) + "addCommand: " + pCmd->toString();
+
     synchronized(m_mxStackCommands);
 
 	boolean bExist = false;
@@ -26,6 +28,7 @@ void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 	    {
 		    if ( m_stackCommands.get(i)->equals(*pCmd) )
 		    {
+                LOG(INFO) + "Command already exists in queue. Skip it.";
 			    bExist = true;
 			    break;
 		    }
@@ -39,8 +42,6 @@ void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 
 void CThreadQueue::addQueueCommand(IQueueCommand* pCmd)
 { 
-    LOG(INFO) + "addCommand: " + pCmd->toString();
-
     addQueueCommandInt(pCmd);
 
     if ( isNoThreadedMode()  )
@@ -70,7 +71,8 @@ void CThreadQueue::run()
         if ( nWait >= 0 && !isStopping() && isNoCommands() )
 		{
             LOG(INFO) + "ThreadQueue blocked for " + nWait + " seconds...";
-            wait(nWait);
+            if ( wait(nWait) == 1 )
+                onTimeout();
         }
         nLastPollInterval = 0;
 

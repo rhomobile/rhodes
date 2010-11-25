@@ -650,7 +650,7 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
 LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	LOG(INFO) + __FUNCTION__;
+	//LOG(INFO) + __FUNCTION__;
     StringW strAppName = getRhodesAppName();
 	CAlertDialog::Params *params = (CAlertDialog::Params *)lParam;
 

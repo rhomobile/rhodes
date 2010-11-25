@@ -455,7 +455,7 @@ module Rho
     
     def serve(req)
       begin
-        puts 'inside RHO.serve...'
+        puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
         return send_response(res)
@@ -466,7 +466,7 @@ module Rho
 
     def serve_hash(req)
       begin
-        puts 'inside RHO.serve...'
+        puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
         return send_response_hash(res)
@@ -479,7 +479,7 @@ module Rho
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
       begin
-        puts 'inside RHO.serve_index: ' + index_name
+        puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
         return send_response(res)
@@ -492,7 +492,7 @@ module Rho
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
       begin
-        puts 'inside RHO.serve_index: ' + index_name
+        puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
         return send_response_hash(res)

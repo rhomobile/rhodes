@@ -42,6 +42,7 @@ module Rhom
       end
 
       def database_client_reset
+        old_interval = SyncEngine.set_pollinterval(0)
         SyncEngine.stop_sync
         
         params = ["", "", 0]
@@ -59,9 +60,12 @@ module Rhom
       
         hash_migrate = {}
         ::Rho::RHO.init_schema_sources(hash_migrate) 
+        
+        SyncEngine.set_pollinterval(old_interval)
       end
       
       def database_full_reset(reset_client_info=false)
+        old_interval = SyncEngine.set_pollinterval(0)
         SyncEngine.stop_sync
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
@@ -77,6 +81,8 @@ module Rhom
       
         hash_migrate = {}
         ::Rho::RHO.init_schema_sources(hash_migrate) 
+        
+        SyncEngine.set_pollinterval(old_interval)
       end
       
       def database_full_reset_and_logout
