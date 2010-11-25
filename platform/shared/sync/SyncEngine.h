@@ -55,6 +55,7 @@ public:
 
     void setFactory(common::IRhoClassFactory* factory){ 
         m_NetRequest = factory->createNetRequest();
+        m_oSyncNotify.setFactory(factory);
     }
 
     void doSyncAllSources();
