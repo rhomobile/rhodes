@@ -236,7 +236,6 @@ public:
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
     LOG(INFO) + "callAppActiveCallback";
-    int stop = !rho_conf_getBool("dont_stop_local_server_in_background");
     if (bActive)
     {
         // Restart server each time when we go to foreground
@@ -265,9 +264,20 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         String strUrl = m_strHomeUrl + "/system/deactivateapp";
         NetResponse(resp,getNet().pullData( strUrl, null ));
         if ( !resp.isOK() )
+        {
             LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        if (stop)
-            m_httpServer->stop();
+        }else
+        {
+            const char* szData = resp.getCharData();
+            boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
+
+            if (bStop)
+            {
+                LOG(INFO) + "Stopping local server.";
+                m_httpServer->stop();
+            }
+        }
+
         m_bDeactivationMode = false;
     }
 }

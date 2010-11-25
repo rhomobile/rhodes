@@ -3,6 +3,7 @@
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
 #include "common/AutoPointer.h"
+#include "common/IRhoClassFactory.h"
 
 typedef int (*RHOC_CALLBACK)(const char* szNotify, void* callback_data);
 
@@ -66,10 +67,17 @@ private:
     String m_strNotifyBody;
     String m_strStatusHide;
 
-    net::INetRequest& getNet();
+   	common::CAutoPtr<net::INetRequest>     m_NetRequest;
+
+    net::INetRequest& getNet(){ return *m_NetRequest; }
     CSyncEngine& getSync(){ return m_syncEngine; }
 public:
-    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), m_bEnableReportingGlobal(false){}
+    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), 
+        m_bEnableReportingGlobal(false){}
+
+    void setFactory(common::IRhoClassFactory* factory){ 
+        m_NetRequest = factory->createNetRequest();
+    }
 
     //Object notifications
     void fireObjectsNotification();

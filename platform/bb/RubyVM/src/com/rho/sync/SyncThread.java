@@ -634,17 +634,33 @@ public class SyncThread extends RhoThread
 			new RubyOneArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 					try{
+						int nOldInterval = getInstance().getPollInterval(); 
 						int nInterval = arg1.toInt();
 						getInstance().setPollInterval(nInterval);
+						
+						
+						return ObjectFactory.createInteger(nOldInterval);
 					}catch(Exception e)
 					{
 						LOG.ERROR("set_pollinterval failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}
-					
-					return RubyConstant.QNIL;
 				}
 			});
+		klass.getSingletonClass().defineMethod("get_pollinterval",
+				new RubyNoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyBlock block) {
+						try{
+							int nOldInterval = getInstance().getPollInterval(); 
+							return ObjectFactory.createInteger(nOldInterval);
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_pollinterval failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+				});
+		
 		klass.getSingletonClass().defineMethod("set_syncserver",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
