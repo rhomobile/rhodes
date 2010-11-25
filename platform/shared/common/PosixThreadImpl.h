@@ -18,7 +18,7 @@ public:
 
     void start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority ePriority);
     void stop(unsigned int nTimeoutToKill);
-    void wait(unsigned int nTimeout);
+    int wait(unsigned int nTimeout);
     void stopWait();
     void sleep(unsigned int nTimeout);
 

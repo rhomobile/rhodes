@@ -15,8 +15,6 @@ using namespace rho::db;
 String CSyncNotify::m_strObjectNotifyUrl;
 common::CMutex CSyncNotify::m_mxObjectNotify;
 
-INetRequest& CSyncNotify::getNet(){ return getSync().getNet(); }
-
 void CSyncNotify::addObjectNotify(int nSrcID, const String& strObject)
 {
     synchronized(m_mxObjectNotify)

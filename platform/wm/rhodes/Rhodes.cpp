@@ -196,8 +196,13 @@ public :
         rho::common::CRhodesApp::Create(m_strRootPath );
         String strTitle = RHODESAPP().getAppTitle();
 
+        DWORD dwStyle = WS_VISIBLE;
+
+#if !defined(_WIN32_WCE)
+        dwStyle |= WS_OVERLAPPEDWINDOW;
+#endif
         // Create the main application window
-        m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), WS_VISIBLE);
+        m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
         if (NULL == m_appWindow.m_hWnd)
         {
             return S_FALSE;

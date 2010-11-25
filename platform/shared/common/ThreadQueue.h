@@ -54,8 +54,9 @@ protected:
     virtual int getLastPollInterval(){ return 0;}
     virtual void processCommand(IQueueCommand* pCmd) = 0;
     virtual boolean isSkipDuplicateCmd() { return false; }
+    virtual void onTimeout(){}
 
-    virtual void processCommands();
+    void processCommands();
 
     void addQueueCommandInt(IQueueCommand* pCmd);
 

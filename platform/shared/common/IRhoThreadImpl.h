@@ -16,7 +16,7 @@ struct IRhoThreadImpl
 
     virtual void start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority) = 0;
     virtual void stop(unsigned int nTimeoutToKill) = 0;
-    virtual void wait(unsigned int nTimeout) = 0;
+    virtual int wait(unsigned int nTimeout) = 0;
     virtual void stopWait() = 0;
     virtual void sleep(unsigned int nTimeout) = 0;
 };

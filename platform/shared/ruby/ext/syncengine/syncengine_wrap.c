@@ -1833,8 +1833,11 @@ static VALUE mSyncEngine;
 	#define set_notification rho_sync_set_notification
 	extern void rho_sync_clear_notification(int source_id);
 	#define clear_notification rho_sync_clear_notification
-	extern void rho_sync_set_pollinterval(int interval);
+	extern int rho_sync_set_pollinterval(int interval);
 	#define set_pollinterval rho_sync_set_pollinterval
+	extern int rho_sync_get_pollinterval();
+	#define get_pollinterval rho_sync_get_pollinterval
+	
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
 	extern VALUE rho_sync_get_attrs(const char* szPartition, int source_id);
@@ -2316,6 +2319,8 @@ _wrap_set_pollinterval(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   int val1 ;
   int ecode1 = 0 ;
+  int result;
+  VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
@@ -2325,8 +2330,25 @@ _wrap_set_pollinterval(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","set_pollinterval", 1, argv[0] ));
   } 
   arg1 = (int)(val1);
-  set_pollinterval(arg1);
+  result = (int)set_pollinterval(arg1);
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
   return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_get_pollinterval(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)get_pollinterval();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
 fail:
   return Qnil;
 }
@@ -2891,6 +2913,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_notification", _wrap_set_notification, -1);
   rb_define_module_function(mSyncEngine, "clear_notification", _wrap_clear_notification, -1);
   rb_define_module_function(mSyncEngine, "set_pollinterval", _wrap_set_pollinterval, -1);
+  rb_define_module_function(mSyncEngine, "get_pollinterval", _wrap_get_pollinterval, -1);
   rb_define_module_function(mSyncEngine, "set_syncserver", _wrap_set_syncserver, -1);
   rb_define_module_function(mSyncEngine, "get_src_attrs", _wrap_get_src_attrs, -1);
   rb_define_module_function(mSyncEngine, "is_blob_attr", _wrap_is_blob_attr, -1);

@@ -59,11 +59,13 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
     }
 }
 
-void CRhoThreadImpl::wait(unsigned int nTimeout)
+int CRhoThreadImpl::wait(unsigned int nTimeout)
 {
     DWORD dwRes = ::WaitForSingleObject( m_hAwakeEvent, nTimeout*1000 );
     if ( dwRes == WAIT_FAILED )
         LOG(ERROR) + "WaitForSingleObject failed. ID: " + ::GetCurrentThreadId() + "; Result: " + dwRes;
+
+    return dwRes == WAIT_TIMEOUT ? 1 : 0;
 }
 
 void CRhoThreadImpl::stopWait()

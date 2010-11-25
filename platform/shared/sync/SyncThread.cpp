@@ -98,12 +98,10 @@ int CSyncThread::getLastPollInterval()
 	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
 }
 
-void CSyncThread::processCommands()//throws Exception
+void CSyncThread::onTimeout()//throws Exception
 {
     if ( isNoCommands() && getPollInterval()>0 )
         addQueueCommandInt(new CSyncCommand(scSyncAll,false));
-
-    CThreadQueue::processCommands();
 }
 
 void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
@@ -264,11 +262,19 @@ unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *fro
     return CSyncThread::getInstance()->getRetValue();
 }	
 
-void rho_sync_set_pollinterval(int nInterval)
+int rho_sync_set_pollinterval(int nInterval)
 {
+    int nOldInterval = CSyncThread::getInstance()->getPollInterval();
     CSyncThread::getInstance()->setPollInterval(nInterval);
+
+    return nOldInterval;
 }
-	
+
+int rho_sync_get_pollinterval()
+{
+    return CSyncThread::getInstance()->getPollInterval();
+}
+
 void rho_sync_set_syncserver(const char* syncserver)
 {
     rho_sync_stop();
