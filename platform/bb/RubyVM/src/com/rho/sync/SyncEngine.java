@@ -130,6 +130,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     
     void setFactory(RhoClassFactory factory)throws Exception{ 
 		m_NetRequest = RhoClassFactory.createNetRequest();
+		m_oSyncNotify.setFactory(factory);		
     }
     
     void prepareSync(int eState, SourceID oSrcID)throws Exception
