@@ -1,6 +1,7 @@
 package com.rho.sync;
 
 import com.rho.Mutex;
+import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoAppAdapter;
@@ -10,6 +11,7 @@ import java.util.Hashtable;
 import com.rho.*;
 import com.rho.db.*;
 import com.rho.net.*;
+
 import java.util.Vector;
 
 public class SyncNotify {
@@ -49,9 +51,10 @@ public class SyncNotify {
     boolean m_bEnableReporting = false;
     boolean m_bEnableReportingGlobal = true;
     String m_strNotifyBody = "";
+    NetRequest m_NetRequest;
     
     SyncEngine getSync(){ return m_syncEngine; }
-	NetRequest getNet(){ return getSync().getNet(); }
+    NetRequest getNet() { return m_NetRequest;}
 
 	String getNotifyBody(){ return m_strNotifyBody; }
 	void cleanNotifyBody(){ m_strNotifyBody = ""; }
@@ -63,6 +66,10 @@ public class SyncNotify {
     SyncNotify( SyncEngine syncEngine ) 
     {
     	m_syncEngine = syncEngine;
+    }
+    
+    void setFactory(RhoClassFactory factory)throws Exception{ 
+		m_NetRequest = RhoClassFactory.createNetRequest();
     }
     
     void addObjectNotify(Integer nSrcID, String strObject)
@@ -267,8 +274,11 @@ public class SyncNotify {
 
         if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
         {
-            fireSyncNotification(src, true, src.m_nErrCode, "");
-    		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
+        	SyncNotification pSN = getSyncNotifyBySrc(src);
+        	if ( pSN != null )        	
+        		fireSyncNotification(src, true, src.m_nErrCode, "");
+        	else
+        		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
         }
         else
             fireSyncNotification( src, true, src.m_nErrCode, "");
