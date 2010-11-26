@@ -76,6 +76,32 @@ VALUE rho_sys_has_network() {
 	return rho_ruby_create_boolean(0);
 }
 
+int rho_net_ping_network(const char* szHost)
+{
+	RAWLOG_INFO("PING network.");
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+	NSString *linkString = [[NSString alloc] initWithUTF8String:szHost];
+
+	[request setURL:[NSURL URLWithString:linkString]];
+	[request setTimeoutInterval:10];
+	
+	NSError *error = nil;
+	NSHTTPURLResponse *response;
+	NSData *returnData = NULL;
+	returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
+	
+	if (!returnData)
+		RAWLOG_ERROR2("PING network FAILED. NSError: %d. NSErrorInfo : %s", [error code], [[error localizedDescription] UTF8String]);
+	else
+		RAWLOG_INFO("PING network SUCCEEDED.");	
+	
+	[pool release];
+	
+	return returnData == NULL ? 0 : 1;
+}
+
 int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)
 {
 	struct sockaddr_in zeroAddress;

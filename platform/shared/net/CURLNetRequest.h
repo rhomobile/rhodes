@@ -72,7 +72,8 @@ private:
     int getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession);
     String makeCookies();
     INetResponse *makeResponse(String strBody, int nErrorCode);
-
+	CURLcode doCURLPerform(const String& strUrl);
+	
     CURLHolder m_curl;
 };
 

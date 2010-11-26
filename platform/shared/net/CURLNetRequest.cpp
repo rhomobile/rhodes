@@ -118,6 +118,7 @@ static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void 
     return nBytes;
 }
 
+extern "C" int rho_net_ping_network(const char* szHost);	
 INetResponse* CURLNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
     RAWLOG_INFO1("GET url: %s", strUrl.c_str());
@@ -144,9 +145,24 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
                                         const String& strBody, IRhoSession *oSession,
                                         Hashtable<String,String>* pHeaders)
 {
-    return doPull(method, strUrl, strBody, null, oSession, pHeaders);
+    INetResponse* pResp = doPull(method, strUrl, strBody, null, oSession, pHeaders);
+	return pResp;
 }
 
+CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
+{
+	CURLcode err = m_curl.perform();
+	if ( err !=  CURLE_OK && !net::URI::isLocalHost(strUrl.c_str()) )
+	{
+		long statusCode = 0;
+		curl_easy_getinfo(m_curl.curl(), CURLINFO_RESPONSE_CODE, &statusCode);
+		if ( statusCode == 0 && rho_net_ping_network(strUrl.c_str()) )
+			err = m_curl.perform();
+	}
+	
+	return err;
+}
+	
 INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
                                      const String& strBody, common::CRhoFile *oFile,
                                      IRhoSession* oSession, Hashtable<String,String>* pHeaders )
@@ -157,7 +173,8 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     if (oFile)
         nStartFrom = oFile->size();
 
-    rho_net_impl_network_indicator(1);
+	if( !net::URI::isLocalHost(strUrl.c_str()) )	
+	   rho_net_impl_network_indicator(1);
 
     Hashtable<String,String> h;
     if (pHeaders)
@@ -177,7 +194,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         if (nStartFrom > 0)
             curl_easy_setopt(curl, CURLOPT_RESUME_FROM, nStartFrom);
 
-        CURLcode err = m_curl.perform();
+        CURLcode err = doCURLPerform(strUrl);
         curl_slist_free_all(hdrs);
         
         long statusCode = 0;
@@ -214,7 +231,8 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         break;
     }
 
-    rho_net_impl_network_indicator(0);
+	if( !net::URI::isLocalHost(strUrl.c_str()) )		   
+	   rho_net_impl_network_indicator(0);
 
     return makeResponse(strRespBody, nRespCode);
 }
@@ -295,7 +313,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
         
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
     
-    CURLcode err = m_curl.perform();
+    CURLcode err = doCURLPerform(strUrl);
 	
     curl_slist_free_all(hdrs);
     curl_formfree(post);
@@ -347,7 +365,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
                  CURLFORM_END);
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
     
-    CURLcode err = m_curl.perform();
+	CURLcode err = doCURLPerform(strUrl);
 	
     curl_slist_free_all(hdrs);
     curl_formfree(post);
