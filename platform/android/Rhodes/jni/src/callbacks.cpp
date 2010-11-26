@@ -68,6 +68,11 @@ RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
     // No GUI indicator on Android
 }
 
+RHO_GLOBAL int rho_net_ping_network(const char* szHost)
+{
+    return 0;
+}
+
 RHO_GLOBAL void *rho_nativethread_start()
 {
     JNIEnv *env;
