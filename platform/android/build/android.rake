@@ -458,7 +458,10 @@ namespace "config" do
     $avdname += "ext" if $use_google_addon_api
     $avdtarget = $androidtargets[get_api_level($emuversion)]
 
-    $appavdname = $app_config["android"]["emulator"]
+    $appavdname = nil
+    if $app_config["android"] != nil
+      $appavdname = $app_config["android"]["emulator"] 
+    end
 
     setup_ndk($androidndkpath, ANDROID_API_LEVEL)
     
