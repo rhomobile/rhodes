@@ -391,6 +391,8 @@ public class SyncThread extends RhoThread
 	
 	public static void stopSync()throws Exception
 	{
+		LOG.INFO("STOP sync");
+		
 		if ( getSyncEngine().isSyncing() )
 		{
 			getSyncEngine().stopSyncByUser();
