@@ -214,6 +214,8 @@ unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
 
 void rho_sync_stop()
 {
+	LOG(INFO)+"STOP sync";
+	
 	if (CSyncThread::getSyncEngine().isSyncing() )
 	{
 		CSyncThread::getSyncEngine().stopSyncByUser();
