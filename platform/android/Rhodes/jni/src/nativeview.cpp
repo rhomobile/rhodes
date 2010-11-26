@@ -9,7 +9,7 @@
 #include <strings.h>
 
 
-#import <RhoNativeViewManager.h> 
+#include <RhoNativeViewManager.h> 
 
 
 class RhoNativeViewHolder{
