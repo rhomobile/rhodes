@@ -213,8 +213,11 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 
     if ( getSync().getState() == CSyncEngine::esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
     {
-        fireSyncNotification(&src, true, src.m_nErrCode, "");
-		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
+		CSyncNotification* pSN = getSyncNotifyBySrc(&src);
+		if ( pSN != null )
+			fireSyncNotification(&src, true, src.m_nErrCode, "");
+		else
+			fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
     }
     else
         fireSyncNotification(&src, true, src.m_nErrCode, "");
