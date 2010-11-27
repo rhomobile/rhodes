@@ -524,6 +524,9 @@ class SyncSource
 	        if ( getToken() == 0 )
 	            break;
 	    }
+	    
+	    if ( getSync().isSchemaChanged() )
+	    	getSync().stopSync();	    
 	}
 
 	void processServerResponse_ver3(JSONArrayIterator oJsonArr)throws Exception
@@ -605,7 +608,6 @@ class SyncSource
 
 	        if ( oCmds.hasName("schema-changed") )
 	        {
-	            //getSync().stopSync();    
 	            getSync().setSchemaChanged(true);
 	        }else if ( oCmds.hasName("source-error") )
 	        {
