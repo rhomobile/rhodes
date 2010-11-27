@@ -427,6 +427,9 @@ void CSyncSource::syncServerChanges()
         if ( getToken() == 0 )
             break;
     }
+
+    if ( getSync().isSchemaChanged() )
+        getSync().stopSync();
 }
 
 void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
@@ -515,7 +518,6 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 
         if ( oCmds.hasName("schema-changed") )
         {
-            //getSync().stopSync();    
             getSync().setSchemaChanged(true);
         }else if ( oCmds.hasName("source-error") )
         {
