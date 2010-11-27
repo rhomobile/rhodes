@@ -823,6 +823,67 @@ describe "Rhom::RhomObject" do
     @accts[1].name.should == "Aeroprise"
     @accts[1].industry.should == "Technology"
   end
+
+  it "should order by block" do
+    @accts = getAccount.find(:all, :order => 'name') do |x,y|
+        y <=> x    
+    end
+    
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+    @accts[1].name.should == "Aeroprise"
+    @accts[1].industry.should == "Technology"
+
+    @accts = getAccount.find(:all, :order => 'name', :orderdir => 'DESC') do |x,y|
+        y <=> x    
+    end
+    
+    @accts[0].name.should == "Aeroprise"
+    @accts[0].industry.should == "Technology"
+    @accts[1].name.should == "Mobio India"
+    @accts[1].industry.should == "Technology"
+
+    puts "block without order parameter"
+    @accts = getAccount.find(:all) do |item1,item2|
+        item2.name <=> item1.name
+    end
+    
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+    @accts[1].name.should == "Aeroprise"
+    @accts[1].industry.should == "Technology"
+    
+  end
+  
+  it "should order by multiple columns" do
+    getAccount.create(:name=>'ZMobile', :industry => 'IT', :modified_by_name => 'user')
+    getAccount.create(:name=>'Aeroprise', :industry => 'Accounting', :modified_by_name => 'admin')
+    
+    @accts = getAccount.find(:all, :order => ['name', 'industry'], :orderdir => ['ASC', 'DESC'])
+
+    @accts.length().should == 4
+    @accts[0].name.should == "Aeroprise"
+    @accts[0].industry.should == "Technology"
+    @accts[1].name.should == "Aeroprise"
+    @accts[1].industry.should == "Accounting"
+    @accts[2].name.should == "Mobio India"
+    @accts[2].industry.should == "Technology"
+    @accts[3].name.should == "ZMobile"
+    @accts[3].industry.should == "IT"
+    
+    puts "multiple order with condition"
+    @accts = getAccount.find(:all, :conditions => {:modified_by_name => 'admin'},
+        :order => ['name', 'industry'], :orderdir => ['ASC', 'DESC'])
+
+    @accts.length().should == 3
+    @accts[0].name.should == "Aeroprise"
+    @accts[0].industry.should == "Technology"
+    @accts[1].name.should == "Aeroprise"
+    @accts[1].industry.should == "Accounting"
+    @accts[2].name.should == "Mobio India"
+    @accts[2].industry.should == "Technology"
+    
+  end
   
   it "should return records when order by is nil for some records" do
     @accts = getAccount.find(:all, :order => 'shipping_address_country', :dont_ignore_missed_attribs => true)
