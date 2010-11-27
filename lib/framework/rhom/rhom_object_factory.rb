@@ -276,7 +276,7 @@ module Rhom
                     return sql, vals
                 end
 
-                def find_objects(condition_hash, op, limit, offset, order_attr)
+                def find_objects(condition_hash, op, limit, offset, order_attr, &block)
                     nulls_cond = {}
                     if op == 'AND'
                         condition_hash.each do |key,value|
@@ -288,7 +288,7 @@ module Rhom
                     end
                     
                     strLimit = nil
-                    if !order_attr 
+                    if !(block_given? || order_attr)
                         strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset && condition_hash.length <= 1 && nulls_cond.length == 0
                     end
                     
@@ -311,8 +311,8 @@ module Rhom
                                 
                                 mapObjs[ rec['object'] ] = 1
                                 listObjs << rec
-                                
-                                bStop = !order_attr && limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
+
+                                bStop = !(block_given? || order_attr) && limit && offset && nulls_cond.length == 0 && listObjs.length >= offset + limit
                                 break if bStop
                             end
                             
@@ -357,7 +357,7 @@ module Rhom
                     res = []
                     listObjs.each do |obj|
                         nIndex += 1
-                        next if !order_attr && offset && nIndex < offset && !strLimit
+                        next if !(block_given? || order_attr) && offset && nIndex < offset && !strLimit
                         
                         bSkip = false
                         #obj_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(obj['object'])
@@ -383,11 +383,11 @@ module Rhom
                     res
                 end
 
-                def find_objects_ex(condition_ar, op, limit, offset, order_attr)
+                def find_objects_ex(condition_ar, op, limit, offset, order_attr, &block)
                     mapObjs = {}
                     listObjs = []
                     condition_ar.each do |cond|
-                        res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr)
+                        res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr, &block)
                         
                         if listObjs.length() == 0
                             if condition_ar.length() > 1
@@ -423,7 +423,7 @@ module Rhom
                 end
                                 
                 def find_bycondhash(args, &block)                
-                    #puts 'find_bycondhash start'
+                    #puts 'find_bycondhash start' + (block_given? ? 'with block' : "")
                     
                     condition_hash = {}
                     select_arr = nil
@@ -442,7 +442,8 @@ module Rhom
                           offset = args[1][:offset] ? args[1][:offset].to_i : 0
                         end
                         select_arr = args[1][:select] if args[1][:select]
-                        order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
+                        
+                        order_dir = args[1][:orderdir]
                         order_attr = args[1][:order]
                         
                         op = args[1][:op].upcase if args[1][:op]
@@ -456,9 +457,14 @@ module Rhom
                     attribs = nil
                     if select_arr
                       attribs = select_arr
-                      if order_attr 
+                      if order_attr
                         order_attr_arr = []
-                        order_attr_arr.push(order_attr)
+                        if order_attr.is_a?(Array)
+                            order_attr_arr = order_attr
+                        else    
+                            order_attr_arr.push(order_attr)
+                        end
+                            
                         attribs = attribs | order_attr_arr
                       end  
                     else
@@ -472,9 +478,9 @@ module Rhom
                     begin
                         listObjs = []
                         if condition_hash.is_a?(Hash)
-                            listObjs = find_objects(condition_hash, op, limit, offset, order_attr)
+                            listObjs = find_objects(condition_hash, op, limit, offset, order_attr, &block)
                         else
-                            listObjs = find_objects_ex(condition_hash, op, limit, offset, order_attr)
+                            listObjs = find_objects_ex(condition_hash, op, limit, offset, order_attr, &block)
                         end
 
                         nCount = 0;
@@ -538,24 +544,16 @@ module Rhom
                                 #end
                                 
                                 ret_list << new_obj
-                                break if !order_attr && limit && ret_list.length >= limit
+                                break if !(block_given? || order_attr) && limit && ret_list.length >= limit
                             end
                         end    
                     ensure
                       db.unlock_db
                     end
                   
-                    if order_attr
-                        ret_list.sort! { |x,y| 
-                           vx = x.vars[order_attr.to_sym()]
-                           vy = y.vars[order_attr.to_sym()]
-                           res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
-                           res *= -1 if order_dir && order_dir == 'DESC'
-                           res
-                        }
-                    end
+                    order_array(ret_list, order_attr,order_dir, &block)
 
-                    if order_attr && limit
+                    if (block_given? || order_attr) && limit
                         ret_list = ret_list.slice(offset,limit)
                     end
 
@@ -570,6 +568,70 @@ module Rhom
                     ret_list
                 end
 
+                def order_array(ret_list, order_attr, order_dir, &block)
+                    if order_attr
+                        ret_list.sort! { |x,y| 
+                        
+                            res = 0
+                            if order_attr.is_a?(Array)
+                                order_attr.each_index { |i|
+                                    vx = x.vars[order_attr[i].to_sym()]
+                                    vy = y.vars[order_attr[i].to_sym()]
+                                    res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+
+                                    dir = 'ASC'
+                                    if order_dir && order_dir.is_a?(Array) && i < order_dir.length()
+                                        dir = order_dir[i].upcase()
+                                    else
+                                        dir = order_dir.upcase() if order_dir && order_dir.is_a?(String)
+                                    end
+                                   
+                                    res *= -1 if dir && dir == 'DESC'
+                                    break if res != 0
+                                }
+                            else
+                                vx = x.vars[order_attr.to_sym()]
+                                vy = y.vars[order_attr.to_sym()]
+                                res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+                                res *= -1 if order_dir && order_dir == 'DESC'
+                            end    
+                            
+                            res
+                        }
+                    elsif block_given?
+                        ret_list.sort! { |x,y| 
+                           res = yield(x,y)
+                           res *= -1 if order_dir && order_dir == 'DESC'
+                           res
+                        }
+                    end
+                    
+                end
+                
+                def make_sql_order(params)
+                    order_attr = params[:order]
+                    order_dir = params[:orderdir]                    
+                    
+                    res = ""
+                    
+                    if order_attr && order_attr.is_a?(Array)
+                        order_attr.each_index do |i|
+                            res += "," if i > 0
+                            
+                            res += "\"#{order_attr[i]}\" "
+                            if order_dir && order_dir.is_a?(Array) && i < order_dir.length()
+                                res += order_dir[i].upcase()
+                            else
+                                res += order_dir && order_dir.is_a?(String) ? order_dir.upcase() : "ASC"
+                            end
+                        end                        
+                    else
+                        res = "\"#{order_attr}\" " + (order_dir ? order_dir.upcase() : "")
+                    end
+                    
+                    res
+                end
+                
                 # retrieve a single record if object id provided, otherwise return
                 # full list corresponding to factory's source id
                 def find(*args, &block)
@@ -629,8 +691,9 @@ module Rhom
                     end
                     
                     select_arr = args[1][:select] if args[1][:select]
-                    order_dir = args[1][:orderdir].upcase() if args[1][:orderdir]
+                    order_dir = args[1][:orderdir]
                     order_attr = args[1][:order]
+                    
                   end
                   
                   if args.first == :first
@@ -639,7 +702,7 @@ module Rhom
                   end
                   
                   strLimit = nil
-                  if !(block_given? && order_attr)
+                  if !block_given?
                       strLimit = " LIMIT " + limit.to_s + " OFFSET " + offset.to_s if limit && offset
                   end
                   
@@ -670,10 +733,10 @@ module Rhom
                           objects = [ { 'object' => strip_braces(args.first.to_s) } ]
                           
                         else  
-                          if !block_given? && order_attr
+                          if !block_given? && order_attr && order_attr.is_a?(String)
                               if  !args[1][:dont_ignore_missed_attribs]
                                   sql << "SELECT object FROM object_values WHERE source_id=? "
-                                  sql << " AND attrib=? ORDER BY \"value\" " + order_dir
+                                  sql << " AND attrib=? ORDER BY \"value\" " + ( order_dir ? order_dir : "")
                                   values << get_source_id
                                   values << order_attr
                               end    
@@ -753,7 +816,7 @@ module Rhom
                             sql << " FROM object_values ov \n"
                             sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
                             sql << "group by object\n"
-                            sql << "order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
+                            sql << "order by " + make_sql_order(args[1]) if !block_given? && order_attr
                             #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                             sql << ") WHERE " + condition_str if condition_str
                             sql << strLimit if strLimit
@@ -775,7 +838,7 @@ module Rhom
                            sql << " WHERE " + condition_str if condition_str
                        end
                            
-                       sql << " order by \"#{order_attr}\" " + order_dir if !block_given? && order_attr
+                       sql << " order by " + make_sql_order(args[1]) if !block_given? && order_attr
                        sql << strLimit if strLimit
                        
                        #puts "Database query start" #: #{sql}"
@@ -804,17 +867,12 @@ module Rhom
                   else
                       puts "Processing rhom objects end, no attributes found."
                   end
-                 
-                  if block_given? && order_attr
-                    ret_list.sort! { |x,y| 
-                       vx = x.vars[order_attr.to_sym()]
-                       vy = y.vars[order_attr.to_sym()]
-                       res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
-                       res *= -1 if order_dir && order_dir == 'DESC'
-                       res
-                    }
+
+                  if block_given?
+                    order_array(ret_list, order_attr, order_dir, &block)
+                    ret_list = ret_list.slice(offset,limit) if limit
                   end
-                  
+                 
                   return list.length if args.first == :count
                   if args.first == :first || args.first.is_a?(String) 
                     return ret_list.length > 0 ? ret_list[0] : nil
