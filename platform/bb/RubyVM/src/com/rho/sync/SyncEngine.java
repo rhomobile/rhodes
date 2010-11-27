@@ -829,7 +829,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        bError = !syncOneSource(i);
 	    }
 
-	    if ( !bError)
+	    if ( !bError && !isSchemaChanged() )
 	    	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 	}
 	
