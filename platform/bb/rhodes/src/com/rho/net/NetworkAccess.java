@@ -39,7 +39,7 @@ public class NetworkAccess implements INetworkAccess {
 		String strDeviceside = ";deviceside=true";
 		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
 			strDeviceside = "";
-
+		
 		if (DeviceInfo.isSimulator()) 
 		{
 			URLsuffix = strDeviceside;
@@ -134,7 +134,7 @@ public class NetworkAccess implements INetworkAccess {
 			return 0;
 		
 		m_nMaxPacketSize = RhoConf.getInstance().getInt("bb_net_maxpacketsize_kb")*1024;
-		if ( (DeviceInfo.isSimulator() || URLsuffix.indexOf(";deviceside=true") < 0) && m_nMaxPacketSize == 0 )
+		if ( (/*DeviceInfo.isSimulator() ||*/ URLsuffix.indexOf(";deviceside=true") < 0) && m_nMaxPacketSize == 0 )
 		{
 			//avoid 403 error on BES/BIS
 			//http://supportforums.blackberry.com/t5/Java-Development/HTTP-Error-413-when-downloading-small-files/m-p/103918
