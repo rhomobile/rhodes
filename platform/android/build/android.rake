@@ -147,6 +147,7 @@ def set_app_name_android(newname)
   manifest = doc.elements["manifest"]
 
   manifest.elements.each('uses-sdk') { |e| manifest.delete e }
+  
   element = REXML::Element.new('uses-sdk')
   element.add_attribute('android:minSdkVersion', ANDROID_API_LEVEL.to_s)
   manifest.add element
@@ -175,7 +176,8 @@ def set_app_name_android(newname)
     manifest.delete(e) if name.to_s =~ /\.C2D_MESSAGE$/
   end
 
-  manifest.elements.each('uses-permission') { |e| manifest.delete e }
+  #manifest.elements.each('uses-permission') { |e| manifest.delete e }
+
   caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
     element.add_attribute('android:name', "android.permission.#{cap}")
