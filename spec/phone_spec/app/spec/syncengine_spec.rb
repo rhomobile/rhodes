@@ -95,6 +95,15 @@ describe "SyncEngine_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
 
   end
+
+  it "should update sources from database" do
+    uniq_sources = Rho::RhoConfig::sources.values  
+    
+    ::Rho::RHO.get_instance().load_server_sources("{\"partition\":\"user\"}")
+    ::Rhom::Rhom.database_fullclient_reset_and_logout
+    
+    #uniq_sources.should == Rho::RhoConfig::sources.values  
+  end
   
   it "should login" do
     

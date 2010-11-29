@@ -197,8 +197,22 @@ module Rho
                 arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                     {'partition'=>str_partition} )
                 arSrcs.each do |src|
-                    src['schema'] = '<empty_schema>' if src && !src['schema'] && db.table_exist?(src['name'])
+                    if src && db.table_exist?(src['name'])
                     
+                        temp = src['schema']
+                    
+                        unless temp && temp.is_a?(Hash)
+                            src['schema'] = {}
+                            
+                            if temp
+                                src['schema']['sql'] = temp
+                            else
+                                #TODO: server has to send schema, overwise reset will not create schema table
+                                src['schema']['sql'] = ';'
+                            end    
+                        end
+                    end
+                                        
                     Rho::RhoConfig::sources()[ src['name'] ] = src
                 end
                 
@@ -317,6 +331,7 @@ module Rho
           db = get_src_db(source['name'])
           
           next unless source['schema']
+          raise ArgumentError, "schema parameter should be Hash!" unless source['schema'].is_a?(Hash)
           
           call_migrate = false
           if db.table_exist?(source['name'])
@@ -325,6 +340,7 @@ module Rho
           end
           
           strCreate = source['schema']['sql']
+          strCreate = "" unless strCreate
           if source['schema']['property']
             arCols = source['schema']['property']
             arCols = arCols
