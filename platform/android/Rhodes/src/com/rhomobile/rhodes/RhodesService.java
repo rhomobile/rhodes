@@ -753,40 +753,44 @@ public class RhodesService {
 	}
 	
 	public static Object getProperty(String name) {
-		if (name.equalsIgnoreCase("platform"))
-			return "ANDROID";
-		else if (name.equalsIgnoreCase("locale"))
-			return getCurrentLocale();
-		else if (name.equalsIgnoreCase("country"))
-			return getCurrentCountry();
-		else if (name.equalsIgnoreCase("screen_width"))
-			return new Integer(getScreenWidth());
-		else if (name.equalsIgnoreCase("screen_height"))
-			return new Integer(getScreenHeight());
-		else if (name.equalsIgnoreCase("has_camera"))
-			return new Boolean(isCameraAvailable);
-		else if (name.equalsIgnoreCase("has_network"))
-			return hasNetwork();
-		else if (name.equalsIgnoreCase("ppi_x"))
-			return new Float(screenPpiX);
-		else if (name.equalsIgnoreCase("ppi_y"))
-			return new Float(screenPpiY);
-		else if (name.equalsIgnoreCase("phone_number")) {
-			TelephonyManager manager = (TelephonyManager)RhodesService.getInstance().
-				getContext().getSystemService(Context.TELEPHONY_SERVICE);
-			String number = manager.getLine1Number();
-			return number;
+		try {
+			if (name.equalsIgnoreCase("platform"))
+				return "ANDROID";
+			else if (name.equalsIgnoreCase("locale"))
+				return getCurrentLocale();
+			else if (name.equalsIgnoreCase("country"))
+				return getCurrentCountry();
+			else if (name.equalsIgnoreCase("screen_width"))
+				return new Integer(getScreenWidth());
+			else if (name.equalsIgnoreCase("screen_height"))
+				return new Integer(getScreenHeight());
+			else if (name.equalsIgnoreCase("has_camera"))
+				return new Boolean(isCameraAvailable);
+			else if (name.equalsIgnoreCase("has_network"))
+				return hasNetwork();
+			else if (name.equalsIgnoreCase("ppi_x"))
+				return new Float(screenPpiX);
+			else if (name.equalsIgnoreCase("ppi_y"))
+				return new Float(screenPpiY);
+			else if (name.equalsIgnoreCase("phone_number")) {
+				TelephonyManager manager = (TelephonyManager)RhodesService.getInstance().
+					getContext().getSystemService(Context.TELEPHONY_SERVICE);
+				String number = manager.getLine1Number();
+				return number;
+			}
+			else if (name.equalsIgnoreCase("device_name")) {
+				return Build.DEVICE;
+			}
+			else if (name.equalsIgnoreCase("is_emulator")) {
+			    String strDevice = Build.DEVICE;
+				return new Boolean(strDevice != null && strDevice.equalsIgnoreCase("generic"));
+			}
+			else if (name.equalsIgnoreCase("os_version")) {
+				return Build.VERSION.RELEASE;
+			}
 		}
-		else if (name.equalsIgnoreCase("device_name")) {
-			return Build.DEVICE;
-		}
-		else if (name.equalsIgnoreCase("is_emulator")) 
-		{
-		    String strDevice = Build.DEVICE;
-			return new Boolean(strDevice != null && strDevice.equalsIgnoreCase("generic"));
-		}
-		else if (name.equalsIgnoreCase("os_version")) {
-			return Build.VERSION.RELEASE;
+		catch (Exception e) {
+			Logger.E(TAG, "Can't get property \"" + name + "\": " + e);
 		}
 		
 		return null;
