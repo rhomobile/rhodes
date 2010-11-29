@@ -95,7 +95,7 @@ describe "SyncEngine_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
 
   end
-
+=begin
   it "should update sources from database" do
     uniq_sources = Rho::RhoConfig::sources.values  
     
@@ -104,7 +104,7 @@ describe "SyncEngine_test" do
     
     #uniq_sources.should == Rho::RhoConfig::sources.values  
   end
-  
+=end  
   it "should login" do
     
     res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")
