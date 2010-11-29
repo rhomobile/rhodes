@@ -265,27 +265,31 @@ namespace "config" do
     $guid = `uuidgen`.strip
     $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
 
-
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
       $provisionprofile = $config["env"]["iphone"]["provisionprofile"]
       $entitlements = $config["env"]["iphone"]["entitlements"]
       $configuration = $config["env"]["iphone"]["configuration"]
       $sdk = $config["env"]["iphone"]["sdk"]
+      $emulatortarget = 'iphone'
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
       $entitlements = $app_config["iphone"]["entitlements"]
       $configuration = $app_config["iphone"]["configuration"]
       $sdk = $app_config["iphone"]["sdk"]
+      $emulatortarget = $app_config["iphone"]["emulatortarget"]
+      if $emulatortarget == nil
+         $emulatortarget = 'iphone'
+      end
     end
 
     if $sdk =~ /iphonesimulator/
-      sdkver = $sdk.gsub(/iphonesimulator/,"")
-      $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + sdkver + ".sdk"
+      $sdkver = $sdk.gsub(/iphonesimulator/,"")
+      $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + $sdkver + ".sdk"
     else
-      sdkver = $sdk.gsub(/iphoneos/,"")
-      $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + sdkver + ".sdk"
+      $sdkver = $sdk.gsub(/iphoneos/,"")
+      $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + $sdkver + ".sdk"
     end
 
     $emulator_version = nil
@@ -293,7 +297,7 @@ namespace "config" do
     if File.exists? plist
       File.open(plist, 'r') do |f|
         while line = f.gets
-          next unless line =~ /<string>(#{sdkver.gsub('.', '\.')}[^<]*)<\/string>/
+          next unless line =~ /<string>(#{$sdkver.gsub('.', '\.')}[^<]*)<\/string>/
           $emulator_version = $1
           break unless $emulator_version.nil?
         end
@@ -533,10 +537,10 @@ namespace "run" do
      end
      `killall "iPhone Simulator"`
 
-     sdkver = $sdk.gsub(/^iphonesimulator/, '')
+     $sdkver = $sdk.gsub(/^iphonesimulator/, '')
      # Workaround: sometimes sdkver could differ from emulator version.
      # Example: iPhone SDK 4.0.1. In this case sdk is still iphonesimulator4.0 but version of simulator is 4.0.1
-     sdkver = $emulator_version.to_s unless $emulator_version.nil?
+     $sdkver = $emulator_version.to_s unless $emulator_version.nil?
 
      elements = []
      binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')
@@ -567,7 +571,7 @@ namespace "run" do
      e.text = 'SimulateDevice'
      elements << e
      e = REXML::Element.new 'string'
-     e.text = sdkver == '3.2' ? 'iPad' : 'iPhone'
+     e.text = $sdkver == '3.2' ? 'iPad' : 'iPhone'
      elements << e
      e = REXML::Element.new 'key'
      e.text = 'currentSDKRoot'
@@ -596,7 +600,7 @@ namespace "run" do
      puts "our app name: #{$app_config['name']}"
      puts "simdir: #{$simdir}"
 
-     Dir.glob(File.join($simdir, sdkver, "Applications", "*")).each do |simapppath|
+     Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
        need_rm = true if File.directory? simapppath
        if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
          name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
@@ -614,10 +618,10 @@ namespace "run" do
 
      puts "app guid: #{$guid}"
 
-     mkdir_p File.join($simdir, sdkver)
+     mkdir_p File.join($simdir, $sdkver)
 
-     simapp = File.join($simdir, sdkver, "Applications")
-     simlink = File.join($simdir, sdkver, "Library", "Preferences")
+     simapp = File.join($simdir, $sdkver, "Applications")
+     simlink = File.join($simdir, $sdkver, "Library", "Preferences")
 
      $simrhodes = File.join(simapp, $guid)
 
@@ -635,9 +639,9 @@ namespace "run" do
 
 
      simpublic = simapp + "/" + $guid + "/Documents/apps/public"
-     apppublic = $app_path + "/sim-public-#{sdkver}"
+     apppublic = $app_path + "/sim-public-#{$sdkver}"
 
-     apprholog = $app_path + "/rholog-#{sdkver}.txt"
+     apprholog = $app_path + "/rholog-#{$sdkver}.txt"
      rm_f apprholog
      rm_f apppublic
      `ln -f -s "#{simpublic}" "#{apppublic}"`
@@ -653,7 +657,18 @@ namespace "run" do
   # testing we will not launch emulator directly
   desc "Builds everything, launches iphone simulator"
   task :iphone => :buildsim do
-     system("open \"#{$sim}/iPhone Simulator.app\"")
+
+    iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+
+    commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver + ' ' + $emulatortarget
+
+    if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+        puts  'use old execution way - just open iPhone Simulator'
+        system("open \"#{$sim}/iPhone Simulator.app\"")
+    else
+        puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+        system(commandis)  	
+    end
 
   end
   
