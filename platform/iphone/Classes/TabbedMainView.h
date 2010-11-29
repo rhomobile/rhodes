@@ -24,4 +24,6 @@
 
 - (UIWebView*)getWebView:(int)tab_index;
 
+- (void)onViewWillActivate:(RhoViewController*)view;
+
 @end
