@@ -81,7 +81,7 @@ public:
 
 INetResponse *CURLNetRequest::makeResponse(String strBody, int nErrorCode)
 {
-    std::auto_ptr<CURLNetResponseImpl> resp(new CURLNetResponseImpl(strBody, nErrorCode));
+    std::auto_ptr<CURLNetResponseImpl> resp(new CURLNetResponseImpl(strBody, nErrorCode>0?nErrorCode:-1));
     if (resp->isOK())
         resp->setCookies(makeCookies());
     return resp.release();
