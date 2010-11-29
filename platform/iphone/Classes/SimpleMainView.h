@@ -11,6 +11,8 @@
 #import "RhoViewController.h"
 #include "RhoNativeViewManagerOC.h"
 
+
+
 @interface SimpleMainView : RhoViewController <RhoMainView, UIWebViewDelegate> {
 
     UIWebView *webView;
@@ -20,6 +22,7 @@
 	id<NativeViewOC,NSObject> nativeView;
 	NSString* nativeViewType;
 	UIView* nativeViewView;
+	RhoViewController* mTabBarCallback;
 }
 
 @property (nonatomic,retain) UIWebView *webView;
@@ -27,6 +30,7 @@
 @property (nonatomic,retain) UINavigationBar *navbar;
 @property (nonatomic,retain) NSString *nativeViewType;
 @property (nonatomic,retain) UIView *nativeViewView;
+@property (nonatomic,assign) RhoViewController* mTabBarCallback;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items;

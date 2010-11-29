@@ -14,6 +14,8 @@
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
+#include "TabbedMainView.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
 
@@ -60,7 +62,7 @@ int rho_sys_get_screen_height();
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView;
+@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback;
 
 
 static BOOL makeHiddenUntilLoadContent = YES;
@@ -289,6 +291,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
 	[self init];
+	
+	self.mTabBarCallback = nil;
     
     rootFrame = frame;
     
@@ -890,6 +894,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		self.view.hidden = NO;
 		[self.view.superview bringSubviewToFront:self.view];
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	if (self.mTabBarCallback != nil) {
+		TabbedMainView* tv = (TabbedMainView*)self.mTabBarCallback;
+		[tv onViewWillActivate:self];
+	}
 }
 
 @end
