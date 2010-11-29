@@ -2,6 +2,7 @@
 require "fileutils"
 
 def fixWin7SimBug (rhoconfig) 
+=begin
 	file = rhoconfig
 	tmpfile = file + ".tmp"
 	no_deviceside_postfix_isFound = 0
@@ -19,6 +20,7 @@ def fixWin7SimBug (rhoconfig)
 	  end
 	end
 	FileUtils.move(tmpfile, file)
+=end
 end
 
 
