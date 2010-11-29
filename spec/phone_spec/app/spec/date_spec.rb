@@ -19,7 +19,7 @@ describe "DateTime" do
     str = "11/22/2010 04:13 PM"
 
     time = Time.strptime(str,  "%m/%d/%Y %I:%M %p")
-    time.utc?.should == false
+    #time.utc?.should == false
     
     dbTime = time.utc
     dbTime.utc?.should == true
