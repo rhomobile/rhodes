@@ -422,6 +422,7 @@ namespace "build" do
     task :xruby do
       #needs $config, $srcdir, $excludelib, $bindir
       app = $app_path
+	  jpath = $config["env"]["paths"]["java"]
       startdir = pwd
       dest =  $srcdir
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
@@ -485,8 +486,9 @@ namespace "build" do
       rm_rf $tmpdir
       mkdir_p $tmpdir
       chdir $srcdir
-=end      
-      puts `jar uf ../RhoBundle.jar apps/#{$all_files_mask}`
+=end  
+
+      puts `"#{File.join(jpath,'jar')}" uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
         puts "Error creating Rhobundle.jar"
         exit 1
