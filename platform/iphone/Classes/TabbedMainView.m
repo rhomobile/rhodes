@@ -108,7 +108,8 @@
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
             subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
-            //[subController navigateRedirect:url tab:0];
+			subController.mTabBarCallback = self;
+	    //[subController navigateRedirect:url tab:0];
             
             [tabs addObject:td];
             [views addObject:subController];
@@ -156,6 +157,9 @@
 }
 
 - (RhoTabBarData*)tabData:(int)index {
+	if ((index < 0) || (index >= [tabbarData count])) {
+		return nil;
+	}
     return (RhoTabBarData*)[tabbarData objectAtIndex:index];
 }
 
@@ -204,21 +208,41 @@
 }
 
 - (void)switchTab:(int)index {
-    tabindex = index;
-    tabbar.selectedIndex = tabindex;
+    tabbar.selectedIndex = index;
 	[self onSwitchTab];
 }
 
 - (void)onSwitchTab {
-    tabindex = tabbar.selectedIndex;
-    RhoTabBarData *td = [self tabData:tabindex];
-    if (!td.loaded || td.reload) {
-        const char *s = [td.url UTF8String];
-        rho_rhodesapp_load_url(s);
-        td.loaded = YES;
-    }
-	[[[self subView:tabindex] view] setNeedsDisplay];
+	int new_index = tabbar.selectedIndex;
+    RhoTabBarData *td = [self tabData:new_index];
+	if (td != nil) {
+		if (tabindex != new_index) {
+			tabindex = new_index;
+			if (!td.loaded || td.reload) {
+				const char *s = [td.url UTF8String];
+				rho_rhodesapp_load_url(s);
+				td.loaded = YES;
+			}
+			[[[self subView:tabindex] view] setNeedsDisplay];
+		}
+	}
 }
+
+
+- (void)onSwitchTab:(int)tab_index {
+	int new_index = tab_index;
+    RhoTabBarData *td = [self tabData:new_index];
+	if (td != nil) {
+		tabindex = new_index;
+		if (!td.loaded || td.reload) {
+			const char *s = [td.url UTF8String];
+			rho_rhodesapp_load_url(s);
+			td.loaded = YES;
+		}
+		[[[self subView:tabindex] view] setNeedsDisplay];
+	}
+}
+
 
 - (int)activeTab {
     return tabindex;
@@ -238,6 +262,19 @@
 
 - (void)removeNavBar {
     [[self subView:[self activeTab]] removeNavBar];
+}
+
+- (void)onViewWillActivate:(RhoViewController*)view {
+	int index = -1;
+	int i;
+	for (i = 0; i < [tabbar.viewControllers count]; i++) {
+		if ([tabbar.viewControllers objectAtIndex:i] == view) {
+			index = i;
+		}
+	}
+	if ((index >= 0) && (index != tabindex)) {
+		[self onSwitchTab:index];
+	}
 }
 
 @end
