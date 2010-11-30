@@ -7,7 +7,7 @@ module Rho
   	attr_accessor :menu
 
     @@rholog = RhoLog.new
-
+    @@before = nil
     def rho_info(str)
       @@rholog.info("RHO " + self.class.to_s, str)
     end
@@ -42,6 +42,11 @@ module Rho
       end
     end
     
+    def self.before(&block)
+      @@before = {} unless @@before
+      @@before[self.to_s] = block if block_given?
+    end
+    
     def serve(application,object_mapping,req,res)
       @request, @response = req, res
       @object_mapping = object_mapping
@@ -50,6 +55,8 @@ module Rho
       @redirected = false
 
       RhoController.process_rho_object(@params)
+
+      @@before[self.class.to_s].call(@params,@request) if @@before and @@before[self.class.to_s]
       
       act = req['action'].nil? ? default_action : req['action']
       if self.respond_to?(act)
