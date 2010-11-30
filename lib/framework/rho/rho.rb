@@ -197,23 +197,26 @@ module Rho
                 arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                     {'partition'=>str_partition} )
                 arSrcs.each do |src|
-                    if src && db.table_exist?(src['name'])
                     
-                        temp = src['schema']
+                    if src && src['schema'] && src['schema'].length() > 0
                     
-                        unless temp && temp.is_a?(Hash)
-                            src['schema'] = {}
-                            
-                            if temp
-                                src['schema']['sql'] = temp
-                            else
-                                #TODO: server has to send schema, overwise reset will not create schema table
-                                src['schema']['sql'] = ';'
-                            end    
+                        #puts "src['schema'] :  #{src['schema']}"
+                        hashSchema = Rho::JSON.parse(src['schema'])
+                        #puts "hashSchema :  #{hashSchema}"
+                        
+                        src['schema'] = {}
+                        src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
+                        src['schema_version'] = hashSchema['version']
+                        
+                        db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+                        
+                        if str_partition != 'user'
+                            @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
                         end
                     end
-                                        
+
                     Rho::RhoConfig::sources()[ src['name'] ] = src
+                    
                 end
                 
                 puts "sources after: #{Rho::RhoConfig::sources()}"            
@@ -339,26 +342,7 @@ module Rho
             call_migrate = true 
           end
           
-          strCreate = source['schema']['sql']
-          strCreate = "" unless strCreate
-          if source['schema']['property']
-            arCols = source['schema']['property']
-            arCols = arCols
-            strCols = ""
-            arCols.each do |col, type|
-                strCols += ',' if strCols.length() > 0
-                strCols += "\"#{col}\" varchar default NULL"
-                #TODO: support column type
-            end
-
-            strCols += ",\"object\" varchar(255) PRIMARY KEY"
-            strCreate = "CREATE TABLE #{source['name']} ( #{strCols} )"
-          end
-
-          strCreate += ";\r\n" if strCreate && strCreate.length() > 0
-          strCreate += processIndexes(source['schema']['index'], source['name'], false)
-          strCreate += ";\r\n" if strCreate && strCreate.length() > 0
-          strCreate += processIndexes(source['schema']['unique_index'], source['name'], true)
+          strCreate = make_createsql_script(source['name'], source['schema'])
         
           if call_migrate
             db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
@@ -372,6 +356,31 @@ module Rho
         end
     end
 
+    def self.make_createsql_script(name,schema_attr)
+        strCreate = schema_attr['sql']
+        strCreate = "" unless strCreate
+        if schema_attr['property']
+            arCols = schema_attr['property']
+            arCols = arCols
+            strCols = ""
+            arCols.each do |col, type|
+                strCols += ',' if strCols.length() > 0
+                strCols += "\"#{col}\" varchar default NULL"
+                #TODO: support column type
+            end
+
+            strCols += ",\"object\" varchar(255) PRIMARY KEY"
+            strCreate = "CREATE TABLE #{name} ( #{strCols} )"
+        end
+
+        strCreate += ";\r\n" if strCreate && strCreate.length() > 0
+        strCreate += processIndexes(schema_attr['index'], name, false)
+        strCreate += ";\r\n" if strCreate && strCreate.length() > 0
+        strCreate += processIndexes(schema_attr['unique_index'], name, true)
+        
+        strCreate
+    end
+    
     def process_blob_attribs(source, db)
       return source['str_blob_attribs'] if source['str_blob_attribs']
       source['str_blob_attribs'] = ""
