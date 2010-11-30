@@ -448,6 +448,27 @@ public class RubyString extends RubyBasic {
         return ObjectFactory.createString(sb_.toString().trim());
     }
 
+    //@RubyLevelMethod(name="strip!")
+    public RubyValue stripBang() {
+        String str = this.sb_.toString();
+        int orgSize = str.length();
+        str = str.trim();
+        this.sb_ = new StringBuffer(str);
+        if (str.length() == orgSize) {
+            return RubyConstant.QNIL;
+        }
+
+        return this;
+    }
+
+    //@RubyLevelMethod(name="lstrip")
+    public RubyValue lstrip() 
+    {
+        RubyString str = ObjectFactory.createString(sb_.toString());
+        str.lstripBang();
+    	return str;
+    }
+    
     //@RubyLevelMethod(name="lstrip!")
     public RubyValue lstripBang() {
         int i = 0;
@@ -463,20 +484,31 @@ public class RubyString extends RubyBasic {
         sb_.delete(0, i);
         return this;
     }
+    
+    //@RubyLevelMethod(name="rstrip")
+    public RubyValue rstrip() 
+    {
+        RubyString str = ObjectFactory.createString(sb_.toString());
+        str.rstripBang();
+    	return str;
+    }
 
-    //@RubyLevelMethod(name="strip!")
-    public RubyValue stripBang() {
-        String str = this.sb_.toString();
-        int orgSize = str.length();
-        str = str.trim();
-        this.sb_ = new StringBuffer(str);
-        if (str.length() == orgSize) {
+    //@RubyLevelMethod(name="rstrip!")
+    public RubyValue rstripBang() {
+        int i = sb_.length()-1;
+        while (i >= 0 && CharacterMe.isWhitespace(sb_.charAt(i))) {
+            i--;
+        }
+
+        if (sb_.length()-1 == i) {
+            //No change
             return RubyConstant.QNIL;
         }
 
+        sb_.delete(i+1, sb_.length());
         return this;
     }
-
+    
     //@RubyLevelMethod(name="capitalize")
     public RubyString capitalize() {
         int length = this.sb_.length();
