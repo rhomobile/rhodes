@@ -660,7 +660,7 @@ namespace "run" do
 
     iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
 
-    commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver + ' ' + $emulatortarget
+    commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget
 
     if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
         puts  'use old execution way - just open iPhone Simulator'
