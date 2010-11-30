@@ -4,6 +4,10 @@ class SpecRunner < MSpecScript
   def initialize
     config[:files] = []
     
+    config[:files] << "spec/strip_spec"
+    config[:files] << "spec/rstrip_spec"
+    config[:files] << "spec/lstrip_spec"
+
     config[:files] << "spec/asynchttp_spec"
     config[:files] << "spec/crypt_spec"
     config[:files] << "spec/json_spec"
@@ -33,6 +37,7 @@ class SpecRunner < MSpecScript
 
     config[:files] << "spec/blobsync_spec"
     config[:files] << "spec/bulksync_spec"
+
   end
 
   def run
