@@ -76,10 +76,6 @@ klass.defineMethod( "capitalize", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).capitalize();}
 });
-klass.defineMethod( "strip", new RubyNoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyBlock block ){
-		return ((RubyString)receiver).strip();}
-});
 klass.defineMethod( "upcase", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).upcase();}
@@ -218,17 +214,33 @@ klass.defineMethod( "concat", new RubyOneArgMethod(){
 		return ((RubyString)receiver).concat(arg);}
 });
 klass.aliasMethod("<<","concat");
-klass.defineMethod( "strip!", new RubyNoArgMethod(){ 
-	protected RubyValue run(RubyValue receiver, RubyBlock block ){
-		return ((RubyString)receiver).stripBang();}
-});
 klass.defineMethod( "squeeze!", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyString)receiver).squeeze_danger(args);}
 });
+klass.defineMethod( "strip!", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).stripBang();}
+});
+klass.defineMethod( "strip", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).strip();}
+});
 klass.defineMethod( "lstrip!", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).lstripBang();}
+});
+klass.defineMethod( "lstrip", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).lstrip();}
+});
+klass.defineMethod( "rstrip!", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).rstripBang();}
+});
+klass.defineMethod( "rstrip", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).rstrip();}
 });
 klass.defineMethod( "chomp!", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
