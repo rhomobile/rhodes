@@ -55,8 +55,10 @@ module Rho
       @redirected = false
 
       RhoController.process_rho_object(@params)
-
-      @@before[self.class.to_s].call(@params,@request) if @@before and @@before[self.class.to_s]
+      
+      if @@before and @@before[self.class.to_s] and not @params['rho_callback']
+        @@before[self.class.to_s].call(@params,@request) 
+      end
       
       act = req['action'].nil? ? default_action : req['action']
       if self.respond_to?(act)
