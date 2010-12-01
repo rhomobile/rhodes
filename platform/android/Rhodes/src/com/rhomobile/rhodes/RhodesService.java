@@ -590,6 +590,7 @@ public class RhodesService {
 				}
 			}
 		}, false);
+		getMainActivity().finish();
 		Process.killProcess(Process.myPid());
 	}
 	
@@ -622,17 +623,17 @@ public class RhodesService {
 	}
 	
 	public void activityStopped() {
-		PerformOnUiThread.exec( new Runnable() {
-			public void run() {
-				if (wakeLockObject != null) {
-					Logger.I(TAG, "activityStopped() temporary destroy wakeLock object");
-					wakeLockObject.release();
-					wakeLockObject = null;
-				}
-			}
-		}, false);
 		--activitiesActive;
 		if (activitiesActive == 0) {
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					if (wakeLockObject != null) {
+						Logger.I(TAG, "activityStopped() temporary destroy wakeLock object");
+						wakeLockObject.release();
+						wakeLockObject = null;
+					}
+				}
+			}, false);
 			needGeoLocationRestart = GeoLocation.isAvailable();
 			GeoLocation.stop();
 			callActivationCallback(false);
