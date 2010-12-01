@@ -27,7 +27,7 @@ public class SplashScreen {
 	private native void nativeHide();
 	
 	public class SplashImageView extends ImageView {
-		private boolean setupExecuted = false;
+		public boolean setupExecuted = false;
 		
 		public SplashImageView(Context ctx) {
 			super(ctx);
@@ -117,6 +117,9 @@ public class SplashScreen {
 	
 	public void start(ViewGroup outer) {
 		outer.removeAllViews();
+		if (view instanceof SplashImageView) {
+			((SplashImageView)view).setupExecuted = false;
+		}
 		outer.addView(view);
 		RhodesService.platformLog(TAG, " view was showed on screen");
 	}
