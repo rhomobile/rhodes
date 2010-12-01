@@ -689,7 +689,7 @@ public class RhoConnection implements IHttpConnection {
 	
 	protected boolean dispatch()throws IOException
 	{
-		LOG.INFO("dispatch start : " + uri.getPath());
+		//LOG.INFO("dispatch start : " + uri.getPath());
 		
 		UrlParser up = new UrlParser(uri.getPath());
 		String apps = up.next();
