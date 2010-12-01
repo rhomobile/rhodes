@@ -17,6 +17,7 @@ public class RhoNativeViewManager {
 	private static class RhoNativeViewImpl implements RhoNativeView {
 		
 		RhoNativeViewImpl(String viewType, long factory_h, long view_h) {
+			mViewType = viewType;
 			mFactoryHandle = factory_h;
 			mViewHandle = view_h;
 		}
