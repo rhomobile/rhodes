@@ -662,7 +662,7 @@ public class RubyKernelModule {
         RubyClass klass = receiver.getRubyClass();
         klass = (klass != null) ? klass.getRealClass() : null;
         String msg =  "undefined method '" + method_name.toString() + "' for " + klass.getName();
-        LOG.ERROR(msg);
+        //LOG.ERROR(msg);
         throw new RubyException(RubyRuntime.NoMethodErrorClass,msg);
     }
     
