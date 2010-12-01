@@ -9,6 +9,13 @@
 #include <strings.h>
 
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "NativeView"
+
+#define logging_enable true
+
+
+
 #include <RhoNativeViewManager.h> 
 
 
@@ -77,6 +84,7 @@ static RhoNativeViewHolder* getHolderByViewTypeName(const char* name) {
 		}
 		p = p->next;
 	}
+	return NULL;
 }
 
 
@@ -114,15 +122,19 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewMan
 	if (p == NULL) {
 		return NULL;
 	}
-	return (jobject)p->getView();
+	return (jobject)(p->getView());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManager_navigateByHandle
 (JNIEnv *env, jclass, jlong handle, jstring url) {
+    	if (logging_enable) RAWLOG_INFO("navigateByHandle() START");
+
 	NativeView* p = (NativeView*)handle;
 	if (p != NULL) {
+    		if (logging_enable) RAWLOG_INFO("navigateByHandle() handle not NULL");
 		p->navigate(rho_cast<std::string>(url).c_str());
 	}
+    	if (logging_enable) RAWLOG_INFO("navigateByHandle() FINISH");
 }
 
 RHO_GLOBAL jlong JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManager_getFactoryHandleByViewType
