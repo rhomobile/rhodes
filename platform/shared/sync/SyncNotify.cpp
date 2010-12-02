@@ -460,7 +460,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         clearNotification(src);
 }
 
-boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& strBody )
+boolean CSyncNotify::callNotify(CSyncNotification oNotify, const String& strBody )
 {
     if ( getSync().isNoThreadedMode() )
     {
