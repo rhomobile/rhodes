@@ -126,7 +126,7 @@ private:
 
     void doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams);
 
-    boolean callNotify(const CSyncNotification& oNotify, const String& strBody );
+    boolean callNotify(CSyncNotification oNotify, const String& strBody );
 
     void clearNotification(CSyncSource* src);
 
