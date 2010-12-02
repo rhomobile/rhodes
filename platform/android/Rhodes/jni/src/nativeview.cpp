@@ -12,7 +12,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NativeView"
 
-#define logging_enable true
+#define logging_enable false
 
 
 
@@ -141,7 +141,7 @@ RHO_GLOBAL jlong JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManag
 (JNIEnv *env, jclass, jstring viewtype) {
 	const char* s_viewtype = rho_cast<std::string>(viewtype).c_str();
 	RhoNativeViewHolder* nvh = getHolderByViewTypeName(s_viewtype);
-	return (jlong)nvh;
+	return (jlong)((unsigned long int)nvh);
 }
 
 RHO_GLOBAL jlong JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManager_getViewHandleByFactoryHandle
@@ -150,7 +150,7 @@ RHO_GLOBAL jlong JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManag
 	if (holder == NULL) {
 		return 0;
 	}
-	return (jlong)holder->factory->getNativeView((const char*)holder->viewtype);
+	return (jlong)((unsigned long int)holder->factory->getNativeView((const char*)holder->viewtype));
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManager_destroyByHandle
