@@ -153,7 +153,9 @@
 	CGRect frame = myframe;
 	float scales = 1;//[[UIScreen mainScreen] scale];
 #ifdef __IPHONE_4_0
-	scales = [[UIScreen mainScreen] scale];
+	if ( [[UIScreen mainScreen] respondsToSelector:@selector(scale)] ) {
+		scales = [[UIScreen mainScreen] scale];
+	}
 #endif
 	
 	BOOL is_HiResolution = ((frame.size.width*scales) > 500);
