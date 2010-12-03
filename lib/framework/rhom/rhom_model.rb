@@ -8,6 +8,7 @@ module Rhom
     end
 
     def get_model_params
+      init_defaults
       BaseModel.model_params  
     end
 
@@ -19,17 +20,23 @@ module Rhom
         false
     end
     
-    def property(name,type=:string,option=nil)
-      if fixed_schema?()
-
-  	      BaseModel.model_params ||= {}
-
+    def init_defaults
+      if fixed_schema?
+          BaseModel.model_params ||= {}
           BaseModel.model_params['schema'] ||= {}
           BaseModel.model_params['schema']['property'] ||= {}
+      else
+          BaseModel.model_params ||= {}
+          BaseModel.model_params ||= {}
+          BaseModel.model_params['property'] ||= {}
+      end
+    end
+     
+    def property(name,type=:string,option=nil)
+      init_defaults
+      if fixed_schema?()
           BaseModel.model_params['schema']['property'][name.to_s] = [type,option] 
       else
-  	      BaseModel.model_params ||= {}
-          BaseModel.model_params['property'] ||= {}
           BaseModel.model_params['property'][name.to_s] = [type,option] 
       end
 

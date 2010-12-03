@@ -154,7 +154,7 @@ public class CharacterMe {
     }
     
     public static boolean isJavaIdentifierPart(char ch) {
-        return CharacterDataLatin1.isJavaIdentifierStart(ch);
+        return CharacterDataLatin1.isJavaIdentifierPart(ch);
     }
     
 }
