@@ -478,7 +478,13 @@ public class RhodesService {
 		if (Utils.isAppHashChanged()) {
 			try {
 				Log.i(TAG, "Application hash was changed, so remove files");
-				Utils.deleteRecursively(new File(rootPath));
+				String[] folders = {"apps", "lib"};
+				for (String folder : folders) {
+					File f = new File(rootPath, folder);
+					if (!f.exists())
+						continue;
+					Utils.deleteRecursively(f);
+				}
 				initRootPath();
 				RhoFileApi.init();
 				RhoFileApi.copy("hash");
