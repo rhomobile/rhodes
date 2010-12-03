@@ -369,7 +369,8 @@ module Rho
                 #TODO: support column type
             end
 
-            strCols += ",\"object\" varchar(255) PRIMARY KEY"
+            strCols += ',' if strCols.length() > 0
+            strCols += "\"object\" varchar(255) PRIMARY KEY"
             strCreate = "CREATE TABLE #{name} ( #{strCols} )"
         end
 
@@ -416,8 +417,10 @@ module Rho
     
         result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
         #puts 'result: ' + result.inspect
-        start_id = result.length > 0 && result[0]['maxid'] ? result[0]['maxid']+2 : 1
+        start_id = result.length() > 0 && result[0].values[0] ? result[0].values[0]+2 : 1
+        puts "start_id: #{start_id}"
         start_id = Rho::RhoConfig.max_config_srcid()+2 if start_id < Rho::RhoConfig.max_config_srcid
+        puts "start_id: #{start_id}"
         
         uniq_sources.each do |source|
           puts "init_db_sources(#{source['name']}) : #{source}"
