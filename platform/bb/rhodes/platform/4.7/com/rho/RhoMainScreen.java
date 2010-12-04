@@ -6,15 +6,15 @@ import net.rim.device.api.ui.container.MainScreen;
 
 public abstract class RhoMainScreen extends MainScreen {
 	
-	protected abstract void onTouchUnclick();
+	protected abstract boolean onTouchUnclick();
 	
 	protected boolean touchEvent(TouchEvent message) {
 		int nEvent = message.getEvent();
 		
 		if ( nEvent == TouchEvent.UNCLICK )
 		{
-			onTouchUnclick();
-			return true;
+			if ( onTouchUnclick() )
+			    return true;
 		}
 		
 		return super.touchEvent(message);

@@ -380,7 +380,7 @@ public class Tokenizer {
             return false;
         }
 
-        return !Token.isKeyword(sToken);
+        return !Token.isKeyword(sTokenOrig);
     }
 
     String getLongNamePre() throws HsqlException {
@@ -874,7 +874,7 @@ public class Tokenizer {
                     iIndex++;
 
                     sToken = getString('"');//.toUpperCase();
-
+                    sTokenOrig = sToken;	
                     if (iIndex == sCommand.length()) {
                         return;
                     }

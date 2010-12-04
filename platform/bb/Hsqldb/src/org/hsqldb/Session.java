@@ -159,6 +159,13 @@ public class Session implements SessionInterface {
     Session getSession() {
         return this;
     }
+    String getOrigToken() 
+    {
+    	if ( tokenizer!= null)
+    		return tokenizer.sTokenOrig;
+    	
+    	return "";
+    }
 
     //RHO
     private IDBCallback m_dbCallback;

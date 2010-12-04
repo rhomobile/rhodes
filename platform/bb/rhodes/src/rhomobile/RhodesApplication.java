@@ -341,6 +341,15 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	              return true;
 	            }
 	        }
+	        /*
+	        String strMenuItems = "";
+	        for(int i=0; i<size; i++)
+	        {
+	            MenuItem item = menu.getItem(i);
+	            strMenuItems += item.toString() + ";"; 
+	        }
+	        
+	        LOG.ERROR("Cannot find link menu item in menu: " + strMenuItems );*/
     	}finally
 	    {
     		m_bOpenLink = false;
@@ -724,8 +733,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			return super.navigationClick(status, time);
 		}
 
-    	protected void onTouchUnclick() {
-			openLink();
+    	protected boolean onTouchUnclick() {
+			return openLink();
     	}
     	
 		private Vector menuItems = new Vector();
