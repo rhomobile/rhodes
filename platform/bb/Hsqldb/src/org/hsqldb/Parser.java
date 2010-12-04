@@ -235,11 +235,12 @@ class Parser {
             if (full) {
                 String   token  = t.getSimpleName();
                 boolean  quoted = t.wasQuotedIdentifier();
-                HsqlName name   = db.nameManager.newHsqlName(token, quoted);
+                HsqlName name   = db.nameManager.newHsqlName(t.sTokenOrig/*token*/, quoted);
 
                 columns.add(name);
             } else {
-                columns.add(t.getName());
+            	String   token  = t.getName();
+                columns.add(t.sTokenOrig);
 
                 if (t.wasLongName()
                         && !t.getLongNameFirst().equals(
