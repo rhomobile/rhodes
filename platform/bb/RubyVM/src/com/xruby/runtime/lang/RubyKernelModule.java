@@ -778,11 +778,14 @@ public class RubyKernelModule {
             mode = val.toString();
         }
 
-        try{
-        	io = ObjectFactory.createResourceFile(filename, mode);
-        }catch (java.lang.Error exc)
+        if ( mode.equalsIgnoreCase("r") )
         {
-        	LOG.TRACE("Cannot open file from jar: " + filename, exc);
+	        try{
+	        	io = ObjectFactory.createResourceFile(filename, mode);
+	        }catch (java.lang.Error exc)
+	        {
+	        	LOG.TRACE("Cannot open file from jar: " + filename, exc);
+	        }
         }
         
         if ( io == null )
