@@ -371,7 +371,7 @@ module Rho
 
             strCols += ',' if strCols.length() > 0
             strCols += "\"object\" varchar(255) PRIMARY KEY"
-            strCreate = "CREATE TABLE #{name} ( #{strCols} )"
+            strCreate = "CREATE TABLE \"#{name}\" ( #{strCols} )"
         end
 
         strCreate += ";\r\n" if strCreate && strCreate.length() > 0

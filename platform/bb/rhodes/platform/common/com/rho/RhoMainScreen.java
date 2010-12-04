@@ -4,7 +4,7 @@ import net.rim.device.api.ui.container.MainScreen;
 
 public abstract class RhoMainScreen extends MainScreen {
 	
-	protected abstract void onTouchUnclick();
+	protected abstract boolean onTouchUnclick();
 	
 	public boolean isTouchScreen()
 	{
