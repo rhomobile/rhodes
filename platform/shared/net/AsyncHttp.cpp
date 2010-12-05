@@ -134,15 +134,15 @@ void CAsyncHttp::CHttpCommand::execute()
                     CRhoParams oItem = arParams.getItem(i);
 
                     net::CMultipartItem* pItem = new net::CMultipartItem();
-                    String strBody = oItem.getString("body");
-                    if ( strBody.length() > 0 )
+                    String strFilePath = oItem.getString("filename");
+                    if ( strFilePath.length() == 0 )
                     {
-                        pItem->m_strBody = strBody;
+                        pItem->m_strBody = oItem.getString("body");
                         pItem->m_strContentType = oItem.getString("content_type", "");
                     }
                     else
                     {
-                        pItem->m_strFilePath = oItem.getString("filename");
+                        pItem->m_strFilePath = strFilePath;
                         pItem->m_strContentType = oItem.getString("content_type", "application/octet-stream");
                     }
 
