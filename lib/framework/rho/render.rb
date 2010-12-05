@@ -79,10 +79,8 @@ module Rho
 
       if $".include?( "rhodes_translator") and @request['model'] != nil
         model = nil
-        begin
-          model = Object.const_get(@request['model'].to_sym)
-        rescue
-        end
+        model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
+        
         if model.respond_to?( :metadata ) and model.metadata != nil
           clean_metadata = true
           metaenabled = model.metadata[action.to_s] != nil
@@ -139,11 +137,10 @@ module Rho
 
     def render_metadata(action = nil,metadata = nil)
       if metadata.nil?
-        begin
-          model = Object.const_get(@request['model'].to_sym)
-        rescue
-        end
-        if model.respond_to?( :metadata ) and model.metadata != nil
+        model = nil
+        model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
+        
+        if model && model.respond_to?( :metadata ) and model.metadata != nil
           metadata = model.metadata
         end
       end
