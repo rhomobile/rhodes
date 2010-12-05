@@ -119,7 +119,8 @@ module Rho
 
             #puts "model name: #{modelName}"            
 
-            modelClass = Object.const_get(modelName)
+            modelClass = nil 
+            modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
             if modelClass
                 if modelClass.respond_to?( :get_model_params )
                     Rho::RhoConfig::add_source(modelName,modelClass.get_model_params())
