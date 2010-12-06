@@ -286,7 +286,9 @@ module Rho
                 init_db_sources(db, uniq_sources, partition,hash_migrate)
                 db.commit
             rescue Exception => e
-                puts "exception when init_db_sources: #{e}"    
+                trace_msg = e.backtrace.join("\n")
+                puts "exception when init_db_sources: #{e}; Trace:" + trace_msg
+                
                 db.rollback
             end
                 
@@ -413,18 +415,35 @@ module Rho
       source['str_blob_attribs']
       
     end
-    
-    def init_db_sources(db, uniq_sources, db_partition, hash_migrate)
-    
-        result = db.execute_sql("SELECT MAX(source_id) AS maxid FROM sources")
-        #puts 'result: ' + result.inspect
-        start_id = result.length() > 0 && result[0].values[0] ? result[0].values[0]+2 : 1
-        puts "start_id: #{start_id}"
+
+    def get_start_id(db_sources)
+        start_id = 0
+        db_sources.each do |db_src|
+            src_id = db_src['source_id']
+            start_id = src_id if src_id > start_id
+        end        
+        
         start_id = Rho::RhoConfig.max_config_srcid()+2 if start_id < Rho::RhoConfig.max_config_srcid
         puts "start_id: #{start_id}"
+        start_id
+    end
+    
+    def find_src_byname(db_sources, name)
+        db_sources.each do |db_src|
+            return  db_src if db_src['name'] == name
+        end        
+        
+        nil            
+    end
+    
+    def init_db_sources(db, uniq_sources, db_partition, hash_migrate)
+        puts "init_db_sources"
+        
+        db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs, name' )
+        start_id = get_start_id(db_sources)
         
         uniq_sources.each do |source|
-          puts "init_db_sources(#{source['name']}) : #{source}"
+          #puts "init_db_sources(#{source['name']}) : #{source}"
           name = source['name']
           sync_priority = source['sync_priority']
           partition = source['partition']
@@ -433,34 +452,36 @@ module Rho
           associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
           
-          attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
-          if attribs && attribs.size > 0 
-            if attribs[0]['sync_priority'].to_i != sync_priority.to_i
+          #attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
+          attribs = find_src_byname(db_sources,name)
+          
+          if attribs
+            if attribs['sync_priority'].to_i != sync_priority.to_i
                 db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
             end
-            if attribs[0]['sync_type'] != sync_type
+            if attribs['sync_type'] != sync_type
                 db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
-            if attribs[0]['schema_version'] != schema_version
+            if attribs['schema_version'] != schema_version
                 if db_partition == partition
-                    hash_migrate[name] = attribs[0]['schema_version']
+                    hash_migrate[name] = attribs['schema_version']
                 else    
                     db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
                 end    
             end
-            if attribs[0]['partition'] != partition
+            if attribs['partition'] != partition
                 db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
             end
-            if attribs[0]['associations'] != associations
+            if attribs['associations'] != associations
                 db.update_into_table('sources', {"associations"=>associations},{"name"=>name})
             end
-            if attribs[0]['blob_attribs'] != blob_attribs
+            if attribs['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
             
             if !source['source_id']
-                source['source_id'] = attribs[0]['source_id'].to_i
-                Rho::RhoConfig::sources[name]['source_id'] = attribs[0]['source_id'].to_i
+                source['source_id'] = attribs['source_id'].to_i
+                Rho::RhoConfig::sources[name]['source_id'] = attribs['source_id'].to_i
             end
             
           else
@@ -487,6 +508,8 @@ module Rho
         puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
+        
+        Rho::RhoController.clean_cached_metadata()
         return send_response(res)
       rescue Exception => e
         return send_error(e)
@@ -498,6 +521,7 @@ module Rho
         puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
+        Rho::RhoController.clean_cached_metadata()
         return send_response_hash(res)
       rescue Exception => e
         return send_error(e,500,true)
@@ -511,6 +535,7 @@ module Rho
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
+        Rho::RhoController.clean_cached_metadata()
         return send_response(res)
       rescue Exception => e
         return send_error(e)
@@ -524,6 +549,7 @@ module Rho
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
+        Rho::RhoController.clean_cached_metadata()
         return send_response_hash(res)
       rescue Exception => e
         return send_error(e, 500, true)
