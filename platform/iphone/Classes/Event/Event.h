@@ -10,3 +10,5 @@
 #ifdef __IPHONE_4_0
 #import <EventKit/EventKit.h>
 #endif
+
+BOOL is_rho_calendar_supported();
