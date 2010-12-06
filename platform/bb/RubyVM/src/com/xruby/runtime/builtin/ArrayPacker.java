@@ -916,7 +916,7 @@ class ArrayPacker {
 
                         result.append(encodes(ptr, todo, type));
                         plen -= todo;
-                        ptr += todo;
+                        ptr = ptr.substring(todo);
                     }
                     break;
 
