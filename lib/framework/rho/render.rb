@@ -61,6 +61,16 @@ module Rho
         binding
     end
     
+    @@cached_metadata = {}
+    def self.cached_metadata
+        @@cached_metadata
+    end
+    
+    def self.clean_cached_metadata
+        @@cached_metadata.clear()
+        puts "meta deleted"
+    end
+    
     def render(options = nil)
       if @params['rho_callback']
         rho_error( "render call in callback. Call WebView.navigate instead" ) 
@@ -71,7 +81,6 @@ module Rho
       options = options.symbolize_keys
 
       metaenabled = false
-      clean_metadata = false
       
       action = nil
       action = options[:action] if options[:action]
@@ -80,11 +89,9 @@ module Rho
       if $".include?( "rhodes_translator") and @request['model'] != nil
         model = nil
         model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
-        
-        if model.respond_to?( :metadata ) and model.metadata != nil
-          clean_metadata = true
-          metaenabled = model.metadata[action.to_s] != nil
-        end
+        if model && model.respond_to?( :metadata ) and model.metadata != nil
+            metaenabled = model.metadata[action.to_s] != nil
+        end    
       end
 
       if not options[:string].nil?
@@ -131,7 +138,6 @@ module Rho
       RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
-      model.clean_cached_metadata() if clean_metadata    
       @content
     end
 
