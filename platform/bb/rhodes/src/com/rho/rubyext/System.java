@@ -260,6 +260,8 @@ public class System {
     		return ObjectFactory.createInteger(0);
     	if ( strPropName.equalsIgnoreCase("is_emulator") )
     		return ObjectFactory.createBoolean(DeviceInfo.isSimulator());
+    	if ( strPropName.equalsIgnoreCase("has_calendar") )
+    		return ObjectFactory.createBoolean(RhoCalendar.has_calendar());
     	
     	return RubyConstant.QNIL;
     }
