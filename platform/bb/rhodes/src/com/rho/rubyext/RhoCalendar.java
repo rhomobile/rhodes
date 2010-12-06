@@ -72,6 +72,10 @@ public class RhoCalendar extends RubyBasic {
 				PIM.EVENT_LIST, PIM.READ_WRITE);
 	}
 	
+	public static boolean has_calendar() {
+		return (PIM.getInstance() != null);
+	}
+	
     //@RubyAllocMethod
     public static RhoCalendar alloc(RubyValue receiver)throws Exception 
     {

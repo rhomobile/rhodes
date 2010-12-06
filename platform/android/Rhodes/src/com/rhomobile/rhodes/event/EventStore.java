@@ -45,6 +45,29 @@ public class EventStore {
 			throw new IllegalAccessException("Capability CALENDAR disabled");
 	}
 	
+	public static boolean hasCalendar() {
+		if (!Capabilities.CALENDAR_ENABLED) {
+			Logger.E(TAG, "Calendar capability is not enabled !!!");
+			return false;
+		}
+		final Cursor calendarCursor = getContentResolver().query(
+				Uri.parse("content://" + AUTHORITY + "/calendars"),
+				new String[] {"_id"},
+				null, null, null);
+		try {
+			if (calendarCursor != null) {
+				if (calendarCursor.moveToFirst())
+					return true;
+			}
+		}
+		finally {
+			if (calendarCursor != null) {
+				calendarCursor.close();
+			}
+		}
+		return false;
+	}
+	
 	private static ContentResolver getContentResolver() {
 		return RhodesService.getInstance().getContext().getContentResolver();
 	}

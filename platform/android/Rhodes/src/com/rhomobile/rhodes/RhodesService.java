@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.alert.Alert;
+import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -794,6 +795,9 @@ public class RhodesService {
 			}
 			else if (name.equalsIgnoreCase("os_version")) {
 				return Build.VERSION.RELEASE;
+			}
+			else if (name.equalsIgnoreCase("has_calendar")) {
+				return new Boolean(EventStore.hasCalendar());
 			}
 		}
 		catch (Exception e) {
