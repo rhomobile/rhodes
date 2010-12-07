@@ -70,6 +70,8 @@ public class RhodesService {
 	public static final int RHO_MAIN_VIEW = 2;
 	public static final int RHO_TOOLBAR_VIEW = 3;
 	
+	private static final String RHO_START_PARAMS_KEY = "RhoStartParams";
+	
 	private static RhodesService instance = null;
 	
 	public static RhodesService getInstance() {
@@ -520,9 +522,25 @@ public class RhodesService {
 				can_start = false;
 				if (params != null && params instanceof Bundle) {
 					Bundle startParams = (Bundle)params;
-					String v = startParams.getString("security_token");
-					if (v != null && v.equals(security_token))
-						can_start = true;
+					String rho_start_params = startParams.getString(RHO_START_PARAMS_KEY);
+					if (rho_start_params != null) {
+						String security_token_key = "sequrity_token=";
+						int sec_index = rho_start_params.indexOf(security_token_key);
+						if (sec_index >= 0) {
+							String tmp = rho_start_params.substring(sec_index + security_token_key.length(), rho_start_params.length() - sec_index - security_token_key.length());
+							int end_of_token = tmp.indexOf(",");
+							if (end_of_token >= 0) {
+								tmp = tmp.substring(0, end_of_token);
+							}
+							end_of_token = tmp.indexOf(" ");
+							if (end_of_token >= 0) {
+								tmp = tmp.substring(0, end_of_token);
+							}
+							if (tmp.equals(security_token)) {
+								can_start = true;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -545,7 +563,9 @@ public class RhodesService {
 
 		Logger.I("Rhodes", "Loading...");
 		//showSplashScreen();
-		splashScreen.rho_start();
+		if (splashScreen != null) {
+			splashScreen.rho_start();
+		}
 		
 		// Increase WebView rendering priority
 		WebView w = new WebView(ctx);
@@ -857,8 +877,9 @@ public class RhodesService {
 			if (params != null) {
 				Bundle startParams = new Bundle();
 				if (params instanceof String) {
-					startParams.putInt((String)params, 1);
+					startParams.putString(RHO_START_PARAMS_KEY, (String)params);
 				}
+				/*
 				else if (params instanceof List<?>) {
 					for (Object obj : (List<?>)params) {
 						startParams.putInt(obj.toString(), 1);
@@ -872,6 +893,7 @@ public class RhodesService {
 						startParams.putString(key.toString(), value == null ? null : value.toString());
 					}
 				}
+				*/
 				else
 					throw new IllegalArgumentException("Unknown type of incoming parameter");
 
