@@ -1870,6 +1870,9 @@ static VALUE mSyncEngine;
 
 	extern void rho_sync_enable_status_popup(int b);
 	#define enable_status_popup rho_sync_enable_status_popup
+
+    extern void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
+	#define set_source_property rho_sync_set_source_property
 	
 	#if !defined(bool)
 	#define bool int
@@ -2630,6 +2633,49 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_source_property(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","set_source_property", 1, argv[0] ));
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","set_source_property", 2, argv[1] ));
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","set_source_property", 3, argv[2] ));
+  }
+  arg3 = (char *)(buf3);
+  set_source_property(arg1,(char const *)arg2,(char const *)arg3);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2925,5 +2971,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_pagesize", _wrap_set_pagesize, -1);
   rb_define_module_function(mSyncEngine, "set_threaded_mode", _wrap_set_threaded_mode, -1);
   rb_define_module_function(mSyncEngine, "enable_status_popup", _wrap_enable_status_popup, -1);
+  rb_define_module_function(mSyncEngine, "set_source_property", _wrap_set_source_property, -1);
 }
 

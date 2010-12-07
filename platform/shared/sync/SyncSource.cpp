@@ -424,6 +424,9 @@ void CSyncSource::syncServerChanges()
 
         processServerResponse_ver3(oJsonArr);
 
+        if (getSync().getSourceOptions().getBoolProperty(getID(), "pass_through"))
+            processToken(0);
+
         if ( getToken() == 0 )
             break;
     }
@@ -554,6 +557,15 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
         }else
         {
             getDB().startTransaction();
+
+            if (getSync().getSourceOptions().getBoolProperty(getID(), "pass_through"))
+            {
+                if ( m_bSchemaSource )
+                    getDB().executeSQL( (String("DELETE FROM ") + getName()).c_str() );
+                else
+                    getDB().executeSQL("DELETE FROM object_values WHERE source_id=?", getID() );
+            }
+
             if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
             {
                 String strMetadata = oCmds.getString("metadata");
