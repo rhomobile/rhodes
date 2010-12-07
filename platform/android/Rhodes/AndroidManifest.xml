@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.rhomobile.rhodes"
       android:installLocation="auto"
-      android:versionCode="25"
-      android:versionName="2.2.4">
+      android:versionCode="26"
+      android:versionName="2.2.5">
     <uses-sdk android:minSdkVersion="3" />
     <application android:icon="@drawable/icon"
           android:multiprocess="true"
