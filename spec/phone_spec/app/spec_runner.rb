@@ -16,6 +16,7 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/date_spec"
     config[:files] << "spec/bsearch_spec"
     config[:files] << "spec/rho_spec"
+    config[:files] << "spec/array_pack_spec"
     config[:files] << "spec/rho_controller_spec"
 
     config[:files] << [ "spec/rhom_object_spec",
