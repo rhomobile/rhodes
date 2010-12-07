@@ -22,6 +22,7 @@ IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
 using namespace rho::net;
 using namespace rho::common;
 using namespace rho::json;
+CSyncEngine::CSourceOptions CSyncEngine::m_oSourceOptions;
 
 CSyncEngine::CSyncEngine():m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this)
 {
@@ -35,6 +36,45 @@ CSyncEngine::CSyncEngine():m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*
 void CSyncEngine::initProtocol()
 {
     m_SyncProtocol = new CSyncProtocol_3();
+}
+
+void CSyncEngine::CSourceOptions::setProperty(int nSrcID, const char* szPropName, const char* szPropValue)
+{
+    synchronized(m_mxSrcOptions)
+    {
+        Hashtable<String,String>* phashOptions = m_hashSrcOptions.get(nSrcID);
+        if ( phashOptions == null )
+        {
+            phashOptions = new Hashtable<String,String>();
+            m_hashSrcOptions.put( nSrcID, phashOptions );
+        }
+
+        Hashtable<String,String>& hashOptions = *phashOptions;
+        hashOptions.put(szPropName,szPropValue!=null?szPropValue:"");
+    }
+}
+
+String CSyncEngine::CSourceOptions::getProperty(int nSrcID, const char* szPropName)
+{
+    String res = "";
+    synchronized(m_mxSrcOptions)
+    {
+        Hashtable<String,String>* phashOptions = m_hashSrcOptions.get(nSrcID);
+        if ( phashOptions != null )
+        {
+            Hashtable<String,String>& hashOptions = *phashOptions;
+            res = hashOptions.get(szPropName);
+        }
+    }
+
+    return res;
+}
+
+boolean CSyncEngine::CSourceOptions::getBoolProperty(int nSrcID, const char* szPropName)
+{
+    String strValue = getProperty(nSrcID, szPropName);
+
+    return strValue.compare("1") == 0 || strValue.compare("true") == 0 ? true : false;
 }
 
 void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)

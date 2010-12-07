@@ -66,6 +66,50 @@ public class SyncEngine implements NetRequest.IRhoSession
         }
     };
     
+    static class SourceOptions
+    {
+        private Mutex m_mxSrcOptions = new Mutex();
+        private Hashtable/*Ptr<int, Hashtable<String,String>* >*/ m_hashSrcOptions = new Hashtable();
+        
+    	public void setProperty(Integer nSrcID, String szPropName, String szPropValue)
+    	{
+    	    synchronized(m_mxSrcOptions)
+    	    {
+    	        Hashtable/*<String,String>* */phashOptions = (Hashtable)m_hashSrcOptions.get(nSrcID);
+    	        if ( phashOptions == null )
+    	        {
+    	            phashOptions = new Hashtable/*<String,String>*/();
+    	            m_hashSrcOptions.put( nSrcID, phashOptions );
+    	        }
+
+    	        //Hashtable<String,String>& hashOptions = *phashOptions;
+    	        phashOptions.put(szPropName,szPropValue!=null?szPropValue:"");
+    	    }
+    	}
+        public String getProperty(Integer nSrcID, String szPropName)
+        {
+            String res = "";
+            synchronized(m_mxSrcOptions)
+            {
+                Hashtable/*<String,String>* */phashOptions = (Hashtable)m_hashSrcOptions.get(nSrcID);
+                if ( phashOptions != null )
+                {
+                    //Hashtable<String,String>& hashOptions = *phashOptions;
+                    res = (String)phashOptions.get(szPropName);
+                }
+            }
+
+            return res;
+        }
+        public boolean getBoolProperty(Integer nSrcID, String szPropName)
+        {
+            String strValue = getProperty(nSrcID, szPropName);
+
+            return strValue.compareTo("1") == 0 || strValue.compareTo("true") == 0 ? true : false;
+        	
+        }
+    };
+    
     Vector/*<SyncSource*>*/ m_sources = new Vector();
     Vector/*<String>*/      m_arPartitions = new Vector();    
     NetRequest m_NetRequest;
@@ -81,6 +125,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "";
     boolean m_bIsSearch, m_bIsSchemaChanged;
+    static SourceOptions m_oSourceOptions = new SourceOptions();
     
     void setState(int eState){ m_syncState = eState; }
     int getState(){ return m_syncState; }
@@ -112,6 +157,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
     void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
+    static SourceOptions getSourceOptions(){ return m_oSourceOptions; }
     
     SyncEngine(){
 		m_NetRequest = null;
