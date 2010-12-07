@@ -296,6 +296,13 @@ module Rho
         end
         
         ::Rho::RHO.init_schema_sources(hash_migrate)
+
+        Rho::RhoConfig::sources.values.each do|src|
+            ['pass_through'].each do |prop|
+                next unless src.has_key?(prop)        
+                SyncEngine.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
+            end            
+        end
     end
 
     def self.processIndexes(index_param, src_name, is_unique)

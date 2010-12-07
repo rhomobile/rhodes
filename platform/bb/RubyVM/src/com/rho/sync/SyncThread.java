@@ -851,6 +851,25 @@ public class SyncThread extends RhoThread
 						return RubyConstant.QNIL;
 					}
 			});
+
+		klass.getSingletonClass().defineMethod("set_source_property",
+				new RubyVarArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+						try{
+							Integer nSrcID = new Integer(args.get(0).toInt());
+							String strPropName = args.get(1).toStr(); 
+							String strPropValue = args.get(2).toStr();
+							
+							SyncEngine.getSourceOptions().setProperty(nSrcID, strPropName, strPropValue);
+							
+							return RubyConstant.QNIL;
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_source_property failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
 		
 	}
 

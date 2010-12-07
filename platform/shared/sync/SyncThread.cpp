@@ -413,4 +413,9 @@ void rho_sync_enable_status_popup(int b)
     return CSyncThread::getSyncEngine().getNotify().enableStatusPopup(b == 0 ? false : true);
 }
 
+void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue)
+{
+    CSyncEngine::getSourceOptions().setProperty(nSrcID, szPropName, szPropValue);
+}
+
 }

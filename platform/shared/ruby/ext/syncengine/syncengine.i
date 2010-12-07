@@ -57,6 +57,9 @@
 
 	extern void rho_sync_enable_status_popup(int b);
 	#define enable_status_popup rho_sync_enable_status_popup
+
+    extern void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
+	#define set_source_property rho_sync_set_source_property
 	
 	#if !defined(bool)
 	#define bool int
@@ -90,3 +93,4 @@ extern int   get_pagesize();
 extern void  set_pagesize(int pagesize);
 extern void  set_threaded_mode(bool b);
 extern void  enable_status_popup(bool b);
+extern void  set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
