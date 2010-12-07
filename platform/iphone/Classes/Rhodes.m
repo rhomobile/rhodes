@@ -705,9 +705,26 @@ static Rhodes *instance = NULL;
 	if (security_token != NULL) {
 		NSString* ns_security_token = [NSString stringWithUTF8String:security_token];
 		if ([ns_security_token length] > 0) {
-			if ([start_parameter compare:ns_security_token] != NSOrderedSame) {
-				NSLog(@"ALERT ! SECURITY_TOKEN is not valid !!!");
-				exit(EXIT_SUCCESS);
+			BOOL can_start = NO;
+			
+			NSString* security_token_key = [NSString stringWithUTF8String:"security_token="];
+			NSRange st_range = [start_parameter rangeOfString:security_token_key];	
+			if (st_range.location >= 0) {
+				NSString* tmp = [start_parameter substringFromIndex:(st_range.location + st_range.length)];
+				NSRange t_range = [tmp rangeOfString:@","];
+				if (t_range.location >= 0) {
+					tmp = [tmp substringToIndex:t_range.location];
+				}
+				t_range = [tmp rangeOfString:@" "];
+				if (t_range.location >= 0) {
+					tmp = [tmp substringToIndex:t_range.location];
+				}
+				
+				// check for app security_token
+				if ([tmp compare:ns_security_token] != NSOrderedSame) {
+					NSLog(@"ALERT ! SECURITY_TOKEN is not valid !!!");
+					exit(EXIT_SUCCESS);
+				}
 			}
 		}
 	}

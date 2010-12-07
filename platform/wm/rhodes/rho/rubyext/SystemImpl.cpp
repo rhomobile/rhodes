@@ -456,13 +456,15 @@ void rho_sys_run_app(const char *appname, VALUE params)
     {
         convertToStringW(getStringFromValue(params), strParamsW);
 
+	/*
         int nPos = strParamsW.find(L"rhogallery_app");
         if ( nPos >= 0 )
         {
             if ( nPos == 0 || (nPos > 0 && strParamsW.at(nPos-1)!= '-' ) )
                 strParamsW.insert(nPos, L"-");
         }
-
+	*/
+	strParamsW.insert(0, L"-RhoStartParams:");        
     }
 
     CRegKey oKey;
