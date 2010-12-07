@@ -54,10 +54,14 @@ end
 $application_build_configs_keys = ['security_token']
 
 def make_application_build_config_header_file
-  inc_file = File.join($startdir, "platform", "shared", "common", "app_build_configs.inc")
+  inc_file = File.join($startdir, "platform", "shared", "common", "app_build_configs.c")
   File.open(inc_file, "w") do |f|
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     f.puts "// Generated #{Time.now.to_s}"
+    f.puts ""
+    f.puts "#include <string.h>"
+    f.puts ""
+    f.puts '#include "app_build_configs.h"'
     f.puts ""
       
     f.puts 'static const char* keys[] = { ""'
@@ -77,9 +81,19 @@ def make_application_build_config_header_file
     f.puts '};'
     f.puts ''
 
-
     f.puts '#define APP_BUILD_CONFIG_COUNT '+count.to_s
     f.puts ''
+    f.puts 'const char* get_app_build_config_item(const char* key) {'
+    f.puts '  int i;'
+    f.puts '  for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
+    f.puts '    if (strcmp(key, keys[i]) == 0) {'
+    f.puts '      return values[i];'
+    f.puts '    }'
+    f.puts '  }'
+    f.puts '  return 0;'
+    f.puts '}'
+    f.puts ''
+
   end	 
 end
 
