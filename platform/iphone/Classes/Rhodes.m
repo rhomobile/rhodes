@@ -721,10 +721,14 @@ static Rhodes *instance = NULL;
 				}
 				
 				// check for app security_token
-				if ([tmp compare:ns_security_token] != NSOrderedSame) {
-					NSLog(@"ALERT ! SECURITY_TOKEN is not valid !!!");
-					exit(EXIT_SUCCESS);
+				if ([tmp compare:ns_security_token] == NSOrderedSame) {
+					can_start = YES;
 				}
+			}
+			
+			if (!can_start) {
+				NSLog(@"ALERT ! SECURITY_TOKEN is not valid !!!");
+				exit(EXIT_SUCCESS);
 			}
 		}
 	}
