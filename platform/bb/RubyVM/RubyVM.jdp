@@ -67,6 +67,7 @@ src\com\rho\Sprintf.java
 src\com\rho\StringScanner.java
 src\com\rho\Capabilities.java
 src\com\rho\Extensions.java
+src\com\rho\AppBuildConfig.java
 src\com\rho\sync\ClientRegister.java
 src\com\rho\sync\ISyncStatusListener.java
 src\com\rho\sync\JSONArrayIterator.java

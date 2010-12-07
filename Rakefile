@@ -97,6 +97,47 @@ def make_application_build_config_header_file
   end	 
 end
 
+def make_application_build_config_java_file
+      file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/AppBuildConfig.java"
+
+      File.open(file_name, "w") do |f|
+        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+        f.puts "// Generated #{Time.now.to_s}"
+        
+        f.puts "package com.rho;"
+        f.puts ""
+        f.puts "public class AppBuildConfig {"
+        
+        f.puts 'static final String keys[] = { ""'
+        $application_build_configs.keys.each do |key|
+          f.puts ',"'+key+'"'
+        end
+        f.puts '};'
+        f.puts ''
+
+        count = 1
+
+        f.puts 'static final String values[] = { ""'
+        $application_build_configs.keys.each do |key|
+          f.puts ',"'+$application_build_configs[key]+'"'
+          count = count + 1
+        end
+        f.puts '};'
+        f.puts ''
+
+        f.puts 'static final int APP_BUILD_CONFIG_COUNT = '+count.to_s + ';'
+        f.puts ''
+        f.puts 'public static String getItem(String key){'
+        f.puts '  for (int i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
+        f.puts '    if ( key.compareTo( keys[i]) == 0) {'
+        f.puts '      return values[i];'
+        f.puts '    }'
+        f.puts '  }'
+        f.puts '  return null;'
+        f.puts '}'
+        f.puts "}"
+      end
+end
 
 namespace "config" do
   task :common do
@@ -173,6 +214,11 @@ namespace "config" do
     end	
     $application_build_configs = application_build_configs
 
+    if $current_platform == "bb"  
+      make_application_build_config_java_file
+    else  
+      make_application_build_config_header_file    
+    end
 
   end
 
@@ -379,10 +425,7 @@ def common_bundle_start(startdir, dest)
   clear_linker_settings
 
   init_extensions(startdir, dest)
-  
-  make_application_build_config_header_file
 
-  
   chdir startdir
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
