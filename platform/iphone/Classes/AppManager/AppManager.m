@@ -21,6 +21,9 @@
 #import "logging/RhoLogConf.h"
 #include "ruby/ext/rho/rhoruby.h"
 #import "logging/RhoLog.h"
+#import "../Event/Event.h"
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -378,7 +381,13 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #endif		
 		*resValue = rho_ruby_create_boolean(bSim);
         return 1;
-    }
+    }else if (strcasecmp("has_calendar", szPropName) == 0) {
+		int bCal = 0;
+		if (is_rho_calendar_supported()) 
+			bCal = 1;
+		*resValue = rho_ruby_create_boolean(bCal);
+		return 1;
+	}
 	
     /*
     // Removed because it's possibly dangerous: Apple could reject application
