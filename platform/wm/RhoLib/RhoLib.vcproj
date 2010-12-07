@@ -893,6 +893,14 @@
 				RelativePath="..\..\shared\common\Tokenizer.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\common\app_build_configs.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\app_build_configs.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="logging"
