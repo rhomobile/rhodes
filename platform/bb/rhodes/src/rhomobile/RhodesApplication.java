@@ -389,7 +389,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	_mainScreen.invalidate();
     }
     
-    static boolean m_bRhoGalleryApp = false;
+    static String m_strSecurityToken = "";
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -402,8 +402,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			{
 				for( int i = 0; i < args.length; i++)
 				{
-					if ( args[i].equals("rhogallery_app") )
-						m_bRhoGalleryApp = true;
+					if ( args[i].startsWith("security_token=") )
+						m_strSecurityToken = args[i].substring(15);
 				}
 			}
 			_instance = new RhodesApplication();
@@ -1047,9 +1047,10 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	    
         	RhoLogger.InitRhoLog();
         	
-            if ( RhoConf.getInstance().getBool("rhogallery_only_app") && !m_bRhoGalleryApp)
+        	if ( AppBuildConfig.getItem("security_token") != null && 
+        		 AppBuildConfig.getItem("security_token").compareTo(m_strSecurityToken) != 0)
             {
-                LOG.INFO("This is RhoGallery only app and can be started only from RhoGallery.");
+                LOG.INFO("This is hidden app and can be started only with security key.");
                 System.exit(0);
                 return;
             }

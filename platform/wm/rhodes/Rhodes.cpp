@@ -180,7 +180,7 @@ public :
 				rho::String app_security_token = app_security_token_cc;
 				if (app_security_token.length() > 0) {
 					if (app_security_token.compare(m_strSecurityToken) != 0) {
-						LOG(INFO) + "SECURITY_TOKEN is bot valid !!!";
+						LOG(INFO) + "This is hidden app and can be started only with security key.";
 						return S_FALSE;
 					}
 				}
