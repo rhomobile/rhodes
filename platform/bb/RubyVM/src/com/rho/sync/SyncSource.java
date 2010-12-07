@@ -521,6 +521,9 @@ class SyncSource
 
 	        processServerResponse_ver3(oJsonArr);
 
+	        if (getSync().getSourceOptions().getBoolProperty(getID(), "pass_through"))
+	        	processToken(0);
+	        
 	        if ( getToken() == 0 )
 	            break;
 	    }
@@ -644,6 +647,15 @@ class SyncSource
 	        }else
 	        {
 		        getDB().startTransaction();
+		        
+	            if (getSync().getSourceOptions().getBoolProperty(getID(), "pass_through"))
+	            {
+	                if ( m_bSchemaSource )
+	                    getDB().executeSQL( "DELETE FROM " + getName() );
+	                else
+	                    getDB().executeSQL( "DELETE FROM object_values WHERE source_id=?", getID() );
+	            }
+		        
 		        if ( oCmds.hasName("metadata") && getSync().isContinueSync() )
 		        {
 		            String strMetadata = oCmds.getString("metadata");

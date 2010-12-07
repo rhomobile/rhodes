@@ -32,6 +32,16 @@ public:
         boolean isEqual(CSyncSource& src)const;
     };
 
+    class CSourceOptions
+    {
+        common::CMutex m_mxSrcOptions;
+        HashtablePtr<int, Hashtable<String,String>* > m_hashSrcOptions;
+    public:
+        void setProperty(int nSrcID, const char* szPropName, const char* szPropValue);
+        String getProperty(int nSrcID, const char* szPropName);
+        boolean getBoolProperty(int nSrcID, const char* szPropName);
+    };
+
 private:
     VectorPtr<CSyncSource*> m_sources;
     Vector<String>          m_arPartitions;
@@ -48,6 +58,7 @@ private:
     int m_nErrCode;
     String m_strError;
     boolean m_bIsSearch, m_bIsSchemaChanged;
+    static CSourceOptions m_oSourceOptions;
 
 public:
     CSyncEngine();
@@ -57,6 +68,7 @@ public:
         m_NetRequest = factory->createNetRequest();
         m_oSyncNotify.setFactory(factory);
     }
+    static CSourceOptions& getSourceOptions(){ return m_oSourceOptions; }
 
     void doSyncAllSources();
     void doSyncSource(const CSourceID& oSrcID);
