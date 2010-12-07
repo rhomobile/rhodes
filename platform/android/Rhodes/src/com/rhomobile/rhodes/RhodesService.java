@@ -168,6 +168,8 @@ public class RhodesService {
 	
 	public native String normalizeUrl(String url);
 	
+	public static native String getBuildConfig(String key);
+	
 	public static native void loadUrl(String url);
 	
 	public static native void navigateBack();
@@ -498,6 +500,7 @@ public class RhodesService {
 		
 		createRhodesApp();
 		
+		/*
 		boolean rhoGalleryApp = false;
 		if (params != null && params instanceof Bundle) {
 			Bundle startParams = (Bundle)params;
@@ -507,6 +510,24 @@ public class RhodesService {
 		}
 		if (!rhoGalleryApp && RhoConf.getBool("rhogallery_only_app")) {
 			Logger.E(TAG, "This is RhoGallery only app and can be started only from RhoGallery");
+			exitApp();
+		}
+		*/
+		boolean can_start = true;
+		String security_token = getBuildConfig("security_token"); 
+		if (security_token != null) {
+			if (security_token.length() > 0) {
+				can_start = false;
+				if (params != null && params instanceof Bundle) {
+					Bundle startParams = (Bundle)params;
+					String v = startParams.getString("security_token");
+					if (v != null && v.equals(security_token))
+						can_start = true;
+				}
+			}
+		}
+		if (!can_start) {
+			Logger.E(TAG, "SECURITY_TOKEN parameter is not valid for this application !");
 			exitApp();
 		}
 		
