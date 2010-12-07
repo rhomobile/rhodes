@@ -51,6 +51,39 @@ namespace "framework" do
 end
 
 
+$application_build_configs_keys = ['security_token']
+
+def make_application_build_config_header_file
+  inc_file = File.join($startdir, "platform", "shared", "common", "app_build_configs.inc")
+  File.open(inc_file, "w") do |f|
+    f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+    f.puts "// Generated #{Time.now.to_s}"
+    f.puts ""
+      
+    f.puts 'static const char* keys[] = { ""'
+    $application_build_configs.keys.each do |key|
+      f.puts ',"'+key+'"'
+    end
+    f.puts '};'
+    f.puts ''
+
+    count = 1
+
+    f.puts 'static const char* values[] = { ""'
+    $application_build_configs.keys.each do |key|
+      f.puts ',"'+$application_build_configs[key]+'"'
+      count = count + 1
+    end
+    f.puts '};'
+    f.puts ''
+
+
+    f.puts '#define APP_BUILD_CONFIG_COUNT '+count.to_s
+    f.puts ''
+  end	 
+end
+
+
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
@@ -109,6 +142,24 @@ namespace "config" do
     
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
+
+    #application build configs
+    application_build_configs = {}
+
+    $application_build_configs_keys.each do |key|
+      value = $app_config[key]
+      if $app_config[$config["platform"]] != nil
+        if $app_config[$config["platform"]][key] != nil
+          value = $app_config[$config["platform"]][key]
+        end
+      end
+      if value != nil
+        application_build_configs[key] = value
+      end
+    end	
+    $application_build_configs = application_build_configs
+
+
   end
 
   out = `javac -version 2>&1`
@@ -314,6 +365,9 @@ def common_bundle_start(startdir, dest)
   clear_linker_settings
 
   init_extensions(startdir, dest)
+  
+  make_application_build_config_header_file
+
   
   chdir startdir
   #throw "ME"
