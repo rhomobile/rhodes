@@ -1,3 +1,13 @@
+## 2.2.5
+* support iPhone and iPad 4.2
+* support Blackberry 6
+* support Samsung Galaxy
+* GPS stops by timeout on Android
+* fixed several schema model issues
+* NativeView on Android and Windows Mobile
+* Tabbar badge for iPhone
+* sms link fix for Blackberry
+
 ## 2.2.4
 * Launch external browser
 * Open any url (http, file etc), and run external application associated with it
