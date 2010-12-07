@@ -9,6 +9,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#include "common/app_build_configs.h"
 #import "SplitView/SplittedMainView.h"
 
 
@@ -688,6 +689,7 @@ static Rhodes *instance = NULL;
 	[self doStartUp];
 	[self processDoSync:launchOptions];
 	
+	/*
 	BOOL rhogallery_only = rho_conf_getBool("rhogallery_only_app");
 	
 	// check for only from gallery app
@@ -697,6 +699,21 @@ static Rhodes *instance = NULL;
 			exit(EXIT_SUCCESS);
 		}
 	}
+	 */
+	const char* security_token = get_app_build_config_item("security_token");
+	
+	if (security_token != NULL) {
+		NSString* ns_security_token = [NSString stringWithUTF8String:security_token];
+		if ([ns_security_token length] > 0) {
+			if ([start_parameter compare:ns_security_token] != NSOrderedSame) {
+				NSLog(@"ALERT ! SECURITY_TOKEN is not valid !!!");
+				exit(EXIT_SUCCESS);
+			}
+		}
+	}
+	
+	
+	
 	return NO;
 }
 #endif
