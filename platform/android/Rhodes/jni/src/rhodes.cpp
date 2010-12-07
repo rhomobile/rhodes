@@ -3,6 +3,7 @@
 #include "rhodes/jni/com_rhomobile_rhodes_RhodesService.h"
 
 #include <common/RhoConf.h>
+#include <common/app_build_configs.h>
 #include <logging/RhoLogConf.h>
 #include <common/RhodesApp.h>
 #include <sync/SyncThread.h>
@@ -543,6 +544,15 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
     std::string const &cs = RHODESAPP().canonicalizeRhoUrl(s);
     return rho_cast<jstring>(env, cs);
 }
+
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
+  (JNIEnv *env, jobject, jstring key)
+{
+    std::string const &s = rho_cast<std::string>(key);
+    const char* cs = get_app_build_config_item(s.c_str());
+    return rho_cast<jstring>(env, cs);
+}
+
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_navigateBack
   (JNIEnv *, jclass)
