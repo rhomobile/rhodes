@@ -128,9 +128,20 @@ public class EventStore {
 					String eid = eventCursor.getString(0);
 					Event event = new Event(eid);
 					
+					Date eventStartDate = new Date(eventCursor.getLong(2));
+					Date eventEndDate = new Date(eventCursor.getLong(3));
+					if (eventStartDate.before(eventEndDate)) {
+						Date tmp = eventStartDate;
+						eventStartDate = eventEndDate;
+						eventEndDate = tmp;
+					}
+					
+					if (eventEndDate.before(startDate) || eventStartDate.after(endDate))
+						continue;
+					
 					event.title = eventCursor.getString(1);
-					event.startDate = new Date(eventCursor.getLong(2));
-					event.endDate = new Date(eventCursor.getLong(3));
+					event.startDate = eventStartDate;
+					event.endDate = eventEndDate;
 					event.location = eventCursor.getString(4);
 					event.notes = eventCursor.getString(5);
 					switch (eventCursor.getInt(6)) {

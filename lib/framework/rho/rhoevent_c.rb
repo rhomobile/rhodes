@@ -6,7 +6,11 @@ module Rho
     def self.find(*args)
       if args.first == :all
         params = {}
-        params = args[1] if args.length >= 2 and args[1].is_a? Hash
+        if args.length >= 2 and args[1].is_a? Hash
+          args[1].each do |k,v|
+            params[k.to_s] = v
+          end
+        end
 
         params['start_date'] = MIN_TIME if params['start_date'].nil? or params['start_date'] < MIN_TIME
         params['end_date'] = MAX_TIME if params['end_date'].nil? or params['end_date'] > MAX_TIME
