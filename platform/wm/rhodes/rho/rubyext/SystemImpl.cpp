@@ -356,6 +356,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         return 1;
     }
 
+	if (strcasecmp("has_calendar",szPropName) == 0)
+    {
+        *resValue = rho_ruby_create_boolean(1);
+        return 1;
+    }
+
     return 0;
 }
 
