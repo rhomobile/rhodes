@@ -19,6 +19,17 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Event"
 
+
+BOOL is_rho_calendar_supported() {
+	BOOL res = YES;
+#if defined(__IPHONE_4_0)
+    NSString *version = [[UIDevice currentDevice] systemVersion];
+    if ([version hasPrefix:@"3."] || [version hasPrefix:@"2."])
+#endif
+        res = NO;
+	return res;
+}
+
 static void calendar_check()
 {
 #if defined(__IPHONE_4_0)
