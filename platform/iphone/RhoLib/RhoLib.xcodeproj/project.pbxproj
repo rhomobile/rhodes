@@ -70,6 +70,8 @@
 		BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD11ECC113664E700349BE3 /* rhoparams.h */; };
 		BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB13B112EE2B500AE3724 /* ssl.cpp */; };
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
+		FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */; };
+		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,6 +139,8 @@
 		BDFCB13B112EE2B500AE3724 /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
+		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +206,8 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */,
+				FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */,
 				5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */,
 				5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */,
 				5C663BE811F3712C005F60AF /* RhodesAppBase.h */,
@@ -338,6 +344,7 @@
 				5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */,
 				5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */,
 				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
+				FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,6 +415,7 @@
 				5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */,
 				5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */,
 				5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */,
+				FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
