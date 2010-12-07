@@ -44,6 +44,9 @@ def getCustomer_str
     'Customer'
 end
 
+SYNC_SERVER_URL = 'http://rhodes-store-server.heroku.com/application'
+#SYNC_SERVER_URL = 'http://localhost:9292/application'
+
 describe "SyncEngine_test" do
 
   before(:all)  do
@@ -51,8 +54,7 @@ describe "SyncEngine_test" do
   
     ::Rhom::Rhom.database_fullclient_reset_and_logout
     
-    SyncEngine.set_syncserver('http://rhodes-store-server.heroku.com/application')
-    #SyncEngine.set_syncserver('http://localhost:9292/application')
+    SyncEngine.set_syncserver(SYNC_SERVER_URL)
 
     @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
@@ -68,7 +70,7 @@ describe "SyncEngine_test" do
   end
   
   after (:each) do
-    Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku.com/application'
+    Rho::RhoConfig.syncserver = SYNC_SERVER_URL
   end
     
   it "should update syncserver at runtime" do
@@ -231,7 +233,7 @@ describe "SyncEngine_test" do
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
     records.length.should_not == 0
 
-    Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku.com/application'
+    Rho::RhoConfig.syncserver = SYNC_SERVER_URL
     res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE

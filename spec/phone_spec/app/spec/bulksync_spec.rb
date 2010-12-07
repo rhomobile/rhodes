@@ -28,6 +28,7 @@ describe "BulkSync_test" do
     ::Rhom::Rhom.database_full_reset_and_logout
     
     SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
+    #SyncEngine.set_syncserver('http://localhost:9292/application')
     Rho::RhoConfig.bulksync_state='0'
 
     @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
