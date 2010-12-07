@@ -944,8 +944,12 @@ module Rhom
 
                         puts "del_objects : #{del_objects}"
                         del_objects.each do |obj|
-                          db.delete_from_table(tableName, {'object'=>obj['object']})
-                          db.delete_from_table('changed_values', {'object'=>obj['object']}) if is_sync_source()
+                          if is_schema_source()
+                            db.delete_from_table(tableName, {'object'=>obj['object']})
+                          else
+                            db.delete_from_table(tableName, {'object'=>obj['object'], "source_id"=>get_source_id})
+                          end  
+                          db.delete_from_table('changed_values', {'object'=>obj['object'], "source_id"=>get_source_id}) if is_sync_source()
                         end
                       else
                         if is_schema_source()
@@ -1078,19 +1082,18 @@ module Rhom
                       attrsList = nil
                       if is_inst_schema_source()
                         attrsList = db.select_from_table(tableName, '*', {"object"=>obj}) 
+                        db.delete_from_table(tableName, {"object"=>obj})
                       else
                         attrsList = db.select_from_table(tableName, '*', {"object"=>obj, "source_id"=>self.get_inst_source_id()}) 
+                        db.delete_from_table(tableName, {"object"=>obj, "source_id"=>self.get_inst_source_id()})
                       end  
-                      
-                      # first delete the record from viewable list
-                      db.delete_from_table(tableName, {"object"=>obj})
                       
                       resUpdateType =  is_inst_sync_source() ? db.select_from_table('changed_values', 'update_type', {"object"=>obj, "update_type"=>'create', "sent"=>0}) : nil 
                       if resUpdateType && resUpdateType.length > 0 
                         update_type = nil                              
                       end
                       
-                      db.delete_from_table('changed_values', {"object"=>obj, "sent"=>0}) if is_inst_sync_source()
+                      db.delete_from_table('changed_values', {"object"=>obj, "source_id"=>self.get_inst_source_id(), "sent"=>0}) if is_inst_sync_source()
                       
                       if is_inst_sync_source() && update_type and attrsList and attrsList.length() > 0
                         # now add delete operation

@@ -897,16 +897,33 @@ describe "Rhom::RhomObject" do
   end
   
   it "should delete_all" do
+    vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
+    account = getAccount.create(vars)
+  
     getAccount.delete_all
     
     getAccount.find(:all).length.should == 0
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'source_id' => getAccount().get_source_id() )
+        records.length.should == 0
+    end    
   end
   
   it "should delete_all with conditions" do
+    vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
+    account = getAccount.create(vars)
+  
     getAccount.delete_all(:conditions => {'name' => 'Mobio India'})
     
     @accts = getAccount.find(:all, :conditions => {'name' => 'Mobio India'})
     @accts.length.should == 0
+
+    if $spec_settings[:sync_model]    
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'source_id' => getAccount().get_source_id() )
+        records.length.should > 0
+    end
+    
   end
   
   it "should delete_all with conditions across objects" do
