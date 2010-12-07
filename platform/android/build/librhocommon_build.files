@@ -8,6 +8,7 @@ platform/shared/common/SplashScreen.cpp
 platform/shared/common/Tokenizer.cpp
 platform/shared/common/AppMenu.cpp
 platform/shared/common/rhoparams.cpp
+platform/shared/common/app_build_configs.c
 platform/shared/net/AsyncHttp.cpp
 platform/shared/net/CURLNetRequest.cpp
 platform/shared/net/HttpServer.cpp
