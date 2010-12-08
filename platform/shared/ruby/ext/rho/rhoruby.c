@@ -183,6 +183,10 @@ void RhoRubyStart()
 #endif
 
     require_compiled(rb_str_new2("rhoframework"), &framework );
+    if ( framework == 0 || framework == Qnil )
+    {
+        RAWLOG_FATAL("RHO framework creating failed. Application will exit.");
+    }
 
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
