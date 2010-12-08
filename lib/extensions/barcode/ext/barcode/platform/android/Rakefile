@@ -1,12 +1,16 @@
 require 'fileutils'
 
-USE_STLPORT = true
-
-
 def build_extension(name, arch, src_files)
   objects = []
   mkdir_p $tempdir unless File.exists? $tempdir
 
+  use_own_stlport = false
+  $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
+  unless File.directory? $std_includes
+      $stlport_includes = "#{$rootdir}/platform/shared/stlport/stlport"
+      use_own_stlport = true
+  end
+ 
   #Dir.glob("*.c").each do |f|
   src_files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
@@ -17,12 +21,13 @@ def build_extension(name, arch, src_files)
     args << "-I#{$rootdir}/platform/shared/ruby/include"
     args << "-I#{$rootdir}/platform/shared"
 
-    args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_STLPORT
-    args << "-D__NEW__" if USE_STLPORT
+    args << "-I#{$std_includes}" unless $std_includes.nil?
+    args << "-D__NEW__" if use_own_stlport
+    args << "-I#{$stlport_includes}" if use_own_stlport
+    
     args << "-I#{$rootdir}/platform/shared/ruby/linux"
     args << "-I#{$rootdir}/platform/shared/ruby/generated"
     args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
-    args << "-I#{$rootdir}/platform/shared/stlport/stlport" if USE_STLPORT
 
     cc_compile f, $tempdir, args or exit 1
 
