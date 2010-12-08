@@ -46,6 +46,7 @@ typedef unsigned __int64 uint64;
 #    include <stdarg.h>
 #    include <sys/select.h>
 #    include <stdio.h>
+#    include <ctype.h>
 #  else
 #    include <wchar.h>
 #  endif // OS_ANDROID
