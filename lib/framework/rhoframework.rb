@@ -30,5 +30,6 @@ begin
     puts 'RHO loaded'
     Rho::RHO.new
 rescue Exception => e
-    puts e.message
-end
+    trace_msg = e.backtrace.join("\n")
+    puts 'Create RHO framework failed: ' + e.inspect + ";Trace: #{trace_msg}"
+end    
