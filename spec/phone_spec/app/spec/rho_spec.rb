@@ -71,8 +71,8 @@ describe "RhoConfig" do
   end  
   
   it "should read log" do
-    log_text = Rho::RhoConfig.read_log
-    log_text.length.should > 0
+  #  log_text = Rho::RhoConfig.read_log
+  #  log_text.length.should > 0
   
     log_text = Rho::RhoConfig.read_log(20000)
     log_text.length.should <= 20000
