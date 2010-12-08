@@ -2,12 +2,12 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require 'pathname'
 
-USE_STLPORT = true
+USE_OWN_STLPORT = false
 USE_TRACES = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2"}.each do |k,v|
+{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3"}.each do |k,v|
   ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
   ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
 end
@@ -352,10 +352,13 @@ namespace "config" do
     $stdout.flush
     
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
+    $dx = File.join( $androidsdkpath, "platform-tools", "dx" + $bat_ext ) unless File.exists? $dx
     $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
+    $aapt = File.join( $androidsdkpath, "platform-tools", "aapt" + $exe_ext ) unless File.exists? $aapt
     $apkbuilder = File.join( $androidsdkpath, "tools", "apkbuilder" + $bat_ext )
     $androidbin = File.join( $androidsdkpath, "tools", "android" + $bat_ext )
     $adb = File.join( $androidsdkpath, "tools", "adb" + $exe_ext )
+    $adb = File.join( $androidsdkpath, "platform-tools", "adb" + $exe_ext ) unless File.exists? $adb
     $zipalign = File.join( $androidsdkpath, "tools", "zipalign" + $exe_ext )
     $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
 
@@ -468,7 +471,11 @@ namespace "config" do
 
     setup_ndk($androidndkpath, ANDROID_API_LEVEL)
     
-    $stlport_includes = File.join $shareddir, "stlport", "stlport"
+    $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
+    unless File.directory? $std_includes
+      $stlport_includes = File.join $shareddir, "stlport", "stlport"
+      USE_OWN_STLPORT = true
+    end
 
     $native_libs = ["sqlite", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
@@ -480,11 +487,11 @@ namespace "config" do
     $objdir = {}
     $libname = {}
     $native_libs.each do |x|
-      $objdir[x] = File.join($rhobindir, $confdir, $ndkgccver, "lib" + x)
-      $libname[x] = File.join($rhobindir, $confdir, $ndkgccver, "lib" + x + ".a")
+      $objdir[x] = File.join($rhobindir, $confdir, $ndkabi, $ndkgccver, "lib" + x)
+      $libname[x] = File.join($rhobindir, $confdir, $ndkabi, $ndkgccver, "lib" + x + ".a")
     end
 
-    $extensionsdir = $bindir + "/libs/" + $confdir + "/" + $ndkgccver + "/extensions"
+    $extensionsdir = $bindir + "/libs/" + $confdir + "/" + $ndkabi + "/" + $ndkgccver + "/extensions"
 
     #$app_config["extensions"] = [] if $app_config["extensions"].nil?
     #$app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
@@ -643,8 +650,9 @@ namespace "build" do
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'libruby', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -657,38 +665,34 @@ namespace "build" do
       args = []
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'libjson', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
-    unless USE_STLPORT
-      task :libstlport do
-      end
-    else
-      task :libstlport => "config:android" do
-        if USE_STLPORT
-          objdir = $objdir["stlport"]
-          libname = $libname["stlport"]
+    task :libstlport => "config:android" do
+      if USE_OWN_STLPORT
+        objdir = $objdir["stlport"]
+        libname = $libname["stlport"]
 
-          args = []
-          args << "-I#{$stlport_includes}"
-          args << "-DTARGET_OS=android"
-          args << "-DOSNAME=android"
-          args << "-DCOMPILER_NAME=gcc"
-          args << "-DBUILD_OSNAME=android"
-          args << "-D_REENTRANT"
-          args << "-D__NEW__"
-          args << "-ffunction-sections"
-          args << "-fdata-sections"
-          args << "-fno-rtti"
-          args << "-fno-exceptions"
+        args = []
+        args << "-I#{$stlport_includes}"
+        args << "-DTARGET_OS=android"
+        args << "-DOSNAME=android"
+        args << "-DCOMPILER_NAME=gcc"
+        args << "-DBUILD_OSNAME=android"
+        args << "-D_REENTRANT"
+        args << "-D__NEW__"
+        args << "-ffunction-sections"
+        args << "-fdata-sections"
+        args << "-fno-rtti"
+        args << "-fno-exceptions"
 
-          cc_build 'libstlport', objdir, args or exit 1
-          cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
-        end
+        cc_build 'libstlport', objdir, args or exit 1
+        cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
       end
     end
 
@@ -698,8 +702,9 @@ namespace "build" do
       libname = $libname["rholog"]
       args = []
       args << "-I#{srcdir}/.."
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'librholog', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -711,8 +716,9 @@ namespace "build" do
       libname = $libname["rhomain"]
       args = []
       args << "-I#{srcdir}"
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'librhomain', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -724,8 +730,9 @@ namespace "build" do
       args = []
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/curl/include"
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'librhocommon', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -739,8 +746,9 @@ namespace "build" do
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'librhodb', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -754,8 +762,9 @@ namespace "build" do
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
       args << "-I#{srcdir}/../sqlite"
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'librhosync', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -892,8 +901,8 @@ namespace "build" do
 
     task :librhodes => [:libs, :gensources] do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
-      objdir = File.join $bindir, "libs", $confdir, $ndkgccver, "librhodes"
-      libname = File.join $bindir, "libs", $confdir, $ndkgccver, "librhodes.so"
+      objdir = File.join $bindir, "libs", $confdir, $ndkabi, $ndkgccver, "librhodes"
+      libname = File.join $bindir, "libs", $confdir, $ndkabi, $ndkgccver, "librhodes.so"
 
       args = []
       args << "-I#{$appincdir}"
@@ -904,9 +913,10 @@ namespace "build" do
       args << "-I#{$shareddir}/curl/include"
       args << "-I#{$shareddir}/ruby/include"
       args << "-I#{$shareddir}/ruby/linux"
-      args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_STLPORT
-      args << "-D__NEW__" if USE_STLPORT
-      args << "-I#{$stlport_includes}" if USE_STLPORT
+      args << "-I#{$std_includes}" unless $std_includes.nil?
+      args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
+      args << "-D__NEW__" if USE_OWN_STLPORT
+      args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
 
       cc_build 'librhodes', objdir, args or exit 1
 
@@ -916,8 +926,8 @@ namespace "build" do
       end
 
       args = []
-      args << "-L#{$rhobindir}/#{$confdir}/#{$ndkgccver}"
-      args << "-L#{$bindir}/libs/#{$confdir}/#{$ndkgccver}"
+      args << "-L#{$rhobindir}/#{$confdir}/#{$ndkabi}/#{$ndkgccver}"
+      args << "-L#{$bindir}/libs/#{$confdir}/#{$ndkabi}/#{$ndkgccver}"
       args << "-L#{$extensionsdir}"
 
       rlibs = []
@@ -928,7 +938,7 @@ namespace "build" do
       rlibs << "rholog"
       rlibs << "rhocommon"
       rlibs << "json"
-      rlibs << "stlport" if USE_STLPORT
+      rlibs << "stlport" if USE_OWN_STLPORT
       rlibs << "curl"
       rlibs << "sqlite"
       rlibs << "log"
@@ -1108,7 +1118,7 @@ namespace "package" do
     # Add native librhodes.so
     rm_rf File.join($tmpdir, "lib")
     mkdir_p File.join($tmpdir, "lib/armeabi")
-    cp_r File.join($bindir, "libs", $confdir, $ndkgccver, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
+    cp_r File.join($bindir, "libs", $confdir, $ndkabi, $ndkgccver, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
     # Add extensions .so libraries
     Dir.glob($extensionsdir + "/lib*.so").each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
@@ -1576,8 +1586,8 @@ namespace "clean" do
     end
   end
   task :librhodes => "config:android" do
-    rm_rf $rhobindir + "/" + $confdir + "/" + $ndkgccver + "/librhodes"
-    rm_rf $bindir + "/libs/" + $confdir + "/" + $ndkgccver + "/librhodes.so"
+    rm_rf $rhobindir + "/" + $confdir + "/" + $ndkabi + "/" + $ndkgccver + "/librhodes"
+    rm_rf $bindir + "/libs/" + $confdir + "/" + $ndkabi + "/" + $ndkgccver + "/librhodes.so"
   end
 #  desc "clean android"
   task :all => [:assets,:librhodes,:libs,:files]
