@@ -67,15 +67,31 @@ module Rho
     #end
     
     def init_app
-      get_app(APPNAME)
+      puts "init_app"
+      begin
+        get_app(APPNAME)
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts 'Application initialize failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end    
     end
 
     def activate_app
-      get_app(APPNAME).on_activate_app
+      begin
+          get_app(APPNAME).on_activate_app
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts 'Application activate failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end    
     end
 
     def deactivate_app
-      get_app(APPNAME).on_deactivate_app
+      begin
+          get_app(APPNAME).on_deactivate_app
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts 'Application activate failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end    
     end
 
     # make sure we close the database file
@@ -117,11 +133,12 @@ module Rho
             Rhom::RhomObjectFactory.init_object(modelName)
             require str
 
-            #puts "model name: #{modelName}"            
+            puts "model name: #{modelName}"            
 
             modelClass = nil 
             modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
             if modelClass
+                puts "model class found"                            
                 if modelClass.respond_to?( :get_model_params )
                     Rho::RhoConfig::add_source(modelName,modelClass.get_model_params())
                     modelClass.reset_model_params()
