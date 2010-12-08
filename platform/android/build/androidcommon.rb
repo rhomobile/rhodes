@@ -36,19 +36,42 @@ def get_sources(name)
 end
 
 def setup_ndk(ndkpath,apilevel)
+  $ndktools = nil
+  $ndkabi = "unknown"
   $ndkgccver = "unknown"
-  ["4.4.0", "4.2.1"].each do |ver|
-    tools = File.join(ndkpath, "build/prebuilt", $ndkhost, "arm-eabi-#{ver}")
-    next unless File.directory? tools
-    $ndkgccver = ver
-    $ndktools = tools
+  ["arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
+    variants = []
+    variants << File.join(ndkpath, "toolchains", abi, "prebuilt", $ndkhost)
+    variants << File.join(ndkpath, "build/prebuilt", $ndkhost, abi)
+    variants.each do |variant|
+      next unless File.directory? variant
+      $ndktools = variant
+      $ndkabi = abi.gsub(/^(.*)-([^-]*)$/, '\1')
+      $ndkgccver = abi.gsub(/^(.*)-([^-]*)$/, '\2')
+      break
+    end
+    break unless $ndktools.nil?
+  end
+  if $ndktools.nil?
+    raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
+  end
+
+  variants = []
+  variants << "platforms"
+  variants << "build/platforms"
+  variants.each do |variant|
+    sysroot = File.join(ndkpath, variant, "android-#{apilevel}/arch-arm")
+    next unless File.directory? sysroot
+    $ndksysroot = sysroot
     break
   end
-  $ndksysroot = File.join(ndkpath, "build/platforms/android-#{apilevel}/arch-arm")
+  if $ndksysroot.nil?
+    raise "Can't detect NDK sysroot (corrupted NDK installation?)"
+  end
 
   ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
     name = tool.gsub('+', 'p')
-    eval "$#{name}bin = $ndktools + '/bin/arm-eabi-#{tool}' + $exe_ext"
+    eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
   end
   
   # Detect rlim_t
@@ -98,7 +121,8 @@ def cpp_def_args
   if $cpp_def_args_val.nil?
     args = []
     args << "-fvisibility-inlines-hidden"
-    args << "-fexceptions -frtti" unless USE_STLPORT
+    args << "-fno-exceptions"
+    args << "-fno-rtti"
     $cpp_def_args_val = args
   end
   $cpp_def_args_val.dup
@@ -238,8 +262,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   dependencies += deps unless deps.nil?
   return true if FileUtils.uptodate? outname, dependencies
   args = []
-  args << "-nostdlib"
-  args << "-Wl,-shared,-Bsymbolic"
+  if $ndkabi == "arm-eabi"
+    args << "-nostdlib"
+    args << "-Wl,-shared,-Bsymbolic"
+  else
+    args << "-shared"
+  end
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"
@@ -249,16 +277,15 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << outname
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
+  unless USE_OWN_STLPORT
+    stlportlib = File.join($androidndkpath, "sources/cxx-stl/stlport/libs/armeabi/libstlport_static.a")
+    args << stlportlib if File.exists? stlportlib
+  end
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   if $cxxlibs.nil?
     $cxxlibs = []
-    if USE_STLPORT
-      $cxxlibs << File.join($ndksysroot, "usr/lib/libstdc++.so")
-    else
-      $cxxlibs << `#{$gccbin} -mthumb-interwork -print-file-name=libstdc++.a`.gsub("\n", "")
-      $cxxlibs << `#{$gccbin} -mthumb-interwork -print-file-name=libsupc++.a`.gsub("\n", "")
-    end
+    $cxxlibs << File.join($ndksysroot, "usr/lib/libstdc++.so")
   end
   args += $cxxlibs
   $libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
