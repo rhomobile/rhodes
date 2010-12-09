@@ -130,7 +130,7 @@ public class EventStore {
 					
 					Date eventStartDate = new Date(eventCursor.getLong(2));
 					Date eventEndDate = new Date(eventCursor.getLong(3));
-					if (eventStartDate.before(eventEndDate)) {
+					if (eventStartDate.after(eventEndDate)) {
 						Date tmp = eventStartDate;
 						eventStartDate = eventEndDate;
 						eventEndDate = tmp;
