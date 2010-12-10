@@ -387,9 +387,15 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 			bCal = 1;
 		*resValue = rho_ruby_create_boolean(bCal);
 		return 1;
+	}else if (strcasecmp("device_id", szPropName) == 0) {
+		NSString* uuid = [[UIDevice currentDevice] uniqueIdentifier];
+        *resValue = rho_ruby_create_string([uuid UTF8String]);
+        return 1;
 	}
+
 	
     /*
+	 [[UIDevice currentDevice] uniqueIdentifier]
     // Removed because it's possibly dangerous: Apple could reject application
     // used such approach from its AppStore
     else if (strcasecmp("phone_number", szPropName) == 0) {
