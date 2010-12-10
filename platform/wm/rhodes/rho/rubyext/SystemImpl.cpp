@@ -535,6 +535,11 @@ int rho_sys_is_app_installed(const char *appname)
     return nRet;
 }
 
+void rho_sys_app_install(const char *url)
+{
+    // TODO: implement
+}
+
 void rho_sys_app_uninstall(const char *appname)
 {
     CFilePath oPath(appname);
