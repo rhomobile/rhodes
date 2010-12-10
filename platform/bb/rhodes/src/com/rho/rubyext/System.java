@@ -155,6 +155,14 @@ public class System {
 				}
 			}
 		});
+		
+		klass.getSingletonClass().defineMethod( "app_install", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg,
+					RubyBlock block) {
+				// TODO: implement
+				return RubyConstant.QNIL;
+			}
+		});
 
 		klass.getSingletonClass().defineMethod( "app_uninstall", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
