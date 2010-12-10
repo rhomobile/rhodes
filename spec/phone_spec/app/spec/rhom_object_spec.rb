@@ -217,6 +217,14 @@ describe "Rhom::RhomObject" do
     
   end
 
+  it "should save string with zero" do
+    val = "\1\2\3\0\5\8\6\7\34"
+    
+    item = getAccount.create(:industry => val)
+    item2 = getAccount.find(item.object)
+    item2.industry.should == val
+  end
+  
   it "should create multiple records offline" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     getAccount.changed?.should == false
