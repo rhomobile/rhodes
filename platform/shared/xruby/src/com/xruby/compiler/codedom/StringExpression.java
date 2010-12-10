@@ -89,11 +89,13 @@ public class StringExpression extends Expression {
                 break;
             }                
             default:
-                if (Character.isDigit(next_char)) {
+                //if (Character.isDigit(next_char)) {
+            	if (next_char>='0' && next_char < '8') {
                     //e,g. "\142", '\0', '\56'
                     int number_length = 1;
                     while ((i + 1 + number_length) < value.length() &&
-                            Character.isDigit(value.charAt(i + 1 + number_length)) &&
+                           // Character.isDigit(value.charAt(i + 1 + number_length)) &&
+                    		(value.charAt(i + 1 + number_length)>='0' && value.charAt(i + 1 + number_length) < '8')&&                    		
                             number_length <= 3) {
                         ++number_length;
                     }
