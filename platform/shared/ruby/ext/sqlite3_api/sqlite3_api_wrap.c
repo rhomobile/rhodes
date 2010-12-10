@@ -263,7 +263,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
                 switch( TYPE(arg) )
                 {
                 case T_STRING:
-                    sqlite3_bind_text(statement, i+1, RSTRING_PTR(arg), -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, i+1, RSTRING_PTR(arg), RSTRING_LEN(arg), SQLITE_TRANSIENT);
                     break;
                 case T_FIXNUM:
                 case T_FLOAT:
@@ -304,8 +304,11 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
                         break;
                     }
 				    default:{
-					    char *text = (char *)sqlite3_column_text(statement, nCol);
-					    colValue = rb_str_new2(text);
+                        sqlite3_value * sqlValue = sqlite3_column_value(statement, nCol);
+                        int nLen = sqlite3_value_bytes(sqlValue);
+                        const char*  szValue = (const char *)sqlite3_value_text(sqlValue);
+					    //char *text = (char *)sqlite3_column_text(statement, nCol);
+					    colValue = rb_str_new(szValue, nLen);
 					    break;
 				    }
 			    }
