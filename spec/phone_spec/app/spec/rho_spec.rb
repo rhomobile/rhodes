@@ -146,7 +146,25 @@ describe "RhoRuby" do
   it "should compute == on float to test flt_rounds" do
     1.0.should == 1
   end
-  
+
+  it "should create octet string" do
+    val = "\1\2\3\0\5\8\6\7\34\39" #octet numbers
+=begin    
+    val[3].should == "\x00"
+    val[8].should == "\x1C"
+    val[9].should == "\x03"
+    val[10].should == '9'
+=end          
+  end
+
+  it "should create hex string" do
+    val = "\x21\x43"
+=begin        
+    val[0].should == "\x21"
+    val[1].should == "\x43"
+=end              
+  end
+
   it "split should have nil" do
     line = "Account|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||\n"
     parts = line.chomp.split('|')
