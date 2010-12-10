@@ -45,6 +45,9 @@ extern void rho_sys_open_url(const char* url);
 #define app_installed rho_sys_is_app_installed
 extern int rho_sys_is_app_installed(const char *appname);
 
+#define app_install rho_sys_app_install
+extern void rho_sys_app_install(const char *url);
+
 #define app_uninstall rho_sys_app_uninstall
 extern void rho_sys_app_uninstall(const char *appname);
 
@@ -96,4 +99,5 @@ extern const char* get_start_params();
 extern void open_url(const char *url);
 %predicate app_installed(const char *appname);
 extern int app_installed(const char *appname);
+extern void app_install(const char *url);
 extern void app_uninstall(const char *appname);
