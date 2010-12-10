@@ -1,15 +1,17 @@
 package com.rhomobile.rhodes;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.alert.Alert;
@@ -44,6 +46,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
@@ -922,6 +925,81 @@ public class RhodesService {
 		}
 	}
 	
+	public static void installApplication(final String url) {
+		Thread bgThread = new Thread(new Runnable() {
+			public void run() {
+				RhodesService r = RhodesService.getInstance();
+				final Context ctx = r.getContext();
+				
+				File tmpFile = null;
+				InputStream is = null;
+				OutputStream os = null;
+				try {
+					URL u = new URL(url);
+					is = u.openStream();
+					
+					File tmpRootFolder = new File(Environment.getExternalStorageDirectory(), "rhodownload");
+					File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
+					if (tmpFolder.exists())
+						deleteFilesInFolder(tmpFolder.getAbsolutePath());
+					else
+						tmpFolder.mkdirs();
+					tmpFile = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
+					Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
+					os = new FileOutputStream(tmpFile);
+					
+					byte[] buf = new byte[65536];
+					for (;;) {
+						int n = is.read(buf);
+						if (n == -1)
+							break;
+						
+						Logger.D(TAG, "Downloading " + url + ": got " + n + " bytes...");
+						os.write(buf, 0, n);
+					}
+					
+					Logger.D(TAG, "File stored to " + tmpFile.getAbsolutePath());
+				}
+				catch (Exception e) {
+					if (tmpFile != null)
+						tmpFile.delete();
+					
+					Log.e(TAG, "Can't download file from url " + url, e);
+					Logger.E(TAG, "Can't download file from url " + url + ": " + e.getMessage());
+					return;
+				}
+				finally {
+					if (is != null)
+						try {
+							is.close();
+						} catch (IOException e) {}
+					if (os != null)
+						try {
+							os.close();
+						} catch (IOException e) {}
+				}
+				
+				final File pkgFile = tmpFile;
+				PerformOnUiThread.exec(new Runnable() {
+					public void run() {
+						try {
+							Logger.D(TAG, "Install package " + pkgFile.getAbsolutePath());
+							Uri uri = Uri.fromFile(pkgFile);
+							Intent intent = new Intent(Intent.ACTION_VIEW);
+							intent.setDataAndType(uri, "application/vnd.android.package-archive");
+							ctx.startActivity(intent);
+						}
+						catch (Exception e) {
+							Log.e(TAG, "Can't install file from " + pkgFile.getAbsolutePath(), e);
+							Logger.E(TAG, "Can't install file from " + pkgFile.getAbsolutePath() + ": " + e.getMessage());
+						}
+					}
+				}, false);
+			}
+		});
+		bgThread.start();
+	}
+	
 	public static void uninstallApplication(String appName) {
 		try {
 			Uri packageUri = Uri.parse("package:" + appName);
@@ -940,7 +1018,7 @@ public class RhodesService {
             
 		    Intent intent = new Intent(Intent.ACTION_VIEW);
 		    intent.setData(uri);
-    		
+		    
 		    ctx.startActivity(Intent.createChooser(intent, "Open in..."));
 		}
 		catch (Exception e) {
