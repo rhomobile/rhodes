@@ -4,6 +4,7 @@ unless File.exists? "build.yml"
   exit 1
 end
 
+require 'yaml'
 
 $app_config = YAML::load_file("build.yml")
 $app_path = File.expand_path(File.dirname(__FILE__))
