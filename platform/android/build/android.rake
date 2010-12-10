@@ -39,6 +39,7 @@ ANDROID_PERMISSIONS = {
   'vibrate' => 'VIBRATE',
   'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
   'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
+  'sdcard' => 'WRITE_EXTERNAL_STORAGE',
   'push' => proc do |manifest| add_push(manifest) end
 }
 

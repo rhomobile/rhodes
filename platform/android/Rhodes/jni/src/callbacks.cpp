@@ -218,6 +218,16 @@ RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
     return (int)env->CallStaticBooleanMethod(cls, mid, env->NewStringUTF(appname));
 }
 
+RHO_GLOBAL void rho_sys_app_install(const char *url)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "installApplication", "(Ljava/lang/String;)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
+}
+
 RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
 {
     JNIEnv *env = jnienv();
