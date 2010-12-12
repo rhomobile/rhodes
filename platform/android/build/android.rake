@@ -346,6 +346,8 @@ namespace "config" do
 
     if $androidplatform.nil?
       puts "+++ No required platform (API level >= #{ANDROID_API_LEVEL}) found, can't proceed"
+      puts "+++ Looks like you have no installed required Android platform package."
+      puts "+++ To solve that, please strictly follow instructions from http://wiki.rhomobile.com/index.php/BuildingRhodes#Prerequisites_5"
       exit 1
     else
       puts "+++ Platform found: #{$androidplatform}" if USE_TRACES
