@@ -159,8 +159,16 @@ public class System {
 		klass.getSingletonClass().defineMethod( "app_install", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg,
 					RubyBlock block) {
-				// TODO: implement
-				return RubyConstant.QNIL;
+				try 
+				{
+		    		RhoRubyHelper helper = new RhoRubyHelper();
+		    		helper.open_url(arg.toStr());
+					
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("app_install failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
 			}
 		});
 
@@ -188,7 +196,7 @@ public class System {
 					
 					return RubyConstant.QNIL;
 				} catch(Exception e) {
-					LOG.ERROR("run_app failed", e);
+					LOG.ERROR("app_uninstall failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
@@ -222,7 +230,7 @@ public class System {
 					
 					return RubyConstant.QNIL;
 				} catch(Exception e) {
-					LOG.ERROR("run_app failed", e);
+					LOG.ERROR("open_url failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
