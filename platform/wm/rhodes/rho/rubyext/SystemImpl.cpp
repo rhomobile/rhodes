@@ -537,7 +537,7 @@ int rho_sys_is_app_installed(const char *appname)
 
 void rho_sys_app_install(const char *url)
 {
-    // TODO: implement
+    rho_sys_open_url(url);
 }
 
 void rho_sys_app_uninstall(const char *appname)
