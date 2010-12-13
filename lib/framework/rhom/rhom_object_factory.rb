@@ -157,6 +157,40 @@ module Rhom
                   Rho::RhoConfig.sources[get_source_name]['source_id'].to_s
                 end
 
+                def convertOpToStr(val_op, value)
+                    res = ""
+                    if val_op == 'IN' or val_op == 'in'
+                    
+                        if value.is_a?(String)
+                            value = value.split(",")
+                            value.each do |item|
+                                item.strip!
+                                if (item.start_with?("\"") && item.end_with?("\"")) || 
+                                   (item.start_with?("\'") && item.end_with?("\'"))
+                                    item.slice!(0)
+                                    item.chop!
+                                end
+                            end
+                            
+                        end
+                    
+                        if value.is_a?(Array)
+                            svalue = ""
+                            value.each do |item| 
+                                svalue += ',' if svalue.length() > 0
+                                svalue += "\'#{item}\'"
+                            end
+                            res += val_op + ' ( ' + svalue + ' )'                                
+                        else
+                            raise ArgumentError, 'IN parameters should be String or Array'    
+                        end    
+                    else
+                        res += val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                    end
+                    
+                    res
+                end
+                
                 def convertConditionToStr(cond, op, condition_hash)
                   if cond.is_a?(String)
                     return cond
@@ -199,15 +233,8 @@ module Rhom
                         else
                             condition_str += "\"" + attrib_name + "\""
                         end
-                        condition_str += ' '
                         
-                        if val_op == 'IN' or val_op == 'in'
-                            svalue = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value)
-                            condition_str += val_op + ' ( ' + svalue[1,svalue.length()-2] + ' )'
-                        else
-                            condition_str += val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
-                        end
-                        
+                        condition_str += ' ' + convertOpToStr(val_op, value)
                     end
                     
                   end
@@ -237,12 +264,7 @@ module Rhom
                     sql << " AND source_id=" + srcid_value 
                     sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
                     
-                    if val_op == 'IN' or val_op == 'in'
-                        svalue = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value)
-                        sql << val_op + ' ( ' + svalue[1,svalue.length()-2] + ' )'
-                    else
-                        sql << val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
-                    end
+                    sql << convertOpToStr(val_op, value)
                     
                     sql
                 end
@@ -270,8 +292,25 @@ module Rhom
                     sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
                     
                     if val_op == 'IN' or val_op == 'in'
-                        sql << val_op + " ( ? )"
-						vals << value.to_s						
+
+                        if value.is_a?(String)
+                            value = value.split(",")
+                            value.each do |item|
+                                item.strip!
+                                if item.start_with?("\"") && item.end_with?("\"")
+                                    item.slice!(0)
+                                    item.chop!
+                                end
+                            end
+                            
+                        end
+                        
+                        if value.is_a?(Array)
+                            sql << val_op + " ( #{Array.new( value.length(), '?').join(',')} )"
+						    vals.concat( value )
+                        else
+                            raise ArgumentError, 'IN parameters should be String or Array'    
+                        end    
                     else
                         sql << val_op + " ?"
 						vals << value.to_s
