@@ -275,9 +275,23 @@ klass.defineMethod( "end_with?", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray arg, RubyBlock block ){
 		return ((RubyString)receiver).opEndWith(arg);}
 });
+klass.defineMethod( "start_with?", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).opStartWith(arg);}
+});
+klass.defineMethod( "start_with?", new RubyVarArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyArray arg, RubyBlock block ){
+		return ((RubyString)receiver).opStartWith(arg);}
+});
+
 klass.defineMethod( "ord", new RubyNoArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyString)receiver).ord();}
+});
+
+klass.defineMethod( "replace", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return ((RubyString)receiver).replace(arg);}
 });
 
 klass.defineAllocMethod(new RubyNoArgMethod(){

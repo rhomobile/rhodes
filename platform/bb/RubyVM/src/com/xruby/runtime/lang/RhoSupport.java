@@ -7,6 +7,8 @@ import com.rho.RhoLogger;
 import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyRegexp;
+
 import j2me.lang.StringMe;
 import com.rho.RhoConf;
 
@@ -63,7 +65,9 @@ public class RhoSupport {
 	    }
 		
 	    public static RhoLog alloc(RubyValue receiver) {
-	        return new RhoLog();
+	    	RhoLog res = new RhoLog();
+	    	res.setRubyClass((RubyClass) receiver);
+	        return res;
 	    }
 
 	    public RhoLog initialize() {

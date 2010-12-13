@@ -285,7 +285,7 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
 
         RubyClass theClass = this.getRubyClass();
         if (!this.respondTo(id)) {
-            throw new RubyException("can't convert " + this.getRubyClass().getName() + " into " + klass.getName());
+            throw new RubyException(RubyRuntime.TypeErrorClass, "can't convert " + this.getRubyClass().getName() + " into " + klass.getName());
         }
 
         RubyValue v = RubyAPI.callNoArgMethod(this, null, id);
