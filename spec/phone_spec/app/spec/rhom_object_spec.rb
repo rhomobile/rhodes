@@ -764,6 +764,40 @@ describe "Rhom::RhomObject" do
     nCount.should_not == 0
   end
 
+  it "should search with IN array" do
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'IN'} => ["Technology", "Technology2"] }
+    )
+  
+    items.length.should == 2
+    
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'IN'} => ["Technology2"] }
+    )
+  
+    items.length.should == 0
+    
+  end
+  
+  it "should search with IN string" do
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'IN'} => "\"Technology\", \"Technology2\"" }
+    )
+  
+    items.length.should == 2
+    
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'IN'} => "\"Technology2\"" }
+    )
+  
+    items.length.should == 0
+    
+  end
+  
   it "should find with group of advanced conditions" do
     query = '%IND%'    
     cond1 = {
