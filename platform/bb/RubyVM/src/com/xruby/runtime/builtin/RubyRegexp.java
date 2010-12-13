@@ -88,7 +88,9 @@ public class RubyRegexp extends RubyBasic {
 
     //@RubyAllocMethod
     public static RubyRegexp alloc(RubyValue receiver) {
-        return ObjectFactory.createRegexp();
+    	RubyRegexp res = new RubyRegexp();
+    	res.setRubyClass((RubyClass) receiver);
+        return res;
     }
 
     //@RubyLevelMethod(name="initialize")

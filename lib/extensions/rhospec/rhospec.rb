@@ -1,3 +1,5 @@
+require 'version'
+
 class MSpecScript
   # Returns the config object. Maintained at the class
   # level to easily enable simple config files. See the
@@ -316,6 +318,101 @@ class NegativeOperatorMatcher
   end
 end
 
+class BeTrueMatcher
+  def matches?(actual)
+    @actual = actual
+    @actual == true
+  end
+
+  def failure_message
+    ["Expected #{@actual.inspect}", "to be true"]
+  end
+  
+  def negative_failure_message
+    ["Expected #{@actual.inspect}", "not to be true"]
+  end
+end
+
+class BeFalseMatcher
+  def matches?(actual)
+    @actual = actual
+    @actual == false
+  end
+
+  def failure_message
+    ["Expected #{@actual.inspect}", "to be false"]
+  end
+  
+  def negative_failure_message
+    ["Expected #{@actual.inspect}", "not to be false"]
+  end
+end
+
+class RaiseErrorMatcher
+  def initialize(exception, message, &block)
+    @exception = exception
+    @message = message
+    @block = block
+  end
+
+  def matches?(proc)
+    proc.call
+    return false
+  rescue Exception => err
+    @actual = err
+    return false unless @exception === @actual
+    if @message then
+      case @message
+      when String then
+        return false if @message != @actual.message
+      when Regexp then
+        return false if @message !~ @actual.message
+      end
+    end
+
+    @block[@actual] if @block
+
+    return true
+  end
+
+  def failure_message
+    message = ["Expected #{@exception}#{%[ (#{@message})] if @message}"]
+
+    if @actual then
+      message << "but got #{@actual.class}#{%[ (#{@actual.message})] if @actual.message}"
+    else
+      message << "but no exception was raised"
+    end
+
+    message
+  end
+
+  def negative_failure_message
+    ["Expected to not get #{@exception}#{%[ (#{@message})] if @message}", ""]
+  end
+end
+
+class EqualMatcher
+  def initialize(expected)
+    @expected = expected
+  end
+
+  def matches?(actual)
+    @actual = actual
+    @actual.equal?(@expected)
+  end
+
+  def failure_message
+    ["Expected #{@actual.pretty_inspect}",
+     "to be identical to #{@expected.pretty_inspect}"]
+  end
+
+  def negative_failure_message
+    ["Expected #{@actual.pretty_inspect}",
+     "not to be identical to #{@expected.pretty_inspect}"]
+  end
+end
+
 class Object
   def should(matcher=nil)
 
@@ -345,4 +442,25 @@ class Object
     BeNilMatcher.new
   end
   
+  def be_true
+    BeTrueMatcher.new
+  end
+
+  def be_false
+    BeFalseMatcher.new
+  end
+
+  def equal(expected)
+    EqualMatcher.new(expected)
+  end
+
+  def raise_error(exception=Exception, message=nil, &block)
+    RaiseErrorMatcher.new(exception, message, &block)
+  end
+
+  def ruby_version_is(*args)
+    yield
+  end
+  
 end
+

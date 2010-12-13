@@ -2,7 +2,8 @@
 # Script encoding of this file should be neither ASCII-8BIT, US-ASCII nor UTF-8.
 # This makes it easier to verify that Strings are converted into correct encodings.
 
-require 'spec/fixtures/classes'
+#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
 
 def binary(str) str.force_encoding(Encoding::ASCII_8BIT) end
 def utf8(str) str.force_encoding(Encoding::UTF_8) end

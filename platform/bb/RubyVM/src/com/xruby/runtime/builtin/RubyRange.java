@@ -48,7 +48,9 @@ public class RubyRange extends RubyBasic {
     
     //@RubyAllocMethod
 	public static RubyRange alloc(RubyValue receiver) {
-		return ObjectFactory.createRange();
+		RubyRange range = new RubyRange();
+		range.setRubyClass((RubyClass) receiver);
+		return range;
 	}
     
     //@RubyLevelMethod(name="initialize")

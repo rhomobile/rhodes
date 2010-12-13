@@ -962,7 +962,7 @@ public class DBAdapter extends RubyBasic
     
     //@RubyAllocMethod
     private static RubyValue alloc(RubyValue receiver) {
-    	return new DBAdapter(RubyRuntime.DatabaseClass);
+    	return new DBAdapter((RubyClass) receiver);
     }
     
     public static void closeAll()
