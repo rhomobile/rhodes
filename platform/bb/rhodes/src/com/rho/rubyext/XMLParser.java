@@ -23,7 +23,7 @@ public class XMLParser extends RubyBasic {
 	
     //@RubyAllocMethod
     private static RubyValue alloc(RubyValue receiver) {
-    	return new XMLParser(RubyRuntime.XMLParserClass); 
+    	return new XMLParser((RubyClass) receiver); 
     }
     
     RubyValue createEndDocumentEvent()

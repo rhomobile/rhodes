@@ -17,7 +17,7 @@ public class RubyMutex extends RubyBasic {
 
     //@RubyAllocMethod
     public static RubyValue alloc(RubyValue receiver) {
-    	return new RubyMutex();
+    	return new RubyMutex((RubyClass) receiver);
     }
 	
     //@RubyLevelMethod(name="initialize")

@@ -26,7 +26,7 @@ public class RubyString extends RubyBasic {
     
     RubyString(RubyClass c, String s) {
         super(c);
-        sb_ = new StringBuffer(s);
+        sb_ = new StringBuffer(s != null ? s : "");
     }
 
     public RubyString(String s) {
@@ -53,8 +53,14 @@ public class RubyString extends RubyBasic {
         return sb_.toString();
     }
 
-    public int toInt() {
-        return Integer.parseInt(sb_.toString());
+    public int toInt() 
+    {
+    	try {
+    		return Integer.parseInt(sb_.toString());
+    	}catch(NumberFormatException exc)
+    	{
+    		throw new RubyException(RubyRuntime.TypeErrorClass, "can't convert " + this.getRubyClass().getName() + " into Integer");
+    	}
     }
     public long toLong() {
         return Long.parseLong(sb_.toString());
@@ -265,16 +271,19 @@ public class RubyString extends RubyBasic {
         if (end < 0) {
             end = string.length() + end;
         }
-
+        if (end < 0)
+        	return ObjectFactory.createString(getRubyClass(), "");
+        
         if (!isExcludeEnd) {
             ++end;
         }
 
         if (begin < 0 || end < 0 || begin > end || begin > string.length() || end > string.length()) {
             return RubyConstant.QNIL;
+        	//return ObjectFactory.createString(getRubyClass(), "");        	
         }
 
-        return ObjectFactory.createString(string.substring(begin, end));
+        return ObjectFactory.createString(getRubyClass(), string.substring(begin, end));
     }
 
     private RubyString gsub(RubyString g, RubyArray args) {
@@ -356,11 +365,11 @@ public class RubyString extends RubyBasic {
     }
 
     private Collection/*<String>*/ split(RubyString g, RubyRegexp r, RubyArray args) {
-        if (args.size() <= 1) {
+        if (args == null || args.size() <= 1) {
             return r.split(g.toString(), 0);
         } else {
-            RubyFixnum i = (RubyFixnum) args.get(1);
-            return r.split(g.toString(), i.toInt());
+            int i = args.get(1).toInt();
+            return r.split(g.toString(), i);
         }
     }
 
@@ -410,6 +419,8 @@ public class RubyString extends RubyBasic {
         if (this == v) {
             return RubyConstant.QTRUE;
         }
+    	if ( v == null || v == RubyConstant.QNIL )
+    		return RubyConstant.QFALSE;
 
         if (v instanceof RubyString) {
             RubyString str = ((RubyString)v);
@@ -424,6 +435,8 @@ public class RubyString extends RubyBasic {
     //@RubyLevelMethod(name="end_with?")
     public RubyValue opEndWith(RubyArray v) 
     {
+    	if ( v == null )
+    		return RubyConstant.QFALSE;
     	
     	for( int i = 0; i < v.size(); i++ )
     	{
@@ -434,6 +447,40 @@ public class RubyString extends RubyBasic {
         return RubyConstant.QFALSE;
     }
 
+    //@RubyLevelMethod(name="start_with?")
+    public RubyValue opStartWith(RubyValue v) {
+        if (this == v) {
+            return RubyConstant.QTRUE;
+        }
+
+    	if ( v == null || v == RubyConstant.QNIL )
+    		return RubyConstant.QFALSE;
+        
+        if (v instanceof RubyString) {
+            RubyString str = ((RubyString)v);
+            
+            return this.sb_.toString().startsWith(str.toStr()) ? RubyConstant.QTRUE :
+            	RubyConstant.QFALSE; 
+        }
+
+        return RubyConstant.QFALSE;
+    }
+
+    //@RubyLevelMethod(name="start_with?")
+    public RubyValue opStartWith(RubyArray v) 
+    {
+    	if ( v == null )
+    		return RubyConstant.QFALSE;
+    	
+    	for( int i = 0; i < v.size(); i++ )
+    	{
+    		RubyValue res = opStartWith(v.get(i));
+    		if ( res == RubyConstant.QTRUE )
+    			return RubyConstant.QTRUE;
+    	}
+        return RubyConstant.QFALSE;
+    }
+    
     //@RubyLevelMethod(name="ord")
     public RubyValue ord() 
     {
@@ -448,6 +495,22 @@ public class RubyString extends RubyBasic {
         return ObjectFactory.createString(sb_.toString().trim());
     }
 
+  //@RubyLevelMethod(name="replace")
+    public RubyValue replace(RubyValue arg) 
+    {
+    	if ( arg == null || arg == RubyConstant.QNIL )
+    		sb_ = new StringBuffer("");
+    	else
+    	{
+	        RubyString anotherString = arg.toRubyString();
+	        if(this == anotherString)
+	            return this;
+	
+	        sb_ = new StringBuffer(anotherString.toString());
+    	}
+        return this;
+    }
+    
     //@RubyLevelMethod(name="strip!")
     public RubyValue stripBang() {
         String str = this.sb_.toString();
@@ -1111,10 +1174,21 @@ public class RubyString extends RubyBasic {
 
     //@RubyLevelMethod(name="split")
     public RubyValue split(RubyArray args) {
-        RubyValue r = (null == args) ? GlobalVariables.get("$;") : args.get(0);
+        RubyValue r = null; 
+        	
+        if (null == args || args.size() == 0) 
+        	r = GlobalVariables.get("$;");
+        else if (args.size() > 0 && (args.get(0) == null || args.get(0) == RubyConstant.QNIL))
+        	r = GlobalVariables.get("$;");
+        else
+        	r = args.get(0);
+        
         int nLimit = 0;
         if ( args != null && args.size() > 1 )
         	nLimit = args.get(1).toInt();
+        
+//        if ( nLimit < 0 )
+//        	nLimit = 0;
         
         Collection/*<String>*/ splitResult;
         boolean bSkipFirstEmptyItem = false;
@@ -1144,9 +1218,29 @@ public class RubyString extends RubyBasic {
             	//if (str == null)
             	//	a.add(RubyConstant.QNIL);
             	//else
-            		a.add(ObjectFactory.createString(str));
+            		a.add(ObjectFactory.createString(getRubyClass(), str));
             }
             ++i;
+        }
+        
+        if (r instanceof RubyString )
+        {
+        	String str = ((RubyString) r).toString();
+        	if ( str != null && str.length() == 1 && CharacterMe.isWhitespace(str.charAt(0) ) )
+        	{
+        		boolean bDelete = false;
+    	        for( i = a.size()-1; i >=0 ;i--)
+    	        {
+    	        	if ( ((RubyString)a.get(i)).length()>0 )
+    	        	{
+    	        		bDelete = true;
+    	        		continue;
+    	        	}
+    	        	
+    	        	if (bDelete)
+    	        		a.delete_at(i);
+    	        }
+        	}
         }
         
         if ( nLimit == 0 )
@@ -1158,6 +1252,13 @@ public class RubyString extends RubyBasic {
 	        	
 	        	a.delete_at(i);
 	        }
+        }else if ( a.size() < nLimit )
+        {
+        	int nAdd = nLimit - a.size();  
+        	for( i = 0; i < nAdd ;i++)
+        	{
+        		a.add(ObjectFactory.createString(this.getRubyClass(), ""));
+        	}
         }
         
         return a;
@@ -1247,7 +1348,7 @@ public class RubyString extends RubyBasic {
             if (arg instanceof RubyString) {
                 String str = ((RubyString) arg).toString();
                 if (string.indexOf(str) >= 0) {
-                    return ObjectFactory.createString(str);
+                    return ObjectFactory.createString(arg.getRubyClass(), str);
                 } else {
                     return RubyConstant.QNIL;
                 }
@@ -1260,7 +1361,7 @@ public class RubyString extends RubyBasic {
                 RubyRegexp regexp = (RubyRegexp) arg;
                 RubyMatchData match = regexp.match(string);
                 if (match != null) {
-                    return ObjectFactory.createString(match.toString());
+                    return ObjectFactory.createString(getRubyClass(), match.toString());
                 } else {
                     return RubyConstant.QNIL;
                 }
@@ -1274,14 +1375,26 @@ public class RubyString extends RubyBasic {
                     return RubyConstant.QNIL;
                 } else 
                 {
-                	return ObjectFactory.createString(string.substring(index, index+1));
+                	return ObjectFactory.createString(getRubyClass(), string.substring(index, index+1));
                 }
             }
         } else {
             int start = args.get(0).toInt();
-            int length = args.get(1).toInt() - 1;
+            int length = args.get(1).toInt();
 
-            return substring(string, start, start + length, false);
+            if (start < 0) {
+            	start = string.length() + start;
+            }
+            if ( start + length > string.length() )
+            	length = string.length() - start;
+            
+            int end = start + length;
+            if (start < 0 || end < 0 || start > end || start > string.length() || end > string.length()) {
+                return RubyConstant.QNIL;
+            	//return ObjectFactory.createString(getRubyClass(), "");        	
+            }
+            
+            return substring(string, start, end, true);
         }
     }
 
@@ -1290,8 +1403,8 @@ public class RubyString extends RubyBasic {
         String string = toString();
         String replacement;
 
-        int start, end;
-
+        int start = 0, end = 0;
+        boolean isExcludeEnd = true;
         if (args.size() == 2) {
             RubyValue arg = args.get(0);
             replacement = ((RubyString) args.get(1)).toString();
@@ -1308,9 +1421,11 @@ public class RubyString extends RubyBasic {
                 RubyRange range = (RubyRange) arg;
                 start = range.getLeft().toInt();
                 end = range.getRight().toInt();
-                if (start >= string.length()) {
-                    throw new RubyException(RubyRuntime.RangeClass, range.toString() + " out of range");
-                }
+                
+                isExcludeEnd = range.isExcludeEnd(); 
+                //if (start >= string.length()) {
+                //    throw new RubyException(RubyRuntime.RangeClass, range.toString() + " out of range");
+                //}
             } else if (arg instanceof RubyRegexp) {
                 RubyRegexp regexp = (RubyRegexp) arg;
                 RubyMatchData match = regexp.match(string);
@@ -1329,12 +1444,37 @@ public class RubyString extends RubyBasic {
             replacement = ((RubyString) args.get(2)).toString();
 
             start = args.get(0).toInt();
-            end = args.get(1).toInt() + start;
-            if (start >/*=*/ string.length()) {
-                throw new RubyException(RubyRuntime.RangeClass, 
-                		"Index '" + start + "' out of string:" + string +";end: '" + end + "';replacement:"+replacement+"" );
-            }
+            if (start < 0) {
+            	start = string.length() + start;
+            	
+                end = args.get(1).toInt() + start;
+                
+                if ( end >= string.length() )
+                	end = string.length();
+            }else
+            	end = args.get(1).toInt() + start;
+            
         }
+        
+        if (start < 0) {
+        	start = string.length() + start;
+        }
+
+        if (end < 0) {
+            end = string.length() + end;
+        }
+        
+        end += isExcludeEnd ? 0 : 1;
+        if (start < 0) {
+            return RubyConstant.QNIL;
+        	//return ObjectFactory.createString(getRubyClass(), "");        	
+        }
+        
+        if (start >/*=*/ string.length()) {
+            throw new RubyException(RubyRuntime.RangeClass, 
+            		"Index '" + start + "' out of string:" + string +";end: '" + end + "';replacement:"+replacement+"" );
+        }
+        
         setString(replace(string, start, end, replacement));
         return ObjectFactory.createString(replacement);
     }

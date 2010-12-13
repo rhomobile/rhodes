@@ -44,7 +44,9 @@ public class RubyTime extends RubyBasic {
     }
     //@RubyAllocMethod
     public static RubyTime alloc(RubyValue receiver) {
-        return ObjectFactory.createTime();
+    	RubyTime res = new RubyTime();
+    	res.setRubyClass((RubyClass) receiver);
+        return res;
     }
 
     //RHO_COMMENT : initialize
