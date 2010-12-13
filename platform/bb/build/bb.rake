@@ -404,65 +404,68 @@ namespace "build" do
       $service_enabled = has_push
       create_jarmanifest()
         
-      puts "Modify Capabilities.java"
       $stdout.flush
       capabilities = File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java")
-      File.open(capabilities, 'w') do |f|
-        f.puts "package com.rho;"
-        f.puts ""
-        f.puts "public class Capabilities {"
-        f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
-        f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
-        f.puts "}"
-      end
-
-
-      extentries = []
-
-      if $app_config["extensions"]
-          $app_config["extensions"].each do |ext|
-            $app_config["extpaths"].each do |p|
-              extpath = File.join(p, ext, 'ext')
-              if RUBY_PLATFORM =~ /(win|w)32$/
-                next unless File.exists? File.join(extpath, 'build.bat')
-              else
-                next unless File.executable? File.join(extpath, 'build')
-              end
-              
-              extroot = File.join(p,ext)
-
-              extyml = File.join(extroot, "ext.yml")
-              if File.file? extyml
-                extconf = Jake.config(File.open(extyml))
-                javaentry = extconf["javaentry"]
-                extentries << javaentry unless javaentry.nil?
-              end
-
-            end
+      
+      if !FileUtils.uptodate?(capabilities,[File.join($app_path, "build.yml")])
+          puts "Modify Capabilities.java"
+          
+          File.open(capabilities, 'w') do |f|
+            f.puts "package com.rho;"
+            f.puts ""
+            f.puts "public class Capabilities {"
+            f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
+            f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
+            f.puts "}"
           end
-      end
-        
-      exts = $startdir + "/platform/bb/RubyVM/src/com/rho/Extensions.java"
 
-      File.open(exts, "w") do |f|
-        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-        f.puts "// Generated #{Time.now.to_s}"
-        f.puts "package com.rho; "
-        f.puts " "
-        f.puts "public class Extensions {"
-        f.puts " "
-        f.puts "public static String[] extensions = {"
 
-        extentries.each do |entry|
-          f.puts '          "' + entry + '",'
-        end
+          extentries = []
 
-        f.puts '""'
-        f.puts "};"
-        f.puts " "
-        f.puts "}"
-      end
+          if $app_config["extensions"]
+              $app_config["extensions"].each do |ext|
+                $app_config["extpaths"].each do |p|
+                  extpath = File.join(p, ext, 'ext')
+                  if RUBY_PLATFORM =~ /(win|w)32$/
+                    next unless File.exists? File.join(extpath, 'build.bat')
+                  else
+                    next unless File.executable? File.join(extpath, 'build')
+                  end
+                  
+                  extroot = File.join(p,ext)
 
+                  extyml = File.join(extroot, "ext.yml")
+                  if File.file? extyml
+                    extconf = Jake.config(File.open(extyml))
+                    javaentry = extconf["javaentry"]
+                    extentries << javaentry unless javaentry.nil?
+                  end
+
+                end
+              end
+          end
+            
+          exts = $startdir + "/platform/bb/RubyVM/src/com/rho/Extensions.java"
+
+          File.open(exts, "w") do |f|
+            f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+            f.puts "// Generated #{Time.now.to_s}"
+            f.puts "package com.rho; "
+            f.puts " "
+            f.puts "public class Extensions {"
+            f.puts " "
+            f.puts "public static String[] extensions = {"
+
+            extentries.each do |entry|
+              f.puts '          "' + entry + '",'
+            end
+
+            f.puts '""'
+            f.puts "};"
+            f.puts " "
+            f.puts "}"
+          end
+      end  
 
     end
     
@@ -480,7 +483,7 @@ namespace "build" do
 
 	  
       if not uptodate?($preverified + '/RubyVM.jar',rubyvmfiles)
-
+        puts "**********************Ruby VM is NOT Up to date!"
         mkdir_p $tmpdir + "/RubyVM" if not FileTest.exists? $tmpdir + "/RubyVM"
         mkdir_p  $targetdir if not FileTest.exists?  $targetdir
         mkdir_p  $preverified if not FileTest.exists?  $preverified
