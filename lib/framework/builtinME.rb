@@ -778,15 +778,18 @@ class String
     alias to_str to_s	
     alias size length
 
-    def slice!(arg1)
-        res = slice(arg1)
-        self[arg1]= "" if res
-        res
-    end
-    
-    def slice!(arg1,arg2)
-        res = slice(arg1,arg2)
-        self[arg1,arg2]= "" if res
+    def slice!(*args)
+        res = ""
+        if args.size() == 1
+            res = slice(args[0])
+            self[args[0]]= "" if res
+        elsif  args.size() == 2
+            res = slice(args[0], args[1])
+            self[args[0], args[1]]= "" if res
+        else
+            raise ArgumentError, 'String.slice! - wrong number of arguments 3 for (1 or 2)'        
+        end
+        
         res
     end
     	

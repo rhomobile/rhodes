@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyRegexp;
 import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.*;
 
@@ -28,7 +29,9 @@ public class RubyStringIO extends RubyBasic {
     
     //@RubyAllocMethod
     public static RubyStringIO alloc(RubyValue receiver) {
-        return new RubyStringIO();
+    	RubyStringIO res = new RubyStringIO();
+    	res.setRubyClass((RubyClass) receiver);
+        return res;
     }
 
     //@RubyLevelMethod(name="initialize")
