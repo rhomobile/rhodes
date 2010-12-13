@@ -109,8 +109,8 @@ public class RhodesService {
 	
 	private int activitiesActive = 0;
 	
-	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
@@ -555,9 +555,9 @@ public class RhodesService {
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))
 			fullScreen = RhoConf.getBool("full_screen");
-		if (!fullScreen) {
-			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
-			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+		if (fullScreen) {
+			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		}
 		
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
