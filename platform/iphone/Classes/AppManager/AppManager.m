@@ -285,7 +285,7 @@ void rho_sys_app_uninstall(const char *appname) {
 }
 
 void rho_sys_app_install(const char *url) {
-    NSLog(@"WARNING: System.app_install is unsupported on iOS platform !!!");
+  rho_sys_open_url(url);
 }
 
 void rho_sys_open_url(const char* url) 
