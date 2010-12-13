@@ -55,6 +55,9 @@ $application_build_configs_keys = ['security_token']
 
 def make_application_build_config_header_file
   inc_file = File.join($startdir, "platform", "shared", "common", "app_build_configs.c")
+  
+  return if FileUtils.uptodate?(inc_file,[File.join($app_path, "build.yml")])
+  
   File.open(inc_file, "w") do |f|
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     f.puts "// Generated #{Time.now.to_s}"
@@ -99,6 +102,7 @@ end
 
 def make_application_build_config_java_file
       file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/AppBuildConfig.java"
+      return if FileUtils.uptodate?(file_name,[File.join($app_path, "build.yml")])
 
       File.open(file_name, "w") do |f|
         f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -305,7 +309,7 @@ def init_extensions(startdir, dest)
   extentries = []
   extlibs = [] 
   extpaths = $app_config["extpaths"]
-  
+
   $app_config["extensions"].each do |extname|
     extpath = nil
     extpaths.each do |p|
@@ -350,8 +354,9 @@ def init_extensions(startdir, dest)
 
   end
 
-  if $config["platform"] != "bb"
-      exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+  exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+
+  if $config["platform"] != "bb" && !FileUtils.uptodate?(exts,[File.join($app_path, "build.yml")])
       exists = []
       File.new(exts, "r").read.split("\n").each do |line|
         next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
