@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -33,8 +35,15 @@ import com.rhomobile.rhodes.webview.ChromeClientOld;
 import com.rhomobile.rhodes.webview.RhoWebSettings;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -62,12 +71,18 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.RemoteViews;
 
 public class RhodesService {
 	
 	private final static String TAG = "RhodesService";
 
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
+	
+	private static final int DOWNLOAD_PACKAGE_ID = 1;
+	
+	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
+	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
 	
 	public static final int RHO_SPLASH_VIEW = 1;
 	public static final int RHO_MAIN_VIEW = 2;
@@ -138,6 +153,8 @@ public class RhodesService {
 	public void post(Runnable r, int delay) {
 		uiHandler.postDelayed(r, delay);
 	}
+	
+	private NotificationManager mNM;
 	
 	private static int screenWidth;
 	private static int screenHeight;
@@ -504,7 +521,7 @@ public class RhodesService {
 		}
 		
 		createRhodesApp();
-		
+
 		/*
 		boolean rhoGalleryApp = false;
 		if (params != null && params instanceof Bundle) {
@@ -600,6 +617,8 @@ public class RhodesService {
 		uriHandlers.addElement(new TelUriHandler(ctx));
 		uriHandlers.addElement(new SmsUriHandler(ctx));
 		uriHandlers.addElement(new VideoUriHandler(ctx));
+		
+		mNM = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		
 		try {
 			if (Capabilities.PUSH_ENABLED)
@@ -925,78 +944,194 @@ public class RhodesService {
 		}
 	}
 	
+	private void updateDownloadNotification(String url, int totalBytes, int currentBytes) {
+		Notification n = new Notification();
+		n.icon = android.R.drawable.stat_sys_download;
+		n.flags |= Notification.FLAG_ONGOING_EVENT;
+		
+		RemoteViews expandedView = new RemoteViews(ctx.getPackageName(),
+				AndroidR.layout.status_bar_ongoing_event_progress_bar);
+		
+		StringBuilder newUrl = new StringBuilder();
+		if (url.length() < 17)
+			newUrl.append(url);
+		else {
+			newUrl.append(url.substring(0, 7));
+			newUrl.append("...");
+			newUrl.append(url.substring(url.length() - 7, url.length()));
+		}
+		expandedView.setTextViewText(AndroidR.id.title, newUrl.toString());
+		
+		StringBuffer downloadingText = new StringBuffer();
+		if (totalBytes > 0) {
+			long progress = currentBytes*100/totalBytes;
+			downloadingText.append(progress);
+			downloadingText.append('%');
+		}
+		expandedView.setTextViewText(AndroidR.id.progress_text, downloadingText.toString());
+		expandedView.setProgressBar(AndroidR.id.progress_bar,
+				totalBytes < 0 ? 100 : totalBytes,
+				currentBytes,
+				totalBytes < 0);
+		n.contentView = expandedView;
+		
+		Context context = getContext();
+		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
+		n.contentIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+		intent = new Intent(ACTION_CANCEL_DOWNLOAD);
+		n.deleteIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+		mNM.notify(DOWNLOAD_PACKAGE_ID, n);
+	}
+	
+	private File downloadPackage(String url) throws IOException {
+		final Context ctx = getContext();
+		
+		final Thread thisThread = Thread.currentThread();
+		
+		final Runnable cancelAction = new Runnable() {
+			public void run() {
+				thisThread.interrupt();
+			}
+		};
+		
+		BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+				if (action.equals(ACTION_ASK_CANCEL_DOWNLOAD)) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+					builder.setMessage("Cancel download?");
+					AlertDialog dialog = builder.create();
+					dialog.setButton(AlertDialog.BUTTON_POSITIVE, ctx.getText(android.R.string.yes),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									cancelAction.run();
+								}
+					});
+					dialog.setButton(AlertDialog.BUTTON_NEGATIVE, ctx.getText(android.R.string.no),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									// Nothing
+								}
+							});
+					dialog.show();
+				}
+				else if (action.equals(ACTION_CANCEL_DOWNLOAD)) {
+					cancelAction.run();
+				}
+			}
+		};
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(ACTION_ASK_CANCEL_DOWNLOAD);
+		filter.addAction(ACTION_CANCEL_DOWNLOAD);
+		ctx.registerReceiver(downloadReceiver, filter);
+		
+		File tmpFile = null;
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+			updateDownloadNotification(url, -1, 0);
+			
+			File tmpRootFolder = new File(Environment.getExternalStorageDirectory(), "rhodownload");
+			File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
+			if (tmpFolder.exists())
+				deleteFilesInFolder(tmpFolder.getAbsolutePath());
+			else
+				tmpFolder.mkdirs();
+			tmpFile = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
+			
+			Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
+			
+			URL u = new URL(url);
+			URLConnection conn = u.openConnection();
+			int totalBytes = -1;
+			if (conn instanceof HttpURLConnection) {
+				HttpURLConnection httpConn = (HttpURLConnection)conn;
+				totalBytes = httpConn.getContentLength();
+			}
+			is = conn.getInputStream();
+			os = new FileOutputStream(tmpFile);
+			
+			int downloaded = 0;
+			updateDownloadNotification(url, totalBytes, downloaded);
+			
+			long prevProgress = 0;
+			byte[] buf = new byte[65536];
+			for (;;) {
+				int nread = is.read(buf);
+				if (nread == -1)
+					break;
+				
+				//Logger.D(TAG, "Downloading " + url + ": got " + nread + " bytes...");
+				os.write(buf, 0, nread);
+				
+				downloaded += nread;
+				if (totalBytes > 0) {
+					// Update progress view only if current progress is greater than
+					// previous by more than 10%. Otherwise, if update it very frequently,
+					// user will no have chance to click on notification view and cancel if need
+					long progress = downloaded*10/totalBytes;
+					if (progress > prevProgress) {
+						updateDownloadNotification(url, totalBytes, downloaded);
+						prevProgress = progress;
+					}
+				}
+			}
+			
+			Logger.D(TAG, "File stored to " + tmpFile.getAbsolutePath());
+			
+			return tmpFile;
+		}
+		catch (IOException e) {
+			if (tmpFile != null)
+				tmpFile.delete();
+			throw e;
+		}
+		finally {
+			try {
+				if (is != null)
+					is.close();
+			} catch (IOException e) {}
+			try {
+				if (os != null)
+					os.close();
+			} catch (IOException e) {}
+			
+			mNM.cancel(DOWNLOAD_PACKAGE_ID);
+			ctx.unregisterReceiver(downloadReceiver);
+		}
+	}
+	
 	public static void installApplication(final String url) {
 		Thread bgThread = new Thread(new Runnable() {
 			public void run() {
-				RhodesService r = RhodesService.getInstance();
-				final Context ctx = r.getContext();
-				
-				File tmpFile = null;
-				InputStream is = null;
-				OutputStream os = null;
 				try {
-					URL u = new URL(url);
-					is = u.openStream();
-					
-					File tmpRootFolder = new File(Environment.getExternalStorageDirectory(), "rhodownload");
-					File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
-					if (tmpFolder.exists())
-						deleteFilesInFolder(tmpFolder.getAbsolutePath());
-					else
-						tmpFolder.mkdirs();
-					tmpFile = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
-					Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
-					os = new FileOutputStream(tmpFile);
-					
-					byte[] buf = new byte[65536];
-					for (;;) {
-						int n = is.read(buf);
-						if (n == -1)
-							break;
-						
-						Logger.D(TAG, "Downloading " + url + ": got " + n + " bytes...");
-						os.write(buf, 0, n);
-					}
-					
-					Logger.D(TAG, "File stored to " + tmpFile.getAbsolutePath());
-				}
-				catch (Exception e) {
-					if (tmpFile != null)
-						tmpFile.delete();
-					
-					Log.e(TAG, "Can't download file from url " + url, e);
-					Logger.E(TAG, "Can't download file from url " + url + ": " + e.getMessage());
-					return;
-				}
-				finally {
-					if (is != null)
-						try {
-							is.close();
-						} catch (IOException e) {}
-					if (os != null)
-						try {
-							os.close();
-						} catch (IOException e) {}
-				}
-				
-				final File pkgFile = tmpFile;
-				PerformOnUiThread.exec(new Runnable() {
-					public void run() {
-						try {
-							Logger.D(TAG, "Install package " + pkgFile.getAbsolutePath());
-							Uri uri = Uri.fromFile(pkgFile);
-							Intent intent = new Intent(Intent.ACTION_VIEW);
-							intent.setDataAndType(uri, "application/vnd.android.package-archive");
-							ctx.startActivity(intent);
+					final RhodesService r = RhodesService.getInstance();
+					final File pkgFile = r.downloadPackage(url);
+					PerformOnUiThread.exec(new Runnable() {
+						public void run() {
+							try {
+								Logger.D(TAG, "Install package " + pkgFile.getAbsolutePath());
+								Uri uri = Uri.fromFile(pkgFile);
+								Intent intent = new Intent(Intent.ACTION_VIEW);
+								intent.setDataAndType(uri, "application/vnd.android.package-archive");
+								r.getContext().startActivity(intent);
+							}
+							catch (Exception e) {
+								Log.e(TAG, "Can't install file from " + pkgFile.getAbsolutePath(), e);
+								Logger.E(TAG, "Can't install file from " + pkgFile.getAbsolutePath() + ": " + e.getMessage());
+							}
 						}
-						catch (Exception e) {
-							Log.e(TAG, "Can't install file from " + pkgFile.getAbsolutePath(), e);
-							Logger.E(TAG, "Can't install file from " + pkgFile.getAbsolutePath() + ": " + e.getMessage());
-						}
-					}
-				}, false);
+					}, false);
+				}
+				catch (IOException e) {
+					Log.e(TAG, "Can't download package from " + url, e);
+					Logger.E(TAG, "Can't download package from " + url + ": " + e.getMessage());
+				}
 			}
 		});
+		bgThread.setPriority(Thread.MIN_PRIORITY);
 		bgThread.start();
 	}
 	
