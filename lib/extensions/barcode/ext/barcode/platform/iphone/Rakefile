@@ -56,7 +56,8 @@ namespace "build" do
     # copy result to $targetdir
     result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libBarcode.a'
     target_lib = $targetdir + '/libBarcode.a'
-    
+
+    mkdir_p $targetdir    
     cp result_lib,target_lib
 
   end
