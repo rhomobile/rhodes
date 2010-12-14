@@ -78,6 +78,9 @@ public final class AndroidR {
         public static final int title_new_devices=R.id.title_new_devices;
         public static final int new_devices=R.id.new_devices;
         public static final int button_scan=R.id.button_scan;
+        public static final int progress_bar=R.id.progress_bar;
+        public static final int progress_text=R.id.progress_text;
+        public static final int title=R.id.title;
     }
     public static final class layout {
         public static final int camera=R.layout.camera;
@@ -90,6 +93,7 @@ public final class AndroidR {
         public static final int datetime=R.layout.datetime;
         public static final int bt_device_list=R.layout.bt_device_list;
         public static final int bt_device_name=R.layout.bt_device_name;
+        public static final int status_bar_ongoing_event_progress_bar=R.layout.status_bar_ongoing_event_progress_bar;
     }
     public static final class menu {
         public static final int options=R.menu.options;
