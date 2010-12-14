@@ -389,11 +389,15 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 			bCal = 1;
 		*resValue = rho_ruby_create_boolean(bCal);
 		return 1;
-	}else if (strcasecmp("device_id", szPropName) == 0) {
+	} 
+	
+	/* "device_id" property used only for PUSH technology !
+	 else if (strcasecmp("device_id", szPropName) == 0) {
 		NSString* uuid = [[UIDevice currentDevice] uniqueIdentifier];
         *resValue = rho_ruby_create_string([uuid UTF8String]);
         return 1;
 	}
+	*/
 
 	
     /*
