@@ -293,7 +293,6 @@ namespace "config" do
     end
 
     puts $sdk
-    exit 0
     
     if $sdk =~ /iphonesimulator/
       $sdkver = $sdk.gsub(/iphonesimulator/,"")
