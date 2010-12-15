@@ -409,17 +409,22 @@ char* rho_sync_create_string(const char* szStr)
 
 void rho_sync_free_string(char* szStr)
 {
-    return free(szStr);
+    free(szStr);
 }
 
 void rho_sync_enable_status_popup(int b)
 {
-    return CSyncThread::getSyncEngine().getNotify().enableStatusPopup(b == 0 ? false : true);
+    CSyncThread::getSyncEngine().getNotify().enableStatusPopup(b == 0 ? false : true);
 }
 
 void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue)
 {
     CSyncEngine::getSourceOptions().setProperty(nSrcID, szPropName, szPropValue);
+}
+
+void rho_sync_set_ssl_verify_peer(int b)
+{
+    CSyncThread::getSyncEngine().getNet().sslVerifyPeer(b == 0 ? false : true);
 }
 
 }
