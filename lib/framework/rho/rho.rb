@@ -76,6 +76,15 @@ module Rho
       end    
     end
 
+    def init_nativebar
+      begin
+        get_app(APPNAME).init_nativebar
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n");
+        puts "Application's native bar initialization failed: #{e.inspect}; Trace: #{trace_msg}"
+      end
+    end
+
     def activate_app
       begin
           get_app(APPNAME).on_activate_app
@@ -90,7 +99,7 @@ module Rho
           get_app(APPNAME).on_deactivate_app
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
-        puts 'Application activate failed: ' + e.inspect + ";Trace: #{trace_msg}"
+        puts 'Application deactivate failed: ' + e.inspect + ";Trace: #{trace_msg}"
       end    
     end
 
