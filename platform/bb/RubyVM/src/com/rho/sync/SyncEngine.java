@@ -879,7 +879,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 	}
 	
-	void login(String name, String password, String callback)
+	void login(String name, String password, SyncNotify.SyncNotification oNotify)
 	{
 		try {
 /*			
@@ -900,13 +900,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    int nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 			    if ( nErrCode != RhoAppAdapter.ERR_NONE )
 			    {
-			        getNotify().callLoginCallback(callback, nErrCode, resp.getCharData());
+			        getNotify().callLoginCallback(oNotify, nErrCode, resp.getCharData());
 			        return;
 			    }
 		    }catch(IOException exc)
 		    {
 				LOG.ERROR("Login failed.", exc);
-		    	getNotify().callLoginCallback(callback, RhoAppAdapter.getNetErrorCode(exc), "" );
+		    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.getNetErrorCode(exc), "" );
 		    	return;
 		    }
 		    
@@ -914,7 +914,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    if ( strSession == null || strSession.length() == 0 )
 		    {
 		    	LOG.ERROR("Return empty session.");
-		    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
+		    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
 		        return;
 		    }
 		    
@@ -927,7 +927,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    else
 		    	getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 		
-	    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_NONE, "" );
+	    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 		    
 	    	if ( ClientRegister.getInstance() != null )
 	    		ClientRegister.getInstance().startUp();	    	
@@ -935,7 +935,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		}catch(Exception exc)
 		{
 			LOG.ERROR("Login failed.", exc);
-	    	getNotify().callLoginCallback(callback, RhoAppAdapter.ERR_RUNTIME, "" );
+	    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_RUNTIME, "" );
 		}
 	}
 

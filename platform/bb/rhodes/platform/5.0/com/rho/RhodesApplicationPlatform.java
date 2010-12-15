@@ -129,6 +129,11 @@ public class RhodesApplicationPlatform extends UiApplication implements PushAppl
 	        
 	        start(epLow);
 		}
+		
+		public void processCommand(IQueueCommand pCmd)
+		{
+			((PushMessageCommand)pCmd).execute();
+		}
 	}
 	
 	public void onMessage(PushInputStream inputStream, StreamConnection conn) 
