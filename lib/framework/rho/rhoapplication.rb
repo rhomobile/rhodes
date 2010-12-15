@@ -25,21 +25,34 @@ module Rho
       	@default_menu = { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
       		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
   	  end
-  	  if @tabs
-  	    # normalize the list
-  	    @tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
-  	    puts "Initializing application with tabs: #{@tabs.inspect}" 
-  	    NativeBar.create(TABBAR_TYPE, @tabs)
-        NativeBar.switch_tab(0)
-	    elsif @@toolbar
-	      NativeBar.create(TOOLBAR_TYPE, @@toolbar)
+
+      if @tabs
+        @@native_bar_data = {:type => :tabbar, :data => @tabs}
+      elsif @@toolbar
+        @@native_bar_data = {:type => :toolbar, :data => @@toolbar}
       else
-        NativeBar.create(NOBAR_TYPE, [])
+        @@native_bar_data = {:type => :nobar}
       end
+      NativeBar.create(NOBAR_TYPE, [])
 	  
       ::Rho::RHO.get_instance().check_source_migration(self)
 
       @initialized = true
+    end
+
+    def init_nativebar
+      if @@native_bar_data[:type] == :tabbar
+        tabs = @@native_bar_data[:data]
+        # normalize the list
+        tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+        puts "Initializing application with tabs: #{tabs.inspect}"
+        NativeBar.create(TABBAR_TYPE, tabs)
+        NativeBar.switch_tab(0)
+      elsif @@native_bar_data[:type] == :toolbar
+        NativeBar.create(TOOLBAR_TYPE, @@native_bar_data[:data])
+      else
+        NativeBar.create(NOBAR_TYPE, [])
+      end
     end
 
     def initialized?
