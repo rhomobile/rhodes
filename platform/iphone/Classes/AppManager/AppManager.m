@@ -284,10 +284,6 @@ void rho_sys_app_uninstall(const char *appname) {
 	NSLog(@"ALERT: Uninstall of applications is unsupported on iOS platfrom !!!");	
 }
 
-void rho_sys_app_install(const char *url) {
-  rho_sys_open_url(url);
-}
-
 void rho_sys_open_url(const char* url) 
 {
 	NSString* strUrl = [NSString stringWithUTF8String:url];
@@ -299,6 +295,10 @@ void rho_sys_open_url(const char* url)
 		RAWLOG_INFO("rho_sys_open_url suceeded.");	
 	else
 		RAWLOG_INFO("rho_sys_open_url faled.");	
+}
+
+void rho_sys_app_install(const char *url) {
+    rho_sys_open_url(url);
 }
 
 void rho_sys_run_app(const char* appname, VALUE params) 
