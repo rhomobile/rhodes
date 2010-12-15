@@ -132,7 +132,12 @@ public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback,
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		Logger.D(TAG, "surfaceCreated");
-		camera = Camera.open();
+		try {
+			camera = Camera.open();
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e.getMessage());
+		}
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
