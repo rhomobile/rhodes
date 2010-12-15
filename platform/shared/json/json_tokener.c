@@ -346,6 +346,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       break;
 
     case json_tokener_state_escape_unicode:
+      c = tolower(c);
       if(strchr(json_hex_chars, c)) {
 	tok->ucs_char += ((unsigned int)hexdigit(c) << ((3-tok->st_pos++)*4));
 	if(tok->st_pos == 4) {
