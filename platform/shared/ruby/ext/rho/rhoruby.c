@@ -58,7 +58,6 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 static ID initApp_mid;
-static ID initNativeBar_mid;
 static ID activateApp_mid;
 static ID deactivateApp_mid;
 static ID loadServerSources_mid;
@@ -204,7 +203,6 @@ void RhoRubyStart()
     CONST_ID(framework_mid, "serve");
     CONST_ID(framework_mid2, "serve_index");
     CONST_ID(initApp_mid, "init_app");
-    CONST_ID(initNativeBar_mid, "init_nativebar");
     CONST_ID(activateApp_mid, "activate_app");
     CONST_ID(deactivateApp_mid, "deactivate_app");
     CONST_ID(loadServerSources_mid,"load_server_sources");
@@ -220,11 +218,6 @@ void RhoRubyStart()
 void RhoRubyInitApp()
 {
     rb_funcall(framework, initApp_mid, 0);
-}
-
-void rho_ruby_init_nativebar()
-{
-    rb_funcall(framework, initNativeBar_mid, 0);
 }
 
 void rho_ruby_activateApp()

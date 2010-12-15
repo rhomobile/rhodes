@@ -98,8 +98,6 @@ void CRhodesApp::run()
 #if defined( OS_WINCE ) || defined( OS_WINDOWS )
     LOG(INFO) + "navigate to first start url";
     RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
-
-    rho_ruby_init_nativebar();
 #endif
 
     while (!m_bExit) {
@@ -223,7 +221,6 @@ public:
         {
             LOG(INFO) + "navigate to first start url";
             RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
-            rho_ruby_init_nativebar();
             navigatedToStartUrl = true;
         }
 	  //  RHODESAPP().getSplashScreen().hide();

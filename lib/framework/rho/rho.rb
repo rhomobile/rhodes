@@ -22,6 +22,7 @@ module Rho
     APPNAME = 'app'
     
     @@rho_framework = nil
+    @@native_bar_initialized = nil
     
     def self.get_instance
         @@rho_framework
@@ -77,12 +78,15 @@ module Rho
     end
 
     def init_nativebar
+      return if @@native_bar_initialized
+
       begin
         get_app(APPNAME).init_nativebar
       rescue Exception => e
         trace_msg = e.backtrace.join("\n");
         puts "Application's native bar initialization failed: #{e.inspect}; Trace: #{trace_msg}"
       end
+      @@native_bar_initialized = true
     end
 
     def activate_app
@@ -547,6 +551,7 @@ module Rho
         res = init_response
         get_app(req['application']).send :serve, req, res
         
+        init_nativebar
         Rho::RhoController.clean_cached_metadata()
         return send_response(res)
       rescue Exception => e
@@ -559,6 +564,8 @@ module Rho
         puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
+
+        init_nativebar
         Rho::RhoController.clean_cached_metadata()
         return send_response_hash(res)
       rescue Exception => e
@@ -573,6 +580,8 @@ module Rho
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
+
+        init_nativebar
         Rho::RhoController.clean_cached_metadata()
         return send_response(res)
       rescue Exception => e
@@ -587,6 +596,8 @@ module Rho
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
+
+        init_nativebar
         Rho::RhoController.clean_cached_metadata()
         return send_response_hash(res)
       rescue Exception => e
