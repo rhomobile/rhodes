@@ -60,6 +60,9 @@
 
     extern void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
 	#define set_source_property rho_sync_set_source_property
+
+	extern void rho_sync_set_ssl_verify_peer(int b);
+	#define set_ssl_verify_peer rho_sync_set_ssl_verify_peer
 	
 	#if !defined(bool)
 	#define bool int
@@ -94,3 +97,4 @@ extern void  set_pagesize(int pagesize);
 extern void  set_threaded_mode(bool b);
 extern void  enable_status_popup(bool b);
 extern void  set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
+extern void  set_ssl_verify_peer(bool b);

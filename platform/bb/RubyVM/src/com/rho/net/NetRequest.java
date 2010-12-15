@@ -54,8 +54,8 @@ public class NetRequest
 	public boolean isCancelled(){ return m_bCancel;}
 	
 	//TODO: use sslVerifyPeer
-    boolean sslVerifyPeer() {return m_sslVerifyPeer;}
-    void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+    public boolean sslVerifyPeer() {return m_sslVerifyPeer;}
+    public void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
 	
 	public NetResponse pullData(String strUrl, IRhoSession oSession ) throws Exception
     {

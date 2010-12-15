@@ -1873,6 +1873,9 @@ static VALUE mSyncEngine;
 
     extern void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
 	#define set_source_property rho_sync_set_source_property
+
+	extern void rho_sync_set_ssl_verify_peer(int b);
+	#define set_ssl_verify_peer rho_sync_set_ssl_verify_peer
 	
 	#if !defined(bool)
 	#define bool int
@@ -2676,6 +2679,27 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_ssl_verify_peer(int argc, VALUE *argv, VALUE self) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_bool(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "bool","set_ssl_verify_peer", 1, argv[0] ));
+  } 
+  arg1 = (bool)(val1);
+  set_ssl_verify_peer(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2972,5 +2996,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_threaded_mode", _wrap_set_threaded_mode, -1);
   rb_define_module_function(mSyncEngine, "enable_status_popup", _wrap_enable_status_popup, -1);
   rb_define_module_function(mSyncEngine, "set_source_property", _wrap_set_source_property, -1);
+  rb_define_module_function(mSyncEngine, "set_ssl_verify_peer", _wrap_set_ssl_verify_peer, -1);
 }
 
