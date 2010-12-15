@@ -1286,7 +1286,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 
     	private static class HttpServerThread extends RhoThread
     	{
-    		private Mutex         m_mxStackCommands = new Mutex();
+    		private Object        m_mxStackCommands;// = new Mutex();
     		private LinkedList	  m_stackCommands = new LinkedList();	         
     		boolean m_bExit = false;
     		private static final int INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
@@ -1295,6 +1295,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     		HttpServerThread()
     		{
     			super(new RhoClassFactory());
+    			
+    			m_mxStackCommands = getSyncObject();
     			start(epNormal);
     		}
     		
@@ -1351,8 +1353,12 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	        	    		LOG.ERROR("Process command crashed.", exc);
 	        	    	}
 	        		}
-	        		
-	        		wait(INTERVAL_INFINITE);
+
+        	    	synchronized(m_mxStackCommands)
+        	    	{
+        	    		if ( m_stackCommands.isEmpty() )
+        	    			wait(INTERVAL_INFINITE);
+        	    	}
         		}
         		
         		LOG.INFO( "Exit HttpServerThread main routine..." );
