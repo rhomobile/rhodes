@@ -11,6 +11,7 @@ platform/bb/RubyVM/src/com/rho/file/IFileAccess.java
 platform/bb/RubyVM/src/com/rho/file/IRAFile.java
 platform/bb/RubyVM/src/com/rho/file/SimpleFile.java
 platform/bb/RubyVM/src/com/rho/file/RandomAccessFile.java
+platform/bb/RubyVM/src/com/rho/file/FileAccessBB.java
 platform/bb/RubyVM/src/com/rho/IRhoLogSink.java
 platform/bb/RubyVM/src/com/rho/IRhoRubyHelper.java
 platform/bb/RubyVM/src/com/rho/Mutex.java

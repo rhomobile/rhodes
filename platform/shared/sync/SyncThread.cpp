@@ -44,6 +44,10 @@ CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CThreadQueue(facto
 
     m_oSyncEngine.setFactory(factory);
 
+    LOG(INFO) + "sync_poll_interval: " + RHOCONF().getInt("sync_poll_interval");
+    LOG(INFO) + "syncserver: " + RHOCONF().getInt("syncserver");
+    LOG(INFO) + "bulksync_state: " + RHOCONF().getInt("bulksync_state");
+
     if ( RHOCONF().getString("syncserver").length() > 0 )
         start(epLow);
 }

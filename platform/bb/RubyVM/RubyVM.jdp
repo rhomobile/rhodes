@@ -34,6 +34,7 @@ src\com\rho\file\IFileAccess.java
 src\com\rho\file\IRAFile.java
 src\com\rho\file\SimpleFile.java
 src\com\rho\file\RandomAccessFile.java
+src\com\rho\file\FileAccessBB.java
 src\com\rho\IRhoLogSink.java
 src\com\rho\IRhoRubyHelper.java
 src\com\rho\Mutex.java

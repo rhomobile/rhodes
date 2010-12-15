@@ -661,6 +661,7 @@ const String& CRhodesApp::getFirstStartUrl()
             m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
     }
 
+    LOG(INFO) + "Start url: " + m_strFirstStartUrl;
     return m_strFirstStartUrl;
 }
 
