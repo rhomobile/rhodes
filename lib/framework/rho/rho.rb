@@ -447,7 +447,12 @@ module Rho
             start_id = src_id if src_id > start_id
         end        
         
-        start_id = Rho::RhoConfig.max_config_srcid()+2 if start_id < Rho::RhoConfig.max_config_srcid
+        if start_id < Rho::RhoConfig.max_config_srcid        
+            start_id = Rho::RhoConfig.max_config_srcid()+2 
+        else
+            start_id += 1
+        end
+            
         puts "start_id: #{start_id}"
         start_id
     end

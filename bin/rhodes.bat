@@ -1,1 +1,1 @@
-@ruby %~dp0rhogen %*
+@ruby %~dp0rhodes %*

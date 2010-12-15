@@ -35,6 +35,7 @@ public final class R {
     }
     public static final class id {
         public static final int LinearLayout01=0x7f07000a;
+        public static final int appIcon=0x7f070023;
         public static final int buttonLayout=0x7f070010;
         public static final int button_scan=0x7f070004;
         public static final int cameraButton=0x7f070006;
@@ -57,6 +58,8 @@ public final class R {
         public static final int okButton=0x7f07000b;
         public static final int paired_devices=0x7f070001;
         public static final int preview=0x7f070011;
+        public static final int progress_bar=0x7f070026;
+        public static final int progress_text=0x7f070024;
         public static final int scrollview=0x7f070019;
         public static final int sig_cancelButton=0x7f070020;
         public static final int sig_clearButton=0x7f070021;
@@ -66,6 +69,7 @@ public final class R {
         public static final int text=0x7f07000d;
         public static final int text1=0x7f070013;
         public static final int timePicker=0x7f070009;
+        public static final int title=0x7f070025;
         public static final int title_new_devices=0x7f070002;
         public static final int title_paired_devices=0x7f070000;
         public static final int widget28=0x7f07000e;
@@ -81,6 +85,7 @@ public final class R {
         public static final int logoptions=0x7f030007;
         public static final int logview=0x7f030008;
         public static final int signature=0x7f030009;
+        public static final int status_bar_ongoing_event_progress_bar=0x7f03000a;
     }
     public static final class menu {
         public static final int options=0x7f060000;
