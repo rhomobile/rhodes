@@ -284,6 +284,17 @@ namespace "config" do
       end
     end
 
+    if $sdk !~ /iphone/
+      if Rake.application.top_level_tasks.to_s =~ /run/
+        $sdk = "iphonesimulator#{$sdk}"
+      else
+        $sdk = "iphoneos#{$sdk}"
+      end
+    end
+
+    puts $sdk
+    exit 0
+    
     if $sdk =~ /iphonesimulator/
       $sdkver = $sdk.gsub(/iphonesimulator/,"")
       $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + $sdkver + ".sdk"
