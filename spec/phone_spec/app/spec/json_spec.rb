@@ -1,4 +1,16 @@
 describe "Json" do
+    it "should parse unicode chars" do
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test_unicode.json')
+        content = File.read(file_name)
+        parsed = Rho::JSON.parse(content)
+        
+        parsed.is_a?(Hash).should == true        
+        parsed.length().should == 3
+        parsed['source'].should_not be_nil         
+        parsed['zendesk'].should_not be_nil         
+        parsed['zendesk2'].should_not be_nil         
+    end
+
     it "should parse" do
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.json')
         content = File.read(file_name)
@@ -102,7 +114,7 @@ describe "Json" do
         gen_content.should == "{\"source_id\":#{prod.source_id},\"object\":\"#{prod.object}\",\"test\":\"123\"}"
         
     end    
-    
+
 =begin
     def webservice2_test
         return unless $is_network_available
