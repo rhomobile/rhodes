@@ -261,7 +261,7 @@ module Rho
         return unless defined? Rho::RhoConfig::sources
     
         uniq_sources = Rho::RhoConfig::sources.values
-        puts 'init_sources: ' + uniq_sources.inspect
+        puts 'init_sources: ' #+ uniq_sources.inspect
 
         uniq_sources.each do |source|
             source['str_associations'] = ""    
