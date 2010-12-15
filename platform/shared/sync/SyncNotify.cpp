@@ -248,7 +248,7 @@ CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bR
     m_strParams(strParams), m_bRemoveAfterFire(bRemoveAfterFire),
     m_cCallback(null), m_cCallbackData(null)
 {
-    if ( strUrl .length() > 0 )
+    if ( strUrl.length() > 0 )
         m_strUrl = RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
