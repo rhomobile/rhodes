@@ -27,7 +27,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoAppAdapter;
 import com.rho.RhoRuby;
-import com.rho.RhoThread;
+import com.rho.ThreadQueue;
 import com.rho.TimeInterval;
 import com.rho.db.DBAdapter;
 import com.rho.db.IDBResult;
@@ -35,19 +35,18 @@ import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import java.util.Vector;
 
-public class SyncThread extends RhoThread
+public class SyncThread extends ThreadQueue
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
-	private static final int SYNC_POLL_INTERVAL_SECONDS = 300;
-	private static final int SYNC_POLL_INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
+	//private static final int SYNC_POLL_INTERVAL_SECONDS = 300;
+	//private static final int SYNC_POLL_INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
 	private static final int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
 	
-	static SyncThread m_pInstance;
-
-   	public final static int scNone = 0, scSyncAll = 2, scSyncOne = 3, scSyncOneByUrl = 4, scChangePollInterval=5, scExit=6, scLogin = 7, scSearchOne=8; 
+//scSyncOneByUrl = 4, scChangePollInterval=5, scExit=6, 
+   	public final static int scNone = 0, scSyncAll = 1, scSyncOne = 2, scLogin = 3, scSearchOne=4; 
     
-   	static private class SyncCommand
+   	static private class SyncCommand implements ThreadQueue.IQueueCommand
    	{
    		int m_nCmdCode;
    		int m_nCmdParam;
@@ -81,23 +80,46 @@ public class SyncThread extends RhoThread
    			m_bShowStatus = bShowStatus;
    		}
    		
-   		public boolean equals(Object obj)
+   		public boolean equals(IQueueCommand obj)
    		{
    			SyncCommand oSyncCmd = (SyncCommand)obj;
    			return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
    				(m_strCmdParam == oSyncCmd.m_strCmdParam ||
    				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)));  		
    		}
+   		
+   		public String toString()
+   		{
+   		    switch(m_nCmdCode)
+   		    {
+   		    case scNone:
+   		        return "CheckPollInterval";
+
+   		    case scSyncAll:
+   		        return "SyncAll";
+   		    case scSyncOne:
+   		        return "SyncOne";
+   		    case scLogin:
+   		        return "Login";
+   		    case scSearchOne:
+   		        return "Search";
+   		    }
+
+   		    return "Unknown; Code : " + m_nCmdCode;
+   		}
+   		
    	};
    	static private class SyncLoginCommand extends SyncCommand
    	{
    		String m_strName, m_strPassword;
-   		public SyncLoginCommand(String name, String password, String callback)
+   		/*common::CAutoPtr<C*/SyncNotify.SyncNotification/*>*/ m_pNotify;
+   		public SyncLoginCommand(String name, String password, String callback, SyncNotify.SyncNotification pNotify)
    		{
    			super(scLogin,callback,false);
    			
    			m_strName = name;
    			m_strPassword = password;
+   			m_pNotify = pNotify; 
    		}
    	};
     static class SyncSearchCommand extends SyncCommand
@@ -114,17 +136,13 @@ public class SyncThread extends RhoThread
 		    m_arSources = arSources;
 	    }
     };
-   	
+
+	static SyncThread m_pInstance;
     SyncEngine  m_oSyncEngine;
-    RhoClassFactory m_ptrFactory;
-	int           m_nPollInterval;
-	Object        m_mxStackCommands;// = new Mutex();
-	LinkedList	  m_stackCommands = new LinkedList();
-	boolean m_bNoThreaded = false;
-	
-    boolean isNoThreadedMode(){ return m_bNoThreaded; }
-    void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
-    int  getPollInterval(){ return m_nPollInterval;}
+
+    public static SyncThread getInstance(){ return m_pInstance; }
+    public static SyncEngine getSyncEngine(){ return m_pInstance!= null ? m_pInstance.m_oSyncEngine : null; }
+    public boolean isSkipDuplicateCmd() { return true; }
     
 	public static SyncThread Create(RhoClassFactory factory)throws Exception
 	{
@@ -151,63 +169,26 @@ public class SyncThread extends RhoThread
 	SyncThread(RhoClassFactory factory)throws Exception
 	{
 		super(factory);
+		ThreadQueue.setLogCategory(LOG.getLogCategory());
 		
-		m_oSyncEngine = new SyncEngine();
-		m_nPollInterval = SYNC_POLL_INTERVAL_SECONDS;
 		if( RhoConf.getInstance().isExist("sync_poll_interval") )
-			m_nPollInterval = RhoConf.getInstance().getInt("sync_poll_interval");
-		
-		m_ptrFactory = factory;
+			setPollInterval(RhoConf.getInstance().getInt("sync_poll_interval"));
+
+		m_oSyncEngine = new SyncEngine();
+		m_oSyncEngine.setFactory(factory);
 	
 	    m_oSyncEngine.setFactory(factory);
-	    m_mxStackCommands = getSyncObject();
-	    	
+
+	    LOG.INFO("sync_poll_interval: " + RhoConf.getInstance().getInt("sync_poll_interval"));
+	    LOG.INFO("syncserver: " + RhoConf.getInstance().getString("syncserver"));
+	    LOG.INFO("bulksync_state: " + RhoConf.getInstance().getInt("bulksync_state"));
+	    
 	    ClientRegister.Create(factory);
 	    
 		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
 			start(epLow);
 	}
 
-    public static SyncThread getInstance(){ return m_pInstance; }
-    public static SyncEngine getSyncEngine(){ return m_pInstance!= null ? m_pInstance.m_oSyncEngine : null; }
-
-    protected void addSyncCommandInt(SyncCommand oSyncCmd)
-    {
-    	synchronized(m_mxStackCommands)
-    	{
-    		boolean bExist = false;
-    		for ( int i = 0; i < m_stackCommands.size(); i++ )
-    		{
-    			if ( m_stackCommands.get(i).equals(oSyncCmd) )
-    			{
-    				bExist = true;
-    				break;
-    			}
-    		}
-    		
-    		if ( !bExist )
-    			m_stackCommands.add(oSyncCmd);
-    	}
-    }
-    
-    void addSyncCommand(SyncCommand oSyncCmd)
-    { 
-    	LOG.INFO( "addSyncCommand: " + oSyncCmd.m_nCmdCode );
-    	addSyncCommandInt(oSyncCmd);
-    	
-        if ( isNoThreadedMode()  )
-        {
-        	try{
-        		processCommands();
-        	}catch(Exception e)
-        	{
-        		LOG.ERROR("processCommand failed", e);
-        	}
-        }
-        else
-        	stopWait(); 
-    }
-    
     RubyValue getRetValue()
     {
     	RubyValue ret = RubyConstant.QNIL;
@@ -220,7 +201,7 @@ public class SyncThread extends RhoThread
         return ret;
     }
 	
-    int getLastSyncInterval()
+    public int getLastPollInterval()
     {
     	try{
 	    	long nowTime = (TimeInterval.getCurrentTime().toULong())/1000;
@@ -241,72 +222,13 @@ public class SyncThread extends RhoThread
     	}
     	return 0;
     }
-    
-	public void run()
-	{
-		LOG.INFO( "Starting sync engine main routine..." );
-	
-		int nLastSyncInterval = getLastSyncInterval();
-		while( m_oSyncEngine.getState() != SyncEngine.esExit )
-		{
-	        int nWait = m_nPollInterval > 0 ? m_nPollInterval : SYNC_POLL_INTERVAL_INFINITE;
 
-	        if ( m_nPollInterval > 0 && nLastSyncInterval > 0 )
-	            nWait = m_nPollInterval - nLastSyncInterval;
-
-	        synchronized(m_mxStackCommands)
-	        {
-				if ( nWait >= 0 && m_oSyncEngine.getState() != SyncEngine.esExit && 
-					 isNoCommands() )
-				{
-					LOG.INFO( "Sync engine blocked for " + nWait + " seconds..." );
-			        wait(nWait);
-				}
-	        }
-	        nLastSyncInterval = 0;
-			
-	        if ( m_oSyncEngine.getState() != SyncEngine.esExit )
-	        {
-	        	try{
-	        		processCommands();
-	        	}catch(Exception e)
-	        	{
-	        		LOG.ERROR("processCommand failed", e);
-	        	}
-	        }
-		}
-		
-		LOG.INFO("Sync engine thread shutdown");		
-	}
-	
-	boolean isNoCommands()
-	{
-		boolean bEmpty = false;
-    	synchronized(m_mxStackCommands)
-    	{		
-    		bEmpty = m_stackCommands.isEmpty();
-    	}
-
-    	return bEmpty;
-	}
-	
-	void processCommands()throws Exception
+	public void onTimeout()//throws Exception
 	{
 	    if ( isNoCommands() && getPollInterval()>0 )
-	        addSyncCommandInt(new SyncCommand(scSyncAll,false));
-		
-		while(!isNoCommands())
-		{
-			SyncCommand oSyncCmd = null;
-	    	synchronized(m_mxStackCommands)
-	    	{
-	    		oSyncCmd = (SyncCommand)m_stackCommands.removeFirst();
-	    	}
-			
-			processCommand(oSyncCmd);
-		}
+	        addQueueCommandInt(new SyncCommand(scSyncAll,false));
 	}
-
+	
 	void checkShowStatus(SyncCommand oSyncCmd)
 	{
 		boolean bShowStatus = oSyncCmd.m_bShowStatus && !this.isNoThreadedMode();
@@ -315,15 +237,14 @@ public class SyncThread extends RhoThread
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 	}	
 	
-	void processCommand(SyncCommand oSyncCmd)throws Exception
+	public void processCommand(IQueueCommand pCmd)
 	{
+		SyncCommand oSyncCmd = (SyncCommand)pCmd;
 	    switch(oSyncCmd.m_nCmdCode)
 	    {
 	    case scSyncAll:
 	    	checkShowStatus(oSyncCmd);
 	        m_oSyncEngine.doSyncAllSources();
-	        break;
-	    case scChangePollInterval:
 	        break;
         case scSyncOne:
 	        {
@@ -345,7 +266,7 @@ public class SyncThread extends RhoThread
 	    	{
 	    		SyncLoginCommand oLoginCmd = (SyncLoginCommand)oSyncCmd;
 	    		checkShowStatus(oSyncCmd);
-	    		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_strCmdParam );
+	    		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_pNotify );
 	    	}
 	        break;
 	        
@@ -364,21 +285,15 @@ public class SyncThread extends RhoThread
 	
 	public void setPollInterval(int nInterval)
 	{ 
-	    m_nPollInterval = nInterval; 
 	    //if ( m_nPollInterval == 0 )
 	    //    m_oSyncEngine.stopSync();
-	
-	    addSyncCommand(new SyncCommand(scChangePollInterval, false)); 
+	    
+	    super.setPollInterval(nInterval);	    
 	}
 	
 	public static void doSyncAllSources(boolean bShowStatus)
 	{
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus));
-	}
-
-	public static void doSyncSource(int nSrcID, String strName, boolean bShowStatus)
-	{
-		getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus) );
+		getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus));
 	}
 	
 	public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
@@ -386,7 +301,7 @@ public class SyncThread extends RhoThread
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 		}
-	    getInstance().addSyncCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus ) );		
+	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus ) );		
 	}
 	
 	public static void stopSync()throws Exception
@@ -408,7 +323,7 @@ public class SyncThread extends RhoThread
 			{
 				getSyncEngine().exitSync();
 				getInstance().stop(0);
-				RhoClassFactory ptrFactory = getInstance().m_ptrFactory;
+				RhoClassFactory ptrFactory = getInstance().getFactory();
 				m_pInstance = null;
 				
 				Create(ptrFactory);
@@ -426,7 +341,8 @@ public class SyncThread extends RhoThread
 			protected RubyValue run(RubyValue receiver, RubyBlock block )
 			{
 				try {
-					doSyncAllSources(true);
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,true));
+					
 				} catch(Exception e) {
 					LOG.ERROR("dosync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -438,7 +354,7 @@ public class SyncThread extends RhoThread
 				try {
 					String str = arg.asString();
 					boolean show = arg.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
-					doSyncAllSources(show);
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,show));
 				} catch(Exception e) {
 					LOG.ERROR("dosync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -457,7 +373,7 @@ public class SyncThread extends RhoThread
 					else
 						strName = arg.toStr();
 					
-					doSyncSource( nSrcID, strName, true);
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, true) );
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -477,7 +393,7 @@ public class SyncThread extends RhoThread
 					else
 						strName = arg0.toStr();
 					
-					doSyncSource(nSrcID, strName, show);
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, show) );
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -510,7 +426,7 @@ public class SyncThread extends RhoThread
 						if ( callback != null && callback.length() > 0 )
 							getSyncEngine().getNotify().setSearchNotification(callback, callback_params);
 						
-						getInstance().addSyncCommand(new SyncSearchCommand(from,params,arSources,bSearchSyncChanges, nProgressStep) );
+						getInstance().addQueueCommand(new SyncSearchCommand(from,params,arSources,bSearchSyncChanges, nProgressStep) );
 					}catch(Exception e)
 					{
 						LOG.ERROR("SyncEngine.login", e);
@@ -550,7 +466,8 @@ public class SyncThread extends RhoThread
 							
 							stopSync();
 							
-							getInstance().addSyncCommand(new SyncLoginCommand(name, password, callback) );
+							getInstance().addQueueCommand(new SyncLoginCommand(name, password, callback,
+									new SyncNotify.SyncNotification(callback, "", false) ) );
 						}catch(Exception e)
 						{
 							LOG.ERROR("SyncEngine.login", e);
@@ -606,7 +523,8 @@ public class SyncThread extends RhoThread
 						int source_id = args.get(0).toInt();
 						String url = args.get(1).toStr();
 						String params = args.get(2).toStr();
-						getSyncEngine().getNotify().setSyncNotification(source_id, url, params);
+						getSyncEngine().getNotify().setSyncNotification(source_id, 
+								new SyncNotify.SyncNotification(url, params != null ? params : "", source_id != -1));
 					}catch(Exception e)
 					{
 						LOG.ERROR("set_notification failed", e);
