@@ -51,14 +51,31 @@ public class NativeBar {
 				MainView mainView = r.getMainView();
 				MainView v = null;
 				
+				SimpleMainView smv = null;
+				if (mainView instanceof SimpleMainView) {
+					smv = (SimpleMainView)mainView;
+				}
+				
 				switch (type) {
 				case NOBAR_TYPE:
-					v = new SimpleMainView(mainView);
-					started = false;
+					if (smv == null) {
+						v = new SimpleMainView(mainView);
+						started = false;
+					}
+					else {
+						smv.removeToolbar();
+						started = false;
+					}
 					break;
 				case TOOLBAR_TYPE:
-					v = new SimpleMainView(mainView, params);
-					started = true;
+					if (smv == null) {
+						v = new SimpleMainView(mainView, params);
+						started = true;
+					}
+					else {
+						smv.setToolbar(params);
+						started = true;
+					}
 					break;
 				case TABBAR_TYPE:
 					v = new TabbedMainView(params);
