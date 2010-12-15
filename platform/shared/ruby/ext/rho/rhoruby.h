@@ -34,6 +34,7 @@ void RhoRubyStart();
 void RhoRubyInitApp();
 //void RhoRubyThreadStart();
 //void RhoRubyThreadStop();
+void rho_ruby_init_nativebar();
 void rho_ruby_activateApp();
 void rho_ruby_deactivateApp();
 void rho_ruby_loadserversources(const char* szData);
