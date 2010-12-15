@@ -383,32 +383,10 @@ public class SimpleMainView implements MainView {
 		return button;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void init(MainView v, Object params) {
+	private void setupToolbar(LinearLayout tool_bar, Object params) {
 		RhodesService r = RhodesService.getInstance();
 		Context ctx = r.getContext();
-		
-		view = new MyView(ctx);
-		view.setOrientation(LinearLayout.VERTICAL);
-		view.setGravity(Gravity.BOTTOM);
-		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-		view.setId(RhodesService.RHO_MAIN_VIEW);
-		
-		webView = null;
-		if (v != null)
-			webView = v.detachWebView();
-		if (webView == null)
-			webView = r.createWebView();
-		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
-		
-		LinearLayout bottom = new LinearLayout(ctx);
-		bottom.setOrientation(LinearLayout.HORIZONTAL);
-		bottom.setBackgroundColor(Color.GRAY);
-		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
-		view.addView(bottom);
-		
-		toolBar = bottom;
-		
+
 		Vector<Object> buttons = null;
 		if (params != null) {
 			if (params instanceof Vector<?>) {
@@ -432,7 +410,7 @@ public class SimpleMainView implements MainView {
 							int green = Integer.parseInt((String)greenObj);
 							int blue = Integer.parseInt((String)blueObj);
 							
-							bottom.setBackgroundColor(Color.rgb(red, green, blue));
+							tool_bar.setBackgroundColor(Color.rgb(red, green, blue));
 						}
 						catch (NumberFormatException e) {
 							// Do nothing here
@@ -470,7 +448,7 @@ public class SimpleMainView implements MainView {
 					group.setGravity(gravity);
 					group.setOrientation(LinearLayout.HORIZONTAL);
 					group.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, FILL_PARENT, 1));
-					bottom.addView(group);
+					tool_bar.addView(group);
 				}
 				group.addView(button);
 			}
@@ -478,9 +456,39 @@ public class SimpleMainView implements MainView {
 			// Last group should have gravity RIGHT
 			if (group != null) {
 				group.setGravity(Gravity.RIGHT);
-				bottom.requestLayout();
+				tool_bar.requestLayout();
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void init(MainView v, Object params) {
+		RhodesService r = RhodesService.getInstance();
+		Context ctx = r.getContext();
+		
+		view = new MyView(ctx);
+		view.setOrientation(LinearLayout.VERTICAL);
+		view.setGravity(Gravity.BOTTOM);
+		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
+		view.setId(RhodesService.RHO_MAIN_VIEW);
+		
+		webView = null;
+		if (v != null)
+			webView = v.detachWebView();
+		if (webView == null)
+			webView = r.createWebView();
+		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+		
+		LinearLayout bottom = new LinearLayout(ctx);
+		bottom.setOrientation(LinearLayout.HORIZONTAL);
+		bottom.setBackgroundColor(Color.GRAY);
+		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
+		view.addView(bottom);
+		
+		toolBar = bottom;
+		
+		setupToolbar(toolBar, params);
+		
 		
 		webView.requestFocus();
 	}
@@ -581,5 +589,18 @@ public class SimpleMainView implements MainView {
 			return;
 		view.removeViewAt(0);
 		navBar = null;
+	}
+	
+	public void setToolbar(Object params) {
+		toolBar.removeAllViews();
+		setupToolbar(toolBar, params);
+		toolBar.requestLayout();
+		view.requestLayout();
+	}
+	
+	public void removeToolbar() {
+		toolBar.removeAllViews();
+		toolBar.requestLayout();
+		view.requestLayout();
 	}
 }
