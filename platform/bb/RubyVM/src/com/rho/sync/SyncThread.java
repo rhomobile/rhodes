@@ -870,6 +870,21 @@ public class SyncThread extends RhoThread
 						}
 					}
 			});
+		klass.getSingletonClass().defineMethod("set_ssl_verify_peer",
+				new RubyOneArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+						try{
+							boolean bVerify = arg1 == RubyConstant.QTRUE;
+							getSyncEngine().getNet().sslVerifyPeer(bVerify);
+						}catch(Exception e)
+						{
+							LOG.ERROR("set_ssl_verify_peer failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						return RubyConstant.QNIL;
+					}
+			});
 		
 	}
 
