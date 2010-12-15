@@ -1059,6 +1059,11 @@ public class RhodesService {
 			long prevProgress = 0;
 			byte[] buf = new byte[65536];
 			for (;;) {
+				if (thisThread.isInterrupted()) {
+					tmpFile.delete();
+					Logger.D(TAG, "Download of " + url + " was canceled");
+					return null;
+				}
 				int nread = is.read(buf);
 				if (nread == -1)
 					break;
@@ -1108,22 +1113,24 @@ public class RhodesService {
 			public void run() {
 				try {
 					final RhodesService r = RhodesService.getInstance();
-					final File pkgFile = r.downloadPackage(url);
-					PerformOnUiThread.exec(new Runnable() {
-						public void run() {
-							try {
-								Logger.D(TAG, "Install package " + pkgFile.getAbsolutePath());
-								Uri uri = Uri.fromFile(pkgFile);
-								Intent intent = new Intent(Intent.ACTION_VIEW);
-								intent.setDataAndType(uri, "application/vnd.android.package-archive");
-								r.getContext().startActivity(intent);
+					final File tmpFile = r.downloadPackage(url);
+					if (tmpFile != null) {
+						PerformOnUiThread.exec(new Runnable() {
+							public void run() {
+								try {
+									Logger.D(TAG, "Install package " + tmpFile.getAbsolutePath());
+									Uri uri = Uri.fromFile(tmpFile);
+									Intent intent = new Intent(Intent.ACTION_VIEW);
+									intent.setDataAndType(uri, "application/vnd.android.package-archive");
+									r.getContext().startActivity(intent);
+								}
+								catch (Exception e) {
+									Log.e(TAG, "Can't install file from " + tmpFile.getAbsolutePath(), e);
+									Logger.E(TAG, "Can't install file from " + tmpFile.getAbsolutePath() + ": " + e.getMessage());
+								}
 							}
-							catch (Exception e) {
-								Log.e(TAG, "Can't install file from " + pkgFile.getAbsolutePath(), e);
-								Logger.E(TAG, "Can't install file from " + pkgFile.getAbsolutePath() + ": " + e.getMessage());
-							}
-						}
-					}, false);
+						}, false);
+					}
 				}
 				catch (IOException e) {
 					Log.e(TAG, "Can't download package from " + url, e);
