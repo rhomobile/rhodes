@@ -57,7 +57,7 @@ static VALUE dateToRuby(NSDate *date)
     
     [gregorian release];
     
-    VALUE rDate = rb_funcall(rb_cTime, rb_intern("utc"), 7, INT2FIX(year), INT2FIX(month), INT2FIX(day),
+    VALUE rDate = rb_funcall(rb_cTime, rb_intern("mktime"), 7, INT2FIX(year), INT2FIX(month), INT2FIX(day),
                              INT2FIX(hour), INT2FIX(minute), INT2FIX(second), INT2FIX(0));
     return rDate;
 }
@@ -74,7 +74,7 @@ static NSDate *dateFromRuby(VALUE rDate)
     if (!rb_equal(cDate, rb_cTime))
         rb_raise(rb_eArgError, "Wrong type of parameter: %s (Time expected)", rb_class2name(cDate));
     
-    ID id_gmtime = rb_intern("gmtime");
+    //ID id_gmtime = rb_intern("gmtime");
     ID id_year = rb_intern("year");
     ID id_month = rb_intern("month");
     ID id_day = rb_intern("day");
