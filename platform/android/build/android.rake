@@ -43,6 +43,8 @@ ANDROID_PERMISSIONS = {
   'push' => proc do |manifest| add_push(manifest) end
 }
 
+ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
+
 def add_push(manifest)
   element = REXML::Element.new('permission')
   element.add_attribute('android:name', "#{$app_package_name}.permission.C2D_MESSAGE")
@@ -131,7 +133,7 @@ def set_app_name_android(newname)
 
   caps_proc = []
   # Default permissions. Need to be always enabled.
-  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK', 'ACCESS_NETWORK_STATE']
+  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK']
   $app_config["capabilities"].each do |cap|
     cap = ANDROID_PERMISSIONS[cap]
     next if cap.nil?
@@ -391,6 +393,7 @@ namespace "config" do
       $app_config["capabilities"] += $app_config["android"]["capabilities"]
       $app_config["android"]["capabilities"] = nil
     end
+    $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
 
