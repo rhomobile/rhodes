@@ -57,6 +57,17 @@ public class DateTimePicker extends RubyBasic {
 		return RubyConstant.QNIL;
 	}
 
+	public static RubyValue choose_with_range(RubyValue arg1, RubyValue arg2, RubyValue arg3, DateFormat fmt, String opaque, RubyValue arg6, RubyValue arg7) {
+		String callback = arg1.toStr();
+		String title = arg2.toStr();
+		long init = arg3.toRubyTime().getTime();
+		
+		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque);
+		UiApplication.getUiApplication().invokeLater(screen);
+        
+		return RubyConstant.QNIL;
+	}
+
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("choose", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
@@ -85,6 +96,38 @@ public class DateTimePicker extends RubyBasic {
 				}
 				
 				return DateTimePicker.choose(arg1, arg2, arg3, new SimpleDateFormat(fmt), opaque);
+			}
+		});		
+		klass.getSingletonClass().defineMethod("choose_with_range", new RubyVarArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+				if(args.size() != 7)
+					throw new RubyException(RubyRuntime.ArgumentErrorClass,
+							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 4 or 5)");
+				
+				RubyValue arg1 = args.get(0);
+				RubyValue arg2 = args.get(1);
+				RubyValue arg3 = args.get(2);
+				RubyValue arg4 = args.get(3);
+				
+				String opaque = null;
+				opaque = args.get(4).toStr();
+
+				RubyValue arg6 = args.get(5);
+				RubyValue arg7 = args.get(6);
+
+				
+				int fmt;
+				switch(arg4.toInt())
+				{
+				case 0: fmt = DateFormat.DATE_LONG | DateFormat.TIME_FULL; break;
+				case 1: fmt = DateFormat.DATE_LONG; break;
+				case 2: fmt = DateFormat.TIME_FULL; break;
+				default: throw new RubyException(RubyRuntime.ArgumentErrorClass,
+						"in `" + this.getID() + "': wrong value of the third parameter (" +
+						arg4.toInt() + ", should be 0, 1 or 2)");
+				}
+				
+				return DateTimePicker.choose_with_range(arg1, arg2, arg3, new SimpleDateFormat(fmt), opaque, arg6, arg7);
 			}
 		});		
 	}
