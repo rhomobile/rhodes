@@ -68,7 +68,7 @@ module Rho
     
     def self.clean_cached_metadata
         @@cached_metadata.clear()
-        puts "meta deleted"
+        #puts "meta deleted"
     end
     
     def render(options = nil)
