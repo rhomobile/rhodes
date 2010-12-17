@@ -20,16 +20,21 @@
  */
 package com.rhomobile.rhodes.datetime;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoActivity;
 import com.rhomobile.rhodes.RhodesService;
 
+
 import android.content.res.Configuration;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,7 +47,10 @@ public class DateTimePickerScreen extends RhoActivity {
 	private static final String TAG = "DateTimePicker";
 	
 	private static final String INTENT_EXTRA_PREFIX = DateTimePicker.INTENT_EXTRA_PREFIX;
-	
+
+	private String _title;
+	private long _initial_time;
+	private long _saved_time;
 	private String _callback;
 	private Calendar _init;
 	private int _fmt;
@@ -61,6 +69,88 @@ public class DateTimePickerScreen extends RhoActivity {
 	private long _max_time;
 	private Calendar _min_Date = null;
 	private Calendar _max_Date = null;
+	
+	
+	public static String mStateID = "DateTimePickerScreenViewState";
+
+	public class DateTimePickerScreenViewState extends Object implements Serializable {
+		
+		private String title;
+		private long initial_time;
+		private long saved_time;
+		private String callback;
+		private int fmt;
+		private byte[] opaque;
+		private long min_time;
+		private long max_time;
+		
+		
+
+		private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+	        out.writeUTF(callback);
+			out.writeLong(initial_time);
+			out.writeLong(saved_time);
+			out.writeInt(fmt);
+	        out.writeUTF(title);
+			out.writeLong(min_time);
+			out.writeLong(max_time);
+			if (opaque != null) {
+				out.writeInt(opaque.length);
+				out.write(opaque);
+			}
+			else {
+				out.writeInt(-1);
+			}
+		}
+		
+		private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+	        callback = in.readUTF();
+	        initial_time = in.readLong();
+	        saved_time = in.readLong();
+	        fmt = in.readInt();
+	        title = in.readUTF();
+	        min_time = in.readLong();
+	        max_time = in.readLong();
+	        int size = in.readInt();
+			if (size != -1) {
+				opaque = new byte[size];
+				in.read(opaque, 0, size);
+			}
+			else {
+				opaque = null;
+			}
+		}
+		
+		public void save(DateTimePickerScreen p) {
+			title = p._title;
+			initial_time = p._initial_time;
+			saved_time = p._saved_time;
+			callback = p._callback;
+			fmt = p._fmt;
+			opaque = p._opaque;
+			min_time = p._min_time;
+			max_time = p._max_time;
+			
+		}
+		public void restore(DateTimePickerScreen p) {
+			p._title = title;
+			p._initial_time = initial_time;
+			p._saved_time = saved_time;
+			p._callback = callback;
+			p._fmt = fmt;
+			p._opaque = opaque;
+			p._min_time = min_time;
+			p._max_time = max_time;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private OnClickListener mOkListener = new OnClickListener() {
 		public void onClick(View arg0) {
@@ -112,29 +202,12 @@ public class DateTimePickerScreen extends RhoActivity {
 	}
 */	
 	
-	@Override
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-		Logger.D(TAG, "onCreate");
-		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
-		setContentView(AndroidR.layout.datetime);
-		
-		Bundle extras = this.getIntent().getExtras();
-		
-		_callback = extras.getString(INTENT_EXTRA_PREFIX + "callback");
-		
-		long milliseconds = extras.getLong(INTENT_EXTRA_PREFIX + "init")*((long)1000);
-		
+	
+	
+	private void initialization() {
 		_init = new GregorianCalendar();
 
-		_init.setTimeInMillis(milliseconds);
-		
-		_fmt = extras.getInt(INTENT_EXTRA_PREFIX + "fmt");
-		_opaque = extras.getByteArray(INTENT_EXTRA_PREFIX + "opaque");
-		
-		_min_time = extras.getLong(INTENT_EXTRA_PREFIX + "min_time")*((long)1000);
-		_max_time = extras.getLong(INTENT_EXTRA_PREFIX + "max_time")*((long)1000);
+		_init.setTimeInMillis(_saved_time);
 		
 		if (_min_time != 0) {
 			_min_Date = new GregorianCalendar();
@@ -154,7 +227,7 @@ public class DateTimePickerScreen extends RhoActivity {
 			_max_Date.set(Calendar.MILLISECOND, 0);
 		}
 		
-		this.setTitle(extras.getString(INTENT_EXTRA_PREFIX + "title"));
+		this.setTitle(_title);
 		
 		_datePicker = (DatePicker)findViewById(AndroidR.id.datePicker);
 		_timePicker = (TimePicker)findViewById(AndroidR.id.timePicker);
@@ -167,7 +240,7 @@ public class DateTimePickerScreen extends RhoActivity {
 		_datePicker.init(_init.get(Calendar.YEAR), _init.get(Calendar.MONTH), _init.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
 				public void	onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-					Logger.D(TAG, "onDateChanged( year="+String.valueOf(year)+", month="+String.valueOf(monthOfYear)+", day="+dayOfMonth);
+					//Logger.D(TAG, "onDateChanged( year="+String.valueOf(year)+", month="+String.valueOf(monthOfYear)+", day="+dayOfMonth);
 					Calendar new_date = new GregorianCalendar();
 					Calendar set_to = null;
 
@@ -196,6 +269,21 @@ public class DateTimePickerScreen extends RhoActivity {
 					if (set_to != null) {
 						view.updateDate(set_to.get(Calendar.YEAR), set_to.get(Calendar.MONTH), set_to.get(Calendar.DAY_OF_MONTH));
 					}
+					{
+						Calendar s_date = new GregorianCalendar();
+						s_date.setTimeInMillis(_saved_time);
+						if (set_to != null) {
+							s_date.set(Calendar.YEAR, set_to.get(Calendar.YEAR));
+							s_date.set(Calendar.MONTH, set_to.get(Calendar.MONTH));
+							s_date.set(Calendar.DAY_OF_MONTH, set_to.get(Calendar.DAY_OF_MONTH));
+						}
+						else {
+							s_date.set(Calendar.YEAR, year);
+							s_date.set(Calendar.MONTH, monthOfYear);
+							s_date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+						}
+						_saved_time = s_date.getTimeInMillis();
+					}
 				}
 			}
 		);
@@ -204,7 +292,15 @@ public class DateTimePickerScreen extends RhoActivity {
 		_timePicker.setCurrentMinute(_init.get(Calendar.MINUTE));
 		_timePicker.setOnTimeChangedListener( new TimePicker.OnTimeChangedListener() {
 				public void onTimeChanged (TimePicker view, int hourOfDay, int minute) {
-				
+					{
+						Calendar s_date = new GregorianCalendar();
+						s_date.setTimeInMillis(_saved_time);
+						s_date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						s_date.set(Calendar.MINUTE, minute);
+						s_date.set(Calendar.SECOND, 0);
+						s_date.set(Calendar.MILLISECOND, 0);
+						_saved_time = s_date.getTimeInMillis();
+					}
 				}
 			}
 		);
@@ -219,6 +315,42 @@ public class DateTimePickerScreen extends RhoActivity {
 		case FORMAT_DATE_TIME:
 			break;
 		}
+		
+	}
+	
+	@Override
+	public void onCreate(Bundle icicle) {
+		super.onCreate(icicle);
+		Logger.D(TAG, "onCreate");
+		
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+		setContentView(AndroidR.layout.datetime);
+		
+		Bundle extras = this.getIntent().getExtras();
+		
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "callback")) 
+			_callback = extras.getString(INTENT_EXTRA_PREFIX + "callback");
+		
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "init")) { 
+			_initial_time = extras.getLong(INTENT_EXTRA_PREFIX + "init")*((long)1000);
+			_saved_time = _initial_time;		
+		}
+		
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "fmt")) 
+			_fmt = extras.getInt(INTENT_EXTRA_PREFIX + "fmt");
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "opaque")) 
+			_opaque = extras.getByteArray(INTENT_EXTRA_PREFIX + "opaque");
+		
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "min_time")) 
+			_min_time = extras.getLong(INTENT_EXTRA_PREFIX + "min_time")*((long)1000);
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "max_time")) 
+			_max_time = extras.getLong(INTENT_EXTRA_PREFIX + "max_time")*((long)1000);
+		
+		
+		if (extras.containsKey(INTENT_EXTRA_PREFIX + "title")) 
+			_title = extras.getString(INTENT_EXTRA_PREFIX + "title");
+
+		initialization();
 	}
 	
 	private void setFieldsEnabled(boolean v) {
@@ -236,10 +368,22 @@ public class DateTimePickerScreen extends RhoActivity {
 		finish();
 	}
 	
-	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
+	
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		DateTimePickerScreenViewState s = (DateTimePickerScreenViewState)savedInstanceState.getSerializable(mStateID);
+		s.restore(this);
+		initialization();
+	}
+
+	public void onSaveInstanceState(Bundle outState) {
+		DateTimePickerScreenViewState s = new DateTimePickerScreenViewState();
+		s.save(this);
+		outState.putSerializable(mStateID, s);
+	}
+	
 	
 }
