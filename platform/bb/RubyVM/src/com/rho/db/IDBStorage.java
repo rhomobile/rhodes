@@ -6,6 +6,7 @@ public interface IDBStorage {
 	public abstract void close()throws DBException;
 	
 	public abstract IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)throws DBException;
+	
 	public abstract void executeBatchSQL(String strStatement)throws DBException;
 	
 	public abstract IDBResult createResult();
@@ -19,6 +20,7 @@ public interface IDBStorage {
 	public abstract void setDbCallback(IDBCallback callback);
 	
 	public abstract String[] getAllTableNames()throws DBException;
+	public abstract boolean isTableExists(String strName)throws DBException;
 	
-	public boolean isDbFileExists(String strPath);
+	public abstract boolean isDbFileExists(String strPath);
 }

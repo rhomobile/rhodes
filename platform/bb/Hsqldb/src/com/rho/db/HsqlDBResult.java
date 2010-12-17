@@ -23,6 +23,10 @@ public class HsqlDBResult implements IDBResult
 	
 	public HsqlDBResult(){
 	}
+	
+	public void close()
+	{
+	}
 /*	
 	public int getCount(){ 
 		return m_result != null ? m_result.getSize() : 0; 
@@ -192,8 +196,12 @@ public class HsqlDBResult implements IDBResult
     {
     	return m_current == null;
     }
+    public boolean isOneEnd()
+    {
+    	return m_current == null;
+    }
     
-    public void next()
+    public void next() throws DBException
     {
     	if ( m_current != null )
     		m_current = m_current.next;
@@ -204,7 +212,7 @@ public class HsqlDBResult implements IDBResult
     	return m_current.data[nCol];
     }
 
-    public Object[] getCurData()
+    public Object[] getCurData() throws DBException
     {
     	return m_current.data;
     }

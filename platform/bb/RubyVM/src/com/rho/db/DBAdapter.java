@@ -468,7 +468,7 @@ public class DBAdapter extends RubyBasic
 				{
 					db.open( m_strDBPath, "" );
 			    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false);
-			    	if ( !res.isEnd() )
+			    	if ( !res.isOneEnd() )
 			    	{
 			    		m_strClientInfoInsert = createInsertStatement(res, "client_info");
 			    		m_dataClientInfo = res.getCurData();
@@ -559,7 +559,7 @@ public class DBAdapter extends RubyBasic
         	m_dbStorage.executeSQL(m_strClientInfoInsert, m_dataClientInfo, false );
         	
             IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
-            if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
+            if ( !res.isOneEnd() &&  res.getStringByIdx(0).length() > 0 )
             {
                 LOG.INFO("Set reset=1 in client_info");
                 executeSQL( "UPDATE client_info SET reset=1" );
@@ -612,15 +612,7 @@ public class DBAdapter extends RubyBasic
 	
 	public boolean isTableExist(String strTableName)throws DBException
 	{
-		String[] vecTables = m_dbStorage.getAllTableNames();
-		for ( int i = 0; i< vecTables.length; i++ )
-		{
-			String tableName = vecTables[i];
-			if ( tableName.equalsIgnoreCase(strTableName) )
-				return true;
-		}
-		
-		return false;
+		return m_dbStorage.isTableExists(strTableName);
 	}
 	
     private RubyValue rb_destroy_tables(RubyValue vInclude, RubyValue vExclude) 
@@ -761,11 +753,11 @@ public class DBAdapter extends RubyBasic
                 int nOldSrcID = ((Integer)arOldSrcs.elementAt(i)).intValue();
 
                 IDBResult res = executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID);
-                if ( !res.isEnd() )
+                if ( !res.isOneEnd() )
                 {
                     String strSrcName = res.getStringByIdx(0);
                     IDBResult res2 = db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName );
-                    if ( !res2.isEnd() )
+                    if ( !res2.isOneEnd() )
                     {
                         if ( nOldSrcID != res2.getIntByIdx(0) )
                         {
@@ -904,7 +896,7 @@ public class DBAdapter extends RubyBasic
     		String strSql = v.toStr();
     		if ( batch == RubyConstant.QTRUE )
     		{
-    			LOG.INFO("batch execute:" + strSql);
+    			//LOG.INFO("batch execute:" + strSql);
     			
     			executeBatchSQL( strSql );
     		}
@@ -1177,27 +1169,44 @@ public class DBAdapter extends RubyBasic
 
 		public void onAfterInsert(String tableName, IDBResult rows2Insert)
 		{
-			if ( !tableName.equalsIgnoreCase("object_values") )
-				return;
-
-			for( ; !rows2Insert.isEnd(); rows2Insert.next() )
+			try
 			{
-				Object[] data = rows2Insert.getCurData();
-				Integer nSrcID = new Integer(rows2Insert.getIntByIdx(0));
-				String attrib = (String)data[1];
-				m_db.getAttrMgr().add(nSrcID, attrib);
+				if ( !tableName.equalsIgnoreCase("object_values") )
+					return;
+	
+				for( ; !rows2Insert.isEnd(); rows2Insert.next() )
+				{
+					Object[] data = rows2Insert.getCurData();
+					Integer nSrcID = new Integer(rows2Insert.getIntByIdx(0));
+					String attrib = (String)data[1];
+					m_db.getAttrMgr().add(nSrcID, attrib);
+				}
+			}catch(DBException exc)
+			{
+				LOG.ERROR("onAfterInsert failed.", exc);
 			}
-			
 		}
 		
 		public void onBeforeUpdate(String tableName, IDBResult rows2Delete, int[] cols)
 		{
-			processDelete(tableName, rows2Delete, cols);
+			try
+			{
+				processDelete(tableName, rows2Delete, cols);
+			}catch(DBException exc)
+			{
+				LOG.ERROR("onAfterInsert failed.", exc);
+			}
 		}
 		
 		public void onBeforeDelete(String tableName, IDBResult rows2Delete) 
 		{
-			processDelete(tableName, rows2Delete, null);
+			try
+			{
+				processDelete(tableName, rows2Delete, null);
+			}catch(DBException exc)
+			{
+				LOG.ERROR("onAfterInsert failed.", exc);
+			}
 		}
 		
 		private boolean isChangedCol(int[] cols, int iCol)
@@ -1213,7 +1222,7 @@ public class DBAdapter extends RubyBasic
 			return false;
 		}
 		
-		private void processDelete(String tableName, IDBResult rows2Delete, int[] cols)
+		private void processDelete(String tableName, IDBResult rows2Delete, int[] cols) throws DBException
 		{
 			if ( tableName.equalsIgnoreCase("changed_values") || tableName.equalsIgnoreCase("sources") ||
 			     tableName.equalsIgnoreCase("client_info"))

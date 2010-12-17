@@ -22,7 +22,7 @@ import rhomobile.datetime.DateTimePicker;
 import rhomobile.mapview.MapView;
 import com.rho.rubyext.GeoLocation;
 
-import com.rho.db.HsqlDBStorage;
+//import com.rho.db.HsqlDBStorage;
 import com.rho.db.IDBStorage;
 import com.rho.file.*;
 import com.rho.net.SSLSocket;
@@ -204,10 +204,6 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		}
 		
 		return strRes;
-	}
-
-	public IDBStorage createDBStorage() {
-		return new HsqlDBStorage();
 	}
 
 	public IFileAccess createFileAccess() {
