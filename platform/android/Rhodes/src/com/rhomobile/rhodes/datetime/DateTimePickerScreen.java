@@ -29,6 +29,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoActivity;
 import com.rhomobile.rhodes.RhodesService;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +44,7 @@ public class DateTimePickerScreen extends RhoActivity {
 	private static final String INTENT_EXTRA_PREFIX = DateTimePicker.INTENT_EXTRA_PREFIX;
 	
 	private String _callback;
-	private Date _init;
+	private Calendar _init;
 	private int _fmt;
 	private byte[] _opaque;
 	
@@ -56,13 +57,21 @@ public class DateTimePickerScreen extends RhoActivity {
 	private static final int FORMAT_DATE = 1;
 	private static final int FORMAT_TIME = 2;
 	
+	private long _min_time;
+	private long _max_time;
+	private Calendar _min_Date = null;
+	private Calendar _max_Date = null;
+	
 	private OnClickListener mOkListener = new OnClickListener() {
 		public void onClick(View arg0) {
-			_init.setYear(_datePicker.getYear() - 1900);
-			_init.setMonth(_datePicker.getMonth());
-			_init.setDate(_datePicker.getDayOfMonth());
-			_init.setHours(_timePicker.getCurrentHour());
-			_init.setMinutes(_timePicker.getCurrentMinute());
+			_init.set(Calendar.YEAR, _datePicker.getYear());
+			_init.set(Calendar.MONTH, _datePicker.getMonth());
+			_init.set(Calendar.DAY_OF_MONTH, _datePicker.getDayOfMonth());
+			
+			_init.set(Calendar.HOUR_OF_DAY, _timePicker.getCurrentHour());
+			_init.set(Calendar.MINUTE, _timePicker.getCurrentMinute());
+			_init.set(Calendar.SECOND, 0);
+			_init.set(Calendar.MILLISECOND, 0);
 			sendResult(_callback, _init, _opaque);
 		}
 	};
@@ -72,6 +81,36 @@ public class DateTimePickerScreen extends RhoActivity {
 			sendResult(_callback, null, _opaque);
 		}
 	};
+
+/*	
+	private static void convertMillisecondsToDate(long millis, Date date, boolean only_date) {
+		Calendar c = new GregorianCalendar();
+		c.setTimeInMillis(millis);
+
+		//date.setTime(0);
+		
+		int year = c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH);
+		int day = c.get(Calendar.DAY_OF_MONTH);
+		int hours = c.get(Calendar.HOUR_OF_DAY);
+		int minutes = c.get(Calendar.MINUTE);
+		int seconds = c.get(Calendar.SECOND);
+		
+		date.setYear(year);
+		date.setMonth(month);
+		date.setDate(day);
+		if (only_date) {
+			date.setHours(0);
+			date.setMinutes(0);
+			date.setSeconds(0);
+		}
+		else {
+			date.setHours(hours);
+			date.setMinutes(minutes);
+			date.setSeconds(seconds);
+		}
+	}
+*/	
 	
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -87,28 +126,33 @@ public class DateTimePickerScreen extends RhoActivity {
 		
 		long milliseconds = extras.getLong(INTENT_EXTRA_PREFIX + "init")*((long)1000);
 		
-		_init = new Date(milliseconds);
+		_init = new GregorianCalendar();
 
-		Calendar c = new GregorianCalendar();
-		c.setTimeInMillis(milliseconds);
-
-		int year = c.get(Calendar.YEAR);
-		int month = c.get(Calendar.MONTH);
-		int day = c.get(Calendar.DAY_OF_MONTH);
-		int hours = c.get(Calendar.HOUR_OF_DAY);
-		int minutes = c.get(Calendar.MINUTE);
-		int seconds = c.get(Calendar.SECOND);
-		
-		_init.setYear(year);
-		_init.setMonth(month);
-		_init.setDate(day);
-		_init.setHours(hours);
-		_init.setMinutes(minutes);
-		
-		
+		_init.setTimeInMillis(milliseconds);
 		
 		_fmt = extras.getInt(INTENT_EXTRA_PREFIX + "fmt");
 		_opaque = extras.getByteArray(INTENT_EXTRA_PREFIX + "opaque");
+		
+		_min_time = extras.getLong(INTENT_EXTRA_PREFIX + "min_time")*((long)1000);
+		_max_time = extras.getLong(INTENT_EXTRA_PREFIX + "max_time")*((long)1000);
+		
+		if (_min_time != 0) {
+			_min_Date = new GregorianCalendar();
+			_min_Date.setTimeInMillis(_min_time);
+			_min_Date.set(Calendar.HOUR_OF_DAY, 0);
+			_min_Date.set(Calendar.MINUTE, 0);
+			_min_Date.set(Calendar.SECOND, 0);
+			_min_Date.set(Calendar.MILLISECOND, 0);
+		}
+
+		if (_max_time != 0) {
+			_max_Date = new GregorianCalendar();
+			_max_Date.setTimeInMillis(_max_time);
+			_max_Date.set(Calendar.HOUR_OF_DAY, 0);
+			_max_Date.set(Calendar.MINUTE, 0);
+			_max_Date.set(Calendar.SECOND, 0);
+			_max_Date.set(Calendar.MILLISECOND, 0);
+		}
 		
 		this.setTitle(extras.getString(INTENT_EXTRA_PREFIX + "title"));
 		
@@ -120,10 +164,51 @@ public class DateTimePickerScreen extends RhoActivity {
 		_okButton.setOnClickListener(mOkListener);
 		_cancelButton.setOnClickListener(mCancelListener);
 		
-		_datePicker.init(year, month, day, null);
-		_timePicker.setCurrentHour(hours);
-		_timePicker.setCurrentMinute(minutes);
+		_datePicker.init(_init.get(Calendar.YEAR), _init.get(Calendar.MONTH), _init.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
+				public void	onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+					Logger.D(TAG, "onDateChanged( year="+String.valueOf(year)+", month="+String.valueOf(monthOfYear)+", day="+dayOfMonth);
+					Calendar new_date = new GregorianCalendar();
+					Calendar set_to = null;
+
+					new_date.set(Calendar.YEAR, year);
+					new_date.set(Calendar.MONTH, monthOfYear);
+					new_date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+					new_date.set(Calendar.HOUR_OF_DAY, 0);
+					new_date.set(Calendar.MINUTE, 0);
+					new_date.set(Calendar.SECOND, 0);
+					new_date.set(Calendar.MILLISECOND, 0);
+
+					//Logger.D(TAG, "            new_date: year="+String.valueOf(new_date.getYear())+", month="+String.valueOf(new_date.getMonth())+", day="+new_date.getDay());
+					
+					if (_min_time != 0) {
+						//Logger.D(TAG, "            min_date: year="+String.valueOf(_min_Date.getYear())+", month="+String.valueOf(_min_Date.getMonth())+", day="+_min_Date.getDay());
+						if (new_date.before(_min_Date)) {
+							set_to = _min_Date;
+						}
+					}
+					if (_max_time != 0) {
+						//Logger.D(TAG, "            max_date: year="+String.valueOf(_max_Date.getYear())+", month="+String.valueOf(_max_Date.getMonth())+", day="+_max_Date.getDay());
+						if (new_date.after(_max_Date)) {
+							set_to = _max_Date;
+						}
+					}
+					if (set_to != null) {
+						view.updateDate(set_to.get(Calendar.YEAR), set_to.get(Calendar.MONTH), set_to.get(Calendar.DAY_OF_MONTH));
+					}
+				}
+			}
+		);
 		
+		_timePicker.setCurrentHour(_init.get(Calendar.HOUR_OF_DAY));
+		_timePicker.setCurrentMinute(_init.get(Calendar.MINUTE));
+		_timePicker.setOnTimeChangedListener( new TimePicker.OnTimeChangedListener() {
+				public void onTimeChanged (TimePicker view, int hourOfDay, int minute) {
+				
+				}
+			}
+		);
+
 		switch (_fmt) {
 		case FORMAT_DATE:
 			_timePicker.setVisibility(View.INVISIBLE);
@@ -143,11 +228,18 @@ public class DateTimePickerScreen extends RhoActivity {
 		_cancelButton.setEnabled(v);
 	}
 	
-	private void sendResult(String callback, Date result, byte[] opaque) {
+	private void sendResult(String callback, Calendar result, byte[] opaque) {
 		this.setFieldsEnabled(false);
-		long res = result == null ? 0 : result.getTime()/((long)1000);
+		long res = result == null ? 0 : result.getTimeInMillis()/((long)1000);
 		Logger.D(TAG, "Return result: " + res);
 		DateTimePicker.callback(callback, res, opaque, result == null);
 		finish();
 	}
+	
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
+	
 }
