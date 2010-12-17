@@ -255,6 +255,7 @@ platform/bb/RubyVM/src/j2me/lang/UnsupportedOperationException.java
 platform/bb/RubyVM/src/j2me/math/HugeDigit.java
 platform/bb/RubyVM/src/j2me/math/HugeInt.java
 platform/bb/RubyVM/src/j2me/math/HugeIntHelper.java
+platform/bb/RubyVM/src/j2me/math/Number.java
 platform/bb/RubyVM/src/j2me/nio/Buffer.java
 platform/bb/RubyVM/src/j2me/nio/BufferUnderflowException.java
 platform/bb/RubyVM/src/j2me/nio/ByteBuffer.java

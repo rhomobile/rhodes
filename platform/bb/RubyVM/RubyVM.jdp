@@ -280,6 +280,7 @@ src\j2me\lang\UnsupportedOperationException.java
 src\j2me\math\HugeDigit.java
 src\j2me\math\HugeInt.java
 src\j2me\math\HugeIntHelper.java
+src\j2me\math\Number.java
 src\j2me\nio\Buffer.java
 src\j2me\nio\BufferUnderflowException.java
 src\j2me\nio\ByteBuffer.java

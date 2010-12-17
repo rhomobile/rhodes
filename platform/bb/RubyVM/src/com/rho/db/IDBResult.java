@@ -22,7 +22,8 @@ public interface IDBResult {
 	
 	//New
     public abstract boolean isEnd();
-    public abstract void next();
+    public abstract boolean isOneEnd() throws DBException;
+    public abstract void next() throws DBException;
 	public abstract String getStringByIdx(int nCol);
 	public abstract int getIntByIdx(int nCol);
 	public abstract long getLongByIdx(int nCol);
@@ -35,8 +36,9 @@ public interface IDBResult {
 	public abstract int getInt(String colname);
 	public abstract String getString(String colname);
 	
-	public abstract Object[] getCurData();
+	public abstract Object[] getCurData() throws DBException;
 	
     public abstract boolean isNonUnique();
-
+    
+    public abstract void close();
 }

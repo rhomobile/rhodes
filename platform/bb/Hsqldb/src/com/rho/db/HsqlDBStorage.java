@@ -203,6 +203,21 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 		
 		return vecTables;
 	}
+	
+	public boolean isTableExists(String strName)throws DBException
+	{
+		org.hsqldb.lib.HsqlArrayList arTables = m_dbSess.getDatabase().schemaManager.getAllTables();
+		
+		for ( int i = 0; i< arTables.size(); i++ )
+		{
+			String tableName = ((Table)arTables.get(i)).getName().name;
+			if ( tableName.equalsIgnoreCase(strName) )
+				return true;
+		}
+		
+		return false;
+	}
+	
 /*	
 	private String createInsertStatement(HsqlDBResult res)
 	{

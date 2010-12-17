@@ -170,7 +170,7 @@ public class SyncNotify {
                     if ( nNotifyType == enDelete.intValue() )
                     {
                         IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", strObject );
-                        if ( !res.isEnd() )
+                        if ( !res.isOneEnd() )
                             nNotifyType = enUpdate.intValue();    
                     }
 */
