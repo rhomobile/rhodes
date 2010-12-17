@@ -107,5 +107,7 @@ private:
 
 extern "C" void  choose_datetime(char* callback, char* title, 
 								 long initial_time, int format, char* data);
+extern "C" void  choose_datetime_with_range(char* callback, char* title, 
+								 long initial_time, int format, char* data, long min_time, long max_time);
 
 #endif //__DATETIMEPICKER_H__
