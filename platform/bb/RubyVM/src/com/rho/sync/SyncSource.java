@@ -166,7 +166,7 @@ class SyncSource
         m_nErrCode = RhoAppAdapter.ERR_NONE;
 
         IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
-        if ( !res.isEnd() )
+        if ( !res.isOneEnd() )
         {
         	m_token = res.getLongByIdx(0);
             m_bTokenFromDB = true;
@@ -254,7 +254,7 @@ class SyncSource
 	        boolean bSyncClient = false;
 	        {
 	            IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", getID());
-	            bSyncClient = !res.isEnd();
+	            bSyncClient = !res.isOneEnd();
 	        }
 	        if ( bSyncClient )
 	        {
@@ -271,7 +271,7 @@ class SyncSource
 	boolean isPendingClientChanges()throws DBException
 	{
 	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
-	    return !res.isEnd();
+	    return !res.isOneEnd();
 	}
 
 	void doSyncClientChanges()throws Exception
@@ -377,6 +377,7 @@ class SyncSource
 
 	    if ( res.isEnd() )
 	    {
+	    	res.close();
 	        getDB().Unlock();
 	        return strBody;
 	    }
@@ -789,7 +790,7 @@ class SyncSource
 
 	        if ( !getSync().isContinueSync() )
 	            return;
-	        
+
 	        IDBResult resInsert = getDB().executeSQLReportNonUniqueEx(strSqlInsert, vecValues );
 	        if ( resInsert.isNonUnique() )
 	        {
@@ -838,7 +839,7 @@ class SyncSource
 	        //Remove item if all nulls
 	        String strSelect = "SELECT * FROM " + getName() + " WHERE object=?";
 	        IDBResult res = getDB().executeSQL( strSelect, strObject );
-	        if ( !res.isEnd() )
+	        if ( !res.isOneEnd() )
 	        {
 	            boolean bAllNulls = true;
 	            for( int i = 0; i < res.getColCount(); i ++)
@@ -899,7 +900,7 @@ class SyncSource
 	        {
 	            String strSelect = "SELECT " + oAttrValue.m_strAttrib + " FROM " + getName() + " WHERE object=?";
 	            IDBResult res = getDB().executeSQL( strSelect, strObject);
-	            if (!res.isEnd())
+	            if (!res.isOneEnd())
 	            {
 	                strDbValue = res.getStringByIdx(0);
 	                bDownload = strDbValue == null || strDbValue.length() == 0;
@@ -909,7 +910,7 @@ class SyncSource
 	            IDBResult res = getDB().executeSQL(
 	                "SELECT value FROM object_values WHERE object=? and attrib=? and source_id=?",
 	                strObject, oAttrValue.m_strAttrib, getID() );
-	            if (!res.isEnd())
+	            if (!res.isOneEnd())
 	            {
 	                strDbValue = res.getStringByIdx(0);
 	                bDownload = strDbValue == null || strDbValue.length() == 0;
@@ -947,7 +948,7 @@ class SyncSource
 	    {
 	        if ( !processBlob(strCmd,strObject,oAttrValue) )
 	            return;
-	        
+
 	        IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values "+
 	                "(attrib, source_id, object, value) VALUES(?,?,?,?)", 
 	                oAttrValue.m_strAttrib, getID(), strObject, oAttrValue.m_strValue );

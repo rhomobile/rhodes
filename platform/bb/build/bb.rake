@@ -152,6 +152,7 @@ namespace "config" do
 
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
+    $use_sqlite = false #$bbver[0].to_i >= 5
     
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"
@@ -416,6 +417,7 @@ namespace "build" do
             f.puts "public class Capabilities {"
             f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
             f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
+            f.puts "  public static final boolean USE_SQLITE = #{$use_sqlite.to_s};"
             f.puts "}"
           end
 
@@ -536,7 +538,7 @@ namespace "build" do
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       sources = Dir.glob($builddir + "/../rhodes/resources/**/*") |
-      File.readlines($builddir + '/hsqldb_build.files').map { |l| l.strip! } |
+      ($use_sqlite ? [] : File.readlines($builddir + '/hsqldb_build.files').map { |l| l.strip! }) |
       File.readlines($builddir +'/rhodes_build.files').map { |l| l.strip! }
 
       sources.delete(nil)
@@ -595,7 +597,7 @@ namespace "build" do
         args << "-nowarn"
         args << "@#{vsrclist}"
         #args << "@RubyVM_build.files"
-        args << "@#{$builddir}/hsqldb_build.files"
+        args << "@#{$builddir}/hsqldb_build.files" if !$use_sqlite
         args << "@#{$builddir}/rhodes_build.files"
         puts "\texecuting javac"
         puts Jake.run(javac,args)
@@ -901,25 +903,14 @@ namespace "clean" do
   desc "Clean bb"
   task :bb => "clean:bb:all"
   namespace "bb" do
-#    desc "Clean preverified jars"
-    task :preverified => "config:bb" do
-      rm_rf $preverified if File.exists? $preverified
-    end
+    task :all => ["config:bb"] do
 
-#    desc "Clean packaged files"
-    task :packaged => "config:bb" do
-      rm_rf $targetdir +"/../"
-    end
-
-#    desc "Clean temp dir"
-    task :tempdir => "config:bb" do
-      rm_rf $tmpdir
-    end
-
-#    desc "Clean all"
-    task :all => [:preverified,:packaged,:tempdir] do
-      rm_rf $bindir
-      #rm_rf $rhobundledir
+      rm_rf $bindir +"/preverified" if File.exists? $bindir +"/preverified"
+      rm_rf $bindir +"/RhoBundle" if File.exists? $bindir +"/RhoBundle"
+      rm_rf $bindir +"/tmp" if File.exists? $bindir +"/tmp"
+      rm_rf $targetdir if File.exists? $targetdir
+      
+      rm_rf Dir.glob($bindir + "/*.jar")
     end
 
   end
