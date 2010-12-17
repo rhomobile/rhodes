@@ -15,12 +15,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_datetime_DateTimePicker_callba
     env->ReleaseByteArrayElements(opaqueObj, opaqueStr, 0);
 }
 
-RHO_GLOBAL void choose_datetime(char* callback, char* title, long initial_time, int format, char* data)
+RHO_GLOBAL void choose_datetime_with_range(char* callback, char* title, long initial_time, int format, char* data, long min_time, long max_time)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_DATE_TIME_PICKER);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "choose", "(Ljava/lang/String;Ljava/lang/String;JI[B)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "choose", "(Ljava/lang/String;Ljava/lang/String;JI[BJJ)V");
     if (!mid) return;
 
     jsize data_size = strlen(data);
@@ -30,9 +30,14 @@ RHO_GLOBAL void choose_datetime(char* callback, char* title, long initial_time, 
     jstring objCallback = rho_cast<jstring>(callback);
     jstring objTitle = rho_cast<jstring>(title);
     env->CallStaticVoidMethod(cls, mid, objCallback, objTitle,
-        (jlong)initial_time, format, opaqueObj);
+        (jlong)initial_time, format, opaqueObj, (jlong)min_time, (jlong)max_time);
     env->DeleteLocalRef(objCallback);
     env->DeleteLocalRef(objTitle);
     env->DeleteLocalRef(opaqueObj);
+}
+
+RHO_GLOBAL void choose_datetime(char* callback, char* title, long initial_time, int format, char* data)
+{
+    choose_datetime_with_range(callback, title, initial_time, format, data, 0, 0);
 }
 
