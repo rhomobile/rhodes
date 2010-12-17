@@ -121,7 +121,7 @@ module Rhom
                     res = db.select_from_table('object_values','object', {"source_id"=>get_source_id}, {"distinct"=>true}).length
                   end
                     
-                  res
+                  res.to_i()
                 end
 
                 def backend_refresh_time

@@ -369,11 +369,29 @@ module Rho
     def self.init_schema_sources(hash_migrate)
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_schema_sources'
+
+        ::Rho::RHO.get_db_partitions().each do |partition, db|
+            db.start_transaction
+            begin
+                init_schema_sources_partition(uniq_sources, hash_migrate, partition, db)
+                db.commit
+            rescue Exception => e
+                trace_msg = e.backtrace.join("\n")
+                puts "exception when init_schema_sources: #{e}; Trace:" + trace_msg
+                
+                db.rollback
+            end
+        end
         
+        puts 'END init_schema_sources'
+
+    end
+    
+    def self.init_schema_sources_partition(uniq_sources, hash_migrate, partition, db)
         uniq_sources.each do |source|
-          db = get_src_db(source['name'])
-          
+          next unless partition == source['partition']
           next unless source['schema']
+          
           raise ArgumentError, "schema parameter should be Hash!" unless source['schema'].is_a?(Hash)
           
           call_migrate = false
