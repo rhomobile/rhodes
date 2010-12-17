@@ -54,7 +54,24 @@ public class RhoClassFactory
 
     public static IDBStorage createDBStorage() throws Exception
     {
-    	return RhoClassFactory.createRhoRubyHelper().createDBStorage();
+        Class wrapperClass;
+        try {
+        	if (Capabilities.USE_SQLITE)
+        		wrapperClass = Class.forName("com.rho.db.SqliteStorage");
+        	else
+        		wrapperClass = Class.forName("com.rho.db.HsqlDBStorage");
+        } catch (ClassNotFoundException exc) {  
+        	throw exc;
+        }
+    	
+        try {
+        	return (IDBStorage)wrapperClass.newInstance();
+        }catch(Exception e)
+        {
+        	LOG.ERROR_OUT("createDBStorage - newInstance failed",e);    	
+        	
+        	throw e;
+        }
     }
 
     public static IRhoRubyHelper createRhoRubyHelper() throws Exception
