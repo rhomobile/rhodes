@@ -184,12 +184,21 @@ LRESULT CTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
     return 0;
 }
 
-void  choose_datetime(char* callback, char* title, 
-					  long initial_time, int format, char* data)
+
+void  choose_datetime_with_range(char* callback, char* title, 
+					  long initial_time, int format, char* data,
+					  long min_time, long max_time)
 {
 	LOG(INFO) + __FUNCTION__ + "callback = " + callback + " title = " + title;
 
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd, WM_DATETIME_PICKER, 0, 
 					(LPARAM)new CDateTimeMessage(callback, title, initial_time, format, data));
+}
+
+
+void  choose_datetime(char* callback, char* title, 
+					  long initial_time, int format, char* data)
+{
+	choose_datetime_with_range( callback, title, initial_time, format, data, 0, 0);
 }

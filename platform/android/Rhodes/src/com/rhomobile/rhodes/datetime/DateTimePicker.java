@@ -35,7 +35,7 @@ public class DateTimePicker {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 
-	public static void choose(String callback, String title, long init, int v, byte[] opaque) {
+	public static void choose(String callback, String title, long init, int v, byte[] opaque, long min_time, long max_time) {
 		try {
 			RhodesService r = RhodesService.getInstance();
 			Intent intent = new Intent(r.getContext(), DateTimePickerScreen.class);
@@ -44,6 +44,8 @@ public class DateTimePicker {
 			intent.putExtra(INTENT_EXTRA_PREFIX + "init", init);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "fmt", v);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "opaque", opaque);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "min_time", min_time);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "max_time", max_time);
 			
 			r.startActivity(intent);
 		}
