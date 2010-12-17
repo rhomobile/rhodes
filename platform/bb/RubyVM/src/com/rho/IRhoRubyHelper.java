@@ -1,6 +1,5 @@
 package com.rho;
 
-import com.rho.db.IDBStorage;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.rho.net.NetResponse;
@@ -11,7 +10,6 @@ public interface IRhoRubyHelper {
 	public abstract RubyProgram createMainObject() throws Exception;
 	public abstract String getPlatform();
 	
-	public abstract IDBStorage createDBStorage();
 	public abstract IFileAccess createFileAccess();
 	public abstract IRAFile createRAFile();
 	public abstract IRAFile createFSRAFile();

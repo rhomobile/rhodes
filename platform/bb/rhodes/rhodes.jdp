@@ -18,13 +18,15 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
-Hsqldb
 RhoBundle
 RubyVM
 ]
 ExcludeFromBuildAll=0
 [Files
 resources\icon.png
+src\com\rho\db\SqliteStorage.java
+src\com\rho\db\SqliteResult.java
+src\com\rho\db\SqliteCopyResult.java
 src\com\rho\BBVersionSpecific.java
 src\com\rho\BrowserAdapter.java
 src\com\rho\BrowserAdapter5.java
