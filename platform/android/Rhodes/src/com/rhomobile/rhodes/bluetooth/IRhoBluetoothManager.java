@@ -1,10 +1,6 @@
 package com.rhomobile.rhodes.bluetooth;
 
-import com.rhomobile.rhodes.util.PerformOnUiThread;
-
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.util.Log;
 
 public interface IRhoBluetoothManager {
 	

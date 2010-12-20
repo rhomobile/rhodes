@@ -164,18 +164,27 @@ public class Utils {
 	
 	public static boolean isAppHashChanged() {
 		try {
-			RhoService r = RhoService.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			File hash = new File(r.getRootPath(), "hash");
 			if (!hash.exists())
 				return true;
 			
-			FileSource as = new AssetsSource(r.getContext().getResources().getAssets());
+			FileSource as = new AssetsSource(r.getResources().getAssets());
 			FileSource fs = new FileSource();
 			return !Utils.isContentsEquals(as, "hash", fs, hash.getPath());
 		}
 		catch (IOException e) {
 			return true;
 		}
+	}
+	
+	public static void platformLog(String tag, String message) {
+		StringBuilder s = new StringBuilder();
+		s.append("ms[");
+		s.append(System.currentTimeMillis());
+		s.append("] ");
+		s.append(message);
+		android.util.Log.v(tag, s.toString());
 	}
 	
 }

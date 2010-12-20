@@ -13,7 +13,7 @@ import android.provider.Contacts.Organizations;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
 
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesService;
 
 @SuppressWarnings("deprecation")
 public class ContactAccessorOld implements ContactAccessor {
@@ -33,7 +33,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	private ContentResolver cr;
 	
 	public ContactAccessorOld() {
-		cr = RhoService.getInstance().getContext().getContentResolver();
+		cr = RhodesService.getInstance().getContentResolver();
 	}
 	
 	private void fillPhones(String id, Contact contact) {

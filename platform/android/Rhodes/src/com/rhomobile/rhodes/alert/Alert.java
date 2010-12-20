@@ -46,7 +46,7 @@ import android.widget.TextView;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
@@ -111,7 +111,6 @@ public class Alert {
 			m_strHide = strHide;
 		}
 		
-		@SuppressWarnings("unchecked")
 		public void run() 
 		{
 			if ( currentAlert != null )
@@ -142,7 +141,7 @@ public class Alert {
 			String callback = null;
 			Vector<CustomButton> buttons = new Vector<CustomButton>();
 			
-			Context ctx = RhoService.getInstance().getContext();
+			Context ctx = RhodesService.getInstance().getApplicationContext();
 			
 			if (params instanceof String) 
 			{
@@ -222,7 +221,7 @@ public class Alert {
 		if (message == null)
 			return;
 
-        Context ctx = RhoService.getInstance().getContext();
+        Context ctx = RhodesService.getInstance().getApplicationContext();
         
 		Dialog dialog = new Dialog(ctx);
 		dialog.setTitle(title);
@@ -327,7 +326,7 @@ public class Alert {
 			if (!Capabilities.VIBRATE_ENABLED)
 				throw new IllegalAccessException("VIBRATE disabled");
 			Logger.T(TAG, "vibrate: " + duration);
-			Context ctx = RhoService.getInstance().getContext();
+			Context ctx = RhodesService.getInstance().getApplicationContext();
 			Vibrator vibrator = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
 			vibrator.vibrate(duration);
 		}
@@ -352,7 +351,7 @@ public class Alert {
 				}
 			});
 			fileName = RhoFileApi.normalizePath("apps/" + fileName);
-			File f = new File(RhoService.getInstance().getRootPath());
+			File f = new File(RhodesService.getInstance().getRootPath());
 			f = new File(f, fileName);
 			if (!f.exists())
 				RhoFileApi.copy(fileName);

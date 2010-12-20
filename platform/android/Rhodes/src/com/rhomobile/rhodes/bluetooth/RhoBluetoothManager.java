@@ -1,31 +1,9 @@
 package com.rhomobile.rhodes.bluetooth;
 
-import java.security.BasicPermission;
-import java.security.Permission;
-
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.content.pm.FeatureInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.rhomobile.rhodes.RhoService;
-import com.rhomobile.rhodes.phonebook.ContactAccessor;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-
 
 public class RhoBluetoothManager {
 

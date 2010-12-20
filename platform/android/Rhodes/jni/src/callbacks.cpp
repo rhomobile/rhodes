@@ -37,7 +37,7 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
 RHO_GLOBAL VALUE rho_sys_has_network()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return rho_ruby_create_boolean(0);
     jmethodID mid = getJNIClassStaticMethod(env, cls, "hasNetwork", "()Z");
     if (!mid) return rho_ruby_create_boolean(0);
@@ -47,7 +47,7 @@ RHO_GLOBAL VALUE rho_sys_has_network()
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
@@ -90,7 +90,7 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     JNIEnv *env = jnienv();
 
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return 0;
@@ -143,7 +143,7 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
 RHO_GLOBAL int rho_sys_set_sleeping(int sleeping) {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "rho_sys_set_sleeping", "(I)I");
     if (!mid) return 0;
@@ -180,7 +180,7 @@ RHO_GLOBAL int rho_sys_get_screen_height()
 RHO_GLOBAL void rho_sys_app_exit()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
     if (!mid) return;
@@ -190,7 +190,7 @@ RHO_GLOBAL void rho_sys_app_exit()
 RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "runApplication", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
@@ -201,7 +201,7 @@ RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
 RHO_GLOBAL void rho_sys_open_url(const char *url)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
     if (!mid) return;
@@ -211,7 +211,7 @@ RHO_GLOBAL void rho_sys_open_url(const char *url)
 RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isAppInstalled", "(Ljava/lang/String;)Z");
     if (!mid) return 0;
@@ -221,7 +221,7 @@ RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
 RHO_GLOBAL void rho_sys_app_install(const char *url)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "installApplication", "(Ljava/lang/String;)V");
     if (!mid) return;
@@ -231,7 +231,7 @@ RHO_GLOBAL void rho_sys_app_install(const char *url)
 RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "uninstallApplication", "(Ljava/lang/String;)V");
     if (!mid) return;
