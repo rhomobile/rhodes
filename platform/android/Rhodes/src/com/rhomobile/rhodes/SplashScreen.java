@@ -14,7 +14,7 @@ import android.widget.ImageView;
 
 public class SplashScreen {
 	
-	private static final String TAG = SplashScreen.class.getName();
+	private static final String TAG = SplashScreen.class.getSimpleName();
 	
 	private static final boolean DEBUG = false;
 	

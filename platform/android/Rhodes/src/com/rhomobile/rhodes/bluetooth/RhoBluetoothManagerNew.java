@@ -1,30 +1,15 @@
 package com.rhomobile.rhodes.bluetooth;
 
 
-import java.security.BasicPermission;
-import java.security.Permission;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.rhomobile.rhodes.RhoService;
-import com.rhomobile.rhodes.phonebook.ContactAccessor;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
@@ -61,7 +46,6 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
     
     private String mRole;
 	
-	
 	private Activity mActivity;
 	
 	public RhoBluetoothManagerNew () {
@@ -70,13 +54,13 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	
 	public void init() {
 		// constructor
-		mActivity = RhoService.getInstance().getMainActivity();
+		mActivity = RhodesActivity.getInstance();
 		mDeviceName = "NONAME";
 		
 		
 		mBluetoothIsEnabled = false;
 		// check feature
-		PackageManager pm = RhoService.getInstance().getContext().getPackageManager();
+		PackageManager pm = RhodesService.getInstance().getPackageManager();
 		FeatureInfo[] fs = pm.getSystemAvailableFeatures();
 		int i;
 		for (i = 0; i < fs.length; i++) {
@@ -177,7 +161,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 					fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
 				}
 				else {
-					fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_DISCONNECT);
+					fireSessionCallback(mConnectedDeviceName, RhoBluetoothSession.BT_SESSION_DISCONNECT);
 				}
 			}
 	   },false);
@@ -188,7 +172,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	   PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 		       mInput.append(message);
-		       fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_INPUT_DATA_RECEIVED);
+		       fireSessionCallback(mConnectedDeviceName, RhoBluetoothSession.BT_SESSION_INPUT_DATA_RECEIVED);
 			}
 	   },false);
    }
@@ -261,7 +245,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		    	if(D) Log.i(TAG, "startClient");
 		        Intent serverIntent = new Intent(mActivity, RhoBluetoothDeviceListActivity.class);
 		        //mActivity.startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-		        RhoService.getInstance().startActivity(serverIntent);
+		        RhodesService.getInstance().startActivity(serverIntent);
 			}
 		},false);
 	}
@@ -274,7 +258,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
 		            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 		            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-		            RhoService.getInstance().startActivity(discoverableIntent);
+		            RhodesService.getInstance().startActivity(discoverableIntent);
 		        }
 			}
 		},false);

@@ -63,14 +63,12 @@ public class RhoMenu {
 		RhodesService r = RhodesService.getInstance();
 		MainView mainView = r.getMainView();
 		
-		RhodesAppOptions opts = r.getOptions();
-		
 		String type = ri.type;
 		if (type.equalsIgnoreCase("refresh")) {
 			mainView.reload(mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("home")) {
-			mainView.navigate(opts.getStartUrl(), mainView.activeTab());
+			mainView.navigate(RhodesAppOptions.getStartUrl(), mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("back")) {
 			mainView.back(mainView.activeTab());
@@ -79,19 +77,19 @@ public class RhoMenu {
 			mainView.forward(mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("options")) {
-			mainView.navigate(opts.getOptionsUrl(), mainView.activeTab());
+			mainView.navigate(RhodesAppOptions.getOptionsUrl(), mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("sync")) {
 			r.doSyncAllSources(true);
 		}
 		else if (type.equalsIgnoreCase("log")) {
-			RhoService.showLogView();
+			RhodesService.showLogView();
 		}
 		else if (type.equalsIgnoreCase("logOptions")) {
-			RhoService.showLogOptions();
+			RhodesService.showLogOptions();
 		}
 		else if (type.equalsIgnoreCase("close") || type.equalsIgnoreCase("exit")) {
-			RhoService.exit();
+			RhodesService.exitApp();
 		}
 		else if (type.equalsIgnoreCase("url")) {
 			String url = ri.url;

@@ -12,7 +12,7 @@ import android.os.Build;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesService;
 
 public class EventStore {
 	
@@ -69,7 +69,7 @@ public class EventStore {
 	}
 	
 	private static ContentResolver getContentResolver() {
-		return RhoService.getInstance().getContext().getContentResolver();
+		return RhodesService.getInstance().getContentResolver();
 	}
 	
 	private static long getDefaultCalendarId() {
