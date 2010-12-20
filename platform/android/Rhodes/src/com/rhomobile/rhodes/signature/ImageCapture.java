@@ -27,7 +27,7 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesService;
 
 import android.content.ContentValues;
@@ -44,7 +44,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class ImageCapture extends RhoActivity implements OnClickListener
+public class ImageCapture extends BaseActivity implements OnClickListener
  {
 	
 	private static final String TAG = "ImageCapture";
