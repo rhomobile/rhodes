@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
 import android.content.Context;
@@ -83,8 +83,8 @@ public class TabbedMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params) {
-		RhoService r = RhoService.getInstance();
-		Context ctx = r.getContext();
+		RhodesService r = RhodesService.getInstance();
+		Context ctx = r.getApplicationContext();
 		
 		Vector<Object> tabs = null;
 		if (params instanceof Vector<?>)
@@ -103,7 +103,6 @@ public class TabbedMainView implements MainView {
 		int size = tabs.size();
 		
 		host = new TabHost(ctx);
-		host.setId(RhoService.RHO_MAIN_VIEW);
 		
 		tabData = new Vector<TabData>(size);
 		tabIndex = 0;
@@ -131,7 +130,7 @@ public class TabbedMainView implements MainView {
 					tabIndex = Integer.parseInt(tabId);
 					TabData data = tabData.elementAt(tabIndex);
 					if (data.reload || !data.loaded) {
-						RhoService.loadUrl(data.url);
+						RhodesService.loadUrl(data.url);
 						data.loaded = true;
 					}
 				}
@@ -143,7 +142,7 @@ public class TabbedMainView implements MainView {
 		
 		TabHost.TabSpec spec;
 		DisplayMetrics metrics = new DisplayMetrics();
-		WindowManager wm = (WindowManager)RhoService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(metrics);
 		
 		for (int i = 0; i < size; ++i) {
@@ -182,7 +181,7 @@ public class TabbedMainView implements MainView {
 				String iconPath = RhoFileApi.normalizePath(icon);
 				Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 				if (bitmap != null)
-					bitmap.setDensity(metrics.DENSITY_MEDIUM);//Bitmap.DENSITY_NONE);
+					bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);//Bitmap.DENSITY_NONE);
 					drawable = new BitmapDrawable(bitmap);
 					drawable.setTargetDensity(metrics);
 			}

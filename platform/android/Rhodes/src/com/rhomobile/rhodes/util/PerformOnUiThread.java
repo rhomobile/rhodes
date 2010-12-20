@@ -1,7 +1,7 @@
 package com.rhomobile.rhodes.util;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesActivity;
 
 public class PerformOnUiThread implements Runnable {
 	
@@ -29,8 +29,8 @@ public class PerformOnUiThread implements Runnable {
 	
 	public static void exec(Runnable r, int delay) {
 		try {
-			RhoService rhodes = RhoService.getInstance();
-			rhodes.post(r, delay);
+			RhodesActivity ra = RhodesActivity.getInstance();
+			ra.post(r, delay);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "exec failed: " + e.getMessage());
@@ -39,20 +39,20 @@ public class PerformOnUiThread implements Runnable {
 	
 	public static void exec(Runnable r, boolean wait) {
 		try {
-			RhoService rhodes = RhoService.getInstance();
+			RhodesActivity ra = RhodesActivity.getInstance();
 			if (!wait) {
-				rhodes.post(r);
+				ra.post(r);
 			}
 			else {
 				long thrId = Thread.currentThread().getId();
-				if (rhodes.getUiThreadId() == thrId) {
+				if (ra.getUiThreadId() == thrId) {
 					// We are already in UI thread
 					r.run();
 				}
 				else {
 					// Post request to UI thread and wait when it would be done
 					synchronized (r) {
-						rhodes.post(new PerformOnUiThread(r));
+						ra.post(new PerformOnUiThread(r));
 						r.wait();
 					}
 				}

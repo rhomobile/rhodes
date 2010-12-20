@@ -28,13 +28,12 @@ import java.util.Date;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesAppOptions;
 
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
 import android.view.KeyEvent;
@@ -151,12 +150,11 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 			values.put(Media.DATE_TAKEN, new Date().getTime());
 			values.put(Media.MIME_TYPE, file_type);
 			values.put(Media.DESCRIPTION, "Handwrited Signature");
-	
-			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-			String dir = RhoService.getBlobPath();
+
+			String dir = RhodesAppOptions.getBlobPath();
 			
+			//Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
 			//OutputStream osCommon = getContentResolver().openOutputStream(uri);
-	
 			
 			String filePath = dir + "/" + filename + "." + file_ext;
 			OutputStream osOwn = new FileOutputStream(filePath);

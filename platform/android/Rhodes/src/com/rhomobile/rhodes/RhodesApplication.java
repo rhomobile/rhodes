@@ -41,6 +41,17 @@ public class RhodesApplication extends Application {
 			action.run();
 		}
 		
+		try {
+			RhodesService r = RhodesService.getInstance();
+			if (r != null)
+				r.stopSelf();
+		}
+		catch (Exception e) {}
+		
+		RhodesActivity ra = RhodesActivity.getInstance();
+		if (ra != null)
+			ra.finish();
+		
 		Process.killProcess(Process.myPid());
 	}
 	

@@ -28,7 +28,8 @@ import java.util.List;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesAppOptions;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
 
 import android.database.Cursor;
@@ -78,7 +79,7 @@ public class FileList extends BaseActivity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		getWindow().setFlags(RhoService.WINDOW_FLAGS, RhoService.WINDOW_MASK);
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		setContentView(AndroidR.layout.directory_list);
 		
 		Bundle extras = getIntent().getExtras();
@@ -134,7 +135,7 @@ public class FileList extends BaseActivity implements OnClickListener{
 		try {
 			String dst = null;
 			if (file != null && file.length() > 0) {
-				dst = RhoService.getBlobPath() + "/" + Utils.getBaseName(file);
+				dst = RhodesAppOptions.getBlobPath() + "/" + Utils.getBaseName(file);
 				Utils.copy(file, dst);
 			}
 			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, dst == null ? "" : dst);
