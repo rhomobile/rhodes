@@ -1,7 +1,5 @@
 package com.rhomobile.rhodes.webview;
 
-import com.rhomobile.rhodes.RhoService;
-
 import android.content.Context;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -14,11 +12,11 @@ public class RhoWebSettingsNew implements RhoWebSettings {
 		
 		webSettings.setAppCacheEnabled(true);
 		
-		
 		webSettings.setDatabaseEnabled(true);
-		webSettings.setJavaScriptEnabled(true); 
+		webSettings.setJavaScriptEnabled(true);
 		
-		String databasePath = RhoService.getInstance().getContext().getDir("database", Context.MODE_PRIVATE).getPath();
+		Context context = w.getContext().getApplicationContext();
+		String databasePath = context.getDir("database", Context.MODE_PRIVATE).getPath();
 		webSettings.setDatabasePath(databasePath);
 		 
 		return webSettings;
