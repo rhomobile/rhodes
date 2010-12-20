@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
 import android.content.Context;
@@ -83,7 +83,7 @@ public class TabbedMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params) {
-		RhodesService r = RhodesService.getInstance();
+		RhoService r = RhoService.getInstance();
 		Context ctx = r.getContext();
 		
 		Vector<Object> tabs = null;
@@ -103,7 +103,7 @@ public class TabbedMainView implements MainView {
 		int size = tabs.size();
 		
 		host = new TabHost(ctx);
-		host.setId(RhodesService.RHO_MAIN_VIEW);
+		host.setId(RhoService.RHO_MAIN_VIEW);
 		
 		tabData = new Vector<TabData>(size);
 		tabIndex = 0;
@@ -131,7 +131,7 @@ public class TabbedMainView implements MainView {
 					tabIndex = Integer.parseInt(tabId);
 					TabData data = tabData.elementAt(tabIndex);
 					if (data.reload || !data.loaded) {
-						RhodesService.loadUrl(data.url);
+						RhoService.loadUrl(data.url);
 						data.loaded = true;
 					}
 				}
@@ -143,7 +143,7 @@ public class TabbedMainView implements MainView {
 		
 		TabHost.TabSpec spec;
 		DisplayMetrics metrics = new DisplayMetrics();
-		WindowManager wm = (WindowManager)RhodesService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager)RhoService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(metrics);
 		
 		for (int i = 0; i < size; ++i) {

@@ -1,6 +1,6 @@
 #include <android/log.h>
 
-#include "rhodes/jni/com_rhomobile_rhodes_RhodesService.h"
+#include "rhodes/jni/com_rhomobile_rhodes_RhoService.h"
 
 #include <common/RhoConf.h>
 #include <common/app_build_configs.h>
@@ -354,7 +354,7 @@ VALUE rho_cast_helper<VALUE, jobject>::operator()(JNIEnv *env, jobject obj)
 
 } // namespace details
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_makeLink
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_makeLink
   (JNIEnv *env, jclass, jstring src, jstring dst)
 {
     // We should not use rho_cast functions here because this function
@@ -404,7 +404,7 @@ jclass rho_find_class(JNIEnv *env, const char *c)
     return cls;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_initClassLoader
   (JNIEnv *env, jobject, jobject cl)
 {
     g_classLoader = env->NewGlobalRef(cl);
@@ -412,7 +412,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
     g_loadClass = env->GetMethodID(javaLangClassLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_nativeInitPath
   (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path, jstring apk_path)
 {
     g_root_path = rho_cast<std::string>(env, root_path);
@@ -420,7 +420,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
     g_apk_path = rho_cast<std::string>(env, apk_path);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_createRhodesApp
   (JNIEnv *env, jobject)
 {
     jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
@@ -470,74 +470,74 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
     rho_rhodesapp_create(szRootPath);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_startRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_startRhodesApp
   (JNIEnv *env, jobject obj)
 {
     rho_rhodesapp_start();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_stopRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_stopRhodesApp
   (JNIEnv *, jobject)
 {
     rho_rhodesapp_destroy();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncAllSources
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_doSyncAllSources
   (JNIEnv *, jobject, jboolean show_status_popup)
 {
     rho_sync_doSyncAllSources(show_status_popup);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_doSyncSource
   (JNIEnv *env, jobject, jstring sourceObj)
 {
     std::string source = rho_cast<std::string>(env, sourceObj);
     rho_sync_doSyncSourceByName(source.c_str());
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getOptionsUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_getOptionsUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getStartUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_getStartUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getCurrentUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_getCurrentUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getAppBackUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_getAppBackUrl
   (JNIEnv *env, jobject)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBlobPath
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_getBlobPath
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getBlobsDirPath().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_doRequest
   (JNIEnv *env, jobject, jstring strUrl)
 {
     std::string const &url = rho_cast<std::string>(strUrl);
     rho_net_request(url.c_str());
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_normalizeUrl
   (JNIEnv *env, jobject, jstring strUrl)
 {
     std::string const &s = rho_cast<std::string>(strUrl);
@@ -545,8 +545,8 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
     return rho_cast<jstring>(env, cs);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
-  (JNIEnv *env, jobject, jstring key)
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoService_getBuildConfig
+  (JNIEnv *env, jclass, jstring key)
 {
     std::string const &s = rho_cast<std::string>(key);
     const char* cs = get_app_build_config_item(s.c_str());
@@ -554,39 +554,39 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfi
 }
 
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_navigateBack
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_navigateBack
   (JNIEnv *, jclass)
 {
     rho_rhodesapp_navigate_back();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_loadUrl
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_loadUrl
   (JNIEnv *env, jclass, jstring str)
 {
     rho_rhodesapp_load_url(rho_cast<std::string>(env, str).c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientationChanged
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_onScreenOrientationChanged
   (JNIEnv *env, jclass, jint width, jint height, jint angle)
 {
 	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
 	//RAWLOG_ERROR3("$$$$$$$$$$$$$$$$ SCREEN : [%d]x[%d] angle[%d]", width, height, angle);	
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCallback
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_callActivationCallback
   (JNIEnv *, jobject, jboolean active)
 {
     rho_rhodesapp_callAppActiveCallback(active);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoService_setPushRegistrationId
   (JNIEnv *env, jobject, jstring jId)
 {
     std::string id = rho_cast<std::string>(env, jId);
     rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, id.c_str());
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoService_callPushCallback
   (JNIEnv *env, jobject, jstring jData)
 {
     std::string data = rho_cast<std::string>(env, jData);
@@ -599,7 +599,7 @@ RHO_GLOBAL char *rho_timezone()
     if (!tz)
     {
         JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHO_SERVICE);
         if (!cls) return NULL;
         jmethodID mid = getJNIClassStaticMethod(env, cls, "getTimezoneStr", "()Ljava/lang/String;");
         if (!mid) return NULL;

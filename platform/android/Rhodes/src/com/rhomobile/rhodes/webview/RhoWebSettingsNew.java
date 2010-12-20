@@ -1,6 +1,6 @@
 package com.rhomobile.rhodes.webview;
 
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 
 import android.content.Context;
 import android.webkit.WebSettings;
@@ -18,7 +18,7 @@ public class RhoWebSettingsNew implements RhoWebSettings {
 		webSettings.setDatabaseEnabled(true);
 		webSettings.setJavaScriptEnabled(true); 
 		
-		String databasePath = RhodesService.getInstance().getContext().getDir("database", Context.MODE_PRIVATE).getPath();
+		String databasePath = RhoService.getInstance().getContext().getDir("database", Context.MODE_PRIVATE).getPath();
 		webSettings.setDatabasePath(databasePath);
 		 
 		return webSettings;

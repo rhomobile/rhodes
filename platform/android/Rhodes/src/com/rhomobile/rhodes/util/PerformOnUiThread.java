@@ -1,7 +1,7 @@
 package com.rhomobile.rhodes.util;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 
 public class PerformOnUiThread implements Runnable {
 	
@@ -29,7 +29,7 @@ public class PerformOnUiThread implements Runnable {
 	
 	public static void exec(Runnable r, int delay) {
 		try {
-			RhodesService rhodes = RhodesService.getInstance();
+			RhoService rhodes = RhoService.getInstance();
 			rhodes.post(r, delay);
 		}
 		catch (Exception e) {
@@ -39,7 +39,7 @@ public class PerformOnUiThread implements Runnable {
 	
 	public static void exec(Runnable r, boolean wait) {
 		try {
-			RhodesService rhodes = RhodesService.getInstance();
+			RhoService rhodes = RhoService.getInstance();
 			if (!wait) {
 				rhodes.post(r);
 			}

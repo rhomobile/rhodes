@@ -22,7 +22,7 @@ package com.rhomobile.rhodes.geolocation;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class GeoLocation {
@@ -50,7 +50,7 @@ public class GeoLocation {
 				Logger.D(TAG, "Stop geolocation service by timeout");
 				GeoLocation.stop();
 			}
-		}, RhodesService.getGeoLocationInactivityTimeout());
+		}, RhoService.getGeoLocationInactivityTimeout());
 	}
 	
 	private static GeoLocationImpl getImpl() {

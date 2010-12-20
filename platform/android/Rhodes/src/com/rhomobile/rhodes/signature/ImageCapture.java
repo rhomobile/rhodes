@@ -28,7 +28,7 @@ import java.util.Date;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
@@ -153,7 +153,7 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 			values.put(Media.DESCRIPTION, "Handwrited Signature");
 	
 			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-			String dir = RhodesService.getBlobPath();
+			String dir = RhoService.getBlobPath();
 			
 			//OutputStream osCommon = getContentResolver().openOutputStream(uri);
 	
