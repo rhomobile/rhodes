@@ -27,7 +27,7 @@ import java.util.List;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
 
@@ -46,7 +46,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class FileList extends RhoActivity implements OnClickListener{
+public class FileList extends BaseActivity implements OnClickListener{
 
 	private static final String TAG = "FileList";
 	

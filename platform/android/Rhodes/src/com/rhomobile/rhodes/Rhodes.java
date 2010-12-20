@@ -23,7 +23,9 @@ package com.rhomobile.rhodes;
 import java.util.Timer;
 
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -33,13 +35,14 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 
-public class Rhodes extends RhoActivity {
+public class Rhodes extends BaseActivity {
 
 	private static final String TAG = "Rhodes";
 	
@@ -57,6 +60,25 @@ public class Rhodes extends RhoActivity {
 	private Handler mHandler = null;
 	
 	private Object mStartParams = null;
+	
+	private void showSplashScreen() {
+		mSplashScreen = new SplashScreen(getApplicationContext());
+		mSplashScreen.start(mOuterFrame);
+	}
+
+	public void hideSplashScreen() {
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				if (mSplashScreen != null) {
+					mSplashScreen.hide(mOuterFrame);
+					mSplashScreen = null;
+				}
+				View view = RhodesService.getInstance().getMainView().getView();
+				view.setVisibility(View.VISIBLE);
+				view.requestFocus();
+			}
+		}, false);
+	}
 		
 	/** Called when the activity is first created. */
 	@Override
@@ -77,7 +99,8 @@ public class Rhodes extends RhoActivity {
 		FrameLayout v = new FrameLayout(this);
 		mOuterFrame = v;
 		
-		mSplashScreen = RhodesService.showSplashScreen(this, mOuterFrame);
+		showSplashScreen();
+		
 		mSavedBundle = savedInstanceState;
 
 		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
@@ -102,8 +125,9 @@ public class Rhodes extends RhoActivity {
 		
 		RhodesService service = RhodesService.getInstance();
 		if (service == null) {
+			mSplashScreen.rho_start();
 			Log.v(TAG, "Starting rhodes service...");
-			service = new RhodesService(this, mOuterFrame, mSplashScreen, mStartParams);
+			service = new RhodesService(this, mOuterFrame, mStartParams);
 		}
 		else
 			Log.v(TAG, "Rhodes service already started...");
@@ -132,8 +156,10 @@ public class Rhodes extends RhoActivity {
 	
 	private Timer mTimerPostponeCreate = null;
 	
+	@Override
 	public void onResume() {
 		super.onResume();
+		instance = this;
 		RhodesService.platformLog("Rhodes", "onResume()");
 	}
 	
@@ -145,6 +171,16 @@ public class Rhodes extends RhoActivity {
 					r.onCreatePosponed();
 				}
 			});
+	}
+	
+	@Override
+	public void onPause() {
+		instance = null;
+	}
+	
+	@Override
+	public void onStop() {
+		instance = null;
 	}
 	
 	@Override
@@ -179,10 +215,6 @@ public class Rhodes extends RhoActivity {
 		if (appMenu == null)
 			return false;
 		return appMenu.onMenuItemSelected(item);
-	}
-	
-	static {
-		NativeLibraries.load();
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {

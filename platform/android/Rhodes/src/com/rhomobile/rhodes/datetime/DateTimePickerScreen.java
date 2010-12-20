@@ -29,7 +29,7 @@ import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesService;
 
 
@@ -42,7 +42,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-public class DateTimePickerScreen extends RhoActivity {
+public class DateTimePickerScreen extends BaseActivity {
 	
 	private static final String TAG = "DateTimePicker";
 	
