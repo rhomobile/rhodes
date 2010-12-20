@@ -136,3 +136,5 @@ platform/bb/rhodes/rhodes.jar
 *.xcworkspace
 xcuserdata
 
+Manifest.java
+
