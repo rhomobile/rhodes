@@ -60,7 +60,7 @@ def make_application_build_config_header_file
   
   File.open(inc_file, "w") do |f|
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-    f.puts "// Generated #{Time.now.to_s}"
+    #f.puts "// Generated #{Time.now.to_s}"
     f.puts ""
     f.puts "#include <string.h>"
     f.puts ""
@@ -106,7 +106,7 @@ def make_application_build_config_java_file
 
       File.open(file_name, "w") do |f|
         f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-        f.puts "// Generated #{Time.now.to_s}"
+        #f.puts "// Generated #{Time.now.to_s}"
         
         f.puts "package com.rho;"
         f.puts ""
@@ -367,7 +367,7 @@ def init_extensions(startdir, dest)
       if exists.sort! != extentries.sort!
         File.open(exts, "w") do |f|
           f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-          f.puts "// Generated #{Time.now.to_s}"
+          #f.puts "// Generated #{Time.now.to_s}"
           if $config["platform"] == "wm" || $config["platform"] == "win32"
             # Add libraries through pragma
             extlibs.each do |lib|
