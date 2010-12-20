@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -40,6 +42,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -53,10 +58,12 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Process;
 import android.telephony.TelephonyManager;
@@ -73,7 +80,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RemoteViews;
 
-public class RhodesService {
+public class RhodesService extends Service {
 	
 	private final static String TAG = "RhodesService";
 
@@ -95,6 +102,24 @@ public class RhodesService {
 	public static RhodesService getInstance() {
 		return instance;
 	}
+	
+	private class LocalBinder extends Binder {
+		RhodesService getService() {
+			return RhodesService.this;
+		}
+	};
+	
+	private final IBinder mBinder = new LocalBinder();
+	
+	@SuppressWarnings("unchecked")
+	private static final Class[] mStartForegroundSignature = new Class[] {int.class, Notification.class};
+	@SuppressWarnings("unchecked")
+	private static final Class[] mStopForegroundSignature = new Class[] {boolean.class};
+	
+	private Method mStartForeground;
+	private Method mStopForeground;
+	
+	private NotificationManager mNM;
 	
 	private Activity ctx;
 	
@@ -154,8 +179,6 @@ public class RhodesService {
 		uiHandler.postDelayed(r, delay);
 	}
 	
-	private NotificationManager mNM;
-	
 	private static int screenWidth;
 	private static int screenHeight;
 	private static int screenOrientation;
@@ -167,8 +190,6 @@ public class RhodesService {
 	
 	private WebChromeClient chromeClient;
 	private RhoWebSettings webSettings;
-	
-	private SplashScreen splashScreen = null;
 	
 	private ViewGroup outerFrame = null;
 	private MainView mainView;
@@ -310,24 +331,16 @@ public class RhodesService {
 		return mGeoLocationInactivityTimeout;
 	}
 	
-	public static SplashScreen showSplashScreen(Context ctx, ViewGroup myOuterFrame) {
-		SplashScreen splashScreen = new SplashScreen(ctx);
-		splashScreen.start(myOuterFrame);
-		return splashScreen;
-	}
-
-	public void hideSplashScreen() {
-		PerformOnUiThread.exec(new Runnable() {
-					public void run() {
-		if (splashScreen != null) {
-			splashScreen.hide(outerFrame);
-			splashScreen = null;
+	private static boolean mSplashHidden = false;
+	
+	private static void hideSplashScreenIfNeeded(Rhodes ra, String url) {
+		if (ra == null)
+			return;
+		
+		if (!mSplashHidden && url.startsWith("http://")) {
+			ra.hideSplashScreen();
+			mSplashHidden = true;
 		}
-		View view = mainView.getView();
-		view.setVisibility(View.VISIBLE);
-		view.requestFocus();
-		}
-				}, false);
 	}
 	
 	public static WebView createLoadingWebView(Context ctx) {
@@ -339,7 +352,6 @@ public class RhodesService {
 
 		w.setWebViewClient(new WebViewClient() {
 			
-			private boolean splashHidden = false;
 			private boolean setupExecuted = false;
 			
 			@Override
@@ -349,16 +361,12 @@ public class RhodesService {
 			
 			@Override
 			public void onPageFinished(WebView view, String url) {
-				RhodesService rs = RhodesService.getInstance();
-				if (rs != null) {
-					if (!splashHidden && url.startsWith("http://")) {
-						rs.hideSplashScreen();
-						splashHidden = true;
-					}
-				}
-				//if (ENABLE_LOADING_INDICATION)
-				Rhodes.getInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				Rhodes ra = Rhodes.getInstance();
+				hideSplashScreenIfNeeded(ra, url);
+				if (ra != null)
+					ra.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
+				
 				if (!setupExecuted) {
 					Rhodes.runPostponedSetup();
 					setupExecuted = true;
@@ -383,8 +391,6 @@ public class RhodesService {
 
 		w.setWebViewClient(new WebViewClient() {
 			
-			private boolean splashHidden = false;
-
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				return handleUrlLoading(url);
@@ -401,16 +407,15 @@ public class RhodesService {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				// Set title
-				Rhodes r = Rhodes.getInstance();
-				String title = view.getTitle();
-				r.setTitle(title);
-				// Hide splash screen
-				if (!splashHidden && url.startsWith("http://")) {
-					hideSplashScreen();
-					splashHidden = true;
+				Rhodes ra = Rhodes.getInstance();
+				hideSplashScreenIfNeeded(ra, url);
+				
+				if (ra != null) {
+					String title = view.getTitle();
+					ra.setTitle(title);
+					ra.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				}
-				//if (ENABLE_LOADING_INDICATION)
-					r.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
+				
 				super.onPageFinished(view, url);
 			}
 
@@ -480,15 +485,83 @@ public class RhodesService {
 		return instance != null;
 	}
 	
-	public RhodesService(Activity c, ViewGroup rootWindow, SplashScreen splash_s, Object params) {
+	public void startServiceForeground(int id, Notification notification) {
+		if (mStartForeground != null) {
+			try {
+				mStartForeground.invoke(this, new Object[] {Integer.valueOf(id), notification});
+			}
+			catch (InvocationTargetException e) {
+				Log.e(TAG, "Unable to invoke startForeground", e);
+			}
+			catch (IllegalAccessException e) {
+				Log.e(TAG, "Unable to invoke startForeground", e);
+			}
+			return;
+		}
+		
+		setForeground(true);
+		mNM.notify(id, notification);
+	}
+	
+	public void stopServiceForeground(int id) {
+		if (mStopForeground != null) {
+			try {
+				mStopForeground.invoke(this, new Object[] {Integer.valueOf(id)});
+			}
+			catch (InvocationTargetException e) {
+				Log.e(TAG, "Unable to invoke stopForeground", e);
+			}
+			catch (IllegalAccessException e) {
+				Log.e(TAG, "Unable to invoke stopForeground", e);
+			}
+			return;
+		}
+		
+		mNM.cancel(id);
+		setForeground(false);
+	}
+	
+	@Override
+	public IBinder onBind(Intent arg0) {
+		return mBinder;
+	}
+	
+	@Override
+	public void onCreate() {
+		// TODO:
+		try {
+			mStartForeground = getClass().getMethod("startForeground", mStartForegroundSignature);
+			mStopForeground = getClass().getMethod("stopForeground", mStopForegroundSignature);
+		}
+		catch (NoSuchMethodException e) {
+			mStartForeground = null;
+			mStopForeground = null;
+		}
+		
+		mNM = (NotificationManager)getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+	}
+	
+	private void handleCommand(Intent intent) {
+		// TODO:
+	}
+	
+	@Override
+	public void onStart(Intent intent, int startId) {
+		handleCommand(intent);
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		handleCommand(intent);
+		return Service.START_STICKY;
+	}
+	
+	public RhodesService(Activity c, ViewGroup rootWindow, Object params) {
 	
 		ctx = c;
 		instance = this;
 		outerFrame = rootWindow;
 
-		//showSplashScreen();
-		splashScreen = splash_s;
-		
 		initClassLoader(ctx.getClassLoader());
 
 		try {
@@ -583,9 +656,9 @@ public class RhodesService {
 
 		Logger.I("Rhodes", "Loading...");
 		//showSplashScreen();
-		if (splashScreen != null) {
-			splashScreen.rho_start();
-		}
+		//if (splashScreen != null) {
+		//	splashScreen.rho_start();
+		//}
 		
 		// Increase WebView rendering priority
 		WebView w = new WebView(ctx);
@@ -1245,5 +1318,5 @@ public class RhodesService {
 				doSyncAllSources(true);
 		}
 	}
-	
+
 }

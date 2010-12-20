@@ -26,7 +26,7 @@ import java.util.Date;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoActivity;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesService;
 
 import android.content.ContentValues;
@@ -45,7 +45,7 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class ImageCapture extends RhoActivity implements SurfaceHolder.Callback, OnClickListener, Camera.AutoFocusCallback
+public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback, OnClickListener, Camera.AutoFocusCallback
  {
 	
 	private static final String TAG = "ImageCapture";
