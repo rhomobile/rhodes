@@ -21,7 +21,7 @@
 package com.rhomobile.rhodes.ui;
 
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -73,11 +73,11 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 			loadLogText();
 			break;
 		case AndroidR.id.logviewClearButton:
-			RhodesService.getInstance().getLogConf().clearLog();
+			RhoService.getInstance().getLogConf().clearLog();
 			loadLogText();
 			break;
 		case AndroidR.id.logviewSendButton:
-			RhodesService.getInstance().getLogConf().sendLog();
+			RhoService.getInstance().getLogConf().sendLog();
 			break;
 		case AndroidR.id.logviewCloseButton:
 			cancel();
@@ -86,14 +86,14 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 	}
 
 	private void loadLogText(){
-        String strLog = RhodesService.getInstance().getLogConf().getLogText();
+        String strLog = RhoService.getInstance().getLogConf().getLogText();
         findCurLine(strLog);
         
         logContent.setText(strLog);
 	}
 	
 	void findCurLine(String strLog){
-        int nPos = RhodesService.getInstance().getLogConf().getLogTextPos();
+        int nPos = RhoService.getInstance().getLogConf().getLogTextPos();
         curLine = 0;
         
         for ( int nEndLine = strLog.indexOf('\n'); nEndLine >= 0 && nEndLine<nPos; 
