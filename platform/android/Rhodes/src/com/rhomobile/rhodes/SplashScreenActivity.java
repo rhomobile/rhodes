@@ -7,6 +7,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -22,6 +23,14 @@ public class SplashScreenActivity extends BaseActivity {
 	private static final String LOADING_PNG = "apps/app/loading.png";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
+	private Handler mHandler;
+	
+	private Runnable mSetup = new Runnable() {
+		public void run() {
+			
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,6 +42,9 @@ public class SplashScreenActivity extends BaseActivity {
 			contentView = createHtmlView(am);
 		
 		setContentView(contentView);
+		
+		mHandler = new Handler();
+		mHandler.post(mSetup);
 	}
 	
 	@Override
