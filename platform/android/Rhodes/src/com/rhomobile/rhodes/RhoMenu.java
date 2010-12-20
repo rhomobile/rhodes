@@ -60,15 +60,17 @@ public class RhoMenu {
 		
 		Item ri = (Item)obj;
 		
-		RhoService r = RhoService.getInstance();
+		RhodesService r = RhodesService.getInstance();
 		MainView mainView = r.getMainView();
+		
+		RhodesAppOptions opts = r.getOptions();
 		
 		String type = ri.type;
 		if (type.equalsIgnoreCase("refresh")) {
 			mainView.reload(mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("home")) {
-			mainView.navigate(r.getStartUrl(), mainView.activeTab());
+			mainView.navigate(opts.getStartUrl(), mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("back")) {
 			mainView.back(mainView.activeTab());
@@ -77,7 +79,7 @@ public class RhoMenu {
 			mainView.forward(mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("options")) {
-			mainView.navigate(r.getOptionsUrl(), mainView.activeTab());
+			mainView.navigate(opts.getOptionsUrl(), mainView.activeTab());
 		}
 		else if (type.equalsIgnoreCase("sync")) {
 			r.doSyncAllSources(true);

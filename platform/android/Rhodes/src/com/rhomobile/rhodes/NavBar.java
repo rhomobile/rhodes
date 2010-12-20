@@ -35,7 +35,7 @@ public class NavBar {
 		}
 		
 		public void run() {
-			RhoService r = RhoService.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			r.getMainView().addNavBar(title, left, right);
 			started = true;
 		}
@@ -43,7 +43,7 @@ public class NavBar {
 	
 	private static class RemoveTask implements Runnable {
 		public void run() {
-			RhoService r = RhoService.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			r.getMainView().removeNavBar();
 			started = false;
 		}

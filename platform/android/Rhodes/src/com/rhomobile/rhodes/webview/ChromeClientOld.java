@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes.webview;
 
-import com.rhomobile.rhodes.Rhodes;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesActivity;
 
 import android.view.Window;
 import android.webkit.JsResult;
@@ -10,16 +9,21 @@ import android.webkit.WebView;
 
 public class ChromeClientOld extends WebChromeClient {
 	
+	private RhodesActivity mRhodesActivity;
+	
+	public ChromeClientOld(RhodesActivity rhodesActivity) {
+		mRhodesActivity = rhodesActivity;
+	}
+	
 	@Override
 	public void onProgressChanged(WebView view, int newProgress) {
-		if (RhoService.ENABLE_LOADING_INDICATION) {
+		if (RhodesActivity.ENABLE_LOADING_INDICATION) {
 			newProgress *= 100;
 			if (newProgress < 0)
 				newProgress = 0;
-			if (newProgress > RhoService.MAX_PROGRESS)
-				newProgress = RhoService.MAX_PROGRESS;
-			Rhodes r = Rhodes.getInstance();
-			r.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
+			if (newProgress > RhodesActivity.MAX_PROGRESS)
+				newProgress = RhodesActivity.MAX_PROGRESS;
+			mRhodesActivity.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
 		}
 		super.onProgressChanged(view, newProgress);
 	}
