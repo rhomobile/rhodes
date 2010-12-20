@@ -1,4 +1,3 @@
 // WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!
-// Generated Thu Mar 25 14:18:38 +0300 2010
 void Init_Extensions(void) {
 }
