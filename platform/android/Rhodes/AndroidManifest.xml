@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.rhomobile.rhodes"
-      android:installLocation="auto"
-      android:versionCode="27"
-      android:versionName="2.2.6">
+    package="com.rhomobile.rhodes"
+    android:installLocation="auto"
+    android:versionCode="27"
+    android:versionName="2.2.6">
+    
     <uses-sdk android:minSdkVersion="4" />
+    
     <application
-          android:name="com.rhomobile.rhodes.RhodesApplication"
-          android:icon="@drawable/icon"
-          android:label="@string/app_name"
-          android:multiprocess="true"
-          android:allowTaskReparenting="true"
-          android:debuggable="true"
-          finishOnTaskLaunch="true">
+        android:name="com.rhomobile.rhodes.RhodesApplication"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:debuggable="true">
+        
+        <!-- Main activity -->
         <activity
-            android:name="com.rhomobile.rhodes.SplashScreenActivity"
+            android:name="com.rhomobile.rhodes.RhodesActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden">
             <intent-filter>
@@ -23,29 +24,48 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.rhomobile.rhodes.RhodesActivity"
-            android:label="@string/app_name"
-            android:configChanges="keyboardHidden|orientation" />
-        <activity android:name="com.rhomobile.rhodes.camera.FileList" />
-        <activity android:name="com.rhomobile.rhodes.camera.ImageCapture" android:screenOrientation="landscape" />
-        <activity android:name="com.rhomobile.rhodes.signature.ImageCapture" />
-        <activity android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
-        <activity android:name="com.rhomobile.rhodes.mapview.MapView" />
-        <activity android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity" />
-        <uses-library android:name="com.google.android.maps" />
-        <receiver android:name="com.rhomobile.rhodes.PushReceiver" android:permission="com.google.android.c2dm.permission.SEND">
-          <!-- Receive the actual message -->
-          <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <category android:name="com.rhomobile.rhodes" />
-          </intent-filter>
-          <!-- Receive the registration id -->
-          <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-            <category android:name="com.rhomobile.rhodes" />
-          </intent-filter>
+        
+        <activity
+            android:name="com.rhomobile.rhodes.camera.FileList" />
+        
+        <activity
+            android:name="com.rhomobile.rhodes.camera.ImageCapture"
+            android:screenOrientation="landscape" />
+        
+        <activity
+            android:name="com.rhomobile.rhodes.signature.ImageCapture" />
+        
+        <activity
+            android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
+        
+        <activity
+            android:name="com.rhomobile.rhodes.mapview.MapView" />
+        
+        <activity
+            android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity" />
+        
+        <receiver
+            android:name="com.rhomobile.rhodes.PushReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <!-- Receive the actual message -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.rhomobile.rhodes" />
+            </intent-filter>
+            <!-- Receive the registration id -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.rhomobile.rhodes" />
+            </intent-filter>
         </receiver>
+        
+        <service
+            android:name="com.rhomobile.rhodes.RhodesService" />
+        
+        <uses-library android:name="com.google.android.maps" />
+        
     </application>
+    
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -66,4 +86,5 @@
     <permission android:name="com.rhomobile.rhodes.permission.C2D_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="com.rhomobile.rhodes.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    
 </manifest> 
