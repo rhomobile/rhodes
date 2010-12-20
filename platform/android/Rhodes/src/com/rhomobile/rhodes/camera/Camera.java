@@ -26,21 +26,21 @@ import android.content.Intent;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class Camera {
 
 	private static final String TAG = "Camera";
 	
-	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "camera.";
+	public static final String INTENT_EXTRA_PREFIX = RhoService.INTENT_EXTRA_PREFIX + "camera.";
 	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
 	private static void init() {
-		File f = new File(RhodesService.getBlobPath());
+		File f = new File(RhoService.getBlobPath());
 		if (!f.exists())
 			f.mkdirs();
 	}
@@ -70,7 +70,7 @@ public class Camera {
 		
 		public void run() {
 			init();
-			RhodesService r = RhodesService.getInstance();
+			RhoService r = RhoService.getInstance();
 			Intent intent = new Intent(r.getContext(), klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
 			r.startActivity(intent);

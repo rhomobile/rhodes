@@ -22,7 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.phonebook.ContactAccessor;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 

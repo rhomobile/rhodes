@@ -30,7 +30,7 @@ import java.util.Vector;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 
 
 import android.content.res.Configuration;
@@ -323,7 +323,7 @@ public class DateTimePickerScreen extends BaseActivity {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+		getWindow().setFlags(RhoService.WINDOW_FLAGS, RhoService.WINDOW_MASK);
 		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();

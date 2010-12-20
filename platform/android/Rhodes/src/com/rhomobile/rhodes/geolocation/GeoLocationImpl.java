@@ -21,7 +21,7 @@
 package com.rhomobile.rhodes.geolocation;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Context;
@@ -85,7 +85,7 @@ public class GeoLocationImpl implements LocationListener {
 		Logger.T(TAG, "GeoLocationImpl.setCurrentGpsLocation");
 		try {
 			if (locationManager == null) {
-				Context ctx = RhodesService.getInstance().getContext();
+				Context ctx = RhoService.getInstance().getContext();
 				locationManager = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
 				LocationProvider gpsProvider = locationManager.getProvider(PROVIDER);
 				available = gpsProvider != null && locationManager.isProviderEnabled(PROVIDER);

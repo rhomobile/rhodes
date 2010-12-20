@@ -164,7 +164,7 @@ public class Utils {
 	
 	public static boolean isAppHashChanged() {
 		try {
-			RhodesService r = RhodesService.getInstance();
+			RhoService r = RhoService.getInstance();
 			File hash = new File(r.getRootPath(), "hash");
 			if (!hash.exists())
 				return true;

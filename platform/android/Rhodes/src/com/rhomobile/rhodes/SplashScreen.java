@@ -34,7 +34,7 @@ public class SplashScreen {
 		}
 		
 		protected void onDraw (Canvas canvas) {
-			RhodesService.platformLog(TAG, "Splash Screen Image REAL DRAWING !");
+			RhoService.platformLog(TAG, "Splash Screen Image REAL DRAWING !");
 			super.onDraw(canvas);
 			if (!setupExecuted) {
 				Rhodes.runPostponedSetup();
@@ -47,7 +47,7 @@ public class SplashScreen {
 	
 
 	public SplashScreen(Context ctx) {
-		RhodesService.platformLog(TAG, "SplashScreen()");
+		RhoService.platformLog(TAG, "SplashScreen()");
 		AssetManager am = ctx.getResources().getAssets();
 		//RhodesService r = RhodesService.getInstance();
 		//boolean bc = r.isBundleChanged();
@@ -65,7 +65,7 @@ public class SplashScreen {
 			ImageView v = new SplashImageView(ctx);
 			v.setImageBitmap(bitmap);
 			v.setAdjustViewBounds(false);
-			v.setId(RhodesService.RHO_SPLASH_VIEW);
+			v.setId(RhoService.RHO_SPLASH_VIEW);
 			view = v;
 			loading_android_ok = true;
 		}
@@ -81,12 +81,12 @@ public class SplashScreen {
 				ImageView v = new SplashImageView(ctx);
 				v.setImageBitmap(bitmap);
 				v.setAdjustViewBounds(false);
-				v.setId(RhodesService.RHO_SPLASH_VIEW);
+				v.setId(RhoService.RHO_SPLASH_VIEW);
 				view = v;
 			}
 			catch (IOException e) {
 				
-				WebView v = RhodesService.createLoadingWebView(ctx);
+				WebView v = RhoService.createLoadingWebView(ctx);
 				
 				String page = LOADING_PAGE;
 				
@@ -108,7 +108,7 @@ public class SplashScreen {
 					v.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
 				}
 				
-				v.setId(RhodesService.RHO_SPLASH_VIEW);
+				v.setId(RhoService.RHO_SPLASH_VIEW);
 				
 				view = v;
 			}
@@ -121,17 +121,17 @@ public class SplashScreen {
 			((SplashImageView)view).setupExecuted = false;
 		}
 		outer.addView(view);
-		RhodesService.platformLog(TAG, " view was showed on screen");
+		RhoService.platformLog(TAG, " view was showed on screen");
 	}
 	
 	public void rho_start() {
 		nativeStart();
-		RhodesService.platformLog(TAG, " rho native loading splash screen started");
+		RhoService.platformLog(TAG, " rho native loading splash screen started");
 	}
 	
 	public void hide(ViewGroup outer) {
 		nativeHide();
 		outer.removeView(view);
-		RhodesService.platformLog(TAG, " splash screen closed");
+		RhoService.platformLog(TAG, " splash screen closed");
 	}
 }
