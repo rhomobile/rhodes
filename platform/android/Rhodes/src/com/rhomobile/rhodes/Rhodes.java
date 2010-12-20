@@ -56,16 +56,19 @@ public class Rhodes extends BaseActivity {
 	
 	private ViewGroup mOuterFrame = null;
 	private Bundle mSavedBundle = null;
-	private SplashScreen mSplashScreen = null;
+	//private SplashScreen mSplashScreen = null;
 	private Handler mHandler = null;
 	
 	private Object mStartParams = null;
 	
+	/*
 	private void showSplashScreen() {
 		mSplashScreen = new SplashScreen(getApplicationContext());
 		mSplashScreen.start(mOuterFrame);
 	}
+	*/
 
+	/*
 	public void hideSplashScreen() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -79,6 +82,7 @@ public class Rhodes extends BaseActivity {
 			}
 		}, false);
 	}
+	*/
 		
 	/** Called when the activity is first created. */
 	@Override
@@ -99,7 +103,7 @@ public class Rhodes extends BaseActivity {
 		FrameLayout v = new FrameLayout(this);
 		mOuterFrame = v;
 		
-		showSplashScreen();
+		//showSplashScreen();
 		
 		mSavedBundle = savedInstanceState;
 
@@ -125,7 +129,7 @@ public class Rhodes extends BaseActivity {
 		
 		RhoService service = RhoService.getInstance();
 		if (service == null) {
-			mSplashScreen.rho_start();
+			//mSplashScreen.rho_start();
 			Log.v(TAG, "Starting rhodes service...");
 			service = new RhoService(this, mOuterFrame, mStartParams);
 		}
@@ -194,7 +198,7 @@ public class Rhodes extends BaseActivity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			RhoService r = RhoService.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			MainView v = r.getMainView();
 			v.back(v.activeTab());
 			return true;
@@ -220,6 +224,5 @@ public class Rhodes extends BaseActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
 	}
-	
 	
 }
