@@ -24,13 +24,15 @@ import android.webkit.WebViewClient;
 
 public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	
-	private static final String TAG = RhodesActivity.class.getName();
+	private static final String TAG = RhodesActivity.class.getSimpleName();
 	
 	private static final boolean DEBUG = false;
 	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
 	public static int MAX_PROGRESS = 10000;
+	
+	static final String RHO_START_PARAMS_KEY = "RhoStartParams";
 	
 	private static RhodesActivity sInstance;
 	
@@ -45,6 +47,12 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	
 	private SplashScreen mSplashScreen;
 	
+	private long uiThreadId = 0;
+	
+	public long getUiThreadId() {
+		return uiThreadId;
+	}
+	
 	private Runnable mSetup = new Runnable() {
 		public void run() {
 			doSetup();
@@ -54,6 +62,10 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Thread ct = Thread.currentThread();
+		//ct.setPriority(Thread.MAX_PRIORITY);
+		uiThreadId = ct.getId();
 		
 		mSplashScreen = new SplashScreen(this);
 		setContentView(mSplashScreen.getContentView());
@@ -113,11 +125,17 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		return mRhodesService;
 	}
 	
+	public void post(Runnable r) {
+		mHandler.post(r);
+	}
+	
+	public void post(Runnable r, int delay) {
+		mHandler.postDelayed(r, delay);
+	}
+	
 	private void doSetup() {
-		// TODO:
-		//ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 		initWebStuff();
-		setupMainView();
+		//setupMainView();
 	}
 	
 	public WebView createWebView() {
@@ -148,11 +166,6 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		});
 		
 		view.loadUrl("http://www.google.ru/");
-	}
-	
-	private boolean handleUrlLoading(String url) {
-		// TODO:
-		return false;
 	}
 	
 	private void initWebStuff() {
@@ -186,7 +199,7 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 			mWebViewClient = new WebViewClient() {
 				@Override
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {
-					return handleUrlLoading(url);
+					return getService().handleUrlLoading(url);
 				}
 				
 				@Override
@@ -217,12 +230,54 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		Log.d(TAG, "Connected to service");
 		mRhodesService = ((RhodesService.LocalBinder)service).getService();
+		
+		if (!isValidSecurityToken()) {
+			Logger.E(TAG, "SECURITY_TOKEN parameter is not valid for this application !");
+			getRhodesApplication().exit();
+			return;
+		}
+		
+		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
 		Log.d(TAG, "Disconnected from service");
 		mRhodesService = null;
+	}
+	
+	private boolean isValidSecurityToken() {
+		boolean valid = true;
+		String security_token = RhodesService.getBuildConfig("security_token");
+		if (security_token != null) {
+			if (security_token.length() > 0) {
+				valid = false;
+				Object params = getIntent().getExtras();
+				if (params != null && params instanceof Bundle) {
+					Bundle startParams = (Bundle)params;
+					String rho_start_params = startParams.getString(RHO_START_PARAMS_KEY);
+					if (rho_start_params != null) {
+						String security_token_key = "sequrity_token=";
+						int sec_index = rho_start_params.indexOf(security_token_key);
+						if (sec_index >= 0) {
+							String tmp = rho_start_params.substring(sec_index + security_token_key.length(), rho_start_params.length() - sec_index - security_token_key.length());
+							int end_of_token = tmp.indexOf(",");
+							if (end_of_token >= 0) {
+								tmp = tmp.substring(0, end_of_token);
+							}
+							end_of_token = tmp.indexOf(" ");
+							if (end_of_token >= 0) {
+								tmp = tmp.substring(0, end_of_token);
+							}
+							if (tmp.equals(security_token)) {
+								valid = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return valid;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.rhomobile.rhodes;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.res.Configuration;
 import android.util.Log;
 
 public class BaseActivity extends Activity {
@@ -13,17 +14,24 @@ public class BaseActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		/*
-		if (RhodesService.getInstance() != null) {
-			RhodesService.getInstance().activityStarted();
-		}
-		*/
+		RhodesService r = RhodesService.getInstance();
+		if (r != null)
+			r.activityStarted();
 	}
 	
 	@Override
 	protected void onStop() {
-		//RhodesService.getInstance().activityStopped();
+		RhodesService r = RhodesService.getInstance();
+		if (r != null)
+			r.activityStopped();
 		super.onStop();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Logger.T(TAG, "+++ onConfigurationChanged");
+		super.onConfigurationChanged(newConfig);
+		RhodesService.getInstance().rereadScreenProperties();
 	}
 	
 	public RhodesApplication getRhodesApplication() {

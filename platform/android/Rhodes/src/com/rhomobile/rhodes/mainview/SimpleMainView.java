@@ -24,7 +24,10 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesAppOptions;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -42,7 +45,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -77,7 +79,7 @@ public class SimpleMainView implements MainView {
 			msg.append(" x ");
 			msg.append(oldh);
 			msg.append(" ]");
-			RhoService.platformLog("SimpleMainView.View", msg.toString());
+			Utils.platformLog("SimpleMainView.View", msg.toString());
 		}
 	}
 	
@@ -89,13 +91,13 @@ public class SimpleMainView implements MainView {
 	
 	private class ActionHome implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhoService.getInstance().getStartUrl(), 0);
+			navigate(RhodesAppOptions.getStartUrl(), 0);
 		}
 	};
 	
 	private class ActionOptions implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhoService.getInstance().getOptionsUrl(), 0);
+			navigate(RhodesAppOptions.getOptionsUrl(), 0);
 		}
 	};
 	
@@ -108,7 +110,7 @@ public class SimpleMainView implements MainView {
 	private class ActionExit implements View.OnClickListener {
 		public void onClick(View v) {
 			restoreWebView();
-			RhoService.exit();
+			RhodesService.getInstance().getRhodesApplication().exit();
 		}
 	};
 
@@ -122,7 +124,7 @@ public class SimpleMainView implements MainView {
 		public void onClick(View v) {
 			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
-					RhoService.loadUrl(ActionCustom.this.url);
+					RhodesService.loadUrl(ActionCustom.this.url);
 				}
 			}, false);
 		}
@@ -219,10 +221,7 @@ public class SimpleMainView implements MainView {
     	StringBuilder s = new StringBuilder("processForNativeView : [");
     	s.append(_url);
     	s.append("]");
-    	RhoService.platformLog(TAG, s.toString());
-    	
-    	
-    	
+    	Utils.platformLog(TAG, s.toString());
     	
     	String url = _url;
     	String callback_prefix = "call_stay_native";
@@ -295,7 +294,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	private View createButton(Map<Object,Object> hash) {
-		Context ctx = RhoService.getInstance().getContext();
+		Context ctx = RhodesService.getInstance().getApplicationContext();
 		
 		Object actionObj = hash.get("action");
 		if (actionObj == null || !(actionObj instanceof String))
@@ -337,7 +336,7 @@ public class SimpleMainView implements MainView {
 			return null;
 		
 		DisplayMetrics metrics = new DisplayMetrics();
-		WindowManager wm = (WindowManager)RhoService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(metrics);
 		
 		Object iconObj = hash.get("icon");
@@ -349,7 +348,7 @@ public class SimpleMainView implements MainView {
 			Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
 			if (bitmap == null)
 				throw new IllegalArgumentException("Can't find icon: " + iconPath);
-			bitmap.setDensity(metrics.DENSITY_MEDIUM);
+			bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
 			icon = new BitmapDrawable(bitmap);
 		}
 		
@@ -383,9 +382,10 @@ public class SimpleMainView implements MainView {
 		return button;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void setupToolbar(LinearLayout tool_bar, Object params) {
-		RhoService r = RhoService.getInstance();
-		Context ctx = r.getContext();
+		RhodesService r = RhodesService.getInstance();
+		Context ctx = r.getApplicationContext();
 
 		Vector<Object> buttons = null;
 		if (params != null) {
@@ -461,23 +461,22 @@ public class SimpleMainView implements MainView {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void init(MainView v, Object params) {
-		RhoService r = RhoService.getInstance();
-		Context ctx = r.getContext();
+		RhodesActivity ra = RhodesActivity.getInstance();
+		
+		RhodesService r = RhodesService.getInstance();
+		Context ctx = r.getApplicationContext();
 		
 		view = new MyView(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-		view.setId(RhoService.RHO_MAIN_VIEW);
 		
 		webView = null;
 		if (v != null)
 			webView = v.detachWebView();
-		// TODO:
-		//if (webView == null)
-		//	webView = r.createWebView();
+		if (webView == null)
+			webView = ra.createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(ctx);
@@ -507,7 +506,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		RhoService.navigateBack();
+		RhodesService.navigateBack();
 	}
 	
 	public void goBack() {
@@ -556,7 +555,7 @@ public class SimpleMainView implements MainView {
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
 		removeNavBar();
 		
-		Context ctx = RhoService.getInstance().getContext();
+		Context ctx = RhodesService.getInstance().getApplicationContext();
 		
 		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);

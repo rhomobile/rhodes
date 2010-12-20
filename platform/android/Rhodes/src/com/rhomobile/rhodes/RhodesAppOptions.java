@@ -2,26 +2,10 @@ package com.rhomobile.rhodes;
 
 public class RhodesAppOptions {
 
-	// TODO: avoid RhoService
-	private RhoService mRhoService;
+	public static native String getOptionsUrl();
+	public static native String getStartUrl();
+	public static native String getCurrentUrl();
+	public static native String getAppBackUrl();
+	public static native String getBlobPath();
 	
-	public RhodesAppOptions() {
-		mRhoService = RhoService.getInstance();
-	}
-	
-	public String getOptionsUrl() {
-		return mRhoService.getOptionsUrl();	
-	}
-	
-	public String getStartUrl() {
-		return mRhoService.getStartUrl();
-	}
-	
-	public String getCurrentUrl() {
-		return mRhoService.getCurrentUrl();
-	}
-	
-	public String getAppBackUrl() {
-		return mRhoService.getAppBackUrl();
-	}
 }

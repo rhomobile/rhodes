@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes;
 
+/*
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -77,42 +78,44 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RemoteViews;
+*/
 
 public class RhoService {
 	
-	private final static String TAG = "RhodesService";
+	//private final static String TAG = "RhoService";
 
-	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
+	//public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
 	
-	private static final int DOWNLOAD_PACKAGE_ID = 1;
+	//private static final int DOWNLOAD_PACKAGE_ID = 1;
 	
-	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
-	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
+	//private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
+	//private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
 	
-	public static final int RHO_SPLASH_VIEW = 1;
-	public static final int RHO_MAIN_VIEW = 2;
-	public static final int RHO_TOOLBAR_VIEW = 3;
+	//public static final int RHO_SPLASH_VIEW = 1;
+	//public static final int RHO_MAIN_VIEW = 2;
+	//public static final int RHO_TOOLBAR_VIEW = 3;
 	
-	private static final String RHO_START_PARAMS_KEY = "RhoStartParams";
+	//private static final String RHO_START_PARAMS_KEY = "RhoStartParams";
 	
-	private static RhoService instance = null;
+	//private static RhoService instance = null;
 	
-	public static RhoService getInstance() {
-		return instance;
-	}
+	//public static RhoService getInstance() {
+	//	return instance;
+	//}
 	
-	private NotificationManager mNM;
+	//private NotificationManager mNM;
 	
-	private Activity ctx;
+	//private Activity ctx;
 	
-	public Context getContext() {
-		return ctx;
-	}
+	//public Context getContext() {
+	//	return ctx;
+	//}
 	
-	public Activity getMainActivity() {
-		return ctx;
-	}
+	//public Activity getMainActivity() {
+	//	return ctx;
+	//}
 	
+	/*
 	public static void platformLog(String _tag, String _message) {
 		StringBuilder s = new StringBuilder();
 		s.append("ms[");
@@ -121,36 +124,44 @@ public class RhoService {
 		s.append(_message);
 		android.util.Log.v(_tag, s.toString());
 	}
+	*/
 	
+	/*
 	private RhoLogConf m_rhoLogConf = new RhoLogConf();
 	public RhoLogConf getLogConf() {
 		return m_rhoLogConf;
 	}
+	*/
 	
-	private boolean needGeoLocationRestart = false;
+	//private boolean needGeoLocationRestart = false;
 	
-	private int activitiesActive = 0;
+	//private int activitiesActive = 0;
 	
-	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
-	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+	//public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+	//public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	
 	//public static boolean ENABLE_LOADING_INDICATION = true;
 	
 	//public static int MAX_PROGRESS = 10000;
 	
+	/*
 	private long uiThreadId = 0;
 	
 	public long getUiThreadId() {
 		return uiThreadId;
 	}
+	*/
 	
+	/*
 	public void setInfo(Activity c, long id, Handler handler) {
 		ctx = c;
 		uiThreadId = id;
 		uiHandler = handler;
 		//RhoBluetoothManager.sharedInstance();
 	}
+	*/
 	
+	/*
 	private Handler uiHandler;
 	
 	public void post(Runnable r) {
@@ -160,56 +171,58 @@ public class RhoService {
 	public void post(Runnable r, int delay) {
 		uiHandler.postDelayed(r, delay);
 	}
+	*/
 	
-	private static int screenWidth;
-	private static int screenHeight;
-	private static int screenOrientation;
+	//private static int screenWidth;
+	//private static int screenHeight;
+	//private static int screenOrientation;
 	
-	private static float screenPpiX;
-	private static float screenPpiY;
+	//private static float screenPpiX;
+	//private static float screenPpiY;
 	
-	private static boolean isCameraAvailable;
+	//private static boolean isCameraAvailable;
 	
-	private WebChromeClient chromeClient;
-	private RhoWebSettings webSettings;
+	//private WebChromeClient chromeClient;
+	//private RhoWebSettings webSettings;
 	
-	private ViewGroup outerFrame = null;
-	private MainView mainView;
+	//private ViewGroup outerFrame = null;
+	//private MainView mainView;
 	
-	private native void initClassLoader(ClassLoader c);
+	//private native void initClassLoader(ClassLoader c);
 	
-	private native void createRhodesApp();
-	private native void startRhodesApp();
+	//private native void createRhodesApp();
+	//private native void startRhodesApp();
 	
-	public native void doSyncAllSources(boolean v);
-	public native void doSyncSource(String source);
+	//public native void doSyncAllSources(boolean v);
+	//public native void doSyncSource(String source);
 	
-	public native String getOptionsUrl();
-	public native String getStartUrl();
-	public native String getCurrentUrl();
-	public native String getAppBackUrl();
+	//public native String getOptionsUrl();
+	//public native String getStartUrl();
+	//public native String getCurrentUrl();
+	//public native String getAppBackUrl();
 	
-	public static native String getBlobPath();
+	//public static native String getBlobPath();
 	
-	public native String normalizeUrl(String url);
+	//public native String normalizeUrl(String url);
 	
-	public static native String getBuildConfig(String key);
+	//public static native String getBuildConfig(String key);
 	
-	public static native void loadUrl(String url);
+	//public static native void loadUrl(String url);
 	
-	public static native void navigateBack();
+	//public static native void navigateBack();
 	
-	public native void doRequest(String url);
+	//public native void doRequest(String url);
 	
-	public native void callActivationCallback(boolean active);
+	//public native void callActivationCallback(boolean active);
 	
-	public native static void makeLink(String src, String dst);
+	//public native static void makeLink(String src, String dst);
 	
-	public static native void onScreenOrientationChanged(int width, int height, int angle);
+	//public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
-	private String rootPath = null;
-	private native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
+	//private String rootPath = null;
+	//private native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
 	
+	/*
 	static PowerManager.WakeLock wakeLockObject = null;
 	static boolean wakeLockEnabled = false;
 	
@@ -251,7 +264,9 @@ public class RhoService {
 		}
 		return wasEnabled;
 	}
+	*/
 	
+	/*
 	private void initRootPath() {
 		ApplicationInfo appInfo = getAppInfo();
 		String dataDir = appInfo.dataDir;
@@ -287,9 +302,11 @@ public class RhoService {
 	public String getRootPath() {
 		return rootPath;
 	}
+	*/
 	
-	private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
+	//private Vector<UriHandler> uriHandlers = new Vector<UriHandler>();
 	
+	/*
 	private boolean handleUrlLoading(String url) {
 		Enumeration<UriHandler> e = uriHandlers.elements();
 		while (e.hasMoreElements()) {
@@ -306,12 +323,15 @@ public class RhoService {
 		
 		return false;
 	}
+	*/
 
+	/*
 	private static int mGeoLocationInactivityTimeout;
 
 	public static int getGeoLocationInactivityTimeout() {
 		return mGeoLocationInactivityTimeout;
 	}
+	*/
 	
 	//private static boolean mSplashHidden = false;
 	
@@ -464,6 +484,7 @@ public class RhoService {
 	}
 	*/
 	
+	/*
 	public void setRootWindow(ViewGroup rootWindow) {
 		if (rootWindow == outerFrame)
 			return;
@@ -472,19 +493,23 @@ public class RhoService {
 		outerFrame = rootWindow;
 		outerFrame.addView(mainView.getView());
 	}
+	*/
 	
+	/*
 	public static boolean isCreated() {
 		return instance != null;
 	}
+	*/
 	
-	public RhoService(Activity c, ViewGroup rootWindow, Object params) {
+	//public RhoService(Activity c, ViewGroup rootWindow, Object params) {
 	
-		ctx = c;
-		instance = this;
-		outerFrame = rootWindow;
+		//ctx = c;
+		//instance = this;
+		//outerFrame = rootWindow;
 
-		initClassLoader(ctx.getClassLoader());
+		//initClassLoader(ctx.getClassLoader());
 
+		/*
 		try {
 			initRootPath();
 			RhoFileApi.init();
@@ -493,7 +518,9 @@ public class RhoService {
 			exitApp();
 			return;
 		}
+		*/
 		
+		/*
 		if (Utils.isAppHashChanged()) {
 			try {
 				Log.i(TAG, "Application hash was changed, so remove files");
@@ -513,8 +540,9 @@ public class RhoService {
 				return;
 			}
 		}
+		*/
 		
-		createRhodesApp();
+		//createRhodesApp();
 
 		/*
 		boolean rhoGalleryApp = false;
@@ -529,6 +557,8 @@ public class RhoService {
 			exitApp();
 		}
 		*/
+		
+		/*
 		boolean can_start = true;
 		String security_token = getBuildConfig("security_token"); 
 		if (security_token != null) {
@@ -562,7 +592,9 @@ public class RhoService {
 			Logger.E(TAG, "SECURITY_TOKEN parameter is not valid for this application !");
 			exitApp();
 		}
+		*/
 		
+		/*
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))
 			fullScreen = RhoConf.getBool("full_screen");
@@ -570,52 +602,64 @@ public class RhoService {
 			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		}
+		*/
 		
 		//ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 		
 		//initWebStuff();
 
-		Logger.I("Rhodes", "Loading...");
+		//Logger.I("Rhodes", "Loading...");
 		//showSplashScreen();
 		//if (splashScreen != null) {
 		//	splashScreen.rho_start();
 		//}
 		
+		/*
 		// Increase WebView rendering priority
 		WebView w = new WebView(ctx);
 		WebSettings webSettings = w.getSettings();
 		webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+		*/
 		
-		mNM = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+		//mNM = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		
+		/*
 		// Get screen width/height
 		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 		Display d = wm.getDefaultDisplay();
 		screenHeight = d.getHeight();
 		screenWidth = d.getWidth();
 		screenOrientation = d.getOrientation();
+		*/
 		
+		/*
 		DisplayMetrics metrics = new DisplayMetrics();
 		d.getMetrics(metrics);
 		screenPpiX = metrics.xdpi;
 		screenPpiY = metrics.ydpi;
+		*/
 		
 		// TODO: detect camera availability
-		isCameraAvailable = true;
+		//isCameraAvailable = true;
 		
+		/*
 		mGeoLocationInactivityTimeout = RhoConf.getInt("geo_location_inactivity_timeout");
 		if (mGeoLocationInactivityTimeout == 0)
 			mGeoLocationInactivityTimeout = 25*1000; // 25s
+		*/
 		
+		/*
 		// Register custom uri handlers here
 		uriHandlers.addElement(new ExternalHttpHandler(ctx));
 		uriHandlers.addElement(new MailUriHandler(ctx));
 		uriHandlers.addElement(new TelUriHandler(ctx));
 		uriHandlers.addElement(new SmsUriHandler(ctx));
 		uriHandlers.addElement(new VideoUriHandler(ctx));
+		*/
 		
-		mNM = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+		//mNM = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		
+		/*
 		try {
 			if (Capabilities.PUSH_ENABLED)
 				PushService.register();
@@ -624,7 +668,9 @@ public class RhoService {
 			exitApp();
 			return;
 		}
+		*/
 		
+		/*
 		Thread init = new Thread(new Runnable() {
 
 			public void run() {
@@ -633,20 +679,26 @@ public class RhoService {
 			
 		});
 		init.start();
-	}
+		*/
+	//}
 	
+	/*
 	public void startActivity(Intent intent) {
 		ctx.startActivity(intent);
 	}
+	*/
 
-	public void exitApp() {
+	//public void exitApp() {
+		/*
 		try {
 			if (Capabilities.PUSH_ENABLED)
 				PushService.unregister();
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
 		}
+		*/
 		
+		/*
 		PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				if (wakeLockObject != null) {
@@ -656,10 +708,13 @@ public class RhoService {
 				}
 			}
 		}, false);
-		getMainActivity().finish();
-		Process.killProcess(Process.myPid());
-	}
+		*/
+		
+		//getMainActivity().finish();
+		//Process.killProcess(Process.myPid());
+	//}
 	
+	/*
 	public void activityStarted() {
 		if (activitiesActive == 0) {
 			if (needGeoLocationRestart) {
@@ -705,7 +760,9 @@ public class RhoService {
 			callActivationCallback(false);
 		}
 	}
+	*/
 	
+	/*
 	public void rereadScreenProperties() {
 		// check for orientarion changed
 		// Get screen width/height
@@ -719,7 +776,9 @@ public class RhoService {
 			screenOrientation = newScreenOrientation; 				
 		}
 	}
+	*/
 	
+	/*
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -731,7 +790,9 @@ public class RhoService {
 			}
 		}, false);
 	}
+	*/
 	
+	/*
 	public static void showLogView() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -742,7 +803,9 @@ public class RhoService {
 			}
 		}, false);
 	}
+	*/
 	
+	/*
 	public static void showLogOptions() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -753,7 +816,9 @@ public class RhoService {
 			}
 		}, false);
 	}
+	*/
 	
+	/*
 	// Called from native code
 	public static void deleteFilesInFolder(String folder) {
 		try {
@@ -765,7 +830,9 @@ public class RhoService {
 			Logger.E(TAG, e);
 		}
 	}
+	*/
 	
+	/*
 	private static boolean hasNetwork() {
 		if (!Capabilities.NETWORK_STATE_ENABLED) {
 			Logger.E(TAG, "HAS_NETWORK: Capability NETWORK_STATE disabled");
@@ -798,19 +865,25 @@ public class RhoService {
 		
 		return false;
 	}
+	*/
 	
+	/*
 	private static String getCurrentLocale() {
 		String locale = Locale.getDefault().getLanguage();
 		if (locale.length() == 0)
 			locale = "en";
 		return locale;
 	}
+	*/
 	
+	/*
 	private static String getCurrentCountry() {
 		String cl = Locale.getDefault().getCountry();
 		return cl;
 	}
+	*/
 	
+	/*
 	public static int getScreenWidth() {
 		return screenWidth;
 	}
@@ -818,7 +891,9 @@ public class RhoService {
 	public static int getScreenHeight() {
 		return screenHeight;
 	}
+	*/
 	
+	/*
 	public static Object getProperty(String name) {
 		try {
 			if (name.equalsIgnoreCase("platform"))
@@ -865,17 +940,23 @@ public class RhoService {
 		
 		return null;
 	}
+	*/
 	
+	/*
 	public static void exit() {
 		RhoService.getInstance().exitApp();
 	}
+	*/
 	
+	/*
 	public static String getTimezoneStr() {
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = cal.getTimeZone();
 		return tz.getDisplayName();
 	}
+	*/
 	
+	/*
 	public static void runApplication(String appName, Object params) {
 		try {
 			Context ctx = RhoService.getInstance().getContext();
@@ -897,7 +978,6 @@ public class RhoService {
 				if (params instanceof String) {
 					startParams.putString(RHO_START_PARAMS_KEY, (String)params);
 				}
-				/*
 				else if (params instanceof List<?>) {
 					for (Object obj : (List<?>)params) {
 						startParams.putInt(obj.toString(), 1);
@@ -911,7 +991,6 @@ public class RhoService {
 						startParams.putString(key.toString(), value == null ? null : value.toString());
 					}
 				}
-				*/
 				else
 					throw new IllegalArgumentException("Unknown type of incoming parameter");
 
@@ -923,7 +1002,9 @@ public class RhoService {
 			Logger.E(TAG, "Can't run application " + appName + ": " + e.getMessage());
 		}
 	}
+	*/
 	
+	/*
 	public static boolean isAppInstalled(String appName) {
 		try {
 			try {
@@ -939,7 +1020,9 @@ public class RhoService {
 			return false;
 		}
 	}
+	*/
 	
+	/*
 	private void updateDownloadNotification(String url, int totalBytes, int currentBytes) {
 		Notification n = new Notification();
 		n.icon = android.R.drawable.stat_sys_download;
@@ -1137,7 +1220,9 @@ public class RhoService {
 		bgThread.setPriority(Thread.MIN_PRIORITY);
 		bgThread.start();
 	}
+	*/
 	
+	/*
 	public static void uninstallApplication(String appName) {
 		try {
 			Uri packageUri = Uri.parse("package:" + appName);
@@ -1148,7 +1233,9 @@ public class RhoService {
 			Logger.E(TAG, "Can't uninstall application " + appName + ": " + e.getMessage());
 		}
 	}
+	*/
 
+	/*
 	public static void openExternalUrl(String url) {
 		try {
 			Context ctx = RhoService.getInstance().getContext();
@@ -1163,7 +1250,9 @@ public class RhoService {
 			Logger.E(TAG, "Can't open url :" + url + ": " + e.getMessage());
 		}
 	}
+	*/
 
+	/*
 	public native void setPushRegistrationId(String id);
 	
 	private native boolean callPushCallback(String data);
@@ -1241,5 +1330,6 @@ public class RhoService {
 				doSyncAllSources(true);
 		}
 	}
+	*/
 
 }

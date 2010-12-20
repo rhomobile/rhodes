@@ -33,7 +33,7 @@ import android.widget.Spinner;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhoLogConf;
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesService;
 
 public class LogOptionsDialog extends Dialog implements OnClickListener {
 
@@ -61,7 +61,7 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 		saveButton.setOnClickListener(this);
 		closeButton.setOnClickListener(this);
 
-		RhoLogConf logConf = RhoService.getInstance().getLogConf();
+		RhoLogConf logConf = RhodesService.getInstance().getLogConf();
 		
 		includeClasses = (EditText) this.findViewById(AndroidR.id.includeClasses);
 		
@@ -85,7 +85,7 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.logoptsSaveButton:
-			RhoLogConf logConf = RhoService.getInstance().getLogConf();
+			RhoLogConf logConf = RhodesService.getInstance().getLogConf();
 			logConf.setMinSeverity(logLevel.getSelectedItemPosition());
 			logConf.setEnabledCategories(includeClasses.getText().toString());
 			logConf.setDisabledCategories(excludeClasses.getText().toString());
