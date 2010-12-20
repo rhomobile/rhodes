@@ -475,8 +475,9 @@ public class SimpleMainView implements MainView {
 		webView = null;
 		if (v != null)
 			webView = v.detachWebView();
-		if (webView == null)
-			webView = r.createWebView();
+		// TODO:
+		//if (webView == null)
+		//	webView = r.createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(ctx);

@@ -42,8 +42,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -80,7 +78,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RemoteViews;
 
-public class RhoService extends Service {
+public class RhoService {
 	
 	private final static String TAG = "RhodesService";
 
@@ -102,22 +100,6 @@ public class RhoService extends Service {
 	public static RhoService getInstance() {
 		return instance;
 	}
-	
-	private class LocalBinder extends Binder {
-		RhoService getService() {
-			return RhoService.this;
-		}
-	};
-	
-	private final IBinder mBinder = new LocalBinder();
-	
-	@SuppressWarnings("unchecked")
-	private static final Class[] mStartForegroundSignature = new Class[] {int.class, Notification.class};
-	@SuppressWarnings("unchecked")
-	private static final Class[] mStopForegroundSignature = new Class[] {boolean.class};
-	
-	private Method mStartForeground;
-	private Method mStopForeground;
 	
 	private NotificationManager mNM;
 	
@@ -152,9 +134,9 @@ public class RhoService extends Service {
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	
-	public static boolean ENABLE_LOADING_INDICATION = true;
+	//public static boolean ENABLE_LOADING_INDICATION = true;
 	
-	public static int MAX_PROGRESS = 10000;
+	//public static int MAX_PROGRESS = 10000;
 	
 	private long uiThreadId = 0;
 	
@@ -331,8 +313,9 @@ public class RhoService extends Service {
 		return mGeoLocationInactivityTimeout;
 	}
 	
-	private static boolean mSplashHidden = false;
+	//private static boolean mSplashHidden = false;
 	
+	/*
 	private static void hideSplashScreenIfNeeded(Rhodes ra, String url) {
 		if (ra == null)
 			return;
@@ -342,7 +325,9 @@ public class RhoService extends Service {
 			mSplashHidden = true;
 		}
 	}
+	*/
 	
+	/*
 	public static WebView createLoadingWebView(Context ctx) {
 		WebView w = new WebView(ctx);
 		
@@ -362,7 +347,7 @@ public class RhoService extends Service {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				Rhodes ra = Rhodes.getInstance();
-				hideSplashScreenIfNeeded(ra, url);
+				//hideSplashScreenIfNeeded(ra, url);
 				if (ra != null)
 					ra.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 				super.onPageFinished(view, url);
@@ -381,7 +366,9 @@ public class RhoService extends Service {
 		return w;
 	
 	}
+	*/
 	
+	/*
 	public WebView createWebView() {
 		WebView w = new WebView(ctx);
 		
@@ -408,7 +395,7 @@ public class RhoService extends Service {
 			public void onPageFinished(WebView view, String url) {
 				// Set title
 				Rhodes ra = Rhodes.getInstance();
-				hideSplashScreenIfNeeded(ra, url);
+				//hideSplashScreenIfNeeded(ra, url);
 				
 				if (ra != null) {
 					String title = view.getTitle();
@@ -425,7 +412,9 @@ public class RhoService extends Service {
 		
 		return w;
 	}
+	*/
 	
+	/*
 	private void initWebStuff() {
 		String ccName;
 		String wsName;
@@ -456,7 +445,9 @@ public class RhoService extends Service {
 			throw new IllegalStateException(e);
 		}
 	}
+	*/
 	
+	/*
 	public void setMainView(MainView v) {
 		View main = outerFrame.findViewById(RHO_MAIN_VIEW);
 		if (main != null)
@@ -471,6 +462,7 @@ public class RhoService extends Service {
 	public MainView getMainView() {
 		return mainView;
 	}
+	*/
 	
 	public void setRootWindow(ViewGroup rootWindow) {
 		if (rootWindow == outerFrame)
@@ -483,77 +475,6 @@ public class RhoService extends Service {
 	
 	public static boolean isCreated() {
 		return instance != null;
-	}
-	
-	public void startServiceForeground(int id, Notification notification) {
-		if (mStartForeground != null) {
-			try {
-				mStartForeground.invoke(this, new Object[] {Integer.valueOf(id), notification});
-			}
-			catch (InvocationTargetException e) {
-				Log.e(TAG, "Unable to invoke startForeground", e);
-			}
-			catch (IllegalAccessException e) {
-				Log.e(TAG, "Unable to invoke startForeground", e);
-			}
-			return;
-		}
-		
-		setForeground(true);
-		mNM.notify(id, notification);
-	}
-	
-	public void stopServiceForeground(int id) {
-		if (mStopForeground != null) {
-			try {
-				mStopForeground.invoke(this, new Object[] {Integer.valueOf(id)});
-			}
-			catch (InvocationTargetException e) {
-				Log.e(TAG, "Unable to invoke stopForeground", e);
-			}
-			catch (IllegalAccessException e) {
-				Log.e(TAG, "Unable to invoke stopForeground", e);
-			}
-			return;
-		}
-		
-		mNM.cancel(id);
-		setForeground(false);
-	}
-	
-	@Override
-	public IBinder onBind(Intent arg0) {
-		return mBinder;
-	}
-	
-	@Override
-	public void onCreate() {
-		// TODO:
-		try {
-			mStartForeground = getClass().getMethod("startForeground", mStartForegroundSignature);
-			mStopForeground = getClass().getMethod("stopForeground", mStopForegroundSignature);
-		}
-		catch (NoSuchMethodException e) {
-			mStartForeground = null;
-			mStopForeground = null;
-		}
-		
-		mNM = (NotificationManager)getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-	}
-	
-	private void handleCommand(Intent intent) {
-		// TODO:
-	}
-	
-	@Override
-	public void onStart(Intent intent, int startId) {
-		handleCommand(intent);
-	}
-	
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		handleCommand(intent);
-		return Service.START_STICKY;
 	}
 	
 	public RhoService(Activity c, ViewGroup rootWindow, Object params) {
@@ -650,9 +571,9 @@ public class RhoService extends Service {
 			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		}
 		
-		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
+		//ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 		
-		initWebStuff();
+		//initWebStuff();
 
 		Logger.I("Rhodes", "Loading...");
 		//showSplashScreen();
@@ -664,6 +585,8 @@ public class RhoService extends Service {
 		WebView w = new WebView(ctx);
 		WebSettings webSettings = w.getSettings();
 		webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+		
+		mNM = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		
 		// Get screen width/height
 		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);

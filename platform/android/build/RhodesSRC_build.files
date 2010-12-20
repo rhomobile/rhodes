@@ -43,6 +43,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/PushService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesAppOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Rhodes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
@@ -56,7 +57,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/SSLImpl.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/SplashScreenActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/SplashScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ui/AboutDialog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ui/LogOptionsDialog.java
