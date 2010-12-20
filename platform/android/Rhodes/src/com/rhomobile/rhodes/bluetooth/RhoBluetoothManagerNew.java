@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.phonebook.ContactAccessor;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
@@ -70,13 +70,13 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	
 	public void init() {
 		// constructor
-		mActivity = RhodesService.getInstance().getMainActivity();
+		mActivity = RhoService.getInstance().getMainActivity();
 		mDeviceName = "NONAME";
 		
 		
 		mBluetoothIsEnabled = false;
 		// check feature
-		PackageManager pm = RhodesService.getInstance().getContext().getPackageManager();
+		PackageManager pm = RhoService.getInstance().getContext().getPackageManager();
 		FeatureInfo[] fs = pm.getSystemAvailableFeatures();
 		int i;
 		for (i = 0; i < fs.length; i++) {
@@ -261,7 +261,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		    	if(D) Log.i(TAG, "startClient");
 		        Intent serverIntent = new Intent(mActivity, RhoBluetoothDeviceListActivity.class);
 		        //mActivity.startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-		        RhodesService.getInstance().startActivity(serverIntent);
+		        RhoService.getInstance().startActivity(serverIntent);
 			}
 		},false);
 	}
@@ -274,7 +274,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
 		            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 		            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-		            RhodesService.getInstance().startActivity(discoverableIntent);
+		            RhoService.getInstance().startActivity(discoverableIntent);
 		        }
 			}
 		},false);

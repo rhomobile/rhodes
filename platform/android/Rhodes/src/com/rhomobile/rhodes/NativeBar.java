@@ -47,7 +47,7 @@ public class NativeBar {
 
 		public void run() {
 			try {
-				RhodesService r = RhodesService.getInstance();
+				RhoService r = RhoService.getInstance();
 				MainView mainView = r.getMainView();
 				MainView v = null;
 				
@@ -104,7 +104,7 @@ public class NativeBar {
 		}
 		
 		public void run() {
-			RhodesService.getInstance().getMainView().switchTab(index);
+			RhoService.getInstance().getMainView().switchTab(index);
 		}
 	};
 	

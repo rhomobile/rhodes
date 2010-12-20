@@ -43,14 +43,14 @@ public class WebView {
 		}
 		
 		public void run() {
-			RhodesService r = RhodesService.getInstance();
+			RhoService r = RhoService.getInstance();
 			r.getMainView().navigate(url, index);
 		}
 	};
 	
 	private static class NavigateBackTask implements Runnable {
 		public void run() {
-			RhodesService r = RhodesService.getInstance();
+			RhoService r = RhoService.getInstance();
 			r.getMainView().goBack();
 		}
 	};
@@ -63,7 +63,7 @@ public class WebView {
 		}
 		
 		public void run() {
-			RhodesService.getInstance().getMainView().reload(index);
+			RhoService.getInstance().getMainView().reload(index);
 		}
 	};
 	
@@ -112,7 +112,7 @@ public class WebView {
 	
 	public static int activeTab() {
 		try {
-			return RhodesService.getInstance().getMainView().activeTab();
+			return RhoService.getInstance().getMainView().activeTab();
 		}
 		catch (Exception e) {
 			reportFail("activeTab", e);

@@ -60,7 +60,7 @@ public class RhoMenu {
 		
 		Item ri = (Item)obj;
 		
-		RhodesService r = RhodesService.getInstance();
+		RhoService r = RhoService.getInstance();
 		MainView mainView = r.getMainView();
 		
 		String type = ri.type;
@@ -83,13 +83,13 @@ public class RhoMenu {
 			r.doSyncAllSources(true);
 		}
 		else if (type.equalsIgnoreCase("log")) {
-			RhodesService.showLogView();
+			RhoService.showLogView();
 		}
 		else if (type.equalsIgnoreCase("logOptions")) {
-			RhodesService.showLogOptions();
+			RhoService.showLogOptions();
 		}
 		else if (type.equalsIgnoreCase("close") || type.equalsIgnoreCase("exit")) {
-			RhodesService.exit();
+			RhoService.exit();
 		}
 		else if (type.equalsIgnoreCase("url")) {
 			String url = ri.url;
