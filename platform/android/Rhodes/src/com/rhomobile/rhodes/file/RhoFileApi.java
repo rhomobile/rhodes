@@ -10,10 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import com.rhomobile.rhodes.RhoService;
+import com.rhomobile.rhodes.RhodesService;
 
 import android.content.res.AssetManager;
-//import android.util.Log;
 
 public class RhoFileApi {
 	
@@ -71,8 +70,7 @@ public class RhoFileApi {
 	{
 		nativeInit();
 	
-		//RhodesService r = RhodesService.getInstance();
-		am = RhoService.getInstance().getContext().getAssets();
+		am = RhodesService.getInstance().getAssets();
 
 		fillStatTable();
 	}
@@ -83,7 +81,7 @@ public class RhoFileApi {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			RhoService r = RhoService.getInstance();
+			RhodesService r = RhodesService.getInstance();
 			
 			is = am.open(path);
 			

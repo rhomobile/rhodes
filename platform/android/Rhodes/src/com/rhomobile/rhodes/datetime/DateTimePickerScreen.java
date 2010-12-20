@@ -23,18 +23,14 @@ package com.rhomobile.rhodes.datetime;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhoService;
-
+import com.rhomobile.rhodes.RhodesService;
 
 import android.content.res.Configuration;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,6 +69,7 @@ public class DateTimePickerScreen extends BaseActivity {
 	
 	public static String mStateID = "DateTimePickerScreenViewState";
 
+	@SuppressWarnings("serial")
 	public class DateTimePickerScreenViewState extends Object implements Serializable {
 		
 		private String title;
@@ -323,7 +320,7 @@ public class DateTimePickerScreen extends BaseActivity {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		
-		getWindow().setFlags(RhoService.WINDOW_FLAGS, RhoService.WINDOW_MASK);
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();
