@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -44,7 +44,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	
 	
 	public ContactAccessorNew() throws Exception {
-		Context ctx = RhodesService.getInstance().getContext();
+		Context ctx = RhoService.getInstance().getContext();
 		
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {

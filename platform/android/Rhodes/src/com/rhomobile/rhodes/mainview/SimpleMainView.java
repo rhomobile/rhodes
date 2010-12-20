@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -77,7 +77,7 @@ public class SimpleMainView implements MainView {
 			msg.append(" x ");
 			msg.append(oldh);
 			msg.append(" ]");
-			RhodesService.platformLog("SimpleMainView.View", msg.toString());
+			RhoService.platformLog("SimpleMainView.View", msg.toString());
 		}
 	}
 	
@@ -89,13 +89,13 @@ public class SimpleMainView implements MainView {
 	
 	private class ActionHome implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhodesService.getInstance().getStartUrl(), 0);
+			navigate(RhoService.getInstance().getStartUrl(), 0);
 		}
 	};
 	
 	private class ActionOptions implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhodesService.getInstance().getOptionsUrl(), 0);
+			navigate(RhoService.getInstance().getOptionsUrl(), 0);
 		}
 	};
 	
@@ -108,7 +108,7 @@ public class SimpleMainView implements MainView {
 	private class ActionExit implements View.OnClickListener {
 		public void onClick(View v) {
 			restoreWebView();
-			RhodesService.exit();
+			RhoService.exit();
 		}
 	};
 
@@ -122,7 +122,7 @@ public class SimpleMainView implements MainView {
 		public void onClick(View v) {
 			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
-					RhodesService.loadUrl(ActionCustom.this.url);
+					RhoService.loadUrl(ActionCustom.this.url);
 				}
 			}, false);
 		}
@@ -219,7 +219,7 @@ public class SimpleMainView implements MainView {
     	StringBuilder s = new StringBuilder("processForNativeView : [");
     	s.append(_url);
     	s.append("]");
-    	RhodesService.platformLog(TAG, s.toString());
+    	RhoService.platformLog(TAG, s.toString());
     	
     	
     	
@@ -295,7 +295,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	private View createButton(Map<Object,Object> hash) {
-		Context ctx = RhodesService.getInstance().getContext();
+		Context ctx = RhoService.getInstance().getContext();
 		
 		Object actionObj = hash.get("action");
 		if (actionObj == null || !(actionObj instanceof String))
@@ -337,7 +337,7 @@ public class SimpleMainView implements MainView {
 			return null;
 		
 		DisplayMetrics metrics = new DisplayMetrics();
-		WindowManager wm = (WindowManager)RhodesService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager)RhoService.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(metrics);
 		
 		Object iconObj = hash.get("icon");
@@ -384,7 +384,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	private void setupToolbar(LinearLayout tool_bar, Object params) {
-		RhodesService r = RhodesService.getInstance();
+		RhoService r = RhoService.getInstance();
 		Context ctx = r.getContext();
 
 		Vector<Object> buttons = null;
@@ -463,14 +463,14 @@ public class SimpleMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	private void init(MainView v, Object params) {
-		RhodesService r = RhodesService.getInstance();
+		RhoService r = RhoService.getInstance();
 		Context ctx = r.getContext();
 		
 		view = new MyView(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-		view.setId(RhodesService.RHO_MAIN_VIEW);
+		view.setId(RhoService.RHO_MAIN_VIEW);
 		
 		webView = null;
 		if (v != null)
@@ -506,7 +506,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		RhodesService.navigateBack();
+		RhoService.navigateBack();
 	}
 	
 	public void goBack() {
@@ -555,7 +555,7 @@ public class SimpleMainView implements MainView {
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
 		removeNavBar();
 		
-		Context ctx = RhodesService.getInstance().getContext();
+		Context ctx = RhoService.getInstance().getContext();
 		
 		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);

@@ -1,5 +1,4 @@
 // WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!
-// Generated Tue Dec 07 06:35:02 +0300 2010
 
 #include <string.h>
 

@@ -73,7 +73,7 @@ public class Rhodes extends BaseActivity {
 					mSplashScreen.hide(mOuterFrame);
 					mSplashScreen = null;
 				}
-				View view = RhodesService.getInstance().getMainView().getView();
+				View view = RhoService.getInstance().getMainView().getView();
 				view.setVisibility(View.VISIBLE);
 				view.requestFocus();
 			}
@@ -83,7 +83,7 @@ public class Rhodes extends BaseActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		RhodesService.platformLog("Rhodes", "onStart()");
+		RhoService.platformLog("Rhodes", "onStart()");
 		
 		super.onCreate(savedInstanceState);
 		mHandler = new Handler();
@@ -103,7 +103,7 @@ public class Rhodes extends BaseActivity {
 		
 		mSavedBundle = savedInstanceState;
 
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+		getWindow().setFlags(RhoService.WINDOW_FLAGS, RhoService.WINDOW_MASK);
 
 		
 		this.requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -117,17 +117,17 @@ public class Rhodes extends BaseActivity {
 	
 	public void onStart() {
 		super.onStart();
-		RhodesService.platformLog("Rhodes", "onStart()");
+		RhoService.platformLog("Rhodes", "onStart()");
 	}
 	
 	public void onCreatePosponed() {
-		RhodesService.platformLog("Rhodes", "onCreatePosponed()");
+		RhoService.platformLog("Rhodes", "onCreatePosponed()");
 		
-		RhodesService service = RhodesService.getInstance();
+		RhoService service = RhoService.getInstance();
 		if (service == null) {
 			mSplashScreen.rho_start();
 			Log.v(TAG, "Starting rhodes service...");
-			service = new RhodesService(this, mOuterFrame, mStartParams);
+			service = new RhoService(this, mOuterFrame, mStartParams);
 		}
 		else
 			Log.v(TAG, "Rhodes service already started...");
@@ -146,7 +146,7 @@ public class Rhodes extends BaseActivity {
 
 		service.setRootWindow(mOuterFrame);
 	
-		RhodesService.getInstance().activityStarted();
+		RhoService.getInstance().activityStarted();
 		
 		if (mTimerPostponeCreate != null) {
 			mTimerPostponeCreate.cancel();
@@ -160,14 +160,14 @@ public class Rhodes extends BaseActivity {
 	public void onResume() {
 		super.onResume();
 		instance = this;
-		RhodesService.platformLog("Rhodes", "onResume()");
+		RhoService.platformLog("Rhodes", "onResume()");
 	}
 	
 	public static void runPostponedSetup() {
 		final Rhodes r = Rhodes.getInstance();
 		r.mHandler.post( new Runnable() {
 				public void run() {
-					RhodesService.platformLog("Rhodes", "postponed Create UIThread.run()");
+					RhoService.platformLog("Rhodes", "postponed Create UIThread.run()");
 					r.onCreatePosponed();
 				}
 			});
@@ -187,14 +187,14 @@ public class Rhodes extends BaseActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		Logger.T(TAG, "+++ onConfigurationChanged");
 		super.onConfigurationChanged(newConfig);
-		RhodesService.getInstance().rereadScreenProperties();
+		RhoService.getInstance().rereadScreenProperties();
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			RhodesService r = RhodesService.getInstance();
+			RhoService r = RhoService.getInstance();
 			MainView v = r.getMainView();
 			v.back(v.activeTab());
 			return true;

@@ -25,7 +25,7 @@ public class PushReceiver extends BroadcastReceiver {
 		else if (id != null) {
 			// TODO: store it in reg_id variable
 			Log.d(TAG, "Registered: id: " + id);
-			RhodesService r = RhodesService.getInstance();
+			RhoService r = RhoService.getInstance();
 			if (r == null) {
 				Log.e(TAG, "Rhodes instance is null");
 				return;
@@ -37,7 +37,7 @@ public class PushReceiver extends BroadcastReceiver {
 	}
 	
 	private void handleMessage(Context context, Intent intent) {
-		RhodesService r = RhodesService.getInstance();
+		RhoService r = RhoService.getInstance();
 		if (r == null) {
 			Log.e(TAG, "Rhodes instance is null");
 			return;
