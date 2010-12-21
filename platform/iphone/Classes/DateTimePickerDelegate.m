@@ -102,7 +102,13 @@
         if (self.dateTime.initialTime) {
             self.pickerView.date = [NSDate dateWithTimeIntervalSince1970:self.dateTime.initialTime];
         }
-
+		if (self.dateTime.minTime) {
+            self.pickerView.minimumDate = [NSDate dateWithTimeIntervalSince1970:self.dateTime.minTime];
+		}
+		if (self.dateTime.maxTime) {
+            self.pickerView.maximumDate = [NSDate dateWithTimeIntervalSince1970:self.dateTime.maxTime];
+		}
+		
         //CGSize pickerSize = CGSizeMake(parentFrame.size.width, parentFrame.size.height/2);
         CGSize pickerSize = [pickerView sizeThatFits:pickerView.frame.size];
 		if (pickerSize.width < parentFrame.size.width) {
