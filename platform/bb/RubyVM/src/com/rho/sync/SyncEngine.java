@@ -27,6 +27,7 @@ import com.rho.RhoProfiler;
 import com.rho.RhoAppAdapter;
 import com.rho.TimeInterval;
 import com.rho.db.*;
+import com.rho.file.IFileAccess;
 import com.rho.net.*;
 import com.rho.*;
 import java.io.IOException;
@@ -760,35 +761,35 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    getNotify().fireBulkSyncNotification(false, "download", strPartition, RhoAppAdapter.ERR_NONE);
 	    
 	    String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.data");
-	    String strHsqlDataUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.data";
-	    LOG.INFO("Bulk sync: download data from server: " + strHsqlDataUrl);
+	    String fScriptName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.script" );
+	    
+	    String strZip = "";//".gzip";
+	    if (Capabilities.USE_SQLITE)
 	    {
-		    NetResponse resp1 = getNet().pullFile(strHsqlDataUrl, fDataName, this, null);
-		    if ( !resp1.isOK() )
+		    String strHsqlDataUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + strZip;
+		    downloadBulkDataAndUnzip(strHsqlDataUrl, fDataName+strZip, strPartition);
+	    }
+	    else
+	    {
+		    String strHsqlDataUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.data" + strZip;
+		    downloadBulkDataAndUnzip(strHsqlDataUrl, fDataName+strZip, strPartition);
+	        if ( !isContinueSync() )
+	            return;
+		    
+		    String strHsqlScriptUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.script";
+		    LOG.INFO("Bulk sync: download script from server: " + strHsqlScriptUrl);
 		    {
-			    LOG.ERROR("Bulk sync failed: cannot download database file: " + resp1.getRespCode() );
-			    stopSync();
-			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
-			    return;
+			    NetResponse resp1 = getNet().pullFile(strHsqlScriptUrl, fScriptName, this, null);
+			    if ( !resp1.isOK() )
+			    {
+				    LOG.ERROR("Bulk sync failed: cannot download database file.");
+				    stopSync();
+				    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
+			    }
 		    }
 	    }
-	    
         if ( !isContinueSync() )
             return;
-	    
-	    String fScriptName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.script" );
-	    String strHsqlScriptUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + ".hsqldb.script";
-	    LOG.INFO("Bulk sync: download script from server: " + strHsqlScriptUrl);
-	    {
-		    NetResponse resp1 = getNet().pullFile(strHsqlScriptUrl, fScriptName, this, null);
-		    if ( !resp1.isOK() )
-		    {
-			    LOG.ERROR("Bulk sync failed: cannot download database file.");
-			    stopSync();
-			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
-			    return;
-		    }
-	    }
 	    
 		LOG.INFO("Bulk sync: start change db");
 		getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
@@ -798,6 +799,36 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    
 		LOG.INFO("Bulk sync: end change db");
 		getNotify().fireBulkSyncNotification(false, "", strPartition, RhoAppAdapter.ERR_NONE);
+	}
+	
+	void downloadBulkDataAndUnzip(String strDataUrl, String fDataName, String strPartition)throws Exception
+	{
+	    LOG.INFO("Bulk sync: download data from server: " + strDataUrl);
+	    {
+		    NetResponse resp1 = getNet().pullFile(strDataUrl, fDataName, this, null);
+		    if ( !resp1.isOK() )
+		    {
+			    LOG.ERROR("Bulk sync failed: cannot download database file: " + resp1.getRespCode() );
+			    stopSync();
+			    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.getErrorFromResponse(resp1));
+			    return;
+		    }
+	    }
+/*		
+	    LOG.INFO("Bulk sync: unzip db");
+
+	    try
+	    {
+	    	RhoClassFactory.createRhoRubyHelper().unzip_file(fDataName);
+	    }catch(Exception exc)
+	    {
+	        LOG.ERROR("Bulk sync failed: cannot unzip database file.", exc);
+	        stopSync();
+	        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
+	    }
+	    
+	    IFileAccess fs = RhoClassFactory.createFileAccess();
+	    fs.delete(fDataName);*/
 	}
 	
 	String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)throws Exception

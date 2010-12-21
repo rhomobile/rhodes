@@ -534,31 +534,31 @@ module Rhom
                                 sql = ""
                                 values = []
                                 
-                                if attribs
-                                    nonExistAttrs = attribs.dup
-                                    nonExistAttrs.delete(obj['attrib']) if obj['attrib']
+                                #if attribs
+                                #    nonExistAttrs = attribs.dup
+                                #    nonExistAttrs.delete(obj['attrib']) if obj['attrib']
 
-                                    if nonExistAttrs.length > 0
-                                        sql << "SELECT attrib,value FROM object_values WHERE object=? AND source_id=?"
-                                        values << obj['object']
-                                        values << get_source_id
-                                        
-                                        quests = ""
-                                        nonExistAttrs.each do |attr|
-                                            quests << ',' if quests.length() > 0
-                                            quests << '?'
-                                            values << attr
-                                        end
-
-                                        sql << " AND attrib IN (#{quests})"
-                                    end                                    
-                                else
+                                #    if nonExistAttrs.length > 0
+                                #        sql << "SELECT attrib,value FROM object_values WHERE object=? AND source_id=?"
+                                #        values << obj['object']
+                                #        values << get_source_id
+                                #        
+                                #        quests = ""
+                                #        nonExistAttrs.each do |attr|
+                                #            quests << ',' if quests.length() > 0
+                                #            quests << '?'
+                                #            values << attr
+                                #        end
+                                #
+                                #        sql << " AND attrib IN (#{quests})"
+                                #    end                                    
+                                #else
                                     sql << "SELECT attrib,value FROM object_values WHERE \n"
                                     sql << "object=? AND source_id=?"
                                     
                                     values << obj['object']
                                     values << get_source_id
-                                end
+                                #end
                                 
                                 #puts "get attribs: #{sql}"
                                 listAttrs = sql.length > 0 ? db.execute_sql(sql,values) : []
@@ -566,15 +566,20 @@ module Rhom
                                 new_obj = self.new({:object=>"#{obj['object']}"})
                                 #new_obj.vars.merge!({:object=>"#{obj['object']}"})
                                 
-                                if attribs && obj['attrib']
+                                #if attribs && obj['attrib']
                                     #new_obj.vars.merge!( {obj['attrib'].to_sym()=>obj['value'] }) if obj['value']
-									new_obj.vars[obj['attrib'].to_sym()] = obj['value'] if obj['value']
-                                end
+								#	new_obj.vars[obj['attrib'].to_sym()] = obj['value'] if obj['value']
+                                #end
                                 
                                 listAttrs.each do |attrValHash|
                                   attrName = attrValHash['attrib']
                                   attrVal = attrValHash['value']
                                   #new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
+                                  
+                                  if attribs && attribs != '*'    
+                                     next unless attribs.include? (attrName)
+                                  end
+                                  
 								  new_obj.vars[attrName.to_sym()] = attrVal if attrVal
                                   
                                   #nonExistAttrs.delete(attrName) if nonExistAttrs
@@ -813,21 +818,25 @@ module Rhom
                                 values2 << object_id
                                 values2 << get_source_id
                                 
-                                if attribs && attribs != '*'    
-                                    quests = ""
-                                    attribs.each do |attr|
-                                        quests << ',' if quests.length() > 0
-                                        quests << '?'
-                                        values2 << attr
-                                    end
-
-                                    sql2 << " AND attrib IN (#{quests})"
-                                end                                    
+                                #if attribs && attribs != '*'    
+                                #    quests = ""
+                                #    attribs.each do |attr|
+                                #        quests << ',' if quests.length() > 0
+                                #        quests << '?'
+                                #        values2 << attr
+                                #    end
+                                #
+                                #    sql2 << " AND attrib IN (#{quests})"
+                                #end                                    
                                
                                 item_attribs = db.execute_sql(sql2, values2)
                                 if item_attribs && item_attribs.length() > 0
                                     new_item = {'object'=>object_id }
                                     item_attribs.each do |item|
+                                       if attribs && attribs != '*'    
+                                         next unless attribs.include? (item['attrib'])
+                                       end
+                                       
                                        new_item[item['attrib']] = item['value']
                                     end    
 

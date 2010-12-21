@@ -1701,5 +1701,48 @@ public class RubyString extends RubyBasic {
     	m_valEncoding = arg;
         return this;
     }
+
+    public RubyValue binary_encode() 
+    {
+    	StringBuffer res = new StringBuffer(sb_.length());
+    	
+    	for( int i = 0; i < sb_.length(); i++ )
+    	{
+    		char ch = sb_.charAt(i);
+    		if ( ch == 0 )
+    			res.append('\u0001');
+    		else if ( ch == 1 )
+    		{
+    			res.append('\u0001');
+    			res.append('\u0001');
+    		}else
+    			res.append(ch);
+    	}
+    	
+        return new RubyString(res);
+    }
+
+    public RubyValue binary_decode() 
+    {
+    	StringBuffer res = new StringBuffer(sb_.length());
+    	
+    	for( int i = 0; i < sb_.length(); i++ )
+    	{
+    		char ch = sb_.charAt(i);
+    		if ( ch == 1 )
+    		{
+    			if ( i + 1 < sb_.length() && sb_.charAt(i+1) == 1)
+    			{
+    				res.append('\u0001');
+    				i++;
+    			}else
+    				res.append('\u0000');
+    		}
+    		else
+    			res.append(ch);
+    	}
+    	
+        return new RubyString(res);
+    }
     
 }

@@ -294,6 +294,15 @@ klass.defineMethod( "replace", new RubyOneArgMethod(){
 		return ((RubyString)receiver).replace(arg);}
 });
 
+klass.defineMethod( "binary_encode", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).binary_encode();}
+});
+klass.defineMethod( "binary_decode", new RubyNoArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyBlock block ){
+		return ((RubyString)receiver).binary_decode();}
+});
+
 klass.defineAllocMethod(new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block )	{
 		return RubyString.alloc(receiver);	}} );

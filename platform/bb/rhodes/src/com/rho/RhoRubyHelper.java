@@ -231,4 +231,9 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	{
 		GeoLocation.wakeUp();
 	}
+	
+	public void unzip_file(String strPath)throws Exception
+	{
+		com.rho.rubyext.System.unzip_file(strPath);
+	}
 }
