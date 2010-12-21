@@ -30,4 +30,6 @@ public interface IRhoRubyHelper {
 	public void navigateUrl(String url);
 	public void navigateBack();
 	public void app_exit();
+	
+	public void unzip_file(String strPath)throws Exception;
 }

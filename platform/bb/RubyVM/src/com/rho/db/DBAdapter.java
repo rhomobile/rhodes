@@ -264,6 +264,7 @@ public class DBAdapter extends RubyBasic
     	m_nTransactionCounter--;
     	if (m_nTransactionCounter == 0)
     	{
+    		m_dbStorage.onBeforeCommit();
 	    	getAttrMgr().save(this);
 	    	m_dbStorage.commit();
     	}
@@ -457,7 +458,27 @@ public class DBAdapter extends RubyBasic
 		
 	    if ( bRhoReset && !bAppReset )
 	        bRhoReset = !migrateDB(dbVer, strRhoDBVer, strAppDBVer);
-
+	    else if ( Capabilities.USE_SQLITE )
+	    {
+	    	IFileAccess fs = RhoClassFactory.createFileAccess();
+			String dbName = getNameNoExt(m_strDBPath);
+		    String dbNameScript = dbName + ".script";
+			String dbNameData = dbName + ".data";
+		    String dbNameJournal = dbName + ".journal";
+		    String dbNameProperties = dbName + ".properties";
+	    	
+	    	if ( fs.exists(dbNameScript) )
+	    	{
+	    		LOG.INFO("Remove hsqldb and use sqlite for Blackberry>=5.");
+	    		
+	    		fs.delete(dbNameScript);
+	    		fs.delete(dbNameData);
+	    		fs.delete(dbNameJournal);
+	    		fs.delete(dbNameProperties);
+	    		bRhoReset = true;
+	    	}
+	    }
+	    
 		if ( bRhoReset || bAppReset )
 		{
 			IDBStorage db = null;
@@ -637,7 +658,9 @@ public class DBAdapter extends RubyBasic
 		    String dbNameScript = dbName + ".script";
 		    String dbNewNameScript = dbNewName + ".script";
 		    String dbNameJournal = dbName + ".journal";
+		    String dbNameJournal2 = dbName + ".data-journal";
 		    String dbNewNameJournal = dbNewName + ".journal";
+		    String dbNewNameJournal2 = dbNewName + ".data-journal";
 		    String dbNewNameProps = dbNewName + ".properties";
 		    
 			//LOG.TRACE("DBAdapter: " + dbNewNameDate + ": " + (fs.exists(dbNewNameData) ? "" : "not ") + "exists");
@@ -646,6 +669,7 @@ public class DBAdapter extends RubyBasic
 		    fs.delete(dbNewNameScript);
 		    //LOG.TRACE("DBAdapter: " + dbNewNameJournal + ": " + (fs.exists(dbNewNameJournal) ? "" : "not ") + "exists");
 		    fs.delete(dbNewNameJournal);
+		    fs.delete(dbNewNameJournal2);
 		    fs.delete(dbNewNameProps);
 		    
 		    LOG.TRACE("1. Size of " + dbNameData + ": " + fs.size(dbNameData));
@@ -654,7 +678,7 @@ public class DBAdapter extends RubyBasic
 			db.open( dbNewName, getSqlScript() );
 			
 			String[] vecTables = m_dbStorage.getAllTableNames();
-			IDBResult res;
+			//IDBResult res;
 	
 		    db.startTransaction();
 			
@@ -678,13 +702,15 @@ public class DBAdapter extends RubyBasic
 		    
 		    fs.delete(dbNewNameProps);
 		    fs.delete(dbNameJournal);
+		    fs.delete(dbNameJournal2);
 		    
 			String fName = makeBlobFolderName();
 			RhoClassFactory.createFile().delete(fName);
 			DBAdapter.makeBlobFolderName(); //Create folder back
 		    
 		    fs.renameOverwrite(dbNewNameData, dbNameData);
-		    fs.renameOverwrite(dbNewNameScript, dbNameScript);
+		    if ( !Capabilities.USE_SQLITE )
+		    	fs.renameOverwrite(dbNewNameScript, dbNameScript);
 		    
 		    LOG.TRACE("3. Size of " + dbNameData + ": " + fs.size(dbNameData));
 		    
@@ -779,6 +805,7 @@ public class DBAdapter extends RubyBasic
 		try{
 			db = (DBAdapter)alloc(null); 
     		db.openDB(fDbName, true);
+    		db.m_dbStorage.createTriggers();
     		db.setDbPartition(m_strDbPartition);
 			
 		    db.startTransaction();
@@ -821,9 +848,11 @@ public class DBAdapter extends RubyBasic
 			String dbNameData = dbName + ".data";
 		    String dbNameScript = dbName + ".script";
 		    String dbNameJournal = dbName + ".journal";
+		    String dbNameJournal2 = dbName + ".data-journal";		    
 		    String dbNewNameProps = getNameNoExt(fDbName) + ".properties";
 		    
 		    fs.delete(dbNameJournal);
+		    fs.delete(dbNameJournal2);
 		    fs.delete(dbNewNameProps);
 		    
 			String fName = makeBlobFolderName();
@@ -831,7 +860,8 @@ public class DBAdapter extends RubyBasic
 			DBAdapter.makeBlobFolderName(); //Create folder back
 		    
 		    fs.renameOverwrite(fDbName, dbNameData);
-		    fs.renameOverwrite(fScriptName, dbNameScript);
+		    if ( !Capabilities.USE_SQLITE )
+		    	fs.renameOverwrite(fScriptName, dbNameScript);
 		    
 		    m_dbStorage = RhoClassFactory.createDBStorage();
 			m_dbStorage.open(m_strDBPath, getSqlScript() );
@@ -1176,9 +1206,9 @@ public class DBAdapter extends RubyBasic
 	
 				for( ; !rows2Insert.isEnd(); rows2Insert.next() )
 				{
-					Object[] data = rows2Insert.getCurData();
+					//Object[] data = rows2Insert.getCurData();
 					Integer nSrcID = new Integer(rows2Insert.getIntByIdx(0));
-					String attrib = (String)data[1];
+					String attrib = rows2Insert.getStringByIdx(1);
 					m_db.getAttrMgr().add(nSrcID, attrib);
 				}
 			}catch(DBException exc)
@@ -1246,15 +1276,12 @@ public class DBAdapter extends RubyBasic
 			
 			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
 			{
-				Object[] data = rows2Delete.getCurData();
-				
 				if ( !bSchemaSrc )
 				{
-					if ( nSrcID == null )
-						nSrcID = new Integer(rows2Delete.getIntByIdx(0));
+					nSrcID = new Integer(rows2Delete.getIntByIdx(0));
 					
-					String attrib = (String)data[1];
-					String value = (String)data[3];
+					String attrib = rows2Delete.getStringByIdx(1);
+					String value = rows2Delete.getStringByIdx(3);
 
 					if (cols == null) //delete
 						m_db.getAttrMgr().remove(nSrcID, attrib);
@@ -1263,6 +1290,7 @@ public class DBAdapter extends RubyBasic
 				    	processBlobDelete(nSrcID, attrib, value);
 				}else
 				{
+					Object[] data = rows2Delete.getCurData();
 					for ( int i = 0; i < rows2Delete.getColCount(); i++ )
 					{
 						if (!isChangedCol(cols, i))
