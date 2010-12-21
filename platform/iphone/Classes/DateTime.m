@@ -11,6 +11,6 @@
 
 @implementation DateTime
 
-@synthesize url, title, initialTime, format, data;
+@synthesize url, title, initialTime, format, data, minTime, maxTime;
 
 @end
