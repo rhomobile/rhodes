@@ -451,7 +451,87 @@ end
 
 namespace "run" do
   namespace "iphone" do
+
+ 
+
+
+
     task :spec => ["clean:iphone",:buildsim] do
+
+      # Run local http server
+      $iphonespec = true
+      httpserver = false
+      httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
+
+      if httpserver
+        require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
+        NetHTTPSpecs.start_server
+      end
+
+      Jake.before_run_spec
+
+      puts 'kill iPhone Simulator'
+      'killall -9  "iPhone Simulator"'
+      'killall -9 iphonesim'
+
+      mkdir_p $tmpdir
+      log_name  =   File.join($tmpdir, 'logout')
+      File.delete(log_name) if File.exist?(log_name)
+
+      Thread.new {
+            # run spec
+            iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+            commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+            puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+            puts 'execute command : ' + commandis
+            system(commandis)  	
+            $iphone_end_spec = true
+     }
+
+        start = Time.now        
+
+        puts "waiting for log"
+      
+        while !File.exist?(log_name)
+            sleep(1)
+        end
+
+        puts "start read log"
+        
+        $iphone_end_spec = false
+
+        while !$iphone_end_spec do
+            io = File.new(log_name, "r")
+        
+            io.each do |line|
+                puts line
+                $iphone_end_spec = !Jake.process_spec_output(line)
+                break if $iphone_end_spec
+            end
+            io.close
+            
+            sleep(5) unless $iphone_end_spec
+        end
+      puts 'spec logging is finished'
+
+      Jake.process_spec_results(start)
+
+      File.delete(log_name) if File.exist?(log_name)
+
+      $stdout.flush
+
+      puts 'kill iPhone Simulator'
+      'killall -9  "iPhone Simulator"'
+      'killall -9 iphonesim'
+
+      $stdout.flush
+
+      NetHTTPSpecs.stop_server if httpserver
+
+      exit $failed.to_i unless $dont_exit_on_failure
+    end
+
+    task :spec_old => ["clean:iphone",:buildsim] do
 
       sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" +
                 $sdk.gsub(/iphonesimulator/,"") + ".sdk"
@@ -506,6 +586,8 @@ namespace "run" do
       ENV["IPHONE_SIMULATOR_ROOT"] = old_iphone_simulator
       exit $failed.to_i unless $dont_exit_on_failure
     end
+
+
 
     task :phone_spec do
       Jake.run_spec_app('iphone','phone_spec')
