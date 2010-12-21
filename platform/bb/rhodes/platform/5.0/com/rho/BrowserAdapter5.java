@@ -84,7 +84,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		m_app = app;
 		
 		m_oConfig = new BrowserFieldConfig();
-		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_POINTER );
+//		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_POINTER );
 		m_oConfig.setProperty( BrowserFieldConfig.JAVASCRIPT_ENABLED, Boolean.TRUE );
 //		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_CARET );
 		m_oConfig.setProperty( BrowserFieldConfig.ENABLE_COOKIES, Boolean.TRUE );
