@@ -184,6 +184,20 @@ describe "Rhom::RhomObject" do
     results[1].name.should == "Aeroprise"
     results[1].industry.should == "Technology"
   end
+
+  it "should compare 2 props" do
+    results = getAccount.find_all(:order => 'name', :orderdir => "DESC")
+    results.length.should == 2
+    
+    res = false
+    if results[0].name == results[1].name
+        res = true
+    else
+        res = false
+    end
+    
+    res.should == false
+  end
   
   it "should have correct number of attributes" do
     @account = getAccount.find(:all, :order => 'name', :orderdir => "DESC").first
