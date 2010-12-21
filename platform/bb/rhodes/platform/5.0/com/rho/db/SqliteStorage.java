@@ -2,6 +2,7 @@ package com.rho.db;
 
 import j2me.lang.CharacterMe;
 
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.file.*;
@@ -18,6 +19,8 @@ public class SqliteStorage implements IDBStorage
 	private IFileAccess m_fs;
 	private boolean m_bPendingTransaction = false;
 	private Database m_db;
+	private int m_nInsideTransaction = 0;
+	private IDBCallback m_dbCallback;
 	
 	public SqliteStorage()
 	{
@@ -38,7 +41,7 @@ public class SqliteStorage implements IDBStorage
 	void bindObject(Statement st, int i, Object obj )throws DatabaseException
 	{
 		if ( obj instanceof String)
-			st.bind(i, (String)obj);
+			st.bind(i, ((String)obj));
 		else if ( obj instanceof Integer)
 			st.bind(i, ((Integer)obj).intValue());
 		else if ( obj instanceof Short)
@@ -80,8 +83,8 @@ public class SqliteStorage implements IDBStorage
 				if ( strStatement == null || start >= strStatement.length() )
 					break;
 				
-				String strSelect = strStatement.length() > 6 ? strStatement.substring(0, 6) : ""; 
-				
+				String strCommand = strStatement.length() > 6 ? strStatement.substring(0, 6) : ""; 
+				boolean bSelect = strCommand.equalsIgnoreCase("SELECT");
 				Statement st = m_db.createStatement(strStatement);
 				boolean bDontCloseStatement = false;
 				try
@@ -91,10 +94,10 @@ public class SqliteStorage implements IDBStorage
 					
 					for ( int i = 0; values != null && i < values.length; i++ )
 					{
-						bindObject(st, i+1, values[i] );
+						bindObject(st, i+1, values[i]);
 					}
 					
-					if ( strSelect.equalsIgnoreCase("SELECT"))
+					if ( bSelect )
 					{
 		                if ( res == null )
 		                {
@@ -106,6 +109,12 @@ public class SqliteStorage implements IDBStorage
 						try
 						{
 							st.execute();
+							
+							if ( m_nInsideTransaction == 0 &&
+								(strCommand.equalsIgnoreCase("INSERT")|| strCommand.equalsIgnoreCase("DELETE") ||
+								 strCommand.equalsIgnoreCase("UPDATE") ) )
+								processCallbackData();
+							
 						}catch(DatabaseException exc)
 						{
 							if ( res == null && bReportNonUnique && exc.getMessage().indexOf("constraint failed") >= 0)
@@ -150,7 +159,7 @@ public class SqliteStorage implements IDBStorage
 		Vector arTables = new Vector();
 	    for ( ; !res.isEnd(); res.next() )
 	    {
-	    	arTables.addElement(res.getCurData());
+	    	arTables.addElement(res.getCurData()[0]);
 	    }
 	    
 		String[] vecTables = new String[arTables.size()]; 
@@ -182,6 +191,17 @@ public class SqliteStorage implements IDBStorage
 		executeSQL(strSqlScript, null, false);
 	}
 	
+	public static void OnInsertObjectRecord(Object NEW_source_id, Object NEW_attrib )
+	{
+		LOG.INFO("OnInsertObjectRecord");
+	}
+	
+	public void createTriggers() throws DBException
+	{
+		String strTriggers = RhoConf.getInstance().loadFileFromJar("apps/db/syncdb_java.triggers");
+		executeBatchSQL( strTriggers );
+	}
+	
 	public void open(String strPath, String strSqlScript) throws DBException 
 	{
 		try{
@@ -196,9 +216,11 @@ public class SqliteStorage implements IDBStorage
 				m_db = DatabaseFactory.create(myURI);
 				
 				m_db.beginTransaction();
+				m_nInsideTransaction++;
 				try
 				{
 					executeBatchSQL( strSqlScript );
+					createTriggers();
 				}catch(DBException exc)
 				{
 					m_db.rollbackTransaction();
@@ -214,6 +236,9 @@ public class SqliteStorage implements IDBStorage
 			m_bPendingTransaction = false;
 		}catch(Exception exc ){
 			throw new DBException(exc);
+		}finally
+		{
+			m_nInsideTransaction = 0;
 		}
 	}
 
@@ -223,17 +248,29 @@ public class SqliteStorage implements IDBStorage
 				m_bPendingTransaction = true;
 			else
 				m_db.beginTransaction();
+			
+			m_nInsideTransaction++;
 		}catch(DatabaseException exc ){
 			throw new DBException(exc);
 		}
+	}
+	
+	public void onBeforeCommit() throws DBException
+	{
+		processCallbackData();
 	}
 	
 	public void commit() throws DBException {
 		try{
 			if ( m_db!= null )
 				m_db.commitTransaction();
+			
 		}catch(DatabaseException exc ){
 			throw new DBException(exc);
+		}finally
+		{
+			if ( m_nInsideTransaction > 0 )
+				m_nInsideTransaction--;
 		}
 	}
 	
@@ -244,6 +281,10 @@ public class SqliteStorage implements IDBStorage
 				m_db.rollbackTransaction();
 		}catch(DatabaseException exc ){
 			throw new DBException(exc);
+		}finally
+		{
+			if ( m_nInsideTransaction > 0 )
+				m_nInsideTransaction--;
 		}
 	}
 
@@ -252,14 +293,83 @@ public class SqliteStorage implements IDBStorage
 		try{
 			if ( m_db!= null )
 				m_db.close();
+			
+			m_db = null;
 		}catch(DatabaseException exc ){
 			throw new DBException(exc);
 		}
 	}
 	
-	public void setDbCallback(IDBCallback callback) {
-		// TODO Auto-generated method stub
-
+	void processCallbackData() throws DBException
+	{
+/*		if ( m_dbCallback == null )
+			return;
+		{
+			IDBResult rows2Insert = executeSQL("SELECT * FROM object_attribs_to_insert", null, false);
+			if ( rows2Insert == null || rows2Insert.isEnd() )
+			{
+				if (rows2Insert != null)
+					rows2Insert.close();
+			}else
+			{
+				m_dbCallback.onAfterInsert("object_values", rows2Insert);
+				
+				m_nInsideTransaction++;
+				try{
+					executeSQL("DELETE FROM object_attribs_to_insert", null, false);
+				}finally
+				{
+					m_nInsideTransaction--;
+				}
+			}
+		}
+		
+		{
+			IDBResult rows2Delete = executeSQL("SELECT * FROM object_attribs_to_delete", null, false);
+			if ( rows2Delete == null || rows2Delete.isEnd() )
+			{
+				if (rows2Delete != null)
+					rows2Delete.close();
+			}else
+			{
+				m_dbCallback.onBeforeDelete("object_values", rows2Delete);
+				
+				m_nInsideTransaction++;
+				try{
+					executeSQL("DELETE FROM object_attribs_to_delete", null, false);
+				}finally
+				{
+					m_nInsideTransaction--;
+				}
+			}
+		}
+		
+		{
+			IDBResult rows2Update = executeSQL("SELECT * FROM object_attribs_to_update", null, false);
+			if ( rows2Update == null || rows2Update.isEnd() )
+			{
+				if (rows2Update != null)
+					rows2Update.close();
+			}else
+			{
+				int cols[] = {3};
+				m_dbCallback.onBeforeUpdate("object_values", rows2Update, cols);
+				
+				m_nInsideTransaction++;
+				try{
+					executeSQL("DELETE FROM object_attribs_to_update", null, false);
+				}finally
+				{
+					m_nInsideTransaction--;
+				}
+			}
+		}*/
+		
+	}
+	
+	public void setDbCallback(IDBCallback callback) 
+	{
+		m_dbCallback = callback;
 	}
 
 }

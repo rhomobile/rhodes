@@ -50,4 +50,6 @@ class Account_s
      
     property :propOne,  :string
     property :TwoProps,  :string
+    
+    property :my_text,  :blob
 end

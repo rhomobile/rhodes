@@ -20,6 +20,17 @@ public class Number{
     		return ((Short)obj).shortValue();
     	else if ( obj instanceof Byte )
     		return ((Byte)obj).byteValue();
+    	else if ( obj instanceof byte[] )
+    	{
+			String strRes = "";
+			try{
+				strRes = new String( ((byte[])obj), "UTF-8");
+       		}catch(java.io.UnsupportedEncodingException exc)
+       		{
+       		}
+    		
+        	return strRes==null || strRes.length() == 0 ? 0 : Integer.parseInt(strRes);
+    	}
     	
     	String strRes = obj.toString();
     	return strRes==null || strRes.length() == 0 ? 0 : Integer.parseInt(strRes);
@@ -34,6 +45,17 @@ public class Number{
     		return ((Short)obj).shortValue();
     	else if ( obj instanceof Byte )
     		return ((Byte)obj).byteValue();
+    	else if ( obj instanceof byte[] )
+    	{
+			String strRes = "";
+			try{
+				strRes = new String( ((byte[])obj), "UTF-8");
+       		}catch(java.io.UnsupportedEncodingException exc)
+       		{
+       		}
+    		
+        	return strRes==null || strRes.length() == 0 ? 0 : Long.parseLong(strRes);
+    	}
     	
     	String strRes = obj.toString();
     	return strRes==null || strRes.length() == 0 ? 0 : Long.parseLong(strRes);
@@ -52,6 +74,17 @@ public class Number{
     		return ((Short)obj).shortValue();
     	else if ( obj instanceof Byte )
     		return ((Byte)obj).byteValue();
+    	else if ( obj instanceof byte[] )
+    	{
+			String strRes = "";
+			try{
+				strRes = new String( ((byte[])obj), "UTF-8");
+       		}catch(java.io.UnsupportedEncodingException exc)
+       		{
+       		}
+    		
+       		return strRes==null || strRes.length() == 0 ? 0 : Double.parseDouble(strRes);
+    	}
     	
     	String strRes = obj.toString();
     	return strRes==null || strRes.length() == 0 ? 0 : Double.parseDouble(strRes);

@@ -2,6 +2,8 @@ package com.rho;
 
 public class FilePath
 {
+    private String m_szPath;
+	
     public FilePath( String str) { m_szPath = str; }
 
     public String getBaseName(){ 
@@ -76,5 +78,15 @@ public class FilePath
         return slash;
     }
 
-    String m_szPath;
+	public String getPathNoExt()
+	{
+		int nDot = m_szPath.lastIndexOf('.');
+		String strRes = "";
+		if ( nDot > 0 )
+			strRes = m_szPath.substring(0, nDot);
+		else
+			strRes = m_szPath;
+		
+		return strRes;
+	}
 }
