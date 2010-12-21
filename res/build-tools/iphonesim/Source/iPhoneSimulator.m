@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [sdkversion] [family] [uuid]\n");
+    fprintf(stderr, "  launch <application path> [sdkversion] [family] [logout file path] [uuid]\n");
 }
 
 
@@ -86,7 +86,7 @@
 /**
  * Launch the given Simulator binary.
  */
-- (int) launchApp: (NSString *) path withFamily:(NSString*)family uuid:(NSString*)uuid{
+- (int) launchApp: (NSString *) path withFamily:(NSString*)family logout:(NSString*)logout uuid:(NSString*)uuid{
     DTiPhoneSimulatorApplicationSpecifier *appSpec;
     DTiPhoneSimulatorSessionConfig *config;
     DTiPhoneSimulatorSession *session;
@@ -110,6 +110,12 @@
     [config setSimulatedSystemRoot: sdkRoot];
     [config setSimulatedApplicationShouldWaitForDebugger: NO];
 
+	if (logout != nil) {
+		nsprintf(@"using logout file: %@",logout);
+		[config setSimulatedApplicationStdErrPath:logout];	
+		[config setSimulatedApplicationStdOutPath:logout];	
+	}
+	
     [config setSimulatedApplicationLaunchArgs: [NSArray array]];
     [config setSimulatedApplicationLaunchEnvironment: [NSDictionary dictionary]];
 
@@ -205,15 +211,20 @@
         /* Don't exit, adds to runloop */
 		NSString *family = nil;
 		NSString *uuid = nil;
+		NSString *logout = nil;
 		if (argc > 4)
 		{
 			family = [NSString stringWithUTF8String:argv[4]];
 		}
 		if (argc > 5)
 		{
+			logout = [NSString stringWithUTF8String:argv[5]];
+		}
+		if (argc > 6)
+		{
 			uuid = [NSString stringWithUTF8String:argv[5]];
 		}
-        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid];
+        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family logout:logout uuid:uuid];
     } else {
         fprintf(stderr, "Unknown command\n");
         [self printUsage];
