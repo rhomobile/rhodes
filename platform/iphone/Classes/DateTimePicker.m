@@ -19,6 +19,8 @@ void choose_datetime_with_range(char* callback, char* title, long initial_time, 
     dateTime.initialTime = initial_time;
     dateTime.format = format;
     dateTime.data = [NSString stringWithUTF8String:data];
+	dateTime.minTime = min_time;
+	dateTime.maxTime = max_time;
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(chooseDateTime:) withObject:dateTime waitUntilDone:YES];
     [dateTime release];
 }
