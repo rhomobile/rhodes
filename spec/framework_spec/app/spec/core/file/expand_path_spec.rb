@@ -66,7 +66,8 @@ describe "File.expand_path" do
       File.expand_path(Dir.pwd).should == Dir.pwd
       File.expand_path('~/').should == ENV['HOME']
       File.expand_path('~/..badfilename').should == "#{ENV['HOME']}/..badfilename"
-      File.expand_path('..').should == Dir.pwd.split('/')[0...-1].join("/")
+      # See ticket ID:7732225,  https://www.pivotaltracker.com/story/show/7732225
+      File.expand_path('..').should == Dir.pwd.split('/')[0...-1].join("/") unless System.get_property('platform') == 'APPLE'
       File.expand_path('//').should == '//'
       File.expand_path('~/a','~/b').should == "#{ENV['HOME']}/a"
     end
@@ -76,7 +77,8 @@ describe "File.expand_path" do
     end
 
     it "expands ~ENV['USER'] to the user's home directory" do
-      File.expand_path("~#{ENV['USER']}").should == ENV['HOME']
+      # See ticket ID:7732225,  https://www.pivotaltracker.com/story/show/7732225
+      File.expand_path("~#{ENV['USER']}").should == ENV['HOME']  unless System.get_property('platform') == 'APPLE'
       File.expand_path("~#{ENV['USER']}/a").should == "#{ENV['HOME']}/a"
     end
   end
