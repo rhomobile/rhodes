@@ -3,6 +3,8 @@ require 'indifferent_access'
 module Rho
   module RhoSupport
 
+    USE_BBSQLITE = System.get_property('platform') == 'Blackberry' && System.get_property('os_version')[0].to_i() >= 5
+
     class << self
       
       def url_encode(s)
@@ -24,7 +26,19 @@ module Rho
       #    [$1.delete('%')].pack('H*')  
       #  end
       #end
-      
+
+      def binary_encode(str)
+        return str unless USE_BBSQLITE
+        
+        str.binary_encode
+      end
+
+      def binary_decode(str)
+        return str unless USE_BBSQLITE
+        
+        str.binary_decode
+      end
+            
      # def _unescape(str, regex) str.gsub(regex){ $1.hex.chr } end
       def url_decode(str)
         _url_decode(str, /((?:%[0-9a-fA-f]{2})+)/n)

@@ -241,7 +241,17 @@ public class SqliteResult implements IDBResult
 			return ObjectFactory.createFloat(Number.doubleValue(val));
 		else if ( val instanceof Double)
 			return ObjectFactory.createFloat(Number.doubleValue(val));
-		
+		else if (val instanceof byte[])
+		{
+			String str = "";
+			try{
+				str = new String( ((byte[])val), "UTF-8");
+       		}catch(java.io.UnsupportedEncodingException exc)
+       		{
+       			LOG.ERROR("getRubyValueByIdx failed.", exc);
+       		}
+			return ObjectFactory.createString(str);
+		}
 		
 		return ObjectFactory.createString(val.toString());
 	}

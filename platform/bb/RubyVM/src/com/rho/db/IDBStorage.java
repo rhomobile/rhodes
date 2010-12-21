@@ -16,6 +16,7 @@ public interface IDBStorage {
 	public abstract void startTransaction()throws DBException;
 	public abstract void commit()throws DBException;
 	public abstract void rollback()throws DBException;
+	public abstract void onBeforeCommit() throws DBException;
 	
 	public abstract void setDbCallback(IDBCallback callback);
 	
@@ -23,4 +24,5 @@ public interface IDBStorage {
 	public abstract boolean isTableExists(String strName)throws DBException;
 	
 	public abstract boolean isDbFileExists(String strPath);
+	public abstract void createTriggers() throws DBException;
 }
