@@ -174,6 +174,16 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 			throw new DBException(exc);
 		}
 	}
+
+	public void onBeforeCommit() throws DBException
+	{
+		
+	}
+	
+	public void createTriggers() throws DBException
+	{
+		
+	}
 	
 	public void commit()throws DBException
 	{

@@ -152,7 +152,7 @@ namespace "config" do
 
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
-    $use_sqlite = false #$bbver[0].to_i >= 5
+    $use_sqlite = $bbver[0].to_i >= 5
     
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"

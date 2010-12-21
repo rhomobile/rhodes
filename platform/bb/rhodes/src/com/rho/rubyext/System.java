@@ -6,18 +6,23 @@ import net.rim.device.api.i18n.Locale;
 import net.rim.device.api.system.Display;
 
 import com.rho.BBVersionSpecific;
+import com.rho.FilePath;
+import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
 import com.rho.RhoRubyHelper;
+import com.rho.file.IRAFile;
 
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.ApplicationManager;
 import net.rim.device.api.system.CodeModuleManager;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.Backlight;
+import net.rim.device.api.compress.*;
+import java.io.*;
 
 public class System {
 
@@ -235,6 +240,20 @@ public class System {
 				}
 			}
 		});
+		klass.getSingletonClass().defineMethod( "unzip_file", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
+			{
+				try 
+				{
+					String strPath = arg1.toStr();
+					unzip_file(strPath);
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("open_url failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
 		
 	}
     
@@ -343,5 +362,52 @@ public class System {
 		return retval;
 	}
 	
-	
+	public static void unzip_file(String strPath)throws Exception
+	{
+		IRAFile file = null;
+		com.rho.file.SimpleFile fileZip = null;
+		InputStream inputStream = null;
+		GZIPInputStream is = null;
+		try
+		{
+	        if (!strPath.startsWith("file:")) { 
+	    		strPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), strPath);
+	        }
+			
+			file = RhoClassFactory.createFSRAFile();
+			String strOutFileName = new FilePath(strPath).getPathNoExt(); 
+			file.open(strOutFileName, "rw");
+				
+			fileZip = RhoClassFactory.createFile();
+			fileZip.open(strPath, true, false);
+			
+		    inputStream = fileZip.getInputStream();
+		    //is = new ZLibInputStream(inputStream, false);
+		    is = new GZIPInputStream(inputStream);
+		    
+			byte[]  byteBuffer = new byte[1024*20]; 
+			int nRead = 0, nSize = 0;
+			do{
+				nRead = /*bufferedReadByByte(m_byteBuffer, is);*/is.read(byteBuffer);
+				if ( nRead > 0 )
+				{
+					file.write(byteBuffer, 0, nRead);
+					nSize += nRead;
+				}
+			}while( nRead >= 0 );
+		    
+		}finally
+		{
+			if ( inputStream != null )
+				inputStream.close();
+			if ( is != null )
+				is.close();
+			
+			if ( fileZip != null )
+				fileZip.close();
+			if ( file != null )
+				file.close();
+			
+		}
+	}	
 }

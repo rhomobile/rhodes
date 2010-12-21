@@ -20,10 +20,8 @@
 require 'rhom'
 require 'rho/rhoutils'
 
+USE_HSQLDB = System.get_property('platform') == 'Blackberry' && System.get_property('os_version')[0].to_i() < 5
 USE_COPY_FILES = !defined? RHO_ME
-
-#TODO:
-#BB: issue with sql search : https://www.pivotaltracker.com/story/show/3182398 ; after fix uncomment all RHO_ME comments
 
 def getAccount
     return Account_s if $spec_settings[:schema_model]
@@ -83,7 +81,7 @@ class Test_Helper
             Rho::RhoUtils.load_offline_data(@tables, @folder, @source_map)
         
             src_path = Rho::RhoFSConnector::get_db_fullpathname('user')
-            if defined? RHO_ME          
+            if USE_HSQLDB          
                 src_path.sub!(".sqlite", ".data")
                 copy_file( src_path, Rho::RhoFSConnector::get_blob_folder() )
                 src_path.sub!(".data", ".script")
@@ -98,7 +96,7 @@ class Test_Helper
         if USE_COPY_FILES
             dst_path = Rho::RhoFSConnector::get_db_fullpathname('user')
             src_path = File.join( Rho::RhoFSConnector::get_blob_folder(), File.basename(dst_path))
-            if defined? RHO_ME          
+            if USE_HSQLDB
                 src_path.sub!(".sqlite", ".data")
                 copy_file( src_path, File.dirname(dst_path) )
                 src_path.sub!(".data", ".script")
@@ -220,9 +218,9 @@ describe "Rhom::RhomObject" do
   it "should save string with zero" do
     val = "\1\2\3\0\5\8\6\7\34"
     
-    item = getAccount.create(:industry => val)
+    item = getAccount.create(:industry => Rho::RhoSupport::binary_encode(val))
     item2 = getAccount.find(item.object)
-    item2.industry.should == val
+    Rho::RhoSupport::binary_decode(item2.industry).should == val
   end
   
   it "should create multiple records offline" do
@@ -979,13 +977,35 @@ describe "Rhom::RhomObject" do
     @accts.length.should == 0
   end
 
-  #it "should support blob file type" do
-  #  @acct = getAccount.new({'image_uri'=>"/db/images/mynewimage.png"})
-  #  @acct.name = "my new acct"
-  #  @acct.save
-  #  @res = ::Rho::RHO.get_user_db().select_from_table('object_values','*', 'attrib_type' => "blob.file")
-  #  @res.length.should == 1
-  #end
+  it "should support blob type" do
+    
+    #TODO: fix blob for schema models    
+    unless $spec_settings[:schema_model]     
+        file_name = File.join(Rho::RhoApplication::get_blob_folder, 'MyText123.txt')
+        puts "file_name : #{file_name}"
+        File.delete(file_name) if File.exists?(file_name)
+        File.exists?(file_name).should ==  false
+      
+        write_data  = "this is blob test"
+        f = File.new(file_name, "w")
+        f.write(write_data)
+        f.close        
+
+        File.exists?(file_name).should == true
+        blob_name = file_name[__rhoGetCurrentDir().length(), file_name.length()-__rhoGetCurrentDir().length()]
+        puts "blob_name : #{blob_name}"
+        
+        item = getAccount.create({'my_text'=>blob_name})
+        item.my_text.should == blob_name
+        File.exists?(file_name).should == true
+        
+        item.destroy
+        
+        item2 = getAccount.find(item.object)
+        item2.should be_nil
+        File.exists?(file_name).should == false
+    end        
+  end
 
   it "should include only selected column" do
     @accts = getAccount.find(:all, :select => ['name'], :order => 'name', :orderdir => 'DESC' )
@@ -1101,7 +1121,7 @@ describe "Rhom#paginate" do
                 {:object => '527579259', :name => 'test', :address => 'bcgi7t4e3e', :industry => 'ozjdrljgm2'}]
 
     def get_expected
-if !defined? RHO_ME      
+if !USE_HSQLDB
         return @expected_s if $spec_settings[:schema_model]
         
         @expected
@@ -1113,7 +1133,7 @@ end
     end
     
     it "should support paginate with no options" do
-      return if defined? RHO_ME and !$spec_settings[:schema_model]
+      return if USE_HSQLDB and !$spec_settings[:schema_model]
       
       3.times do |x|
         @accts = getAccount.paginate(:page => x)
