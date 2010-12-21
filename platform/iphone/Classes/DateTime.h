@@ -16,6 +16,8 @@
     long	  initialTime;
     int		  format;
     NSString* data;
+    long	  minTime;
+    long	  maxTime;
 }
 
 @property (nonatomic, retain) NSString* url;
@@ -23,5 +25,7 @@
 @property (assign) long initialTime;
 @property (assign) int format;
 @property (nonatomic, retain) NSString* data;
+@property (assign) long minTime;
+@property (assign) long maxTime;
 
 @end
