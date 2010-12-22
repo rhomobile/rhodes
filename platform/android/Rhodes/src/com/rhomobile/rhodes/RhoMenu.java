@@ -89,7 +89,7 @@ public class RhoMenu {
 			RhodesService.showLogOptions();
 		}
 		else if (type.equalsIgnoreCase("close") || type.equalsIgnoreCase("exit")) {
-			RhodesService.exitApp();
+			RhodesService.exit();
 		}
 		else if (type.equalsIgnoreCase("url")) {
 			String url = ri.url;
