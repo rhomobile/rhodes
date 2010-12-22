@@ -1560,14 +1560,13 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     		else
     		{
     			_application.processConnection(connection, _event);
-    			
-            	if (_callback != null )
-            	{
-            		_callback.run();
-            		_callback = null;
-            	}
-    			
     		}
+    		
+        	if (_callback != null )
+        	{
+        		_callback.run();
+        		_callback = null;
+        	}
         }
         
     }
