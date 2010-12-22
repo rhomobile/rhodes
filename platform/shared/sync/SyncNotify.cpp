@@ -460,8 +460,9 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         clearNotification(src);
 }
 
-boolean CSyncNotify::callNotify(CSyncNotification oNotify, const String& strBody )
+boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& strBody )
 {
+    String strUrl = oNotify.m_strUrl; //Need to copy url since notify may be cleared in callback
     if ( getSync().isNoThreadedMode() )
     {
         m_strNotifyBody = strBody;
@@ -472,10 +473,10 @@ boolean CSyncNotify::callNotify(CSyncNotification oNotify, const String& strBody
         int nRet = (*oNotify.m_cCallback)(strBody.c_str(), oNotify.m_cCallbackData);
         return nRet == 1;
     }
-    if ( oNotify.m_strUrl.length() == 0 )
+    if ( strUrl.length() == 0 )
         return true;
 
-    NetResponse(resp,getNet().pushData( oNotify.m_strUrl, strBody, null ));
+    NetResponse(resp,getNet().pushData( strUrl, strBody, null ));
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else
