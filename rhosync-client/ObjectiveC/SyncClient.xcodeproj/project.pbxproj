@@ -1205,7 +1205,7 @@
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = SyncClient;
 				RHO_NO_RUBY = 1;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
@@ -1235,7 +1235,7 @@
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = SyncClient;
 				RHO_NO_RUBY = 1;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Release;
