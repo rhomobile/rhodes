@@ -800,6 +800,50 @@ import com.rho.Tokenizer;
     return schemespec.toString();
   }
 
+  public String getPathNoFragment() {
+	    StringBuffer schemespec = new StringBuffer();
+
+	    if (m_scheme != null) {
+	    	schemespec.append(m_scheme);
+	    	schemespec.append(':');
+	      }
+	    
+	    if (m_host != null || m_regAuthority != null) {
+	      schemespec.append("//");
+	    
+	      // Server based authority.
+	      if (m_host != null) {
+
+	        if (m_userinfo != null) {
+	          schemespec.append(m_userinfo);
+	          schemespec.append('@');
+	        }
+	        
+	        schemespec.append(m_host);
+	        
+	        if (m_port != -1) {
+	          schemespec.append(':');
+	          schemespec.append(m_port);
+	        }
+	      }
+	      // Registry based authority.
+	      else {
+	      	schemespec.append(m_regAuthority);
+	      }
+	    }
+
+	    if (m_path != null) {
+	      schemespec.append((m_path));
+	    }
+
+	    if (m_queryString != null) {
+	      schemespec.append('?');
+	      schemespec.append(m_queryString);
+	    }
+
+	    return schemespec.toString();
+	  }
+  
   public String getHostSpecificPart() 
   {
     StringBuffer schemespec = new StringBuffer();
