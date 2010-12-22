@@ -15,7 +15,7 @@ public class RhoWebSettingsNew implements RhoWebSettings {
 		webSettings.setDatabaseEnabled(true);
 		webSettings.setJavaScriptEnabled(true);
 		
-		Context context = w.getContext().getApplicationContext();
+		Context context = w.getContext();
 		String databasePath = context.getDir("database", Context.MODE_PRIVATE).getPath();
 		webSettings.setDatabasePath(databasePath);
 		 

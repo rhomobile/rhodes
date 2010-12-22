@@ -25,6 +25,7 @@ import java.io.File;
 import android.content.Intent;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -58,11 +59,11 @@ public class Signature {
 		
 		public void run() {
 			init();
-			RhodesService r = RhodesService.getInstance();
-			Intent intent = new Intent(r.getApplicationContext(), klass);
+			RhodesActivity ra = RhodesActivity.getInstance();
+			Intent intent = new Intent(ra, klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "format", format);
-			r.startActivity(intent);
+			ra.startActivity(intent);
 		}
 	};
 	

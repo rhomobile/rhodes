@@ -29,7 +29,7 @@ public class PushService {
 		
 		Logger.D(TAG, "Register for PUSH messages (use \"" + Push.SENDER + "\" as sender)");
 		
-		Context ctx = RhodesService.getInstance().getApplicationContext();
+		Context ctx = RhodesService.getContext();
 		Intent registrationIntent = new Intent(C2DM_INTENT_PREFIX + "REGISTER");
 		registrationIntent.putExtra("app", PendingIntent.getBroadcast(ctx, 0, new Intent(), 0));
 		registrationIntent.putExtra("sender", Push.SENDER);
@@ -44,7 +44,7 @@ public class PushService {
 		
 		Logger.D(TAG, "Unregister from PUSH messages");
 		
-		Context ctx = RhodesService.getInstance().getApplicationContext();
+		Context ctx = RhodesService.getContext();
 		Intent unregIntent = new Intent(C2DM_INTENT_PREFIX + "UNREGISTER");
 		unregIntent.putExtra("app", PendingIntent.getBroadcast(ctx, 0, new Intent(), 0));
 		ctx.startService(unregIntent);

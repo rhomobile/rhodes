@@ -1,6 +1,7 @@
 #include <android/log.h>
 
 #include "rhodes/jni/com_rhomobile_rhodes_RhodesService.h"
+#include "rhodes/jni/com_rhomobile_rhodes_RhodesAppOptions.h"
 
 #include <common/RhoConf.h>
 #include <common/app_build_configs.h>
@@ -495,35 +496,35 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
     rho_sync_doSyncSourceByName(source.c_str());
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getOptionsUrl
-  (JNIEnv *env, jobject)
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getOptionsUrl
+  (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getStartUrl
-  (JNIEnv *env, jobject)
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getStartUrl
+  (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getCurrentUrl
-  (JNIEnv *env, jobject)
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getCurrentUrl
+  (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getAppBackUrl
-  (JNIEnv *env, jobject)
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getAppBackUrl
+  (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
     return rho_cast<jstring>(env, s);
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBlobPath
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getBlobPath
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getBlobsDirPath().c_str();
