@@ -32,7 +32,6 @@ public class RhoBluetoothSession {
 
     // Member fields
     private final BluetoothAdapter mAdapter;
-    private final Handler mHandler;
     private AcceptThread mAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
@@ -54,7 +53,6 @@ public class RhoBluetoothSession {
     public RhoBluetoothSession(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
-        mHandler = handler;
         mCallbackUrl = null;
     }
 
