@@ -90,13 +90,6 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private static final String TAG = "SignatureView";
 	
-	
-    /** Handle to the application context, used to e.g. fetch Drawables. */
-    private Context mContext;
-	
-    private int mCanvasHeight = 1;
-    private int mCanvasWidth = 1;
-    
     Bitmap mBitmap;
     Canvas mCanvas;
     
