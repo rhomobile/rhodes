@@ -75,6 +75,8 @@ public class RhodesService extends Service {
 	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
 	
+	public static final String INTENT_SOURCE = INTENT_EXTRA_PREFIX + ".intent.source";
+	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	
@@ -379,19 +381,50 @@ public class RhodesService extends Service {
 	public void onStart(Intent intent, int startId) {
 		if (DEBUG)
 			Log.d(TAG, "+++ onStart");
-		handleCommand(intent);
+		try {
+			handleCommand(intent);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "Can't handle service command: " + e.getMessage());
+		}
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (DEBUG)
 			Log.d(TAG, "+++ onStartCommand");
-		handleCommand(intent);
+		try {
+			handleCommand(intent);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, "Can't handle service command: " + e.getMessage());
+		}
 		return Service.START_STICKY;
 	}
 	
 	private void handleCommand(Intent intent) {
-		// TODO:
+		String source = intent.getStringExtra(INTENT_SOURCE);
+		if (source == null)
+			throw new IllegalArgumentException("Service command received from empty source");
+		
+		Logger.D(TAG, "Service command received from " + source);
+		if (source.equals(PushReceiver.INTENT_SOURCE)) {
+			int type = intent.getIntExtra(PushReceiver.INTENT_TYPE, PushReceiver.INTENT_TYPE_UNKNOWN);
+			switch (type) {
+			case PushReceiver.INTENT_TYPE_REGISTRATION_ID:
+				String id = intent.getStringExtra(PushReceiver.INTENT_REGISTRATION_ID);
+				if (id == null)
+					throw new IllegalArgumentException("Empty registration id received in service command");
+				setPushRegistrationId(id);
+				break;
+			case PushReceiver.INTENT_TYPE_MESSAGE:
+				Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_EXTRAS);
+				handlePushMessage(extras);
+				break;
+			default:
+				Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
+			}
+		}
 	}
 	
 	public void startServiceForeground(int id, Notification notification) {
@@ -906,14 +939,13 @@ public class RhodesService extends Service {
 		}
 	}
 	
-	public native void setPushRegistrationId(String id);
+	private native void setPushRegistrationId(String id);
 	
 	private native boolean callPushCallback(String data);
 	
-	public void handlePushMessage(Intent intent) {
+	private void handlePushMessage(Bundle extras) {
 		Logger.D(TAG, "Receive PUSH message");
 		
-		Bundle extras = intent.getExtras();
 		if (extras == null) {
 			Logger.W(TAG, "Empty PUSH message received");
 			return;
