@@ -94,6 +94,21 @@ public class RhoLogger {
 			return res;
 		}
 	}
+
+	private String makeStringSizeEnd(String str, int nSize)
+	{
+		if ( str.length() >= nSize )
+			return str.substring(str.length()-nSize, str.length());
+		else {
+			String res = "";
+			for( int i = 0; i < nSize - str.length(); i++ )
+				res += ' ';
+			
+			res += str;
+			
+			return res;
+		}
+	}
 	
 	private String getThreadField(){
 		String strThread = Thread.currentThread().getName();
@@ -118,7 +133,7 @@ public class RhoLogger {
 	    else
 	    	m_strMessage += LogSeverityNames[m_severity].charAt(0);
 
-	    m_strMessage += " " + getLocalTimeString() + ' ' + makeStringSize(getThreadField(),8) + ' ' +
+	    m_strMessage += " " + getLocalTimeString() + ' ' + makeStringSizeEnd(getThreadField(),8) + ' ' +
 	    	makeStringSize(m_category,15) + "| ";
 	}
 
