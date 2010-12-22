@@ -97,7 +97,7 @@ public class RhodesService extends Service {
 	
 	private NotificationManager mNM;
 	
-	private MainView mMainView;
+	//private MainView mMainView;
 	
 	private static int mScreenWidth;
 	private static int mScreenHeight;
@@ -108,7 +108,7 @@ public class RhodesService extends Service {
 	
 	private static boolean mCameraAvailable;
 	
-	private static int mActivitiesActive;
+	private static int sActivitiesActive;
 	
 	private static int mGeoLocationInactivityTimeout;
 
@@ -199,7 +199,7 @@ public class RhodesService extends Service {
 	}
 	
 	private ApplicationInfo getAppInfo() {
-		Context context = getApplicationContext();
+		Context context = this;
 		String pkgName = context.getPackageName();
 		try {
 			ApplicationInfo info = context.getPackageManager().getApplicationInfo(pkgName, 0);
@@ -217,14 +217,19 @@ public class RhodesService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		if (DEBUG)
+			Log.d(TAG, "+++ onBind");
 		return mBinder;
 	}
 	
 	@Override
 	public void onCreate() {
+		if (DEBUG)
+			Log.d(TAG, "+++ onCreate");
+		
 		sInstance = this;
 		
-		Context context = getApplicationContext();
+		Context context = this;
 		
 		mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 		
@@ -235,7 +240,7 @@ public class RhodesService extends Service {
 			RhoFileApi.init();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
-			exitApp();
+			exit();
 			return;
 		}
 		
@@ -254,12 +259,16 @@ public class RhodesService extends Service {
 				RhoFileApi.copy("hash");
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage());
-				exitApp();
+				exit();
 				return;
 			}
 		}
 		
 		createRhodesApp();
+		
+		RhodesActivity ra = RhodesActivity.getInstance();
+		SplashScreen splashScreen = ra.getSplashScreen();
+		splashScreen.start();
 		
 		initForegroundServiceApi();
 		
@@ -328,11 +337,14 @@ public class RhodesService extends Service {
 			}
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
-			exitApp();
+			exit();
 			return;
 		}
 		
 		startRhodesApp();
+		
+		if (sActivitiesActive > 0)
+			handleAppActivation();
 	}
 	
 	private void setFullscreenParameters() {
@@ -358,16 +370,22 @@ public class RhodesService extends Service {
 	
 	@Override
 	public void onDestroy() {
+		if (DEBUG)
+			Log.d(TAG, "+++ onDestroy");
 		sInstance = null;
 	}
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
+		if (DEBUG)
+			Log.d(TAG, "+++ onStart");
 		handleCommand(intent);
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (DEBUG)
+			Log.d(TAG, "+++ onStartCommand");
 		handleCommand(intent);
 		return Service.START_STICKY;
 	}
@@ -413,28 +431,29 @@ public class RhodesService extends Service {
 	}
 	
 	public void setMainView(MainView v) {
-		mMainView = v;
 		RhodesActivity ra = RhodesActivity.getInstance();
-		if (ra != null)
-			ra.setContentView(mMainView.getView());
+		ra.setMainView(v);
 	}
 	
 	public MainView getMainView() {
-		return mMainView;
+		RhodesActivity ra = RhodesActivity.getInstance();
+		if (ra == null)
+			return null;
+		return ra.getMainView();
 	}
 
 	public RhodesApplication getRhodesApplication() {
 		return (RhodesApplication)getApplication();
 	}
 	
-	static void exitApp() {
+	public static void exit() {
 		getInstance().getRhodesApplication().exit();
 	}
 	
 	public void rereadScreenProperties() {
 		// check for orientarion changed
 		// Get screen width/height
-		WindowManager wm = (WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 		Display d = wm.getDefaultDisplay();
 		mScreenHeight = d.getHeight();
 		mScreenWidth = d.getWidth();
@@ -448,7 +467,7 @@ public class RhodesService extends Service {
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				final AboutDialog aboutDialog = new AboutDialog(Rhodes.getInstance());
+				final AboutDialog aboutDialog = new AboutDialog(RhodesActivity.getInstance());
 				aboutDialog.setTitle("About");
 				aboutDialog.setCanceledOnTouchOutside(true);
 				aboutDialog.setCancelable(true);
@@ -460,7 +479,7 @@ public class RhodesService extends Service {
 	public static void showLogView() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				final LogViewDialog logViewDialog = new LogViewDialog(Rhodes.getInstance());
+				final LogViewDialog logViewDialog = new LogViewDialog(RhodesActivity.getInstance());
 				logViewDialog.setTitle("Log View");
 				logViewDialog.setCancelable(true);
 				logViewDialog.show();
@@ -471,7 +490,7 @@ public class RhodesService extends Service {
 	public static void showLogOptions() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(Rhodes.getInstance());
+				final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(RhodesActivity.getInstance());
 				logOptionsDialog.setTitle("Logging Options");
 				logOptionsDialog.setCancelable(true);
 				logOptionsDialog.show();
@@ -497,7 +516,7 @@ public class RhodesService extends Service {
 			return false;
 		}
 		
-		Context ctx = RhodesService.getInstance().getApplicationContext();
+		Context ctx = RhodesService.getContext();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
 		{
@@ -565,8 +584,7 @@ public class RhodesService extends Service {
 			else if (name.equalsIgnoreCase("ppi_y"))
 				return new Float(mScreenPpiY);
 			else if (name.equalsIgnoreCase("phone_number")) {
-				RhodesService r = RhodesService.getInstance();
-				Context context = r.getApplicationContext();
+				Context context = RhodesService.getContext();
 				TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
 				String number = manager.getLine1Number();
 				return number;
@@ -600,7 +618,7 @@ public class RhodesService extends Service {
 	
 	public static void runApplication(String appName, Object params) {
 		try {
-			Context ctx = RhodesService.getInstance().getApplicationContext();
+			Context ctx = RhodesService.getContext();
 			PackageManager mgr = ctx.getPackageManager();
 			PackageInfo info = mgr.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
 			if (info.activities.length == 0) {
@@ -614,6 +632,7 @@ public class RhodesService extends Service {
 
 			Intent intent = new Intent();
 			intent.setClassName(appName, className);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			if (params != null) {
 				Bundle startParams = new Bundle();
 				if (params instanceof String) {
@@ -649,7 +668,7 @@ public class RhodesService extends Service {
 	public static boolean isAppInstalled(String appName) {
 		try {
 			try {
-				RhodesService.getInstance().getApplicationContext().getPackageManager().getPackageInfo(appName, 0);
+				RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
 				return true;
 			}
 			catch (NameNotFoundException ne) {
@@ -663,7 +682,7 @@ public class RhodesService extends Service {
 	}
 	
 	private void updateDownloadNotification(String url, int totalBytes, int currentBytes) {
-		Context context = getApplicationContext();
+		Context context = RhodesActivity.getContext();
 		
 		Notification n = new Notification();
 		n.icon = android.R.drawable.stat_sys_download;
@@ -704,7 +723,7 @@ public class RhodesService extends Service {
 	}
 	
 	private File downloadPackage(String url) throws IOException {
-		final Context ctx = getApplicationContext();
+		final Context ctx = RhodesActivity.getContext();
 		
 		final Thread thisThread = Thread.currentThread();
 		
@@ -841,7 +860,7 @@ public class RhodesService extends Service {
 									Uri uri = Uri.fromFile(tmpFile);
 									Intent intent = new Intent(Intent.ACTION_VIEW);
 									intent.setDataAndType(uri, "application/vnd.android.package-archive");
-									r.getApplicationContext().startActivity(intent);
+									r.startActivity(intent);
 								}
 								catch (Exception e) {
 									Log.e(TAG, "Can't install file from " + tmpFile.getAbsolutePath(), e);
@@ -865,7 +884,7 @@ public class RhodesService extends Service {
 		try {
 			Uri packageUri = Uri.parse("package:" + appName);
 			Intent intent = new Intent(Intent.ACTION_DELETE, packageUri);
-			RhodesService.getInstance().getApplicationContext().startActivity(intent);
+			RhodesService.getContext().startActivity(intent);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "Can't uninstall application " + appName + ": " + e.getMessage());
@@ -874,7 +893,7 @@ public class RhodesService extends Service {
 	
 	public static void openExternalUrl(String url) {
 		try {
-			Context ctx = RhodesService.getInstance().getApplicationContext();
+			Context ctx = RhodesService.getContext();
             Uri uri = Uri.parse(url);			
             
 		    Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -965,50 +984,109 @@ public class RhodesService extends Service {
 		}
 	}
 	
-	public void activityStarted() {
-		if (mActivitiesActive == 0) {
-			if (mNeedGeoLocationRestart) {
-				GeoLocation.isKnownPosition();
-				mNeedGeoLocationRestart = false;
-			}
-			PerformOnUiThread.exec( new Runnable() {
-				public void run() {
-					if (wakeLockEnabled) {
-						if (wakeLockObject == null) {
-							PowerManager pm = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
-							if (pm != null) {
-								Logger.I(TAG, "activityStarted() restore wakeLock object");
-								wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
-								wakeLockObject.acquire();
-							}
-							else {
-								Logger.E(TAG, "activityStarted() - Can not get PowerManager !!!");
-							}
+	private void restartGeoLocationIfNeeded() {
+		if (mNeedGeoLocationRestart) {
+			GeoLocation.isKnownPosition();
+			mNeedGeoLocationRestart = false;
+		}
+	}
+	
+	private void stopGeoLocation() {
+		mNeedGeoLocationRestart = GeoLocation.isAvailable();
+		GeoLocation.stop();
+	}
+	
+	private void restoreWakeLockIfNeeded() {
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (wakeLockEnabled) {
+					if (wakeLockObject == null) {
+						PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+						if (pm != null) {
+							Logger.I(TAG, "activityStarted() restore wakeLock object");
+							wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
+							wakeLockObject.acquire();
+						}
+						else {
+							Logger.E(TAG, "activityStarted() - Can not get PowerManager !!!");
 						}
 					}
 				}
-			}, false);
-			callActivationCallback(true);
-		}
-		++mActivitiesActive;
+			}
+		}, false);
 	}
 	
-	public void activityStopped() {
-		--mActivitiesActive;
-		if (mActivitiesActive == 0) {
-			PerformOnUiThread.exec( new Runnable() {
-				public void run() {
-					if (wakeLockObject != null) {
-						Logger.I(TAG, "activityStopped() temporary destroy wakeLock object");
-						wakeLockObject.release();
-						wakeLockObject = null;
-					}
+	private void stopWakeLock() {
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (wakeLockObject != null) {
+					Logger.I(TAG, "activityStopped() temporary destroy wakeLock object");
+					wakeLockObject.release();
+					wakeLockObject = null;
 				}
-			}, false);
-			mNeedGeoLocationRestart = GeoLocation.isAvailable();
-			GeoLocation.stop();
-			callActivationCallback(false);
+			}
+		}, false);
+	}
+	
+	private void handleAppActivation() {
+		if (DEBUG)
+			Log.d(TAG, "handle app activation");
+		restartGeoLocationIfNeeded();
+		restoreWakeLockIfNeeded();
+		callActivationCallback(true);
+	}
+	
+	private void handleAppDeactivation() {
+		if (DEBUG)
+			Log.d(TAG, "handle app deactivation");
+		stopWakeLock();
+		stopGeoLocation();
+		callActivationCallback(false);
+	}
+	
+	public static void activityStarted() {
+		if (DEBUG)
+			Log.d(TAG, "activityStarted (1): sActivitiesActive=" + sActivitiesActive);
+		if (sActivitiesActive == 0) {
+			RhodesService r = RhodesService.getInstance();
+			if (DEBUG)
+				Log.d(TAG, "first activity started; r=" + r);
+			if (r != null)
+				r.handleAppActivation();
 		}
+		++sActivitiesActive;
+		if (DEBUG)
+			Log.d(TAG, "activityStarted (2): sActivitiesActive=" + sActivitiesActive);
+	}
+	
+	public static void activityStopped() {
+		if (DEBUG)
+			Log.d(TAG, "activityStopped (1): sActivitiesActive=" + sActivitiesActive);
+		--sActivitiesActive;
+		if (sActivitiesActive == 0) {
+			RhodesService r = RhodesService.getInstance();
+			if (DEBUG)
+				Log.d(TAG, "last activity stopped; r=" + r);
+			if (r != null)
+				r.handleAppDeactivation();
+		}
+		if (DEBUG)
+			Log.d(TAG, "activityStopped (2): sActivitiesActive=" + sActivitiesActive);
+	}
+	
+	@Override
+	public void startActivity(Intent intent) {
+		RhodesActivity ra = RhodesActivity.getInstance();
+		if (ra == null)
+			throw new IllegalStateException("Trying to start activity, but main activity is empty (we are in background, no UI active)");
+		ra.startActivity(intent);
+	}
+	
+	public static Context getContext() {
+		RhodesService r = RhodesService.getInstance();
+		if (r == null)
+			throw new IllegalStateException("No rhodes service instance at this moment");
+		return r;
 	}
 	
 }

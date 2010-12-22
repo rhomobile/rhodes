@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_rhomobile_rhodes_SplashScreen_DEBUG
+#define com_rhomobile_rhodes_SplashScreen_DEBUG 0L
 /*
  * Class:     com_rhomobile_rhodes_SplashScreen
  * Method:    nativeStart
@@ -21,6 +23,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_SplashScreen_nativeStart
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_SplashScreen_nativeHide
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_SplashScreen
+ * Method:    howLongWaitMs
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_SplashScreen_howLongWaitMs
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

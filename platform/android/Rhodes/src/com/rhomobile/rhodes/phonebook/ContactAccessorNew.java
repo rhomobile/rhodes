@@ -44,7 +44,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	
 	
 	public ContactAccessorNew() throws Exception {
-		Context ctx = RhodesService.getInstance().getApplicationContext();
+		Context ctx = RhodesService.getContext();
 		
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {

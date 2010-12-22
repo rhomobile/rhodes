@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -18,6 +19,7 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
@@ -195,16 +197,18 @@ public class MapView extends MapActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		RhodesService.getInstance().activityStarted();
+		RhodesService.activityStarted();
 	}
 	
 	@Override
 	protected void onStop() {
-		RhodesService.getInstance().activityStopped();
+		RhodesService.activityStopped();
 		super.onStop();
 	}
 	
 	private void doGeocoding() {
+		Context context = RhodesActivity.getContext();
+		
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
 			Annotation ann = annotations.elementAt(i);
 			if (ann.latitude == 10000 || ann.longitude == 10000)
@@ -219,7 +223,7 @@ public class MapView extends MapActivity {
 			if (ann.address == null)
 				continue;
 			
-			Geocoder gc = new Geocoder(RhodesService.getInstance().getApplicationContext());
+			Geocoder gc = new Geocoder(context);
 			try {
 				List<Address> addrs = gc.getFromLocationName(ann.address, 1);
 				if (addrs.size() == 0)
@@ -258,7 +262,7 @@ public class MapView extends MapActivity {
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
 		try {
-			Intent intent = new Intent(RhodesService.getInstance().getApplicationContext(), MapView.class);
+			Intent intent = new Intent(RhodesActivity.getContext(), MapView.class);
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");

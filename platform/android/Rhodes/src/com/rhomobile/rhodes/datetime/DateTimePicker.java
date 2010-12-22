@@ -23,6 +23,7 @@ package com.rhomobile.rhodes.datetime;
 import android.content.Intent;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 
 public class DateTimePicker {
@@ -37,8 +38,8 @@ public class DateTimePicker {
 
 	public static void choose(String callback, String title, long init, int v, byte[] opaque, long min_time, long max_time) {
 		try {
-			RhodesService r = RhodesService.getInstance();
-			Intent intent = new Intent(r.getApplicationContext(), DateTimePickerScreen.class);
+			RhodesActivity r = RhodesActivity.getInstance();
+			Intent intent = new Intent(RhodesActivity.getContext(), DateTimePickerScreen.class);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", callback);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "title", title);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "init", init);

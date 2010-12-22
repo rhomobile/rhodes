@@ -42,7 +42,7 @@ public class RingtoneManager {
 	
 	private static void init() {
 		if (context == null)
-			context = RhodesService.getInstance().getApplicationContext();
+			context = RhodesService.getContext();
 		if (manager == null)
 			manager = new android.media.RingtoneManager(context);
 	}
