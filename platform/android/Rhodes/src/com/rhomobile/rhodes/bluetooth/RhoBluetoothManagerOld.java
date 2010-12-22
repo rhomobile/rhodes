@@ -8,57 +8,33 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
     private static final String TAG = "RhoBluetoothManagerOld";
     private static final boolean D = true;
 
-	
 	public RhoBluetoothManagerOld () {
 		if(D) Log.d(TAG, "RhoBluetoothManagerOld()");
-   }
-	
-   public void init(){		
-   }
-   
-	public void setDeviceName(String device_name) {
 	}
-   
-   
-   private void sendMessage(String message) {
-   }
 	
+	public void init() {}
+   
+	public void setDeviceName(String device_name) {}
 	
-   private void setupSession() {
-   }
+	public void onSessionConnectedOK() {}
 
+	public void onSessionDisconnected() {}
 
-   public void onSessionConnectedOK() {
-   }
-   
-   public void onSessionDisconnected() {
-   }
+	public void onSessionReadMessage(byte[] buf, int bytes) {}
 
-   public void onSessionReadMessage(byte[] buf, int bytes) {
-   }
-   
-   public void onSessionConnectedDeviceName(String name) {
-   }
-   
-   public void onSessionToast(String message) {
-   }
-   
+	public void onSessionConnectedDeviceName(String name) {}
+
+	public void onSessionToast(String message) {}
+	
+    public static void onActivityResult(int requestCode, int resultCode, Intent data) {}
 	   
-    public static void onActivityResult(int requestCode, int resultCode, Intent data) {
-	}
-	   
-    public void onDeviceListActivityFinished( boolean is_ok, String adress) {
-    }
+    public void onDeviceListActivityFinished( boolean is_ok, String adress) {}
     
-    public void onActivityResultPrivate(int requestCode, int resultCode, Intent data) {
-    }
+    public void onActivityResultPrivate(int requestCode, int resultCode, Intent data) {}
 	   
-
 	public RhoBluetoothSession getSession() {
 		return null;
 	}
-	
-	
 	
 	public int is_bluetooth_available() {
 		return 0;
@@ -113,7 +89,5 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 
 	public void session_write_data(String connected_device_name, Byte[] buf, int length) {
 	}
-
-
 
 }

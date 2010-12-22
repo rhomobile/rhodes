@@ -26,7 +26,7 @@ import com.rhomobile.rhodes.Logger;
 public class Contact {
 	
 	private static final String TAG = "Contact";	
-	private static final boolean logging_enable = false;
+	//private static final boolean logging_enable = false;
 	
 	private String id = null;
 	
@@ -57,9 +57,11 @@ public class Contact {
 		mIsCompanyFilled = true;
 	}
 	
+	/*
 	private boolean isFullFilled() {
 		return (mIsNameFilled && mIsPhoneFilled && mIsEmailsFilled && mIsCompanyFilled);
 	}
+	*/
 
 	
 	public void setFieldInner(int key, String value) {
@@ -137,6 +139,7 @@ public class Contact {
 		return id;
 	}
 
+	/*
 	private void fillAll() {
 		if (!isFullFilled()) {
 			int i;
@@ -145,6 +148,7 @@ public class Contact {
 			}
 		}
 	}
+	*/
 	
 
 	/*

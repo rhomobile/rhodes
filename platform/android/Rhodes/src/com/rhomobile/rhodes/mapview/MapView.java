@@ -132,7 +132,6 @@ public class MapView extends MapActivity {
 		view.setBuiltInZoomControls(zoom_enabled);
 		view.setSatellite(map_type.equals("hybrid") || map_type.equals("satellite"));
 		view.setTraffic(false);
-		view.setStreetView(false);
 		
 		MapController controller = view.getController();
 		String type = extras.getString(SETTINGS_PREFIX + "region");
