@@ -2,6 +2,7 @@ package com.rhomobile.rhodes;
 
 import java.lang.reflect.Constructor;
 
+import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.webview.ChromeClientOld;
 import com.rhomobile.rhodes.webview.RhoWebSettings;
@@ -350,6 +351,11 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		if (ra == null)
 			throw new IllegalStateException("No rhodes activity instance at this moment");
 		return ra;
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
 	}
 	
 }
