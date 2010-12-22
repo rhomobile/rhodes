@@ -10,11 +10,9 @@ class CSplashScreen
 {
     DEFINE_LOGCLASS;
 	
-	long m_nDelay;
-	CTimeInterval m_startTime;
+    long m_nDelay;
+    CTimeInterval m_startTime;
    	int m_nFlags;
-
-   	long howLongWaitMs();
 
 public: 
     static const int NONE = 0, VZOOM = 1, HZOOM = 2, VCENTER = 4, HCENTER = 8;
@@ -33,6 +31,8 @@ public:
    	void start();
   	void hide();
     void init();
+
+    long howLongWaitMs();
    
 };
 

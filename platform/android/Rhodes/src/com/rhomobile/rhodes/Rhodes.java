@@ -20,41 +20,30 @@
  */
 package com.rhomobile.rhodes;
 
-import java.util.Timer;
-
-import com.rhomobile.rhodes.mainview.MainView;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.FrameLayout;
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 
 public class Rhodes extends BaseActivity {
 
-	private static final String TAG = "Rhodes";
+	//private static final String TAG = "Rhodes";
 	
-	private static Rhodes instance = null;
+	//private static Rhodes instance = null;
 	
+	/*
 	public static Rhodes getInstance() {
 		return instance;
 	}
+	*/
 	
-	private RhoMenu appMenu = null;
+	//private RhoMenu appMenu = null;
 	
-	private ViewGroup mOuterFrame = null;
-	private Bundle mSavedBundle = null;
+	//private ViewGroup mOuterFrame = null;
+	//private Bundle mSavedBundle = null;
 	//private SplashScreen mSplashScreen = null;
-	private Handler mHandler = null;
+	//private Handler mHandler = null;
 	
-	private Object mStartParams = null;
+	//private Object mStartParams = null;
 	
 	/*
 	private void showSplashScreen() {
@@ -82,42 +71,44 @@ public class Rhodes extends BaseActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Utils.platformLog("Rhodes", "onStart()");
+		//Utils.platformLog("Rhodes", "onStart()");
 		
 		super.onCreate(savedInstanceState);
-		mHandler = new Handler();
+		//mHandler = new Handler();
 		
 		// Here Log should be used, not Logger. It is because Logger is not initialized yet.
-		Log.v(TAG, "+++ onCreate");
+		//Log.v(TAG, "+++ onCreate");
 		
-		mStartParams = getIntent().getExtras();
-		Log.d(TAG, "start parameters: " + mStartParams);
+		//mStartParams = getIntent().getExtras();
+		//Log.d(TAG, "start parameters: " + mStartParams);
 		
-		instance = this;
+		//instance = this;
 		
-		FrameLayout v = new FrameLayout(this);
-		mOuterFrame = v;
+		//FrameLayout v = new FrameLayout(this);
+		//mOuterFrame = v;
 		
 		//showSplashScreen();
 		
-		mSavedBundle = savedInstanceState;
+		//mSavedBundle = savedInstanceState;
 
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+		//getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 
 		
-		this.requestWindowFeature(Window.FEATURE_PROGRESS);
+		//this.requestWindowFeature(Window.FEATURE_PROGRESS);
 
-		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
+		//getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
 		
-		setContentView(mOuterFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		//setContentView(mOuterFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 
 
 	}
 	
+	/*
 	public void onStart() {
 		super.onStart();
 		Utils.platformLog("Rhodes", "onStart()");
 	}
+	*/
 	
 	/*
 	public void onCreatePosponed() {
@@ -155,14 +146,16 @@ public class Rhodes extends BaseActivity {
 	}
 	*/
 	
-	private Timer mTimerPostponeCreate = null;
+	//private Timer mTimerPostponeCreate = null;
 	
+	/*
 	@Override
 	public void onResume() {
 		super.onResume();
 		instance = this;
 		Utils.platformLog("Rhodes", "onResume()");
 	}
+	*/
 	
 	/*
 	public static void runPostponedSetup() {
@@ -176,15 +169,19 @@ public class Rhodes extends BaseActivity {
 	}
 	*/
 	
+	/*
 	@Override
 	public void onPause() {
 		instance = null;
 	}
+	*/
 	
+	/*
 	@Override
 	public void onStop() {
 		instance = null;
 	}
+	*/
 	
 	/*
 	@Override
@@ -195,6 +192,7 @@ public class Rhodes extends BaseActivity {
 	}
 	*/
 
+	/*
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
@@ -207,7 +205,9 @@ public class Rhodes extends BaseActivity {
 		
 		return super.onKeyDown(keyCode, event);
 	}
+	*/
 	
+	/*
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
@@ -221,6 +221,7 @@ public class Rhodes extends BaseActivity {
 			return false;
 		return appMenu.onMenuItemSelected(item);
 	}
+	*/
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);

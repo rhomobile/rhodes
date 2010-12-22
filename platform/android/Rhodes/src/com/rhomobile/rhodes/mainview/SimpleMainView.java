@@ -294,7 +294,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	private View createButton(Map<Object,Object> hash) {
-		Context ctx = RhodesService.getInstance().getApplicationContext();
+		Context ctx = RhodesActivity.getContext();
 		
 		Object actionObj = hash.get("action");
 		if (actionObj == null || !(actionObj instanceof String))
@@ -384,8 +384,7 @@ public class SimpleMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	private void setupToolbar(LinearLayout tool_bar, Object params) {
-		RhodesService r = RhodesService.getInstance();
-		Context ctx = r.getApplicationContext();
+		Context ctx = RhodesActivity.getContext();
 
 		Vector<Object> buttons = null;
 		if (params != null) {
@@ -462,10 +461,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	private void init(MainView v, Object params) {
-		RhodesActivity ra = RhodesActivity.getInstance();
-		
-		RhodesService r = RhodesService.getInstance();
-		Context ctx = r.getApplicationContext();
+		Context ctx = RhodesActivity.getContext();
 		
 		view = new MyView(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
@@ -476,7 +472,7 @@ public class SimpleMainView implements MainView {
 		if (v != null)
 			webView = v.detachWebView();
 		if (webView == null)
-			webView = ra.createWebView();
+			webView = RhodesActivity.getInstance().createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(ctx);
@@ -555,7 +551,7 @@ public class SimpleMainView implements MainView {
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
 		removeNavBar();
 		
-		Context ctx = RhodesService.getInstance().getApplicationContext();
+		Context ctx = RhodesActivity.getContext();
 		
 		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);
@@ -602,5 +598,10 @@ public class SimpleMainView implements MainView {
 		toolBar.removeAllViews();
 		toolBar.requestLayout();
 		view.requestLayout();
+	}
+
+	@Override
+	public int getTabsCount() {
+		return 0;
 	}
 }

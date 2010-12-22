@@ -17,6 +17,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -41,11 +43,15 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	
 	private Handler mHandler;
 	
+	private SplashScreen mSplashScreen;
+	
+	private MainView mMainView;
+	
+	private RhoMenu mAppMenu;
+	
 	private WebChromeClient mChromeClient;
 	private WebViewClient mWebViewClient;
 	private RhoWebSettings mWebSettings;
-	
-	private SplashScreen mSplashScreen;
 	
 	private long uiThreadId = 0;
 	
@@ -67,31 +73,39 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
 		
-		mSplashScreen = new SplashScreen(this);
-		setContentView(mSplashScreen.getContentView());
+		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		
-		Intent intent = new Intent(getApplicationContext(), RhodesService.class);
+		requestWindowFeature(Window.FEATURE_PROGRESS);
+		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
+
+		mSplashScreen = new SplashScreen(this);
+		setMainView(mSplashScreen);
+		
+		Intent intent = new Intent(this, RhodesService.class);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 		mBoundToService = true;
 		
 		mHandler = new Handler();
 		mHandler.post(mSetup);
+		
+		sInstance = this;
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		sInstance = this;
+		//sInstance = this;
 	}
 	
 	@Override
 	public void onStop() {
-		sInstance = null;
+		//sInstance = null;
 		super.onStop();
 	}
 	
 	@Override
 	public void onDestroy() {
+		sInstance = null;
 		if (mBoundToService) {
 			unbindService(this);
 			mBoundToService = false;
@@ -117,6 +131,20 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		mAppMenu = new RhoMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mAppMenu == null)
+			return false;
+		return mAppMenu.onMenuItemSelected(item);
+	}
+	
 	public static RhodesActivity getInstance() {
 		return sInstance;
 	}
@@ -135,7 +163,64 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	
 	private void doSetup() {
 		initWebStuff();
-		//setupMainView();
+	}
+	
+	public SplashScreen getSplashScreen() {
+		return mSplashScreen;
+	}
+	
+	public void setMainView(MainView v) {
+		setMainView(v, true);
+	}
+	
+	public void setMainView(final MainView v, boolean waitUntilNavigationDone) {
+		if (DEBUG)
+			Log.d(TAG, "setMainView: v=" + v + "; mMainView=" + mMainView);
+		
+		// If there's no previous mMainView, don't wait
+		if (mMainView == null)
+			waitUntilNavigationDone = false;
+		
+		// Set mMainView right now but not yet do it visible
+		mMainView = v;
+
+		// This is action need to be executed when mMainView should become visible 
+		final Runnable setMainViewVisible = new Runnable() {
+			public void run() {
+				if (DEBUG)
+					Log.d(TAG, "setMainViewAction: v=" + v);
+				setContentView(v.getView());
+			}
+		};
+		
+		if (!waitUntilNavigationDone) {
+			// Make new MainView visible right now
+			setMainViewVisible.run();
+		}
+		else {
+			// If we're requested to wait until first navigation will be done,
+			// use the trick: keep current main view until first navigate will be
+			// finished in the new MainView.
+			// This will end up in good user experience - user will see
+			// new MainView only when it will have completely load its content
+			// (no blank screens for user).
+			WebView webView = v.getWebView(0);
+			webView.setWebViewClient(new WebViewClient() {
+				@Override
+				public void onPageFinished(WebView view, String url) {
+					mWebViewClient.onPageFinished(view, url);
+					// Restore standard WebViewClient to be sure this callback will not
+					// be called anymore (it should be called only once)
+					view.setWebViewClient(mWebViewClient);
+					
+					setMainViewVisible.run();
+				}
+			});
+		}
+	}
+	
+	public MainView getMainView() {
+		return mMainView;
 	}
 	
 	public WebView createWebView() {
@@ -146,26 +231,6 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		view.clearCache(true);
 		
 		return view;
-	}
-	
-	private void setupMainView() {
-		if (DEBUG)
-			Log.d(TAG, "setupMainView");
-		WebView view = createWebView();
-		// Set another web view client for one time
-		// It will be replace by the standard one as soon as
-		// first page will be loaded
-		view.setWebViewClient(new WebViewClient() {
-			@Override
-			public void onPageFinished(WebView view, String url) {
-				mWebViewClient.onPageFinished(view, url);
-				view.setWebViewClient(mWebViewClient);
-				
-				setContentView(view);
-			}
-		});
-		
-		view.loadUrl("http://www.google.ru/");
 	}
 	
 	private void initWebStuff() {
@@ -279,5 +344,12 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		}
 		return valid;
 	}
-
+	
+	public static Context getContext() {
+		RhodesActivity ra = RhodesActivity.getInstance();
+		if (ra == null)
+			throw new IllegalStateException("No rhodes activity instance at this moment");
+		return ra;
+	}
+	
 }

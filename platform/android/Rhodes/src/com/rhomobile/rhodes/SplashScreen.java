@@ -2,6 +2,9 @@ package com.rhomobile.rhodes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+
+import com.rhomobile.rhodes.mainview.MainView;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -12,7 +15,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
-public class SplashScreen {
+public class SplashScreen implements MainView {
 	
 	private static final String TAG = SplashScreen.class.getSimpleName();
 	
@@ -24,39 +27,17 @@ public class SplashScreen {
 	
 	private View mContentView;
 	
+	private WebView mWebView;
+	
 	private native void nativeStart();
 	private native void nativeHide();
-	
-	/*
-	public class SplashImageView extends ImageView {
-		public boolean setupExecuted = false;
-		
-		public SplashImageView(Context ctx) {
-			super(ctx);
-		}
-		
-		protected void onDraw (Canvas canvas) {
-			RhoService.platformLog(TAG, "Splash Screen Image REAL DRAWING !");
-			super.onDraw(canvas);
-			if (!setupExecuted) {
-				Rhodes.runPostponedSetup();
-				setupExecuted = true;
-			}
-		}
-		
-		
-	}
-	*/
+	private native int howLongWaitMs();
 	
 	public SplashScreen(Context context) {
 		AssetManager am = context.getResources().getAssets();
 		mContentView = createImageView(context, am);
 		if (mContentView == null)
 			mContentView = createHtmlView(context, am);
-	}
-	
-	public View getContentView() {
-		return mContentView;
 	}
 	
 	private View createImageView(Context context, AssetManager am) {
@@ -117,78 +98,94 @@ public class SplashScreen {
 		
 		return view;
 	}
-
-	/*
-	public SplashScreen(Context ctx) {
-		RhoService.platformLog(TAG, "SplashScreen()");
-		AssetManager am = ctx.getResources().getAssets();
-		//RhodesService r = RhodesService.getInstance();
-		//boolean bc = r.isBundleChanged();
-		
-		String file = LOADING_ANDROID_PNG;
-		
-		boolean loading_android_ok = false;
-		
-		Bitmap bitmap = null;
-		try {
-			InputStream is = am.open(file);
-			bitmap = BitmapFactory.decodeStream(is);
-			is.close();
-			
-			ImageView v = new SplashImageView(ctx);
-			v.setImageBitmap(bitmap);
-			v.setAdjustViewBounds(false);
-			v.setId(RhoService.RHO_SPLASH_VIEW);
-			view = v;
-			loading_android_ok = true;
-		}
-		catch (IOException e) {
-		}
-		if (!loading_android_ok) { 
-			try {
-				file = LOADING_PNG;
-				InputStream is = am.open(file);
-				bitmap = BitmapFactory.decodeStream(is);
-				is.close();
-				
-				ImageView v = new SplashImageView(ctx);
-				v.setImageBitmap(bitmap);
-				v.setAdjustViewBounds(false);
-				v.setId(RhoService.RHO_SPLASH_VIEW);
-				view = v;
-			}
-			catch (IOException e) {
-				
-				WebView v = RhoService.createLoadingWebView(ctx);
-				
-				String page = LOADING_PAGE;
-				
-				boolean hasNeededPage;
-				try {
-					InputStream is1 = am.open(page);
-					if (is1 != null)
-						is1.close();
-					hasNeededPage = true;
-				}
-				catch (IOException e1) {
-					hasNeededPage = false;
-				}
-				
-				if (hasNeededPage) {
-					v.loadUrl("file:///android_asset/" + page);
-				}
-				else {
-					v.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
-				}
-				
-				v.setId(RhoService.RHO_SPLASH_VIEW);
-				
-				view = v;
-			}
-		}
-	}
-	*/
 	
+	public void start() {
+		nativeStart();
+	}
+	
+	@Override
+	public View getView() {
+		return mContentView;
+	}
+	
+	@Override
+	public WebView getWebView(int index) {
+		if (mWebView == null) {
+			RhodesActivity ra = RhodesActivity.getInstance();
+			mWebView = ra.createWebView();
+		}
+		return mWebView;
+	}
+	
+	@Override
+	public void goBack() {
+		// Nothing here
+	}
+	
+	@Override
+	public void navigate(String url, int index) {
+		if (DEBUG)
+			Log.d(TAG, "navigate: url=" + url);
+		
+		getWebView(0).loadUrl(url);
+	}
+	
+	@Override
+	public WebView detachWebView() {
+		return getWebView(0);
+	}
+	@Override
+	public void back(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void forward(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void reload(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public String currentLocation(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void switchTab(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public int activeTab() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getTabsCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void loadData(String data, int index) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void addNavBar(String title, Map<Object, Object> left,
+			Map<Object, Object> right) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void removeNavBar() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/*
 	public void start(ViewGroup outer) {
 		outer.removeAllViews();
