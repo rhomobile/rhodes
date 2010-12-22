@@ -33,7 +33,6 @@ module Rho
       else
         @@native_bar_data = {:type => :nobar}
       end
-      NativeBar.create(NOBAR_TYPE, [])
 	  
       ::Rho::RHO.get_instance().check_source_migration(self)
 

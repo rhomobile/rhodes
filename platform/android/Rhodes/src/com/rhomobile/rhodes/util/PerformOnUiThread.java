@@ -5,7 +5,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 
 public class PerformOnUiThread implements Runnable {
 	
-	private static final String TAG = "PerformOnUiThread";
+	private static final String TAG = PerformOnUiThread.class.getSimpleName();
 	
 	private Runnable runnable;
 	

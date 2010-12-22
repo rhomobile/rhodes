@@ -14,16 +14,12 @@ public class BaseActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		RhodesService r = RhodesService.getInstance();
-		if (r != null)
-			r.activityStarted();
+		RhodesService.activityStarted();
 	}
 	
 	@Override
 	protected void onStop() {
-		RhodesService r = RhodesService.getInstance();
-		if (r != null)
-			r.activityStopped();
+		RhodesService.activityStopped();
 		super.onStop();
 	}
 	

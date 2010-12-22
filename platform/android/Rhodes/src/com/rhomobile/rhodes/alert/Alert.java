@@ -46,6 +46,7 @@ import android.widget.TextView;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -141,7 +142,7 @@ public class Alert {
 			String callback = null;
 			Vector<CustomButton> buttons = new Vector<CustomButton>();
 			
-			Context ctx = RhodesService.getInstance().getApplicationContext();
+			Context ctx = RhodesActivity.getContext();
 			
 			if (params instanceof String) 
 			{
@@ -221,7 +222,7 @@ public class Alert {
 		if (message == null)
 			return;
 
-        Context ctx = RhodesService.getInstance().getApplicationContext();
+        Context ctx = RhodesActivity.getInstance();
         
 		Dialog dialog = new Dialog(ctx);
 		dialog.setTitle(title);
@@ -326,7 +327,7 @@ public class Alert {
 			if (!Capabilities.VIBRATE_ENABLED)
 				throw new IllegalAccessException("VIBRATE disabled");
 			Logger.T(TAG, "vibrate: " + duration);
-			Context ctx = RhodesService.getInstance().getApplicationContext();
+			Context ctx = RhodesService.getContext();
 			Vibrator vibrator = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
 			vibrator.vibrate(duration);
 		}

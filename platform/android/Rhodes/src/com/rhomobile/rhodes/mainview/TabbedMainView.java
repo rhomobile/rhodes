@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
@@ -83,8 +84,7 @@ public class TabbedMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params) {
-		RhodesService r = RhodesService.getInstance();
-		Context ctx = r.getApplicationContext();
+		Context ctx = RhodesActivity.getContext();
 		
 		Vector<Object> tabs = null;
 		if (params instanceof Vector<?>)
@@ -273,6 +273,11 @@ public class TabbedMainView implements MainView {
 	
 	public void removeNavBar() {
 		getView(activeTab()).removeNavBar();
+	}
+	
+	@Override
+	public int getTabsCount() {
+		return tabData.size();
 	}
 
 }

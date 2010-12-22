@@ -48,10 +48,7 @@ public class NativeBar {
 		public void run() {
 			try {
 				RhodesService r = RhodesService.getInstance();
-				if (r == null) {
-					Logger.E(TAG, "RhodesService instance is null");
-					return;
-				}
+				
 				MainView mainView = r.getMainView();
 				MainView v = null;
 				
@@ -62,24 +59,18 @@ public class NativeBar {
 				
 				switch (type) {
 				case NOBAR_TYPE:
-					if (smv == null) {
+					if (smv == null)
 						v = new SimpleMainView(mainView);
-						started = false;
-					}
-					else {
+					else
 						smv.removeToolbar();
-						started = false;
-					}
+					started = false;
 					break;
 				case TOOLBAR_TYPE:
-					if (smv == null) {
+					if (smv == null)
 						v = new SimpleMainView(mainView, params);
-						started = true;
-					}
-					else {
+					else
 						smv.setToolbar(params);
-						started = true;
-					}
+					started = true;
 					break;
 				case TABBAR_TYPE:
 					v = new TabbedMainView(params);

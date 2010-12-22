@@ -85,7 +85,7 @@ public class GeoLocationImpl implements LocationListener {
 		Logger.T(TAG, "GeoLocationImpl.setCurrentGpsLocation");
 		try {
 			if (locationManager == null) {
-				Context ctx = RhodesService.getInstance().getApplicationContext();
+				Context ctx = RhodesService.getContext();
 				locationManager = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
 				LocationProvider gpsProvider = locationManager.getProvider(PROVIDER);
 				available = gpsProvider != null && locationManager.isProviderEnabled(PROVIDER);
