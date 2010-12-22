@@ -7,15 +7,7 @@ import com.rho.net.URI;
 import rhomobile.*;
 import rhomobile.RhodesApplication.PrimaryResourceFetchThread;
 
-import net.rim.device.api.browser.field.BrowserContent;
-import net.rim.device.api.browser.field.Event;
-import net.rim.device.api.browser.field.RedirectEvent;
-import net.rim.device.api.browser.field.RenderingApplication;
-import net.rim.device.api.browser.field.RenderingException;
-import net.rim.device.api.browser.field.RenderingOptions;
-import net.rim.device.api.browser.field.RenderingSession;
-import net.rim.device.api.browser.field.RequestedResource;
-import net.rim.device.api.browser.field.UrlRequestedEvent;
+import net.rim.device.api.browser.field.*;
 import net.rim.device.api.io.http.HttpHeaders;
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.Display;
@@ -32,6 +24,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
     private RhodesApplication m_app;
 	private HttpConnection m_connResource = null;
     private boolean m_bLoadImageAsync = false;
+    private java.util.Hashtable m_hashCookies = new java.util.Hashtable();
     
 	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app, boolean bLoadImageAsync) 
 	{
@@ -157,8 +150,18 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                 break;
 
             case Event.EVENT_SET_HEADER :
-            case Event.EVENT_SET_HTTP_COOKIE : {
-            	/*String cookie = ((SetHttpCookieEvent)event).getCookie();
+            case Event.EVENT_SET_HTTP_COOKIE : 
+            {
+            	String cookie = ((SetHttpCookieEvent)event).getCookie();
+            	String strUrl = ((SetHttpCookieEvent)event).getURL();
+            	if ( strUrl == null )
+            		strUrl = "";
+            	
+            	if ( cookie == null || cookie.length() == 0 )
+            		m_hashCookies.remove(strUrl);
+            	else
+            		m_hashCookies.put(strUrl, cookie);
+            	/*
         		String response = processAjaxCall(cookie);
         		if (response != null)
         			synchronized (pendingResponses) {
@@ -183,7 +186,8 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         BrowserContent browserContent = null;
 
         try {
-            browserContent = _renderingSession.getBrowserContent(connection, this, (Event)e);
+        	if ( connection.getResponseCode() != HttpConnection.HTTP_NOT_MODIFIED )
+        		browserContent = _renderingSession.getBrowserContent(connection, this, (Event)e);
 
             if (browserContent != null) {
        			browserContent.finishLoading();
@@ -217,8 +221,8 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                 }
                 
             }
-        } catch (RenderingException re) {
-        	LOG.ERROR("RenderingException", re);
+        } catch (Exception re) {
+        	LOG.ERROR("processConnection failed.", re);
 	    } finally {
 	        SecondaryResourceFetchThread.doneAddingImages();
 	    }
@@ -232,8 +236,12 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 		return Display.getWidth();
 	}
 
-	public String getHTTPCookie(String url) {
-		return null;
+	public String getHTTPCookie(String url) 
+	{
+		if ( url == null )
+			url = "";
+		
+		return (String)m_hashCookies.get(url);
 	}
 
 	public int getHistoryPosition(BrowserContent browserContent) {
@@ -264,8 +272,8 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 	        	}else
 	        	{
 		            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null, null);
-		            if (bLocalHost)
-		            	m_connResource = connection;
+		            //if (bLocalHost)
+		            //	m_connResource = connection;
 		            return connection;
 	        	}
         	}else

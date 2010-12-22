@@ -70,7 +70,7 @@ public class SqliteStorage implements IDBStorage
 		{
 			while( strStatement != null && strStatement.length()> 0)
 			{
-				//LOG.INFO(strStatement);
+				//LOG.INFO(strStatement + "Values: " + values);
 	            int start = 0;
 	            while ( start < strStatement.length() && (strStatement.charAt(start) == '\n' ||
 	            		strStatement.charAt(start) == '\r' ||
@@ -302,7 +302,7 @@ public class SqliteStorage implements IDBStorage
 	
 	void processCallbackData() throws DBException
 	{
-/*		if ( m_dbCallback == null )
+		if ( m_dbCallback == null )
 			return;
 		{
 			IDBResult rows2Insert = executeSQL("SELECT * FROM object_attribs_to_insert", null, false);
@@ -363,7 +363,7 @@ public class SqliteStorage implements IDBStorage
 					m_nInsideTransaction--;
 				}
 			}
-		}*/
+		}
 		
 	}
 	

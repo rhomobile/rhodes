@@ -125,6 +125,15 @@ public class BrowserAdapter5 implements IBrowserAdapter
 	
     public void processConnection(HttpConnection connection, Object e) 
     {
+    	try
+    	{
+    		if ( connection.getResponseCode() == HttpConnection.HTTP_NOT_MODIFIED )
+    			return;
+    	}catch( java.io.IOException exc)
+    	{
+    		LOG.ERROR("processConnection - getResponseCode failed.", exc);
+    	}
+    	
         synchronized (Application.getEventLock()) 
         {
         	createBrowserField();        	

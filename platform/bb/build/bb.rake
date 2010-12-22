@@ -153,6 +153,7 @@ namespace "config" do
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
     $use_sqlite = $bbver[0].to_i >= 5
+    puts "$use_sqlite : #{$use_sqlite}"
     
     $builddir = $config["build"]["bbpath"] + "/build"
     $bindir = $app_path + "/bin"
@@ -408,7 +409,7 @@ namespace "build" do
       $stdout.flush
       capabilities = File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java")
       
-      if !FileUtils.uptodate?(capabilities,[File.join($app_path, "build.yml")])
+      #if !FileUtils.uptodate?(capabilities,[File.join($app_path, "build.yml")])
           puts "Modify Capabilities.java"
           
           File.open(capabilities, 'w') do |f|
@@ -467,7 +468,7 @@ namespace "build" do
             f.puts " "
             f.puts "}"
           end
-      end  
+      #end  
 
     end
     
