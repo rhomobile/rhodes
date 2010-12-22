@@ -209,6 +209,7 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "store" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -301,6 +302,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = store;
+				SDKROOT = iphoneos;
 				SYMROOT = ../../../build;
 			};
 			name = Debug;
@@ -321,6 +323,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lSyncClient";
 				PRODUCT_NAME = store;
+				SDKROOT = iphoneos;
 				SYMROOT = ../../../build;
 				VALIDATE_PRODUCT = YES;
 			};
