@@ -1,3 +1,7 @@
+## 1.0.2
+* support iPhone SDK 4.2
+* merge with latest Sync Engine
+
 ## 1.0.1
 * add support for sync notifications to ObjectiveC client
 
