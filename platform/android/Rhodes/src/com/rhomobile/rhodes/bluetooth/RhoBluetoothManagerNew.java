@@ -44,7 +44,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
     
     private String mCreateSessionCallback;
     
-    private String mRole;
+    //private String mRole;
 	
 	private Activity mActivity;
 	
@@ -299,7 +299,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
     	if(D) Log.i(TAG, "create_session("+role+", "+callback_url+");");
 
 		sharedInstance().mCreateSessionCallback = callback_url;
-		sharedInstance().mRole = role;
+		//sharedInstance().mRole = role;
 		if (role.equalsIgnoreCase(RhoBluetoothManager.BT_ROLE_SERVER)) {
 			sharedInstance().startServer();
 		}

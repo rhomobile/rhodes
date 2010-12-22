@@ -33,7 +33,6 @@ import com.rhomobile.rhodes.RhodesAppOptions;
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
 import android.view.KeyEvent;
@@ -50,8 +49,6 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 	
 	private String callbackUrl;
 	private String imageFormat;
-	private Camera camera;
-	private boolean isPreviewRunning = false;
 	private SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
 
 	private SignatureView surfaceView;
