@@ -157,6 +157,8 @@ public class RhodesService extends Service {
 	
 	public native String normalizeUrl(String url);
 	
+	public native void doRequest(String url);
+	
 	public static native void loadUrl(String url);
 	
 	public static native void navigateBack();
