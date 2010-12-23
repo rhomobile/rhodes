@@ -88,6 +88,8 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		m_oConfig.setProperty( BrowserFieldConfig.JAVASCRIPT_ENABLED, Boolean.TRUE );
 //		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_CARET );
 		m_oConfig.setProperty( BrowserFieldConfig.ENABLE_COOKIES, Boolean.TRUE );
+		
+		m_oConfig.setProperty(BrowserFieldConfig.ALLOW_CS_XHR, Boolean.TRUE);        		
 	}
 
 	public void setFullBrowser()
@@ -146,7 +148,17 @@ public class BrowserAdapter5 implements IBrowserAdapter
         //synchronized (Application.getEventLock()) 
         {
         	BrowserField field = (BrowserField)m_oMainScreen.getField(0);
-        	field.executeScript(strJavascript);
+        	field.executeScript("javascript:" + strJavascript);
+        }
+    }
+    
+    public void setCookie(String url, String cookie)
+    {
+        //synchronized (Application.getEventLock()) 
+        {
+        	BrowserFieldCookieManager man = (BrowserFieldCookieManager)m_oConfig.getProperty(BrowserFieldConfig.COOKIE_MANAGER);
+        	if ( man != null )
+        		man.setCookie(url, cookie);
         }
     }
     
