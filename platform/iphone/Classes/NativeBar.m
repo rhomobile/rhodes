@@ -123,7 +123,8 @@ static int started = 0;
   [value getValue:&index];
   RAWLOG_INFO1("RhoNativeBarSetTabBadgeTask %d",index);
   RAWLOG_INFO1("RhoNativeBarSetTabBadgeTask %s",badge_val);
-  [[[Rhodes sharedInstance] mainView] setTabBadge:index val:badge_val];
+	//if ([[[Rhodes sharedInstance] mainView] respondsToSelector:@selector(setTabBadge::)]) 	
+	  [[[Rhodes sharedInstance] mainView] setTabBadge:index val:badge_val];
 }
 @end
 
@@ -162,6 +163,9 @@ void create_nativebar(int bar_type, rho_param *p)
     int size = params->v.array->size;
     NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
 
+	const char* background_color = NULL;
+	const char* background_color_enable = NULL;
+	
     for (int i = 0; i < size; ++i) {
         rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
@@ -174,7 +178,12 @@ void create_nativebar(int bar_type, rho_param *p)
         const char *icon = NULL;
         const char *reload = NULL;
         const char *colored_icon = NULL;
-        
+		
+		const char *selected_color = NULL;
+		const char *selected_color_enable = NULL;
+		const char *disabled = NULL;
+		
+        BOOL skip_item = NO;
         for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
             const char *name = hash->v.hash->name[j];
             rho_param *value = hash->v.hash->value[j];
@@ -182,6 +191,11 @@ void create_nativebar(int bar_type, rho_param *p)
                 RAWLOG_ERROR1("Unexpected '%s' type, should be String", name);
                 return;
             }
+			if (strcasecmp(name, "background_color") == 0) {
+				background_color = value->v.string;
+				background_color_enable = "true";
+				skip_item = YES;
+			}
             
             if (strcasecmp(name, "label") == 0)
                 label = value->v.string;
@@ -193,22 +207,37 @@ void create_nativebar(int bar_type, rho_param *p)
                 reload = value->v.string;
             else if (strcasecmp(name, "colored_icon") == 0)
                 colored_icon = value->v.string;
+            else if (strcasecmp(name, "selected_color") == 0){
+                selected_color = value->v.string;
+				selected_color_enable = "true";
+			}	
+            else if (strcasecmp(name, "disabled") == 0)
+                disabled = value->v.string;
         }
         
         if (label == NULL && bar_type == TOOLBAR_TYPE)
             label = "";
         
-        if (label == NULL || action == NULL) {
+        if ((label == NULL || action == NULL) && (!skip_item)) {
             RAWLOG_ERROR("Illegal argument for create_nativebar");
             return;
         }
-        
-        [items addObject:[NSString stringWithUTF8String:label]];
-        [items addObject:[NSString stringWithUTF8String:action]];
-        [items addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
-        [items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
-        [items addObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")]];
-    }
+		if (!skip_item) {
+			[items addObject:[NSString stringWithUTF8String:label]];
+			[items addObject:[NSString stringWithUTF8String:action]];
+			[items addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
+			[items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
+			[items addObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")]];
+
+			[items addObject:[NSString stringWithUTF8String:(selected_color ? selected_color : "0")]];
+			[items addObject:[NSString stringWithUTF8String:(selected_color_enable ? selected_color_enable : "false")]];
+			[items addObject:[NSString stringWithUTF8String:(disabled ? disabled : "false")]];
+		}
+		
+	}
+	
+	[items insertObject:[NSString stringWithUTF8String:(background_color ? background_color : "0")] atIndex:0];
+	[items insertObject:[NSString stringWithUTF8String:(background_color_enable ? background_color_enable : "false")] atIndex:0];
     
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
