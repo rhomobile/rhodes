@@ -10,13 +10,35 @@
 #import "RhoMainView.h"
 #import "RhoViewController.h"
 
+@interface RhoUITabBarController : UITabBarController
+{
+	int bkgColor;
+}
+
+@property (nonatomic,assign) int bkgColor;
+
+@end
+
+@interface RhoCustomTabBarItem : UITabBarItem  
+{
+    UIImage *customHighlightedImage;
+    UIImage *customStdImage;
+}
+
+@property (nonatomic, retain) UIImage *customHighlightedImage;
+@property (nonatomic, retain) UIImage *customStdImage;
+
+@end
+
+
+
 @interface TabbedMainView : RhoViewController<RhoMainView> {
-    UITabBarController *tabbar;
+    RhoUITabBarController *tabbar;
     NSArray *tabbarData;
     int tabindex;
 }
 
-@property (nonatomic,retain) UITabBarController *tabbar;
+@property (nonatomic,retain) RhoUITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 @property (nonatomic,assign) int tabindex;
 
