@@ -124,6 +124,12 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         		RHODESAPP().canonicalizeRhoUrl(url), null, null, null);
         thread.start();                       
     }
+
+    public void navigateUrlWithEvent(String url, Object ev){
+    	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
+        		RHODESAPP().canonicalizeRhoUrl(url), null, null, ev);
+        thread.start();                       
+    }
     
     public void addMenuItem(String label, String value){
     	LOG.TRACE("Adding menu item: label: " + label + ", value: " + value);
@@ -1128,7 +1134,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     
     public String getCookie(String url) {
     	URI uri = new URI(url);
-    	String baseUrl = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+    	String baseUrl = uri.getPathNoFragmentNoQuery();
     	Object c = cookies.get(baseUrl);
     	if (c instanceof String)
     		return (String)c;
@@ -1137,8 +1143,10 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     
     public void setCookie(String url, String cookie) {
     	URI uri = new URI(url);
-    	String baseUrl = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+    	String baseUrl = uri.getPathNoFragmentNoQuery();
     	cookies.put(baseUrl, cookie);
+    	
+    	m_oBrowserAdapter.setCookie(url, cookie);
     }
     
     private void createBrowserControl()
