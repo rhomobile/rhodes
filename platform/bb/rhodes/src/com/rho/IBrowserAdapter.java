@@ -7,4 +7,5 @@ public interface IBrowserAdapter {
 	public boolean navigationMovement(int dx, int dy, int status, int time);
 	public void executeJavascript(String strJavascript);
 	public void setFullBrowser();
+	public void setCookie(String url, String cookie);
 }

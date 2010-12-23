@@ -24,7 +24,6 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
     private RhodesApplication m_app;
 	private HttpConnection m_connResource = null;
     private boolean m_bLoadImageAsync = false;
-    private java.util.Hashtable m_hashCookies = new java.util.Hashtable();
     
 	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app, boolean bLoadImageAsync) 
 	{
@@ -154,13 +153,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
             {
             	String cookie = ((SetHttpCookieEvent)event).getCookie();
             	String strUrl = ((SetHttpCookieEvent)event).getURL();
-            	if ( strUrl == null )
-            		strUrl = "";
-            	
-            	if ( cookie == null || cookie.length() == 0 )
-            		m_hashCookies.remove(strUrl);
-            	else
-            		m_hashCookies.put(strUrl, cookie);
+            	m_app.setCookie(strUrl, cookie);
             	/*
         		String response = processAjaxCall(cookie);
         		if (response != null)
@@ -238,10 +231,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
 	public String getHTTPCookie(String url) 
 	{
-		if ( url == null )
-			url = "";
-		
-		return (String)m_hashCookies.get(url);
+		return m_app.getCookie(url);		
 	}
 
 	public int getHistoryPosition(BrowserContent browserContent) {
@@ -336,6 +326,11 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
     }
     
     public void executeJavascript(String strJavascript)
+    {
+//    	m_app.navigateUrlWithEvent("javascript:" + URI.urlEncode(strJavascript), new ExecutingScriptEvent(null, ExecutingScriptEvent.TYPE_JAVASCRIPT) );
+    }
+    
+    public void setCookie(String url, String cookie)
     {
     	
     }
