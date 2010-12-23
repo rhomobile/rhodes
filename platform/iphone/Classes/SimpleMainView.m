@@ -169,13 +169,27 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (UIToolbar*)newToolbar:(NSArray*)items frame:(CGRect)mainFrame {
-    if ([items count] % 5 != 0) {
+    if (([items count]-2) % 8 != 0) {
         RAWLOG_ERROR("Illegal arguments for createNewToolbar");
         return nil;
     }
     
     UIToolbar *tb = [UIToolbar new];
     tb.barStyle = UIBarStyleBlack;//Opaque;
+	
+	NSString *background_color_enable = [items objectAtIndex:0];
+	NSString *background_color = [items objectAtIndex:1];
+	
+	if ([background_color_enable isEqualToString:@"true"]) {
+		tb.barStyle = UIBarStyleDefault;
+		int c = [background_color intValue];
+		int cR = (c & 0xFF0000) >> 16;
+		int cG = (c & 0xFF00) >> 8;
+		int cB = (c & 0xFF);
+		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+	}
+	
+	
     
     [tb sizeToFit];
     
@@ -196,8 +210,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
                               target:nil action:nil];
     
     NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]/4];
-    for(int i = 0, lim = [items count]/5; i < lim; i++) {
-        int index = i*5 - 1;
+    for(int i = 0, lim = ([items count]-2)/8; i < lim; i++) {
+        int index = i*8 - 1 + 2;
         NSString *label = (NSString*)[items objectAtIndex:++index];
         NSString *url = (NSString*)[items objectAtIndex:++index];
         NSString *icon = (NSString*)[items objectAtIndex:++index];

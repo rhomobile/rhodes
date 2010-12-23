@@ -26,7 +26,7 @@ public class RhoConnection implements IHttpConnection {
 		new RhoLogger("RhoConnection");
 	
 	/** Request URI **/
-	URI uri;
+	URI uri, uri_orig;
 	String  url_external;
 	
 	/** Method - GET, POST, HEAD **/
@@ -53,6 +53,7 @@ public class RhoConnection implements IHttpConnection {
     public RhoConnection(URI _uri) 
     {
     	url_external = _uri.toString();
+    	uri_orig = _uri;
     	uri = new URI(url_external);
     
     	if ( !uri.getPath().startsWith("/apps") )
@@ -137,13 +138,13 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getHeaderField(String name) throws IOException {
-		LOG.TRACE("getHeaderField: " + name);
+		//LOG.TRACE("getHeaderField: " + name);
 		processRequest();
 		return resHeaders.getPropertyIgnoreCase(name);
 	}
 
 	public String getHeaderField(int index) throws IOException {
-		LOG.TRACE("getHeaderField: " + index);
+		//LOG.TRACE("getHeaderField: " + index);
 		processRequest();
         if (index >= resHeaders.size()) {
             return null;
@@ -152,7 +153,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public long getHeaderFieldDate(String name, long def) throws IOException {
-		LOG.TRACE("getHeaderFieldDate: " + name);
+		//LOG.TRACE("getHeaderFieldDate: " + name);
 		processRequest();
         try {
             return DateTimeTokenizer.parse(getHeaderField(name));
@@ -167,7 +168,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public int getHeaderFieldInt(String name, int def) throws IOException {
-		LOG.TRACE("getHeaderFieldInt: " + name);
+		//LOG.TRACE("getHeaderFieldInt: " + name);
 		processRequest();
         try {
             return Integer.parseInt(getHeaderField(name));
@@ -180,7 +181,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getHeaderFieldKey(int index) throws IOException {
-		LOG.TRACE("getHeaderFieldKey: " + index);
+		//LOG.TRACE("getHeaderFieldKey: " + index);
 		processRequest();
         if (index >= resHeaders.size())
             return null;
@@ -223,7 +224,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getRequestProperty(String key) {
-		LOG.TRACE("getRequestProperty: " + key);
+		//LOG.TRACE("getRequestProperty: " + key);
         return reqHeaders.getPropertyIgnoreCase(key);
 	}
 
@@ -265,7 +266,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public void setRequestProperty(String key, String value) throws IOException {
-		LOG.TRACE("setRequestProperty: key = " + key + "; value = " + value);
+		//LOG.TRACE("setRequestProperty: key = " + key + "; value = " + value);
 		int index = 0;
 
 		/*
@@ -307,7 +308,7 @@ public class RhoConnection implements IHttpConnection {
 	 *            the value for the request header field.
 	 */
     protected void setRequestField(String key, String value) {
-    	LOG.TRACE("setRequestField: key = " + key + "; value = " + value);
+    	//LOG.TRACE("setRequestField: key = " + key + "; value = " + value);
 
         /*
 		 * If application setRequestProperties("Connection", "close") then we
@@ -783,24 +784,31 @@ public class RhoConnection implements IHttpConnection {
 			String strErr = "";
 			
 			LOG.TRACE("processRequest: " + getURL() );
-			
-			String strContType = getContentType();
-			if ( this.method.equals("POST") || strContType.length() == 0 )
+			String strReferer = reqHeaders != null ? reqHeaders.getPropertyIgnoreCase("Referer") : "";
+			if ( getRef() != null && getRef().length() > 0 && strReferer != null &&
+        		 strReferer.equalsIgnoreCase(uri_orig.getPathNoFragment()) )
 			{
-				if ( dispatch() )
+				respondNotModified();				
+			}else
+			{
+				String strContType = getContentType();
+				if ( this.method.equals("POST") || strContType.length() == 0 ||
+						strContType.indexOf("application/x-www-form-urlencoded") >= 0)
 				{
-					requestProcessed = true;
-					return;
+					if ( dispatch() )
+					{
+						requestProcessed = true;
+						return;
+					}
 				}
-			}
-			
-			if ( /*this.method == "GET" &&*/ httpGetFile(strContType) ){
 				
-			//}else if ( dispatch() ){
-			}else{
-				respondNotFound(strErr);
-			}
-			
+				if ( /*this.method == "GET" &&*/ httpGetFile(strContType) ){
+					
+				//}else if ( dispatch() ){
+				}else{
+					respondNotFound(strErr);
+				}
+			}			
 			requestProcessed = true;
 		}
 	}
