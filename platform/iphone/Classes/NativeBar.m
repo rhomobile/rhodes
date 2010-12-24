@@ -116,7 +116,11 @@ void create_nativebar(int bar_type, rho_param *p)
 {
     if (!rho_rhodesapp_check_mode())
         return;
-    rho_param *params = NULL;
+
+	const char* background_color = NULL;
+	const char* background_color_enable = NULL;
+	
+	rho_param *params = NULL;
     switch (p->type) {
         case RHO_PARAM_ARRAY:
             params = p;
@@ -126,7 +130,11 @@ void create_nativebar(int bar_type, rho_param *p)
                 const char *name = p->v.hash->name[i];
                 rho_param *value = p->v.hash->value[i];
                 
-                // TODO: implement color settings
+                if (strcasecmp(name, "background_color") == 0) {
+					background_color = value->v.string;
+					background_color_enable = "true";
+                }
+				
                 if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
                     params = value;
                 }
@@ -147,9 +155,6 @@ void create_nativebar(int bar_type, rho_param *p)
     int size = params->v.array->size;
     NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
 
-	const char* background_color = NULL;
-	const char* background_color_enable = NULL;
-	
     for (int i = 0; i < size; ++i) {
         rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
