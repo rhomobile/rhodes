@@ -176,6 +176,9 @@ module Rho
       localclass = Class.new do
         require 'helpers/application_helper'
         include ApplicationHelper
+        require 'helpers/browser_helper'
+        include BrowserHelper
+        
         def initialize(obj=nil)
           @vars = {}
           if obj
