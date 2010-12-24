@@ -31,7 +31,16 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.graphics.drawable.shapes.Shape;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -50,16 +59,197 @@ public class TabbedMainView implements MainView {
 	private Vector<TabData> tabData;
 	private int tabIndex;
 	
+	private int mBackgroundColor = 0;
+	private boolean mBackgroundColorEnable = false;
+	
 	private static class TabData {
 		public MainView view;
 		public String url;
 		public boolean reload;
 		public boolean loaded;
 		
+		public int selected_color;
+		public boolean selected_color_enabled;
+		public boolean disabled;
+		
 		public TabData() {
 			loaded = false;
+			selected_color_enabled = false;
+			disabled = false;
 		}
 	};
+	
+	private class RhoCustomDrawable extends ColorDrawable {
+		
+		public static final int NORMAL = 1;
+		public static final int SELECTED = 2;
+		public static final int DISABLED = 3;
+		
+		public RhoCustomDrawable() {
+			style = NORMAL;
+			color = 0xFF000000;
+		}
+
+		public void setRhoStyle(int _style) {
+			style = _style;
+		}
+		
+		public void setRhoColor(int _color) {
+			color = _color;
+		}
+		
+		private int modifyColorComponent(int c, int delta) {
+			int r = c + delta;
+			if (r < 0) r = 0;
+			if (r > 255) r = 255;
+			return r;
+		}
+
+		private void drawVerticalGradient(	Canvas canvas, int left, int top, int right, int bottom, 
+											int color0_R, int color0_G, int color0_B,
+											int color1_R, int color1_G, int color1_B) {
+	        Paint paint = new Paint();
+	        paint.setAntiAlias(false);
+	        paint.setARGB(255, 0, 0, 0);
+	        int i;
+	        for (i = top ; i < bottom; i++) {
+	        	int ctop = i;
+	        	int cbottom = i + 1;
+	        	
+	        	int cR = color0_R + ((color1_R - color0_R)*(i-top))/(bottom-top-1);
+	        	int cG = color0_G + ((color1_G - color0_G)*(i-top))/(bottom-top-1);
+	        	int cB = color0_B + ((color1_B - color0_B)*(i-top))/(bottom-top-1);
+	        	
+	        	paint.setARGB(255, cR, cG, cB);
+	       		canvas.drawRect(left, ctop, right, cbottom, paint);
+	        }
+		}
+		
+		
+		public void draw (Canvas canvas) {
+			/*
+			Rect rect = getBounds();
+			{
+		        Paint paint = new Paint();
+		        paint.setAntiAlias(false);
+	        	paint.setARGB(255, 255, 0, 255);
+	       		canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, paint);
+			}
+			*/
+			
+			Rect rect = getBounds();
+			
+			int c_R = (color & 0xFF0000) >> 16;
+			int c_G = (color & 0xFF00) >> 8;
+			int c_B = (color & 0xFF);
+			int height = rect.bottom - rect.top + 1;
+			switch (style) {
+				case NORMAL: {
+					int dark_k = 16;
+					int dark_k2 = 128;
+					int c_dark_R = modifyColorComponent( c_R, -dark_k);
+					int c_dark_G = modifyColorComponent( c_G, -dark_k);
+					int c_dark_B = modifyColorComponent( c_B, -dark_k);
+
+					int c_dark2_R = modifyColorComponent( c_R, -dark_k2);
+					int c_dark2_G = modifyColorComponent( c_G, -dark_k2);
+					int c_dark2_B = modifyColorComponent( c_B, -dark_k2);
+					
+					int y0 = rect.top;
+					int y1 = rect.top + ((height-3)/10); 
+					int y2 = rect.top + ((height-3)/2); 
+					int y3 = rect.bottom - ((height-3)/10) - 3; 
+					int y4 = rect.bottom - 3; 
+				
+					drawVerticalGradient(	canvas, rect.left+3, y0, rect.right-3, y1,
+											c_dark2_R, c_dark2_G, c_dark2_B,
+											c_dark_R, c_dark_G, c_dark_B);
+					
+					drawVerticalGradient(	canvas, rect.left+3, y1, rect.right-3, y2,
+							c_dark_R, c_dark_G, c_dark_B,
+							c_R, c_G, c_B);
+
+					drawVerticalGradient(	canvas, rect.left+3, y2, rect.right-3, y3,
+							c_R, c_G, c_B,
+							c_dark_R, c_dark_G, c_dark_B);
+
+					drawVerticalGradient(	canvas, rect.left+3, y3, rect.right-3, y4,
+							c_dark_R, c_dark_G, c_dark_B,
+							c_dark2_R, c_dark2_G, c_dark2_B);
+					
+			        Paint paint = new Paint();
+			        paint.setAntiAlias(false);
+			        paint.setARGB(32, 0, 0, 0);
+		       		canvas.drawRect(rect.left+3, rect.top, rect.left+4, rect.bottom-3, paint);
+		       		canvas.drawRect(rect.right-4, rect.top, rect.right-3, rect.bottom-3, paint);
+					
+				}
+				break;
+				case SELECTED: {
+					int light_k = 16;
+					int dark_k = 16;
+					int light_k2 = 64;
+					int dark_k2 = 64;
+					
+					int c_0_R = modifyColorComponent( c_R, light_k2);
+					int c_0_G = modifyColorComponent( c_G, light_k2);
+					int c_0_B = modifyColorComponent( c_B, light_k2);
+					
+					int c_1_R = modifyColorComponent( c_R, light_k);
+					int c_1_G = modifyColorComponent( c_G, light_k);
+					int c_1_B = modifyColorComponent( c_B, light_k);
+					
+					int c_3_R = modifyColorComponent( c_R, -dark_k);
+					int c_3_G = modifyColorComponent( c_G, -dark_k);
+					int c_3_B = modifyColorComponent( c_B, -dark_k);
+
+					int c_4_R = modifyColorComponent( c_R, -dark_k2);
+					int c_4_G = modifyColorComponent( c_G, -dark_k2);
+					int c_4_B = modifyColorComponent( c_B, -dark_k2);
+					
+					int y0 = rect.top;
+					int y1 = rect.top + ((height-3)/4); 
+					int y2 = rect.top + ((height-3)/2); 
+					int y3 = rect.bottom - ((height-3)/4) - 3; 
+					int y4 = rect.bottom-3; 
+				
+					drawVerticalGradient(	canvas, rect.left+3, y0, rect.right-3, y1,
+											c_0_R, c_0_G, c_0_B,
+											c_1_R, c_1_G, c_1_B);
+					
+					drawVerticalGradient(	canvas, rect.left+3, y1, rect.right-3, y2,
+							c_1_R, c_1_G, c_1_B,
+							c_R, c_G, c_B);
+
+					drawVerticalGradient(	canvas, rect.left+3, y2, rect.right-3, y3,
+							c_R, c_G, c_B,
+							c_3_R, c_3_G, c_3_B);
+
+					drawVerticalGradient(	canvas, rect.left+3, y3, rect.right-3, y4,
+							c_3_R, c_3_G, c_3_B,
+							c_4_R, c_4_G, c_4_B);
+					
+			        Paint paint = new Paint();
+			        paint.setAntiAlias(false);
+			        paint.setARGB(32, 0, 0, 0);
+		       		canvas.drawRect(rect.left+3, rect.top, rect.left+4, rect.bottom, paint);
+		       		canvas.drawRect(rect.right-4, rect.top, rect.right-3, rect.bottom, paint);
+			        paint.setARGB(255, c_4_R, c_4_G, c_4_B);
+		       		canvas.drawRect(rect.left, rect.bottom-3, rect.right, rect.bottom-1, paint);
+				}
+				break;
+				case DISABLED: {
+					
+				}
+				break;
+			}
+		}
+		
+		
+		private int style;
+		private int color;
+	}
+	
 	
 	private static class TabViewFactory implements TabHost.TabContentFactory {
 		
@@ -82,15 +272,80 @@ public class TabbedMainView implements MainView {
 		return data.view;
 	}
 	
+	private void processTabHostColors(TabHost tabHost, int SelectedColor, boolean useSelectedColor) {
+		
+		for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) { 
+			if ((i == tabHost.getCurrentTab()) && useSelectedColor) {
+				tabHost.getTabWidget().getChildAt(i).setBackgroundColor(SelectedColor);
+				
+				Drawable cur_d = tabHost.getTabWidget().getChildAt(i).getBackground();
+				RhoCustomDrawable d = null;
+				if (d instanceof RhoCustomDrawable) {
+					d = (RhoCustomDrawable)cur_d;
+				}
+				else {
+					d = new RhoCustomDrawable();
+				}
+				d.setRhoColor(SelectedColor);
+				d.setRhoStyle(RhoCustomDrawable.SELECTED);
+				d.setColorFilter(SelectedColor | 0xFF000000, android.graphics.PorterDuff.Mode.SRC);
+				d.setVisible(true, true);
+				d.setAlpha(255);
+				d.setBounds(0,
+						0, 
+						tabHost.getTabWidget().getChildAt(i).getRight() - tabHost.getTabWidget().getChildAt(i).getLeft() + 1,
+						tabHost.getTabWidget().getChildAt(i).getBottom() - tabHost.getTabWidget().getChildAt(i).getTop() + 1);
+				tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(d);
+				tabHost.getTabWidget().getChildAt(i).requestLayout();
+			}
+			else {
+				if (mBackgroundColorEnable) {
+					tabHost.getTabWidget().getChildAt(i).setBackgroundColor(mBackgroundColor);
+
+					Drawable cur_d = tabHost.getTabWidget().getChildAt(i).getBackground();
+					RhoCustomDrawable d = null;
+					if (d instanceof RhoCustomDrawable) {
+						d = (RhoCustomDrawable)cur_d;
+					}
+					else {
+						d = new RhoCustomDrawable();
+					}
+					
+					d.setRhoColor(mBackgroundColor);
+					d.setRhoStyle(RhoCustomDrawable.NORMAL);
+					d.setColorFilter(mBackgroundColor | 0xFF000000, android.graphics.PorterDuff.Mode.SRC);
+					d.setVisible(true, true);
+					d.setAlpha(255);
+					d.setBounds(0,
+							0, 
+							tabHost.getTabWidget().getChildAt(i).getRight() - tabHost.getTabWidget().getChildAt(i).getLeft() + 1,
+							tabHost.getTabWidget().getChildAt(i).getBottom() - tabHost.getTabWidget().getChildAt(i).getTop() + 1);
+					tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(d);
+					tabHost.getTabWidget().getChildAt(i).requestLayout();
+				}
+			}
+		} 
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params) {
 		Context ctx = RhodesActivity.getContext();
-		
+
+		mBackgroundColorEnable = false;		
+
 		Vector<Object> tabs = null;
 		if (params instanceof Vector<?>)
 			tabs = (Vector<Object>)params;
 		else if (params instanceof Map<?,?>) {
 			Map<Object,Object> settings = (Map<Object,Object>)params;
+			
+			Object bkgObj = settings.get("background_color");
+			if ((bkgObj != null) && (bkgObj instanceof String)) {
+				int color = Integer.parseInt((String)bkgObj) | 0xFF000000;
+				mBackgroundColor = color;
+				mBackgroundColorEnable = true;
+			}
 			
 			Object tabsObj = settings.get("tabs");
 			if (tabsObj != null && (tabsObj instanceof Vector<?>))
@@ -124,8 +379,11 @@ public class TabbedMainView implements MainView {
 		host.setup();
 		
 		host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+			private TabHost tabHost = host;
 			
 			public void onTabChanged(String tabId) {
+				int sel_col = 0;
+				boolean sel_col_enable = false;
 				try {
 					tabIndex = Integer.parseInt(tabId);
 					TabData data = tabData.elementAt(tabIndex);
@@ -133,10 +391,13 @@ public class TabbedMainView implements MainView {
 						RhodesService.loadUrl(data.url);
 						data.loaded = true;
 					}
+					sel_col = data.selected_color;
+					sel_col_enable = data.selected_color_enabled;
 				}
 				catch (NumberFormatException e) {
 					Logger.E(TAG, e);
 				}
+				processTabHostColors(tabHost, sel_col, sel_col_enable);
 			}
 		});
 		
@@ -144,6 +405,9 @@ public class TabbedMainView implements MainView {
 		DisplayMetrics metrics = new DisplayMetrics();
 		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(metrics);
+
+		int selected_color = 0;
+		boolean selected_color_enable = false;
 		
 		for (int i = 0; i < size; ++i) {
 			Object param = tabs.elementAt(i);
@@ -165,6 +429,8 @@ public class TabbedMainView implements MainView {
 			String icon = null;
 			boolean reload = false;
 			
+			boolean disabled = false;
+			
 			Object iconObj = hash.get("icon");
 			if (iconObj != null && (iconObj instanceof String))
 				icon = "apps/" + (String)iconObj;
@@ -172,6 +438,16 @@ public class TabbedMainView implements MainView {
 			Object reloadObj = hash.get("reload");
 			if (reloadObj != null && (reloadObj instanceof String))
 				reload = ((String)reloadObj).equalsIgnoreCase("true");
+			
+			Object selected_color_Obj = hash.get("selected_color");
+			if ((selected_color_Obj != null) && (selected_color_Obj instanceof String)) {
+				selected_color_enable = true;
+				selected_color = Integer.parseInt((String)selected_color_Obj) | 0xFF000000;
+			}
+
+			Object disabled_Obj = hash.get("disabled");
+			if (disabled_Obj != null && (disabled_Obj instanceof String))
+				disabled = ((String)disabled_Obj).equalsIgnoreCase("true");
 			
 			spec = host.newTabSpec(Integer.toString(i));
 			
@@ -197,12 +473,25 @@ public class TabbedMainView implements MainView {
 			data.url = action;
 			data.reload = reload;
 			
+			data.selected_color = selected_color;
+			data.selected_color_enabled = selected_color_enable;
+			data.disabled = disabled;
+			
 			TabViewFactory factory = new TabViewFactory(data);
 			spec.setContent(factory);
 			
 			tabData.addElement(data);
 			host.addTab(spec);
 		}
+		
+		int sel_col = 0;
+		boolean sel_col_enable = false;
+		TabData data = tabData.elementAt(tabIndex); 
+		if (data != null) {
+			sel_col = data.selected_color;
+			sel_col_enable = data.selected_color_enabled;
+		}
+		processTabHostColors(host, sel_col, sel_col_enable);
 		
 		host.requestLayout();
 		
