@@ -776,6 +776,21 @@ describe "Rhom::RhomObject" do
     nCount.should_not == 0
   end
 
+  it "should search with 3 LIKE" do
+    getAccount.create({:SurveyID=>"Survey1", :CallID => 'Call1', :SurveyResultID => 'SurveyResult1'})
+    getAccount.create({:SurveyID=>"Survey2", :CallID => 'Call2', :SurveyResultID => 'SurveyResult2'})
+    getAccount.create({:SurveyID=>"Survey3", :CallID => 'Call3', :SurveyResultID => 'SurveyResult3'})
+
+    shift_callreport = true
+    prevresult = getAccount.find(:first, :conditions =>
+            {{:func => 'LOWER', :name => 'SurveyID', :op => 'LIKE'} => 'survey%',
+            {:func => 'LOWER', :name => 'CallID', :op => 'LIKE'} => 'call%',
+            {:func => 'LOWER', :name => 'SurveyResultID', :op => 'LIKE'} => 'surveyresult%'},
+            :op => 'AND') if shift_callreport    
+
+    prevresult.should_not be_nil
+  end
+    
   it "should search with IN array" do
     items = getAccount.find( :all, 
        :conditions => { 
