@@ -52,4 +52,9 @@ class Account_s
     property :TwoProps,  :string
     
     property :my_text,  :blob
+    
+    property :SurveyID,        :string    
+    property :CallID,        :string    
+    property :SurveyResultID,        :string    
+    
 end
