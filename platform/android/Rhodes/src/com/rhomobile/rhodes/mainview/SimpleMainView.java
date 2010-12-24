@@ -137,6 +137,9 @@ public class SimpleMainView implements MainView {
 	private LinearLayout navBar = null;
 	private LinearLayout toolBar = null;
 	
+	private int mCustomBackgroundColor = 0;
+	private boolean mCustomBackgroundColorEnable = false;
+	
 	public View getView() {
 		return view;
 	}
@@ -370,10 +373,29 @@ public class SimpleMainView implements MainView {
 			ImageButton btn = new ImageButton(ctx);
 			btn.setImageDrawable(icon);
 			button = btn;
+			if (mCustomBackgroundColorEnable) {
+				Drawable d = btn.getBackground();
+				if (d != null) {
+					d.setColorFilter(mCustomBackgroundColor, android.graphics.PorterDuff.Mode.SRC_OVER);
+				}
+				else {
+					btn.setBackgroundColor(mCustomBackgroundColor);
+				}
+			}
 		}
 		else {
 			Button btn = new Button(ctx);
 			btn.setText(label);
+			if (mCustomBackgroundColorEnable) {
+				btn.setBackgroundColor(mCustomBackgroundColor);
+				int gray = (((mCustomBackgroundColor & 0xFF0000) >> 16) + ((mCustomBackgroundColor & 0xFF00) >> 8) + ((mCustomBackgroundColor & 0xFF)))/3; 
+				if (gray > 128) {
+					btn.setTextColor(0xFF000000);
+				}
+				else {
+					btn.setTextColor(0xFFFFFFFF);
+				}
+			}
 			button = btn;
 		}
 		
@@ -385,6 +407,8 @@ public class SimpleMainView implements MainView {
 	@SuppressWarnings("unchecked")
 	private void setupToolbar(LinearLayout tool_bar, Object params) {
 		Context ctx = RhodesActivity.getContext();
+
+                mCustomBackgroundColorEnable = false;
 
 		Vector<Object> buttons = null;
 		if (params != null) {
@@ -409,12 +433,26 @@ public class SimpleMainView implements MainView {
 							int green = Integer.parseInt((String)greenObj);
 							int blue = Integer.parseInt((String)blueObj);
 							
+							mCustomBackgroundColor = ((red & 0xFF ) << 16) | ((green & 0xFF ) << 8) | ((blue & 0xFF )) | 0xFF000000;
+							mCustomBackgroundColorEnable = true;
+							
 							tool_bar.setBackgroundColor(Color.rgb(red, green, blue));
 						}
 						catch (NumberFormatException e) {
 							// Do nothing here
 						}
 					}
+				}
+				
+				Object bkgObj = settings.get("background_color");
+				if ((bkgObj != null) && (bkgObj instanceof String)) {
+					int color = Integer.decode(((String)bkgObj)).intValue();
+					int red = (color & 0xFF0000) >> 16;
+					int green = (color & 0xFF00) >> 8;
+					int blue = (color & 0xFF);
+					tool_bar.setBackgroundColor(Color.rgb(red, green, blue));
+					mCustomBackgroundColor = color | 0xFF000000;
+					mCustomBackgroundColorEnable = true;
 				}
 				
 				Object buttonsObj = settings.get("buttons");
@@ -588,6 +626,7 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void setToolbar(Object params) {
+		toolBar.setBackgroundColor(Color.GRAY);
 		toolBar.removeAllViews();
 		setupToolbar(toolBar, params);
 		toolBar.requestLayout();
