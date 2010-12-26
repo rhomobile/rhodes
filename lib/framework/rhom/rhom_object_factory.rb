@@ -974,40 +974,90 @@ module Rhom
                 end
                 
                 # deletes all records matching conditions (optionally nil)
-                def delete_all(conditions=nil)
-                
+                def delete_all(*args)
                   db = ::Rho::RHO.get_src_db(get_source_name)
                   tableName = is_schema_source() ? get_schema_table_name : 'object_values'
+                  op = 'AND'
+                  op = args[0][:op].upcase if args && args[0] && args[0][:op]
+                  conditions = args[0][:conditions] if args && args[0] && args[0][:conditions]
+                  
                   begin
                       db.start_transaction
-                      if conditions
-                        # find all relevant objects, then delete them
-                        if is_schema_source()
-                            del_conditions = conditions[:conditions]
-                            del_objects = db.select_from_table(tableName, 'object', del_conditions)
-                        else    
-                            del_conditions = get_conditions_hash(conditions[:conditions])
-                            del_objects = db.select_from_table(tableName, 'object', del_conditions.merge!({"source_id"=>get_source_id}), {"distinct"=>true})
-                        end
-
-                        puts "del_objects : #{del_objects}"
-                        del_objects.each do |obj|
-                          if is_schema_source()
-                            db.delete_from_table(tableName, {'object'=>obj['object']})
-                          else
-                            db.delete_from_table(tableName, {'object'=>obj['object'], "source_id"=>get_source_id})
-                          end  
-                          db.delete_from_table('changed_values', {'object'=>obj['object'], "source_id"=>get_source_id}) if is_sync_source()
-                        end
-                      else
-                        if is_schema_source()
-                            db.delete_all_from_table(tableName)
-                        else
-                            db.delete_from_table(tableName, {"source_id"=>get_source_id})
-                        end
+                      
+                      if is_schema_source()
+                        condition_hash = nil
+                        condition_str = convertConditionToStr(conditions, op, condition_hash) if conditions
+                      
+                        if is_sync_source()
+                            sql = "SELECT object FROM #{tableName}"
+                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                            sql << " WHERE " + condition_str if condition_str
+                            listObjs = db.execute_sql(sql)
                             
-                        db.delete_from_table('changed_values', {"source_id"=>get_source_id})  if is_sync_source()
-                        #TODO: add delete all update_type
+                            listObjs.each do |item|
+                            
+                                db.delete_from_table('changed_values', {'object'=>item['object'], "source_id"=>get_source_id(), "sent"=>0})
+                                
+                                attrsList = db.select_from_table(tableName, '*', {"object"=>item['object']}) 
+                                attrsList[0].each do |attrName, attrValue|
+                                    next if attrName == 'object'
+                                    
+                                    db.insert_into_table('changed_values', 
+                                      {"source_id"=>get_source_id(), "object"=>item['object'], 
+                                        "attrib"=> attrName, "value"=>attrValue, 
+                                        "update_type"=>'delete'})
+                                end        
+                                
+                                sql = "DELETE FROM #{tableName} WHERE object=?"
+                                values = [ item['object'] ]
+                                
+                                db.execute_sql(sql,values)
+                            end
+                            
+                        else #just delete objects
+                            sql = "DELETE FROM #{tableName}"
+                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                            sql << " WHERE " + condition_str if condition_str
+                            db.execute_sql(sql)
+                        end  
+                      else
+                        listObjs = []
+                        
+                        if !conditions
+                            if is_sync_source()                        
+                                listObjs = db.execute_sql("SELECT DISTINCT(object) FROM #{tableName} WHERE source_id=?", get_source_id() )
+                            else
+                                db.delete_from_table(tableName, {"source_id"=>get_source_id()} )
+                            end    
+                        elsif conditions.is_a?(Hash)
+                            listObjs = find_objects(conditions, op, nil, 0, nil)
+                        else
+                            listObjs = find_objects_ex(conditions, op, nil, 0, nil)
+                        end
+                      
+                        listObjs.each do |item|
+
+                            if is_sync_source()                        
+                                db.delete_from_table('changed_values', {'object'=>item['object'], "source_id"=>get_source_id(), "sent"=>0})
+                                
+                                attrsList = db.select_from_table(tableName, '*', {"object"=>item['object'], "source_id"=>get_source_id()}) 
+                                attrsList.each do |attrName|
+                                    db.insert_into_table('changed_values', 
+                                      {"source_id"=>get_source_id(), "object"=>item['object'], 
+                                        "attrib"=> attrName['attrib'], "value"=>attrName['value'], 
+                                        "update_type"=>'delete'})
+                                end        
+                            end
+                            
+                            sql = "DELETE FROM #{tableName} WHERE \n"
+                            sql << "object=? AND source_id=?"
+                            
+                            values = []
+                            values << item['object']
+                            values << get_source_id
+                            
+                            db.execute_sql(sql,values)
+                        end
                       end
                       db.commit
  
@@ -1073,21 +1123,6 @@ module Rhom
                     new_obj    
                 end
                     
-                private
-                
-                # get hash of conditions in sql form
-                def get_conditions_hash(conditions=nil)
-                  if conditions
-                    condition_hash = {}
-                    conditions.each do |key,value|
-                      condition_hash.merge!('attrib' => key.to_s, 'value' => value.to_s)
-                    end
-                    condition_hash
-                  else
-                    nil
-                  end
-                end
-                
               end #class methods
 	          
 	          # if app server does not support oo in inserts. 
