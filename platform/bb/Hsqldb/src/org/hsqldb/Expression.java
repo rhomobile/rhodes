@@ -2053,7 +2053,7 @@ public class Expression {
             case FUNCTION :
                 function.resolveType(session);
 
-                dataType = 0;//function.getReturnType();
+                dataType = function.getReturnType();
                 break;
 
             case QUERY : {
