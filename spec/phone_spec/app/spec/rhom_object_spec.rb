@@ -964,38 +964,74 @@ describe "Rhom::RhomObject" do
         @accts[0].name.should == "Aeroprise"
     end        
   end
-  
+
   it "should delete_all" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = getAccount.create(vars)
+    getAccount.find(:all).length.should > 0
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should == 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+        
+    end    
   
     getAccount.delete_all
     
     getAccount.find(:all).length.should == 0
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'source_id' => getAccount().get_source_id() )
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should > 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should == 0
+        
     end    
   end
   
   it "should delete_all with conditions" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = getAccount.create(vars)
+    @accts = getAccount.find(:all, :conditions => {'name' => 'Mobio India'})
+    @accts.length.should > 0
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should == 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+        
+    end    
   
     getAccount.delete_all(:conditions => {'name' => 'Mobio India'})
     
     @accts = getAccount.find(:all, :conditions => {'name' => 'Mobio India'})
     @accts.length.should == 0
 
-    if $spec_settings[:sync_model]    
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'source_id' => getAccount().get_source_id() )
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
-    end
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+        
+    end    
     
   end
   
   it "should delete_all with conditions across objects" do
+    @accts = getAccount.find(:all, :conditions => {'industry' => 'Technology'})
+    @accts.length.should > 0
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should == 0
+    end    
+  
     getAccount.delete_all(:conditions => {'industry' => 'Technology'})
     
     @accts = getAccount.find(:all, :conditions => {'industry' => 'Technology'})
@@ -1004,7 +1040,156 @@ describe "Rhom::RhomObject" do
     @accts = getAccount.find(:all)
     
     @accts.length.should == 0
+    
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should > 0
+    end    
+    
   end
+
+  it "should delete_all not delete from other sources" do
+    vars = {"name"=>"Aeroprise"}
+    account = getCase().create(vars)
+
+    accts = getAccount.find(:all)
+    accts.length.should > 0
+
+    test_cond = {'name' => 'Aeroprise'}  
+    
+    cases = getCase().find(:all, :conditions => test_cond)
+    cases.length.should > 0
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should == 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getCase().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+    end    
+  
+    getAccount.delete_all(:conditions => test_cond)
+    
+    accts = getAccount.find(:all, :conditions => test_cond)
+    accts.length.should == 0
+
+    cases = getCase().find(:all, :conditions => test_cond)
+    cases.length.should > 0
+    
+    accts = getAccount.find(:all)
+    accts.length.should > 0
+    
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should > 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getCase().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+    end    
+    
+  end
+
+  it "should delete_all with multiple conditions" do
+    vars = {"name"=>"Aeroprise", "website"=>"test.com"}
+    account = getAccount.create(vars)
+    
+    test_cond = {'name' => 'Aeroprise', 'website'=>'aeroprise.com'}
+    accts = getAccount.find(:all, :conditions => test_cond)
+    accts.length.should == 1
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should == 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+        
+    end    
+  
+    getAccount.delete_all(:conditions => test_cond)
+    
+    accts = getAccount.find(:all, :conditions => test_cond)
+    accts.length.should == 0
+
+    accts = getAccount.find(:all, :conditions => vars)
+    accts.length.should == 1
+    
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should > 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should == 2
+        
+    end    
+    
+  end
+  
+  it "should delete_all with advanced conditions" do
+    vars = {"name"=>"Aeroprise", "website"=>"test.com"}
+    account = getAccount.create(vars)
+    
+    test_cond = {{:func=>'UPPER', :name=>'name', :op=>'LIKE'} => 'AERO%', 
+        {:func=>'UPPER', :name=>'website', :op=>'LIKE'} => 'TEST%'}
+    
+    accts = getAccount.find(:all, :conditions => test_cond, :op => 'OR')
+    accts.length.should == 2
+
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should == 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should > 0
+        
+    end    
+  
+    getAccount.delete_all(:conditions => test_cond, :op => 'OR')
+    
+    accts = getAccount.find(:all, :conditions => test_cond, :op => 'OR')
+    accts.length.should == 0
+
+    accts = getAccount.find(:all, :conditions => vars)
+    accts.length.should == 0
+    
+    if $spec_settings[:sync_model]        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records.length.should > 0
+        
+        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records.length.should == 0
+        
+    end    
+    
+  end
+
+  it "should not find with advanced condition" do
+    vars = {"name"=>"Aeroprise", "website"=>"testaa.com"}
+    account = getAccount.create(vars)
+    
+    test_cond = {{:func=>'UPPER', :name=>'name', :op=>'LIKE'} => 'AERO%', 
+        {:func=>'UPPER', :name=>'website', :op=>'LIKE'} => 'TEST'}
+    
+    accts = getAccount.find(:all, :select => ['name', 'website'],  :conditions => test_cond, :op => 'OR')
+    accts.length.should > 0    
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:func=>'UPPER', :name=>'website', :op=>'='} => 'TEST'} )
+    accts.length.should == 0
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:func=>'UPPER', :name=>'website', :op=>'='} => 'XY'} )
+    accts.length.should == 0
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:func=>'UPPER', :name=>'website', :op=>'='} => 'AMO'} )
+    accts.length.should == 0
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:func=>'LOWER', :name=>'website', :op=>'='} => 'test'} )
+    accts.length.should == 0
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:name=>'website', :op=>'LIKE'} => 'test'} )
+    accts.length.should == 0
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:name=>'website', :op=>'LIKE'} => 'te'} )
+    accts.length.should == 0    
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:name=>'website', :op=>'LIKE'} => 'om'} )
+    accts.length.should == 0
+    accts = getAccount.find(:all, :select => ['name', 'website'], :conditions => {{:name=>'website', :op=>'LIKE'} => 'xy'} )
+    accts.length.should == 0    
+ end
+      
 
   it "should support blob type" do
     
