@@ -125,13 +125,13 @@ public class Library {
         {
             "ABS", "org.hsqldb.Library.abs"
         }, {
-            "ACOS", "java.lang.Math.acos"
+            "ACOS", "javolution.lang.MathLib.acos"
         }, {
-            "ASIN", "java.lang.Math.asin"
+            "ASIN", "javolution.lang.MathLib.asin"
         }, {
-            "ATAN", "java.lang.Math.atan"
+            "ATAN", "javolution.lang.MathLib.atan"
         }, {
-            "ATAN2", "java.lang.Math.atan2"
+            "ATAN2", "javolution.lang.MathLib.atan2"
         }, {
             "CEILING", "java.lang.Math.ceil"
         }, {
@@ -141,19 +141,19 @@ public class Library {
         }, {
             "DEGREES", "java.lang.Math.toDegrees"
         }, {
-            "EXP", "java.lang.Math.exp"
+            "EXP", "javolution.lang.MathLib.exp"
         }, {
             "FLOOR", "java.lang.Math.floor"
         }, {
-            "LOG", "java.lang.Math.log"
+            "LOG", "javolution.lang.MathLib.log"
         }, {
-            "LOG10", "org.hsqldb.Library.log10"
+            "LOG10", "javolution.lang.MathLib.log10"
         }, {
             "MOD", "org.hsqldb.Library.mod"
         }, {
             "PI", "org.hsqldb.Library.pi"
         }, {
-            "POWER", "java.lang.Math.pow"
+            "POWER", "javolution.lang.MathLib.pow"
         }, {
             "RADIANS", "java.lang.Math.toRadians"
         }, {
@@ -2298,5 +2298,285 @@ public class Library {
         return fname.startsWith(prefix)
                ? functionMap.get(fname.substring(prefixLength), -1)
                : -1;
+    }
+    
+    static public class Method
+    {
+    	Class m_retType;
+    	Class[] m_aArgClasses;
+    	public Method( Class retType , Class[] aArgClasses )
+    	{
+    		m_retType = retType;
+    		m_aArgClasses = aArgClasses;
+    	}
+    	
+    	public Class getReturnType()
+    	{
+    		return m_retType;
+    	}
+    	
+    	Class[] getParameterTypes()
+    	{
+    		return m_aArgClasses;
+    	}
+    };
+    
+    static public Method find_method(String strFullName)
+    {
+    	if ( strFullName.equals("org.hsqldb.Library.ucase") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.lcase") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.substring") )
+    	{
+    		Class[] args = {String.class, Integer.class, Integer.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.space") )
+    	{
+    		Class[] args = {Integer.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.soundex") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.rtrim") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.right") )
+    	{
+    		Class[] args = {String.class, Integer.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.replace") )
+    	{
+    		Class[] args = {String.class, String.class, String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.repeat") )
+    	{
+    		Class[] args = {String.class, Integer.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.rawToHex") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.octetLength") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( Integer.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.ltrim") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.locate") )
+    	{
+    		Class[] args = {String.class, String.class, Integer.class};
+    		return new Method( Integer.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.length") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( Integer.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.left") )
+    	{
+    		Class[] args = {String.class, Integer.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.insert") )
+    	{
+    		Class[] args = {String.class, Integer.class, Integer.class, String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.hexToRaw") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.difference") )
+    	{
+    		Class[] args = {String.class, String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.concat") )
+    	{
+    		Class[] args = {String.class, String.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.length") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( Integer.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.character") )
+    	{
+    		Class[] args = {Integer.class};
+    		return new Method( String.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.bitLength") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( Integer.class, args );
+    	}else if ( strFullName.equals("org.hsqldb.Library.ascii") )
+    	{
+    		Class[] args = {String.class};
+    		return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.datediff") )
+		{
+			Class[] args = {String.class, Timestamp.class, Timestamp.class};
+			return new Method( Long.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.dayofmonth") )
+		{
+			Class[] args = {Date.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.dayofweek") )
+		{
+			Class[] args = {Date.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.hour") )
+		{
+			Class[] args = {Time.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.minute") )
+		{
+			Class[] args = {Time.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.month") )
+		{
+			Class[] args = {Date.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.monthname") )
+		{
+			Class[] args = {Date.class};
+			return new Method( String.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.quarter") )
+		{
+			Class[] args = {Date.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.second") )
+		{
+			Class[] args = {Time.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.week") )
+		{
+			Class[] args = {Date.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.year") )
+		{
+			Class[] args = {Date.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.to_char") )
+		{
+			Class[] args = {Date.class, String.class};
+			return new Method( String.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.abs") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.acos") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.asin") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.atan") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.ceil") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.cos") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.cot") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.toDegrees") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.exp") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.floor") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.log") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.log10") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.log10") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.mod") )
+		{
+			Class[] args = {Integer.class, Integer.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.pi") )
+		{
+			Class[] args = {};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.pow") )
+		{
+			Class[] args = {Double.class, Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.toRadians") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("javolution.lang.MathLib.random") )
+		{
+			Class[] args = {Integer.class, Integer.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.round") )
+		{
+			Class[] args = {Double.class, Integer.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.sign") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("java.lang.Math.sin") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.sqrt") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("java.lang.Math.tan") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.truncate") )
+		{
+			Class[] args = {Double.class, Integer.class};
+			return new Method( Double.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.bitand") )
+		{
+			Class[] args = {Integer.class, Integer.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.bitor") )
+		{
+			Class[] args = {Integer.class, Integer.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.bitxor") )
+		{
+			Class[] args = {Integer.class, Integer.class};
+			return new Method( Integer.class, args );
+		}else if ( strFullName.equals("org.hsqldb.Library.roundMagic") )
+		{
+			Class[] args = {Double.class};
+			return new Method( Double.class, args );
+		}
+
+    	return null;
     }
 }
