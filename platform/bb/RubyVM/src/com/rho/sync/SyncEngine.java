@@ -763,7 +763,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    String fDataName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.data");
 	    String fScriptName = makeBulkDataFileName(strDataUrl, dbPartition.getDBPath(), "_bulk.script" );
 	    
-	    String strZip = "";//".gzip";
+	    String strZip = ".gzip";
 	    if (Capabilities.USE_SQLITE)
 	    {
 		    String strHsqlDataUrl = FilePath.join(getHostFromUrl(serverUrl), strDataUrl) + strZip;
@@ -814,7 +814,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    return;
 		    }
 	    }
-/*		
+		
 	    LOG.INFO("Bulk sync: unzip db");
 
 	    try
@@ -828,7 +828,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 	    
 	    IFileAccess fs = RhoClassFactory.createFileAccess();
-	    fs.delete(fDataName);*/
+	    fs.delete(fDataName);
 	}
 	
 	String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)throws Exception
