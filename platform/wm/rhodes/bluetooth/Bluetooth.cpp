@@ -393,10 +393,10 @@ void RhoBluetoothManager::fireRhodeCallback(const char* callback_url, const char
 
 void RhoBluetoothManager::init() {
 	LOG(INFO)  + "RhoBluetoothManager::init()";
-	WORD wVersionRequested;
+/*	WORD wVersionRequested;
 	WSADATA wsaData;
 	wVersionRequested = MAKEWORD( 2, 2 );
-	WSAStartup( wVersionRequested, &wsaData );
+	WSAStartup( wVersionRequested, &wsaData );*/
 
 	m_pDeviceList			= NULL;
 	m_pStart				= NULL;
@@ -407,6 +407,9 @@ void RhoBluetoothManager::init() {
 	m_hReadThread			= NULL;
 	m_socketServer			= INVALID_SOCKET;
 	m_socketClient			= INVALID_SOCKET;
+	mFirstDataBlock = NULL;
+	mLastDataBlock = NULL;
+
 	BthGetMode(&m_dwBluetoothMode);
 	if(m_dwBluetoothMode==BTH_POWER_OFF)
 	{
@@ -486,7 +489,7 @@ void RhoBluetoothManager::freeAll() {
 		mReadedString = NULL;
 	}
 
-	WSACleanup();
+//	WSACleanup();
 
 	freeAllBlocks();
 }
