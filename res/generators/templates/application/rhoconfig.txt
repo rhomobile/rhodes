@@ -1,13 +1,13 @@
-# Startup page for your application
+# startup page for your application
 start_path = '/app'
 
-# Path to the options page (in this case handled by javascript)
+# path to the options page (in this case handled by javascript)
 options_path = '/app/Settings'
 
-# Location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
+# location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
 rhobundle_zip_url = '<%=zip_url%>'
 
-# Optional password to access bundle (usually not required); used by desktop win32 simulator 
+# optional password to access bundle (usually not required); used by desktop win32 simulator 
 rhobundle_zip_pwd = nil
 
 # Rhodes log properties
@@ -15,34 +15,50 @@ rhobundle_zip_pwd = nil
 # 0-trace, 1-info(app level), 3-warnings, 4-errors
 # for production set to 3
 MinSeverity  = 1 
-LogToOutput = 1 # enable copy log messages to standard output, useful for debugging
-LogCategories = * # * means all categories, otherwise list them : Cat1, Cat2 
-ExcludeLogCategories = # what categories to exclude
-MaxLogFileSize=50 #max log file size in KB, set 0 to unlimited size. When limit is reach, log start from begin of file
 
-#net_trace = 0 # turn on local http server traces, off by default
-#net_timeout = 60 # timeout of network requests in seconds (30 by default)
+# enable copy log messages to standard output, useful for debugging
+LogToOutput = 1
 
-logserver = 'http://rhologs.heroku.com' # where log will be sent by RhoConf.send_log or from log menu  
-#Source is also open and up on http://github.com/rhomobile/rhologs, so anyone can deploy their own rhodes logserver.
+# '*' means all categories, otherwise list them : Cat1, Cat2 
+LogCategories = *
 
-logname='<%=@app_name%>' # log file prefix - contain user readable text
+# what categories to exclude
+ExcludeLogCategories = 
+
+# max log file size in KB, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
+MaxLogFileSize=50
+
+# turn on local http server traces, off by default
+#net_trace = 0
+
+# timeout of network requests in seconds (30 by default)
+#net_timeout = 60
+
+# where log will be posted by RhoConf.send_log or from the log menu  
+# source is also open and up on http://github.com/rhomobile/rhologs, so you can deploy your own logserver
+logserver = 'http://rhologs.heroku.com' 
+
+# log file prefix - contain human-readable text
+logname='<%=@app_name%>'
 
 # Keep track of the last visited page
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
 
-# Sync server url. Typically this will look like 'http://<hostname>:<port>/application'
-# For example: 'http://localhost:9292/application'
+# sync server url, typically this will look like 'http://<hostname>:<port>/application'
+# for example: 'http://localhost:9292/application'
 syncserver = '<%=syncserver%>'
 
-# Geo location inactivity timeout (in seconds)
+# geo location inactivity timeout (in seconds)
 #geo_location_inactivity_timeout = 30
 
 # open rhodes app in full screen mode
 # default 1 for Android up to Rhodes 2.2.5.
 # on all other platforms and on Android from Rhodes >2.2.5 default 0
 #full_screen = 1
+
+# disable the Android page loading progress bar
+#disable_loading_indication = 0
 
 # Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes.
 # If not specified, application will use dynamically selected one.
@@ -55,16 +71,16 @@ syncserver = '<%=syncserver%>'
 # disable screen rotation (enabled by default) - disable possible for ANDROID and iPhone ONLY
 #disable_screen_rotation = 1
 
-#disable close app when pressing back on home screen on blackberry
+# disable close app when pressing back on home screen on blackberry
 #bb_disable_closebyback = 0
 
-#load images in background, this improve reaction speed on user actions, 0 by default
+# load images in background, this improve reaction speed on user actions, 0 by default
 #bb_loadimages_async = 0
 
-# Set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
+# set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
 #bulksync_state = 1
 
-# Hides forward button and animates back button transition
+# hides forward button and animates back button transition
 jqtouch_mode=1
 
 splash_screen='zoom'
