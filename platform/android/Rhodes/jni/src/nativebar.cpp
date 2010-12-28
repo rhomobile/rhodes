@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NativeBar"
 
-RHO_GLOBAL void create_nativebar(int bar_type, rho_param *p)
+RHO_GLOBAL void create_nativebar_inner(int bar_type, rho_param *p)
 {
     JNIEnv *env = jnienv();
     jclass clsNativeBar = getJNIClass(RHODES_JAVA_CLASS_NATIVEBAR);
@@ -27,7 +27,7 @@ RHO_GLOBAL void create_nativebar(int bar_type, rho_param *p)
     env->DeleteLocalRef(paramsObj);
 }
 
-RHO_GLOBAL void remove_nativebar()
+RHO_GLOBAL void remove_nativebar_inner()
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_NATIVEBAR);
@@ -38,7 +38,7 @@ RHO_GLOBAL void remove_nativebar()
     env->CallStaticVoidMethod(cls, mid);
 }
 
-RHO_GLOBAL void nativebar_switch_tab(int index)
+RHO_GLOBAL void nativebar_switch_tab_inner(int index)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_NATIVEBAR);
@@ -60,3 +60,53 @@ RHO_GLOBAL VALUE nativebar_started()
 
     return rho_ruby_create_boolean(env->CallStaticBooleanMethod(cls, mid));
 }
+
+RHO_GLOBAL void create_nativebar(int bar_type, rho_param *p)
+{
+	RAWLOG_INFO("NativeBar.create() is DEPRECATED API ! Please use Rho::NativeToolbar.create() or Rho::NativeTabbar.create().");
+	create_nativebar_inner(bar_type, p);
+}
+
+RHO_GLOBAL void remove_nativebar()
+{
+	RAWLOG_INFO("NativeBar.remove() is DEPRECATED API ! Please use Rho::NativeToolbar.remove() or Rho::NativeTabbar.remove().");
+	remove_nativebar_inner();
+}
+
+RHO_GLOBAL void nativebar_switch_tab(int index)
+{
+	RAWLOG_INFO("NativeBar.switch_tab() is DEPRECATED API ! Please use Rho::NativeTabbar.switch_tab().");
+	nativebar_switch_tab_inner(index);
+}
+
+
+
+
+RHO_GLOBAL void nativebar_set_tab_badge(int index,char *val) {
+	RAWLOG_INFO("NativeBar.set_tab_badge() is DEPRECATED API ! Please use Rho::NativeTabbar.set_tab_badge().");
+}
+
+RHO_GLOBAL void create_native_toolbar(int bar_type, rho_param *p) {
+	create_nativebar_inner( bar_type, p);
+}
+
+RHO_GLOBAL void remove_native_toolbar() {
+	remove_nativebar_inner();
+}
+
+RHO_GLOBAL void create_native_tabbar(int bar_type, rho_param *p) {
+	create_nativebar_inner( bar_type, p);
+}
+
+RHO_GLOBAL void remove_native_tabbar() {
+	remove_nativebar_inner();
+}
+
+RHO_GLOBAL void native_tabbar_switch_tab(int index) {
+	nativebar_switch_tab_inner(index);
+}
+
+RHO_GLOBAL void native_tabbar_set_tab_badge(int index,char *val) {
+	RAWLOG_INFO("Rho::NativeTabbar.set_tab_badge() unsupported on Android !");
+}
+
