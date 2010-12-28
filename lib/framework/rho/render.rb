@@ -173,7 +173,7 @@ module Rho
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
 
-      localclass = Class.new do
+      localclass = Class.new(::Rho::RhoController) do
         require 'helpers/application_helper'
         include ApplicationHelper
         require 'helpers/browser_helper'
