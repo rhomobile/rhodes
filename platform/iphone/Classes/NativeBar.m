@@ -253,3 +253,32 @@ void nativebar_switch_tab(int index) {
 VALUE nativebar_started() {
     return rho_ruby_create_boolean(started);
 }
+
+
+void create_native_toolbar(int bar_type, rho_param *p) {
+
+}
+
+void remove_native_toolbar() {
+
+}
+
+void create_native_tabbar(int bar_type, rho_param *p) {
+
+}
+
+void remove_native_tabbar() {
+
+}
+
+void native_tabbar_switch_tab(int index) {
+
+}
+
+void native_tabbar_set_tab_badge(int index,char *val) {
+
+}
+
+
+
+

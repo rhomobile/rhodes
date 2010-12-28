@@ -1547,6 +1547,7 @@ static VALUE mNativeBar;
 
 
 #include "ext/rho/rhoruby.h"
+
 extern void create_nativebar(int bar_type, rho_param *p);
 #define create create_nativebar
 extern void remove_nativebar();
@@ -1555,6 +1556,13 @@ extern void nativebar_switch_tab(int index);
 #define switch_tab nativebar_switch_tab
 extern VALUE nativebar_started();
 #define started nativebar_started
+
+extern void create_native_toolbar(int bar_type, rho_param *p);
+extern void remove_native_toolbar();
+extern void create_native_tabbar(int bar_type, rho_param *p);
+extern void remove_native_tabbar();
+extern void native_tabbar_switch_tab(int index);
+extern void native_tabbar_set_tab_badge(int index,char *val);
 
 
 #include <limits.h>
@@ -1619,6 +1627,60 @@ SWIG_AsVal_int (VALUE obj, int *val)
   }  
   return res;
 }
+
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
+{
+  if (TYPE(obj) == T_STRING) {
+    
+
+
+    char *cstr = STR2CSTR(obj);
+    
+    size_t size = RSTRING_LEN(obj) + 1;
+    if (cptr)  {
+      if (alloc) {
+	if (*alloc == SWIG_NEWOBJ) {
+	  *cptr = (char *)memcpy((char *)malloc((size)*sizeof(char)), cstr, sizeof(char)*(size));
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      }
+    }
+    if (psize) *psize = size;
+    return SWIG_OK;
+  } else {
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *)vptr;
+	if (psize) *psize = vptr ? (strlen((char*)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }  
+  return SWIG_TypeError;
+}
+
+
+
 
 SWIGINTERN VALUE
 _wrap_create(int argc, VALUE *argv, VALUE self) {
@@ -1696,6 +1758,145 @@ _wrap_started(int argc, VALUE *argv, VALUE self) {
   vresult = result;
   return vresult;
 fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_create_native_toolbar(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  rho_param *arg2 = (rho_param *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "create_native_toolbar" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  {
+    arg2 = rho_param_fromvalue(argv[1]);
+  }
+  create_native_toolbar(arg1,arg2);
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+fail:
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_remove_native_toolbar(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  remove_native_toolbar();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_create_native_tabbar(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  rho_param *arg2 = (rho_param *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "create_native_tabbar" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  {
+    arg2 = rho_param_fromvalue(argv[1]);
+  }
+  create_native_tabbar(arg1,arg2);
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+fail:
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_remove_native_tabbar(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  remove_native_tabbar();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_native_tabbar_switch_tab(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "native_tabbar_switch_tab" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  native_tabbar_switch_tab(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_native_tabbar_set_tab_badge(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *arg2 = (char *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "native_tabbar_set_tab_badge" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "native_tabbar_set_tab_badge" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  native_tabbar_set_tab_badge(arg1,arg2);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return Qnil;
 }
 
@@ -1970,5 +2171,11 @@ SWIGEXPORT void Init_NativeBar(void) {
   rb_define_module_function(mNativeBar, "remove", _wrap_remove, -1);
   rb_define_module_function(mNativeBar, "switch_tab", _wrap_switch_tab, -1);
   rb_define_module_function(mNativeBar, "started", _wrap_started, -1);
+  rb_define_module_function(mNativeBar, "create_native_toolbar", _wrap_create_native_toolbar, -1);
+  rb_define_module_function(mNativeBar, "remove_native_toolbar", _wrap_remove_native_toolbar, -1);
+  rb_define_module_function(mNativeBar, "create_native_tabbar", _wrap_create_native_tabbar, -1);
+  rb_define_module_function(mNativeBar, "remove_native_tabbar", _wrap_remove_native_tabbar, -1);
+  rb_define_module_function(mNativeBar, "native_tabbar_switch_tab", _wrap_native_tabbar_switch_tab, -1);
+  rb_define_module_function(mNativeBar, "native_tabbar_set_tab_badge", _wrap_native_tabbar_set_tab_badge, -1);
 }
 
