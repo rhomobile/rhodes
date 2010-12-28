@@ -30,4 +30,4 @@ class String
 end
 
 
-Rhogen.run_cli(Dir.pwd, 'rhogen', Rhodes::VERSION, ARGV)
+Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
