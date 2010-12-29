@@ -112,7 +112,7 @@ static int started = 0;
 @end
 
 
-void create_nativebar(int bar_type, rho_param *p)
+void create_nativebar_innner(int bar_type, rho_param *p)
 {
     if (!rho_rhodesapp_check_mode())
         return;
@@ -233,7 +233,7 @@ void create_nativebar(int bar_type, rho_param *p)
     [Rhodes performOnUiThread:runnable arg:arg1 arg:items wait:NO];
 }
 
-void remove_nativebar() {
+void remove_nativebar_innner() {
     if (!rho_rhodesapp_check_mode())
         return;
     int bar_type = NOBAR_TYPE;
@@ -242,7 +242,7 @@ void remove_nativebar() {
     [Rhodes performOnUiThread:runnable arg:arg1 arg:nil wait:NO];
 }
 
-void nativebar_switch_tab(int index) {
+void nativebar_switch_tab_innner(int index) {
     if (!rho_rhodesapp_check_mode())
         return;
     id runnable = [RhoNativeBarSwitchTabTask class];
@@ -255,28 +255,51 @@ VALUE nativebar_started() {
 }
 
 
-void create_native_toolbar(int bar_type, rho_param *p) {
 
+void create_nativebar(int bar_type, rho_param *p)
+{
+	RAWLOG_INFO("NativeBar.create() is DEPRECATED. Use Rho::NativeToolbar.create() or Rho::NativeTabbar.create().");
+	create_nativebar_innner(bar_type, p);
+}
+
+void remove_nativebar() {
+	RAWLOG_INFO("NativeBar.remove() is DEPRECATED. Use Rho::NativeToolbar.remove() or Rho::NativeTabbar.remove().");
+	remove_nativebar_innner();
+}
+
+void nativebar_switch_tab(int index) {
+	RAWLOG_INFO("NativeBar.switch_tab() is DEPRECATED. Use Rho::NativeTabbar.switch_tab().");
+	nativebar_switch_tab_innner(index);
+}
+
+void nativebar_set_tab_badge(int index, char *val)
+{
+	RAWLOG_INFO("NativeBar.set_tab_badge() is DEPRECATED. Use Rho::NativeTabbar.set_tab_badge().");
+	nativebar_set_tab_badge_innner(index, val);
+}
+
+
+void create_native_toolbar(int bar_type, rho_param *p) {
+	create_nativebar_innner(bar_type, p);
 }
 
 void remove_native_toolbar() {
-
+	remove_nativebar_innner();
 }
 
 void create_native_tabbar(int bar_type, rho_param *p) {
-
+	create_nativebar_innner(bar_type, p);
 }
 
 void remove_native_tabbar() {
-
+	remove_nativebar_innner();
 }
 
 void native_tabbar_switch_tab(int index) {
-
+	nativebar_switch_tab_innner(index);
 }
 
 void native_tabbar_set_tab_badge(int index,char *val) {
-
 }
 
 
