@@ -45,7 +45,7 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback, OnClickListener, Camera.AutoFocusCallback
+public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback, OnClickListener
  {
 	
 	private static final String TAG = "ImageCapture";
@@ -58,8 +58,6 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
 	private ImageButton cameraButton;
-
-	boolean mIsActive = true;
 
 	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
@@ -92,7 +90,6 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	PictureCallback mPictureCallbackRaw = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera c) {
 			Logger.D(TAG, "PICTURE CALLBACK RAW");
-			camera.startPreview();
 		}
 	};
 
@@ -137,12 +134,18 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e.getMessage());
+			finish();
 		}
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 		try {
 			Logger.D(TAG, "surfaceChanged");
+			if (camera == null) {
+				Logger.E(TAG, "Camera was not opened");
+				return;
+			}
+			
 			if (isPreviewRunning) {
 				camera.stopPreview();
 			}
@@ -162,28 +165,46 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Logger.D(TAG, "surfaceDestroyed");
-		camera.stopPreview();
-		isPreviewRunning = false;
-		camera.release();
+		if (camera != null) {
+			camera.stopPreview();
+			isPreviewRunning = false;
+			camera.release();
+			camera = null;
+		}
 	}
 
 	public void onClick(View v) {
 		if (v.getId() == AndroidR.id.cameraButton) {
 			takePictureWithAutofocus();
 			cameraButton.setVisibility(View.INVISIBLE);
-			
 		}
 	}
 
 	private void takePictureWithAutofocus() {
-		startAutoFocus();
+		if (camera == null) {
+			Logger.E(TAG, "Attempt of auto focus while camera was not opened");
+			return;
+		}
+		
+		//this only from API v.5 and higher
+		//String focus_mode = camera.getParameters().getFocusMode();
+		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
+		camera.autoFocus(new Camera.AutoFocusCallback() {
+			@Override
+			public void onAutoFocus(boolean success, Camera camera) {
+				takePicture();
+			}
+		});
+		//}
 	}
 
 	
 	private void takePicture() {
-		if (!mIsActive) {
+		if (camera == null) {
+			Logger.E(TAG, "Attempt of take picture while camera was not opened");
 			return;
 		}
+		
 		ImageCaptureCallback iccb = null;
 		try {
 			String filename = "Image_" + timeStampFormat.format(new Date());
@@ -205,18 +226,6 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		}
 		
 		camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
-		mIsActive = false;
 	}
 
-	private void startAutoFocus() {
-		//this only from API v.5 and higher
-		//String focus_mode = camera.getParameters().getFocusMode();
-		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
-		camera.autoFocus(this);
-		//}
-	}
-
-	public void onAutoFocus (boolean success, Camera camera) {
-		takePicture();
-	}
 }
