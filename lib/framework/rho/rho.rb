@@ -404,11 +404,15 @@ module Rho
         
           if call_migrate
             db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
+            ::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
+                        
             source['migrate_version'] = hash_migrate[ source['name'] ]
             source['schema']['sql'] = strCreate
           else
             db.execute_batch_sql(strCreate)
             db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
+            
+            ::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
           end
         
         end
@@ -820,15 +824,15 @@ module Rho
         else
             @@sources[modelname]['sync_priority'] = 1000
         end
+
+        #@@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
+        @@sources[modelname]['sync_type'] ||= 'none'
         
         if @@sources[modelname]['partition']
             @@sources[modelname]['partition'] = @@sources[modelname]['partition'].to_s
         else    
-            @@sources[modelname]['partition'] ||= 'user'
+            @@sources[modelname]['partition'] ||= @@sources[modelname]['sync_type'] != 'none' ? 'user' : 'local'
         end    
-        
-        #@@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
-        @@sources[modelname]['sync_type'] ||= 'none'
         
         if @@sources[modelname]['source_id']
             @@sources[modelname]['source_id'] = @@sources[modelname]['source_id'].to_i()
