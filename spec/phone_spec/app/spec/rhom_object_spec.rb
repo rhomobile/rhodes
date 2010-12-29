@@ -47,13 +47,17 @@ def getCase_str
     'Case'
 end
 
+def getTestDB
+    ::Rho::RHO.get_db_partitions['local']
+end
+
 def clean_db_data
     #Rhom::Rhom.database_full_reset(true)
-    ::Rho::RHO.get_user_db().start_transaction
-    ::Rho::RHO.get_user_db().delete_all_from_table('client_info')
-    ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
-    ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
-    ::Rho::RHO.get_user_db().commit
+    getTestDB().start_transaction
+    getTestDB().delete_all_from_table('client_info')
+    getTestDB().delete_all_from_table('object_values')
+    getTestDB().delete_all_from_table('changed_values')
+    getTestDB().commit
 end
 
 def copy_file(src, dst_dir)
@@ -65,8 +69,8 @@ class Test_Helper
     def before_all(tables, folder)
         @tables = tables
         @folder = folder
-        @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
-        ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
+        @save_sync_types = getTestDB().select_from_table('sources','name, sync_type')
+        getTestDB().update_into_table('sources',{'sync_type'=>'none'})
         
         Rho::RhoConfig.sources[getAccount_str()]['sync_type'] = 'incremental' if $spec_settings[:sync_model]
         Rho::RhoConfig.sources[getCase_str()]['sync_type'] = 'incremental' if $spec_settings[:sync_model]
@@ -80,7 +84,7 @@ class Test_Helper
         if USE_COPY_FILES
             Rho::RhoUtils.load_offline_data(@tables, @folder, @source_map)
         
-            src_path = Rho::RhoFSConnector::get_db_fullpathname('user')
+            src_path = Rho::RhoFSConnector::get_db_fullpathname('local')
             if USE_HSQLDB          
                 src_path.sub!(".sqlite", ".data")
                 copy_file( src_path, Rho::RhoFSConnector::get_blob_folder() )
@@ -94,7 +98,7 @@ class Test_Helper
 
     def after_each
         if USE_COPY_FILES
-            dst_path = Rho::RhoFSConnector::get_db_fullpathname('user')
+            dst_path = Rho::RhoFSConnector::get_db_fullpathname('local')
             src_path = File.join( Rho::RhoFSConnector::get_blob_folder(), File.basename(dst_path))
             if USE_HSQLDB
                 src_path.sub!(".sqlite", ".data")
@@ -117,7 +121,7 @@ class Test_Helper
     
     def after_all
       @save_sync_types.each do |src|
-        ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>src['sync_type']}, {'name'=>src['name']})
+        getTestDB().update_into_table('sources',{'sync_type'=>src['sync_type']}, {'name'=>src['name']})
       end
       
       Rho::RhoConfig.sources[getAccount_str()]['sync_type'] = 'none'
@@ -262,7 +266,7 @@ describe "Rhom::RhomObject" do
   end
 
   it "should update attribs while save" do
-    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 0
   
     acct = getAccount.find(:first)
@@ -273,15 +277,15 @@ describe "Rhom::RhomObject" do
     acct2.name.should == 'soccer'
     
     if $spec_settings[:sync_model]    
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
     end    
     
   end
   
   it "should create records with no attribs in database" do
-    ::Rho::RHO.get_user_db().delete_all_from_table('object_values')
-    res = ::Rho::RHO.get_user_db().select_from_table('object_values',"*")
+    getTestDB().delete_all_from_table('object_values')
+    res = getTestDB().select_from_table('object_values',"*")
     res.length.should == 0
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = getAccount.create(vars)
@@ -350,10 +354,10 @@ describe "Rhom::RhomObject" do
     @account3.industry.should == update_attributes['industry']
 
     if $spec_settings[:sync_model]
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
         records.length.should == 2
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 0
     end    
   end
@@ -376,10 +380,10 @@ describe "Rhom::RhomObject" do
     @account3.industry.should == update_attributes['industry']
 
     if $spec_settings[:sync_model]
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
         records.length.should == 2
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 0
     end    
   end
@@ -404,7 +408,7 @@ describe "Rhom::RhomObject" do
     @new_acct.industry.should == "Technology"
 
     if $spec_settings[:sync_model]    
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
     end    
   end
@@ -422,7 +426,7 @@ describe "Rhom::RhomObject" do
     @new_acct.industry.should == "Electronics"
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 2
     end
   end
@@ -437,7 +441,7 @@ describe "Rhom::RhomObject" do
     @new_acct.industry.should == "Technology"
 
     if $spec_settings[:sync_model]    
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
     end    
     
@@ -494,13 +498,13 @@ describe "Rhom::RhomObject" do
     @new_acct.industry.should == "Technology"
 
     if $spec_settings[:sync_model]    
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
     end    
   end
   
   it "should update a record with full mode" do
-    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 0
   
     new_attributes = {"created_by_name"=>"evgeny"}
@@ -510,14 +514,14 @@ describe "Rhom::RhomObject" do
     @new_case.created_by_name.should == "evgeny"
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 17
     end    
     
   end
   
   it "should save a record with full mode" do
-    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 0
   
     #new_attributes = {"created_by_name"=>"evgeny"}
@@ -529,7 +533,7 @@ describe "Rhom::RhomObject" do
     @new_case.created_by_name.should == "evgeny"
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 17
     end    
     
@@ -634,7 +638,7 @@ describe "Rhom::RhomObject" do
     @new_acct.industry.should == "Technology"
 
     if $spec_settings[:sync_model]    
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
     end        
   end
@@ -970,10 +974,10 @@ describe "Rhom::RhomObject" do
     account = getAccount.create(vars)
     getAccount.find(:all).length.should > 0
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
         
     end    
@@ -983,10 +987,10 @@ describe "Rhom::RhomObject" do
     getAccount.find(:all).length.should == 0
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should == 0
         
     end    
@@ -999,10 +1003,10 @@ describe "Rhom::RhomObject" do
     @accts.length.should > 0
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
         
     end    
@@ -1013,10 +1017,10 @@ describe "Rhom::RhomObject" do
     @accts.length.should == 0
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
         
     end    
@@ -1028,7 +1032,7 @@ describe "Rhom::RhomObject" do
     @accts.length.should > 0
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
     end    
   
@@ -1042,7 +1046,7 @@ describe "Rhom::RhomObject" do
     @accts.length.should == 0
     
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
     end    
     
@@ -1061,10 +1065,10 @@ describe "Rhom::RhomObject" do
     cases.length.should > 0
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getCase().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getCase().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
     end    
   
@@ -1080,10 +1084,10 @@ describe "Rhom::RhomObject" do
     accts.length.should > 0
     
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getCase().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getCase().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
     end    
     
@@ -1098,10 +1102,10 @@ describe "Rhom::RhomObject" do
     accts.length.should == 1
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
         
     end    
@@ -1115,10 +1119,10 @@ describe "Rhom::RhomObject" do
     accts.length.should == 1
     
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should == 2
         
     end    
@@ -1136,10 +1140,10 @@ describe "Rhom::RhomObject" do
     accts.length.should == 2
 
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should > 0
         
     end    
@@ -1153,10 +1157,10 @@ describe "Rhom::RhomObject" do
     accts.length.should == 0
     
     if $spec_settings[:sync_model]        
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should > 0
         
-        records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
+        records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
         records.length.should == 0
         
     end    
