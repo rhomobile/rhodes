@@ -17,12 +17,13 @@ module Rho
                 @@mapSrcByIdx[src.source_id()] = src
             end
         end
-        
         mapDeleted = {}
-        db = ::Rho::RHO.get_user_db()
-        db.delete_all_from_table(filename)
-        db.start_transaction
-
+        mapPartDeleted = {}
+        #db = ::Rho::RHO.get_user_db()
+        #db.delete_all_from_table(filename)
+        #db.start_transaction
+        db = nil
+        
         first_row=true
         prefix = dir_prefix.nil? ? "" : dir_prefix
         cur_src = nil
@@ -45,6 +46,20 @@ module Rho
             end
           end
           
+          src = @@mapSrcByIdx[ row['source_id'].to_i ]
+          src_db = src ? ::Rho::RHO.get_src_db(src.name() ) :  ::Rho::RHO.get_user_db()
+          if src_db != db
+            db.commit if db
+            db = src_db
+            db.start_transaction 
+            
+            if !mapPartDeleted[db]
+                puts  "delete_all_from_table: #{row}"
+                db.delete_all_from_table(filename)
+                mapPartDeleted[db] = 1
+            end
+          end
+          
           if ( cur_objid != row['object'] )
             if cur_src && hashItem && hashItem.length() > 0            
             
@@ -62,6 +77,7 @@ module Rho
           end
           
           cur_src = @@mapSrcByIdx[ row['source_id'].to_i ]
+          puts "cur_src: #{cur_src.schema()}" if cur_src
           if ( cur_src && cur_src.schema() )  
             hashItem[ row['attrib'] ] = row['value'] if row['value']
           else
@@ -80,7 +96,7 @@ module Rho
             db.insert_into_table(cur_src.name(),hashItem) 
         end
 
-        db.commit
+        db.commit if db
         columns = []
       end
     end
