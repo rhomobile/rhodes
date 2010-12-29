@@ -702,13 +702,11 @@ public class RhodesService extends Service {
 	
 	public static boolean isAppInstalled(String appName) {
 		try {
-			try {
-				RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
-				return true;
-			}
-			catch (NameNotFoundException ne) {
-				return false;
-			}
+			RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
+			return true;
+		}
+		catch (NameNotFoundException ne) {
+			return false;
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "Can't check is app " + appName + " installed: " + e.getMessage());
