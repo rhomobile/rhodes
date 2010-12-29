@@ -55,6 +55,9 @@ public class TabbedMainView implements MainView {
 	
 	private static final String TAG = "TabbedMainView";
 	
+	private static final int DISABLED_BKG_COLOR = 0xFF000000 | (128 << 16) | (128 << 8) | (128);
+	private static final int DISABLED_IMG_COLOR = 0xFF000000 | (164 << 16) | (164 << 8) | (164);
+	
 	private TabHost host;
 	private Vector<TabData> tabData;
 	private int tabIndex;
@@ -257,6 +260,47 @@ public class TabbedMainView implements MainView {
 				break;
 				case DISABLED: {
 					
+					c_R = (DISABLED_BKG_COLOR & 0xFF0000) >> 16;
+					c_G = (DISABLED_BKG_COLOR & 0xFF00) >> 8;
+					c_B = (DISABLED_BKG_COLOR & 0xFF);
+					
+					int dark_k = 8;
+					int dark_k2 = 32;
+					int c_dark_R = modifyColorComponent( c_R, -dark_k);
+					int c_dark_G = modifyColorComponent( c_G, -dark_k);
+					int c_dark_B = modifyColorComponent( c_B, -dark_k);
+
+					int c_dark2_R = modifyColorComponent( c_R, -dark_k2);
+					int c_dark2_G = modifyColorComponent( c_G, -dark_k2);
+					int c_dark2_B = modifyColorComponent( c_B, -dark_k2);
+					
+					int y0 = rect.top;
+					int y1 = rect.top + ((height-gap)/10); 
+					int y2 = rect.top + ((height-gap)/2); 
+					int y3 = rect.bottom - ((height-gap)/10) - gap; 
+					int y4 = rect.bottom - gap; 
+				
+					drawVerticalGradient(	canvas, rect.left+left_gap, y0, rect.right-right_gap, y1,
+											c_dark2_R, c_dark2_G, c_dark2_B,
+											c_dark_R, c_dark_G, c_dark_B);
+					
+					drawVerticalGradient(	canvas, rect.left+left_gap, y1, rect.right-right_gap, y2,
+							c_dark_R, c_dark_G, c_dark_B,
+							c_R, c_G, c_B);
+
+					drawVerticalGradient(	canvas, rect.left+left_gap, y2, rect.right-right_gap, y3,
+							c_R, c_G, c_B,
+							c_dark_R, c_dark_G, c_dark_B);
+
+					drawVerticalGradient(	canvas, rect.left+left_gap, y3, rect.right-right_gap, y4,
+							c_dark_R, c_dark_G, c_dark_B,
+							c_dark2_R, c_dark2_G, c_dark2_B);
+					
+			        Paint paint = new Paint();
+			        paint.setAntiAlias(false);
+			        paint.setARGB(32, 0, 0, 0);
+		       		canvas.drawRect(rect.left+left_gap, rect.top, rect.left+left_gap+1, rect.bottom-gap, paint);
+		       		canvas.drawRect(rect.right-right_gap-1, rect.top, rect.right-right_gap, rect.bottom-gap, paint);
 				}
 				break;
 			}
@@ -310,19 +354,17 @@ public class TabbedMainView implements MainView {
 				d.setColorFilter(SelectedColor | 0xFF000000, android.graphics.PorterDuff.Mode.SRC);
 				d.setVisible(true, true);
 				d.setAlpha(255);
-				d.setBounds(0,
-						0, 
-						tabHost.getTabWidget().getChildAt(i).getRight() - tabHost.getTabWidget().getChildAt(i).getLeft() + 1,
-						tabHost.getTabWidget().getChildAt(i).getBottom() - tabHost.getTabWidget().getChildAt(i).getTop() + 1);
 				d.setRhoFirstTab(i == 0);
 				d.setRhoLastTab(i == (tabHost.getTabWidget().getChildCount()-1));
 				tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(d);
 				tabHost.getTabWidget().getChildAt(i).requestLayout();
 			}
 			else {
-				if (mBackgroundColorEnable) {
+				TabData data = tabData.elementAt(i);
+				if (data.disabled) {
+					// return to previous selected
 					tabHost.getTabWidget().getChildAt(i).setBackgroundColor(mBackgroundColor);
-
+					
 					Drawable cur_d = tabHost.getTabWidget().getChildAt(i).getBackground();
 					RhoCustomDrawable d = null;
 					if (d instanceof RhoCustomDrawable) {
@@ -333,18 +375,38 @@ public class TabbedMainView implements MainView {
 					}
 					
 					d.setRhoColor(mBackgroundColor);
-					d.setRhoStyle(RhoCustomDrawable.NORMAL);
-					d.setColorFilter(mBackgroundColor | 0xFF000000, android.graphics.PorterDuff.Mode.SRC);
+					d.setRhoStyle(RhoCustomDrawable.DISABLED);
+					d.setColorFilter(Color.GRAY, android.graphics.PorterDuff.Mode.SRC);
 					d.setVisible(true, true);
 					d.setAlpha(255);
 					d.setRhoFirstTab(i == 0);
 					d.setRhoLastTab(i == (tabHost.getTabWidget().getChildCount()-1));
-					d.setBounds(0,
-							0, 
-							tabHost.getTabWidget().getChildAt(i).getRight() - tabHost.getTabWidget().getChildAt(i).getLeft() + 1,
-							tabHost.getTabWidget().getChildAt(i).getBottom() - tabHost.getTabWidget().getChildAt(i).getTop() + 1);
 					tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(d);
 					tabHost.getTabWidget().getChildAt(i).requestLayout();
+				}
+				else {
+					if (mBackgroundColorEnable) {
+						tabHost.getTabWidget().getChildAt(i).setBackgroundColor(mBackgroundColor);
+	
+						Drawable cur_d = tabHost.getTabWidget().getChildAt(i).getBackground();
+						RhoCustomDrawable d = null;
+						if (d instanceof RhoCustomDrawable) {
+							d = (RhoCustomDrawable)cur_d;
+						}
+						else {
+							d = new RhoCustomDrawable();
+						}
+						
+						d.setRhoColor(mBackgroundColor);
+						d.setRhoStyle(RhoCustomDrawable.NORMAL);
+						d.setColorFilter(mBackgroundColor | 0xFF000000, android.graphics.PorterDuff.Mode.SRC);
+						d.setVisible(true, true);
+						d.setAlpha(255);
+						d.setRhoFirstTab(i == 0);
+						d.setRhoLastTab(i == (tabHost.getTabWidget().getChildCount()-1));
+						tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(d);
+						tabHost.getTabWidget().getChildAt(i).requestLayout();
+					}
 				}
 			}
 		} 
@@ -408,9 +470,18 @@ public class TabbedMainView implements MainView {
 				int sel_col = 0;
 				boolean sel_col_enable = false;
 				try {
-					tabIndex = Integer.parseInt(tabId);
-					TabData data = tabData.elementAt(tabIndex);
-					if (data.reload || !data.loaded) {
+					int new_tabIndex = Integer.parseInt(tabId);
+					TabData data = tabData.elementAt(new_tabIndex);
+					if (data != null) {
+						if (data.disabled) {
+							// return to previous selected
+							tabHost.setCurrentTab(tabIndex);
+							return;
+						}
+					}
+					boolean real_change = (tabIndex != new_tabIndex);
+					tabIndex = new_tabIndex;
+					if ((data.reload && real_change) || !data.loaded ) {
 						RhodesService.loadUrl(data.url);
 						data.loaded = true;
 					}
@@ -431,7 +502,7 @@ public class TabbedMainView implements MainView {
 
 		int selected_color = 0;
 		boolean selected_color_enable = false;
-		
+
 		for (int i = 0; i < size; ++i) {
 			Object param = tabs.elementAt(i);
 			if (!(param instanceof Map<?,?>))
@@ -476,9 +547,28 @@ public class TabbedMainView implements MainView {
 			
 			// Set label and icon
 			BitmapDrawable drawable = null;
+
 			if (icon != null) {
 				String iconPath = RhoFileApi.normalizePath(icon);
 				Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
+				if (disabled && (bitmap != null)) {
+					// replace Bitmap to gray
+					bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true); // prepare mutable bitmap
+					int x;
+					int y;
+					int bw = bitmap.getWidth();
+					int bh = bitmap.getHeight();
+					int nc = DISABLED_IMG_COLOR & 0xFFFFFF;
+					int c;
+					for (y = 0; y < bh; y++) {
+						for (x = 0; x < bw; x++) {
+							c = bitmap.getPixel(x, y);
+							c = nc | (c & 0xFF000000);
+							bitmap.setPixel(x, y, c);
+						}
+					}
+				}
+				
 				if (bitmap != null)
 					bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);//Bitmap.DENSITY_NONE);
 					drawable = new BitmapDrawable(bitmap);
@@ -509,7 +599,24 @@ public class TabbedMainView implements MainView {
 		
 		int sel_col = 0;
 		boolean sel_col_enable = false;
-		TabData data = tabData.elementAt(tabIndex); 
+		
+		tabIndex = 0;
+		TabData data = null; 
+		boolean founded_not_disabled = false;
+		
+		while ((!founded_not_disabled) && (tabIndex < tabData.size())) {
+			data = tabData.elementAt(tabIndex); 
+			if ((data != null) && (!data.disabled)) {
+				founded_not_disabled = true;
+			}
+			else {
+				tabIndex++;
+			}
+		}
+		if (!founded_not_disabled) {
+			Logger.E(TAG, "ERROR : All tabs is disabled !!! ");
+		}
+		
 		if (data != null) {
 			sel_col = data.selected_color;
 			sel_col_enable = data.selected_color_enabled;
@@ -526,8 +633,6 @@ public class TabbedMainView implements MainView {
 		lpf.setMargins(0, hh, 0, 0);
 		host.updateViewLayout(frame, lpf);
 		
-	
-	
 	}
 
 	public View getView() {

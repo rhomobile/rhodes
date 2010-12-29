@@ -545,6 +545,29 @@ extern "C" VALUE nativebar_started() {
     return rho_ruby_create_boolean(0);
 }
 
+
+extern "C" void create_native_toolbar(int bar_type, rho_param *p) {
+}
+
+RHO_GLOBAL void remove_native_toolbar() {
+}
+
+extern "C"  void create_native_tabbar(int bar_type, rho_param *p) {
+}
+
+extern "C"  void remove_native_tabbar() {
+}
+
+extern "C"  void native_tabbar_switch_tab(int index) {
+}
+
+extern "C"  void native_tabbar_set_tab_badge(int index,char *val) {
+}
+
+
+
+
+
 extern "C" void mapview_create(rho_param *p) {
     //TODO: mapview_create
 }
