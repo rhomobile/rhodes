@@ -15,13 +15,15 @@ public:
 		FORMAT_TIME
 	};
 
-	CDateTimeMessage (const char* callback, const char* title, long initial_time, int format, const char* data)
+	CDateTimeMessage (const char* callback, const char* title, long initial_time, int format, const char* data, long min_time, long max_time)
 	{
 		m_callback    = strdup (callback);
 		m_title       = strdup (title);
 		m_initialTime = initial_time;
 		m_format      = format;
 		m_data        = strdup (data);
+		m_min_time = min_time;
+		m_max_time = max_time;
 	}
 
 	~CDateTimeMessage ()
@@ -36,6 +38,8 @@ public:
 	char *m_data;
 	long  m_initialTime;
 	int   m_format;
+	long  m_min_time;
+	long  m_max_time;
 };
 
 class CDateTimePickerDialog : public 
@@ -68,6 +72,8 @@ private:
 	time_t      m_returnTime;
 	time_t		m_initialTime;
 	const char *m_title;
+	time_t      m_min_time;
+	time_t      m_max_time;
 };
 
 
