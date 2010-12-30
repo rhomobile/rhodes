@@ -31,6 +31,8 @@ CDateTimePickerDialog::CDateTimePickerDialog (const CDateTimeMessage *msg)
 	m_format       = msg->m_format;
 	m_title        = msg->m_title;
 	m_initialTime  = msg->m_initialTime;
+	m_min_time	   = msg->m_min_time;
+	m_max_time     = msg->m_max_time;
 }
 
 CDateTimePickerDialog::~CDateTimePickerDialog ()
@@ -52,6 +54,22 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     RHO_ASSERT(SHCreateMenuBar(&mbi));
+
+	SYSTEMTIME times[2]; // min and max times
+	unsigned int flags = 0;
+
+
+	if (m_min_time != 0) {
+		UnixTimeToSystemTime(m_min_time, &(times[0]));
+		flags = flags | GDTR_MIN;
+	}
+	if (m_max_time != 0) {
+		UnixTimeToSystemTime(m_max_time, &(times[1]));
+		flags = flags | GDTR_MAX;
+	}
+	DateTime_SetRange( GetDlgItem(IDC_DATE_CTRL), flags, times);
+
+
 	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
 #else 
@@ -193,7 +211,7 @@ void  choose_datetime_with_range(char* callback, char* title,
 
 	HWND main_wnd = getMainWnd();
 	::PostMessage(main_wnd, WM_DATETIME_PICKER, 0, 
-					(LPARAM)new CDateTimeMessage(callback, title, initial_time, format, data));
+					(LPARAM)new CDateTimeMessage(callback, title, initial_time, format, data, min_time, max_time));
 }
 
 
