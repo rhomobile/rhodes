@@ -29,16 +29,15 @@ public class RhoLogConf {
 	
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
-    public void saveToFile(){
-        RHOCONF().setInt("MinSeverity", getMinSeverity() );
-        RHOCONF().setBool("LogToOutput", isLogToOutput() );
-        RHOCONF().setBool("LogToFile", isLogToFile() );
-        RHOCONF().setString("LogFilePath", getLogFilePath() );
-        RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize() );
-        RHOCONF().setString("LogCategories", getEnabledCategories() );
-        RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );
-
-        RHOCONF().saveToFile();
+    public void saveToFile()
+    {
+        RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
+        RHOCONF().setBool("LogToOutput", isLogToOutput(), true );
+        RHOCONF().setBool("LogToFile", isLogToFile(), true  );
+        RHOCONF().setString("LogFilePath", getLogFilePath(), true  );
+        RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize(), true  );
+        RHOCONF().setString("LogCategories", getEnabledCategories(), true  );
+        RHOCONF().setString("ExcludeLogCategories", getDisabledCategories(), true  );
     }
     
     void loadFromConf(RhoConf oRhoConf){

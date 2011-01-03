@@ -4,7 +4,6 @@
 #ifdef __cplusplus
 
 #include "RhoStd.h"
-#include <map>
 
 namespace rho{
 namespace common{
@@ -14,7 +13,9 @@ namespace common{
 
 class RhoSettings{
     String      m_strConfFilePath;
-    std::map<String,String> m_mapValues;
+    Hashtable<String,String> m_mapValues;
+    Hashtable<String,String> m_mapChangedValues;
+    HashtablePtr<String,Vector<String>* > m_mapConflictedValues;
 
 public:
     String getString(const char* szName);
@@ -26,25 +27,25 @@ public:
     void   setInt(const char* szName, int nVal, boolean bSaveToFile);
     void   setBool(const char* szName, bool bVal, boolean bSaveToFile);
 
-    void   setString(const char* szName, const String& str);
-    void   setInt(const char* szName, int nVal);
-    void   setBool(const char* szName, bool bVal);
-
     bool   isExist(const char* szName);
 
     const String& getConfFilePath()const{ return m_strConfFilePath;}
     void setConfFilePath(const char* szConfFilePath){ m_strConfFilePath = szConfFilePath; }
 
-    void saveToFile();
     void loadFromFile();
 
-    void loadFromString(const char* szSettings);
-
+    HashtablePtr<String,Vector<String>* >& getConflicts(){ return m_mapConflictedValues;}
+    void conflictsResolved();
 protected:
-    void saveToString(String& strData);
+    void saveChangesToString(String& strData);
+    void loadFromString(const char* szSettings, Hashtable<String,String>& mapValues);
 
-    void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen );
-    void loadProperty( const char* start, int len );
+    void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen, Hashtable<String,String>& mapValues );
+    void loadProperty( const char* start, int len, Hashtable<String,String>& mapValues );
+
+    void saveToFile(const char* szName);
+    void readChanges();
+    void checkConflicts();
 };
 
 extern RhoSettings g_RhoSettings;
@@ -69,7 +70,7 @@ void  rho_conf_setInt(const char* szName, int value);
 char* rho_conf_getString(const char* szName);
 void  rho_conf_freeString(char* str);
 void  rho_conf_setString(const char* szName, const char* value);
-void  rho_conf_save();
+//void  rho_conf_save();
 int   rho_conf_is_property_exists(const char* name);
 
 #ifdef __cplusplus

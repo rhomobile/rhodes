@@ -58,6 +58,7 @@ static VALUE  framework;
 static ID framework_mid;
 static ID framework_mid2;
 static ID initApp_mid;
+static ID onConfigConflicts_mid;
 static ID activateApp_mid;
 static ID deactivateApp_mid;
 static ID loadServerSources_mid;
@@ -203,6 +204,7 @@ void RhoRubyStart()
     CONST_ID(framework_mid, "serve");
     CONST_ID(framework_mid2, "serve_index");
     CONST_ID(initApp_mid, "init_app");
+    CONST_ID(onConfigConflicts_mid, "on_config_conflicts");
     CONST_ID(activateApp_mid, "activate_app");
     CONST_ID(deactivateApp_mid, "deactivate_app");
     CONST_ID(loadServerSources_mid,"load_server_sources");
@@ -218,6 +220,16 @@ void RhoRubyStart()
 void RhoRubyInitApp()
 {
     rb_funcall(framework, initApp_mid, 0);
+}
+
+VALUE rho_conf_get_conflicts();
+void rho_ruby_call_config_conflicts()
+{
+    VALUE hashConflicts = rho_conf_get_conflicts();
+    if ( RHASH_EMPTY_P(hashConflicts) )
+        return;
+
+    rb_funcall(framework, onConfigConflicts_mid, 1, hashConflicts);
 }
 
 void rho_ruby_activateApp()

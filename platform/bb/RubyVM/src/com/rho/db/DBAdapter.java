@@ -248,7 +248,7 @@ public class DBAdapter extends RubyBasic
     
     private String getSqlScript()
     {
-    	return RhoConf.getInstance().loadFileFromJar("apps/db/syncdb.schema");
+    	return RhoFile.readStringFromJarFile("apps/db/syncdb.schema", this);
     }
     
     public void startTransaction()throws DBException
@@ -514,6 +514,9 @@ public class DBAdapter extends RubyBasic
 			DBAdapter.makeBlobFolderName(); //Create folder back
 			
             writeDBVersion(new DBVersion(strRhoDBVer, strAppDBVer) );
+            
+            if ( RhoConf.getInstance().isExist("bulksync_state") && RhoConf.getInstance().getInt("bulksync_state") != 0)
+            	RhoConf.getInstance().setInt("bulksync_state", 0, true);            
 		}
 		
 	}
