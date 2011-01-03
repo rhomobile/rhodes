@@ -251,13 +251,16 @@ public class RhodesService extends Service {
 		if (Utils.isAppHashChanged()) {
 			try {
 				Log.i(TAG, "Application hash was changed, so remove files");
+				Utils.deleteChildrenIgnoreFirstLevel(new File(getRootPath(), "apps"), "rhoconfig.txt");
+				Utils.deleteRecursively(new File(getRootPath(), "lib"));
+/*				
 				String[] folders = {"apps", "lib"};
 				for (String folder : folders) {
 					File f = new File(getRootPath(), folder);
 					if (!f.exists())
 						continue;
 					Utils.deleteRecursively(f);
-				}
+				}*/
 				initRootPath();
 				RhoFileApi.init();
 				RhoFileApi.copy("hash");

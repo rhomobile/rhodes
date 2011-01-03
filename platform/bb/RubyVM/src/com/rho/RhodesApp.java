@@ -231,8 +231,7 @@ public class RhodesApp
 	            if ( nFragment >= 0 )
 	                strUrl = strUrl.substring(0, nFragment);
 	
-	            RHOCONF().setString("LastVisitedPage",strUrl);		
-	            RHOCONF().saveToFile();
+	            RHOCONF().setString("LastVisitedPage",strUrl, true);		
 	        }
     	}catch(Exception exc)
     	{

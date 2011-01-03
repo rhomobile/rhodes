@@ -75,13 +75,39 @@ public class Utils {
 	}
 	
 	public static void deleteRecursively(File target) throws IOException {
+        if (!target.exists())	
+            return;
+        
 		if (target.isDirectory()) {
 			String[] children = target.list();
 			for(int i = 0; i != children.length; ++i)
 				deleteRecursively(new File(target, children[i]));
 		}
+		
+	    //platformLog("delete", target.getPath());
+		
 		if (!target.delete())
 			throw new IOException("Can not delete " + target.getAbsolutePath());
+	}
+
+	public static void deleteChildrenIgnoreFirstLevel(File target, String strIgnore) throws IOException {
+        if (!target.exists())	
+            return;
+	
+		if (target.isDirectory()) {
+			String[] children = target.list();
+			for(int i = 0; i != children.length; ++i)
+			{
+			    File f = new File(target, children[i]);
+			    if ( f.isDirectory())
+				    deleteRecursively(f);
+				else if ( !f.getName().startsWith(strIgnore))    
+				{
+		            if (!target.delete())
+			            throw new IOException("Can not delete " + target.getAbsolutePath());
+				}
+			}
+		}
 	}
 	
 	public static void copyRecursively(FileSource fs, String source, File target, boolean remove) throws IOException

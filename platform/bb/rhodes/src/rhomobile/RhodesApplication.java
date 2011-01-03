@@ -183,10 +183,10 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         thread.start();                       
     }
     
-    void saveCurrentLocation(String url) {
+    void saveCurrentLocation(String url) 
+    {
     	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
-			RhoConf.getInstance().setString("LastVisitedPage",url);
-			RhoConf.getInstance().saveToFile();
+			RhoConf.getInstance().setString("LastVisitedPage",url,true);
 			LOG.TRACE("Saved LastVisitedPage: " + url);
 		}   	
     }
@@ -591,6 +591,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	        }
 	        
 	        RhoRuby.RhoRubyInitApp();
+	        RhoRuby.call_config_conflicts();
+	        RhoConf.getInstance().conflictsResolved();	        
     	}finally
     	{
 	        m_bRubyInit = true;

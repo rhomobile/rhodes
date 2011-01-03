@@ -89,6 +89,15 @@ module Rho
       @@native_bar_initialized = true
     end
 
+    def on_config_conflicts(conflicts)
+      begin
+          get_app(APPNAME).on_config_conflicts(conflicts)
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts 'Application on_config_conflicts failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end    
+    end
+
     def activate_app
       begin
           get_app(APPNAME).on_activate_app

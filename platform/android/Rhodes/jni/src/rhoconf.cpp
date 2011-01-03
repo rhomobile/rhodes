@@ -25,19 +25,19 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoConf_getBool
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoConf_setString
   (JNIEnv *, jclass, jstring name, jstring value)
 {
-    RHOCONF().setString(rho_cast<std::string>(name).c_str(), rho_cast<std::string>(value));
+    RHOCONF().setString(rho_cast<std::string>(name).c_str(), rho_cast<std::string>(value), false);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoConf_setInt
   (JNIEnv *, jclass, jstring name, jint value)
 {
-    RHOCONF().setInt(rho_cast<std::string>(name).c_str(), value);
+    RHOCONF().setInt(rho_cast<std::string>(name).c_str(), value, false);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoConf_setBoolean
   (JNIEnv *, jclass, jstring name, jboolean value)
 {
-    RHOCONF().setBool(rho_cast<std::string>(name).c_str(), value);
+    RHOCONF().setBool(rho_cast<std::string>(name).c_str(), value, false);
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoConf_isExist

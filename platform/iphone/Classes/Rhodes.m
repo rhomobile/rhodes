@@ -613,11 +613,6 @@ static Rhodes *instance = NULL;
 #endif
 
 - (void) saveLastUsedTime {
-    /*
-    int now = [[NSDate date] timeIntervalSince1970];
-    rho_conf_setInt("last_time_used",now);
-    rho_conf_save();
-    */
 }
 
 - (void)playStart:(NSString *)fileName mediaType:(NSString *)type {

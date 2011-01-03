@@ -3,23 +3,31 @@ package com.rho;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import com.rho.net.NetResponse;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
 import com.rho.net.NetRequest.MultipartItem;
 import com.rho.file.SimpleFile;
+import com.rho.file.RhoFile;
 
 public class RhoConf {
     String      m_strConfFilePath = "";
     String      m_strRhoRootPath = "";
     private Hashtable m_mapValues = new Hashtable();
+    Hashtable/*<String,String>*/ m_mapChangedValues = new Hashtable();
+    Hashtable/*Ptr<String,Vector<String>* >*/ m_mapConflictedValues = new Hashtable();
+    
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoConf");
     
     private static RhoConf m_Instance;
-	private static String CONF_FILENAME = "apps/rhoconfig.txt";
-    
+	private static final String CONF_FILENAME = "apps/rhoconfig.txt";
+	private static final String CONF_CHANGES = ".changes";
+	private static final String CONF_TIMESTAMP = ".timestamp";
+	private static final String CONF_TIMESTAMP_PROP = "rho_conf_timestamp";
+	
     public static RhoConf getInstance(){return m_Instance;}
     
 	void setConfFilePath(String path){ m_strConfFilePath = path; }
@@ -28,15 +36,20 @@ public class RhoConf {
 	void setRhoRootPath(String szRootPath){ m_strRhoRootPath = szRootPath;}
 	public String getRhoRootPath(){ return m_strRhoRootPath;}
 	
-    public void saveToFile(){
-        String strData = saveToString();
+	Hashtable/*Ptr<String,Vector<String>* >&*/ getConflicts(){ return m_mapConflictedValues;}
+	
+    private void saveToFile(String szName)
+    {
+    	m_mapChangedValues.put(szName, getString(szName) );
+    	
+        String strData = saveChangesToString();
     	SimpleFile oFile = null;
 
     	try{
 	        oFile = RhoClassFactory.createFile();
-	        oFile.delete(getConfFilePath());
+	        oFile.delete(getConfFilePath()+CONF_CHANGES);
 	        
-        	oFile.open( getConfFilePath(), false, false);
+        	oFile.open( getConfFilePath()+CONF_CHANGES, false, false);
 	        oFile.write( 0, strData.getBytes() );
 	        oFile.close();
     	}catch(Exception exc){
@@ -45,46 +58,68 @@ public class RhoConf {
     	}
         
     }
-    
-    void loadFromFile(){
-    	SimpleFile oFile = null;
-    	try{
-	        oFile = RhoClassFactory.createFile();
-	        oFile.open( getConfFilePath(), true, false);
-	        
-	        if ( oFile.isOpened() ){
-	            String strSettings = oFile.readString();
-	            oFile.close();
-	            
-	            Hashtable saved_mapValues = m_mapValues;
-	            m_mapValues = new Hashtable();	            
-	            loadFromString( strSettings );
-	            
-	            Object oldVer = m_mapValues.get("app_version");
-	            Object newVer = saved_mapValues.get("app_version");
-	            if ( oldVer != null && newVer != null && oldVer.equals(newVer))
-	            {
-	            	Enumeration vals = m_mapValues.elements();
-	            	Enumeration keys = m_mapValues.keys();
-	        		while (vals.hasMoreElements()) 
-	        		{
-	        			saved_mapValues.put(keys.nextElement(), vals.nextElement());
-	        		}
-	            }else
-	            {
-	            	oFile.delete(getConfFilePath());
-	            }
-	            
-	            m_mapValues = saved_mapValues;
-	        }
-	        
-    	}catch(Exception exc){
-    		if ( oFile != null )
-    			try{ oFile.close(); }catch(IOException exc2){}
-    	}
+
+    void checkConflicts()
+    {
+        m_mapConflictedValues.clear();
+        
+    	Enumeration enValues = m_mapChangedValues.elements();
+    	Enumeration enKeys = m_mapChangedValues.keys();
+		while (enValues.hasMoreElements()) 
+		{
+			String key = (String)enKeys.nextElement();
+			String valueChanged = (String)enValues.nextElement();
+			
+			if ( !m_mapValues.containsKey(key) )
+				continue;
+			
+            String strValue = (String)m_mapValues.get(key);
+            if ( strValue.compareTo(valueChanged) != 0 )
+            {
+                Vector/*<String>* */ values = new Vector/*<String>*/();
+                values.addElement(valueChanged);
+                values.addElement(strValue);
+                m_mapConflictedValues.put(key, values);
+            }
+        }
+    }
+
+    public void conflictsResolved()
+    {
+        if (m_mapConflictedValues.size() == 0 )
+            return;
+
+        String strTimestamp = RhoFile.readStringFromJarFile(CONF_FILENAME+CONF_TIMESTAMP, this);
+        
+        setString(CONF_TIMESTAMP_PROP, strTimestamp, true);
+        m_mapConflictedValues.clear();
     }
     
-    void loadFromString(String szSettings){
+    void readChanges()
+    {
+        String strTimestamp = RhoFile.readStringFromJarFile(CONF_FILENAME+CONF_TIMESTAMP, this);
+
+        if ( RhoFile.isFileExist( getConfFilePath()+CONF_CHANGES) )
+        {
+            String strSettings = RhoFile.readStringFromFile(getConfFilePath()+CONF_CHANGES);
+            loadFromString( strSettings, m_mapChangedValues );
+
+            String strOldTimestamp = "";
+            if ( m_mapChangedValues.containsKey(CONF_TIMESTAMP_PROP) )
+                strOldTimestamp = (String)m_mapChangedValues.get(CONF_TIMESTAMP_PROP);
+            
+            if ( strTimestamp.compareTo(strOldTimestamp) != 0 )
+                checkConflicts();
+            
+            loadFromString( strSettings, m_mapValues );            
+        }else
+        {
+            m_mapChangedValues.put(CONF_TIMESTAMP_PROP,strTimestamp);
+        }
+    }
+    
+    void loadFromString(String szSettings, Hashtable/*<String,String>&*/ mapValues)
+    {
 		Tokenizer stringtokenizer = new Tokenizer(szSettings, "\n");
 		while (stringtokenizer.hasMoreTokens()) {
 			String tok = stringtokenizer.nextToken();
@@ -113,18 +148,20 @@ public class RhoConf {
 				value = value.substring(1,value.length()-1);
 			}
 				
-			setPropertyByName(name,value);
+			setPropertyByName(name,value,mapValues);
 		}
 	}
 
-    public void setPropertyByName(String name, String value ){
-    	m_mapValues.put(name,value);
+    public void setPropertyByName(String name, String value, Hashtable/*<String,String>&*/ mapValues )
+    {
+    	mapValues.put(name,value);
     }
 	
-    String saveToString(){
+    String saveChangesToString()
+    {
     	String strData = "";
-    	Enumeration enValues = m_mapValues.elements();
-    	Enumeration enKeys = m_mapValues.keys();
+    	Enumeration enValues = m_mapChangedValues.elements();
+    	Enumeration enKeys = m_mapChangedValues.keys();
 		while (enValues.hasMoreElements()) {
 			String key = (String)enKeys.nextElement();
 			String value = (String)enValues.nextElement();
@@ -167,40 +204,26 @@ public class RhoConf {
         return getInt(szName) == 0 ? false : true;
     }
 
-    public void   setString(String szName, String str, boolean bSaveToFile){
+    public void setString(String szName, String str, boolean bSaveToFile){
     	m_mapValues.put(szName,str);
     	
     	if ( bSaveToFile )
-    		saveToFile();    	
+    		saveToFile(szName);    	
     }
 
-    public void   setInt(String szName, int nVal, boolean bSaveToFile){
+    public void setInt(String szName, int nVal, boolean bSaveToFile){
     	m_mapValues.put(szName,Integer.toString(nVal));
     	
     	if ( bSaveToFile )
-    		saveToFile();    	
+    		saveToFile(szName);    	
     }
 
-    public void   setBool(String szName, boolean bVal, boolean bSaveToFile){
-        setInt(szName, bVal ? 1 : 0 );
-        
-    	if ( bSaveToFile )
-    		saveToFile();    	
+    public void setBool(String szName, boolean bVal, boolean bSaveToFile)
+    {
+        setInt(szName, bVal ? 1 : 0, bSaveToFile );
     }
     
-    public void   setString(String szName, String str){
-    	m_mapValues.put(szName,str);
-    }
-
-    public void   setInt(String szName, int nVal){
-    	m_mapValues.put(szName,Integer.toString(nVal));
-    }
-
-    public void   setBool(String szName, boolean bVal){
-        setInt(szName, bVal ? 1 : 0 );
-    }
-
-    public boolean  isExist(String szName){
+    public boolean isExist(String szName){
     	return m_mapValues.containsKey(szName);
     }
     
@@ -217,45 +240,22 @@ public class RhoConf {
     	m_Instance.setRhoRootPath(szRootPath);
     }
 
-    public void loadConf(){
+    public void loadConf()
+    {
+        m_mapValues.clear();
+        m_mapChangedValues.clear();
+
     	loadFromJar();
-    	loadFromFile();
+        
+    	readChanges();
+
     	loadFromJad();
     }
 
-    public String loadFileFromJar(String path)
-    {
-		java.io.InputStream fstream = null;
-		String strFile = "";		
-		try {
-			fstream = RhoClassFactory.createFile().getResourceAsStream(getClass(),
-				 "/" + path);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if ( fstream == null )
-			return strFile;
-		 
-		try{
-			byte[] data = new byte[fstream.available()];
-			int len = fstream.read(data);
-			if ( len == 0 )
-				return strFile;
-			
-			strFile = new String(data,0,len);
-		}catch(java.io.IOException exc){
-		}
-		
-		try{fstream.close();}catch(java.io.IOException exc){}
-		
-		return strFile;
-    }
-    
     private void loadFromJar()
     {
-    	String strSettings = loadFileFromJar(CONF_FILENAME);
-		loadFromString(strSettings);
+    	String strSettings = RhoFile.readStringFromJarFile(CONF_FILENAME, this);
+		loadFromString(strSettings, m_mapValues);
    }
     
    void loadFromJad()
@@ -291,6 +291,27 @@ public class RhoConf {
 	   }
 	   
 	   return nTotal;
+   }
+   
+   public RubyHash getRubyConflicts()
+   {
+	   RubyHash hashConflicts = ObjectFactory.createHash();
+	   
+		Hashtable/*Ptr<String,Vector<String>* >&*/ mapConflicts = RhoConf.getInstance().getConflicts();
+    	Enumeration enValues = mapConflicts.elements();
+    	Enumeration enKeys = mapConflicts.keys();
+		while (enValues.hasMoreElements()) {
+			String key = (String)enKeys.nextElement();
+			Vector/*<String>&*/ values = (Vector)enValues.nextElement();
+			
+		    RubyArray arValues = new RubyArray(values.size());
+		    for( int i = 0; i < (int)values.size(); i++)
+		    	arValues.add(ObjectFactory.createString((String)values.elementAt(i)));
+		
+		    hashConflicts.add(ObjectFactory.createString(key), arValues);
+		}
+	   
+	   return hashConflicts;
    }
    
    static RubyString getLogText_ruby(long limit)throws Exception
@@ -402,9 +423,8 @@ public class RhoConf {
 	   klass.getSingletonClass().defineMethod("set_property_by_name", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
 				try {
-					RhoConf.getInstance().setPropertyByName(arg0.toString(), arg1.toString());
-					RhoConf.getInstance().saveToFile();
-					//RhoConf.getInstance().loadFromFile();
+					RhoConf.getInstance().setString(arg0.toString(), arg1.toString(), true);
+					
 					RhoLogger.getLogConf().loadFromConf(RhoConf.getInstance());
 				} catch (Exception e) {
 					LOG.ERROR("set_property_by_name failed", e);

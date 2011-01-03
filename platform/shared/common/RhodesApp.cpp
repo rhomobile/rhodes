@@ -92,7 +92,8 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
-
+    rho_ruby_call_config_conflicts();
+    RHOCONF().conflictsResolved();
 
     //rho_clientregister_create("iphone_client");
 #if defined( OS_WINCE ) || defined( OS_WINDOWS )
@@ -595,8 +596,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
         if ( nFragment != String::npos )
             strUrl = strUrl.substr(0, nFragment);
 
-        RHOCONF().setString("LastVisitedPage",strUrl);		
-        RHOCONF().saveToFile();
+        RHOCONF().setString("LastVisitedPage",strUrl, true);		
     }
 }
 
