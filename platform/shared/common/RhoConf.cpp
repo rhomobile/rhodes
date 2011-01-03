@@ -2,39 +2,102 @@
 #include "RhoFile.h"
 #include "RhoFilePath.h"
 #include "StringConverter.h"
-#ifndef RHO_NO_RUBY
-#include "ruby/ext/rho/rhoruby.h"
-#endif //RHO_NO_RUBY
 static const char* CONF_FILENAME = "apps/rhoconfig.txt";
+static const char* CONF_CHANGES = ".changes";
+static const char* CONF_TIMESTAMP = ".timestamp";
+static const char* CONF_TIMESTAMP_PROP = "rho_conf_timestamp";
 
 namespace rho{
 namespace common{
 
 RhoSettings g_RhoSettings;
 
-void RhoSettings::saveToFile(){
+void RhoSettings::saveToFile(const char* szName)
+{
+    m_mapChangedValues.put(szName, getString(szName) );
+
     String strData;
-    saveToString(strData);
+    saveChangesToString(strData);
 
-    common::CRhoFile oFile;
-    oFile.open(  getConfFilePath().c_str(), common::CRhoFile::OpenForWrite);
-
+    CRhoFile oFile;
+    oFile.open( (getConfFilePath()+CONF_CHANGES).c_str(), common::CRhoFile::OpenForWrite);
     oFile.write( strData.c_str(), strData.size() );
 }
 
-void RhoSettings::loadFromFile(){
-    common::CRhoFile oFile;
-    if ( oFile.open( getConfFilePath().c_str(), common::CRhoFile::OpenReadOnly) ){
-        String strSettings;
-        oFile.readString(strSettings);
-        loadFromString( strSettings.c_str() );
+void RhoSettings::checkConflicts()
+{
+    m_mapConflictedValues.clear();
+    for ( Hashtable<String,String>::iterator it=m_mapChangedValues.begin() ; it != m_mapChangedValues.end(); it++ ) 
+    {
+        String key = it->first;
+        String valueChanged = it->second;
+	    Hashtable<String,String>::iterator itValues = m_mapValues.find(key);
+        if ( itValues == m_mapValues.end() )
+            continue;
+
+        String strValue = itValues->second;
+        if ( strValue.compare(valueChanged) != 0 )
+        {
+            Vector<String>* values = new Vector<String>();
+            (*values).addElement(valueChanged);
+            (*values).addElement(strValue);
+            m_mapConflictedValues.put(key, values);
+        }
     }
 }
 
-void RhoSettings::loadFromString(const char* szSettings)
+void RhoSettings::conflictsResolved()
+{
+    if (m_mapConflictedValues.size() == 0 )
+        return;
+
+    String strTimestamp;
+    CRhoFile::readStringFromFile((getConfFilePath()+CONF_TIMESTAMP).c_str(), strTimestamp);
+
+    setString(CONF_TIMESTAMP_PROP, strTimestamp, true);
+    m_mapConflictedValues.clear();
+}
+
+void RhoSettings::readChanges()
+{
+    String strTimestamp;
+    CRhoFile::readStringFromFile((getConfFilePath()+CONF_TIMESTAMP).c_str(), strTimestamp);
+
+    if ( CRhoFile::isFileExist((getConfFilePath()+CONF_CHANGES).c_str()) )
+    {
+        String strSettings;
+        CRhoFile::readStringFromFile((getConfFilePath()+CONF_CHANGES).c_str(), strSettings);
+        loadFromString( strSettings.c_str(), m_mapChangedValues );
+
+        String strOldTimestamp = "";
+	    Hashtable<String,String>::iterator it = m_mapChangedValues.find(CONF_TIMESTAMP_PROP);
+        if ( it != m_mapChangedValues.end() )
+            strOldTimestamp = it->second;
+        
+        if ( strTimestamp.compare(strOldTimestamp) != 0 )
+            checkConflicts();
+
+        loadFromString( strSettings.c_str(), m_mapValues );
+    }else
+    {
+        m_mapChangedValues.put(CONF_TIMESTAMP_PROP,strTimestamp);
+    }
+}
+
+void RhoSettings::loadFromFile()
 {
     m_mapValues.clear();
+    m_mapChangedValues.clear();
 
+    String strSettings;
+    CRhoFile::readStringFromFile(getConfFilePath().c_str(), strSettings);
+    loadFromString( strSettings.c_str(), m_mapValues );
+
+    readChanges();
+}
+
+void RhoSettings::loadFromString(const char* szSettings, Hashtable<String,String>& mapValues)
+{
     if ( !szSettings && !*szSettings )
         return;
 
@@ -53,13 +116,14 @@ void RhoSettings::loadFromString(const char* szSettings)
             len = (int)strlen(start);
         }
 
-        loadProperty( start, len );
+        loadProperty( start, len, mapValues );
 
         start = end ? end + 1 : end;
     }
 }
 
-void RhoSettings::loadProperty( const char* start, int len ){
+void RhoSettings::loadProperty( const char* start, int len, Hashtable<String,String>& mapValues )
+{
     int nNameLen = 0;
     while(*start==' '){ start++; len--;}
 
@@ -86,24 +150,26 @@ void RhoSettings::loadProperty( const char* start, int len ){
     while((*szValue==' ' || *szValue=='\'' || *szValue=='"') && nValueLen >= 0 ){ szValue++; nValueLen--;}
     while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
 
-    setPropertyByName(start, nNameLen, szValue, nValueLen );
+    setPropertyByName(start, nNameLen, szValue, nValueLen, mapValues );
 }
 
-void RhoSettings::setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen ){
+void RhoSettings::setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen, Hashtable<String,String>& mapValues )
+{
     String name(szName,nNameLen);
     String value(szValue,nValueLen);
 	//printf("name: %s, value: %s\n", name.c_str(), value.c_str());
-    m_mapValues[name] = value;
+    mapValues[name] = value;
 }
 
-void RhoSettings::saveToString(String& strData){
-	for ( std::map<String,String>::iterator it=m_mapValues.begin() ; it != m_mapValues.end(); it++ ) {
+void RhoSettings::saveChangesToString(String& strData)
+{
+    for ( std::map<String,String>::iterator it=m_mapChangedValues.begin() ; it != m_mapChangedValues.end(); it++ ) {
         strData += it->first;
         strData += "='";
         strData += it->second;
         strData += "'";
         strData += LOG_NEWLINE;
-	}
+    }
 }
 
 String RhoSettings::getString(const char* szName){
@@ -138,33 +204,18 @@ void   RhoSettings::setString(const char* szName, const String& str, boolean bSa
     m_mapValues[szName] = str;
 
     if ( bSaveToFile )
-        saveToFile();
+        saveToFile(szName);
 }
 
 void   RhoSettings::setInt(const char* szName, int nVal, boolean bSaveToFile){
     m_mapValues[szName] = common::convertToStringA(nVal);
 
     if ( bSaveToFile )
-        saveToFile();
+        saveToFile(szName);
 }
 
 void   RhoSettings::setBool(const char* szName, bool bVal, boolean bSaveToFile){
-    setInt(szName, bVal?1:0);
-
-    if ( bSaveToFile )
-        saveToFile();
-}
-
-void   RhoSettings::setString(const char* szName, const String& str){
-    m_mapValues[szName] = str;
-}
-
-void   RhoSettings::setInt(const char* szName, int nVal){
-    m_mapValues[szName] = common::convertToStringA(nVal);
-}
-
-void   RhoSettings::setBool(const char* szName, bool bVal){
-    setInt(szName, bVal?1:0);
+    setInt(szName, bVal?1:0, bSaveToFile);
 }
 
 bool   RhoSettings::isExist(const char* szName){
@@ -189,7 +240,7 @@ int rho_conf_getBool(const char* szName) {
 }
 
 void rho_conf_setBool(const char* szName, bool value) {
-	RHOCONF().setBool(szName,value);
+	RHOCONF().setBool(szName,value,true);
 }
 
 int rho_conf_getInt(const char* szName) {
@@ -197,7 +248,7 @@ int rho_conf_getInt(const char* szName) {
 }
 	
 void rho_conf_setInt(const char* szName, int value) {
-	RHOCONF().setInt(szName,value);
+	RHOCONF().setInt(szName,value,true);
 }
 	
 char* rho_conf_getString(const char* szName) {
@@ -215,12 +266,12 @@ void rho_conf_freeString(char* str) {
 }
 
 void rho_conf_setString(const char* szName, const char* value){
-    RHOCONF().setString(szName,value ? value : "");
+    RHOCONF().setString(szName,value ? value : "", true);
 }
 
-void rho_conf_save() {
-	RHOCONF().saveToFile();
-}
+//void rho_conf_save() {
+//	RHOCONF().saveToFile();
+//}
 
 char* str_assign_ex( char* data, int len) 
 {

@@ -64,6 +64,10 @@ module Rho
     def on_deactivate_app
     end
 
+    def on_config_conflicts(conflicts)
+        puts "on_config_conflicts: #{conflicts}"
+    end
+
     # works for schema sources
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)

@@ -443,19 +443,19 @@ public :
 		LOG(INFO) + "HTTP proxy port     = " + port;
 	
 		if (host.length()) {
-			RHOCONF().setString ("http_proxy_host", host);
+			RHOCONF().setString ("http_proxy_host", host, false);
 
 			if (port.length()){
-				RHOCONF().setString ("http_proxy_port", port);
+				RHOCONF().setString ("http_proxy_port", port, false);
 			} else {
 				LOG(WARNING) + "there is no proxy port defined";
 			}
 
 			if (login.length())
-				RHOCONF().setString ("http_proxy_login", login);
+				RHOCONF().setString ("http_proxy_login", login, false);
 
 			if (password.length())
-				RHOCONF().setString ("http_proxy_password", password);
+				RHOCONF().setString ("http_proxy_password", password, false);
 
 		} else {
 			LOG(ERROR) + "empty host name in HTTP-proxy URL";

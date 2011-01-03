@@ -859,8 +859,7 @@ void CSyncEngine::setSyncServer(const char* syncserver)
 	
 	if ( strOldSrv.compare(strNewSrv) != 0)
 	{
-		rho_conf_setString("syncserver", syncserver);
-		rho_conf_save();
+		RHOCONF().setString("syncserver", syncserver, true);
 		
 		getUserDB().executeSQL("DELETE FROM client_info");
 

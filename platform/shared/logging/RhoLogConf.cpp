@@ -6,7 +6,7 @@
 #include "common/RhoConf.h"
 #ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
-#endif /RHO_NO_RUBY
+#endif //RHO_NO_RUBY
 
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;
@@ -62,17 +62,15 @@ int LogSettings::getLogTextPos()
 }
 
 void LogSettings::saveToFile(){
-    RHOCONF().setInt("MinSeverity", getMinSeverity() );
-    RHOCONF().setBool("LogToOutput", isLogToOutput() );
-    RHOCONF().setBool("LogToFile", isLogToFile() );
+    RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
+    RHOCONF().setBool("LogToOutput", isLogToOutput(), true );
+    RHOCONF().setBool("LogToFile", isLogToFile(), true );
 #if !defined(OS_MACOSX)	
-    RHOCONF().setString("LogFilePath", getLogFilePath() );
+    RHOCONF().setString("LogFilePath", getLogFilePath(), true );
 #endif
-    RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize() );
-    RHOCONF().setString("LogCategories", getEnabledCategories() );
-    RHOCONF().setString("ExcludeLogCategories", getDisabledCategories() );
-
-    RHOCONF().saveToFile();
+    RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize(), true );
+    RHOCONF().setString("LogCategories", getEnabledCategories(), true );
+    RHOCONF().setString("ExcludeLogCategories", getDisabledCategories(), true );
 }
 
 void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf){
@@ -162,6 +160,8 @@ void LogSettings::setDisabledCategories( const char* szCatList ){
 }
 
 extern "C" {
+using namespace rho;
+using namespace rho::common;
 
 void rho_logconf_Init(const char* szRootPath){
 
@@ -236,8 +236,7 @@ void rho_logconf_freeString(char* str) {
 // RhoConf.set_property_by_name
 void rho_conf_set_property_by_name(char* name, char* value)
 {
-	rho_conf_setString(name, value);
-	rho_conf_save();
+	RHOCONF().setString(name, value, true);
 
     LOGCONF().loadFromConf(RHOCONF());
 }
@@ -253,6 +252,24 @@ VALUE rho_conf_get_property_by_name(char* name)
 	char* szValue = rho_conf_getString(name);
 
     return rho_ruby_create_string(szValue);
+}
+
+VALUE rho_conf_get_conflicts()
+{
+    CHoldRubyValue hashConflicts(rho_ruby_createHash());
+
+    HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+    for ( HashtablePtr<String,Vector<String>* >::iterator it=mapConflicts.begin() ; it != mapConflicts.end(); it++ ) 
+    {
+        Vector<String>& values = *(it->second);
+        CHoldRubyValue arValues(rho_ruby_create_array());
+        for( int i = 0; i < (int)values.size(); i++)
+            rho_ruby_add_to_array(arValues, rho_ruby_create_string(values.elementAt(i).c_str()) );
+
+        addHashToHash(hashConflicts, it->first.c_str(), arValues);
+    }
+
+    return hashConflicts;
 }
 
 VALUE rho_conf_read_log(int limit)
