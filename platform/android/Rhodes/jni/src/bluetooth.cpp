@@ -20,6 +20,7 @@
 #include "rhodes/jni/com_rhomobile_rhodes_bluetooth_RhoBluetoothManager.h"
 
 #include <common/RhodesApp.h>
+#include "ruby/ext/rho/rhoruby.h"
 
 
 
@@ -161,9 +162,61 @@ RHO_GLOBAL void rho_bluetooth_session_write_string(const char* connected_device_
 }
 
 RHO_GLOBAL VALUE rho_bluetooth_session_read_data(const char* connected_device_name) {
-	return 0;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "session_read_data", "(Ljava/lang/String;[BI)I");
+    jstring objStr1 = rho_cast<jstring>(connected_device_name);
+    if (!mid) return 0;
+
+    int buf_size = env->CallStaticIntMethod(cls, mid, objStr1, 0, 0);
+
+    if (buf_size == 0) {
+        // nothing for receive
+	return rho_ruby_get_NIL();
+    }
+
+    jbyteArray buf_j = env->NewByteArray(buf_size);
+    int real_readed = env->CallStaticIntMethod(cls, mid, objStr1, buf_j, buf_size);
+    env->DeleteLocalRef(objStr1);
+
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+ 
+    VALUE val = rho_ruby_create_byte_array((unsigned char*)buf_p, real_readed);
+	
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0); 
+    env->DeleteLocalRef(buf_j);
+
+    return val;
 }
 
+// public static int session_read_data(String connected_device_name, byte[] buf, int max_length)
+// public static void session_write_data(String connected_device_name, byte[] buf, int length)
+
+
 RHO_GLOBAL void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data) {
+    int size = rho_ruby_unpack_byte_array(data, 0, 0);
+    if (size <= 0) {
+	return;
+    }
+
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "session_write_data", "(Ljava/lang/String;[BI)V");
+    jstring objStr1 = rho_cast<jstring>(connected_device_name);
+    if (!mid) return;
+
+    jbyteArray buf_j = env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+
+    size = rho_ruby_unpack_byte_array(data, (unsigned char*)buf_p, size);
+
+    env->CallStaticVoidMethod(cls, mid, objStr1, buf_j, size);
+
+    env->DeleteLocalRef(objStr1);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0); 
+    env->DeleteLocalRef(buf_j);
 }
 
