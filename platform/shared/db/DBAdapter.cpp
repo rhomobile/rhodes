@@ -259,6 +259,9 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
         CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
         writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+
+        if ( RHOCONF().isExist("bulksync_state") && RHOCONF().getInt("bulksync_state") != 0)
+            RHOCONF().setInt("bulksync_state", 0, true);
 	}
 }
 

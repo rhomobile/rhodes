@@ -1003,15 +1003,19 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    //loadAllSources();
 	}
 	
-	public void setSyncServer(String url)throws Exception
+	public void setSyncServer(String syncserver)throws Exception
 	{
-		RhoConf.getInstance().setPropertyByName("syncserver", url);
-		RhoConf.getInstance().saveToFile();
-		RhoConf.getInstance().loadConf();
+		String strOldSrv = RhoConf.getInstance().getString("syncserver");
+		String strNewSrv = syncserver != null ? syncserver : "";
 		
-		getUserDB().executeSQL("DELETE FROM client_info");
-		
-		logout();
+		if ( strOldSrv.compareTo(strNewSrv) != 0)
+		{
+			RhoConf.getInstance().setString("syncserver", syncserver, true);
+			
+			getUserDB().executeSQL("DELETE FROM client_info");
+
+			logout();
+		}
 	}
 	
 	static String getHostFromUrl( String strUrl )
