@@ -142,6 +142,9 @@ namespace "build" do
         mkdir_p win32rhopath
         namepath = File.join(win32rhopath,"name.txt")        
         old_appname = File.read(namepath) if File.exists?(namepath)
+
+        confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")        
+        confpath_content = File.read(confpath) if File.exists?(confpath)
         
         rm_rf win32rhopath + 'lib'      
         rm_rf win32rhopath + 'apps'
@@ -152,6 +155,7 @@ namespace "build" do
         cp_r $srcdir + '/db', win32rhopath      
         
         File.open(namepath, "w") { |f| f.write($appname) }      
+        File.open(confpath, "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
         
     end
   end

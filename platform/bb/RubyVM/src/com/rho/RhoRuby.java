@@ -29,6 +29,7 @@ public class RhoRuby {
 	public static final RubyID serveIndexID = RubyID.intern("serve_index_hash");
 	public static final RubyID raiseRhoError = RubyID.intern("raise_rhoerror");
 	public static final RubyID initApp = RubyID.intern("init_app");
+	public static final RubyID onConfigConflicts_mid = RubyID.intern("on_config_conflicts");
 	public static final RubyID activateApp = RubyID.intern("activate_app");
 	public static final RubyID deactivateApp = RubyID.intern("deactivate_app");
 	
@@ -79,6 +80,15 @@ public class RhoRuby {
 		RubyAPI.callPublicNoArgMethod(receiver, null, initApp);
 	}
 
+	public static void call_config_conflicts()
+	{
+		RubyHash hashConflicts = RhoConf.getInstance().getRubyConflicts();
+		if (hashConflicts.size().toInt() == 0 )
+			return;
+		
+		RubyAPI.callPublicOneArgMethod(receiver, hashConflicts, null, onConfigConflicts_mid);
+	}
+	
 	public static void rho_ruby_activateApp(){
 		RubyAPI.callPublicNoArgMethod(receiver, null, activateApp);
 	}

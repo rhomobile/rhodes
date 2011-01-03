@@ -440,6 +440,7 @@ def common_bundle_start(startdir, dest)
 
   app_version = "\r\napp_version='#{$app_config["version"]}'"  
   File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
+  File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
   
   unless $debug
     rm_rf $srcdir + "/apps/app/test"

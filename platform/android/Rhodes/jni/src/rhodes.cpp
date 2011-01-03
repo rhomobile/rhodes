@@ -461,8 +461,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
     rho_logconf_Init(szRootPath);
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
-    RHOCONF().setBool("LogToOutput", false);
-    RHOCONF().saveToFile();
+    RHOCONF().setBool("LogToOutput", false, true);
     LOGCONF().setLogToOutput(false);
     // Add android system log sink
     LOGCONF().setLogView(rho::common::g_androidLogSink);
