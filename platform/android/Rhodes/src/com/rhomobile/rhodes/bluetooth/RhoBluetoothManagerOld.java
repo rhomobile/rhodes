@@ -83,11 +83,11 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 	public void session_write_string(String connected_device_name, String str) {
 	}
 	
-	public int session_read_data(String connected_device_name, Byte[] buf, int max_length) {
+	public int session_read_data(String connected_device_name, byte[] buf, int max_length) {
 		return 0;
 	}
 
-	public void session_write_data(String connected_device_name, Byte[] buf, int length) {
+	public void session_write_data(String connected_device_name, byte[] buf, int length) {
 	}
 
 }
