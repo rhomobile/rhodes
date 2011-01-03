@@ -34,7 +34,9 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
     private String mDeviceName = null;
     
     private String mConnectedDeviceName = null;
-    StringBuffer mInput;
+    //StringBuffer mInput;
+    byte[] mInputBuffer;
+    int    mInputBufferSize;
  	
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -56,6 +58,9 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		// constructor
 		mActivity = RhodesActivity.getInstance();
 		mDeviceName = "NONAME";
+		
+		mInputBuffer = new byte[1024];
+		mInputBufferSize = 0;
 		
 		
 		mBluetoothIsEnabled = false;
@@ -89,7 +94,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		}
 		
 		
-		mInput = new StringBuffer("");
+		//mInput = new StringBuffer("");
 		
 		
         // Get local Bluetooth adapter
@@ -136,7 +141,28 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
          }
     }
 	
-	
+    /**
+     * Sends a message.
+     * @param message  A string of text to send.
+     */
+    private void sendData(byte data[]) {
+        if(D) Log.i(TAG, "sendMessage");
+        // Check that we're actually connected before trying anything
+        if (mSession.getState() != RhoBluetoothSession.STATE_CONNECTED) {
+            //Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            if(D) Log.i(TAG, "NOT CONNECTED");
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (data.length > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            mSession.write(data);
+         }
+    }
+
+    
+    
    private void setupSession() {
         Log.d(TAG, "setupSession()");
 
@@ -146,7 +172,8 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 
 
    public void onSessionConnectedOK() {
-       mInput.setLength(0);
+       //mInput.setLength(0);
+	   mInputBufferSize = 0;
        PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				fireCreateSessionCallback(RhoBluetoothManager.BTC_OK, mConnectedDeviceName);
@@ -168,10 +195,30 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
    }
 
    public void onSessionReadMessage(byte[] buf, int bytes) {
-	   final String message = new String(buf, 0, bytes);
+	   //final String message = new String(buf, 0, bytes);
+	   final byte[] tmpbuf = buf.clone();
+	   final int tmpbuf_length = bytes;
 	   PerformOnUiThread.exec( new Runnable() {
+		    private byte[] buf = tmpbuf;
+		    private int buf_length = tmpbuf_length;
 			public void run() {
-		       mInput.append(message);
+		       //mInput.append(message);
+			   int i;
+			   synchronized (mInputBuffer) {
+				   if (mInputBuffer.length < (mInputBufferSize + buf_length)) {
+					   // need alloc new larger buffer
+					   byte[] new_buf = new byte[mInputBufferSize + buf_length + 1024];
+					   // copy old to new
+					   for (i = 0; i < mInputBufferSize; i++) {
+						   new_buf[i] = mInputBuffer[i];
+					   }
+					   mInputBuffer = new_buf;
+				   }
+				   for (i = mInputBufferSize; i < (mInputBufferSize + buf_length); i++) {
+					   mInputBuffer[i] = buf[i-mInputBufferSize];
+				   }
+				   mInputBufferSize = mInputBufferSize + buf_length;
+			   }
 		       fireSessionCallback(mConnectedDeviceName, RhoBluetoothSession.BT_SESSION_INPUT_DATA_RECEIVED);
 			}
 	   },false);
@@ -354,14 +401,19 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		if (!mBluetoothIsEnabled) return -1;
 		if(D) Log.i(TAG, "session_get_status");
 		//if (sharedInstance().mInputStringsArrayAdapter.isEmpty()) {
-		return sharedInstance().mInput.length();
+		return sharedInstance().mInputBufferSize;//mInput.length();
 	}
 
 	public String session_read_string(String connected_device_name) {
 		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
 		if(D) Log.i(TAG, "session_read_string");
-    	String t = sharedInstance().mInput.toString();
-    	sharedInstance().mInput.setLength(0);
+    	//String t = sharedInstance().mInput.toString();
+    	//sharedInstance().mInput.setLength(0);
+		String t = null;
+	    synchronized (mInputBuffer) {
+	    	t = new String(mInputBuffer, 0, mInputBufferSize);
+	    	mInputBufferSize = 0;
+	    }
 		return t;
 	}
 
@@ -371,13 +423,47 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		sharedInstance().sendMessage(str);
 	}
 	
-	public int session_read_data(String connected_device_name, Byte[] buf, int max_length) {
+	public int session_read_data(String connected_device_name, byte[] buf, int max_length) {
 		if (!mBluetoothIsEnabled) return 0;
-		return 0;
+		if ((buf == null) || (max_length == 0)) {
+			return mInputBufferSize;
+		}
+		int real_readed = 0;
+		int i;
+		synchronized (mInputBuffer) {
+			// read;
+			real_readed = mInputBufferSize;
+			if (real_readed > max_length) {
+				real_readed = max_length;
+			}
+			// copy
+			for (i = 0; i < real_readed; i++) {
+				buf[i] = mInputBuffer[i];
+			}
+			// adjust input buf
+			if (mInputBufferSize > max_length) {
+				for (i = 0; i < (mInputBufferSize - max_length); i++) {
+					mInputBuffer[i] = mInputBuffer[i + max_length];
+				}
+				mInputBufferSize = mInputBufferSize - max_length;
+			}
+			else {
+				mInputBufferSize = 0;
+			}
+		}
+		return real_readed;
 	}
 
-	public void session_write_data(String connected_device_name, Byte[] buf, int length) {
-		if (!mBluetoothIsEnabled) return;		
+	public void session_write_data(String connected_device_name, byte[] buf, int length) {
+		if (!mBluetoothIsEnabled) return;
+		if(D) Log.i(TAG, "session_write_data()");
+		if (D) {
+			int i;
+			for (i = 0; i < length; i++) {
+				Log.i(TAG, "     writed data ["+String.valueOf(i)+"] = " + String.valueOf(buf[i]));
+			}
+		}
+		sharedInstance().sendData(buf);
 	}
 
 
