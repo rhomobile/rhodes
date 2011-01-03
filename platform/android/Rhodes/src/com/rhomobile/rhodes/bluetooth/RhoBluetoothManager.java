@@ -108,11 +108,11 @@ public class RhoBluetoothManager {
 		sharedInstance().session_write_string(connected_device_name, str);
 	}
 	
-	public static int session_read_data(String connected_device_name, Byte[] buf, int max_length) {
+	public static int session_read_data(String connected_device_name, byte[] buf, int max_length) {
 		return sharedInstance().session_read_data(connected_device_name, buf, max_length);
 	}
 
-	public static void session_write_data(String connected_device_name, Byte[] buf, int length) {
+	public static void session_write_data(String connected_device_name, byte[] buf, int length) {
 		sharedInstance().session_write_data(connected_device_name, buf, length);
 	}
 
