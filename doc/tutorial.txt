@@ -1,0 +1,166 @@
+Rhodes Tutorial
+========
+This tutorial describes how to use Rhodes and RhoSync to build native mobile apps for all shipping smartphones.  Specifically it describes how to write Rhodes controllers and templates and how to write RhoSync source adapters to sync data from backend apps to the device.  The architecture of this is shown [here](http://wiki.rhomobile.com/images/1/1b/RhodesArchitecture.jpg).
+
+Install Rhodes
+--------------
+
+### Instant Rhodes (Windows)
+The easiest way to install Rhodes on Windows is to use the [Instant Rhodes installer](http://rhomobile.com/instant-rhodes).  This will install Ruby, Rubygems, Redis, Rhodes and Rhosync gems and dependencies.
+
+Once the installer has completed, you can skip to the [Configure Rhodes section](#configure-rhodes).
+
+### Rhodes Gem
+To install the Rhodes gem, you will need the following tools installed:
+
+* [Ruby](http://www.ruby-lang.org/en/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby)
+* [RubyGems](http://docs.rubygems.org/) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.)
+
+**NOTE:** Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the [GnuWin32](http://gnuwin32.sourceforge.net/) project provides the tools, and can be conveniently installed via the [GetGnuWin32](http://sourceforge.net/projects/getgnuwin32/files/) installer.
+
+The first step in using Rhodes is to install the Rhodes gem (you may want to put "sudo" in the front of this command on OS X):
+
+    :::term
+    $ gem install rhodes
+
+**NOTE:** If you get any "`no such file to load -- something`" messages while running the rake tasks or rhodes commands, this can usually be resolved by running '[sudo] gem install something'.
+
+Configure Rhodes
+----------------
+Once you have Rhodes, you will need the SDKs for the platform you want to build your app on. These instructions are found [[Building Rhodes Apps on Supported Platforms#Prerequisites_-_All_Platforms | here]].
+
+After you install the gem and your desired SDKs, you need to run:
+
+    :::term
+    $ rhodes-setup
+
+
+This will prompt you for where you installed the SDKs for the various platforms.  The installation script will display its best guess as to where the SDK is. You can then enter a new location, or leave it blank to use the suggestion. If you are not building for a specific platform (for example, you can't build for the iPhone on Windows), you can leave that SDK location blank. You can find prerequisites for each platform here: [[Building Rhodes Apps on Supported Platforms]]
+
+Generating A Rhodes Application
+-------------------------------
+The first step is to generate the application and base files.  First we will generate an application called StoreManager with the following command:
+
+    :::term
+    $ rhodes app storemanager http://localhost:9292/application
+
+This will generate an application directory called "storemanager" with several files.  Note also that the third argument above is the URL to the RhoSync server data source (required if you want to do synchronized data as we describe in the next section).  Specifically it will set the rhoconfig.txt file to have the following option:
+
+    syncserver = 'http://localhost:9292/application'
+
+If you do not need synchronized offline data, you can leave the third argument out.
+
+
+The default home screen of the app is defined in the storemanager/app/index.erb file.  You can edit the HTML there to create what your app displays.  You can link to other HTML files and ERB files from there with standard HTML techniques.  Then you can build your app with rake tasks.  For example, to build for the iPhone and run the simulator, type the following commands:
+
+    :::term
+    $ cd storemanager
+    $ rake run:iphone
+
+<img src="http://img.skitch.com/20100512-px2wrmj1bj7yixjy7fp2d31yw6.png"/>
+
+To build for other platforms/simulators, you execute the appropriate rake tasks, such as "rake run:bb" to run it on the BlackBerry emulator. To see all possible rake tasks:
+
+    :::term
+    $ rake -T
+
+Generating Models
+-----------------
+
+Now that your app compiles and runs, you can start adding models and controllers. When the model is generated, Rhodes will also create files for a standard UI for displaying and editing the model. This follows the standard model-view-controller paradigm.
+
+Let's generate a model called "product" and give it some attributes.
+
+    :::term
+    $ cd storemanager
+    $ rhodes model product brand,name,price,quantity,sku
+      Generating with model generator:
+        [ADDED]  app/Product/index.erb
+        [ADDED]  app/Product/edit.erb
+        [ADDED]  app/Product/new.erb
+        [ADDED]  app/Product/show.erb
+        [ADDED]  app/Product/index.bb.erb
+        [ADDED]  app/Product/edit.bb.erb
+        [ADDED]  app/Product/new.bb.erb
+        [ADDED]  app/Product/show.bb.erb
+        [ADDED]  app/Product/product_controller.rb
+        [ADDED]  app/Product/product.rb
+        [ADDED]  app/test/product_spec.rb
+
+Editing Rhodes Views
+--------------------
+
+You can edit the generated ERB files to customize the HTML as you see fit.  Typically you will provide links to the model index page from the home screen.  Below is the generated top level index.erb file for the Store Manager app (app/index.erb).
+
+
+    :::ruby
+    <div id="pageTitle">
+      <h1>Storemanager</h1>
+    </div>
+
+    <div id="toolbar">
+      <div id="leftItem" class="blueButton">
+        <%= link_to "Sync", :controller => :Settings, :action => :do_sync %>
+      </div>
+      <% if SyncEngine::logged_in > 0 %>
+        <div id="rightItem" class="regularButton">
+          <%= link_to "Logout", :controller => :Settings, :action => :logout %>
+        </div>
+      <% else %>
+        <div id="rightItem" class="regularButton">
+          <%= link_to "Login", :controller => :Settings, :action => :login %>
+        </div>
+      <% end %>
+    </div>
+
+    <div id="content">
+      <ul>
+        <li>
+          <a href="#">
+            <span class="title">Add Links Here...</span>
+            <span class="disclosure_indicator"></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+To provide a link to the Product model's index page and templates you can replace the list item with the title "Add links here" with:
+
+    :::ruby
+    <li>
+      <a href="Product">
+        <span class="title">Products</span>
+        <span class="disclosure_indicator"></span>
+      </a>
+    </li>
+
+<img src="http://img.skitch.com/20100512-grk9ymqwj66jypdckthmm5484n.png"/>
+
+
+**NOTE:** You can edit this top level page or any of the other pages with any arbitrary HTML you wish.   We don't attempt to teach you HTML or Ruby here but there are many good external references for both topics.
+
+Doing More With Rhodes
+----------------------
+
+See the comprehensive and exhaustive [Rhodes Developer Reference](http://wiki.rhomobile.com/index.php/Rhodes) for details on all Rhodes capabilities.
+
+Code samples of each and every Rhodes capability are in the
+[Rhodes API samples](http://github.com/rhomobile/rhodes-system-api-samples).
+
+You should take a look at the [Rhodes 2.0 training webinar](http://vimeo.com/channels/rhomobile#12214213).
+
+There is a [technical FAQ](TechnicalFAQ) that describes how to perform certain specific tasks in Rhodes.
+
+The following sections describe how to add synchronized data to our app with RhoSync.
+
+Adding Synchronized Data to Your App with RhoSync
+-------------------------------------------------
+To add synchronized data to your application, see the [Rhosync Tutorial](rhosync/tutorial).  Also check out the [RhoSync training video](http://vimeo.com/channels/rhomobile#12218913).
+
+More Info
+---------
+There are training webinars on various Rhomobile related topics held weekly.  Videos of these are on [the Rhomobile Vimeo channel](http://vimeo.com/channels/rhomobile).
+
+There is also the following [book on Rhomobile](http://www.apress.com/book/view/9781430228684).
+
+For more questions, [write to us](mailto:info@rhomobile.com) or join the [Rhomobile Google Group](http://groups.google.com/group/rhomobile) and post.
