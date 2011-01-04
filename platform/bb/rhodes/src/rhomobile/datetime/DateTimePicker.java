@@ -17,15 +17,19 @@ class CallDateTimePickerScreen implements Runnable {
 	private String _callback;
 	private String _title;
 	private long _init;
+	private long _min_time;
+	private long _max_time;
 	private DateFormat _fmt;
 	private String _opaque;
 	
 	private static DateTimeScreen screen = null;
 	
-	CallDateTimePickerScreen(String callback, String title, long init, DateFormat fmt, String opaque) {
+	CallDateTimePickerScreen(String callback, String title, long init, DateFormat fmt, String opaque, long min_time, long max_time) {
 		_callback = callback;
 		_title = title;
 		_init = init;
+		_min_time = min_time;
+		_max_time = max_time; 
 		_fmt = fmt;
 		_opaque = opaque;
 	}
@@ -34,7 +38,7 @@ class CallDateTimePickerScreen implements Runnable {
 		if (screen != null)
 			return;
 		//Initialize the screen.
-		screen = new DateTimeScreen(_callback, _title, _init, _fmt, _opaque);
+		screen = new DateTimeScreen(_callback, _title, _init, _fmt, _opaque, _min_time, _max_time);
         UiApplication.getUiApplication().pushModalScreen(screen);
         screen = null;
 	}
@@ -51,7 +55,7 @@ public class DateTimePicker extends RubyBasic {
 		String title = arg2.toStr();
 		long init = arg3.toRubyTime().getTime();
 		
-		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque);
+		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque, 0, 0);
 		UiApplication.getUiApplication().invokeLater(screen);
         
 		return RubyConstant.QNIL;
@@ -61,8 +65,10 @@ public class DateTimePicker extends RubyBasic {
 		String callback = arg1.toStr();
 		String title = arg2.toStr();
 		long init = arg3.toRubyTime().getTime();
+		long min_t = arg6.toRubyTime().getTime(); 
+		long max_t = arg7.toRubyTime().getTime(); 
 		
-		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque);
+		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque, min_t, max_t);
 		UiApplication.getUiApplication().invokeLater(screen);
         
 		return RubyConstant.QNIL;
