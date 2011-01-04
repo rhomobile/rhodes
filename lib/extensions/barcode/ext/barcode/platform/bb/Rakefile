@@ -8,7 +8,10 @@ USE_STLPORT = true
 def build_extension
 
 	#vsrclist = #rhoroot + "/lib/extensions/barcode/ext/barcode/platform/bb/barcode.files"
+        
 	vsrclist = "Barcode.files"
+        vsrclist = "Barcode6.files" if ($bbver == '6.0')
+
         args = []
         args << "-g"
         args << "-d"
@@ -79,6 +82,9 @@ namespace "build" do
 
     $rhoroot = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rhoroot.nil?
+
+    $bbver = ENV['BB_SDK_VERSION']
+    raise "BB_SDK_VERSION is not set" if $bbver.nil?
 
   end
 

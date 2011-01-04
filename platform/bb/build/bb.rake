@@ -251,6 +251,8 @@ namespace "build" do
 	
       ENV["RUBYVM_JAR"] = $preverified+"/RubyVM.jar"	
 
+      ENV["BB_SDK_VERSION"] = $bbver
+
       mkdir_p extensionsdir unless File.directory? extensionsdir
       mkdir_p extensionstmpdir unless File.directory? extensionstmpdir
 
