@@ -198,7 +198,7 @@ public class SqliteStorage implements IDBStorage
 	
 	public void createTriggers() throws DBException
 	{
-		String strTriggers = RhoConf.getInstance().loadFileFromJar("apps/db/syncdb_java.triggers");
+        String strTriggers = RhoFile.readStringFromJarFile("apps/db/syncdb_java.triggers", this);	
 		executeBatchSQL( strTriggers );
 	}
 	
