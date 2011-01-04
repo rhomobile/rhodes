@@ -32,7 +32,11 @@ public class DateTimeScreen extends MainScreen {
 	private ButtonField _okButton;
 	private ButtonField _cancelButton;
 	
-	public DateTimeScreen(String callback, String title, long init, DateFormat fmt, String opaque)
+	private long _min_time;
+	private long _max_time;
+	
+	
+	public DateTimeScreen(String callback, String title, long init, DateFormat fmt, String opaque, long min_time, long max_time)
 	{
 		_callbackUrl = callback;
 		_opaque = opaque;
@@ -42,6 +46,34 @@ public class DateTimeScreen extends MainScreen {
 		setTitle( new LabelField( title, LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH ) );
 		
 		_dateTimeField = new DateField("", init, fmt);
+		
+		_min_time = min_time;
+		_max_time = max_time;
+		
+		_dateTimeField.setChangeListener( new FieldChangeListener() {
+			public void fieldChanged(Field field, int context) {
+				if (_dateTimeField == null) {
+					return;
+				}
+				long cur_date = _dateTimeField.getDate();
+				boolean is_fixed = false;
+				if (_min_time != 0) {
+					if (cur_date < _min_time) {
+						cur_date = _min_time;
+						is_fixed = true;
+					}
+				}
+				if (_max_time != 0) {
+					if (cur_date > _max_time) {
+						cur_date = _max_time;
+						is_fixed = true;
+					}
+				}
+				if (is_fixed) {
+					_dateTimeField.setDate(cur_date);
+				}
+			}
+		});
 		
 		_okButton = new ButtonField("OK");
 		_okButton.setChangeListener(new OkListener());
