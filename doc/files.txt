@@ -1,0 +1,470 @@
+# Rhodes Application Files
+
+## Rhodes Directories and Files
+The RhoGen application generator generates a basic application from the "rhogen app" option. It will generate subdirectories and controller and template files when specifying a model and actions.   Please refer to the [[Rhogen|rhogen]] documentation for more detailed information about the Rhodes directory structure.
+
+## Example Directory Structure
+As an example, /sugar could be the root folder for an application that provides mobile access to SugarCRM. The app's root directory will contain a few .erb files, depending on the app's functionality. At the very least there will be an index.erb file that serves as the default landing page. This default landing page will typically have links to the controllers for some of the data models, and is not associated with any specific controller. In case the application needs a default landing page associated with a controller, it is recommended to create a model/controller/view folder and use an action on this controller as a default start path. To do that, edit the start_path property in the [[#Configuration|framework configuration file]].
+
+## Generated Files
+The generated files for each model include a controller, a model class and view templates described below.
+
+### Controller
+Each Rhodes-generated model controller has several actions to perform basic CRUD (create, read, update and delete) on the object. These actions are:
+* '''index''' - lists all objects
+* '''new''' - displays the editing form for creating a new object
+* '''create''' - actually creates the object
+* '''edit''' - edits an existing object
+* '''update''' - updates properties of the object
+* '''show''' - views the object
+* '''delete''' - deletes the object
+
+This set of actions (and the associated URL paths) follows the Rails scaffolding pattern for creating CRUD actions for objects and the associated "map resources" convention for routing to those actions.
+
+### Model
+
+Your model class is located in the generated model's folder. For the model "UserBase" the file would be called "user_base.rb"
+
+Example of added upper_name method to the model:
+
+	:::ruby
+	class UserBase
+	  #add model specific code here
+	  def upper_name
+	    self.name.upcase
+	  end
+	end
+
+### Views (Templates)
+The .erb files mentioned above are the templates used for views. Rhodes follows the Rails convention for template naming.
+* index.erb lists the data model objects
+* edit.erb lets you edit the object
+* show.erb shows the object's attribute values
+* new.erb creates a new object
+These files are all created by the [rhodes generator](rhodes_generator).  Inside the template, any valid HTML, JavaScript, and Ruby can be used, with Ruby code enclosed in <% and %> tags. See more information about ERB [here](http://www.ruby-doc.org/stdlib/libdoc/erb/rdoc/).
+
+### AppApplication class
+The file application.rb contains the AppAplication class:
+	:::ruby
+	class AppApplication < Rho::RhoApplication
+	  def initialize
+	    #put initialization code here
+	  end
+	  def on_activate_app
+	    # Invokes when application activates. 
+	  end 
+	  def on_deactivate_app
+	    # Invokes when application go to background
+	    # Only restricted set of API allowed here
+	    # If you call any UI operations here, they just ignored
+	    # For example, WebView.refresh
+ 
+	    #to stop sync background thread call SyncEngine.stop_sync; SyncEngine.set_pollinterval(0)
+    
+	    #To stop local server when application switched to background (so called 'service mode'). It will stop sync thread also
+	    # in this case you have also stop sync thread
+	    #return "stop_local_server"
+    
+	  end
+
+	  def on_config_conflicts(conflicts)
+	      #puts "on_config_conflicts: #{conflicts}"
+	      # Invokes when application upgrade.
+	      # If application bundle contain rhoconfig with properties modified locally on the phone
+	      # conflicts is a hash name to array of conflicted values(local value, upgrade value)
+	      # by default local values are kept in place
+	  end
+
+	end
+
+You can store session data here. To get an instance of the AppApplication object:
+
+	:::ruby
+	::Rho.get_app
+
+## Configuration
+Each Rhodes application contains a configuration file called "rhoconfig.txt".  A typical rhoconfig.txt will look like the following when an app is generated:
+
+	# startup page for your application
+	start_path = '/app'
+
+	# path to the options page (in this case handled by javascript)
+	options_path = '/app/Settings'
+
+	# location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
+	rhobundle_zip_url = ''
+
+	# optional password to access bundle (usually not required); used by desktop win32 simulator 
+	rhobundle_zip_pwd = nil
+
+	# Rhodes log properties
+	# log level
+	# 0-trace, 1-info(app level), 3-warnings, 4-errors
+	# for production set to 3
+	MinSeverity  = 1 
+
+	# enable copy log messages to standard output, useful for debugging
+	LogToOutput = 1
+
+	# '*' means all categories, otherwise list them : Cat1, Cat2 
+	LogCategories = *
+
+	# what categories to exclude
+	ExcludeLogCategories = 
+
+	# max log file size in KB, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
+	MaxLogFileSize=50
+
+	# turn on local http server traces, off by default
+	#net_trace = 0
+
+	# timeout of network requests in seconds (30 by default)
+	#net_timeout = 60
+
+	# where log will be posted by RhoConf.send_log or from the log menu  
+	# source is also open and up on http://github.com/rhomobile/rhologs, so you can deploy your own logserver
+	logserver = 'http://rhologs.heroku.com' 
+
+	# log file prefix - contain human-readable text
+	logname='helloworld'
+
+	# Keep track of the last visited page
+	KeepTrackOfLastVisitedPage = 0 
+	LastVisitedPage = ''
+
+	# sync server url, typically this will look like 'http://<hostname>:<port>/application'
+	# for example: 'http://localhost:9292/application'
+	syncserver = ''
+
+	# geo location inactivity timeout (in seconds)
+	#geo_location_inactivity_timeout = 30
+
+	# open rhodes app in full screen mode
+	# default 1 for Android up to Rhodes 2.2.5.
+	# on all other platforms and on Android from Rhodes >2.2.5 default 0
+	#full_screen = 1
+
+	# Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes.
+	# If not specified, application will use dynamically selected one.
+	# WARNING!!! Remove this parameter before put application to production.
+	#local_server_port = 8080
+
+	# show status bar on windows mobile. default 1
+	#wm_show_statusbar = 1
+
+	# disable screen rotation (enabled by default) - disable possible for ANDROID and iPhone ONLY
+	#disable_screen_rotation = 1
+
+	# disable close app when pressing back on home screen on blackberry
+	#bb_disable_closebyback = 0
+
+	# load images in background, this improve reaction speed on user actions, 0 by default
+	#bb_loadimages_async = 0
+
+	# set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
+	#bulksync_state = 1
+
+	# hides forward button and animates back button transition
+	jqtouch_mode=1
+
+	splash_screen='zoom'
+
+To access rhoconfig.txt from application code use Rho::RhoConfig class:
+
+	:::ruby
+	Rho::RhoConfig.full_screen
+	Rho::RhoConfig.app_property='some value'
+	if Rho::RhoConfig.exists?('some_property')
+	  #do something
+	end
+
+### Last Visited Page
+Rhodes can keep track of the last visited page, so that next time you start your application, it will open to the same page. To enable this feature, use 
+
+	KeepTrackOfLastVisitedPage=1
+
+Keep in mind, POST requests will be converted to GETs.
+
+### Application Database Version
+If you want the next version of your application to start from a clean database, set app_db_version in rhoconfig.txt.
+When a Rhodes app starts, it compares the current db version with app_db_version cleans the db if they do not match.
+
+### Ruby API
+Each of the configuration options shown above are available through the RhoConfig Ruby API:
+
+	:::ruby
+	Rho::RhoConfig.options_path #=> returns '/app/Settings'
+	Rho::RhoConfig.options_path = '/app/MyObject' #=> assignment will be saved to rhoconfig.txt
+
+You may store any arbitrary options in the rhoconfig.txt file using the Ruby API. Keep in mind that they will be lost the next time the user installs a new version of the application.
+
+### SyncEngine Configuration
+In the previous section, there is a "syncserver" option available.  This option can be changed through the Rho::RhoConfig API as you would expect.  However, since changing the syncserver option requires updating the SyncEngine at runtime, another Ruby call is available:
+
+	:::ruby
+	SyncEngine.set_syncserver('http://examplesyncserver.com/apps/MyApp/sources/') #=> nil
+
+Calling the function above will do the following:
+#Update the in-memory syncserver for the SyncEngine (all subsequent synchronization will use the new syncserver)
+#Perform a logout to make sure the session for the old syncserver is removed
+#Write the new syncserver property to rhoconfig.txt
+
+To enable auto sync you can call (enabled by default with 5 minutes interval )
+
+	:::ruby
+	SyncEngine.set_pollinterval(timeout_in_seconds)
+	
+OR set in rhoconfig.txt:
+
+	sync_poll_interval=timeout_in_seconds
+
+To disable auto sync you can call 
+
+	:::ruby
+	SyncEngine.set_pollinterval(0)
+
+OR set in rhoconfig.txt:
+	
+	sync_poll_interval=0
+
+### Logging
+To show the application log on the device with log and log-related menu items, like clear, send and log options:
+
+	:::ruby
+	Rho::RhoConfig.show_log
+
+To send the log to the log server url, defined in rhoconfig:
+
+	:::ruby
+	Rho::RhoConfig.send_log #Url format: <logserver>/client_log?client_id=<client_id>&device_pin=<device_pin>&log_name=<logname>
+
+### Persistent Storage (Blackberry only)
+To enable use of the RIM persistent storage API in rhodes, just add the line
+
+	use_persistent_storage = 1
+	
+to your rhoconfig.txt. It will enable RIM's persistent storage API (instead of files) to store the DB version, the DB journal and the database itself. The main goal of persistent storage is that all objects stored by an application will be automatically removed when the application is uninstalled.
+
+## Optional Files
+
+### 'Loading' screen
+
+Rhodes supports the display of a custom "Loading" screen while your application is launching. This screen's source is the file loading.html, located at <application-root>/app/loading.html.
+<br/>
+Alternatively, you can replace loading.html with an image named loading.png if you just want a simple image to be displayed.
+Please see additional instruction about customization loading.png for iOS devices : [http://wiki.rhomobile.com/index.php/BuildingRhodes#HOWTO:_Customize_Loading_image  HOWTO: Customization Loading Image]
+<br/>
+Loading parameters in rhoconfig.txt:
+* delay - how long splash screen should be displayed (in seconds)
+* center,vcenter,hcenter - picture alignment
+* zoom,vzoom,hzoom - scaling options
+'''Example''':
+*splash_screen='delay=5;center'
+*splash_screen='delay=5;hcenter;vzoom'
+
+### 'Installing' screen
+
+<font color="red">'''''WARNING!''''' '''This section is outdated since Rhodes 2.2. There is no more 'installing' phase for iPhone and Android applications.'''</font>
+
+On Android and iPhone, rhodes applications need to finish installation on first start. To properly indicate this to user, application should provide installing.html or installing.png located at <application-root>/app/ folder. If no such file provided, 'loading' page will be used as described above.
+
+### Error handlers(400,500)
+Rhodes can display the following error pages: app\E400.erb and app\E500.erb
+* error 400 occurs when there's a Rho::RecordNotFound exception (for example, when you search for a non-existent objectID)
+* error 500 occurs for any other unhanded exception
+To get exception object use $! or Rho::RHO.current_exception
+
+### Layouts
+
+Rhodes supports a layout mechanism based on ERB templates. The default layout template is called "layout.erb" and is located in the application root folder.  Unless overridden, this layout is rendered on all non-Ajax requests.
+
+#### Customizing Layouts
+
+If you would like to override or customize layout behavior, you can call the render function with the following parameters:
+
+	:::ruby
+	render :action => 'index', :layout => 'mycustomlayout', :use_layout_on_ajax => false
+
+The first argument is the action you would like to render.  Next is the (optional) layout name, which assumes the application root as a base directory.  In the above example, Rhodes would look for a file called "mycustomlayout.erb" in the application root directory (you also may use :layout => false to disable the use of a layout template).  The use_layout_on_ajax argument tells Rhodes whether or not to use the layout on Ajax calls (default is false). 
+
+You can call the layout method on the controller to overwrite the default layout name:
+
+	:::ruby
+	layout :mycustomlayout
+
+This will force the render call to use mycustomlayout.erb in place of the default layout file for all actions of this controller.
+
+## Helpers
+
+### link_to
+Examples of how to use the link_to method:
+
+	link_to "Visit Other Site", "http://www.rhomobile.com/"
+	==> <a href="http://www.rhomobile.com/" >Visit Other Site</a>
+  
+	link_to "Help", { :action => "help" }
+	==> <a href="/app/model/help" >Help</a>
+  
+	link_to "Delete", { :action => "delete", :id => '{12}' }
+	==> <a href="/app/model/{12}/delete"  onclick="var f = document.createElement('form'); 
+	    f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST'; 
+	    f.action = this.href;f.submit();return false;">Delete</a>
+ 
+	link_to "Show", { :action => "show", :id => '{12}'},"style=\"height:4px;width:7px;border-width:0px;\"" 
+	==> <a href="/app/model/{12}/show" style="height:4px;width:7px;border-width:0px;">Show</a>
+  
+	link_to "Delete", { :action => "delete", :id => '{12}' }, "class=\"delete_link\""
+	==> <a href="/app/model/{12}/delete" class="delete_link" onclick="var f = document.createElement('form'); 
+	    f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST'; 
+	    f.action = this.href;f.submit();return false;\">Delete</a>"
+  
+	link_to "Invite",:action => :invite, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}
+	==> <a href="/app/model/invite?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com" >Invite</a>
+
+### url_for
+Examples of how to use the url_for method:
+    
+	url_for '/some_url'
+	==> /some_url
+    
+When generating a new URL, missing values may be filled in from the current request's parameters.
+For example, if the application name or model are not specified in the call parameters, they would be filled from the request.
+    
+	url_for :action => :index
+	==> /app/model
+  
+	url_for :action => :create
+	==> /app/model
+ 
+	url_for :action => :new
+	==> /app/model/new
+  
+	url_for :action => :show, :id => '{12}'
+	==> /app/model/{12}/show
+
+	url_for :model => :another_model, :action => :show, :id => '{12}'
+	==> /app/another_model/{12}/show
+  
+	url_for :controller => :another_controller, :action => :show, :id => '{12}'
+	==> /app/another_controller/{12}/show
+  
+	url_for :application => :another_app, :model => :another_model, :action => :show, :id => '{12}'
+	==> /another_app/another_model/{12}/show
+   
+	url_for :action => :create, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}
+	==> /app/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com
+  
+	url_for :action => :show, :id => '{12}', :fragment => "an-anchor" 
+	==> /app/model/{12}/show#an-anchor
+
+## Redefine back action
+* use :back parameter in render:
+
+	:::ruby
+	render :action => :index, :back => url_for( :controller => :Settings, :action => :main_page )
+	render :back => '/app'
+
+* use back with callback:
+
+:::ruby
+render :action => :page_alert, :back => 'callback:' + url_for(:action => :callback_alert)
+
+* you can also define back action in menu
+
+:::ruby
+@menu = { "Back" => :back,
+    "Main Menu" => :home
+}
+render :action => :page_back
+
+* redefine back with close:
+
+	:::ruby
+	render :action => :page_close, :back => :close
+
+### Sample
+See system-api-samples\app\DynamicMenu
+
+## Advanced Usage of Render
+
+* Render does not need to be called at the end of each method. If render was not called, then it will default to rendering the action of the method you are in. 
+* Rendering of views works with no method in controller. If the method does not exist for an action, but a view exists for that action, then the view will be rendered. 
+* Rendering of files.  render :file => "Settings/wait.erb"  will render that file with the current controller's instance. By default, layout is false when rendering a file. 
+* Rendering of partials, with collections or locals. Either collections or locals must be provided. Rendering partials in other folders added in 2.0.
+
+	:::ruby
+	render :partial => "ad", :collection => ["foo1","foo2","foo3"] 
+
+or 
+
+	:::ruby
+	render :partial =>"ad", :locals => { :ad => "foo_ad" } 
+
+Will render the partial "_ad.erb"  and the local variable "ad" will be available. With a collection, the partial will be rendered once per element.
+
+'''Added in 2.0'''
+
+Load from 'partials' folder:
+
+	:::ruby
+	render :partial =>"partials/ad", :locals => { :ad => "foo_ad" } 
+
+## WebView class
+It is possible to call on the WebView (browser) directly from your controllers. This API is recommended for use from callbacks, such as sync callback or camera callbacks.
+
+	:::ruby
+	WebView.refresh #=> will force WebView refresh current page
+	WebView.refresh(index) #=> will force WebView refresh current page on tab with specified index.
+	                       #  If no tab bar present, index ignored
+
+	WebView.navigate(url) #=> will force WebView navigate to provided location (url)
+
+	# Since 1.2.2 WebView.navigate supports an optional index parameter (defaults to 0, useful for tabbed applications)
+	WebView.navigate(url, index)
+
+	WebView.current_location #=> will return location (url) of the currently displayed page
+	WebView.current_location(index) #=> the same as above but for specified tab (if tab bar present)
+ 
+	WebView.execute_js(js) #=> will try to execute javascript string in the context of the currently displayed page
+	#supported on iPhone, Android, Windows Mobile and Blackberry 5.0 in full browser mode
+	WebView.execute_js(js, index) #=> the same as above but for specified tab (if tab bar present)
+	#For example:
+	WebView.execute_js("test();") #call method test from current page
+	Suppose that current page has js method:
+	function test() {
+	    alert("Test");
+	}
+
+	WebView.active_tab #=> returns index of @tabs array for currently selected tab
+
+	WebView.full_screen_mode(enable) #=> switch to/from full screen mode
+
+	# Set cookie to be used by WebView for specified url. Each time when WebView load specified url
+	# (either by selecting link or in result of calling WebView.navigate), it will add this cookie
+	# to the HTTP request. Cookie should be in format "NAME=VALUE". Multiple name/value pairs allowed.
+	# In this case they need to be split by semicolon: "NAME1=VALUE1; NAME2=VALUE2".
+	WebView.set_cookie(url, cookie)
+
+### Sample
+See controller and view in the /app/Image folder of the [http://github.com/rhomobile/rhodes-system-api-samples/tree/master system API sample application] for some of the examples of how to use WebView in callbacks.
+
+## Per Platform Files
+
+On a per platform basis, you can use alternative files for any given file in your 'app' or 'public' folder. To do this, make a second file with the platform in the name of the file. For example, to replace these files on the Android platform...
+
+	default.css
+	index.erb
+
+... All you need to do is add the two files
+
+	default.android.css
+	index.android.erb
+
+Note that you must still have the base file present for it to be replaced on a platform.
+
+Valid platform names are:
+
+* android
+* wm
+* bb
+* iphone

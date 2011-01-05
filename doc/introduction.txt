@@ -1,0 +1,25 @@
+# Rhodes 
+
+## Introduction
+
+Rhodes is a framework for building locally executing, device-optimized mobile applications. These applications are optimized for interacting with transactional enterprise application backends. It is also designed to work with synced local data using a local database such as SQLite or HSQLDB and a generic backend synchronization framework such as [RhoSync](../rhosync) (another open source component available from [Rhomobile](http://rhomobile.com)). Rhodes is available for iPhone, Research in Motion (Blackberry), Windows Mobile, and Android phones.
+
+The [Tutorial](tutorial) describes how to install Rhodes and start on building your apps. The rest of this Developer Reference covers all Rhodes features.
+
+## Rhodes Application
+
+Rhodes Application is a web application running locally on the device. It is implement standard MVC architecture:
+
+* Views are set of ERB templates, HTML, CSS, and JavaScript files executed by the WebView control available on the device and served by the local web server. That server is very light weight web server running on the device. You may use [native UI](native_ui) elements for your Views as well.  
+* Controllers are set of usually very simple Ruby scripts in controller.rb files. You may use [native API-s](native_apis) in your controllers.
+* Models are defined by a Ruby script in model.rb file.
+
+See [Rhodes Application Files](files) for more details.
+
+You may generate Rhodes Application using [rhodes](rhodes_generator) utility. 
+
+## Framework Architecture
+
+TBD
+
+
