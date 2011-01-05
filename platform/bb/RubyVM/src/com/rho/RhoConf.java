@@ -411,7 +411,7 @@ public class RhoConf {
 		
 		if ( resp == null || !resp.isOK() )
 		{
-	        LOG.ERROR("send_log failed : network error - " + resp.getRespCode() + "; Body - " + resp.getCharData());
+	        LOG.ERROR("send_log failed : network error - " +  ( resp == null ? "" : resp.getRespCode() + "; Body - " + resp.getCharData()));
 			
 			return false;
 		}
