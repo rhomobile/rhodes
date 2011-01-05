@@ -10,6 +10,10 @@ extern void alert_vibrate(void*);
 #define vibrate alert_vibrate
 extern void alert_play_file(char* file_name, ...);
 #define play_file alert_play_file 
+
+extern void show_status(char* szText, char* szHideLabel);
+#define show_status rho_alert_show_status
+
 %}
 
 %typemap(in) (rho_param *p) {
@@ -24,3 +28,4 @@ extern void show_popup(rho_param *p);
 extern void hide_popup();
 extern void vibrate(...);
 extern void play_file(char* file_name, ...);
+extern void show_status(char* szText, char* szHideLabel);
