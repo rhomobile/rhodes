@@ -566,3 +566,11 @@ void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCo
 }
 }
 }
+
+extern "C"
+{
+void rho_alert_show_status(char* szText, char* szHideLabel)
+{
+    alert_show_status( szText ? szText : "", szHideLabel ? szHideLabel : "");
+}
+}

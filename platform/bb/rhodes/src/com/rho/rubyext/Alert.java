@@ -355,7 +355,7 @@ public class Alert
 				try {
 					if ( arg0 instanceof RubyString )
 					{
-						String message = arg0.toString();
+						String message = arg0.toStr();
 						Alert.showPopup(message);
 					}else if ( arg0 instanceof RubyHash)
 					{
@@ -387,6 +387,22 @@ public class Alert
 			}
 			
 		});
+		
+		klass.getSingletonClass().defineMethod("show_status", new RubyTwoArgMethod() 
+		{
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			{
+				try {
+					RhodesApplication.getInstance().showStatus(arg0.toString(), arg1.toStr());
+					
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("show_status failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+					
+			}
+		});		
 		klass.getSingletonClass().defineMethod("vibrate", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) 
 			{
@@ -397,7 +413,7 @@ public class Alert
 				try {
 					String duration = "2500";
 					if ((args != null) && (args.size() > 0))
-						duration = args.get(0).toString();
+						duration = args.get(0).toStr();
 					Alert.vibrate(duration);
 					
 					return RubyConstant.QNIL;
