@@ -1,0 +1,141 @@
+#Rhodes Application Generator
+
+Rhodes utility is a generator which the user uses to create Rhodes applications, models, and tests (specs). 
+
+## Generate application
+
+App name is passed in as a parameter. Utility will generate default directory structure for your application, with reasonable defaults.
+
+	Usage: rhodes app [options] [args]
+
+	Generate a new rhodes application.
+
+	Required:
+	  name        - application name
+  
+	Optional:
+	  syncserver  - url to the source adapter (i.e. "" or "http://myacct.rhohub.com/apps/myapp/sources/")
+	  zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
+
+	General options:
+	    -p, --pretend                    Run, but do not make any changes.
+	    -f, --force                      Overwrite files that already exist.
+	    -s, --skip                       Skip files that already exist.
+	    -d, --delete                     Delete files that have previously been generated with this generator.
+	        --no-color                   Don't colorize the output
+	    -h, --help                       Show this message
+	        --debug                      Do not catch errors
+
+For example:
+
+	:::term
+	$ rhodes app myspace
+
+generates:
+
+	myspace/
+		Rakefile
+		build.yml
+		rhoconfig.txt
+	./app:
+		application.rb
+		index.bb.erb
+		index.erb
+		layout.erb
+		loading.html
+		loading.png
+	./app/Settings:
+		controller.rb	
+		home.bb.erb	
+		home.erb	
+		index.bb.erb	
+		index.erb	
+		login.bb.erb	
+		login.erb	
+		reset.bb.erb	
+		reset.erb	
+		wait.bb.erb	wait.erb
+	./app/helpers:
+		application_helper.rb
+		browser_helper.rb
+	./icon:
+		<default application icons; modify these to have your own app icon>
+	./public:
+	./public/css:
+	   	<default set of css for different platforms>
+	./public/images:
+		<default images used by js libraries>
+	./public/jqtouch:
+		<jqtouch js script with some rhomobile fixes>
+	./public/js:
+	   	<default js libraries>
+
+## Add new model
+
+Generate a new model:
+
+	Usage: rhodes model [options] [args]
+
+	Generate a new model for a rhodes application.
+
+	Required:
+	  name        - model name
+	  attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
+  
+	General options:
+	    -p, --pretend                    Run, but do not make any changes.
+	    -f, --force                      Overwrite files that already exist.
+	    -s, --skip                       Skip files that already exist.
+	    -d, --delete                     Delete files that have previously been generated with this generator.
+	        --no-color                   Don't colorize the output
+	    -h, --help                       Show this message
+	        --debug                      Do not catch errors
+
+For example:
+
+	:::term
+	$ cd myspace
+	$ rhodes model account name,industry
+
+This will generate the following files in  the folder app/Account:
+
+* app/Account/index.erb - the template to display the list of objects
+* app/Account/edit.erb - the template to edit an object
+* app/Account/new.erb - the template to supply values to create a new object
+* app/Account/show.erb - the template to displays the selected object
+* app/Account/index.bb.erb - the template to display the list of objects on Blackberry
+* app/Account/edit.bb.erb - the template to edit an object on Blackberry
+* app/Account/new.bb.erb - the template to supply values to create a new object on Blackberry
+* app/Account/show.bb.erb - the template to displays the selected object on Blackberry
+* app/Account/account_controller.rb - contains the basic CRUD actions: index, new, create, edit, update and delete.
+* app/Account/account.rb - contains Account model definition
+
+Placeholder for Account test specs will be generated in the app/test folder:
+
+* app/test/account_spec.rb - placeholder for Account test specs
+
+## Add test framework
+
+Add test framework to the app:
+
+	Usage: rhodes spec
+
+	Add test framework to a rhodes application.
+
+
+For example:
+
+	:::term
+	$ cd myspace
+	$ rhodes spec
+
+This will generate the following files in the app folder:
+
+* SpecRunner/controller.rb - contains index action, which start all tests
+* SpecRunner/index.erb - the template to display tests results
+* mspec.rb - contain all mspec required files
+* spec_runner.rb - contain spec framework initialization and generate list of spec files
+
+If you are going to use mspec then add mspec and fileutils extensions to build.yml:
+
+	extensions: ["mspec", "fileutils"]
