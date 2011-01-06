@@ -10,7 +10,7 @@
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
-#include "sqlite/crypto.h"
+//#include "sqlite/crypto.h"
 /*
 extern "C" void rho_crypt_aes_256_encrypt(int size, unsigned char *in, unsigned char *out);
 extern "C" void rho_crypt_aes_256_decrypt(int size, unsigned char *in, unsigned char *out);
