@@ -638,25 +638,16 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	return 0;
 }
 
-/*static*/ StringW CMainWindow::getRhodesAppName()
-{
-    String path = rho_native_rhopath();
-    int last, pre_last;
-
-    last = path.find_last_of('\\');
-    pre_last = path.substr(0, last).find_last_of('\\');
-    return convertToStringW( path.substr(pre_last + 1, last - pre_last - 1) );
-}
-
 LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	//LOG(INFO) + __FUNCTION__;
-    StringW strAppName = getRhodesAppName();
+    StringW strAppName = RHODESAPP().getAppNameW();
 	CAlertDialog::Params *params = (CAlertDialog::Params *)lParam;
 
    	if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS) 
     {
         m_SyncStatusDlg.setStatusText(convertToStringW(params->m_message).c_str());
+        //m_SyncStatusDlg.setTitle(convertToStringW(params->m_title).c_str());
         if ( !m_SyncStatusDlg.m_hWnd )
             m_SyncStatusDlg.Create(m_hWnd, 0);
         else
