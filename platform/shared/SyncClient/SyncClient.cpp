@@ -136,12 +136,21 @@ void rho_syncclient_database_full_reset_and_logout()
     if ( rho_conf_is_property_exists("bulksync_state") )
         rho_conf_setInt("bulksync_state", 0 );
 
-    oUserDB.executeSQL("UPDATE sources SET token=0");
+    //oUserDB.executeSQL("UPDATE sources SET token=0");
 
     Vector<String> arExclude;
     arExclude.addElement("sources");
     arExclude.addElement("client_info");
-    db::CDBAdapter::destroy_tables_allpartitions(Vector<String>(), arExclude);
+
+    Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
+    for( int i = 0; i < (int)arPartNames.size(); i++ )
+    {
+        db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
+
+        dbPart.executeSQL("UPDATE sources SET token=0");
+        dbPart.destroy_tables(Vector<String>(), arExclude);
+        //db::CDBAdapter::destroy_tables_allpartitions(Vector<String>(), arExclude);
+    }
 
     //TODO: scema_sources
     //hash_migrate = {}

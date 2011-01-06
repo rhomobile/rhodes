@@ -44,7 +44,6 @@ public:
 
 private:
     VectorPtr<CSyncSource*> m_sources;
-    Vector<String>          m_arPartitions;
     common::CAutoPtr<net::INetRequest> m_NetRequest;
     common::CAutoPtr<ISyncProtocol> m_SyncProtocol;
     ESyncState m_syncState;

@@ -205,15 +205,20 @@ public class SyncThread extends ThreadQueue
     {
     	try{
 	    	long nowTime = (TimeInterval.getCurrentTime().toULong())/1000;
+	    	long latestTimeUpdated = 0;
 	    	
-		    IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT last_updated from sources");
-		    long latestTimeUpdated = 0;
-		    for ( ; !res.isEnd(); res.next() )
-		    { 
-		        long timeUpdated = res.getLongByIdx(0);
-		        if ( latestTimeUpdated < timeUpdated )
-		        	latestTimeUpdated = timeUpdated;
-		    }
+	    	Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
+	    	for( int i = 0; i < (int)arPartNames.size(); i++ )
+	    	{
+	    		DBAdapter dbPart = DBAdapter.getDB((String)arPartNames.elementAt(i));
+			    IDBResult res = dbPart.executeSQL("SELECT last_updated from sources");
+			    for ( ; !res.isEnd(); res.next() )
+			    { 
+			        long timeUpdated = res.getLongByIdx(0);
+			        if ( latestTimeUpdated < timeUpdated )
+			        	latestTimeUpdated = timeUpdated;
+			    }
+	    	}
 	    	
 	    	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
     	}catch(Exception exc)

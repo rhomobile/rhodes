@@ -41,7 +41,7 @@ module Rhom
         c_id.nil? ? nil : c_id['client_id']
       end
 
-      def database_client_reset
+      def database_client_reset(reset_local_models=true)
         old_interval = SyncEngine.set_pollinterval(0)
         SyncEngine.stop_sync
         
@@ -51,11 +51,12 @@ module Rhom
         if ( Rho::RhoConfig.exists?('bulksync_state') )
             Rho::RhoConfig.bulksync_state='0'
         end    
-        ::Rho::RHO.get_user_db().execute_sql("UPDATE sources SET token=0")
         
-        ::Rho::RHO.get_db_partitions().each_value do |db|
-            db.destroy_tables(
-             :exclude => (['sources','client_info']) )
+        ::Rho::RHO.get_db_partitions().each do |partition, db|
+            next if !reset_local_models && partition == 'local'
+            
+            db.execute_sql("UPDATE sources SET token=0")        
+            db.destroy_tables( :exclude => (['sources','client_info']) )
         end
       
         hash_migrate = {}
@@ -64,7 +65,7 @@ module Rhom
         SyncEngine.set_pollinterval(old_interval)
       end
       
-      def database_full_reset(reset_client_info=false)
+      def database_full_reset(reset_client_info=false, reset_local_models=true)
         old_interval = SyncEngine.set_pollinterval(0)
         SyncEngine.stop_sync
         
@@ -72,11 +73,13 @@ module Rhom
         if ( Rho::RhoConfig.exists?('bulksync_state') )
             Rho::RhoConfig.bulksync_state='0'
         end    
-        ::Rho::RHO.get_user_db().execute_sql("UPDATE sources SET token=0")
         
-        ::Rho::RHO.get_db_partitions().each_value do |db|
-            db.destroy_tables(
-             :exclude => (reset_client_info ? ['sources'] : ['sources','client_info']) )
+        ::Rho::RHO.get_db_partitions().each do |partition, db|
+        
+            next if !reset_local_models && partition == 'local'        
+            
+            db.execute_sql("UPDATE sources SET token=0")        
+            db.destroy_tables( :exclude => (reset_client_info ? ['sources'] : ['sources','client_info']) )
         end
       
         hash_migrate = {}
