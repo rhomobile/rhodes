@@ -1,12 +1,17 @@
 package com.rho.db;
 
+import com.rho.RhoEmptyLogger;
+import com.rho.RhoLogger;
 import com.rho.db.DBException;
 import com.rho.db.IDBResult;
 import com.rho.db.IDBStorage;
 import org.hsqldb.*;
 import org.hsqldb.persist.*;
 
-public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
+public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
+{
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		new RhoLogger("HsqlStorage");
 
 	private Session m_dbSess;
 	private FileUtilBB m_fs;
@@ -151,6 +156,8 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback{
 		try {
 			if ( m_dbSess == null )
 				throw new RuntimeException("executeSQL: m_dbSess == null");
+			
+			LOG.TRACE(strStatement);// + "; Values: " + values);
 			
 			CompiledStatement st = m_dbSess.compiledStatementManager.compile(m_dbSess, strStatement);
 			Result res = m_dbSess.sqlExecuteCompiledNoPreChecksSafe(st, values, bReportNonUnique);

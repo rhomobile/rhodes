@@ -65,7 +65,7 @@ public:
 #else
 	static ATL::CWndClassInfo& GetWndClassInfo() 
 	{ 
-        static rho::StringW strAppName = getRhodesAppName() + L".MainWindow";
+        static rho::StringW strAppName = RHODESAPP().getAppNameW() + L".MainWindow";
 		static ATL::CWndClassInfo wc = 
 		{ 
 			{ CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, StartWindowProc, 
@@ -170,7 +170,6 @@ private:
 	
 	void ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL);
 
-    static rho::StringW getRhodesAppName();
 	void createCustomMenu(void);
 
 	// return cleared URL or empty string
