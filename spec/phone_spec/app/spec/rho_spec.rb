@@ -165,6 +165,17 @@ describe "RhoRuby" do
 =end              
   end
 
+  it "should base64 binary string" do
+    val = ["\1\2\3\0\5\8\6\7\34"]
+    str = val.pack('m')
+    str.should_not be_nil
+    
+    res = str.unpack('m')
+    res.should_not be_nil
+    
+    res[0].should == val[0]
+  end
+    
   it "split should have nil" do
     line = "Account|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||\n"
     parts = line.chomp.split('|')
