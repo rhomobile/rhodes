@@ -225,7 +225,11 @@ public class Alert {
         Context ctx = RhodesActivity.getInstance();
         
 		Dialog dialog = new Dialog(ctx);
-		dialog.setTitle(title);
+		if ( title == null || title.length() == 0 )
+		    dialog.requestWindowFeature(dialog.getWindow().FEATURE_NO_TITLE);
+		else    
+		    dialog.setTitle(title);
+		    
 		dialog.setCancelable(false);
 		dialog.setCanceledOnTouchOutside(false);
 		
