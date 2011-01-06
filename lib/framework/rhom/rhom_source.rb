@@ -55,11 +55,14 @@ module Rhom
         if args.first == :all || args.first == :first
           list = []
         
-          results = ::Rho::RHO.get_src_db().select_from_table('sources', '*')
-          
-          results.each do |result|
-            list << RhomSource.new(result)
+          ::Rho::RHO.get_db_partitions.each_value do |db|
+              results = db.select_from_table('sources', '*')
+
+              results.each do |result|
+                list << RhomSource.new(result)
+              end
           end
+          
           
           if args.first == :first
             return list.length > 0 ? list[0] : nil
@@ -68,9 +71,16 @@ module Rhom
           list
           
         else 
-          result = ::Rho::RHO.get_src_db().select_from_table('sources', '*', 
-                                                            {"source_id" => strip_braces(args.first)}).first
-          RhomSource.new(result)
+        
+          ::Rho::RHO.get_db_partitions.each_value do |db|
+              result = ::Rho::RHO.get_src_db().select_from_table('sources', '*', 
+                                                                {"source_id" => strip_braces(args.first)})
+              next unless result && result.length() > 0 
+              
+              return RhomSource.new(result.first)
+          end    
+          
+          return nil
         end
         
       end

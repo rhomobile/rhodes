@@ -89,16 +89,22 @@ unsigned long CSyncThread::getRetValue()
 int CSyncThread::getLastPollInterval()
 {
     uint64 nowTime = CLocalTime().toULong();
-	
-    DBResult( res, CDBAdapter::getUserDB().executeSQL("SELECT last_updated from sources") );
     uint64 latestTimeUpdated = 0;
-    for ( ; !res.isEnd(); res.next() )
-    { 
-        uint64 timeUpdated = res.getUInt64ByIdx(0);
-        if ( latestTimeUpdated < timeUpdated )
-        	latestTimeUpdated = timeUpdated;
+
+    Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
+    for( int i = 0; i < (int)arPartNames.size(); i++ )
+    {
+        db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
+
+        DBResult( res, dbPart.executeSQL("SELECT last_updated from sources") );
+        for ( ; !res.isEnd(); res.next() )
+        { 
+            uint64 timeUpdated = res.getUInt64ByIdx(0);
+            if ( latestTimeUpdated < timeUpdated )
+        	    latestTimeUpdated = timeUpdated;
+        }
     }
-	
+
 	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
 }
 

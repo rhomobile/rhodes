@@ -155,7 +155,7 @@ namespace "build" do
         cp_r $srcdir + '/db', win32rhopath      
         
         File.open(namepath, "w") { |f| f.write($appname) }      
-        File.open(confpath, "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+        File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
         
     end
   end

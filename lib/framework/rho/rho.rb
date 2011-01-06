@@ -250,9 +250,9 @@ module Rho
                         
                         db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
                         
-                        if str_partition != 'user'
-                            @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
-                        end
+                        #if str_partition != 'user'
+                        #    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+                        #end
                     end
 
                     Rho::RhoConfig::sources()[ src['name'] ] = src
@@ -413,7 +413,7 @@ module Rho
         
           if call_migrate
             db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
-            ::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
+            #::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
                         
             source['migrate_version'] = hash_migrate[ source['name'] ]
             source['schema']['sql'] = strCreate
@@ -421,7 +421,7 @@ module Rho
             db.execute_batch_sql(strCreate)
             db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
             
-            ::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
+            #::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
           end
         
         end
@@ -484,15 +484,17 @@ module Rho
       
     end
 
-    def get_start_id(db_sources)
+    def get_start_id(db_sources, db_partition)
         start_id = 0
         db_sources.each do |db_src|
+            next unless db_partition == db_src['partition']
+            
             src_id = db_src['source_id']
             start_id = src_id if src_id > start_id
         end        
         
-        if start_id < Rho::RhoConfig.max_config_srcid        
-            start_id = Rho::RhoConfig.max_config_srcid()+2 
+        if start_id < Rho::RhoConfig.max_config_srcid()[db_partition]        
+            start_id = Rho::RhoConfig.max_config_srcid()[db_partition]+2 
         else
             start_id += 1
         end
@@ -513,13 +515,14 @@ module Rho
         puts "init_db_sources"
         
         db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs, name' )
-        start_id = get_start_id(db_sources)
+        start_id = get_start_id(db_sources, db_partition)
         
         uniq_sources.each do |source|
+          partition = source['partition']        
+          next unless partition == db_partition
           #puts "init_db_sources(#{source['name']}) : #{source}"
           name = source['name']
           sync_priority = source['sync_priority']
-          partition = source['partition']
           sync_type = source['sync_type']
           schema_version = source['schema_version']
           associations = source['str_associations']
@@ -767,7 +770,10 @@ module Rho
     
     @@sources = {}
     #@@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
-    @@max_config_srcid = 1
+    @@max_config_srcid = {}
+    @@max_config_srcid['user'] = 1
+    @@max_config_srcid['app'] = 20001
+    @@max_config_srcid['local'] = 40001
     
     class << self
       def method_missing(name, *args)
@@ -793,10 +799,6 @@ module Rho
         @@max_config_srcid
       end
 
-      def reset_max_config_srcid
-        @@max_config_srcid = 1
-      end
-        
       def show_log
         RhoConf.show_log
       end
@@ -847,7 +849,7 @@ module Rho
             @@sources[modelname]['source_id'] = @@sources[modelname]['source_id'].to_i()
         end
         
-        @@max_config_srcid = @@sources[modelname]['source_id'] if @@sources[modelname]['source_id'] && @@max_config_srcid < @@sources[modelname]['source_id']
+        @@max_config_srcid[@@sources[modelname]['partition']] = @@sources[modelname]['source_id'] if @@sources[modelname]['source_id'] && @@max_config_srcid[@@sources[modelname]['partition']] < @@sources[modelname]['source_id']
       end
       
       @@g_base_temp_id = nil
