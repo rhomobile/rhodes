@@ -614,22 +614,33 @@ void CRhodesApp::setAppBackUrl(const String& url)
     }
 }
 
+String CRhodesApp::getAppName()
+{
+    String strAppName;
+#ifdef OS_WINCE
+    String path = rho_native_rhopath();
+    int last, pre_last;
+
+    last = path.find_last_of('\\');
+    pre_last = path.substr(0, last).find_last_of('\\');
+    strAppName = path.substr(pre_last + 1, last - pre_last - 1);
+#else
+    strAppName = "Rhodes";
+#endif
+
+    return strAppName;
+}
+
+StringW CRhodesApp::getAppNameW()
+{
+    return convertToStringW( RHODESAPP().getAppName() );
+}
+
 String CRhodesApp::getAppTitle()
 {
     String strTitle = RHOCONF().getString("title_text");
     if ( strTitle.length() == 0 )
-    {
-#ifdef OS_WINCE
-        String path = rho_native_rhopath();
-        int last, pre_last;
-
-        last = path.find_last_of('\\');
-        pre_last = path.substr(0, last).find_last_of('\\');
-        strTitle = path.substr(pre_last + 1, last - pre_last - 1);
-#else
-        strTitle = "Rhodes";
-#endif
-    }
+        strTitle = getAppName();
 
     return strTitle;
 }

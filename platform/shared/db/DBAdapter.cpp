@@ -10,6 +10,12 @@
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
+#include "sqlite/crypto.h"
+/*
+extern "C" void rho_crypt_aes_256_encrypt(int size, unsigned char *in, unsigned char *out);
+extern "C" void rho_crypt_aes_256_decrypt(int size, unsigned char *in, unsigned char *out);
+static rho_codec s_cryptCodec = {rho_crypt_aes_256_encrypt, rho_crypt_aes_256_decrypt};
+*/
 
 namespace rho{
 namespace db{
@@ -125,6 +131,14 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     if ( !checkDbError(nRes) )
         return;
     //TODO: raise exception if error
+/*
+    if (RHOCONF().getBool("encrypt_database"))
+    {
+        rho_set_codec( &s_cryptCodec );
+        CDBError dbError;
+	    executeBatch("PRAGMA key = \"x'2DD29CA851E7B56E4697B0E1F08507293D761A05CE4D1B628663F411A8086D99'\";", dbError);
+    }*/
+
     if ( !bExist )
         createSchema();
 
@@ -458,7 +472,7 @@ void CDBAdapter::copyChangedValues(CDBAdapter& db)
             for ( ; !resSrc.isEnd(); resSrc.next() )
                 arOldSrcs.addElement( resSrc.getIntByIdx(0) );
         }
-        for( int i = 0; i < arOldSrcs.size(); i++)
+        for( int i = 0; i < (int)arOldSrcs.size(); i++)
         {
             int nOldSrcID = arOldSrcs.elementAt(i);
 
@@ -494,6 +508,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
     copyTable("client_info", *this, db );
     copyChangedValues(db);
 
+    /*
     //update User partition
     if ( m_strDbPartition.compare(USER_PARTITION_NAME())==0 )
     {
@@ -513,7 +528,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
         copyTable("sources", db, dbUser );
 
         dbUser.endTransaction();
-    }
+    }*/
 
     getDBPartitions().put(m_strDbPartition.c_str(), &db);
     sync::CSyncThread::getSyncEngine().applyChangedValues(db);
@@ -797,6 +812,15 @@ void CDBAdapter::rollback()
     return *getDBPartitions().get(szPartition);
 }
 
+/*static*/ Vector<String> CDBAdapter::getDBAllPartitionNames()
+{
+    Vector<String> vecNames;
+    for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
+        vecNames.addElement(it->first);
+
+    return vecNames;
+}
+
 /*static*/ boolean CDBAdapter::isAnyInsideTransaction()
 {
     for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
@@ -808,13 +832,13 @@ void CDBAdapter::rollback()
     return false;
 }
 
-/*static*/ void CDBAdapter::destroy_tables_allpartitions(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
+/*static void CDBAdapter::destroy_tables_allpartitions(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
 {
     for (Hashtable<String,CDBAdapter*>::iterator it = m_mapDBPartitions.begin();  it != m_mapDBPartitions.end(); ++it )
     {
         it->second->destroy_tables(arIncludeTables, arExcludeTables);
     }
-}
+}*/
 
 /*static*/ db::CDBAdapter& CDBAdapter::getDBByHandle(sqlite3* db)
 {
@@ -910,7 +934,7 @@ void* rho_db_get_handle(void* pDB)
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     return db.getDbHandle();
 }
-
+/*
 void* rho_db_user_get_handle()
 {
     rho::db::CDBAdapter& db = rho::db::CDBAdapter::getUserDB();
@@ -921,7 +945,7 @@ void* rho_db_user_get_adapter()
 {
     rho::db::CDBAdapter& db = rho::db::CDBAdapter::getUserDB();
     return &db;
-}
+} */
 
 int rho_db_prepare_statement(void* pDB, const char* szSql, int nByte, sqlite3_stmt **ppStmt)
 {
@@ -951,7 +975,19 @@ void rho_db_init_attr_manager()
 {
     rho::db::CDBAdapter::initAttrManager();
 }
+/*
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+void rho_crypt_aes_256_encrypt(int size, unsigned char *in, unsigned char *out)
+{
+    memcpy(out, in, size);
+}
 
+void rho_crypt_aes_256_decrypt(int size, unsigned char *in, unsigned char *out)
+{
+    memcpy(out, in, size);
+}
+#endif //OS_WINDOWS
+*/
 }
 
 namespace rho{
