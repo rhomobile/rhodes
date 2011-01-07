@@ -1,5 +1,3 @@
-
-
 ## Optional Files
 
 ### 'Loading' screen
@@ -29,69 +27,6 @@ Rhodes can display the following error pages: app\E400.erb and app\E500.erb
 * error 500 occurs for any other unhanded exception
 To get exception object use $! or Rho::RHO.current_exception
 
-
-## Helpers
-
-### link_to
-Examples of how to use the link_to method:
-
-	link_to "Visit Other Site", "http://www.rhomobile.com/"
-	==> <a href="http://www.rhomobile.com/" >Visit Other Site</a>
-  
-	link_to "Help", { :action => "help" }
-	==> <a href="/app/model/help" >Help</a>
-  
-	link_to "Delete", { :action => "delete", :id => '{12}' }
-	==> <a href="/app/model/{12}/delete"  onclick="var f = document.createElement('form'); 
-	    f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST'; 
-	    f.action = this.href;f.submit();return false;">Delete</a>
- 
-	link_to "Show", { :action => "show", :id => '{12}'},"style=\"height:4px;width:7px;border-width:0px;\"" 
-	==> <a href="/app/model/{12}/show" style="height:4px;width:7px;border-width:0px;">Show</a>
-  
-	link_to "Delete", { :action => "delete", :id => '{12}' }, "class=\"delete_link\""
-	==> <a href="/app/model/{12}/delete" class="delete_link" onclick="var f = document.createElement('form'); 
-	    f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST'; 
-	    f.action = this.href;f.submit();return false;\">Delete</a>"
-  
-	link_to "Invite",:action => :invite, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}
-	==> <a href="/app/model/invite?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com" >Invite</a>
-
-### url_for
-Examples of how to use the url_for method:
-    
-	url_for '/some_url'
-	==> /some_url
-    
-When generating a new URL, missing values may be filled in from the current request's parameters.
-For example, if the application name or model are not specified in the call parameters, they would be filled from the request.
-    
-	url_for :action => :index
-	==> /app/model
-  
-	url_for :action => :create
-	==> /app/model
- 
-	url_for :action => :new
-	==> /app/model/new
-  
-	url_for :action => :show, :id => '{12}'
-	==> /app/model/{12}/show
-
-	url_for :model => :another_model, :action => :show, :id => '{12}'
-	==> /app/another_model/{12}/show
-  
-	url_for :controller => :another_controller, :action => :show, :id => '{12}'
-	==> /app/another_controller/{12}/show
-  
-	url_for :application => :another_app, :model => :another_model, :action => :show, :id => '{12}'
-	==> /another_app/another_model/{12}/show
-   
-	url_for :action => :create, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}
-	==> /app/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com
-  
-	url_for :action => :show, :id => '{12}', :fragment => "an-anchor" 
-	==> /app/model/{12}/show#an-anchor
 
 ## Redefine back action
 * use :back parameter in render:
