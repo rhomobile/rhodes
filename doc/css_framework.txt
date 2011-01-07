@@ -1,0 +1,144 @@
+# CSS Framework
+
+## Introduction
+
+The Rhodes framework includes stylesheets customized for each device to give your applications a native look and feel. These stylesheets are included by default in all generated Rhodes applications (public/css/), and are included in the application layout file (app/layout.erb).
+
+The default styles will automatically be applied to all supported content found in the "toolbar", "pageTitle", and "content" divs.  If you prefer using different names for any of these divs, you will need to update your stylesheets to reflect the new names in order to retain native styling.  Conversely, if you prefer not to use any of the customized styles in your applications, you can either delete the links to the default stylesheets from your application, or simply place any content you wish to create custom styles for in a div that does not descend from "toolbar", "pageTitle", or "content".
+
+
+## On designing for multiple browsers... 
+
+As with any cross-platform development effort, significant differences exist between the browsers found on devices supported by the Rhodes platform.  Additionally, the native look-and-feel of each device varies greatly.  For this reason, each device supported by Rhodes requires a custom css framework for visual design.
+
+While there are enough similarities between most browsers to facilitate the use of a single view file across platforms, you may encounter some differences which may necessitate the use of custom view files for specific devices.  Rhodes supports such differences in several ways:
+
+### Conditional display in view files
+
+To render content in some browsers but not others, you can include conditional statements within your views.  For example, this code can be used to conditionally display the name of the phone's operating system in your model views.  
+
+	:::ruby
+	<% if platform == 'APPLE' %>
+		iPhone 
+	<% elsif  platform == 'ANDROID' %>
+		Android
+	<% elsif platform == 'Blackberry' %>
+		BlackBerry
+	<% else %>
+		Windows Mobile
+	<% end %>	
+
+To see the appropriate conditional logic for determining the current platform in the application index (or other page outside a model), refer to the generated application <code>layout.erb</code> - this file contains conditional logic for loading the appropriate automatically-generated stylesheets.
+
+If you use more complex conditionals on a regular basis, you can also create custom helper methods in /app/helpers/browser_helper.rb. The following helper method can be used to 
+
+a) determine if a browser is webkit based
+
+	:::ruby
+	def is_webkit?
+	     platform == "APPLE" || platform == "ANDROID"
+	end
+
+b) and if it is, include a custom webkit stylesheet in the html header in the application layout file.
+    
+	:::ruby
+	<%= '<link href="/public/css/my_custom_webkit.css" type="text/css" rel="stylesheet"/>'  if is_webkit? %>
+
+### Dynamic loading of custom view files based on the current platform
+
+For more significant differences between browsers, Rhodes supports platform-specific loading of view files.  At runtime, the application detects the current platform, and checks first for a platform-specific file before loading the default view file.  
+
+To create a platform-specific view file, simply name the file using the following convention
+[action_name].[platform_abbreviation].erb (e.g., index.bb.erb, show.wm.erb)
+
+<table>
+<tr><td width="125">Android:</td><td width="125" > android</td><td width="125" >index.android.erb</td></tr>
+<tr><td width="125">BlackBerry:</td><td width="125" >bb</td><td width="125" >index.bb.erb</td></tr>
+<tr><td width="125">iPhone:</td><td width="125" >iphone</td><td width="125" >index.iphone.erb</td></tr>
+<tr><td width="125">Windows Mobile:</td><td width="125" > wm</td><td width="125" >index.wm.erb</td></tr>
+</table>
+
+As an example, the BlackBerry browser has severely limited support for modern css. In order to take full advantage of the capabilities of the more advanced browsers found on iPhone, Android and Windows Mobile devices, the views generated via the rhogen command include custom BlackBerry view files which are loaded when running on a BB device.  As described above, the files customized for the BlackBerry are designated by including "bb" before the standard erb extension (e.g., app/index.bb.erb). 
+
+Keep in mind that any changes made to the standard view files are not incorporated into the custom views, so if you're developing custom views for a specific platform, ensure that any necessary changes are applied to all relevant view files.
+
+## Different styles for different platforms
+
+Many of the custom styles required on one platform have no corresponding counterpart on other platforms. For example, while the iphone supports several toolbar button styles, there are no corresponding styles in the Android or Windows Mobile platforms.  As a result, the iPhone stylesheet provides custom styles for each of these button types, while the remaining devices apply the same style definition to all four button styles.  Refer to the rest of this document for additional information on which styles to apply for your specific use case.
+
+## BlackBerry CSS/HTML Architecture
+
+The BlackBerry Browser version 4.2 - the version available to native BlackBerry applications built for Blackberry devices prior version BB 6.0 - has extremely limited support for modern css, most notably the key styles applied to divs, like floats, which are used in the standard views.  Instead, the view files loaded when your application runs on the BlackBerry use a table-based layout.
+
+In order to take advantage of the features found in the modern browsers on other supported devices, it is necessary to provide alternate view files with a structure that mitigates BlackBerry's limited support for modern css styles.  Instead, table-based view files are loaded when Rhodes applications are run in the BlackBerry device. 
+
+Please refer to [Blackberry HTML and CSS](bb_css) for a discussion of the styles used for BB.
+
+## Standard Smartphone CSS/HTML Architecture
+
+With the exception of the <code>pageTitle</code> div, the following sections describe the styles available on iPhone, Android and Windows Mobile devices, which will generally be referred to as standard smartphones. 
+
+Please refer to [Standard Smartphone CSS/HTML Architecture](standard_css) for a discussion of the html markup and styles available for standard smartphones.
+
+## Creating Custom Styles
+
+If you prefer to generate your own custom styles for your application, you can do so in several ways:
+
+<ol type="A">
+
+<li><p>Locate content outside of the pageTitle, toolbar and content divs.</p>  With the exception of some styles applied to the body, h1 and a tags,  the platform-specific stylesheets only apply style to content inside the pageTitle, toolbar and content divs.
+This option provides the most flexibility in the event you wish to eventually use some of the pre-defined styles.</li>
+
+<li><p>Create custom stylesheets </p> You can create custom stylesheets for your application which override some or all of the predefined styles in the generated stylesheets.  Make sure these stylesheets are included in the layout after the generated stylesheets to ensure that they fall last in the chain of inheritance.</li>
+
+<li><p>Modify the generated stylesheets.</p> To retain maximum flexibility in your applications, this is ''not'' recommended.  </li>
+</ol>
+
+
+## Tips and Tricks:
+
+You might find the following tips useful if you are developing your own styles for use in a Rhodes application.
+
+### Links
+
+When creating navigation elements using links, you may not want them to look like standard links.  
+
+<ul>
+<li>To make a link's entire parent container clickable, the <a> tag should be styled with <code>display:block</code></li>
+<li>To prevent links from being underlined,  the <a> tag should be styled with <code> text-decoration:none </code> </li>
+
+</ul>
+
+### Lists
+<ul>
+<li>To display lists without bullets or numbers, apply "list-style-type:none" to the list's parent ul or ol tag.  </li>
+</ul>
+
+## Known quirks you might run into with the various devices...
+
+### Windows Mobile
+Windows Mobile has limited support for floated elements.  All floated elements and their parent containers must be assigned a fixed height to properly display, making them difficult to use for dynamically generated content.  Additionally, Windows Mobile does not support the overflow:hidden method, so text that flows over the boundaries of its parent container will not be hidden.
+
+Placeholder text is only used in textfields on native iPhone applications, however, you may want to note that placeholders will not be displayed on Windows Mobile, and should not be relied upon as the sole user-facing description of a textfield.
+
+### Webkit-based browsers
+
+Webkit-based browsers are particularly flexible, as they currently implement many of the advanced features available in css3 and html5.
+
+<p style="font-weight:bold">-webkit-appearance</p>
+In Webkit-based browsers, the <code>-webkit-appearance</code> property allows you access advanced browser-specific styles for user interface elements.  However, in order to customize the appearance of these UI elements,  you may need to turn off the default webkit appearance by including 
+
+<source lang="ruby">
+  -webkit-appearance:none
+</source>
+
+in your style definitions for input elements, buttons, etc.
+
+You can  see an example of this in the generated stylesheets for Android and iPhone,  where -webkit-appearance is overridden for all form elements so that form elements can be styled to resemble native applications components rather than those used in the browser.
+
+You can find more information about -webkit-appearance at http://developer.apple.com/safari/articles/cssrecipes.html
+
+<p style="font-weight:bold">Viewports vs postion:fixed</p>
+The position:fixed attribute does not exhibit the expected behavior in webkit-based mobile browsers.  To ensure that the view is rendered at the appropriate resolution, mobile webkit-based browsers use a viewport to determine which content is displayed.  
+
+To understand how scrolling in a viewport differs from scrolling in a desktop browser, imagine a newspaper laid out on a desk.  Take a large piece of paper, and cut a 480mm x320mm rectangle out of the center of the construction paper.  When you lay the construction paper on top of the newspaper, you can only view a small portion of the content at any given time, and you must move the paper around to see additional content.  Similarly, mobile webkit-based browsers render the entire page, and allow the user to move their 480x320px window over the top of the page, in contrast to dynamically rendering of pages found in desktop browsers.  Since the entire page is rendered once, the browser is unable to regenerate the toolbar in the appropriate location.  As a result, items with position:fixed are interpreted as being fixed relative to the page body, rather than the viewport, and from the user's perspective, the position of the toolbar is not fixed.
