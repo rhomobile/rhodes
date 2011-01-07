@@ -81,6 +81,8 @@ public:
     const String& getAppBackUrl(){return m_strAppBackUrl;}
     void setAppBackUrl(const String& url);
     String getAppTitle();
+    String getAppName();
+    StringW getAppNameW();
 
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, const String& strError, boolean bCancel );

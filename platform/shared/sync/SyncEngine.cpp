@@ -362,22 +362,23 @@ void CSyncEngine::applyChangedValues(db::CDBAdapter& db)
 void CSyncEngine::loadAllSources()
 {
     m_sources.removeAllElements();
-    m_arPartitions.removeAllElements();
 
-    DBResult( res, getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY sync_priority") );
-    for ( ; !res.isEnd(); res.next() )
-    { 
-        String strShouldSync = res.getStringByIdx(1);
-        if ( strShouldSync.compare("none") == 0 )
-            continue;
+    Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
 
-        String strName = res.getStringByIdx(2);
-        String strPartition = res.getStringByIdx(3);
+    for( int i = 0; i < (int)arPartNames.size(); i++ )
+    {
+        db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
+        DBResult( res, dbPart.executeSQL("SELECT source_id,sync_type,name from sources ORDER BY sync_priority") );
+        for ( ; !res.isEnd(); res.next() )
+        { 
+            String strShouldSync = res.getStringByIdx(1);
+            if ( strShouldSync.compare("none") == 0 )
+                continue;
 
-        if ( m_arPartitions.indexOf(strPartition) < 0 )
-            m_arPartitions.addElement(strPartition);
+            String strName = res.getStringByIdx(2);
 
-        m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strName, strShouldSync, getDB(strPartition), *this) );
+            m_sources.addElement( new CSyncSource( res.getIntByIdx(0), strName, strShouldSync, dbPart, *this) );
+        }
     }
 
     checkSourceAssociations();
@@ -589,9 +590,12 @@ void CSyncEngine::doBulkSync()//throws Exception
 
 	LOG(INFO) + "Bulk sync: start";
     getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);        
-
-    for (int i = 0; i < (int)m_arPartitions.size() && isContinueSync(); i++)
-        loadBulkPartition(m_arPartitions.elementAt(i));
+    Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
+    for (int i = 0; i < (int)arPartNames.size() && isContinueSync(); i++)
+    {
+        if ( arPartNames.elementAt(i).compare("local") !=0 )
+            loadBulkPartition(arPartNames.elementAt(i));
+    }
 
     if (isContinueSync())
     {
