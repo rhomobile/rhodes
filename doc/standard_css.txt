@@ -1,0 +1,392 @@
+# Standard Smartphone CSS/HTML Architecture
+
+## HTML Structure 
+
+### pageTitle (\<div id="pageTitle"\>)
+
+The pageTitle div contains the title of the current page, wrapped in an <code>h1</code> tag.  The page title will be displayed in the appropriate location for each device. 
+
+The pageTitle div is not displayed on Windows Mobile devices.
+	:::html
+	<div id="pageTitle">
+          <h1>Things</h1>
+	</div>
+
+### toolbar (\<div id="toolbar"\>)
+
+The toolbar <code>div</code> contains contains interaction elements that allow users to perform actions and navigate through the application.  Most frequently, these elements are links styled as buttons.  
+
+The toolbar <code>div</code> is displayed at the top of the page on standard smartphones.  
+<ul>
+<li>On the iPhone, the content of the toolbar is overlaid on top of the <code>pageTitle</code> div.</li>
+<li>On Android, the application toolbar is typically displayed at the bottom of the screen.  However, the <code>position:fixed</code> attribute does not exhibit the expected behavior in webkit-based mobile browsers.  To ensure that the view is rendered at the appropriate resolution, mobile webkit-based browsers use a viewport to determine which content is displayed. </li>
+</ul>
+
+You can read more about the conflict between viewports and fixed positioning at the end of this document.
+
+	:::html
+	<div id="toolbar">
+		<div id="leftItem" class="regularButton"><%= link_to "Home", Rho::RhoConfig.start_path %></div>
+		<div id="rightItem" class="regularButton"><%= link_to "New", :controller => :Thing, :action => :new %></div>
+	</div>
+
+The toolbar div supports three positions:
+<ul>
+<li><code>#leftItem</code></li>
+<li><code>#rightItem</code></li>
+<li><code>#centerItem</code></li>
+</ul>
+
+Note that placing an item in the <code>#centerItem</code> div will prevent the page title from being displayed on the iPhone, and is not in compliance with Apple's human interface guidelines.
+If you wish to include more than two items in an application targeting iPhone, you may wish to add a secondary toolbar directly below the application toolbar.
+
+#### Toolbar Button Styles
+
+Four button styles are supported for the toolbar.  Note that variation in height and width are due to variation in toolbar height between the platforms. Additionally, in Windows Mobile, the button is a simple text-based link without decoration on a black background.  
+
+
+<table>
+<tr>
+<td>class</td>
+<td>iPhone</td>
+<td>Android</td>
+<td>Windows Mobile</td>
+</tr>
+<tr>
+<td>.regularButton</td>
+<td><img src="http://img.skitch.com/20100428-fcuduqxdwmtum66qhjn39s8jy9.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-xp5r4rtfyn3uhywk9mwt36qfxm.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-emt2m1wc8ibdj58dua3xr25y9k.jpg"></img></td>
+</tr>
+<tr>
+<td>.blueButton </td>
+<td><img src="http://img.skitch.com/20100428-ja12rgj9qr8w12fktrrayau82g.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-etf5p52rjbm8qgs5q5tfqh19cc.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-p4e8h3cmhc8h9kb8cxrcxp4d5x.jpg"></img></td>
+</tr>
+<tr>
+<td>.backButton</td>
+<td><img src="http://img.skitch.com/20100428-c6nu263xf2awqg8sbn2jgy6hyu.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-x2s7f7ehjf89c892npj1ag8p65.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-8394cdjgjngcuap1ikgx9xkdny.jpg"></img></td>
+</tr>
+<tr>
+<td> .deleteButton </td>
+<td><img src="http://img.skitch.com/20100428-bkg63m9dx7etwttix8ek4nhd73.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-gftrd79i13gqq7y48p31ffgwpj.jpg"></img></td>
+<td><img src="http://img.skitch.com/20100428-mh9yydr417nsmraw8k2uhf4r2g.jpg"></img></td>
+</tr>
+</table>
+
+**NOTE: the variation in width of the buttons for Android is due to the length of the text in the button, and should not be attributed to the classes described in this section. **
+
+### Content (\<div id="content"\>)
+ 
+The features described below are only accessible when used inside the content div.  
+
+The content div includes support for native-styled forms and lists.
+
+#### Lists 
+
+##### Static list (title)
+	:::html
+	<ul>
+	    <li>Item A</li>
+	    <li>Item B </li>
+	    <li>Item C </li>
+	</ul>
+
+Sample: no current example
+
+##### List of links
+	:::html
+	<ul>
+	   	<li><%= link_to :controller => :Product %></li>
+	   	<li><%= link_to :controller => :Inventory %></li>
+	   	<li><%= link_to :controller => :Location %></li>
+	   	<li><%= link_to :controller => :Purchase %></li>
+	</ul>
+
+Sample: none
+
+##### List with disclosure indicators (">")
+
+	:::html
+	<ul>            
+	   <li>
+	      <a href="<%= url_for :action => :show, :id => obj.object %>">
+	         <span class="title">Product</span>
+	         <span class="disclosure_indicator"></span>
+	      </a>
+	   </li>
+	   <li>
+	      <a href="<%= url_for :action => :show, :id => obj.object %>">
+	         <span class="title"> Inventory </span>
+	         <span class="disclosure_indicator"></span>
+	      </a>
+	   </li>
+	   <li>
+	      <a href="<%= url_for :action => :show, :id => obj.object %>">
+	         <span class="title"> Location </span>
+	         <span class="disclosure_indicator"></span>
+	      </a>
+	   </li>
+	</ul>
+
+Sample: generated application index.erb page
+
+**NOTE: Disclosure indicators are only displayed on iPhone, and are not displayed on Android or Windows Mobile. **
+
+##### List with left, right-aligned text (label/value pairs)
+
+	:::html
+	<ul>
+	    <li>Item A</li>
+	    <li>Item B </li>
+	    <li>Item C </li>
+	</ul>
+
+Sample: generated application Model show.erb
+
+**NOTE: WiMo cuts off text.  Overflow doesn't work. **
+
+By default, list items dynamically resize to fit your content on iPhone and Android.  
+
+To enforce a standard height for list items, select one of the following options: 
+
+<ol >
+<li>Assign a static height to some list items:</li>
+
+<li>Create a class as follows, and 
+
+<ul >
+<li>apply that class to each list item to assign a static height to some list elements:
+	<em><code>div#content ul li.fixed { height:50px; }</code></em>
+</li>
+
+<li> OR </li>
+ 
+<li> Apply a class to the ul tag to assign a static height to all elements in that list:
+
+	<em><code>div#content ul.fixed li { height:50px; }</code></em>
+	
+</li>
+</ul>
+</li> 
+
+<li>Redefine the default <code>li</code> style as follows to assign a static height to all list elements in the content <code>div</code>:
+
+	<em><code>div#content ul li { height:50px; }</code></em>
+
+</li>
+
+
+<li>Redefine the behavior of li globally to assign a static height to all list elements in your application:
+
+	<em><code>ul li { height:50px; }</code></em>
+
+</li>
+</ol>
+You can make these modifications in the original device stylesheets individually, but for maximum flexibility, it is recommended that you include custom styles in a separate stylesheet or in the application layout's head element.
+
+Note that the standard rules of css inheritance apply, so if using options B or C, make sure that you have redefined the style ''after'' the standard device stylesheet has been included to override the style.
+
+## Forms 
+
+In Rhodes applications, object attributes are stored as strings, so by default, when you generate your model, all editable fields in your generated views will be text fields.  However, each field can easily be changed to support your desired input type.  Refer to the following guidelines for styling form elements using the default device stylesheets.
+
+### Form Structure
+
+To simplify layout of forms in a horizontally constrained space, form fields are organized in one or more unordered lists. In order to access the custom styles for each device, follow the guidelines below. You can structure your forms in a single set of fields or grouped sets of related fields in a form.
+ 
+Add a <code>\<ul\></code> tag inside your form to display your fields in a single cluster.  To create groupings of related fields within a form, cluster fields in separate  <code>\<ul\></code> tags.  Each  <code>\<ul\></code> will be displayed according to the device's default form styling.  
+
+To apply natively-styled labels to a grouping of fields, apply the groupTitle class to an  <code>\<h4\></code> tag immediately outside the grouping  <code>\<ul\></code> tag.  
+
+	:::html
+	<h2 class="groupTitle">Person</h2>
+	<ul>  
+	       <li>...</li>
+	       <li>...</li>
+	</ul>
+
+	 <h2 class="groupTitle">Address</h2> 
+	<ul>  
+	       <li>...</li>
+	       <li>...</li>
+	</ul>
+
+Typically, each list item in the form should contain a label element and an input element.  Any exceptions will be noted below.
+
+### Sample Code
+
+[Sample code for forms](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/UIFormDemo/)<br/>
+
+[Sample rhodes application with forms](http://github.com/rhomobile/rhodes-system-api-samples/)<br/>
+
+
+### Creating a custom "New" Form
+
+Custom "new" form for iPhone, Android, and Windows Mobile platforms
+
+You can create native-styled forms by organizing form fields in one or more unordered lists inside a view's "content" div. 
+
+Include a form tag inside the \<div id="content"\> tag. The form should use the post method to submit to the current controller's <code>create</code> or <code>update</code> actions.
+    
+	:::html
+    <form method="POST" action="<%= url_for :action => :create %>">
+    </form>
+
+Add a <code>\<ul\></code> tag inside your form. To break your fields into multiple groupings, include one <code>\<ul\></code> tag to contain each group as described above.<br/>
+**NOTE: to append a label to a group of fields, use the <code>\<h2 class="groupTitle"\></code> tag to apply styling appropriate for each platform. **
+
+Add one <code>\<li\></code> tag inside the <code>\<ul\></code> tag for each input field.  You must adhere to the syntax found in the examples below to access the natively-styled form elements for each platform.<br/>        
+**NOTE: each checkbox and radio button will need to be contained inside its own list item.  Further discussion of the formatting can be found later in this document. **
+
+To include a "submit" button, immediately below the last closing <code>\</ul\></code> tag and immediately above the closing <code>\</form\></code> tag.  
+**NOTE: the button should ''not'' be contained inside an <code>\<li\></code> tag, and must have the <code>standardButton</code> class to be appropriately styled. **
+
+	:::html
+    <input type="submit" class="standardButton" value="Create" />
+
+### Creating a custom "Edit" Form
+
+
+You can create native-styled forms by organizing form fields in one or more unordered lists inside a view's <code>"content" \<div\></code>. 
+<br/>
+Include a form tag inside the <code>\<div id="content"\></code> tag. The form should use the post method to submit to the current controller's "create" or "update" actions.
+    
+	:::html
+    <form method="POST" action="<%= url_for :action => :create %>">
+    </form>
+
+
+Add a <code>\<ul\></code> tag inside your form.  To break your fields into multiple groupings, include one \<ul\> tag to contain each group as described above.<br/>
+**NOTE: to append a label to a group of fields, use the <code>\<h2 class="groupTitle"\></code> tag to apply styling appropriate for each platform. **
+
+When creating an edit form, it should include a hidden field that contains the id of the  object being edited.
+
+	:::html
+	<input type="hidden" name="id" value="<%= @model_name.object %>"/>
+
+Add one <code>\<li\></code> tag inside the <code>\<ul\></code> tag for each input field.  You must adhere to the syntax found in the examples below to access the natively-styled form elements for each platform.<br/>        
+**NOTE: each checkbox and radio button will need to be contained inside its own list item.  Further discussion of the formatting can be found later in this document. **
+
+To include a form submission button, immediately below the last closing <code>\</ul\></code> tag and immediately above the closing <code>\</form\></code> tag.  
+**NOTE: the button should ''not'' be contained inside an <code><nowiki><li></nowiki></code> tag, and must have the <code>standardButton</code> class to be appropriately styled. **
+
+	:::html
+    <input type="submit" class="standardButton" value="Create" />
+
+## Form fields 
+
+### Text fields
+
+In native iPhone applications, text fields display a placeholder attribute, rather than the standard label/value pair used on WiMo and Android devices. To display the label for text fields properly on all supported devices, follow the following steps when adding or editing a text field:
+<br/>
+
+Apply the <code>fieldLabel</code> class to the textfield label.  The <code>fieldLabel</code> class prevents the label from being displayed on the iPhone by setting the display property to "<code>none</code>".
+
+Call the placeholder method inside the text field input tag and include the desired placeholder text as an argument.  The text field input tag should contain an embedded ruby tag calling the placeholder method to display placeholder text only on the iPhone.  The placeholder method only returns the placeholder attribute when the application is running on an iPhone, since only native iPhone applications use placeholders instead of labels.
+
+	:::html
+	<ul>  
+		<li>
+	        <label for="thing[name]" class="fieldLabel">Name</label>
+	        <input type="text" name="thing[name]" <%= placeholder( "Name" ) %> />
+		</li>
+         
+		<li>
+	        <label for="thing[desc]" class="fieldLabel">Desc</label>
+	        <input type="text" name="thing[desc]" <%= placeholder( "Desc" ) %> />
+		</li>
+	</ul>
+
+### Checkboxes/Switches 
+Checkboxes should be used to allow the user to distinguish between two binary states.  On Android and WiMo, checkboxes look like checkboxes.   However, traditional checkboxes are not a native component on the iPhone, so to comply with Apple HIG, checkboxes are instead displayed as switches labeled with the diametrically opposed states 'on/off.'
+
+	:::html
+	<ul>
+		<li>
+			<label for="todo[description1]">C2</label>
+			<input type="checkbox" name="todo[description1]" />
+		</li>
+		<li>
+			<label for="todo[description2]">C2</label>
+			<input type="checkbox" name="todo[description2]" />
+		</li>
+	</ul>
+
+The custom style can be overridden on the iphone by redefining div#content form input[type="checkbox"] as follows:  
+
+	:::html
+	div#content form input[type="checkbox"]{
+	    background: none;
+	    -webkit-appearance: checkbox;  #explain webkit appearance
+	    width:20px;
+	}
+
+### Radio Buttons
+
+Android and iPhone applications display stylized radio buttons that match those used in the native interface.  Note that on the iPhone, a selected radio button will be marked with a checkmark.
+
+WiMo applications utilize the default radio button styles.  
+
+	:::html
+	<h4 class="groupTitle">Current status</h4>
+	<ul>
+	     <li><label for="task[status]">Not started</label>
+	         <input type="radio" name="task[status]" value="new"/>
+	     </li>
+	     <li><label for="task[status]">In progress</label>
+	         <input type="radio" name="task[status]" value="current"/>
+	     </li>
+	     <li><label for="task[status]">Finished</label>
+	         <input type="radio" name="task[status]" value="complete"/>
+	     </li>
+	</ul>
+
+### Select boxes
+
+The stylesheets included in your Rhodes applications customize the style of the selection box element displayed on the form.  Select boxes make use of the device's native selection components and cannot be modified. 
+
+	:::html
+	<h4 class="groupTitle">Select</h4>
+	<ul>
+	    <li>
+	        <select name="cars">
+	            <option value="volvo" selected>Please select</option>
+	            <option value="volvo">Volvo</option>
+	            <option value="saab">Saab</option>
+	            <option value="fiat">Fiat</option>
+	            <option value="gremlin">Gremlin</option>
+	        </select>
+	    </li>
+	</ul>
+
+### Text areas
+
+Although textareas are styled in css for each device, by convention, each textarea tag must include attributes for the number of rows and columns. The recommended values for rows and columns can be found below.  Additionally, each textarea tag must have both an opening <code>\<textarea\></code> and closing <code>\</textarea\></code> tag - self-closing textarea tags will not be displayed properly in your application.
+
+	:::html
+	<h4 class="groupTitle">Textarea</h4>
+	<ul>
+	    <li class="textarea">
+	        <textarea rows="5" cols="30" ></textarea>
+	    </li>
+
+	</ul>
+
+If your application is targeting Windows Mobile devices, include the <code>textarea</code> class on any <code>\<li\></code> tags containing a textarea to ensure that the list item is the proper height.
+
+### Buttons
+
+Buttons involved in form submission should be created as input tags, type submit. Buttons should not be contained inside an <code>\<li\></code> tag, and must have the <code>standardButton</code> class to be appropriately styled. 
+
+Links/buttons used to perform actions related to the form but not involved in form submission (e.g., Delete, Cancel) should be located in the top toolbar instead.
+
+	:::html
+	<input type="submit" class="standardButton" value="Create"/>
+
+
+<code>\<button\></code> elements are not supported in Windows Mobile and BlackBerry platforms.
