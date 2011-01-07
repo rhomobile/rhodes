@@ -62,15 +62,19 @@ public class SqliteStorage implements IDBStorage
 	public IDBResult executeSQL(String strStatement, Object[] values,
 			boolean bReportNonUnique) throws DBException 
 	{
+		LOG.TRACE(strStatement);// + "; Values: " + values);
+		
 		if ( m_db == null )
 			throw new RuntimeException("executeSQL: m_db == null");
-		
+
 		IDBResult res = null;
+		
+		String strStatementOrig = strStatement;
+		
 		try
 		{
 			while( strStatement != null && strStatement.length()> 0)
 			{
-				//LOG.INFO(strStatement + "Values: " + values);
 	            int start = 0;
 	            while ( start < strStatement.length() && (strStatement.charAt(start) == '\n' ||
 	            		strStatement.charAt(start) == '\r' ||
@@ -137,6 +141,7 @@ public class SqliteStorage implements IDBStorage
 			}
 		}catch(DatabaseException exc )
 		{
+			LOG.ERROR("executeSQL failed. Statement: " + strStatementOrig, exc);
 			throw new DBException(exc);
 		}
 		return res;
@@ -198,7 +203,7 @@ public class SqliteStorage implements IDBStorage
 	
 	public void createTriggers() throws DBException
 	{
-        String strTriggers = RhoFile.readStringFromJarFile("apps/db/syncdb_java.triggers", this);	
+		String strTriggers = RhoFile.readStringFromJarFile("apps/db/syncdb_java.triggers", this); 
 		executeBatchSQL( strTriggers );
 	}
 	

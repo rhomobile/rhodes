@@ -76,7 +76,8 @@ public:
     static CDBAdapter& getUserDB();
     static CDBAdapter& getDBByHandle(sqlite3* db);
     static CDBAdapter& getDB(const char* szPartition);
-    static void destroy_tables_allpartitions(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
+    static Vector<String> getDBAllPartitionNames();
+    //static void destroy_tables_allpartitions(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
 
     boolean isTableExist(String strTableName);
     int prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt);

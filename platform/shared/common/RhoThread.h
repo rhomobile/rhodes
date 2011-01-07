@@ -36,7 +36,7 @@ public:
 
     boolean isStopping(){return (m_nState&TS_STOPPING) != 0;}
     boolean isWaiting(){return (m_nState&TS_WAIT) != 0;}
-    boolean isRunning(){return (m_nState&TS_RUNNING) != 0;}
+    boolean isAlive(){return (m_nState&TS_RUNNING) != 0;}
 
 };
 

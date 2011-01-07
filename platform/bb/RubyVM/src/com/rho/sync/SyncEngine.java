@@ -112,7 +112,6 @@ public class SyncEngine implements NetRequest.IRhoSession
     };
     
     Vector/*<SyncSource*>*/ m_sources = new Vector();
-    Vector/*<String>*/      m_arPartitions = new Vector();    
     NetRequest m_NetRequest;
     ISyncProtocol m_SyncProtocol;
     int         m_syncState;
@@ -489,22 +488,22 @@ public class SyncEngine implements NetRequest.IRhoSession
 	void loadAllSources()throws DBException
 	{
 	    m_sources.removeAllElements();
-	    m_arPartitions.removeAllElements();
-	    
-	    IDBResult res = getUserDB().executeSQL("SELECT source_id,sync_type,name, partition from sources ORDER BY sync_priority");
-	    for ( ; !res.isEnd(); res.next() )
-	    { 
-	        String strShouldSync = res.getStringByIdx(1);
-	        if ( strShouldSync.compareTo("none") == 0)
-	            continue;
+	    Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
 
-	        String strName = res.getStringByIdx(2);
-	        String strPartition = res.getStringByIdx(3);
-	        
-	        if ( m_arPartitions.indexOf(strPartition) < 0 )
-	        	m_arPartitions.addElement(strPartition);
-	        
-	        m_sources.addElement( new SyncSource( res.getIntByIdx(0), strName, strShouldSync, getDB(strPartition), this) );
+	    for( int i = 0; i < (int)arPartNames.size(); i++ )
+	    {
+	        DBAdapter dbPart = DBAdapter.getDB((String)arPartNames.elementAt(i));	    
+		    IDBResult res = dbPart.executeSQL("SELECT source_id,sync_type,name from sources ORDER BY sync_priority");
+		    for ( ; !res.isEnd(); res.next() )
+		    { 
+		        String strShouldSync = res.getStringByIdx(1);
+		        if ( strShouldSync.compareTo("none") == 0)
+		            continue;
+	
+		        String strName = res.getStringByIdx(2);
+		        
+		        m_sources.addElement( new SyncSource( res.getIntByIdx(0), strName, strShouldSync, dbPart, this) );
+		    }
 	    }
 	    
 	    checkSourceAssociations();
@@ -698,8 +697,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 		LOG.INFO("Bulk sync: start");
 		getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);
 		
-	    for (int i = 0; i < (int)m_arPartitions.size() && isContinueSync(); i++)
-	        loadBulkPartition( (String)m_arPartitions.elementAt(i));
+		Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
+	    for( int i = 0; i < (int)arPartNames.size()&& isContinueSync(); i++ )
+	        loadBulkPartition( (String)arPartNames.elementAt(i));
 
 	    if (isContinueSync())
 	    {

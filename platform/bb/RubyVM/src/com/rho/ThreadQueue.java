@@ -85,7 +85,7 @@ public abstract class ThreadQueue extends RhoThread
 
         if ( isNoThreadedMode()  )
             processCommands();
-        else
+        else if ( isAlive() )
     	    stopWait(); 
     }
     
@@ -161,7 +161,8 @@ public abstract class ThreadQueue extends RhoThread
 
     public void setPollInterval(int nInterval)
     { 
-        m_nPollInterval = nInterval; 
-        stopWait();
+        m_nPollInterval = nInterval;
+        if ( isAlive() )        
+        	stopWait();
     }
 }

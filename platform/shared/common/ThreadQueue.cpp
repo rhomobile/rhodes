@@ -46,7 +46,7 @@ void CThreadQueue::addQueueCommand(IQueueCommand* pCmd)
 
     if ( isNoThreadedMode()  )
         processCommands();
-    else
+    else if ( isAlive() )
 	    stopWait(); 
 }
 
@@ -111,7 +111,8 @@ void CThreadQueue::processCommands()//throws Exception
 void CThreadQueue::setPollInterval(int nInterval)
 { 
     m_nPollInterval = nInterval; 
-    stopWait();
+    if ( isAlive() )
+        stopWait();
 }
 
 };

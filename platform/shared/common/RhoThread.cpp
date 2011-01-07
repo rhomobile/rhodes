@@ -12,7 +12,7 @@ CRhoThread::CRhoThread(IRhoClassFactory* factory)
 
 void CRhoThread::start(EPriority ePriority)
 {
-    if ( !isRunning() )
+    if ( !isAlive() )
     {
         m_pImpl->start(this, ePriority);
 
