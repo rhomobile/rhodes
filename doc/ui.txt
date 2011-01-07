@@ -1,0 +1,481 @@
+# Rhodes Application User Interface
+
+== [[CSS Framework]] (Since 2.0) ==
+Rhodes 2.0+ includes an improved [[CSS Framework]] which takes advantage of powerful Webkit features on supporting platforms, while providing a clean, intuitive codebase across all platforms.
+
+== Menu Layout ==
+For menu-based platforms (currently RIM and Android), the Rhodes framework provides the ability to change the native application menu items through the following simple API:
+
+<source lang='ruby'>
+@default_menu = { 
+  "Item Label 1" => "/item1path", 
+  "Item Label 2" => "/item2path",
+   ... 
+} #=> overrides the rhodes default menu
+
+@menu = { 
+  "Item Label 1" => "/item1path", 
+  "Item Label 2" => "/item2path", 
+  ... 
+} #=> overrides the default menu in a specific action
+</source>
+
+=== Default Menu ===
+To change the default menu (in application.rb):
+
+<source lang='ruby'>
+class AppApplication < Rho::RhoApplication
+  def initialize
+    super
+    @default_menu = {
+      "Go Home" => :home, 
+      "View Accounts" => "/app/Account", 
+      "Do Refresh" => :refresh, 
+      "Perform Sync" => :sync, 
+      "App Options" => :options, 
+      "View Log" => :log 
+    }
+  end
+end
+</source>
+
+This will create a default menu with the following items (in top-down order):
+<br/>
+*Go Home
+*View Accounts
+*Do Refresh
+*Perform Sync
+*App Options
+*View Log<br/>
+
+All of these menu items with the exception of "View Accounts" call a reserved menu item.  The "View Accounts" item will navigate to the path specified by the hash value, in this case /app/Account.
+
+'''Note:''' Android menu customization support was implemented in Rhodes 2.0.
+
+=== Controller Action Menu ===
+To change the menu for a specific action (in controller.rb):
+
+<source lang='ruby'>
+def index
+  @accounts = Account.find(:all)
+  @menu = { 
+    "Go Home" => :home, 
+    "Refresh" => :refresh, 
+    "Options" => :options, 
+    :separator => nil, 
+    "Log" => :log, 
+    "New Account" => "/app/Account/new" 
+  }
+  render
+end
+</source>
+
+'''Note:''' The menu will reset to the application default menu as soon as the user navigates to a different action.
+
+=== Reserved Menu Items ===
+
+See predefined actions allowed in menus in [[User defined menu/toolbar/etc actions]] section
+
+The following is the default Rhodes menu if none is provided in application.rb:
+
+<source lang='ruby'>
+@default_menu = {
+  "Home" => :home, 
+  "Refresh" => :refresh, 
+  "Sync" => :sync, 
+  "Options" => :options, 
+  "Log" => :log, 
+  :separator => nil, 
+  "Close" => :close
+}
+</source>
+
+== User defined menu/toolbar/tabbar actions ==
+
+Here is list of allowed values for actions for user defined menus, toolbars and tabbars:
+
+<source lang='ruby'>
+:back #=> do back navigation using web view history or application's back url
+:forward #=> do forward navigation
+:home #=> navigate to configured start_path
+:options #=> navigate to configured options_path
+:refresh #=> refresh current page
+:sync #=> trigger SyncEngine.dosync
+:log #=> load the native logging UI
+:separator #=> draw a separator line (if supported)
+:close #=> close or put Rhodes to background (depending on platform)
+:fullscreen #=> go to full screen mode
+</source>
+
+Action can be also URL of user-defined controller method. URL can be prefixed with 'callback:' meaning it should be loaded by rhodes core, not WebView. This will effectively load specified url but in background, not touching UI. Some examples:
+
+<source lang='ruby'>
+:action => url_for(:action => :do_that) # Calling of this action will be done by UI WebView component so
+                                        # result of the do_that method will be rendered in UI
+:action => '/app/AnotherController/do_that' # The same as above but for another controller
+:action => 'callback:' + url_for(:action => :callback) # Here url of :callback action will be loaded in background
+                                                       # by the rhodes core. UI will not be touched
+:action => 'callback:/app/AnotherController/callback' # The same as above but for another controller
+</source>
+
+== Native Bar Control (deprecated) ==
+NativeBar API now is deprecated. Use new Rho::NativeToolbar and Rho::NativeTabbar APIs.
+You can see documentation about [http://wiki.rhomobile.com/index.php/RhodesNativeBarOldAPI old NativeBar API] in separated document.
+
+== Native Toolbar Control (since 2.3) ==
+Rhodes supports displaying a native looking 'toolbar'.
+
+The toolbar is a small space at the bottom of the screen, where the user can add buttons with associated actions. In Rhodes, these actions should be loading URLs. There are different methods for loading these URLs - you can either specify the 'callback:' prefix at the beginning of the URL (which will perform 'background' loading of the URL by the Rhodes core), or you can use url itself, without prefix (which will use the UI WebView element to load the URL - in this case pressing the toolbar button will cause the current page to reload and redraw).
+
+The toolbar supported on iPhone and Android.
+
+You can customize toolbar during runtime.
+
+To use the toolbar, all you have to do is define the toolbar items in your application.rb:
+
+<source lang='ruby'>
+class AppApplication < Rho::RhoApplication
+  def initialize
+    @@toolbar = [
+      {:action => :back,    :icon => '/public/images/back_btn.png'},
+      {:action => :forward, :icon => '/public/images/forward_btn.png'},
+      {:action => :separator},
+      {:action => :home},
+      {:action => :refresh},
+      {:action => :options}
+    ]
+    # Important to call super _after_ you define @@toolbar!
+    super
+  end
+end
+</source>
+
+Refer to the [[User defined menu/toolbar/etc actions]] to see how :action can be defined.
+
+Each toolbar item can define next elements :
+
+<source lang='ruby'>
+:label #=> Visible label to display instead of icon
+:action #=> Path to your rhodes action (i.e. '/app/Account' would load the Account index action)
+:icon #=> Relative path to toolbar item icon in your rhodes app (typically located in /public/images/)
+:colored_icon => false #=> Optional argument which tells rhodes to use color icon in toolbar on iPhone instead of standard monochrome white icon (prepared from image alpha).
+</source>
+
+
+Predefined actions are drawn using predefined icons, but that icons can be overridden by the user by specifying an :icon as shown in the example above. Icons that are defined must be black with a transparent background. Icons must be no more than 30x30 pixels and must be in .png format.
+In case of a user-defined action, either :icon or :label must be specified. If both are omitted, Rhodes will not add the button to the toolbar. If both are specified, the :icon will be drawn and the :label will be discarded.
+
+Behind the scenes, Rho::RhoApplication will detect the @@toolbar array in its initialize method and build the native toolbar through the following function:
+<source lang='ruby'>
+require 'rho/rhotoolbar'
+
+Rho::NativeToolbar.create(bar_item_array)
+</source>
+
+
+To disable the toolbar entirely:
+<source lang='ruby'>
+class AppApplication < Rho::RhoApplication
+  def initialize
+    @@toolbar = nil
+    super
+  end
+end
+</source>
+<br/>
+
+=== Native Toolbar runtime API ===
+
+As mentioned above, with recent versions of Rhodes you can create/remove toolbars/tabbars in runtime.
+
+Examples of creating toolbar:
+<source lang='ruby'>
+require 'rho/rhotoolbar'
+
+
+Rho::NativeToolbar.create(toolbar)
+Rho::NativeToolbar.create(:buttons => toolbar) # means the same as above
+Rho::NativeToolbar.create( :buttons => toolbar, # 
+     :background_color => 0x0000FF)                 #   Will create toolbar the same as above but with specified
+                                                                         #   background color
+</source>
+
+Examples of remove toolbar:
+<source lang='ruby'>
+require 'rho/rhotoolbar'
+
+Rho::NativeToolbar.remove
+</source>
+
+===  Sample ===
+Please find sample code in "NativeToolbarTest" in [http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/NativeToolbarTest/ Rhodes-System-Api-Samples]
+
+== Native Tabbar Control (since 2.3) ==
+
+Rhodes supports displaying a native looking 'tabbar'. 
+
+The tabbar is set of different UI views associated with each tab, so that selecting any tab will display the associated view. There is no ability to define custom actions for the tabbar like you can for the toolbar. The only action when a tab is selected is to switch to another UI view.
+
+The tabbar are supported on iPhone and Android.
+
+You can use VerticalTabBar control on iPad (specifically control for iPad). It like Tabbar, but tabs located on left side and each item have horizontal orientation. Like Tabs items can have Icon image and text. Functionality very similar Tabbar.
+
+You can customize toolbars/tabbars during runtime.
+
+
+For the tabbar:
+<source lang='ruby'>
+class AppApplication < Rho::RhoApplication
+  def initialize
+    # Tab items are loaded left->right, @tabs[0] is leftmost tab in the tab-bar
+    @tabs = [
+      { :label => "Dashboard", :action => '/app', :icon => "/public/images/tabs/dashboard.png", :reload => true }, 
+      { :label => "Accounts",  :action => '/app/Account',  :icon => "/public/images/tabs/accounts.png" },
+      { :label => "Contacts",  :action => '/app/Contact',  :icon => "/public/images/tabs/contacts.png" },
+      { :label => "Options",   :action => '/app/Settings', :icon => "/public/images/tabs/options.png" }
+    ]
+    # Important to call super _after_ you define @tabs!
+    super
+  end
+end
+</source>
+
+Each tabbar item defined in the above sample defines four tab elements (all four are required):
+
+<source lang='ruby'>
+:label #=> Visible label to display on the tabbar
+:action #=> Path to your rhodes action (i.e. '/app/Account' would load the Account index action)
+:icon #=> Relative path to tabbar item icon in your rhodes app (typically located in /public/images/)
+:reload => true #=> Optional argument which tells rhodes to reload the tab's :action, defaults to false
+:selected_color => 0xFFFF00 #=> Optional parameter for change selected color of this tabs (if you use it on Android - you should defined it for all tabs! and also define :background_color for TabBar!)
+:disabled => true #=> Optional parameter for disable this tab
+</source>
+
+
+Behind the scenes, Rho::RhoApplication will detect the @tabs array in its initialize method and build the native bar through the following function:
+<source lang='ruby'>
+require 'rho/rhotabbar'
+
+Rho::NativeTabbar.create(bar_item_array)
+</source>
+
+
+To disable the tabbar entirely:
+<source lang='ruby'>
+class AppApplication < Rho::RhoApplication
+  def initialize
+    @tab = nil
+    super
+  end
+end
+</source>
+<br/>
+
+=== Native Tabbar runtime API ===
+
+<source lang='ruby'>
+require 'rho/rhotabbar'
+
+Rho::NativeTabbar.create(tabs) # Will remove existing tabbar (if exists) and create new one
+Rho::NativeTabbar.create( :tabs => tabs) # means the same as above
+Rho::NativeTabbar.create( :tabs => tabs, :background_color => 0x0000FF) # Means the same as above and setup background color for tabbar. Attention ! If you setup :background_color on Android you should also setup :selected_color for each tab !
+Rho::NativeTabbar.remove # Will remove current tabbar. Does nothing if there is no active bar
+Rho::NativeTabbar.switch_tab(1) # Will switch active tab to second (numeration is zero based i.e. 0 means first tab, 1 - second etc)
+</source>
+
+Rho::NativeTabbar.create() create native tab bar UI element and activate its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create:
+<source lang='ruby'>
+require 'rho/rhotabbar'
+
+Rho::NativeTabbar.create(tabs) # Create tab bar
+Rho::NativeTabbar.switch_tab(2)                                  # Switch to 3-rd tab (index is zero-based!)
+</source>
+
+And one more:
+<source lang='ruby'>
+require 'rho/rhotabbar'
+
+Rho::NativeTabbar.create(tabs)
+Rho::NativeTabbar.switch_tab(3)
+WebView.navigate('app/Settings', 3)
+</source>
+
+<br>
+For VerticalTabBar on iPad (if you run this code not on iPad, then tabbar will created):
+<source lang='ruby'>
+require 'rho/rhotabbar'
+
+Rho::NativeTabbar.create_vertical(tabs)
+Rho::NativeTabbar.switch_tab(3)
+WebView.navigate('app/Settings', 3)
+</source>
+
+===  Sample ===
+Please find sample code in "NativeTabbarTest" in [http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/NativeTabbarTest/ Rhodes-System-Api-Samples]
+
+== Navigation bar (Since 2.0) ==
+
+Beginning in 2.0, Rhodes supports a native navigation bar for iPhone. This is a native UI element with a title, 'back' button and optional 'right' button.
+
+<source lang='ruby'>
+NavBar.create :title => "Navigation bar",
+              :left => {:action => :back, :label => "Back"},
+              :right => {:action => url_for(:action => :help), :label => "Help"}
+</source>
+
+':right' can be omitted. ':left' and ':right' described in [[User defined menu/toolbar/etc actions]]
+
+== Date/Time picker ==
+
+The Date/Time picker API allows the user to choose date or time:
+
+*<source lang='ruby'>DateTimePicker.choose(callback, title, initial_time, fmt)</source>
+*<source lang='ruby'>DateTimePicker.choose(callback, title, initial_time, fmt, opaque)</source>
+*<source lang='ruby'>DateTimePicker.choose_with_range(callback, title, initial_time, fmt, opaque, mindatetime, maxdatetime)</source>
+
+The "fmt" parameter can have the following values (any other value throws an exception)
+* 0 - full date and time input field
+* 1 - date only input field
+* 2 - time only input field
+
+The "opaque" parameter is an optional string. It is non-interpreted (hence the name "opaque") and will be returned in the callback, unmodified.
+
+Once user chooses a date/time and presses OK or Cancel, the callback URL you specified will be called. The callback is a POST message; the body of the message contains 'status', 'result' and, possibly, 'opaque'.
+* 'status' can be 'ok' or 'cancel'
+* 'result' is a string representation of the selected date, as the number of seconds since Epoch. Ruby time can be created from it using the Time::at method.
+* There is no 'result' if status is 'cancel'
+* 'opaque' - if it exists, 'opaque' will be the same string that was passed into the choose method.
+*mindatetime - minimum datetime for setup range. Setup to Time.at(0) for no limit. 
+*maxdatetime - maximum datetime for setup range. Setup to Time.at(0) for no limit. 
+
+Data/Time Picker also can executed via AJAX call for set date/time without leave the page.
+NOTE: Currently implemented for Android, iPhone and Blackberry
+
+=== Sample ===
+See controller.rb and index.erb view in the /app/DateTime folder of the [http://github.com/rhomobile/rhodes-system-api-samples/tree/master System API Samples application] for more information.  This example demonstrates each of the three date/time picker types.<br>
+See controller.rb and index.erb view in the /app/DateTimeAJ folder of the [http://github.com/rhomobile/rhodes-system-api-samples/tree/master System API Samples application] for more information about execute Date/Time Picker via AJAX call.  This example demonstrates set date/time without leave the page.
+
+== Animated transitions for Webkit platforms ==
+
+Animated transitions are supported on the iPhone and Android. Rhodes uses a customized version of jQTouch to deliver transitions between screens. To enable animated transitions in your application, you must include this in your layout's head element:
+
+<source lang="xml">
+    <% if System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' %>
+        <script src="/public/jqtouch/jquery.1.3.2.min.js" type="text/javascript"></script>
+        <script src="/public/jqtouch/jqtouch.js" type="text/javascript"></script>
+        <link href="/public/jqtouch/jqtouch.css" type="text/css" rel="stylesheet"/>
+        <script>$.jQTouch();</script>
+    <% end %>
+</source>
+
+Also make sure to add ''jqtouch_mode=1'' to your application's ''rhoconfig.txt''. Setting this property enables animation for the back button in the bottom toolbar and hides the forward button.
+
+Once these lines are included, links in the application will run animated transitions between screens. '''Each link must be a full path'''; relative paths won't work with transitions. If you use helper functions like url_for and link_to, you should be safe.
+
+=== Adding transitions to older applications ===
+
+If you have an older application that you'd like to add animated transitions to, all you should have to do is follow these steps:
+
+* Follow the instructions as described in the previous section.
+* Go through each view template and change all the id attributes to classes. For example:
+**  &lt;div ''id="toolbar"''> should be &lt;div ''class="toolbar"''>
+**  &lt;div ''id="leftItem"'' class="regularButton"> should be &lt;div ''class="leftItem regularButton"''>
+* Copy the ''public/jqtouch'' directory from Rhodes latest to your application's ''public'' directory.
+* Copy the ''public/css/*.css'' files from Rhodes latest to your application's ''public/css'' directory.
+** Alternatively, you can change all the id selectors to class selectors. You may want to go down this route if you have custom changes in your CSS file. For instance, a ''#toolbar'' selector should now be ''.toolbar''.
+
+=== Transition styles ===
+
+Transitions between screens are '''slide''' by default. You can override the animation on a link by setting a specific animation class. Valid animation classes are:
+
+* slide (default)
+* fade
+* dissolve
+* flip
+* slideup
+* swap
+* cube
+* pop
+
+Note that animations other than slide may not work as well on Android devices as they do on the iPhone.
+
+<source lang="xml">
+<div class="toolbar">
+    <div class="leftItem backButton"> 
+        <a class="swap" href="...">Left back button that animates swap transition</a>
+    </div>
+    <div class="rightItem regularButton">
+        <a class="flip" href="...">Right button that animates flip transition</a> 
+    </div>
+</div> 
+<div class="content">
+    <ul>     
+        <li>
+            <a class="pop" href="...">
+                <span class="title">Link that animates pop transition</span>
+                <span class="disclosure_indicator"></span>
+            </a>
+        </li>
+        <li>
+            <a class="cube" href="...">
+                <span class="title">Link that animates cube transition</span>
+                <span class="disclosure_indicator"></span>
+            </a>
+        </li>
+    </ul>
+</div>
+</source>
+
+=== Back button ===
+
+Links marked with a ''backButton'' class reverse the navigation of the previous animated transition. Note that the href assigned to these links are ignored.
+
+<source lang="xml">
+<div class="toolbar">
+    <div class="leftItem backButton">
+        <a href="...">Cancel</a>
+    </div>
+    <div class="rightItem regularButton">
+        <a href="...">Edit</a>
+    </div>
+</div>   
+</source>
+
+=== Navigating to another page ===
+
+Setting a target="_webapp" will disable animation and navigate to the specified href on a link. Note that any animation classes (like slide, flip, etc) are ignored.
+
+<source lang="xml">
+<div class="content">
+    <ul>
+        <li>
+            <a target="_webapp" href="http://rhomobile.com/">
+                <span class="title">Rhomobile home page</span>
+                <span class="disclosure_indicator"></span>
+            </a>
+        </li>
+    </ul>
+</div>   
+</source>
+
+=== Sample application ===
+
+Check out the [http://github.com/rhomobile/store store app] in github for a reference sample application that uses animated transitions.
+
+=== jQTouch modifications ===
+
+The Rhodes framework uses a modified version of jQTouch version 1, beta 2. The following is a list of modifications to the jQTouch library:
+
+* $.support.WebKitAnimationEvent is set to true if the device is Android 2.x. The default implementation sets this to false.
+* A default timeout has been set for Ajax requests to 30 seconds.
+* The default backSelector has been changed from ".back, .cancel, .goback" to ".backButton a".
+* The default slideSelector has been changed from "body > * > ul li a" to "a". This makes every link animate with a slide transition by default.
+* Every "a" invokes liveTap; every "[type=submit]" invokes submitParentForm.
+* On document load, the Rhodes implementation of jQTouch wraps the children of the body with a DIV. 
+* Fixed slide animation for Android 2.x devices. Slide transitions are handled differently than other animated transitions.
+* This implementation creates a global Rho object that contains two properties:
+** Rho.insertAsyncPage(screenSnippet) - a function that inserts a page to the application. Screen snippet should be a string containing a DIV representing a page that in theory contains pageTitle, toolbar and content DIVs.
+** Rho.jqt - a reference to the public jQTouch methods normally returned by instantiating jQTouch. For example, to programmatically go back a screen, you can invoke Rho.jqt.goBack().
+* Ajax requests set a ''Transition-Enabled: true'' request header. This informs the controller that the request was made by a jQTouch enabled application.
+* Conversely, Ajax requests inspect for a ''Wait-Page'' response header. This informs jQTouch that the page it received was returned after an asynchronous HTTP request was spawned by the controller. Wait pages are not added to the jQtouch history. The animation is then deferred until the expected page is returned to the user interface via the Rho.insertAsyncPage() call. This method is typically invoked after an async HTTP callback function has been triggered in the controller.
+* You can override the slide animated transition for forms by setting an animation class on the form like ''<form class="pop">...</form>''.

@@ -70,6 +70,48 @@ To send View to the browser, use render method in your controller. For example, 
 	
 Rhodes framework will load list.erb template, process it, and send resulted HTML to the browser.	
 
+## AppApplication class
+To coordinate application startup Rhodes framework introduced Application class. This class persistent all the time while app is running and across all requests to the controller actions. You can store session data here. To get an instance of the AppApplication object in your controller, use:
+
+	:::ruby
+	::Rho.get_app
+
+AppAplication class defined in the application.rb file:
+	:::ruby
+	class AppApplication < Rho::RhoApplication
+	  def initialize
+	  	# put initialization code here
+	  end
+	end
+	
+You may listen for activation/deactivation/upgrade events if you define following methods on AppApplication class. 
+
+Method on_activate_app will be invoked after application is activated. 
+	:::ruby
+	def on_activate_app
+		# put your application activation code here
+	end 
+
+Method on_deactivate_app will be invoked before application goes to background.
+	:::ruby
+	def on_deactivate_app
+	  	# Don't call any UI operations here, they'll be ignored
+	  	# For example, WebView.refresh
+
+	  	# to stop sync background thread call 
+		# SyncEngine.stop_sync; SyncEngine.set_pollinterval(0)
+	
+	  	# To stop local web server when application switched to 
+		# background return "stop_local_server"
+	  	# return "stop_local_server" 
+	end
+
+Method on_config_conflicts may be called after application was upgraded. If application bundle contain rhoconfig with properties modified locally on the phone conflicts is a hash name to array of conflicted values(old local value, new upgrade value). By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade.
+	:::ruby
+	def on_config_conflicts(conflicts)
+	    # puts "on_config_conflicts: #{conflicts}"
+	end
+
 ## View Layouts
 
 Rhodes supports a layout mechanism based on ERB templates. The default layout template is called "layout.erb" and is located in the application root folder.  Unless overridden, this layout is rendered on all non-Ajax requests.
@@ -90,17 +132,100 @@ You can call the layout method on the controller to overwrite the default layout
 
 This will force the render call to use mycustomlayout.erb in place of the default layout file for all actions of this controller.
 
+## Application Helpers
+Few helper methods defined as part of the Rhodes framework. There are just a few of them because Rhodes framework designed for mobile environment where size is still of some concern and we tried to keep framework as tight as possible. 
+
+Generated application comes with number of other helpers (see app/helpers folder). These helpers are not used by the framework internally and may be modified/deleted/extended at will.
+
+### link_to
+Examples of how to use the link_to method:
+
+	link_to "Visit Other Site", "http://www.rhomobile.com/"
+	==> <a href="http://www.rhomobile.com/" >Visit Other Site</a>
+  
+	link_to "Help", { :action => "help" }
+	==> <a href="/app/model/help" >Help</a>
+  
+	link_to "Delete", { :action => "delete", :id => '{12}' }
+	==> <a href="/app/model/{12}/delete"  onclick="
+		var f = document.createElement('form'); 
+	    f.style.display = 'none'; this.parentNode.appendChild(f); 
+		f.method = 'POST'; f.action = this.href; f.submit(); 
+		return false;">Delete</a>
+ 
+	link_to "Show", { :action => "show", :id => '{12}'},
+	"style=\"height:4px;width:7px;border-width:0px;\"" 
+	==> <a href="/app/model/{12}/show" 
+		style="height:4px;width:7px;border-width:0px;">Show</a>
+  
+	link_to "Delete", { :action => "delete", :id => '{12}' }, 
+	"class=\"delete_link\""
+	==> <a href="/app/model/{12}/delete" class="delete_link" 
+		onclick="var f = document.createElement('form'); 
+	    f.style.display = 'none'; this.parentNode.appendChild(f); 
+		f.method = 'POST'; f.action = this.href; f.submit();
+		return false;\">Delete</a>"
+  
+	link_to "Invite",:action => :invite, 
+	:query => {:name=>'John Smith','address'=>"http://john.smith.com"}
+	==> <a href="/app/model/invite?
+		name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com">
+		Invite</a>
+
+### url_for
+Examples of how to use the url_for method:
+    
+	url_for '/some_url'
+	==> /some_url
+    
+When generating a new URL, missing values may be filled in from the current request's parameters.
+For example, if the application name or model are not specified in the call parameters, they would be filled from the request.
+    
+	url_for :action => :index
+	==> /app/model
+  
+	url_for :action => :create
+	==> /app/model
+ 
+	url_for :action => :new
+	==> /app/model/new
+  
+	url_for :action => :show, :id => '{12}'
+	==> /app/model/{12}/show
+
+	url_for :model => :another_model, 
+	:action => :show, :id => '{12}'
+	==> /app/another_model/{12}/show
+  
+	url_for :controller => :another_controller, 
+	:action => :show, :id => '{12}'
+	==> /app/another_controller/{12}/show
+  
+	url_for :application => :another_app, 
+	:model => :another_model, :action => :show, :id => '{12}'
+	==> /another_app/another_model/{12}/show
+   
+	url_for :action => :create, :query => 
+	{:name => 'John Smith', 'address' => "http://john.smith.com"}
+	==> /app/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com
+  
+	url_for :action => :show, :id => '{12}', :fragment => "an-anchor" 
+	==> /app/model/{12}/show#an-anchor
+
+
 ## Per Platform Files
 
-On a per platform basis, you can use alternative files for any given file in your 'app' or 'public' folder. To do this, make a second file with the platform in the name of the file. For example, to replace these files on the Android platform...
+On a per platform basis, you can use alternative files for any given file in your 'app' or 'public' folder. To do this, make a second file with the platform in the name of the file. 
 
-	default.css
-	index.erb
+For example, to replace these files on the Android platform:
 
-... All you need to do is add the two files
+		default.css
+		index.erb
 
-	default.android.css
-	index.android.erb
+All you need to do is add the two files:
+
+		default.android.css
+		index.android.erb
 
 Note that you must still have the base file present for it to be replaced on a platform.
 
@@ -110,43 +235,3 @@ Valid platform names are:
 * wm
 * bb
 * iphone
-
-## AppApplication class
-The file application.rb contains the AppAplication class:
-	:::ruby
-	class AppApplication < Rho::RhoApplication
-	  def initialize
-	    #put initialization code here
-	  end
-	  def on_activate_app
-	    # Invokes when application activates. 
-	  end 
-	  def on_deactivate_app
-	    # Invokes when application go to background
-	    # Only restricted set of API allowed here
-	    # If you call any UI operations here, they just ignored
-	    # For example, WebView.refresh
- 
-	    #to stop sync background thread call SyncEngine.stop_sync; SyncEngine.set_pollinterval(0)
-    
-	    #To stop local server when application switched to background (so called 'service mode'). It will stop sync thread also
-	    # in this case you have also stop sync thread
-	    #return "stop_local_server"
-    
-	  end
-
-	  def on_config_conflicts(conflicts)
-	      #puts "on_config_conflicts: #{conflicts}"
-	      # Invokes when application upgrade.
-	      # If application bundle contain rhoconfig with properties modified locally on the phone
-	      # conflicts is a hash name to array of conflicted values(local value, upgrade value)
-	      # by default local values are kept in place
-	  end
-
-	end
-
-You can store session data here. To get an instance of the AppApplication object:
-
-	:::ruby
-	::Rho.get_app
-
