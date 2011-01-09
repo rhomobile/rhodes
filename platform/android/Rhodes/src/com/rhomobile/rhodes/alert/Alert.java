@@ -103,13 +103,15 @@ public class Alert {
 
 	private static class ShowStatusDialog implements Runnable 
 	{
+	    private String m_strTitle;
 	    private String m_strMessage;
         private String m_strHide;
         
-		public ShowStatusDialog(String strMessage, String strHide) 
+		public ShowStatusDialog(String strTitle, String strMessage, String strHide) 
 		{
 			m_strMessage = strMessage;
 			m_strHide = strHide;
+			m_strTitle = strTitle;
 		}
 		
 		public void run() 
@@ -123,7 +125,7 @@ public class Alert {
 			Vector<CustomButton> buttons = new Vector<CustomButton>();
 			buttons.addElement(new CustomButton(m_strHide));
 			
-			makeDialog( "", m_strMessage, null, buttons, null);
+			makeDialog( m_strTitle, m_strMessage, null, buttons, null);
         }
     }
 	
@@ -223,12 +225,16 @@ public class Alert {
 			return;
 
         Context ctx = RhodesActivity.getInstance();
+        int nTopPadding = 10;
         
 		Dialog dialog = new Dialog(ctx);
 		if ( title == null || title.length() == 0 )
 		    dialog.requestWindowFeature(dialog.getWindow().FEATURE_NO_TITLE);
 		else    
+		{
 		    dialog.setTitle(title);
+		    nTopPadding = 0;
+		}
 		    
 		dialog.setCancelable(false);
 		dialog.setCanceledOnTouchOutside(false);
@@ -236,12 +242,12 @@ public class Alert {
 		LinearLayout main = new LinearLayout(ctx);
 		main.setOrientation(LinearLayout.VERTICAL);
 		main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		main.setPadding(10, 10, 10, 10);
+		main.setPadding(10, nTopPadding, 10, 10);
 		
 		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);
 		top.setGravity(Gravity.CENTER);
-		top.setPadding(10, 10, 10, 10);
+		top.setPadding(10, nTopPadding, 10, 10);
 		top.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		main.addView(top);
 		
@@ -249,7 +255,7 @@ public class Alert {
 			ImageView imgView = new ImageView(ctx);
 			imgView.setImageDrawable(icon);
 			imgView.setScaleType(ImageView.ScaleType.CENTER);
-			imgView.setPadding(10, 10, 10, 10);
+			imgView.setPadding(10, nTopPadding, 10, 10);
 			top.addView(imgView);
 		}
 		
@@ -316,10 +322,10 @@ public class Alert {
 		}
 	}
 
-	public static void showStatusPopup(String message, String hide) {
+	public static void showStatusPopup(String title, String message, String hide) {
 		try {
 			Logger.I(TAG, "showStatusPopup");
-			PerformOnUiThread.exec(new ShowStatusDialog(message, hide), false);
+			PerformOnUiThread.exec(new ShowStatusDialog(title, message, hide), false);
 		}
 		catch (Exception e) {
 			reportFail("showStatusPopup", e);

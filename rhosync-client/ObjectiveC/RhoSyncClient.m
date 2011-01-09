@@ -330,7 +330,7 @@ int rho_net_ping_network(const char* szHost)
 	return returnData == NULL ? 0 : 1;
 }
 
-void alert_show_status(const char* szMessage, const char* szHide)
+void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
 }
 

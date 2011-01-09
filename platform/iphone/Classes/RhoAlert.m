@@ -245,7 +245,7 @@ static BOOL is_current_alert_status = NO;
 
 @end
 
-void alert_show_status(const char* szMessage, const char* szHide)
+void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
     //show new status dialog or update text
     if (!rho_rhodesapp_check_mode())
@@ -254,7 +254,7 @@ void alert_show_status(const char* szMessage, const char* szHide)
 	rho_param* p = rho_param_hash(4);
 	
 	rho_param* p_title_key = rho_param_str("title");
-	rho_param* p_title_value = rho_param_str("");
+	rho_param* p_title_value = rho_param_str(szTitle);
 
 	rho_param* p_message_key = rho_param_str("message");
 	rho_param* p_message_value = rho_param_str(szMessage);
@@ -297,7 +297,7 @@ void alert_show_popup(rho_param *p) {
 	}
     
 	
-	//alert_show_status("Some message", "Close Status");
+	//alert_show_status("Title", "Some message", "Close Status");
     [RhoAlert showPopup:p];
 }
 

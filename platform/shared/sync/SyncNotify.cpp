@@ -286,7 +286,7 @@ void CSyncNotify::showStatusPopup(const String& status)
     if ( m_strStatusHide.length() == 0 )
         m_strStatusHide = RhoAppAdapter.getMessageText("hide");
 
-    alert_show_status(status.c_str(), m_strStatusHide.c_str());
+    alert_show_status("", status.c_str(), m_strStatusHide.c_str());
 }
 
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
@@ -569,8 +569,8 @@ void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCo
 
 extern "C"
 {
-void rho_alert_show_status(char* szText, char* szHideLabel)
+void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel)
 {
-    alert_show_status( szText ? szText : "", szHideLabel ? szHideLabel : "");
+    alert_show_status( szTitle ? szTitle : "", szText ? szText : "", szHideLabel ? szHideLabel : "");
 }
 }
