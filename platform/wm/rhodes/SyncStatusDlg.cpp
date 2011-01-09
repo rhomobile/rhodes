@@ -7,6 +7,7 @@ LRESULT CSyncStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 {
     SetDlgItemText(IDC_SYNCSTATUS, m_strStatus );
 
+    SendMessage(WM_SETTEXT, 0, (LPARAM)(LPCTSTR)m_strTitle );
 	bHandled = TRUE;
 	return 1;  // Let the system set the focus
 }

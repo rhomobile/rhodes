@@ -5,7 +5,7 @@
 class CSyncStatusDlg : 
 	public CDialogImpl<CSyncStatusDlg>
 {
-    CStringW m_strStatus;
+    CStringW m_strStatus, m_strTitle;
 public:
     CSyncStatusDlg(){}
 	~CSyncStatusDlg(){}
@@ -24,6 +24,7 @@ END_MSG_MAP()
 	LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     void setStatusText(LPCWSTR szStatus);
+    void setTitle(LPCWSTR szTitle){ m_strTitle = szTitle; }
 };
 
 
