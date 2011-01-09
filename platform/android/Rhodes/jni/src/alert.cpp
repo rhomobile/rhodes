@@ -15,19 +15,21 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_alert_Alert_doCallback
         rho_cast<std::string>(env, id).c_str(), rho_cast<std::string>(env, title).c_str());
 }
 
-RHO_GLOBAL void alert_show_status(const char* szMessage, const char* szHide)
+RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_ALERT);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "showStatusPopup", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "showStatusPopup", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
     RAWLOG_INFO("alert_show_status");
 
     jstring strMsg = rho_cast<jstring>(szMessage);
     jstring strHide = rho_cast<jstring>(szHide);
-    env->CallStaticVoidMethod(cls, mid, strMsg, strHide);
+    jstring strTitle = rho_cast<jstring>(szTitle);
+
+    env->CallStaticVoidMethod(cls, mid, strTitle, strMsg, strHide);
     env->DeleteLocalRef(strMsg);
 }
 
