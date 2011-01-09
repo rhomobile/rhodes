@@ -647,7 +647,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
    	if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS) 
     {
         m_SyncStatusDlg.setStatusText(convertToStringW(params->m_message).c_str());
-        //m_SyncStatusDlg.setTitle(convertToStringW(params->m_title).c_str());
+        m_SyncStatusDlg.setTitle( convertToStringW(params->m_title).c_str() );
         if ( !m_SyncStatusDlg.m_hWnd )
             m_SyncStatusDlg.Create(m_hWnd, 0);
         else
