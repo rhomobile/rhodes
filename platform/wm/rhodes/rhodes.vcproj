@@ -1273,6 +1273,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\RhoCryptImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RhoCryptImpl.h"
+					>
+				</File>
+				<File
 					RelativePath=".\rho\common\RhoThreadImpl.cpp"
 					>
 				</File>

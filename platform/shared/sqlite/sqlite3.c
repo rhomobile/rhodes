@@ -23,6 +23,8 @@
 #define SQLITE_DEFAULT_MEMSTATUS 0
 #define SQLITE_OSTRACE 0
 #define SQLITE_OMIT_UTF16
+#define SQLITE_TEMP_STORE 2
+#define SQLITE_HAS_CODEC 1
 // RHO
 #define SQLITE_CORE 1
 #define SQLITE_AMALGAMATION 1
@@ -112449,3 +112451,7 @@ SQLITE_PRIVATE void sqlite3Fts3IcuTokenizerModule(
 #endif /* !defined(SQLITE_CORE) || defined(SQLITE_ENABLE_FTS3) */
 
 /************** End of fts3_icu.c ********************************************/
+
+#ifdef SQLITE_HAS_CODEC
+#include "crypto.c"
+#endif //SQLITE_HAS_CODEC

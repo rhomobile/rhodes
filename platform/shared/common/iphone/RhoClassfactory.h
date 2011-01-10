@@ -4,6 +4,7 @@
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
 #include "net/iphone/sslimpl.h"
+#include "common/IRhoCrypt.h"
 
 namespace rho {
 namespace common {
@@ -22,6 +23,11 @@ public:
     net::ISSL* createSSLEngine()
     {
         return new net::SSLImpl();
+    }
+
+    IRhoCrypt* createRhoCrypt()
+    {
+        return 0;
     }
 };
 
