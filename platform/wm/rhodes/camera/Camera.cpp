@@ -22,7 +22,7 @@ extern "C" char *strdup(const char * str);
 extern "C" wchar_t* wce_mbtowc(const char* a);
 #endif
 
-#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)
 
 static bool copy_file(LPTSTR from, LPTSTR to);
 static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
@@ -35,8 +35,10 @@ Camera::Camera(void) {
 Camera::~Camera(void) {
 }
 
-HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
-    HRESULT         hResult;
+HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
+{
+    HRESULT         hResult = S_OK;
+#if defined(_WIN32_WCE)
     SHCAMERACAPTURE shcc;
 
     wchar_t* root  = wce_mbtowc(rho_rhodesapp_getblobsdirpath());
@@ -76,13 +78,19 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) {
 			hResult = E_INVALIDARG;
 		}
     }
+#endif //_WIN32_WCE
 
     return hResult;
 }
 
-HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
+HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) 
+{
 	RHO_ASSERT(pszFilename);
+#ifdef _WIN32_WCE
 	OPENFILENAMEEX ofn = {0};
+#else
+    OPENFILENAME ofn = {0};
+#endif
 
 	ofn.lStructSize     = sizeof(ofn);
 	ofn.lpstrFilter     = NULL;
@@ -90,28 +98,37 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 	ofn.nMaxFile        = MAX_PATH;
 	ofn.lpstrInitialDir = NULL;
 	ofn.lpstrTitle      = _T("Select an image");
+#ifdef _WIN32_WCE
 	ofn.ExFlags         = OFN_EXFLAG_THUMBNAILVIEW|OFN_EXFLAG_NOFILECREATE|OFN_EXFLAG_LOCKDIRECTORY;
+    if (GetOpenFileNameEx(&ofn))
+#else
+    if (GetOpenFileName(&ofn))
+#endif
 
-	if (GetOpenFileNameEx(&ofn)) {
+    {
 		HRESULT hResult = S_OK;
 
+        /*
 		TCHAR rhoroot[MAX_PATH];
 		wchar_t* root  = wce_mbtowc(rho_rhodesapp_getblobsdirpath());
 		wsprintf(rhoroot,L"%s",root);
 		free(root);
 
-		create_folder(rhoroot);
+		create_folder(rhoroot);*/
+
+        StringW strBlobRoot = convertToStringW( RHODESAPP().getBlobsDirPath() );
 
         LPCTSTR szExt = wcsrchr(pszFilename, '.');
 		TCHAR filename[256];
 		generate_filename(filename, szExt);
 		
-		int len = wcslen(rhoroot) + wcslen(L"\\") + wcslen(filename);
+		int len = strBlobRoot.length() + wcslen(L"\\") + wcslen(filename);
 		wchar_t* full_name = (wchar_t*) malloc((len+2)*sizeof(wchar_t));
-		wsprintf(full_name,L"%s\\%s",rhoroot,filename);
+		wsprintf(full_name,L"%s\\%s",strBlobRoot.c_str(),filename);
 
-		if (copy_file(pszFilename,full_name)) {
-			StringCchCopy(pszFilename, MAX_PATH, filename);	
+		if (copy_file(pszFilename,full_name)) 
+        {
+			wcscpy( pszFilename, filename );
 		} else {
 			hResult = E_INVALIDARG;
 		}
@@ -125,10 +142,11 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) {
 	return E_INVALIDARG;
 }
 
-bool copy_file(LPTSTR from, LPTSTR to) {
+bool copy_file(LPTSTR from, LPTSTR to) 
+{
 	RHO_ASSERT(from);
 	RHO_ASSERT(to);
-
+/*
 	SHFILEOPSTRUCT SHFileOp;
 	ATL::CString source(from);
 	ATL::CString destination(to);
@@ -144,8 +162,11 @@ bool copy_file(LPTSTR from, LPTSTR to) {
 	SHFileOp.pFrom = source;
 	SHFileOp.pTo = destination;
 	SHFileOp.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR;
-
-	if(SHFileOperation(&SHFileOp) != 0) {
+*/
+	//if(SHFileOperation(&SHFileOp) != 0) {
+    if ( !CopyFile(from, to, TRUE) )
+    {
+        DWORD dwErr = GetLastError();
 		return false;
 	}
 	return true;
@@ -204,7 +225,7 @@ void create_folder(LPTSTR Path)
 	CreateDirectory(DirName, NULL);
 }
 
-#endif //_WIN32_WCE
+//#endif //_WIN32_WCE
 
 void take_picture(char* callback_url) {
 //#if defined(_WIN32_WCE)
