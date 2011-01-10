@@ -18,9 +18,7 @@
 #include "AppManager.h"
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
-#if defined(_WIN32_WCE)
 #include "camera/Camera.h"
-#endif
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
@@ -622,13 +620,8 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 {
 	TCHAR image_uri[MAX_PATH];
     HRESULT status = S_OK;
-#if defined (_WIN32_WCE)
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
-#else
-    //TODO: show browse file dialog
-    wsprintf( image_uri, L"%s", L"dashboard.PNG");
-#endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
