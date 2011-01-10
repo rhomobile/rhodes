@@ -613,7 +613,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
     String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
-    String strDataUrl = "", strCmd = "";
+    String strDataUrl = "", strCmd = "", strCryptKey = "";
 
   	getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
 
@@ -693,7 +693,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 	LOG(INFO) + "Bulk sync: start change db";
    	getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
     
-    dbPartition.setBulkSyncDB(fDataName);
+    dbPartition.setBulkSyncDB(fDataName, strCryptKey);
     processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
 	LOG(INFO) + "Bulk sync: end change db";

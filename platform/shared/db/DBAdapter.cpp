@@ -10,12 +10,6 @@
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
-//#include "sqlite/crypto.h"
-/*
-extern "C" void rho_crypt_aes_256_encrypt(int size, unsigned char *in, unsigned char *out);
-extern "C" void rho_crypt_aes_256_decrypt(int size, unsigned char *in, unsigned char *out);
-static rho_codec s_cryptCodec = {rho_crypt_aes_256_encrypt, rho_crypt_aes_256_decrypt};
-*/
 
 namespace rho{
 namespace db{
@@ -131,13 +125,19 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     if ( !checkDbError(nRes) )
         return;
     //TODO: raise exception if error
-/*
+
     if (RHOCONF().getBool("encrypt_database"))
     {
-        rho_set_codec( &s_cryptCodec );
+        common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
+        m_ptrCrypt = factory->createRhoCrypt();
+        if ( m_strCryptKey.length() > 0 )
+            m_ptrCrypt->set_db_CryptKey( m_strDbPartition.c_str(), m_strCryptKey.c_str() );
+
         CDBError dbError;
-	    executeBatch("PRAGMA key = \"x'2DD29CA851E7B56E4697B0E1F08507293D761A05CE4D1B628663F411A8086D99'\";", dbError);
-    }*/
+        String strKey = "PRAGMA key = \"";
+        strKey += m_strDbPartition + "\";";
+	    executeBatch(strKey.c_str(), dbError);
+    }
 
     if ( !bExist )
         createSchema();
@@ -497,9 +497,10 @@ void CDBAdapter::copyChangedValues(CDBAdapter& db)
     }
 }
 
-void CDBAdapter::setBulkSyncDB(String fDataName)
+void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
 {
     CDBAdapter db(m_strDbPartition.c_str(), true);
+    db.setCryptKey(strCryptKey);
     db.open( fDataName, m_strDbVer, true );
     db.createTriggers();
 
@@ -544,6 +545,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName)
 
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(fDataName.c_str(),dbOldName.c_str());
+    setCryptKey(strCryptKey);
     open( dbOldName, m_strDbVer, false );
 }
 
@@ -632,6 +634,9 @@ void CDBAdapter::close()
 
     m_dbHandle = 0;
     m_strDbPath = String();
+
+    m_ptrCrypt = 0;
+    m_strCryptKey = "";
 }
 
 int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt)
@@ -975,19 +980,25 @@ void rho_db_init_attr_manager()
 {
     rho::db::CDBAdapter::initAttrManager();
 }
-/*
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
-void rho_crypt_aes_256_encrypt(int size, unsigned char *in, unsigned char *out)
+
+void rho_db_encrypt( const char* szPartition, int nPartLen, int size, unsigned char* data, unsigned char* dataOut )
 {
-    memcpy(out, in, size);
+    String strPartition(szPartition, nPartLen);
+    rho::db::CDBAdapter& db = rho::db::CDBAdapter::getDB(strPartition.c_str());
+    if ( db.getCrypt() )
+        db.getCrypt()->db_encrypt(strPartition.c_str(), size, data, dataOut);
+    else
+        memcpy(dataOut, data, size);
 }
 
-void rho_crypt_aes_256_decrypt(int size, unsigned char *in, unsigned char *out)
+void rho_db_decrypt( const char* szPartition, int nPartLen, int size, unsigned char* data )
 {
-    memcpy(out, in, size);
+    String strPartition(szPartition, nPartLen);
+    rho::db::CDBAdapter& db = rho::db::CDBAdapter::getDB( strPartition.c_str() );
+    if ( db.getCrypt() )
+        db.getCrypt()->db_decrypt(strPartition.c_str(), size, data);
 }
-#endif //OS_WINDOWS
-*/
+
 }
 
 namespace rho{
