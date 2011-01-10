@@ -26,6 +26,7 @@ public:
         return null;
     }
 
+    virtual IRhoCrypt* createRhoCrypt();
 };
 
 }

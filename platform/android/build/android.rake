@@ -618,7 +618,7 @@ namespace "build" do
       objdir = $objdir["sqlite"]
       libname = $libname["sqlite"]
 
-      cc_build 'libsqlite', objdir, ["-I#{srcdir}"] or exit 1
+      cc_build 'libsqlite', objdir, ["-I#{srcdir}", "-I#{$shareddir}"] or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
     end
 
