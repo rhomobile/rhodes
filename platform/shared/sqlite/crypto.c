@@ -39,7 +39,7 @@ void sqlite3FreeCodecArg(void *pCodecArg)
 
 int sqlite3_key(sqlite3 *db, const void *pKey, int nKey) 
 {
-    RAWLOG_INFO("sqlite3_key");
+    //RAWLOG_INFO("sqlite3_key");
 
     if ( db && pKey && nKey ) 
     {
@@ -57,7 +57,7 @@ void* sqlite3Codec(void *iCtx, void *data, Pgno pgno, int mode)
     int offset = 0;
     unsigned char *pData = (unsigned char *) data;
 
-    RAWLOG_INFO("sqlite3Codec");
+    //RAWLOG_INFO("sqlite3Codec");
 
     if ( pgno == 1 ) 
         offset = FILE_HEADER_SZ; /* adjust starting pointers in data page for header offset on first page*/
@@ -89,7 +89,7 @@ int sqlite3CodecAttach(sqlite3* db, int nDb, const void *pKey, int nKey)
 {
     struct Db *pDb = &db->aDb[nDb];
 
-    RAWLOG_INFO("sqlite3CodecAttach");
+    //RAWLOG_INFO("sqlite3CodecAttach");
 
     if ( nKey && pKey && pDb->pBt ) 
     {
@@ -134,7 +134,7 @@ void sqlite3CodecGetKey(sqlite3* db, int nDb, void **zKey, int *nKey)
 {
     struct Db *pDb = &db->aDb[nDb];
 
-    RAWLOG_INFO("sqlite3CodecGetKey");
+    //RAWLOG_INFO("sqlite3CodecGetKey");
 
     if( pDb->pBt ) 
     {
@@ -159,6 +159,7 @@ void sqlite3_activate_see(const char* in)
 
 int sqlite3_rekey(sqlite3 *db, const void *pKey, int nKey) 
 {
+	return SQLITE_OK;
 }
 
 #if 0
