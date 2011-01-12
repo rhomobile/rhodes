@@ -24,6 +24,8 @@
 		5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0A30121D28BF0022E83C /* sslimpl.cpp */; };
 		5C0D0C0D121D337A0022E83C /* RhoThreadImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0C0C121D337A0022E83C /* RhoThreadImpl.m */; };
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
+		5C59AB2912DDA1B800ED4A1E /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */; };
+		5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AB4112DDA22E00ED4A1E /* Security.framework */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD486F59124FB66600F8A93F /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = BD486F58124FB66600F8A93F /* Event.m */; };
@@ -179,6 +181,9 @@
 		5C0D0A31121D28BF0022E83C /* sslimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sslimpl.h; path = ../shared/net/iphone/sslimpl.h; sourceTree = SOURCE_ROOT; };
 		5C0D0C0C121D337A0022E83C /* RhoThreadImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoThreadImpl.m; path = ../shared/common/iphone/RhoThreadImpl.m; sourceTree = SOURCE_ROOT; };
 		5C5333790FC1B20000F268F0 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
+		5C59AB2712DDA1B800ED4A1E /* RhoCryptImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoCryptImpl.h; path = ../shared/common/iphone/RhoCryptImpl.h; sourceTree = SOURCE_ROOT; };
+		5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../shared/common/iphone/RhoCryptImpl.mm; sourceTree = SOURCE_ROOT; };
+		5C59AB4112DDA22E00ED4A1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		BD38E6DB115CFF14001CE05C /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
@@ -292,6 +297,7 @@
 				46AD7DB31117AFB9009A974A /* MapKit.framework in Frameworks */,
 				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
 				FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */,
+				5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +368,7 @@
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
 				FACC20FF123A759A0088A447 /* GameKit.framework */,
+				5C59AB4112DDA22E00ED4A1E /* Security.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -447,6 +454,8 @@
 		5C5335490FC2973900F268F0 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C59AB2712DDA1B800ED4A1E /* RhoCryptImpl.h */,
+				5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */,
 				5C0D0C0C121D337A0022E83C /* RhoThreadImpl.m */,
 				5C0D0A2B121D28A30022E83C /* RhoClassFactory.cpp */,
 				5C0D0A2C121D28A30022E83C /* RhoClassFactory.h */,
@@ -916,6 +925,7 @@
 				FACA4C791270AC0900777CFF /* RightViewController.m in Sources */,
 				FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */,
 				FACA4C7B1270AC0900777CFF /* SplitViewDelegate.m in Sources */,
+				5C59AB2912DDA1B800ED4A1E /* RhoCryptImpl.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
