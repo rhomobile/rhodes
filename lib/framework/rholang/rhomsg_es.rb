@@ -16,6 +16,7 @@ module Rho
 	  'close_menu' => "Cerrar",
       'get_link_menu' => "Obtener vínculo",
       'open_link_menu' => "Abrir vínculo",
+      'change_option_menu' => "Opción Change",
       'email_menu' => "Email",
       'call_menu' => "Llamar",
       'sms_menu' => "SMS",
