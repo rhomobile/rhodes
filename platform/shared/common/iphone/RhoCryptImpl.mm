@@ -224,7 +224,6 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 					   &movedBytes
 					   ) );
 	
-	memcpy(dataOut, data, size);
     return getErrorCode() == 0 ? 1 : 0;
 }
 
