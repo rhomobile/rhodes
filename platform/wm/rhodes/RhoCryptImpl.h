@@ -29,6 +29,7 @@ private:
     unsigned int getErrorCode(){ return m_dwLastError; }
 
     void initContext(const char* szPartition);
+    void initCryptProvider();
 
     void readKeyFromStorage(DATA_BLOB& blobKey);
     void writeKeyToStorage();
