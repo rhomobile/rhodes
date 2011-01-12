@@ -206,7 +206,7 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
     return getErrorCode() == 0 ? 1 : 0;
 }
 
-int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey )
+int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent )
 {
     convertToStringW(szPartition, m_strDBPartition);
 

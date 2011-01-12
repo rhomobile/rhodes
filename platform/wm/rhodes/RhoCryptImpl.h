@@ -23,7 +23,7 @@ public:
 
     virtual int db_decrypt( const char* szPartition, int size, unsigned char* data );
     virtual int db_encrypt( const char* szPartition, int size, unsigned char* data, unsigned char* dataOut );
-    virtual int set_db_CryptKey( const char* szPartition, const char* szKey );
+    virtual int set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent );
 private:
     bool _checkError( BOOL bRes, const char* szFunc );
     unsigned int getErrorCode(){ return m_dwLastError; }
