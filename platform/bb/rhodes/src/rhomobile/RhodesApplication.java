@@ -80,8 +80,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 		public boolean keyChar(char key, int status, int time) {
 	        if( key == Characters.ENTER ) {
 	        
-	        	openLink();
-	        	return true;
+	        	return openLink();
+	        	//return true;
 	        }
 			return false;
 		}
@@ -108,8 +108,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     class CTrackwheelListener implements TrackwheelListener{
 
 		public boolean trackwheelClick(int status, int time) {
-			openLink();
-			return true;
+			return openLink();
+			//return true;
 		}
 
 		public boolean trackwheelRoll(int amount, int status, int time) 
@@ -312,7 +312,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     }
 
     private boolean m_bOpenLink = false;
-    private String m_strGetLink, m_strEmailMenu, m_strCallMenu;
+    private String m_strGetLink, m_strEmailMenu, m_strCallMenu, m_strChangeOptionMenu;
     boolean openLink(){
     	LOG.TRACE("openLink");
     	try{
@@ -331,6 +331,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
             	m_strEmailMenu = RhoAppAdapter.getMessageText("email_menu");
             if (m_strCallMenu==null)
             	m_strCallMenu = RhoAppAdapter.getMessageText("call_menu");
+            if (m_strChangeOptionMenu==null)
+            	m_strChangeOptionMenu = RhoAppAdapter.getMessageText("change_option_menu");
             
 	    	Menu menu = _mainScreen.getMenu(0);
 	        int size = menu.getSize();
@@ -341,7 +343,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	            //LOG.INFO("*******openLink: " + label);
 	            
 	            if( label.equalsIgnoreCase(m_strGetLink) 
-	                ||label.startsWith(m_strEmailMenu) || label.startsWith(m_strCallMenu))
+	                ||label.startsWith(m_strEmailMenu) || label.startsWith(m_strCallMenu) ||
+	                label.equalsIgnoreCase(m_strChangeOptionMenu) )
 	            {
 	              item.run();
 	              return true;
