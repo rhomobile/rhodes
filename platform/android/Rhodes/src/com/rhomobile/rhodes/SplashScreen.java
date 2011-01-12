@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.mainview.SimpleMainView;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -126,8 +127,13 @@ public class SplashScreen implements MainView {
 	public void navigate(String url, int index) {
 		if (DEBUG)
 			Log.d(TAG, "navigate: url=" + url);
-		
-		getWebView(0).loadUrl(url);
+
+        RhodesService r = RhodesService.getInstance();
+		MainView mainView = r.getMainView();
+		SimpleMainView v = new SimpleMainView(mainView);
+		r.setMainView(v);		
+		//getWebView(0).loadUrl(url);
+		v.navigate(url,0);
 	}
 	
 	@Override
