@@ -117,12 +117,10 @@ void CRhoCryptImpl::writeKeyToStorage()
         LocalFree(protectedKey.pbData);
 }
 
-void CRhoCryptImpl::initContext(const char* szPartition)
+void CRhoCryptImpl::initCryptProvider()
 {
     if ( m_hCryptProv )
         return;
-
-    convertToStringW(szPartition, m_strDBPartition);
 
     LPCTSTR szContName = _T("RhodesKeyContainer");  // Name of the key container to be used.
     checkError( CryptAcquireContext( &m_hCryptProv, szContName, NULL, PROV_RSA_AES, 0) ); 
@@ -131,7 +129,16 @@ void CRhoCryptImpl::initContext(const char* szPartition)
     {
         checkError( CryptAcquireContext( &m_hCryptProv, szContName, NULL, PROV_RSA_AES, CRYPT_NEWKEYSET) );
     }
+}
 
+void CRhoCryptImpl::initContext(const char* szPartition)
+{
+    if ( m_hCryptProv )
+        return;
+
+    convertToStringW(szPartition, m_strDBPartition);
+
+    initCryptProvider();
     if ( getErrorCode() != 0 )
         return;
 
@@ -215,16 +222,24 @@ int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey, 
     rho_base64_decode(szKey, -1, (char*)pbKeyBlob);
 
     DATA_BLOB unprotectedKey = {dwBlobLen , pbKeyBlob };
-    DATA_BLOB protectedKey = {0};
-    checkError( CryptProtectData( &unprotectedKey, L"Rhodes data key", 0, 0, 0, 0, &protectedKey ) );
 
-    if (pbKeyBlob)
-        free(pbKeyBlob);
+    if ( !bPersistent )
+    {
+        initCryptProvider();
+        checkError(CryptImportKey(m_hCryptProv, unprotectedKey.pbData, unprotectedKey.cbData, 0, 0, &m_hKey));
+    }else
+    {
+        DATA_BLOB protectedKey = {0};
+        checkError( CryptProtectData( &unprotectedKey, L"Rhodes data key", 0, 0, 0, 0, &protectedKey ) );
 
-    saveKeyToStorage(protectedKey);
+        if (pbKeyBlob)
+            free(pbKeyBlob);
 
-    if ( protectedKey.pbData )
-        LocalFree(protectedKey.pbData);
+        saveKeyToStorage(protectedKey);
+
+        if ( protectedKey.pbData )
+            LocalFree(protectedKey.pbData);
+    }
 
     return 1;
 }
