@@ -4,7 +4,7 @@
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
 #include "net/iphone/sslimpl.h"
-#include "common/IRhoCrypt.h"
+#include "RhoCryptImpl.h"
 
 namespace rho {
 namespace common {
@@ -27,7 +27,7 @@ public:
 
     IRhoCrypt* createRhoCrypt()
     {
-        return 0;
+        return new CRhoCryptImpl();
     }
 };
 

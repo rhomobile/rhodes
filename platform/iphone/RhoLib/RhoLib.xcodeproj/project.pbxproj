@@ -56,6 +56,8 @@
 		5CBD462B1087399700107D0D /* URI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBD46281087399700107D0D /* URI.h */; };
 		5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */; };
 		5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCD7EBB116CE2D5005E6CA3 /* AppMenu.h */; };
+		5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE03CCA12DB7E990058B474 /* sqlite3.c */; };
+		5CE03CCD12DB7E990058B474 /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE03CCB12DB7E990058B474 /* sqlite3.h */; };
 		5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */; };
 		5CECDBB3113FE3620084A75B /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CECDBB2113FE3620084A75B /* System.cpp */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
@@ -124,6 +126,8 @@
 		5CBD46281087399700107D0D /* URI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URI.h; path = ../../shared/net/URI.h; sourceTree = SOURCE_ROOT; };
 		5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppMenu.cpp; path = ../../shared/common/AppMenu.cpp; sourceTree = SOURCE_ROOT; };
 		5CCD7EBB116CE2D5005E6CA3 /* AppMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMenu.h; path = ../../shared/common/AppMenu.h; sourceTree = SOURCE_ROOT; };
+		5CE03CCA12DB7E990058B474 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../shared/sqlite/sqlite3.c; sourceTree = SOURCE_ROOT; };
+		5CE03CCB12DB7E990058B474 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../../shared/sqlite/sqlite3.h; sourceTree = SOURCE_ROOT; };
 		5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhoparams.cpp; path = ../../shared/common/rhoparams.cpp; sourceTree = SOURCE_ROOT; };
 		5CECDBB2113FE3620084A75B /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../shared/rubyext/System.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
@@ -167,6 +171,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				5CE03CC912DB7E670058B474 /* sqlite */,
 				5C59BF4A115B4BA300E96ADE /* unzip */,
 				5C798931113BD10C005F8736 /* rubyext */,
 				5CBD46251087397B00107D0D /* net */,
@@ -292,6 +297,15 @@
 			name = net;
 			sourceTree = "<group>";
 		};
+		5CE03CC912DB7E670058B474 /* sqlite */ = {
+			isa = PBXGroup;
+			children = (
+				5CE03CCA12DB7E990058B474 /* sqlite3.c */,
+				5CE03CCB12DB7E990058B474 /* sqlite3.h */,
+			);
+			name = sqlite;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -345,6 +359,7 @@
 				5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */,
 				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
 				FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */,
+				5CE03CCD12DB7E990058B474 /* sqlite3.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,7 +390,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoLib" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* RhoLib */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -416,6 +438,7 @@
 				5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */,
 				5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */,
 				FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */,
+				5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +462,7 @@
 					"-fvisibility=hidden",
 				);
 				PRODUCT_NAME = rholib;
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};
@@ -459,7 +482,7 @@
 					"-fvisibility=hidden",
 				);
 				PRODUCT_NAME = rholib;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};
@@ -520,7 +543,7 @@
 					"-fvisibility=hidden",
 				);
 				PRODUCT_NAME = rholib;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};
