@@ -131,7 +131,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
         m_ptrCrypt = factory->createRhoCrypt();
         if ( m_strCryptKey.length() > 0 )
-            m_ptrCrypt->set_db_CryptKey( m_strDbPartition.c_str(), m_strCryptKey.c_str() );
+            m_ptrCrypt->set_db_CryptKey( m_strDbPartition.c_str(), m_strCryptKey.c_str(), !bTemp );
 
         CDBError dbError;
         String strKey = "PRAGMA key = \"";
