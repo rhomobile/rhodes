@@ -72,13 +72,13 @@ The BlackBerry Browser version 4.2 - the version available to native BlackBerry 
 
 In order to take advantage of the features found in the modern browsers on other supported devices, it is necessary to provide alternate view files with a structure that mitigates BlackBerry's limited support for modern css styles.  Instead, table-based view files are loaded when Rhodes applications are run in the BlackBerry device. 
 
-Please refer to [Blackberry HTML and CSS](bb_css) for a discussion of the styles used for BB.
+Please refer to [Blackberry HTML and CSS](bb-css) for a discussion of the styles used for BB.
 
 ## Standard Smartphone CSS/HTML Architecture
 
 With the exception of the <code>pageTitle</code> div, the following sections describe the styles available on iPhone, Android and Windows Mobile devices, which will generally be referred to as standard smartphones. 
 
-Please refer to [Standard Smartphone CSS/HTML Architecture](standard_css) for a discussion of the html markup and styles available for standard smartphones.
+Please refer to [Standard Smartphone CSS/HTML Architecture](standard-css) for a discussion of the html markup and styles available for standard smartphones.
 
 ## Creating Custom Styles
 
