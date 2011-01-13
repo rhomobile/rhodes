@@ -107,6 +107,7 @@ describe "SyncEngine_test" do
     #uniq_sources.should == Rho::RhoConfig::sources.values  
   end
 =end  
+
   it "should login" do
     
     res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")
@@ -320,7 +321,25 @@ describe "SyncEngine_test" do
         dbRes[0]['client_id'].length().should > 0
     end
   end
-  
+
+  it "should reset data after login with different user" do
+    SyncEngine.logged_in.should == 1    
+
+    item = getProduct.create({:name => 'Test1'})
+    item2 = getProduct.find(item.object)
+    item2.vars.should == item.vars
+
+    SyncEngine.logout
+    SyncEngine.logged_in.should == 0
+    
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars1', 'larspass', "/app/Settings/login_callback")
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+    SyncEngine.logged_in.should == 1
+    
+    item2 = getProduct.find(item.object)    
+    item2.should be_nil
+  end
+    
   it "should logout" do
     SyncEngine.logout()
   

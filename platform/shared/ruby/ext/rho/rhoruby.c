@@ -62,6 +62,7 @@ static ID onConfigConflicts_mid;
 static ID activateApp_mid;
 static ID deactivateApp_mid;
 static ID loadServerSources_mid;
+static ID resetDBOnSyncUserChanged_mid;
 
 static char* rb_type_to_s(VALUE obj);
 //extern int ruby_thread_set_native(rb_thread_t *th);
@@ -208,6 +209,7 @@ void RhoRubyStart()
     CONST_ID(activateApp_mid, "activate_app");
     CONST_ID(deactivateApp_mid, "deactivate_app");
     CONST_ID(loadServerSources_mid,"load_server_sources");
+    CONST_ID(resetDBOnSyncUserChanged_mid, "reset_db_on_sync_user_changed");
 
     //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
 
@@ -245,6 +247,11 @@ void rho_ruby_deactivateApp()
 void rho_ruby_loadserversources(const char* szData)
 {
     rb_funcall(framework, loadServerSources_mid, 1, rb_str_new2(szData) );
+}
+
+void rho_ruby_reset_db_on_sync_user_changed()
+{
+    rb_funcall(framework, resetDBOnSyncUserChanged_mid, 0);
 }
 
 const char* rho_ruby_getRhoDBVersion()

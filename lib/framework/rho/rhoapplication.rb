@@ -70,6 +70,10 @@ module Rho
     def on_deactivate_app
     end
 
+    def on_sync_user_changed
+        Rhom::Rhom.database_full_reset(false, false)    
+    end
+    
     def on_config_conflicts(conflicts)
         puts "on_config_conflicts: #{conflicts}"
     end

@@ -207,6 +207,13 @@ static void callback_loadserversources(void *arg, String const &strQuery)
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
+static void callback_resetDBOnSyncUserChanged(void *arg, String const &strQuery)
+{
+    RhoAppAdapter.resetDBOnSyncUserChanged();
+    String strMsg;
+    rho_http_sendresponse(arg, strMsg.c_str());
+}
+
 class CRhoActivateApp
 {
     String m_strUrl;
@@ -452,6 +459,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);
     m_httpServer->register_uri("/system/deactivateapp", callback_deactivateapp);
     m_httpServer->register_uri("/system/loadserversources", callback_loadserversources);
+    m_httpServer->register_uri("/system/resetDBOnSyncUserChanged", callback_resetDBOnSyncUserChanged);
 }
 
 const char* CRhodesApp::getFreeListeningPort()
