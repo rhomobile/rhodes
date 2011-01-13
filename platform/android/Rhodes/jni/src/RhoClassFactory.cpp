@@ -24,6 +24,11 @@ net::ISSL *CRhoClassFactory::createSSLEngine()
     return new net::SSLImpl();
 }
 
+IRhoCrypt *CRhoClassFactory::createRhoCrypt()
+{
+    return 0;
+}
+
 } // namespace common
 } // namespace rho
 

@@ -23,7 +23,17 @@
 #require 'rho/rhosupport'
 
 module Rhom
-  
+
+    def self.any_model_changed?
+        ::Rho::RHO.get_db_partitions.each_value do |db|
+            result = db.execute_sql("SELECT object FROM changed_values LIMIT 1 OFFSET 0" )
+            
+            return true if result && result.length > 0            
+        end
+        
+        false
+    end
+	           
   class RhomObjectFactory
     
     def initialize

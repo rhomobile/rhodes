@@ -5,6 +5,7 @@
 #include <net/INetRequest.h>
 #include <net/ssl.h>
 #include <common/IRhoThreadImpl.h>
+#include <common/IRhoCrypt.h>
 
 namespace rho
 {
@@ -17,6 +18,7 @@ public:
     net::INetRequest *createNetRequest();
     IRhoThreadImpl *createThreadImpl();
     net::ISSL *createSSLEngine();
+    IRhoCrypt* createRhoCrypt();
 };
 
 } // namespace common

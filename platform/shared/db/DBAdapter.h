@@ -3,6 +3,7 @@
 #include "DBResult.h"
 #include "DBAttrManager.h"
 #include "logging/RhoLog.h"
+#include "common/IRhoCrypt.h"
 
 namespace rho{
 namespace common{
@@ -36,6 +37,8 @@ class CDBAdapter
     int     m_nTransactionCounter;
     CDBAttrManager m_attrMgr;
     static HashtablePtr<String,CDBAdapter*> m_mapDBPartitions;
+    common::CAutoPtr<common::IRhoCrypt> m_ptrCrypt;
+    String m_strCryptKey;
 
     struct CDBVersion
     {
@@ -68,6 +71,8 @@ public:
     void Unlock();
     boolean isInsideTransaction(){ return m_nTransactionCounter > 0; }
     const String& getDBPath(){ return m_strDbPath; }
+    common::IRhoCrypt* getCrypt(){ return m_ptrCrypt; }
+    void setCryptKey(String& strKey){ m_strCryptKey = strKey; }
 
     static HashtablePtr<String,CDBAdapter*>& getDBPartitions(){ return  m_mapDBPartitions; }
     static void closeAll();
@@ -252,7 +257,7 @@ public:
     void endTransaction();
     void rollback();
     void destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
-    void setBulkSyncDB(String fDataName);
+    void setBulkSyncDB(String fDataName, String strCryptKey);
 
     void createDeleteTrigger(const String& strTable);
 	

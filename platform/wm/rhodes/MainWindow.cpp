@@ -18,9 +18,7 @@
 #include "AppManager.h"
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
-#if defined(_WIN32_WCE)
 #include "camera/Camera.h"
-#endif
 #include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
@@ -622,13 +620,8 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 {
 	TCHAR image_uri[MAX_PATH];
     HRESULT status = S_OK;
-#if defined (_WIN32_WCE)
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
-#else
-    //TODO: show browse file dialog
-    wsprintf( image_uri, L"%s", L"dashboard.PNG");
-#endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
@@ -647,7 +640,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
    	if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS) 
     {
         m_SyncStatusDlg.setStatusText(convertToStringW(params->m_message).c_str());
-        //m_SyncStatusDlg.setTitle(convertToStringW(params->m_title).c_str());
+        m_SyncStatusDlg.setTitle( convertToStringW(params->m_title).c_str() );
         if ( !m_SyncStatusDlg.m_hWnd )
             m_SyncStatusDlg.Create(m_hWnd, 0);
         else

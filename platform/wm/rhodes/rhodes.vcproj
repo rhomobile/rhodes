@@ -186,7 +186,7 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OutDir)"
@@ -568,7 +568,7 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OutDir)"
@@ -1270,6 +1270,14 @@
 				</File>
 				<File
 					RelativePath=".\rho\common\RhoClassFactory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RhoCryptImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RhoCryptImpl.h"
 					>
 				</File>
 				<File

@@ -1,6 +1,6 @@
 Rhodes Tutorial
 ========
-This tutorial describes how to use Rhodes and RhoSync to build native mobile apps for all shipping smartphones.  Specifically it describes how to write Rhodes controllers and templates and how to write RhoSync source adapters to sync data from backend apps to the device.  The architecture of this is shown [here](http://wiki.rhomobile.com/images/1/1b/RhodesArchitecture.jpg).
+This tutorial describes how to use Rhodes and RhoSync to build native mobile apps for all shipping smartphones.  Specifically it describes how to write Rhodes controllers and templates and how to write RhoSync source adapters to sync data from backend apps to the device.  The architecture of this is shown [here](https://img.skitch.com/20110111-1snnuchj3ph1hu41cafkb23jng.png).
 
 Install Rhodes
 --------------
@@ -142,20 +142,20 @@ To provide a link to the Product model's index page and templates you can replac
 Doing More With Rhodes
 ----------------------
 
-See the comprehensive and exhaustive [Rhodes Developer Reference](http://wiki.rhomobile.com/index.php/Rhodes) for details on all Rhodes capabilities.
+See the comprehensive and exhaustive [Rhodes Developer Reference](/rhodes/introduction) for details on all Rhodes capabilities.
 
 Code samples of each and every Rhodes capability are in the
 [Rhodes API samples](http://github.com/rhomobile/rhodes-system-api-samples).
 
 You should take a look at the [Rhodes 2.0 training webinar](http://vimeo.com/channels/rhomobile#12214213).
 
-There is a [technical FAQ](TechnicalFAQ) that describes how to perform certain specific tasks in Rhodes.
+There is a [technical FAQ](/faq) that describes how to perform certain specific tasks in Rhodes.
 
 The following sections describe how to add synchronized data to our app with RhoSync.
 
 Adding Synchronized Data to Your App with RhoSync
 -------------------------------------------------
-To add synchronized data to your application, see the [Rhosync Tutorial](rhosync/tutorial).  Also check out the [RhoSync training video](http://vimeo.com/channels/rhomobile#12218913).
+To add synchronized data to your application, see the [Rhosync Tutorial](/rhosync/tutorial).  Also check out the [RhoSync training video](http://vimeo.com/channels/rhomobile#12218913).
 
 More Info
 ---------
