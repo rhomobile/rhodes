@@ -5,98 +5,108 @@
 ## Run time configuration
 Each Rhodes application contains a configuration file called "rhoconfig.txt".  A typical rhoconfig.txt will look like the following when an app is generated:
 
-	# startup page for your application
+Startup page for your application
+
 	start_path = '/app'
 
-	# path to the options page (in this case handled by javascript)
+Path to the options page (in this case handled by javascript)
+
 	options_path = '/app/Settings'
 
-	# location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
+Location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
+
 	rhobundle_zip_url = ''
 
-	# optional password to access bundle (usually not required); used by desktop win32 simulator 
+Optional password to access bundle (usually not required); used by desktop win32 simulator 
+
 	rhobundle_zip_pwd = nil
 
-	# Rhodes log properties
-	# log level
-	# 0-trace, 1-info(app level), 3-warnings, 4-errors
-	# for production set to 3
+Log level: 0-trace, 1-info(app level), 3-warnings, 4-errors. It is recommended for production set it to 3 to minimize log and increase speed lost due to log output
+
 	MinSeverity  = 1 
 
-	# enable copy log messages to standard output, useful for debugging
+Enable copy log messages to standard output, useful for debugging
+
 	LogToOutput = 1
 
-	# '*' means all categories, otherwise list them : Cat1, Cat2 
+Log categories: '*' means all categories, otherwise list them : Cat1, Cat2 
+
 	LogCategories = *
 
-	# what categories to exclude
+What log categories to exclude
+
 	ExcludeLogCategories = 
 
-	# max log file size in KB, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
+Max log file size in KB, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
+
 	MaxLogFileSize=50
 
-	# turn on local http server traces, off by default
-	#net_trace = 0
+Turn on local http server traces, off by default
 
-	# timeout of network requests in seconds (30 by default)
-	#net_timeout = 60
+	net_trace = 0
 
-	# where log will be posted by RhoConf.send_log or from the log menu  
-	# source is also open and up on http://github.com/rhomobile/rhologs, so you can deploy your own logserver
+Timeout of network requests in seconds (30 by default)
+	
+	net_timeout = 60
+
+Log server address where log will be posted by using RhoConf.send_log or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver
+
 	logserver = 'http://rhologs.heroku.com' 
 
-	# log file prefix - contain human-readable text
+Log file prefix - contain human-readable text
+
 	logname='helloworld'
 
-	# Keep track of the last visited page
+Keep track of the last visited page
+
 	KeepTrackOfLastVisitedPage = 0 
 	LastVisitedPage = ''
 
-	# sync server url, typically this will look like 'http://<hostname>:<port>/application'
-	# for example: 'http://localhost:9292/application'
-	syncserver = ''
+Sync server url, typically this will look like 'http://<hostname>:<port>/application'. For example:
 
-	# geo location inactivity timeout (in seconds)
-	#geo_location_inactivity_timeout = 30
+	syncserver = 'http://localhost:9292/application'
 
-	# open rhodes app in full screen mode
-	# default 1 for Android up to Rhodes 2.2.5.
-	# on all other platforms and on Android from Rhodes >2.2.5 default 0
-	#full_screen = 1
+Geo location inactivity timeout (in seconds)
+	
+	geo_location_inactivity_timeout = 30
 
-	# Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes.
-	# If not specified, application will use dynamically selected one.
-	# WARNING!!! Remove this parameter before put application to production.
-	#local_server_port = 8080
+Set this option to 1 in order to open Rhodes app in full screen mode. Default 1 for Android up to Rhodes 2.2.5. On all other platforms and on Android from Rhodes > 2.2.5 default is 0
+	
+	full_screen = 1
 
-	# show status bar on windows mobile. default 1
-	#wm_show_statusbar = 1
+Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.
+**NOTE WARNING!!! Remove this parameter before put application to production. **
+	
+	local_server_port = 8080
 
-	# disable screen rotation (enabled by default) - disable possible for ANDROID and iPhone ONLY
-	#disable_screen_rotation = 1
+Show status bar on windows mobile. Default is 1 (show)
+	
+	wm_show_statusbar = 1
 
-	# disable close app when pressing back on home screen on blackberry
-	#bb_disable_closebyback = 0
+Disable screen rotation. By default set to 0 (enabled). This option available on ANDROID and iPhone ONLY
+	
+	disable_screen_rotation = 1
 
-	# load images in background, this improve reaction speed on user actions, 0 by default
-	#bb_loadimages_async = 0
+Disable closing app when pressing back on home screen on blackberry
 
-	# set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
-	#bulksync_state = 1
+	bb_disable_closebyback = 0
 
-	# hides forward button and animates back button transition
+Load images in background, this improve reaction speed on user actions, 0 by default
+
+	bb_loadimages_async = 0
+
+Set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
+	
+	bulksync_state = 1
+
+Hides forward button and animates back button transition
+	
 	jqtouch_mode=1
+
+Splash screen image display options. See more details [here](ui#loading-screen).
 
 	splash_screen='zoom'
 
-To access rhoconfig.txt from application code use Rho::RhoConfig class:
-
-	:::ruby
-	Rho::RhoConfig.full_screen
-	Rho::RhoConfig.app_property='some value'
-	if Rho::RhoConfig.exists?('some_property')
-	  #do something
-	end
 
 ### Last Visited Page
 Rhodes can keep track of the last visited page, so that next time you start your application, it will open to the same page. To enable this feature, use 
@@ -110,24 +120,44 @@ If you want the next version of your application to start from a clean database,
 When a Rhodes app starts, it compares the current db version with app_db_version cleans the db if they do not match.
 
 ### Ruby API
-Each of the configuration options shown above are available through the RhoConfig Ruby API:
+
+Each of the configuration options shown above are available through the RhoConfig Ruby API. To access configuration properties from application code use Rho::RhoConfig class:
 
 	:::ruby
-	Rho::RhoConfig.options_path #=> returns '/app/Settings'
-	Rho::RhoConfig.options_path = '/app/MyObject' #=> assignment will be saved to rhoconfig.txt
+	Rho::RhoConfig.full_screen
+	Rho::RhoConfig.app_property='some value'
+	if Rho::RhoConfig.exists?('some_property')
+	  #do something
+	end
 
-You may store any arbitrary options in the rhoconfig.txt file using the Ruby API. Keep in mind that they will be lost the next time the user installs a new version of the application.
+For example:
+
+To get start_path:
+	:::ruby
+	Rho::RhoConfig.start_path 
+	#=> will return current value of start_path
+	
+To set start_path	
+	:::ruby
+	Rho::RhoConfig.start_path = '/app/MyObject' 
+	#=> start_path will be saved to rhoconfig.txt as '/app/MyObject'
+
+You may store any arbitrary options in the rhoconfig.txt file using the Ruby API. Keep in mind that they will may be lost the next time the user installs a new version of the application.
+
+# TBD add link to update of rhoconfig.txt
 
 ### SyncEngine Configuration
-In the previous section, there is a "syncserver" option available.  This option can be changed through the Rho::RhoConfig API as you would expect.  However, since changing the syncserver option requires updating the SyncEngine at runtime, another Ruby call is available:
+In the previous section, there is a "syncserver" option available.  This option can be changed through the Rho::RhoConfig API as you would expect. However, since changing the syncserver option requires updating the SyncEngine at runtime, another Ruby call is available:
 
 	:::ruby
-	SyncEngine.set_syncserver('http://examplesyncserver.com/apps/MyApp/sources/') #=> nil
-
+	SyncEngine.set_syncserver(
+		'http://examplesyncserver.com/apps/MyApp/sources/')
+		
 Calling the function above will do the following:
-#Update the in-memory syncserver for the SyncEngine (all subsequent synchronization will use the new syncserver)
-#Perform a logout to make sure the session for the old syncserver is removed
-#Write the new syncserver property to rhoconfig.txt
+
+* Update the in-memory syncserver for the SyncEngine (all subsequent synchronization will use the new syncserver)
+* Perform a logout to make sure the session for the old syncserver is removed
+* Write the new syncserver property to rhoconfig.txt
 
 To enable auto sync you can call (enabled by default with 5 minutes interval )
 
@@ -153,14 +183,16 @@ To show the application log on the device with log and log-related menu items, l
 	:::ruby
 	Rho::RhoConfig.show_log
 
-To send the log to the log server url, defined in rhoconfig:
+To send the log to the log server url, defined in rhoconfig.txt:
 
 	:::ruby
-	Rho::RhoConfig.send_log #Url format: <logserver>/client_log?client_id=<client_id>&device_pin=<device_pin>&log_name=<logname>
+	Rho::RhoConfig.send_log = "http://example.com/client_log?client_id=123&device_pin=345&log_name=mylog"
+	
+Url format: \<logserver\>/client_log?client_id=\<client_id\>&device_pin=\<device_pin\>&log_name=\<logname\>
 
 ### Persistent Storage (Blackberry only)
-To enable use of the RIM persistent storage API in rhodes, just add the line
+To enable use of the RIM persistent storage API in rhodes, just add following line to your rhoconfig.txt:
 
 	use_persistent_storage = 1
 	
-to your rhoconfig.txt. It will enable RIM's persistent storage API (instead of files) to store the DB version, the DB journal and the database itself. The main goal of persistent storage is that all objects stored by an application will be automatically removed when the application is uninstalled.
+It will enable RIM's persistent storage API (instead of files) to store the DB version, the DB journal and the database itself. The main goal of persistent storage is that all objects stored by an application will be automatically removed when the application is uninstalled.
