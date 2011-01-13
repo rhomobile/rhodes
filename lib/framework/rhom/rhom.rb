@@ -42,6 +42,8 @@ module Rhom
       end
 
       def database_client_reset(reset_local_models=true)
+        puts "database_client_reset : reset_local_models=#{reset_local_models}"      
+        
         old_interval = SyncEngine.set_pollinterval(0)
         SyncEngine.stop_sync
         
@@ -64,8 +66,24 @@ module Rhom
         
         SyncEngine.set_pollinterval(old_interval)
       end
+
+      def database_local_reset()
+        puts "database_local_reset"
+        
+        ::Rho::RHO.get_db_partitions().each do |partition, db|
+        
+            next if partition != 'local'        
+            
+            db.destroy_tables( :exclude => ['sources','client_info'] )
+        end
+      
+        hash_migrate = {}
+        ::Rho::RHO.init_schema_sources(hash_migrate) 
+        
+      end
       
       def database_full_reset(reset_client_info=false, reset_local_models=true)
+        puts "database_full_reset : reset_client_info=#{reset_client_info}, reset_local_models=#{reset_local_models}"
         old_interval = SyncEngine.set_pollinterval(0)
         SyncEngine.stop_sync
         

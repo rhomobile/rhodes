@@ -26,6 +26,7 @@ static String getErrorText(int nError);
 static int    getErrorFromResponse(net::INetResponse& resp);
 static void   loadServerSources(const String& strSources);
 static const char* getRhoDBVersion();
+static void   resetDBOnSyncUserChanged();
 	
 };
 extern const _CRhoAppAdapter& RhoAppAdapter;
