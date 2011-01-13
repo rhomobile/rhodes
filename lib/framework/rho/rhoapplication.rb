@@ -2,6 +2,8 @@ require 'rhom'
 require 'rhofsconnector'
 require 'rholang/localization_simplified'
 require 'rho/rhomsg'
+require 'rho/rhotabbar'
+require 'rho/rhotoolbar'
 
 module Rho
   class RhoApplication
@@ -31,7 +33,7 @@ module Rho
       elsif @@toolbar
         @@native_bar_data = {:type => :toolbar, :data => @@toolbar}
       else
-        @@native_bar_data = {:type => :nobar}
+        @@native_bar_data = nil #{:type => :nobar}
       end
 	  
       ::Rho::RHO.get_instance().check_source_migration(self)
@@ -40,18 +42,22 @@ module Rho
     end
 
     def init_nativebar
+      return unless @@native_bar_data
+      
       if @@native_bar_data[:type] == :tabbar
         tabs = @@native_bar_data[:data]
         # normalize the list
         tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
         puts "Initializing application with tabs: #{tabs.inspect}"
-        NativeBar.create(TABBAR_TYPE, tabs)
-        NativeBar.switch_tab(0)
+        NativeTabbar.create(tabs)
+        NativeTabbar.switch_tab(0)
       elsif @@native_bar_data[:type] == :toolbar
-        NativeBar.create(TOOLBAR_TYPE, @@native_bar_data[:data])
-      else
-        NativeBar.create(NOBAR_TYPE, [])
+        NativeToolbar.create(@@native_bar_data[:data])
+      #else
+      #  NativeBar.create(NOBAR_TYPE, [])
       end
+      
+      @@native_bar_data = nil
     end
 
     def initialized?

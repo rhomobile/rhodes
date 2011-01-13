@@ -135,4 +135,4 @@ private:
 }
 }
 
-extern "C" void alert_show_status(const char* message, const char* szHide);
+extern "C" void alert_show_status(const char* title, const char* message, const char* szHide);

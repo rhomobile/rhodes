@@ -388,12 +388,16 @@ public class Alert
 			
 		});
 		
-		klass.getSingletonClass().defineMethod("show_status", new RubyTwoArgMethod() 
+		klass.getSingletonClass().defineMethod("show_status", new RubyVarArgMethod() 
 		{
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) 
 			{
+				if ( args == null || args.size() != 3 )
+					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+							"in Alert.show_status: wrong number of arguments ( " + args.size() + " for " + 3 + " )");
+				
 				try {
-					RhodesApplication.getInstance().showStatus(arg0.toString(), arg1.toStr());
+					RhodesApplication.getInstance().showStatus(/*args.get(0).toString(),*/ args.get(1).toString(), args.get(2).toString());
 					
 					return RubyConstant.QNIL;
 				} catch(Exception e) {

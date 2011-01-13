@@ -14,6 +14,7 @@ struct ICallbackObject
 
 namespace common {
 struct IRhoThreadImpl;
+struct IRhoCrypt;
 
 struct IRhoClassFactory
 {
@@ -22,6 +23,8 @@ struct IRhoClassFactory
     virtual net::INetRequest* createNetRequest() = 0;
     virtual IRhoThreadImpl* createThreadImpl() = 0;
     virtual net::ISSL* createSSLEngine() = 0;
+
+    virtual IRhoCrypt* createRhoCrypt() = 0;
 };
 
 IRhoClassFactory* rho_impl_createClassFactory();
