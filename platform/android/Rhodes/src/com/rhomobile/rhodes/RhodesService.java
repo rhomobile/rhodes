@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,7 +54,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
@@ -807,13 +805,45 @@ public class RhodesService extends Service {
 		try {
 			updateDownloadNotification(url, -1, 0);
 			
-			File tmpRootFolder = new File(Environment.getExternalStorageDirectory(), "rhodownload");
-			File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
-			if (tmpFolder.exists())
-				deleteFilesInFolder(tmpFolder.getAbsolutePath());
-			else
-				tmpFolder.mkdirs();
-			tmpFile = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
+			/*
+			List<File> folders = new ArrayList<File>();
+			folders.add(Environment.getDownloadCacheDirectory());
+			folders.add(Environment.getDataDirectory());
+			folders.add(ctx.getCacheDir());
+			folders.add(ctx.getFilesDir());
+			try {
+				folders.add(new File(ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), 0).dataDir));
+			} catch (NameNotFoundException e1) {
+				// Ignore
+			}
+			folders.add(Environment.getExternalStorageDirectory());
+			
+			for (File folder : folders) {
+				File tmpRootFolder = new File(folder, "rhodownload");
+				File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
+				if (tmpFolder.exists())
+					deleteFilesInFolder(tmpFolder.getAbsolutePath());
+				else
+					tmpFolder.mkdirs();
+				
+				File of = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
+				Logger.D(TAG, "Check path " + of.getAbsolutePath() + "...");
+				try {
+					os = new FileOutputStream(of);
+				}
+				catch (FileNotFoundException e) {
+					Logger.D(TAG, "Can't open file " + of.getAbsolutePath() + ", check next path");
+					continue;
+				}
+				Logger.D(TAG, "File " + of.getAbsolutePath() + " succesfully opened for write, start download app");
+				
+				tmpFile = of;
+				break;
+			}
+			*/
+			
+			tmpFile = ctx.getFileStreamPath(UUID.randomUUID().toString() + ".apk");
+			os = ctx.openFileOutput(tmpFile.getName(), Context.MODE_WORLD_READABLE);
 			
 			Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
 			
@@ -825,7 +855,6 @@ public class RhodesService extends Service {
 				totalBytes = httpConn.getContentLength();
 			}
 			is = conn.getInputStream();
-			os = new FileOutputStream(tmpFile);
 			
 			int downloaded = 0;
 			updateDownloadNotification(url, totalBytes, downloaded);

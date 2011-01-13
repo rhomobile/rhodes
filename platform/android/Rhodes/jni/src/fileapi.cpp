@@ -670,16 +670,6 @@ RHO_GLOBAL int lchown(const char *path, uid_t uid, gid_t gid)
     RHO_NOT_IMPLEMENTED;
 }
 
-RHO_GLOBAL int chmod(const char *path, mode_t mode)
-{
-    RHO_NOT_IMPLEMENTED;
-}
-
-RHO_GLOBAL int fchmod(int fd, mode_t mode)
-{
-    RHO_NOT_IMPLEMENTED;
-}
-
 RHO_GLOBAL int mknod(const char *path, mode_t mode, dev_t dev)
 {
     RHO_NOT_IMPLEMENTED;
