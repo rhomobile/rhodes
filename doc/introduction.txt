@@ -10,13 +10,13 @@ The [Tutorial](tutorial) describes how to install Rhodes and start on building y
 
 Rhodes Application is a web application running locally on the device. It is implement standard MVC architecture:
 
-* Views are set of ERB templates, HTML, CSS, and JavaScript files executed by the WebView control available on the device and served by the local web server. That server is very light weight web server running on the device. You may use [native UI](native_ui) elements for your Views as well.  
+* Views are set of ERB templates, HTML, CSS, and JavaScript files executed by the WebView control available on the device and served by the local web server. That server is very lightweight web server running on the device. See [User Interface](ui) section for more details on [Layouts](ui#view-layouts), [CSS framework](ui#css-framework), [JavaScrip frameworks](ui#javascript-frameworks), [Menus](ui#menu), and [Native UI elements](ui#native-toolbar-control) you may use in the View.  
 * Controllers are set of usually very simple Ruby scripts in controller.rb files. You may use [native API-s](native_apis) in your controllers.
 * Models are defined by a Ruby script in model.rb file.
 
 See [Rhodes Application](application) for more details.
 
-You may generate Rhodes Application using [rhodes](rhodes_generator) utility. 
+You may generate Rhodes Application using [rhodes](generator) utility. 
 
 ## Framework Architecture
 
