@@ -220,6 +220,16 @@ module Rho
           db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
       end
     end
+
+    def reset_db_on_sync_user_changed() 
+      puts "reset_db_on_sync_user_changed"
+      begin
+          get_app(APPNAME).on_sync_user_changed
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts 'Application reset_db_on_sync_user_changed failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end       
+    end
     
     def load_server_sources(data)
         puts "load_server_sources : #{data}"
@@ -941,6 +951,10 @@ module Rho
 end # Rho
 
 module SyncEngine
+    def self.get_user_name
+        Rho::RhoConfig.rho_sync_user        
+    end
+    
     def self.search(args)
         searchParams = ""
 

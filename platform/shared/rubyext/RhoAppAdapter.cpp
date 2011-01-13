@@ -44,5 +44,10 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 {
 	return rho_ruby_getRhoDBVersion();
 }
-	
+
+/*static*/ void  _CRhoAppAdapter::resetDBOnSyncUserChanged()
+{
+    rho_ruby_reset_db_on_sync_user_changed();
+}
+
 }
