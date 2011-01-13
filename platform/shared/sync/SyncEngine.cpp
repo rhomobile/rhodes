@@ -810,6 +810,21 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
 			getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 	}
 	
+    if ( RHOCONF().isExist("rho_sync_user") )
+    {
+        String strOldUser = RHOCONF().getString("rho_sync_user");
+        if ( name.compare(strOldUser) != 0 )
+        {
+            if (isNoThreadedMode())
+                RhoAppAdapter.resetDBOnSyncUserChanged();
+            else
+            {
+                NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/resetDBOnSyncUserChanged"), "", null ));
+            }
+        }
+    }
+    RHOCONF().setString("rho_sync_user", name, true);
+
     getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 	
     PROF_STOP("Login");
