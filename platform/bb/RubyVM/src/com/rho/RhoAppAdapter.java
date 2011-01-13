@@ -22,6 +22,7 @@ public class RhoAppAdapter
 	public static final int ERR_GEOLOCATION = 12;
 	
 	public static final RubyID loadServerSources_mid = RubyID.intern("load_server_sources");
+	public static final RubyID resetDBOnSyncUserChanged_mid = RubyID.intern("reset_db_on_sync_user_changed");
 	
 	static RubyClass m_classRhoError;
 	static RubyMethod m_RhoError_err_message;
@@ -91,6 +92,11 @@ public class RhoAppAdapter
 	public static void loadServerSources(String strData)
 	{
 		RubyAPI.callPublicOneArgMethod(RhoRuby.getFrameworkObj(), ObjectFactory.createString(strData), null, loadServerSources_mid);
+	}
+
+	public static void resetDBOnSyncUserChanged()
+	{
+		RubyAPI.callPublicNoArgMethod(RhoRuby.getFrameworkObj(), null, resetDBOnSyncUserChanged_mid);
 	}
 	
 }
