@@ -40,6 +40,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		new RhoLogger("Sync");
 	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
     public static final int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esSearch=3, esStop = 4, esExit = 5;
 
@@ -958,6 +959,21 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    else
 		    	getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 		
+		    if ( RHOCONF().isExist("rho_sync_user") )
+		    {
+		        String strOldUser = RHOCONF().getString("rho_sync_user");
+		        if ( name.compareTo(strOldUser) != 0 )
+		        {
+		            if (isNoThreadedMode())
+		                RhoAppAdapter.resetDBOnSyncUserChanged();
+		            else
+		            {
+		                NetResponse resp1 = getNet().pushData( getNet().resolveUrl("/system/resetDBOnSyncUserChanged"), "", null );
+		            }
+		        }
+		    }
+		    RHOCONF().setString("rho_sync_user", name, true);
+		    
 	    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 		    
 	    	if ( ClientRegister.getInstance() != null )

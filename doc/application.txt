@@ -1,7 +1,7 @@
 # Rhodes Application
 
 ## App structure
-The Rhodes application generator generates a basic application from the "rhodes app" option. It will generate subdirectories and controller and template files when specifying a model and actions. Please refer to the [Rhodes generator](rhodes_generator) documentation for more detailed information about the Rhodes directory structure.
+The Rhodes application generator generates a basic application from the "rhodes app" option. It will generate subdirectories and controller and template files when specifying a model and actions. Please refer to the [Rhodes generator](generator) documentation for more detailed information about the Rhodes directory structure.
 
 ### Example Directory Structure
 As an example, /sugar could be the root folder for an application that provides mobile access to SugarCRM. The app's root directory will contain a few .erb files, depending on the app's functionality. At the very least there will be an index.erb file that serves as the default landing page. This default landing page will typically have links to the controllers for some of the data models, and is not associated with any specific controller. In case the application needs a default landing page associated with a controller, it is recommended to create a model/controller/view folder and use an action on this controller as a default start path. To do that, edit the start_path property in the [Configuration]() framework configuration file.
@@ -61,7 +61,7 @@ Each controller action usually associated with a View template. The .erb files m
 * show.erb - shows the object's attribute values
 * new.erb - creates a new object
 
-These files are all created by the [rhodes generator](rhodes_generator). Inside the template, any valid HTML, JavaScript, and Ruby can be used, with Ruby code enclosed in <% and %> tags. See more information about ERB [here](http://www.ruby-doc.org/stdlib/libdoc/erb/rdoc/).
+These files are all created by the [rhodes generator](generator). Inside the template, any valid HTML, JavaScript, and Ruby can be used, with Ruby code enclosed in <% and %> tags. See more information about ERB [here](http://www.ruby-doc.org/stdlib/libdoc/erb/rdoc/).
 
 To send View to the browser, use render method in your controller. For example, to render list.erb, make following call in your controller:
 
@@ -111,26 +111,6 @@ Method on_config_conflicts may be called after application was upgraded. If appl
 	def on_config_conflicts(conflicts)
 	    # puts "on_config_conflicts: #{conflicts}"
 	end
-
-## View Layouts
-
-Rhodes supports a layout mechanism based on ERB templates. The default layout template is called "layout.erb" and is located in the application root folder.  Unless overridden, this layout is rendered on all non-Ajax requests.
-
-### Customizing Layouts
-
-If you would like to override or customize layout behavior, you can call the render function with the following parameters:
-
-	:::ruby
-	render :action => 'index', :layout => 'mycustomlayout', :use_layout_on_ajax => false
-
-The first argument is the action you would like to render.  Next is the (optional) layout name, which assumes the application root as a base directory.  In the above example, Rhodes would look for a file called "mycustomlayout.erb" in the application root directory (you also may use :layout => false to disable the use of a layout template).  The use_layout_on_ajax argument tells Rhodes whether or not to use the layout on Ajax calls (default is false). 
-
-You can call the layout method on the controller to overwrite the default layout name:
-
-	:::ruby
-	layout :mycustomlayout
-
-This will force the render call to use mycustomlayout.erb in place of the default layout file for all actions of this controller.
 
 ## Application Helpers
 Few helper methods defined as part of the Rhodes framework. There are just a few of them because Rhodes framework designed for mobile environment where size is still of some concern and we tried to keep framework as tight as possible. 
@@ -212,6 +192,14 @@ For example, if the application name or model are not specified in the call para
 	url_for :action => :show, :id => '{12}', :fragment => "an-anchor" 
 	==> /app/model/{12}/show#an-anchor
 
+## Error handlers(400,500)
+
+Rhodes can display the following error pages: app\E400.erb and app\E500.erb
+
+* error 400 occurs when there's a Rho::RecordNotFound exception (for example, when you search for a non-existent objectID)
+* error 500 occurs for any other unhanded exception
+
+To get exception object use $! or Rho::RHO.current_exception
 
 ## Per Platform Files
 
