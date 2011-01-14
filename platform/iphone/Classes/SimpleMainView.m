@@ -62,7 +62,7 @@ int rho_sys_get_screen_height();
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback;
+@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView;
 
 
 static BOOL makeHiddenUntilLoadContent = YES;
@@ -309,6 +309,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	self.mTabBarCallback = nil;
     
     rootFrame = frame;
+	
+	self.urlBasedNativeView = NO;
     
     UIView* root = self.view;
     
@@ -526,7 +528,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (void)goForward:(id)sender {
-	[self restoreWebView];
+	if ((nativeViewView != nil) && (self.urlBasedNativeView == YES)) {
+		[self restoreWebView];
+	}
     [self forward:0];
 }
 
@@ -563,8 +567,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)back:(int)index {
 	//if (nativeViewView != nil) {
+	if ((nativeViewView != nil) && (self.urlBasedNativeView == YES)) {
 		[self restoreWebView];
-		//[webView setNeedsDisplay];
+	}
+	//[webView setNeedsDisplay];
 	//}
 	//else {
 		[webView goBack];
@@ -572,7 +578,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (void)forward:(int)index {
-	[self restoreWebView];
+	if ((nativeViewView != nil) && (self.urlBasedNativeView == YES)) {
+		[self restoreWebView];
+	}
     [webView goForward];
 }
 
@@ -602,6 +610,27 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		nativeView = nil;
 	}
 }
+
+
+-(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index {
+	nativeViewView = nv_view;
+	if (nativeViewView != nil) {
+		CGRect rect = [webView frame];
+		[webView removeFromSuperview];
+		nativeViewView.frame = rect;
+		nativeViewView.autoresizesSubviews = YES;
+		nativeViewView.clipsToBounds = NO;
+		nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+		[self.view addSubview:nativeViewView];
+		self.urlBasedNativeView = NO;
+	}
+}
+
+-(void)closeNativeView:(int)tab_index {
+	[self restoreWebView];
+}
+
+
 
 - (NSString*)processForNativeView:(NSString*)url {
 
@@ -644,18 +673,23 @@ static BOOL makeHiddenUntilLoadContent = YES;
 						//w.delegate = self;
 						nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 						[root addSubview:nativeViewView];
+						self.urlBasedNativeView = YES;
 					}
 					[nativeView navigate:navto];
 					return nil;
 				}
 				else {
-					[self restoreWebView];
+					if ((nativeViewView != nil) && (self.urlBasedNativeView == YES)) {
+						[self restoreWebView];
+					}
 					return url;
 				}
 			}
 		}
 		else {
-			[self restoreWebView];
+			if ((nativeViewView != nil) && (self.urlBasedNativeView == YES)) {
+				[self restoreWebView];
+			}
 			return url;
 		}
 

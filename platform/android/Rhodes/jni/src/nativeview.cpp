@@ -115,6 +115,15 @@ void* RhoNativeViewManager::getWebViewObject(int tab_index) {
     return env->CallStaticObjectMethod(cls, mid, tab_index);
 }
 
+// destroy native view (opened with URL prefix or in separated full-screen window)
+// this function can executed from your native code (from NativeView code, for example)
+// instead of this function you can execute destroy() for Ruby NativeView object
+void RhoNativeViewManager::destroyNativeView(NativeView* nativeView) {
+   //TODO
+
+}
+
+
 
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManager_getViewByHandle
 (JNIEnv *env, jclass, jlong handle) {
@@ -162,4 +171,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_nativeview_RhoNativeViewManage
 	}
 	holder->factory->destroyNativeView(nv);
 }
+
+extern "C" int rho_native_view_manager_create_native_view(const char* viewtype, int tab_index, VALUE params) {
+	return -1;
+}
+
+extern "C" void rho_native_view_manager_navigate_native_view(int native_view_id, const char* url) {
+}
+
+extern "C" void rho_native_view_manager_destroy_native_view(int native_view_id) {
+}
+
+
+
+
+
 

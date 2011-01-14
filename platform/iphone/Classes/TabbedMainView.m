@@ -552,6 +552,22 @@
     [[self subView:[self activeTab]] removeNavBar];
 }
 
+-(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index {
+	if (tab_index == -1) {
+		tab_index = [self activeTab];
+	}
+	[[self subView:tab_index] openNativeView:nv_view tab_index:-1];
+}
+
+-(void)closeNativeView:(int)tab_index {
+	if (tab_index == -1) {
+		tab_index = [self activeTab];
+	}
+	[[self subView:tab_index] closeNativeView:-1];
+}
+
+
+
 - (void)onViewWillActivate:(RhoViewController*)view {
 	int index = -1;
 	int i;
