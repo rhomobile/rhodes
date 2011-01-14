@@ -35,7 +35,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, start_parameters;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate, start_parameters;
 #ifdef __IPHONE_4_0
 @synthesize eventStore;
 #endif
@@ -284,11 +284,37 @@ static Rhodes *instance = NULL;
         RAWLOG_ERROR2("startSignatureViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
     }
     
-	
-	//[self startCameraPicker:pickImageDelegate 
-    //             sourceType:UIImagePickerControllerSourceTypeCamera];
-	
 }
+
+- (void)openFullScreenNativeView:(UIView*)view {
+    if (!rho_rhodesapp_check_mode())
+        return;
+	[self hideSplash];
+	[nvDelegate setParentView:window];
+	[nvDelegate setPrevView:mainView.view];
+	@try {
+		CGRect rect = mainView.view.bounds;
+		//rect.origin.x = 0;
+		//rect.origin.y = 0;
+		NVViewController* svc = [[NVViewController alloc] initWithRect:rect nvview:view delegate:nvDelegate];
+		[nvDelegate setNVViewControllerValue:svc];
+
+		[mainView.view retain];
+		[mainView.view removeFromSuperview];
+		[window addSubview:svc.view];
+		
+		[window layoutSubviews];
+		[window setNeedsDisplay];
+		
+	} @catch(NSException* theException) {
+        RAWLOG_ERROR2("startFullSreeenNativeViewViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
+    }
+}
+
+- (void)closeFullScreenNativeView {
+	[nvDelegate doClose];
+}
+
 
 - (void)choosePicture:(NSString*) url {
     if (!rho_rhodesapp_check_mode())
@@ -498,6 +524,7 @@ static Rhodes *instance = NULL;
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
     signatureDelegate = [[SignatureDelegate alloc] init];
+    nvDelegate = [[NVDelegate alloc] init];
     
 #ifdef __IPHONE_3_0
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
