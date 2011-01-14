@@ -210,7 +210,7 @@ Set cookie to be used by WebView for specified url. Each time when WebView load 
 ### Sample
 See controller and view in the /app/Image folder of the [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb#L30) for some of the examples of how to use WebView in the callbacks.
 
-## Menu
+## Application Menu
 For platforms which support menus Rhodes framework provides ability to change the native application menu items through the following simple API:
 
 	:::ruby
