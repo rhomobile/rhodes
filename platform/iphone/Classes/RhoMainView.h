@@ -34,4 +34,7 @@
 
 - (UIWebView*)getWebView:(int)tab_index;
 
+-(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index;
+-(void)closeNativeView:(int)tab_index;
+
 @end

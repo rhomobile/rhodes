@@ -111,6 +111,16 @@ void* RhoNativeViewManager::getWebViewObject(int tab_index) {
     return main_wnd;
 }
 
+// destroy native view (opened with URL prefix or in separated full-screen window)
+// this function can executed from your native code (from NativeView code, for example)
+// instead of this function you can execute destroy() for Ruby NativeView object
+void RhoNativeViewManager::destroyNativeView(NativeView* nativeView) {
+   //TODO
+
+}
+
+
+
 NativeViewFactory* RhoNativeViewManagerWM::getFactoryByViewType(const char* viewtype) {
 	RhoNativeViewHolder* h = getHolderByViewTypeName(viewtype);
 	if (h != NULL) {
@@ -124,3 +134,16 @@ void RhoNativeViewUtil::executeInUIThread_WM(RhoNativeViewRunnable* command) {
 	::PostMessage(main_wnd, WM_EXECUTE_COMMAND, (WPARAM)command, 0);
 
 }
+
+extern "C" int rho_native_view_manager_create_native_view(const char* viewtype, int tab_index, VALUE params) {
+	return -1;
+}
+
+extern "C" void rho_native_view_manager_navigate_native_view(int native_view_id, const char* url) {
+}
+
+extern "C" void rho_native_view_manager_destroy_native_view(int native_view_id) {
+}
+
+
+
