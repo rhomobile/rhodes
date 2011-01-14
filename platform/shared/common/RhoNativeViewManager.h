@@ -11,16 +11,29 @@
 #define _RHO_NATIVE_VIEW_MANAGER_
 
 
+#include "common/RhoStd.h"
+#include "ruby/ext/rho/rhoruby.h"
+
+
 class NativeView {
 public:
 	virtual ~NativeView(){}
-	// that function must return native object provided view functionality :
+	
+        // that function must return native object provided view functionality :
 	// UIView* for iPhone
 	// jobject for Android - jobect must be android.view.View class type
 	// HWND for Windows Mobile 
 	virtual void* getView() = 0;
 	
 	virtual void navigate(const char* url) = 0;
+
+
+        // that function must return native object provided view functionality :
+	// UIView* for iPhone
+	// jobject for Android - jobect must be android.view.View class type
+	// HWND for Windows Mobile 
+        // this function executed when we make native view by Ruby NativeViewManager (not by URL prefix) 
+        virtual void* createView(VALUE params) {return getView();}
 };
 
 class NativeViewFactory {
@@ -42,6 +55,12 @@ public:
 	// jobject for Android - jobect is android.webkit.WebView class type
 	// HWND for Windows Mobile 
 	static void* getWebViewObject(int tab_index);
+
+
+        // destroy native view (opened with URL prefix or in separated full-screen window)
+        // this function can executed from your native code (from NativeView code, for example)
+        // instead of this function you can execute destroy() for Ruby NativeView object
+        static void destroyNativeView(NativeView* nativeView);
 };
 
 

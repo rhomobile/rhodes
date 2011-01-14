@@ -35,6 +35,7 @@ extern void Init_Alert(void);
 extern void Init_Camera(void);
 extern void Init_SignatureTool(void);
 extern void Init_RhoBluetooth(void);
+extern void Init_RhodesNativeViewManager(void);
 extern void Init_stringio(void);
 extern void Init_DateTimePicker(void);
 extern void Init_NativeBar(void);
@@ -164,6 +165,7 @@ void RhoRubyStart()
     Init_Alert();
     Init_SignatureTool();
     Init_RhoBluetooth();	
+	Init_RhodesNativeViewManager();	
     Init_Camera();
     Init_stringio();
     Init_DateTimePicker();
