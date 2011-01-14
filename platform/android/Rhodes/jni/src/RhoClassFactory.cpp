@@ -3,6 +3,7 @@
 
 #include "rhodes/RhoClassFactory.h"
 #include "rhodes/sslimpl.h"
+#include "rhodes/rhocryptimpl.h"
 
 namespace rho
 {
@@ -26,7 +27,7 @@ net::ISSL *CRhoClassFactory::createSSLEngine()
 
 IRhoCrypt *CRhoClassFactory::createRhoCrypt()
 {
-    return 0;
+    return new CRhoCryptImpl;
 }
 
 } // namespace common
