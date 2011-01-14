@@ -23,3 +23,4 @@ platform/android/Rhodes/jni/src/socketimpl.cpp
 platform/android/Rhodes/jni/src/splashscreen.cpp
 platform/android/Rhodes/jni/src/sslimpl.cpp
 platform/android/Rhodes/jni/src/webview.cpp
+platform/android/Rhodes/jni/src/rhocryptimpl.cpp
