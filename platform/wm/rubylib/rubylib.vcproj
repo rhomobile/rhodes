@@ -1587,6 +1587,14 @@
 					</File>
 				</Filter>
 				<Filter
+					Name="nativeview"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\nativeviewmanager\nativeviewmanager_wrap.c"
+						>
+					</File>
+				</Filter>
+				<Filter
 					Name="stringio"
 					>
 					<File

@@ -188,6 +188,17 @@
 	[v reload:index];
 }
 
+-(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index {
+	SimpleMainView* v = [self getSimpleView:tab_index];
+	[v openNativeView:nv_view tab_index:-1];
+}
+
+-(void)closeNativeView:(int)tab_index {
+	SimpleMainView* v = [self getSimpleView:tab_index];
+	[v closeNativeView:-1];
+}
+
+
 - (void)executeJs:(NSString*)js tab:(int)index {
 	SimpleMainView* v = [self getSimpleView:index];
 	[v executeJs:js tab:index];

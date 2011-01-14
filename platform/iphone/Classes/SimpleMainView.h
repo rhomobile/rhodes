@@ -22,6 +22,7 @@
 	id<NativeViewOC,NSObject> nativeView;
 	NSString* nativeViewType;
 	UIView* nativeViewView;
+	BOOL urlBasedNativeView;
 	RhoViewController* mTabBarCallback;
 }
 
@@ -31,6 +32,8 @@
 @property (nonatomic,retain) NSString *nativeViewType;
 @property (nonatomic,retain) UIView *nativeViewView;
 @property (nonatomic,assign) RhoViewController* mTabBarCallback;
+@property (assign) BOOL urlBasedNativeView;
+
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items;

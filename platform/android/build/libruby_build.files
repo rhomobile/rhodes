@@ -22,6 +22,7 @@ platform/shared/ruby/eval.c
 platform/shared/ruby/ext/alert/alert_wrap.c
 platform/shared/ruby/ext/asynchttp/asynchttp_wrap.c
 platform/shared/ruby/ext/bluetooth/bluetooth_wrap.c
+platform/shared/ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c
 platform/shared/ruby/ext/calendar/calendar_wrap.c
 platform/shared/ruby/ext/calendar/event_wrap.c
 platform/shared/ruby/ext/camera/camera_wrap.c

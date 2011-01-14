@@ -10,6 +10,12 @@
 //#import <NSMapTable.h>
 
 
+#include "ruby/ext/rho/rhoruby.h"
+
+
+#define   OPEN_IN_MODAL_FULL_SCREEN_WINDOW  11111
+
+
 @protocol NativeViewOC
 
 - (UIView*)getView;
@@ -26,10 +32,12 @@
 
 @interface RhoNativeViewManagerOC : NSObject {
 	NSMutableDictionary* mProviders;
+	NSMutableArray* mOpenedViews;
 	
 }
 
 @property (nonatomic, retain) NSMutableDictionary *mProviders;
+@property (nonatomic, retain) NSMutableArray* mOpenedViews;
 
 - (id)init;
 - (void)dealloc;	
@@ -42,4 +50,11 @@
 +(void)unregisterViewType:(NSString*)viewType;
 +(UIWebView*)getWebViewObject:(int)tab_index;
 
++(int)create_native_view:(NSString*)viewType tab_index:(int)tab_index params:(VALUE)params;
++(void)navigate_native_view:(int)nv_id message:(NSString*)message;
++(void)destroy_native_view:(int)nv_id;
++(void)destroy_native_view_by_nview:(void*)nv_view;
+
 @end
+
+
