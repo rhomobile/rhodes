@@ -44,6 +44,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.hardware.SensorManager;
+import android.view.OrientationEventListener;
 
 public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback, OnClickListener
  {
@@ -58,7 +60,9 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
 	private ImageButton cameraButton;
-
+    private OrientationEventListener myOrientationEventListener;
+    private int m_rotation = 0;
+    
 	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
 	@Override
@@ -80,6 +84,41 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		
 		cameraButton = (ImageButton)findViewById(AndroidR.id.cameraButton);
 		cameraButton.setOnClickListener(this);
+		
+        myOrientationEventListener = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL)
+        {
+            @Override
+            public void onOrientationChanged(int orientation) 
+            { 
+                //Logger.D(TAG, "onOrientationChanged: " + orientation); 
+                if (orientation == ORIENTATION_UNKNOWN) 
+                    return; 
+                 
+                m_rotation = orientation;    
+             }   
+        };
+    
+        if (myOrientationEventListener.canDetectOrientation())
+        {
+           Logger.I(TAG, "myOrientationEventListener.enable()"); 
+           myOrientationEventListener.enable();
+        }
+        else
+        {
+           Logger.I(TAG, "cannot detect!"); 
+           myOrientationEventListener = null;
+        }		
+	}
+
+	@Override
+	public void finish() 
+	{
+	    Logger.D(TAG, "finish");
+	    if ( myOrientationEventListener != null )
+	        myOrientationEventListener.disable();
+	        
+        myOrientationEventListener = null;	        
+		super.finish();
 	}
 
 	@Override
@@ -221,6 +260,17 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			
 			OutputStream osCommon = getContentResolver().openOutputStream(uri);
 			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg");
+			
+	        Camera.Parameters parameters = camera.getParameters();
+            //int nOrient = RhodesService.getInstance().getScreenOrientation();
+            int nCamRotate = 90;
+            if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) )
+                nCamRotate = 0;
+                
+	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
+            parameters.set("rotation", nCamRotate );
+            camera.setParameters(parameters);
+
 		} catch (Exception ex) {
 			Logger.E(TAG, ex.getMessage());
 		}
