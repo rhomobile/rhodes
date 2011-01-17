@@ -189,7 +189,8 @@ public class RhodesApplicationPlatform extends UiApplication implements PushAppl
 
 		LOG.INFO("onStatusChange : " + strMsg);
 		
-		m_PushMessageThread.addQueueCommand( new PushStatusCommand(strMsg) );
+		if ( m_PushMessageThread != null )
+			m_PushMessageThread.addQueueCommand( new PushStatusCommand(strMsg) );
 	}
 	
 	public void onPlatformActivate()

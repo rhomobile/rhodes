@@ -21,6 +21,7 @@
 #import "DateTimePickerDelegate.h"
 #import "PickImageDelegate.h"
 #import "SignatureDelegate.h"
+#import "NVDelegate.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate>
@@ -37,6 +38,7 @@
     DateTimePickerDelegate* dateTimePickerDelegate;
     PickImageDelegate* pickImageDelegate;
 	SignatureDelegate* signatureDelegate;
+	NVDelegate* nvDelegate;
 	NSString* start_parameters;
 #ifdef __IPHONE_4_0
     EKEventStore *eventStore;
@@ -50,6 +52,7 @@
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) NSMutableDictionary *cookies;
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
+@property (nonatomic, copy) NVDelegate* nvDelegate;
 #ifdef __IPHONE_4_0
 @property (nonatomic, readonly) EKEventStore *eventStore;
 #endif
@@ -83,4 +86,7 @@
 - (id<RhoMainView,NSObject>)mainView;
 - (void)setMainView:(id<RhoMainView,NSObject>)view;
 
+- (void)openFullScreenNativeView:(UIView*)view;
+- (void)closeFullScreenNativeView;
+	
 @end

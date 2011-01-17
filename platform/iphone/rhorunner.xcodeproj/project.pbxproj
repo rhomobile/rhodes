@@ -73,13 +73,15 @@
 		FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */; };
 		FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9711FF2EF70096AC39 /* SignatureViewController.m */; };
 		FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4981B411FFC53C00488CB2 /* SignatureView.m */; };
+		FA522E7F12DEA7B300AB55CC /* NVDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7B12DEA7B300AB55CC /* NVDelegate.m */; };
+		FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7D12DEA7B300AB55CC /* NVViewController.m */; };
+		FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */; };
 		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
 		FACA4C791270AC0900777CFF /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C731270AC0900777CFF /* RightViewController.m */; };
 		FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C751270AC0900777CFF /* SplittedMainView.m */; };
 		FACA4C7B1270AC0900777CFF /* SplitViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C771270AC0900777CFF /* SplitViewDelegate.m */; };
 		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
-		FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -258,6 +260,12 @@
 		FA291E9711FF2EF70096AC39 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature/SignatureViewController.m; sourceTree = "<group>"; };
 		FA4981B311FFC53C00488CB2 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature/SignatureView.h; sourceTree = "<group>"; };
 		FA4981B411FFC53C00488CB2 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature/SignatureView.m; sourceTree = "<group>"; };
+		FA522E7A12DEA7B300AB55CC /* NVDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NVDelegate.h; path = NativeView/NVDelegate.h; sourceTree = "<group>"; };
+		FA522E7B12DEA7B300AB55CC /* NVDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NVDelegate.m; path = NativeView/NVDelegate.m; sourceTree = "<group>"; };
+		FA522E7D12DEA7B300AB55CC /* NVViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NVViewController.m; path = NativeView/NVViewController.m; sourceTree = "<group>"; };
+		FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoNativeViewManager.mm; path = NativeView/RhoNativeViewManager.mm; sourceTree = "<group>"; };
+		FA522E8212DEA8AE00AB55CC /* RhoNativeViewManagerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoNativeViewManagerOC.h; path = NativeView/RhoNativeViewManagerOC.h; sourceTree = "<group>"; };
+		FA522E8312DEA8C900AB55CC /* NVViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NVViewController.h; path = NativeView/NVViewController.h; sourceTree = "<group>"; };
 		FACA4C701270AC0900777CFF /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
 		FACA4C711270AC0900777CFF /* LeftViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeftViewController.m; path = SplitView/LeftViewController.m; sourceTree = "<group>"; };
 		FACA4C721270AC0900777CFF /* RightViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RightViewController.h; path = SplitView/RightViewController.h; sourceTree = "<group>"; };
@@ -269,8 +277,6 @@
 		FACC20C8123A60F40088A447 /* Bluetooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bluetooth.h; path = Bluetooth/Bluetooth.h; sourceTree = "<group>"; };
 		FACC20C9123A60F40088A447 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
-		FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RhoNativeViewManager.mm; sourceTree = "<group>"; };
-		FAD45EAF122571EE00141873 /* RhoNativeViewManagerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoNativeViewManagerOC.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -307,6 +313,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA522E6C12DEA74F00AB55CC /* NativeView */,
 				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
 				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
 				BDC6F34811F4ABBF0056C1C3 /* icon114.png */,
@@ -535,8 +542,6 @@
 				BDB373651144220F006EA6DA /* SimpleMainView.m */,
 				BD38E753115D1AAC001CE05C /* TabbedMainView.h */,
 				BD38E754115D1AAC001CE05C /* TabbedMainView.m */,
-				FAD45E8D122566CB00141873 /* RhoNativeViewManager.mm */,
-				FAD45EAF122571EE00141873 /* RhoNativeViewManagerOC.h */,
 			);
 			name = MainView;
 			sourceTree = "<group>";
@@ -648,6 +653,19 @@
 				FA291E9711FF2EF70096AC39 /* SignatureViewController.m */,
 			);
 			name = Signature;
+			sourceTree = "<group>";
+		};
+		FA522E6C12DEA74F00AB55CC /* NativeView */ = {
+			isa = PBXGroup;
+			children = (
+				FA522E8312DEA8C900AB55CC /* NVViewController.h */,
+				FA522E8212DEA8AE00AB55CC /* RhoNativeViewManagerOC.h */,
+				FA522E7A12DEA7B300AB55CC /* NVDelegate.h */,
+				FA522E7B12DEA7B300AB55CC /* NVDelegate.m */,
+				FA522E7D12DEA7B300AB55CC /* NVViewController.m */,
+				FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */,
+			);
+			name = NativeView;
 			sourceTree = "<group>";
 		};
 		FACA4C6E1270ABCD00777CFF /* SplitView */ = {
@@ -917,7 +935,6 @@
 				5C0D0A2F121D28A30022E83C /* RhoFileImpl.m in Sources */,
 				5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */,
 				5C0D0C0D121D337A0022E83C /* RhoThreadImpl.m in Sources */,
-				FAD45E8E122566CB00141873 /* RhoNativeViewManager.mm in Sources */,
 				BD6A622A123E46BB0093E03C /* RhoViewController.m in Sources */,
 				FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */,
 				BD486F59124FB66600F8A93F /* Event.m in Sources */,
@@ -926,6 +943,9 @@
 				FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */,
 				FACA4C7B1270AC0900777CFF /* SplitViewDelegate.m in Sources */,
 				5C59AB2912DDA1B800ED4A1E /* RhoCryptImpl.mm in Sources */,
+				FA522E7F12DEA7B300AB55CC /* NVDelegate.m in Sources */,
+				FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */,
+				FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

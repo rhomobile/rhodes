@@ -204,6 +204,17 @@
 	[rvc navigateRedirect:url tab:index];
 }
 
+-(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index {
+	RightViewController* rvc = [self getRightViewController];
+	[rvc openNativeView:nv_view tab_index:tab_index];
+}
+
+-(void)closeNativeView:(int)tab_index {
+	RightViewController* rvc = [self getRightViewController];
+	[rvc closeNativeView:tab_index];
+}
+
+
 - (void)reload:(int)index {
 	RightViewController* rvc = [self getRightViewController];
 	[rvc reload:index];
