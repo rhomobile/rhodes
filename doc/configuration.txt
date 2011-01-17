@@ -106,7 +106,15 @@ Hides forward button and animates back button transition
 Splash screen image display options. See more details [here](ui#loading-screen).
 
 	splash_screen='zoom'
+	
+Turn on Full Browser mode for Blackberry 4.6.0 and higher
 
+	use_bb_full_browser = 1
+
+Turn on Persistent Storage usage mode for Blackberry
+
+	use_persistent_storage = 1
+	
 
 ### Last Visited Page
 Rhodes can keep track of the last visited page, so that next time you start your application, it will open to the same page. To enable this feature, use 
