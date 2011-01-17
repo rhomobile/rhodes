@@ -2,6 +2,7 @@ package com.rho.db;
 
 import j2me.lang.CharacterMe;
 
+import com.rho.AppBuildConfig;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -215,10 +216,13 @@ public class SqliteStorage implements IDBStorage
 			//m_dbSess.setDBCallback(this);
 
 			URI myURI = URI.create(strDbName);
+			boolean bEncrypted =  AppBuildConfig.getItem("encrypt_database") != null && 
+           		 AppBuildConfig.getItem("encrypt_database").compareTo("1") == 0;
+			DatabaseSecurityOptions dbso = new DatabaseSecurityOptions(bEncrypted);
 			
 			if ( !m_fs.exists(strDbName) )
 			{
-				m_db = DatabaseFactory.create(myURI);
+				m_db = DatabaseFactory.create(myURI, dbso);
 				
 				m_db.beginTransaction();
 				m_nInsideTransaction++;
@@ -233,8 +237,10 @@ public class SqliteStorage implements IDBStorage
 				}
 				m_db.commitTransaction();
 			}else
-				m_db = DatabaseFactory.open(myURI);
-				
+			{
+				m_db = DatabaseFactory.openOrCreate(myURI, dbso);
+			}
+			
 			if ( m_bPendingTransaction )
 				m_db.beginTransaction();
 			
