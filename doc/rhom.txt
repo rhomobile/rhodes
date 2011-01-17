@@ -1,1 +1,678 @@
-#RHOM
+# Using the Local Database with Rhom
+
+Rhom is a mini database object mapper for Rhodes. It provides a high level interface to make it very powerful and simple to use a local database.  That database is SQLite on all platforms except BlackBerry where it is HSQLDB.
+
+Rhom currently supports two model types: property bag and fixed schema
+
+## Property Bags
+With a property bag model, all is stored in a single table.  Rhom determines a set of properties by their respective model (or source id).  The following example illustrates this idea:
+
+<pre>
+Source ID: 1, Model Name: Account
++-----------+----------+--------------+----------------------+
+| source_id | attrib   | object       | value                |
++-----------+----------+--------------+------- --------------+
+|         1 | name     | 48f39f63741b | A.G. Parr PLC 37862  | 
+|         1 | industry | 48f39f63741b | Entertainment        |
+|         1 | name     | 48f39f230529 | Jones Group          |
+|         1 | industry | 48f39f230529 | Sales                |
++-----------+----------+--------------+----------------------+
+</pre>
+
+In this example, Rhom will expose a class `Account` with two attributes: `name` and `industry`
+
+	:::ruby
+	account = Account.find('48f39f63741b')
+	account.name
+	  #=> "A.G. Parr PLC 37862"
+	
+	account.industry
+	  #=> "Entertainment"
+	
+## Methods
+
+### `clear_notification`
+Used to clear the notification for the object, see the [sync notification section](/rhodes/sync-engine#notify) for more details.
+
+### `delete_all(conditions)`
+Deletes all rhom objects for a source, optionally filtering by conditions:
+
+	:::ruby
+	# :conditions 	Delete only objects matching these criteria. 
+	#               Supports find() conditions.
+	# :op  			See advanced find syntax
+	Account.delete_all(:conditions => {'industry'=>'electronics'})
+
+### `destroy`
+Delete a rhom object.
+
+	:::ruby
+	@account = Account.find(:all).first
+	@account.destroy
+
+### `find(*args)`
+Returns rhom object(s) based on the following arguments:
+
+	:::ruby
+	# :all 			returns all objects w/ optional conditions
+	#
+	# :first		returns first object matching conditions
+	#
+	# :count 		returns number of objects matching conditions
+	#
+	# :conditions 	(optional) hash of attribute/values to match
+	# 				supports sql fragment(i.e. "name like 'rhomobile') 
+	#				or sql fragment with binding 
+	#				(i.e. ["name like ?", "'#{company#}'"])
+	# 				Note: use single comma around string values 
+	#
+	# :order 		(optional) attribute(s) to order the list
+	#
+	# :orderdir 	(optional) order direction('ASC' (default), 'DESC' )
+	#
+	# :select 		(optional) array of string attributes to return 
+	#				with the object.  This is useful if your model 
+	#				has a lot of attributes but your query only needs 
+	#				a few of them.
+	#
+	# :per_page 	(optional) maximum number of items return 
+	#
+	# :offset 		(optional) offset from beginning of the list
+
+	acct = Account.find "3560c0a0-ef58-2f40-68a5-48f39f63741b"
+	
+	acct.name 
+	  #=> "A.G. Parr PLC 37862"
+
+	accts = Account.find(:all, :select => ['name','address'])
+	
+	accts[0].name 
+	  #=> "A.G. Parr PLC 37862"
+	
+	accts[0].telephone 
+	  #=> nil
+
+**NOTE: Use SQL fragments with caution.  They are considerably slower than advanced queries [described below](/rhodes/rhom#advanced-queries).**
+
+#### Order Examples
+The `:order` argument accepts several forms:
+
+* `:order` by one attribute:
+
+  		:::ruby
+		@accts = Account.find(
+		  :all, 
+		  :order => 'name',
+		  :orderdir => 'DESC'
+		)
+
+* `:order` by one attribute with block:
+
+    	:::ruby
+		@accts = Account.find(:all, :order => 'name') do |x,y|
+	      y <=> x    
+	    end
+
+* `:order` with block:
+
+    	:::ruby
+		@accts = Account.find(:all) do |item1,item2|
+	      item2.name <=> item1.name
+	    end
+
+* `:order` by multiple attributes
+
+    	:::ruby
+		@accts = Account.find(
+		  :all, 
+	      :order => ['name', 'industry'], 
+	      :orderdir => ['ASC', 'DESC']
+ 		)
+
+### `find_all(*args)`
+Alias for find(:all,*args).
+
+### `new(attributes = nil)`
+Creates a new rhom object and assigns given attributes, or initializes an empty rhom object.
+
+	:::ruby
+	@account = Account.new(
+	  {"name" => "ABC Inc.","address" => "555 5th St."}
+	)
+	@account.name 
+	  #=> "ABC Inc."
+
+### `save`
+Saves the current rhom object to the database.
+
+	:::ruby
+	@account = Account.new(
+	  {"name" => "some new record", "industry" => "electronics"}
+	)
+	@account.save
+
+### `create(attributes)`
+Creates a new rhom object and saves to the database. 
+
+**NOTE: This is the fastest way to insert a single item into the database.**
+
+	:::ruby
+	@account = Account.create(
+	  {"name" => "some new record", "industry" => "electronics"}
+	)
+
+### `paginate(*args)`
+Calls `find` with a limit on the # of records.  This emulates rails' classic pagination syntax. Default page size is 10.
+
+	:::ruby
+	# :page 		which page to return, used as offset 
+	#				in combination with :per_page
+	#				
+	# :per_page 	number of records to return (used as limit)
+	#
+	# :conditions 	same as find with :conditions
+	#
+	# :order 		same as find with :order
+	#
+	# :select 		same as find with :select
+	
+	Account.paginate(:page => 0) 
+	  #=> returns first 10 records
+	Account.paginate(:page => 1, :per_page => 20) 
+	  #=> returns records 21-40
+	Account.paginate(
+	  :page => 5, 
+	  :conditions => {'industry' => 'Technology'}, 
+	  :order => 'name'
+	) #=> you can have :conditions and :order as well
+
+### `sync(callback = nil, callback_data = "", show_status_popup = nil)`
+Start the sync process for a model. If the callback is set, SyncEngine.set_notification is called before SyncEngine.dosync.
+
+	:::ruby
+	Account.sync( url_for(:action => :sync_callback) )
+
+### `set_notification(url)`
+Used to asynchronously refresh the page, see [[RhodesConnectToWebServices#Sync_notification|Sync Notification Docs]] for more details.
+
+### `update_attributes(attributes)`
+Updates the current rhom object's attributes and saves it to the database
+
+	:::ruby
+	@account = Account.find(
+	  :all, 
+	  :conditions=>{'name' => 'ABC Inc.'}
+	)
+	@account.update_attributes(
+	  {"name" => "ABC Inc.", "industry" => "Technology"}
+	)
+	@account.industry   
+	  #=> "Technology"
+
+### `can_modify`
+Before show page to modify item, application should check is it possible to modify this item. Item can be in intermediate state: data sent to server but response from server does not recieved.
+<source lang='ruby'>
+  def edit
+    @product = Product.find(@params['id'])
+    
+    if @product && !@product.can_modify
+        render :action => :show_edit_error
+    else    
+        render :action => :edit
+    end
+    
+  end
+</source>
+
+=== changed? ===
+Detect does model has local changes which has to be synced with server
+<source lang='ruby'>
+def should_sync_product
+    Product.changed?
+end
+
+def should_sync_product_object
+  @product = Product.find(@params['id'])
+
+  if @product.changed? 
+    #... do stuff ...
+  end
+end
+</source>
+
+
+
+== Use model without RhoSync ==
+* You can use model to store data in database locally on client. Just add any model you want - manually or using rhogen.
+* Since Rhodes 2.0, sync is disabled by default.
+* In config.rb set empty sync url: FOR Rhodes < 2.0
+<source lang='ruby'>
+Rho::RhoConfig::add_source("Customer", {"url"=>''})
+</source>
+* In rhoconfig.txt disable background sync: sync_poll_interval=0
+
+== Rhom Models ==
+There are two types of models - 'property bag' model and 'fixed schema' model
+
+* property bag is a db table which contains object id/attribute/value triplets and therefore set of attributes for each object is arbitrary
+* fixed schema is a regular db table with fixed set of columns (attributes)
+* model file name is class name with lowercase and underscore after each capital letter : Product\product.rb, IM\i_m.rb
+
+=== Property Bag vs Fixed Schema ===
+==== Property bag ====
+* + simple use, no require for specifiyng attributes before use
+* + do not need in migration data if add/remove attributes
+* - size is 3 times bigger than fixed schema, because of indexing all attributes, so if you want to store a lot of data, consider fixed schema
+* - sync is slower a little, because insert to database take place for each attribute
+==== Fixed schema ====
+* + smaller size, you can specify index for only required attributes
+* + faster sync
+* - you have to support all schema changes
+
+=== Property Bag Model ===
+<source lang='ruby'>
+class SomeModel
+  include Rhom::PropertyBag
+
+  # rhosync settings
+  enable :sync #default is disabled - for local models
+  # you may use set :sync, true instead
+  set :sync_type, :bulk_only #default is :incremental (which allow for bulk and regular sync)
+  set :sync_priority, 1     #1000 by default, first will sync models with 0, then 1 etc
+
+  enable :full_update #send all attributes from client when call update server method - not only changed ones
+
+  # model settings
+  # if you use other than user partition, partition name should correspond with ones from settings.yml from the server app
+  set :partition, :app # optional, default user
+
+  # object properties 
+  # any object may have arbitrary set of properties 
+  # blob fields called out explicitly to identify field type
+  # :blob - declare property as a blob type
+  # :overwrite - (optional) overwrite client copy of blob with new copy from server
+  #                    useful when server modifies images, for example zooming or cropping
+  property :image_url, :blob, :overwrite 
+end
+</source>
+
+=== Fixed Schema Model ===
+<source lang='ruby'>
+class SomeModel
+  include Rhom::FixedSchema
+
+  # rhosync settings
+  enable :sync #default is disabled - for local models
+                    # you may use set :sync, true instead
+  set :sync_type, :bulk_only #default is :incremental (which allow for bulk and regular sync)
+  set :sync_priority, 1     #1000 by default, first will sync models with 0, then 1 etc
+
+  enable :full_update #send all attributes from client when call update server method - not only changed ones
+
+  # model settings
+  # if you use other than user partition, partition name should correspond with ones from settings.yml from the server app
+  set :partition, :app # optional, default :user
+
+  set :schema_version, '1.0' #application may use it for data migration
+
+  # object properties 
+  property :name, :string
+  property :tag, :string
+  property :phone, :string
+  property :image_url, :blob
+
+  # blob fields called out explicitly to identify field type
+  # :blob - declare property as a blob type
+  # :overwrite - (optional) overwrite client copy of blob with new copy from server
+  #                    useful when server modifies images, for example zooming or cropping
+  property :cropped_image_url, :blob, :overwrite
+
+ 
+  # object column will be added by rhom and  will be primary key
+
+  #indexes
+  index :by_name_tag, [:name, :tag] #will create index for name and tag columns
+
+  unique_index :by_phone, [:phone] #will create unique index for phone column
+end
+</source>
+
+=== Associations ===
+<source lang='ruby'>
+class Customer
+  include Rhom::PropertyBag
+
+  belongs_to :product_id, 'Product'
+
+  #Rhodes 2.2 support polymorphic relationships:
+  belongs_to :parent_id, ['Product', 'Cases']
+  #or
+  belongs_to :parent_id, 'Product'
+  belongs_to :parent_id, 'Cases'
+
+end
+
+#product_controller.rb create code:
+def create
+  @product = Product.new(@params['product'])
+  @product.save
+
+  cust = Customer.find(:first) #find customer
+  cust.product_id = @product.object
+  cust.save
+  redirect :action => :index
+end
+</source>
+After sync object id of new Product will be updated in product_id
+NOTE(rhodes < 2.0.4): to work correct in this scenario Product should sync before Customer, so if Customer has sync priority=1, Product should has 0. Rhodes > 2.0.4 reorder sources automatically
+
+=== Examples ===
+Model without RhoSync:
+<source lang='ruby'>
+class SomeModel
+  include Rhom::PropertyBag
+end
+</source>
+
+Simple Model with RhoSync:
+<source lang='ruby'>
+class SomeModel
+  include Rhom::PropertyBag
+
+  enable :sync
+
+end
+</source>
+
+=== Source Configuration Protocol ===
+RhoSync will send the source configuration via the client/server protocol in the following json package:
+
+<source lang='javascript'>
+{
+  "sources": {
+    "Product": {
+      "partition": "application",
+      "schema": {
+        "property": {
+          "brand": "string",
+          "price": "string",
+          "name": "string",
+          "image_url": "blob,overwrite"
+        },
+        "unique_index": {
+          "by_price": "price"
+        },
+        "version": "1.0",
+        "index": {
+          "by_brand": "brand",
+          "by_name_brand": "name,brand"
+        }
+      },
+      "poll_interval": 300,
+      "sync_type": "incremental",
+      "belongs_to": {
+        "brand": "Customer"
+      },
+      "sync_priority": 0
+    }
+  }
+}
+</source>
+
+This is translated from the following yml definition:
+<source lang='ruby'>
+sources: 
+  Product:
+    poll_interval: 300
+    sync_priority: 0
+    partition: 'application'
+    schema: 
+      version: '1.0'
+      property: 
+        name: 'string'
+        price: 'string'
+        brand: 'string'
+        image_url: 'blob,overwrite'
+      index: 
+        by_name_brand: 'name,brand'
+        by_brand: 'brand'
+      unique_index: 
+        by_price: 'price'
+    sync_type: 'incremental'
+    belongs_to: 
+      brand: 'Customer'
+</source>
+
+== Data migration ==
+=== Property Bag model ===
+When you use Property Bag model you don't have to track schema changes (adding or removing attributes). However, Rhodes uses property bag schema to store app data in sql database. If or when internal property bag schema changed, after application is updated/reloaded db will be (re)created and all existing data is erased and will be lost. See rhodes\lib\rhodes.rb and rhodes\lib\framework\rhodes.rb for internal db schema version:
+<source lang='ruby'>
+DBVERSION = '2.0.3'
+</source>
+
+
+On the first application start after application was first time installed or updated/reloaded database will be (re)created if app_db_version in the rhoconfig.txt is different from what it was before. If db version is changed and db is recreated then all data in the db is erased and will be lost.
+Note: since Rhodes 2.2.4 Rhosync session is kept in database, so SyncEngine.logged_in will return true. At start application can check that db is empty but user still logge in and run sync without interactive login
+
+Application db version in rhoconfig.txt:
+<source lang='ruby'>
+app_db_version = '1.0'
+</source>
+
+=== Fixed Schema Model ===
+When you use Fixed Schema model application developer is responsible for sql schema. So when you add or delete some properties or just change app logic you may need to perform data migration or database reset. To track schema changes use schema_version parameter in the model:
+<source lang='ruby'>
+class Product
+    include Rhom::FixedSchema
+
+    set :schema_version, '1.1'
+end
+
+class AppApplication < Rho::RhoApplication
+  # this method called when schema_version parameter has been changed in 2 cases:
+  # at application start
+  # when server send sources to client
+  # old_version is String containing old version value
+  # new_src is Hash with source parameters like 'schema_version', 'name' etc; new_src['schema']['sql'] contain sql table creation script
+  def on_migrate_source(old_version, new_src)
+    # call super to delete table
+    # return false to run sql script to create table with new schema 
+  end
+end
+</source>
+
+
+
+== Sync Sources ==
+Rhodes sync sources are also available by the Rhodes Ruby framework through the RhomSource object.  
+You can use RhomSource just like a normal Rhom object with the exception that only the source_url field is writeable (below is the SourceController provided in the sample applications which demonstrates how to use RhomSource):
+
+<source lang='ruby'>
+require 'rho/rhocontroller'
+require 'rhom/rhom_source'
+
+class SourceController < Rho::RhoController
+  include Rhom
+
+  def index
+    @sources = RhomSource.find(:all)
+    render :action => :index
+  end
+  
+  def edit
+    @source = RhomSource.find(@params['id'])
+    render :action => :edit
+  end
+  
+  def update
+    @source = RhomSource.find(@params['source']['source_id'])
+    @source.update_attributes(@params['source'])
+    redirect :action => :index
+  end
+end
+</source>
+
+You can also access the following attributes on RhomSource:
+
+<source lang='ruby'>
+@source = RhomSource.find(@params['id'])
+puts @source.source_id #id of source
+puts @source.name #name of source
+puts @source.source_url #url of a source
+puts @source.last_updated #returns Time object of last sync for the source (in Time.at format)
+puts @source.last_inserted_size #returns number of records inserted on last sync
+puts @source.last_deleted_size #returns number of records deleted on last sync
+puts @source.last_sync_duration #returns duration of last sync for this source in seconds
+puts @source.last_sync_success #returns 1 if sync was successful, 0 otherwise
+puts @source.distinct_object #returns number of records
+</source>
+
+Show last sync time for Product source example:
+<source lang='ruby'>
+<%= ::Rhom::RhomSource.find(Product.get_source_id).last_updated.strftime("%m/%d/%Y, %I:%M%p") %>
+</source>
+
+== Database Crash Recovery ==
+Rhodes provides the following functions for recovering the database from a bad or corrupt state, or if the rhosync server returns errors.
+
+<source lang='ruby'>
+Rhom::Rhom.database_full_reset(reset_client_info=false, reset_local_models=true) #=> deletes all records from object_values and schema tables
+# if reset_client_info is set to true, client_info table will be cleaned as well
+# if reset_local_models is set to true, local(non-synced models) will be cleaned also
+Rhom::Rhom.database_full_reset_and_logout #=> perform a full reset and then logout the sync client
+
+Rhom::Rhom.database_fullclient_reset_and_logout #=> calls Rhom::Rhom.database_full_reset(true) and then logout the sync client
+
+Rhom::Rhom.database_local_reset #reset only local(non-synced models)
+
+</source>
+
+
+If you receive a sync error "Unknown client" message in your sync callback, this means that the server no longer knows about the client and a database_fullclient_reset_and_logout is recommended.  This error requires proper intervention in your app so you can handle the state before resetting the client.  For example, your sync notification could contain the following:
+
+<source lang='ruby'>
+if @params['error_message'].downcase == 'unknown client'
+  puts "Received unknown client, resetting!"
+  Rhom::Rhom.database_fullclient_reset_and_logout
+end
+</source>
+
+== Seeding Data ==
+If your application requires seeding some initial data, use the following method:
+
+<source lang='ruby'>
+# table_array - array containing table names corresponding to pipe-delimted files
+# seed_prefix_directory - relative path to directory containing a 'fixtures' directory of files
+Rho::RhoUtils.load_offline_data(table_array, seed_prefix_directory)
+</source>
+
+
+For example, in the rhodes/spec/framework_spec, we use <code>load_offline_data</code> to seed the device database for each test:
+
+<source lang='ruby'>
+Rho::RhoUtils.load_offline_data(['client_info','object_values'], 'spec')
+</source>
+
+
+In this example, there is a 'spec/fixtures' directory which contains a client_info.txt and object_values.txt pipe-delimited files.  These files are structured as follows:
+
+client_info.txt:
+<pre>
+client_id|last_sync_success
+67320d31-e42e-4156-af91-5d9bd7175b08|
+</pre>
+
+object_values.txt:
+<pre>
+source_name|attrib|object|value
+Case|status|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|New|
+Case|assigned_user_id|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|d64e9409-6445-db6f-e9eb-48fce5e9fb16|
+Case|work_log|41a4e1f1-2c0c-7e51-0495-4900dc4c072c||
+Case|priority|41a4e1f1-2c0c-7e51-0495-4900dc4c072c|High|
+...
+</pre>
+
+Note the column names are always the first line of the file.
+
+## Advanced Queries
+
+### `find(*args)` (advanced conditions)
+Rhom also supports advanced find `:conditions`.  Using advanced `:conditions`, rhom can optimize the query for the property bag table.
+
+Let's say we have the following SQL fragment condition:
+
+	:::ruby
+	find(
+	 :all, 
+	 :conditions => [ 
+	   "LOWER(description) like ? or LOWER(title) like ?", 
+	   query, 
+	   query
+	 ], 
+	 :select => ['title','description'] 
+	)
+
+Using advanced `:conditions`, this becomes:
+
+	:::ruby
+	find( 
+	  :all, 
+	  :conditions => { 
+		{ 
+		  :func => 'LOWER', 
+		  :name => 'description', 
+		  :op => 'LIKE'
+		} => query, 
+	    {
+		  :func => 'LOWER', 
+		  :name => 'title', 
+		  :op => 'LIKE'
+		} => query
+	  }, 
+	  :op => 'OR', 
+	  :select => ['title','description']
+	)
+
+IN operation example:
+
+<source lang='ruby'>
+find(:all, :conditions=>{ 
+   {:name=>"image_uri", :op=>"IN"} => "\"15704\",\"15386\"" 
+ } )
+</source>
+
+<source lang='ruby'>
+#since Rhodes 2.2.6:
+find(:all, :conditions=>{ 
+   {:name=>"image_uri", :op=>"IN"} => ["15704","15386"]
+ } )
+</source>
+
+You can also groups conditions:
+<source lang='ruby'>
+cond1 = {
+   :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+   :op => 'OR'
+}
+cond2 = {
+   :conditions => { 
+        {:name=>'description', :op=>'LIKE'} => 'Hello%'}
+   }
+
+@accts = Account.find( :all, 
+   :conditions => [cond1, cond2], 
+   :op => 'AND', 
+   :select => ['name','industry'])
+</source>
+
+LB (suggestion to make conditions an array of hashes instead - not supported in 1.4):
+<source lang='ruby'>
+find( :all, 
+      :conditions => [{:func=>'LOWER', :name=>'description', :op=>'LIKE', :param=>query}, 
+                      {:func=>'LOWER', :name=>'title', :op=>'LIKE', :param=>query}], 
+      :op => 'OR', 
+      :select => ['title','description'])
+</source>
+

@@ -10,6 +10,7 @@
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
+#include "common/app_build_configs.h"
 
 namespace rho{
 namespace db{
@@ -126,7 +127,9 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
         return;
     //TODO: raise exception if error
 
-    if (RHOCONF().getBool("encrypt_database"))
+    //if (RHOCONF().getBool("encrypt_database"))
+    const char* szEncrypt = get_app_build_config_item("encrypt_database");
+    if ( szEncrypt && strcmp(szEncrypt, "1") == 0 )
     {
         common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
         m_ptrCrypt = factory->createRhoCrypt();

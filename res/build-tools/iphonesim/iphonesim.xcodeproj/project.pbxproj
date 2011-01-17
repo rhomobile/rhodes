@@ -34,6 +34,7 @@
 		2481364B115A750000E3A9BA /* nsprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = nsprintf.m; path = Source/nsprintf.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* iphonesim_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iphonesim_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* iphonesim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = iphonesim; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA28F9AE12B9946000597425 /* iPhoneSimulatorRemoteClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iPhoneSimulatorRemoteClient.h; path = iPhoneSimulatorRemoteClient/iPhoneSimulatorRemoteClient.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +62,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				FA28F9AE12B9946000597425 /* iPhoneSimulatorRemoteClient.h */,
 				24813647115A750000E3A9BA /* iPhoneSimulator.h */,
 				24813648115A750000E3A9BA /* iPhoneSimulator.m */,
 				24813649115A750000E3A9BA /* main.m */,
