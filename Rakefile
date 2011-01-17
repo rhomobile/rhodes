@@ -51,7 +51,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token']
+$application_build_configs_keys = ['security_token', 'encrypt_database']
 
 def make_application_build_config_header_file
   inc_file = File.join($startdir, "platform", "shared", "common", "app_build_configs.c")
