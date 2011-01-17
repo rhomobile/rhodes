@@ -152,7 +152,9 @@ namespace "config" do
 
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
-    $use_sqlite = $bbver[0].to_i >= 5
+    
+    use_hsqldb = $app_config[$config["platform"]] && $app_config[$config["platform"]]['use_hsqldb']
+    $use_sqlite = $bbver[0].to_i >= 5 && !(use_hsqldb && use_hsqldb == '1')
     puts "$use_sqlite : #{$use_sqlite}"
     
     $builddir = $config["build"]["bbpath"] + "/build"
