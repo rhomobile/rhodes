@@ -770,6 +770,17 @@ describe "Rhom::RhomObject" do
     nCount.should == 0
   end
 
+  it "should find with advanced AND conditions and non-string value" do
+    res = getAccount.find( :all, 
+       :conditions => { 
+        {:func=>'length', :name=>'name', :op=>'>'} => 0 
+       },
+       :op => 'AND')
+       
+    res.should_not be_nil
+    res.length.should  == 2
+  end
+
   it "should search with LIKE" do
     query2 = '%CHNolo%'     #LIKE is case insensitive by default   
     nCount = getAccount.find( :count, 
