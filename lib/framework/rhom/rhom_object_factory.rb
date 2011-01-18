@@ -195,7 +195,7 @@ module Rhom
                             raise ArgumentError, 'IN parameters should be String or Array'    
                         end    
                     else
-                        res += val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value) 
+                        res += val_op + ' ' + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(value, false) 
                     end
                     
                     res
@@ -323,7 +323,7 @@ module Rhom
                         end    
                     else
                         sql << val_op + " ?"
-						vals << value.to_s
+						vals << value #.to_s
                     end
 
                     return sql, vals

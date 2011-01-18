@@ -163,15 +163,19 @@ class RhomDbAdapter
       end
       
       # generates a value for sql statement
-      def get_value_for_sql_stmt(value)
+      def get_value_for_sql_stmt(value, convert_value_to_string=true)
         if value.nil? or value == 'NULL'
           "NULL"
         elsif value.is_a?(String)
           s = value.gsub(/'/,"''")
           "'#{s}'"
         else
-          s = value.to_s.gsub(/'/,"''")
-          "'#{s}'"
+          if convert_value_to_string
+            s = value.to_s.gsub(/'/,"''")
+            "'#{s}'"
+          else
+            "#{value}"            
+          end  
         end
       end
     end #self
