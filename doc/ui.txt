@@ -106,8 +106,7 @@ By default, Rhodes framework uses a modified version of jQTouch version 1, beta 
 
 Rhodes supports the display of a custom "Loading" screen while your application is launching. This screen's source is the file loading.html, located at <application-root>/app/loading.html.
 
-Alternatively, you can replace loading.html with an image named loading.png if you just want a simple image to be displayed.
-Please see additional instruction about customization loading.png for iOS devices [here](build#how-to-customize-loading-image).  
+Alternatively, you can replace loading.html with an image named loading.png if you just want a simple image to be displayed. 
 
 You can control how image presented by modifying splash_screen options in [rhoconfig.txt](configuration):
 
@@ -124,6 +123,41 @@ Place splash screen in the center and show it for 5 seconds:
 Center splash screen horizontally, scale it vertically to file all available space, and show it for 5 seconds: 
 	:::ruby
 	splash_screen='delay=5;hcenter;vzoom'
+
+You can customize you loading image (showed on start of application) for each platform by platform suffix:
+
+* Android `loading.android.png`
+* iPhone `loading.iPhone.png`
+* WM `loading.wm.png`
+* BB `loading.bb.png`
+
+If application doesn't have platform specific `loading.png`, then Rhodes'll try to load default `loading.png`.
+
+For iPhone you may define a set of loading images. See Apple documentation about these images, [section Application Launch Images in Build-Time Configuration Details](http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BuildTimeConfiguration/BuildTimeConfiguration.html).
+
+If you are building for iPhone using rake commands, place `loading.png` to your applications "app" folder. If you created an app called `testapp` then the folder would be `testapp/app`. Also you can add some additional images for so loading screen look better on different devices:
+
+* loading.png; size 320x480 - for iPhone/iPod/iPhone4/iPad and other non iOS devices
+* loading@2x.png; size 640x960 - for iPhone4/iPod4; if not defined then loading.png will be used
+* loading-Portrait.png; size 768x1024 - for iPad in Portrait orientation on start; if not defined then loading@2x.png will be used
+* loading-PortraitUpsideDown.png; size 768x1024 - for iPad in Portrait orientation on start, if not defined then loading-Portrait.png will be used
+* loading-Landscape.png; size 1024x768 - for iPad in Landscape orientation on start, if not defined then use loading@2x.png
+* loading-LandscapeLeft.png; size 1024x768 - for iPad in LandscapeLeft orientation on start; if not defined then loading-Landscape.png will be used
+* loading-LandscapeRight.png; size 1024x768 - for iPad in LandscapeRight orientation on start; if not defined then loading-Landscape.png will be used
+
+If you are using xCode to build for iPhone, you should add to your project Default.png image. You can also add some additional images for better work on different devices:
+
+* Default.png; siz 320x480 - for iPhone/iPod/iPhone4/iPad
+* Default@2x.png; size 640x960 - for iPhone4/iPod4, if not defined then use Default.png
+* Default-Portrait.png; size 768x1024 - for iPad in Portrait orientation on start, if not defined then Default@2x.png will be used
+* Default-PortraitUpsideDown.png; size 768x1024 - for iPad in Portrait orientation on start, if not defined then Default-Portrait.png will be used
+* Default-Landscape.png; size 1024x768 - for iPad in Landscape orientation on start, if not defined then Default@2x.png will be used
+* Default-LandscapeLeft.png; size 1024x768 - for iPad in LandscapeLeft orientation on start, if not defined then Default-Landscape.png will be used
+* Default-LandscapeRight.png; size 1024x768 - for iPad in LandscapeRight orientation on start, if not defined then Default-Landscape.png will be used
+
+**NOTE: Use rake command once and it will update xcode project. **
+
+You can see examples of all these images in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples) application.
 
 ## Advanced Usage of Render
 
@@ -149,8 +183,7 @@ Load from 'partials' folder:
 
 	:::ruby
 	render :partial =>"partials/ad", :locals => { :ad => "foo_ad" } 
-
-
+	
 ## Control WebView from controller actions
 It is possible to call on the WebView (browser) directly from your controllers. This API is recommended for use from callbacks, such as sync callback or camera callbacks.
 
