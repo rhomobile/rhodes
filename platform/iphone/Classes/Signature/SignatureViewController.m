@@ -33,6 +33,7 @@
 	//1ontent.backgroundColor = [UIColor groupTableViewBackgroundColor];
 	
 	toolbar = [[UIToolbar alloc] init];
+	toolbar.barStyle = UIBarStyleBlack;
 	
 	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
 	toolbar.autoresizesSubviews = YES;
