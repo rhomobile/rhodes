@@ -77,7 +77,7 @@ static bool isfile(String const &path)
     return stat(path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
 }
 
-static bool isindex(String const &uri)
+/*static*/ int CHttpServer::isIndex(String const &uri)
 {
     static struct {
         const char *s;
@@ -102,10 +102,15 @@ static bool isindex(String const &uri)
         if (pos + index_files[i].len != luri.size())
             continue;
         
-        return true;
+        return index_files[i].len;
     }
     
-    return false;
+    return 0;
+}
+
+static bool isindex(String const &uri)
+{
+    return CHttpServer::isIndex(uri) > 0 ; 
 }
 
 static bool isknowntype(String const &uri)

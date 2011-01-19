@@ -109,6 +109,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    getAppStartUrl
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    setPushRegistrationId
  * Signature: (Ljava/lang/String;)V
  */
