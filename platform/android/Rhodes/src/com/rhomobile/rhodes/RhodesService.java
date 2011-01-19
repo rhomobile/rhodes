@@ -172,6 +172,8 @@ public class RhodesService extends Service {
 	
 	public static native boolean isOnStartPage();
 	
+	public static native boolean canStartApp(String strCmdLine, String strSeparators);
+	
 	public static RhodesService getInstance() {
 		return sInstance;
 	}
