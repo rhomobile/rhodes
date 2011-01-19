@@ -269,7 +269,15 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
         CAtlStringW strValue = strHeader.Mid(nSep+1);
         strValue.Trim();
 
-        oHeaders.put(common::convertToStringA(strName.GetString()),common::convertToStringA(strValue.GetString()));
+        String strFieldName = common::convertToStringA(strName.GetString());
+        String strFieldValue = common::convertToStringA(strValue.GetString());
+        if ( oHeaders.containsKey(strFieldName) )
+        {
+            strFieldValue += ";" + oHeaders.get( strFieldName );
+            oHeaders.put( strFieldName, strFieldValue );
+        }
+        else
+            oHeaders.put( strFieldName, strFieldValue );
     }
 
     return true;
@@ -350,7 +358,7 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
         }
 	}
 
-    if (pNetResp->isOK())
+    if (pNetResp->isSuccess())
         pNetResp->setCookies(makeClientCookie());
 }
 
