@@ -1,0 +1,937 @@
+# Device Capabilities
+
+## Introduction
+
+Rhodes provide access to device specific capabilities such as GPS, PIM, camera, SMS, video player, accelerometer, proximity detector and [native UI elements](ui).  Below is the device support matrix showing what release supports what device capabilities on a per device operating system basis.
+
+<table class="device-caps">
+	<tr>
+		<th>Capability</th>
+		<th>iPhone</th>
+		<th>Windows Mobile</th>
+		<th>BlackBerry</th>
+		<th>Android</th>
+	</tr>
+	<tr><td class='cap'>GeoLocation</td><td>0.3</td><td>0.3</td><td>0.3</td><td>1.0</td></tr>
+	<tr><td class='cap'>PIM Contacts</td><td>0.3</td><td>0.3</td><td>0.3</td><td>1.0</td></tr>
+	<tr><td class='cap'>PIM Calendar</td><td>2.2</td><td>2.2</td><td>2.2</td><td>2.2</td><tr>
+	<tr><td class='cap'>Camera</td><td>1.0</td><td>1.0</td><td>1.0</td><td>1.0</td></tr>
+	<tr><td class='cap'>Barcode</td><td>2.1</td><td>2.1</td><td>2.1</td><td>2.1</td></tr>
+	<tr><td class='cap'>Date/Time picker</td><td>1.2.2</td><td>2.0</td><td>1.2</td><td>1.2</td></tr>
+	<tr><td class='cap'>Menu</td><td>1.2.2</td><td>2.0</td><td>1.2</td><td>1.5</td><tr>
+	<tr><td class='cap'>Tab Bar</td><td>1.2.2</td><td class='tbd'>2.5</td><td class='tbd'>n/a</td><td>1.5</td><tr>
+	<tr><td class='cap'>Nav Bar</td><td>2.0</td><td class='tbd'>2.5</td><td class='tbd'>n/a</td><td>2.0</td><tr>
+	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td class='tbd'>2.5</td><td class='tbd'>2.5</td><td>2.1</td><tr>
+	<tr class='tbd'><td class='cap'>Audio/Video capture</td><td>3.0</td><td>3.0</td><td>3.0</td><td>3.0</td><tr>
+	<tr><td class='cap'>Bluetooth</td><td>2.2</td><td>2.2</td><td>2.2</td><td>2.2</td><tr>
+	<tr><td class='cap'>Push</td><td>1.2</td><td class='tbd'>3.0</td><td>1.2</td><td>2.2</td><tr>
+	<tr><td class='cap'>Screen rotation</td><td>2.1</td><td class='tbd'>2.5</td><td>2.0</td><td>2.1</td><tr>
+	<tr><td class='cap'>Native Maps</td><td>1.4</td><td class='tbd'>2.5</td><td>1.4</td><td>1.5</td><tr>
+	<tr><td class='cap'>Alerts/Audio File Playback</td><td>1.2</td><td>1.5</td><td>1.2</td><td>1.2</td><tr>
+	<tr><td class='cap'>Ringtones</td><td>2.5</td><td>1.5</td><td>1.5</td><td>1.5</td><tr>
+</table>	
+
+## Geolocation
+
+Geolocation information is available in two ways: as an asynchronous service through Ajax calls to a predefined local URL, or in a controller using Ruby calls to the GeoLocation class.
+
+You need to enable the GPS capability to use GeoLocaiton. This is done by adding the following lines to build.yml:
+
+	capabilities:
+	  - gps
+
+See the [Configuration](configuration#build-time-configuration) section for more details.
+
+The GPS receiver consumes a significant amount of energy, and should be switched off most of the time in order to preserve the device's battery life. Any call to get location information will power up the GPS receiver. Also note that it usually takes a while to acquire the device's current position; in some cases, it may take several minutes and may not work at all indoors.
+
+### Asynchronous Ajax calls
+
+The Rhodes framework provides a simple HTML tag for accessing Geolocation information. To use it, include the appropriate javascript library on your page:
+
+* For iPhone, Android: `/public/js/jquery-1.2.6.min.js` and `/public/js/rhogeolocation.js`
+* For Windows Mobile: `/public/js/rhogeolocation-wm.js`
+* For BlackBerry: Unsupported. The BlackBerry webview control doesn't support Ajax. 
+
+Then add one of the following tags in the appropriate location in your HTML: <geolocation/>, <geolatitude/> or <geolongitude/>. The included javascript will query a predefined URL and fill these tags with location information.
+
+`<geolocation/>` - returns a string in the form `[formatted position];[latitude];[longitude]`. 
+
+For example: 37.3317° North, 122.0307° West;37.331689;-122.030731
+
+`<geolatitude/>` - returns just the latitude <br/>
+`<geolongitude/>` - returns just the longitude
+
+### GeoLocation Ruby class
+
+Get current latitude: 
+	:::ruby
+	GeoLocation.latitude
+
+Get current longitude:
+	:::ruby
+	GeoLocation.longitude
+	
+Test if the location system is up and acquired position:
+	:::ruby
+	GeoLocation.known_position?
+	
+Set callback to track location changes.  
+
+	:::ruby
+	GeoLocation.set_notification(
+		callback, callback_params="", ping_gpssystem_timeout=0)
+
+* callback - callback url; it will be called only once, to have it called again, you need to call set_notification again.
+* ping_gpssystem_timeout  - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
+* callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError)
+	
+Get the distance between two points in miles
+	:::ruby
+	GeoLocation.haversine_distance(
+		latitude1, longitude1, latitude2, longitude2) 
+                                                                        
+#### Testing GeoLocation
+
+While developing your application on Windows Mobile emulator, you may find [FakeGPS](http://msdn.microsoft.com/en-us/library/bb158722.aspx) utility useful.
+
+Before testing on BB simulator select menu Simulate/GPS Location and set your position.
+
+To provide Mock Location Data on Android see [here](http://developer.android.com/guide/topics/location/index.html)
+
+#### Samples
+
+##### Tracking location all the time
+You may decide to keep track of your position right after application starts. To do that, add following to your application.rb:
+
+	:::ruby
+    class AppApplication < Rho::RhoApplication
+      def on_activate_app
+        #start geolocation
+        GeoLocation.set_notification("/app/Settings/geo_callback", "")
+      end
+    end
+
+Callback points to the `geo_callback` in the Settings controller.rb:
+    
+	:::ruby
+    class SettingsController < Rho::RhoController
+      def geo_callback
+        puts "geo_callback : #{@params}"
+		# do something on position changes
+		#...
+		# Reset callback
+		GeoLocation.set_notification("/app/Settings/geo_callback", "")
+      end
+    end
+
+
+##### Requiring location only on a specific view
+
+	:::ruby
+    def show_location
+	  # check if we know our position	
+      if !GeoLocation.known_position?
+		# wait till GPS receiver acquire position
+        GeoLocation.set_notification( url_for(:action => :geo_callback), "")
+        redirect wait
+      else
+		# show position
+        render
+      end
+    end
+    
+    def geo_callback
+      # navigate to `show_location` page if GPS receiver acquire position  
+	  if @params['known_position'].to_i != 0 && @params['status'] =='ok'	
+	  	WebView.navigate url_for(:action => :show_location) 
+	  end	
+	  # show error if timeout expired and GPS receiver didn't acquire position
+	  if @params['available'].to_i == 0 || @params['status'] !='ok'
+        WebView.navigate url_for(:action => :show_location_error) 
+	  end
+      # do nothing, still wait for location 
+    end
+
+#### Code Sample
+
+See controller and view in the /app/GeoLocation folder of the [ System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for more information
+
+## PIM Contacts
+
+Rhodes provides access to the device's local phone book and stored contacts via the Ruby class RhoContact.
+
+The following methods are available in the RhoContact class:
+
+Return hash of hashes of all contacts stored in the phonebook (index):
+	:::ruby
+	Rho::RhoContact.find(:all)
+
+Return hash of all properties of the contact identified by the provided id (show):
+	:::ruby
+	Rho::RhoContact.find(@params['id'])
+
+Create new contact in the phonebook, set properties of the contact passed as parameter hash, and save created phonebook record (create). 
+	:::ruby
+	Rho::RhoContact.create!(@params['contact'])
+
+Find contact record in the phonebook, update record properties from the has passed as parameter and save updated record. Contact id passed in the hash (update):
+	:::ruby
+	Rho::RhoContact.update_attributes(@params['contact'])
+
+Remove contact identified by the provided id from the phonebook. (delete)
+	:::ruby
+	Rho::RhoContact.destroy(@params['id'])
+
+On all devices, properties currently supported are: "id","first_name","last_name","mobile_number","home_number","business_number","email_address","company_name"
+
+On iPhone, additional contact properties are supported. 
+
+General: 
+"prefix", "first_name", "middle_name", "last_name", "suffix", "nickname",
+"birthday", "anniversary", "created", "updated",
+"company_name", "job_title", "assistant_name", "assistant_number",
+"spouse_name", "person_note"
+
+**NOTE: "birthday", "anniversary", "created", "updated" properties expect a date formatted as YYYY-MM-DD**
+
+Addresses: 
+"street_address_1", "city_1", "state_1", "zip_1", "country_1" 
+"street_address_2", "city_2", "state_2", "zip_2", "country_2" 
+"street_address_3", "city_3", "state_3", "zip_3", "country_3" 
+
+**NOTE: Address 1 is mapped to "work," 2 is to "home," 3 is to "other."**
+
+Email addresses:
+"email_address", "home_email_address", "other_email_address"
+**NOTE: "email_address" is mapped to "work" **
+
+Phone numbers: 
+"business_number", "home_number", "mobile_number", "main_number", "pager_number", "home_fax", "work_fax"
+
+Home pages: 
+"home_page"
+
+### Sample
+For examples on how to use the API provided by this class, see the view and controller in the /app/Contacts folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Contacts/controller.rb).
+
+## PIM Calendar/Events
+Rhodes provides access to the device's local calendar and stored events via the Ruby class RhoEvent.
+
+Check if the device has a calendar:
+	:::ruby
+	System::get_property('has_calendar')
+
+The following methods are available in the RhoContact class:
+
+Return hash of hashes of all events stored in the calendar (index):
+	:::ruby
+	Rho::RhoEvent.find(:all) 
+
+Return hash of all properties of the event identified by the provided id (show):
+	:::ruby
+	Rho::RhoEvent.find(@params['id'])
+
+Return hash of all properties of the events found by specified parameters (index):
+	:::ruby
+	Rho::RhoEvent.find(:all, :start_date=>start, 
+		:end_date => endtime, :find_type=>'starting', :include_repeating => true )
+		
+* start_date, end_date - define range where at least one of the Event's occurrences falls, inclusive. 
+* find_type - determines the criteria for matching an event occurrence; 
+	* 'starting' searches for events starting between start_date and end_date, 
+	* 'ending'  searches for events ending between start_date and end_date, 
+	* 'occurring' searches for events that have any part of the event occurring during the period specified by start_date and end_date. 
+* include_repeating -  if false then only search based on an Event's START and END values and do not calculate repeating occurrences of the event; if true then repeating occurrences of an Event are included during the search. 
+ 
+Create new event in the calendar, set properties of the event from passed as parameter hash, and save created calendar event (create):
+	:::ruby
+	Rho::RhoEvent.create!(@params['event'])
+
+Find event in the calendar, update record properties from the has passed as parameter and save updated event. Event id passed in the hash (update):
+	:::ruby
+	Rho::RhoEvent.update_attributes(@params['event'])
+
+Rho::RhoEvent.destroy(@params['id']) #=> remove event identified by the provided id from the calendar. (delete)
+</source>
+
+On all devices, properties currently supported are: "id","title","location","notes","start_date","end_date"
+
+On Blackberry and Windows mobile additional contact properties are supported. These are: 
+"reminder"(in minutes), "privacy"('public', 'private', 'confidential')
+
+Recurrence properties:
+"recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval", "end_date" , "days"(array of 7 items, 1 - means event is triggered - Mon-Sun), "months" ( array of 12 items, Jan-Dec), "weeks"(array of 5 items, first-fifth ), "count"(how many occurrences),
+"day_of_month"(1..31)
+
+On iPhone and Android additional event properties are supported. These are: 
+"canceled", "organizer", "attendees", "last_modified", 
+
+Recurrence properties:
+"recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval"
+
+### Sample
+For examples on how to use the API provided by this class, see the view and controller in the /app/Calendar folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Calendar/controller.rb).
+
+## Camera
+
+Check if the device has a camera:
+	:::ruby
+	System::get_property('has_camera')
+	
+The Camera API provides the following functionality:
+
+Take a picture:
+	:::ruby
+	Camera::take_picture('/app/model/camera_callback')
+	
+Choose a picture from an album:
+	:::ruby
+	Camera::choose_picture('/app/model/camera_callback')
+
+Once the user has taken/chosen a picture, the callback URL you specified will be called. The callback is a POST message; the body of the message contains the return status and image_uri.
+
+* Status is 'ok', 'cancel', or 'error'
+* image_uri points to the taken/chosen image stored in the /public/db-files folder; the image file will have auto-generated name.
+
+### Sample
+See controller and view in the /app/Image folder of the [ System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb) for more information.
+
+## Barcode
+
+The Barcode API allows to try recognize barcode on an image:
+	:::ruby
+	Barcode.barcode_recognize(image_file_full_path)
+
+Barcode recognition functionality realized as Rhode Native extension. You should add "Barcode" to extension list in build.yml located in your application folder. `Barcode.barcode_recognize(image_file_full_path)` return string with recognized code or emty string if not any recognized barcodes on the image. You can combine Camera for get picture with Barcode recognition for process barcode data - see sample below.
+
+For barcode recognition we use Zbar library (iPhone, Android and Windows Mobile platforms) and ZXing library (BlackBerry platform). In this case we support next barcode types :
+
+* iPhone, Android and WM platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, .
+* BlackBerry platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
+
+### Sample
+See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.
+
+## Signature Capture
+
+The Signature Capture API allow take a signature and save it as an image:
+	:::ruby
+	SignatureTool::take_signature(callback_url, image_format)
+
+Signature Capture open window for hand writing, where user draw his signature. Signature saved to an image file. You can choice 'jpg' or 'png' format for image. 
+
+After user entered signature (or canceled) provided callback url will be called. Callback parameters will be:
+* status - 'ok' or 'cancel'
+* signature_uri - path to the image with signature   
+
+### Sample
+See controller and view in the /app/SignatureUtil folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SignatureUtil/controller.rb) for more information.
+
+## Bluetooth
+
+Bluetooth API provide access to Bluetooth serial port connection between phone and another phone, phone and PC, phone and external Bluetooth device (for example external Bluetooth GPS device).
+
+Currently Bluetooth support have following limitations:
+
+* on Apple device (iPhone, iPad etc.) you can connect only to another Apple device
+* on Blackberry if you want to make client connection to any device, you should pair devices only when on another device running server service, because it need for add paired device to list of devices with support serial port profile - only that devices you can see in the list of devices to connect
+* on any platform, except iPhone, you should pair you devices before make connection
+* you can change local device name for display on another device only on iOS and Android platform - for WM and BB use system settings for change local device name
+* you can not see another device name, when you using server connection on BlackBerry
+* only one connection session can created and using on any device in this time. You should close current session before make another session.
+* one-to-few peers connection scheme is unsupported now.
+
+Do not forget add special "bluetooth" capability into your application's build.yml config - it critical for Android.
+
+There are two steps to make connection and start using of Bluetooth :
+
+* Make connection session: execute `Rho::BluetoothManager.create_session` and setup callback where you receive result of connection. That callback will get events related to making connection(connect ok, canceled by user, error). Connection provided by platform specific UI.
+* After receiving successful result and name of connected device in create_session_callback you should setup session_callback by `Rho::BluetoothSession.set_callback` to process incoming session events from connected device (data received) or event related to this session connection(disconnect, errors).
+
+### Bluetooth API
+
+#### BluetoothManager
+
+Get availability of Bluetooth on the device. Return true/false:
+	:::ruby
+	Rho::BluetoothManager.is_bluetooth_available
+
+Switch Bluetooth off:
+	:::ruby
+	Rho::BluetoothManager.off_bluetooth
+
+
+Change local device name:
+	:::ruby
+	Rho::BluetoothManager.set_device_name(name)
+
+Get local device name for current device (this name displayed on another device)
+	:::ruby
+	Rho::BluetoothManager.get_device_name
+
+Get last error. Returns OK/ERROR/CANCEL
+	:::ruby
+	Rho::BluetoothManager.get_last_error
+
+
+Creates Bluetooth session. Return OK/ERROR:
+	:::ruby
+	Rho::BluetoothManager.create_session(role, callback_url)
+
+* role - may be ROLE_SERVER or ROLE_CLIENT
+* callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
+	* status - OK / ERROR / CANCEL
+	* connected_device_name - name of the connected device
+
+
+#### BluetoothSession
+
+Set Bluetooth session callback
+	:::ruby
+	Rho::BluetoothSession.set_callback(
+		connected_device_name, session_callback_url)
+* connected_device_name - name of the connected device	
+* return OK/ERROR
+* parameters in callback:
+	* 'connected_device_name' - name of connected device
+    * 'event_type' - SESSION_INPUT_DATA_RECEIVED / ERROR / SESSION_DISCONNECT
+
+Disconnect from the device
+	:::ruby
+	Rho::BluetoothSession.disconnect(connected_device_name)
+* connected_device_name - name of the connected device	
+* return OK/ERROR
+
+Get session status
+	:::ruby
+	Rho::BluetoothSession.get_status(connected_device_name)
+* return received but not read data size; -1 if error, 0 if empty(not actually received data)
+
+Read data
+	:::ruby
+	Rho::BluetoothSession.read(connected_device_name)
+* connected_device_name - name of the connected device	
+* return array of bytes
+
+Write data  
+	:::ruby
+	Rho::BluetoothSession.write(connected_device_name, data)
+* connected_device_name - name of the connected device	
+* data must be array of byte/fixnum
+
+Read string
+	:::ruby
+	Rho::BluetoothSession.read_string(connected_device_name)
+* connected_device_name - name of the connected device	
+* return string
+
+Write string  
+	:::ruby
+	Rho::BluetoothSession.write_string(connected_device_name, data)
+* connected_device_name - name of the connected device	
+* data must be a string
+* return OK/ERROR
+
+
+### Example of Controller with using Bluetooth API
+
+It is not complete example (link to complete example see below). This code just show how you can make connection and send/receive strings. 
+	:::ruby
+	require 'rho/rhocontroller'
+	require 'rho/rhobluetooth'
+
+	class BluetoothController < Rho::RhoController
+	  @layout = :simplelayout
+	  $connected_device = nil
+  
+	  def index
+	    render
+	  end
+
+	  def start_bluetooth
+	    if Rho::BluetoothManager.is_bluetooth_available()
+	      Rho::BluetoothManager.create_session(Rho::BluetoothManager::ROLE_CLIENT, url_for( :action => :connection_callback))
+	    end
+	  end
+
+	  def send_string(str)
+	    Rho::BluetoothSession.write_string($connected_device, str)
+	  end
+
+	  def connection_callback 
+	    if @params['status'] == Rho::BluetoothManager::OK
+	       $connected_device = @params['connected_device_name']
+	       Rho::BluetoothSession.set_callback($connected_device, url_for( :action => :session_callback))
+	       send_string('Hello friend !')
+	    end
+	  end 
+
+	  def session_callback
+	     if @params['event_type'] == Rho::BluetoothSession::SESSION_INPUT_DATA_RECEIVED
+	        while Rho::BluetoothSession.get_status($connected_device) > 0
+	          str = Rho::BluetoothSession.read_string($connected_device)
+        
+	          # use received string
+           
+	        end
+	     end
+	  end
+
+	  def close_all
+	    Rho::BluetoothSession.disconnect($connected_device)
+	    Rho::BluetoothManager.off_bluetooth()
+	  end
+      
+	end
+
+### Example of chat application using Bluetooth connection
+
+You can find complete example of using Bluetooth API in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples). See Bluetooth Chat Demo page - [BluetoothChat](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BluetoothChat/). In this example you can see how to exchange text messages between two different devices. You also can use this example for connect to external Bluetooth device (external GPS device for example) or PC or Mac (use terminal to see and send messages).
+
+## Ringtone manager
+
+The Ringtone manager API provides access to view/play the user's installed ringtones.
+
+Get all available ringtones
+	:::ruby
+	@ringtones = RingtoneManager::get_all_ringtones
+* The variable returned by get_all_ringtones will be a hash containing key/value pairs, where the key is the user-friendly name of ringtone, and the value is its full file name.
+
+Play a given ringtone
+	:::ruby
+	RingtoneManager::play @ringtones['My Ringtone']	
+NOTE: that if 'play' is called while another ringtone is playing, it will stop the old ringtone and start the new one.
+
+Halt playing of a ringtone
+	:::ruby
+	RingtoneManager::stop
+* Can safely be called even if no ringtone is playing
+
+NOTE: Currently implemented for Android, Blackberry and Windows mobile. On Blackberry, only the user installed ringtones are accessible. System preinstalled ringtones are not accessible due to Blackberry limitations.
+
+### Sample
+See controller and view in the /app/Ringtones folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Ringtones/controller.rb) for more information.
+
+## PUSH Notifications
+Push notification support is currently available for Android, Blackberry and iPhone. 
+
+Testing push is a little more involved than some other features because it requires additional setup on both the RhoSync application and Rhodes application. Please refer to [RhoSync Device Push](/rhosync/push) for more information.
+
+### Setup
+
+First, enable push in your rhodes application in build.yml:
+
+	capabilities:
+	  - push
+	  - vibrate #=> if you want to enable vibrate in your push messages
+
+Next, your RhoSync application should be running on a network that is accessible to your device. For example, you might have your RhoSync application running on a LAN with IP 192.168.1.10, PORT 9292. Then make sure your device is connected to the same LAN and setup your application [rhoconfig.txt](configuration#run-time-configuration) syncserver as follows:
+
+	syncserver = 'http://192.168.1.10:9292/application'
+
+Now your Rhodes application is configured to receive push messages.
+
+### iPhone
+iPhone PUSH support uses the Apple Push Notification Service (APNS) introduced in iPhone SDK 3.0.  In order to use the service, you will need to obtain a push-enabled provisioning profile and a server-side push certificate used for encrypting RhoSync->APNS traffic.
+
+NOTE: For testing push, you will need to build and deploy your application to a physical iPhone (or iPad) device. Apple does not support testing push on simulators.
+
+#### Setup Push Certificate
+The first step to setting up your environment is to create an APNS push certificate. To create the SSL certificate, follow the "Creating the SSL Certificate and Keys" section on the 
+[developer site](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW4).
+
+Once you have the certificate, you will need to export it to a .pem format using [these instructions](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW6). Make sure to name the output file 'apple_push_cert.pem' file from these instructions, since this is what we configured in our RhoSync application.
+
+Once you have this file, copy it to your RhoSync application directory under the settings folder:
+
+	:::term
+	$ cd myrhosyncapp
+	$ cp /path/to/apple_push_cert.pem settings/apple_push_cert.pem
+
+Now your RhoSync application is ready to send APNS messages.
+
+#### Setup Provisioning Profile
+Next, you can setup your Apple Push Provisioning Profile using Apple's [developer site instructions](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW5).  Once you have the profile installed in XCode and on your test device, you are ready to test push.
+
+#### Setup iPhone Device
+Setting up the device is the same process as [building any normal Rhodes application](build#build-for-iphoneipad). When you start the application, make sure to also open the console window (cmd-shift-R). When the application starts, you should see some output in the console that shows the device token (towards the top):
+
+  2010-08-19 10:14:22.627 rhorunner[1486:307] Device token is <10fd92ab fa8ee481 55d9af6e 73290863 22b323fd 0d18fdbd 19e92d03 c0fef7c8>
+
+This confirms that your application is running with push enabled. Once you login to the RhoSync application and sync, you will see the device registered on the RhoSync console under the user id you used to login. Now you are ready to [test push from your RhoSync application](/rhosync/push#testing-push-in-the-web-console).
+
+### Android
+Android PUSH support uses the Android Cloud to Device Messaging (AC2DM) system introduced in Android 2.2 (Froyo). In order to use the service, you will need to register your role-based google account (or use existing one) and then register this account in [Google C2DM program](http://code.google.com/android/c2dm/signup.html).
+
+Here are some guidelines for developing and testing an Android application that uses the C2DM feature:
+
+* To develop and test your C2DM applications, you need to run and debug the applications on an Android 2.2 system image that includes the necessary underlying Google services. 
+* To develop and debug on an actual device, you need a device running an Android 2.2 system image that includes the Market application. 
+* To develop and test on the Android Emulator, you need to download the Android 2.2 version of the Google APIs Add-On into your SDK using the Android SDK and AVD Manager. Specifically, you need to download the component named "Google APIs by Google Inc, Android API 8". Then, you need to set up an AVD that uses that system image.
+* Android C2DM system uses an existing connection for Google services. This requires users to set up their Google account on their mobile devices (and on emulator!).
+
+#### Setup application
+As first step, register role-based google account for your application. Here for example it will be referred as push-app@gmail.com.
+
+Then modify your application's build.yml and specify there google account used to send PUSH messages:
+
+	android:
+	  push:
+	    sender: push-app@gmail.com
+
+This is the same address used by RhoSync to retrieve authtoken. See [here](/rhosync/push#android) for more information.
+
+NOTE: **WARNING** This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). 
+
+### BlackBerry
+Notifications to BlackBerry are sent using PAP 2.0 message through a BES/MDS server.  
+
+On the simulator, this is done via the MDS simulator tool (which you've probably already seen in the form of a console window everytime you do 'rake run:bb'). On the device, this is done through the BES/MDS server that the phone is configured to use.  
+
+These instructions assume you are familiar with BES/MDS concepts (for more information please see [here](http://na.blackberry.com/eng/services/business/server/full/)).
+
+#### Setup MDS Simulator
+<i>Make sure you close the BlackBerry simulator and MDS simulator before continuing for your changes to take effect!</i>
+
+To enable the push port in your MDS simulator, edit the following file:
+
+	C:\Program Files\Research In Motion\BlackBerry JDE <VERSION YOU ARE BUILDING>\MDS\config\rimpublic.property
+
+Uncomment the last line of the file, which should be 'push.application.reliable.ports=100':
+
+  push.application.reliable.ports=100
+
+#### Setup BlackBerry Simulator
+To listen for incoming messages on BlackBerry, the Rhodes application will start when device powers on and will run a listener thread in the background. You will use the "push_port" option in the [rhoconfig.txt](configuration#run-time-configuration) to specify the listening port for incoming push messages. If "push_port" is not specified, default will be 100 as shown in the previous section.
+
+NOTE: For testing push, the BlackBerry simulator requires a 'kickstart' process.  When the simulator starts, open the web browser on the simulator and navigate to any web page (i.e. http://m.google.com/).  Now your simulator is ready to receive push messages.
+
+Now you are ready to [testing Push in the RhoSync Web Console](/rhosync/push#testing-push-in-the-web-console).
+
+#### Setup BlackBerry Device
+To test push on a BlackBerry device, you will need to use a device that is configured with a BES server. Then, all you need to do is [build your Rhodes application for the device](build#build-for-blackberry).
+
+#### BlackBerry 5.0 Push service
+Rhodes 2.2 and higher support new [Blackberry Push Service](http://na.blackberry.com/eng/developers/javaappdev/pushapi.jsp)
+
+Define in [rhoconfig.txt](configuration#run-time-configuration) which push to use (if empty or missed only MDS push is supported).	
+
+	push_options = 'mds;push_service'
+
+These parameters from [PushApplicationDescriptor](http://www.blackberry.com/developers/docs/5.0.0api/net/rim/blackberry/api/push/PushApplicationDescriptor.html). Set them in [rhoconfig.txt](configuration#run-time-configuration):
+
+	push_service_url  = 'https://pushapi.eval.blackberry.com/'
+	push_service_port = 20558
+	push_service_appname = 'RhoTest'
+	push_service_type = 'BPAS'
+
+### Push Callback
+Rhodes applications can also handle PUSH notifications that didn't come from a RhoSync application. 
+
+In this example, we will get the device ID so we can register the device with some push server:
+	:::ruby
+	System.get_property('device_id')
+
+Application can set push callback to process any commands from server:
+	:::ruby
+	System.set_push_notification("/app/Settings/push_notify", '')
+
+Callback parameters:
+
+* since Rhodes 2.0.4 : contain push message parameters as hash
+* rhodes  < 2.0.4 : message - contain server push message body
+
+Callback return:
+
+* empty string - do not run Rhodes push command processing
+* "rho_push" - to run rhodes push command processing (for alerts, sounds, etc...)
+
+Example:
+	:::ruby
+	def push_notify
+	  puts 'push_notify: ' + @params.inspect  
+	  "rho_push"
+	end
+
+### Push Payload
+The Rhodes push payload allows more than one operation in a single message. 
+ 
+There are no required operations. There are default operations - if operation is not specified, no default operation will be performed. 
+
+In case of Blackberry if application in background, alert operation will bring application upfront; other operations will not. 
+In case of iPhone, regardless of operation, user will be presented with option to activate application if it is not running.
+
+Payload may include following operations which client will perform when it receives the PUSH message:
+
+do_sync - do sync on spec specified sync source; use "all" to sync all sources  
+	:::ruby
+	# one or more sources, or "all" can be specified
+	do_sync = "Product,Customer" 
+
+alert - bring app upfront and show specified message
+	:::ruby
+	alert = "Some message"
+
+vibrate - vibrate for the specified number of milliseconds, up to 25500; if 0 or no duration is specified, it will vibrate for 2500 millisecond.
+	:::ruby
+	vibrate = 2000 #=> duration in milliseconds
+
+sound - play specified file if media type supported by the phone. iPhone will ignore media-type parameter.
+	:::ruby
+	sound = "hello.mp3"
+
+File should be included to the application bundle in `/public/alerts` folder
+
+In case of Blackberry, if file is in public folder, file name will be `/apps/public/alerts/test-file.mp3` Media type should be either specified explicitly or may be recognized from file extension. Known file extensions are: .mp3 - audio/mpeg; .wav - audio/x-wav   
+
+In case of iPhone, audio files should be placed in the `/public/alerts` folder and build script will copy them into root of the application main bundle (iPhone wouldn't play file from any other place).
+
+## Alerts
+
+In your controller, you may call on system alert methods to show popup, vibrate, or play audio file.
+
+** show_popup ** - bring app upfront and show specified message
+	:::ruby
+	Alert.show_popup "Some message"
+
+You can also customize popup window's title, icon, buttons and specify callback to be called on button click:
+	:::ruby
+	Alert.show_popup {
+		:message => 'Some message', 
+		:title => 'Custom title', 
+		:icon => '/public/images/icon.png',
+	    :buttons => ["Yes", "No", 
+			{:id => 'cancel', :title => 'Cancel all'}],
+	    :callback => url_for(:action => :on_dissmiss_popup) }
+
+Popup window always close after clicking on any button.
+
+* :message - text to be displayed in popup window
+* :title - title of the popup window
+* :icon - image to be displayed in popup window. It's value can be one of predefined values or path to image file. Predefined values:
+	* :alert - '!' icon
+	* :question - '?' icon
+	* :info - informational icon
+* :buttons - array of buttons for popup window. Each button defined by its id and title. Button can be specified by Hash with :id and :title keys or just String - in this case both id and title will be set to this value.
+* :callback - url to be called when any of the button will be clicked. This callback will be called with @params hash containing three keys: :button_id, :button_title and :button_index.
+
+Example:
+	:::ruby
+	def on_dismiss_popup
+	  id = @params[:button_id]
+	  title = @params[:button_title]
+	  index = @params[:button_index]
+	  if id == 'Yes'
+	    # Handle 'Yes' button
+	  elsif id == 'No'
+	    # Handle 'No' button
+	  elsif id == 'cancel'
+	    # Handle 'Cancel all' button
+	  end
+	end
+
+
+** hide_popup ** - close current opened popup
+	:::ruby
+	Alert.hide_popup
+
+** vibrate ** - vibrate for the specified number of milliseconds, up to 25500; if 0 or no duration is specified, it will vibrate for 2500 millisecond.
+	:::ruby
+	Alert.vibrate(duration_in_milliseconds)
+
+
+** play_file ** - play specified file if media type supported by the phone. File should be included to the application. For example, if file is in public folder, file name will be `/apps/public/test-file.mp3` Media type should be either specified explicitly or may be recognized from file extension. Known file extensions are: .mp3 - audio/mpeg; .wav - audio/x-wav
+	:::ruby
+	Alert.play_file(file_name.ext, media_type)
+
+** show_status ** - show status messages
+	:::ruby
+	Alert.show_status(title, status_text, hide_button_label)
+
+Status window will close after clicking on hide button.
+
+* status_text - text to be displayed in status window
+* hide_button_label - label of hide button
+
+For example you can use Alert.show_status in sync notification callback:
+	:::ruby
+	def sync_notify
+	  status = @params['status'] ? @params['status'] : ""
+	  Alert.show_status( 
+		"Status", 
+		"#{@params['source_name']} : #{status}", 
+		Rho::RhoMessages.get_message('hide'))
+	end
+
+## Screen rotation
+When user rotate device, Rhodes update view corresponding to new orientation. To get notification about rotation use callback:
+	:::ruby
+	System.set_screen_rotation_notification(callback, params) 
+
+Callback will be called when screen rotate (available since Rhodes 2.0). Callback parameters will be: width, height, degrees
+
+### Sample
+See controller and view in the /app/ScreenRotation folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/ScreenRotation/controller.rb) for more information.
+
+## Run external application
+Use System.open_url : you can provide any url with any schema(http, file etc), depending of platform will be run associated application to handle this url 
+	:::ruby
+	System.open_url('http://www.rhomobile.com')
+
+Use rho_open_target=_blank in html link. Note that jqtouch or other javascript library may disable this attribute.
+	:::html
+	<a href="http://www.google.com/?rho_open_target=_blank">Open Google in external browser</a>
+
+### Sample
+See CustomUri of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/CustomUri/controller.rb) for example.
+
+## MapView
+MapView class provides an embeddable map interface, similar to the one provided by the Maps application. The following code would go into your controller and the map appears on a whole page.
+
+NOTE: in order to use it on Android, you need to install Google Add-on API and retrieve Google Map API key as described [here](build#build-for-android).
+
+	:::ruby
+	map_params = {
+	     :settings => {:map_type => "hybrid",:region => [@params['latitude'], @params['longitude'], 0.2, 0.2],
+	                   :zoom_enabled => true,:scroll_enabled => true,:shows_user_location => false,
+	                   :api_key => 'Google Maps API Key'},
+	     :annotations => [{:latitude => @params['latitude'], :longitude => @params['longitude'], :title => "Current location", :subtitle => ""},
+	                      {:street_address => "Cupertino, CA 95014", :title => "Cupertino", :subtitle => "zip: 95014", 
+	                       :url => "/app/GeoLocation/show?city=Cupertino"},
+	                      {:street_address => "Santa Clara, CA 95051", :title => "Santa Clara", :subtitle => "zip: 95051", 
+	                       :url => "/app/GeoLocation/show?city=Santa%20Clara"}]
+	}
+	MapView.create map_params
+
+Map settings:
+
+* map_type - widget may display maps of three types: standard, satellite, and hybrid
+* region - two types allowed:
+	* [latitude,longitude,latitudeDelta,longitudeDelta]. The area currently displayed by the map view. The region encompasses both the latitude and longitude point on which the map is centered and the span of coordinates to display. The span values provide an implicit zoom value for the map. The larger the displayed area, the lower the amount of zoom. Similarly, the smaller the displayed area, the greater the amount of zoom. 
+		* latitude,longitude - map coordinate of the region center
+		* latitudeDelta - the amount of north-to-south distance (measured in degrees) to display on the map. Unlike longitudinal distances, which vary based on the latitude, one degree of latitude is always approximately 111 kilometers (69 miles).
+		* longitudeDelta - the amount of east-to-west distance (measured in degrees) to display for the map region. The number of kilometers spanned by a longitude range varies based on the current latitude. For example, one degree of longitude spans a distance of approximately 111 kilometers (69 milies) at the equator but shrinks to 0 kilometers at the poles.
+	* {:center => center, :radius => radius}. Another way to define area displayed by the map view.
+		* center - string describing center of area. Can be any string allowed by google geocoding service. Examples: "1 infinite loop, cupertino, ca 95014", "California, USA", "37.365519,-121.982918"
+		* radius - radius of displayed area measured in degrees
+* zoom_enabled - true if zoom of the map is enabled
+* scroll_enabled - true if scrool of the map is enabled
+* shows_user_location - true if current user location is displayed on the map 
+* api_key - Google Maps API Key (sign up for it here: http://code.google.com/apis/maps/signup.html). Note that this parameter is ignored on Android! For Android you should get another key and specify it in the app's build.yml as described [[Building_Rhodes_on_Supported_Platforms#Prerequisites_5|here]]
+
+Annotations - array of map annotation objects (list of pins on the map). Annotation:
+
+* latitude,longitude - map coordinate of the annotation 
+* street_address - if map coordinate is not specified, framework will attempt to obtain it using provided street address from google geo-coding service 
+* title - title of the annotation callout
+* subtitle - subtitle of the annotation callout
+* url - url to follow when user click on the callout button
+
+### Sample
+See GeoLocation/controller.rb of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for some of the examples of how to use MapView class.
+
+## File system access
+
+### Rhodes client file system structure
+	<rhodes root>  #system-dependent path
+	  apps         #Rho::RhoApplication::get_base_app_path
+	    app        #Rho::RhoApplication::get_app_path('app') - contain models
+	      model1   #Rho::RhoApplication::get_model_path('app','model1')
+	  public       #contains files from application public folder
+	  db           #contains schema and data files
+	    db-files   #contains files stored in database(blobs)
+	               # for file paths from camera callback etc: Rho::RhoApplication::get_blob_path(relative_file_path); 
+	               # to create file path for blob: Rho::RhoApplication::get_blob_folder()
+	  lib          #contains rho framework library files. Blackberry does not has this folder, library files are stored in jar
+	  RhoLog.txt   #application log
+
+### Read\write file example
+	:::ruby	
+	fileName = File.join(Rho::RhoApplication::get_base_app_path(), 'myfile.txt')
+	File.open(fileName).each do |line|
+	end
+
+	fileNameW = File.join(Rho::RhoApplication::get_base_app_path(), 'tempfile.txt')
+	f = File.new(fileNameW)
+	f.write('test')
+	f.close
+
+	#binary file read\write
+	#to read file from blob attribute use Rho::RhoApplication::get_blob_path(image.image_uri) method
+
+	file_testname = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.png')
+	test_content = File.binread(file_testname)
+
+	file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'temp.png')
+	f = File.new(file_name, "wb")
+	f.write(test_content)
+	f.close        
+
+### Platform notes
+
+#### Blackberry
+Only read from files are supported as of 1.4 release
+
+Simulator files folder (4.6 and bigger) - `<sdk root>/components/simulator/sdcard/rho/<appname>`
+
+Device files folder can be found using Media/Explore. 
+
+#### iPhone
+Simulator files folder - run search for RhoLog.txt from the drive root. Files are placed inside simulator folder.
+
+Application can creates folders and files under apps and db roots.
+
+#### Windows Mobile
+Device/simulator files folder root - Program Files/<app name>/rho
+
+#### Desktop win32 simulator
+To use client with the HTTP proxy you should pass its URL as the first command line argument `-http_proxy_url=http://<login>:<passwod>@<host>:<port>` or add it to rhoconfig.txt.
+
+## Shutdown hook
+Like any application written in Ruby, rhodes can register a shutdown hook. Shutdown hook is routine registered for execution when the program exits. It usefull for cleanup on exit, saving program states, etc. To create you own shutdown hook you should add at_exit block to the file application.rb. 
+For example:
+	:::ruby
+	at_exit do
+	  #delete all temporary files
+	  ...
+	  ...
+	end
+
+## Media Support
+Rhodes can play video/audio files in native Internet Browser. So application developer can just add link to online or local audio/video file:
+	:::html
+	<a href="http://videos3.netprofesseur.com/1/videos/130/BRICOLAGE_Changer_un_joints.mp4">Play mp4 online video</a>
+
+Application can download file to file system using [AsyncHttp.download_file](call-web-services) and than put link [to this file](#file-system-access) to view.
+
+### Sample
+See app\Media of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Media/controller.rb) as an example.
+
+## Using Hyperlinks for Email, Phone Dialing, SMS and others
+
+You can allow your users to send email messages, call phone numbers and send SMS messages using the hyperlink (`<a href="...">`) syntax. Please note not all of these examples could work on simulators! Use real devices for test. Examples are shown below. 
+
+**mailto**
+	:::html
+	<a href="mailto:test@host.com?subject=testing123">Mailto</a>
+Note, even for an empty address, you must add the @ symbol: <a href="mailto:@?subject=testing123">Mailto</a>
+
+**tel**
+	:::html
+	<a href="tel:1-555-531-3255!8335033#!#!9582#">Tel</a>
+	<a href="wtai://wp/mc;5195551212" title="Call">Work Tel</a>
+	<a href="wtai://wp/mc;5195551213" title="Call">Home Tel</a>
+Note, the WML tel description can be found [ here](http://na.blackberry.com/eng/devjournals/resources/journals/oct_2004/wml_101.jsp).
+
+**sms:**
+	:::html
+	<a href="sms:+3581234567">Send SMS to us </a>
+
+Open link in external application (browser for http:// links):
+	:::html
+	<a href="http://www.google.com/?rho_open_target=_blank">Open Google in external browser</a>
+
+Open appstore on iphone: [http://wiki.akosma.com/IPhone_URL_Schemes#App_Store](http://wiki.akosma.com/IPhone_URL_Schemes#App_Store)
+
+
+
