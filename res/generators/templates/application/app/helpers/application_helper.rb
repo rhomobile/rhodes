@@ -1,4 +1,3 @@
-require 'json'
 
 module ApplicationHelper
   def strip_braces(str=nil)
@@ -116,6 +115,7 @@ module ApplicationHelper
   end
 
   def caller_request_hash_to_query
+    require 'json'
     'caller_request=' + Rho::RhoSupport.url_encode(::JSON.generate(@request))
   end
 
