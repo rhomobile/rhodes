@@ -611,9 +611,20 @@ extern "C" void Init_fcntl(void)
 {
 }
 
-extern "C" void Init_NavBar(void)
+extern "C" void create_navbar(rho_param *p)
 {
 }
+extern "C" void remove_navbar()
+{
+}
+extern "C" VALUE navbar_started()
+{
+    return 0;
+}
+
+//extern "C" void Init_NavBar(void)
+//{
+//}
 
 //extern "C" void Init_RhoEvent()
 //{

@@ -1641,6 +1641,10 @@
 						RelativePath="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c"
 						>
 					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\navbar\navbar_wrap.c"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="mapview"
