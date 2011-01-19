@@ -50,6 +50,16 @@ public:
         return m_nRespCode == 401;
     }
 
+    boolean isRedirect()
+    {
+       return m_nRespCode == 301 || m_nRespCode ==302;
+    }
+
+    virtual boolean isSuccess()
+    {
+        return m_nRespCode > 0 && m_nRespCode < 400;
+    }
+
     void setCookies(String s)
     {
         m_cookies = s;
