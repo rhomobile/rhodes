@@ -37,6 +37,11 @@ public class NetResponse {
 		return m_nRespCode == IHttpConnection.HTTP_UNAUTHORIZED;
 	}
 	
+	public boolean isSuccess()
+	{
+		return m_nRespCode > 0 && m_nRespCode < 400;
+	}
+	
 	public void setCookies(String s)
     {
         m_strCookies = s;
