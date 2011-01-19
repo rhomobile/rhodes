@@ -141,10 +141,13 @@ public class SplashScreen implements MainView {
 		return getWebView(0);
 	}
 	@Override
-	public void back(int index) {
-		// TODO Auto-generated method stub
-		
+	public void back(int index) 
+	{
+        RhodesActivity ra = RhodesActivity.getInstance();
+        if ( ra != null )
+            ra.moveTaskToBack(true);
 	}
+	
 	@Override
 	public void forward(int index) {
 		// TODO Auto-generated method stub

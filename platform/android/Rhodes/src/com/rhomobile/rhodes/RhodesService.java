@@ -170,6 +170,8 @@ public class RhodesService extends Service {
 	
 	public static native String getBuildConfig(String key);
 	
+	public static native boolean isOnStartPage();
+	
 	public static RhodesService getInstance() {
 		return sInstance;
 	}
