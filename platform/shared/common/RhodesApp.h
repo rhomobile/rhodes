@@ -191,6 +191,8 @@ int rho_rhodesapp_check_mode();
 
 int rho_is_local_server_started();
 
+int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

@@ -14,6 +14,7 @@
 #include "net/AsyncHttp.h"
 #include "rubyext/WebView.h"
 #include "rubyext/GeoLocation.h"
+#include "common/app_build_configs.h"
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -911,6 +912,7 @@ boolean CRhodesApp::isLocalServerStarted()
 
 extern "C" {
 
+using namespace rho;
 using namespace rho::common;
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex)
 {
@@ -1265,5 +1267,30 @@ void rho_free_callbackdata(void* pData)
 {
 	//It is used in SyncClient.
 }
-	
+
+int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
+{
+	const char* szAppSecToken = get_app_build_config_item("security_token");
+    if ( !szAppSecToken || !*szAppSecToken)
+        return 1;
+
+    String strCmdLineSecToken;
+	String security_key = "security_token=";
+    String strCmdLine = szCmdLine ? szCmdLine : "";
+
+	int skpos = strCmdLine.find(security_key);
+	if (skpos != String::npos) 
+    {
+		String tmp = strCmdLine.substr(skpos+security_key.length(), strCmdLine.length() - security_key.length() - skpos);
+
+		int divider = tmp.find_first_of(szSeparators);
+		if (divider != String::npos)
+			strCmdLineSecToken = tmp.substr(0, divider);
+		else
+			strCmdLineSecToken = tmp;
+	}
+
+    return strCmdLineSecToken.compare(szAppSecToken) != 0 ? 0 : 1;
+}
+
 } //extern "C"

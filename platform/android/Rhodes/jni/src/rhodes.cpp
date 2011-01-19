@@ -560,6 +560,16 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
     return (jboolean)res;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp
+  (JNIEnv *, jclass, jstring cmdLine, jstring sep)
+{
+    std::string const &strCmdLine = rho_cast<std::string>(cmdLine);
+    std::string const &strSep = rho_cast<std::string>(sep);
+
+    int nRes = rho_rhodesapp_canstartapp(strCmdLine.c_str(), strSep.c_str());
+    return (jboolean)(nRes ? true : false);
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_navigateBack
   (JNIEnv *, jclass)
 {

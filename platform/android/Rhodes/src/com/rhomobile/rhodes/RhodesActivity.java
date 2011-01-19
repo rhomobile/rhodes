@@ -298,7 +298,7 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		mRhodesService = ((RhodesService.LocalBinder)service).getService();
 		
 		if (!isValidSecurityToken()) {
-			Logger.E(TAG, "SECURITY_TOKEN parameter is not valid for this application !");
+			Logger.E(TAG, "This is hidden app and can be started only with security key.");
 			getRhodesApplication().exit();
 			return;
 		}
@@ -312,38 +312,18 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		mRhodesService = null;
 	}
 	
-	private boolean isValidSecurityToken() {
-		boolean valid = true;
-		String security_token = RhodesService.getBuildConfig("security_token");
-		if (security_token != null) {
-			if (security_token.length() > 0) {
-				valid = false;
-				Object params = getIntent().getExtras();
-				if (params != null && params instanceof Bundle) {
-					Bundle startParams = (Bundle)params;
-					String rho_start_params = startParams.getString(RHO_START_PARAMS_KEY);
-					if (rho_start_params != null) {
-						String security_token_key = "sequrity_token=";
-						int sec_index = rho_start_params.indexOf(security_token_key);
-						if (sec_index >= 0) {
-							String tmp = rho_start_params.substring(sec_index + security_token_key.length(), rho_start_params.length() - sec_index - security_token_key.length());
-							int end_of_token = tmp.indexOf(",");
-							if (end_of_token >= 0) {
-								tmp = tmp.substring(0, end_of_token);
-							}
-							end_of_token = tmp.indexOf(" ");
-							if (end_of_token >= 0) {
-								tmp = tmp.substring(0, end_of_token);
-							}
-							if (tmp.equals(security_token)) {
-								valid = true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return valid;
+	private boolean isValidSecurityToken() 
+	{
+	    String rho_start_params = "";
+	    
+		Object params = getIntent().getExtras();
+		if (params != null && params instanceof Bundle) 
+		{
+			Bundle startParams = (Bundle)params;
+			rho_start_params = startParams.getString(RHO_START_PARAMS_KEY);
+	    }
+	    
+	    return RhodesService.canStartApp(rho_start_params, ", ");
 	}
 	
 	public static Context getContext() {
