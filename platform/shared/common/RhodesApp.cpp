@@ -659,6 +659,31 @@ const String& CRhodesApp::getStartUrl()
     return m_strStartUrl;
 }
 
+boolean CRhodesApp::isOnStartPage()
+{
+    String strStart = getStartUrl();
+    String strCurUrl = getCurrentUrl(0);
+
+    if ( strStart.compare(strCurUrl) == 0 )
+        return true;
+
+    //check for index
+    int nIndexLen = CHttpServer::isIndex(strStart);
+    if ( nIndexLen > 0 && String_startsWith(strStart, strCurUrl) )
+    {
+        return strncmp(strStart.c_str(), strCurUrl.c_str(), strStart.length() - nIndexLen - 1) == 0;
+    }
+
+    nIndexLen = CHttpServer::isIndex(strCurUrl);
+    if ( nIndexLen > 0 && String_startsWith(strCurUrl, strStart) )
+    {
+        return strncmp(strCurUrl.c_str(), strStart.c_str(), strCurUrl.length() - nIndexLen - 1) == 0;
+    }
+
+    return false;
+
+}
+
 const String& CRhodesApp::getOptionsUrl()
 {
     m_strOptionsUrl = canonicalizeRhoUrl( RHOCONF().getString("options_path") );
