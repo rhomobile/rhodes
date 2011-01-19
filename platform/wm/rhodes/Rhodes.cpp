@@ -5,7 +5,6 @@
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 #include "common/rhoparams.h"
-#include "common/app_build_configs.h"
 #include "rho/rubyext/GeoLocationImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "net/NetRequestImpl.h"
@@ -69,30 +68,11 @@ public :
 			}
 			*/
 			{ // -RhoStartParams:
-				rho::String cur_token = wce_wctomb(lpszToken);
-				rho::String start_params_key = "RhoStartParams:";
-				int sppos = cur_token.find(start_params_key.c_str(), 0, start_params_key.length());
-				if (sppos != string::npos) {
-					// extract start params
-					rho::String start_params = cur_token.substr(sppos+start_params_key.length(), cur_token.length() - start_params_key.length() - sppos);
-
-					// check start params for security_token
-
-					rho::String security_key = "security_token=";
-					int skpos = start_params.find(security_key.c_str(), 0, security_key.length());
-					if (skpos != string::npos) {
-						rho::String tmp = start_params.substr(skpos+security_key.length(), start_params.length() - security_key.length() - skpos);
-
-						int divider = tmp.find_first_of(" /-,");
-						if (divider != string::npos) {
-							m_strSecurityToken = tmp.substr(0, divider);
-						}
-						else {
-							m_strSecurityToken = tmp;
-						}
-					}
-
-				}
+				String cur_token = convertToStringA(lpszToken);
+				String start_params_key = "RhoStartParams:";
+				int sppos = cur_token.find(start_params_key);
+				if (sppos != String::npos) 
+					m_strStartParams = cur_token.substr(sppos+start_params_key.length(), cur_token.length() - start_params_key.length() - sppos);
 			}
 
 #if defined(OS_WINDOWS)
@@ -165,29 +145,12 @@ public :
 		}
 
 		rho_logconf_Init(m_strRootPath.c_str());
-		/*
-        if ( RHOCONF().getBool("rhogallery_only_app") && !m_bRhoGalleryApp)
+
+        if ( !rho_rhodesapp_canstartapp(m_strStartParams.c_str(), " /-,") )
         {
-            LOG(INFO) + "This is RhoGallery only app and can be started only from RhoGallery.";
-            return S_FALSE;
+			LOG(INFO) + "This is hidden app and can be started only with security key.";
+			return S_FALSE;
         }
-		*/
-		///*
-		{
-
-			const char* app_security_token_cc = get_app_build_config_item("security_token");
-			if (app_security_token_cc != NULL) {
-				rho::String app_security_token = app_security_token_cc;
-				if (app_security_token.length() > 0) {
-					if (app_security_token.compare(m_strSecurityToken) != 0) {
-						LOG(INFO) + "This is hidden app and can be started only with security key.";
-						return S_FALSE;
-					}
-				}
-			}
-		}
-		//*/
-
 
 		LOG(INFO) + "Rhodes started";
 
@@ -469,7 +432,7 @@ private:
 	int m_nRestarting;
 
     bool m_bRhoGalleryApp;
-	rho::String m_strSecurityToken;
+	String m_strStartParams;
 };
 
 CRhodesModule _AtlModule;
