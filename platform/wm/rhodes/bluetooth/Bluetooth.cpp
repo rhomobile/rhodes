@@ -135,7 +135,7 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 		return WSAGetLastError ();
 	}
 	int iSize=0, cbBytesRecd=0 ;
-	WCHAR szMessage[MAX_MESSAGE_SIZE];
+	//WCHAR szMessage[MAX_MESSAGE_SIZE];
 	char pbuf[MAX_MESSAGE_SIZE];
 	iSize = sizeof(mManager->m_saClient);
 	BTH_REMOTE_NAME remotename;
