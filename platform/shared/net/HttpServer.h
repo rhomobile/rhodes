@@ -84,7 +84,8 @@ public:
     String create_response(String const &reason, HeaderList const &headers);
     String create_response(String const &reason, String const &body);
     String create_response(String const &reason, HeaderList const &headers, String const &body);
-    
+
+    static int isIndex(String const &uri);
 private:
     bool init();
     void close_listener();

@@ -553,6 +553,12 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfi
     return rho_cast<jstring>(env, cs);
 }
 
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
+  (JNIEnv *env, jclass)
+{
+    bool res = RHODESAPP().isOnStartPage();
+    return (jboolean)res;
+}
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_navigateBack
   (JNIEnv *, jclass)

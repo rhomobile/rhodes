@@ -516,7 +516,14 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	restoreWebView();
-    m_spIWebBrowser2->GoBack();
+
+/*    bool bStartPage = RHODESAPP().isOnStartPage();
+
+    if ( bStartPage )
+        ShowWindow(SW_MINIMIZE);
+    else*/
+        m_spIWebBrowser2->GoBack();
+
     return 0;
 }
 
