@@ -25,8 +25,8 @@ LogCategories = *
 # what categories to exclude
 ExcludeLogCategories = 
 
-# max log file size in KB, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
-MaxLogFileSize=50
+# max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
+MaxLogFileSize=50000
 
 # turn on local http server traces, off by default
 #net_trace = 0
