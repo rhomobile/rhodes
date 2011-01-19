@@ -96,7 +96,15 @@ public class NetRequest
 				if (strField != null ) 
 				{
 					String header_field = m_connection.getHeaderField(i);
-					m_OutHeaders.put(strField.toLowerCase(), header_field);
+					
+					String strKeyName = strField.toLowerCase();
+					if ( m_OutHeaders.containsKey(strKeyName))
+					{
+						header_field += ";" + m_OutHeaders.get(strKeyName);
+						m_OutHeaders.put(strKeyName, header_field);
+					}
+					else	
+						m_OutHeaders.put(strKeyName, header_field);
 				}
 			}
 		}
@@ -225,7 +233,7 @@ public class NetRequest
 	private NetResponse makeResponse(String strRespBody, int nErrorCode)throws Exception
 	{
 		NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
-		if (pResp.isOK())
+		if (pResp.isSuccess())
 			pResp.setCookies(makeClientCookie(m_OutHeaders));
 		
 		return pResp;

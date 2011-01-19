@@ -61,6 +61,11 @@ public:
         return m_nRespCode == 401;
     }
 
+    virtual boolean isSuccess()
+    {
+        return m_nRespCode > 0 && m_nRespCode < 400;
+    }
+
     virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 
     void setCharData(const String &data)
@@ -82,7 +87,7 @@ public:
 INetResponse *CURLNetRequest::makeResponse(String strBody, int nErrorCode)
 {
     std::auto_ptr<CURLNetResponseImpl> resp(new CURLNetResponseImpl(strBody, nErrorCode>0?nErrorCode:-1));
-    if (resp->isOK())
+    if (resp->isSuccess())
         resp->setCookies(makeCookies());
     return resp.release();
 }
@@ -103,7 +108,13 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
         
         String strValue = String_trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
         
-        pHeaders->put(lName, strValue);
+        if ( pHeaders->containsKey(lName) )
+        {
+            strValue += ";" + pHeaders->get( lName );
+            pHeaders->put( lName, strValue );
+        }
+        else
+            pHeaders->put(lName, strValue);
     }
     
     return nBytes;
