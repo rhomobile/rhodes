@@ -10,8 +10,6 @@ public interface RhoMapField {
 	
 	public boolean handleClick();
 	
-	public boolean needToClose();
-	
 	public void redraw();
 	
 	public void addAnnotation(Annotation ann);
