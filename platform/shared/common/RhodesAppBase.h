@@ -61,6 +61,9 @@ int rho_unzip_file(const char* szZipPath);
 
 void rho_free_callbackdata(void* pData);
 	
+int rho_base64_encode(const char *src, int srclen, char *dst);
+int rho_base64_decode(const char *src, int srclen, char *dst);	
+	
 #ifdef __cplusplus
 };
 #endif //__cplusplus

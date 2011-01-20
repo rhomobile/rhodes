@@ -179,9 +179,6 @@ void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id,
 
 int rho_conf_send_log();
 
-int rho_base64_encode(const char *src, int srclen, char *dst);
-int rho_base64_decode(const char *src, int srclen, char *dst);
-
 void rho_net_request(const char *url);
 void rho_net_request_with_data(const char *url, const char *str_body);
 

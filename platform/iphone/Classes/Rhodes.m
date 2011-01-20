@@ -693,7 +693,8 @@ static Rhodes *instance = NULL;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
-
+    NSLog(@"didFinishLaunchingWithOptions: %@", url);
+	
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
 	if (url != nil) {
