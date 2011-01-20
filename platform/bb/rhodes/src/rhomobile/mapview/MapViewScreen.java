@@ -32,7 +32,7 @@ public class MapViewScreen extends MainScreen {
 		new ESRIMapProvider()
 	};
 	
-	private MapViewParent parent;
+	private MapViewParent mapParent;
 	private MapProvider mapProvider;
 	private RhoMapField mapField;
 	
@@ -74,15 +74,17 @@ public class MapViewScreen extends MainScreen {
 		super(DEFAULT_MENU | DEFAULT_CLOSE);
 		addMenuItem(new PanModeMenuItem(this, 0, 100));
 		addMenuItem(new ZoomModeMenuItem(this, 1, 100));
-		parent = p;
+		
+		mapParent = p;
 		createMapProvider(providerName);
+		
 		createUI(settings, annotations);
 	}
 	
 	public void close() {
 		mapField.close();
+		mapParent.onChildClosed();
 		super.close();
-		parent.childClosed();
 	}
 	
 	private void setMode(int m) {
@@ -104,7 +106,7 @@ public class MapViewScreen extends MainScreen {
 	
 	private void createUI(Hashtable settings, Vector annotations) {
 		synchronized (Application.getEventLock()) {
-			mapField = mapProvider.createMap();
+			mapField = mapProvider.createMap(mapParent);
 			mapField.setPreferredSize(Display.getWidth(), Display.getHeight());
 			add(mapField.getBBField());
 		}
@@ -286,10 +288,7 @@ public class MapViewScreen extends MainScreen {
 	}
 	
 	protected boolean trackwheelClick(int status, int time) {
-		if (mapField.handleClick()) {
-			if (mapField.needToClose())
-				this.close();
-		}
+		mapField.handleClick();
 		
 		invalidate();
 		return true;

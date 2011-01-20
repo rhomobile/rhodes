@@ -93,11 +93,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private String maptype;
 	private Vector annotations;
 	
-	private boolean needToCloseMap = false;
-	
-	public boolean needToClose() {
-		return needToCloseMap;
-	}
+	private MapViewParent mParent;
 	
 	private class CachedImage {
 		public EncodedImage image;
@@ -674,7 +670,9 @@ public class GoogleMapField extends Field implements RhoMapField {
 		
 	};
 	
-	public GoogleMapField() {
+	public GoogleMapField(MapViewParent parent) {
+		mParent = parent;
+		
 		if (fetchThreadPool == null) {
 			fetchThreadPool = new MapThreadPool();
 			fetchThreadPool.start();
@@ -1039,8 +1037,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (a == null || a.url == null)
 			return false;
 		
-		needToCloseMap = true;
 		WebView.navigate(a.url);
+		mParent.close();
 		return true;
 	}
 

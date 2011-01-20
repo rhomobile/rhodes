@@ -8,8 +8,8 @@ public class ESRIMapProvider implements MapProvider {
 		return name.equalsIgnoreCase("esri");
 	}
 
-	public RhoMapField createMap() {
-		return new ESRIMapField();
+	public RhoMapField createMap(MapViewParent parent) {
+		return new ESRIMapField(parent);
 	}
 
 }

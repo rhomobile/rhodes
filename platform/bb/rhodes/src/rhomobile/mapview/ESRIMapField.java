@@ -37,6 +37,8 @@ public class ESRIMapField extends Field implements RhoMapField {
 	private int mWidth;
 	private int mHeight;
 	
+	private MapViewParent mParent;
+	
 	private static abstract class MapCommand {
 		public abstract String type();
 		public abstract String description();
@@ -59,7 +61,9 @@ public class ESRIMapField extends Field implements RhoMapField {
 		
 	};
 	
-	public ESRIMapField() {
+	public ESRIMapField(MapViewParent parent) {
+		mParent = parent;
+		
 		String url = RhoConf.getInstance().getString("esri_map_url_roadmap");
 		if (url == null || url.length() == 0)
 			url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
@@ -78,11 +82,6 @@ public class ESRIMapField extends Field implements RhoMapField {
 
 	}
 	
-	public boolean needToClose() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public void redraw() {
 		invalidate();
 	}
