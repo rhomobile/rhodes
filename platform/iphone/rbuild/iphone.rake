@@ -405,11 +405,15 @@ namespace "build" do
 
       saved_name = set_app_name($app_config["name"]) unless $app_config["name"].nil?
       saved_version = set_app_version($app_config["version"]) unless $app_config["version"].nil?
-      saved_identifier = set_app_bundle_identifier($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
+
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
+      bundle_identifier = "com.#{vendor}.#{appname}"
+      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
+      saved_identifier = set_app_bundle_identifier(bundle_identifier)
+      
       saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
-      saved_url_name = set_app_url_name($app_config["iphone"]["BundleIdentifier"]) unless $app_config["iphone"]["BundleIdentifier"].nil?
- 
-            
+      saved_url_name = set_app_url_name(bundle_identifier)
 
       set_app_icon
       set_default_images
