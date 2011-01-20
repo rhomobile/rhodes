@@ -35,7 +35,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, nvDelegate, start_parameters;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate;
 #ifdef __IPHONE_4_0
 @synthesize eventStore;
 #endif
@@ -706,8 +706,6 @@ static Rhodes *instance = NULL;
 			}
 		}
 	}	
-	self.start_parameters = [NSString stringWithUTF8String:[start_parameter UTF8String]];
-	
 	[self doStartUp];
 	[self processDoSync:launchOptions];
 
@@ -720,17 +718,11 @@ static Rhodes *instance = NULL;
 	return NO;
 }
 #endif
-
-- (void)applicationDidFinishLaunching:(UIApplication *)application {
-	self.start_parameters = [NSString stringWithUTF8String:""];
-
+/*
+- (void)applicationDidFinishLaunching:(UIApplication *)application 
+{
 	[self doStartUp];
-	BOOL rhogallery_only = rho_conf_getBool("rhogallery_only_app");
-	if (rhogallery_only) {
-		NSLog(@"ALERT ! Application should be executed only from RhoGallery application !!!");
-		exit(EXIT_SUCCESS);
-	}
-}
+} */
 
 #ifdef __IPHONE_3_0
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -829,14 +821,6 @@ static Rhodes *instance = NULL;
 @end
 
 // Native functions
-
-const char* rho_sys_get_start_params() {
-	if ([Rhodes sharedInstance].start_parameters == nil) {
-		return "";
-	}
-    return [[Rhodes sharedInstance].start_parameters UTF8String];
-}
-
 
 void rho_map_location(char* query) {
     [[Rhodes sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];
