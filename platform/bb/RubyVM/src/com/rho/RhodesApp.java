@@ -24,6 +24,7 @@ public class RhodesApp
 
 	Mutex m_mxScreenRotationCallback = new Mutex();
     String m_strScreenRotationCallback = "", m_strScreenRotationCallbackParams = "";
+    static String m_strStartParameters = "";
     
     int m_currentTabIndex = 0;
     String[] m_currentUrls = new String[5];
@@ -53,6 +54,9 @@ public class RhodesApp
     
     NetRequest getNet() { return RhoClassFactory.createNetRequest();}
     public String getHomeUrl(){ return m_strHomeUrl; }
+    
+    public static void setStartParameters(String szParams ){ m_strStartParameters = (szParams != null? szParams : ""); }
+    public static String getStartParameters(){ return m_strStartParameters; }
     
     RhodesApp(String strRootPath)
     {

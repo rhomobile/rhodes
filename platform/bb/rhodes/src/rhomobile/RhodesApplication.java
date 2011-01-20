@@ -399,7 +399,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	_mainScreen.invalidate();
     }
     
-    static String m_strSecurityToken = "";
+    static String m_strCmdLine = "", m_strSecurityToken = "";
     /***************************************************************************
      * Main.
      **************************************************************************/
@@ -412,6 +412,11 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			{
 				for( int i = 0; i < args.length; i++)
 				{
+					if ( i > 0 )
+						m_strCmdLine += " ";
+					
+					m_strCmdLine += args[i];
+					
 					if ( args[i].startsWith("security_token=") )
 						m_strSecurityToken = args[i].substring(15);
 				}
@@ -1090,7 +1095,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
             }
             
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
-	    	
+	        RhodesApp.setStartParameters(m_strCmdLine);
+	        
 	        RhodesApp.Create(RhoConf.getInstance().getRhoRootPath());
         	
 	    	CKeyListener list = new CKeyListener();
