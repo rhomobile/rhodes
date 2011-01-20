@@ -37,6 +37,7 @@ private:
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
+    static String m_strStartParameters;
     String m_strRhoMessage;
 
     int m_currentTabIndex;
@@ -78,6 +79,9 @@ public:
 
 	const String& getLoadingPngPath(){return m_strLoadingPngPath;}
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
+
+    static void setStartParameters(const char* szParams ){ m_strStartParameters = (szParams ? szParams : ""); }
+    static const String& getStartParameters(){ return m_strStartParameters; }
 
     const String& getAppBackUrl(){return m_strAppBackUrl;}
     void setAppBackUrl(const String& url);

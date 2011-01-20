@@ -254,6 +254,18 @@ public class System {
 				}
 			}
 		});
+		klass.getSingletonClass().defineMethod( "get_start_params", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+				try 
+				{
+					return ObjectFactory.createString(RhodesApp.getStartParameters());
+				} catch(Exception e) {
+					LOG.ERROR("get_start_params failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
 		
 	}
     

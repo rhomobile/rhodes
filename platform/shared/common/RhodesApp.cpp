@@ -35,6 +35,7 @@ namespace rho {
 namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
+String CRhodesApp::m_strStartParameters;
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath)
 {
@@ -1198,6 +1199,8 @@ void rho_free_callbackdata(void* pData)
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {
+    CRhodesApp::setStartParameters(szCmdLine);
+
 	const char* szAppSecToken = get_app_build_config_item("security_token");
     if ( !szAppSecToken || !*szAppSecToken)
         return 1;
