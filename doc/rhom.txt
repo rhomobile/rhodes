@@ -110,65 +110,118 @@ There are several features you can enable or disable in the model, below is a co
 	end
 
 ## Fixed Schema
+With a fixed schema model, each model has a separate database table and each attribute exists as a column in the table.  In this sense, fixed schema models are similar to traditional relational tables.
 
-### Property Bag Advantages
+### Fixed Schema Advantages
 * Smaller database size, indexes can be specified only on specific attributes.
 * Sync process may perform faster because whole objects are inserted at a time.
 
-### Property Bag Disadvantages
+### Fixed Schema Disadvantages
 * Schema changes must be handled with data migrations.
 * Database performance may be slow unless you specify proper indexes.
 
 ### Using Fixed Schema Models
+Using a fixed schema model involves an additional step to using a property bag model.
+
+First, generate the model using the `rhodes` command:
+
+	:::term
+	$ rhodes model product name,brand,price,quantity,sku
+	
+Next, change the include statement in `product.rb` to `include Rhom::FixedSchema` and add the attributes:
+
+	:::ruby
+	class Product
+	  include Rhom::FixedSchema
+
+	  # Uncomment the following line to enable sync with Product.
+	  # enable :sync
+	
+	  property :name, :string
+	  property :brand, :string
+	  property :price, :string
+	  property :quantity, :string
+	  property :sku, :string
+	end
+
+That's it!  Now your model is a fixed schema model, the table will be generated automatically for you when the application launches.
+
+Below is a full list of options available to fixed schema models:
 
 	:::ruby
 	class SomeModel
 	  include Rhom::FixedSchema
 
 	  # rhosync settings
-	  enable :sync #default is disabled - for local models
-	                    # you may use set :sync, true instead
-	  set :sync_type, :bulk_only #default is :incremental (which allow for bulk and regular sync)
-	  set :sync_priority, 1     #1000 by default, first will sync models with 0, then 1 etc
+	  # Enable sync for this model.
+	  # Default is disabled.
+	  enable :sync 
 
-	  enable :full_update #send all attributes from client when call update server method - not only changed ones
+	  # Set the type of sync this model
+	  # will use (default :incrmental).
+	  # Set to :bulk_only to disable incremental
+	  # sync and only use bulk sync.
+	  set :sync_type, :bulk_only 
+
+	  # Set the sync priority for this model.
+	  # 1000 is default, set to lower number
+	  # for a higher priority.
+	  set :sync_priority, 1     
+
+	  # Instruct Rhom to send all attributes
+	  # to RhoSync when an object is updated.
+	  # Default is disabled, only changed attributes
+	  # are sent.
+	  enable :full_update 
+
 
 	  # model settings
-	  # if you use other than user partition, partition name should correspond with ones from settings.yml from the server app
-	  set :partition, :app # optional, default :user
 
-	  set :schema_version, '1.0' #application may use it for data migration
+	  # Define how data is partitioned for this model.
+      # Default is :user.  If you have an :app partition
+	  # for your RhoSync source adapter and use bulk sync,
+	  # set this to :app also.
+	  set :partition, :app
 
-	  # object properties 
+	  # Set the current version of the fixed schema.
+	  # Your application may use it for data migrations.
+	  set :schema_version, '1.0'
+
+	  # Define fixed schema attributes.
+	  # :string and :blob types are supported.
 	  property :name, :string
 	  property :tag, :string
 	  property :phone, :string
 	  property :image_url, :blob
+	
+	  # Define a named index on a set of attributes.
+	  # For example, this will create index for name and tag columns.
+	  index :by_name_tag, [:name, :tag] 
 
-	  # blob fields called out explicitly to identify field type
-	  # :blob - declare property as a blob type
-	  # :overwrite - (optional) overwrite client copy of blob with new copy from server
-	  #                    useful when server modifies images, for example zooming or cropping
-	  property :cropped_image_url, :blob, :overwrite
+	  # Define a unique named index on a set of attributes.
+	  # For example, this will create unique index for the phone column.
+	  unique_index :by_phone, [:phone] 
 
+	  # Define blob attributes for the model.
+	  # :blob			Declare property as a blob type
+	  #
+	  # :overwrite		(optional) Overwrite client copy 
+	  #					of blob with new copy from server.
+	  #                 This is useful when RhoSync modifies
+	  # 				images sent from Rhodes, for example 
+	  #					zooming or cropping.
+	  property :image_url, :blob, :overwrite
 
-	  # object column will be added by rhom and  will be primary key
-
-	  #indexes
-	  index :by_name_tag, [:name, :tag] #will create index for name and tag columns
-
-	  unique_index :by_phone, [:phone] #will create unique index for phone column
+	  # You can define your own properties also
+	  property :mycustomproperty, 'hello'
 	end
 
-### Data migration
-On the first application start after application was first time installed or updated/reloaded database will be (re)created if `app_db_version` in the `rhoconfig.txt` is different from what it was before. If db version is changed and db is recreated then all data in the db is erased and will be lost.
-Note: since Rhodes 2.2.4 Rhosync session is kept in database, so SyncEngine.logged_in will return true. At start application can check that db is empty but user still logge in and run sync without interactive login
+### Fixed Schema Data Migrations
+When the application starts the first time after an update, the database will be (re)created if the `app_db_version` in `rhoconfig.txt` is different from what existed before.  If the database is recreated, the existing database is removed along with all data.  
 
-Application db version in `rhoconfig.txt`:
-	
-	app_db_version = '1.0'
+For this scenario, Rhom provides an application hook to migrate the data manually, overriding the default behavior which deletes the data.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
 
-When you use Fixed Schema model application developer is responsible for sql schema. So when you add or delete some properties or just change app logic you may need to perform data migration or database reset. To track schema changes use schema_version parameter in the model:
+To use this hook, first we need to track the `:schema_version` in our model:
 
 	:::ruby
 	class Product
@@ -176,18 +229,39 @@ When you use Fixed Schema model application developer is responsible for sql sch
 
 	  set :schema_version, '1.1'
 	end
+	
+Next, we will implement the following hook in our `application.rb` class:
+
+#### `on_migrate_source(old_version, new_src)`
+This is called on application start when `:schema_version` has changed.
 
 	:::ruby
 	class AppApplication < Rho::RhoApplication
-	  # this method called when schema_version parameter has been changed in 2 cases:
-	  # at application start
-	  # when server send sources to client
-	  # old_version is String containing old version value
-	  # new_src is Hash with source parameters like 'schema_version', 'name' etc; new_src['schema']['sql'] contain sql table creation script
+	  
+	  #	old_version 	String containing old version value (i.e. '1.0')
+	  # new_src 		Hash with source information:
+	  #					'schema_version', 'name', 'schema'
+	  #					new_src['schema']['sql'] contains new schema sql
 	  def on_migrate_source(old_version, new_src)
-	    # call super to delete table
-	    # return false to run sql script to create table with new schema 
+	    # ... do something like alert user ...
+	    super
 	  end
+	end
+	
+To let Rhom automatically delete the table and replace the schema:
+
+	:::ruby
+	def on_migrate_source(old_version, new_src)
+	  # ... do something like alert user ...
+	  super
+	end
+
+Return `false` to run the custom sql specified by the new_src['schema']['sql'] string:
+    
+	:::ruby
+	def on_migrate_source(old_version, new_src)
+	  # ... do something like alert user ...
+	  false
 	end
 
 	
@@ -396,58 +470,120 @@ Determine if a rhom model has local database changes that need to be synchronize
        end
 
 ## Associations
-<source lang='ruby'>
-class Customer
-  include Rhom::PropertyBag
+For sync-enabled models, Rhom offers associations as a means to automatically trigger sync updates for dependent objects.  This is useful where you have relationships between backend service objects.
 
-  belongs_to :product_id, 'Product'
+For example, you can have a list of customers who have purchased a product:
 
-  #Rhodes 2.2 support polymorphic relationships:
-  belongs_to :parent_id, ['Product', 'Cases']
-  #or
-  belongs_to :parent_id, 'Product'
-  belongs_to :parent_id, 'Cases'
+	:::ruby
+	class Customer
+	  include Rhom::PropertyBag
 
-end
+	  # Declare container model and attribute.
+	  belongs_to :product_id, 'Product'
+	end
 
-#product_controller.rb create code:
-def create
-  @product = Product.new(@params['product'])
-  @product.save
+In your `product_controller.rb`, assign the `:belongs_to` attribute when a product is created:
 
-  cust = Customer.find(:first) #find customer
-  cust.product_id = @product.object
-  cust.save
-  redirect :action => :index
-end
-</source>
-After sync object id of new Product will be updated in product_id
-NOTE(rhodes < 2.0.4): to work correct in this scenario Product should sync before Customer, so if Customer has sync priority=1, Product should has 0. Rhodes > 2.0.4 reorder sources automatically
+	:::ruby
+	def create
+	  @product = Product.new(@params['product'])
+	  @product.save
+
+	  cust = Customer.find(:first) # find the customer
+	  cust.product_id = @product.object
+	  cust.save
+	  redirect :action => :index
+	end
+
+You can also define polymorphic associations, or associations across multiple classes.
+
+Using array notation:
+	
+	:::ruby
+	belongs_to :parent_id, ['Product', 'Cases']
+
+Or multiple declarations:
+
+	:::ruby
+	belongs_to :parent_id, 'Product'
+	belongs_to :parent_id, 'Cases'
+
+
+**NOTE: After a new product is created, the `:product_id` for the `Customer` records will be updated to the new value.**
 
 
 ## Accessing Sync Info with RhomSource
-Rhodes sync sources are also available by the Rhodes Ruby framework through the RhomSource object.  
-You can use RhomSource just like a normal Rhom object with the exception that only the source_url field is writeable (below is the SourceController provided in the sample applications which demonstrates how to use RhomSource):
+Rhom exposes sync information as a `RhomSource` object.  You can use this information for alerts, status pages, etc.  
 
-You can also access the following attributes on RhomSource:
+To access a RhomSource, load it by id:
 
-<source lang='ruby'>
-@source = RhomSource.find(@params['id'])
-puts @source.source_id #id of source
-puts @source.name #name of source
-puts @source.source_url #url of a source
-puts @source.last_updated #returns Time object of last sync for the source (in Time.at format)
-puts @source.last_inserted_size #returns number of records inserted on last sync
-puts @source.last_deleted_size #returns number of records deleted on last sync
-puts @source.last_sync_duration #returns duration of last sync for this source in seconds
-puts @source.last_sync_success #returns 1 if sync was successful, 0 otherwise
-puts @source.distinct_object #returns number of records
-</source>
+	:::ruby
+	@source = RhomSource.find(@params['id'])
 
-Show last sync time for Product source example:
-<source lang='ruby'>
-<%= ::Rhom::RhomSource.find(Product.get_source_id).last_updated.strftime("%m/%d/%Y, %I:%M%p") %>
-</source>
+Here are the available statistics:
+
+### `source_id`
+Returns the id of a source.
+
+	:::ruby
+	@source.source_id
+	  #=> 1
+
+### `name`
+Name of the source.
+
+	:::ruby
+	@source.name
+	  #=> "Product"
+	
+### `last_updated`
+Last time the source was synchronzied (in `Time.at` format).
+
+	:::ruby
+	@source.last_updated.to_s
+	  #=> "Wed Jan 19 18:35:05 -0800 2011"
+	
+For example, to show the formatted time for the `Product` model:
+
+	:::ruby
+	RhomSource.find(
+      Product.get_source_id
+    ).last_updated.strftime("%m/%d/%Y, %I:%M%p")
+      #=> "01/19/2011, 06:40PM"
+
+### `last_inserted_size`
+Number of records inserted on last sync.
+	
+	:::ruby
+	@source.last_inserted_size 
+	  #=> 3
+
+### `last_deleted_size`
+Number of records deleted on last sync.
+
+	:::ruby
+	@source.last_deleted_size
+	  #=> 1
+
+### `last_sync_duration`
+This returns the duration in seconds of the last sync for this source.
+	
+	:::ruby
+	@source.last_sync_duration
+	  #=> 7
+### `last_sync_success`
+Returns 1 if last sync was successful, 0 if it failed.
+
+	:::ruby
+	@source.last_sync_success 
+	  #=> 1
+
+### `distinct_object`
+Number of records for this source.
+
+	:::ruby
+	@source.distinct_object
+	  #=> 837
 
 ## Resetting the Database
 Rhodes provides the following functions for recovering the database from a bad or corrupt state, or if the RhoSync server returns errors.
