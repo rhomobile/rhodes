@@ -28,8 +28,8 @@ public class MapViewScreen extends MainScreen {
 	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
 	private static final MapProvider[] providers = {
-		//new BBMapProvider(),
-		new GoogleMapProvider()
+		new GoogleMapProvider(),
+		new ESRIMapProvider()
 	};
 	
 	private MapViewParent parent;

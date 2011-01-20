@@ -102,6 +102,7 @@ public class MapView extends RubyBasic {
 				
 				RubyHash settingsHash = null;
 				RubyArray annotationsArray = null;
+				RubyHash providerHash = null;
 				
 				Hashtable settings = new Hashtable();
 				Vector annotations = new Vector();
@@ -127,6 +128,12 @@ public class MapView extends RubyBasic {
 								throw new RubyException(RubyRuntime.ArgumentErrorClass,
 										"Wrong 'annotations' type, should be Array");
 							annotationsArray = (RubyArray)value;
+						}
+						else if (strKey.equals("provider")) {
+							if (!(value instanceof RubyHash))
+								throw new RubyException(RubyRuntime.ArgumentErrorClass,
+										"Wrong 'provider' type, should be Hash");
+							providerHash = (RubyHash)value;
 						}
 					}
 				}
@@ -274,7 +281,24 @@ public class MapView extends RubyBasic {
 					}
 				}
 				
-				parent.create("google", settings, annotations);
+				String providerId = "google";
+				
+				if (providerHash != null) {
+					RubyArray arKeys = providerHash.keys();
+					RubyArray arValues = providerHash.values();
+					for (int i = 0; i != arKeys.size(); ++i) {
+						RubyValue key = arKeys.get(i);
+						RubyValue value = arValues.get(i);
+						if (key == null || value == null)
+							continue;
+						String strKey = key.toString();
+						
+						if (strKey.equals("id"))
+							providerId = value.toString();
+					}
+				}
+				
+				parent.create(providerId, settings, annotations);
 				
 				return RubyConstant.QNIL;
 			}
