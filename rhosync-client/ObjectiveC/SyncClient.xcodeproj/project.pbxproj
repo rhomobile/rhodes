@@ -246,6 +246,11 @@
 		5C40D1F312282E4D007298DA /* RhoSyncClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C40D1ED12282E4D007298DA /* RhoSyncClient.m */; };
 		5C40D1F412282E4D007298DA /* RhoSyncNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C40D1EE12282E4D007298DA /* RhoSyncNotify.h */; };
 		5C40D1F512282E4D007298DA /* RhoSyncNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C40D1EF12282E4D007298DA /* RhoSyncNotify.m */; };
+		5C59ACDB12E82C0E00ED4A1E /* RhoClassFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59ACD812E82C0E00ED4A1E /* RhoClassFactory.h */; };
+		5C59ACDC12E82C0E00ED4A1E /* RhoCryptImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59ACD912E82C0E00ED4A1E /* RhoCryptImpl.h */; };
+		5C59ACDD12E82C0E00ED4A1E /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C59ACDA12E82C0E00ED4A1E /* RhoCryptImpl.mm */; };
+		5C59ACEE12E82C5700ED4A1E /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C59ACEC12E82C5700ED4A1E /* sqlite3.c */; };
+		5C59ACEF12E82C5700ED4A1E /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59ACED12E82C5700ED4A1E /* sqlite3.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -488,6 +493,11 @@
 		5C40D1ED12282E4D007298DA /* RhoSyncClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoSyncClient.m; sourceTree = "<group>"; };
 		5C40D1EE12282E4D007298DA /* RhoSyncNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoSyncNotify.h; sourceTree = "<group>"; };
 		5C40D1EF12282E4D007298DA /* RhoSyncNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoSyncNotify.m; sourceTree = "<group>"; };
+		5C59ACD812E82C0E00ED4A1E /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = ../../platform/shared/common/iphone/RhoClassFactory.h; sourceTree = SOURCE_ROOT; };
+		5C59ACD912E82C0E00ED4A1E /* RhoCryptImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoCryptImpl.h; path = ../../platform/shared/common/iphone/RhoCryptImpl.h; sourceTree = SOURCE_ROOT; };
+		5C59ACDA12E82C0E00ED4A1E /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../../platform/shared/common/iphone/RhoCryptImpl.mm; sourceTree = SOURCE_ROOT; };
+		5C59ACEC12E82C5700ED4A1E /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../platform/shared/sqlite/sqlite3.c; sourceTree = SOURCE_ROOT; };
+		5C59ACED12E82C5700ED4A1E /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../../platform/shared/sqlite/sqlite3.h; sourceTree = SOURCE_ROOT; };
 		D2AAC07E0554694100DB518D /* libSyncClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSyncClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -536,6 +546,7 @@
 		5C0D080F121CFBC90022E83C /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				5C59ACEB12E82C3100ED4A1E /* sqlite */,
 				5C0D0A89121D2B380022E83C /* curl */,
 				5C0D088D121D00B40022E83C /* common */,
 				5C0D0880121CFF5A0022E83C /* db */,
@@ -694,6 +705,9 @@
 		5C0D0A24121D26600022E83C /* iphone */ = {
 			isa = PBXGroup;
 			children = (
+				5C59ACD812E82C0E00ED4A1E /* RhoClassFactory.h */,
+				5C59ACD912E82C0E00ED4A1E /* RhoCryptImpl.h */,
+				5C59ACDA12E82C0E00ED4A1E /* RhoCryptImpl.mm */,
 				5C0D0C04121D33160022E83C /* RhoThreadImpl.m */,
 				5C0D0A43121D29710022E83C /* RhoClassFactory.cpp */,
 				5C0D0A44121D29710022E83C /* RhoClassfactory.h */,
@@ -861,6 +875,15 @@
 			name = iphone;
 			sourceTree = "<group>";
 		};
+		5C59ACEB12E82C3100ED4A1E /* sqlite */ = {
+			isa = PBXGroup;
+			children = (
+				5C59ACEC12E82C5700ED4A1E /* sqlite3.c */,
+				5C59ACED12E82C5700ED4A1E /* sqlite3.h */,
+			);
+			name = sqlite;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -992,6 +1015,9 @@
 				5C40D1F012282E4D007298DA /* RhomModel.h in Headers */,
 				5C40D1F212282E4D007298DA /* RhoSyncClient.h in Headers */,
 				5C40D1F412282E4D007298DA /* RhoSyncNotify.h in Headers */,
+				5C59ACDB12E82C0E00ED4A1E /* RhoClassFactory.h in Headers */,
+				5C59ACDC12E82C0E00ED4A1E /* RhoCryptImpl.h in Headers */,
+				5C59ACEF12E82C5700ED4A1E /* sqlite3.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1171,6 +1197,8 @@
 				5C40D1F112282E4D007298DA /* RhomModel.m in Sources */,
 				5C40D1F312282E4D007298DA /* RhoSyncClient.m in Sources */,
 				5C40D1F512282E4D007298DA /* RhoSyncNotify.m in Sources */,
+				5C59ACDD12E82C0E00ED4A1E /* RhoCryptImpl.mm in Sources */,
+				5C59ACEE12E82C5700ED4A1E /* sqlite3.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,8 +15,8 @@
 		28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
 		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
 		28F335F11007B36200424DE2 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F335F01007B36200424DE2 /* RootViewController.xib */; };
+		5C59AD0A12E82D7C00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AD0912E82D7C00ED4A1E /* Security.framework */; };
 		5C84C12B122D0FE800B0873C /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C84C113122D0F3800B0873C /* libstdc++.6.dylib */; };
-		5C84C12C122D0FEF00B0873C /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C84C118122D0F6300B0873C /* libsqlite3.dylib */; };
 		5C84C12E122D0FF600B0873C /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C84C12D122D0FF600B0873C /* libz.dylib */; };
 		5C84C15C122D105400B0873C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C84C15B122D105400B0873C /* CFNetwork.framework */; };
 		5C84C160122D107900B0873C /* db in Resources */ = {isa = PBXBuildFile; fileRef = 5C84C15F122D107900B0873C /* db */; };
@@ -59,6 +59,7 @@
 		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		28F335F01007B36200424DE2 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5C59AD0912E82D7C00ED4A1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5C84C0F2122D0DA100B0873C /* SyncClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncClient.xcodeproj; path = ../../../ObjectiveC/SyncClient.xcodeproj; sourceTree = SOURCE_ROOT; };
 		5C84C113122D0F3800B0873C /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		5C84C118122D0F6300B0873C /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -87,10 +88,10 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */,
 				5C84C12B122D0FE800B0873C /* libstdc++.6.dylib in Frameworks */,
-				5C84C12C122D0FEF00B0873C /* libsqlite3.dylib in Frameworks */,
 				5C84C12E122D0FF600B0873C /* libz.dylib in Frameworks */,
 				5C84C15C122D105400B0873C /* CFNetwork.framework in Frameworks */,
 				D343E06E125E38DF005588D0 /* libSyncClient.a in Frameworks */,
+				5C59AD0A12E82D7C00ED4A1E /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +138,7 @@
 				5C84C12D122D0FF600B0873C /* libz.dylib */,
 				5C84C15B122D105400B0873C /* CFNetwork.framework */,
 				5C95B3181233EAD8008E7E7E /* libSyncClient.a */,
+				5C59AD0912E82D7C00ED4A1E /* Security.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";

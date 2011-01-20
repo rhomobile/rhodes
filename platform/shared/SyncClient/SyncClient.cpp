@@ -129,7 +129,11 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
 void rho_syncclient_database_full_reset_and_logout()
 {
     rho_sync_logout();
-
+	rho_syncclient_database_full_reset();
+}
+	
+void rho_syncclient_database_full_reset()
+{
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
     oUserDB.executeSQL("UPDATE client_info SET reset=1");
 
@@ -842,6 +846,11 @@ namespace rho {
 	{
 		return "1.0";
 	}
+	
+	/*static*/ void _CRhoAppAdapter::resetDBOnSyncUserChanged()
+	{
+		rho_syncclient_database_full_reset();
+	}	
 }
 
 extern "C" 
@@ -865,5 +874,13 @@ void rho_net_impl_network_indicator(int active)
 {
 //	[UIApplication sharedApplication].networkActivityIndicatorVisible = active ? YES : NO;
 }
+
+	void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
+	{
+	}
 	
+	const char* get_app_build_config_item(const char* key) 
+	{
+		return 0;
+	}	
 }
