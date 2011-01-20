@@ -1,3 +1,5 @@
+#import <Foundation/Foundation.h>
+
 #include "RhoCryptImpl.h"
 #include "common/RhodesApp.h"
 
