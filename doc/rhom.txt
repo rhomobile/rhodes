@@ -5,7 +5,7 @@ Rhom is a mini database object mapper for Rhodes. It provides a high level inter
 Rhom currently supports two model types: ***Property Bag (default)*** and ***Fixed Schema***
 
 ## Property Bag
-With a property bag model, all is stored in a single table using the object-attribute-value pattern also referred to as the [Entity-attribute-value model](http://en.wikipedia.org/wiki/Entity-attribute-value_model).
+With a property bag model, all data is stored in a single table using the object-attribute-value pattern also referred to as the [Entity-attribute-value model](http://en.wikipedia.org/wiki/Entity-attribute-value_model).
 
 ### Property Bag Advantages
 * Simple to use, it doesn't require specifying attributes.
@@ -430,7 +430,10 @@ Start the sync process for a model. If the callback is set, `SyncEngine.set_noti
 	Account.sync( url_for(:action => :sync_callback) )
 
 ### `set_notification(url)`
-Used to asynchronously refresh the page, see [[RhodesConnectToWebServices#Sync_notification|Sync Notification Docs]] for more details.
+Set a notification to be called when the sync is complete for this model.  This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the [sync notification docs](/rhodes/synchronization#notifications) for more information.
+
+	:::ruby
+	Account.set_notification( url_for(:action => :sync_callback) )
 
 ### `update_attributes(attributes)`
 Updates the current rhom object's attributes and saves it to the database
