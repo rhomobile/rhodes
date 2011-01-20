@@ -238,21 +238,21 @@ namespace "config" do
 
     $androidsdkpath = $config["env"]["paths"]["android"]
     unless File.exists? $androidsdkpath
-      puts "Missing or invalid 'android' section in rhobuild.yml"
+      puts "Missing or invalid 'android' section in rhobuild.yml: '#{$androidsdkpath}'"
       exit 1
     end
 
     $androidndkpath = $config["env"]["paths"]["android-ndk"]
     unless File.exists? $androidndkpath
-      puts "Missing or invalid 'android-ndk' section in rhobuild.yml"
+      puts "Missing or invalid 'android-ndk' section in rhobuild.yml: '#{$androidndkpath}'"
       exit 1
     end
 
     errfmt = "WARNING!!! Path to Android %s contain spaces! It will not work because of the Google toolchain restrictions. Move it to another location and reconfigure rhodes."
-    if $androidsdkpath =~ /\s/
-      puts(errfmt % "SDK")
-      exit 1
-    end
+    #if $androidsdkpath =~ /\s/
+    #  puts(errfmt % "SDK")
+    #  exit 1
+    #end
     if $androidndkpath =~ /\s/
       puts(errfmt % "NDK")
       exit 1
