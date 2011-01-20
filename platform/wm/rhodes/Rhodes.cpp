@@ -50,7 +50,11 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 private:
 
 public :
-	bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( ) {
+	bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( ) 
+    {
+        if (lpCmdLine)
+            m_strCmdLine = convertToStringA(lpCmdLine);
+
 		m_nRestarting = 1;
         //m_bRhoGalleryApp = false;
 		TCHAR szTokens[] = _T("-/");
@@ -153,7 +157,7 @@ public :
         }
 
 		LOG(INFO) + "Rhodes started";
-
+        CRhodesApp::setStartParameters(m_strCmdLine.c_str());
 #ifdef OS_WINDOWS
 		if (httpProxy.length() > 0) {
 			parseHttpProxyURI(httpProxy);
@@ -163,8 +167,6 @@ public :
 			}
 		}
 #endif
-			
-
         //::SetThreadPriority(GetCurrentThread(),10);
 
 		//Check for bundle directory is exists.
@@ -432,7 +434,7 @@ private:
 	int m_nRestarting;
 
     bool m_bRhoGalleryApp;
-	String m_strStartParams;
+	String m_strStartParams, m_strCmdLine;
 };
 
 CRhodesModule _AtlModule;
@@ -474,11 +476,6 @@ extern "C" void rho_conf_show_log()
 {
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
-
-extern "C" const char* rho_sys_get_start_params() {
-    return "";
-}
-
 
 //Hook for ruby call to refresh web view
 

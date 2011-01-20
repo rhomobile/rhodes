@@ -85,4 +85,10 @@ int rho_sys_set_sleeping(int sleeping)
 }
 #endif //defined(OS_MACOSX) || defined(OS_ANDROID)
 
+const char* rho_sys_get_start_params() 
+{
+    return rho::common::CRhodesApp::getStartParameters().c_str();
+}
+
+
 } //extern "C"
