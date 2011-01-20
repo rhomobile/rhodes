@@ -286,6 +286,8 @@ void rho_sys_app_uninstall(const char *appname) {
 
 void rho_sys_open_url(const char* url) 
 {
+    RAWLOG_INFO1("rho_sys_open_url: %s", url);	
+	
 	NSString* strUrl = [NSString stringWithUTF8String:url];
 	BOOL res = FALSE;
 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]])
@@ -294,7 +296,7 @@ void rho_sys_open_url(const char* url)
 	if ( res)
 		RAWLOG_INFO("rho_sys_open_url suceeded.");	
 	else
-		RAWLOG_INFO("rho_sys_open_url faled.");	
+		RAWLOG_INFO("rho_sys_open_url failed.");	
 }
 
 void rho_sys_app_install(const char *url) {
@@ -315,6 +317,7 @@ void rho_sys_run_app(const char* appname, VALUE params)
 			}
 		//}
 	}
+	
 	rho_sys_open_url([app_name UTF8String]);
 }
 
