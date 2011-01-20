@@ -10,15 +10,11 @@ import org.json.me.RhoJSONArray;
 import org.json.me.RhoJSONException;
 import org.json.me.RhoJSONObject;
 
-import j2me.lang.MathEx;
-
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
 import com.rho.net.URI;
-
-import com.xruby.runtime.builtin.ObjectFactory;
 
 import com.rho.rubyext.WebView;
 import rhomobile.mapview.RhoMapField;
@@ -82,7 +78,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	// This is maximum absolute value of sine ( == sin(85*PI/180) ) allowed by Merkator projection
 	private static final double MAX_SIN = 0.99627207622;
 	
-	private static final double LN2 = 0.693147180559945;
 	private static final double PI = Math.PI;
 	
 	//===============================================================================
@@ -744,7 +739,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		long top = -toCurrentZoom(latitude - img.latitude, zoom);
 		
 		if (img.zoom != zoom) {
-			double x = math_pow(2, img.zoom - zoom);
+			double x = MapTools.math_pow(2, img.zoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
@@ -948,54 +943,54 @@ public class GoogleMapField extends Field implements RhoMapField {
 		double angleRatio = degrees*GOOGLE_TILE_SIZE/pixels;
 		
 		double twoInZoomExp = 360/angleRatio;
-		int zoom = (int)math_log2(twoInZoomExp);
+		int zoom = (int)MapTools.math_log2(twoInZoomExp);
 		return zoom;
 	}
 	
 	private static long toMaxZoom(long n, int zoom) {
-		return n == 0 ? 0 : n*(long)math_pow(2, MAX_ZOOM - zoom);
+		return n == 0 ? 0 : n*(long)MapTools.math_pow(2, MAX_ZOOM - zoom);
 	}
 	
 	private static long toCurrentZoom(long coord, int zoom) {
 		if (coord == 0) return 0;
-		long pow = (long)math_pow(2, MAX_ZOOM - zoom);
+		long pow = (long)MapTools.math_pow(2, MAX_ZOOM - zoom);
 		return coord/pow;
 	}
 
 	private static long degreesToPixelsX(double n, int z) {
 		while (n < -180.0) n += 360.0;
 		while (n > 180.0) n -= 360.0;
-		double angleRatio = 360/math_pow(2, z);
+		double angleRatio = 360/MapTools.math_pow(2, z);
 		double val = (n + 180)*GOOGLE_TILE_SIZE/angleRatio;
 		return (long)val;
 	}
 	
 	private static long degreesToPixelsY(double n, int z) {
 		// Google use Merkator projection so use it here
-		double sin_phi = math_sin(n*PI/180);
+		double sin_phi = MapTools.math_sin(n*PI/180);
 		// MAX_SIN - maximum value of sine allowed by Merkator projection
 		// (~85.0 degrees of north latitude)
 		if (sin_phi < -MAX_SIN) sin_phi = -MAX_SIN;
 		if (sin_phi > MAX_SIN) sin_phi = MAX_SIN;
 		
-		double ath = math_atanh(sin_phi);
-		double val = GOOGLE_TILE_SIZE * math_pow(2, z) * (1 - ath/PI)/2;
+		double ath = MapTools.math_atanh(sin_phi);
+		double val = GOOGLE_TILE_SIZE * MapTools.math_pow(2, z) * (1 - ath/PI)/2;
 		return (long)val;
 	}
 	
 	private static double pixelsToDegreesX(long n, int z) {
 		while (n < 0) n += MAX_LONGITUDE;
 		while (n > MAX_LONGITUDE) n -= MAX_LONGITUDE;
-		double angleRatio = 360/math_pow(2, z);
+		double angleRatio = 360/MapTools.math_pow(2, z);
 		double val = n*angleRatio/GOOGLE_TILE_SIZE - 180.0;
 		return val;
 	}
 	
 	private static double pixelsToDegreesY(long n, int z) {
 		// Revert calculation of Merkator projection
-		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*math_pow(2, z));
-		double th = math_tanh(ath);
-		double val = 180*math_asin(th)/PI;
+		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*MapTools.math_pow(2, z));
+		double th = MapTools.math_tanh(ath);
+		double val = 180*MapTools.math_asin(th)/PI;
 		return val;
 	}
 	
@@ -1030,7 +1025,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			// Move area of sensitivity bit higher
 			deltaY += ANNOTATION_SENSIVITY_AREA_RADIUS*3;
 			
-			double distance = math_pow(math_pow(deltaX, 2) + math_pow(deltaY, 2), 0.5);
+			double distance = MapTools.math_pow(MapTools.math_pow(deltaX, 2) + MapTools.math_pow(deltaY, 2), 0.5);
 			if ((int)distance > ANNOTATION_SENSIVITY_AREA_RADIUS)
 				continue;
 			
@@ -1047,55 +1042,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		needToCloseMap = true;
 		WebView.navigate(a.url);
 		return true;
-	}
-
-	//================================================================
-	// Mathematical functions
-	
-	// Sine of the a
-	private static double math_sin(double a) {
-		return Math.sin(a);
-	}
-	
-	// Arc sine of the a
-	private static double math_asin(double a) {
-		//return MathUtilities.asin(a);
-		return MathEx.asin(a);
-	}
-	
-	// Exponential (base E ~ 2.718281828) of a
-	private static double math_exp(double a) {
-		//return MathUtilities.exp(a);
-		return MathEx.exp(a);
-	}
-	
-	// Natural logarithm (base E ~ 2.718281828) of a
-	private static double math_ln(double a) {
-		//return MathUtilities.log(a);
-		return MathEx.log(a);
-	}
-	
-	// Binary logarithm (base 2) of a
-	private static double math_log2(double a) {
-		return math_ln(a)/LN2;
-	}
-	
-	// a raised to the power of b
-	private static double math_pow(double a, double b) {
-		//return MathUtilities.pow(a, b);
-		return MathEx.pow(a, b);
-	}
-	
-	// Hyperbolic tangent of a
-	private static double math_tanh(double a) {
-		double epx = math_exp(a);
-		double emx = math_exp(-a);
-		return (epx - emx)/(epx + emx);
-	}
-	
-	// Hyperbolic arc tangent of a
-	private static double math_atanh(double a) {
-		return 0.5*math_ln((1 + a)/(1 - a));
 	}
 
 	public double getCenterLatitude() {
