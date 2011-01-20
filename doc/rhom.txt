@@ -614,7 +614,7 @@ Equivalent to `Rhom::Rhom.database_full_reset(true)` followed by `SyncEngine.log
 	:::ruby
 	Rhom::Rhom.database_fullclient_reset_and_logout
 	
-**NOTE: If you receive a sync error "Unknown client" message in your sync callback, this means that the RHoSync server no longer knows about the client and a `Rhom::Rhom.database_fullclient_reset_and_logout` is recommended.  This error requires proper intervention in your app so you can handle the state before resetting the client.  For example, your sync notification could contain the following:**
+**NOTE: If you receive a sync error "Unknown client" message in your sync callback, this means that the RhoSync server no longer knows about the client and a `Rhom::Rhom.database_fullclient_reset_and_logout` is recommended.  This error requires proper intervention in your app so you can handle the state before resetting the client.  For example, your sync notification could contain the following:**
 
 	:::ruby
 	if @params['error_message'].downcase == 'unknown client'
