@@ -1,0 +1,528 @@
+# Extending the Rhodes Framework
+
+## Introduction
+
+There are three ways to extend Rhodes. You can add to the Ruby gems supported by Rhodes ("Rhodes extensions"). You can create new "native extensions" in the underlying SDK for a given smartphone operating system. You can extend the types of views available in Rhodes ("native extensions").
+
+## Rhodes Extensions	
+
+### Supported extensions and libraries
+To keep rhodes lightweight we didn't provide extensions and libraries beyond core Ruby functionality. Examples of the features that either aren't necessary in Rhodes or we haven't provided for space reasons are: web services, XML, pluralization, YAML, etc. 
+
+Our C/C++ implementation is based on original Ruby C code, 1.9 release.
+
+Our Java implementation is based on [XRuby](http://xruby.com), which supports Ruby 1.8 (We didn't use JRuby because it is substantially bigger and required version of java which is not available on most of the target mobile platforms).
+
+Both implementations support such core classes and module as:
+ 
+<i>
+BasicObject, Object, Module, Class, Integer, Float, Numeric, Bignum, Rational, Complex, Math, String, StringScanner, StringIO, 
+Array, Hash, Struct, Regexp, RegexpError, MatchData, Data, NilClass, TrueClass, FalseClass, Comparable, Enumerable, Enumerator,
+Converter, Marshal, IO, Dir, Time, Date, Signal, Mutex, Thread, ThreadGroup, Process, Fiber, FiberError, Method, UnboundMethod, 
+Binding, RubyVM, GC, Exception, SystemExit, fatal, SignalException, Interrupt, StandardError, TypeError, ArgumentError, IndexError, 
+KeyError, RangeError, ScriptError, SyntaxError, LoadError, NotImplementedError, NameError, NoMethodError, RuntimeError, 
+SecurityError, NoMemoryError, EncodingError, CompatibilityError, SystemCallError, Errno, ZeroDivisionError, FloatDomainError, 
+IOError, EOFError, ThreadError
+</i>
+
+We are using Rubinius specs to test Ruby compatibility across different platforms.
+
+### Localization 
+
+See [Rhodes System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Localization/index.erb) as an example.
+
+Rhodes use localization_simplified library to support non-English languages.
+
+Add to build.yml:
+
+	extensions: ["rholang"]
+
+In case of several extensions, insert space after extension name and comma:
+
+	extensions: ["rholang", "net-http"]
+
+Create utf-8 encoded file in app `<app_folder>/app/lang/lang_<lang_id>.rb`. This file will be automatically loaded by rhodes based on current locale.
+
+For Example create lang_en.eb:
+	:::ruby
+	module Localization
+		Views = {
+			:greeting => "This is test"
+		}
+	end
+
+And use this string in the view:
+	:::html
+	<ul id="home">
+		<li><%= Localization::Views[:greeting] %></li>
+	</ul> 
+
+#### Details:
+
+All non-ascii symbols should be utf-8 encoded
+
+To get current locale on the phone use System.get_locale method. It returns 'en', 'de' etc locale id's
+
+To show localized Date and Time:
+	:::ruby
+	Time.now.to_formatted_s(:long)
+	Time.now.strftime("%B %d, %Y %H:%M") # all names will be localized
+	Date.today.to_formatted_s(:long)
+	Date.today.strftime("%B %e, %Y") # all names will be localized
+
+To show currency (see rails analog for details):
+	:::ruby
+	Rho::NumberHelper.number_to_currency
+
+
+### JSON library support
+
+For parsing use Rho::JSON.parse, no extension required.
+
+Ruby code example:
+	:::ruby
+	parsed = Rho::JSON.parse("[{\"count\":10}]")
+
+For generate use JSON extension.
+  
+Add to build.yml:
+
+	extensions: ["json"]
+	
+In case of several extensions, insert space after extension name and comma:
+
+	extensions: ["json", "net-http"]
+
+Ruby code example:
+	:::ruby
+	require 'json'
+	json_data = ::JSON.generate(some_object)
+
+See JSON tests in [Rhodes System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/JsonTest/controller.rb) as an example.
+
+### XML handling
+There are two ways of handling XML directly in Rhodes. The Rexml library and the much faster RhoXML library.
+
+#### Rexml
+
+Add to build.yml:
+
+	extensions: ["rexml", "set"]
+
+Ruby code example:
+    :::ruby
+	require 'rexml/document'
+    file = File.new("bibliography.xml")
+    doc = REXML::Document.new(file)
+    puts doc
+
+#### RhoXML
+This is a reduced version of rexml. Rhoxml has the same syntax as rexml, but smaller in size and faster. For Blackberry this is the only choice, because rexml is too slow.
+
+Change rexml to rhoxml in build.yml:
+	
+	extensions: ["rhoxml"]
+
+No more changes required.
+
+Rhoxml limitations:
+
+1. Decoding xml text is not fully implemented. See document.rb line 503 (Text::unnormalize). Need to implement non regular expression decoding.
+2. No DTD, validation and formatters support
+3. Support only elements and attributes. No cdata, comments, etc.
+
+#### XML Stream parser
+
+To process xml faster (without building DOM xml tree in memory) you can use StreamParser:
+	:::ruby
+    class MyStreamListener
+
+        def initialize(events)
+            @events = events
+        end
+
+        def tag_start name, attrs
+            #puts "tag_start: #{name}; #{attrs}"
+            @events << attrs if name == 'event'
+        end
+        def tag_end name
+            #puts "tag_end: #{name}"
+        end
+        def text text
+            #puts "text: #{text}"
+        end
+        def instruction name, instruction
+        end
+        def comment comment
+        end
+        def doctype name, pub_sys, long_name, uri
+        end
+        def doctype_end
+        end
+        def attlistdecl element_name, attributes, raw_content
+        end
+        def elementdecl content
+        end
+        def entitydecl content
+        end
+        def notationdecl content
+        end
+        def entity content
+        end
+        def cdata content
+            #puts "cdata: #{content}"
+        end
+        def xmldecl version, encoding, standalone
+        end
+    end
+
+	def parse_xml(str_xml)
+        @events = []
+        list = MyStreamListener.new(@events)
+        REXML::Document.parse_stream(str_xml, list)
+		...
+		
+It supported in RhoXml and Rexml extensions. For example see : [`<rhodes>\spec\phone_spec\app\spec\xml_spec.rb`](https://github.com/rhomobile/rhodes/blob/master/spec/phone_spec/app/spec/xml_spec.rb) ("should stream parse" spec) and rexml stream parser documentation
+
+### Barcode
+Add to build.yml:
+	
+	extensions: ["Barcode"]
+
+See details [here](device-caps#barcode).
+
+### FileUtils
+
+Add to build.yml:
+	
+	extensions: ["fileutils"]
+
+DryRun, NoWrite and Verbose are commented out modules since they using `eval` function.
+
+Blackberry is not supported.<br/>
+
+Use Ruby class `Dir` whenever possible.
+
+### Notes on Ruby standard library support
+
+For iPhone the Date class is supported
+	:::ruby
+    require 'date'
+    puts Date.today.to_s
+
+For Blackberry Date is still not supported. Use this instead:
+	:::ruby
+    require 'time'
+    Time.now.strftime('%Y-%m-%d')
+
+### Adding Ruby Extension Libraries to Your Rhodes Application
+
+Create folder 'extensions' under application root.
+
+Copy folder with Ruby library to 'extensions' folder. (This will work for "pure ruby" extensions. Extensions which implemented in c/c++ or such you will have to compile for the target platform and link with Rhodes.)
+
+Add extension with folder library name to build.yml:
+	
+	extensions: ["myext"]
+
+This library will be available for require:
+	:::ruby
+	require 'myext'
+
+Using this technique you can easily remove extension from application or include some extension for particular platform:
+
+	iphone:
+	  extensions: ["mspec", "fileutils"]
+
+	wm:
+	  extensions: ["json"]
+  
+### Adding Libraries to Your Rhodes Application
+
+During the course of your app development you might need to add an external ruby library with extra features that the rhodes framework doesn't provide.  While we don't guarantee that all ruby libraries will work on the mobile device, you can follow the steps below to add and test libraries as needed.
+
+In Rhodes, the require path is relative to the "app" subdirectory, since this is what gets bundled with the rhodes client.
+
+Assuming your application is called "mynewapp", create a directory under app called lib (or whatever you wish to call it):
+	:::term
+	$ cd mynewapp
+	$ mkdir app/lib
+
+Add your ruby files to this directory:
+	:::ruby
+ 	$ cp /path/to/my_lib.rb app/lib/my_lib.rb
+
+Now, in your application (controller.rb for example), you can load this library like the following:
+	:::ruby
+	require 'rho/rhocontroller'
+	require 'lib/my_lib'
+
+	class TicketController < Rho::RhoController
+	  def use_lib
+	    @a = MyLib.new
+	    ...
+	  end
+	end
+
+Please note that "rubygems" are not loaded on the device Ruby VM because of size constraints, therefore all third-party ruby library source files must be put into the lib directory as described above.
+
+### Adding Libraries to Rhodes Framework
+There are two ways to add Ruby libraries to the Rhodes framework, essentially dependent upon how you choose to build your Rhodes application.
+
+If you are using Rhodes via the RubyGems installation, you must add external Ruby libraries to your RubyGems installation directory for the 'rhodes-framework' gem. Your RubyGems installation directory can be found with `gem env` in a terminal.
+
+For example, a user on Linux might place additional libraries in the following directory:
+
+	/usr/local/lib/ruby/gems/1.8/gems/rhodes-x.x.x/lib/framework
+
+Similarly, a user on Mac OSX 10.5 might place them here:
+
+	/Library/Ruby/Gems/1.8/gems/rhodes-x.x.x/lib/framework
+
+For Windows, this location might be:
+
+ C:/ruby/lib/ruby/gems/1.8/gems/rhodes-x.x.x/lib/framework
+
+
+If you are using a clone of the Rhodes Git repository, you can put additional libraries in the following directory (preferably on your own github fork):
+
+	<rhodes-clone>/lib/framework
+
+Including the library into your application is simple once the library is in the proper directory.
+
+Assuming the library has been added to the correct location, require the library from a controller in your Rhodes application:
+	:::ruby
+	require 'libname'
+
+You can now use the added library to access additional functionality not provided by the Rhodes framework.
+
+NOTE: Once again, it should be mentioned that not all libraries are guaranteed to work with Rhodes.
+
+## Native Extensions 
+
+Starting from 2.0, Rhodes support native extensions for Android, iPhone, WM and BB platforms. Native extensions are extensions written on native language (C/C++/ObjC for iPhone, C/C++/Java for Android, C/C++ for WM, Java for BB). They can provide Ruby interface or don't provide it - its up to authors of these extensions. Below is list of steps need to be done to create native extension for Rhodes (here assumed extension name is 'ext-name')
+
+Create folder ext-name in your application extensions folder (app-name/extensions/ext-name) and go there.
+
+Create file ext.yml with content:
+
+	entry: Init_ext_name
+	libraries: ["ext-name"]
+
+Here Init_ext_name is function provided by native extension. It will be called on rhodes application start - put here all initialization stuff. "ext-name" - is the name of library extension will be compiled in. There could be more than one libraries, in this case just specify them separated by comma. When rhodes creates final binary, it will search library with name 'libext-name.a' for iPhone and Android or 'ext-name.lib' for Windows and link with it.
+
+Create folder 'ext' and put 'build' script there (build.bat on Windows). Be sure this script has execute bit set in file permissions if running on Linux/Mac OS X.
+
+Edit build script as you want - it will be called on application build and must produce library libext-name.a (iPhone/Android) or ext-name.lib (Windows) in the folder pointed by environment variable TARGET_TEMP_DIR. You are free to implement it as you want - the only requirement is when the script finished, library libext-name.a/ext-name.lib must exist in TARGET_TEMP_DIR directory. Other useful environment variables passed to the build script:
+
+Common variables :
+
+* TARGET_TEMP_DIR - Location to put your compiled library
+* RHO_PLATFORM - mobile platform current build for. Possible values are 'iphone', 'android' and 'wm'
+* RHO_ROOT - point to the rhodes installation root folder (directory where rhobuild.yml located)
+* TEMP_FILES_DIR - you can use it for temporary files
+
+Special for Android build :
+ 
+* ANDROID_NDK - path to Android NDK used by rhodes (Android build)
+* ANDROID_API_LEVEL - Android API level used by rhodes (Android build)
+
+Special for WM build :
+
+* VCBUILD - path to the vcbuild application usable to build MS VS projects/solutions (WM build)
+
+Special for iPhone build :
+
+* PLATFORM_DEVELOPER_BIN_DIR - path to the platform developer bin directory (iPhone build)
+* SDKROOT - path to the root of the used SDK - 3.0, 3.1 etc (iPhone build)
+* ARCHS - cpu architecture used to build extension - i386, armv6 etc (iPhone build)
+* XCODEBUILD - contain fullname of xcodebuild (iPhone build)
+* CONFIGURATION - "Debug"/"Release"  (iPhone build)
+* SDK_NAME - name of SDK - need for build of xcodeproject  (iPhone build)
+
+Special for BB build :
+
+* JAVA_EXE - java.exe full path (BB build)
+* JAVAC_EXE - javac.exe full path (BB build)
+* JDE_HOME - JDE home full path (BB build)
+* JAR_EXE - jar.exe full path (BB build)
+* RUBYVM_JAR - full name of RubyVM.jar file (need for compilation) (BB build)	
+* BB_SDK_VERSION - version of BB SDK
+
+Android notes:
+
+* If you need to call JNI functions from native code, `JNIEnv *env` variable need to be retrieved. To get it, include file `RHO_ROOT/platform/android/Rhodes/jni/include/rhodes.h` somewhere to the C/C++ files. Global function `JNIEnv *jnienv()` defined there so use it anywhere when `JNIEnv *` needed.
+
+* If native extension use Java code, build script should create file ext_build.files in the TARGET_TEMP_DIR. This file should contain java source file names (full names, with path) - one by line. Rhodes will include all of them to the final build.
+
+* If native extension use prebuilt libraries (jars), build script should copy all such jars to the TARGET_TEMP_DIR. They must have extension '.jar'. Rhodes will include these files to the final build.
+
+* If native extension create native thread (using pthread_create, for example), this thread should be attached to the JVM to be able call Java methods from its context. This should be done using rho_nativethread_start/rho_nativethread_end functions called at start/end of thread routine. 
+
+Example:
+	:::cpp
+	void *thread_routine(void *arg)
+	{
+	  void *q = rho_nativethread_start();
+	  .....
+	  rho_nativethread_end(q);
+	  return NULL;
+	}
+
+Otherwise, if thread was not attached to the JVM, no JNI calls should be performed in its context (it will cause crash).
+
+WM note:
+
+* If application need to provide additional DLLs, just put them to the TARGET_TEMP_DIR. Rhodes build scripts will detect them and include to the final binary automatically.
+
+Now edit application's build.yml and add 'ext-name' to the list of extensions:
+
+	extensions: ["ext-name"]
+
+That's all. Now build your application as usual - it will automatically call build script of your extension and (if this script finished successfully, producing needed libraries into TARGET_TEMP_DIR) link extension libraries into the final binary.
+
+BlackBerry Notes:
+
+Similar to other platfrom you should prepare build.bat where you should prepare <your Extension name>.jar file and place it to TARGET_TEMP_DIR
+In your "ext.yml" file add new parameter with full name of you class supported Runnable interface, see example:
+
+	entry: Init_Barcode
+	javaentry: com.rho.rubyext.BarcodeRecognizer
+	libraries: ["Barcode"]
+
+In run() method of this class you should register in RubyVM your classes and methods.
+Example of registration:
+	:::java
+	package com.rho.rubyext;
+
+	import com.xruby.runtime.builtin.ObjectFactory;
+	import com.xruby.runtime.builtin.RubyString;
+	import com.xruby.runtime.lang.*;
+
+	public class BarcodeRecognizer implements Runnable {
+	
+      public static RubyClass BarcodeClass;    
+
+      public void run() {
+        // register Ruby class
+        BarcodeClass = 
+		  RubyAPI.defineClass("Barcode", RubyRuntime.ObjectClass);        
+        // register Ruby method
+        BarcodeClass.getSingletonClass().
+		  defineMethod("barcode_recognize", this);
+
+      }
+
+      protected RubyValue run(
+		RubyValue receiver, RubyValue arg0, RubyBlock block) {
+    	//some code for Barcode.barcode_recognize() ruby method
+      }	
+
+	}
+
+Examples:
+
+You can use Barcode extension as an example of native extension for all supported platforms. Please see code of Barcode native extension [here](https://github.com/rhomobile/rhodes/tree/master/lib/extensions/barcode/).
+
+Also you can see another example of native extension - Rainbow native extension from Rhodes System Api Samples. Please see code of Rainbow native extension [here](https://github.com/rhomobile/rhodes-system-api-samples/tree/master/extensions/rainbow/). 
+
+## Native View Extensions
+
+The Native View interface allow developers implement a custom native view and seamlessly integrate it into Rhodes framework (currently only on iPhone supported, Android, WM and Blackberry is soon).
+
+To access implemented view navigate to a url where url schema is the register type name of your view: 
+  
+	view_type_name:path?query_string#anchor
+
+Example:
+
+	:::ruby
+	WebView.navigate("my_video_view:/app/files/barak_obama_0123.mpg")
+
+
+When Rhodes application navigates to a native view it will replace current view (WebView in most cases) with requested native view and pass path?query_string#anchor to created native view. If application navigate to that view again new instance of the view will not be created but the rest of url will be passed to the view.
+
+To provide custom native view native extension should implement NativeViewFactory interface and register it with Rhodes framework using `RhoNativeViewManager::registerViewType(const char* viewType, NativeViewFactory* factory)` call (or similar call on BB, see definition below). Rhodes framework will use registered factory to create and display view of given type.  
+
+### Native view manager, factory, and view interface definitions on iPhone, Android, Windows Mobile
+
+	:::cpp
+	class NativeView {
+	public:
+		// that function must return native object provided view functionality :
+		// UIView* for iPhone
+		// jobject for Android - jobect must be android.view.View class type
+		// HWND for Windows Mobile 
+		virtual void* getView() = 0;
+		// Used by Rhodes to pass path?query_string#anchor to the view
+		virtual void navigate(const char* url) = 0;
+	};
+
+	class NativeViewFactory {
+	public:
+		virtual NativeView* getNativeView(const char* viewType) = 0;
+		virtual void destroyNativeView(NativeView* nativeView) = 0;
+	};
+
+	class RhoNativeViewManager {
+	public: 
+		static void registerViewType(const char* viewType, NativeViewFactory* factory);
+		static void unregisterViewType(const char* viewType);
+	};
+
+### Native view manager, factory, and view interface definitions on Blackberry
+
+	:::java
+	interface NativeView {
+	  net.rim.device.api.ui.Field getView();
+	  void navigate(String url);
+	}
+
+	interface NativeViewFactory {
+	  NativeView getNativeView(String viewType);
+	};
+
+	class RhoNativeViewManager extends Object{
+	public: 
+	  static void registerViewType(String viewType, NativeViewFactory factory);
+	  static void unregisterViewType(String viewType);
+	};
+
+### Sample
+See [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples) for details of how to implement and use native view interface. This sample implements a "rainbow_view" native view; you should add rainbow to the list of extensions to include it to the application. 
+
+See [/app/NativeView/controller.rb](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/app/NativeView/controller.rb) and [/app/NativeView/index.erb](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/app/NativeView/index.erb) for details how to call native view from your controller.
+
+* To navigate to rainbow view in your controller you should call `WebView.navigate('rainbow_view:red')`. In your url schema indicates view type you want to open and rest of the url (red) passed to the after it was created. 
+
+* To pass parameters to created view you may call WebView.navigate again: `WebView.navigate('rainbow_view:green')`. In your native code you may pass parameters to the native view by calling `pNativeView->navigate(url)` where pNativeView is an instance of native view created by the `RhoNativeViewManager` using registered factory. 
+
+* To close view you created just navigate to any other url.
+
+See [/extensions/rainbow](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/extensions/rainbow/) for implementation of the "rainbow" native view. 
+
+* See how to register your view type with Rhodes here: [RainbowViewFactoryRegister.cpp](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/extensions/rainbow/ext/rainbow/platform/iphone/Classes/RainbowViewFactoryRegister.cpp)
+
+* See implementation of native view factory here: [RainbowViewFactory.mm](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/extensions/rainbow/ext/rainbow/platform/iphone/Classes/RainbowViewFactory.mm)
+
+* See sample implementation of native view object here: [RainbowView.h](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/extensions/rainbow/ext/rainbow/platform/iphone/Classes/RainbowView.h) and [RainbowView.m](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/extensions/rainbow/ext/rainbow/platform/iphone/Classes/RainbowView.m).
+
+	* In the "rainbow" view you can see several buttons:
+		* [Red], [Green], [Blue] buttons change color by calling controller action using rho_net_request(url). Controller in turn execute WebView.navigate("rainbow_view:color") on the same view to change color.
+		* [Stop] and [Play] buttons execute native code inside native view object.
+		* [Close Native View] button return you to the web view by executing rho_webview_navigate(url, tab_index).
+
+This sample extension uses functionality provided by Rhodes framework and therefore include few framework header files:
+
+* [$(RHO_ROOT)/platform/shared/common/RhoNativeViewManager.h](http://github.com/rhomobile/rhodes/blob/master/platform/shared/common/RhoNativeViewManager.h)
+* [$(RHO_ROOT)/platform/shared/common/RhodesApp.h](http://github.com/rhomobile/rhodes/blob/master/platform/shared/common/RhodesApp.h)
+* [$(RHO_ROOT)/platform/shared/rubyext/WebView.h](http://github.com/rhomobile/rhodes/blob/master/platform/shared/rubyext/WebView.h)
+
+Make sure following folder added to your compiler include path:
+
+* [$(RHO_ROOT)/platform/shared/rubyext](http://github.com/rhomobile/rhodes/tree/master/platform/shared/rubyext/)
+* [$(RHO_ROOT)/platform/shared/ruby/include](http://github.com/rhomobile/rhodes/tree/master/platform/shared/ruby/include/)
+* [$(RHO_ROOT)/platform/shared](http://github.com/rhomobile/rhodes/tree/master/platform/shared/)
+* [$(RHO_ROOT)/platform/shared/ruby/iphone](http://github.com/rhomobile/rhodes/tree/master/platform/shared/ruby/iphone/)
+* [$(RHO_ROOT)/platform/shared/common](http://github.com/rhomobile/rhodes/tree/master/platform/shared/common/)
+
