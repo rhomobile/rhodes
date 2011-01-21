@@ -329,6 +329,7 @@ class SyncSource
 		            {
 		                getSync().setState(SyncEngine.esStop);
 		                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
+		                m_strError = resp.getCharData();
 		            }
 		        }else
 		        {
@@ -337,6 +338,7 @@ class SyncSource
 		            {
 		                getSync().setState(SyncEngine.esStop);
 		                m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
+		                m_strError = resp.getCharData();
 		            }
 		        }
 		    }catch(Exception exc)
