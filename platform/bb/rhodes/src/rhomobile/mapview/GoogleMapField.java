@@ -739,7 +739,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		long top = -toCurrentZoom(latitude - img.latitude, zoom);
 		
 		if (img.zoom != zoom) {
-			double x = MapTools.math_pow(2, img.zoom - zoom);
+			double x = MapTools.math_pow2(img.zoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
@@ -948,19 +948,19 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	private static long toMaxZoom(long n, int zoom) {
-		return n == 0 ? 0 : n*(long)MapTools.math_pow(2, MAX_ZOOM - zoom);
+		return n == 0 ? 0 : n*MapTools.math_pow2(MAX_ZOOM - zoom);
 	}
 	
 	private static long toCurrentZoom(long coord, int zoom) {
 		if (coord == 0) return 0;
-		long pow = (long)MapTools.math_pow(2, MAX_ZOOM - zoom);
+		long pow = MapTools.math_pow2(MAX_ZOOM - zoom);
 		return coord/pow;
 	}
 
 	private static long degreesToPixelsX(double n, int z) {
 		while (n < -180.0) n += 360.0;
 		while (n > 180.0) n -= 360.0;
-		double angleRatio = 360/MapTools.math_pow(2, z);
+		double angleRatio = 360d/MapTools.math_pow2(z);
 		double val = (n + 180)*GOOGLE_TILE_SIZE/angleRatio;
 		return (long)val;
 	}
@@ -974,21 +974,21 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (sin_phi > MAX_SIN) sin_phi = MAX_SIN;
 		
 		double ath = MapTools.math_atanh(sin_phi);
-		double val = GOOGLE_TILE_SIZE * MapTools.math_pow(2, z) * (1 - ath/PI)/2;
+		double val = GOOGLE_TILE_SIZE * MapTools.math_pow2(z) * (1 - ath/PI)/2;
 		return (long)val;
 	}
 	
 	private static double pixelsToDegreesX(long n, int z) {
 		while (n < 0) n += MAX_LONGITUDE;
 		while (n > MAX_LONGITUDE) n -= MAX_LONGITUDE;
-		double angleRatio = 360/MapTools.math_pow(2, z);
+		double angleRatio = 360d/MapTools.math_pow2(z);
 		double val = n*angleRatio/GOOGLE_TILE_SIZE - 180.0;
 		return val;
 	}
 	
 	private static double pixelsToDegreesY(long n, int z) {
 		// Revert calculation of Merkator projection
-		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*MapTools.math_pow(2, z));
+		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*MapTools.math_pow2(z));
 		double th = MapTools.math_tanh(ath);
 		double val = 180*MapTools.math_asin(th)/PI;
 		return val;
@@ -1025,7 +1025,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			// Move area of sensitivity bit higher
 			deltaY += ANNOTATION_SENSIVITY_AREA_RADIUS*3;
 			
-			double distance = MapTools.math_pow(MapTools.math_pow(deltaX, 2) + MapTools.math_pow(deltaY, 2), 0.5);
+			double distance = MapTools.math_sqrt(deltaX*deltaX + deltaY*deltaY);
 			if ((int)distance > ANNOTATION_SENSIVITY_AREA_RADIUS)
 				continue;
 			
