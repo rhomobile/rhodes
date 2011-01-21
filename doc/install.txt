@@ -1,0 +1,35 @@
+# Install Rhodes
+
+## Instant Rhodes (Windows)
+The easiest way to install Rhodes on Windows is to use the [Instant Rhodes installer](http://rhomobile.com/instant-rhodes).  This will install Ruby, Rubygems, Redis, Rhodes and Rhosync gems and dependencies.
+
+Once the installer has completed, you can skip to the [Setup Rhodes section](#setup-rhodes).
+
+## Rhodes Gem
+To install the Rhodes gem, you will need the following tools installed:
+
+* [Ruby](http://www.ruby-lang.org/en/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby)
+* [RubyGems](http://docs.rubygems.org/) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.)
+
+NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the [GnuWin32](http://gnuwin32.sourceforge.net/) project provides the tools, and can be conveniently installed via the [GetGnuWin32](http://sourceforge.net/projects/getgnuwin32/files/) installer.
+
+The first step in using Rhodes is to install the Rhodes gem (you may want to put "sudo" in the front of this command on OS X):
+
+    :::term
+    $ gem install rhodes
+
+
+NOTE: If you get any "`no such file to load -- something`" messages while running the rake tasks or rhodes commands, this can usually be resolved by running '[sudo] gem install something'.
+
+## Setup Rhodes
+
+Once you have Rhodes, you will need the SDKs for the platform you want to build your app on. These instructions are found [here](build).
+
+After you install the gem and your desired SDKs, you need to run:
+
+	:::term
+	$ rhodes-setup
+
+This will prompt you for where you installed the SDKs for the various platforms.  The installation script will display its best guess as to where the SDK is. You can then enter a new location, or leave it blank to use the suggestion. If you are not building for a specific platform (for example, you can't build for the iPhone on Windows), you can leave that SDK location blank. You can find prerequisites for each platform [here](build#all-platforms-prerequisites).
+
+

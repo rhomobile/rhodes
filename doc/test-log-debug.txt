@@ -1,0 +1,148 @@
+# Testing, Logging, and Debugging 
+
+## Testing
+
+### Adding Unit Tests
+
+When you [generate a model](generator#add-new-model), you will now get an _spec.rb file generated along with your controller.
+
+	Generating with model generator:
+	....
+	[ADDED]  app/Person/person_spec.rb
+
+This file contains tests for your controller and is in the mspec format: [rubyspec.org](http://rubyspec.org/) 
+
+	:::ruby
+	describe "Person" do
+	  #this test always fails, you really should have tests!
+
+	  it "should have tests" do
+	    true.should == false
+	  end
+	end
+
+We use this test format internally as well. You can see our specs for the core framework [here](http://github.com/rhomobile/rhodes/tree/1.4.0/spec/framework_spec/app/spec/) which use many functions of mspec.
+
+To run these tests however, you need the testing framework to be included in your app. To add this, you would run the rhogen task in your application folder:
+
+	:::term
+	$ rhogen spec
+
+You will then see the mspec framework added to your application:
+
+	Generating with spec generator:
+	     [ADDED]  app/SpecRunner
+	     [ADDED]  app/spec
+	     [ADDED]  app/mspec.rb
+	     [ADDED]  app/spec_runner.rb
+
+Finally, add the fileutils and mspec extensions to your build.yml:
+	
+	extensions: ["fileutils", "mspec"]
+
+You are now ready to run the tests. Simply add a link to the SpecRunner controller, and you will get a summary of number of passing/failing tests
+
+In your index.erb:
+	:::html
+	<li><a href="SpecRunner">Run tests</a></li>
+
+A summary of the results will be displayed on the screen.
+
+Detailed results will be displayed in your rholog.txt:
+
+	I 01/15/2010 16:36:33 b0185000                  APP| FAIL: Product - Expected true
+	 to equal false
+
+	apps/app/mspec/expectations/expectations.rb:15:in `fail_with'
+	apps/app/mspec/matchers/base.rb:8:in `=='
+	apps/app/Product/product_spec.rb:5:in `block (2 levels) in <main>'
+	...
+
+And finally, a summary will be printed in rholog.txt as well:
+
+	I 01/15/2010 16:36:33 b0185000                  APP| ***Total:  3
+	I 01/15/2010 16:36:33 b0185000                  APP| ***Passed: 1
+	I 01/15/2010 16:36:33 b0185000                  APP| ***Failed: 2
+
+### Disabling tests
+When you are ready to do a production build of your application, change build.yml's build property to 'release' and the specs will not be included in the binary:
+
+	...
+	vendor: Acme, Inc.
+	build: release
+	...
+
+## Logging
+There are two methods to log messages. 
+
+From any controller you can log using the methods app_info and app_error. These methods take a string and will write that to rholog.txt with the category of your controllers name. See platform specific [build topic](build) to see notes on how to get rholog.txt.
+
+There also is a logging Ruby class called RhoLog. This class has methods info and error which take 2 strings. The first string is the category, the second string is the message.
+
+In rholog.txt the lines appear as follows:
+
+	<Timestamp> <category> | <message>
+
+### RhoError class
+You may find access to the error class useful in logging and reporting:
+
+This class contains error codes and the method message() to translate error code to a text message.
+All callbacks return an error code from this class. The status text in the callback contains some internal error message, so in most cases it should not be exposed to user.
+Currently RhoError contains the following error codes:
+
+	ERR_NONE = 0
+	ERR_NETWORK = 1
+	ERR_REMOTESERVER = 2
+	ERR_RUNTIME = 3
+	ERR_UNEXPECTEDSERVERRESPONSE = 4
+	ERR_DIFFDOMAINSINSYNCSRC = 5
+	ERR_NOSERVERRESPONSE = 6
+	ERR_CLIENTISNOTLOGGEDIN = 7
+	ERR_CUSTOMSYNCSERVER = 8
+	ERR_UNATHORIZED = 9
+
+### Sample
+See [Login/Logout Manager]() as an example.
+
+## Debugging
+
+You can debug your Rhodes app running on OSX using the Rhodes Debugger.
+
+The Rhodes Debugger app is located in [platform/osx/Rhodes Debugger](https://github.com/rhomobile/rhodes/tree/master/platform/osx/Rhodes%20Debugger). An xcode project is located there that you can use to build the debugger.
+
+Launching the debugger, by default it listens for debugger connections over tcp. There is a checkbox to enable scanning using gdb for a local emulator running.
+
+Be aware that debugging using the methods below will have a noticeable performance penalty on your application. GDB performance penalty is incurred when the debugger connects to the application and until the application is relaunched. TCP performance penalty is incurred if the application makes a successful connection to the debugger.
+
+[This video demonstrates debugging using TCP on iPhone and Android](http://www.youtube.com/watch?v=xtpjlIdOdQE).
+
+[This video demonstrates debugging using GDB](http://www.youtube.com/watch?v=dHJ3qvzjcuA).
+
+### TCP debugging
+
+Tcp debugging works across multiple platforms, and can be run from the device.
+
+To enable tcp debugging, you have two make a few small modifications to your application:
+
+Include the extensions net-http and debugger in your build.yml.
+
+	extensions: ["net-http", "debugger"]
+
+Modify your rhoconfig.txt add a line at the bottom debug_host. This should be set to an ip address of the machine that the debugger app is running on that is reachable by the phone or emulator.
+
+	debug_host = '192.168.1.106'
+
+Modify your application.rb. At the top of the application.rb file in your app, after the first require add the line:
+
+	:::ruby
+	require 'debugger'
+
+Then you can launch your application and you should see the text in the bottom left of the debugger change from 'Waiting for Rhodes' to 'Connected'. Once this is connected, browse to your rhodes application and then you can set breakpoints or execute ruby commands.
+
+Once you are done debugging, you should click the disconnect button on the debugger to disconnect the debugger from the app.
+
+### Gdb debugging
+
+Gdb debugging only works when you run the debugger and iphone simulator on the same machine. It only works with the iphone simulator.
+
+There is no changes needed to your application to use gdb debugging. Simply launch the Rhodes Debugger app select the gdb checkbox and then launch your application in the iphone simulator. The debugger will detect your application and connect to it automatically.
