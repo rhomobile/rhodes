@@ -343,7 +343,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	            //LOG.INFO("*******openLink: " + label);
 	            
 	            if( label.equalsIgnoreCase(m_strGetLink) 
-	                ||label.startsWith(m_strEmailMenu) || label.startsWith(m_strCallMenu) ||
+	                ||label.indexOf(m_strEmailMenu)>=0 || label.indexOf(m_strCallMenu)>=0 ||
 	                label.equalsIgnoreCase(m_strChangeOptionMenu) )
 	            {
 	              item.run();
