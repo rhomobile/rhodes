@@ -31,6 +31,76 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Ringtones</td><td>2.5</td><td>1.5</td><td>1.5</td><td>1.5</td><tr>
 </table>	
 
+## System class
+The System Ruby class provides access to the system specific information.
+
+To get value of a named system property:
+	:::ruby
+	System.get_property(property)
+
+Properties:
+
+* platform - APPLE, Blackberry, WINDOWS, ANDROID, SYMBIAN
+* has_camera - is camera available on the device
+* screen_width - screen width in pixels
+* screen_height - screen height in pixels
+* ppi_x - horizontal PPI (Pixels Per Inch)
+* ppi_y - vertical PPI (Pixels Per Inch)
+* has_network - is device connected to the network
+* phone_number - device phone number
+* device_id - returns device ID which may be used to receive push messages. This is not phone device id, this is PUSH device id - you should register you phone for PUSH before get this parameter. Read [Push Notification documentation](device-caps#push-notifications) about it. On iPhone it may be empty right after application started while Rhodes registers to receive PUSH notifications; you should wait till it become non-empty.
+* full_browser -  is full browser in the WebView control on Blackberry (see [here](#blackberry-browser-support) for more details)
+* device_name - name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android)
+* os_version - version of OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android)
+* locale - current language like 'en', 'ru' etc.
+* country - country abbreviation
+* is_emulator - return true if application is running on emulator
+* has_calendar - return true if calendar support is available 
+
+Get notifications on screen rotation:
+	:::ruby
+	System.set_screen_rotation_notification(callback_url, params)
+* callback_url will be called when screen rotate; callback parameters will contain params you passed while setting up notification as well as `width`, `height`, and `degrees`
+
+Exit application
+	:::ruby
+	System.exit
+
+Enable\disable phone sleep by timeout, return previous state
+	:::ruby
+	System.set_sleeping
+
+Open application associated with url; behavior may be different on different platforms and depend on installed software
+	:::ruby
+	System.open_url(url)
+
+Run specified application. Note: appname is platform dependent
+	:::ruby
+	System.run_app(appname, params)
+
+Install application from specified url
+	:::ruby
+	System.app_install(url) 
+
+Is specified application installed on device?
+	:::ruby
+	System.app_installed?(appname)
+	
+Uninstall specified application	
+	:::ruby
+	System.app_uninstall(appname)
+
+Unzip file to the same folder where zip file is	
+	:::ruby
+	System.unzip_file(local_path_to_zip)
+
+Return command line parameters as a string
+	:::ruby
+	System.get_start_params() 
+
+### Sample
+See layout.erb of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/layout.erb)  for some of the examples of how to use System class. There is also [system test](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SystemTest/controller.rb) which demonstrate System class usage.
+
 ## Geolocation
 
 Geolocation information is available in two ways: as an asynchronous service through Ajax calls to a predefined local URL, or in a controller using Ruby calls to the GeoLocation class.
@@ -934,4 +1004,141 @@ Open link in external application (browser for http:// links):
 Open appstore on iphone: [http://wiki.akosma.com/IPhone_URL_Schemes#App_Store](http://wiki.akosma.com/IPhone_URL_Schemes#App_Store)
 
 
+## BlackBerry network connection
+Rhodes may use any Blackberry network connection available on the device. What particular network connection will be selected depends on the url suffix used to connect. Here is the algorithm:
+
+1. Rhodes enumerate device Service Books at application start to identify Wifi, BES (has priority over BIS-B) and BIS-B transport:
+
+	* if WIFI exist we set wifi_postfix = ";interface=wifi"
+	* if BES exist we set url_postfix = ""
+	* If BIS-B exist and NO BES: url_postfix = ";deviceside=false;ConnectionType=mds-public"
+	* If no BES or BES exist or in simulator mode : url_postfix = ";deviceside=true"
+
+2. When application make network call, Rhodes create network connection:
+
+	* if wifi_postfix is not empty and WIFI network available: add wifi_postfix to url
+	* add url_postfix
+	* make network connection
+
+3. If connection creation failed, Rhodes try to connect without wifi_postfix(if exists) and then without url_postfix (if exists)
+
+4. There are several [rhoconfig.txt](configuration#run-time-configuration) parameters which can modify this process (mostly for the testing purposes):
+
+Do not use `;deviceside=true` suffix:
+
+	no_deviceside_postfix = 0 
+
+Set `url_postfix` to specific value, without enumerating Service Books records
+
+	bb_connection_postfix = ''
+
+## BlackBerry Browser Support
+
+Capabilities of BlackBerry WebView control differ quite significantly form other OS-es as well as from one version of BB OS to another. And even with the single BB OS you may have different capabilities depending on what WebView do you use (see full browser capability described below).
+
+Check out the [BlackBerry Browser Version 4.2 Content Developer Guide](http://docs.blackberry.com/eng/deliverables//1143/browser_devguide.pdf) to see what HTML, CSS and JavaScript supported on BlackBerry.
+
+One of the limitation is that simple submit element in the form does not work (this issue was fixed in Rhodes > 2.2.4):
+
+	:::html
+	<form id="user_edit_form" 
+	   method="POST" 
+	   action="<%=url_for(:action => 'do_login')%>" selected="true">  
+	<input type="submit" value="Login"/>
+	</form>
+
+Solution:
+
+	:::html
+	<form id="user_edit_form" 
+	   method="POST" 
+	   action="<%=url_for(:action => 'do_login')%>" selected="true">  
+	</form>
+	<a href="#" onclick="document.forms[0].submit(); return false;">
+		<img src="/public/images/button_next.png" />
+	</a>
+
+### Blackberry Touch screen (4.7, 5.x )
+
+There are some issues Rhodes developers encountered developing for Blackberry Touch screen 4.7 and 5.x.
+ 
+Links with aligned images are not clickable:
+	:::html
+	<a href="/app/WelcomeScreen/do_info">
+		<img src="/public/images/bb_info_btn.png" align="left" />
+	</a>
+Solution: remove alignment or add text to link
+
+Links with div inside issue:
+	:::html
+	<a href="/app/Login"><div style="height:10px"></div>Login</a>
+Solution: move dive out of `<a>`:
+	:::html
+	<div style="height:10px"></div><a href="/app/Login">Login</a>
+
+Links with style display:block:
+	:::html
+	<a href="/app/Login" 
+		style="display:block;background: url('test.png') no-repeat 97% 50%;">
+		Login
+	</a>
+	<a href="/app/Login" 
+		style="display:block;border-Top: 1px solid #bbb;">
+		Login
+	</a>
+Solution: remove display:block from a element
+
+### Blackberry 5.0 full browser
+
+Blackberry 5.0 has new BrowserField class, which support javascript, ajax and extended css. To use it set in [rhoconfig.txt](configuration#run-time-configuration):
+
+	# use full browser only on BB 5.0 and above
+	use_bb_full_browser=5 
+
+	# use full browser only on touch devices including 5.0
+	use_bb_full_browser=touch 
+
+NOTE: on Blackberry 5.0 non-touch device full browser has problems with fields navigation - it does not move from one focus field to another like usual browser field does, it just move from one symbol to another. This issue make full browser usable only on touch screen devices.
+
+### Blackberry full browser
+
+Available for Blackberry 4.6 and above
+
+Support AJAX and better support of CSS
+
+On non-touch screen looks like usual browser app, so not very useful because it uses pointer cursor. On Touch screen devices no visual difference between full browser and browser field (default mode). 
+
+To enable on all devices - add to [rhoconfig.txt](configuration#run-time-configuration):
+
+	use_bb_full_browser=1
+
+To enable on Touch screen devices - add to [rhoconfig.txt](configuration#run-time-configuration):
+
+	use_bb_full_browser='touch'
+
+Submit form issue:
+	:::html
+	<head>
+	<script type="text/javascript">
+	function submitform()
+	{
+	    document.forms["login"].submit();
+	}
+	</script>
+	</head>
+	<form id="user_edit_form" 
+	   method="POST" 
+	   action="<%=url_for(:action => 'do_login')%>" selected="true">  
+	<a href="javascript: submitform()">Login</a>
+	</form>
+
+Solution:
+	:::html
+	<form id="user_edit_form" 
+	   method="POST" 
+	   action="<%=url_for(:action => 'do_login')%>" selected="true">  
+		<a href="#" onclick="document.forms[0].submit(); return false;">
+			<img src="/public/images/bb_logon_btn1.png" />
+		</a>
+	</form>
 
