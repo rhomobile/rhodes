@@ -37,10 +37,24 @@ public class MapTools {
 		return math_ln(a)/LN2;
 	}
 	
-	// a raised to the power of b
-	public static double math_pow(double a, double b) {
-		//return MathUtilities.pow(a, b);
-		return MathEx.pow(a, b);
+	// 2 raised to the power of n
+	public static long math_pow2(int n) {
+		long ret = 1;
+		if (n < 0) {
+			for (; n < 0; ++n) {
+				ret /= 2;
+			}
+		}
+		if (n > 0) {
+			for (; n > 0; --n) {
+				ret *= 2;
+			}
+		}
+		return ret;
+	}
+	
+	public static double math_sqrt(double a) {
+		return MathEx.pow(a, 0.5);
 	}
 	
 	// Hyperbolic tangent of a
