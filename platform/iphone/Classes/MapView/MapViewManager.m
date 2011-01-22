@@ -88,10 +88,11 @@ void mapview_create(rho_param *p) {
 #ifdef __IPHONE_3_0
 	if (map_providers == nil) {
 		[RhoMapViewProvidersManager registerMapViewProvider:@"Google" provider:[[MapEngine_Google alloc] init]];
-
-		//[RhoMapViewProvidersManager registerMapViewProvider:@"ESRI" provider:[[MapEngine_ESRI alloc] init]];
-		//register_ESRI_mapViewProvider();
-		//Init_ESRI();
+	}
+	else {
+		if ([map_providers objectForKey:@"Google"] == nil) {
+			[RhoMapViewProvidersManager registerMapViewProvider:@"Google" provider:[[MapEngine_Google alloc] init]];
+		}
 	}
 	
 	NSString* engine = @"Google";

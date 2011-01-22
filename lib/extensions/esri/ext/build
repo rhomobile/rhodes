@@ -1,0 +1,17 @@
+#!/bin/sh
+
+
+if [ "$RHO_PLATFORM" = "android" ]; then
+
+cd esri/platform/android
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "iphone" ]; then
+
+cd esri/platform/iphone
+rake --trace
+
+fi
+
+
+
