@@ -45,6 +45,8 @@ HREGNOTIFY g_hNotify = NULL;
 String httpProxy;
 #endif
 
+static String g_strCmdLine;
+
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
 private:
@@ -52,11 +54,7 @@ private:
 public :
 	bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( ) 
     {
-        if (lpCmdLine)
-            m_strCmdLine = convertToStringA(lpCmdLine);
-
 		m_nRestarting = 1;
-        //m_bRhoGalleryApp = false;
 		TCHAR szTokens[] = _T("-/");
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
         getRhoRootPath();
@@ -65,18 +63,6 @@ public :
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
-			}
-			/*
-			if (WordCmpI(lpszToken, _T("rhogallery_app"))==0) {
-				m_bRhoGalleryApp = true;
-			}
-			*/
-			{ // -RhoStartParams:
-				String cur_token = convertToStringA(lpszToken);
-				String start_params_key = "RhoStartParams:";
-				int sppos = cur_token.find(start_params_key);
-				if (sppos != String::npos) 
-					m_strStartParams = cur_token.substr(sppos+start_params_key.length(), cur_token.length() - start_params_key.length() - sppos);
 			}
 
 #if defined(OS_WINDOWS)
@@ -150,14 +136,13 @@ public :
 
 		rho_logconf_Init(m_strRootPath.c_str());
 
-        if ( !rho_rhodesapp_canstartapp(m_strStartParams.c_str(), " /-,") )
+        if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
         {
 			LOG(INFO) + "This is hidden app and can be started only with security key.";
 			return S_FALSE;
         }
 
 		LOG(INFO) + "Rhodes started";
-        CRhodesApp::setStartParameters(m_strCmdLine.c_str());
 #ifdef OS_WINDOWS
 		if (httpProxy.length() > 0) {
 			parseHttpProxyURI(httpProxy);
@@ -432,19 +417,15 @@ private:
     CMainWindow m_appWindow;
     rho::String m_strRootPath;
 	int m_nRestarting;
-
-    bool m_bRhoGalleryApp;
-	String m_strStartParams, m_strCmdLine;
 };
 
 CRhodesModule _AtlModule;
 HINSTANCE rhoApplicationHINSTANCE = 0;
-
 //
 bool g_restartOnExit = false;
 //
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
-                                LPTSTR /*lpCmdLine*/, int nShowCmd)
+                                LPTSTR lpCmdLine, int nShowCmd)
 {
 	INITCOMMONCONTROLSEX ctrl;
 
@@ -454,6 +435,8 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	ctrl.dwSize = sizeof(ctrl);
 	ctrl.dwICC = ICC_DATE_CLASSES;
 	InitCommonControlsEx(&ctrl);
+
+    g_strCmdLine = convertToStringA(lpCmdLine);
 
 	return _AtlModule.WinMain(nShowCmd);
 }
