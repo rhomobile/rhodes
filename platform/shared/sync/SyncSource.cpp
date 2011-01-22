@@ -230,6 +230,7 @@ void CSyncSource::doSyncClientChanges()
             {
                 getSync().setState(CSyncEngine::esStop);
                 m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
+                m_strError = resp.getCharData();
             }
         }else
         {
@@ -238,6 +239,7 @@ void CSyncSource::doSyncClientChanges()
             {
                 getSync().setState(CSyncEngine::esStop);
                 m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
+                m_strError = resp.getCharData();
             }
         }
     }
