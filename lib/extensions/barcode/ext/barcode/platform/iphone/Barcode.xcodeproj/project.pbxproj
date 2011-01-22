@@ -60,7 +60,6 @@
 		FAAE075A11EF4F22001787D8 /* img_scanner.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAE06EF11EF4F22001787D8 /* img_scanner.h */; };
 		FAAE075C11EF4F22001787D8 /* mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAE06F111EF4F22001787D8 /* mutex.h */; };
 		FAAE075E11EF4F22001787D8 /* null.c in Sources */ = {isa = PBXBuildFile; fileRef = FAAE06F411EF4F22001787D8 /* null.c */; };
-		FAAE076311EF4F22001787D8 /* processor.c in Sources */ = {isa = PBXBuildFile; fileRef = FAAE06F911EF4F22001787D8 /* processor.c */; };
 		FAAE076411EF4F22001787D8 /* processor.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAE06FA11EF4F22001787D8 /* processor.h */; };
 		FAAE077311EF4F22001787D8 /* refcnt.c in Sources */ = {isa = PBXBuildFile; fileRef = FAAE070A11EF4F22001787D8 /* refcnt.c */; };
 		FAAE077411EF4F22001787D8 /* refcnt.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAE070B11EF4F22001787D8 /* refcnt.h */; };
@@ -129,7 +128,6 @@
 		FAAE06EF11EF4F22001787D8 /* img_scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = img_scanner.h; sourceTree = "<group>"; };
 		FAAE06F111EF4F22001787D8 /* mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mutex.h; sourceTree = "<group>"; };
 		FAAE06F411EF4F22001787D8 /* null.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null.c; sourceTree = "<group>"; };
-		FAAE06F911EF4F22001787D8 /* processor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = processor.c; sourceTree = "<group>"; };
 		FAAE06FA11EF4F22001787D8 /* processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = processor.h; sourceTree = "<group>"; };
 		FAAE070A11EF4F22001787D8 /* refcnt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = refcnt.c; sourceTree = "<group>"; };
 		FAAE070B11EF4F22001787D8 /* refcnt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = refcnt.h; sourceTree = "<group>"; };
@@ -310,7 +308,6 @@
 				FAAE06EF11EF4F22001787D8 /* img_scanner.h */,
 				FAAE06F111EF4F22001787D8 /* mutex.h */,
 				FAAE06F211EF4F22001787D8 /* processor */,
-				FAAE06F911EF4F22001787D8 /* processor.c */,
 				FAAE06FA11EF4F22001787D8 /* processor.h */,
 				FAAE070A11EF4F22001787D8 /* refcnt.c */,
 				FAAE070B11EF4F22001787D8 /* refcnt.h */,
@@ -444,7 +441,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Barcode" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
@@ -476,7 +480,6 @@
 				FAAE075711EF4F22001787D8 /* image.c in Sources */,
 				FAAE075911EF4F22001787D8 /* img_scanner.c in Sources */,
 				FAAE075E11EF4F22001787D8 /* null.c in Sources */,
-				FAAE076311EF4F22001787D8 /* processor.c in Sources */,
 				FAAE077311EF4F22001787D8 /* refcnt.c in Sources */,
 				FAAE077511EF4F22001787D8 /* scanner.c in Sources */,
 				FAAE077811EF4F22001787D8 /* symbol.c in Sources */,

@@ -1093,17 +1093,29 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../shared;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-ObjC",
+					"-all_load",
 					"$(EXTENSIONS_LDFLAGS)",
 					"-weak_framework",
 					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = (
+					"-all_load",
+					"-ObjC",
+					"$(EXTENSIONS_LDFLAGS)",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-ObjC",
+					"-all_load",
 					"$(EXTENSIONS_LDFLAGS)",
 					"-weak_framework",
 					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = (
+					"-ObjC",
+					"-all_load",
+					"$(EXTENSIONS_LDFLAGS)",
+				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
@@ -1156,17 +1168,29 @@
 				IBC_FLATTEN_NIBS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-ObjC",
+					"-all_load",
 					"$(EXTENSIONS_LDFLAGS)",
 					"-weak_framework",
 					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = (
+					"-all_load",
+					"-ObjC",
+					"$(EXTENSIONS_LDFLAGS)",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-ObjC",
+					"-all_load",
 					"$(EXTENSIONS_LDFLAGS)",
 					"-weak_framework",
 					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = (
+					"-ObjC",
+					"-all_load",
+					"$(EXTENSIONS_LDFLAGS)",
+				);
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1188,17 +1212,29 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../shared;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"-ObjC",
+					"-all_load",
 					"$(EXTENSIONS_LDFLAGS)",
 					"-weak_framework",
 					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
+				"OTHER_LDFLAGS[sdk=iphoneos3.2][arch=*]" = (
+					"-all_load",
+					"-ObjC",
+					"$(EXTENSIONS_LDFLAGS)",
+				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"-ObjC",
+					"-all_load",
 					"$(EXTENSIONS_LDFLAGS)",
 					"-weak_framework",
 					EventKit,
 				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = "$(EXTENSIONS_LDFLAGS)";
+				"OTHER_LDFLAGS[sdk=iphonesimulator3.2][arch=*]" = (
+					"-ObjC",
+					"-all_load",
+					"$(EXTENSIONS_LDFLAGS)",
+				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;

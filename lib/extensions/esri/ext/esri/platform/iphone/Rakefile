@@ -1,0 +1,76 @@
+require 'fileutils'
+
+USE_STLPORT = true
+
+
+puts "ESRI extension !"
+
+namespace "build" do
+  task :config do
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+    $xcodebuild = ENV['XCODEBUILD']	
+    raise "XCODEBUILD is not set" if $xcodebuild.nil?
+    
+    $configuration = ENV['CONFIGURATION']	
+    raise "CONFIGURATION is not set" if $configuration.nil?
+
+    $sdk = ENV['SDK_NAME']	
+    raise "SDK_NAME is not set" if $sdk.nil?
+
+    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+    
+    $sdkroot = ENV['SDKROOT']
+    raise "SDKROOT is not set" if $sdkroot.nil?
+
+
+    $arch = ENV['ARCHS']
+    raise "ARCHS is not set" if $arch.nil?
+    
+    $gccbin = $bindir + '/gcc-4.2'
+    $arbin = $bindir + '/ar'
+
+  end
+
+  task :all => :config do
+    iphone_path = '.'
+
+    simulator = $sdk =~ /iphonesimulator/
+
+    if $configuration == 'Distribution'
+       $configuration = 'Release'
+    end
+
+    result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libESRI.a'
+    target_lib = $targetdir + '/libESRI.a'
+
+    rm_rf 'build'
+    rm_rf target_lib
+
+    args = ['build', '-target', 'ESRI', '-configuration', $configuration, '-sdk', $sdk]
+
+   include_dirs = ENV['USER_HEADER_SEARCH_PATHS']
+   include_dirs = '' if include_dirs.nil?
+
+
+   #include_dirs = include_dirs + ' ' + $rootdir + '/platform/iphone/Classes' + ' ' + $rootdir + '/platform/iphone/Classes/MapView' + ' ' +$rootdir + '/platform/shared/ruby/ext/rho' + ' ' + $rootdir + '/platform/shared/rubyext' + ' ' + $rootdir + '/platform/shared/ruby/include' + ' ' + $rootdir + '/platform/shared' + ' ' + $rootdir + '/platform/shared/ruby/iphone'+ ' ' + $rootdir + '/platform/shared/common'
+   #ENV['USER_HEADER_SEARCH_PATHS'] = include_dirs
+
+   require   $rootdir + '/lib/build/jake.rb'
+
+    puts Jake.run($xcodebuild,args)
+    ret = $?
+
+    # copy result to $targetdir
+    cp result_lib,target_lib
+
+  end
+end
+
+task :default => "build:all"
