@@ -117,6 +117,16 @@ In this example, once the sync process for the `Account` model is complete, the 
 
 **NOTE: In these examples, after the sync is complete the notifications are removed.**
 
+You can also set a notification for all models:
+
+	:::ruby
+	SyncEngine.set_notification(
+	  -1, url_for(:action => :sync_notify), 
+	  "sync_complete=true"
+	)
+	
+**NOTE: This notification will not be removed automatically.**
+
 ### Notification Parameters
 When the notification is called, it will receive a variable called `@params`, just like a normal Rhodes controller action.
 
@@ -298,110 +308,235 @@ Your callback might look like:
 	    render :action => :search_error
 	  end
 	end
+	
+**NOTE: Typically you want to forward the original search query `@params['search_params']` to your view that displays the results so you can perform the same query locally.**
 
-To make find faster use [[Rhom#find.28.2Aargs.29_Advanced_proposal|Rhom]] <br/>
-And after callback is called and data is ready, you may render next page:
-<source lang='ruby'>
-def show_page
-  $contacts = Contact.find(:all,
-    #:conditions => ["LOWER(FirstName) LIKE ? OR LOWER(LastName) LIKE ? OR LOWER(Company) LIKE ?",
-    #  @params[:FirstName], @params[:LastName], @params[:Company]]
+Next, the resulting action `:show_page` will be called.  Here we demonstrate using Rhom's [advanced find query syntax](/rhodes/rhom#advanced-queries) since we are filtering a very large dataset:
 
-    :conditions => { 
-      {:func=>'LOWER', :name=>'FirstName', :op=>'LIKE'}=>@params[:FirstName], 
-      {:func=>'LOWER', :name=>'LastName', :op=>'LIKE'}=>@params[:LastName],
-      {:func=>'LOWER', :name=>'Company', :op=>'LIKE'}=>@params[:Company],
-    }, 
-    :op => 'OR', 
+	:::ruby
+	def show_page
+	  @contacts = Contact.find(
+		:all,
+	    :conditions => { 
+	      {
+		    :func => 'LOWER', 
+		    :name => 'FirstName', 
+		    :op => 'LIKE'
+		  } => @params[:FirstName], 
+	      {
+		    :func => 'LOWER', 
+		    :name=>'LastName', 
+		    :op=>'LIKE'
+		  } => @params[:LastName],
+	      {
+		    :func=>'LOWER', 
+		    :name=>'Company', 
+		    :op=>'LIKE'
+		  } => @params[:Company],
+	    }, 
+	    :op => 'OR', 
+	    :select => ['FirstName','LastName', 'Company'],
+	    :per_page => page_size, 
+	    :offset => page * page_size 
+	  )    
+	  render :action => :show_page
+	end
 
-    :select => ['FirstName','LastName', 'Company'],
-    :per_page => page_size, :offset => page*page_size )    
-  render :action => :show_page
-end
-</source>
 
-To stop call callback return 'stop':
-<source lang='ruby'>
-def search_callback    
-  if (status && status == 'ok')
-    WebView.navigate ( url_for :action => :show_page )
-  end
-  #TODO: show error page if status == 'error'
-  'stop'
-end
-</source>
-
-=== Asynchronous search call parameters ===
-Search call takes hash of the following parameters. All parameters not named one of those below are assumed to be search parameters.
-<source lang='ruby'>
-:from #=> sets the path or custom method that records will be fetched from (optional, default is 'search')  
-:offset #=> starting record to be returned 
-:max_results #=> max number of records to be returned 
-:callback #=> callback to be called after search is completed
-:callback_param #=> parameters to be passed to the callback (optional)
-:progress_step #=> optional parameter, define how often search callback will be called with 'in_progress' state 
-</source>
-
-Call from example above will result in the following call to the RhoSync server:
-  /search?FirstName=Jon&LastName=Smith&Company=Acme&offset=30&max_results=10&source[][name]=Contact
-
-=== Asynchronous search across sources ===
-<source lang='ruby'>
-SyncEngine.search(
-  :source_names => ['Product', 'Customer'],
-  :from => 'search',
-  :search_params => { :FirstName => @params['FirstName'], :LastName => @params['LastName'], :Company => @params['Company'] },
-  :offset => page*page_size,
-  :max_results => page_size,
-  :callback => '/app/Contact/search_callback',
-  :callback_param => "" )
-</source>
-<source lang='ruby'>
-</source>
-Parameters are the same as for Model.search. Additional parameter:
-* :source_names #=> array of source names to search on server. They converts to source[][name]=src_name1&source[][name]=src_name2 etc
+If you want to stop or cancel the search, return "stop" in your callback:
+	
+	:::ruby
+	def search_callback    
+	  if(status and status == 'ok')
+	    WebView.navigate( url_for :action => :show_page )
+	  else
+	    'stop'
+	  end
+	end
+	
+Finally, you will need to implement the `search` method in your source adapter.  See the [RhoSync search method](/rhosync/source-adapters#source-adapter-api) for more details.
 
 ## SyncEngine API
-You will add calls to the sync engine class, the full set of which are described below.  
-*<source lang='ruby'>SyncEngine.dosync(show_sync_status)</source>
-** requests to start the sync process; if the optional parameter show_sync_status is set to false, then the sync status popup will not be displayed (default is true)
-*<source lang='ruby'>SyncEngine.dosync_source(source_id, show_sync_status)</source>
-** requests to start the sync process on the specified source; if the optional parameter show_sync_status is set to false, then the sync status popup will not be displayed (default is true)
-*<source lang='ruby'>SyncEngine.lock_sync_mutex</source>
-** wait to acquire the sync engine lock (useful for performing batch operations)
-*<source lang='ruby'>SyncEngine.unlock_sync_mutex</source>
-** release the acquired sync engine lock (make sure you do this if you call lock!)
-*<source lang='ruby'>SyncEngine.login(login, password, callback)</source>
-** authenticates the user with the sync server; callback URL will be called after login operation is completed, more info [[#Login.2FLogout_Manager|here]]
-*<source lang='ruby'>SyncEngine.logged_in</source>
-** returns true if the user is authenticated by the sync server, more info [[#Login.2FLogout_Manager|here]]
-*<source lang='ruby'>SyncEngine.logout</source>
-** logout the user from sync server, more info [[#Login.2FLogout_Manager|here]]
-*<source lang='ruby'>SyncEngine.stop_sync</source>
-** stops any sync operations in progress
-*<source lang='ruby'>SyncEngine.set_notification(source_id, url, params)</source>
-** more info [[#Sync_notification|here]]
-*<source lang='ruby'>SyncEngine.clear_notification(source_id)</source>
-** more info [[#Sync_notification|here]]
-*<source lang='ruby'>SyncEngine.set_pollinterval(interval)</source>
-** set the sync poll interval; 0 will disable polling for updates, sync still may be initiated by [[RhodesDeviceCapabilities#PUSH_notifications|PUSH notifications]] 
-*<source lang='ruby'>SyncEngine.set_syncserver(syncserver)</source>
-**sets the sync server address and stores it in [[RhodesFiles#SyncEngine_Configuration|Rho Config]]
-*<source lang='ruby'>SyncEngine.set_objectnotify_url</source>
-** more info [[#Sync_object_notification|here]]
-*<source lang='ruby'>SyncEngine.set_pagesize</source>
-** set the page size for server show request
-*<source lang='ruby'>SyncEngine.get_pagesize</source>
-** set the page size for server show request
-*<source lang='ruby'>SyncEngine.dosearch(source_names_array, from, params, sync_client_changes, progress_step, callback_url, callback_params)</source>
-** make RhoSync server call with <sync_server_url>/from?params
-** source_names_array converts to source[][name]=src_name1&source[][name]=src_name2
-*<source lang='ruby'>SyncEngine.enable_status_popup(enable)</source>
-** enable/disable show status popup, true by default for Blackberry, false for other platforms
-*<source lang='ruby'>SyncEngine.set_ssl_verify_peer(enable)</source>
-** enable/disable check ssl certificate - true by default
-SyncEngine::logout #performs a logout on each source
-SyncEngine::logged_in #returns 1 if true, 0 if false
-SyncEngine::get_user_name # return logged user name if logged_in is true or last logged user name if logged_in is false
+Below is the full list of methods available on the `SyncEngine`:
 
-SyncEngine.set_notification(-1,url,params) #set callback for all sources. This callback will not removed after sync completed
+### `login(login, password, callback)`
+Authenticates the user with RhoSync.  The callback will be executed when it is finished.  See the [authentication section](/rhodes/synchronization#sync-authentication) for details.
+
+	:::ruby
+	SyncEngine.login(
+	  @params['login'], 
+	  @params['password'], 
+	  url_for(:action => :login_callback) 
+	)
+
+### `logout`
+Logout the user from the RhoSync server.  This removes the local user session.  See the [authentication section](/rhodes/synchronization#sync-authentication) for details.
+
+	:::ruby
+	SyncEngine.logout
+
+### `logged_in`
+Returns 1 if the `SyncEngine` currently has a user session, 0 if not.  
+
+	:::ruby
+	if SyncEngine::logged_in == 1
+	  render :action => :index
+	else
+	  render :action => :login
+	end
+
+### `dosync(show_sync_status = true)`
+Start the `SyncEngine` process and display an optional status popup (defaults to true).
+
+	:::ruby
+	SyncEngine.dosync(false)
+	  #=> no status popups are displayed
+
+### `dosync_source(source_id, show_sync_status = true)`
+Star the `SyncEngine` process for a given source_id and display an optional status popup (defaults to true).
+
+	:::ruby
+	SyncEngine.dosync_source(Product.get_source_id, true)
+
+### `lock_sync_mutex`
+Blocking call to wait for `SyncEngine` lock (useful for performing batch operations).
+
+	:::ruby
+	SyncEngine.lock_sync_mutex
+	#... perform blocking tasks...
+	SyncEngine.unlock_sync_mutex
+
+### `unlock_sync_mutex`
+Release the acquired `SyncEngine` lock (make sure you do this if you call `lock_sync_mutex`!).
+
+###	`stop_sync`
+Stops any sync operations currently in progress.
+
+	:::ruby
+	SyncEngine.stop_sync
+	  #=> no callback is called
+
+### `set_notification(source_id, callback_url, params = nil)`
+See the [sync notification section](/rhodes/synchronization#notifications).
+
+### `set_notification(-1, callback_url, params = nil)` 
+Set notification callback for all models. This callback is not removed after the sync process completes.  See the [sync notification section](/rhodes/synchronization#notifications).
+
+### `clear_notification(source_id)`
+Clears the sync notification for a given source id.
+
+	:::ruby
+	SyncEngine.clear_notification(Product.get_source_id)
+
+### `set_pollinterval(interval)`
+Update the `SyncEngine` poll interval. Setting this to 0 will disable polling-based sync.  However, you may still use [push-based-sync](/rhosync/push).
+
+	:::ruby
+	SyncEngine.set_pollinterval(20)'
+	  #=> now polls every 20 seconds
+
+### `set_syncserver(server_url)`
+Sets the RhoSync server address and stores it in [`rhoconfig.txt`](/rhodes/configuration).
+
+	:::ruby
+	SyncEngine.set_syncserver("http://myapp.com/application")
+	  #=> don't forget the '/application' path
+
+### `set_objectnotify_url(url)`
+See the [sync notification section](/rhodes/synchronization#notifications).
+
+### `set_pagesize(size)`
+Set the sync page size for the `SyncEngine`. Default size is 2000. See [the `SyncEngine` workflow](/rhodes/synchronization#syncengine-workflow) for how this is used.
+
+	:::ruby
+	SyncEngine.set_pagesize(5000)
+
+### `get_pagesize`
+Get the current sync page size for the `SyncEngine`. See [the `SyncEngine` workflow](/rhodes/synchronization#syncengine-workflow) for how this is used.
+
+	:::ruby
+	SyncEngine.get_pagesize
+	  #=> 2000
+	
+	SyncEngine.set_pagesize(5000)
+	SyncEngine.get_pagesize
+	  #=> 5000
+
+### `enable_status_popup(false)`
+Enable or disable show status popup. True by default for Blackberry, false for other platforms.
+
+	:::ruby
+	SyncEngine.enable_status_popup(true)
+
+### `set_ssl_verify_peer(true)`
+Enable or disable verification of RhoSync ssl certificates, true by default.
+
+	:::ruby
+	# using a self-signed cert
+	SyncEngine.set_ssl_verify_peer(false)
+
+### `get_user_name`
+Returns current username of the `SyncEngine` session if `logged_in` is true, otherwise returns the last logged in username.
+
+	:::ruby
+	SyncEngine.get_user_name
+	  #=> "testuser"
+
+### `search(*args)`
+Call search on the RhoSync application with given parameters.  See the [search section](#filtering-datasets-with-search) for more details.
+
+	:::ruby
+	# :from 			Sets the RhoSync path that records 
+	#					will be fetched with (optional).
+	#					Default is 'search'.
+	#
+	# :search_params	Hash containing key/value search items.
+	#
+	# :offset 			Starting record to be returned.
+	#
+	# :max_results		Max number of records to be returned.
+	#
+	# :callback 		Callback to be executed after search
+	#					is completed.
+	#
+	# :callback_param	(optional) Parameters passed to callback. 
+	#
+	# :progress_step	(optional) Define how often search callback 
+	#					will be executed with 'in_progress' state. 
+	Contact.search(
+	  :from => 'search',
+	  :search_params => { 
+	    :FirstName => @params['FirstName'], 
+	    :LastName => @params['LastName'], 
+	    :Company => @params['Company'] 
+	  },
+	  :offset => page * page_size,
+	  :max_results => page_size,
+	  :callback => url_for(:action => :search_callback),
+	  :callback_param => ""
+	)
+
+### `search(*args) (multiple sources)`
+Call search on the RhoSync application with multiple source names.  This is useful if your `search` spans across multiple models.
+
+For example:
+
+	:::ruby
+	SyncEngine.search(
+	  :source_names => ['Product', 'Customer'],
+	  :from => 'search',
+	  :search_params => { 
+        :FirstName => @params['FirstName'], 
+        :LastName => @params['LastName'], 
+        :Company => @params['Company'] 
+      },
+	  :offset => page * page_size,
+	  :max_results => page_size,
+	  :callback => url_for(:action => :search_callback),
+	  :callback_param => ""
+	)
+
+
+Parameters are the same as for ModelName.search with an additional parameter:
+
+* `:source_names` - Sends a list of source adapter names to RhoSync to search across.
