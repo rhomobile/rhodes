@@ -43,6 +43,7 @@ public:
 	virtual void destroyNativeView(NativeView* nativeView) = 0;
 };
 
+#define   OPEN_IN_MODAL_FULL_SCREEN_WINDOW  11111
 
 
 class RhoNativeViewManager {
@@ -61,6 +62,12 @@ public:
         // this function can executed from your native code (from NativeView code, for example)
         // instead of this function you can execute destroy() for Ruby NativeView object
         static void destroyNativeView(NativeView* nativeView);
+
+
+        static int openNativeView(const char* viewType, int tab_index, VALUE params);
+
+        static void closeNativeView(int v_id);
+
 };
 
 

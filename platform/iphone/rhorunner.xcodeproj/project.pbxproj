@@ -76,6 +76,13 @@
 		FA522E7F12DEA7B300AB55CC /* NVDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7B12DEA7B300AB55CC /* NVDelegate.m */; };
 		FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7D12DEA7B300AB55CC /* NVViewController.m */; };
 		FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */; };
+		FA522FE112E49D6F00AB55CC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA522FE012E49D6F00AB55CC /* QuartzCore.framework */; };
+		FA52300D12E4BBC700AB55CC /* MapViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FA52300C12E4BBC700AB55CC /* MapViewManager.m */; };
+		FA52309412E55CA700AB55CC /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA52309312E55CA700AB55CC /* EventKit.framework */; };
+		FA52317A12E7511700AB55CC /* BluePushpin.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317312E7511700AB55CC /* BluePushpin.png */; };
+		FA52317B12E7511700AB55CC /* esri.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317412E7511700AB55CC /* esri.png */; };
+		FA52317C12E7511700AB55CC /* esri@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317512E7511700AB55CC /* esri@2x.png */; };
+		FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52330012E9204300AB55CC /* BluePushpin@2x.png */; };
 		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
 		FACA4C791270AC0900777CFF /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C731270AC0900777CFF /* RightViewController.m */; };
 		FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C751270AC0900777CFF /* SplittedMainView.m */; };
@@ -266,6 +273,14 @@
 		FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoNativeViewManager.mm; path = NativeView/RhoNativeViewManager.mm; sourceTree = "<group>"; };
 		FA522E8212DEA8AE00AB55CC /* RhoNativeViewManagerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoNativeViewManagerOC.h; path = NativeView/RhoNativeViewManagerOC.h; sourceTree = "<group>"; };
 		FA522E8312DEA8C900AB55CC /* NVViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NVViewController.h; path = NativeView/NVViewController.h; sourceTree = "<group>"; };
+		FA522FE012E49D6F00AB55CC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA52300B12E4BBC700AB55CC /* MapViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewManager.h; path = MapView/MapViewManager.h; sourceTree = "<group>"; };
+		FA52300C12E4BBC700AB55CC /* MapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewManager.m; path = MapView/MapViewManager.m; sourceTree = "<group>"; };
+		FA52309312E55CA700AB55CC /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		FA52317312E7511700AB55CC /* BluePushpin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = BluePushpin.png; path = ESRI/BluePushpin.png; sourceTree = "<group>"; };
+		FA52317412E7511700AB55CC /* esri.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = esri.png; path = ESRI/esri.png; sourceTree = "<group>"; };
+		FA52317512E7511700AB55CC /* esri@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "esri@2x.png"; path = "ESRI/esri@2x.png"; sourceTree = "<group>"; };
+		FA52330012E9204300AB55CC /* BluePushpin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "BluePushpin@2x.png"; path = "ESRI/BluePushpin@2x.png"; sourceTree = "<group>"; };
 		FACA4C701270AC0900777CFF /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
 		FACA4C711270AC0900777CFF /* LeftViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeftViewController.m; path = SplitView/LeftViewController.m; sourceTree = "<group>"; };
 		FACA4C721270AC0900777CFF /* RightViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RightViewController.h; path = SplitView/RightViewController.h; sourceTree = "<group>"; };
@@ -304,6 +319,8 @@
 				46AD7DB71117AFBF009A974A /* CFNetwork.framework in Frameworks */,
 				FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */,
 				5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */,
+				FA522FE112E49D6F00AB55CC /* QuartzCore.framework in Frameworks */,
+				FA52309412E55CA700AB55CC /* EventKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,6 +376,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FA52317212E750F300AB55CC /* Resources */,
 				BDFBD99910B1B9A900BAAFAB /* Settings.bundle */,
 				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
 				BD2C94A610AE052A008D4692 /* curl.xcodeproj */,
@@ -376,6 +394,8 @@
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
 				FACC20FF123A759A0088A447 /* GameKit.framework */,
 				5C59AB4112DDA22E00ED4A1E /* Security.framework */,
+				FA522FE012E49D6F00AB55CC /* QuartzCore.framework */,
+				FA52309312E55CA700AB55CC /* EventKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -549,6 +569,8 @@
 		F5425BCD1060539A000CCA8C /* MapView */ = {
 			isa = PBXGroup;
 			children = (
+				FA52300B12E4BBC700AB55CC /* MapViewManager.h */,
+				FA52300C12E4BBC700AB55CC /* MapViewManager.m */,
 				F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */,
 				F5128C2B106C1FF3002F00E5 /* GoogleGeocoder.m */,
 				F5FD0942106151C200B7B8ED /* MapViewController.h */,
@@ -666,6 +688,17 @@
 				FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */,
 			);
 			name = NativeView;
+			sourceTree = "<group>";
+		};
+		FA52317212E750F300AB55CC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FA52330012E9204300AB55CC /* BluePushpin@2x.png */,
+				FA52317312E7511700AB55CC /* BluePushpin.png */,
+				FA52317412E7511700AB55CC /* esri.png */,
+				FA52317512E7511700AB55CC /* esri@2x.png */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		FACA4C6E1270ABCD00777CFF /* SplitView */ = {
@@ -821,6 +854,10 @@
 				BDC6F34911F4ABBF0056C1C3 /* icon57.png in Resources */,
 				BDC6F34A11F4ABBF0056C1C3 /* icon72.png in Resources */,
 				BDC6F34B11F4ABBF0056C1C3 /* icon114.png in Resources */,
+				FA52317A12E7511700AB55CC /* BluePushpin.png in Resources */,
+				FA52317B12E7511700AB55CC /* esri.png in Resources */,
+				FA52317C12E7511700AB55CC /* esri@2x.png in Resources */,
+				FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -946,6 +983,7 @@
 				FA522E7F12DEA7B300AB55CC /* NVDelegate.m in Sources */,
 				FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */,
 				FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */,
+				FA52300D12E4BBC700AB55CC /* MapViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
