@@ -1,0 +1,3 @@
+entry: Init_ESRI
+javaentry: com.rho.rubyext.ESRIExtension
+libraries: ["ESRI"]
