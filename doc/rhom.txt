@@ -13,7 +13,7 @@ With a property bag model, all data is stored in a single table using the object
 * Attributes can be added or removed without modifying the database schema.
 
 ### Property Bag Disadvantages
-* For some applications, the database size may be up to three times larger than fixed schema.  This is because each attribute is indexed for fast lookup.
+* For some applications, the database size may be significantly larger than fixed schema.  This is because each attribute is indexed for fast lookup.
 * Sync process may be slightly slower because inserts are performed at attribute level.
 
 In a property bag model, Rhom groups objects by their source id and object id.  The following example illustrates this idea:
@@ -269,7 +269,7 @@ Return `false` to run the custom sql specified by the new_src['schema']['sql'] s
 Below is the full list of methods available to Rhom models:
 
 ### `clear_notification`
-Used to clear the notification for the object, see the [sync notification section](/rhodes/sync-engine#notify) for more details.
+Used to clear the notification for the object, see the [sync notification section](/rhodes/synchronization#notifications) for more details.
 
 ### `delete_all(conditions)`
 Deletes all rhom objects for a source, optionally filtering by conditions:
@@ -343,21 +343,21 @@ The `:order` argument accepts several forms:
 		  :orderdir => 'DESC'
 		)
 
-* `:order` by one attribute with block:
+* `:order` by one attribute with a block:
 
     	:::ruby
 		@accts = Account.find(:all, :order => 'name') do |x,y|
 	      y <=> x    
 	    end
 
-* `:order` with block:
+* `:order` with a block:
 
     	:::ruby
 		@accts = Account.find(:all) do |item1,item2|
 	      item2.name <=> item1.name
 	    end
 
-* `:order` by multiple attributes
+* `:order` by multiple attributes:
 
     	:::ruby
 		@accts = Account.find(
@@ -429,11 +429,11 @@ Start the sync process for a model. If the callback is set, `SyncEngine.set_noti
 	:::ruby
 	Account.sync( url_for(:action => :sync_callback) )
 
-### `set_notification(url)`
+### `set_notification(url, params = nil)`
 Set a notification to be called when the sync is complete for this model.  This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the [sync notification docs](/rhodes/synchronization#notifications) for more information.
 
 	:::ruby
-	Account.set_notification( url_for(:action => :sync_callback) )
+	Account.set_notification( url_for(:action => :sync_notify) )
 
 ### `update_attributes(attributes)`
 Updates the current rhom object's attributes and saves it to the database
@@ -441,7 +441,7 @@ Updates the current rhom object's attributes and saves it to the database
 	:::ruby
 	@account = Account.find(
 	  :all, 
-	  :conditions=>{'name' => 'ABC Inc.'}
+	  :conditions => {'name' => 'ABC Inc.'}
 	)
 	@account.update_attributes(
 	  {"name" => "ABC Inc.", "industry" => "Technology"}
@@ -465,12 +465,12 @@ Before displaying an edit page for an object, your application can check if the 
 ### `changed?`
 Determine if a rhom model has local database changes that need to be synchronized.
 
-       :::ruby
-       def should_sync_product_object
-         if Product.changed?
-           #... do stuff ...
-         end
-       end
+    :::ruby
+    def should_sync_product_object
+      if Product.changed?
+        #... do stuff ...
+      end
+    end
 
 ## Associations
 For sync-enabled models, Rhom offers associations as a means to automatically trigger sync updates for dependent objects.  This is useful where you have relationships between backend service objects.
@@ -629,7 +629,7 @@ Reset only local(non-sync-enabled) models.
 	Rhom::Rhom.database_local_reset
 
 ## Seeding the Database
-If your application requires seeding some initial data, use the following method:
+If your application requires seeding some initial data, you can use the following function:
 
 ### `Rho::RhoUtils.load_offline_data(table_array, seed_prefix_directory)`
 
@@ -732,7 +732,7 @@ You can also use the 'IN' operator:
 	  } 
 	)
 
-You can also groups `:conditions`:
+You can also group `:conditions`:
 	
 	:::ruby
 	cond1 = {
@@ -764,6 +764,28 @@ You can also groups `:conditions`:
 	  :all, 
 	  :conditions => [cond1, cond2], 
 	  :op => 'AND', 
-	  :select => ['name','industry']
+	  :select => ['name','industry','description']
 	)
-</source>
+
+## Database Encryption
+To enable encryption add to build.yml:
+
+	:::yaml
+	encrypt_database: 1
+
+=== Bulk sync ===
+Not supported for encryption database at this moment.
+
+=== Platform notes ===
+* iPhone : use AES 128 algorithm from iPhone SDK
+* Android: use AES 128 algorithm from Android SDK  
+* Windows Mobile: use RC4 algorithm from WindowsMobile SDK  
+
+=== Blackberry notes ===
+* Blackberry >= 5.0: use built-in encryption for sqlite database
+* Any Blackberry versions: user can turn on memory encryption (device memory and sdcard), it also can be enforced by enterprise server: [http://docs.blackberry.com/en/admin/deliverables/3940/file_encryption_STO.pdf File encryption]
+In this case you have to use hsqldb even on devices >= 5.0, because sqlite does not encrypt database file. Add to build.yml to enforce hsqldb usage:
+<pre>
+bb:   
+  use_hsqldb: 1
+</pre>
