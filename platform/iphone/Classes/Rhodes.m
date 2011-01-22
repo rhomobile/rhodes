@@ -293,9 +293,9 @@ static Rhodes *instance = NULL;
 	[nvDelegate setParentView:window];
 	[nvDelegate setPrevView:mainView.view];
 	@try {
-		CGRect rect = mainView.view.bounds;
-		//rect.origin.x = 0;
-		//rect.origin.y = 0;
+		CGRect rect = window.frame;
+		rect.origin.x = 0;
+		rect.origin.y = 0;
 		NVViewController* svc = [[NVViewController alloc] initWithRect:rect nvview:view delegate:nvDelegate];
 		[nvDelegate setNVViewControllerValue:svc];
 

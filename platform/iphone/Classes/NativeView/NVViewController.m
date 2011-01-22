@@ -41,6 +41,7 @@
 	nvView.frame = srect;
 	
 	[self.view addSubview:nvView];
+	[self.view layoutSubviews];
 	
 	return self;
 
