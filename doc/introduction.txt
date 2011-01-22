@@ -82,6 +82,7 @@ If you are interested us using your patch to Rhodes you will need to submit a [c
 
 ## Framework Architecture
 
-TBD
+<img src='/images/rhodes-framework.png'/>
+
 
 
