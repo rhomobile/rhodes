@@ -436,3 +436,14 @@ extern "C" void rho_native_view_manager_destroy_native_view(int native_view_id) 
 
 
 
+int RhoNativeViewManager::openNativeView(const char* viewType, int tab_index, VALUE params) {
+	return rho_native_view_manager_create_native_view(viewType, tab_index, params);
+}
+
+
+void RhoNativeViewManager::closeNativeView(int v_id) {
+	rho_native_view_manager_destroy_native_view(v_id);
+}
+
+
+

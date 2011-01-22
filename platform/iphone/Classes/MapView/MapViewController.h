@@ -16,7 +16,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 
- 
+#import "MapViewManager.h" 
 
 @interface MapViewController : RhoViewController <MKMapViewDelegate, MKReverseGeocoderDelegate> {
     MKMapView *mapView;
@@ -43,6 +43,9 @@
 
 + (void)createMap:(rho_param*)params;
 + (void)closeMap;
++ (BOOL)isStarted;
++ (double)centerLatitude;
++ (double)centerLongitude;
 
 - (void)setParams:(rho_param*)params;
 - (void)close;
