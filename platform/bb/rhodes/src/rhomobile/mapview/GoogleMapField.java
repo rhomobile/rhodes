@@ -104,15 +104,29 @@ public class GoogleMapField extends Field implements RhoMapField {
 	};
 	
 	private class ImageCache {
-		private Hashtable hash = new Hashtable();
-		private SimpleSortingVector cvec = new SimpleSortingVector();
-		private SimpleSortingVector tvec = new SimpleSortingVector();
+		private Hashtable hash;
+		private SimpleSortingVector cvec;
+		private SimpleSortingVector tvec;
 		
 		public ImageCache() {
+			reinit();
+		}
+		
+		private void reinit() {
+			hash = new Hashtable();
+			cvec = new SimpleSortingVector();
 			cvec.setSortComparator(new ByCoordinatesComparator());
 			cvec.setSort(true);
+			tvec = new SimpleSortingVector();
 			tvec.setSortComparator(new ByAccessTimeComparator());
 			tvec.setSort(true);
+		}
+		
+		public ImageCache clone() {
+			ImageCache cloned = new ImageCache();
+			for (Enumeration e = hash.elements(); e.hasMoreElements();)
+				cloned.put((CachedImage)e.nextElement());
+			return cloned;
 		}
 		
 		public Enumeration sortedByCoordinates() {
@@ -139,13 +153,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 				return;
 			
 			SimpleSortingVector vec = tvec;
-			hash = new Hashtable();
-			cvec = new SimpleSortingVector();
-			cvec.setSortComparator(new ByCoordinatesComparator());
-			cvec.setSort(true);
-			tvec = new SimpleSortingVector();
-			tvec.setSortComparator(new ByAccessTimeComparator());
-			tvec.setSort(true);
+			reinit();
 			
 			Enumeration e = vec.elements();
 			while (e.hasMoreElements()) {
@@ -610,7 +618,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		long top = -toCurrentZoom(latitude - img.latitude, zoom);
 		
 		if (img.zoom != zoom) {
-			double x = MapTools.math_pow2(img.zoom - zoom);
+			double x = MapTools.math_pow2d(img.zoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
@@ -638,17 +646,17 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	protected void paint(Graphics graphics) {
-		ImageCache imgCache = null;
-		synchronized (this) {
-			imgCache = cache;
-		}
-		
 		// Draw background
 		for (int i = 1, lim = 2*Math.max(width, height); i < lim; i += 5) {
 			graphics.drawLine(0, i, i, 0);
 		}
-		
+
 		// Draw map tiles
+		ImageCache imgCache;
+		synchronized (this) {
+			imgCache = cache.clone();
+		}
+		
 		Enumeration e = imgCache.sortedByCoordinates();
 		while (e.hasMoreElements()) {
 			// Draw map
