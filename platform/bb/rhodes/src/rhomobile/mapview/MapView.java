@@ -196,10 +196,7 @@ public class MapView extends RubyBasic {
 									
 									String strHKey = hKey.toString();
 									if (strHKey.equals("center")) {
-										Annotation ann = new Annotation();
-										ann.type = "center";
-										ann.street_address = hValue.toString();
-										annotations.addElement(ann);
+										settings.put("center", hValue.toString());
 									}
 									else if (strHKey.equals("radius")) {
 										String strHValue = hValue.toString();
@@ -221,7 +218,6 @@ public class MapView extends RubyBasic {
 				if (annotationsArray != null) {
 					for (int i = 0; i != annotationsArray.size(); ++i) {
 						Annotation annotation = new Annotation();
-						annotation.type = "ann";
 						RubyValue val = annotationsArray.get(i);
 						if (!(val instanceof RubyHash))
 							throw new RubyException(RubyRuntime.ArgumentErrorClass,
