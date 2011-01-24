@@ -55,6 +55,10 @@ public class MapViewScreen extends MainScreen {
 	
 	private Bitmap mapPinImage;
 	
+	private boolean mTouchDown = false;
+	private int mTouchX;
+	private int mTouchY;
+	
 	private class PanModeMenuItem extends MenuItem {
 		
 		private MapViewScreen screen;
@@ -381,23 +385,10 @@ public class MapViewScreen extends MainScreen {
 		return calcDySmooth(dy, curTime);
 	}
 	
-	protected boolean navigationMovement(int dx, int dy, int status, int time) {
-		if ((status & KeypadListener.STATUS_TRACKWHEEL) == 0 &&
-				(status & KeypadListener.STATUS_FOUR_WAY) == 0)
-			return false;
-
+	private void handleMove(int dx, int dy) {
 		if (mode == PAN_MODE) {
-			long curTime = System.currentTimeMillis();
-			int newDx = calcDx(dx, curTime);
-			int newDy = calcDy(dy, curTime);
-			
-			prevMoveTime = curTime;
-			
-			//int newDx = dx*10;
-			//int newDy = dy*10;
-			
-			//LOG.TRACE("Scroll by " + newDx + "," + newDy);
-			mapField.move(newDx, newDy);
+			//LOG.TRACE("Scroll by " + dx + "," + dy);
+			mapField.move(dx, dy);
 			mapField.redraw();
 		}
 		else if (mode == ZOOM_MODE && dy != 0) {
@@ -416,10 +407,9 @@ public class MapViewScreen extends MainScreen {
 			mapField.setZoom(newZoom);
 			mapField.redraw();
 		}
-		return true;
 	}
 	
-	private boolean handleClick(int x, int y) {
+	private void handleClick(int x, int y) {
 		Annotation a = getCurrentAnnotation(x, y);
 		Annotation selectedAnnotation = mSelectedAnnotation;
 		mSelectedAnnotation = a;
@@ -430,23 +420,65 @@ public class MapViewScreen extends MainScreen {
 			mSelectedAnnotation = null;
 		}
 		invalidate();
+	}
+	
+	protected boolean navigationMovement(int dx, int dy, int status, int time) {
+		if ((status & KeypadListener.STATUS_TRACKWHEEL) == 0 &&
+				(status & KeypadListener.STATUS_FOUR_WAY) == 0)
+			return false;
+
+		if (mode == PAN_MODE) {
+			long curTime = System.currentTimeMillis();
+			dx = calcDx(dx, curTime);
+			dy = calcDy(dy, curTime);
+			prevMoveTime = curTime;
+		}
+		
+		handleMove(dx, dy);
+		
 		return true;
 	}
 	
 	protected boolean trackwheelClick(int status, int time) {
 		int x = getWidth()/2;
 		int y = getHeight()/2;
-		return handleClick(x, y);
+		handleClick(x, y);
+		return true;
 	}
 	
 	protected boolean touchEvent(TouchEvent message) {
-		int event = message.getEvent();
-		
-		if (event == TouchEvent.CLICK) {
-			int x = message.getX(1);
-			int y = message.getY(1);
-			return handleClick(x, y);
+		switch (message.getEvent()) {
+		case TouchEvent.CLICK:
+			handleClick(message.getX(1), message.getY(1));
+			return true;
+		case TouchEvent.DOWN:
+			mTouchDown = true;
+			mTouchX = message.getX(1);
+			mTouchY = message.getY(1);
+			break;
+		case TouchEvent.UP:
+			mTouchDown = false;
+			break; 
+		case TouchEvent.MOVE:
+			if (mTouchDown) {
+				int x = message.getX(1);
+				int y = message.getY(1);
+				
+				int dx = x - mTouchX;
+				int dy = y - mTouchY;
+				if (mode == PAN_MODE) {
+					dx = -dx;
+					dy = -dy;
+				}
+				
+				handleMove(dx, dy);
+				
+				mTouchX = x;
+				mTouchY = y;
+				return true;
+			}
 		}
+		
 		return super.touchEvent(message);
 	}
 	
