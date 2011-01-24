@@ -9,8 +9,8 @@ public class GoogleMapProvider implements MapProvider {
 		return name.equalsIgnoreCase("google");
 	}
 	
-	public RhoMapField createMap(MapViewParent parent) {
-		return new GoogleMapField(parent);
+	public RhoMapField createMap() {
+		return new GoogleMapField();
 	}
 
 }

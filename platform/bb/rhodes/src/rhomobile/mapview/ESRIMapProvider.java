@@ -1,6 +1,5 @@
 package rhomobile.mapview;
 
-import com.rho.RhoConf;
 
 public class ESRIMapProvider implements MapProvider {
 
@@ -8,8 +7,8 @@ public class ESRIMapProvider implements MapProvider {
 		return name.equalsIgnoreCase("esri");
 	}
 
-	public RhoMapField createMap(MapViewParent parent) {
-		return new ESRIMapField(parent);
+	public RhoMapField createMap() {
+		return new ESRIMapField();
 	}
 
 }
