@@ -110,15 +110,29 @@ public class ESRIMapField extends Field implements RhoMapField {
 	};
 	
 	private class ImageCache {
-		private Hashtable hash = new Hashtable();
-		private SimpleSortingVector cvec = new SimpleSortingVector();
-		private SimpleSortingVector tvec = new SimpleSortingVector();
+		private Hashtable hash;
+		private SimpleSortingVector cvec;
+		private SimpleSortingVector tvec;
 		
 		public ImageCache() {
+			reinit();
+		}
+		
+		private void reinit() {
+			hash = new Hashtable();
+			cvec = new SimpleSortingVector();
 			cvec.setSortComparator(new ByCoordinatesComparator());
 			cvec.setSort(true);
+			tvec = new SimpleSortingVector();
 			tvec.setSortComparator(new ByAccessTimeComparator());
 			tvec.setSort(true);
+		}
+		
+		public ImageCache clone() {
+			ImageCache cloned = new ImageCache();
+			for (Enumeration e = hash.elements(); e.hasMoreElements();)
+				cloned.put((CachedImage)e.nextElement());
+			return cloned;
 		}
 		
 		public Enumeration sortedByCoordinates() {
@@ -145,13 +159,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 				return;
 			
 			SimpleSortingVector vec = tvec;
-			hash = new Hashtable();
-			cvec = new SimpleSortingVector();
-			cvec.setSortComparator(new ByCoordinatesComparator());
-			cvec.setSort(true);
-			tvec = new SimpleSortingVector();
-			tvec.setSortComparator(new ByAccessTimeComparator());
-			tvec.setSort(true);
+			reinit();
 			
 			Enumeration e = vec.elements();
 			while (e.hasMoreElements()) {
@@ -428,9 +436,9 @@ public class ESRIMapField extends Field implements RhoMapField {
 			graphics.drawLine(0, i, i, 0);
 		}
 		
-		ImageCache imgCache = null;
+		ImageCache imgCache;
 		synchronized (this) {
-			imgCache = mImgCache;
+			imgCache = mImgCache.clone();
 		}
 		
 		// Draw map tiles
@@ -454,7 +462,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 		long top = -toCurrentZoom(mLatitude - img.latitude, mZoom);
 		
 		if (img.zoom != mZoom) {
-			double x = MapTools.math_pow2(img.zoom - mZoom);
+			double x = MapTools.math_pow2d(img.zoom - mZoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
