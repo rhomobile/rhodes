@@ -4,17 +4,18 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import rhomobile.mapview.GeoCoding.OnGeocodingDone;
-
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
+import com.rho.rubyext.WebView;
 
 import net.rim.device.api.system.Application;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.system.KeypadListener;
+import net.rim.device.api.ui.Color;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.MenuItem;
+import net.rim.device.api.ui.TouchEvent;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.container.MainScreen;
 
@@ -31,6 +32,9 @@ public class MapViewScreen extends MainScreen {
 	
 	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
+	// Sensivity of annotations area (in pixels)
+	private static final int ANNOTATION_SENSIVITY_AREA_RADIUS = 16;
+	
 	private static final MapProvider[] providers = {
 		new GoogleMapProvider(),
 		new ESRIMapProvider()
@@ -41,6 +45,7 @@ public class MapViewScreen extends MainScreen {
 	private RhoMapField mapField;
 	private GeoCoding mapGeoCoding;
 	private Vector annotations = new Vector();
+	private Annotation mSelectedAnnotation;
 	
 	private int mode;
 	
@@ -87,10 +92,11 @@ public class MapViewScreen extends MainScreen {
 		
 		mapParent = p;
 		createMapProvider(providerName);
+
+		mapGeoCoding = new GoogleGeoCoding();
 		
 		createUI(settings);
 
-		mapGeoCoding = new GoogleGeoCoding();
 		this.annotations = annotations;
 		handleAnnotations();
 	}
@@ -154,6 +160,16 @@ public class MapViewScreen extends MainScreen {
 		if (radius != null) {
 			int zoom = mapField.calculateZoom(radius.doubleValue(), radius.doubleValue());
 			mapField.setZoom(zoom);
+		}
+		
+		String center = (String)settings.get("center");
+		if (center != null) {
+			mapGeoCoding.resolve(center, new GeoCoding.OnGeocodingDone() {
+				public void onSuccess(double latitude, double longitude) {
+					mapField.moveTo(latitude, longitude);
+				}
+				public void onError(String description) {}
+			});
 		}
 		
 		mode = PAN_MODE;
@@ -229,7 +245,10 @@ public class MapViewScreen extends MainScreen {
 			graphics.drawBitmap((int)(x - pinWidth/2), (int)(y - pinHeight/2), pinWidth, pinHeight, mapPinImage, 0, 0);
 		}
 		
-		graphics.setColor(0x00000000); // Black
+		if (mSelectedAnnotation != null)
+			drawSubtitle(graphics, mSelectedAnnotation);
+		
+		graphics.setColor(Color.BLACK);
 		
 		// Draw current mode
 		String strMode  = null;
@@ -239,15 +258,77 @@ public class MapViewScreen extends MainScreen {
 			strMode = "Zoom mode";
 		
 		if (strMode != null) {
-			// Detect drawn text width
-			int x = mapField.getLeft() + mapField.getWidth()/2;
-			int y = mapField.getTop() + mapField.getHeight() + 20;
-			int tw = graphics.drawText(strMode, x, y);
+			// Detect drawn text size
+			int tw = graphics.getFont().getAdvance(strMode);
+			int th = graphics.getFont().getHeight();
 			// Actual drawing
-			x -= tw/2;
-			y -= 60;
+			int x = mapField.getLeft() + mapField.getWidth()/2 - tw/2;
+			int y = mapField.getTop() + mapField.getHeight() - th - 10; 
 			tw = graphics.drawText(strMode, x, y);
 		}
+	}
+	
+	private void fillRectWithRoundedCorners(Graphics graphics, int left, int top, int width, int height, int roundRadius) {
+		final int r = roundRadius;
+		final int d = r*2;
+		
+		final int right = left + width;
+		final int bottom = top + height;
+		
+		graphics.fillArc(left - r, top - r, d, d, 90, 90);
+		graphics.fillArc(left - r, bottom - r, d, d, 180, 90);
+		graphics.fillArc(right - r, bottom - r, d, d, 270, 90);
+		graphics.fillArc(right - r, top - r, d, d, 0, 90);
+		
+		graphics.fillRect(left - r, top, r, bottom - top);
+		graphics.fillRect(right, top, r, bottom - top);
+		graphics.fillRect(left, top - r, right - left, r);
+		graphics.fillRect(left, bottom, right - left, r);
+		
+		graphics.fillRect(left, top, right - left, bottom - top);
+	}
+	
+	private void drawRectWithRoundedCorners(Graphics graphics, int left, int top, int width, int height, int roundRadius) {
+		final int r = roundRadius;
+		final int d = r*2;
+		
+		final int right = left + width;
+		final int bottom = top + height;
+		
+		graphics.drawArc(left - r, top - r, d, d, 90, 90);
+		graphics.drawArc(left - r, bottom - r, d, d, 180, 90);
+		graphics.drawArc(right - r, bottom - r, d, d, 270, 90);
+		graphics.drawArc(right - r, top - r, d, d, 0, 90);
+		
+		graphics.drawLine(left - r, top, left - r, bottom);
+		graphics.drawLine(right + r, top, right + r, bottom);
+		graphics.drawLine(left, top - r, right, top - r);
+		graphics.drawLine(left, bottom + r, right, bottom + r);
+	}
+	
+	private void drawSubtitle(Graphics graphics, Annotation ann) {
+		int width = graphics.getFont().getAdvance(ann.subtitle);
+		int height = graphics.getFont().getHeight();
+		
+		int annX = (int)mapField.toScreenCoordinateX(ann.coordinates.longitude);
+		int annY = (int)mapField.toScreenCoordinateY(ann.coordinates.latitude);
+		
+		int left = annX - width/2;
+		int top = annY - height/2 - mapPinImage.getHeight()/2;
+
+		final int roundRadius = 6;
+		
+		// Shadow
+		graphics.setColor(Color.GRAY);
+		fillRectWithRoundedCorners(graphics, left + 4, top + 4, width, height, roundRadius);
+		// Actual shape
+		graphics.setColor(Color.WHITE);
+		fillRectWithRoundedCorners(graphics, left, top, width, height, roundRadius);
+		graphics.setColor(Color.BLACK);
+		drawRectWithRoundedCorners(graphics, left, top, width, height, roundRadius);
+		
+		graphics.setColor(Color.BLACK);
+		graphics.drawText(ann.subtitle, left, top);
 	}
 	
 	private int calcDxSmooth(int dx, long curTime) {
@@ -338,9 +419,35 @@ public class MapViewScreen extends MainScreen {
 		return true;
 	}
 	
-	protected boolean trackwheelClick(int status, int time) {
+	private boolean handleClick(int x, int y) {
+		Annotation a = getCurrentAnnotation(x, y);
+		Annotation selectedAnnotation = mSelectedAnnotation;
+		mSelectedAnnotation = a;
+		if (a != null && selectedAnnotation != null && selectedAnnotation.equals(a)) {
+			// We have clicked already selected annotation
+			WebView.navigate(a.url);
+			mapParent.close();
+			mSelectedAnnotation = null;
+		}
 		invalidate();
 		return true;
+	}
+	
+	protected boolean trackwheelClick(int status, int time) {
+		int x = getWidth()/2;
+		int y = getHeight()/2;
+		return handleClick(x, y);
+	}
+	
+	protected boolean touchEvent(TouchEvent message) {
+		int event = message.getEvent();
+		
+		if (event == TouchEvent.CLICK) {
+			int x = message.getX(1);
+			int y = message.getY(1);
+			return handleClick(x, y);
+		}
+		return super.touchEvent(message);
 	}
 	
 	public double getCenterLatitude() {
@@ -349,5 +456,30 @@ public class MapViewScreen extends MainScreen {
 	
 	public double getCenterLongitude() {
 		return mapField.getCenterLongitude();
+	}
+	
+	private Annotation getCurrentAnnotation(int x, int y) {
+		// return current annotation (point we are under now)
+		Enumeration e = annotations.elements();
+		while (e.hasMoreElements()) {
+			Annotation a = (Annotation)e.nextElement();
+			Annotation.Coordinates coords = a.coordinates;
+			if (coords == null)
+				continue;
+			
+			long annX = mapField.toScreenCoordinateX(coords.longitude);
+			long annY = mapField.toScreenCoordinateY(coords.latitude);
+			annY -= mapPinImage.getHeight()/2;
+			
+			long deltaX = (long)x - annX;
+			long deltaY = (long)y - annY;
+			
+			double distance = MapTools.math_sqrt(deltaX*deltaX + deltaY*deltaY);
+			if ((int)distance > ANNOTATION_SENSIVITY_AREA_RADIUS)
+				continue;
+			
+			return a;
+		}
+		return null;
 	}
 }

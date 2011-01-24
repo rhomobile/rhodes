@@ -28,10 +28,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		new RhoLogger("GoogleMapField");
 	
 	// Configurable parameters
-	
-	// Sensivity of annotations area (in pixels)
-	private static final int ANNOTATION_SENSIVITY_AREA_RADIUS = 8;
-	
+		
 	// Size of workers pool (threads which actually fetch data from Google)
 	private static final int WORKERS_POOL_SIZE = 1;
 	// Maximum time for task executing by worker
@@ -300,24 +297,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 			url.append("&format=png&sensor=false");
 			url.append("&mobile=" + (cmd.maptype.equals("roadmap") ? "true" : "false"));
 			url.append("&key=" + mapkey);
-			/*
-			if (!cmd.annotations.isEmpty()) {
-				url.append("&markers=color:blue");
-				for (int i = 0, lim = cmd.annotations.size(); i < lim; ++i) {
-					Annotation ann = (Annotation)cmd.annotations.elementAt(i);
-					if (ann.coordinates != null) {
-						url.append('|');
-						url.append(ann.coordinates.latitude);
-						url.append(',');
-						url.append(ann.coordinates.longitude);
-					}
-					else if (ann.street_address != null) {
-						url.append('|');
-						url.append(URI.urlEncode(ann.street_address));
-					}
-				}
-			}
-			*/
 			String finalUrl = url.toString();
 		
 			byte[] data = fetchData(finalUrl);
@@ -680,6 +659,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			paintImage(graphics, img);
 		}
 		
+		/*
 		// Draw pointer at center
 		graphics.setColor(0x00000000); // Black
 		// Draw black cross
@@ -692,15 +672,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		int xRight = xCenter + delta;
 		graphics.drawLine(xCenter, yTop, xCenter, yBottom);
 		graphics.drawLine(xLeft, yCenter, xRight, yCenter);
-		
-		/*
-		Annotation a = getCurrentAnnotation();
-		if (a != null && a.url != null) {
-			// Annotation found, so draw pointer
-			//graphics.setColor(0x00FFFFFF); // White
-			for (delta = 3; delta <= 7; delta += 2)
-				graphics.drawEllipse(xCenter, yCenter, xCenter + delta, yCenter, xCenter, yCenter + delta, 0, 360);
-		}
 		*/
 	}
 	
@@ -808,18 +779,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		lastFetchCommandSent = 0;
 	}
 	
-	private void geocodingDone(Annotation ann, double lat, double lon) {
-		
-		LOG.TRACE("Apply geocoding result: " + lat + "," + lon);
-		ann.coordinates = new Annotation.Coordinates(lat, lon);
-		long nlat = degreesToPixelsY(lat, MAX_ZOOM);
-		long nlon = degreesToPixelsX(lon, MAX_ZOOM);
-		ann.normalized_coordinates = new Annotation.NormalizedCoordinates(nlat, nlon);
-		if (ann.type.equals("center")) {
-			moveTo(lat, lon);
-		}
-	}
-	
 	private static int calcZoom(double degrees, int pixels) {
 		double angleRatio = degrees*GOOGLE_TILE_SIZE/pixels;
 		
@@ -874,48 +833,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		double val = 180*MapTools.math_asin(th)/PI;
 		return val;
 	}
-	
-	private static Vector split(String s, String delimiter) {
-		Vector res = new Vector();
-		for (int start = 0, end = start;;) {
-			end = s.indexOf(delimiter, start);
-			if (end == -1) {
-				res.addElement(s.substring(start));
-				break;
-			}
-			else {
-				res.addElement(s.substring(start, end));
-				start = end + delimiter.length();
-			}
-		}
-		
-		return res;
-	}
-	
-	/*
-	private Annotation getCurrentAnnotation() {
-		// return current annotation (point we are under now)
-		Enumeration e = annotations.elements();
-		while (e.hasMoreElements()) {
-			Annotation a = (Annotation)e.nextElement();
-			Annotation.NormalizedCoordinates coords = a.normalized_coordinates;
-			if (coords == null)
-				continue;
-			
-			long deltaX = toCurrentZoom(longitude - coords.longitude, zoom);
-			long deltaY = toCurrentZoom(latitude - coords.latitude, zoom);
-			// Move area of sensitivity bit higher
-			deltaY += ANNOTATION_SENSIVITY_AREA_RADIUS*3;
-			
-			double distance = MapTools.math_sqrt(deltaX*deltaX + deltaY*deltaY);
-			if ((int)distance > ANNOTATION_SENSIVITY_AREA_RADIUS)
-				continue;
-			
-			return a;
-		}
-		return null;
-	}
-	*/
 	
 	public double getCenterLatitude() {
 		return pixelsToDegreesY(latitude, MAX_ZOOM);
