@@ -236,8 +236,9 @@ public class ESRIMapField extends Field implements RhoMapField {
 							}
 							continue;
 						}
-						cmd = (MapCommand)commands.elementAt(0);
-						commands.removeElementAt(0);
+						int last = commands.size() - 1;
+						cmd = (MapCommand)commands.elementAt(last);
+						commands.removeElementAt(last);
 						if (cmd == null)
 							continue;
 					}
