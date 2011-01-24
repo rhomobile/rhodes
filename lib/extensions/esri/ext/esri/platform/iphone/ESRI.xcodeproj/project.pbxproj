@@ -1,0 +1,320 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA747D9F0F9514B9006C5449 /* ESRI_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* ESRI_Prefix.pch */; };
+		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FA42C1FB12EA6883007FB3FE /* ESRIViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FA42C1F412EA6883007FB3FE /* ESRIViewFactory.h */; };
+		FA42C1FC12EA6883007FB3FE /* ESRIViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA42C1F512EA6883007FB3FE /* ESRIViewFactory.mm */; };
+		FA42C1FE12EA6883007FB3FE /* ESRIViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA42C1F712EA6883007FB3FE /* ESRIViewManager.h */; };
+		FA42C1FF12EA6883007FB3FE /* ESRIViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA42C1F812EA6883007FB3FE /* ESRIViewManager.mm */; };
+		FA42C20012EA6883007FB3FE /* MapViewControllerESRI.h in Headers */ = {isa = PBXBuildFile; fileRef = FA42C1F912EA6883007FB3FE /* MapViewControllerESRI.h */; };
+		FA42C20112EA6883007FB3FE /* MapViewControllerESRI.m in Sources */ = {isa = PBXBuildFile; fileRef = FA42C1FA12EA6883007FB3FE /* MapViewControllerESRI.m */; };
+		FA42C20312EA68BE007FB3FE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20212EA68BE007FB3FE /* CoreGraphics.framework */; };
+		FA42C20712EA68FA007FB3FE /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20612EA68FA007FB3FE /* CoreFoundation.framework */; };
+		FA42C20912EA68FA007FB3FE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20812EA68FA007FB3FE /* CoreLocation.framework */; };
+		FA42C20B12EA68FA007FB3FE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20A12EA68FA007FB3FE /* MapKit.framework */; };
+		FA42C20D12EA68FA007FB3FE /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20C12EA68FA007FB3FE /* QuartzCore.framework */; };
+		FA42C20F12EA68FA007FB3FE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20E12EA68FA007FB3FE /* UIKit.framework */; };
+		FA42C21B12EA6928007FB3FE /* libArcGIS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C21A12EA6928007FB3FE /* libArcGIS.a */; };
+		FA42C2D212EA731E007FB3FE /* ESRIViewFactoryRegister.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA42C2D112EA731E007FB3FE /* ESRIViewFactoryRegister.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA747D9E0F9514B9006C5449 /* ESRI_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESRI_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D2AAC07E0554694100DB518D /* libESRI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libESRI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA42C1F412EA6883007FB3FE /* ESRIViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ESRIViewFactory.h; path = Classes/ESRIViewFactory.h; sourceTree = "<group>"; };
+		FA42C1F512EA6883007FB3FE /* ESRIViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ESRIViewFactory.mm; path = Classes/ESRIViewFactory.mm; sourceTree = "<group>"; };
+		FA42C1F712EA6883007FB3FE /* ESRIViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ESRIViewManager.h; path = Classes/ESRIViewManager.h; sourceTree = "<group>"; };
+		FA42C1F812EA6883007FB3FE /* ESRIViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ESRIViewManager.mm; path = Classes/ESRIViewManager.mm; sourceTree = "<group>"; };
+		FA42C1F912EA6883007FB3FE /* MapViewControllerESRI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewControllerESRI.h; path = Classes/MapViewControllerESRI.h; sourceTree = "<group>"; };
+		FA42C1FA12EA6883007FB3FE /* MapViewControllerESRI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewControllerESRI.m; path = Classes/MapViewControllerESRI.m; sourceTree = "<group>"; };
+		FA42C20212EA68BE007FB3FE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FA42C20612EA68FA007FB3FE /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		FA42C20812EA68FA007FB3FE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		FA42C20A12EA68FA007FB3FE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		FA42C20C12EA68FA007FB3FE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA42C20E12EA68FA007FB3FE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FA42C21A12EA6928007FB3FE /* libArcGIS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libArcGIS.a; path = ../../../../../../../../Library/SDKs/ArcGIS/iOS.sdk/usr/local/lib/libArcGIS.a; sourceTree = SOURCE_ROOT; };
+		FA42C2D112EA731E007FB3FE /* ESRIViewFactoryRegister.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ESRIViewFactoryRegister.mm; path = Classes/ESRIViewFactoryRegister.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D2AAC07C0554694100DB518D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
+				FA42C20312EA68BE007FB3FE /* CoreGraphics.framework in Frameworks */,
+				FA42C20712EA68FA007FB3FE /* CoreFoundation.framework in Frameworks */,
+				FA42C20912EA68FA007FB3FE /* CoreLocation.framework in Frameworks */,
+				FA42C20B12EA68FA007FB3FE /* MapKit.framework in Frameworks */,
+				FA42C20D12EA68FA007FB3FE /* QuartzCore.framework in Frameworks */,
+				FA42C20F12EA68FA007FB3FE /* UIKit.framework in Frameworks */,
+				FA42C21B12EA6928007FB3FE /* libArcGIS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC07E0554694100DB518D /* libESRI.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* ESRI */ = {
+			isa = PBXGroup;
+			children = (
+				FA42C21A12EA6928007FB3FE /* libArcGIS.a */,
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = ESRI;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FA42C20212EA68BE007FB3FE /* CoreGraphics.framework */,
+				FA42C20612EA68FA007FB3FE /* CoreFoundation.framework */,
+				FA42C20812EA68FA007FB3FE /* CoreLocation.framework */,
+				FA42C20A12EA68FA007FB3FE /* MapKit.framework */,
+				FA42C20C12EA68FA007FB3FE /* QuartzCore.framework */,
+				FA42C20E12EA68FA007FB3FE /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA42C2D112EA731E007FB3FE /* ESRIViewFactoryRegister.mm */,
+				FA42C1F412EA6883007FB3FE /* ESRIViewFactory.h */,
+				FA42C1F512EA6883007FB3FE /* ESRIViewFactory.mm */,
+				FA42C1F712EA6883007FB3FE /* ESRIViewManager.h */,
+				FA42C1F812EA6883007FB3FE /* ESRIViewManager.mm */,
+				FA42C1F912EA6883007FB3FE /* MapViewControllerESRI.h */,
+				FA42C1FA12EA6883007FB3FE /* MapViewControllerESRI.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				AA747D9E0F9514B9006C5449 /* ESRI_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D2AAC07A0554694100DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA747D9F0F9514B9006C5449 /* ESRI_Prefix.pch in Headers */,
+				FA42C1FB12EA6883007FB3FE /* ESRIViewFactory.h in Headers */,
+				FA42C1FE12EA6883007FB3FE /* ESRIViewManager.h in Headers */,
+				FA42C20012EA6883007FB3FE /* MapViewControllerESRI.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D2AAC07D0554694100DB518D /* ESRI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "ESRI" */;
+			buildPhases = (
+				D2AAC07A0554694100DB518D /* Headers */,
+				D2AAC07B0554694100DB518D /* Sources */,
+				D2AAC07C0554694100DB518D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ESRI;
+			productName = ESRI;
+			productReference = D2AAC07E0554694100DB518D /* libESRI.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "ESRI" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* ESRI */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2AAC07D0554694100DB518D /* ESRI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D2AAC07B0554694100DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA42C1FC12EA6883007FB3FE /* ESRIViewFactory.mm in Sources */,
+				FA42C1FF12EA6883007FB3FE /* ESRIViewManager.mm in Sources */,
+				FA42C20112EA6883007FB3FE /* MapViewControllerESRI.m in Sources */,
+				FA42C2D212EA731E007FB3FE /* ESRIViewFactoryRegister.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB921F08733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
+				DSTROOT = /tmp/ESRI.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ESRI_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				LIBRARY_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/lib";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_NAME = ESRI;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+				USER_HEADER_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/include/**";
+			};
+			name = Debug;
+		};
+		1DEB922008733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DEAD_CODE_STRIPPING = NO;
+				DSTROOT = /tmp/ESRI.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ESRI_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				LIBRARY_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/lib";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_NAME = ESRI;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+				USER_HEADER_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/include/**";
+			};
+			name = Release;
+		};
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/shared/ruby/ext/rho",
+					"$(RHO_ROOT)/platform/iphone/Classes/MapView",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/shared/ruby/ext/rho",
+					"$(RHO_ROOT)/platform/iphone/Classes/MapView",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "ESRI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB921F08733DC00010E9CD /* Debug */,
+				1DEB922008733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "ESRI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}
