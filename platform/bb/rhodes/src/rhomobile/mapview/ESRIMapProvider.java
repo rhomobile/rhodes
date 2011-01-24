@@ -1,6 +1,5 @@
 package rhomobile.mapview;
 
-import com.rho.RhoConf;
 
 public class ESRIMapProvider implements MapProvider {
 
