@@ -63,8 +63,6 @@ public class ESRIMapField extends Field implements RhoMapField {
 	private int mWidth;
 	private int mHeight;
 	
-	private MapViewParent mParent;
-	
 	private static class ByCoordinatesComparator implements Comparator {
 		
 		public int compare (Object o1, Object o2) {
@@ -391,9 +389,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 	
 	private CacheUpdate mCacheUpdate = new CacheUpdate();
 	
-	public ESRIMapField(MapViewParent parent) {
-		mParent = parent;
-		
+	public ESRIMapField() {
 		String url = RhoConf.getInstance().getString("esri_map_url_roadmap");
 		if (url == null || url.length() == 0)
 			url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
@@ -485,15 +481,6 @@ public class ESRIMapField extends Field implements RhoMapField {
 		graphics.drawBitmap((int)left, (int)top, w, h, img.bitmap, 0, 0);
 	}
 	
-	public boolean handleClick() {
-		// TODO: handle annotation click here
-		return false;
-	}
-
-	public void addAnnotation(Annotation ann) {
-		// TODO: add annotation and start geocoding request if needed
-	}
-
 	protected void layout(int w, int h) {
 		mWidth = Math.min(mWidth, w);
 		mHeight = Math.min(mHeight, h);
@@ -647,6 +634,20 @@ public class ESRIMapField extends Field implements RhoMapField {
 		buf.append(y);
 		String key = buf.toString();
 		return key;
+	}
+
+	public long toScreenCoordinateX(double n) {
+		long v = degreesToPixelsX(n, mZoom);
+		long center = toCurrentZoom(mLongitude, mZoom);
+		long begin = center - mWidth/2;
+		return v - begin;
+	}
+	
+	public long toScreenCoordinateY(double n) {
+		long v = degreesToPixelsY(n, mZoom);
+		long center = toCurrentZoom(mLatitude, mZoom);
+		long begin = center - mHeight/2;
+		return v - begin;
 	}
 	
 }
