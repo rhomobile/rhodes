@@ -39,7 +39,14 @@ public class MapTools {
 	
 	// 2 raised to the power of n
 	public static long math_pow2(int n) {
-		long ret = 1;
+		long ret;
+		for (ret = 1; n > 0; --n)
+			ret *= 2;
+		return ret;
+	}
+	
+	public static double math_pow2d(int n) {
+		double ret = 1.0;
 		if (n < 0) {
 			for (; n < 0; ++n) {
 				ret /= 2;
