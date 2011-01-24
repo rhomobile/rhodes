@@ -6,17 +6,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.json.me.RhoJSONArray;
-import org.json.me.RhoJSONException;
-import org.json.me.RhoJSONObject;
-
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
-import com.rho.net.URI;
 
-import com.rho.rubyext.WebView;
 import rhomobile.mapview.RhoMapField;
 
 import net.rim.device.api.math.Fixed32;
@@ -91,13 +85,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private int width;
 	private int height;
 	private String maptype;
-	private Vector annotations;
-	
-	private boolean needToCloseMap = false;
-	
-	public boolean needToClose() {
-		return needToCloseMap;
-	}
 	
 	private class CachedImage {
 		public EncodedImage image;
@@ -186,18 +173,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public int width;
 		public int height;
 		public String maptype;
-		public Vector annotations;
 		public GoogleMapField mapField;
 		
 		public MapFetchCommand(long lat, long lon, int z, int w, int h,
-				String m, Vector a, GoogleMapField mf) {
+				String m, GoogleMapField mf) {
 			latitude = lat;
 			longitude = lon;
 			zoom = z;
 			width = w;
 			height = h;
 			maptype = m;
-			annotations = a;
 			mapField = mf;
 		}
 		
@@ -207,7 +192,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			MapFetchCommand cmd = (MapFetchCommand)c;
 			return latitude == cmd.latitude && longitude == cmd.longitude &&
 				zoom == cmd.zoom && width == cmd.width && maptype.equals(cmd.maptype) &&
-				annotations == cmd.annotations && mapField == cmd.mapField;
+				mapField == cmd.mapField;
 		}
 		
 		public String type() {
@@ -219,38 +204,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 	}
 	
-	private static class MapGeocodingCommand extends MapCommand {
-
-		public Annotation annotation;
-		public GoogleMapField mapField;
-		
-		public MapGeocodingCommand(Annotation a, GoogleMapField mf) {
-			annotation = a;
-			mapField = mf;
-		}
-		
-		public boolean equals(Object c) {
-			if (!(c instanceof MapGeocodingCommand))
-				return false;
-			MapGeocodingCommand cmd = (MapGeocodingCommand)c;
-			return annotation.equals(cmd.annotation);
-		}
-
-		public String type() {
-			return "geocoding";
-		}
-		
-		public String description() {
-			if (annotation.street_address != null)
-				return "location:\"" + annotation.street_address + "\"";
-			else if (annotation.coordinates != null)
-				return "location:" + annotation.coordinates.latitude + "," +
-					annotation.coordinates.longitude;
-			else
-				return "location:null";
-		}
-	}
-		
 	private static class MapThread extends Thread {
 
 		private static final String mapkey = "ABQIAAAA-X8Mm7F-7Nmz820lFEBHYxT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSfNPZbryNEPHF-5PQKi9c7Fbdf-A";
@@ -347,6 +300,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			url.append("&format=png&sensor=false");
 			url.append("&mobile=" + (cmd.maptype.equals("roadmap") ? "true" : "false"));
 			url.append("&key=" + mapkey);
+			/*
 			if (!cmd.annotations.isEmpty()) {
 				url.append("&markers=color:blue");
 				for (int i = 0, lim = cmd.annotations.size(); i < lim; ++i) {
@@ -363,6 +317,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 					}
 				}
 			}
+			*/
 			String finalUrl = url.toString();
 		
 			byte[] data = fetchData(finalUrl);
@@ -371,66 +326,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 			img.setDecodeMode(DECODE_MODE);
 			LOG.TRACE("Map request done, draw just received image");
 			cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
-		}
-		
-		private void processCommand(MapGeocodingCommand cmd) throws IOException, RhoJSONException {
-			LOG.TRACE("Processing map geocoding command (thread #" + hashCode() + "): " + cmd.description());
-			
-			if (cmd.annotation.street_address == null) {
-				LOG.ERROR("Can not make geocoding request: street address is null");
-				return;
-			}
-			
-			StringBuffer url = new StringBuffer();
-			url.append("http://maps.google.com/maps/geo?");
-			url.append("q=" + URI.urlEncode(cmd.annotation.street_address));
-			url.append("&output=json&mobile=true&sensor=false");
-			url.append("&key=" + mapkey);
-			
-			String finalUrl = url.toString();
-			
-			byte[] data = fetchData(finalUrl);
-			String response = new String(data);
-			
-			RhoJSONObject resp = new RhoJSONObject(response);
-			RhoJSONObject status = resp.getJSONObject("Status");
-			int statusCode = status.getInt("code");
-			if (statusCode/100 != 2) {
-				LOG.ERROR("Error received from geocoding service: " + statusCode);
-				return;
-			}
-			
-			RhoJSONArray placemarks = resp.getJSONArray("Placemark");
-			if (placemarks.length() == 0) {
-				LOG.ERROR("Geocoding request return empty response");
-				return;
-			}
-			RhoJSONObject placemark = placemarks.getJSONObject(0);
-			RhoJSONObject point = placemark.getJSONObject("Point");
-			RhoJSONArray coordinates = point.getJSONArray("coordinates");
-			if (coordinates.length() < 2) {
-				LOG.ERROR("Geocoding response contains less than 2 coordinates");
-				return;
-			}
-			double longitude = coordinates.getDouble(0);
-			double latitude = coordinates.getDouble(1);
-			
-			/*
-			// Parse response
-			Vector res = split(response, ",");
-			if (res.size() != 4) {
-				LOG.ERROR("Geocoding response parse error. Response: " + response);
-				return;
-			}
-			
-			int statusCode = Integer.parseInt((String)res.elementAt(0));
-			int accuracy = Integer.parseInt((String)res.elementAt(1));
-			double latitude = Double.parseDouble((String)res.elementAt(2));
-			double longitude = Double.parseDouble((String)res.elementAt(3));
-			*/
-			
-			LOG.TRACE("Geocoding request done, pass results back");
-			cmd.mapField.geocodingDone(cmd.annotation, latitude, longitude);
 		}
 		
 		public void run() {
@@ -454,8 +349,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 					try {
 						if (cmd instanceof MapFetchCommand)
 							processCommand((MapFetchCommand)cmd);
-						else if (cmd instanceof MapGeocodingCommand)
-							processCommand((MapGeocodingCommand)cmd);
 						else
 							LOG.INFO("Received unknown command: " + cmd.type() + ", ignore it");
 					}
@@ -643,7 +536,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 								if (img == null) {
 									if (curTime - CACHE_UPDATE_INTERVAL > lastFetchCommandSent) {
 										cmd = new MapFetchCommand(lat, lon, zoom,
-												rts, rts, maptype, annotations, mapField);
+												rts, rts, maptype, mapField);
 										CachedImage dummy = new CachedImage(null, lat, lon, zoom);
 										cache.put(dummy);
 										fetchCommandWasSent = true;
@@ -684,7 +577,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (tileSize + 2*ADDITIONAL_AREA_WIDTH > MAX_GOOGLE_TILE_SIZE)
 			tileSize = MAX_GOOGLE_TILE_SIZE - 2*ADDITIONAL_AREA_WIDTH;
 		maptype = "roadmap";
-		annotations = new Vector();
 		
 		cacheUpdate = new CacheUpdate(this);
 		cacheUpdate.start();
@@ -801,6 +693,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		graphics.drawLine(xCenter, yTop, xCenter, yBottom);
 		graphics.drawLine(xLeft, yCenter, xRight, yCenter);
 		
+		/*
 		Annotation a = getCurrentAnnotation();
 		if (a != null && a.url != null) {
 			// Annotation found, so draw pointer
@@ -808,6 +701,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			for (delta = 3; delta <= 7; delta += 2)
 				graphics.drawEllipse(xCenter, yCenter, xCenter + delta, yCenter, xCenter, yCenter + delta, 0, 360);
 		}
+		*/
 	}
 	
 	public void redraw() {
@@ -914,19 +808,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		lastFetchCommandSent = 0;
 	}
 	
-	public void addAnnotation(Annotation ann) {
-		if (ann.street_address == null && ann.coordinates == null)
-			return;
-		if (ann.coordinates != null) {
-			long nlat = degreesToPixelsY(ann.coordinates.latitude, MAX_ZOOM);
-			long nlon = degreesToPixelsX(ann.coordinates.longitude, MAX_ZOOM);
-			ann.normalized_coordinates = new Annotation.NormalizedCoordinates(nlat, nlon);
-		}
-		annotations.addElement(ann);
-		if (ann.coordinates == null)
-			fetchThreadPool.send(new MapGeocodingCommand(ann, this));
-	}
-	
 	private void geocodingDone(Annotation ann, double lat, double lon) {
 		
 		LOG.TRACE("Apply geocoding result: " + lat + "," + lon);
@@ -1011,6 +892,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return res;
 	}
 	
+	/*
 	private Annotation getCurrentAnnotation() {
 		// return current annotation (point we are under now)
 		Enumeration e = annotations.elements();
@@ -1033,17 +915,8 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 		return null;
 	}
+	*/
 	
-	public boolean handleClick() {
-		Annotation a = getCurrentAnnotation();
-		if (a == null || a.url == null)
-			return false;
-		
-		needToCloseMap = true;
-		WebView.navigate(a.url);
-		return true;
-	}
-
 	public double getCenterLatitude() {
 		return pixelsToDegreesY(latitude, MAX_ZOOM);
 	}
@@ -1052,4 +925,17 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return pixelsToDegreesX(longitude, MAX_ZOOM);
 	}
 
+	public long toScreenCoordinateX(double n) {
+		long v = degreesToPixelsX(n, zoom);
+		long center = toCurrentZoom(longitude, zoom);
+		long begin = center - width/2;
+		return v - begin;
+	}
+	
+	public long toScreenCoordinateY(double n) {
+		long v = degreesToPixelsY(n, zoom);
+		long center = toCurrentZoom(latitude, zoom);
+		long begin = center - height/2;
+		return v - begin;
+	}
 }
