@@ -4,14 +4,18 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import rhomobile.mapview.GeoCoding.OnGeocodingDone;
+
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
 import net.rim.device.api.system.Application;
+import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.system.KeypadListener;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.MenuItem;
+import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.container.MainScreen;
 
 public class MapViewScreen extends MainScreen {
@@ -35,12 +39,16 @@ public class MapViewScreen extends MainScreen {
 	private MapViewParent mapParent;
 	private MapProvider mapProvider;
 	private RhoMapField mapField;
+	private GeoCoding mapGeoCoding;
+	private Vector annotations = new Vector();
 	
 	private int mode;
 	
 	private long prevMoveTime = 0;
 	private int prevDx = 0;
 	private int prevDy = 0;
+	
+	private Bitmap mapPinImage;
 	
 	private class PanModeMenuItem extends MenuItem {
 		
@@ -75,14 +83,21 @@ public class MapViewScreen extends MainScreen {
 		addMenuItem(new PanModeMenuItem(this, 0, 100));
 		addMenuItem(new ZoomModeMenuItem(this, 1, 100));
 		
+		mapPinImage = Bitmap.getBitmapResource("mappin.png");
+		
 		mapParent = p;
 		createMapProvider(providerName);
 		
-		createUI(settings, annotations);
+		createUI(settings);
+
+		mapGeoCoding = new GoogleGeoCoding();
+		this.annotations = annotations;
+		handleAnnotations();
 	}
 	
 	public void close() {
 		mapField.close();
+		mapGeoCoding.stop();
 		mapParent.onChildClosed();
 		super.close();
 	}
@@ -104,9 +119,9 @@ public class MapViewScreen extends MainScreen {
 			throw new IllegalArgumentException("Unknown map provider: " + providerName);
 	}
 	
-	private void createUI(Hashtable settings, Vector annotations) {
+	private void createUI(Hashtable settings) {
 		synchronized (Application.getEventLock()) {
-			mapField = mapProvider.createMap(mapParent);
+			mapField = mapProvider.createMap();
 			mapField.setPreferredSize(Display.getWidth(), Display.getHeight());
 			add(mapField.getBBField());
 		}
@@ -140,17 +155,34 @@ public class MapViewScreen extends MainScreen {
 			mapField.setZoom(zoom);
 		}
 		
-		// Annotations
-		Enumeration e = annotations.elements();
-		while (e.hasMoreElements()) {
-			Annotation ann = (Annotation)e.nextElement();
-			if (ann != null)
-				mapField.addAnnotation(ann);
-		}
-		
 		mode = PAN_MODE;
 		
 		mapField.redraw();
+	}
+	
+	private void handleAnnotations() {
+		Enumeration e = annotations.elements();
+		while (e.hasMoreElements()) {
+			final Annotation ann = (Annotation)e.nextElement();
+			if (ann == null)
+				continue;
+			if (ann.street_address == null && ann.coordinates == null)
+				continue;
+			if (ann.street_address != null && ann.street_address.length() > 0)
+				mapGeoCoding.resolve(ann.street_address, new GeoCoding.OnGeocodingDone() {
+					public void onSuccess(double latitude, double longitude) {
+						ann.coordinates = new Annotation.Coordinates(latitude, longitude);
+						UiApplication.getUiApplication().invokeLater(new Runnable() {
+							public void run() {
+								invalidate();
+							}
+						});
+					}
+					public void onError(String description) {
+						ann.street_address = null;
+					}
+				});
+		}
 	}
 	
 	/**
@@ -177,7 +209,25 @@ public class MapViewScreen extends MainScreen {
 	protected void paint(Graphics graphics) {
 		super.paint(graphics);
 		
-		// TODO: draw overlays here
+		// Draw annotations
+		int pinWidth = mapPinImage.getWidth();
+		int pinHeight = mapPinImage.getHeight();
+		Enumeration e = annotations.elements();
+		while (e.hasMoreElements()) {
+			Annotation ann = (Annotation)e.nextElement();
+			if (ann == null || ann.coordinates == null)
+				continue;
+			
+			long x = mapField.toScreenCoordinateX(ann.coordinates.longitude);
+			if (x + pinWidth/2 < 0 || x - pinWidth/2 > mapField.getWidth())
+				continue;
+			long y = mapField.toScreenCoordinateY(ann.coordinates.latitude);
+			if (y + pinHeight/2 < 0 || y - pinHeight/2 > mapField.getHeight())
+				continue;
+			
+			graphics.drawBitmap((int)(x - pinWidth/2), (int)(y - pinHeight/2), pinWidth, pinHeight, mapPinImage, 0, 0);
+		}
+		
 		graphics.setColor(0x00000000); // Black
 		
 		// Draw current mode
@@ -288,8 +338,6 @@ public class MapViewScreen extends MainScreen {
 	}
 	
 	protected boolean trackwheelClick(int status, int time) {
-		mapField.handleClick();
-		
 		invalidate();
 		return true;
 	}
