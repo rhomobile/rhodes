@@ -768,24 +768,25 @@ You can also group `:conditions`:
 	)
 
 ## Database Encryption
-To enable encryption add to build.yml:
+If your application requires that the local database is encrypted on the filesystem, you can enable it by setting a flag in `build.yml`:
 
 	:::yaml
 	encrypt_database: 1
 
-=== Bulk sync ===
-Not supported for encryption database at this moment.
+**NOTE:  Database encryption is not supported for applications that use bulk sync at this time.**
 
-=== Platform notes ===
-* iPhone : use AES 128 algorithm from iPhone SDK
-* Android: use AES 128 algorithm from Android SDK  
-* Windows Mobile: use RC4 algorithm from WindowsMobile SDK  
+### Platform Notes
+* iOS: Uses AES 128 encryption algorithm from iOS SDK.
+* Android: Uses AES 128 ecryption algorithm from Android SDK.
+* Windows Mobile: Uses RC4 algorithm from Windows Mobile SDK.
 
-=== Blackberry notes ===
-* Blackberry >= 5.0: use built-in encryption for sqlite database
-* Any Blackberry versions: user can turn on memory encryption (device memory and sdcard), it also can be enforced by enterprise server: [http://docs.blackberry.com/en/admin/deliverables/3940/file_encryption_STO.pdf File encryption]
-In this case you have to use hsqldb even on devices >= 5.0, because sqlite does not encrypt database file. Add to build.yml to enforce hsqldb usage:
-<pre>
-bb:   
-  use_hsqldb: 1
-</pre>
+### Blackberry Notes
+* Blackberry JDE >= 5.0: Uses built-in encryption library for SQLite database.
+
+* Any Blackberry Version: The user can turn on memory encryption (device memory and sdcard),  This policy can also can be enforced by the Blackberry enterprise server: <a href="http://docs.blackberry.com/en/admin/deliverables/3940/file_encryption_STO.pdf"/>
+
+**NOTE: In this case you have to use HSQLDB even on Blackberry device OS >= 5.0, because SQLite does not encrypt database file.  You can force Rhodes to use HSQLDB for all Blackberry OS versions by adding the following to `build.yml`:**
+
+	:::yaml
+	bb:   
+	  use_hsqldb: 1
