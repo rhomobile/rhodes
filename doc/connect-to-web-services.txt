@@ -1,0 +1,225 @@
+Connecting Directly to Web Services with Rhodes
+===
+You do not have to use RhoSync to connect to your backend apps. You can call backend web services directly via http, specifically the AsyncHttp library.   In order to handle https just supply a URL prefixed with https.   To handle authentication just populate the headers hash appropriately.  In order to process the XML or JSON coming back from the web service, you will generally have to load the JSON or Rexml libraries as described in [[RhodesExtensions]].
+
+=== AsyncHttp ===
+To make asynchronous calls to web service or any other http(s) server, you should use Rho::AsyncHttp:
+* get(:url, :headers, :callback,:callback_params)
+* post(:url, :headers, :body, :callback,:callback_params) 
+
+In Rhodes 2.1 an http_command parameter has been added. You can also use the http_command argument to define which HTTP command you wish to use('POST', 'GET', 'DELETE' etc)
+* download_file(:url, :headers, :filename, :callback, :callback_params) 
+* upload_file(:url, :headers, :filename, :body, :callback, :callback_params) 
+* cancel(cancel_callback = '*') # cancel current http call, '*' is by default, means cancel all current http calls
+
+<source lang='ruby'>
+  Rho::AsyncHttp.get(
+  :url => 'http://www.example.com',
+  :headers => {'Cookie' => cookie},
+  :callback => (url_for :action => :httpget_callback),
+  :callback_param => "" )
+
+  Rho::AsyncHttp.post(
+  :url => 'https://www.example.com',
+  :headers => {'Cookie' => cookie},
+  :body => 'Test',
+  :callback => (url_for :action => :httppost_callback),
+  :callback_param => "" )
+
+  @@file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
+  Rho::AsyncHttp.download_file(
+    :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
+    :filename => @@file_name,
+    :headers => {},
+    :callback => (url_for :action => :httpdownload_callback),
+    :callback_param => "" )
+
+  @@file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'rhoconfig.txt')
+  Rho::AsyncHttp.upload_file(
+    :url => 'http://dev.rhosync.rhohub.com/apps/SystemApiSamples/sources/client_log?client_id=19bdcf15-aca2-4e5a-9676-3c297c09bb11&device_pin=&   log_name=',
+    :filename => @@file_name,
+    :body => "" #body will be sent with as separate multipart
+    :headers => {'content-type'=>'text/plain'}, #used as body text content type
+    :callback => (url_for :action => :httpupload_callback),
+    :callback_param => "" )
+  #send several files and/or text:
+  #multipart item format:
+  #Content-Disposition: form-data; name="name"; filename="filename_base"
+   Rho::AsyncHttp.upload_file(
+     :url => 'some_url',
+     :multipart => [
+              { 
+                :filename => file_name,
+                :filename_base => "phone_spec_file", #optional, if missed base name from file path used
+                :name => "phone_spec_name", # optional, 'blob' used as default
+                :content_type => "application/octet-stream" #optional , ''application/octet-stream" used as default
+              },
+              {
+                :body => "upload test",
+                :name => "phone_spec_bodyname", # optional, 'blob' used as default
+                :content_type => "plain/text" # optional
+              }
+           ]
+        )
+
+  def httpget_callback
+    #@params contain response. In case of json (ContentType=application/json) @params['body'] 
+    #contain parsed body represented as hash of hashes
+    #@params['headers'] contain response headers represented as hash
+    #@params['cookies'] contain parsed cookies suitable for server request 
+    #in case of unrecognized body type @params['body'] contain raw text body
+    #in case of error usual RhoError info returned plus @params['http_error'] and @params['body'] contain server response
+  end
+</source>
+
+'''NOTE:''' There is new parameter :ssl_verify_peer since Rhodes 2.0 (true by default). It allow to disable verifying of remote peer so AsyncHttp could work with sites with self-signed certificates.
+
+'''NOTE:''' Starting with Rhodes 2.0, AsyncHttp supports HTTP Basic Authentication. Example of usage:
+<source lang='ruby'>
+Rho::AsyncHttp.get(
+  :url => 'http://www.example.com',
+  :callback => (url_for :action => :httpget_callback),
+  :authentication => {:type => :basic, :username => 'username', :password => 'none'} )
+</source>
+
+'''NOTE:''' to parse xml (application/xml) use rexml ruby extension : [[RhodesExtensions#Rexml|here]] <br/>
+See rhodes-system-api-samples\AsyncHttp as an example
+
+'''NOTE:''' to make synchronous call, just skip callback parameter(since 1.5.1):
+<source lang='ruby'>
+    res = Rho::AsyncHttp.get( :url => 'http://www.apache.org/licenses/LICENSE-2.0')
+    puts "Sync http call: #{res}"
+    @@get_result = res['body']
+</source>
+'''NOTE:''' to make call to Rails Restful server with specific HTTP command you can use special body :
+form rhodes 2.1 use http_command parameter to redefine HTTP method
+before 2.1:
+<source lang='ruby'>
+  :body => "_method=delete"  #using this parameter in Asychttp.post did the trick!!
+</source>
+
+==== With animated transitions ====
+ 
+Making an async http request with animated transition enabled is not much different from making a request without transitions enabled. The main difference is the controller method must set a Wait-Page response header after making the async call. The response header tells the user interface that an async request has been spawned and that the returned view should be treated as an interstitial page.
+
+The example below renders a waiting screen while awaiting a response from the async request. A view marked as Wait-Page is not considered part of the navigation history by the user interface and a back transition won't navigate to this page.
+
+<source lang='ruby'>
+  def async_show
+    Rho::AsyncHttp.get(
+            :url =>  "http://rhostore.heroku.com/products/#{@params['product_id']}.json",
+            :callback => (url_for :action => :show_callback),
+            :callback_param => "")
+
+    @response['headers']['Wait-Page'] = 'true'
+    render :action => :waiting
+  end
+</source>
+
+The async http callback can render the response by calling render_transition. This function is defined in ApplicationHelper so make sure you include it in your controller. Render transition works very much like render except that it will animate a transition from the previous page.
+
+Below, a product model is created using the response from the web service and then calling render_transition, which leverages the show view template.
+
+<source lang='ruby'>
+  include ApplicationHelper
+
+  def show_callback
+    if @params['status'] == 'ok'
+      @product = Product.new(@params['body']['product'])
+      @product.object = @product.id
+      render_transition :action => :show
+    else
+      # In this example, an error just navigates back to the index w/o transition.
+      WebView.navigate url_for :action => :index
+    end
+  end
+</source>
+
+==== With and without animated transitions ====
+
+If you deploy to platforms that don't handle animation (like Windows Mobile and BlackBerry) the controller will need to handle both cases. In your async request, you'll need to set the callback_param with the @request value. There's a helper function called '''caller_request_hash_to_query''' defined in ApplicationHelper that you can invoke. The returned value is a string that looks like "_request=<json_request>", where json_request is an URL encoded JSON representation of the @request value. This parameter is used to give the callback function some context of whether the user interface made the request with or without transition enabled.
+
+<source lang='ruby'>
+  include ApplicationHelper
+  def async_show
+    Rho::AsyncHttp.get(
+            :url =>  "http://rhostore.heroku.com/products/#{@params['product_id']}.json",
+            :callback => (url_for :action => :show_callback),
+            :callback_param => caller_request_hash_to_query)
+
+    @response['headers']['Wait-Page'] = 'true'
+    render :action => :waiting
+  end
+</source>
+
+In your callback function, the first thing you need to do is invoke '''caller_request_query_to_hash''' (also defined in ApplicationHelper) that basically deserializes the _request query parameter value passed in via callback_param shown in the example above. The function sets a @caller_request in the current context. You can then use it to determine if the user interface had transition enabled by inspecting the ''Transition-Enabled'' request header. For transitions, call render_transition, otherwise call WebView.navigate.
+
+<source lang='ruby'>
+  def show_callback
+    caller_request_query_to_hash
+
+    if @params['status'] == 'ok'
+      @product = Product.new(@params['body']['product'])
+      @product.object = @product.id
+      if @caller_request['headers']['Transition-Enabled'] == 'true'
+        render_transition :action => :show
+      else
+        WebView.navigate url_for :action => :show, :id => @product.object
+      end
+    else
+      WebView.navigate url_for :action => :index
+    end
+  end
+</source>
+
+=== Sample of Connecting Directly to a Backend Web Service ===
+
+Here is a controller in the [http://github.com/rhomobile/system-api-samples Rexml sample in System API Samples]. It makes as AsyncHttp.get call to the test web service. It then parses the return with Rexml.  
+
+<source lang='ruby'>
+   def webservicetest
+    Rho::AsyncHttp.get(
+      :url => 'http://rhostore.heroku.com/products.xml',
+      :callback => (url_for :action => :httpget_callback),
+      :callback_param => "" )
+      
+    render :action => :wait
+  end
+
+  def get_res
+    @@get_result    
+  end
+
+  def get_error
+    @@error_params
+  end
+  
+  def httpget_callback
+    puts "httpget_callback: #{@params}"
+
+    if @params['status'] != 'ok'
+        @@error_params = @params
+        WebView.navigate ( url_for :action => :show_error )        
+    else
+        @@get_result = @params['body']
+        puts "@@get_result : #{@@get_result}"
+
+        begin
+            require 'rexml/document'
+        
+            doc = REXML::Document.new(@@get_result)
+            puts "doc : #{doc}"
+        rescue Exception => e
+            puts "Error: #{e}"
+            @@get_result = "Error: #{e}"
+        end
+            
+        WebView.navigate ( url_for :action => :show_result )
+    end
+
+  end
+
+  def show_result
+    render :action => :webservicetest, :back => '/app/RexmlTest'
+  end
+</source>

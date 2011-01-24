@@ -42,10 +42,9 @@ static MapViewController *mc = nil;
 	UIView* v = [[[Rhodes sharedInstance] mainView] view];
 	map.savedMainView = v;
 	[map.savedMainView retain];
-	//[window layoutSubviews];
     [map.savedMainView removeFromSuperview];
-	//map.savedMainView.hidden = YES;
 	[window addSubview:map.view];
+    //window.autoresizesSubviews = YES;
 	//[window layoutSubviews];
     
     mc = map;
@@ -98,16 +97,9 @@ static MapViewController *mc = nil;
     
 	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 
-	//CGRect frame = self.view.bounds;
-	
-	//self.savedMainView.frame = frame;
-	
 
 	[window addSubview:self.savedMainView];
 	[self.view removeFromSuperview];
-	//[self.savedMainView layoutSubviews];
-	//[window layoutSubviews];
-	//self.view.hidden = YES;
 
 	[self.savedMainView release];
 	self.savedMainView = nil;
@@ -485,47 +477,15 @@ static MapViewController *mc = nil;
     return center;
 }
 
++ (double)centerLatitude {
+	return [MapViewController center].latitude;
+}
+
++ (double)centerLongitude {
+	return [MapViewController center].longitude;
+}
+
+
 @end
 
 #endif
-
-void mapview_create(rho_param *p) {
-    if (!rho_rhodesapp_check_mode())
-        return;
-#ifdef __IPHONE_3_0
-	[MapViewController createMap:rho_param_dup(p)];
-#endif	
-}
-
-void mapview_close() {
-    if (!rho_rhodesapp_check_mode())
-        return;
-#ifdef __IPHONE_3_0
-    [MapViewController closeMap];
-#endif
-}
-
-VALUE mapview_state_started() {
-#ifdef __IPHONE_3_0
-    BOOL started = [MapViewController isStarted];
-    return rho_ruby_create_boolean(started);
-#else
-    return 0;
-#endif
-}
-
-double mapview_state_center_lat() {
-#ifdef __IPHONE_3_0
-    return [MapViewController center].latitude;
-#else
-    return 0;
-#endif
-}
-
-double mapview_state_center_lon() {
-#ifdef __IPHONE_3_0
-    return [MapViewController center].longitude;
-#else
-    return 0;
-#endif
-}

@@ -13,7 +13,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 
-#define   OPEN_IN_MODAL_FULL_SCREEN_WINDOW  11111
+//#define   OC_OPEN_IN_MODAL_FULL_SCREEN_WINDOW  11111
 
 
 @protocol NativeViewOC
