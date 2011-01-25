@@ -6,6 +6,7 @@
 
 To enable specific device capabilities, edit application's build.yml as below:
 
+	:::yaml
 	capabilities:
 	  - camera
 	  - gps
