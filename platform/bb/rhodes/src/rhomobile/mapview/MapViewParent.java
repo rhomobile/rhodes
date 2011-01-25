@@ -1,5 +1,6 @@
 package rhomobile.mapview;
 
 public interface MapViewParent {
-	public void childClosed();
+	public void onChildClosed();
+	public void close();
 }

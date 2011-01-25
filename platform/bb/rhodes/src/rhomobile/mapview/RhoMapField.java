@@ -8,13 +8,7 @@ public interface RhoMapField {
 	
 	public Field getBBField();
 	
-	public boolean handleClick();
-	
-	public boolean needToClose();
-	
 	public void redraw();
-	
-	public void addAnnotation(Annotation ann);
 	
 	public void setPreferredSize(int width, int height);
 	public void move(int dx, int dy);
@@ -41,5 +35,8 @@ public interface RhoMapField {
 	
 	public double getCenterLatitude();
 	public double getCenterLongitude();
+	
+	public long toScreenCoordinateX(double longitude);
+	public long toScreenCoordinateY(double latitude);
 
 }
