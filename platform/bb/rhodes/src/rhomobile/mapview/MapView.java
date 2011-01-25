@@ -8,6 +8,7 @@ import net.rim.device.api.ui.UiApplication;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
@@ -64,6 +65,10 @@ public class MapView extends RubyBasic {
 			});
 		}
 		
+		public void onChildClosed() {
+			screen = null;
+		}
+		
 		public boolean closed() {
 			return screen == null;
 		}
@@ -78,12 +83,6 @@ public class MapView extends RubyBasic {
 			if (screen == null)
 				return 0.0;
 			return screen.getCenterLongitude();
-		}
-		
-		public void childClosed() {
-			if (screen != null) {
-				screen = null;
-			}
 		}
 		
 	};
@@ -102,6 +101,7 @@ public class MapView extends RubyBasic {
 				
 				RubyHash settingsHash = null;
 				RubyArray annotationsArray = null;
+				RubyValue providerValue = null;
 				
 				Hashtable settings = new Hashtable();
 				Vector annotations = new Vector();
@@ -127,6 +127,12 @@ public class MapView extends RubyBasic {
 								throw new RubyException(RubyRuntime.ArgumentErrorClass,
 										"Wrong 'annotations' type, should be Array");
 							annotationsArray = (RubyArray)value;
+						}
+						else if (strKey.equals("provider")) {
+							if (!(value instanceof RubyString))
+								throw new RubyException(RubyRuntime.ArgumentErrorClass,
+										"Wrong 'provider' type, should be String");
+							providerValue = value;
 						}
 					}
 				}
@@ -189,10 +195,7 @@ public class MapView extends RubyBasic {
 									
 									String strHKey = hKey.toString();
 									if (strHKey.equals("center")) {
-										Annotation ann = new Annotation();
-										ann.type = "center";
-										ann.street_address = hValue.toString();
-										annotations.addElement(ann);
+										settings.put("center", hValue.toString());
 									}
 									else if (strHKey.equals("radius")) {
 										String strHValue = hValue.toString();
@@ -214,7 +217,6 @@ public class MapView extends RubyBasic {
 				if (annotationsArray != null) {
 					for (int i = 0; i != annotationsArray.size(); ++i) {
 						Annotation annotation = new Annotation();
-						annotation.type = "ann";
 						RubyValue val = annotationsArray.get(i);
 						if (!(val instanceof RubyHash))
 							throw new RubyException(RubyRuntime.ArgumentErrorClass,
@@ -274,7 +276,28 @@ public class MapView extends RubyBasic {
 					}
 				}
 				
-				parent.create("google", settings, annotations);
+				String providerId = "google";
+				
+				/*
+				if (providerHash != null) {
+					RubyArray arKeys = providerHash.keys();
+					RubyArray arValues = providerHash.values();
+					for (int i = 0; i != arKeys.size(); ++i) {
+						RubyValue key = arKeys.get(i);
+						RubyValue value = arValues.get(i);
+						if (key == null || value == null)
+							continue;
+						String strKey = key.toString();
+						
+						if (strKey.equals("id"))
+							providerId = value.toString().toLowerCase();
+					}
+				}
+				*/
+				if (providerValue != null)
+					providerId = providerValue.toString().toLowerCase();
+				
+				parent.create(providerId, settings, annotations);
 				
 				return RubyConstant.QNIL;
 			}
