@@ -6,21 +6,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.json.me.RhoJSONArray;
-import org.json.me.RhoJSONException;
-import org.json.me.RhoJSONObject;
-
-import j2me.lang.MathEx;
-
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.net.IHttpConnection;
-import com.rho.net.URI;
 
-import com.xruby.runtime.builtin.ObjectFactory;
-
-import com.rho.rubyext.WebView;
 import rhomobile.mapview.RhoMapField;
 
 import net.rim.device.api.math.Fixed32;
@@ -38,10 +28,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		new RhoLogger("GoogleMapField");
 	
 	// Configurable parameters
-	
-	// Sensivity of annotations area (in pixels)
-	private static final int ANNOTATION_SENSIVITY_AREA_RADIUS = 8;
-	
+		
 	// Size of workers pool (threads which actually fetch data from Google)
 	private static final int WORKERS_POOL_SIZE = 1;
 	// Maximum time for task executing by worker
@@ -82,7 +69,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	// This is maximum absolute value of sine ( == sin(85*PI/180) ) allowed by Merkator projection
 	private static final double MAX_SIN = 0.99627207622;
 	
-	private static final double LN2 = 0.693147180559945;
 	private static final double PI = Math.PI;
 	
 	//===============================================================================
@@ -96,13 +82,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 	private int width;
 	private int height;
 	private String maptype;
-	private Vector annotations;
-	
-	private boolean needToCloseMap = false;
-	
-	public boolean needToClose() {
-		return needToCloseMap;
-	}
 	
 	private class CachedImage {
 		public EncodedImage image;
@@ -125,15 +104,29 @@ public class GoogleMapField extends Field implements RhoMapField {
 	};
 	
 	private class ImageCache {
-		private Hashtable hash = new Hashtable();
-		private SimpleSortingVector cvec = new SimpleSortingVector();
-		private SimpleSortingVector tvec = new SimpleSortingVector();
+		private Hashtable hash;
+		private SimpleSortingVector cvec;
+		private SimpleSortingVector tvec;
 		
 		public ImageCache() {
+			reinit();
+		}
+		
+		private void reinit() {
+			hash = new Hashtable();
+			cvec = new SimpleSortingVector();
 			cvec.setSortComparator(new ByCoordinatesComparator());
 			cvec.setSort(true);
+			tvec = new SimpleSortingVector();
 			tvec.setSortComparator(new ByAccessTimeComparator());
 			tvec.setSort(true);
+		}
+		
+		public ImageCache clone() {
+			ImageCache cloned = new ImageCache();
+			for (Enumeration e = hash.elements(); e.hasMoreElements();)
+				cloned.put((CachedImage)e.nextElement());
+			return cloned;
 		}
 		
 		public Enumeration sortedByCoordinates() {
@@ -160,13 +153,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 				return;
 			
 			SimpleSortingVector vec = tvec;
-			hash = new Hashtable();
-			cvec = new SimpleSortingVector();
-			cvec.setSortComparator(new ByCoordinatesComparator());
-			cvec.setSort(true);
-			tvec = new SimpleSortingVector();
-			tvec.setSortComparator(new ByAccessTimeComparator());
-			tvec.setSort(true);
+			reinit();
 			
 			Enumeration e = vec.elements();
 			while (e.hasMoreElements()) {
@@ -191,18 +178,16 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public int width;
 		public int height;
 		public String maptype;
-		public Vector annotations;
 		public GoogleMapField mapField;
 		
 		public MapFetchCommand(long lat, long lon, int z, int w, int h,
-				String m, Vector a, GoogleMapField mf) {
+				String m, GoogleMapField mf) {
 			latitude = lat;
 			longitude = lon;
 			zoom = z;
 			width = w;
 			height = h;
 			maptype = m;
-			annotations = a;
 			mapField = mf;
 		}
 		
@@ -212,7 +197,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			MapFetchCommand cmd = (MapFetchCommand)c;
 			return latitude == cmd.latitude && longitude == cmd.longitude &&
 				zoom == cmd.zoom && width == cmd.width && maptype.equals(cmd.maptype) &&
-				annotations == cmd.annotations && mapField == cmd.mapField;
+				mapField == cmd.mapField;
 		}
 		
 		public String type() {
@@ -224,38 +209,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		}
 	}
 	
-	private static class MapGeocodingCommand extends MapCommand {
-
-		public Annotation annotation;
-		public GoogleMapField mapField;
-		
-		public MapGeocodingCommand(Annotation a, GoogleMapField mf) {
-			annotation = a;
-			mapField = mf;
-		}
-		
-		public boolean equals(Object c) {
-			if (!(c instanceof MapGeocodingCommand))
-				return false;
-			MapGeocodingCommand cmd = (MapGeocodingCommand)c;
-			return annotation.equals(cmd.annotation);
-		}
-
-		public String type() {
-			return "geocoding";
-		}
-		
-		public String description() {
-			if (annotation.street_address != null)
-				return "location:\"" + annotation.street_address + "\"";
-			else if (annotation.coordinates != null)
-				return "location:" + annotation.coordinates.latitude + "," +
-					annotation.coordinates.longitude;
-			else
-				return "location:null";
-		}
-	}
-		
 	private static class MapThread extends Thread {
 
 		private static final String mapkey = "ABQIAAAA-X8Mm7F-7Nmz820lFEBHYxT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSfNPZbryNEPHF-5PQKi9c7Fbdf-A";
@@ -352,22 +305,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 			url.append("&format=png&sensor=false");
 			url.append("&mobile=" + (cmd.maptype.equals("roadmap") ? "true" : "false"));
 			url.append("&key=" + mapkey);
-			if (!cmd.annotations.isEmpty()) {
-				url.append("&markers=color:blue");
-				for (int i = 0, lim = cmd.annotations.size(); i < lim; ++i) {
-					Annotation ann = (Annotation)cmd.annotations.elementAt(i);
-					if (ann.coordinates != null) {
-						url.append('|');
-						url.append(ann.coordinates.latitude);
-						url.append(',');
-						url.append(ann.coordinates.longitude);
-					}
-					else if (ann.street_address != null) {
-						url.append('|');
-						url.append(URI.urlEncode(ann.street_address));
-					}
-				}
-			}
 			String finalUrl = url.toString();
 		
 			byte[] data = fetchData(finalUrl);
@@ -376,66 +313,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 			img.setDecodeMode(DECODE_MODE);
 			LOG.TRACE("Map request done, draw just received image");
 			cmd.mapField.draw(cmd.latitude, cmd.longitude, cmd.zoom, img);
-		}
-		
-		private void processCommand(MapGeocodingCommand cmd) throws IOException, RhoJSONException {
-			LOG.TRACE("Processing map geocoding command (thread #" + hashCode() + "): " + cmd.description());
-			
-			if (cmd.annotation.street_address == null) {
-				LOG.ERROR("Can not make geocoding request: street address is null");
-				return;
-			}
-			
-			StringBuffer url = new StringBuffer();
-			url.append("http://maps.google.com/maps/geo?");
-			url.append("q=" + URI.urlEncode(cmd.annotation.street_address));
-			url.append("&output=json&mobile=true&sensor=false");
-			url.append("&key=" + mapkey);
-			
-			String finalUrl = url.toString();
-			
-			byte[] data = fetchData(finalUrl);
-			String response = new String(data);
-			
-			RhoJSONObject resp = new RhoJSONObject(response);
-			RhoJSONObject status = resp.getJSONObject("Status");
-			int statusCode = status.getInt("code");
-			if (statusCode/100 != 2) {
-				LOG.ERROR("Error received from geocoding service: " + statusCode);
-				return;
-			}
-			
-			RhoJSONArray placemarks = resp.getJSONArray("Placemark");
-			if (placemarks.length() == 0) {
-				LOG.ERROR("Geocoding request return empty response");
-				return;
-			}
-			RhoJSONObject placemark = placemarks.getJSONObject(0);
-			RhoJSONObject point = placemark.getJSONObject("Point");
-			RhoJSONArray coordinates = point.getJSONArray("coordinates");
-			if (coordinates.length() < 2) {
-				LOG.ERROR("Geocoding response contains less than 2 coordinates");
-				return;
-			}
-			double longitude = coordinates.getDouble(0);
-			double latitude = coordinates.getDouble(1);
-			
-			/*
-			// Parse response
-			Vector res = split(response, ",");
-			if (res.size() != 4) {
-				LOG.ERROR("Geocoding response parse error. Response: " + response);
-				return;
-			}
-			
-			int statusCode = Integer.parseInt((String)res.elementAt(0));
-			int accuracy = Integer.parseInt((String)res.elementAt(1));
-			double latitude = Double.parseDouble((String)res.elementAt(2));
-			double longitude = Double.parseDouble((String)res.elementAt(3));
-			*/
-			
-			LOG.TRACE("Geocoding request done, pass results back");
-			cmd.mapField.geocodingDone(cmd.annotation, latitude, longitude);
 		}
 		
 		public void run() {
@@ -459,8 +336,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 					try {
 						if (cmd instanceof MapFetchCommand)
 							processCommand((MapFetchCommand)cmd);
-						else if (cmd instanceof MapGeocodingCommand)
-							processCommand((MapGeocodingCommand)cmd);
 						else
 							LOG.INFO("Received unknown command: " + cmd.type() + ", ignore it");
 					}
@@ -648,7 +523,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 								if (img == null) {
 									if (curTime - CACHE_UPDATE_INTERVAL > lastFetchCommandSent) {
 										cmd = new MapFetchCommand(lat, lon, zoom,
-												rts, rts, maptype, annotations, mapField);
+												rts, rts, maptype, mapField);
 										CachedImage dummy = new CachedImage(null, lat, lon, zoom);
 										cache.put(dummy);
 										fetchCommandWasSent = true;
@@ -689,7 +564,6 @@ public class GoogleMapField extends Field implements RhoMapField {
 		if (tileSize + 2*ADDITIONAL_AREA_WIDTH > MAX_GOOGLE_TILE_SIZE)
 			tileSize = MAX_GOOGLE_TILE_SIZE - 2*ADDITIONAL_AREA_WIDTH;
 		maptype = "roadmap";
-		annotations = new Vector();
 		
 		cacheUpdate = new CacheUpdate(this);
 		cacheUpdate.start();
@@ -744,7 +618,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		long top = -toCurrentZoom(latitude - img.latitude, zoom);
 		
 		if (img.zoom != zoom) {
-			double x = math_pow(2, img.zoom - zoom);
+			double x = MapTools.math_pow2d(img.zoom - zoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
@@ -772,17 +646,17 @@ public class GoogleMapField extends Field implements RhoMapField {
 	}
 	
 	protected void paint(Graphics graphics) {
-		ImageCache imgCache = null;
-		synchronized (this) {
-			imgCache = cache;
-		}
-		
 		// Draw background
 		for (int i = 1, lim = 2*Math.max(width, height); i < lim; i += 5) {
 			graphics.drawLine(0, i, i, 0);
 		}
-		
+
 		// Draw map tiles
+		ImageCache imgCache;
+		synchronized (this) {
+			imgCache = cache.clone();
+		}
+		
 		Enumeration e = imgCache.sortedByCoordinates();
 		while (e.hasMoreElements()) {
 			// Draw map
@@ -793,6 +667,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 			paintImage(graphics, img);
 		}
 		
+		/*
 		// Draw pointer at center
 		graphics.setColor(0x00000000); // Black
 		// Draw black cross
@@ -805,14 +680,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		int xRight = xCenter + delta;
 		graphics.drawLine(xCenter, yTop, xCenter, yBottom);
 		graphics.drawLine(xLeft, yCenter, xRight, yCenter);
-		
-		Annotation a = getCurrentAnnotation();
-		if (a != null && a.url != null) {
-			// Annotation found, so draw pointer
-			//graphics.setColor(0x00FFFFFF); // White
-			for (delta = 3; delta <= 7; delta += 2)
-				graphics.drawEllipse(xCenter, yCenter, xCenter + delta, yCenter, xCenter, yCenter + delta, 0, 360);
-		}
+		*/
 	}
 	
 	public void redraw() {
@@ -919,185 +787,61 @@ public class GoogleMapField extends Field implements RhoMapField {
 		lastFetchCommandSent = 0;
 	}
 	
-	public void addAnnotation(Annotation ann) {
-		if (ann.street_address == null && ann.coordinates == null)
-			return;
-		if (ann.coordinates != null) {
-			long nlat = degreesToPixelsY(ann.coordinates.latitude, MAX_ZOOM);
-			long nlon = degreesToPixelsX(ann.coordinates.longitude, MAX_ZOOM);
-			ann.normalized_coordinates = new Annotation.NormalizedCoordinates(nlat, nlon);
-		}
-		annotations.addElement(ann);
-		if (ann.coordinates == null)
-			fetchThreadPool.send(new MapGeocodingCommand(ann, this));
-	}
-	
-	private void geocodingDone(Annotation ann, double lat, double lon) {
-		
-		LOG.TRACE("Apply geocoding result: " + lat + "," + lon);
-		ann.coordinates = new Annotation.Coordinates(lat, lon);
-		long nlat = degreesToPixelsY(lat, MAX_ZOOM);
-		long nlon = degreesToPixelsX(lon, MAX_ZOOM);
-		ann.normalized_coordinates = new Annotation.NormalizedCoordinates(nlat, nlon);
-		if (ann.type.equals("center")) {
-			moveTo(lat, lon);
-		}
-	}
-	
 	private static int calcZoom(double degrees, int pixels) {
 		double angleRatio = degrees*GOOGLE_TILE_SIZE/pixels;
 		
 		double twoInZoomExp = 360/angleRatio;
-		int zoom = (int)math_log2(twoInZoomExp);
+		int zoom = (int)MapTools.math_log2(twoInZoomExp);
 		return zoom;
 	}
 	
 	private static long toMaxZoom(long n, int zoom) {
-		return n == 0 ? 0 : n*(long)math_pow(2, MAX_ZOOM - zoom);
+		return n == 0 ? 0 : n*MapTools.math_pow2(MAX_ZOOM - zoom);
 	}
 	
 	private static long toCurrentZoom(long coord, int zoom) {
 		if (coord == 0) return 0;
-		long pow = (long)math_pow(2, MAX_ZOOM - zoom);
+		long pow = MapTools.math_pow2(MAX_ZOOM - zoom);
 		return coord/pow;
 	}
 
 	private static long degreesToPixelsX(double n, int z) {
 		while (n < -180.0) n += 360.0;
 		while (n > 180.0) n -= 360.0;
-		double angleRatio = 360/math_pow(2, z);
+		double angleRatio = 360d/MapTools.math_pow2(z);
 		double val = (n + 180)*GOOGLE_TILE_SIZE/angleRatio;
 		return (long)val;
 	}
 	
 	private static long degreesToPixelsY(double n, int z) {
 		// Google use Merkator projection so use it here
-		double sin_phi = math_sin(n*PI/180);
+		double sin_phi = MapTools.math_sin(n*PI/180);
 		// MAX_SIN - maximum value of sine allowed by Merkator projection
 		// (~85.0 degrees of north latitude)
 		if (sin_phi < -MAX_SIN) sin_phi = -MAX_SIN;
 		if (sin_phi > MAX_SIN) sin_phi = MAX_SIN;
 		
-		double ath = math_atanh(sin_phi);
-		double val = GOOGLE_TILE_SIZE * math_pow(2, z) * (1 - ath/PI)/2;
+		double ath = MapTools.math_atanh(sin_phi);
+		double val = GOOGLE_TILE_SIZE * MapTools.math_pow2(z) * (1 - ath/PI)/2;
 		return (long)val;
 	}
 	
 	private static double pixelsToDegreesX(long n, int z) {
 		while (n < 0) n += MAX_LONGITUDE;
 		while (n > MAX_LONGITUDE) n -= MAX_LONGITUDE;
-		double angleRatio = 360/math_pow(2, z);
+		double angleRatio = 360d/MapTools.math_pow2(z);
 		double val = n*angleRatio/GOOGLE_TILE_SIZE - 180.0;
 		return val;
 	}
 	
 	private static double pixelsToDegreesY(long n, int z) {
 		// Revert calculation of Merkator projection
-		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*math_pow(2, z));
-		double th = math_tanh(ath);
-		double val = 180*math_asin(th)/PI;
+		double ath = PI - 2*PI*n/(GOOGLE_TILE_SIZE*MapTools.math_pow2(z));
+		double th = MapTools.math_tanh(ath);
+		double val = 180*MapTools.math_asin(th)/PI;
 		return val;
 	}
 	
-	private static Vector split(String s, String delimiter) {
-		Vector res = new Vector();
-		for (int start = 0, end = start;;) {
-			end = s.indexOf(delimiter, start);
-			if (end == -1) {
-				res.addElement(s.substring(start));
-				break;
-			}
-			else {
-				res.addElement(s.substring(start, end));
-				start = end + delimiter.length();
-			}
-		}
-		
-		return res;
-	}
-	
-	private Annotation getCurrentAnnotation() {
-		// return current annotation (point we are under now)
-		Enumeration e = annotations.elements();
-		while (e.hasMoreElements()) {
-			Annotation a = (Annotation)e.nextElement();
-			Annotation.NormalizedCoordinates coords = a.normalized_coordinates;
-			if (coords == null)
-				continue;
-			
-			long deltaX = toCurrentZoom(longitude - coords.longitude, zoom);
-			long deltaY = toCurrentZoom(latitude - coords.latitude, zoom);
-			// Move area of sensitivity bit higher
-			deltaY += ANNOTATION_SENSIVITY_AREA_RADIUS*3;
-			
-			double distance = math_pow(math_pow(deltaX, 2) + math_pow(deltaY, 2), 0.5);
-			if ((int)distance > ANNOTATION_SENSIVITY_AREA_RADIUS)
-				continue;
-			
-			return a;
-		}
-		return null;
-	}
-	
-	public boolean handleClick() {
-		Annotation a = getCurrentAnnotation();
-		if (a == null || a.url == null)
-			return false;
-		
-		needToCloseMap = true;
-		WebView.navigate(a.url);
-		return true;
-	}
-
-	//================================================================
-	// Mathematical functions
-	
-	// Sine of the a
-	private static double math_sin(double a) {
-		return Math.sin(a);
-	}
-	
-	// Arc sine of the a
-	private static double math_asin(double a) {
-		//return MathUtilities.asin(a);
-		return MathEx.asin(a);
-	}
-	
-	// Exponential (base E ~ 2.718281828) of a
-	private static double math_exp(double a) {
-		//return MathUtilities.exp(a);
-		return MathEx.exp(a);
-	}
-	
-	// Natural logarithm (base E ~ 2.718281828) of a
-	private static double math_ln(double a) {
-		//return MathUtilities.log(a);
-		return MathEx.log(a);
-	}
-	
-	// Binary logarithm (base 2) of a
-	private static double math_log2(double a) {
-		return math_ln(a)/LN2;
-	}
-	
-	// a raised to the power of b
-	private static double math_pow(double a, double b) {
-		//return MathUtilities.pow(a, b);
-		return MathEx.pow(a, b);
-	}
-	
-	// Hyperbolic tangent of a
-	private static double math_tanh(double a) {
-		double epx = math_exp(a);
-		double emx = math_exp(-a);
-		return (epx - emx)/(epx + emx);
-	}
-	
-	// Hyperbolic arc tangent of a
-	private static double math_atanh(double a) {
-		return 0.5*math_ln((1 + a)/(1 - a));
-	}
-
 	public double getCenterLatitude() {
 		return pixelsToDegreesY(latitude, MAX_ZOOM);
 	}
@@ -1106,4 +850,17 @@ public class GoogleMapField extends Field implements RhoMapField {
 		return pixelsToDegreesX(longitude, MAX_ZOOM);
 	}
 
+	public long toScreenCoordinateX(double n) {
+		long v = degreesToPixelsX(n, zoom);
+		long center = toCurrentZoom(longitude, zoom);
+		long begin = center - width/2;
+		return v - begin;
+	}
+	
+	public long toScreenCoordinateY(double n) {
+		long v = degreesToPixelsY(n, zoom);
+		long center = toCurrentZoom(latitude, zoom);
+		long begin = center - height/2;
+		return v - begin;
+	}
 }
