@@ -8,6 +8,7 @@ import net.rim.device.api.ui.UiApplication;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.builtin.RubyHash;
+import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.RubyBasic;
 import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyClass;
@@ -102,7 +103,7 @@ public class MapView extends RubyBasic {
 				
 				RubyHash settingsHash = null;
 				RubyArray annotationsArray = null;
-				RubyHash providerHash = null;
+				RubyValue providerValue = null;
 				
 				Hashtable settings = new Hashtable();
 				Vector annotations = new Vector();
@@ -130,10 +131,10 @@ public class MapView extends RubyBasic {
 							annotationsArray = (RubyArray)value;
 						}
 						else if (strKey.equals("provider")) {
-							if (!(value instanceof RubyHash))
+							if (!(value instanceof RubyString))
 								throw new RubyException(RubyRuntime.ArgumentErrorClass,
-										"Wrong 'provider' type, should be Hash");
-							providerHash = (RubyHash)value;
+										"Wrong 'provider' type, should be String");
+							providerValue = value;
 						}
 					}
 				}
@@ -279,6 +280,7 @@ public class MapView extends RubyBasic {
 				
 				String providerId = "google";
 				
+				/*
 				if (providerHash != null) {
 					RubyArray arKeys = providerHash.keys();
 					RubyArray arValues = providerHash.values();
@@ -290,9 +292,12 @@ public class MapView extends RubyBasic {
 						String strKey = key.toString();
 						
 						if (strKey.equals("id"))
-							providerId = value.toString();
+							providerId = value.toString().toLowerCase();
 					}
 				}
+				*/
+				if (providerValue != null)
+					providerId = providerValue.toString().toLowerCase();
 				
 				parent.create(providerId, settings, annotations);
 				
