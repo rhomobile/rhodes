@@ -379,7 +379,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 							CachedImage img = mImgCache.get(key);
 							if (img == null) {
 								//LOG.TRACE("lat=" + lat + ", lon=" + lon + "; key=" + key);
-								String baseUrl = (String)mMapUrls.get(mMapType);
+								String baseUrl = getMapUrl();
 								cmd = new MapFetchCommand(baseUrl, mZoom, lat, lon);
 								
 								CachedImage dummy = new CachedImage(null, lat, lon, mZoom);
@@ -429,6 +429,13 @@ public class ESRIMapField extends Field implements RhoMapField {
 	
 	public void redraw() {
 		invalidate();
+	}
+	
+	private String getMapUrl() {
+		String url = (String)mMapUrls.get(mMapType);
+		if (url == null)
+			url = (String)mMapUrls.get("roadmap");
+		return url;
 	}
 	
 	protected void paint(Graphics graphics) {
