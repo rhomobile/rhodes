@@ -271,6 +271,7 @@ h1 {
 }
 
 .content form input[type="text"],
+.content form input[type="number"],
 .content form input[type="password"] {
     float: right;
     height: 40px;
