@@ -456,7 +456,7 @@ extern "C" void alert_show_popup(rho_param *p)
 			}//buttons
 		}
 		
-		CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons));
+		CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons, CAlertDialog::Params::DLG_CUSTOM));
 	}
 }
 

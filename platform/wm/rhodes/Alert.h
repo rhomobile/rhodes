@@ -33,7 +33,7 @@ public:
 			m_message  = message;
 		}
 
-		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType = DLG_STATUS)
+		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType)
 		{
 			m_dlgType  = dlgType;
 			m_title    = title;
