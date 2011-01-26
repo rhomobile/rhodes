@@ -17,10 +17,10 @@ module Rho
       'get_link_menu' => "Link abrufen",
       'open_link_menu' => "Link öffnen",
       'change_option_menu' => "Option Wechseln",
-      'email_menu' => "Email",
-      'call_menu' => "Call",
+      'email_menu' => "E-Mail",
+      'call_menu' => "anrufen",
       'sms_menu' => "SMS",
-      'add_contacts_menu' => "Add to Contacts",
+      'add_contacts_menu' => "Zum Adressbuch hinzuf.",
       
       'hide' => 'Hide'
     }
