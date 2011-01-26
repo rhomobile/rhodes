@@ -250,7 +250,7 @@ public class MapViewScreen extends MainScreen {
 		}
 		
 		if (mSelectedAnnotation != null)
-			drawSubtitle(graphics, mSelectedAnnotation);
+			drawTitle(graphics, mSelectedAnnotation);
 		
 		graphics.setColor(Color.BLACK);
 		
@@ -310,8 +310,9 @@ public class MapViewScreen extends MainScreen {
 		graphics.drawLine(left, bottom + r, right, bottom + r);
 	}
 	
-	private void drawSubtitle(Graphics graphics, Annotation ann) {
-		int width = graphics.getFont().getAdvance(ann.subtitle);
+	private void drawTitle(Graphics graphics, Annotation ann) {
+		String textToDraw = ann.title;
+		int width = graphics.getFont().getAdvance(textToDraw);
 		int height = graphics.getFont().getHeight();
 		
 		int annX = (int)mapField.toScreenCoordinateX(ann.coordinates.longitude);
@@ -332,7 +333,7 @@ public class MapViewScreen extends MainScreen {
 		drawRectWithRoundedCorners(graphics, left, top, width, height, roundRadius);
 		
 		graphics.setColor(Color.BLACK);
-		graphics.drawText(ann.subtitle, left, top);
+		graphics.drawText(textToDraw, left, top);
 	}
 	
 	private int calcDxSmooth(int dx, long curTime) {
