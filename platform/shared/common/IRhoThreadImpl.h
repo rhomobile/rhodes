@@ -7,6 +7,7 @@ struct IRhoRunnable
 {
     enum EPriority{ epNormal = 0, epHigh, epLow};
 
+    virtual ~IRhoRunnable(){}
     virtual void runObject() = 0;
 };
 

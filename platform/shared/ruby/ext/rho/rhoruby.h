@@ -34,7 +34,6 @@ void RhoRubyStart();
 void RhoRubyInitApp();
 //void RhoRubyThreadStart();
 //void RhoRubyThreadStop();
-void rho_ruby_init_nativebar();
 void rho_ruby_call_config_conflicts();
 void rho_ruby_activateApp();
 void rho_ruby_deactivateApp();
