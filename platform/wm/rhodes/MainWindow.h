@@ -60,6 +60,12 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
+	void openNativeView(	NativeViewFactory* nativeViewFactory, 
+							NativeView* nativeView,
+							String nativeViewType);
+	void closeNativeView();
+
+
 #if defined(OS_WINDOWS)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
 #else
@@ -178,10 +184,13 @@ private:
 	void hideWebView();
 	void showWebView();
 
+	
+
 private:
 	NativeViewFactory* mNativeViewFactory;
 	NativeView* mNativeView;
 	String mNativeViewType;
+	bool mIsOpenedByURL;
 
 
 private:
