@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="stubs"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="E:/_proj/rhomobile/gwt-2.1.1/gwt-user.jar"/>
+	<classpathentry kind="lib" path="E:/_proj/rhomobile/gwt-2.1.1/gwt-dev.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
