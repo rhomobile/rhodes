@@ -170,4 +170,5 @@ using namespace ATL;
 //#include <atlctrlx.h>
 //#include <atlmisc.h>
 //#include <atlddx.h>
+#include <atlmisc.h>
 #endif

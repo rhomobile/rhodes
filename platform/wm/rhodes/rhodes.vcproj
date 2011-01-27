@@ -1304,6 +1304,14 @@
 					RelativePath=".\rho\rubyext\GeoLocationImpl.h"
 					>
 				</File>
+                <File
+					RelativePath=".\rho\rubyext\NativeToolbar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\rubyext\NativeToolbar.h"
+					>
+				</File>				
 				<File
 					RelativePath=".\rho\rubyext\SystemImpl.cpp"
 					>
