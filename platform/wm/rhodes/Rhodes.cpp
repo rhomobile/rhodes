@@ -234,6 +234,10 @@ public :
 		return m_appWindow.m_hWnd;
 	}
 
+	CMainWindow* GetMainWindowObject() {
+		return &m_appWindow;
+	}
+
 	HWND GetWebViewWindow() {
 		return m_appWindow.getWebViewHWND();
 	}
@@ -447,6 +451,10 @@ extern "C" HWND getMainWnd() {
 
 extern "C" HWND getWebViewWnd() {
 	return _AtlModule.GetWebViewWindow();
+}
+
+CMainWindow* Rhodes_getMainWindow() {
+	return _AtlModule.GetMainWindowObject();
 }
 
 
