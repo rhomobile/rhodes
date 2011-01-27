@@ -230,12 +230,16 @@ public :
         return S_OK;
     }
 
-	HWND GetManWindow() {
+	HWND GetMainWindow() {
 		return m_appWindow.m_hWnd;
 	}
 
 	CMainWindow* GetMainWindowObject() {
 		return &m_appWindow;
+	}
+
+	CMainWindow& GetAppWindow() {
+		return m_appWindow;
 	}
 
 	HWND GetWebViewWindow() {
@@ -437,7 +441,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
-	ctrl.dwICC = ICC_DATE_CLASSES;
+	ctrl.dwICC = ICC_DATE_CLASSES|ICC_BAR_CLASSES;
 	InitCommonControlsEx(&ctrl);
 
     g_strCmdLine = convertToStringA(lpCmdLine);
@@ -446,7 +450,12 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 }
 
 extern "C" HWND getMainWnd() {
-	return _AtlModule.GetManWindow();
+	return _AtlModule.GetMainWindow();
+}
+
+CMainWindow& getAppWindow() 
+{
+	return _AtlModule.GetAppWindow();
 }
 
 extern "C" HWND getWebViewWnd() {
@@ -474,50 +483,6 @@ extern "C" void rho_net_impl_network_indicator(int active)
 {
     //TODO: rho_net_impl_network_indicator
 }
-
-extern "C" void create_nativebar(int bar_type, rho_param *p) {
-	//TODO: Implement me!
-}
-
-extern "C" void remove_nativebar() {
-	//TODO: Implement me!
-}
-
-extern "C" void nativebar_set_tab_badge(int index,char* val)
-{
-}
-
-extern "C" void nativebar_switch_tab(int index) {
-	//TODO: Implement me!
-}
-
-extern "C" VALUE nativebar_started() {
-    // TODO:
-    return rho_ruby_create_boolean(0);
-}
-
-
-extern "C" void create_native_toolbar(int bar_type, rho_param *p) {
-}
-
-RHO_GLOBAL void remove_native_toolbar() {
-}
-
-extern "C"  void create_native_tabbar(int bar_type, rho_param *p) {
-}
-
-extern "C"  void remove_native_tabbar() {
-}
-
-extern "C"  void native_tabbar_switch_tab(int index) {
-}
-
-extern "C"  void native_tabbar_set_tab_badge(int index,char *val) {
-}
-
-
-
-
 
 extern "C" void mapview_create(rho_param *p) {
     //TODO: mapview_create
@@ -561,21 +526,6 @@ extern "C" void Init_openssl(void)
 extern "C" void Init_fcntl(void)
 {
 }
-
-extern "C" void create_navbar(rho_param *p)
-{
-}
-extern "C" void remove_navbar()
-{
-}
-extern "C" VALUE navbar_started()
-{
-    return 0;
-}
-
-//extern "C" void Init_NavBar(void)
-//{
-//}
 
 //extern "C" void Init_RhoEvent()
 //{
