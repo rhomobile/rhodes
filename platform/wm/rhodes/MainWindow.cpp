@@ -233,9 +233,39 @@ Error:
     return SUCCEEDED(hr) ? 0 : -1;
 }
 
+void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
+{
+	PostMessage(WM_EXECUTE_RUNNABLE, 0, (LPARAM)pTask);
+}
+LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
+{
+    rho::common::IRhoRunnable* pTask = (rho::common::IRhoRunnable*)lParam;
+	if (pTask)
+    {
+		pTask->runObject();
+        delete pTask;
+    }
+	return 0;
+}	
 LRESULT CMainWindow::OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     return TRUE;
+}
+LRESULT CMainWindow::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+    LPNMHDR pnmh = (LPNMHDR) lParam;
+    if(pnmh->hwndFrom == m_toolbar.m_hWnd)
+    {
+        LPNMCUSTOMDRAW lpNMCustomDraw = (LPNMCUSTOMDRAW) lParam;
+        CRect rect;
+        m_toolbar.GetClientRect(rect);
+        FillRect(lpNMCustomDraw->hdc, rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+        SetBkColor(lpNMCustomDraw->hdc, RGB(255, 0,0 ) );
+        SetTextColor(lpNMCustomDraw->hdc, RGB(255, 0,0 ) );
+        bHandled = TRUE;
+    }else
+        bHandled = FALSE;
+    return 1;
 }
 
 HWND CMainWindow::getWebViewHWND() {
@@ -287,22 +317,26 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 
 #if defined(OS_WINDOWS)
 	USES_CONVERSION;
-	LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight);
-	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight);
+	LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
+	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
 	if (m_menuBar.m_hWnd) {
 		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
 	}
+    if ( m_toolbar.m_hWnd )
+	    m_toolbar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
 #else
-
     LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
 
-	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam));
+	m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight());
+
+    if ( m_toolbar.m_hWnd )
+        m_toolbar.MoveWindow(0, HIWORD(lParam)-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
 #endif
 
 	return 0;
 }
 
-LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(&ps);
@@ -350,6 +384,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 #endif //_WIN32_WCE
 
 	EndPaint(&ps);
+    bHandled = TRUE;
 	return 0;
 }
 
@@ -1104,7 +1139,8 @@ void CMainWindow::createCustomMenu()
     }
 
 	RECT  rect; 
-	m_browser.GetWindowRect(&rect);
+	GetWindowRect(&rect);
+    rect.bottom -= m_menuBarHeight;
 	sub.Attach(menu.GetSubMenu(0));
 	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
 						rect.right-1, 
@@ -1165,5 +1201,11 @@ LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, H
 
     oMenuItem.processCommand();
 
+    return 0;
+}
+LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{	
+    int nItemPos = wID-ID_CUSTOM_TOOLBAR_ITEM_FIRST;
+    m_toolbar.processCommand(nItemPos);
     return 0;
 }
