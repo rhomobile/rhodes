@@ -58,6 +58,8 @@ CMainWindow::CMainWindow()
 	mNativeViewFactory = NULL;
 	mNativeViewType = "";
 
+	mIsOpenedByURL = false;
+
 	m_bLoading = true;
 #if defined(_WIN32_WCE)
     memset(&m_sai, 0, sizeof(m_sai));
@@ -378,6 +380,40 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
+
+void CMainWindow::openNativeView(	NativeViewFactory* nativeViewFactory, 
+					NativeView* nativeView,
+					String nativeViewType) 
+{
+	mNativeView = nativeView;
+	mNativeViewFactory = nativeViewFactory;
+	mNativeViewType = nativeViewType;
+
+	HWND nvh = (HWND)mNativeView->getView();
+
+	::SetParent(nvh, m_hWnd);
+
+	RECT rect;
+	::GetWindowRect(getWebViewHWND(),&rect);
+
+	int x = 0;
+	int y = 0;
+	int w = rect.right - rect.left;
+	int h = rect.bottom - rect.top;
+
+	::SetWindowPos(nvh, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW);
+
+	::ShowWindow(nvh, SW_SHOWNORMAL);
+	hideWebView();
+}
+
+void CMainWindow::closeNativeView() {
+	restoreWebView();
+}
+
+
+
+
 // return true if NativeView was created
 String CMainWindow::processForNativeView(String _url) {
 
@@ -411,31 +447,12 @@ String CMainWindow::processForNativeView(String _url) {
 			restoreWebView();
 			NativeView* nv = nvf->getNativeView(protocol.c_str());
 			if (nv != NULL) {
-				mNativeView = nv;
-				mNativeViewFactory = nvf;
-				mNativeViewType = protocol;
 
-				HWND nvh = (HWND)mNativeView->getView();
-
-
-				
-
-				::SetParent(nvh, m_hWnd);
-
-				RECT rect;
-				::GetWindowRect(getWebViewHWND(),&rect);
-
-				int x = 0;
-				int y = 0;
-				int w = rect.right - rect.left;
-				int h = rect.bottom - rect.top;
-
-				::SetWindowPos(nvh, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW);
+				openNativeView(nvf, nv, protocol);
 
 				nv->navigate(navto.c_str());
-				
-				::ShowWindow(nvh, SW_SHOWNORMAL);
-				hideWebView();
+
+				mIsOpenedByURL = true;
 
 				return "";
 			}
@@ -462,7 +479,9 @@ String CMainWindow::processForNativeView(String _url) {
 			}
 		}
 	}
-	restoreWebView();
+	if (mIsOpenedByURL) {
+		restoreWebView();
+	}
 	return url;
 }
 
@@ -473,6 +492,7 @@ void CMainWindow::restoreWebView() {
 		mNativeView = NULL;
 		mNativeViewFactory = NULL;
 		mNativeViewType = "";
+		mIsOpenedByURL = false;
 		showWebView();
 	}
 }
