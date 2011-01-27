@@ -35,9 +35,14 @@ platform/bb/rhodes/src/rhomobile/datetime/DateTimeScreen.java
 platform/bb/rhodes/src/rhomobile/RingtoneManager.java
 platform/bb/rhodes/src/rhomobile/NativeBar.java
 platform/bb/rhodes/src/rhomobile/mapview/Annotation.java
+platform/bb/rhodes/src/rhomobile/mapview/ESRIMapField.java
+platform/bb/rhodes/src/rhomobile/mapview/ESRIMapProvider.java
+platform/bb/rhodes/src/rhomobile/mapview/GeoCoding.java
+platform/bb/rhodes/src/rhomobile/mapview/GoogleGeoCoding.java
 platform/bb/rhodes/src/rhomobile/mapview/GoogleMapField.java
 platform/bb/rhodes/src/rhomobile/mapview/GoogleMapProvider.java
 platform/bb/rhodes/src/rhomobile/mapview/MapProvider.java
+platform/bb/rhodes/src/rhomobile/mapview/MapTools.java
 platform/bb/rhodes/src/rhomobile/mapview/MapView.java
 platform/bb/rhodes/src/rhomobile/mapview/MapViewParent.java
 platform/bb/rhodes/src/rhomobile/mapview/MapViewScreen.java
