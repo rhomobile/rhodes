@@ -24,16 +24,20 @@ IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
 
 class CURLNetResponseImpl : public INetResponse
 {
-    String m_data;
+    Vector<char> m_data;
     int   m_nRespCode;
     String m_cookies;
 
 public:
-    CURLNetResponseImpl(String const &data, int nRespCode) : m_data(data), m_nRespCode(nRespCode){}
+    CURLNetResponseImpl(char const *data, size_t size, int nRespCode)
+        :m_nRespCode(nRespCode)
+    {
+        m_data.assign(data, data + size);
+    }
 
     virtual const char* getCharData()
     {
-        return m_data.c_str();
+        return &m_data[0];
     }
 
     virtual unsigned int getDataSize()
@@ -70,7 +74,7 @@ public:
 
     void setCharData(const String &data)
     {
-        m_data = data;
+        m_data.assign(data.begin(), data.end());
     }
     
     void setCookies(String s)
@@ -84,9 +88,9 @@ public:
     }
 };
 
-INetResponse *CURLNetRequest::makeResponse(String strBody, int nErrorCode)
+INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, int nErrorCode)
 {
-    std::auto_ptr<CURLNetResponseImpl> resp(new CURLNetResponseImpl(strBody, nErrorCode>0?nErrorCode:-1));
+    std::auto_ptr<CURLNetResponseImpl> resp(new CURLNetResponseImpl(body, bodysize, nErrorCode>0?nErrorCode:-1));
     if (resp->isSuccess())
         resp->setCookies(makeCookies());
     return resp.release();
@@ -126,6 +130,15 @@ static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void 
     size_t nBytes = size*nmemb;
     RAWTRACE1("Received %d bytes", nBytes);
     pStr->append((const char *)ptr, nBytes);
+    return nBytes;
+}
+
+static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    Vector<char> *pBody = (Vector<char> *)opaque;
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    std::copy((char*)ptr, (char*)ptr + nBytes, std::back_inserter(*pBody));
     return nBytes;
 }
 
@@ -179,7 +192,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
                                      IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
     int nRespCode = -1;
-    String strRespBody;
+    Vector<char> respBody;
     long nStartFrom = 0;
     if (oFile)
         nStartFrom = oFile->size();
@@ -192,7 +205,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         h = *pHeaders;
     
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
-        String strRespChunk;
+        Vector<char> respChunk;
         
         curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
         CURL *curl = m_curl.curl();
@@ -200,8 +213,8 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
         }
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespChunk);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
         if (nStartFrom > 0)
             curl_easy_setopt(curl, CURLOPT_RESUME_FROM, nStartFrom);
 
@@ -217,35 +230,35 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 			//Do nothing, file is already loaded
 		}else if (statusCode == 206) {
             if (oFile)
-                oFile->write(strRespChunk.c_str(), strRespChunk.size());
+                oFile->write(&respChunk[0], respChunk.size());
             else
-                strRespBody.append(strRespChunk.c_str(), strRespChunk.size());
+                std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
             // Clear counter of attempts because 206 response does not considered to be failed attempt
             nAttempts = 0;
         }
         else {
             if (oFile) {
                 oFile->movePosToStart();
-                oFile->write(strRespChunk.c_str(), strRespChunk.size());
+                oFile->write(&respChunk[0], respChunk.size());
             }
             else
-                strRespBody = strRespChunk;
+                respBody = respChunk;
         }
         
-        if (err == CURLE_OPERATION_TIMEDOUT && strRespChunk.size() > 0) {
+        if (err == CURLE_OPERATION_TIMEDOUT && respChunk.size() > 0) {
             RAWTRACE("Connection was closed by timeout, but we have part of data received; try to restore connection");
-            nStartFrom = oFile ? oFile->size() : strRespBody.size();
+            nStartFrom = oFile ? oFile->size() : respBody.size();
             continue;
         }
         
-        nRespCode = getResponseCode(err, strRespBody, oSession);
+        nRespCode = getResponseCode(err, &respBody[0], respBody.size(), oSession);
         break;
     }
 
 	if( !net::URI::isLocalHost(strUrl.c_str()) )		   
 	   rho_net_impl_network_indicator(0);
 
-    return makeResponse(strRespBody, nRespCode);
+    return makeResponse(&respBody[0], respBody.size(), nRespCode);
 }
 
 INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
@@ -258,7 +271,7 @@ INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFi
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
     {
         RAWLOG_ERROR1("pullFile: cannot create file: %s", strFilePath.c_str());
-        return new CURLNetResponseImpl("", nRespCode);
+        return new CURLNetResponseImpl("", 0, nRespCode);
     }
     
     return doPull("GET", strUrl, String(), &oFile, oSession, pHeaders);
@@ -331,8 +344,8 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     
     rho_net_impl_network_indicator(0);
     
-    nRespCode = getResponseCode(err, strRespBody, oSession);
-    return makeResponse(strRespBody, nRespCode);
+    nRespCode = getResponseCode(err, strRespBody.c_str(), strRespBody.size(), oSession);
+    return makeResponse(strRespBody.c_str(), strRespBody.size(), nRespCode);
 }
 
 INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
@@ -357,7 +370,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
     {
         LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
-        return new CURLNetResponseImpl(strRespBody,nRespCode);
+        return new CURLNetResponseImpl(strRespBody.c_str(), strRespBody.size(), nRespCode);
     }
 	
     rho_net_impl_network_indicator(1);
@@ -383,11 +396,11 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
 	
     rho_net_impl_network_indicator(0);
     
-    nRespCode = getResponseCode(err, strRespBody, oSession);
-    return makeResponse(strRespBody, nRespCode);
+    nRespCode = getResponseCode(err, strRespBody.c_str(), strRespBody.size(), oSession);
+    return makeResponse(strRespBody.c_str(), strRespBody.size(), nRespCode);
 }
 
-int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession )	
+int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession )	
 {    
     //if (err != CURLE_OK)
     //    return -1;
@@ -403,14 +416,14 @@ int CURLNetRequest::getResponseCode(CURLcode err, const String& strRespBody, IRh
 	
     if (statusCode >= 400) {
         RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
-                      (int)statusCode, strRespBody.c_str());
+                      (int)statusCode, body);
         if (statusCode == 401)
             if (oSession)
                 oSession->logout();
     }
     else {
-        RAWTRACE1("RESPONSE----- (%d bytes)", strRespBody.size());
-        RAWTRACE(strRespBody.c_str());
+        RAWTRACE1("RESPONSE----- (%d bytes)", bodysize);
+        RAWTRACE(body);
         RAWTRACE("END RESPONSE-----");
     }
 
