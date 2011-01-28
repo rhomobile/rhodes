@@ -2,12 +2,13 @@
 #include "common/map/GoogleMapEngine.h"
 #include "common/RhoMath.h"
 #include "common/RhoConf.h"
-#include "common/RhoThread.h"
-#include "common/ThreadQueue.h"
+#include "common/IRhoClassFactory.h"
 
 #include <list>
 
 namespace rho
+{
+namespace common
 {
 namespace map
 {
@@ -107,33 +108,27 @@ private:
     std::list<CachedTile> m_tiles;
 };
 
-class MapFetch : public common::CThreadQueue
+ESRIMapView::MapFetch::MapFetch(IMapView *view)
+    :CRhoThread(rho_impl_createClassFactory()), m_mapview(view)
 {
-public:
-    MapFetch(ESRIMapView *view);
-    ~MapFetch();
+    start(epNormal);
+}
 
-    void fetch();
-
-private:
-    void run();
-
-private:
-    ESRIMapView *m_mapview;
-};
-
-class CacheUpdate : public common::CRhoThread
+ESRIMapView::MapFetch::~MapFetch()
 {
-public:
-    CacheUpdate(ESRIMapView *view);
-    ~CacheUpdate();
+    stop(1000);
+}
 
-private:
-    void run();
+ESRIMapView::CacheUpdate::CacheUpdate(IMapView *view)
+    :CRhoThread(rho_impl_createClassFactory()), m_mapview(view)
+{
+    start(epNormal);
+}
 
-private:
-    ESRIMapView *m_mapview;
-};
+ESRIMapView::CacheUpdate::~CacheUpdate()
+{
+    stop(1000);
+}
 
 class ESRIGeoCodingCallback : public GeoCodingCallback
 {
@@ -279,4 +274,5 @@ void ESRIMapView::paint(IDrawingContext *context)
 }
 
 } // namespace map
+} // namespace common
 } // namespace rho
