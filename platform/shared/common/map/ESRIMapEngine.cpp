@@ -23,14 +23,6 @@ static int const TILE_SIZE = 256;
 
 static int const CACHE_UPDATE_INTERVAL = 500;
 
-uint64 degreesToPixelsX(int degrees, int zoom);
-uint64 degreesToPixelsY(int degrees, int zoom);
-
-static uint64 const MIN_LATITUDE = degreesToPixelsY(90, MAX_ZOOM);
-static uint64 const MAX_LATITUDE = degreesToPixelsY(-90, MAX_ZOOM);
-static uint64 const MIN_LONGITUDE = degreesToPixelsX(-180, MAX_ZOOM);
-static uint64 const MAX_LONGITUDE = degreesToPixelsX(180, MAX_ZOOM);
-
 static uint64 degreesToPixelsX(double n, int zoom)
 {
     while (n < -180) n += 360;
@@ -52,6 +44,11 @@ static uint64 degreesToPixelsY(double n, int zoom)
     double val = TILE_SIZE * rho_math_pow2(zoom) * (1 - ath/M_PI)/2;
     return (uint64)val;
 }
+
+static uint64 const MIN_LATITUDE = degreesToPixelsY(90, MAX_ZOOM);
+static uint64 const MAX_LATITUDE = degreesToPixelsY(-90, MAX_ZOOM);
+static uint64 const MIN_LONGITUDE = degreesToPixelsX(-180, MAX_ZOOM);
+static uint64 const MAX_LONGITUDE = degreesToPixelsX(180, MAX_ZOOM);
 
 static double pixelsToDegreesX(uint64 n, int zoom)
 {
@@ -331,6 +328,11 @@ private:
 ESRIMapView *ESRIMapEngine::createMapView(IDrawingDevice *device)
 {
     return new ESRIMapView(device);
+}
+
+void ESRIMapEngine::destroyMapView(IMapView *view)
+{
+    delete view;
 }
 
 ESRIMapView::ESRIMapView(IDrawingDevice *device)

@@ -2,6 +2,7 @@
 #define _RHOMAPVIEW_H_
 
 #include "logging/RhoLog.h"
+#include "common/rhoparams.h"
 
 namespace rho
 {
@@ -15,8 +16,8 @@ class IDrawingImage
 public:
     virtual ~IDrawingImage() {}
 
-    virtual int width() = 0;
-    virtual int height() = 0;
+    virtual int width() const = 0;
+    virtual int height() const = 0;
 };
 
 class IDrawingDevice
@@ -24,8 +25,8 @@ class IDrawingDevice
 public:
     virtual ~IDrawingDevice(){}
 
-    virtual IDrawingImage* createImage(String path) = 0;
-    virtual IDrawingImage* createImage(void* p, size_t s) = 0;
+    virtual IDrawingImage* createImage(String const &path) = 0;
+    virtual IDrawingImage* createImage(void const *p, size_t s) = 0;
     virtual IDrawingImage* cloneImage(IDrawingImage *image) = 0;
     virtual void destroyImage(IDrawingImage* image) = 0;
 
@@ -114,25 +115,35 @@ class IMapEngine
 {
 public:
     virtual IMapView *createMapView(IDrawingDevice *drawingDevice) = 0;
+    virtual void destroyMapView(IMapView *view) = 0;
 };
 
 class MapProvider
 {
-public:
+private:
     MapProvider();
+
+public:
+    static MapProvider &getInstance();
 
     void registerMapEngine(String const &id, IMapEngine *engine);
     void unregisterMapEngine(String const &id);
 
     IMapView *createMapView(String const &id, IDrawingDevice *device);
+    void destroyMapView(IMapView *view);
 
 private:
     Hashtable<String, IMapEngine *> m_engines;
+    Hashtable<IMapView *, IMapEngine *> m_cache;
 };
 
 } // namespace map
 } // namespace common
 } // namespace rho
+
+inline rho::common::map::MapProvider &RHOMAPPROVIDER() {return rho::common::map::MapProvider::getInstance();}
+
+rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDrawingDevice *device);
 
 #endif
 
