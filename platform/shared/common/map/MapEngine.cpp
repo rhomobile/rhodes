@@ -4,6 +4,8 @@
 
 namespace rho
 {
+namespace common
+{
 namespace map
 {
 
@@ -39,5 +41,6 @@ IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
 }
 
 } // namespace map
+} // namespace common
 } // namespace rho
 
