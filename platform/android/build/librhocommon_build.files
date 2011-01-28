@@ -4,7 +4,6 @@ platform/shared/common/AppMenu.cpp
 platform/shared/common/map/ESRIMapEngine.cpp
 platform/shared/common/map/GoogleMapEngine.cpp
 platform/shared/common/map/MapEngine.cpp
-platform/shared/common/map/MapTilesService.cpp
 platform/shared/common/PosixThreadImpl.cpp
 platform/shared/common/RhoConf.cpp
 platform/shared/common/RhoFile.cpp
