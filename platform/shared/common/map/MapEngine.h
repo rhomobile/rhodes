@@ -5,6 +5,8 @@
 
 namespace rho
 {
+namespace common
+{
 namespace map
 {
 
@@ -125,6 +127,7 @@ private:
 };
 
 } // namespace map
+} // namespace common
 } // namespace rho
 
 #endif
