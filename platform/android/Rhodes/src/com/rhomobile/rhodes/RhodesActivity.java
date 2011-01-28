@@ -25,7 +25,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class RhodesActivity extends BaseActivity implements ServiceConnection {
+public class RhodesActivity extends BaseActivity {
 	
 	private static final String TAG = RhodesActivity.class.getSimpleName();
 	
@@ -38,9 +38,6 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	static final String RHO_START_PARAMS_KEY = "RhoStartParams";
 	
 	private static RhodesActivity sInstance;
-	
-	private RhodesService mRhodesService;
-	private boolean mBoundToService;
 	
 	private Handler mHandler;
 	
@@ -82,10 +79,6 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		mSplashScreen = new SplashScreen(this);
 		setMainView(mSplashScreen);
 		
-		Intent intent = new Intent(this, RhodesService.class);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
-		mBoundToService = true;
-		
 		mHandler = new Handler();
 		mHandler.post(mSetup);
 		
@@ -107,10 +100,6 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 	@Override
 	public void onDestroy() {
 		sInstance = null;
-		if (mBoundToService) {
-			unbindService(this);
-			mBoundToService = false;
-		}
 		super.onDestroy();
 	}
 	
@@ -294,8 +283,7 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
-		Log.d(TAG, "Connected to service");
-		mRhodesService = ((RhodesService.LocalBinder)service).getService();
+		super.onServiceConnected(name, service);
 		
 		if (!isValidSecurityToken()) {
 			Logger.E(TAG, "This is hidden app and can be started only with security key.");
@@ -306,12 +294,6 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		Log.d(TAG, "Disconnected from service");
-		mRhodesService = null;
-	}
-	
 	private boolean isValidSecurityToken() 
 	{
 	    String rho_start_params = "";
