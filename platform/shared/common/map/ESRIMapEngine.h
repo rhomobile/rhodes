@@ -3,6 +3,9 @@
 
 #include "common/map/MapEngine.h"
 #include "common/RhoThread.h"
+#include "common/ThreadQueue.h"
+
+#include <list>
 
 namespace rho
 {
@@ -18,22 +21,98 @@ private:
     ESRIMapView(ESRIMapView const &);
     ESRIMapView &operator=(ESRIMapView const &);
 
-    class MapFetch : public CRhoThread
+    // Helper classes
+    class Tile
+    {
+    public:
+        Tile(IDrawingDevice *device, int z, uint64 lat, uint64 lon);
+        Tile(IDrawingDevice *device, int z, uint64 lat, uint64 lon, void *data, size_t datasize);
+        Tile(Tile const &c);
+        ~Tile();
+
+        Tile &operator=(Tile const &c);
+
+        int zoom() const {return m_zoom;}
+        uint64 latitude() const {return m_latitude;}
+        uint64 longitude() const {return m_longitude;}
+        IDrawingImage *image() const {return m_image;}
+
+    private:
+        void swap(Tile &tile);
+
+    private:
+        IDrawingDevice *m_device;
+        int m_zoom;
+        uint64 m_latitude;
+        uint64 m_longitude;
+        IDrawingImage *m_image;
+    };
+
+    class TilesCache
+    {
+    public:
+        typedef std::list<Tile>::const_iterator iterator;
+
+    public:
+        TilesCache();
+        ~TilesCache();
+
+        TilesCache clone() const;
+
+        iterator begin() const {return m_tiles.begin();}
+        iterator end() const {return m_tiles.end();}
+
+        bool empty() const {return m_tiles.empty();}
+
+        void put(Tile const &tile);
+        Tile const *get(int zoom, uint64 latitude, uint64 longitude) const;
+
+    private:
+        static String makeKey(int zoom, uint64 latitude, uint64 longitude);
+
+    private:
+        std::list<Tile> m_tiles;
+        std::map<String, iterator> m_by_coordinates;
+        std::map<uint64, iterator> m_by_time;
+    };
+
+    class MapFetch : public CThreadQueue
     {
     private:
         MapFetch(MapFetch const &);
         MapFetch &operator=(MapFetch const &);
 
+        struct Command : public IQueueCommand
+        {
+            Command(String const &u, int z, uint64 lat, uint64 lon)
+                :baseUrl(u), zoom(z), latitude(lat), longitude(lon)
+            {}
+
+            String baseUrl;
+            int zoom;
+            uint64 latitude;
+            uint64 longitude;
+
+            bool equals(IQueueCommand const &) {return false;}
+            String toString();
+        };
+
     public:
-        MapFetch(IMapView *view);
+        MapFetch(ESRIMapView *view);
         ~MapFetch();
 
-        void fetch();
+        void fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude);
 
     private:
-        IMapView *m_mapview;
+        void processCommand(IQueueCommand *cmd);
+        bool fetchData(String const &url, void **data, size_t *datasize);
+
+    private:
+        ESRIMapView *m_mapview;
+        net::INetRequest *m_net_request;
     };
 
+    friend class CacheUpdate;
     class CacheUpdate : public CRhoThread
     {
     private:
@@ -41,11 +120,14 @@ private:
         CacheUpdate &operator=(CacheUpdate const &);
 
     public:
-        CacheUpdate(IMapView *);
+        CacheUpdate(ESRIMapView *);
         ~CacheUpdate();
 
     private:
-        IMapView *m_mapview;
+        void run();
+
+    private:
+        ESRIMapView *m_mapview;
     };
 
 public:
@@ -77,8 +159,18 @@ public:
     void paint(IDrawingContext *context);
 
 private:
-    String getMapUrl();
+    String const &getMapUrl();
     void setCoordinates(uint64 latitude, uint64 longitude);
+
+    IDrawingDevice *drawingDevice() const {return m_drawing_device;}
+
+    void fetchTile(int zoom, uint64 latitude, uint64 longitude);
+
+    void paintBackground(IDrawingContext *context);
+    void paintTile(IDrawingContext *context, Tile const &tile);
+
+    CMutex &tilesCacheLock() {return m_tiles_cache_mtx;}
+    TilesCache &tilesCache() {return m_tiles_cache;}
 
 private:
     IDrawingDevice *m_drawing_device;
@@ -97,6 +189,11 @@ private:
     int m_zoom;
     uint64 m_latitude;
     uint64 m_longitude;
+
+    Vector<Annotation> m_annotations;
+
+    CMutex m_tiles_cache_mtx;
+    TilesCache m_tiles_cache;
 };
 
 class ESRIMapEngine : public IMapEngine
