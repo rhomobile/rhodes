@@ -194,7 +194,7 @@ public class RhodesActivity extends BaseActivity implements ServiceConnection {
 			}
 		};
 		
-		if (!waitUntilNavigationDone) {
+		if (true/*!waitUntilNavigationDone*/) {
 			// Make new MainView visible right now
 			setMainViewVisible.run();
 		}
