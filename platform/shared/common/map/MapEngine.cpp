@@ -94,6 +94,15 @@ rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDraw
     }
 
     char *map_type = NULL;
+    bool use_center_radius = false;
+    double latitude = 0;
+    double longitude = 0;
+    double latitudeSpan = 0;
+    double longitudeSpan = 0;
+    char *center = NULL;
+    double radius = 0;
+    bool zoom_enabled = true;
+    bool scroll_enabled = true;
 
     if (settings)
     {
@@ -115,10 +124,65 @@ rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDraw
             }
             else if (strcasecmp(name, "region") == 0)
             {
-                if (value->type != RHO_PARAM_ARRAY)
-                    rb_raise(rb_eArgError, "Wrong 'region' value (expect Array)");
-                if (value->v.array->size != 4)
-                    rb_raise(rb_eArgError, "'region' value should contain exactly 4 items");
+                if (value->type == RHO_PARAM_ARRAY)
+                {
+                    if (value->v.array->size != 4)
+                        rb_raise(rb_eArgError, "'region' array should contain exactly 4 items");
+
+                    rho_param *lat = value->v.array->value[0];
+                    if (!lat) continue;
+                    rho_param *lon = value->v.array->value[1];
+                    if (!lon) continue;
+                    rho_param *latSpan = value->v.array->value[2];
+                    if (!latSpan) continue;
+                    rho_param *lonSpan = value->v.array->value[3];
+                    if (!lonSpan) continue;
+
+                    latitude = lat->type == RHO_PARAM_STRING ? strtod(lat->v.string, NULL) : 0;
+                    longitude = lon->type == RHO_PARAM_STRING ? strtod(lon->v.string, NULL) : 0;
+                    latitudeSpan = latSpan->type == RHO_PARAM_STRING ? strtod(latSpan->v.string, NULL) : 0;
+                    longitudeSpan = lonSpan->type == RHO_PARAM_STRING ? strtod(lonSpan->v.string, NULL) : 0;
+
+                    use_center_radius = false;
+                }
+                else if (value->type == RHO_PARAM_HASH)
+                {
+                    for (int j = 0, limm = value->v.hash->size; j < limm; ++j)
+                    {
+                        char *rname = value->v.hash->name[i];
+                        rho_param *rvalue = value->v.hash->value[i];
+                        if (!rname || !rvalue)
+                            continue;
+                        if (strcasecmp(rname, "center") == 0)
+                        {
+                            if (rvalue->type != RHO_PARAM_STRING)
+                                rb_raise(rb_eArgError, "Wrong 'center' value (expect String)");
+                            center = rvalue->v.string;
+                        }
+                        else if (strcasecmp(rname, "radius") == 0)
+                        {
+                            if (rvalue->type != RHO_PARAM_STRING)
+                                rb_raise(rb_eArgError, "Wrong 'radius' value (expect String or Float)");
+                            radius = strtod(rvalue->v.string, NULL);
+                        }
+                    }
+
+                    use_center_radius = true;
+                }
+                else
+                    rb_raise(rb_eArgError, "Wrong 'region' value (expect Array or Hash");
+            }
+            else if (strcasecmp(name, "zoom_enabled") == 0)
+            {
+                if (value->type != RHO_PARAM_STRING)
+                    rb_raise(rb_eArgError, "Wrong 'zoom_enabled' value (expect boolean)");
+                zoom_enabled = strcasecmp(value->v.string, "true") == 0;
+            }
+            else if (strcasecmp(name, "scroll_enabled") == 0)
+            {
+                if (value->type != RHO_PARAM_STRING)
+                    rb_raise(rb_eArgError, "Wrong 'scroll_enabled' value (expect boolean)");
+                scroll_enabled = strcasecmp(value->v.string, "true") == 0;
             }
         }
     }
@@ -129,6 +193,20 @@ rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDraw
 
     if (map_type)
         mapview->setMapType(map_type);
+
+    if (use_center_radius)
+    {
+        mapview->moveTo(center);
+        mapview->setZoom(radius, radius);
+    }
+    else
+    {
+        mapview->moveTo(latitude, longitude);
+        mapview->setZoom(latitudeSpan, longitudeSpan);
+    }
+
+    mapview->setZoomEnabled(zoom_enabled);
+    mapview->setScrollEnabled(scroll_enabled);
 
     return mapview;
 }
