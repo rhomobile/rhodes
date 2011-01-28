@@ -46,18 +46,36 @@ class Annotation
 {
 public:
     Annotation(String const &title, String const &subtitle,
-        String const &address, String const &url)
-        :m_title(title), m_subtitle(subtitle), m_address(address), m_url(url)
+        double latitude, double longitude, String const &url)
+        :m_title(title), m_subtitle(subtitle), m_resolved(true),
+        m_latitude(latitude), m_longitude(longitude),
+        m_address(make_address(latitude, longitude)), m_url(url)
     {}
 
-    String const &title() {return m_title;}
-    String const &subtitle() {return m_subtitle;}
-    String const &address() {return m_address;}
-    String const &url() {return m_url;}
+    Annotation(String const &title, String const &subtitle,
+        String const &address, String const &url)
+        :m_title(title), m_subtitle(subtitle), m_resolved(false),
+        m_latitude(0), m_longitude(0),
+        m_address(address), m_url(url)
+    {}
+
+    String const &title() const {return m_title;}
+    String const &subtitle() const {return m_subtitle;}
+    bool resolved() const {return m_resolved;}
+    double latitude() const {return m_latitude;}
+    double longitude() const {return m_longitude;}
+    String const &address() const {return m_address;}
+    String const &url() const {return m_url;}
+
+private:
+    static String make_address(double latitude, double longitude);
 
 private:
     String m_title;
     String m_subtitle;
+    bool m_resolved;
+    double m_latitude;
+    double m_longitude;
     String m_address;
     String m_url;
 };
