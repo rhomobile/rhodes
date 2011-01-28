@@ -69,9 +69,9 @@ public:
 
 private:
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
-    int getResponseCode(CURLcode err, const String& strRespBody, IRhoSession* oSession);
+    int getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession);
     String makeCookies();
-    INetResponse *makeResponse(String strBody, int nErrorCode);
+    INetResponse *makeResponse(char const *body, size_t bodysize, int nErrorCode);
 	CURLcode doCURLPerform(const String& strUrl);
 	
     CURLHolder m_curl;
