@@ -7,7 +7,9 @@
 extern "C" {
 #endif
 
+double rho_math_sqrt(double n);
 uint64 rho_math_pow2(int n);
+
 double rho_math_log2(double n);
 
 double rho_math_sin(double n);

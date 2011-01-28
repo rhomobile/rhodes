@@ -1,6 +1,11 @@
 #include <math.h>
 #include "common/RhoMath.h"
 
+double rho_math_sqrt(double n)
+{
+    return sqrt(n);
+}
+
 uint64 rho_math_pow2(int n)
 {
     uint64 ret;
