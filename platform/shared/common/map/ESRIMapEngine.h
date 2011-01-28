@@ -2,8 +2,11 @@
 #define _RHOESRIMAPENGINE_H_
 
 #include "common/map/MapEngine.h"
+#include "common/RhoThread.h"
 
 namespace rho
+{
+namespace common
 {
 namespace map
 {
@@ -14,6 +17,36 @@ private:
     // Non-copyable class
     ESRIMapView(ESRIMapView const &);
     ESRIMapView &operator=(ESRIMapView const &);
+
+    class MapFetch : public CRhoThread
+    {
+    private:
+        MapFetch(MapFetch const &);
+        MapFetch &operator=(MapFetch const &);
+
+    public:
+        MapFetch(IMapView *view);
+        ~MapFetch();
+
+        void fetch();
+
+    private:
+        IMapView *m_mapview;
+    };
+
+    class CacheUpdate : public CRhoThread
+    {
+    private:
+        CacheUpdate(CacheUpdate const &);
+        CacheUpdate &operator=(CacheUpdate const &);
+
+    public:
+        CacheUpdate(IMapView *);
+        ~CacheUpdate();
+
+    private:
+        IMapView *m_mapview;
+    };
 
 public:
     ESRIMapView(IDrawingDevice *device);
@@ -54,6 +87,9 @@ private:
 
     std::auto_ptr<IGeoCoding> m_geo_coding;
 
+    std::auto_ptr<MapFetch> m_map_fetch;
+    std::auto_ptr<CacheUpdate> m_cache_update;
+
     int m_width;
     int m_height;
     String m_maptype;
@@ -70,6 +106,7 @@ public:
 };
 
 } // namespace map
+} // namespace common
 } // namespace rho
 
 #endif
