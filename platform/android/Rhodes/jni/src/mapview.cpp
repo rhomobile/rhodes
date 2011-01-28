@@ -1,10 +1,114 @@
 #include "rhodes/JNIRhodes.h"
 
 #include <common/rhoparams.h>
+#include <common/map/MapEngine.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
 
+static rho::common::map::IMapView *s_mapview = NULL;
+
+namespace rho
+{
+namespace common
+{
+namespace map
+{
+
+class AndroidDrawingImage : public IDrawingImage
+{
+public:
+    int width() const;
+    int height() const;
+};
+
+class AndroidDrawingDevice : public IDrawingDevice
+{
+public:
+    IDrawingImage* createImage(String const &path);
+    IDrawingImage* createImage(void const *p, size_t s);
+    IDrawingImage* cloneImage(IDrawingImage *image);
+    void destroyImage(IDrawingImage* image);
+
+    void requestRedraw();
+};
+
+int AndroidDrawingImage::width() const
+{
+    // TODO:
+    return 0;
+}
+
+int AndroidDrawingImage::height() const
+{
+    // TODO:
+    return 0;
+}
+
+IDrawingImage *AndroidDrawingDevice::createImage(String const &path)
+{
+    // TODO:
+    return 0;
+}
+
+IDrawingImage *AndroidDrawingDevice::createImage(void const *p, size_t s)
+{
+    // TODO:
+    return 0;
+}
+
+IDrawingImage *AndroidDrawingDevice::cloneImage(IDrawingImage *image)
+{
+    // TODO:
+    return 0;
+}
+
+void AndroidDrawingDevice::destroyImage(IDrawingImage *image)
+{
+    // TODO:
+}
+
+void AndroidDrawingDevice::requestRedraw()
+{
+    // TODO:
+}
+
+} // namespace map
+} // namespace common
+} // namespace rho
+
+RHO_GLOBAL void mapview_create(rho_param *p)
+{
+    s_mapview = rho_map_create(p, new rho::common::map::AndroidDrawingDevice());
+}
+
+RHO_GLOBAL void mapview_close()
+{
+    if (s_mapview)
+        RHOMAPPROVIDER().destroyMapView(s_mapview);
+    s_mapview = NULL;
+}
+
+RHO_GLOBAL VALUE mapview_state_started()
+{
+    return rho_ruby_create_boolean(!!s_mapview);
+}
+
+RHO_GLOBAL double mapview_state_center_lat()
+{
+    if (!s_mapview)
+        return 0;
+    return s_mapview->latitude();
+}
+
+RHO_GLOBAL double mapview_state_center_lon()
+{
+    if (!s_mapview)
+        return 0;
+    return s_mapview->longitude();
+}
+
+#if 0
 RHO_GLOBAL void mapview_create(rho_param *p)
 {
 #ifdef RHO_GOOGLE_API_KEY
@@ -85,4 +189,4 @@ RHO_GLOBAL double mapview_state_center_lon()
     return 0;
 #endif
 }
-
+#endif

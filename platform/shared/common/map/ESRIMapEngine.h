@@ -54,9 +54,6 @@ private:
         typedef std::list<Tile>::const_iterator iterator;
 
     public:
-        TilesCache();
-        ~TilesCache();
-
         TilesCache clone() const;
 
         iterator begin() const {return m_tiles.begin();}
@@ -200,6 +197,7 @@ class ESRIMapEngine : public IMapEngine
 {
 public:
     ESRIMapView *createMapView(IDrawingDevice *device);
+    void destroyMapView(IMapView *view);
 };
 
 } // namespace map
