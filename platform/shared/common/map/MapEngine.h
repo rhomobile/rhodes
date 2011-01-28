@@ -71,6 +71,12 @@ public:
     virtual int width() const = 0;
     virtual int height() const = 0;
 
+    virtual void setZoomEnabled(bool v) = 0;
+    virtual bool zoomEnabled() const = 0;
+
+    virtual void setScrollEnabled(bool v) = 0;
+    virtual bool scrollEnabled() const = 0;
+
     virtual void setMapType(String const &type) = 0;
     virtual String const &mapType() const = 0;
 

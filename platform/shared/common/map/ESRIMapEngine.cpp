@@ -337,7 +337,8 @@ void ESRIMapEngine::destroyMapView(IMapView *view)
 
 ESRIMapView::ESRIMapView(IDrawingDevice *device)
     :m_drawing_device(device), m_geo_coding(new GoogleGeoCoding()),
-    m_map_fetch(new MapFetch(this)), m_cache_update(new CacheUpdate(this))
+    m_map_fetch(new MapFetch(this)), m_cache_update(new CacheUpdate(this)),
+    m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap")
 {
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
