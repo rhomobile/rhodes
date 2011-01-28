@@ -126,7 +126,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     m_browser.Create(m_hWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
 					 TEXT("Microsoft.PIEDocView"), // ProgID of the control
-                     WS_CHILD | WS_BORDER, 0,
+                     WS_CHILD, 0,
                      ID_BROWSER);
 #else
 	LOGCONF().setLogView(&m_logView);
@@ -346,14 +346,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 #ifdef _WIN32_WCE	
     StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
 
-	StringW path_wm_W = pathW.substr(0, pathW.length() - 3);
-	String wm_png = "wm.png";
-	path_wm_W.append(convertToStringW(wm_png));
-
-    HBITMAP hbitmap = SHLoadImageFile(path_wm_W.c_str());
-	if (!hbitmap) {
-		hbitmap = SHLoadImageFile(pathW.c_str());
-	}
+	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
 		
 	if (!hbitmap)
 		return 0;
