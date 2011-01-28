@@ -30,6 +30,9 @@ void CNativeToolbar::removeAllButtons()
     int nCount = GetButtonCount();
     for( int i = 0; i < nCount; i++)
         DeleteButton(0);
+
+    m_arLabels.removeAllElements();
+    m_arActions.removeAllElements();
 }
 
 void CNativeToolbar::createToolbar(rho_param *p)
@@ -175,14 +178,12 @@ void CNativeToolbar::addToolbarButton(const char *label, const char *action, con
 
     TBBUTTON btn = {0};
 
-    String aLabel = label;
+    StringW wLabel;
+    if ( label )
+        convertToStringW( label, wLabel );
+    m_arLabels.addElement(wLabel);
+    btn.iString = (INT_PTR)m_arLabels.elementAt(m_arLabels.size()-1).c_str();
 
-    StringW wLabel = convertToStringW( aLabel );
-    wchar_t *label2 = new wchar_t[wLabel.length()+1];
-    wcscpy(label2, wLabel.c_str());
-    label2[wLabel.length()+1] = 0;
-
-    btn.iString = AddStrings(label2);
     btn.fsStyle = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
     btn.fsState = TBSTATE_ENABLED;
     btn.idCommand = ID_CUSTOM_TOOLBAR_ITEM_FIRST+m_arActions.size();
