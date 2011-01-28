@@ -14,6 +14,9 @@ class IDrawingImage
 {
 public:
     virtual ~IDrawingImage() {}
+
+    virtual int width() = 0;
+    virtual int height() = 0;
 };
 
 class IDrawingDevice
@@ -23,6 +26,7 @@ public:
 
     virtual IDrawingImage* createImage(String path) = 0;
     virtual IDrawingImage* createImage(void* p, size_t s) = 0;
+    virtual IDrawingImage* cloneImage(IDrawingImage *image) = 0;
     virtual void destroyImage(IDrawingImage* image) = 0;
 
     virtual void requestRedraw() = 0;

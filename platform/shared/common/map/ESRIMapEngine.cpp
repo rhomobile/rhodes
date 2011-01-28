@@ -3,8 +3,7 @@
 #include "common/RhoMath.h"
 #include "common/RhoConf.h"
 #include "common/IRhoClassFactory.h"
-
-#include <list>
+#include "net/INetRequest.h"
 
 namespace rho
 {
@@ -21,6 +20,8 @@ static int const MIN_ZOOM = 0;
 static int const MAX_ZOOM = 19;
 
 static int const TILE_SIZE = 256;
+
+static int const CACHE_UPDATE_INTERVAL = 500;
 
 uint64 degreesToPixelsX(int degrees, int zoom);
 uint64 degreesToPixelsY(int degrees, int zoom);
@@ -87,29 +88,45 @@ static uint64 toCurrentZoom(uint64 n, int zoom)
 //=============================================================================================
 // Helper classes
 
-struct CachedTile
-{};
+ESRIMapView::Tile::Tile(IDrawingDevice *device, int z, uint64 lat, uint64 lon)
+    :m_device(device), m_zoom(z), m_latitude(lat), m_longitude(lon), m_image(0)
+{}
 
-class TilesCache
+ESRIMapView::Tile::Tile(IDrawingDevice *device, int z, uint64 lat, uint64 lon, void *data, size_t datasize)
+    :m_device(device), m_zoom(z), m_latitude(lat), m_longitude(lon),
+    m_image(m_device->createImage(data, datasize))
+{}
+
+ESRIMapView::Tile::Tile(ESRIMapView::Tile const &c)
+    :m_device(c.m_device), m_zoom(c.m_zoom), m_latitude(c.m_latitude), m_longitude(c.m_longitude),
+    m_image(c.m_image ? m_device->cloneImage(c.m_image) : 0)
+{}
+
+ESRIMapView::Tile::~Tile()
 {
-public:
-    typedef std::list<CachedTile>::const_iterator iterator;
+    if (m_image)
+        m_device->destroyImage(m_image);
+    delete m_image;
+}
 
-public:
-    TilesCache();
-    ~TilesCache();
+ESRIMapView::Tile &ESRIMapView::Tile::operator=(ESRIMapView::Tile const &c)
+{
+    Tile copy(c);
+    swap(copy);
+    return *this;
+}
 
-    TilesCache clone() const;
+void ESRIMapView::Tile::swap(ESRIMapView::Tile &tile)
+{
+    std::swap(m_zoom, tile.m_zoom);
+    std::swap(m_latitude, tile.m_latitude);
+    std::swap(m_longitude, tile.m_longitude);
+    std::swap(m_image, tile.m_image);
+}
 
-    iterator begin() const;
-    iterator end() const;
-
-private:
-    std::list<CachedTile> m_tiles;
-};
-
-ESRIMapView::MapFetch::MapFetch(IMapView *view)
-    :CRhoThread(rho_impl_createClassFactory()), m_mapview(view)
+ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
+    :CThreadQueue(rho_impl_createClassFactory()),
+    m_mapview(view), m_net_request(getFactory()->createNetRequest())
 {
     start(epNormal);
 }
@@ -117,9 +134,75 @@ ESRIMapView::MapFetch::MapFetch(IMapView *view)
 ESRIMapView::MapFetch::~MapFetch()
 {
     stop(1000);
+    delete m_net_request;
 }
 
-ESRIMapView::CacheUpdate::CacheUpdate(IMapView *view)
+void ESRIMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
+{
+    addQueueCommandInt(new Command(baseUrl, zoom, latitude, longitude));
+}
+
+bool ESRIMapView::MapFetch::fetchData(String const &url, void **data, size_t *datasize)
+{
+    NetResponse(resp, m_net_request->doRequest("GET", url, "", 0, 0));
+    if (!resp.isOK())
+        return false;
+    *datasize = resp.getDataSize();
+    *data = malloc(*datasize);
+    if (!*data)
+        return false;
+    memcpy(*data, resp.getCharData(), *datasize);
+    return true;
+}
+
+void ESRIMapView::MapFetch::processCommand(IQueueCommand *c)
+{
+    Command *cmd = (Command *)c;
+    String url = cmd->baseUrl;
+    int zoom = cmd->zoom;
+    uint64 latitude = cmd->latitude;
+    uint64 longitude = cmd->longitude;
+    delete cmd;
+
+    uint64 ts = toMaxZoom(TILE_SIZE, zoom);
+    unsigned row = (unsigned)(latitude/ts);
+    unsigned column = (unsigned)(longitude/ts);
+
+    url += "/MapServer/tile/";
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d", zoom);
+    url += buf;
+    url += "/";
+    snprintf(buf, sizeof(buf), "%d", row);
+    url += buf;
+    url += "/";
+    snprintf(buf, sizeof(buf), "%d", column);
+    url += buf;
+
+    void *data;
+    size_t datasize;
+    if (!fetchData(url, &data, &datasize))
+        return;
+
+    IDrawingDevice *device = m_mapview->drawingDevice();
+
+    uint64 lat = ts*row + ts/2;
+    uint64 lon = ts*column + ts/2;
+
+    synchronized (m_mapview->tilesCacheLock());
+    m_mapview->tilesCache().put(Tile(device, zoom, lat, lon, data, datasize));
+    free(data);
+    device->requestRedraw();
+}
+
+String ESRIMapView::MapFetch::Command::toString()
+{
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%d/%llu/%llu", zoom, latitude, longitude);
+    return String(&buf[0]);
+}
+
+ESRIMapView::CacheUpdate::CacheUpdate(ESRIMapView *view)
     :CRhoThread(rho_impl_createClassFactory()), m_mapview(view)
 {
     start(epNormal);
@@ -128,6 +211,100 @@ ESRIMapView::CacheUpdate::CacheUpdate(IMapView *view)
 ESRIMapView::CacheUpdate::~CacheUpdate()
 {
     stop(1000);
+}
+
+void ESRIMapView::CacheUpdate::run()
+{
+    CMutex &lock = m_mapview->tilesCacheLock();
+    TilesCache &cache = m_mapview->tilesCache();
+    while (!isStopping())
+    {
+        wait(CACHE_UPDATE_INTERVAL);
+        
+        {
+            synchronized (lock);
+            if (cache.empty())
+                continue;
+        }
+
+        IDrawingDevice *drawingDevice = m_mapview->drawingDevice();
+
+        int zoom = m_mapview->zoom();
+        uint64 ts = toMaxZoom(TILE_SIZE, zoom);
+        uint64 h = toMaxZoom(m_mapview->height(), zoom);
+        uint64 w = toMaxZoom(m_mapview->width(), zoom);
+
+        uint64 totalTiles = rho_math_pow2(zoom);
+
+        uint64 latitude = m_mapview->latitude();
+        uint64 longitude = m_mapview->longitude();
+
+        uint64 tlLat = latitude < h/2 ? 0 : latitude - h/2;
+        uint64 tlLon = longitude < w/2 ? 0 : longitude - w/2;
+        for (uint64 lat = (tlLat/ts)*ts, latLim = std::min(tlLat + h + ts, ts*totalTiles); lat < latLim; lat += ts)
+            for (uint64 lon = (tlLon/ts)*ts, lonLim = std::min(tlLon + w + ts, ts*totalTiles); lon < lonLim; lon += ts)
+            {
+                {
+                    synchronized (lock);
+                    Tile const *tile = cache.get(zoom, lat, lon);
+                    if (tile)
+                        continue;
+
+                    cache.put(Tile(drawingDevice, zoom, lat, lon));
+                }
+
+                m_mapview->fetchTile(zoom, lat, lon);
+            }
+    }
+}
+
+ESRIMapView::Tile const *ESRIMapView::TilesCache::get(int zoom, uint64 latitude, uint64 longitude) const
+{
+    String const &key = makeKey(zoom, latitude, longitude);
+    std::map<String, iterator>::const_iterator it = m_by_coordinates.find(key);
+    if (it == m_by_coordinates.end())
+        return 0;
+    return &(*(it->second));
+}
+
+void ESRIMapView::TilesCache::put(Tile const &tile)
+{
+    String const &key = makeKey(tile.zoom(), tile.latitude(), tile.longitude());
+    m_tiles.insert(m_tiles.begin(), tile);
+    m_by_coordinates.insert(std::make_pair(key, m_tiles.begin()));
+    // TODO: support Windows
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    uint64 now = (uint64)tv.tv_sec*1000000 + tv.tv_usec;
+    m_by_time.insert(std::make_pair(now, m_tiles.begin()));
+#endif
+    // TODO: throw away oldest tiles if limit reached
+}
+
+ESRIMapView::TilesCache ESRIMapView::TilesCache::clone() const
+{
+    TilesCache copy;
+    for (iterator it = begin(), lim = end(); it != lim; ++it)
+        copy.put(*it);
+    return copy;
+}
+
+String ESRIMapView::TilesCache::makeKey(int zoom, uint64 latitude, uint64 longitude)
+{
+    String key;
+
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%d", zoom);
+    key += buf;
+    key += "/";
+    snprintf(buf, sizeof(buf), "%llu", latitude);
+    key += buf;
+    key += "/";
+    snprintf(buf, sizeof(buf), "%llu", longitude);
+    key += buf;
+
+    return key;
 }
 
 class ESRIGeoCodingCallback : public GeoCodingCallback
@@ -157,7 +334,8 @@ ESRIMapView *ESRIMapEngine::createMapView(IDrawingDevice *device)
 }
 
 ESRIMapView::ESRIMapView(IDrawingDevice *device)
-    :m_drawing_device(device), m_geo_coding(new GoogleGeoCoding())
+    :m_drawing_device(device), m_geo_coding(new GoogleGeoCoding()),
+    m_map_fetch(new MapFetch(this)), m_cache_update(new CacheUpdate(this))
 {
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
@@ -176,12 +354,12 @@ void ESRIMapView::setSize(int width, int height)
     m_height = height;
 }
 
-String ESRIMapView::getMapUrl()
+String const &ESRIMapView::getMapUrl()
 {
     String type = m_maptype;
     if (!m_map_urls.containsKey(type))
         type = "roadmap";
-    return m_map_urls.get(type);
+    return m_map_urls[type];
 }
 
 int ESRIMapView::minZoom() const
@@ -259,7 +437,8 @@ void ESRIMapView::move(int dx, int dy)
 
 void ESRIMapView::addAnnotation(Annotation const &ann)
 {
-    // TODO:
+    m_annotations.addElement(ann);
+    // TODO: do geocoding
 }
 
 bool ESRIMapView::handleClick(int x, int y)
@@ -270,7 +449,54 @@ bool ESRIMapView::handleClick(int x, int y)
 
 void ESRIMapView::paint(IDrawingContext *context)
 {
+    paintBackground(context);
+
+    TilesCache cache;
+    {
+        synchronized(m_tiles_cache_mtx);
+        cache = m_tiles_cache.clone();
+    }
+
+    for (TilesCache::iterator it = cache.begin(), lim = cache.end(); it != lim; ++it)
+        paintTile(context, *it);
+}
+
+void ESRIMapView::paintBackground(IDrawingContext *context)
+{
     // TODO:
+}
+
+void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
+{
+    IDrawingImage *image = tile.image();
+    if (!image)
+        return;
+    if (tile.zoom() != m_zoom)
+        return;
+
+    int64 left = -toCurrentZoom(m_longitude - tile.longitude(), m_zoom);
+    int64 top = -toCurrentZoom(m_latitude - tile.latitude(), m_zoom);
+
+    int imgWidth = image->width();
+    int imgHeight = image->height();
+
+    left += (m_width - imgWidth)/2;
+    top += (m_height - imgHeight)/2;
+
+    int64 w = (int64)m_width - left;
+    int64 h = (int64)m_height - top;
+
+    int64 maxW = m_width + TILE_SIZE;
+    int64 maxH = m_height + TILE_SIZE;
+    if (w < 0 || h < 0 || w > maxW || h > maxH)
+        return;
+
+    context->drawImage((int)left, (int)top, image);
+}
+
+void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
+{
+    m_map_fetch->fetchTile(getMapUrl(), zoom, latitude, longitude);
 }
 
 } // namespace map
