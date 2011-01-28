@@ -737,6 +737,8 @@ namespace "build" do
       args = []
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/curl/include"
+      args << "-I#{$shareddir}/ruby/include"
+      args << "-I#{$shareddir}/ruby/linux"
       args << "-I#{$std_includes}" unless $std_includes.nil?
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
