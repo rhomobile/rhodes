@@ -134,6 +134,12 @@ public:
     int width() const {return m_width;}
     int height() const {return m_height;}
 
+    void setZoomEnabled(bool v) {m_zoom_enabled = v;}
+    bool zoomEnabled() const {return m_zoom_enabled;}
+
+    void setScrollEnabled(bool v) {m_scroll_enabled = v;}
+    bool scrollEnabled() const {return m_scroll_enabled;}
+
     void setMapType(String const &type) {m_maptype = type;}
     String const &mapType() const {return m_maptype;}
 
@@ -181,6 +187,9 @@ private:
 
     int m_width;
     int m_height;
+
+    bool m_zoom_enabled;
+    bool m_scroll_enabled;
     String m_maptype;
 
     int m_zoom;
