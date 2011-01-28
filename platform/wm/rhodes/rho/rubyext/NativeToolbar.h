@@ -10,6 +10,7 @@ class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>
     //CImageList m_imageList;
     int        m_nHeight;
     rho::Vector<rho::String> m_arActions;
+    rho::Vector<rho::StringW> m_arLabels;
 public:
     class CCreateTask: public rho::common::IRhoRunnable
     {
