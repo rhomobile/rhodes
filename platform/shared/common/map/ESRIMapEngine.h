@@ -175,6 +175,8 @@ private:
     CMutex &tilesCacheLock() {return m_tiles_cache_mtx;}
     TilesCache &tilesCache() {return m_tiles_cache;}
 
+    Annotation const *getAnnotation(int x, int y);
+
 private:
     IDrawingDevice *m_drawing_device;
 
@@ -196,7 +198,9 @@ private:
     uint64 m_latitude;
     uint64 m_longitude;
 
-    Vector<Annotation> m_annotations;
+    typedef Vector<Annotation> annotations_list_t;
+    annotations_list_t m_annotations;
+    Annotation const *m_selected_annotation;
 
     CMutex m_tiles_cache_mtx;
     TilesCache m_tiles_cache;

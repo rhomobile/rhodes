@@ -58,11 +58,20 @@ void MapProvider::destroyMapView(IMapView *view)
     engine->destroyMapView(view);
 }
 
+String Annotation::make_address(double latitude, double longitude)
+{
+    char buf[128];
+    snprintf(buf, sizeof(buf), "%.5lf,%.5lf", latitude, longitude);
+    return buf;
+}
+
 } // namespace map
 } // namespace common
 } // namespace rho
 
-rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDrawingDevice *device)
+namespace rhomap = rho::common::map;
+
+rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device)
 {
     if (!p || !p->type == RHO_PARAM_HASH)
         rb_raise(rb_eArgError, "Wrong input parameter (expect Hash)");
@@ -187,7 +196,69 @@ rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDraw
         }
     }
 
-    rho::common::map::IMapView *mapview = RHOMAPPROVIDER().createMapView(providerId, device);
+    typedef rhomap::Annotation ann_t;
+    typedef std::vector<ann_t> ann_list_t;
+    ann_list_t ann_list;
+    if (annotations)
+    {
+        if (annotations->type != RHO_PARAM_ARRAY)
+            rb_raise(rb_eArgError, "Wrong 'annotations' value (expect Array)");
+        for (int i = 0, lim = annotations->v.array->size; i < lim; ++i)
+        {
+            rho_param *ann = annotations->v.array->value[i];
+            if (!ann)
+                continue;
+            if (ann->type != RHO_PARAM_HASH)
+                rb_raise(rb_eArgError, "Wrong annotation value found (expect Hash)");
+
+            bool latitude_set = false;
+            double latitude = 0;
+            bool longitude_set = false;
+            double longitude = 0;
+            char const *address = "";
+            char const *title = "";
+            char const *subtitle = "";
+            char const *url = "";
+
+            for (int j = 0, limm = ann->v.hash->size; j < limm; ++j)
+            {
+                char *name = ann->v.hash->name[i];
+                rho_param *value = ann->v.hash->value[i];
+                if (!name || !value)
+                    continue;
+
+                if (value->type != RHO_PARAM_STRING)
+                    rb_raise(rb_eArgError, "Wrong annotation value");
+
+                char *v = value->v.string;
+                if (strcasecmp(v, "latitude") == 0)
+                {
+                    latitude = strtod(v, NULL);
+                    latitude_set = true;
+                }
+                else if (strcasecmp(v, "longitude") == 0)
+                {
+                    longitude = strtod(v, NULL);
+                    longitude_set = true;
+                }
+                else if (strcasecmp(v, "street_address") == 0)
+                    address = v;
+                else if (strcasecmp(v, "title") == 0)
+                    title = v;
+                else if (strcasecmp(v, "subtitle") == 0)
+                    subtitle = v;
+                else if (strcasecmp(v, "url") == 0)
+                    url = v;
+            }
+
+            if (latitude_set && longitude_set)
+                ann_list.push_back(ann_t(title, subtitle, latitude, longitude, url));
+            else
+                ann_list.push_back(ann_t(title, subtitle, address, url));
+        }
+    }
+
+    rhomap::IMapView *mapview = RHOMAPPROVIDER().createMapView(providerId, device);
     if (!mapview)
         return NULL;
 
@@ -207,6 +278,9 @@ rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDraw
 
     mapview->setZoomEnabled(zoom_enabled);
     mapview->setScrollEnabled(scroll_enabled);
+
+    for (ann_list_t::const_iterator it = ann_list.begin(), lim = ann_list.end(); it != lim; ++it)
+        mapview->addAnnotation(*it);
 
     return mapview;
 }

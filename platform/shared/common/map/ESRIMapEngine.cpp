@@ -3,6 +3,7 @@
 #include "common/RhoMath.h"
 #include "common/RhoConf.h"
 #include "common/IRhoClassFactory.h"
+#include "common/RhodesApp.h"
 #include "net/INetRequest.h"
 
 namespace rho
@@ -22,6 +23,8 @@ static int const MAX_ZOOM = 19;
 static int const TILE_SIZE = 256;
 
 static int const CACHE_UPDATE_INTERVAL = 500;
+
+static int const ANNOTATION_SENSITIVITY_AREA_RADIUS = 16;
 
 static uint64 degreesToPixelsX(double n, int zoom)
 {
@@ -165,15 +168,8 @@ void ESRIMapView::MapFetch::processCommand(IQueueCommand *c)
     unsigned row = (unsigned)(latitude/ts);
     unsigned column = (unsigned)(longitude/ts);
 
-    url += "/MapServer/tile/";
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%d", zoom);
-    url += buf;
-    url += "/";
-    snprintf(buf, sizeof(buf), "%d", row);
-    url += buf;
-    url += "/";
-    snprintf(buf, sizeof(buf), "%d", column);
+    char buf[128];
+    snprintf(buf, sizeof(buf), "/MapServer/tile/%d/%d/%d", zoom, row, column);
     url += buf;
 
     void *data;
@@ -289,30 +285,17 @@ ESRIMapView::TilesCache ESRIMapView::TilesCache::clone() const
 
 String ESRIMapView::TilesCache::makeKey(int zoom, uint64 latitude, uint64 longitude)
 {
-    String key;
-
-    char buf[64];
-    snprintf(buf, sizeof(buf), "%d", zoom);
-    key += buf;
-    key += "/";
-    snprintf(buf, sizeof(buf), "%llu", latitude);
-    key += buf;
-    key += "/";
-    snprintf(buf, sizeof(buf), "%llu", longitude);
-    key += buf;
-
+    char key[64];
+    snprintf(key, sizeof(key), "%d/%llu/%llu", zoom, latitude, longitude);
     return key;
 }
 
-class ESRIGeoCodingCallback : public GeoCodingCallback
+class CenterResolved : public GeoCodingCallback
 {
 public:
-    ESRIGeoCodingCallback(IMapView *view) :m_mapview(view) {}
+    CenterResolved(IMapView *view) :m_mapview(view) {}
 
-    void onError(String const &error)
-    {
-        // TODO:
-    }
+    void onError(String const &) {}
 
     void onSuccess(double latitude, double longitude)
     {
@@ -321,6 +304,26 @@ public:
 
 private:
     IMapView *m_mapview;
+};
+
+class AnnotationResolved : public GeoCodingCallback
+{
+public:
+    AnnotationResolved(IMapView *view, Annotation const &ann)
+        :m_mapview(view), m_ann(ann)
+    {}
+
+    void onError(String const &) {}
+
+    void onSuccess(double latitude, double longitude)
+    {
+        Annotation ann(m_ann.title(), m_ann.subtitle(), latitude, longitude, m_ann.url());
+        m_mapview->addAnnotation(ann);
+    }
+
+private:
+    IMapView *m_mapview;
+    Annotation m_ann;
 };
 
 // ESRIMapView implementation
@@ -338,7 +341,8 @@ void ESRIMapEngine::destroyMapView(IMapView *view)
 ESRIMapView::ESRIMapView(IDrawingDevice *device)
     :m_drawing_device(device), m_geo_coding(new GoogleGeoCoding()),
     m_map_fetch(new MapFetch(this)), m_cache_update(new CacheUpdate(this)),
-    m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap")
+    m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
+    m_selected_annotation(NULL)
 {
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
@@ -426,7 +430,7 @@ void ESRIMapView::moveTo(double latitude, double longitude)
 
 void ESRIMapView::moveTo(String const &address)
 {
-    m_geo_coding->resolve(address, new ESRIGeoCodingCallback(this));
+    m_geo_coding->resolve(address, new CenterResolved(this));
 }
 
 void ESRIMapView::move(int dx, int dy)
@@ -440,13 +444,53 @@ void ESRIMapView::move(int dx, int dy)
 
 void ESRIMapView::addAnnotation(Annotation const &ann)
 {
-    m_annotations.addElement(ann);
-    // TODO: do geocoding
+    if (ann.resolved())
+        m_annotations.addElement(ann);
+    else
+        m_geo_coding->resolve(ann.address(), new AnnotationResolved(this, ann));
+}
+
+Annotation const *ESRIMapView::getAnnotation(int x, int y)
+{
+    for (annotations_list_t::const_iterator it = m_annotations.begin(), lim = m_annotations.end();
+        it != lim; ++it)
+    {
+        Annotation const &ann = *it;
+
+        int64 ann_lon = (int64)degreesToPixelsX(ann.longitude(), m_zoom);
+        int64 topleft_lon = (int64)toCurrentZoom(m_longitude, m_zoom) - m_width/2;
+        int64 ann_lat = (int64)degreesToPixelsY(ann.latitude(), m_zoom);
+        int64 topleft_lat = (int64)toCurrentZoom(m_latitude, m_zoom) - m_height/2;
+
+        int annX = (int)(ann_lon - topleft_lon);
+        int annY = (int)(ann_lat - topleft_lat);
+
+        int deltaX = x - annX;
+        int deltaY = y - annY;
+
+        double distance = rho_math_sqrt(deltaX*deltaX + deltaY*deltaY);
+        if ((int)distance > ANNOTATION_SENSITIVITY_AREA_RADIUS)
+            continue;
+
+        return &ann;
+    }
+
+    return NULL;
 }
 
 bool ESRIMapView::handleClick(int x, int y)
 {
-    // TODO:
+    Annotation const *ann = getAnnotation(x, y);
+    Annotation const *selected = m_selected_annotation;
+    m_selected_annotation = ann;
+    if (ann && selected == ann)
+    {
+        // We have clicked already selected annotation
+        RHODESAPP().navigateToUrl(ann->url());
+        m_selected_annotation = NULL;
+        return true;
+    }
+    m_drawing_device->requestRedraw();
     return false;
 }
 
