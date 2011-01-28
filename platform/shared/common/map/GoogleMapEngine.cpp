@@ -2,6 +2,8 @@
 
 namespace rho
 {
+namespace common
+{
 namespace map
 {
 
@@ -22,5 +24,6 @@ void GoogleGeoCoding::resolve(String const &address, GeoCodingCallback *cb)
 }
 
 } // namespace map
+} // namespace common
 } // namespace rho
 

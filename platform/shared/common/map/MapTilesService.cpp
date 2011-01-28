@@ -2,10 +2,13 @@
 
 namespace rho
 {
+namespace common
+{
 namespace map
 {
 
 
 
 } // namespace map
+} // namespace common
 } // namespace rho
