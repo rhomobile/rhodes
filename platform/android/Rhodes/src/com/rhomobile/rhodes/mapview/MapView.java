@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
@@ -31,6 +34,8 @@ public class MapView extends MapActivity {
 	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "annotations.";
 	
 	private static MapView mc = null;
+	
+	private ServiceConnection mServiceConnection = null;
 	
 	private com.google.android.maps.MapView view;
 	private AnnotationsOverlay annOverlay;
@@ -59,8 +64,26 @@ public class MapView extends MapActivity {
 	}
 	
 	@Override
+	public void onDestroy() {
+		if (mServiceConnection != null) {
+			unbindService(mServiceConnection);
+			mServiceConnection = null;
+		}
+		super.onDestroy();
+	}
+	
+	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		
+		Intent intent = new Intent(this, RhodesService.class);
+		mServiceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceDisconnected(ComponentName name) {}
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {}
+		};
+		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 		
 		mc = this;
 		

@@ -382,6 +382,7 @@ public class RhodesService extends Service {
 		if (DEBUG)
 			Log.d(TAG, "+++ onDestroy");
 		sInstance = null;
+		getRhodesApplication().exit();
 	}
 	
 	@Override
