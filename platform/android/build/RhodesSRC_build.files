@@ -27,6 +27,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/TabbedMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/Annotation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/nativeview/RhoNativeViewManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NavBar.java
