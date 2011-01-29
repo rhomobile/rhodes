@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
@@ -52,6 +51,14 @@ public class MapView extends BaseActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+	
+	public void drawImage(int x, int y, Bitmap bm) {
+		// TODO:
+	}
+	
+	public void drawText(int x, int y, String text, int color) {
+		// TODO:
 	}
 	
 	public void redraw() {
