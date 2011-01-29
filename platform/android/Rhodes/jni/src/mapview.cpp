@@ -29,6 +29,8 @@ public:
 
     AndroidImage *clone();
 
+    jobject bitmap() const {return *m_bitmap;}
+
     int width() const {return m_width;}
     int height() const {return m_height;}
 
@@ -127,12 +129,31 @@ AndroidImage *AndroidImage::clone()
 
 void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 {
-    // TODO:
+    if (!image)
+        return;
+
+    jobject bitmap = ((AndroidImage*)image)->bitmap();
+
+    JNIEnv *env = jnienv();
+    jclass cls = env->GetObjectClass(m_device);
+    if (!cls) return;
+    jmethodID mid = getJNIClassMethod(env, cls, "drawImage", "(IILandroid/graphics/Bitmap;)V");
+    if (!mid) return;
+
+    env->CallVoidMethod(m_device, mid, x, y, bitmap);
 }
 
 void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
 {
-    // TODO:
+    JNIEnv *env = jnienv();
+    jclass cls = env->GetObjectClass(m_device);
+    if (!cls) return;
+    jmethodID mid = getJNIClassMethod(env, cls, "drawText", "(IILjava/lang/String;I)V");
+    if (!mid) return;
+
+    jstring jText = rho_cast<jstring>(text);
+    env->CallVoidMethod(m_device, mid, x, y, jText, color);
+    env->DeleteLocalRef(jText);
 }
 
 AndroidMapDevice::AndroidMapDevice()
@@ -168,7 +189,9 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
     if (!mid) return NULL;
 
-    jobject bitmap = env->CallStaticObjectMethod(cls, mid, rho_cast<jstring>(path));
+    jstring jPath = rho_cast<jstring>(path);
+    jobject bitmap = env->CallStaticObjectMethod(cls, mid, jPath);
+    env->DeleteLocalRef(jPath);
     return new AndroidImage(bitmap);
 }
 
