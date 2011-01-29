@@ -26,6 +26,7 @@ import java.util.Vector;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
 import android.content.Context;
@@ -64,6 +65,10 @@ public class TabbedMainView implements MainView {
 	
 	private int mBackgroundColor = 0;
 	private boolean mBackgroundColorEnable = false;
+	
+	
+	private boolean mIsReallyOnScreen = false;
+	private String mLoadUrlAfterLoadToScreen = null;
 	
 	private static class TabData {
 		public MainView view;
@@ -463,38 +468,6 @@ public class TabbedMainView implements MainView {
 		
 		host.setup();
 		
-		host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-			private TabHost tabHost = host;
-			
-			public void onTabChanged(String tabId) {
-				int sel_col = 0;
-				boolean sel_col_enable = false;
-				try {
-					int new_tabIndex = Integer.parseInt(tabId);
-					TabData data = tabData.elementAt(new_tabIndex);
-					if (data != null) {
-						if (data.disabled) {
-							// return to previous selected
-							tabHost.setCurrentTab(tabIndex);
-							return;
-						}
-					}
-					boolean real_change = (tabIndex != new_tabIndex);
-					tabIndex = new_tabIndex;
-					if ((data.reload && real_change) || !data.loaded ) {
-						RhodesService.loadUrl(data.url);
-						data.loaded = true;
-					}
-					sel_col = data.selected_color;
-					sel_col_enable = data.selected_color_enabled;
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, e);
-				}
-				processTabHostColors(tabHost, sel_col, sel_col_enable);
-			}
-		});
-		
 		TabHost.TabSpec spec;
 		DisplayMetrics metrics = new DisplayMetrics();
 		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
@@ -597,6 +570,18 @@ public class TabbedMainView implements MainView {
 			host.addTab(spec);
 		}
 		
+		tabWidget.measure(host.getWidth(), host.getHeight());
+		int hh = tabWidget.getMeasuredHeight();
+		if (hh < 64) {
+			hh = 64;
+		}
+		lpf.setMargins(0, hh, 0, 0);
+		host.updateViewLayout(frame, lpf);
+		
+	}
+
+	public void loadFirstPage() {
+
 		int sel_col = 0;
 		boolean sel_col_enable = false;
 		
@@ -621,20 +606,90 @@ public class TabbedMainView implements MainView {
 			sel_col = data.selected_color;
 			sel_col_enable = data.selected_color_enabled;
 		}
-		processTabHostColors(host, sel_col, sel_col_enable);
+		//processTabHostColors(host, sel_col, sel_col_enable);
 		
 		host.requestLayout();
-		
-		tabWidget.measure(host.getWidth(), host.getHeight());
-		int hh = tabWidget.getMeasuredHeight();
-		if (hh < 64) {
-			hh = 64;
+
+		host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+			private TabHost tabHost = host;
+			
+			public void onTabChanged(String tabId) {
+				//Utils.platformLog("TabbedMainView", "onTabChangeListener( "+tabId+" )");
+				int sel_col = 0;
+				boolean sel_col_enable = false;
+				try {
+					int new_tabIndex = Integer.parseInt(tabId);
+					TabData data = tabData.elementAt(new_tabIndex);
+					if (data != null) {
+						if (data.disabled) {
+							// return to previous selected
+							tabHost.setCurrentTab(tabIndex);
+							return;
+						}
+					}
+					boolean real_change = (tabIndex != new_tabIndex);
+					tabIndex = new_tabIndex;
+					if ((data.reload && real_change) || !data.loaded ) {
+						if (mIsReallyOnScreen) {
+							RhodesService.loadUrl(data.url);
+							data.loaded = true;
+						}
+					}
+					sel_col = data.selected_color;
+					sel_col_enable = data.selected_color_enabled;
+				}
+				catch (NumberFormatException e) {
+					Logger.E(TAG, e);
+				}
+				processTabHostColors(tabHost, sel_col, sel_col_enable);
+			}
+		});
+
+		if (data != null) {
+			try {
+				RhodesService.loadUrl(data.url);
+				data.loaded = true;
+				sel_col = data.selected_color;
+				sel_col_enable = data.selected_color_enabled;
+			}
+			catch (NumberFormatException e) {
+				Logger.E(TAG, e);
+			}
+			processTabHostColors(host, sel_col, sel_col_enable);
 		}
-		lpf.setMargins(0, hh, 0, 0);
-		host.updateViewLayout(frame, lpf);
+
+		host.setCurrentTab(tabIndex);
+		
+		RhodesActivity.getInstance().post( new Runnable() {
+			public void run() {
+				//Utils.platformLog("TabbedMainView", "invoke post setup code in UI thread");
+
+				// invoke in UI thread
+				int i;
+				for (i = 0; i < tabData.size(); i++) {
+					TabData data = tabData.elementAt(i);
+					if (i != tabIndex) {
+						data.loaded = false;
+					}
+					if (i != tabIndex) {
+						WebView wv = getWebView(i);
+						wv.clearView();
+						wv.clearCache(true);
+						wv.invalidate();
+						wv.loadData("", "", "");
+					}
+				}
+				TabData selected_data = tabData.elementAt(tabIndex);
+				RhodesService.loadUrl(selected_data.url);
+				selected_data.loaded = true;
+				mIsReallyOnScreen = true;
+			}
+		});
+		
 		
 	}
-
+	
+	
 	public View getView() {
 		return host;
 	}
@@ -656,10 +711,12 @@ public class TabbedMainView implements MainView {
 	}
 	
 	public void navigate(String url, int index) {
+		//Utils.platformLog("TabbedMainView", "navigate( "+url+" , "+String.valueOf(index)+" )");
 		getView(index).navigate(url, 0);
 	}
 	
 	public void reload(int index) {
+		//Utils.platformLog("TabbedMainView", "reload( "+String.valueOf(index)+" )");
 		getView(index).reload(0);
 	}
 	
@@ -668,6 +725,7 @@ public class TabbedMainView implements MainView {
 	}
 
 	public void switchTab(int index) {
+		//Utils.platformLog("TabbedMainView", "switchTab( "+String.valueOf(index)+" )");
 		host.setCurrentTab(index);
 		tabIndex = index;
 	}
