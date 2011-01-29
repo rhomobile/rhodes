@@ -45,12 +45,16 @@ IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
     if (!engine)
         return 0;
     IMapView *view = engine->createMapView(device);
+    if (!view)
+        return 0;
     m_cache.put(view, engine);
     return view;
 }
 
 void MapProvider::destroyMapView(IMapView *view)
 {
+    if (!view)
+        return;
     IMapEngine *engine = m_cache.get(view);
     if (!engine)
         return;
@@ -283,4 +287,9 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device)
         mapview->addAnnotation(*it);
 
     return mapview;
+}
+
+void rho_map_destroy(rho::common::map::IMapView *mapview)
+{
+    RHOMAPPROVIDER().destroyMapView(mapview);
 }
