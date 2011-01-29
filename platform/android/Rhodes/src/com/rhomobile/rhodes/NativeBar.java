@@ -80,8 +80,14 @@ public class NativeBar {
 					Logger.E(TAG, "Unknown bar type passed: " + type);
 				}
 				
-				if (v != null)
+				if (v != null) {
 					r.setMainView(v);
+					if (v instanceof TabbedMainView) {
+						// loading of default opened tab should be after TabView insert to real Views tree
+						TabbedMainView tmv = (TabbedMainView)v;
+						tmv.loadFirstPage();
+					}
+				}
 			}
 			catch (Exception e) {
 				reportFail("CreateTask", e);
