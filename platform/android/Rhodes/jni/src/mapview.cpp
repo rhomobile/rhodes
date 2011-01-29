@@ -44,8 +44,8 @@ private:
 class AndroidDrawingContext : public IDrawingContext
 {
 public:
-    AndroidDrawingContext(jobject device)
-        :m_device(device)
+    AndroidDrawingContext(jobject device, jobject canvas)
+        :m_device(device), m_canvas(canvas)
     {}
 
     void drawImage(int x, int y, IDrawingImage *image);
@@ -53,6 +53,7 @@ public:
 
 private:
     jobject m_device;
+    jobject m_canvas;
 };
 
 class AndroidMapDevice : public IDrawingDevice
@@ -73,7 +74,7 @@ public:
 
     void requestRedraw();
 
-    void paint();
+    void paint(jobject canvas);
 
 private:
     IMapView *m_mapview;
@@ -137,10 +138,10 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
     if (!cls) return;
-    jmethodID mid = getJNIClassMethod(env, cls, "drawImage", "(IILandroid/graphics/Bitmap;)V");
+    jmethodID mid = getJNIClassMethod(env, cls, "drawImage", "(Landroid/graphics/Canvas;IILandroid/graphics/Bitmap;)V");
     if (!mid) return;
 
-    env->CallVoidMethod(m_device, mid, x, y, bitmap);
+    env->CallVoidMethod(m_device, mid, m_canvas, x, y, bitmap);
 }
 
 void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
@@ -148,11 +149,11 @@ void AndroidDrawingContext::drawText(int x, int y, String const &text, int color
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
     if (!cls) return;
-    jmethodID mid = getJNIClassMethod(env, cls, "drawText", "(IILjava/lang/String;I)V");
+    jmethodID mid = getJNIClassMethod(env, cls, "drawText", "(Landroid/graphics/Canvas;IILjava/lang/String;I)V");
     if (!mid) return;
 
     jstring jText = rho_cast<jstring>(text);
-    env->CallVoidMethod(m_device, mid, x, y, jText, color);
+    env->CallVoidMethod(m_device, mid, m_canvas, x, y, jText, color);
     env->DeleteLocalRef(jText);
 }
 
@@ -234,12 +235,12 @@ void AndroidMapDevice::requestRedraw()
     env->CallVoidMethod(m_jdevice, mid);
 }
 
-void AndroidMapDevice::paint()
+void AndroidMapDevice::paint(jobject canvas)
 {
     if (!m_mapview)
         return;
 
-    std::auto_ptr<AndroidDrawingContext> context(new AndroidDrawingContext(m_jdevice));
+    std::auto_ptr<AndroidDrawingContext> context(new AndroidDrawingContext(m_jdevice, canvas));
     m_mapview->paint(context.get());
 }
 
@@ -251,10 +252,17 @@ namespace rhomap = rho::common::map;
 static rhomap::AndroidMapDevice *s_mapdevice = NULL;
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeDevice
-  (JNIEnv *env, jobject jDevice, jlong nativeDevice)
+  (JNIEnv *, jobject jDevice, jlong nativeDevice)
 {
     rhomap::AndroidMapDevice *device = (rhomap::AndroidMapDevice*)nativeDevice;
     device->attach(jDevice);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
+  (JNIEnv *, jobject, jlong nativeDevice, jobject canvas)
+{
+    rhomap::AndroidMapDevice *device = (rhomap::AndroidMapDevice*)nativeDevice;
+    device->paint(canvas);
 }
 
 RHO_GLOBAL void mapview_close()
