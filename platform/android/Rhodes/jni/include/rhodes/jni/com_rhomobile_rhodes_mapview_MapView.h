@@ -17,6 +17,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeDevice
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    paint
+ * Signature: (JLandroid/graphics/Canvas;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
+  (JNIEnv *, jobject, jlong, jobject);
+
 #ifdef __cplusplus
 }
 #endif
