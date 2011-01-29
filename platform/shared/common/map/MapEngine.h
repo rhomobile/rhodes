@@ -38,8 +38,8 @@ class IDrawingContext
 public:
     virtual ~IDrawingContext(){}
 
-    virtual void drawImage(int x, int y, IDrawingImage* image) = 0;
-    virtual void drawText(int x, int y, String &text, int color) = 0;
+    virtual void drawImage(int x, int y, IDrawingImage *image) = 0;
+    virtual void drawText(int x, int y, String const &text, int color) = 0;
 };
 
 class Annotation
