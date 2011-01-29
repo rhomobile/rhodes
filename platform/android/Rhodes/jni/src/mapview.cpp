@@ -6,8 +6,6 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapView"
 
-static rho::common::map::IMapView *s_mapview = NULL;
-
 namespace rho
 {
 namespace common
@@ -15,97 +13,260 @@ namespace common
 namespace map
 {
 
-class AndroidDrawingImage : public IDrawingImage
+class AndroidImage : public IDrawingImage
 {
+private:
+    AndroidImage(AndroidImage const &);
+    AndroidImage &operator=(AndroidImage const &);
+
+    AndroidImage(int *count, jobject *bitmap);
+
+    void init();
+
 public:
-    int width() const;
-    int height() const;
+    AndroidImage(jobject bitmap);
+    ~AndroidImage();
+
+    AndroidImage *clone();
+
+    int width() const {return m_width;}
+    int height() const {return m_height;}
+
+private:
+    int *m_count;
+    jobject *m_bitmap;
+    int m_width;
+    int m_height;
 };
 
-class AndroidDrawingDevice : public IDrawingDevice
+class AndroidDrawingContext : public IDrawingContext
 {
 public:
+    AndroidDrawingContext(jobject device)
+        :m_device(device)
+    {}
+
+    void drawImage(int x, int y, IDrawingImage* image);
+    void drawText(int x, int y, String &text, int color);
+
+private:
+    jobject m_device;
+};
+
+class AndroidMapDevice : public IDrawingDevice
+{
+public:
+    AndroidMapDevice();
+    ~AndroidMapDevice();
+
+    void attach(jobject jDevice) {m_jdevice = jDevice;}
+
+    void setMapView(IMapView *mapview) {m_mapview = mapview;}
+    IMapView *mapView() const {return m_mapview;}
+
     IDrawingImage* createImage(String const &path);
     IDrawingImage* createImage(void const *p, size_t s);
     IDrawingImage* cloneImage(IDrawingImage *image);
     void destroyImage(IDrawingImage* image);
 
     void requestRedraw();
+
+    void paint();
+
+private:
+    IMapView *m_mapview;
+    jobject m_jdevice;
 };
 
-int AndroidDrawingImage::width() const
+AndroidImage::AndroidImage(jobject bitmap)
+    :m_count(new int(1)), m_bitmap(new jobject(bitmap))
 {
-    // TODO:
-    return 0;
+    init();
 }
 
-int AndroidDrawingImage::height() const
+AndroidImage::AndroidImage(int *count, jobject *bitmap)
+    :m_count(count), m_bitmap(bitmap)
 {
-    // TODO:
-    return 0;
+    ++*m_count;
+    init();
 }
 
-IDrawingImage *AndroidDrawingDevice::createImage(String const &path)
+void AndroidImage::init()
 {
-    // TODO:
-    return 0;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_BITMAP);
+    if (!cls) return;
+    jmethodID midWidth = getJNIClassMethod(env, cls, "getWidth", "()I");
+    if (!midWidth) return;
+    jmethodID midHeight = getJNIClassMethod(env, cls, "getHeight", "()I");
+    if (!midHeight) return;
+
+    m_width = env->CallIntMethod(*m_bitmap, midWidth);
+    m_height = env->CallIntMethod(*m_bitmap, midHeight);
 }
 
-IDrawingImage *AndroidDrawingDevice::createImage(void const *p, size_t s)
+AndroidImage::~AndroidImage()
 {
-    // TODO:
-    return 0;
+    if (--*m_count == 0)
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "destroyImage", "(Landroid/graphics/Bitmap;)V");
+
+        if (cls && mid)
+            env->CallStaticVoidMethod(cls, mid, *m_bitmap);
+
+        delete m_count;
+    }
 }
 
-IDrawingImage *AndroidDrawingDevice::cloneImage(IDrawingImage *image)
+AndroidImage *AndroidImage::clone()
 {
-    // TODO:
-    return 0;
+    return new AndroidImage(m_count, m_bitmap);
 }
 
-void AndroidDrawingDevice::destroyImage(IDrawingImage *image)
+void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage* image)
 {
     // TODO:
 }
 
-void AndroidDrawingDevice::requestRedraw()
+void AndroidDrawingContext::drawText(int x, int y, String &text, int color)
 {
     // TODO:
+}
+
+AndroidMapDevice::AndroidMapDevice()
+    :m_mapview(NULL), m_jdevice(NULL)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(J)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, (jlong)this);
+}
+
+AndroidMapDevice::~AndroidMapDevice()
+{
+    if (m_jdevice)
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        if (!cls) return;
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "destroy", "(Lcom/rhomobile/rhodes/mapview/MapView;)V");
+        if (!mid) return;
+        env->CallStaticVoidMethod(cls, mid, m_jdevice);
+        m_jdevice = NULL;
+    }
+}
+
+IDrawingImage *AndroidMapDevice::createImage(String const &path)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return NULL;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
+    if (!mid) return NULL;
+
+    jobject bitmap = env->CallStaticObjectMethod(cls, mid, rho_cast<jstring>(path));
+    return new AndroidImage(bitmap);
+}
+
+IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return NULL;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "([B)Landroid/graphics/Bitmap;");
+    if (!mid) return NULL;
+
+    jbyteArray data = env->NewByteArray(size);
+    if (!data) return NULL;
+    env->SetByteArrayRegion(data, 0, size, (jbyte const *)p);
+
+    jobject bitmap = env->CallStaticObjectMethod(cls, mid, data);
+    return new AndroidImage(bitmap);
+}
+
+IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
+{
+    return image ? ((AndroidImage *)image)->clone() : NULL;
+}
+
+void AndroidMapDevice::destroyImage(IDrawingImage *image)
+{
+    delete image;
+}
+
+void AndroidMapDevice::requestRedraw()
+{
+    if (!m_jdevice)
+        return;
+
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return;
+    jmethodID mid = getJNIClassMethod(env, cls, "redraw", "()V");
+    if (!mid) return;
+    env->CallVoidMethod(m_jdevice, mid);
+}
+
+void AndroidMapDevice::paint()
+{
+    if (!m_mapview)
+        return;
+
+    std::auto_ptr<AndroidDrawingContext> context(new AndroidDrawingContext(m_jdevice));
+    m_mapview->paint(context.get());
 }
 
 } // namespace map
 } // namespace common
 } // namespace rho
 
-RHO_GLOBAL void mapview_create(rho_param *p)
+namespace rhomap = rho::common::map;
+static rhomap::AndroidMapDevice *s_mapdevice = NULL;
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeDevice
+  (JNIEnv *env, jobject jDevice, jlong nativeDevice)
 {
-    s_mapview = rho_map_create(p, new rho::common::map::AndroidDrawingDevice());
+    rhomap::AndroidMapDevice *device = (rhomap::AndroidMapDevice*)nativeDevice;
+    device->attach(jDevice);
 }
 
 RHO_GLOBAL void mapview_close()
 {
-    if (s_mapview)
-        RHOMAPPROVIDER().destroyMapView(s_mapview);
-    s_mapview = NULL;
+    if (s_mapdevice)
+        rho_map_destroy(s_mapdevice->mapView());
+    delete s_mapdevice;
+    s_mapdevice = NULL;
+}
+
+RHO_GLOBAL void mapview_create(rho_param *p)
+{
+    mapview_close();
+
+    s_mapdevice = new rhomap::AndroidMapDevice();
+    s_mapdevice->setMapView(rho_map_create(p, s_mapdevice));
 }
 
 RHO_GLOBAL VALUE mapview_state_started()
 {
-    return rho_ruby_create_boolean(!!s_mapview);
+    return rho_ruby_create_boolean(!!s_mapdevice);
 }
 
 RHO_GLOBAL double mapview_state_center_lat()
 {
-    if (!s_mapview)
+    if (!s_mapdevice)
         return 0;
-    return s_mapview->latitude();
+    return s_mapdevice->mapView()->latitude();
 }
 
 RHO_GLOBAL double mapview_state_center_lon()
 {
-    if (!s_mapview)
+    if (!s_mapdevice)
         return 0;
-    return s_mapview->longitude();
+    return s_mapdevice->mapView()->longitude();
 }
 
 #if 0
