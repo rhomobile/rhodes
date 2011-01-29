@@ -46,8 +46,8 @@ public:
         :m_device(device)
     {}
 
-    void drawImage(int x, int y, IDrawingImage* image);
-    void drawText(int x, int y, String &text, int color);
+    void drawImage(int x, int y, IDrawingImage *image);
+    void drawText(int x, int y, String const &text, int color);
 
 private:
     jobject m_device;
@@ -125,12 +125,12 @@ AndroidImage *AndroidImage::clone()
     return new AndroidImage(m_count, m_bitmap);
 }
 
-void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage* image)
+void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 {
     // TODO:
 }
 
-void AndroidDrawingContext::drawText(int x, int y, String &text, int color)
+void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
 {
     // TODO:
 }
