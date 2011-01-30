@@ -37,7 +37,7 @@ class SpecRunner < MSpecScript
 
     config[:files] << "spec/barcode_spec" unless System.get_property('device_name') == 'Win32'            
     config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
-    config[:files] << "spec/nativebar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
+    config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
     config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME

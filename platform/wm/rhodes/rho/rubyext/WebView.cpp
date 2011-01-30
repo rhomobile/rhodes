@@ -38,6 +38,11 @@ void rho_webview_navigate_back()
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_BACK, (LPARAM)0 );
 }
 
+void rho_webview_navigate_forward()
+{
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_FORWARD, (LPARAM)0 );
+}
+
 const char* rho_webview_execute_js(const char* js, int index) 
 {
     String strJS = "javascript:";

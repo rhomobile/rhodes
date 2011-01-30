@@ -309,7 +309,9 @@ public class System {
     		return ObjectFactory.createBoolean(DeviceInfo.isSimulator());
     	if ( strPropName.equalsIgnoreCase("has_calendar") )
     		return ObjectFactory.createBoolean(RhoCalendar.has_calendar());
-    	
+    	if ( strPropName.equalsIgnoreCase("has_touchscreen") )
+    		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.getInstance().hasTouchScreen());
+    	    	
     	return RubyConstant.QNIL;
     }
 

@@ -52,6 +52,7 @@
 #define IDM_SK2_MENU                    40002
 #define IDM_BACK                        40003
 #define IDM_NAVIGATE_BACK               40005
+#define IDM_NAVIGATE_FORWARD            40006
 #define IDM_REFRESH                     40007
 #define IDM_POPUP_MENU                  40009
 #define ID_SYNC                         40010
