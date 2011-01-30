@@ -879,6 +879,9 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 
 void CRhodesApp::loadUrl(String url)
 {
+    if ( url.length() == 0 )
+        return;
+
     boolean callback = false;
     if (String_startsWith(url, "callback:") )
     {
@@ -887,6 +890,22 @@ void CRhodesApp::loadUrl(String url)
     }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
     {
         rho_sys_app_exit();
+        return;
+    }else if ( strcasecmp(url.c_str(), "options")==0 )
+    {
+        rho_webview_navigate(getOptionsUrl().c_str(), 0);
+        return;
+    }else if ( strcasecmp(url.c_str(), "home")==0 )
+    {
+        rho_webview_navigate(getStartUrl().c_str(), 0);
+        return;
+    }else if ( strcasecmp(url.c_str(), "refresh")==0 )
+    {
+        rho_webview_refresh(0);
+        return;
+    }else if ( strcasecmp(url.c_str(), "back")==0 )
+    {
+        navigateBack();
         return;
     }
 

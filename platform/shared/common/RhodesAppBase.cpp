@@ -36,6 +36,7 @@ void CRhodesAppBase::initAppUrls()
 {
     m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
 	m_strDBDirPath = getRhoRootPath() + "db";
+    m_strAppRootPath = getRhoRootPath() + "apps";
 }
 
 String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
