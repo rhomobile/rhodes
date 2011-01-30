@@ -622,3 +622,60 @@ char* wce_wctomb(const wchar_t* w)
 }
 
 #endif
+
+
+#if !defined(_WIN32_WCE)
+#include <gdiplus.h>
+#include <Gdiplusinit.h>
+using namespace Gdiplus;
+
+#define   SelectBitmap(hdc, hbm)  ((HBITMAP)SelectObject((hdc), (HGDIOBJ)(HBITMAP)(hbm)))
+HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
+{
+    if ( !pszFileName || !*pszFileName )
+        return 0;
+
+    String strFileName = convertToStringA(pszFileName);
+    if ( String_endsWith(strFileName, ".bmp") )
+    {
+        return (HBITMAP)::LoadImage(NULL, pszFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    }
+
+    if ( !String_endsWith(strFileName, ".png") )
+        return 0;
+
+    static bool s_GDIInit = false;
+    if ( !s_GDIInit)
+    {
+        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+        ULONG_PTR gdiplusToken;
+        Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+        s_GDIInit = true;
+    }
+
+    Gdiplus::Image* image = new Gdiplus::Image(convertToStringW(strFileName).c_str());
+    SizeF sizePng;
+    Status res = image->GetPhysicalDimension(&sizePng);
+
+    HDC hDC = GetDC(getMainWnd());
+
+    HDC hdcMem = CreateCompatibleDC(hDC);
+    HBITMAP hBitmap  = ::CreateCompatibleBitmap(hDC, (int)sizePng.Width, (int)sizePng.Height);
+    HBITMAP hbmOld = SelectBitmap(hdcMem, hBitmap);
+
+    CRect rc(0,0,(int)sizePng.Width, (int)sizePng.Height);
+	COLORREF clrOld = ::SetBkColor(hdcMem, RGB(255,255,255));
+	::ExtTextOut(hdcMem, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
+	::SetBkColor(hdcMem, clrOld);
+
+    Gdiplus::Graphics grpx(hdcMem);
+    res = grpx.DrawImage(image, 0, 0, (int)sizePng.Width, (int)sizePng.Height);
+
+    SelectBitmap(hdcMem, hbmOld);
+    DeleteDC(hdcMem);
+    DeleteDC(hDC);
+
+    return hBitmap;
+}
+
+#endif

@@ -21,7 +21,7 @@ protected:
 
     static CRhodesAppBase* m_pInstance;
 
-    String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath;
+    String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath;
     String m_strHomeUrl;
 
     CRhodesAppBase(const String& strRootPath);
@@ -32,6 +32,7 @@ public:
 
     String resolveDBFilesPath(const String& strFilePath);
     const String& getRhoRootPath(){return m_strRhoRootPath;}
+    const String& getAppRootPath(){return m_strAppRootPath;}
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getDBDirPath(){return m_strDBDirPath; }
     const String& getHomeUrl(){ return m_strHomeUrl; }

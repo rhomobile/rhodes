@@ -453,24 +453,26 @@ def common_bundle_start(startdir, dest)
 
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
 
-  chdir File.join($srcdir,'apps')
-
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
-  Dir.glob("**/*.#{replace_platform}.*").each do |file|
-    oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
-    rm oldfile if File.exists? oldfile
-    mv file,oldfile
-  end
-  
-  Dir.glob("**/*.wm.*").each { |f| rm f }
-  Dir.glob("**/*.iphone.*").each { |f| rm f }
-  Dir.glob("**/*.bb.*").each { |f| rm f }
-  Dir.glob("**/*.bb6.*").each { |f| rm f }
-  Dir.glob("**/*.android.*").each { |f| rm f }
-  Dir.glob("**/.svn").each { |f| rm_rf f }
-  Dir.glob("**/CVS").each { |f| rm_rf f }
-
+  replace_platform = "wm" if replace_platform == 'win32'
+  [File.join($srcdir,'apps'), File.join($srcdir,'lib/res')].each do |folder|
+      chdir folder
+      
+      Dir.glob("**/*.#{replace_platform}.*").each do |file|
+        oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
+        rm oldfile if File.exists? oldfile
+        mv file,oldfile
+      end
+      
+      Dir.glob("**/*.wm.*").each { |f| rm f }
+      Dir.glob("**/*.iphone.*").each { |f| rm f }
+      Dir.glob("**/*.bb.*").each { |f| rm f }
+      Dir.glob("**/*.bb6.*").each { |f| rm f }
+      Dir.glob("**/*.android.*").each { |f| rm f }
+      Dir.glob("**/.svn").each { |f| rm_rf f }
+      Dir.glob("**/CVS").each { |f| rm_rf f }
+  end  
 end
 
 def create_manifest

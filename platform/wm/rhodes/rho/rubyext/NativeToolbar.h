@@ -7,10 +7,30 @@ class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>
 {
     DEFINE_LOGCLASS;
 
-    //CImageList m_imageList;
+    static const int  MIN_TOOLBAR_HEIGHT = 60;
+    static const int  MIN_TOOLBAR_IDENT = 12;
+
     int        m_nHeight;
-    rho::Vector<rho::String> m_arActions;
-    rho::Vector<rho::StringW> m_arLabels;
+    COLORREF   m_rgbBackColor, m_rgbMaskColor;
+    CImageList m_listImages;
+
+    struct CToolbarBtn
+    {
+        rho::StringW m_strLabelW;
+        rho::String m_strAction;
+        HBITMAP     m_hImage;
+        CSize       m_sizeImage;
+        int         m_nItemWidth;
+
+        CToolbarBtn( const char *label, const char *action, const char *icon, int nItemWidth );
+        ~CToolbarBtn();
+
+        rho::String toString();
+        rho::String getDefaultImagePath(const rho::String& strAction);
+        bool isSeparator();
+    };
+
+    rho::VectorPtr<CToolbarBtn*> m_arButtons;
 public:
     class CCreateTask: public rho::common::IRhoRunnable
     {
@@ -32,17 +52,22 @@ public:
     static CNativeToolbar& getInstance();
 
 	BEGIN_MSG_MAP(CNativeToolbar)
-		//MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
         //MESSAGE_HANDLER(WM_PAINT, OnPaint)
 	END_MSG_MAP()
-	
+	LRESULT OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+    virtual void OnFinalMessage(HWND /*hWnd*/);
+
     int getHeight(){ return m_nHeight;}
 
     void processCommand(int nItemPos);
+    bool isStarted();
 private:
 
-    void addToolbarButton(const char *label, const char *action, const char *icon, const char *colored_icon);
+    void addToolbarButton(CToolbarBtn& oButton, int nPos);
     void removeAllButtons();
+    CSize getMaxImageSize();
+    void alignSeparatorWidth();
 
     void createToolbar(rho_param *param);
     void removeToolbar();

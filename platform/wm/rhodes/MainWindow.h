@@ -97,6 +97,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
         COMMAND_ID_HANDLER(IDM_EXIT, OnExitCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE_BACK, OnNavigateBackCommand)
+        COMMAND_ID_HANDLER(IDM_NAVIGATE_FORWARD, OnNavigateForwardCommand)
         COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
 		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
@@ -136,6 +137,7 @@ private:
     LRESULT OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -248,3 +250,7 @@ private:
 
     CSyncStatusDlg m_SyncStatusDlg;
 };
+
+#if !defined(_WIN32_WCE)
+HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
+#endif
