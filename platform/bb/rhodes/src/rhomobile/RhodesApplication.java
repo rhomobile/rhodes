@@ -982,11 +982,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	try {
     		RubyProgram obj = new xruby.version.main();
 	    	String pngname = "/apps/app/loading.png";
-	    	String pngbbname = "/apps/app/loading.bb.png";
-	    	is = obj.getClass().getResourceAsStream(pngbbname);
-	    	if (is == null) {
-		    	is = obj.getClass().getResourceAsStream(pngname);
-	    	}
+	    	is = obj.getClass().getResourceAsStream(pngname);
 	    	if ( is != null )
 	    	{
 		    	int size = is.available();
@@ -1181,6 +1177,11 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	cookies.put(baseUrl, cookie);
     	
     	m_oBrowserAdapter.setCookie(url, cookie);
+    }
+    
+    public boolean hasTouchScreen()
+    {
+    	return _mainScreen.isTouchScreen();
     }
     
     private void createBrowserControl()

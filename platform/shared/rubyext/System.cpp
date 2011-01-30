@@ -56,6 +56,9 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (strcasecmp("is_emulator",szPropName) == 0) 
         return rho_ruby_create_boolean(0);
 
+	if (strcasecmp("has_touchscreen",szPropName) == 0)
+        return rho_ruby_create_boolean(1);
+
     RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
 
     return rho_ruby_get_NIL();

@@ -150,7 +150,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	m_browser.Create(m_hWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
 					 TEXT("Shell.Explorer"), // ProgID of the control
-                     WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
+                     WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
                      ID_BROWSER);
 	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
 
@@ -343,7 +343,6 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
   	CSplashScreen& splash = RHODESAPP().getSplashScreen();
     splash.start();
-#ifdef _WIN32_WCE	
     StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
 
 	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
@@ -374,7 +373,6 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
 
 	DeleteObject(hbitmap);
-#endif //_WIN32_WCE
 
 	EndPaint(&ps);
     bHandled = TRUE;
@@ -571,6 +569,14 @@ LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
         ShowWindow(SW_MINIMIZE);
     else*/
         m_spIWebBrowser2->GoBack();
+
+    return 0;
+}
+
+LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	restoreWebView();
+    m_spIWebBrowser2->GoForward();
 
     return 0;
 }
