@@ -19,9 +19,11 @@ public class MapView extends BaseActivity {
 	
 	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".MapView";
 	
-	public native void attachToNativeDevice(long nativeDevice);
 	public native void setSize(long nativeDevice, int width, int height);
 	public native void paint(long nativeDevice, Canvas canvas);
+	public native void destroy(long nativeDevice);
+	
+	private long mNativeDevice;
 
 	public static void create(long nativeDevice) {
 		RhodesActivity r = RhodesActivity.getInstance();
@@ -43,26 +45,32 @@ public class MapView extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		final long nativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
-		if (nativeDevice == 0)
+		mNativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
+		if (mNativeDevice == 0)
 			throw new IllegalArgumentException();
-		
-		attachToNativeDevice(nativeDevice);
 		
 		View view = new View(this) {
 			@Override
 			protected void dispatchDraw(Canvas canvas) {
 				super.dispatchDraw(canvas);
-				paint(nativeDevice, canvas);
+				paint(mNativeDevice, canvas);
 			}
 			
 			@Override
 			protected void onSizeChanged(int w, int h, int oldW, int oldH) {
 				super.onSizeChanged(w, h, oldW, oldH);
-				setSize(nativeDevice, w, h);
+				if (w != oldW || h != oldH)
+					setSize(mNativeDevice, w, h);
 			}
 		};
 		setContentView(view);
+	}
+	
+	@Override
+	protected void onStop() {
+		destroy(mNativeDevice);
+		mNativeDevice = 0;
+		super.onStop();
 	}
 	
 	@Override
