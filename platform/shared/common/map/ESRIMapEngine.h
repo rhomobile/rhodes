@@ -129,6 +129,7 @@ private:
 
 public:
     ESRIMapView(IDrawingDevice *device);
+    ~ESRIMapView();
 
     void setSize(int width, int height);
     int width() const {return m_width;}
@@ -153,7 +154,9 @@ public:
     void moveTo(String const &address);
     void move(int dx, int dy);
     double latitude() const;
+    uint64 latitudeInt() const {return m_latitude;}
     double longitude() const;
+    uint64 longitudeInt() const {return m_longitude;}
 
     void addAnnotation(Annotation const &ann);
 
@@ -163,7 +166,6 @@ public:
 
 private:
     String const &getMapUrl();
-    void setCoordinatesSpan();
     void setCoordinates(uint64 latitude, uint64 longitude);
 
     IDrawingDevice *drawingDevice() const {return m_drawing_device;}
@@ -196,8 +198,6 @@ private:
     String m_maptype;
 
     int m_zoom;
-    double m_lat_delta;
-    double m_lon_delta;
     uint64 m_latitude;
     uint64 m_longitude;
 

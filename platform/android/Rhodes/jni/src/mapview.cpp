@@ -4,7 +4,7 @@
 #include <common/map/MapEngine.h>
 
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "MapView"
+#define DEFAULT_LOGCATEGORY "AndroidMapEngine"
 
 namespace rho
 {
@@ -21,7 +21,7 @@ private:
 
     AndroidImage(int *count, jobject *bitmap);
 
-    void init();
+    void init(JNIEnv *env);
 
 public:
     AndroidImage(jobject bitmap);
@@ -58,11 +58,17 @@ private:
 
 class AndroidMapDevice : public IDrawingDevice
 {
+private:
+    AndroidMapDevice(AndroidMapDevice const &);
+    AndroidMapDevice &operator=(AndroidMapDevice const &);
+
 public:
-    AndroidMapDevice();
+    AndroidMapDevice(rho_param *p);
     ~AndroidMapDevice();
 
     void attach(jobject jDevice) {m_jdevice = jDevice;}
+
+    rho_param *params() const {return m_params;}
 
     void setMapView(IMapView *mapview) {m_mapview = mapview;}
     IMapView *mapView() const {return m_mapview;}
@@ -77,6 +83,7 @@ public:
     void paint(jobject canvas);
 
 private:
+    rho_param *m_params;
     IMapView *m_mapview;
     jobject m_jdevice;
 };
@@ -84,21 +91,21 @@ private:
 AndroidImage::AndroidImage(jobject bitmap)
     :m_count(new int(1)), m_bitmap(new jobject(bitmap))
 {
-    init();
+    JNIEnv *env = jnienv();
+    env->NewGlobalRef(bitmap);
+    env->DeleteLocalRef(bitmap);
+    init(env);
 }
 
 AndroidImage::AndroidImage(int *count, jobject *bitmap)
     :m_count(count), m_bitmap(bitmap)
 {
     ++*m_count;
-    init();
+    init(jnienv());
 }
 
-void AndroidImage::init()
+void AndroidImage::init(JNIEnv *env)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
-
-    JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_BITMAP);
     if (!cls) return;
     jmethodID midWidth = getJNIClassMethod(env, cls, "getWidth", "()I");
@@ -112,7 +119,6 @@ void AndroidImage::init()
 
 AndroidImage::~AndroidImage()
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
     if (--*m_count == 0)
     {
         JNIEnv *env = jnienv();
@@ -122,19 +128,21 @@ AndroidImage::~AndroidImage()
         if (cls && mid)
             env->CallStaticVoidMethod(cls, mid, *m_bitmap);
 
+        env->DeleteGlobalRef(*m_bitmap);
+
+        delete m_bitmap;
         delete m_count;
     }
 }
 
 AndroidImage *AndroidImage::clone()
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
     return new AndroidImage(m_count, m_bitmap);
 }
 
 void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE3("drawImage: x=%d, y=%d, image=%p", x, y, image);
     if (!image)
         return;
 
@@ -151,7 +159,7 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 
 void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE4("drawText: x=%d, y=%d, text=%s, color=%d", x, y, text.c_str(), color);
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
     if (!cls) return;
@@ -163,10 +171,11 @@ void AndroidDrawingContext::drawText(int x, int y, String const &text, int color
     env->DeleteLocalRef(jText);
 }
 
-AndroidMapDevice::AndroidMapDevice()
-    :m_mapview(NULL), m_jdevice(NULL)
+AndroidMapDevice::AndroidMapDevice(rho_param *p)
+    :m_params(rho_param_dup(p)), m_mapview(NULL), m_jdevice(NULL)
 {
     RAWTRACE(__PRETTY_FUNCTION__);
+
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return;
@@ -178,6 +187,8 @@ AndroidMapDevice::AndroidMapDevice()
 AndroidMapDevice::~AndroidMapDevice()
 {
     RAWTRACE(__PRETTY_FUNCTION__);
+
+    rho_param_free(m_params);
 
     if (!m_jdevice)
         return;
@@ -193,7 +204,7 @@ AndroidMapDevice::~AndroidMapDevice()
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE1("createImage: %s", path.c_str());
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
@@ -209,7 +220,7 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path)
 
 IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
@@ -222,24 +233,28 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
     env->SetByteArrayRegion(data, 0, size, (jbyte const *)p);
 
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, data);
-    return new AndroidImage(bitmap);
+    IDrawingImage *image = new AndroidImage(bitmap);
+    RAWTRACE1("createImage: return image=%p", image);
+    return image;
 }
 
 IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
-    return image ? ((AndroidImage *)image)->clone() : NULL;
+    RAWTRACE1("cloneImage: image=%p", image);
+    IDrawingImage *cloned = image ? ((AndroidImage *)image)->clone() : NULL;
+    RAWTRACE1("cloneImage: return image=%p", cloned);
+    return cloned;
 }
 
 void AndroidMapDevice::destroyImage(IDrawingImage *image)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE1("destroyImage: image=%p", image);
     delete image;
 }
 
 void AndroidMapDevice::requestRedraw()
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE("requestRedraw");
 
     if (!m_jdevice)
         return;
@@ -254,7 +269,7 @@ void AndroidMapDevice::requestRedraw()
 
 void AndroidMapDevice::paint(jobject canvas)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
+    RAWTRACE("paint");
 
     if (!m_mapview)
         return;
@@ -270,20 +285,17 @@ void AndroidMapDevice::paint(jobject canvas)
 namespace rhomap = rho::common::map;
 static rhomap::AndroidMapDevice *s_mapdevice = NULL;
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeDevice
-  (JNIEnv *, jobject jDevice, jlong nativeDevice)
-{
-    RAWTRACE("Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeDevice");
-    rhomap::AndroidMapDevice *device = (rhomap::AndroidMapDevice*)nativeDevice;
-    device->attach(jDevice);
-}
-
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
-  (JNIEnv *, jobject, jlong nativeDevice, jint width, jint height)
+  (JNIEnv *, jobject jDevice, jlong nativeDevice, jint width, jint height)
 {
     RAWTRACE("Java_com_rhomobile_rhodes_mapview_MapView_setSize");
     rhomap::AndroidMapDevice *device = (rhomap::AndroidMapDevice*)nativeDevice;
     rhomap::IMapView *mapview = device->mapView();
+    if (!mapview) {
+        mapview = rho_map_create(device->params(), device, width, height);
+        device->setMapView(mapview);
+        device->attach(jDevice);
+    }
     if (mapview)
         mapview->setSize(width, height);
 }
@@ -294,6 +306,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
     RAWTRACE("Java_com_rhomobile_rhodes_mapview_MapView_paint");
     rhomap::AndroidMapDevice *device = (rhomap::AndroidMapDevice*)nativeDevice;
     device->paint(canvas);
+}
+
+RHO_GLOBAL void mapview_close();
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_destroy
+  (JNIEnv *, jobject, jlong nativeDevice)
+{
+    RAWTRACE("Java_com_rhomobile_rhodes_mapview_MapView_destroy");
+    mapview_close();
 }
 
 RHO_GLOBAL void mapview_close()
@@ -312,10 +333,7 @@ RHO_GLOBAL void mapview_create(rho_param *p)
 {
     mapview_close();
 
-    s_mapdevice = new rhomap::AndroidMapDevice();
-    rhomap::IMapView *mapview = rho_map_create(p, s_mapdevice);
-    RAWTRACE1("mapview_create: mapview=%p", mapview);
-    s_mapdevice->setMapView(mapview);
+    s_mapdevice = new rhomap::AndroidMapDevice(p);
 }
 
 RHO_GLOBAL VALUE mapview_state_started()
