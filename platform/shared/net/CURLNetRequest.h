@@ -73,6 +73,8 @@ private:
     int getResponseCode(CURLcode err, Vector<char> const &body, IRhoSession* oSession);
     int getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession);
     String makeCookies();
+    INetResponse *makeResponse(String const &body, int nErrorCode);
+    INetResponse *makeResponse(Vector<char> const &body, int nErrorCode);
     INetResponse *makeResponse(char const *body, size_t bodysize, int nErrorCode);
 	CURLcode doCURLPerform(const String& strUrl);
 	
