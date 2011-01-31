@@ -251,7 +251,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             continue;
         }
         
-        nRespCode = getResponseCode(err, &respBody[0], respBody.size(), oSession);
+        nRespCode = getResponseCode(err, respBody, oSession);
         break;
     }
 
@@ -344,7 +344,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     
     rho_net_impl_network_indicator(0);
     
-    nRespCode = getResponseCode(err, strRespBody.c_str(), strRespBody.size(), oSession);
+    nRespCode = getResponseCode(err, strRespBody, oSession);
     return makeResponse(strRespBody.c_str(), strRespBody.size(), nRespCode);
 }
 
@@ -396,14 +396,29 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
 	
     rho_net_impl_network_indicator(0);
     
-    nRespCode = getResponseCode(err, strRespBody.c_str(), strRespBody.size(), oSession);
+    nRespCode = getResponseCode(err, strRespBody, oSession);
     return makeResponse(strRespBody.c_str(), strRespBody.size(), nRespCode);
+}
+
+int CURLNetRequest::getResponseCode(CURLcode err, String const &body, IRhoSession* oSession)
+{
+    return getResponseCode(err, body.c_str(), body.size(), oSession);
+}
+
+int CURLNetRequest::getResponseCode(CURLcode err, Vector<char> const &body, IRhoSession* oSession)
+{
+    return getResponseCode(err, &body[0], body.size(), oSession);
 }
 
 int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession )	
 {    
     //if (err != CURLE_OK)
     //    return -1;
+
+    if (!body) {
+        body = "";
+        bodysize = 0;
+    }
 	
     long statusCode = 0;
     CURL *curl = m_curl.curl();
