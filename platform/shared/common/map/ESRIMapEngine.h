@@ -163,6 +163,7 @@ public:
 
 private:
     String const &getMapUrl();
+    void setCoordinatesSpan();
     void setCoordinates(uint64 latitude, uint64 longitude);
 
     IDrawingDevice *drawingDevice() const {return m_drawing_device;}
@@ -195,6 +196,8 @@ private:
     String m_maptype;
 
     int m_zoom;
+    double m_lat_delta;
+    double m_lon_delta;
     uint64 m_latitude;
     uint64 m_longitude;
 
