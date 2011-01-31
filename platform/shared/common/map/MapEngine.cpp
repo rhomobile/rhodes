@@ -48,8 +48,6 @@ void MapProvider::unregisterMapEngine(String const &id)
 
 IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
-
     IMapEngine *engine = m_engines.get(id);
     if (!engine)
         return 0;
@@ -62,8 +60,6 @@ IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
 
 void MapProvider::destroyMapView(IMapView *view)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
-
     if (!view)
         return;
     IMapEngine *engine = m_cache.get(view);
@@ -86,7 +82,7 @@ String Annotation::make_address(double latitude, double longitude)
 
 namespace rhomap = rho::common::map;
 
-rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device)
+rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, int width, int height)
 {
     if (!p || !p->type == RHO_PARAM_HASH)
         rb_raise(rb_eArgError, "Wrong input parameter (expect Hash)");
@@ -277,6 +273,8 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device)
     rhomap::IMapView *mapview = RHOMAPPROVIDER().createMapView(providerId, device);
     if (!mapview)
         return NULL;
+
+    mapview->setSize(width, height);
 
     if (map_type)
         mapview->setMapType(map_type);

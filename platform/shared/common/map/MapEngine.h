@@ -167,7 +167,7 @@ private:
 
 inline rho::common::map::MapProvider &RHOMAPPROVIDER() {return rho::common::map::MapProvider::getInstance();}
 
-rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDrawingDevice *device);
+rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDrawingDevice *device, int width, int height);
 void rho_map_destroy(rho::common::map::IMapView *mapview);
 
 #endif
