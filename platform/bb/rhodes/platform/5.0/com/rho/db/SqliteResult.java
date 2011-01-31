@@ -18,7 +18,7 @@ public class SqliteResult implements IDBResult
 	private Cursor m_cursor;
 	private Row m_row;
 	private SqliteCopyResult m_resCopy;
-	private boolean m_bNonUnique = false;
+	private boolean m_bNonUnique = false, m_bCachedStatement = false;
 	SqliteResult()
 	{
 	}
@@ -32,9 +32,10 @@ public class SqliteResult implements IDBResult
 		return m_bNonUnique;
 	}
 	
-	SqliteResult( Statement st )throws DatabaseException
+	SqliteResult( Statement st, boolean bCachedStatement )throws DatabaseException
 	{
 		m_st = st;
+		m_bCachedStatement = bCachedStatement;
 		if ( m_st != null )
 		{
 			m_cursor = m_st.getCursor();
@@ -47,20 +48,25 @@ public class SqliteResult implements IDBResult
 	
 	public void close()
 	{
-		try
+/*		try
 		{
 			if ( m_cursor != null )
 				m_cursor.close();
 		}catch(DatabaseException exc)
 		{
 			LOG.ERROR("cursor close failed.", exc);
-		}
+		}*/
 
 		try
 		{
 			
 			if ( m_st != null )
-				m_st.close();
+			{
+				if ( m_bCachedStatement )
+					m_st.reset();
+				else
+					m_st.close();
+			}
 		}catch(DatabaseException exc)
 		{
 			LOG.ERROR("statement close failed.", exc);

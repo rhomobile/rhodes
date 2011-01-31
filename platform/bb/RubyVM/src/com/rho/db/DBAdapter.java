@@ -265,7 +265,7 @@ public class DBAdapter extends RubyBasic
     	if (m_nTransactionCounter == 0)
     	{
     		m_dbStorage.onBeforeCommit();
-	    	getAttrMgr().save(this);
+	    	//getAttrMgr().save(this);
 	    	m_dbStorage.commit();
     	}
     	
@@ -568,7 +568,7 @@ public class DBAdapter extends RubyBasic
 		//executeSQL("CREATE INDEX by_src ON object_values (source_id)", null);
 		m_bIsOpen = true;
 		
-		getAttrMgr().load(this);
+		//getAttrMgr().load(this);
 		
 		m_dbStorage.setDbCallback(new DBCallback(this));
 		
@@ -646,7 +646,7 @@ public class DBAdapter extends RubyBasic
 		
 		IDBStorage db = null;
 		try{
-		    getAttrMgr().reset(this);
+		    //getAttrMgr().reset(this);
 			
 			Vector vecIncludes = RhoRuby.makeVectorStringFromArray(vInclude);
 			Vector vecExcludes = RhoRuby.makeVectorStringFromArray(vExclude);
@@ -721,7 +721,7 @@ public class DBAdapter extends RubyBasic
 			m_dbStorage.open(m_strDBPath, getSqlScript() );
 			m_bIsOpen = true;
 			
-			getAttrMgr().load(this);
+			//getAttrMgr().load(this);
 			
 			m_dbStorage.setDbCallback(new DBCallback(this));
 			
@@ -870,7 +870,7 @@ public class DBAdapter extends RubyBasic
 			m_dbStorage.open(m_strDBPath, getSqlScript() );
 			m_bIsOpen = true;
 			
-			getAttrMgr().load(this);
+			//getAttrMgr().load(this);
 			
 			m_dbStorage.setDbCallback(new DBCallback(this));
 			
@@ -965,13 +965,18 @@ public class DBAdapter extends RubyBasic
 	    		}
 	    		
 	    		IDBResult rows = executeSQL( strSql, values);
-	    		RubyString[] colNames = getOrigColNames(rows);
+	    		RubyString[] colNames = null;
 	    		
 	    		for( ; !rows.isEnd(); rows.next() )
 	    		{
 	    			RubyHash row = ObjectFactory.createHash();
 	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+	    			{
+	    				if ( colNames == null )
+	    					colNames = getOrigColNames(rows);
+	    				
 	    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+	    			}
 	    			
 	    			res.add( row );
 	    		}
@@ -1007,6 +1012,8 @@ public class DBAdapter extends RubyBasic
 		{
 			DBAdapter db = (DBAdapter)enumDBs.nextElement();
 			db.getAttrMgr().loadBlobAttrs(db);
+			if ( !db.getAttrMgr().hasBlobAttrs() )
+				db.m_dbStorage.setDbCallback(null);
 		}
     }
     
@@ -1211,7 +1218,7 @@ public class DBAdapter extends RubyBasic
 				LOG.ERROR("DBCallback.OnDeleteAllFromTable: Error delete files from table: " + tableName, exc);				
 			}
 		}*/
-
+/*
 		public void onAfterInsert(String tableName, IDBResult rows2Insert)
 		{
 			try
@@ -1230,7 +1237,7 @@ public class DBAdapter extends RubyBasic
 			{
 				LOG.ERROR("onAfterInsert failed.", exc);
 			}
-		}
+		}*/
 		
 		public void onBeforeUpdate(String tableName, IDBResult rows2Delete, int[] cols)
 		{
@@ -1298,8 +1305,8 @@ public class DBAdapter extends RubyBasic
 					String attrib = rows2Delete.getStringByIdx(1);
 					String value = rows2Delete.getStringByIdx(3);
 
-					if (cols == null) //delete
-						m_db.getAttrMgr().remove(nSrcID, attrib);
+					//if (cols == null) //delete
+					//	m_db.getAttrMgr().remove(nSrcID, attrib);
 					
 				    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
 				    	processBlobDelete(nSrcID, attrib, value);

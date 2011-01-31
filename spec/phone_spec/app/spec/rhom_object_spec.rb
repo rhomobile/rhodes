@@ -389,13 +389,13 @@ describe "Rhom::RhomObject" do
   end
   
   it "should destroy a record" do
-    count = getAccount.find(:all).size
-    @account = getAccount.find(:all)[0]
+    count = getAccount.count
+    @account = getAccount.find(:first)
     destroy_id = @account.object
     @account.destroy
     @account_nil = getAccount.find(destroy_id)
     @account_nil.should be_nil
-    new_count = getAccount.find(:all).size
+    new_count = getAccount.count
     (count - 1).should == new_count
   end
   
@@ -415,12 +415,12 @@ describe "Rhom::RhomObject" do
   
   it "should fully update a record" do
     new_attributes = {"name"=>"Mobio US", "industry"=>"Electronics"}
-    @account = getAccount.find(:all).first
+    @account = getAccount.find(:first)
     @account.update_attributes(new_attributes)
     @account.name.should == "Mobio US"
     @account.industry.should == "Electronics"
     
-    @new_acct = getAccount.find(:all).first
+    @new_acct = getAccount.find(:first)
     
     @new_acct.name.should == "Mobio US"
     @new_acct.industry.should == "Electronics"
@@ -673,7 +673,7 @@ describe "Rhom::RhomObject" do
   end
   
   it "should find with conditions" do
-    @accts = getAccount.find(:all, :conditions => {'industry' => 'Technology'}, :order => 'name', :orderdir => "DESC")
+    @accts = getAccount.find(:all, :conditions => {'industry' => 'Technology'}, :order => 'name', :orderdir => "desc")
     @accts.length.should == 2
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
@@ -686,12 +686,6 @@ describe "Rhom::RhomObject" do
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
-  end
-
-  it "should find with SQL multiple conditions" do
-    @acct = getAccount.find(:first, :conditions => [ "name = ? AND industry = ?", "'Mobio India'", "'Technology'" ])
-    @acct.name.should == "Mobio India"
-    @acct.industry.should == "Technology"
   end
 
   it "should find with advanced OR conditions" do
@@ -969,21 +963,10 @@ describe "Rhom::RhomObject" do
     
   end
   
-  it "should return records when order by is nil for some records" do
-    @accts = getAccount.find(:all, :order => 'shipping_address_country', :dont_ignore_missed_attribs => true)
-    @accts.length.should == 2
-    
-    if ( @accts[1].name == "Aeroprise" )
-        @accts[1].name.should == "Aeroprise"
-    else
-        @accts[0].name.should == "Aeroprise"
-    end        
-  end
-
   it "should delete_all" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = getAccount.create(vars)
-    getAccount.find(:all).length.should > 0
+    getAccount.count.should > 0
     if $spec_settings[:sync_model]        
         records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
         records.length.should == 0
@@ -995,7 +978,7 @@ describe "Rhom::RhomObject" do
   
     getAccount.delete_all
     
-    getAccount.find(:all).length.should == 0
+    getAccount.count.should == 0
 
     if $spec_settings[:sync_model]        
         records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'delete'} )
@@ -1277,42 +1260,61 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Aeroprise"
     @accts[0].industry.should == "Technology"
   end
+  
+#=begin
+  it "should find with sql multiple conditions" do
+    @acct = getAccount.find(:first, :conditions => [ "name = ? AND industry = ?", "'Mobio India'", "'Technology'" ], :select => ['name', 'industry'])
+    @acct.name.should == "Mobio India"
+    @acct.industry.should == "Technology"
+  end
 
   it "should support sql conditions arg" do
-    @accts = getAccount.find(:all, :conditions => "name = 'Mobio India'")
+    @accts = getAccount.find(:all, :conditions => "name = 'Mobio India'", :select => ['name', 'industry'])
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
 
   it "should support simple sql conditions" do
-    @accts = getAccount.find(:all, :conditions => ["name = ?", "'Mobio India'"])
+    @accts = getAccount.find(:all, :conditions => ["name = ?", "'Mobio India'"], :select => ['name', 'industry'])
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
 
   it "should support complex sql conditions arg" do
-    @accts = getAccount.find(:all, :conditions => "name like 'Mobio%'")
+    @accts = getAccount.find(:all, :conditions => "name like 'Mobio%'", :select => ['name', 'industry'])
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
   
   it "should support sql conditions single filter" do
-    @accts = getAccount.find(:all, :conditions => ["name like ?", "'Mob%'"])
+    @accts = getAccount.find(:all, :conditions => ["name like ?", "'Mob%'"], :select => ['name', 'industry'])
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
   
   it "should support sql conditions with multiple filters" do
-    @accts = getAccount.find(:all, :conditions => ["name like ? and industry like ?", "'Mob%'", "'Tech%'"])
+    @accts = getAccount.find(:all, :conditions => ["name like ? and industry like ?", "'Mob%'", "'Tech%'"], :select => ['name', 'industry'])
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
-
+  
+  it "should return records when order by is nil for some records" do
+    @accts = getAccount.find(:all, :order => 'shipping_address_country', :dont_ignore_missed_attribs => true, :select => ['name'])
+    @accts.length.should == 2
+    
+    if ( @accts[1].name == "Aeroprise" )
+        @accts[1].name.should == "Aeroprise"
+    else
+        @accts[0].name.should == "Aeroprise"
+    end        
+  end
+  
+#=end
 end
 
 describe "Rhom#paginate" do
