@@ -275,7 +275,8 @@ namespace "config" do
     $vendor = $app_config["vendor"]
     $vendor = "rhomobile" if $vendor.nil?
     $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
-    $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
+    $app_package_name = $app_config["android"] ? $app_config["android"]["package_name"] : nil
+    $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
