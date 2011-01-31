@@ -20,6 +20,7 @@ public class MapView extends BaseActivity {
 	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".MapView";
 	
 	public native void attachToNativeDevice(long nativeDevice);
+	public native void setSize(long nativeDevice, int width, int height);
 	public native void paint(long nativeDevice, Canvas canvas);
 
 	public static void create(long nativeDevice) {
@@ -45,6 +46,7 @@ public class MapView extends BaseActivity {
 		final long nativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
 		if (nativeDevice == 0)
 			throw new IllegalArgumentException();
+		
 		attachToNativeDevice(nativeDevice);
 		
 		View view = new View(this) {
@@ -52,6 +54,12 @@ public class MapView extends BaseActivity {
 			protected void dispatchDraw(Canvas canvas) {
 				super.dispatchDraw(canvas);
 				paint(nativeDevice, canvas);
+			}
+			
+			@Override
+			protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+				super.onSizeChanged(w, h, oldW, oldH);
+				setSize(nativeDevice, w, h);
 			}
 		};
 		setContentView(view);

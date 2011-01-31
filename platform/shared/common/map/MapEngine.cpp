@@ -3,6 +3,11 @@
 #include "common/map/ESRIMapEngine.h"
 #include "ruby.h"
 
+#include <algorithm>
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "MapEngine"
+
 namespace rho
 {
 namespace common
@@ -25,6 +30,7 @@ MapProvider::MapProvider()
 
 void MapProvider::registerMapEngine(String const &id, IMapEngine *engine)
 {
+    RAWTRACE2("Register map engine: id=%s, engine=%p", id.c_str(), engine);
     IMapEngine *old = m_engines.get(id);
     if (old)
         delete old;
@@ -33,6 +39,7 @@ void MapProvider::registerMapEngine(String const &id, IMapEngine *engine)
 
 void MapProvider::unregisterMapEngine(String const &id)
 {
+    RAWTRACE1("Unregister map engine: id=%s", id.c_str());
     IMapEngine *engine = m_engines.get(id);
     if (engine)
         delete engine;
@@ -41,6 +48,8 @@ void MapProvider::unregisterMapEngine(String const &id)
 
 IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
+
     IMapEngine *engine = m_engines.get(id);
     if (!engine)
         return 0;
@@ -53,6 +62,8 @@ IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
 
 void MapProvider::destroyMapView(IMapView *view)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
+
     if (!view)
         return;
     IMapEngine *engine = m_cache.get(view);
@@ -98,13 +109,14 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device)
             annotations = value;
     }
 
-    char const *providerId = "google";
+    std::string providerId = "google";
     if (provider)
     {
         if (provider->type != RHO_PARAM_STRING)
             rb_raise(rb_eArgError, "Wrong 'provider' value (expect String)");
         providerId = provider->v.string;
     }
+    std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);
 
     char *map_type = NULL;
     bool use_center_radius = false;
