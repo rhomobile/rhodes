@@ -221,8 +221,8 @@ public class Alert {
 
 	private static void makeDialog( String title, String message, Drawable icon, Vector<CustomButton> buttons, String callback)
 	{
-		if (message == null)
-			return;
+		//if (message == null)
+		//	return;
 
         Context ctx = RhodesActivity.getInstance();
         int nTopPadding = 10;
@@ -259,12 +259,15 @@ public class Alert {
 			top.addView(imgView);
 		}
 		
-		TextView textView = new TextView(ctx);
-		s_textView = textView;
-		textView.setText(message);
-		textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		textView.setGravity(Gravity.CENTER);
-		top.addView(textView);
+		if ( message != null )
+		{
+		    TextView textView = new TextView(ctx);
+		    s_textView = textView;
+		    textView.setText(message);
+		    textView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		    textView.setGravity(Gravity.CENTER);
+		    top.addView(textView);
+        }
 		
 		LinearLayout bottom = new LinearLayout(ctx);
 		bottom.setOrientation(buttons.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
