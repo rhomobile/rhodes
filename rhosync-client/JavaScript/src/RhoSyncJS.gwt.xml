@@ -13,23 +13,9 @@
   <!-- Other module inherits                                      -->
   <inherits name='RhoSyncStubsJS'/>
 
-
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='gwtstuff.client.RhoSyncJS'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='com/rho'/>
-  <source path='gwtstuff/client'/>
-  <source path='gwtstuff/shared'/>
-
-<!--
-
-  <source path='com/rho'/>
-  <source path='com/rho/db'/>
-  <source path='com/rho/file'/>
-  <source path='com/rho/net'/>
-  <source path='com/rho/rjson'/>
-  <source path='com/rho/sync'/>
--->
 
 </module>
