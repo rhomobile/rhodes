@@ -19,6 +19,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeD
 
 /*
  * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    setSize
+ * Signature: (JII)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
+  (JNIEnv *, jobject, jlong, jint, jint);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
  * Method:    paint
  * Signature: (JLandroid/graphics/Canvas;)V
  */
