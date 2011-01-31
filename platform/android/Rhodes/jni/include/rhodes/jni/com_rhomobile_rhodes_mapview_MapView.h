@@ -11,14 +11,6 @@ extern "C" {
 #define com_rhomobile_rhodes_mapview_MapView_DEBUG 0L
 /*
  * Class:     com_rhomobile_rhodes_mapview_MapView
- * Method:    attachToNativeDevice
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_attachToNativeDevice
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_rhomobile_rhodes_mapview_MapView
  * Method:    setSize
  * Signature: (JII)V
  */
@@ -32,6 +24,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
   (JNIEnv *, jobject, jlong, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    destroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_destroy
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }
