@@ -12,6 +12,7 @@ import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class MapView extends BaseActivity {
 	
@@ -35,10 +36,6 @@ public class MapView extends BaseActivity {
 		Intent intent = new Intent(r, MapView.class);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", nativeDevice);
 		r.startActivity(intent);
-	}
-	
-	public static void destroy(MapView device) {
-		device.finish();
 	}
 	
 	@Override
@@ -90,7 +87,11 @@ public class MapView extends BaseActivity {
 	}
 	
 	public void redraw() {
-		getWindow().getDecorView().invalidate();
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				getWindow().getDecorView().invalidate();
+			}
+		}, false);
 	}
 	
 	public static Bitmap createImage(String path) {
