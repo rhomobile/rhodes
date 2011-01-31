@@ -109,11 +109,11 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
 	}
 
 	public void onAfterInsert(Table table, Row row) {
-		if ( m_dbCallback == null )
-			return;
+		//if ( m_dbCallback == null )
+		//	return;
 		
-		m_rowResult.init(table, row);
-		m_dbCallback.onAfterInsert(table.getName().name, m_rowResult );
+		//m_rowResult.init(table, row);
+		//m_dbCallback.onAfterInsert(table.getName().name, m_rowResult );
 	}
 	
 	public void onBeforeUpdate(Table table, Row row, int[] cols) {

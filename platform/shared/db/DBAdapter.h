@@ -118,7 +118,7 @@ public:
         bind(res->getStatement(), 1, p1);
         bind(res->getStatement(), 2, p2);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1, typename T2, typename T3>
@@ -132,7 +132,7 @@ public:
         bind(res->getStatement(), 2, p2);
         bind(res->getStatement(), 3, p3);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1, typename T2, typename T3, typename T4>
@@ -147,7 +147,7 @@ public:
         bind(res->getStatement(), 3, p3);
         bind(res->getStatement(), 4, p4);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -163,7 +163,7 @@ public:
         bind(res->getStatement(), 4, p4);
         bind(res->getStatement(), 5, p5);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
@@ -180,7 +180,7 @@ public:
         bind(res->getStatement(), 5, p5);
         bind(res->getStatement(), 6, p6);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     DBResultPtr executeSQLReportNonUniqueEx( const char* szSt, Vector<String>& arValues );
@@ -198,7 +198,7 @@ public:
         bind(res->getStatement(), 4, p4);
 
         res->setReportNonUnique(true);
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
@@ -216,7 +216,7 @@ public:
         bind(res->getStatement(), 6, p6);
         bind(res->getStatement(), 7, p7);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
@@ -235,7 +235,7 @@ public:
         bind(res->getStatement(), 7, p7);
         bind(res->getStatement(), 8, p8);
 
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     template<typename T1>
@@ -246,7 +246,7 @@ public:
             return res;
 
         bind(res->getStatement(), 1, p1);
-        return executeStatement(res);
+        return executeStatement(res, szSt);
     }
 
     DBResultPtr executeSQLEx( const char* szSt, Vector<String>& arValues);
@@ -262,7 +262,7 @@ public:
     void createDeleteTrigger(const String& strTable);
 	
     virtual DBResultPtr prepareStatement( const char* szSt );
-    DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res);
+    DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res, const char* szSt);
 	
 private:
 

@@ -651,7 +651,7 @@ module Rhom
                                 vx = x.vars[order_attr.to_sym()]
                                 vy = y.vars[order_attr.to_sym()]
                                 res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
-                                res *= -1 if order_dir && order_dir == 'DESC'
+                                res *= -1 if order_dir && order_dir.upcase() == 'DESC'
                             end    
                             
                             res
@@ -659,7 +659,7 @@ module Rhom
                     elsif block_given?
                         ret_list.sort! { |x,y| 
                            res = yield(x,y)
-                           res *= -1 if order_dir && order_dir == 'DESC'
+                           res *= -1 if order_dir && order_dir.upcase() == 'DESC'
                            res
                         }
                     end
@@ -776,6 +776,7 @@ module Rhom
                     attribs = '*'
                   end
 
+                  order_manually = false
                   if attribs and attribs.length > 0
                     sql = ""
                     list = []
@@ -795,18 +796,28 @@ module Rhom
                               if  !args[1][:dont_ignore_missed_attribs]
                                   sql << "SELECT object FROM object_values WHERE source_id=? "
                                   sql << " AND attrib=? ORDER BY \"value\" " + ( order_dir ? order_dir : "")
-                                  values << get_source_id
+                                  values << nSrcID
                                   values << order_attr
                               end    
                           else
                               #it is more effective to use old find here
                               if attribs && attribs != '*' && attribs.length() != 0 && !args[1][:dont_ignore_missed_attribs]
-                                  #sql << "SELECT object FROM object_values WHERE source_id=? AND attrib=?"
-                                  #values << get_source_id
-                                  #values << attribs[0]
+                                  sql << "SELECT object FROM object_values WHERE source_id=? AND attrib=?"
+                                  values << nSrcID
+                                  values << attribs[0]
                               else 
+                                  if  limit == 1 && offset == 0 
+                                    sql = "SELECT object FROM object_values WHERE source_id=?"
+                                    values << nSrcID
+                                  elsif strLimit  
+                                    sql = "SELECT distinct(object) FROM object_values WHERE source_id=?"
+                                    values << nSrcID
+                                  end
+                                  
                                   #sql << "SELECT distinct(object) FROM object_values WHERE source_id=" << srcid_value 
                               end    
+                              
+                              order_manually = !order_attr.nil?
                           end
                           
                           if sql.length() > 0                          
@@ -826,7 +837,7 @@ module Rhom
                                 sql2 = "SELECT attrib,value FROM object_values WHERE object=? AND source_id=?"
                                 values2 = []
                                 values2 << object_id
-                                values2 << get_source_id
+                                values2 << nSrcID
                                 
                                 #if attribs && attribs != '*'    
                                 #    quests = ""
@@ -859,36 +870,56 @@ module Rhom
                       end
                             
                       if objects.nil?
-                      
-                        if attribs == "*"
-                            attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)                            
-                        end    
-                      
-                        if attribs and attribs.length > 0                      
-                            sql << "SELECT * FROM (\n" if condition_hash or condition_str
-                            sql << "SELECT object, \n"
-                            #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
-                            attribs.each do |attrib|
-                              unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
-                                sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
-                              end
-                            end 
-                            sql.chomp!
-                            sql.chop!
-                            sql << " FROM object_values ov \n"
-                            sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
-                            sql << "group by object\n"
-                            sql << "order by " + make_sql_order(args[1]) if !block_given? && order_attr
-                            #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
-                            sql << ") WHERE " + condition_str if condition_str
-                            sql << strLimit if strLimit
-                            
-                            #puts "Database query start"
-                            list = db.execute_sql(sql)
-                            #puts "Database query end"
-                        end   
-                      end  
 
+                        if !condition_str && !(args[1] && args[1][:dont_ignore_missed_attribs])
+                            sql = "SELECT object, attrib, value FROM object_values WHERE source_id=? order by object"
+                            values = [nSrcID]
+                            objects = db.execute_sql(sql, values)                      
+
+                            new_item = nil
+                            objects.each do |item|
+                               if ( !new_item || new_item['object'] != item['object'])
+                                 list << new_item if new_item
+                                 new_item = {'object'=>item['object'] }
+                               end
+                                
+                               new_item[item['attrib']] = item['value'] if item['value']
+                            end    
+                            list << new_item if new_item
+                            
+                            order_manually = !order_attr.nil?
+                        else
+                                                
+                            if attribs == "*"
+                                raise ArgumentError, "Use Rhom advanced find syntax or specify :select parameter when use sql queries!"
+                                #attribs = SyncEngine.get_src_attrs(Rho::RhoConfig.sources[get_source_name]['partition'].to_s, nSrcID)                            
+                            end    
+                          
+                            if attribs and attribs.length > 0                      
+                                sql << "SELECT * FROM (\n" if condition_hash or condition_str
+                                sql << "SELECT object, \n"
+                                #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
+                                attribs.each do |attrib|
+                                  unless attrib.nil? or attrib.length == 0 or ::Rhom::RhomObject.method_name_reserved?(attrib)
+                                    sql << "MAX(CASE WHEN attrib = '#{attrib}' THEN value ELSE NULL END) AS \'#{attrib}\',\n"
+                                  end
+                                end 
+                                sql.chomp!
+                                sql.chop!
+                                sql << " FROM object_values ov \n"
+                                sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
+                                sql << "group by object\n"
+                                sql << "order by " + make_sql_order(args[1]) if !block_given? && order_attr
+                                #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                                sql << ") WHERE " + condition_str if condition_str
+                                sql << strLimit if strLimit
+                                
+                                #puts "Database query start"
+                                list = db.execute_sql(sql)
+                                #puts "Database query end"
+                            end   
+                          end  
+                        end
                     else #schema source
                        attribs = attribs.join(',') if attribs.is_a?(Array)
                        
@@ -930,7 +961,7 @@ module Rhom
                       puts "Processing rhom objects end, no attributes found."
                   end
 
-                  if block_given?
+                  if block_given? || order_manually
                     order_array(ret_list, order_attr, order_dir, &block)
                     ret_list = ret_list.slice(offset,limit) if limit
                   end
@@ -1084,54 +1115,10 @@ module Rhom
                 def create(obj)  		      
                     new_obj = self.new(obj)
                     
-                    update_type = 'create'
-                    nSrcID = get_source_id
-                    obj = new_obj.object
-                    src_name = get_source_name
-                    db_partition = Rho::RhoConfig.sources[src_name]['partition'].to_s
-                    isSchemaSrc = is_schema_source()
-                    tableName = isSchemaSrc ? get_schema_table_name() : 'object_values'
-                    db = ::Rho::RHO.get_src_db(src_name)
-                    begin
-                        db.start_transaction
-
-                        if isSchemaSrc
-                            db.insert_into_table(tableName, new_obj.vars, {:source_id=>true})
-                        end
-                        
-                        if is_sync_source() || !isSchemaSrc
-                            new_obj.vars.each do |key_a,value|
-                                key = key_a.to_s
-                                next if ::Rhom::RhomObject.method_name_reserved?(key)
-
-                                val = value.to_s #self.inst_strip_braces(value.to_s)
-                                
-                                # add rows excluding object, source_id and update_type
-                                fields = {"source_id"=>nSrcID,
-                                          "object"=>obj,
-                                          "attrib"=>key,
-                                          "value"=>val,
-                                          "update_type"=>update_type}
-                                fields = new_obj.is_blob_attrib(db_partition, nSrcID, key) ? fields.merge!({"attrib_type" => "blob.file"}) : fields
-                                
-                                db.insert_into_table('changed_values', fields) if is_sync_source()
-                                fields.delete("update_type")
-                                fields.delete("attrib_type")
-                                
-                                db.insert_into_table(tableName, fields) if !isSchemaSrc
-                            end
-                        end
-                        
-                        db.commit
-                    rescue Exception => e
-                        puts 'create Exception: ' + e.inspect
-                        db.rollback
-                        
-                        raise    
-                    end
+                    new_obj.create
                     
-                    new_obj    
-                end
+                    new_obj
+                end    
                     
               end #class methods
 	          
@@ -1226,6 +1213,55 @@ module Rhom
                 SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
 		        #return attrib_name == "image_uri"
 		      end
+
+              def create
+                update_type = 'create'
+                nSrcID = self.get_inst_source_id
+                obj = self.object
+                src_name = get_inst_source_name
+                db_partition = Rho::RhoConfig.sources[src_name]['partition'].to_s
+				tableName = is_inst_schema_source() ? get_inst_schema_table_name() : 'object_values'
+				isSchemaSrc = is_inst_schema_source()
+                db = ::Rho::RHO.get_src_db(src_name)
+                begin
+                    db.start_transaction
+
+                    if isSchemaSrc
+                        db.insert_into_table(tableName, self.vars, {:source_id=>true})
+                    end
+                    
+                    if is_inst_sync_source() || !isSchemaSrc
+                        self.vars.each do |key_a,value|
+                            key = key_a.to_s
+                            next if ::Rhom::RhomObject.method_name_reserved?(key)
+
+                            val = value.to_s #self.inst_strip_braces(value.to_s)
+                            
+                            # add rows excluding object, source_id and update_type
+                            fields = {"source_id"=>nSrcID,
+                                      "object"=>obj,
+                                      "attrib"=>key,
+                                      "value"=>val,
+                                      "update_type"=>update_type}
+                            fields = self.is_blob_attrib(db_partition, nSrcID, key) ? fields.merge!({"attrib_type" => "blob.file"}) : fields
+                            
+                            db.insert_into_table('changed_values', fields) if is_inst_sync_source()
+                            fields.delete("update_type")
+                            fields.delete("attrib_type")
+                            
+                            db.insert_into_table(tableName, fields) if !isSchemaSrc
+                        end
+                    end
+                    
+                    db.commit
+                rescue Exception => e
+                    puts 'create Exception: ' + e.inspect
+                    db.rollback
+                    
+                    raise    
+                end
+                
+            end
 
               # saves the current object to the database as a create type
               def save

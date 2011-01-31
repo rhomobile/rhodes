@@ -358,7 +358,7 @@ void rho_sync_clear_notification(int source_id)
 #ifndef RHO_NO_RUBY
 unsigned long rho_sync_get_attrs(const char* szPartition, int nSrcID)
 {
-    return (VALUE)CDBAdapter::getDB(szPartition).getAttrMgr().getAttrsBySrc(nSrcID);
+    return 0;//(VALUE)CDBAdapter::getDB(szPartition).getAttrMgr().getAttrsBySrc(nSrcID);
 }
 
 unsigned long rho_sync_is_blob_attr(const char* szPartition, int nSrcID, const char* szAttrName)
