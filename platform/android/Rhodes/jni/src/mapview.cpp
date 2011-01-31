@@ -142,9 +142,10 @@ AndroidImage *AndroidImage::clone()
 
 void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 {
-    RAWTRACE3("drawImage: x=%d, y=%d, image=%p", x, y, image);
     if (!image)
         return;
+
+    RAWTRACE3("drawImage: x=%d, y=%d, image=%p", x, y, image);
 
     jobject bitmap = ((AndroidImage*)image)->bitmap();
 
@@ -160,6 +161,7 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
 {
     RAWTRACE4("drawText: x=%d, y=%d, text=%s, color=%d", x, y, text.c_str(), color);
+
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
     if (!cls) return;
@@ -204,7 +206,7 @@ AndroidMapDevice::~AndroidMapDevice()
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path)
 {
-    RAWTRACE1("createImage: %s", path.c_str());
+    //RAWTRACE1("createImage: %s", path.c_str());
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
@@ -215,12 +217,15 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path)
     jstring jPath = rho_cast<jstring>(path);
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, jPath);
     env->DeleteLocalRef(jPath);
-    return new AndroidImage(bitmap);
+    IDrawingImage *image = new AndroidImage(bitmap);
+
+    //RAWTRACE1("createImage: return image=%p", image);
+    return image;
 }
 
 IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
 {
-    RAWTRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
+    //RAWTRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
@@ -234,22 +239,24 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
 
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, data);
     IDrawingImage *image = new AndroidImage(bitmap);
-    RAWTRACE1("createImage: return image=%p", image);
+
+    //RAWTRACE1("createImage: return image=%p", image);
     return image;
 }
 
 IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
 {
-    RAWTRACE1("cloneImage: image=%p", image);
+    //RAWTRACE1("cloneImage: image=%p", image);
     IDrawingImage *cloned = image ? ((AndroidImage *)image)->clone() : NULL;
-    RAWTRACE1("cloneImage: return image=%p", cloned);
+    //RAWTRACE1("cloneImage: return image=%p", cloned);
     return cloned;
 }
 
 void AndroidMapDevice::destroyImage(IDrawingImage *image)
 {
-    RAWTRACE1("destroyImage: image=%p", image);
+    //RAWTRACE1("destroyImage: image=%p", image);
     delete image;
+    //RAWTRACE("destroyImage done");
 }
 
 void AndroidMapDevice::requestRedraw()
@@ -265,6 +272,8 @@ void AndroidMapDevice::requestRedraw()
     jmethodID mid = getJNIClassMethod(env, cls, "redraw", "()V");
     if (!mid) return;
     env->CallVoidMethod(m_jdevice, mid);
+
+    RAWTRACE("requestRedraw done");
 }
 
 void AndroidMapDevice::paint(jobject canvas)
@@ -276,6 +285,8 @@ void AndroidMapDevice::paint(jobject canvas)
 
     std::auto_ptr<AndroidDrawingContext> context(new AndroidDrawingContext(m_jdevice, canvas));
     m_mapview->paint(context.get());
+
+    RAWTRACE("paint done");
 }
 
 } // namespace map
