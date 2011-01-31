@@ -6,6 +6,9 @@
 #include "common/RhodesApp.h"
 #include "net/INetRequest.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "ESRIMapEngine"
+
 namespace rho
 {
 namespace common
@@ -128,22 +131,26 @@ ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
     :CThreadQueue(rho_impl_createClassFactory()),
     m_mapview(view), m_net_request(getFactory()->createNetRequest())
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     start(epNormal);
 }
 
 ESRIMapView::MapFetch::~MapFetch()
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     stop(1000);
     delete m_net_request;
 }
 
 void ESRIMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
 {
+    RAWTRACE4("%s: zoom=%d, latitude=%llu, longitude=%llu", __PRETTY_FUNCTION__, zoom, latitude, longitude);
     addQueueCommandInt(new Command(baseUrl, zoom, latitude, longitude));
 }
 
 bool ESRIMapView::MapFetch::fetchData(String const &url, void **data, size_t *datasize)
 {
+    RAWTRACE2("%s: url=%s", __PRETTY_FUNCTION__, url.c_str());
     NetResponse(resp, m_net_request->doRequest("GET", url, "", 0, 0));
     if (!resp.isOK())
         return false;
@@ -157,6 +164,7 @@ bool ESRIMapView::MapFetch::fetchData(String const &url, void **data, size_t *da
 
 void ESRIMapView::MapFetch::processCommand(IQueueCommand *c)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     Command *cmd = (Command *)c;
     String url = cmd->baseUrl;
     int zoom = cmd->zoom;
@@ -198,39 +206,50 @@ String ESRIMapView::MapFetch::Command::toString()
 ESRIMapView::CacheUpdate::CacheUpdate(ESRIMapView *view)
     :CRhoThread(rho_impl_createClassFactory()), m_mapview(view)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     start(epNormal);
 }
 
 ESRIMapView::CacheUpdate::~CacheUpdate()
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     stop(1000);
 }
 
 void ESRIMapView::CacheUpdate::run()
 {
+    RAWTRACE1("%s: start", __PRETTY_FUNCTION__);
+
     CMutex &lock = m_mapview->tilesCacheLock();
     TilesCache &cache = m_mapview->tilesCache();
     while (!isStopping())
     {
-        wait(CACHE_UPDATE_INTERVAL);
-        
+        RAWTRACE2("%s: wait for %dms", __PRETTY_FUNCTION__, CACHE_UPDATE_INTERVAL);
+        //wait(CACHE_UPDATE_INTERVAL);
+        ::usleep(CACHE_UPDATE_INTERVAL*1000);
+
+        /*
         {
             synchronized (lock);
             if (cache.empty())
                 continue;
         }
+        */
 
         IDrawingDevice *drawingDevice = m_mapview->drawingDevice();
 
         int zoom = m_mapview->zoom();
-        uint64 ts = toMaxZoom(TILE_SIZE, zoom);
-        uint64 h = toMaxZoom(m_mapview->height(), zoom);
-        uint64 w = toMaxZoom(m_mapview->width(), zoom);
-
-        uint64 totalTiles = rho_math_pow2(zoom);
-
         uint64 latitude = m_mapview->latitude();
         uint64 longitude = m_mapview->longitude();
+        RAWTRACE4("%s: zoom=%d, latitude=%llu, longitude=%llu", __PRETTY_FUNCTION__, zoom, latitude, longitude);
+
+        uint64 ts = toMaxZoom(TILE_SIZE, zoom);
+        uint64 w = toMaxZoom(m_mapview->width(), zoom);
+        uint64 h = toMaxZoom(m_mapview->height(), zoom);
+        RAWTRACE4("%s: ts=%llu, w=%llu, h=%llu", __PRETTY_FUNCTION__, ts, w, h);
+
+        uint64 totalTiles = rho_math_pow2(zoom);
+        RAWTRACE2("%s: totalTiles=%llu", __PRETTY_FUNCTION__, totalTiles);
 
         uint64 tlLat = latitude < h/2 ? 0 : latitude - h/2;
         uint64 tlLon = longitude < w/2 ? 0 : longitude - w/2;
@@ -246,13 +265,17 @@ void ESRIMapView::CacheUpdate::run()
                     cache.put(Tile(drawingDevice, zoom, lat, lon));
                 }
 
+                RAWTRACE4("%s: fetch tile: zoom=%d, lat=%llu, lon=%llu", __PRETTY_FUNCTION__, zoom, lat, lon);
                 m_mapview->fetchTile(zoom, lat, lon);
             }
     }
+
+    RAWTRACE1("%s: stop", __PRETTY_FUNCTION__);
 }
 
 ESRIMapView::Tile const *ESRIMapView::TilesCache::get(int zoom, uint64 latitude, uint64 longitude) const
 {
+    RAWTRACE4("%s: zoom=%d, latitude=%llu, longitude=%llu", __PRETTY_FUNCTION__, zoom, latitude, longitude);
     String const &key = makeKey(zoom, latitude, longitude);
     std::map<String, iterator>::const_iterator it = m_by_coordinates.find(key);
     if (it == m_by_coordinates.end())
@@ -262,7 +285,11 @@ ESRIMapView::Tile const *ESRIMapView::TilesCache::get(int zoom, uint64 latitude,
 
 void ESRIMapView::TilesCache::put(Tile const &tile)
 {
-    String const &key = makeKey(tile.zoom(), tile.latitude(), tile.longitude());
+    int zoom = tile.zoom();
+    uint64 latitude = tile.latitude();
+    uint64 longitude = tile.longitude();
+    RAWTRACE4("%s: zoom=%d, latitude=%llu, longitude=%llu", __PRETTY_FUNCTION__, zoom, latitude, longitude);
+    String const &key = makeKey(zoom, latitude, longitude);
     m_tiles.insert(m_tiles.begin(), tile);
     m_by_coordinates.insert(std::make_pair(key, m_tiles.begin()));
     // TODO: support Windows
@@ -277,6 +304,7 @@ void ESRIMapView::TilesCache::put(Tile const &tile)
 
 ESRIMapView::TilesCache ESRIMapView::TilesCache::clone() const
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     TilesCache copy;
     for (iterator it = begin(), lim = end(); it != lim; ++it)
         copy.put(*it);
@@ -299,6 +327,7 @@ public:
 
     void onSuccess(double latitude, double longitude)
     {
+        RAWTRACE3("%s: latitude=%lf, longitude=%lf", __PRETTY_FUNCTION__, latitude, longitude);
         m_mapview->moveTo(latitude, longitude);
     }
 
@@ -317,6 +346,7 @@ public:
 
     void onSuccess(double latitude, double longitude)
     {
+        RAWTRACE3("%s: latitude=%lf, longitude=%lf", __PRETTY_FUNCTION__, latitude, longitude);
         Annotation ann(m_ann.title(), m_ann.subtitle(), latitude, longitude, m_ann.url());
         m_mapview->addAnnotation(ann);
     }
@@ -330,20 +360,27 @@ private:
 
 ESRIMapView *ESRIMapEngine::createMapView(IDrawingDevice *device)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     return new ESRIMapView(device);
 }
 
 void ESRIMapEngine::destroyMapView(IMapView *view)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     delete view;
 }
 
 ESRIMapView::ESRIMapView(IDrawingDevice *device)
     :m_drawing_device(device), m_geo_coding(new GoogleGeoCoding()),
     m_map_fetch(new MapFetch(this)), m_cache_update(new CacheUpdate(this)),
+    m_width(0), m_height(0),
     m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
+    m_zoom(MIN_ZOOM), m_lat_delta(0), m_lon_delta(0),
+    m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
     m_selected_annotation(NULL)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
+
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
         url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
@@ -357,8 +394,17 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
 
 void ESRIMapView::setSize(int width, int height)
 {
+    RAWTRACE3("%s: width=%d, height=%d", __PRETTY_FUNCTION__, width, height);
+
+    bool recalculate = true;
+    if (m_width == 0 || m_height == 0)
+        recalculate = false;
+
     m_width = width;
     m_height = height;
+
+    if (recalculate)
+        setCoordinatesSpan();
 }
 
 String const &ESRIMapView::getMapUrl()
@@ -379,26 +425,58 @@ int ESRIMapView::maxZoom() const
     return MAX_ZOOM;
 }
 
-void ESRIMapView::setZoom(int zoom)
+static double calc_delta(int zoom, int pixels, int tile_size)
 {
-    m_zoom = zoom;
-    if (m_zoom < MIN_ZOOM) m_zoom = MIN_ZOOM;
-    if (m_zoom > MAX_ZOOM) m_zoom = MAX_ZOOM;
+    RAWTRACE3("calc_delta: zoom=%d, pixels=%d, tile_size=%d", zoom, pixels, tile_size);
+    if (tile_size == 0)
+        return 0;
+    double twoInZoomExp = rho_math_pow2(zoom);
+    double angleRatio = 360/twoInZoomExp;
+    double degrees = angleRatio*pixels/tile_size;
+    RAWTRACE1("calc_delta: degrees=%lf", degrees);
+    return degrees;
 }
 
 static int calc_zoom(double degrees, int pixels, int tile_size)
 {
+    RAWTRACE3("calc_zoom: degrees=%lf, pixels=%d, tile_size=%d", degrees, pixels, tile_size);
+    if (pixels == 0)
+        return 0;
     double angleRatio = degrees*tile_size/pixels;
     double twoInZoomExp = 360/angleRatio;
+    RAWTRACE2("calc_zoom: angleRatio=%lf, twoInZoomExp=%lf", angleRatio, twoInZoomExp);
     int zoom = (int)rho_math_log2(twoInZoomExp);
+    RAWTRACE1("calc_zoom: zoom=%d", zoom);
     return zoom;
+}
+
+void ESRIMapView::setCoordinatesSpan()
+{
+    m_lat_delta = calc_delta(m_zoom, m_height, TILE_SIZE);
+    m_lon_delta = calc_delta(m_zoom, m_width, TILE_SIZE);
+}
+
+void ESRIMapView::setZoom(int zoom)
+{
+    RAWTRACE2("%s: zoom=%d", __PRETTY_FUNCTION__, zoom);
+    m_zoom = zoom;
+    if (m_zoom < MIN_ZOOM) m_zoom = MIN_ZOOM;
+    if (m_zoom > MAX_ZOOM) m_zoom = MAX_ZOOM;
+    setCoordinatesSpan();
 }
 
 void ESRIMapView::setZoom(double latDelta, double lonDelta)
 {
-    int zoom1 = calc_zoom(latDelta, m_width, TILE_SIZE);
-    int zoom2 = calc_zoom(lonDelta, m_height, TILE_SIZE);
-    setZoom(std::min(zoom1, zoom2));
+    RAWTRACE3("%s: latDelta=%lf, lonDelta=%lf", __PRETTY_FUNCTION__, latDelta, lonDelta);
+    m_lat_delta = latDelta;
+    if (m_lat_delta < 0) m_lat_delta = 0;
+    m_lon_delta = lonDelta;
+    if (m_lon_delta < 0) m_lon_delta = 0;
+    int zoom1 = calc_zoom(m_lat_delta, m_height, TILE_SIZE);
+    int zoom2 = calc_zoom(m_lon_delta, m_width, TILE_SIZE);
+    m_zoom = std::min(zoom1, zoom2);
+    if (m_zoom < MIN_ZOOM) m_zoom = MIN_ZOOM;
+    if (m_zoom > MAX_ZOOM) m_zoom = MAX_ZOOM;
 }
 
 double ESRIMapView::latitude() const
@@ -413,6 +491,7 @@ double ESRIMapView::longitude() const
 
 void ESRIMapView::setCoordinates(uint64 latitude, uint64 longitude)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     if (latitude < MIN_LATITUDE) latitude = MIN_LATITUDE;
     if (latitude > MAX_LATITUDE) latitude = MAX_LATITUDE;
     if (longitude > MIN_LONGITUDE) longitude = MIN_LONGITUDE;
@@ -423,6 +502,7 @@ void ESRIMapView::setCoordinates(uint64 latitude, uint64 longitude)
 
 void ESRIMapView::moveTo(double latitude, double longitude)
 {
+    RAWTRACE3("%s: latitude=%lf, longitude=%lf", __PRETTY_FUNCTION__, latitude, longitude);
     uint64 lat = degreesToPixelsY(latitude, MAX_ZOOM);
     uint64 lon = degreesToPixelsX(longitude, MAX_ZOOM);
     setCoordinates(lat, lon);
@@ -430,11 +510,13 @@ void ESRIMapView::moveTo(double latitude, double longitude)
 
 void ESRIMapView::moveTo(String const &address)
 {
+    RAWTRACE2("%s: address=%s", __PRETTY_FUNCTION__, address.c_str());
     m_geo_coding->resolve(address, new CenterResolved(this));
 }
 
 void ESRIMapView::move(int dx, int dy)
 {
+    RAWTRACE3("%s: dx=%d, dy=%d", __PRETTY_FUNCTION__, dx, dy);
     uint64 lat = m_latitude;
     lat += toMaxZoom(dy, m_zoom);
     uint64 lon = m_longitude;
@@ -444,6 +526,7 @@ void ESRIMapView::move(int dx, int dy)
 
 void ESRIMapView::addAnnotation(Annotation const &ann)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
     if (ann.resolved())
         m_annotations.addElement(ann);
     else
@@ -496,6 +579,8 @@ bool ESRIMapView::handleClick(int x, int y)
 
 void ESRIMapView::paint(IDrawingContext *context)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
+
     paintBackground(context);
 
     TilesCache cache;
@@ -515,6 +600,8 @@ void ESRIMapView::paintBackground(IDrawingContext *context)
 
 void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
 {
+    RAWTRACE(__PRETTY_FUNCTION__);
+
     IDrawingImage *image = tile.image();
     if (!image)
         return;
@@ -543,6 +630,7 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
 
 void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
 {
+    RAWTRACE4("%s: zoom=%d, latitude=%llu, longitude=%llu", __PRETTY_FUNCTION__, zoom, latitude, longitude);
     m_map_fetch->fetchTile(getMapUrl(), zoom, latitude, longitude);
 }
 
