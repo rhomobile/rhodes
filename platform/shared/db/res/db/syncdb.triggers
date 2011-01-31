@@ -8,8 +8,3 @@ CREATE TRIGGER rhoupdateTrigger BEFORE UPDATE ON object_values FOR EACH ROW WHEN
        SELECT rhoOnUpdateObjectRecord(OLD.value, OLD.source_id, OLD.attrib );
    END;
 ;   
-CREATE TRIGGER rhoinsertTrigger AFTER INSERT ON object_values FOR EACH ROW 
-   BEGIN 
-       SELECT rhoOnInsertObjectRecord( NEW.source_id, NEW.attrib );
-   END;
-;

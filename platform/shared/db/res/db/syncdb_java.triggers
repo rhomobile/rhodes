@@ -1,6 +1,3 @@
-CREATE TABLE object_attribs_to_insert(
- "source_id" BIGINT default NULL,
- "attrib" varchar(255) default NULL);
 CREATE TABLE object_attribs_to_delete(
  "source_id" BIGINT default NULL,
  "attrib" varchar(255) default NULL,
@@ -12,11 +9,6 @@ CREATE TABLE object_attribs_to_update(
  "object" varchar(255) default NULL,
  "value" varchar default NULL);
  
-CREATE TRIGGER rhoinsertTrigger AFTER INSERT ON object_values FOR EACH ROW
-BEGIN
-	INSERT INTO object_attribs_to_insert(source_id, attrib) VALUES (NEW.source_id, NEW.attrib);
-END;
-
 CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW 
    BEGIN 
        INSERT INTO object_attribs_to_delete(source_id, attrib, value) VALUES (OLD.source_id, OLD.attrib, OLD.value);   
