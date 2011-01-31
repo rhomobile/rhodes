@@ -41,7 +41,7 @@ void SyncBlob_DeleteCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
         CRhoFile::deleteFile(strFilePath.c_str());
     }
 
-    attrMgr.remove( nSrcID, szAttrName );
+    //attrMgr.remove( nSrcID, szAttrName );
 }
 
 void SyncBlob_UpdateCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
@@ -69,10 +69,10 @@ void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite
 
 void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
-    if ( nArgs < 2 )
-        return;
+    //if ( nArgs < 2 )
+    //    return;
 
-    CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
+    //CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
 }
 
 boolean CDBAdapter::checkDbError(int rc)
@@ -158,7 +158,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
-    getAttrMgr().load(*this);
+    //getAttrMgr().load(*this);
 
     //copy client_info table
     if ( !bTemp && !bExist && CRhoFile::isFileExist((strDbPath+"_oldver").c_str()) )
@@ -405,7 +405,7 @@ boolean CDBAdapter::isTableExist(String strTableName)
 
 void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
 {
-    getAttrMgr().reset(*this);
+    //getAttrMgr().reset(*this);
     CFilePath oFilePath(m_strDbPath);
 	String dbNewName  = oFilePath.changeBaseName("resetdbtemp.sqlite");
 
@@ -694,7 +694,7 @@ DBResultPtr CDBAdapter::executeSQLReportNonUniqueEx( const char* szSt, Vector<St
         bind(res->getStatement(), i+1, arValues.elementAt(i));
 
     res->setReportNonUnique(true);
-    return executeStatement(res);
+    return executeStatement(res, szSt);
 }
 
 DBResultPtr CDBAdapter::executeSQLEx( const char* szSt, Vector<String>& arValues)
@@ -706,7 +706,7 @@ DBResultPtr CDBAdapter::executeSQLEx( const char* szSt, Vector<String>& arValues
     for (int i = 0; i < (int)arValues.size(); i++ )
         bind(res->getStatement(), i+1, arValues.elementAt(i));
 
-    return executeStatement(res);
+    return executeStatement(res, szSt);
 }
 
 DBResultPtr CDBAdapter::executeSQL( const char* szSt)
@@ -715,11 +715,13 @@ DBResultPtr CDBAdapter::executeSQL( const char* szSt)
     if ( res->getStatement() == null )
         return res;
 
-    return executeStatement(res);
+    return executeStatement(res, szSt);
 }
 
-DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res)
+DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res, const char* szSt)
 {
+    //LOG(INFO) + "executeStatement:" + szSt;
+
     int rc = sqlite3_step(res->getStatement());
     if ( rc != SQLITE_ROW )
     {
@@ -775,7 +777,7 @@ void CDBAdapter::endTransaction()
 	m_nTransactionCounter--;
 	if (m_dbHandle && m_nTransactionCounter == 0)
     {
-        getAttrMgr().save(*this);
+        //getAttrMgr().save(*this);
 		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
         checkDbError(rc);
     }

@@ -9,7 +9,7 @@
 namespace rho{
 namespace db{
 using namespace rho::common;
-
+/*
 void CDBAttrManager::add( int nSrcID, const char* szAttr )
 {
     synchronized(m_mxSrcAttrs)
@@ -90,8 +90,8 @@ void CDBAttrManager::reset(CDBAdapter& db)
         m_mapSrcAttrs.clear();
         db.executeSQL("UPDATE sources SET source_attribs=?", "" );
     }
-}
-
+}*/
+/*
 #ifndef RHO_NO_RUBY
 unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
 {
@@ -115,6 +115,7 @@ unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
     }
 }
 #endif //RHO_NO_RUBY
+*/
 
 boolean CDBAttrManager::isBlobAttr(int nSrcID, const char* szAttr)
 {

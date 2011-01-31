@@ -623,9 +623,10 @@ public class SyncThread extends ThreadQueue
 				new RubyTwoArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
 						try{
-							String strPartition = arg0.toStr(); 
-							int nSrcID = arg1.toInt();
-							return DBAdapter.getDB(strPartition).getAttrMgr().getAttrsBySrc(nSrcID);
+							//String strPartition = arg0.toStr(); 
+							//int nSrcID = arg1.toInt();
+							//return DBAdapter.getDB(strPartition).getAttrMgr().getAttrsBySrc(nSrcID);
+							return RubyConstant.QNIL;
 						}catch(Exception e)
 						{
 							LOG.ERROR("get_src_attrs failed", e);
