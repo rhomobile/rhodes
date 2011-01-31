@@ -51,15 +51,28 @@ static uint64 degreesToPixelsY(double n, int zoom)
     return (uint64)val;
 }
 
-static uint64 const MIN_LATITUDE = degreesToPixelsY(90, MAX_ZOOM);
+//static uint64 const MIN_LATITUDE = degreesToPixelsY(90, MAX_ZOOM);
 static uint64 const MAX_LATITUDE = degreesToPixelsY(-90, MAX_ZOOM);
-static uint64 const MIN_LONGITUDE = degreesToPixelsX(-180, MAX_ZOOM);
+//static uint64 const MIN_LONGITUDE = degreesToPixelsX(-180, MAX_ZOOM);
 static uint64 const MAX_LONGITUDE = degreesToPixelsX(180, MAX_ZOOM);
+
+static uint64 normalize_latitude(uint64 latitude)
+{
+    while (latitude < 0) latitude += MAX_LATITUDE;
+    while (latitude > MAX_LATITUDE) latitude -= MAX_LATITUDE;
+    return latitude;
+}
+
+static uint64 normalize_longitude(uint64 longitude)
+{
+    while (longitude < 0) longitude += MAX_LONGITUDE;
+    while (longitude > MAX_LONGITUDE) longitude -= MAX_LONGITUDE;
+    return longitude;
+}
 
 static double pixelsToDegreesX(uint64 n, int zoom)
 {
-    while (n < 0) n += MAX_LONGITUDE;
-    while (n > MAX_LONGITUDE) n -= MAX_LONGITUDE;
+    n = normalize_longitude(n);
     double angleRatio = 360.0/rho_math_pow2(zoom);
     double val = n * angleRatio/TILE_SIZE - 180;
     return val;
@@ -77,14 +90,14 @@ static double pixelsToDegreesY(uint64 n, int zoom)
 static int64 toMaxZoom(int64 n, int zoom)
 {
     if (n == 0) return 0;
-    uint64 pow = rho_math_pow2(MAX_ZOOM - zoom);
+    int64 pow = rho_math_pow2(MAX_ZOOM - zoom);
     return n*pow;
 }
 
 static int64 toCurrentZoom(int64 n, int zoom)
 {
     if (n == 0) return 0;
-    uint64 pow = rho_math_pow2(MAX_ZOOM - zoom);
+    int64 pow = rho_math_pow2(MAX_ZOOM - zoom);
     return n/pow;
 }
 
@@ -166,8 +179,8 @@ void ESRIMapView::MapFetch::processCommand(IQueueCommand *c)
     RAWTRACE1("processCommand: cmd=%s", cmd->toString().c_str());
     String url = cmd->baseUrl;
     int zoom = cmd->zoom;
-    uint64 latitude = cmd->latitude;
-    uint64 longitude = cmd->longitude;
+    uint64 latitude = normalize_latitude(cmd->latitude);
+    uint64 longitude = normalize_longitude(cmd->longitude);
 
     uint64 ts = toMaxZoom(TILE_SIZE, zoom);
     unsigned row = (unsigned)(latitude/ts);
@@ -227,45 +240,56 @@ void ESRIMapView::CacheUpdate::run()
         //wait(CACHE_UPDATE_INTERVAL);
         ::usleep(CACHE_UPDATE_INTERVAL*1000);
 
-        /*
-        {
-            synchronized (lock);
-            if (cache.empty())
-                continue;
-        }
-        */
-
         IDrawingDevice *drawingDevice = m_mapview->drawingDevice();
 
         int zoom = m_mapview->zoom();
         uint64 latitude = m_mapview->latitudeInt();
         uint64 longitude = m_mapview->longitudeInt();
-        //RAWTRACE3("CacheUpdate: zoom=%d, latitude=%llu, longitude=%llu", zoom, latitude, longitude);
+        //uint64 latitude = toCurrentZoom(m_mapview->latitudeInt(), zoom);
+        //uint64 longitude = toCurrentZoom(m_mapview->longitudeInt(), zoom);
+        RAWTRACE3("CacheUpdate: zoom=%d, latitude=%llu, longitude=%llu", zoom, latitude, longitude);
 
         uint64 ts = toMaxZoom(TILE_SIZE, zoom);
         uint64 w = toMaxZoom(m_mapview->width(), zoom);
         uint64 h = toMaxZoom(m_mapview->height(), zoom);
-        //RAWTRACE3("CacheUpdate: ts=%llu, w=%llu, h=%llu", ts, w, h);
+        //uint64 ts = TILE_SIZE;
+        //uint64 w = m_mapview->width();
+        //uint64 h = m_mapview->height();
+        RAWTRACE3("CacheUpdate: ts=%llu, w=%llu, h=%llu", ts, w, h);
 
         uint64 totalTiles = rho_math_pow2(zoom);
-        //RAWTRACE1("CacheUpdate: totalTiles=%llu", totalTiles);
+        RAWTRACE1("CacheUpdate: totalTiles=%llu", totalTiles);
 
-        uint64 tlLat = latitude < h/2 ? 0 : latitude - h/2;
-        uint64 tlLon = longitude < w/2 ? 0 : longitude - w/2;
-        for (uint64 lat = (tlLat/ts)*ts, latLim = std::min(tlLat + h + ts, ts*totalTiles); lat < latLim; lat += ts)
-            for (uint64 lon = (tlLon/ts)*ts, lonLim = std::min(tlLon + w + ts, ts*totalTiles); lon < lonLim; lon += ts)
+        // Coordinates of the most top-left tile visible on the screen
+        uint64 latBegin = ((latitude < h/2 ? 0 : latitude - h/2)/ts)*ts + ts/2;
+        uint64 lonBegin = ((longitude < w/2 ? 0 : longitude - w/2)/ts)*ts + ts/2;
+        RAWTRACE2("CacheUpdate: latBegin=%llu, lonBegin=%llu", latBegin, lonBegin);
+
+        // Coordinates of the most bottom-right tile visible on the screen
+        //uint64 latEnd = std::min(((latBegin - ts/2 + h)/ts + 1)*ts, ts*totalTiles - ts/2);
+        //uint64 lonEnd = std::min(((lonBegin - ts/2 + w)/ts + 1)*ts, ts*totalTiles - ts/2);
+        uint64 latEnd = ((latBegin - ts/2 + h)/ts + 1)*ts;
+        uint64 lonEnd = ((lonBegin - ts/2 + w)/ts + 1)*ts;
+        RAWTRACE2("CacheUpdate: latEnd=%llu, lonEnd=%llu", latEnd, lonEnd);
+
+        for (uint64 lat = latBegin; lat <= latEnd; lat += ts)
+            for (uint64 lon = lonBegin; lon <= lonEnd; lon += ts)
             {
+                //uint64 latitude = toMaxZoom(lat, zoom);
+                //uint64 longitude = toMaxZoom(lon, zoom);
+                uint64 latitude = lat;
+                uint64 longitude = lon;
                 {
                     synchronized (lock);
-                    Tile const *tile = cache.get(zoom, lat, lon);
+                    Tile const *tile = cache.get(zoom, latitude, longitude);
                     if (tile)
                         continue;
 
-                    cache.put(Tile(drawingDevice, zoom, lat, lon));
+                    cache.put(Tile(drawingDevice, zoom, latitude, longitude));
                 }
 
-                //RAWTRACE3("CacheUpdate: fetch tile: zoom=%d, lat=%llu, lon=%llu", zoom, lat, lon);
-                m_mapview->fetchTile(zoom, lat, lon);
+                RAWTRACE3("CacheUpdate: fetch tile: zoom=%d, lat=%llu, lon=%llu", zoom, lat, lon);
+                m_mapview->fetchTile(zoom, latitude, longitude);
             }
     }
 
@@ -472,12 +496,9 @@ double ESRIMapView::longitude() const
 
 void ESRIMapView::setCoordinates(uint64 latitude, uint64 longitude)
 {
-    if (latitude < MIN_LATITUDE) latitude = MIN_LATITUDE;
-    if (latitude > MAX_LATITUDE) latitude = MAX_LATITUDE;
-    if (longitude > MIN_LONGITUDE) longitude = MIN_LONGITUDE;
-    if (longitude < MAX_LONGITUDE) longitude = MAX_LONGITUDE;
-    m_latitude = latitude;
-    m_longitude = longitude;
+    RAWTRACE2("setCoordinates: latitude=%llu, longitude=%llu", latitude, longitude);
+    m_latitude = normalize_latitude(latitude);
+    m_longitude = normalize_longitude(longitude);
 }
 
 void ESRIMapView::moveTo(double latitude, double longitude)
@@ -585,14 +606,15 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
     if (tile.zoom() != m_zoom)
         return;
 
-    RAWTRACE3("paintTile: tile.zoom=%d, tile.latitude=%llu, tile.longitude=%llu",
+    RAWTRACE3("=== paintTile: tile.zoom=%d, tile.latitude=%llu, tile.longitude=%llu",
         tile.zoom(), tile.latitude(), tile.longitude());
-    RAWTRACE3("paintTile: zoom=%d, latitude=%llu, longitude=%llu",
+    RAWTRACE3("+++ paintTile: zoom=%d, latitude=%llu, longitude=%llu",
         m_zoom, m_latitude, m_longitude);
 
-    int64 left = -toCurrentZoom(m_longitude - tile.longitude(), m_zoom);
-    int64 top = -toCurrentZoom(m_latitude - tile.latitude(), m_zoom);
-    RAWTRACE2("paintTile: left=%lld, top=%lld", left, top);
+    // Difference between center of screen and center of tile (in screen pixels)
+    int64 deltaX = toCurrentZoom(m_longitude - tile.longitude(), m_zoom);
+    int64 deltaY = toCurrentZoom(m_latitude - tile.latitude(), m_zoom);
+    RAWTRACE2("paintTile: deltaX=%lld, deltaY=%lld", deltaX, deltaY);
 
     int imgWidth = image->width();
     int imgHeight = image->height();
@@ -600,20 +622,43 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
     RAWTRACE2("paintTile: imgWidth=%d, imgHeight=%d", imgWidth, imgHeight);
     RAWTRACE2("paintTile: m_width=%d, m_height=%d", m_width, m_height);
 
-    left += (m_width - imgWidth)/2;
-    top += (m_height - imgHeight)/2;
+    int64 centerX = (int64)m_width/2 - deltaX;
+    int64 centerY = (int64)m_height/2 - deltaY;
+    RAWTRACE2("paintTile: centerX=%lld, centerY=%lld", centerX, centerY);
+
+    int64 left = centerX - imgWidth/2;
+    int64 top = centerY - imgHeight/2;
     RAWTRACE2("paintTile: left=%lld, top=%lld", left, top);
 
-    int64 w = (int64)m_width - left;
-    int64 h = (int64)m_height - top;
-    RAWTRACE2("paintTile: w=%llu, h=%llu", w, h);
+    // Convert MAX_LATITUDE/MAX_LONGITUDE to screen pixels on current zoom level
+    int64 maxLat = toCurrentZoom(MAX_LATITUDE, m_zoom);
+    int64 maxLon = toCurrentZoom(MAX_LONGITUDE, m_zoom);
 
-    int64 maxW = m_width + TILE_SIZE;
-    int64 maxH = m_height + TILE_SIZE;
-    RAWTRACE2("paintTile: maxW=%llu, maxH=%llu", maxW, maxH);
-
-    if (w < 0 || h < 0 || w > maxW || h > maxH)
-        return;
+    // Adjust image coordinates to be visible on the screen
+    while (left > (int64)m_width)
+    {
+        left -= maxLon;
+        if (left + imgWidth < 0)
+            return;
+    }
+    while (left + imgWidth < 0)
+    {
+        left += maxLon;
+        if (left > (int64)m_width)
+            return;
+    }
+    while (top > (int64)m_height)
+    {
+        top -= maxLat;
+        if (top + imgHeight < 0)
+            return;
+    }
+    while (top + imgHeight < 0)
+    {
+        top += maxLat;
+        if (top > (int64)m_height)
+            return;
+    }
 
     context->drawImage((int)left, (int)top, image);
 }
