@@ -88,8 +88,23 @@ public:
     }
 };
 
+INetResponse *CURLNetRequest::makeResponse(String const &body, int nErrorCode)
+{
+    return makeResponse(body.c_str(), body.size(), nErrorCode);
+}
+
+INetResponse *CURLNetRequest::makeResponse(Vector<char> const &body, int nErrorCode)
+{
+    return makeResponse(&body[0], body.size(), nErrorCode);
+}
+
 INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, int nErrorCode)
 {
+    if (!body) {
+        body = "";
+        bodysize = 0;
+    }
+
     std::auto_ptr<CURLNetResponseImpl> resp(new CURLNetResponseImpl(body, bodysize, nErrorCode>0?nErrorCode:-1));
     if (resp->isSuccess())
         resp->setCookies(makeCookies());
@@ -258,7 +273,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 	if( !net::URI::isLocalHost(strUrl.c_str()) )		   
 	   rho_net_impl_network_indicator(0);
 
-    return makeResponse(&respBody[0], respBody.size(), nRespCode);
+    return makeResponse(respBody, nRespCode);
 }
 
 INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
@@ -345,7 +360,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     rho_net_impl_network_indicator(0);
     
     nRespCode = getResponseCode(err, strRespBody, oSession);
-    return makeResponse(strRespBody.c_str(), strRespBody.size(), nRespCode);
+    return makeResponse(strRespBody, nRespCode);
 }
 
 INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
@@ -397,7 +412,7 @@ INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFi
     rho_net_impl_network_indicator(0);
     
     nRespCode = getResponseCode(err, strRespBody, oSession);
-    return makeResponse(strRespBody.c_str(), strRespBody.size(), nRespCode);
+    return makeResponse(strRespBody, nRespCode);
 }
 
 int CURLNetRequest::getResponseCode(CURLcode err, String const &body, IRhoSession* oSession)
