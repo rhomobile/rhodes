@@ -456,7 +456,8 @@ def common_bundle_start(startdir, dest)
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
   replace_platform = "wm" if replace_platform == 'win32'
-  [File.join($srcdir,'apps'), File.join($srcdir,'lib/res')].each do |folder|
+  
+  [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
       chdir folder
       
       Dir.glob("**/*.#{replace_platform}.*").each do |file|
