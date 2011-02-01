@@ -176,8 +176,6 @@ void AndroidDrawingContext::drawText(int x, int y, String const &text, int color
 AndroidMapDevice::AndroidMapDevice(rho_param *p)
     :m_params(rho_param_dup(p)), m_mapview(NULL), m_jdevice(NULL)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
-
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return;
@@ -188,20 +186,7 @@ AndroidMapDevice::AndroidMapDevice(rho_param *p)
 
 AndroidMapDevice::~AndroidMapDevice()
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
-
     rho_param_free(m_params);
-
-    if (!m_jdevice)
-        return;
-
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
-    if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "destroy", "(Lcom/rhomobile/rhodes/mapview/MapView;)V");
-    if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, m_jdevice);
-    m_jdevice = NULL;
 }
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path)
@@ -330,11 +315,14 @@ RHO_GLOBAL void mapview_close()
     if (s_mapdevice)
     {
         rhomap::IMapView *mapview = s_mapdevice->mapView();
-        RAWTRACE1("mapview_close: mapview=%p", mapview);
+        //RAWTRACE1("mapview_close: destroy mapview=%p", mapview);
         rho_map_destroy(mapview);
+        //RAWTRACE("mapview_close: mapview destroyed");
     }
+    //RAWTRACE1("mapview_close: destroy mapdevice=%p", s_mapdevice);
     delete s_mapdevice;
     s_mapdevice = NULL;
+    //RAWTRACE("mapview_close: mapdevice destroyed");
 }
 
 RHO_GLOBAL void mapview_create(rho_param *p)
