@@ -6,7 +6,7 @@
 
   <!-- Arguments to gwtc and devmode targets -->
 	  <property name="gwt.devmode.args" value="-logLevel DEBUG" />
-	  <property name="gwt.gwtc.args" value="-style DETAILED" />
+	  <property name="gwt.gwtc.args" value="-style DETAILED -optimize 0 -draftCompile" />
 
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="E:/_proj/rhomobile/gwt-2.1.1" />
