@@ -12,18 +12,10 @@
 
   <!-- Other module inherits                                      -->
 
+  <entry-point class='com.rho.sync.SyncThread'/>
+
   <!-- Specify the paths for translatable code                    -->
 
   <source path='com/rho'/>
-
-<!--
-  <source path=''/>
-  <source path='com'/>
-  <source path='j2me'/>
-  <source path='java/io'/>
-  <source path='javax/microedition.io'/>
-  <source path='net/rim/device/api/system'/>
-  <source path='org/json/me'/>
--->
 
 </module>
