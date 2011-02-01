@@ -30,6 +30,8 @@ RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, co
     jstring strTitle = rho_cast<jstring>(szTitle);
 
     env->CallStaticVoidMethod(cls, mid, strTitle, strMsg, strHide);
+    env->DeleteLocalRef(strTitle);
+    env->DeleteLocalRef(strHide);
     env->DeleteLocalRef(strMsg);
 }
 
