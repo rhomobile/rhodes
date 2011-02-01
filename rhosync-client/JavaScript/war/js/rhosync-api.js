@@ -1,5 +1,7 @@
 Rhomobile = function() {
 
+	// === Storage ================================================
+
 	var SyncDbSchema = ''
 		+'CREATE TABLE client_info ('
 				+' "client_id" VARCHAR(255) default NULL,'
@@ -46,46 +48,46 @@ Rhomobile = function() {
 				+'CREATE INDEX by_src_value ON object_values ("attrib", "source_id", "value");'
 		;
 
-		var _execInTx = function(db, sql, values, resultHdlr/*(tx,resultSet)*/, errHdlr/*(db|tx,err)*/) {
-			db.transaction(function (tx) {
-				tx.executeSql(sql, values, resultHdlr, errHdlr);
-			}, function(err){
-				if(errHdlr) errHdlr(db, err);
-			});
-		};
+	var _execInTx = function(db, sql, values, resultHdlr/*(tx,resultSet)*/, errHdlr/*(db|tx,err)*/) {
+		db.transaction(function (tx) {
+			tx.executeSql(sql, values, resultHdlr, errHdlr);
+		}, function(err){
+			if(errHdlr) errHdlr(db, err);
+		});
+	};
 
-		var klass_webSqlStorage = function(dbName) {
-			this.dbName = dbName;
-		};
+	var klass_webSqlStorage = function(dbName) {
+		this.dbName = dbName;
+	};
 
-		klass_webSqlStorage.prototype.open = function(toExecute/*str|func*/, errHdlr/*(db|tx,err)*/)
-		{
-			try {
-				var db = openDatabase(this.dbName, '1.0', 'Rhodes sync database', 2 * 1024 * 1024);
-				if ("string" == typeof toExecute) {
-						_execInTx(db, toExecute, null, null, errHdlr);
-				} else if ("function" == typeof toExecute) {
-					toExecute(db);
-				}
-			} catch(ex) {
-				if(errHdlr) errHdlr(null, ex);
+	klass_webSqlStorage.prototype.open = function(toExecute/*str|func*/, errHdlr/*(db|tx,err)*/)
+	{
+		try {
+			var db = openDatabase(this.dbName, '1.0', 'Rhodes sync database', 2 * 1024 * 1024);
+			if ("string" == typeof toExecute) {
+					_execInTx(db, toExecute, null, null, errHdlr);
+			} else if ("function" == typeof toExecute) {
+				toExecute(db);
 			}
-		};
-			
-		klass_webSqlStorage.prototype.close = function()/*throws DBException*/{};
+		} catch(ex) {
+			if(errHdlr) errHdlr(null, ex);
+		}
+	};
+		
+	klass_webSqlStorage.prototype.close = function()/*throws DBException*/{};
 
-		klass_webSqlStorage.prototype.executeSQL = function(sql, values, resultHdlr/*(tx,resultSet)*/, errHdlr/*(db|tx,err)*/)
-		{
-			this.open(function(db){
-				_execInTx(db, sql, values, resultHdlr, errHdlr);
-			});
-		};
-			
-		klass_webSqlStorage.prototype.executeBatchSQL = function(sql)
-		{
-			this.executeSQL(sql);
-		};
-			
+	klass_webSqlStorage.prototype.executeSQL = function(sql, values, resultHdlr/*(tx,resultSet)*/, errHdlr/*(db|tx,err)*/)
+	{
+		this.open(function(db){
+			_execInTx(db, sql, values, resultHdlr, errHdlr);
+		});
+	};
+		
+	klass_webSqlStorage.prototype.executeBatchSQL = function(sql)
+	{
+		this.executeSQL(sql);
+	};
+		
 //			/*IDBResult*/ createResult: function(){},
 //			/*void*/ deleteAllFiles: function(/*String*/ strPath)throws Exception{},
 //			
@@ -104,12 +106,56 @@ Rhomobile = function() {
 //
 //			/*void*/ createTriggers: function() /*throws DBException*/{},
 //			/*void*/ setDbCallback: function(/*IDBCallback*/ callback){},
+
 			
-	// public members
-		return {
-				sync: {},
-				db: {
-					DbStorage: klass_webSqlStorage
+	// === Model ==================================================
+
+	var klass_model = function(name, props) {
+		this.name = name;
+		this.properties = props;
+	}
+	
+	// === API load support =======================================
+
+	var _gwtClasses = ["com.rho.sync.SyncThread"];         	              	
+	
+	// Function to report the exact GWT class is ready to use.
+	//
+	// GWT class definitions are bound to load event and number
+	// of them is unknown at the moment of this code runs.
+	//
+	// So we unable to rely on load event to have all GWT classes
+	// defined completely.
+	//
+	// We use this function to report each class is ready, and
+	// Rhomobile.event.apiReady event to fire an application
+	// when all of GWT classes is ready to use.
+	//
+	var _gwtClassReady = function(className){
+		for(var i in _gwtClasses) {
+			if(className == _gwtClasses[i]) {
+				_gwtClasses.splice(i, 1);
+				if(0 == _gwtClasses.length) {
+					jQuery(window).trigger(Rhomobile.event.apiReady);
 				}
-			};
+			}
+		}
+	};
+
+	// === Public members =========================================
+
+	return {
+		internal: 	{
+			gwtClassReady: _gwtClassReady
+		},         	              	
+		event: {
+			apiReady: "Rhomobile.event.apiReady"
+		},
+		sync: {
+			Model: klass_model
+		},
+		db: {
+			DbStorage: klass_webSqlStorage
+		}
+	};
 }();

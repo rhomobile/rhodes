@@ -9,7 +9,7 @@
 
 
   <!-- include source files here... -->
-  <script type="text/javascript" language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+  <script type="text/javascript" language="javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.min.js"></script>
   
   <script type="text/javascript" src="../js/rhosync-api.js"></script>
   <script type="text/javascript" src="../rhosyncjs/rhosyncjs.nocache.js"></script>
@@ -23,7 +23,7 @@
 
 <script type="text/javascript">
 	//It is used, because GWT renders javascript after document loaded.
-	jQuery(window).load(function(){
+	jQuery(window).bind(Rhomobile.event.apiReady, function(){
 	  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
 	  jasmine.getEnv().execute();
 	}); //jQuery(window).load
