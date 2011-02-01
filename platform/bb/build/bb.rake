@@ -86,6 +86,26 @@ def startsim(hidden=false)
   Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
+def load_to_sim
+  sim = $config["env"]["paths"][$bbver]["sim"]
+  jde = $config["env"]["paths"][$bbver]["jde"]
+
+  cod_path = $targetdir + "/"+$outfilebase+".cod.pending"
+  puts "cod_path : #{cod_path}"
+  
+  command = jde + "/simulator/fledgecontroller.exe"
+  args = []
+  args << "/session="+sim
+  args << "/execute=LoadCod(\"#{cod_path}\")"
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
+
+  args = []
+  args << "/session="+sim
+  args << "/execute=LoadCod(\"updates.force\")"
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}  
+
+end
+
 def stopsim
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
@@ -923,6 +943,11 @@ end
 
 namespace "run" do
   namespace "bb" do
+
+      task :testsim => ["config:bb"] do #"package:bb:production_sim"] do
+        load_to_sim
+      end  
+  
       task :stopmdsandsim => ["config:bb"] do
         stopsim  
         stopmds
