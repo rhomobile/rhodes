@@ -67,6 +67,7 @@ public class MapView extends BaseActivity {
 	protected void onStop() {
 		destroy(mNativeDevice);
 		mNativeDevice = 0;
+		finish();
 		super.onStop();
 	}
 	
