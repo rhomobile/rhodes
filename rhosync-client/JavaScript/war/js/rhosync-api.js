@@ -2,7 +2,7 @@ Rhomobile = function() {
 
 	// === Storage ================================================
 
-	var SyncDbSchema = ''
+	var syncDbSchemaSQL = ''
 		+'CREATE TABLE client_info ('
 				+' "client_id" VARCHAR(255) default NULL,'
 				+' "session" VARCHAR(255) default NULL,'
@@ -11,12 +11,12 @@ Rhomobile = function() {
 				+' "reset" BIGINT default 0,'
 				+' "port" VARCHAR(10) default NULL,'
 				+' "last_sync_success" VARCHAR(100) default NULL);'
-				+'CREATE TABLE object_values ('
+		+'CREATE TABLE object_values ('
 				+' "source_id" BIGINT default NULL,'
 				+' "attrib" varchar(255) default NULL,'
 				+' "object" varchar(255) default NULL,'
 				+' "value" varchar default NULL);'
-				+'CREATE TABLE changed_values ('
+		+'CREATE TABLE changed_values ('
 				+' "source_id" BIGINT default NULL,'
 				+' "attrib" varchar(255) default NULL,'
 				+' "object" varchar(255) default NULL,'
@@ -24,7 +24,7 @@ Rhomobile = function() {
 				+' "attrib_type" varchar(255) default NULL,'
 				+' "update_type" varchar(255) default NULL,'
 				+' "sent" BIGINT default 0);'
-				+'CREATE TABLE sources ('
+		+'CREATE TABLE sources ('
 				+' "source_id" BIGINT PRIMARY KEY,'
 				+' "name" VARCHAR(255) default NULL,'
 				+' "token" BIGINT default NULL,'
@@ -43,9 +43,9 @@ Rhomobile = function() {
 				+' "schema_version" varchar default NULL,'
 				+' "associations" varchar default NULL,'
 				+' "blob_attribs" varchar default NULL);'
-				+'CREATE INDEX by_src_id on object_values ("source_id");'
-				+'CREATE UNIQUE INDEX by_src_object ON object_values ("object", "attrib", "source_id");'
-				+'CREATE INDEX by_src_value ON object_values ("attrib", "source_id", "value");'
+		+'CREATE INDEX by_src_id on object_values ("source_id");'
+		+'CREATE UNIQUE INDEX by_src_object ON object_values ("object", "attrib", "source_id");'
+		+'CREATE INDEX by_src_value ON object_values ("attrib", "source_id", "value");'
 		;
 
 	var _execInTx = function(db, sql, values, resultHdlr/*(tx,resultSet)*/, errHdlr/*(db|tx,err)*/) {
@@ -83,11 +83,34 @@ Rhomobile = function() {
 		});
 	};
 		
-	klass_webSqlStorage.prototype.executeBatchSQL = function(sql)
+	klass_webSqlStorage.prototype.executeBatchSQL = function(sql, errHdlr/*(db|tx,err)*/)
 	{
-		this.executeSQL(sql);
+		var statements = sql.split(";");
+		for(var i in statements) {
+			var stmt = statements[i];
+			if(stmt) { // means: it is defined and not null and not empty string
+				this.executeSQL(statements[i], null, null, errHdlr);
+			}
+		}
 	};
 		
+	klass_webSqlStorage.prototype.initSchema = function(errHdlr/*(db|tx,err)*/)
+	{
+		this.executeBatchSQL(syncDbSchemaSQL, errHdlr);
+	};
+		
+	klass_webSqlStorage.prototype.getAllTableNames = function(errHdlr/*(db|tx,err)*/)
+	{
+		var tableNames = [];
+		this.executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null, jQuery.proxy(function(tx,rs){
+			for(var i=0; i<rs.rows.length; i++) {
+				tableNames.push(rs.rows.item(i)['name']);
+			}
+		}, this), errHdlr);
+		// there is an error: tableNames is empty at the moment of return!
+		return tableNames;
+	};
+
 //			/*IDBResult*/ createResult: function(){},
 //			/*void*/ deleteAllFiles: function(/*String*/ strPath)throws Exception{},
 //			
@@ -96,9 +119,6 @@ Rhomobile = function() {
 //			/*void*/ rollback: function()/*throws DBException*/{},
 //			/*void*/ onBeforeCommit: function() /*throws DBException*/{},
 //			
-//			/*String[]*/ getAllTableNames: function()/*throws DBException*/{
-//				//"SELECT name FROM sqlite_master WHERE type='table'"
-//			},
 //			/*boolean*/ isTableExists: function(/*String*/ strName)/*throws DBException*/{},
 //			/*boolean*/ isDbFileExists: function(/*String*/ strPath){},
 //			
@@ -110,9 +130,20 @@ Rhomobile = function() {
 			
 	// === Model ==================================================
 
-	var klass_model = function(name, props) {
+	var klass_model = function(name, opts, props) {
 		this.name = name;
+		this.options = opts;
 		this.properties = props;
+	}
+	
+	// === Config ==================================================
+
+	var klass_config = function() {
+	}
+	
+	// === Engine ==================================================
+
+	var klass_engine = function() {
 	}
 	
 	// === API load support =======================================
@@ -151,8 +182,10 @@ Rhomobile = function() {
 		event: {
 			apiReady: "Rhomobile.event.apiReady"
 		},
+		Config: klass_config,
 		sync: {
-			Model: klass_model
+			Model: klass_model,
+			Engine: klass_engine
 		},
 		db: {
 			DbStorage: klass_webSqlStorage
