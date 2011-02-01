@@ -110,18 +110,28 @@ private:
     };
 
     friend class CacheUpdate;
-    class CacheUpdate : public CRhoThread
+    class CacheUpdate : public CThreadQueue
     {
     private:
         CacheUpdate(CacheUpdate const &);
         CacheUpdate &operator=(CacheUpdate const &);
 
+        struct Command : public IQueueCommand
+        {
+            Command() {}
+
+            bool equals(IQueueCommand const &) {return false;}
+            String toString() {return "CACHE-UPDATE";}
+        };
+
     public:
         CacheUpdate(ESRIMapView *);
         ~CacheUpdate();
 
+        void updateCache();
+
     private:
-        void run();
+        void processCommand(IQueueCommand *cmd);
 
     private:
         ESRIMapView *m_mapview;
@@ -141,7 +151,7 @@ public:
     void setScrollEnabled(bool v) {m_scroll_enabled = v;}
     bool scrollEnabled() const {return m_scroll_enabled;}
 
-    void setMapType(String const &type) {m_maptype = type;}
+    void setMapType(String const &type);
     String const &mapType() const {return m_maptype;}
 
     void setZoom(int zoom);
@@ -171,6 +181,7 @@ private:
     IDrawingDevice *drawingDevice() const {return m_drawing_device;}
 
     void fetchTile(int zoom, uint64 latitude, uint64 longitude);
+    void updateCache();
 
     void paintBackground(IDrawingContext *context);
     void paintTile(IDrawingContext *context, Tile const &tile);
