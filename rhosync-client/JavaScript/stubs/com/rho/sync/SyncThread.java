@@ -87,5 +87,6 @@ public class SyncThread implements EntryPoint {
 		};
 
 		$wnd.Rhomobile.sync.Thread = klass;
+		$wnd.Rhomobile.internal.gwtClassReady("com.rho.sync.SyncThread");
 	}-*/;
 }
