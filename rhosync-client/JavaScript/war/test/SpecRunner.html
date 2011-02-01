@@ -22,7 +22,7 @@
 <body>
 
 <script type="text/javascript">
-	//It is used, because GWT renders javascript after document loaded.
+	//It is used, because GWT runs javascript definitions after document loaded.
 	jQuery(window).bind(Rhomobile.event.apiReady, function(){
 	  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
 	  jasmine.getEnv().execute();
