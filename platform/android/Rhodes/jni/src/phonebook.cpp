@@ -156,15 +156,13 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     jmethodID mid = getJNIClassMethod(env, cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return NULL;
 
-    jstring objId = rho_cast<jstring>(id);
-    jobject recordObj = env->CallObjectMethod(obj, mid, objId);
-    env->DeleteLocalRef(objId);
+    jhstring objId = rho_cast<jhstring>(id);
+    jhobject recordObj = jhobject(env->CallObjectMethod(obj, mid, objId.get()));
     if (!recordObj) return NULL;
-    jobject retval = env->NewGlobalRef(recordObj);
-    env->DeleteLocalRef(recordObj);
+    jhobject retval = jhobject(env->NewGlobalRef(recordObj.get()));
     if (logging_enable) RAWLOG_INFO("openPhonebookRecord() FINISH");
     if (!retval) return NULL;
-    return retval;
+    return retval.release();
 }
 
 RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
@@ -252,18 +250,15 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
     jmethodID mid = getJNIClassMethod(env, contactCls, "setField", "(ILjava/lang/String;)V");
     if (!mid) return 0;
 
-    //jstring objProperty = rho_cast<jstring>(property);
-    jstring objValue = rho_cast<jstring>(value);
+    jhstring objValue = rho_cast<jhstring>(value);
 
 	int index = get_value_index_by_name(property);
 	if (index >= 0) {
-		env->CallVoidMethod(contactObj, mid, index, objValue);
+		env->CallVoidMethod(contactObj, mid, index, objValue.get());
 	}
 	else {
 		RAWLOG_ERROR("Phonebook.cpp invalid property name for Contact Record");
 	}
-    //env->DeleteLocalRef(objProperty);
-    env->DeleteLocalRef(objValue);
     return 1;
 }
 

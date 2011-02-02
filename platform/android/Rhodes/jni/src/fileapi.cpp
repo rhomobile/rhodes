@@ -246,7 +246,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePa
   (JNIEnv *env, jclass, jstring pathObj)
 {
     std::string path = normalize_path(rho_cast<std::string>(env, pathObj));
-    return rho_cast<jstring>(env, path);
+    return rho_cast<jhstring>(env, path).release();
 }
 
 static std::string make_full_path(const char *path)
@@ -278,7 +278,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativ
   (JNIEnv *env, jclass, jstring pathObj)
 {
     std::string path = rho_cast<std::string>(env, pathObj);
-    return rho_cast<jstring>(env, make_rel_path(make_full_path(path)));
+    return rho_cast<jhstring>(env, make_rel_path(make_full_path(path))).release();
 }
 
 static rho_stat_t *rho_stat(const char *path)
@@ -417,9 +417,8 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     {
         //RHO_LOG("open: %s: copy from Android package", path);
         JNIEnv *env = jnienv();
-        jstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath).c_str());
-        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj);
-        env->DeleteLocalRef(relPathObj);
+        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
+        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
         {
             errno = EFAULT;
@@ -433,11 +432,15 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     if (java_way)
     {
         JNIEnv *env = jnienv();
-        jstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath).c_str());
-        jobject is = env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj);
-        env->DeleteLocalRef(relPathObj);
+        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
+        jhobject is = jhobject(env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get()));
 
-        if (is != NULL)
+        if (!is)
+        {
+            errno = EFAULT;
+            fd = -1;
+        }
+        else
         {
             scoped_lock_t guard(rho_fd_mtx);
             if (!rho_fd_free.empty())
@@ -448,18 +451,11 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
             else
                 fd = rho_fd_counter++;
             rho_fd_data_t d;
-            d.is = env->NewGlobalRef(is);
+            d.is = env->NewGlobalRef(is.get());
             d.fpath = fpath;
             d.pos = 0;
             rho_fd_map[fd] = d;
         }
-        else
-        {
-            errno = EFAULT;
-            fd = -1;
-        }
-
-        env->DeleteLocalRef(is);
     }
     else
     {

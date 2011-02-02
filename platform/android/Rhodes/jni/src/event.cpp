@@ -367,24 +367,20 @@ RHO_GLOBAL VALUE event_fetch_by_id(const char *id)
     if (!clsString) return Qnil;
 
     RHO_TRACE("event_fetch_by_id (1)");
-    jstring jId = rho_cast<jstring>(env, id);
+    jhstring jId = rho_cast<jhstring>(env, id);
     RHO_TRACE("event_fetch_by_id (2)");
-    jobject jRet = env->CallStaticObjectMethod(cls, mid, jId);
+    jhobject jRet = jhobject(env->CallStaticObjectMethod(cls, mid, jId));
     RHO_TRACE("event_fetch_by_id (3)");
-    if (env->IsInstanceOf(jRet, clsString))
+    if (env->IsInstanceOf(jRet.get(), clsString))
     {
         RHO_TRACE("event_fetch_by_id (3.1)");
-        std::string error = rho_cast<std::string>(env, (jstring)jRet);
+        std::string error = rho_cast<std::string>(env, (jstring)jRet.get());
         RHO_TRACE("event_fetch_by_id (3.2)");
-        env->DeleteLocalRef(jRet);
-        RHO_TRACE("event_fetch_by_id (3.3)");
         rb_raise(rb_eRuntimeError, "Can't fetch event with id %s: %s", id, error.c_str());
         return Qnil;
     }
-    VALUE rEvent = event_cast<VALUE>(jRet);
+    VALUE rEvent = event_cast<VALUE>(jRet.get());
     RHO_TRACE("event_fetch_by_id (4)");
-    env->DeleteLocalRef(jId);
-    env->DeleteLocalRef(jRet);
     return rEvent;
 }
 
@@ -416,14 +412,12 @@ RHO_GLOBAL void event_delete(const char *id)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "delete", "(Ljava/lang/String;)Ljava/lang/String;");
     if (!mid) return;
 
-    jstring jId = rho_cast<jstring>(env, id);
-    jstring jError = (jstring)env->CallStaticObjectMethod(cls, mid, jId);
-    env->DeleteLocalRef(jId);
+    jhstring jId = rho_cast<jhstring>(env, id);
+    jhstring jError = jhstring((jstring)env->CallStaticObjectMethod(cls, mid, jId.get()));
 
-    if (jError)
+    if (!!jError)
     {
-        std::string error = rho_cast<std::string>(env, jError);
-        env->DeleteLocalRef(jError);
+        std::string error = rho_cast<std::string>(env, jError.get());
         rb_raise(rb_eRuntimeError, "Event delete failed: %s", error.c_str());
     }
 }
