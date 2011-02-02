@@ -90,7 +90,9 @@ def load_to_sim
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
 
-  cod_path = $targetdir + "/"+$outfilebase+".cod.pending"
+  cp_r File.join($targetdir,"/."), jde + "/simulator"
+
+  cod_path = jde + "/simulator" + "/"+$outfilebase+".cod.pending"
   puts "cod_path : #{cod_path}"
   
   command = jde + "/simulator/fledgecontroller.exe"
@@ -944,7 +946,7 @@ end
 namespace "run" do
   namespace "bb" do
 
-      task :testsim => ["config:bb"] do #"package:bb:production_sim"] do
+      task :testsim => ["package:bb:production_sim"] do
         load_to_sim
       end  
   
@@ -956,6 +958,10 @@ namespace "run" do
 #      desc "Starts mds and sim"
       task :startmdsandsim => ["config:bb"] do
         startmds
+        startsim
+      end
+
+      task :startsim => ["config:bb"] do
         startsim
       end
       
