@@ -51,9 +51,8 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objFolderPath = rho_cast<jstring>(szFolderPath);
-    env->CallStaticVoidMethod(cls, mid, objFolderPath);
-    env->DeleteLocalRef(objFolderPath);
+    jhstring objFolderPath = rho_cast<jhstring>(szFolderPath);
+    env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
 }
 
 RHO_GLOBAL VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values)
@@ -95,9 +94,8 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return 0;
 
-    jstring propNameObj = rho_cast<jstring>(szPropName);
-    jobject result = env->CallStaticObjectMethod(cls, mid, propNameObj);
-    env->DeleteLocalRef(propNameObj);
+    jhstring propNameObj = rho_cast<jhstring>(szPropName);
+    jhobject result = jhobject(env->CallStaticObjectMethod(cls, mid, propNameObj.get()));
     if (!result) return 0;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
@@ -106,34 +104,29 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     jclass clsDouble = getJNIClass(RHODES_JAVA_CLASS_DOUBLE);
     jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
 
-    if (env->IsInstanceOf(result, clsBoolean)) {
+    if (env->IsInstanceOf(result.get(), clsBoolean)) {
         jmethodID midValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
-        *resValue = rho_ruby_create_boolean((int)env->CallBooleanMethod(result, midValue));
-        env->DeleteLocalRef(result);
+        *resValue = rho_ruby_create_boolean((int)env->CallBooleanMethod(result.get(), midValue));
         return 1;
     }
-    else if (env->IsInstanceOf(result, clsInteger)) {
+    else if (env->IsInstanceOf(result.get(), clsInteger)) {
         jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
-        *resValue = rho_ruby_create_integer((int)env->CallIntMethod(result, midValue));
-        env->DeleteLocalRef(result);
+        *resValue = rho_ruby_create_integer((int)env->CallIntMethod(result.get(), midValue));
         return 1;
     }
-    else if (env->IsInstanceOf(result, clsFloat)) {
+    else if (env->IsInstanceOf(result.get(), clsFloat)) {
         jmethodID midValue = getJNIClassMethod(env, clsFloat, "floatValue", "()F");
-        *resValue = rho_ruby_create_double((double)env->CallFloatMethod(result, midValue));
-        env->DeleteLocalRef(result);
+        *resValue = rho_ruby_create_double((double)env->CallFloatMethod(result.get(), midValue));
         return 1;
     }
-    else if (env->IsInstanceOf(result, clsDouble)) {
+    else if (env->IsInstanceOf(result.get(), clsDouble)) {
         jmethodID midValue = getJNIClassMethod(env, clsDouble, "doubleValue", "()D");
-        *resValue = rho_ruby_create_double((double)env->CallDoubleMethod(result, midValue));
-        env->DeleteLocalRef(result);
+        *resValue = rho_ruby_create_double((double)env->CallDoubleMethod(result.get(), midValue));
         return 1;
     }
-    else if (env->IsInstanceOf(result, clsString)) {
-        jstring resStrObj = (jstring)result;
+    else if (env->IsInstanceOf(result.get(), clsString)) {
+        jstring resStrObj = (jstring)result.get();
         *resValue = rho_ruby_create_string(rho_cast<std::string>(resStrObj).c_str());
-        env->DeleteLocalRef(result);
         return 1;
     }
 

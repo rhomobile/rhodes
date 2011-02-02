@@ -24,9 +24,9 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
     jfieldID fidPort = getJNIClassField(env, clsSockAddr, "port", "I");
     if (!fidPort) return NULL;
 
-    jbyteArray array = env->NewByteArray(4);
+    jholder<jbyteArray> array = jholder<jbyteArray>(env->NewByteArray(4));
     if (!array) return NULL;
-    jbyte *arr = env->GetByteArrayElements(array, NULL);
+    jbyte *arr = env->GetByteArrayElements(array.get(), NULL);
     if (!arr) return NULL;
 
     sockaddr_in sa;
@@ -44,22 +44,19 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
     arr[1] = (jbyte)(addr & 0xFF);
     addr >>= 8;
     arr[0] = (jbyte)(addr & 0xFF);
-    env->ReleaseByteArrayElements(array, arr, 0);
+    env->ReleaseByteArrayElements(array.get(), arr, 0);
 
-    jstring ipaddrObj = rho_cast<jstring>(::inet_ntoa(sa.sin_addr));
-    jobject inetaddrObj = env->NewObject(clsInetAddr, midInetAddr, array, ipaddrObj);
-    env->DeleteLocalRef(ipaddrObj);
+    jhstring ipaddrObj = rho_cast<jhstring>(::inet_ntoa(sa.sin_addr));
+    jhobject inetaddrObj = jhobject(env->NewObject(clsInetAddr, midInetAddr, array.get(), ipaddrObj.get()));
     if (!inetaddrObj) return NULL;
 
-    jobject sockaddrObj = env->NewObject(clsSockAddr, midSockAddr);
+    jhobject sockaddrObj = jhobject(env->NewObject(clsSockAddr, midSockAddr));
     if (!sockaddrObj) return NULL;
 
-    env->SetObjectField(sockaddrObj, fidInetAddr, inetaddrObj);
-    env->SetIntField(sockaddrObj, fidPort, ntohs(sa.sin_port));
+    env->SetObjectField(sockaddrObj.get(), fidInetAddr, inetaddrObj.get());
+    env->SetIntField(sockaddrObj.get(), fidPort, ntohs(sa.sin_port));
 
-    env->DeleteLocalRef(inetaddrObj);
-
-    return sockaddrObj;
+    return sockaddrObj.release();
 }
 
 namespace rho
@@ -127,15 +124,15 @@ ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
     if (!storage) return -1;
 
     JNIEnv *env = jnienv();
-    jbyteArray array = env->NewByteArray(len);
+    jholder<jbyteArray> array = jholder<jbyteArray>(env->NewByteArray(len));
     if (!array) return -1;
-    jbyte *arr = env->GetByteArrayElements(array, NULL);
+    jbyte *arr = env->GetByteArrayElements(array.get(), NULL);
     if (!arr) return -1;
     std::memmove(arr, mem, len);
-    env->ReleaseByteArrayElements(array, arr, 0);
+    env->ReleaseByteArrayElements(array.get(), arr, 0);
 
     jobject obj = (jobject)storage;
-    jboolean result = env->CallBooleanMethod(obj, midSend, array);
+    jboolean result = env->CallBooleanMethod(obj, midSend, array.get());
     if (!result) return -1;
     return len;
 }
@@ -166,14 +163,14 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
         return -1;
     }
 
-    jbyteArray array = env->NewByteArray(size);
-    jint result = env->CallIntMethod(obj, midRecv, array);
+    jholder<jbyteArray> array = jholder<jbyteArray>(env->NewByteArray(size));
+    jint result = env->CallIntMethod(obj, midRecv, array.get());
 
     if (result > 0) {
-        jbyte *arr = env->GetByteArrayElements(array, NULL);
+        jbyte *arr = env->GetByteArrayElements(array.get(), NULL);
         if (!arr) return -1;
         std::memmove(buf, arr, result);
-        env->ReleaseByteArrayElements(array, arr, JNI_ABORT);
+        env->ReleaseByteArrayElements(array.get(), arr, JNI_ABORT);
     }
     return result;
 }
