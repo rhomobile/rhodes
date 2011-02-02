@@ -28,12 +28,7 @@
 
 @property (nonatomic,retain) NSArray *viewControllers;
 
-- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray*)items;
-
-
-
-
-
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
 
 //- (UIView*)view;
 
