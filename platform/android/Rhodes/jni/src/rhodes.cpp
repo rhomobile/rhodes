@@ -86,7 +86,7 @@ jobject RhoValueConverter::createObject(rho_param *p)
     if (!init || !p) return NULL;
     switch (p->type) {
     case RHO_PARAM_STRING:
-        return rho_cast<jstring>(p->v.string);
+        return rho_cast<jhstring>(p->v.string).release();
         break;
     case RHO_PARAM_ARRAY:
         {
@@ -94,9 +94,8 @@ jobject RhoValueConverter::createObject(rho_param *p)
             if (!v) return NULL;
 
             for (int i = 0, lim = p->v.array->size; i < lim; ++i) {
-                jobject value = createObject(p->v.array->value[i]);
-                env->CallVoidMethod(v, midAddElement, value);
-                env->DeleteLocalRef(value);
+                jhobject value = jhobject(createObject(p->v.array->value[i]));
+                env->CallVoidMethod(v, midAddElement, value.get());
             }
             return v;
         }
@@ -107,11 +106,9 @@ jobject RhoValueConverter::createObject(rho_param *p)
             if (!v) return NULL;
 
             for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
-                jstring key = rho_cast<jstring>(p->v.hash->name[i]);
-                jobject value = createObject(p->v.hash->value[i]);
-                env->CallObjectMethod(v, midPut, key, value);
-                env->DeleteLocalRef(key);
-                env->DeleteLocalRef(value);
+                jhstring key = rho_cast<jhstring>(p->v.hash->name[i]);
+                jhobject value = jhobject(createObject(p->v.hash->value[i]));
+                env->CallObjectMethod(v, midPut, key.get(), value.get());
             }
             return v;
         }
@@ -236,9 +233,9 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
     return ret;
 }
 
-jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
+jhstring rho_cast_helper<jhstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
-    return env->NewStringUTF(s);
+    return jhstring(env->NewStringUTF(s));
 }
 
 static rho::common::CMutex rho_cast_java_ruby_mtx;
@@ -499,35 +496,35 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getOptions
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
-    return rho_cast<jstring>(env, s);
+    return rho_cast<jhstring>(env, s).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getStartUrl
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
-    return rho_cast<jstring>(env, s);
+    return rho_cast<jhstring>(env, s).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getCurrentUrl
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
-    return rho_cast<jstring>(env, s);
+    return rho_cast<jhstring>(env, s).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getAppBackUrl
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
-    return rho_cast<jstring>(env, s);
+    return rho_cast<jhstring>(env, s).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getBlobPath
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getBlobsDirPath().c_str();
-    return rho_cast<jstring>(env, s);
+    return rho_cast<jhstring>(env, s).release();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
@@ -542,7 +539,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
 {
     std::string const &s = rho_cast<std::string>(strUrl);
     std::string const &cs = RHODESAPP().canonicalizeRhoUrl(s);
-    return rho_cast<jstring>(env, cs);
+    return rho_cast<jhstring>(env, cs).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
@@ -550,7 +547,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfi
 {
     std::string const &s = rho_cast<std::string>(key);
     const char* cs = get_app_build_config_item(s.c_str());
-    return rho_cast<jstring>(env, cs);
+    return rho_cast<jhstring>(env, cs).release();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage

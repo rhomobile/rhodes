@@ -21,9 +21,7 @@ RHO_GLOBAL void take_picture(char* callback_url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "takePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objCallback = rho_cast<jstring>(callback_url);
-    env->CallStaticVoidMethod(cls, mid, objCallback);
-    env->DeleteLocalRef(objCallback);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(callback_url).get());
 }
 
 RHO_GLOBAL void choose_picture(char* callback_url)
@@ -33,8 +31,6 @@ RHO_GLOBAL void choose_picture(char* callback_url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "choosePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objCallback = rho_cast<jstring>(callback_url);
-    env->CallStaticVoidMethod(cls, mid, objCallback);
-    env->DeleteLocalRef(objCallback);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(callback_url).get());
 }
 

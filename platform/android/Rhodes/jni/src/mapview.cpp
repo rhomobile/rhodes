@@ -19,11 +19,9 @@ RHO_GLOBAL void mapview_create(rho_param *p)
         return;
     }
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    jstring keyObj = rho_cast<jstring>(RHO_GOOGLE_API_KEY);
-    env->CallStaticVoidMethod(clsMapView, midCreate, keyObj, paramsObj);
-    env->DeleteLocalRef(keyObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = jhobject(RhoValueConverter(env).createObject(p));
+    jhstring keyObj = rho_cast<jhstring>(RHO_GOOGLE_API_KEY);
+    env->CallStaticVoidMethod(clsMapView, midCreate, keyObj.get(), paramsObj.get());
 #else
     RAWLOG_ERROR("MapView disabled at build time");
 #endif
