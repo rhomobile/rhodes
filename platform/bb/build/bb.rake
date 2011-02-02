@@ -180,8 +180,8 @@ namespace "config" do
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
     
-    use_sqlite = $app_config[$config["platform"]] && $app_config[$config["platform"]]['use_sqlite'] == '1'
-    $use_sqlite = $bbver[0].to_i >= 5 && use_sqlite 
+    use_sqlite = $app_config[$current_platform] && $app_config[$current_platform]['use_sqlite'] == '1'
+    $use_sqlite = $bbver[0].to_i >= 5 && use_sqlite ? true : false
     puts "$use_sqlite : #{$use_sqlite}"
     
     $builddir = $config["build"]["bbpath"] + "/build"
