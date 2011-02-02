@@ -586,6 +586,18 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientat
 	//RAWLOG_ERROR3("$$$$$$$$$$$$$$$$ SCREEN : [%d]x[%d] angle[%d]", width, height, angle);	
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiCreatedCallback
+  (JNIEnv *, jobject)
+{
+    rho_rhodesapp_callUiCreatedCallback();
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiDestroyedCallback
+  (JNIEnv *, jobject)
+{
+    rho_rhodesapp_callUiDestroyedCallback();
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCallback
   (JNIEnv *, jobject, jboolean active)
 {

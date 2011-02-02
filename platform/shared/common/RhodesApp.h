@@ -4,6 +4,8 @@
 
 #ifdef __cplusplus
 
+#include "common/ThreadQueue.h"
+
 #include "net/INetRequest.h"
 
 #include "net/HttpServer.h"
@@ -55,6 +57,8 @@ private:
     boolean m_bDeactivationMode;
     int m_activateCounter;
 
+    common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
+
 public:
     ~CRhodesApp(void);
 
@@ -71,6 +75,7 @@ public:
     boolean deactivationMode() const {return m_bDeactivationMode;}
 
     const String& getRhobundleReloadUrl();
+    const String& getBaseUrl();
     const String& getStartUrl();
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
@@ -94,6 +99,8 @@ public:
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 	void callBluetoothCallback(String strCallbackUrl, const char* body);
     void callAppActiveCallback(boolean bActive);
+    void callUiCreatedCallback();
+    void callUiDestroyedCallback();
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
 
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
@@ -116,7 +123,7 @@ public:
 
     void loadUrl(String url);
 
-    boolean isLocalServerStarted();
+    void notifyLocalServerStarted();
     const char* getFreeListeningPort();
 
 protected:
@@ -171,6 +178,8 @@ void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char*
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char* body);
 void rho_rhodesapp_callAppActiveCallback(int nActive);
+void rho_rhodesapp_callUiCreatedCallback();
+void rho_rhodesapp_callUiDestroyedCallback();
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu);
@@ -189,8 +198,6 @@ void rho_net_request_with_data(const char *url, const char *str_body);
 void rho_rhodesapp_load_url(const char *url);
 
 int rho_rhodesapp_check_mode();
-
-int rho_is_local_server_started();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
 
