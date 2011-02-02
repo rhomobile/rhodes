@@ -116,6 +116,25 @@ module Rho
       end    
     end
 
+    def ui_created
+      begin
+        get_app(APPNAME).on_ui_created
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts '"UI created" callback failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end
+    end
+
+    def ui_destroyed
+      begin
+        get_app(APPNAME).on_ui_destroyed
+        @@native_bar_initialized = false
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n");
+        puts '"UI destroyed" callback failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end
+    end
+
     # make sure we close the database file
     #def self.finalize
       #Rhom::RhomDbAdapter::close
