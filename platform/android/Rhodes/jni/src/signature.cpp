@@ -23,11 +23,9 @@ RHO_GLOBAL void rho_signature_take_signature(char* callback_url, char* image_for
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objCallback = rho_cast<jstring>(callback_url);
-    jstring objFormat = rho_cast<jstring>(image_format);
-    env->CallStaticVoidMethod(cls, mid, objCallback, objFormat);
-    env->DeleteLocalRef(objCallback);
-    env->DeleteLocalRef(objFormat);
+    jhstring objCallback = rho_cast<jhstring>(callback_url);
+    jhstring objFormat = rho_cast<jhstring>(image_format);
+    env->CallStaticVoidMethod(cls, mid, objCallback.get(), objFormat.get());
 //*/
 }
 
