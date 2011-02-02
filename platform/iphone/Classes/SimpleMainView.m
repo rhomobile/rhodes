@@ -16,6 +16,8 @@
 
 #include "TabbedMainView.h"
 
+#include "NativeBar.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
 
@@ -62,7 +64,7 @@ int rho_sys_get_screen_height();
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView;
+@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView, url_after_set_background, isBackgroundSetted, is_url_after_set_background_redirect;
 
 
 static BOOL makeHiddenUntilLoadContent = YES;
@@ -168,19 +170,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return btn;
 }
 
-- (UIToolbar*)newToolbar:(NSArray*)items frame:(CGRect)mainFrame {
-    if (([items count]-2) % 8 != 0) {
-        RAWLOG_ERROR("Illegal arguments for createNewToolbar");
-        return nil;
-    }
+- (UIToolbar*)newToolbar:(NSDictionary*)bar_info frame:(CGRect)mainFrame {
     
     UIToolbar *tb = [UIToolbar new];
     tb.barStyle = UIBarStyleBlack;//Opaque;
 	
-	NSString *background_color_enable = [items objectAtIndex:0];
-	NSString *background_color = [items objectAtIndex:1];
+
+	NSString *background_color = nil;
+
+	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
+	if (global_properties != nil) {
+		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+	}
 	
-	if ([background_color_enable isEqualToString:@"true"]) {
+	
+	if (background_color != nil) {
 		tb.barStyle = UIBarStyleDefault;
 		int c = [background_color intValue];
 		int cR = (c & 0xFF0000) >> 16;
@@ -209,17 +213,25 @@ static BOOL makeHiddenUntilLoadContent = YES;
                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                               target:nil action:nil];
     
-    NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]/4];
-    for(int i = 0, lim = ([items count]-2)/8; i < lim; i++) {
-        int index = i*8 - 1 + 2;
-        NSString *label = (NSString*)[items objectAtIndex:++index];
-        NSString *url = (NSString*)[items objectAtIndex:++index];
-        NSString *icon = (NSString*)[items objectAtIndex:++index];
-        NSString *reload = (NSString*)[items objectAtIndex:++index];
-		NSString *colored_icon = (NSString*)[items objectAtIndex:++index];  
+	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
+	if (items == nil) {
+		RAWLOG_ERROR("Illegal arguments for createNewToolbar - array of items not found");
+		[tb release];
+		[fixed release];
+		return nil;
+	}
+
+    NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]];
+	
+    for(int i = 0, lim = [items count]; i < lim; i++) {
+		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
         
-		reload = nil;
 		
+		NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
+        NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
+        NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
+		NSString *colored_icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_COLORED_ICON];  
+        
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
             [tb release];
@@ -262,18 +274,18 @@ static BOOL makeHiddenUntilLoadContent = YES;
     self.toolbar = nil;
 }
 
-- (void)addToolbar:(NSArray*)items {
+- (void)addToolbar:(NSDictionary*)bar_info {
     [self removeToolbar];
     assert(!toolbar);
     
-    if (!items)
+    if (!bar_info)
         return;
     
     CGRect wFrame = [self getContentRect];
 	wFrame.size.height += wFrame.origin.y;
 	wFrame.origin.y = 0;
     
-    toolbar = [self newToolbar:items frame:wFrame];
+    toolbar = [self newToolbar:bar_info frame:wFrame];
     assert([toolbar retainCount] == 1);
     toolbar.tag = RHO_TAG_TOOLBAR;
     UIView* root = self.view;
@@ -303,7 +315,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return w;
 }
 
-- (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame toolbar:(NSArray*)items {
+- (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
 	[self init];
 	
 	self.mTabBarCallback = nil;
@@ -312,7 +324,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	
 	self.urlBasedNativeView = NO;
     
+	self.url_after_set_background = nil;
+	self.isBackgroundSetted = YES;
+	self.is_url_after_set_background_redirect = NO;
+	
     UIView* root = self.view;
+	if (web_bkg_color != nil) {
+		self.view.backgroundColor = web_bkg_color;
+	}
     
     assert(!webView || [webView retainCount] == 2);
     [webView removeFromSuperview];
@@ -330,11 +349,23 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
     webView.autoresizesSubviews = YES;
     webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	
-    [root addSubview:webView];
-    assert([webView retainCount] == 2);
 
-    [self addToolbar:items];
+	if (web_bkg_color != nil) {
+		self.webView.backgroundColor = web_bkg_color;
+		int cr = (int)(CGColorGetComponents([web_bkg_color CGColor])[0] * 255);
+		int cg = (int)(CGColorGetComponents([web_bkg_color CGColor])[1] * 255);
+		int cb = (int)(CGColorGetComponents([web_bkg_color CGColor])[2] * 255);
+		int c = (cr << 16) | (cg << 8) | cb;
+		[self setWebBackgroundColor:c];
+		assert([webView retainCount] == 1);
+	}
+	else {
+		[root addSubview:webView];
+		assert([webView retainCount] == 2);
+    }
+	
+
+    [self addToolbar:bar_info];
     self.navbar = nil;
 	nativeView = nil;
 	nativeViewType = nil;
@@ -453,24 +484,32 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
 }
 
-- (id)initWithParentView:(UIView *)p frame:(CGRect)frame toolbar:(NSArray*)items {
-    return [self init:p webView:nil frame:frame toolbar:items];
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame bar_info:(NSDictionary*)bar_info {
+    return [self init:p webView:nil frame:frame bar_info:bar_info web_bkg_color:nil];
+}
+
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
+    return [self init:p webView:nil frame:frame bar_info:bar_info web_bkg_color:web_bkg_color];
 }
 
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame {
-    return [self initWithParentView:p frame:frame toolbar:nil];
+    return [self initWithParentView:p frame:frame bar_info:nil];
+}
+
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame web_bkg_color:(UIColor*)web_bkg_color {
+    return [self initWithParentView:p frame:frame bar_info:nil web_bkg_color:web_bkg_color];
 }
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p {
-    return [self initWithMainView:v parent:p toolbar:nil];
+    return [self initWithMainView:v parent:p bar_info:nil];
 }
 
-- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p toolbar:(NSArray*)items {
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
     CGRect frame = [[v view] frame];
 	frame.origin.x = 0;
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
     UIWebView *w = [v detachWebView];
-    id result = [self init:p webView:w frame:frame toolbar:items];
+    id result = [self init:p webView:w frame:frame bar_info:bar_info web_bkg_color:nil];
     return result;
 }
 
@@ -559,6 +598,24 @@ static BOOL makeHiddenUntilLoadContent = YES;
     assert(w && [w retainCount] == 1);
     return w;
 }
+
+-(void)setWebBackgroundColor:(int)bkg_color {
+	self.isBackgroundSetted = NO;
+	int cR = (bkg_color & 0xFF0000) >> 16;
+	int cG = (bkg_color & 0xFF00) >> 8;
+	int cB = (bkg_color & 0xFF);
+	UIColor* bc = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+	
+	self.webView.backgroundColor = bc;
+	self.view.backgroundColor = bc;
+	
+	NSString* data = [NSString stringWithFormat:@"<body bgcolor=\"#%X\"></body>", bkg_color]; 
+	
+	self.webView.hidden = YES;
+	
+	[self loadHTMLString:data];
+}
+
 
 - (void)loadHTMLString:(NSString *)data {
 	[self restoreWebView];
@@ -697,6 +754,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
+	if (!self.isBackgroundSetted) {
+		self.url_after_set_background = url;
+		self.is_url_after_set_background_redirect = NO;
+		return;
+	}
 	[SimpleMainView disableHiddenOnStart];
     NSString *encodedUrl = [self encodeUrl:url];
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
@@ -712,6 +774,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
+	if (!self.isBackgroundSetted) {
+		self.url_after_set_background = url;
+		self.is_url_after_set_background_redirect = YES;
+		return;
+	}
 	[SimpleMainView disableHiddenOnStart];
     NSString *encodedUrl = [self encodeUrl:url];
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
@@ -910,9 +977,28 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		self.view.hidden = NO;
 		[self.view.superview bringSubviewToFront:self.view];
     }
+	if ([self.webView superview] == nil) {
+		[self.view addSubview:self.webView];
+	}
+	if (self.webView.hidden) {
+		self.webView.hidden = NO;
+		[self.webView.superview bringSubviewToFront:self.webView];
+    }
 	
-	
-    // TODO
+	if (!self.isBackgroundSetted) {
+		self.isBackgroundSetted = YES;
+		if (self.url_after_set_background != nil) {
+			if (self.is_url_after_set_background_redirect) {
+				[self navigateRedirect:url_after_set_background tab:0];
+			}
+			else {
+				[self navigate:url_after_set_background tab:0];
+			}
+		}
+	}
+	self.url_after_set_background = nil;	
+    
+	// TODO
     /*
      [self inactive];
      
@@ -942,6 +1028,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		self.view.hidden = NO;
 		[self.view.superview bringSubviewToFront:self.view];
     }
+	if ([self.webView superview] == nil) {
+		[self.view addSubview:self.webView];
+	}
+	if (self.webView.hidden) {
+		self.webView.hidden = NO;
+		[self.webView.superview bringSubviewToFront:self.webView];
+    }
+	self.isBackgroundSetted = YES;
+	self.url_after_set_background = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -72,7 +72,7 @@
 
 @synthesize viewControllers;
 
-- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p  bar_info:(NSDictionary*)bar_info {
     
 	self = [self initWithNibName:nil bundle:nil];
 
@@ -80,12 +80,12 @@
 	LeftViewController *leftView = NULL;
 	//create the master view
 	leftView = [[LeftViewController alloc]
-										initWithItems:items
+										initWithItems:bar_info
 										parent:self];
 	
 	//create the details view
 	rightView = [[RightViewController alloc]
-									  initWithItems:items
+									  initWithItems:bar_info
 									  parent:self];
 
 	//RhoUISplitView* rv = [[RhoUISplitView alloc] init];
@@ -262,54 +262,5 @@
 	return [rvc getWebView:tab_index];
 }
  
-/*
-
-- (UIWebView*)detachWebView {
-	return NULL;
-}
-
-- (void)loadHTMLString:(NSString*)data {
-}
-
-- (void)back:(int)index {
-}
-
-- (void)forward:(int)index {
-}
-
-- (void)navigate:(NSString*)url tab:(int)index {
-}
-
-- (void)navigateRedirect:(NSString*)url tab:(int)index {
-}
-
-- (void)reload:(int)index {
-}
-
-- (void)executeJs:(NSString*)js tab:(int)index {
-}
-
-- (NSString*)currentLocation:(int)index {
-	return NULL;
-}
-
-- (void)switchTab:(int)index {
-}
-
-- (int)activeTab {
-	return 0;
-}
-
-- (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right {
-}
-
-- (void)removeNavBar {
-}
-
-- (UIWebView*)getWebView:(int)tab_index {
-	return NULL;
-}
-
-*/
 
 @end
