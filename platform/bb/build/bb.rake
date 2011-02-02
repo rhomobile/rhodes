@@ -90,8 +90,6 @@ def load_to_sim
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
 
-  cp_r File.join($targetdir,"/."), jde + "/simulator"
-
   cod_path = jde + "/simulator" + "/"+$outfilebase+".cod.pending"
   puts "cod_path : #{cod_path}"
   
@@ -99,13 +97,20 @@ def load_to_sim
   args = []
   args << "/session="+sim
   args << "/execute=LoadCod(\"#{cod_path}\")"
-  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
-
+  res_line = ""
+  Jake.run2( command, args, {:directory => jde + "/simulator"} ) do |line| 
+    puts "fledgecontroller return:" + line;
+    res_line = line
+  end  
+  
+  return false if res_line && res_line.index("There is no Fledge instance running with session name")
+  
   args = []
   args << "/session="+sim
   args << "/execute=LoadCod(\"updates.force\")"
   Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}  
-
+  
+  return true
 end
 
 def stopsim
@@ -946,12 +951,12 @@ end
 namespace "run" do
   namespace "bb" do
 
-      task :testsim => ["package:bb:production_sim"] do
-        load_to_sim
-      end  
-  
       task :stopmdsandsim => ["config:bb"] do
         stopsim  
+        stopmds
+      end
+
+      task :stopmds => ["config:bb"] do
         stopmds
       end
 
@@ -961,10 +966,6 @@ namespace "run" do
         startsim
       end
 
-      task :startsim => ["config:bb"] do
-        startsim
-      end
-      
       task :spec => ["run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"
@@ -1011,7 +1012,14 @@ namespace "run" do
         exit 0
       end
 
+    task :testsim => ["config:bb"] do
+      load_to_sim
+    end
   end
+
+  task :startsim => ["config:bb"] do
+    startsim
+  end  
   
   desc "Builds everything, loads and starts bb sim and mds"
   task :bb => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
@@ -1020,7 +1028,8 @@ namespace "run" do
     cp_r File.join($targetdir,"/."), jde + "/simulator"
     
     startmds
-    startsim
+    startsim #if !load_to_sim
+    
     $stdout.flush
   end
 
