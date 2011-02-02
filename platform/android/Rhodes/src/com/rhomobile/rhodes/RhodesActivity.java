@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.ChromeClientOld;
 import com.rhomobile.rhodes.webview.RhoWebSettings;
 
@@ -83,6 +84,20 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(mSetup);
 		
 		sInstance = this;
+		
+		mHandler.post(new Runnable() {
+			public void run() {
+				RhodesService r = RhodesService.getInstance();
+				if (r == null) {
+					// If there is no yet running RhodesService instance,
+					// try to do the same after 100ms
+					mHandler.postDelayed(this, 100);
+					return;
+				}
+				
+				r.callUiCreatedCallback();
+			}
+		});
 	}
 
 	@Override
@@ -99,6 +114,10 @@ public class RhodesActivity extends BaseActivity {
 	
 	@Override
 	public void onDestroy() {
+		RhodesService r = RhodesService.getInstance();
+		if (r != null)
+			r.callUiDestroyedCallback();
+		
 		sInstance = null;
 		super.onDestroy();
 	}

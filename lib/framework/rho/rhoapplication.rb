@@ -63,11 +63,17 @@ module Rho
     def initialized?
       @initialized
     end
-    
+
     def on_activate_app
     end
 
     def on_deactivate_app
+    end
+
+    def on_ui_created
+    end
+
+    def on_ui_destroyed
     end
 
     def on_sync_user_changed

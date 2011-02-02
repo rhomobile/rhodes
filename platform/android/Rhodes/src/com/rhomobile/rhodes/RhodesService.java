@@ -166,6 +166,8 @@ public class RhodesService extends Service {
 	
 	public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
+	public native void callUiCreatedCallback();
+	public native void callUiDestroyedCallback();
 	public native void callActivationCallback(boolean active);
 	
 	public static native String getBuildConfig(String key);
