@@ -22,11 +22,11 @@
 static int started = 0;
 
 @interface RhoNativeBarCreateTask : NSObject {}
-+ (void)run:(NSValue*)value :(NSArray*)items;
++ (void)run:(NSValue*)value :(NSDictionary*)parameters;
 @end
 
 @implementation RhoNativeBarCreateTask
-+ (void)run:(NSValue*)value :(NSArray*)items {
++ (void)run:(NSValue*)value :(NSDictionary*)parameters {
     int type;
     [value getValue:&type];
     
@@ -55,17 +55,17 @@ static int started = 0;
 			break;
 		case TOOLBAR_TYPE:
 			if (smv != nil) {
-				[smv addToolbar:items];
+				[smv addToolbar:parameters];
 			}
 			else {
-				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w toolbar:items];
+				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
 				[r setMainView:view];
 				[view release];
 			}
 			started = 1;
 			break;
 		case TABBAR_TYPE: {
-			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
 			started = 1;
 			[r setMainView:view];
 			[view release];
@@ -81,10 +81,10 @@ static int started = 0;
 				}
 			}
 			if (is_iPad) {
-				view = [[SplittedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+				view = [[SplittedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
 			}
 			else {
-				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w tabs:items];
+				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
 			}
 			started = 1;
 			[r setMainView:view];
@@ -153,8 +153,16 @@ void create_nativebar_innner(int bar_type, rho_param *p)
     }
     
     int size = params->v.array->size;
-    NSMutableArray *items = [NSMutableArray arrayWithCapacity:size];
 
+	NSMutableDictionary* main_properties = [NSMutableDictionary dictionaryWithCapacity:2];
+	
+	NSMutableDictionary* properties = [NSMutableDictionary dictionaryWithCapacity:1];
+	[main_properties setObject:properties forKey:NATIVE_BAR_PROPERTIES];
+	
+	NSMutableArray* items = [NSMutableArray arrayWithCapacity:size];
+	[main_properties setObject:items forKey:NATIVE_BAR_ITEMS];
+	
+	
     for (int i = 0; i < size; ++i) {
         rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
@@ -169,8 +177,9 @@ void create_nativebar_innner(int bar_type, rho_param *p)
         const char *colored_icon = NULL;
 		
 		const char *selected_color = NULL;
-		const char *selected_color_enable = NULL;
+		//const char *selected_color_enable = NULL;
 		const char *disabled = NULL;
+		const char* web_bkg_color = NULL;
 		
         BOOL skip_item = NO;
         for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
@@ -182,7 +191,7 @@ void create_nativebar_innner(int bar_type, rho_param *p)
             }
 			if (strcasecmp(name, "background_color") == 0) {
 				background_color = value->v.string;
-				background_color_enable = "true";
+				//background_color_enable = "true";
 				skip_item = YES;
 			}
             
@@ -198,10 +207,12 @@ void create_nativebar_innner(int bar_type, rho_param *p)
                 colored_icon = value->v.string;
             else if (strcasecmp(name, "selected_color") == 0){
                 selected_color = value->v.string;
-				selected_color_enable = "true";
+				//selected_color_enable = "true";
 			}	
             else if (strcasecmp(name, "disabled") == 0)
                 disabled = value->v.string;
+            else if (strcasecmp(name, "web_bkg_color") == 0)
+                web_bkg_color = value->v.string;
         }
         
         if (label == NULL && bar_type == TOOLBAR_TYPE)
@@ -212,25 +223,32 @@ void create_nativebar_innner(int bar_type, rho_param *p)
             return;
         }
 		if (!skip_item) {
-			[items addObject:[NSString stringWithUTF8String:label]];
-			[items addObject:[NSString stringWithUTF8String:action]];
-			[items addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
-			[items addObject:[NSString stringWithUTF8String:(reload ? reload : "false")]];
-			[items addObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")]];
-
-			[items addObject:[NSString stringWithUTF8String:(selected_color ? selected_color : "0")]];
-			[items addObject:[NSString stringWithUTF8String:(selected_color_enable ? selected_color_enable : "false")]];
-			[items addObject:[NSString stringWithUTF8String:(disabled ? disabled : "false")]];
+			NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:9];	
+			
+			[item setObject:[NSString stringWithUTF8String:label] forKey:NATIVE_BAR_ITEM_LABEL];
+			[item setObject:[NSString stringWithUTF8String:action] forKey:NATIVE_BAR_ITEM_ACTION];
+			[item setObject:[NSString stringWithUTF8String:(icon ? icon : "")] forKey:NATIVE_BAR_ITEM_ICON];
+			[item setObject:[NSString stringWithUTF8String:(reload ? reload : "false")] forKey:NATIVE_BAR_ITEM_RELOAD];
+			[item setObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")] forKey:NATIVE_BAR_ITEM_COLORED_ICON];
+			if (selected_color != nil) {
+				[item setObject:[NSString stringWithUTF8String:selected_color] forKey:NATIVE_BAR_ITEM_SELECTED_COLOR];
+			}
+			[item setObject:[NSString stringWithUTF8String:(disabled ? disabled : "false")] forKey:NATIVE_BAR_ITEM_DISABLED];
+			if (web_bkg_color != NULL) {
+				[item setObject:[NSString stringWithUTF8String:web_bkg_color] forKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
+			}
+			
+			[items addObject:item];
 		}
 		
 	}
+	if (background_color != nil) {
+		[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];	
+	}
 	
-	[items insertObject:[NSString stringWithUTF8String:(background_color ? background_color : "0")] atIndex:0];
-	[items insertObject:[NSString stringWithUTF8String:(background_color_enable ? background_color_enable : "false")] atIndex:0];
-    
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
-    [Rhodes performOnUiThread:runnable arg:arg1 arg:items wait:NO];
+    [Rhodes performOnUiThread:runnable arg:arg1 arg:main_properties wait:NO];
 }
 
 void remove_nativebar_innner() {
