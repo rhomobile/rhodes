@@ -108,6 +108,7 @@ Geolocation information is available in two ways: as an asynchronous service thr
 
 You need to enable the GPS capability to use GeoLocaiton. This is done by adding the following lines to build.yml:
 
+	:::yaml
 	capabilities:
 	  - gps
 
@@ -592,6 +593,7 @@ Testing push is a little more involved than some other features because it requi
 
 First, enable push in your rhodes application in build.yml:
 
+	:::yaml
 	capabilities:
 	  - push
 	  - vibrate #=> if you want to enable vibrate in your push messages
@@ -627,7 +629,7 @@ Next, you can setup your Apple Push Provisioning Profile using Apple's [develope
 #### Setup iPhone Device
 Setting up the device is the same process as [building any normal Rhodes application](build#build-for-iphoneipad). When you start the application, make sure to also open the console window (cmd-shift-R). When the application starts, you should see some output in the console that shows the device token (towards the top):
 
-  2010-08-19 10:14:22.627 rhorunner[1486:307] Device token is <10fd92ab fa8ee481 55d9af6e 73290863 22b323fd 0d18fdbd 19e92d03 c0fef7c8>
+	2010-08-19 10:14:22.627 rhorunner[1486:307] Device token is <10fd92ab fa8ee481 55d9af6e 73290863 22b323fd 0d18fdbd 19e92d03 c0fef7c8>
 
 This confirms that your application is running with push enabled. Once you login to the RhoSync application and sync, you will see the device registered on the RhoSync console under the user id you used to login. Now you are ready to [test push from your RhoSync application](/rhosync/push#testing-push-in-the-web-console).
 
@@ -646,6 +648,7 @@ As first step, register role-based google account for your application. Here for
 
 Then modify your application's build.yml and specify there google account used to send PUSH messages:
 
+	:::yaml
 	android:
 	  push:
 	    sender: push-app@gmail.com
