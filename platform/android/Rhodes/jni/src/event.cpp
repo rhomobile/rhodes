@@ -369,7 +369,7 @@ RHO_GLOBAL VALUE event_fetch_by_id(const char *id)
     RHO_TRACE("event_fetch_by_id (1)");
     jhstring jId = rho_cast<jhstring>(env, id);
     RHO_TRACE("event_fetch_by_id (2)");
-    jhobject jRet = jhobject(env->CallStaticObjectMethod(cls, mid, jId));
+    jhobject jRet = jhobject(env->CallStaticObjectMethod(cls, mid, jId.get()));
     RHO_TRACE("event_fetch_by_id (3)");
     if (env->IsInstanceOf(jRet.get(), clsString))
     {
