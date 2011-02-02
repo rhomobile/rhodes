@@ -14,6 +14,8 @@
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
+#include "NativeBar.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RightViewController"
 
@@ -66,24 +68,26 @@
 
 @synthesize itemsData, tabindex;
 
-- (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)parent {
+- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent {
 	self = [self initWithNibName:nil bundle:nil];
 
 	CGRect rect = CGRectMake(0,0,200,200);//self.view.frame;
 	
-
-    int count = ([items count]-2)/8;
-
+	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
+	
+    int count = [items count];
+	
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
     
     for (int i = 0; i < count; ++i) {
-        int index = i*8 - 1+2;
-        NSString *label = [items objectAtIndex:++index];
-        NSString *url = [items objectAtIndex:++index];
-        NSString *icon = [items objectAtIndex:++index];
-        NSString *reload = [items objectAtIndex:++index];
+		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
+        
+        NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
+        NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
+        NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
+        NSString *reload = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_RELOAD];
         
         if (!initUrl)
             initUrl = url;
@@ -93,7 +97,7 @@
             td.url = url;
             td.reload = [reload isEqualToString:@"true"];
             
-            SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent frame:rect];
+            SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
             
 			subController.title = label;
 			//subController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -120,7 +124,7 @@
 		ri.loaded = YES;
 	}
 	// set first tab
-	SimpleMainView* v = [[self.itemsData objectAtIndex:0] view];
+	SimpleMainView* v = (SimpleMainView*)[[self.itemsData objectAtIndex:0] view];
 	if (v != NULL) {
 		[v navigateRedirect:initUrl tab:0];
 		[self.view addSubview:v.view];

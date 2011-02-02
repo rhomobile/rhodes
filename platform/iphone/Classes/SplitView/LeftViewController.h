@@ -22,7 +22,7 @@
 @property (nonatomic,assign) int preferredSize;
 @property (nonatomic,retain) UIFont *myFont;
 
-- (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)p;
+- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)p;
 - (void)setSelection:(int)index;
 
 - (int)getPreferredWidth;
