@@ -539,6 +539,11 @@ public class SimpleMainView implements MainView {
 		init(v, params);
 	}
 	
+	public void setWebBackgroundColor(int color) {
+		view.setBackgroundColor(color);
+		webView.setBackgroundColor(color);
+	}
+	
 	public void back(int index) {
 		RhodesService.navigateBack();
 	}
