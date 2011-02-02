@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.rhomobile.rhodes.BaseActivity;
@@ -38,6 +40,16 @@ public class MapView extends BaseActivity {
 		r.startActivity(intent);
 	}
 	
+	private static class Touch {
+		public float x;
+		public float y;
+		
+		public Touch(float x, float y) {
+			this.x = x;
+			this.y = y;
+		}
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,6 +59,9 @@ public class MapView extends BaseActivity {
 			throw new IllegalArgumentException();
 		
 		View view = new View(this) {
+			
+			private Touch[] mTouch = {null, null};
+			
 			@Override
 			protected void dispatchDraw(Canvas canvas) {
 				super.dispatchDraw(canvas);
@@ -58,6 +73,72 @@ public class MapView extends BaseActivity {
 				super.onSizeChanged(w, h, oldW, oldH);
 				if (w != oldW || h != oldH)
 					setSize(mNativeDevice, w, h);
+			}
+			
+			private void dumpEvent(MotionEvent event) {
+			   String names[] = { "DOWN" , "UP" , "MOVE" , "CANCEL" , "OUTSIDE" ,
+			      "POINTER_DOWN" , "POINTER_UP" , "7?" , "8?" , "9?" };
+			   StringBuilder sb = new StringBuilder();
+			   int action = event.getAction();
+			   int actionCode = action & MotionEvent.ACTION_MASK;
+			   sb.append("event ACTION_" ).append(names[actionCode]);
+			   if (actionCode == MotionEvent.ACTION_POINTER_DOWN
+			         || actionCode == MotionEvent.ACTION_POINTER_UP) {
+			      sb.append("(pid " ).append(
+			      action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
+			      sb.append(")" );
+			   }
+			   sb.append("[" );
+			   for (int i = 0; i < event.getPointerCount(); i++) {
+			      sb.append("#" ).append(i);
+			      sb.append("(pid " ).append(event.getPointerId(i));
+			      sb.append(")=" ).append((int) event.getX(i));
+			      sb.append("," ).append((int) event.getY(i));
+			      if (i + 1 < event.getPointerCount())
+			         sb.append(";" );
+			   }
+			   sb.append("]" );
+			   Log.d(TAG, sb.toString());
+			}
+			
+			@Override
+			public boolean onTouchEvent (MotionEvent event) {
+				dumpEvent(event);
+
+				/*
+				int action = event.getAction();
+				int actionCode = action & MotionEvent.ACTION_MASK;
+				
+				if (actionCode == MotionEvent.ACTION_POINTER_DOWN ||
+						actionCode == MotionEvent.ACTION_UP) {
+					int pointerId = action >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+			      	if (actionCode == MotionEvent.ACTION_POINTER_UP)
+			      		mTouch[pointerId] = null;
+			      	if (actionCode == MotionEvent.ACTION_POINTER_DOWN)
+			      		mTouch[pointerId] = new Touch(event.getX(idx));
+				}
+				
+				switch (actionCode) {
+				case MotionEvent.ACTION_DOWN:
+					for (int i = 0; i < mTouch.length; ++i)
+						mTouch[i] = null;
+				case MotionEvent.ACTION_POINTER_DOWN:
+					for (int i = 0; i < event.getPointerCount(); ++i) {
+						int pointerId = event.getPointerId(i);
+						float x = event.getX(i);
+						float y = event.getY(i);
+						mTouch[pointerId] = new Touch(x, y);
+					}
+					break;
+				case MotionEvent.ACTION_POINTER_UP:
+					for (int i = 0; i < event.getPointerCount(); ++i) {
+						int pointerId = event.getPointerId(i);
+						
+					}
+				}
+				*/
+				
+				return true;
 			}
 		};
 		setContentView(view);
