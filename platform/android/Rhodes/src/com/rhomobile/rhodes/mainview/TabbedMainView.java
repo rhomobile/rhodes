@@ -495,8 +495,8 @@ public class TabbedMainView implements MainView {
 			String action = (String)actionObj;
 			String icon = null;
 			boolean reload = false;
-			
 			boolean disabled = false;
+			int web_bkg_color = 0xFFFFFFFF;
 			
 			Object iconObj = hash.get("icon");
 			if (iconObj != null && (iconObj instanceof String))
@@ -515,6 +515,11 @@ public class TabbedMainView implements MainView {
 			Object disabled_Obj = hash.get("disabled");
 			if (disabled_Obj != null && (disabled_Obj instanceof String))
 				disabled = ((String)disabled_Obj).equalsIgnoreCase("true");
+			
+			Object web_bkg_color_Obj = hash.get("web_bkg_color");
+			if (web_bkg_color_Obj != null && (web_bkg_color_Obj instanceof String)) {
+				web_bkg_color = Integer.parseInt((String)web_bkg_color_Obj) | 0xFF000000;
+			}
 			
 			spec = host.newTabSpec(Integer.toString(i));
 			
@@ -554,6 +559,12 @@ public class TabbedMainView implements MainView {
 			
 			// Set view factory
 			SimpleMainView view = new SimpleMainView();
+			
+			if (web_bkg_color_Obj != null) {
+				view.setWebBackgroundColor(web_bkg_color);
+				host.setBackgroundColor(web_bkg_color);
+			}
+			
 			TabData data = new TabData();
 			data.view = view;
 			data.url = action;
