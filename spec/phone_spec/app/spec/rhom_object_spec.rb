@@ -20,7 +20,7 @@
 require 'rhom'
 require 'rho/rhoutils'
 
-USE_HSQLDB = System.get_property('platform') == 'Blackberry' && System.get_property('os_version')[0].to_i() < 5
+USE_HSQLDB = System.get_property('platform') == 'Blackberry' #&& System.get_property('os_version')[0].to_i() < 5
 USE_COPY_FILES = !defined? RHO_ME
 
 def getAccount
@@ -152,7 +152,7 @@ describe "Rhom::RhomObject" do
   #  getAccount.get_source_id.should == "23"
     #getCase.get_source_id.should == "1"
   #end
-
+#=begin
   it "should dynamically assign values" do
     account = getAccount.new
     account.name = 'hello name'
@@ -355,7 +355,8 @@ describe "Rhom::RhomObject" do
 
     if $spec_settings[:sync_model]
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-        records.length.should == 2
+        records.length.should == 1
+        records[0]['attrib'].should == 'object'
         
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 0
@@ -381,7 +382,8 @@ describe "Rhom::RhomObject" do
 
     if $spec_settings[:sync_model]
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-        records.length.should == 2
+        records.length.should == 1
+        records[0]['attrib'].should == 'object'
         
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 0
@@ -515,7 +517,8 @@ describe "Rhom::RhomObject" do
 
     if $spec_settings[:sync_model]        
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
-        records.length.should == 17
+        records.length.should == 1
+        records[0]['attrib'].should == 'object'
     end    
     
   end
@@ -534,7 +537,8 @@ describe "Rhom::RhomObject" do
 
     if $spec_settings[:sync_model]        
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
-        records.length.should == 17
+        records.length.should == 1
+        records[0]['attrib'].should == 'object'
     end    
     
   end
@@ -615,28 +619,36 @@ describe "Rhom::RhomObject" do
     @new_acct.name.should == ""
     @new_acct.industry.should == "Technology"
   end
-  
+
   it "should store only last updated value for attrib" do
+    object_id = '44e804f2-4933-4e20-271c-48fcecd9450d'
     new_attributes1 = {"new_name"=>"Mobio Europe"}
-    @account = getAccount.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account = getAccount.find(object_id)
     @account.update_attributes(new_attributes1)
+    if $spec_settings[:sync_model]    
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 1
+    end        
     
-    @new_acct = getAccount.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @new_acct = getAccount.find(object_id)
     
     @new_acct.new_name.should == "Mobio Europe"
     @new_acct.name.should == "Mobio India"
     @new_acct.industry.should == "Technology"
     
     new_attributes2 = {"new_name"=>"Mobio Asia"}
-    @account = getAccount.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @account = getAccount.find(object_id)
     @account.update_attributes(new_attributes2)
+    if $spec_settings[:sync_model]    
+        records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+        records.length.should == 1
+    end        
     
-    @new_acct = getAccount.find('44e804f2-4933-4e20-271c-48fcecd9450d')
+    @new_acct = getAccount.find(object_id)
     
     @new_acct.new_name.should == "Mobio Asia"
     @new_acct.name.should == "Mobio India"
     @new_acct.industry.should == "Technology"
-
     if $spec_settings[:sync_model]    
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
@@ -1117,8 +1129,8 @@ describe "Rhom::RhomObject" do
         records.length.should > 0
         
         records = getTestDB().select_from_table('changed_values','*', {'source_id' => getAccount().get_source_id(), "update_type"=>'create'} )
-        records.length.should == 2
-        
+        records.length.should == 1
+        records[0]['attrib'].should == 'object'
     end    
     
   end
@@ -1261,7 +1273,6 @@ describe "Rhom::RhomObject" do
     @accts[0].industry.should == "Technology"
   end
   
-#=begin
   it "should find with sql multiple conditions" do
     @acct = getAccount.find(:first, :conditions => [ "name = ? AND industry = ?", "'Mobio India'", "'Technology'" ], :select => ['name', 'industry'])
     @acct.name.should == "Mobio India"
@@ -1302,8 +1313,10 @@ describe "Rhom::RhomObject" do
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
-  
+
+
   it "should return records when order by is nil for some records" do
+    return if USE_HSQLDB
     @accts = getAccount.find(:all, :order => 'shipping_address_country', :dont_ignore_missed_attribs => true, :select => ['name'])
     @accts.length.should == 2
     
@@ -1316,7 +1329,7 @@ describe "Rhom::RhomObject" do
   
 #=end
 end
-
+#=begin
 describe "Rhom#paginate" do
 
     before(:all) do
@@ -1359,7 +1372,7 @@ if !USE_HSQLDB
 else
         return @expected if $spec_settings[:schema_model]
         
-        @expected_b
+        @expected #_b
 end        
     end
     
@@ -1426,3 +1439,4 @@ end
     end
 end
 
+#=end
