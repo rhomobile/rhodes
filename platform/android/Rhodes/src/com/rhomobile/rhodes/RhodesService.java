@@ -365,7 +365,14 @@ public class RhodesService extends Service {
 		if (fullScreen) {
 			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+			RhodesActivity.setFullscreen(1);
 		}
+		else {
+			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			RhodesActivity.setFullscreen(0);
+		}
+		//Utils.platformLog(TAG, "rhoconfig    full_screen = "+String.valueOf(fullScreen)+" ");
 	}
 	
 	private void initForegroundServiceApi() {
