@@ -99,14 +99,23 @@ Rhomobile = function() {
 		this.executeBatchSQL(syncDbSchemaSQL, errHdlr);
 	};
 		
-	klass_webSqlStorage.prototype.getAllTableNames = function(errHdlr/*(db|tx,err)*/)
+	klass_webSqlStorage.prototype.getAllTableNames = function(toWait, errHdlr/*(db|tx,err)*/)
 	{
 		var tableNames = [];
+		var done = !toWait;
+		
 		this.executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null, jQuery.proxy(function(tx,rs){
 			for(var i=0; i<rs.rows.length; i++) {
 				tableNames.push(rs.rows.item(i)['name']);
 			}
-		}, this), errHdlr);
+			done = true;
+		}, this), function(obj,err){
+			done = true; errHdlr(obj,err);
+			}/*errHdlr*/);
+		
+//		while(!done) {
+//			jQuery.get('')
+//			};
 		// there is an error: tableNames is empty at the moment of return!
 		return tableNames;
 	};
@@ -136,9 +145,24 @@ Rhomobile = function() {
 		this.properties = props;
 	}
 	
+	// === Source ==================================================
+
+	// add_source('Product', {'source_id'=> 1, 'sync_type' => 'incremental'} )
+	var klass_source = function(model, props) {
+		this.model = model;
+		this.properties = props;
+		this.id = this.properties['sourceId'];
+		this.name = this.model['name'];
+	}
+	
 	// === Config ==================================================
 
 	var klass_config = function() {
+		this.sources = [];
+	}
+
+	klass_config.addSource = function(model, props) {
+		this.sources.push(new Rhomobile.sync.Source(model, props));
 	}
 	
 	// === Engine ==================================================
@@ -148,7 +172,7 @@ Rhomobile = function() {
 	
 	// === API load support =======================================
 
-	var _gwtClasses = ["com.rho.sync.SyncThread"];         	              	
+	var _gwtClasses = ["com.rho.sync.SyncThread"];
 	
 	// Function to report the exact GWT class is ready to use.
 	//
@@ -172,19 +196,38 @@ Rhomobile = function() {
 			}
 		}
 	};
+	var _loadModules = function (nameStr) {
+		var names = nameStr.split(' ');
 
+		var hdr = document.getElementsByTagName("head")[0];
+		var addModule = function(modFile) {
+			var tag = document.createElement("script");
+			tag.setAttribute("src", modFile);
+			tag.setAttribute("type", "text/javascript");
+			hdr.appendChild(tag);
+		};
+
+		for(var idx in names) {
+			var modname = names[idx].replace(/.js$/gi, '');
+			addModule(modname + '.js');
+		}
+	};
 	// === Public members =========================================
 
 	return {
+        loadModules: _loadModules,
 		internal: 	{
 			gwtClassReady: _gwtClassReady
-		},         	              	
+		},
 		event: {
 			apiReady: "Rhomobile.event.apiReady"
 		},
 		Config: klass_config,
+		data: {
+			Model: klass_model
+		},
 		sync: {
-			Model: klass_model,
+			Source: klass_source,
 			Engine: klass_engine
 		},
 		db: {
