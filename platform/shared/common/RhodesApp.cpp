@@ -51,6 +51,7 @@ public:
 
 public:
     CAppCallbacksQueue(IRhoClassFactory *factory);
+	~CAppCallbacksQueue();
 
     void call(callback_t type);
 
@@ -94,6 +95,11 @@ CAppCallbacksQueue::CAppCallbacksQueue(IRhoClassFactory *factory)
 {
     //setPollInterval(1);
     start(epNormal);
+}
+
+CAppCallbacksQueue::~CAppCallbacksQueue()
+{
+	stop(1000);
 }
 
 void CAppCallbacksQueue::call(CAppCallbacksQueue::callback_t type)
@@ -197,7 +203,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath)
 
     m_ptrFactory = rho_impl_createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
-    m_appCallbacksQueue = new CAppCallbacksQueue(m_ptrFactory);
+    m_appCallbacksQueue = new CAppCallbacksQueue(rho_impl_createClassFactory());
 
 #if defined( OS_WINCE ) || defined (OS_WINDOWS)
     //initializing winsock
