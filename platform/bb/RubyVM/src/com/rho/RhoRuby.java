@@ -30,6 +30,8 @@ public class RhoRuby {
 	public static final RubyID raiseRhoError = RubyID.intern("raise_rhoerror");
 	public static final RubyID initApp = RubyID.intern("init_app");
 	public static final RubyID onConfigConflicts_mid = RubyID.intern("on_config_conflicts");
+	public static final RubyID uiCreated = RubyID.intern("ui_created");
+	public static final RubyID uiDestroyed = RubyID.intern("ui_destroyed");
 	public static final RubyID activateApp = RubyID.intern("activate_app");
 	public static final RubyID deactivateApp = RubyID.intern("deactivate_app");
 	
@@ -87,6 +89,14 @@ public class RhoRuby {
 			return;
 		
 		RubyAPI.callPublicOneArgMethod(receiver, hashConflicts, null, onConfigConflicts_mid);
+	}
+	
+	public static void rho_ruby_uiCreated() {
+		RubyAPI.callPublicNoArgMethod(receiver, null, uiCreated);
+	}
+	
+	public static void rho_ruby_uiDestroyed() {
+		RubyAPI.callPublicNoArgMethod(receiver, null, uiDestroyed);
 	}
 	
 	public static void rho_ruby_activateApp(){
