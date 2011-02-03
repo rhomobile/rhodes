@@ -81,7 +81,7 @@ def startsim(hidden=false)
     args << "/no-guibacklight"
   end
         
-  args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"])
+  args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"]) if $app_config["applog"] && $app_config["applog"].length() > 0
 
   Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
@@ -970,20 +970,22 @@ namespace "run" do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"
         rm_rf jde + "/simulator/sdcard/Rho"
-        
-        log_name  = Jake.get_absolute($app_config["applog"] )
-        File.delete(log_name) if File.exist?(log_name)
+
+        log_name = jde + "/simulator/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
+        puts log_name
+        #log_name  = Jake.get_absolute($app_config["applog"] )
+        #File.delete(log_name) if File.exist?(log_name)
         
         startmds
         startsim(true)
 
         Jake.before_run_spec
         start = Time.now
-      
+
         while !File.exist?(log_name)
             sleep(1)
         end
-        
+
         io = File.new(log_name, "r")
         end_spec = false
         while !end_spec do

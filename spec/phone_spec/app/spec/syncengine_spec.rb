@@ -44,6 +44,10 @@ def getCustomer_str
     'Customer'
 end
 
+def getTestDB
+    ::Rho::RHO.get_db_partitions['user']
+end
+
 SYNC_SERVER_URL = 'http://rhodes-store-server.heroku.com/application'
 #SYNC_SERVER_URL = 'http://localhost:9292/application'
 
@@ -174,6 +178,10 @@ describe "SyncEngine_test" do
     SyncEngine.logged_in.should == 1
   
     item = getProduct.create({:name => 'Test'})
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+    
     item2 = getProduct.find(item.object)
     item2.vars.should == item.vars
 
