@@ -54,7 +54,7 @@ module Rho
             db.start_transaction 
             
             if !mapPartDeleted[db]
-                puts  "delete_all_from_table: #{row}"
+                #puts  "delete_all_from_table: #{row}"
                 db.delete_all_from_table(filename)
                 mapPartDeleted[db] = 1
             end
@@ -77,7 +77,7 @@ module Rho
           end
           
           cur_src = @@mapSrcByIdx[ row['source_id'].to_i ]
-          puts "cur_src: #{cur_src.schema()}" if cur_src
+          #puts "cur_src: #{cur_src.schema()}" if cur_src
           if ( cur_src && cur_src.schema() )  
             hashItem[ row['attrib'] ] = row['value'] if row['value']
           else

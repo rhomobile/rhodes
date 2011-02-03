@@ -260,8 +260,10 @@ module Rho
                 puts "reload sources for partition: #{str_partition}"
                 db = @db_partitions[ str_partition ]
 
-                puts "sources before: #{Rho::RhoConfig::sources()}"
+                #puts "sources before: #{Rho::RhoConfig::sources()}"
                 
+                db.start_transaction
+                begin
                 Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
                 arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                     {'partition'=>str_partition} )
@@ -287,8 +289,13 @@ module Rho
                     Rho::RhoConfig::sources()[ src['name'] ] = src
                     
                 end
+                    db.commit
+                rescue Exception => e
+                    db.rollback
+                    raise
+                end                
                 
-                puts "sources after: #{Rho::RhoConfig::sources()}"            
+                #puts "sources after: #{Rho::RhoConfig::sources()}"            
                 return
             end
         rescue Exception => e
