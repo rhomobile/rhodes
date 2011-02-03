@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -71,8 +72,8 @@ public class RhodesActivity extends BaseActivity {
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
-		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
@@ -98,6 +99,24 @@ public class RhodesActivity extends BaseActivity {
 				r.callUiCreatedCallback();
 			}
 		});
+	}
+	
+	public static void setFullscreen(int enable) {
+		//Utils.platformLog(TAG, "setFullscreen("+String.valueOf(enable)+")");
+		final int en = enable;
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (en != 0) {
+					getInstance().getWindow().clearFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				}
+				else {
+					getInstance().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+				}
+			}
+		}		
+		, false);
 	}
 
 	@Override

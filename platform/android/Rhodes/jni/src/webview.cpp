@@ -80,7 +80,12 @@ RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
 
 RHO_GLOBAL void rho_webview_full_screen_mode(int enable)
 {
-    //TODO: rho_webview_full_screen_mode
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_ACTIVITY);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setFullscreen", "(I)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, enable);
 }
 
 RHO_GLOBAL void rho_webview_set_cookie(const char *url, const char *cookie)
