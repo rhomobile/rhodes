@@ -282,6 +282,10 @@ static void escapeDoubleQuotes(String& str)
 void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType, boolean isSync)
 {
     getDB().Lock();
+
+    if ( isSync )
+        getDB().updateAllAttribChanges();
+
     DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
         "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY object", getID(), strUpdateType.c_str() ) );
 

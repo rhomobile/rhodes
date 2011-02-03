@@ -149,6 +149,22 @@ public class DBAdapter extends RubyBasic
 		return res; 
 	}
 
+	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7)throws DBException{
+		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
+		
+		Object[] values = {arg1,arg2,arg3,arg4, arg5, arg6, arg7};
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values, true);
+		}finally
+		{
+			Unlock();
+		}
+		
+		return res; 
+	}
+	
 	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector vecValues)throws DBException{
 		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
@@ -767,8 +783,75 @@ public class DBAdapter extends RubyBasic
 	    }
     }
     
+    public void updateAllAttribChanges()throws DBException
+    {
+	    //Check for attrib = object
+	    IDBResult res = executeSQL("SELECT object, source_id, update_type " +
+	        "FROM changed_values where attrib = 'object' and sent=0" );
+
+	    if ( res.isEnd() )
+	        return;
+
+	    startTransaction();
+
+	    Vector/*<String>*/ arObj = new Vector(), arUpdateType = new Vector();
+	    Vector/*<int>*/ arSrcID = new Vector();
+	    for( ; !res.isEnd(); res.next() )
+	    {
+	        arObj.addElement(res.getStringByIdx(0));
+	        arSrcID.addElement(new Integer(res.getIntByIdx(1)));
+	        arUpdateType.addElement(res.getStringByIdx(2));
+	    }
+        
+        for( int i = 0; i < (int)arObj.size(); i++ )
+        {
+            IDBResult resSrc = executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) );
+            boolean bSchemaSource = false;
+            String strTableName = "object_values";
+            if ( !resSrc.isEnd() )
+            {
+                bSchemaSource = resSrc.getStringByIdx(1).length() > 0;
+                if ( bSchemaSource )
+                    strTableName = resSrc.getStringByIdx(0);
+            }
+
+            if (bSchemaSource)
+            {
+                IDBResult res2 = executeSQL( "SELECT * FROM " + strTableName + " where object=?", arObj.elementAt(i) );
+                for( int j = 0; j < res2.getColCount(); j ++)
+                {
+                    String strAttrib = res2.getColName(j);
+                    String value = res2.getStringByIdx(j);
+                    String attribType = getAttrMgr().isBlobAttr((Integer)arSrcID.elementAt(i), strAttrib) ? "blob.file" : "";
+
+    	            executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+        	                arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, new Integer(0) );
+                }
+            }else
+            {
+                IDBResult res2 = executeSQL( "SELECT attrib, value FROM " + strTableName + " where object=? and source_id=?", 
+                    arObj.elementAt(i), arSrcID.elementAt(i) );
+
+    	        for( ; !res2.isEnd(); res2.next() )
+    	        {
+    	            String strAttrib = res2.getStringByIdx(0);
+    	            String value = res2.getStringByIdx(1);
+    	            String attribType = getAttrMgr().isBlobAttr((Integer)arSrcID.elementAt(i), strAttrib) ? "blob.file" : "";
+
+    	            executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+    	                arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, new Integer(0) );
+    	        }
+            }
+        }
+
+        executeSQL("DELETE FROM changed_values WHERE attrib='object'"); 
+
+        endTransaction();
+    }
+    
     void copyChangedValues(DBAdapter db)throws DBException
     {
+    	updateAllAttribChanges();    	
         copyTable("changed_values", m_dbStorage, db.m_dbStorage );
         {
             Vector/*<int>*/ arOldSrcs = new Vector();

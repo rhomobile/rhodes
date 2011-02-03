@@ -693,15 +693,15 @@ public class Column {
 
             case Types.VARCHAR :
             case Types.LONGVARCHAR :
-                return collation.compare((String) a, (String) b);
+                return collation.compare(/*(String)*/ a.toString(), /*(String)*/ b.toString());
 
             case Types.CHAR :
-                return collation.compare(Library.rtrim((String) a),
-                                         Library.rtrim((String) b));
+                return collation.compare(Library.rtrim(/*(String)*/ a.toString()),
+                                         Library.rtrim(/*(String)*/ b.toString()));
 
             case Types.VARCHAR_IGNORECASE :
-                return collation.compareIgnoreCase(((String) a),
-                                                   ((String) b));
+                return collation.compareIgnoreCase((/*(String)*/ a.toString()),
+                                                   (/*(String)*/ b.toString()));
 
             case Types.TINYINT :
             case Types.SMALLINT :

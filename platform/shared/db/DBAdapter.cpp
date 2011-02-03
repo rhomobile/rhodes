@@ -465,8 +465,76 @@ void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbT
     }
 }
 
+void CDBAdapter::updateAllAttribChanges()
+{
+    //Check for attrib = object
+    DBResult( res , executeSQL("SELECT object, source_id, update_type "
+        "FROM changed_values where attrib = 'object' and sent=0") );
+
+    if ( res.isEnd() )
+        return;
+
+    startTransaction();
+
+    Vector<String> arObj, arUpdateType;
+    Vector<int> arSrcID;
+    for( ; !res.isEnd(); res.next() )
+    {
+        arObj.addElement(res.getStringByIdx(0));
+        arSrcID.addElement(res.getIntByIdx(1));
+        arUpdateType.addElement(res.getStringByIdx(2));
+    }
+
+    for( int i = 0; i < (int)arObj.size(); i++ )
+    {
+        DBResult( resSrc , executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) ) );
+        boolean bSchemaSource = false;
+        String strTableName = "object_values";
+        if ( !resSrc.isEnd() )
+        {
+            bSchemaSource = resSrc.getStringByIdx(1).length() > 0;
+            if ( bSchemaSource )
+                strTableName = resSrc.getStringByIdx(0);
+        }
+
+        if (bSchemaSource)
+        {
+            DBResult( res2 , executeSQL((String("SELECT * FROM ") + strTableName + " where object=?").c_str(), arObj.elementAt(i) ) );
+            for( int j = 0; j < res2.getColCount(); j ++)
+            {
+                String strAttrib = res2.getColName(j);
+                String value = res2.getStringByIdx(j);
+                String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), strAttrib.c_str()) ? "blob.file" : "";
+
+                executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+                    arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, 0);
+            }
+        }else
+        {
+            DBResult( res2 , executeSQL((String("SELECT attrib, value FROM ") + strTableName + " where object=? and source_id=?").c_str(), 
+                arObj.elementAt(i), arSrcID.elementAt(i) ) );
+
+            for( ; !res2.isEnd(); res2.next() )
+            {
+                String strAttrib = res2.getStringByIdx(0);
+                String value = res2.getStringByIdx(1);
+                String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), strAttrib.c_str()) ? "blob.file" : "";
+
+                executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+                    arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, 0);
+            }
+        }
+    }
+
+    executeSQL("DELETE FROM changed_values WHERE attrib='object'"); 
+
+    endTransaction();
+}
+
 void CDBAdapter::copyChangedValues(CDBAdapter& db)
 {
+    updateAllAttribChanges();
+
     copyTable("changed_values", *this, db );
     {
         Vector<int> arOldSrcs;
