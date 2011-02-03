@@ -319,8 +319,10 @@ namespace "run" do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         win32logpath = File.join(win32rhopath,"RhoLog.txt")        
         win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")        
+        win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")                
         rm_rf win32logpath if File.exists?(win32logpath)
         rm_rf win32logpospath if File.exists?(win32logpospath)
+        rm_rf win32configpath if File.exists?(win32configpath)
         
         Jake.before_run_spec
         start = Time.now

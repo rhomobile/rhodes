@@ -37,7 +37,7 @@ import com.rho.TimeInterval;
 import com.rho.RhoAppAdapter;
 import com.rho.net.NetRequest.MultipartItem;
 
-class SyncSource
+public class SyncSource
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
@@ -374,6 +374,10 @@ class SyncSource
 	{
 		String strBody = "";
 	    getDB().Lock();
+	    
+	    if ( isSync )
+	    	getDB().updateAllAttribChanges();
+	    
 	    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "+
 	        "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY object", getID(), strUpdateType );
 
