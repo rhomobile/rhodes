@@ -15,6 +15,11 @@
 #include "SyncProtocol_3.h"
 #include "net/URI.h"
 
+#ifdef _MSC_VER
+// Disable warnings about using "this" in member initializater list
+#pragma warning(disable: 4355)
+#endif
+
 namespace rho {
 namespace sync {
 IMPLEMENT_LOGCLASS(CSyncEngine,"Sync");
