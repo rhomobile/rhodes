@@ -43,17 +43,13 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
 {
     //LOG(INFO) + "C:db_decrypt";
     JNIEnv *env = jnienv();
-    jobject dataInObj = env->NewDirectByteBuffer(data, size); 
-    jstring objPartition = rho_cast<jstring>(szPartition);
+    jhobject dataInObj = jhobject(env->NewDirectByteBuffer(data, size)); 
+    jhstring objPartition = rho_cast<jhstring>(szPartition);
 
-    jobject dataOutObj = env->NewDirectByteBuffer(m_dataOut, size);
-    jboolean result = env->CallBooleanMethod(m_obj, midDBDecrypt, objPartition, dataInObj, dataOutObj);
+    jhobject dataOutObj = jhobject(env->NewDirectByteBuffer(m_dataOut, size));
+    jboolean result = env->CallBooleanMethod(m_obj, midDBDecrypt, objPartition.get(), dataInObj.get(), dataOutObj.get());
 
     memcpy( data, m_dataOut, size );
-
-    env->DeleteLocalRef(objPartition);
-    env->DeleteLocalRef(dataOutObj);
-    env->DeleteLocalRef(dataInObj);
 
     //LOG(INFO) + "C:db_decrypt END";
     return result ? 1 : 0;
@@ -65,14 +61,10 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 {
     //LOG(INFO) + "C:db_encrypt";
     JNIEnv *env = jnienv();
-    jobject dataInObj = env->NewDirectByteBuffer(data, size); 
-    jobject dataOutObj = env->NewDirectByteBuffer(dataOut, size); 
-    jstring objPartition = rho_cast<jstring>(szPartition);
-    jboolean result = env->CallBooleanMethod(m_obj, midDBEncrypt, objPartition, dataInObj, dataOutObj);
-
-    env->DeleteLocalRef(objPartition);
-    env->DeleteLocalRef(dataOutObj);
-    env->DeleteLocalRef(dataInObj);
+    jhobject dataInObj = jhobject(env->NewDirectByteBuffer(data, size)); 
+    jhobject dataOutObj = jhobject(env->NewDirectByteBuffer(dataOut, size)); 
+    jhstring objPartition = rho_cast<jhstring>(szPartition);
+    jboolean result = env->CallBooleanMethod(m_obj, midDBEncrypt, objPartition.get(), dataInObj.get(), dataOutObj.get());
 
     //LOG(INFO) + "C:db_encrypt END";
     return result ? 1 : 0;
@@ -83,12 +75,9 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent )
 {
     JNIEnv *env = jnienv();
-    jstring objPartition = rho_cast<jstring>(szPartition);
-    jstring objKey = rho_cast<jstring>(szKey);
-    jboolean result = env->CallBooleanMethod(m_obj, midSetDBCryptKey, objPartition, objKey, (jboolean)bPersistent);
-
-    env->DeleteLocalRef(objPartition);
-    env->DeleteLocalRef(objKey);
+    jhstring objPartition = rho_cast<jhstring>(szPartition);
+    jhstring objKey = rho_cast<jhstring>(szKey);
+    jboolean result = env->CallBooleanMethod(m_obj, midSetDBCryptKey, objPartition.get(), objKey.get(), (jboolean)bPersistent);
 
     return result ? 1 : 0;
 }

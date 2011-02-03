@@ -38,7 +38,7 @@ RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuSize
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemLabel
   (JNIEnv *env, jobject, jlong menu, jint idx)
 {
-    return rho_cast<jstring>(env, menu_items(menu)[idx].m_strLabel.c_str());
+    return rho_cast<jhstring>(env, menu_items(menu)[idx].m_strLabel.c_str()).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemType
@@ -59,12 +59,12 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemType
         case r::CAppMenuItem::emtExit: s = "exit"; break;
         case r::CAppMenuItem::emtClose: s = "close"; break;
     }
-    return rho_cast<jstring>(env, s);
+    return rho_cast<jhstring>(env, s).release();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoMenu_getMenuItemUrl
   (JNIEnv *env, jobject, jlong menu, jint idx)
 {
-    return rho_cast<jstring>(env, menu_items(menu)[idx].m_strLink.c_str());
+    return rho_cast<jhstring>(env, menu_items(menu)[idx].m_strLink.c_str()).release();
 }
 

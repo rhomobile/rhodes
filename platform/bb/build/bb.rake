@@ -86,6 +86,33 @@ def startsim(hidden=false)
   Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
+def load_to_sim
+  sim = $config["env"]["paths"][$bbver]["sim"]
+  jde = $config["env"]["paths"][$bbver]["jde"]
+
+  cod_path = jde + "/simulator" + "/"+$outfilebase+".cod.pending"
+  puts "cod_path : #{cod_path}"
+  
+  command = jde + "/simulator/fledgecontroller.exe"
+  args = []
+  args << "/session="+sim
+  args << "/execute=LoadCod(\"#{cod_path}\")"
+  res_line = ""
+  Jake.run2( command, args, {:directory => jde + "/simulator"} ) do |line| 
+    puts "fledgecontroller return:" + line;
+    res_line = line
+  end  
+  
+  return false if res_line && res_line.index("There is no Fledge instance running with session name")
+  
+  args = []
+  args << "/session="+sim
+  args << "/execute=LoadCod(\"updates.force\")"
+  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}  
+  
+  return true
+end
+
 def stopsim
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
@@ -153,8 +180,8 @@ namespace "config" do
     $bbver = $app_config["bbver"].to_s
     $bb6 = true if $bbver == "6.0"
     
-    use_hsqldb = $app_config[$config["platform"]] && $app_config[$config["platform"]]['use_hsqldb']
-    $use_sqlite = $bbver[0].to_i >= 5 && (use_hsqldb && use_hsqldb == '0') ? true : false
+    use_sqlite = $app_config[$current_platform] && $app_config[$current_platform]['use_sqlite']  && $app_config[$current_platform]['use_sqlite'].to_s == '1'
+    $use_sqlite = $bbver[0].to_i >= 5 && use_sqlite ? true : false
     puts "$use_sqlite : #{$use_sqlite}"
     
     $builddir = $config["build"]["bbpath"] + "/build"
@@ -923,8 +950,13 @@ end
 
 namespace "run" do
   namespace "bb" do
+
       task :stopmdsandsim => ["config:bb"] do
         stopsim  
+        stopmds
+      end
+
+      task :stopmds => ["config:bb"] do
         stopmds
       end
 
@@ -933,7 +965,7 @@ namespace "run" do
         startmds
         startsim
       end
-      
+
       task :spec => ["run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"
@@ -980,7 +1012,14 @@ namespace "run" do
         exit 0
       end
 
+    task :testsim => ["config:bb"] do
+      load_to_sim
+    end
   end
+
+  task :startsim => ["config:bb"] do
+    startsim
+  end  
   
   desc "Builds everything, loads and starts bb sim and mds"
   task :bb => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
@@ -989,7 +1028,8 @@ namespace "run" do
     cp_r File.join($targetdir,"/."), jde + "/simulator"
     
     startmds
-    startsim
+    startsim #if !load_to_sim
+    
     $stdout.flush
   end
 

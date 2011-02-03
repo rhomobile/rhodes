@@ -20,9 +20,8 @@ RHO_GLOBAL void rho_webview_navigate(const char* url, int index)
     }
 
     char *normUrl = rho_http_normalizeurl(url);
-    jstring objNormUrl = rho_cast<jstring>(normUrl);
-    env->CallStaticVoidMethod(cls, mid, objNormUrl, index);
-    env->DeleteLocalRef(objNormUrl);
+    jhstring objNormUrl = rho_cast<jhstring>(normUrl);
+    env->CallStaticVoidMethod(cls, mid, objNormUrl.get(), index);
 }
 
 RHO_GLOBAL void rho_webview_refresh(int index)
@@ -74,15 +73,19 @@ RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "executeJs", "(Ljava/lang/String;I)V");
     if (!mid) return NULL;
 
-    jstring objJs = rho_cast<jstring>(env, js);
-    env->CallStaticVoidMethod(cls, mid, objJs, index);
-    env->DeleteLocalRef(objJs);
+    jhstring objJs = rho_cast<jhstring>(env, js);
+    env->CallStaticVoidMethod(cls, mid, objJs.get(), index);
     return "";
 }
 
 RHO_GLOBAL void rho_webview_full_screen_mode(int enable)
 {
-    //TODO: rho_webview_full_screen_mode
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_ACTIVITY);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setFullscreen", "(I)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, enable);
 }
 
 RHO_GLOBAL void rho_webview_set_cookie(const char *url, const char *cookie)
@@ -93,9 +96,7 @@ RHO_GLOBAL void rho_webview_set_cookie(const char *url, const char *cookie)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "setCookie", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
-    jstring urlObj = rho_cast<jstring>(url);
-    jstring cookieObj = rho_cast<jstring>(cookie);
-    env->CallStaticVoidMethod(cls, mid, urlObj, cookieObj);
-    env->DeleteLocalRef(urlObj);
-    env->DeleteLocalRef(cookieObj);
+    jhstring urlObj = rho_cast<jhstring>(url);
+    jhstring cookieObj = rho_cast<jhstring>(cookie);
+    env->CallStaticVoidMethod(cls, mid, urlObj.get(), cookieObj.get());
 }

@@ -21,7 +21,7 @@
 @property (nonatomic,retain) NSArray *itemsData;
 @property (nonatomic,assign) int tabindex;
 
-- (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)parent;
+- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent;
 
 
 
