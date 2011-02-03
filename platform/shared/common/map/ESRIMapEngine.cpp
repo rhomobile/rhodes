@@ -6,6 +6,19 @@
 #include "common/RhodesApp.h"
 #include "net/INetRequest.h"
 
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef _MSC_VER
+// Disable warnings about using "this" in member initializater list
+#pragma warning(disable: 4355)
+#endif
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "ESRIMapEngine"
 
@@ -142,18 +155,14 @@ ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
     :CThreadQueue(rho_impl_createClassFactory()),
     m_mapview(view), m_net_request(getFactory()->createNetRequest())
 {
-    RAWTRACE1("%s: start", __PRETTY_FUNCTION__);
     start(epNormal);
-    RAWTRACE1("%s: finish", __PRETTY_FUNCTION__);
 }
 
 ESRIMapView::MapFetch::~MapFetch()
 {
-    RAWTRACE1("%s: start", __PRETTY_FUNCTION__);
     stop(1000);
     delete m_net_request;
     m_net_request = NULL;
-    RAWTRACE1("%s: finish", __PRETTY_FUNCTION__);
 }
 
 void ESRIMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
@@ -227,16 +236,12 @@ String ESRIMapView::MapFetch::Command::toString()
 ESRIMapView::CacheUpdate::CacheUpdate(ESRIMapView *view)
     :CThreadQueue(rho_impl_createClassFactory()), m_mapview(view)
 {
-    RAWTRACE1("%s: start", __PRETTY_FUNCTION__);
     start(epNormal);
-    RAWTRACE1("%s: finish", __PRETTY_FUNCTION__);
 }
 
 ESRIMapView::CacheUpdate::~CacheUpdate()
 {
-    RAWTRACE1("%s: start", __PRETTY_FUNCTION__);
     stop(1000);
-    RAWTRACE1("%s: finish", __PRETTY_FUNCTION__);
 }
 
 void ESRIMapView::CacheUpdate::updateCache()
@@ -408,7 +413,6 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
     m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
     m_selected_annotation(NULL)
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
         url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
@@ -422,7 +426,6 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
 
 ESRIMapView::~ESRIMapView()
 {
-    RAWTRACE(__PRETTY_FUNCTION__);
 }
 
 void ESRIMapView::setSize(int width, int height)
@@ -462,7 +465,7 @@ static double calc_delta(int zoom, int pixels, int tile_size)
     RAWTRACE3("calc_delta: zoom=%d, pixels=%d, tile_size=%d", zoom, pixels, tile_size);
     if (tile_size == 0)
         return 0;
-    double twoInZoomExp = rho_math_pow2(zoom);
+    double twoInZoomExp = (double)rho_math_pow2(zoom);
     double angleRatio = 360/twoInZoomExp;
     double degrees = angleRatio*pixels/tile_size;
     RAWTRACE1("calc_delta: degrees=%lf", degrees);

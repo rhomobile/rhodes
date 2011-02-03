@@ -634,6 +634,17 @@ void rho_ruby_raise_runtime(const char* szText)
     rb_raise(rb_eRuntimeError, szText );
 }
 
+void rho_ruby_raise_argerror(const char *fmt, ...)
+{
+	va_list args;
+	VALUE mesg;
+
+	va_start(args, fmt);
+	mesg = rb_vsprintf(fmt, args);
+	va_end(args);
+	rb_exc_raise(rb_exc_new3(rb_eArgError, mesg));
+}
+
 VALUE rho_ruby_main_thread()
 {
     return rb_thread_main();

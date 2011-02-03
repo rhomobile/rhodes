@@ -117,6 +117,7 @@ void rho_ruby_lock_mutex(VALUE val);
 void rho_ruby_unlock_mutex(VALUE val);
 
 void rho_ruby_raise_runtime(const char* szText);
+void rho_ruby_raise_argerror(const char *fmt, ...);
 
 #define RHO_PARAM_UNKNWON 0
 #define RHO_PARAM_STRING 1
