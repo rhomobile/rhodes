@@ -1,7 +1,6 @@
 #include "common/map/MapEngine.h"
 #include "common/map/GoogleMapEngine.h"
 #include "common/map/ESRIMapEngine.h"
-#include "ruby.h"
 
 #include <algorithm>
 
@@ -84,8 +83,8 @@ namespace rhomap = rho::common::map;
 
 rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, int width, int height)
 {
-    if (!p || !p->type == RHO_PARAM_HASH)
-        rb_raise(rb_eArgError, "Wrong input parameter (expect Hash)");
+    if (!p || p->type != RHO_PARAM_HASH)
+		rho_ruby_raise_argerror("Wrong input parameter (expect Hash)");
 
     rho_param *provider = NULL;
     rho_param *settings = NULL;
@@ -109,7 +108,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     if (provider)
     {
         if (provider->type != RHO_PARAM_STRING)
-            rb_raise(rb_eArgError, "Wrong 'provider' value (expect String)");
+            rho_ruby_raise_argerror("Wrong 'provider' value (expect String)");
         providerId = provider->v.string;
     }
     std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);
@@ -128,7 +127,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     if (settings)
     {
         if (settings->type != RHO_PARAM_HASH)
-            rb_raise(rb_eArgError, "Wrong 'settings' value (expect Hash)");
+			rho_ruby_raise_argerror("Wrong 'settings' value (expect Hash)");
 
         for (int i = 0, lim = settings->v.hash->size; i < lim; ++i)
         {
@@ -140,7 +139,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
             if (strcasecmp(name, "map_type") == 0)
             {
                 if (value->type != RHO_PARAM_STRING)
-                    rb_raise(rb_eArgError, "Wrong 'map_type' value (expect String)");
+                    rho_ruby_raise_argerror("Wrong 'map_type' value (expect String)");
                 map_type = value->v.string;
             }
             else if (strcasecmp(name, "region") == 0)
@@ -148,7 +147,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 if (value->type == RHO_PARAM_ARRAY)
                 {
                     if (value->v.array->size != 4)
-                        rb_raise(rb_eArgError, "'region' array should contain exactly 4 items");
+                        rho_ruby_raise_argerror("'region' array should contain exactly 4 items");
 
                     rho_param *lat = value->v.array->value[0];
                     if (!lat) continue;
@@ -177,13 +176,13 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                         if (strcasecmp(rname, "center") == 0)
                         {
                             if (rvalue->type != RHO_PARAM_STRING)
-                                rb_raise(rb_eArgError, "Wrong 'center' value (expect String)");
+                                rho_ruby_raise_argerror("Wrong 'center' value (expect String)");
                             center = rvalue->v.string;
                         }
                         else if (strcasecmp(rname, "radius") == 0)
                         {
                             if (rvalue->type != RHO_PARAM_STRING)
-                                rb_raise(rb_eArgError, "Wrong 'radius' value (expect String or Float)");
+                                rho_ruby_raise_argerror("Wrong 'radius' value (expect String or Float)");
                             radius = strtod(rvalue->v.string, NULL);
                         }
                     }
@@ -191,18 +190,18 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     use_center_radius = true;
                 }
                 else
-                    rb_raise(rb_eArgError, "Wrong 'region' value (expect Array or Hash");
+                    rho_ruby_raise_argerror("Wrong 'region' value (expect Array or Hash");
             }
             else if (strcasecmp(name, "zoom_enabled") == 0)
             {
                 if (value->type != RHO_PARAM_STRING)
-                    rb_raise(rb_eArgError, "Wrong 'zoom_enabled' value (expect boolean)");
+                    rho_ruby_raise_argerror("Wrong 'zoom_enabled' value (expect boolean)");
                 zoom_enabled = strcasecmp(value->v.string, "true") == 0;
             }
             else if (strcasecmp(name, "scroll_enabled") == 0)
             {
                 if (value->type != RHO_PARAM_STRING)
-                    rb_raise(rb_eArgError, "Wrong 'scroll_enabled' value (expect boolean)");
+                    rho_ruby_raise_argerror("Wrong 'scroll_enabled' value (expect boolean)");
                 scroll_enabled = strcasecmp(value->v.string, "true") == 0;
             }
         }
@@ -214,14 +213,14 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     if (annotations)
     {
         if (annotations->type != RHO_PARAM_ARRAY)
-            rb_raise(rb_eArgError, "Wrong 'annotations' value (expect Array)");
+            rho_ruby_raise_argerror("Wrong 'annotations' value (expect Array)");
         for (int i = 0, lim = annotations->v.array->size; i < lim; ++i)
         {
             rho_param *ann = annotations->v.array->value[i];
             if (!ann)
                 continue;
             if (ann->type != RHO_PARAM_HASH)
-                rb_raise(rb_eArgError, "Wrong annotation value found (expect Hash)");
+                rho_ruby_raise_argerror("Wrong annotation value found (expect Hash)");
 
             bool latitude_set = false;
             double latitude = 0;
@@ -240,7 +239,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     continue;
 
                 if (value->type != RHO_PARAM_STRING)
-                    rb_raise(rb_eArgError, "Wrong annotation value");
+                    rho_ruby_raise_argerror("Wrong annotation value");
 
                 char *v = value->v.string;
                 if (strcasecmp(v, "latitude") == 0)
