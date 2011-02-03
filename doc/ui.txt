@@ -492,7 +492,7 @@ For the tabbar:
 	    # Tab items are loaded left->right, @tabs[0] is leftmost tab in the tab-bar
 	    @tabs = [
 	      { :label => "Dashboard", :action => '/app', 
-			:icon => "/public/images/tabs/dashboard.png", :reload => true }, 
+			:icon => "/public/images/tabs/dashboard.png", :reload => true, :web_bkg_color => 0x7F7F7F }, 
 	      { :label => "Accounts",  :action => '/app/Account',  
 			:icon => "/public/images/tabs/accounts.png" },
 	      { :label => "Contacts",  :action => '/app/Contact',  
@@ -513,6 +513,7 @@ Each tabbar item defined in the above sample defines following tab elements:
 * :reload => true - Optional argument which tells rhodes to reload the tab's :action, defaults to false
 * :selected_color => 0xFFFF00 - Optional parameter for change selected color of this tabs (if you use it on Android - you should defined it for all tabs! and also define :background_color for TabBar!)
 * :disabled => true - Optional parameter for disable this tab
+* :web_bkg_color = > int hex value (like HTML color) - background color for tab (use when your app bkg is not white for remove blink during switch tabs)
 
 
 Behind the scenes, Rho::RhoApplication will detect the @tabs array in its initialize method and build the native bar through the following function:
