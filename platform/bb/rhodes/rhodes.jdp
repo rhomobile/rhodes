@@ -18,6 +18,7 @@ AutoRestart=0
 [DefFiles
 ]
 [DependsOn
+Hsqldb
 RhoBundle
 RubyVM
 ]

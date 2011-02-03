@@ -86,6 +86,22 @@ AppAplication class defined in the application.rb file:
 	
 You may listen for activation/deactivation/upgrade events if you define following methods on AppApplication class. 
 
+Method on_ui_created will be invoked after application's UI was created (usually on app start)
+	:::ruby
+	def on_ui_created
+		# put your application UI creation code here
+		# for example, create tab bar:
+		# NativeBar.create(Rho::RhoApplication::TABBAR_TYPE, tabs)
+	end
+
+Method on_ui_destroyed will be invoked when application's UI was destroyed (usually on app exit)
+	:::ruby
+	def on_ui_destroyed
+		# put your code here
+		# example:
+		# @forbid_ui_operations = true
+	end
+
 Method on_activate_app will be invoked after application is activated. 
 	:::ruby
 	def on_activate_app
@@ -111,6 +127,42 @@ Method on_config_conflicts may be called after application was upgraded. If appl
 	def on_config_conflicts(conflicts)
 	    # puts "on_config_conflicts: #{conflicts}"
 	end
+
+### Relative order of callbacks and conditions where they occurs
+Look to the scheme of application life cycle:
+
+	initialize          -> called when application start
+	on_ui_created       -> called when application's UI created
+	on_activate_app     -> called when application become foreground
+
+Now application is live and visible on the screen. Assume now that user somehow
+switched to another application (for example, answering to incoming call) or
+explicitly send app to background.
+
+	on_deactivate_app   -> called when application switched to background
+
+Now, on this stage, application can be activated again (in this case *on_activate_app*
+will be called) or system can destroy it's UI to free some memory (in this case
+*on_ui_destroyed* will be called).
+Let's look on case if app's UI was destroyed but then we activated app again:
+
+	on_ui_destroyed     -> called when OS destroy app's UI
+	on_ui_created       -> called just after user request system activate
+	                       app (for example, tap app's icon on screen)
+	on_activate_app     -> called when app goes to foreground
+
+Ok, now user choose to exit from app completely (either by selecting menu item
+"Close" or calling System.exit method somewhere in app code).
+Let's look on callbacks chain in this case:
+
+	on_deactivate_app   -> at first, app will be deactivated (become
+	                       invisible on screen)
+	on_ui_destroyed     -> then, app's UI will be destroyed
+	Kernel.at_exit      -> all calls registered by calling of
+	                       Kernel.at_exit will be called as in usual Ruby.
+
+That's how it's working. Important thing to understand is that *on_activate_app* callback
+always called **after** *on_ui_created* and *on_deactivate_app* always called **before** *on_ui_destroyed*
 
 ## Application Helpers
 Few helper methods defined as part of the Rhodes framework. There are just a few of them because Rhodes framework designed for mobile environment where size is still of some concern and we tried to keep framework as tight as possible. 

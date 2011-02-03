@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.ChromeClientOld;
 import com.rhomobile.rhodes.webview.RhoWebSettings;
 
@@ -21,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -70,8 +72,8 @@ public class RhodesActivity extends BaseActivity {
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
-		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
@@ -83,6 +85,38 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(mSetup);
 		
 		sInstance = this;
+		
+		mHandler.post(new Runnable() {
+			public void run() {
+				RhodesService r = RhodesService.getInstance();
+				if (r == null) {
+					// If there is no yet running RhodesService instance,
+					// try to do the same after 100ms
+					mHandler.postDelayed(this, 100);
+					return;
+				}
+				
+				r.callUiCreatedCallback();
+			}
+		});
+	}
+	
+	public static void setFullscreen(int enable) {
+		//Utils.platformLog(TAG, "setFullscreen("+String.valueOf(enable)+")");
+		final int en = enable;
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (en != 0) {
+					getInstance().getWindow().clearFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				}
+				else {
+					getInstance().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+				}
+			}
+		}		
+		, false);
 	}
 
 	@Override
@@ -99,6 +133,10 @@ public class RhodesActivity extends BaseActivity {
 	
 	@Override
 	public void onDestroy() {
+		RhodesService r = RhodesService.getInstance();
+		if (r != null)
+			r.callUiDestroyedCallback();
+		
 		sInstance = null;
 		super.onDestroy();
 	}

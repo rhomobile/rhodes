@@ -14,6 +14,8 @@
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
+#include "NativeBar.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "LeftViewController"
 
@@ -61,12 +63,16 @@
 
 @synthesize itemsData, preferredSize, myFont;
 
-- (id)initWithItems:(NSArray*)items parent:(SplittedMainView*)parent {
+- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent {
 	self = [self initWithStyle:UITableViewStylePlain];
 	
 	splittedView = parent;
+	
+	
+	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
 
-    int count = ([items count]-2)/8;
+    int count = [items count];
+
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
@@ -77,11 +83,11 @@
 	self.preferredSize = 0;
 	
     for (int i = 0; i < count; ++i) {
-        int index = i*8 - 1 + 2;
-        NSString *label = [items objectAtIndex:++index];
-        NSString *url = [items objectAtIndex:++index];
-        NSString *icon = [items objectAtIndex:++index];
-        NSString *reload = [items objectAtIndex:++index];
+		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
+        
+        NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
+        NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
+        NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
         
         if (!initUrl)
             initUrl = url;

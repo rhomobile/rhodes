@@ -457,6 +457,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	if ( SyncThread.getInstance() != null )
     		SyncThread.getInstance().Destroy();
     	
+    	RhoRuby.rho_ruby_deactivateApp();
+    	RhoRuby.rho_ruby_uiDestroyed();
+    	
 		GeoLocation.stop();
         RhoRuby.RhoRubyStop();
         
@@ -561,6 +564,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 		        	
 		    		System.exit(1);
 		    	}
+		    	
+		    	RhoRuby.rho_ruby_uiCreated();
 		    	
 		    	runActivateHooks();
 		    	
