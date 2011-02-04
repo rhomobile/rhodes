@@ -1036,7 +1036,7 @@ namespace "run" do
       end
 
     task :testsim => ["config:bb"] do
-      load_to_sim
+      load_to_sim(false)
     end
 
     task :startsim => ["config:bb"] do
@@ -1053,7 +1053,18 @@ namespace "run" do
   end
 
   desc "Builds everything, loads and starts bb sim and mds"
-  task :bb => ["run:bb:stopmdsandsim_ex", "package:bb:production_sim"] do
+  task :bb => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
+    jde = $config["env"]["paths"][$bbver]["jde"]
+
+    cp_r File.join($targetdir,"/."), jde + "/simulator"
+    
+    startmds
+    startsim 
+    
+    $stdout.flush
+  end
+
+  task :bbapp => ["run:bb:stopmdsandsim_ex", "package:bb:production_sim"] do
     jde = $config["env"]["paths"][$bbver]["jde"]
     
     startmds
