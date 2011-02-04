@@ -17,11 +17,12 @@ describe("Sync client API", function() {
 
 	describe("Rhomobile.fsm.Machine", function() {
 		var api = Rhomobile.fsm;
-		var instName = 'sample Machine';
-		var instance = null;
+
+		var fsmName = 'sample Machine';
+		var fsmInst = null;
 
 		beforeEach(function(){
-			instance = new api.Machine(instName);
+			fsmInst = new api.Machine(fsmName);
 		});
 
 		it("is defined", function() {
@@ -30,57 +31,186 @@ describe("Sync client API", function() {
 
 		it("is able to construct an instance", function() {
 			expect(api.define).toBeSet();
-			var inst2 = api.define('another '+instName);
-			expect(inst2.name).not.toEqual(instName);
-			expect(instance.name).toEqual(instName);
+			var fsmInst2 = api.define('another '+fsmName);
+			expect(fsmInst2.name).not.toEqual(fsmName);
+			expect(fsmInst.name).toEqual(fsmName);
 		});
 
 		it("is able to obtain definition", function() {
 			var def1 = jasmine.createSpy('Machine1 definition');
 			var def2 = jasmine.createSpy('Machine2 definition');
 			// states can be defined after creation
-			instance.define(def1);
+			fsmInst.define(def1);
 			// or while creating the instance
-			var inst2 = api.define('another '+instName, def2);
-			expect(def1).toHaveBeenCalledWith(instance);
-			expect(def2).toHaveBeenCalledWith(inst2);
+			var fsmInst2 = api.define('another '+fsmName, def2);
+			expect(def1).toHaveBeenCalledWith(fsmInst);
+			expect(def2).toHaveBeenCalledWith(fsmInst2);
+		});
+
+		it("prohibits to define the same status twice", function() {
+			var stateName1 = 'sample input';
+			var stateName2 = stateName1;
+
+			fsmInst.state(stateName1);
+
+			var exceptionHappens = false;
+			try {
+				fsmInst.state(stateName2);
+			} catch(ex) {
+				jasmine.log('Exception thrown: '+ex);
+				exceptionHappens = true;
+			}
+			expect(exceptionHappens).toEqual(true);
 		});
 
 		it("is able to have states", function() {
 			var stName1 = 'sample state';
-			var stName2 = 'another'+stName1;
-			var stName3 = 'one more'+stName1;
+			var stName2 = 'another '+stName1;
 
-			expect(instance.state).toBeSet();
-			instance.state(stName1);
-			instance.state(stName2);
-			instance.state(stName3);
-			expect(instance.states).toBeSet();
-			expect(instance.states[stName1].name).toEqual(stName1);
-			expect(instance.states[stName2].name).toEqual(stName2);
-			expect(instance.states[stName3].name).toEqual(stName3);
+			expect(fsmInst.state).toBeSet();
+			fsmInst.state(stName1);
+			fsmInst.state(stName2);
+
+			expect(fsmInst.states).toBeSet();
+			expect(fsmInst.states[stName1].name).toEqual(stName1);
+			expect(fsmInst.states[stName2].name).toEqual(stName2);
+		});
+
+		it("is able to have current state", function() {
+			var stName1 = 'sample state';
+			var stName2 = 'another '+stName1;
+
+			// if no states has been defined yet,
+			// then first one becomes current state
+			var st1 = fsmInst.state(stName1);
+			var st2 = fsmInst.state(stName2);
+			expect(fsmInst.currentState).toBeSet();
+			expect(fsmInst.currentState).toEqual(st1);
+		});
+
+		it("is able to have initial state", function() {
+			var stName1 = 'sample state';
+			var stName2 = 'another '+stName1;
+
+			// if no states has been defined yet,
+			// then first one becomes initial state
+			var st1 = fsmInst.state(stName1);
+			var st2 = fsmInst.state(stName2);
+			expect(fsmInst.initialState).toBeSet();
+			expect(fsmInst.initialState).toEqual(st1);
+
+			// and then we can change it to any defined
+			expect(fsmInst.withInitialState).toBeSet();
+			fsmInst.withInitialState(stName2);
+			// it changes
+			expect(fsmInst.initialState).toEqual(st2);
+			// but current state doesn't
+			expect(fsmInst.currentState).toEqual(st1);
+		});
+
+		it("is able to be reset", function() {
+			var stName1 = 'sample state';
+			var stName2 = 'another '+stName1;
+
+			var st1 = fsmInst.state(stName1);
+			var st2 = fsmInst.state(stName2);
+
+			// first defined state becomes current one
+			expect(fsmInst.currentState).toEqual(st1);
+
+			// define initial state explicitly
+			fsmInst.withInitialState(stName2);
+
+			// reset to initial state
+			expect(fsmInst.reset).toBeSet();
+			fsmInst.reset();
+			expect(fsmInst.currentState).toEqual(st2);
+
+			// reset to any state
+			fsmInst.resetTo(stName1);
+			// it changes
+			expect(fsmInst.currentState).toEqual(st1);
+			// but initial state still the same
+			expect(fsmInst.initialState).toEqual(st2);
 		});
 
 		it("is able to receive an input", function() {
-			expect(instance.input).toBeSet();
-			spyOn(instance, 'input');
-			instance.input('button pressed', 5);
-			expect(instance).toHaveBeenCalledWith('button pressed', 5);
+			expect(fsmInst.inputWith).toBeSet();
+			var inputSpy = spyOn(fsmInst, 'inputWith');
+			fsmInst.inputWith('button pressed', 5);
+			expect(inputSpy).toHaveBeenCalledWith('button pressed', 5);
 		});
+
+		it("can change state on appropriate input applied", function() {
+
+			var lampSwitchFsm = api.define('Lamp switch FSM', function(fsm){
+				fsm.state('Light is OFF')
+						.on('turn switch on').transitsTo('Light is ON')
+				fsm.state('Light is ON')
+						.on('turn switch off').transitsTo('Light is OFF')
+			});
+
+			expect(lampSwitchFsm).toBeSet();
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+
+			lampSwitchFsm.inputWith('turn switch off');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+
+			lampSwitchFsm.inputWith('turn switch on');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
+
+			lampSwitchFsm.inputWith('turn switch on');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
+
+			lampSwitchFsm.inputWith('turn switch off');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+		});
+
+		it("can handle states with immediate transition", function() {
+
+			var lampSwitchFsm = api.define('Lamp switch FSM', function(fsm){
+				expect(fsm.state('some fake intact state w/o transitions').immediateTransitsTo).toBeSet();
+
+				fsm.state('Light is OFF')
+						.on('turn switch on').transitsTo('ON click sound produced');
+				fsm.state('ON click sound produced')
+						.immediateTransitsTo('Light is ON')
+				fsm.state('Light is ON')
+						.on('turn switch off').transitsTo('OFF click sound produced');
+				fsm.state('OFF click sound produced')
+						.immediateTransitsTo('Light is OFF');
+			}).withInitialState('Light is OFF').reset();
+
+			expect(lampSwitchFsm).toBeSet();
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+
+			lampSwitchFsm.inputWith('turn switch off');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+
+			lampSwitchFsm.inputWith('turn switch on');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
+
+			lampSwitchFsm.inputWith('turn switch on');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
+
+			lampSwitchFsm.inputWith('turn switch off');
+			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+		});
+
 	});
 
 	describe("Rhomobile.fsm.State", function() {
 		var api = Rhomobile.fsm;
 
-		var instName = 'sample State';
-		var instance = null;
-
 		var fsmName = 'sample Machine';
 		var fsmInst = null;
 
+		var stateName = 'sample State';
+		var stateInst = null;
+
 		beforeEach(function(){
 			fsmInst = api.define(fsmName);
-			instance = fsmInst.state(instName);
+			stateInst = fsmInst.state(stateName);
 		});
 
 		it("is defined", function() {
@@ -88,22 +218,119 @@ describe("Sync client API", function() {
 		});
 
 		it("is able to construct an instance", function() {
-			var inst2 = fsmInst.state('another '+instName);
-			expect(inst2.name).not.toEqual(instName);
-			expect(instance.name).toEqual(instName);
+			var stateInst2 = fsmInst.state('another '+stateName);
+			expect(stateInst2.name).not.toEqual(stateName);
+			expect(stateInst.name).toEqual(stateName);
 		});
 
-/*
-		it("is able to obtain definition", function() {
-			var name = "sample FSM";
-			var def1 = jasmine.createSpy('FSM1 definition');
-			var def2 = jasmine.createSpy('FSM2 definition');
-			var inst1 = (new api.Machine(name)).define(def1);
-			var inst2 = api.define('another '+name, def2);
-			expect(def1).toHaveBeenCalledWith(inst1);
-			expect(def2).toHaveBeenCalledWith(inst2);
+		it("is able to receive an input from Machine", function() {
+			expect(stateInst.inputWith).toBeSet();
+			var inputSpy = spyOn(stateInst, 'inputWith');
+			fsmInst.inputWith('button pressed', 5);
+			expect(inputSpy).toHaveBeenCalledWith('button pressed', 5);
 		});
-*/
+
+		it("is able to have inputs defined", function() {
+			var inputName1 = 'sample input';
+			var inputName2 = 'another '+inputName1;
+
+			expect(stateInst.on).toBeSet();
+			stateInst.on(inputName1);
+			stateInst.on(inputName2);
+
+			expect(stateInst.inputs).toBeSet();
+			expect(stateInst.inputs[inputName1].name).toEqual(inputName1);
+			expect(stateInst.inputs[inputName2].name).toEqual(inputName2);
+		});
+
+		it("prohibits to define the same input twice", function() {
+			var inputName1 = 'sample input';
+			var inputName2 = inputName1;
+
+			stateInst.on(inputName1);
+
+			var exceptionHappens = false;
+			try {
+				stateInst.on(inputName2);
+			} catch(ex) {
+				jasmine.log('Exception thrown: '+ex);
+				exceptionHappens = true;
+			}
+			expect(exceptionHappens).toEqual(true);
+		});
+
+		it("can fire entry actions", function() {
+
+			var actSpy = jasmine.createSpy('entry action spy');
+
+			var lampSwitchFsm = api.define('Lamp switch FSM', function(fsm){
+				expect(fsm.state('some fake intact state w/o transitions').withEntryAction).toBeSet();
+
+				fsm.state('Light is OFF')
+						.on('turn switch on').transitsTo('Light is ON')
+						.withEntryAction('sample entry action', actSpy);
+
+				fsm.state('Light is ON')
+						.on('turn switch off').transitsTo('Light is OFF');
+			}).withInitialState('Light is OFF').reset();
+
+
+//			expect(lampSwitchFsm).toBeSet();
+//			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+//
+//			lampSwitchFsm.inputWith('turn switch off');
+//			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+//
+//			lampSwitchFsm.inputWith('turn switch on');
+//			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
+//
+//			lampSwitchFsm.inputWith('turn switch on');
+//			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
+//
+//			lampSwitchFsm.inputWith('turn switch off');
+//			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+		});
+
+	});
+
+	describe("Rhomobile.fsm.Input", function() {
+		var api = Rhomobile.fsm;
+
+		var fsmName = 'sample Machine';
+		var fsmInst = null;
+
+		var stateName = 'sample State';
+		var stateInst = null;
+
+		var inputName = 'sample Input';
+		var inputInst = null;
+
+		beforeEach(function(){
+			fsmInst = api.define(fsmName);
+			stateInst = fsmInst.state(stateName);
+			inputInst = stateInst.on(inputName);
+		});
+
+		it("is defined", function() {
+			expect(api.Input).toBeSet();
+		});
+
+		it("is able to construct an instance", function() {
+			var inputInst2 = stateInst.on('another '+inputName);
+			expect(inputInst2.name).not.toEqual(inputName);
+			expect(inputInst.name).toEqual(inputName);
+		});
+
+		it("is able to have transition defined", function() {
+			var transName1 = 'sample sample transition';
+
+			expect(inputInst.transitsTo).toBeSet();
+			var fsmCheck = inputInst.transitsTo(transName1);
+
+			expect(inputInst.transition).toBeSet();
+			expect(inputInst.transition).toEqual(transName1);
+			expect(fsmCheck).toEqual(fsmInst);
+		});
 
 	});
 
