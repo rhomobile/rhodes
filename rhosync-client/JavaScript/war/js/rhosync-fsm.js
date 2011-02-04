@@ -148,7 +148,7 @@ if (Rhomobile) { Rhomobile.fsm = function(){
 		// currently just only action per input
 		if (actions[input]) {
 			try {
-				actions[input]();
+				actions[input](data);
 			} catch(ex) {/*report action exception*/}
 		}
 	};
@@ -192,26 +192,30 @@ if (Rhomobile) { Rhomobile.fsm = function(){
 	kls.prototype.withEntryAction = function(actionName, action) {
 		// actionName to be used just to render documentation
 		this.entryActions.push(action);
+		return this;
 	};
 
 	kls.prototype.withExitAction = function(actionName, action) {
 		// actionName to be used just to render documentation
 		this.exitActions.push(action);
+		return this;
 	};
 
 	kls.prototype.withActionOnInput = function(inputName, actionName, action) {
 		// actionName to be used just to render documentation
 		this.inputActions[inputName] = action;
+		return this;
 	};
 
 	kls.prototype.withActionOnTransitTo = function(stateName, actionName, action) {
 		// actionName to be used just to render documentation
-		this.transitionActions[transitName] = action;
+		this.transitionActions[stateName] = action;
+		return this;
 	};
 
 	kls.prototype.immediateTransitsTo = function(stateName) {
 		this.immediateTransitionState = stateName;
-		return this.fsm;
+		return this;
 	};
 
 	var klass_State = kls;
@@ -226,7 +230,7 @@ if (Rhomobile) { Rhomobile.fsm = function(){
 
 	kls.prototype.transitsTo = function(stateName) {
 		this.transition = stateName;
-		return this.state.fsm;
+		return this.state;
 	};
 
 	var klass_Input = kls;
