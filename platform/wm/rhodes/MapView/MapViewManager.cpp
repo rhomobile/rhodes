@@ -112,6 +112,11 @@ LRESULT CRhoMapViewDlg::OnSliderScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lP
 
 LRESULT CRhoMapViewDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
 {
+	if (ourMapView != NULL) {
+		rho_map_destroy(ourMapView);
+		ourMapView = NULL;
+	}
+
 	EndDialog(wID);
 	return 0;
 }
@@ -119,6 +124,11 @@ LRESULT CRhoMapViewDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*
 
 LRESULT CRhoMapViewDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if (ourMapView != NULL) {
+		rho_map_destroy(ourMapView);
+		ourMapView = NULL;
+	}
+
 	EndDialog(wID);
 	return 0;
 }
@@ -173,11 +183,53 @@ void CRhoMapViewDlg::doOpen() {
 }
 
 void CRhoMapViewDlg::doClose() {
+	if (ourMapView != NULL) {
+		rho_map_destroy(ourMapView);
+		ourMapView = NULL;
+	}
 	EndDialog(0);
 }
 
 void CRhoMapViewDlg::requestRedraw() {
 	InvalidateRect(NULL, FALSE);
+}
+
+LRESULT CRhoMapViewDlg::OnTouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	int xPos = LOWORD(lParam); 
+	int yPos = HIWORD(lParam);
+	mLastX = xPos;
+	mLastY = yPos;
+	mInitialX = xPos;
+	mInitialY = yPos;
+	mIsPossibleClick = true;
+	return 0;
+}
+
+#define MABS(x) ((x)>=0)?(x):-(x)
+
+LRESULT CRhoMapViewDlg::OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	if ( (MABS(mInitialX - mLastX) < 8) && (MABS(mInitialY - mLastY) < 8) && mIsPossibleClick) {
+		if (ourMapView != NULL) {
+			if (ourMapView->handleClick(mLastX, mLastY)) {
+				rho_map_destroy(ourMapView);
+				ourMapView = NULL;
+				EndDialog(0);
+			}
+		}
+	}	
+	return 0;
+}
+
+LRESULT CRhoMapViewDlg::OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	int xPos = LOWORD(lParam); 
+	int yPos = HIWORD(lParam);
+	if (ourMapView != NULL) {
+		ourMapView->move(mLastX-xPos, mLastY-yPos);
+		requestRedraw();
+	}
+	mLastX = xPos;
+	mLastY = yPos;
+	return 0;
 }
 
 
@@ -193,9 +245,6 @@ public:
 		//ourMapView->setGraphicsDevice(&ourDrawingDevice);
 
 		ourMapViewDlg.DoModal(getMainWnd());
-
-		rho_map_destroy(ourMapView);
-		ourMapView = NULL;
 	}
 
 private:
@@ -226,16 +275,19 @@ extern "C" void mapview_close() {
 }
 
 extern "C" VALUE mapview_state_started() {
-	//TODO: mapview_state_started
-	return 0;
+	return (ourMapView != NULL);
 }
 
 extern "C" double mapview_state_center_lat() {
-	//TODO:
+	if (ourMapView != NULL) {
+		return ourMapView->latitude();
+	}
 	return 0;
 }
 
 extern "C" double mapview_state_center_lon() {
-	//TODO:
+	if (ourMapView != NULL) {
+		return ourMapView->longitude();
+	}
 	return 0;
 }
