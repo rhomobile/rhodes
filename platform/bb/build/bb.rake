@@ -449,68 +449,78 @@ namespace "build" do
       create_jarmanifest()
         
       $stdout.flush
-      capabilities = File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java")
+
+      f = StringIO.new("", "w+")      
+      f.puts "package com.rho;"
+      f.puts ""
+      f.puts "public class Capabilities {"
+      f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
+      f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
+      f.puts "  public static final boolean USE_SQLITE = #{$use_sqlite.to_s};"
+      f.puts "}"
+
+      file_name = File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java")
+      f.rewind
+      content = f.read()
+      old_content = File.exists?(file_name) ? File.read(file_name) : ""
+      if old_content != content  
+        puts "Modify Capabilities.java"      
+        File.open(file_name, "w"){|file| file.write(content)}
+      end
+      f.close
       
-      #if !FileUtils.uptodate?(capabilities,[File.join($app_path, "build.yml")])
-          puts "Modify Capabilities.java"
-          
-          File.open(capabilities, 'w') do |f|
-            f.puts "package com.rho;"
-            f.puts ""
-            f.puts "public class Capabilities {"
-            f.puts "  public static final boolean ENABLE_PUSH = #{has_push.to_s};"
-            f.puts "  public static final boolean RUNAS_SERVICE = #{has_push.to_s};"
-            f.puts "  public static final boolean USE_SQLITE = #{$use_sqlite.to_s};"
-            f.puts "}"
-          end
+      extentries = []
 
-
-          extentries = []
-
-          if $app_config["extensions"]
-              $app_config["extensions"].each do |ext|
-                $app_config["extpaths"].each do |p|
-                  extpath = File.join(p, ext, 'ext')
-                  if RUBY_PLATFORM =~ /(win|w)32$/
-                    next unless File.exists? File.join(extpath, 'build.bat')
-                  else
-                    next unless File.executable? File.join(extpath, 'build')
-                  end
-                  
-                  extroot = File.join(p,ext)
-
-                  extyml = File.join(extroot, "ext.yml")
-                  if File.file? extyml
-                    extconf = Jake.config(File.open(extyml))
-                    javaentry = extconf["javaentry"]
-                    extentries << javaentry unless javaentry.nil?
-                  end
-
-                end
+      if $app_config["extensions"]
+          $app_config["extensions"].each do |ext|
+            $app_config["extpaths"].each do |p|
+              extpath = File.join(p, ext, 'ext')
+              if RUBY_PLATFORM =~ /(win|w)32$/
+                next unless File.exists? File.join(extpath, 'build.bat')
+              else
+                next unless File.executable? File.join(extpath, 'build')
               end
-          end
-            
-          exts = $startdir + "/platform/bb/RubyVM/src/com/rho/Extensions.java"
+              
+              extroot = File.join(p,ext)
 
-          File.open(exts, "w") do |f|
-            f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-            f.puts "// Generated #{Time.now.to_s}"
-            f.puts "package com.rho; "
-            f.puts " "
-            f.puts "public class Extensions {"
-            f.puts " "
-            f.puts "public static String[] extensions = {"
+              extyml = File.join(extroot, "ext.yml")
+              if File.file? extyml
+                extconf = Jake.config(File.open(extyml))
+                javaentry = extconf["javaentry"]
+                extentries << javaentry unless javaentry.nil?
+              end
 
-            extentries.each do |entry|
-              f.puts '          "' + entry + '",'
             end
-
-            f.puts '""'
-            f.puts "};"
-            f.puts " "
-            f.puts "}"
           end
-      #end  
+      end
+
+      f = StringIO.new("", "w+")      
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      #f.puts "// Generated #{Time.now.to_s}"
+      f.puts "package com.rho; "
+      f.puts " "
+      f.puts "public class Extensions {"
+      f.puts " "
+      f.puts "public static String[] extensions = {"
+
+      extentries.each do |entry|
+        f.puts '          "' + entry + '",'
+      end
+
+      f.puts '""'
+      f.puts "};"
+      f.puts " "
+      f.puts "}"
+      
+      file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/Extensions.java"
+      f.rewind
+      content = f.read()
+      old_content = File.exists?(file_name) ? File.read(file_name) : ""
+      if old_content != content  
+        puts "Modify Extensions.java"      
+        File.open(file_name, "w"){|file| file.write(content)}
+      end
+      f.close
 
     end
     
