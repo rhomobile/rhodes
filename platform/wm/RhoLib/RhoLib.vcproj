@@ -838,6 +838,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\RhoMath.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoMath.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoMutexLock.h"
 				>
 			</File>
