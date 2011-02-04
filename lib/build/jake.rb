@@ -179,7 +179,7 @@ class Jake
         $getdump = true
       end
       
-      return ($failed == 0)
+      return true
   end
   
   def self.process_spec_results(start)

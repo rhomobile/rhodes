@@ -14,6 +14,8 @@
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
+#include "NativeBar.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "TabbedMainView"
 
@@ -294,14 +296,18 @@
 
 
 
-- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p tabs:(NSArray *)items {
+- (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
 	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
     
-	NSString *background_color_enable = [items objectAtIndex:0];
-	NSString *background_color = [items objectAtIndex:1];
+	NSString *background_color = nil;
 	
-	if ([background_color_enable isEqualToString:@"true"]) {
+	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
+	if (global_properties != nil) {
+		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+	}
+	
+	if (background_color != nil) {
 		RhoUITabBarController* rc = [RhoUITabBarController alloc];
 		rc.bkgColor = [background_color intValue];
 		rc = [rc initWithNibName:nil bundle:nil];
@@ -328,25 +334,30 @@
 	//else {
 		childFrame.size.height -= tbFrame.size.height;
 	//}
-    int count = ([items count] -2 )/8;
+	
+	
+	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
+	
+    int count = [items count];
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
     
     for (int i = 0; i < count; ++i) {
-        int index = i*8 - 1 + 2;
-        NSString *label = [items objectAtIndex:++index];
-        NSString *url = [items objectAtIndex:++index];
-        NSString *icon = [items objectAtIndex:++index];
-        NSString *reload = [items objectAtIndex:++index];
-        NSString *colored_icon = [items objectAtIndex:++index];
 		
-		NSString *selected_color = (NSString*)[items objectAtIndex:++index];  
-		NSString *selected_color_enable = (NSString*)[items objectAtIndex:++index];  
-		NSString *disabled = (NSString*)[items objectAtIndex:++index];  
+		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
+		
+        NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
+        NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
+        NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
+        NSString *reload = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_RELOAD];
+		
+		NSString *selected_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_SELECTED_COLOR];  
+		NSString *disabled = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_DISABLED];
+		
+		NSString *web_bkg_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
         
-		colored_icon = nil;
 		
         if (!initUrl)
             initUrl = url;
@@ -355,13 +366,26 @@
             RhoTabBarData *td = [[RhoTabBarData alloc] init];
             td.url = url;
 			td.reload = [reload isEqualToString:@"true"];
+			SimpleMainView *subController = nil;
+			if (web_bkg_color != nil) {
+				int bkgc = [web_bkg_color intValue];
+				int cR = (bkgc & 0xFF0000) >> 16;
+				int cG = (bkgc & 0xFF00) >> 8;
+				int cB = (bkgc & 0xFF);
+				UIColor* bc = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+				
+				subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame web_bkg_color:bc];
+			}
+			else {
+				subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
+			}
             
-            SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
+			
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
 			
 			
-			if ([selected_color_enable isEqualToString:@"true"]) {
+			if (selected_color != nil) {
 				
 				int sel_col = [selected_color intValue];
 				int cR = (sel_col & 0xFF0000) >> 16;

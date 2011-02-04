@@ -62,6 +62,8 @@ static ID initApp_mid;
 static ID onConfigConflicts_mid;
 static ID activateApp_mid;
 static ID deactivateApp_mid;
+static ID uiCreated_mid;
+static ID uiDestroyed_mid;
 static ID loadServerSources_mid;
 static ID resetDBOnSyncUserChanged_mid;
 
@@ -210,6 +212,8 @@ void RhoRubyStart()
     CONST_ID(onConfigConflicts_mid, "on_config_conflicts");
     CONST_ID(activateApp_mid, "activate_app");
     CONST_ID(deactivateApp_mid, "deactivate_app");
+    CONST_ID(uiCreated_mid, "ui_created");
+    CONST_ID(uiDestroyed_mid, "ui_destroyed");
     CONST_ID(loadServerSources_mid,"load_server_sources");
     CONST_ID(resetDBOnSyncUserChanged_mid, "reset_db_on_sync_user_changed");
 
@@ -244,6 +248,16 @@ void rho_ruby_activateApp()
 void rho_ruby_deactivateApp()
 {
     rb_funcall(framework, deactivateApp_mid, 0);
+}
+
+void rho_ruby_uiCreated()
+{
+    rb_funcall(framework, uiCreated_mid, 0);
+}
+
+void rho_ruby_uiDestroyed()
+{
+    rb_funcall(framework, uiDestroyed_mid, 0);
 }
 
 void rho_ruby_loadserversources(const char* szData)

@@ -58,9 +58,8 @@ RHO_GLOBAL void rho_bluetooth_set_device_name(const char* device_name) {
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "set_device_name", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objDeviceName = rho_cast<jstring>(device_name);
-    env->CallStaticVoidMethod(cls, mid, objDeviceName);
-    env->DeleteLocalRef(objDeviceName);
+    jhstring objDeviceName = rho_cast<jhstring>(device_name);
+    env->CallStaticVoidMethod(cls, mid, objDeviceName.get());
 }
 
 RHO_GLOBAL const char* rho_bluetooth_get_device_name() {
@@ -92,11 +91,9 @@ RHO_GLOBAL const char* rho_bluetooth_create_session(const char* role, const char
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create_session", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
     if (!mid) return 0;
-    jstring objStr1 = rho_cast<jstring>(role);
-    jstring objStr2 = rho_cast<jstring>(callback_url);
-    jstring res = (jstring)env->CallStaticObjectMethod(cls, mid, objStr1, objStr2);
-    env->DeleteLocalRef(objStr1);
-    env->DeleteLocalRef(objStr2);
+    jhstring objStr1 = rho_cast<jhstring>(role);
+    jhstring objStr2 = rho_cast<jhstring>(callback_url);
+    jhstring res = jhstring((jstring)env->CallStaticObjectMethod(cls, mid, objStr1.get(), objStr2.get()));
     return rho_cast<std::string>(res).c_str();
 }
 
@@ -106,11 +103,9 @@ RHO_GLOBAL void rho_bluetooth_session_set_callback(const char* connected_device_
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_set_callback", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
-    jstring objStr2 = rho_cast<jstring>(callback_url);
-    env->CallStaticVoidMethod(cls, mid, objStr1, objStr2);
-    env->DeleteLocalRef(objStr1);
-    env->DeleteLocalRef(objStr2);
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
+    jhstring objStr2 = rho_cast<jhstring>(callback_url);
+    env->CallStaticVoidMethod(cls, mid, objStr1.get(), objStr2.get());
 }
 
 RHO_GLOBAL void rho_bluetooth_session_disconnect(const char* connected_device_name) {
@@ -119,9 +114,8 @@ RHO_GLOBAL void rho_bluetooth_session_disconnect(const char* connected_device_na
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_disconnect", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
-    env->CallStaticVoidMethod(cls, mid, objStr1);
-    env->DeleteLocalRef(objStr1);
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
+    env->CallStaticVoidMethod(cls, mid, objStr1.get());
 }
 
 RHO_GLOBAL int rho_bluetooth_session_get_status(const char* connected_device_name) {
@@ -129,11 +123,9 @@ RHO_GLOBAL int rho_bluetooth_session_get_status(const char* connected_device_nam
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_get_status", "(Ljava/lang/String;)I");
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
     if (!mid) return 0;
-    int res = env->CallStaticIntMethod(cls, mid, objStr1);
-    env->DeleteLocalRef(objStr1);
-    return res;
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
+    return env->CallStaticIntMethod(cls, mid, objStr1.get());
 }
 
 RHO_GLOBAL const char* rho_bluetooth_session_read_string(const char* connected_device_name) {
@@ -141,10 +133,9 @@ RHO_GLOBAL const char* rho_bluetooth_session_read_string(const char* connected_d
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_read_string", "(Ljava/lang/String;)Ljava/lang/String;");
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
     if (!mid) return 0;
-    jstring res = (jstring)env->CallStaticObjectMethod(cls, mid, objStr1);
-    env->DeleteLocalRef(objStr1);
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
+    jhstring res = jhstring((jstring)env->CallStaticObjectMethod(cls, mid, objStr1.get()));
     return rho_cast<std::string>(res).c_str();
 }
 
@@ -154,11 +145,9 @@ RHO_GLOBAL void rho_bluetooth_session_write_string(const char* connected_device_
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_write_string", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
-    jstring objStr2 = rho_cast<jstring>(str);
-    env->CallStaticVoidMethod(cls, mid, objStr1, objStr2);
-    env->DeleteLocalRef(objStr1);
-    env->DeleteLocalRef(objStr2);
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
+    jhstring objStr2 = rho_cast<jhstring>(str);
+    env->CallStaticVoidMethod(cls, mid, objStr1.get(), objStr2.get());
 }
 
 RHO_GLOBAL VALUE rho_bluetooth_session_read_data(const char* connected_device_name) {
@@ -166,26 +155,24 @@ RHO_GLOBAL VALUE rho_bluetooth_session_read_data(const char* connected_device_na
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_read_data", "(Ljava/lang/String;[BI)I");
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
     if (!mid) return 0;
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
 
-    int buf_size = env->CallStaticIntMethod(cls, mid, objStr1, 0, 0);
+    int buf_size = env->CallStaticIntMethod(cls, mid, objStr1.get(), 0, 0);
 
     if (buf_size == 0) {
         // nothing for receive
 	return rho_ruby_get_NIL();
     }
 
-    jbyteArray buf_j = env->NewByteArray(buf_size);
-    int real_readed = env->CallStaticIntMethod(cls, mid, objStr1, buf_j, buf_size);
-    env->DeleteLocalRef(objStr1);
+    jholder<jbyteArray> buf_j = jholder<jbyteArray>(env->NewByteArray(buf_size));
+    int real_readed = env->CallStaticIntMethod(cls, mid, objStr1.get(), buf_j.get(), buf_size);
 
-    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j.get(), 0);
  
     VALUE val = rho_ruby_create_byte_array((unsigned char*)buf_p, real_readed);
 	
-    env->ReleaseByteArrayElements(buf_j, buf_p, 0); 
-    env->DeleteLocalRef(buf_j);
+    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0); 
 
     return val;
 }
@@ -204,19 +191,16 @@ RHO_GLOBAL void rho_bluetooth_session_write_data(const char* connected_device_na
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_write_data", "(Ljava/lang/String;[BI)V");
-    jstring objStr1 = rho_cast<jstring>(connected_device_name);
     if (!mid) return;
+    jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
 
-    jbyteArray buf_j = env->NewByteArray(size);
-    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    jholder<jbyteArray> buf_j = jholder<jbyteArray>(env->NewByteArray(size));
+    jbyte* buf_p = env->GetByteArrayElements(buf_j.get(), 0);
 
     size = rho_ruby_unpack_byte_array(data, (unsigned char*)buf_p, size);
 
-    env->CallStaticVoidMethod(cls, mid, objStr1, buf_j, size);
+    env->CallStaticVoidMethod(cls, mid, objStr1.get(), buf_j.get(), size);
 
-    env->DeleteLocalRef(objStr1);
-    
-    env->ReleaseByteArrayElements(buf_j, buf_p, 0); 
-    env->DeleteLocalRef(buf_j);
+    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0); 
 }
 

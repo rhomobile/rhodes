@@ -37,6 +37,8 @@ void RhoRubyInitApp();
 void rho_ruby_call_config_conflicts();
 void rho_ruby_activateApp();
 void rho_ruby_deactivateApp();
+void rho_ruby_uiCreated();
+void rho_ruby_uiDestroyed();
 void rho_ruby_loadserversources(const char* szData);
 void rho_ruby_reset_db_on_sync_user_changed();
 void rho_ruby_start_threadidle();
