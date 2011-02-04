@@ -483,7 +483,7 @@ extern "C" void rho_net_impl_network_indicator(int active)
 {
     //TODO: rho_net_impl_network_indicator
 }
-
+/*
 extern "C" void mapview_create(rho_param *p) {
     //TODO: mapview_create
 }
@@ -506,7 +506,7 @@ extern "C" double mapview_state_center_lon() {
     //TODO:
     return 0;
 }
-
+*/
 extern "C" void rho_map_location(char* query)
 {
 }

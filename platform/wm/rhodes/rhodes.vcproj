@@ -1425,6 +1425,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="MapView"
+			>
+			<File
+				RelativePath=".\MapView\Graphics.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MapView\Graphics.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MapView\MapViewManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MapView\MapViewManager.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 		<Global

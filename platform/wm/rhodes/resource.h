@@ -15,6 +15,7 @@
 #define IDR_LOGOPTIONSMENUBAR           114
 #define IDR_LOGVIEW_MENU                115
 #define IDD_SIMULATOR_LOGOPTIONS        116
+#define IDR_MAPVIEW                     116
 #define IDI_ICON                        117
 #define IDD_DATETIME_PICKER             118
 #define IDD_TIME_PICKER                 119
@@ -23,6 +24,7 @@
 #define IDD_BLUETOOTH_DISCOVERED        121
 #define IDD_DIALOG1                     122
 #define IDD_SYNCSTATUS                  122
+#define IDD_MAPVIEW                     123
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
@@ -34,14 +36,18 @@
 #define IDC_MSGEXCLUDE                  1008
 #define IDC_SYNCSTATUS                  1009
 #define IDC_BUTTON2                     1010
+#define IDC_BUTTON_ZOOM_IN              1010
 #define IDC_DATE_CTRL                   1012
 #define IDC_TIME_CTRL                   1013
 #define IDC_DATE_STATIC                 1017
 #define IDC_TIME_STATIC                 1019
 #define IDC_BT_LIST                     1020
+#define IDC_SLIDER1                     1020
+#define IDC_SLIDER_ZOOM                 1020
 #define IDC_BUTTON1                     1022
 #define IDC_BT_CANCEL                   1022
 #define IDC_BT_STATIC                   1023
+#define IDC_BUTTON_ZOOM_OUT             1023
 #define IDS_EXIT                        10001
 #define IDS_MENU                        10002
 #define IDS_OK                          10003
@@ -71,14 +77,15 @@
 #define IDM_SENDLOG                     40027
 #define ID_Menu                         40028
 #define ID_FULLSCREEN                   40029
+#define ID_CANCEL                       40030
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40030
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_COMMAND_VALUE         40031
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif
