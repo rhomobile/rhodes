@@ -257,7 +257,7 @@ public class Jsr75File implements SimpleFile
 			fdir = (FileConnection)Connector.open(strSdCardPath);
 			if ( fdir != null && fdir.exists() )
 				return true;
-		}catch(IOException exc){
+		}catch(Exception exc){
 			log("isSDCardExist failed." + exc.getMessage());
 		}finally{
 			if ( fdir != null )
