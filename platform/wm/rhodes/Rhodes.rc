@@ -114,6 +114,16 @@ BEGIN
     END
 END
 
+IDR_MENU_PC MENU 
+BEGIN
+    MENUITEM "Close",                       IDOK
+END
+
+IDR_MAPVIEW MENU 
+BEGIN
+    MENUITEM "Close",                       IDOK
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -223,6 +233,15 @@ BEGIN
     CTEXT           "Static",IDC_SYNCSTATUS,7,7,143,24
 END
 
+IDD_MAPVIEW DIALOG  0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    CONTROL         "",IDC_SLIDER_ZOOM,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,18,17,61
+    PUSHBUTTON      "+",IDC_BUTTON_ZOOM_IN,7,3,15,14
+    PUSHBUTTON      "-",IDC_BUTTON_ZOOM_OUT,7,81,15,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -306,6 +325,14 @@ BEGIN
         RIGHTMARGIN, 180
         TOPMARGIN, 7
         BOTTOMMARGIN, 37
+    END
+
+    IDD_MAPVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
     END
 END
 #endif    // APSTUDIO_INVOKED
