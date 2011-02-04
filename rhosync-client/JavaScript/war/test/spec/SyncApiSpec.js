@@ -145,9 +145,9 @@ describe("Sync client API", function() {
 
 			var lampSwitchFsm = api.define('Lamp switch FSM', function(fsm){
 				fsm.state('Light is OFF')
-						.on('turn switch on').transitsTo('Light is ON')
+						.on('turn switch on').transitsTo('Light is ON');
 				fsm.state('Light is ON')
-						.on('turn switch off').transitsTo('Light is OFF')
+						.on('turn switch off').transitsTo('Light is OFF');
 			});
 
 			expect(lampSwitchFsm).toBeSet();
@@ -174,7 +174,7 @@ describe("Sync client API", function() {
 				fsm.state('Light is OFF')
 						.on('turn switch on').transitsTo('ON click sound produced');
 				fsm.state('ON click sound produced')
-						.immediateTransitsTo('Light is ON')
+						.immediateTransitsTo('Light is ON');
 				fsm.state('Light is ON')
 						.on('turn switch off').transitsTo('OFF click sound produced');
 				fsm.state('OFF click sound produced')
@@ -259,38 +259,101 @@ describe("Sync client API", function() {
 			expect(exceptionHappens).toEqual(true);
 		});
 
-		it("can fire entry actions", function() {
+		it("can fire actions properly", function() {
 
-			var actSpy = jasmine.createSpy('entry action spy');
+			var unknownInput = 'unknown input';
+			var knownInput = 'well known input w/o transition follows';
+			var turnOnInput = 'turn switch on';
+			var turnOffInput = 'turn switch off';
+
+			var stateOn = 'Light is ON';
+			var stateOff = 'Light is OFF';
+
+			var spyOnEntry = jasmine.createSpy('spy on entry action');
+			var spyOnExit = jasmine.createSpy('spy on exit action');
+			var spyOnInput = jasmine.createSpy('spy on input action');
+			var spyOnTransit = jasmine.createSpy('spy on transition action');
 
 			var lampSwitchFsm = api.define('Lamp switch FSM', function(fsm){
-				expect(fsm.state('some fake intact state w/o transitions').withEntryAction).toBeSet();
 
 				fsm.state('Light is OFF')
-						.on('turn switch on').transitsTo('Light is ON')
-						.withEntryAction('sample entry action', actSpy);
+						.on(turnOnInput).transitsTo(stateOn)
+						.withEntryAction('entry action1', spyOnEntry)
+						.withExitAction('exit action1', spyOnExit)
+						.withActionOnInput(knownInput, 'input action1', spyOnInput)
+						.withActionOnTransitTo(stateOff, 'transit action1', spyOnTransit)
+						.withActionOnTransitTo(stateOn, 'transit action1', spyOnTransit)
+						;
 
 				fsm.state('Light is ON')
-						.on('turn switch off').transitsTo('Light is OFF');
-			}).withInitialState('Light is OFF').reset();
+						.on(turnOffInput).transitsTo(stateOff)
+						.withEntryAction('entry action2', spyOnEntry)
+						.withExitAction('exit action2', spyOnExit)
+						.withActionOnInput(knownInput, 'input action3', spyOnInput)
+						.withActionOnTransitTo(stateOn, 'transit action2', spyOnTransit)
+						.withActionOnTransitTo(stateOff, 'transit action2', spyOnTransit)
+						;
+			});
 
+			var cntEntry = 0;
+			var cntExit = 0;
+			var cntInput = 0;
+			var cntTrans = 0;
 
-//			expect(lampSwitchFsm).toBeSet();
-//			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
-//
-//			lampSwitchFsm.inputWith('turn switch off');
-//			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
-//
-//			lampSwitchFsm.inputWith('turn switch on');
-//			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
-//
-//			lampSwitchFsm.inputWith('turn switch on');
-//			expect(lampSwitchFsm.currentState.name).toEqual('Light is ON');
-//
-//			lampSwitchFsm.inputWith('turn switch off');
-//			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
+			var reportCounts = function(logMsg) {
+				jasmine.log(logMsg);
+				jasmine.log('-- entry'); 		expect(spyOnEntry.callCount).toEqual(cntEntry);
+				jasmine.log('-- exit');  		expect(spyOnExit.callCount).toEqual(cntExit);
+				jasmine.log('-- input'); 		expect(spyOnInput.callCount).toEqual(cntInput);
+				jasmine.log('-- transition');	expect(spyOnTransit.callCount).toEqual(cntTrans);
+			};
+
+			reportCounts(stateOff+': initial state');
+
+			lampSwitchFsm.inputWith(unknownInput);
+			// nothing should happen
+			reportCounts(stateOff+': '+unknownInput);
+
+			lampSwitchFsm.inputWith(knownInput, 123);
+			cntInput++;
+			// still at the same state, but action happens
+			reportCounts(stateOff+': '+knownInput);
+			expect(spyOnInput).toHaveBeenCalledWith(123);
+
+			lampSwitchFsm.inputWith(turnOffInput);
+			// nothing should happen
+			reportCounts(stateOff+': '+turnOffInput);
+
+			lampSwitchFsm.inputWith(turnOnInput);
+			// three more actions should be performed:
+			// exit current state, transition to the new one, and entry to the new state
+			cntEntry++;
+			cntTrans++;
+			cntExit++;
+			reportCounts(stateOff+': '+turnOnInput);
+
+			lampSwitchFsm.inputWith(unknownInput);
+			// no changes should happen
+			reportCounts(stateOn+': '+unknownInput);
+
+			lampSwitchFsm.inputWith(knownInput, 123);
+			// still at the same state, but action happens
+			cntInput++;
+			reportCounts(stateOn+': '+knownInput);
+			expect(spyOnInput).toHaveBeenCalledWith(123);
+
+			lampSwitchFsm.inputWith(turnOnInput);
+			// nothing should happen
+			reportCounts(stateOn+': '+turnOnInput);
+
+			lampSwitchFsm.inputWith(turnOffInput);
+			// three more actions should be performed:
+			// exit current state, transition to the new one, and entry to the new state
+			cntEntry++;
+			cntTrans++;
+			cntExit++;
+			reportCounts(stateOn+': '+turnOffInput);
 		});
-
 	});
 
 	describe("Rhomobile.fsm.Input", function() {
@@ -325,11 +388,13 @@ describe("Sync client API", function() {
 			var transName1 = 'sample sample transition';
 
 			expect(inputInst.transitsTo).toBeSet();
-			var fsmCheck = inputInst.transitsTo(transName1);
+
+			var stateCheck = inputInst.transitsTo(transName1);
+			// state should be returned
+			expect(stateCheck).toEqual(stateInst);
 
 			expect(inputInst.transition).toBeSet();
 			expect(inputInst.transition).toEqual(transName1);
-			expect(fsmCheck).toEqual(fsmInst);
 		});
 
 	});
