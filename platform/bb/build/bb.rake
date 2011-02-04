@@ -86,24 +86,35 @@ def startsim(hidden=false)
   Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
 
-def load_to_sim
+def load_to_sim(is_wait)
   sim = $config["env"]["paths"][$bbver]["sim"]
   jde = $config["env"]["paths"][$bbver]["jde"]
 
-  cod_path = jde + "/simulator" + "/"+$outfilebase+".cod.pending"
+  #cod_path = jde + "/simulator" + "/"+$outfilebase+".cod.pending"
+  cod_path = File.join( $targetdir, $outfilebase+".cod.pending")
+
   puts "cod_path : #{cod_path}"
   
   command = jde + "/simulator/fledgecontroller.exe"
   args = []
   args << "/session="+sim
   args << "/execute=LoadCod(\"#{cod_path}\")"
-  res_line = ""
-  Jake.run2( command, args, {:directory => jde + "/simulator"} ) do |line| 
-    puts "fledgecontroller return:" + line;
-    res_line = line
-  end  
-  
-  return false if res_line && res_line.index("There is no Fledge instance running with session name")
+
+  while(true)  
+    res_line = ""
+    Jake.run2( command, args, {:directory => jde + "/simulator"} ) do |line| 
+      puts "fledgecontroller return:" + line;
+      res_line = line
+    end  
+
+    if res_line && res_line.index("There is no Fledge instance running with session name")    
+      return false unless is_wait
+      puts "wait for simulator..."
+    else
+      break
+    end
+  end
+
   
   args = []
   args << "/session="+sim
@@ -1017,21 +1028,36 @@ namespace "run" do
     task :testsim => ["config:bb"] do
       load_to_sim
     end
+
+    task :startsim => ["config:bb"] do
+      startsim
+    end  
+
+    task :stopmdsandsim_ex => ["config:bb"] do
+        
+        stopsim if $bbver[0].to_i < 5
+
+        stopmds
+    end  
+
   end
 
-  task :startsim => ["config:bb"] do
-    startsim
-  end  
-  
   desc "Builds everything, loads and starts bb sim and mds"
-  task :bb => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
+  task :bb => ["run:bb:stopmdsandsim_ex", "package:bb:production_sim"] do
     jde = $config["env"]["paths"][$bbver]["jde"]
     
-    cp_r File.join($targetdir,"/."), jde + "/simulator"
-    
     startmds
-    startsim #if !load_to_sim
-    
+
+    if $bbver[0].to_i < 5
+      cp_r File.join($targetdir,"/."), jde + "/simulator"
+      startsim 
+    elsif !load_to_sim(false)
+      cp_r File.join($targetdir,"/."), jde + "/simulator"
+      
+      startsim 
+      
+    end
+
     $stdout.flush
   end
 
