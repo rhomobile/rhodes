@@ -14,10 +14,6 @@ uint64 rho_math_pow2(int n)
     return ret;
 }
 
-#ifndef M_LN2
-#define M_LN2 ((double)0.69314718055994530942);
-#endif
-
 double rho_math_log2(double n)
 {
     return log(n)/M_LN2;
