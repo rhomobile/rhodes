@@ -101,46 +101,52 @@ def make_application_build_config_header_file
 end
 
 def make_application_build_config_java_file
-      file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/AppBuildConfig.java"
-      #return if FileUtils.uptodate?(file_name,[File.join($app_path, "build.yml")])
 
-      File.open(file_name, "w") do |f|
-        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-        #f.puts "// Generated #{Time.now.to_s}"
-        
-        f.puts "package com.rho;"
-        f.puts ""
-        f.puts "public class AppBuildConfig {"
-        
-        f.puts 'static final String keys[] = { ""'
-        $application_build_configs.keys.each do |key|
-          f.puts ',"'+key+'"'
-        end
-        f.puts '};'
-        f.puts ''
+    f = StringIO.new("", "w+")
+    f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+    #f.puts "// Generated #{Time.now.to_s}"
 
-        count = 1
+    f.puts "package com.rho;"
+    f.puts ""
+    f.puts "public class AppBuildConfig {"
 
-        f.puts 'static final String values[] = { ""'
-        $application_build_configs.keys.each do |key|
-          f.puts ',"'+$application_build_configs[key]+'"'
-          count = count + 1
-        end
-        f.puts '};'
-        f.puts ''
+    f.puts 'static final String keys[] = { ""'
+    $application_build_configs.keys.each do |key|
+      f.puts ',"'+key+'"'
+    end
+    f.puts '};'
+    f.puts ''
 
-        f.puts 'static final int APP_BUILD_CONFIG_COUNT = '+count.to_s + ';'
-        f.puts ''
-        f.puts 'public static String getItem(String key){'
-        f.puts '  for (int i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
-        f.puts '    if ( key.compareTo( keys[i]) == 0) {'
-        f.puts '      return values[i];'
-        f.puts '    }'
-        f.puts '  }'
-        f.puts '  return null;'
-        f.puts '}'
-        f.puts "}"
-      end
+    count = 1
+
+    f.puts 'static final String values[] = { ""'
+    $application_build_configs.keys.each do |key|
+      f.puts ',"'+$application_build_configs[key]+'"'
+      count = count + 1
+    end
+    f.puts '};'
+    f.puts ''
+
+    f.puts 'static final int APP_BUILD_CONFIG_COUNT = '+count.to_s + ';'
+    f.puts ''
+    f.puts 'public static String getItem(String key){'
+    f.puts '  for (int i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
+    f.puts '    if ( key.compareTo( keys[i]) == 0) {'
+    f.puts '      return values[i];'
+    f.puts '    }'
+    f.puts '  }'
+    f.puts '  return null;'
+    f.puts '}'
+    f.puts "}"
+
+    file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/AppBuildConfig.java"
+    f.rewind
+    content = f.read()
+    old_content = File.exists?(file_name) ? File.read(file_name) : ""
+  
+    File.open(file_name, "w"){|file| file.write(content)}  if old_content != content
+    
+    f.close
 end
 
 namespace "config" do
