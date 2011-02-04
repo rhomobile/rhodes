@@ -132,12 +132,20 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 		COMMAND_ID_HANDLER(IDC_BUTTON_ZOOM_IN, OnZoomIn)
 		COMMAND_ID_HANDLER(IDC_BUTTON_ZOOM_OUT, OnZoomOut)
+		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnTouch)
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnUntouch)
+		MESSAGE_HANDLER(WM_MOUSEMOVE, OnDrag)
+
 	END_MSG_MAP()
 
 public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSliderScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	LRESULT OnTouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -149,6 +157,10 @@ public:
 
 	void requestRedraw();
 
-
+	int mLastX;
+	int mLastY;
+	int mInitialX;
+	int mInitialY;
+	bool mIsPossibleClick;
 	rho_param* mParams;
 };
