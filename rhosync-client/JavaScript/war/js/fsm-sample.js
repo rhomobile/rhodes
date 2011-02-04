@@ -1,9 +1,12 @@
 
-Rhomobile.fsm.define("sample FSM", function(fsm){
+Rhomobile.fsm.define("sample FSM", function(/*Rhomobile.fsm.Machine*/fsm){
 
 	fsm.state('Logged out')
-			.on('login button click').transitTo('Login request sent')
-			.on('timeout happens').transitTo('Screensaver ont')
+			// to implement the Moore type of FSM
+			.immediateTransitsTo('Some state to transit immediately, w/o any input received')
+
+			.on('login button click').transitsTo('Login request sent')
+			.on('timeout happens').transitsTo('Screensaver ont')
 
 			.withEntryAction(/*comment*/'some tags here: and comment text', function(input)
 			{
@@ -27,8 +30,8 @@ Rhomobile.fsm.define("sample FSM", function(fsm){
 
 
 	fsm.state('Screensaver on')
-			.on('screen touch').transitTo('Logged out')
-			.on('button pressed').transitTo('Logged out')
+			.on('screen touch').transitsTo('Logged out')
+			.on('button pressed').transitsTo('Logged out')
 
 			.withEntryAction(/*comment*/'some tags here: and comment text', function(input)
 			{
@@ -44,8 +47,8 @@ Rhomobile.fsm.define("sample FSM", function(fsm){
 			{
 			})
 
-			.withActionOnTransitTo(/*ID*/'Logged out', /*comment*/'commented here', function(input)
+			.withActionOnTransitsTo(/*ID*/'Logged out', /*comment*/'commented here', function(input)
 			{
 			});
 
-}).initialState('Logged off');
+}).withInitialState('Logged off');
