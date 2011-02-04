@@ -78,6 +78,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 	class CKeyListener  implements KeyListener{
 
 		public boolean keyChar(char key, int status, int time) {
+			if ( m_bDisableInput )
+				return true;
+			
 	        if( key == Characters.ENTER ) {
 	        
 	        	return openLink();
@@ -86,6 +89,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			return false;
 		}
 		public boolean keyDown(int keycode, int time) {
+			if ( m_bDisableInput )
+				return true;
+			
 			int nKey = Keypad.key(keycode);
 			if ( nKey == Keypad.KEY_ESCAPE )
 			{
@@ -108,6 +114,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     class CTrackwheelListener implements TrackwheelListener{
 
 		public boolean trackwheelClick(int status, int time) {
+			if ( m_bDisableInput )
+				return true;
+
 			return openLink();
 			//return true;
 		}
@@ -773,6 +782,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 		}
 
     	protected boolean onTouchUnclick() {
+			if ( m_bDisableInput )
+				return true;
+    		
 			return openLink();
     	}
     	
@@ -1308,6 +1320,8 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	});
     }
 
+    boolean m_bDisableInput = false;
+    public boolean isInputDisabled(){ return m_bDisableInput; }
     public void processConnection(HttpConnection connection, Object e) 
     {
         // cancel previous request
@@ -1322,7 +1336,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         
         RHODESAPP().getSplashScreen().hide();
         
+        m_bDisableInput = true;
         m_oBrowserAdapter.processConnection(connection, e);
+        m_bDisableInput = false;
     }
 
     public static class PrimaryResourceFetchThread {//extends Thread {
