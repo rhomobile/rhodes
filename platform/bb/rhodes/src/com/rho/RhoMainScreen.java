@@ -1,5 +1,6 @@
 package com.rho;
 
+import rhomobile.RhodesApplication;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.ui.TouchEvent;
 import net.rim.device.api.ui.container.MainScreen;
@@ -9,6 +10,9 @@ public abstract class RhoMainScreen extends MainScreen {
 	protected abstract boolean onTouchUnclick();
 	
 	protected boolean touchEvent(TouchEvent message) {
+		if ( RhodesApplication.getInstance().isInputDisabled() )
+			return true;
+		
 		int nEvent = message.getEvent();
 		
 		if ( nEvent == TouchEvent.UNCLICK )
