@@ -61,6 +61,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    doRequest
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    loadUrl
  * Signature: (Ljava/lang/String;)V
  */
@@ -90,6 +98,22 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientationChanged
   (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    callUiCreatedCallback
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiCreatedCallback
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    callUiDestroyedCallback
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiDestroyedCallback
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService

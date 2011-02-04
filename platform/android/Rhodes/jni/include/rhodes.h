@@ -14,6 +14,56 @@ extern "C" void rho_nativethread_end(void *);
 std::string const &rho_root_path();
 std::string const &rho_apk_path();
 
+template <typename T>
+class jholder
+{
+public:
+    jholder(T obj) :m_object(obj) {}
+
+    jholder(jholder const &c)
+        :m_object(c.m_object)
+    {
+        if (m_object)
+            jnienv()->NewLocalRef(m_object);
+    }
+
+    ~jholder()
+    {
+        if (m_object)
+            jnienv()->DeleteLocalRef(m_object);
+    }
+
+    jholder &operator=(jholder const &rhs)
+    {
+        jholder copy(rhs);
+        swap(copy);
+        return *this;
+    }
+
+    T get() const {return m_object;}
+
+    T release()
+    {
+        T ret = m_object;
+        m_object = NULL;
+        return ret;
+    }
+
+    bool operator!() const {return !m_object;}
+
+private:
+    void swap(jholder &c)
+    {
+        std::swap(m_object, c.m_object);
+    }
+
+private:
+    T m_object;
+};
+
+typedef jholder<jobject> jhobject;
+typedef jholder<jstring> jhstring;
+
 namespace details
 {
 
@@ -27,27 +77,33 @@ struct rho_cast_helper<std::string, jstring>
 };
 
 template <>
-struct rho_cast_helper<jstring, char const *>
+struct rho_cast_helper<std::string, jhstring>
 {
-    jstring operator()(JNIEnv *env, char const *);
+    std::string operator()(JNIEnv *env, jhstring s) {return rho_cast_helper<std::string, jstring>()(env, s.get());}
 };
 
 template <>
-struct rho_cast_helper<jstring, char *>
+struct rho_cast_helper<jhstring, char const *>
 {
-    jstring operator()(JNIEnv *env, char *s) {return rho_cast_helper<jstring, char const *>()(env, s);}
+    jhstring operator()(JNIEnv *env, char const *);
+};
+
+template <>
+struct rho_cast_helper<jhstring, char *>
+{
+    jhstring operator()(JNIEnv *env, char *s) {return rho_cast_helper<jhstring, char const *>()(env, s);}
 };
 
 template <int N>
-struct rho_cast_helper<jstring, char [N]>
+struct rho_cast_helper<jhstring, char [N]>
 {
-    jstring operator()(JNIEnv *env, char (&s)[N]) {return rho_cast_helper<jstring, char const *>()(env, &s[0]);}
+    jhstring operator()(JNIEnv *env, char (&s)[N]) {return rho_cast_helper<jhstring, char const *>()(env, &s[0]);}
 };
 
 template <>
-struct rho_cast_helper<jstring, std::string>
+struct rho_cast_helper<jhstring, std::string>
 {
-    jstring operator()(JNIEnv *env, std::string const &s) {return rho_cast_helper<jstring, char const *>()(env, s.c_str());}
+    jhstring operator()(JNIEnv *env, std::string const &s) {return rho_cast_helper<jhstring, char const *>()(env, s.c_str());}
 };
 
 } // namespace details

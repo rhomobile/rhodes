@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.date = Time.now
   s.description = %q{Rhodes mobile framework}
   s.email = %q{dev@rhomobile.com}
-  s.extra_rdoc_files = ["README.textile", "LICENSE"]
+  s.extra_rdoc_files = ["README.md", "LICENSE"]
   files = Array.new
   IO.read("Manifest.txt").each_line {|x| files << x.chomp}
   s.files =  files

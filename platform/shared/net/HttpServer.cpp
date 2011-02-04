@@ -270,7 +270,7 @@ void CHttpServer::stop()
     // WARNING!!! It is not enough to just close listener on Android
     // to stop server. By unknown reason accept does not unblock if
     // it was closed in another thread. However, on iPhone it works
-    // right. To work around this, we create dummy sockect and connect
+    // right. To work around this, we create dummy socket and connect
     // to the listener. This surely unblock accept on listener and,
     // therefore, stop server thread (because m_active set to false).
     m_active = false;
@@ -365,6 +365,7 @@ bool CHttpServer::run()
         return false;
     
     m_active = true;
+    RHODESAPP().notifyLocalServerStarted();
     
     for(;;) {
         RAWTRACE("Waiting for connections...");

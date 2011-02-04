@@ -25,14 +25,8 @@ RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, co
 
     RAWLOG_INFO("alert_show_status");
 
-    jstring strMsg = rho_cast<jstring>(szMessage);
-    jstring strHide = rho_cast<jstring>(szHide);
-    jstring strTitle = rho_cast<jstring>(szTitle);
-
-    env->CallStaticVoidMethod(cls, mid, strTitle, strMsg, strHide);
-    env->DeleteLocalRef(strTitle);
-    env->DeleteLocalRef(strHide);
-    env->DeleteLocalRef(strMsg);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(szTitle).get(),
+        rho_cast<jhstring>(szMessage).get(), rho_cast<jhstring>(szHide).get());
 }
 
 RHO_GLOBAL void alert_show_popup(rho_param *p)
@@ -85,10 +79,6 @@ RHO_GLOBAL void alert_play_file(char* file_name, char *media_type)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "playFile", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
-    jstring objFileName = rho_cast<jstring>(file_name);
-    jstring objMediaType = media_type ? rho_cast<jstring>(media_type) : NULL;
-    env->CallStaticVoidMethod(cls, mid, objFileName, objMediaType);
-    env->DeleteLocalRef(objFileName);
-    if (objMediaType) env->DeleteLocalRef(objMediaType);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(file_name).get(), rho_cast<jhstring>(media_type).get());
 }
 

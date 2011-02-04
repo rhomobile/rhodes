@@ -166,6 +166,8 @@ public class RhodesService extends Service {
 	
 	public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
+	public native void callUiCreatedCallback();
+	public native void callUiDestroyedCallback();
 	public native void callActivationCallback(boolean active);
 	
 	public static native String getBuildConfig(String key);
@@ -363,7 +365,14 @@ public class RhodesService extends Service {
 		if (fullScreen) {
 			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+			RhodesActivity.setFullscreen(1);
 		}
+		else {
+			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+			RhodesActivity.setFullscreen(0);
+		}
+		//Utils.platformLog(TAG, "rhoconfig    full_screen = "+String.valueOf(fullScreen)+" ");
 	}
 	
 	private void initForegroundServiceApi() {
