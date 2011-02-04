@@ -1,32 +1,32 @@
 
 Rhomobile.fsm.define("sample FSM", function(/*Rhomobile.fsm.Machine*/fsm){
 
-	fsm.state('Logged out')
+	fsm.state('Logged out')/*>>state*/
 			// to implement the Moore type of FSM
-			.immediateTransitsTo('Some state to transit immediately, w/o any input received')
+			.immediateTransitsTo('Some state to transit immediately, w/o any input received')/*>>state*/
 
-			.on('login button click').transitsTo('Login request sent')
-			.on('timeout happens').transitsTo('Screensaver ont')
+			.on('login button click')/*>>input*/.transitsTo('Login request sent')/*>>state*/
+			.on('timeout happens')/*>>input*/.transitsTo('Screensaver ont')/*>>state*/
 
-			.withEntryAction(/*comment*/'some tags here: and comment text', function(input)
+			.withEntryAction(/*comment*/'some tags here: and comment text', function()
 			{
 				// enable login button
-			})
+			})/*>>state*/
 
-			.withExitAction(/*comment*/'login: disable button', function(input)
+			.withExitAction(/*comment*/'login: disable button', function()
 			{
 				// disable login button
-			})
+			})/*>>state*/
 
-			.withActionOnInput(/*ID*/'login button click', /*comment*/'backlight: turn on', function(input)
+			.withActionOnInput(/*inputName*/'login button click', /*comment*/'backlight: turn on', function(input)
 			{
 				// turn backlight on
-			})
+			})/*>>state*/
 
-			.withActionOnTransitTo(/*ID*/'Screensaver on', /*comment*/'backlight: turn off', function(input)
+			.withActionOnTransitTo(/*stateName*/'Screensaver on', /*comment*/'backlight: turn off', function(input)
 			{
 				// turn backlight off
-			});
+			})/*>>state*/;
 
 
 	fsm.state('Screensaver on')
