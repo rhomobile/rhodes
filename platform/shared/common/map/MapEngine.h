@@ -4,6 +4,22 @@
 #include "logging/RhoLog.h"
 #include "common/rhoparams.h"
 
+//#define RHO_MAP_DEBUG
+
+#ifdef RHO_MAP_DEBUG
+#   define RHO_MAP_TRACE(fmt) RAWTRACE(fmt)
+#   define RHO_MAP_TRACE1(fmt, arg1) RAWTRACE1(fmt, arg1)
+#   define RHO_MAP_TRACE2(fmt, arg1, arg2) RAWTRACE2(fmt, arg1, arg2)
+#   define RHO_MAP_TRACE3(fmt, arg1, arg2, arg3) RAWTRACE3(fmt, arg1, arg2, arg3)
+#   define RHO_MAP_TRACE4(fmt, arg1, arg2, arg3, arg4) RAWTRACE4(fmt, arg1, arg2, arg3, arg4)
+#else
+#   define RHO_MAP_TRACE(fmt)
+#   define RHO_MAP_TRACE1(fmt, arg1)
+#   define RHO_MAP_TRACE2(fmt, arg1, arg2)
+#   define RHO_MAP_TRACE3(fmt, arg1, arg2, arg3)
+#   define RHO_MAP_TRACE4(fmt, arg1, arg2, arg3, arg4)
+#endif
+
 namespace rho
 {
 namespace common
