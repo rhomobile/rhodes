@@ -394,7 +394,7 @@ Rhodes supports displaying a native looking 'toolbar'.
 
 The toolbar is a small space at the bottom of the screen, where the user can add buttons with associated actions. In Rhodes, these actions should be loading URLs. There are different methods for loading these URLs - you can either specify the 'callback:' prefix at the beginning of the URL (which will perform 'background' loading of the URL by the Rhodes core), or you can use url itself, without prefix (which will use the UI WebView element to load the URL - in this case pressing the toolbar button will cause the current page to reload and redraw).
 
-The toolbar supported on iPhone and Android.
+The toolbar supported on iPhone, Android and Windows Mobile.
 
 You can customize toolbar during runtime.
 
@@ -427,7 +427,15 @@ Each toolbar item can define next elements :
 * :icon - Relative path to toolbar item icon in your rhodes app (typically located in /public/images/)
 * :colored_icon => false - Optional argument which tells rhodes to use color icon in toolbar on iPhone instead of standard monochrome white icon (prepared from image alpha).
 
-Predefined actions are drawn using predefined icons, but that icons can be overridden by the user by specifying an :icon as shown in the example above. Icons that are defined must be black with a transparent background. Icons must be no more than 30x30 pixels and must be in .png format.
+Windows Mobile:
+
+* :width - optional, define width in pixels for separator element
+
+Predefined actions are drawn using predefined icons, but that icons can be overridden by the user by specifying an :icon as shown in the example above. Icons that are defined must be black with a transparent background. 
+
+iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format.
+Windows Mobile: Icons can be any size, but all icons should have same size. By default - 48x48
+
 In case of a user-defined action, either :icon or :label must be specified. If both are omitted, Rhodes will not add the button to the toolbar. If both are specified, the :icon will be drawn and the :label will be discarded.
 
 Behind the scenes, Rho::RhoApplication will detect the @@toolbar array in its initialize method and build the native toolbar through the following function:
@@ -450,6 +458,15 @@ To disable the toolbar entirely:
 
 As mentioned above, with recent versions of Rhodes you can create/remove toolbars/tabbars in runtime.
 
+Toolbar elements :
+
+* :background_color=>system_color - define custom background color
+
+Windows Mobile:
+
+* :mask_color=>0xFFFFFF  - image mask color(transparent color)
+* :view_height - optional, toolbar height. Must be bigger than image height
+
 Examples of creating toolbar:
 
 	:::ruby
@@ -469,6 +486,11 @@ Examples of removing toolbar:
 	:::ruby
 	require 'rho/rhotoolbar'
 	Rho::NativeToolbar.remove
+
+Windows Mobile: Create toolbar with image mask color and toolbar height
+	:::ruby	
+	Rho::NativeToolbar.create( :buttons => toolbar, 
+		:background_color => 0x0000FF, :mask_color => 0xFFFFFF, :view_height => 80)
 
 ### Sample
 Please find sample code in "NativeToolbarTest" in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/NativeToolbarTest/)
