@@ -41,6 +41,7 @@ public:
     ~CThreadQueue(void);
 
     virtual void addQueueCommand(IQueueCommand* pCmd);
+    virtual void addQueueCommandToFront(IQueueCommand* pCmd);
 	virtual void run();
 
 	void setPollInterval(int nInterval);
@@ -56,9 +57,12 @@ protected:
     virtual boolean isSkipDuplicateCmd() { return false; }
     virtual void onTimeout(){}
 
+    boolean isAlreadyExist(IQueueCommand *pCmd);
+
     void processCommands();
 
     void addQueueCommandInt(IQueueCommand* pCmd);
+    void addQueueCommandToFrontInt(IQueueCommand* pCmd);
 
     boolean isNoCommands();
 };

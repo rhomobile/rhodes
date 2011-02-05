@@ -199,6 +199,8 @@ def cc_compile(filename, objdir, additional = nil)
 
   args = get_def_args(filename)
   args << "-Wall"
+  args << "-Wextra"
+  args << "-Wno-unused"
   args += additional if additional.is_a? Array and not additional.empty?
   args << "-c"
   args << filename

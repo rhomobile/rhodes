@@ -51,13 +51,11 @@ private:
     class TilesCache
     {
     public:
+        typedef std::list<Tile> list;
         typedef std::list<Tile>::const_iterator iterator;
 
     public:
-        TilesCache clone() const;
-
-        iterator begin() const {return m_tiles.begin();}
-        iterator end() const {return m_tiles.end();}
+        list clone() const;
 
         bool empty() const {return m_tiles.empty();}
 
@@ -69,8 +67,7 @@ private:
 
     private:
         std::list<Tile> m_tiles;
-        std::map<String, iterator> m_by_coordinates;
-        std::map<uint64, iterator> m_by_time;
+        std::map<String, Tile *> m_by_coordinates;
     };
 
     class MapFetch : public CThreadQueue
@@ -176,9 +173,10 @@ public:
 
 private:
     String const &getMapUrl();
-    void setCoordinates(uint64 latitude, uint64 longitude);
+    void setCoordinates(int64 latitude, int64 longitude);
 
     IDrawingDevice *drawingDevice() const {return m_drawing_device;}
+    void redraw();
 
     void fetchTile(int zoom, uint64 latitude, uint64 longitude);
     void updateCache();
