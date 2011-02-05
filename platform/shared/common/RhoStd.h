@@ -176,6 +176,11 @@ public:
         addElement(item);
     }
 
+    void addToFront(const Type& item)
+    {
+        this->insert(this->begin(), item);
+    }
+
     Type removeFirst()
     {
         if ( VectorPtr<Type>::isEmpty() )
