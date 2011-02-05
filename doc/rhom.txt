@@ -299,7 +299,7 @@ Returns rhom object(s) based on the following arguments:
 	#
 	# :conditions 	(optional) hash of attribute/values to match
 	# 				supports sql fragment(i.e. "name like 'rhomobile') 
-	#				or sql fragment with binding 
+	#				or sql fragment with binding (you have to define :select with sql queries)
 	#				(i.e. ["name like ?", "'#{company#}'"])
 	# 				Note: use single comma around string values 
 	#
@@ -329,7 +329,7 @@ Returns rhom object(s) based on the following arguments:
 	accts[0].telephone 
 	  #=> nil
 
-**NOTE: Use SQL fragments with caution.  They are considerably slower than advanced queries [described below](/rhodes/rhom#advanced-queries).**
+**NOTE: Use SQL fragments with caution.  They are considerably slower than advanced queries [described below](/rhodes/rhom#advanced-queries). You also have to specify :select parameter.**
 
 #### Order Examples
 The `:order` argument accepts several forms:
@@ -783,10 +783,12 @@ If your application requires that the local database is encrypted on the filesys
 ### Blackberry Notes
 * Blackberry JDE >= 5.0: Uses built-in encryption library for SQLite database.
 
+**NOTE: Bulk sync is not supported in this mode.**
+
 * Any Blackberry Version: The user can turn on memory encryption (device memory and sdcard),  This policy can also can be enforced by the Blackberry enterprise server: <a href="http://docs.blackberry.com/en/admin/deliverables/3940/file_encryption_STO.pdf"/>
 
 **NOTE: In this case you have to use HSQLDB even on Blackberry device OS >= 5.0, because SQLite does not encrypt database file.  You can force Rhodes to use HSQLDB for all Blackberry OS versions by adding the following to `build.yml`:**
 
 	:::yaml
 	bb:   
-	  use_hsqldb: 1
+	  use_sqlite: 0
