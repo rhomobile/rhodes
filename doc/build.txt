@@ -372,15 +372,45 @@ Blackberry SDK for Mac doesn't come with simulators so far. So for now we would 
 
 ### Prerequisites
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
-* Load and install Blackberry JDE version 4.6.0 or higher and BlackBerry MDS Simulator from [here](http://na.blackberry.com/eng/developers/)
+* Load and install Blackberry JDE version 4.6.0 or higher(5.0 or higher recommended for simulator usage) from [here](http://na.blackberry.com/eng/developers/)
 * Read about Blackberry Browser limitations of CSS, HTML and JavaScript. Get relevant documentation from [here](http://na.blackberry.com/eng/support/docs/subcategories/?userType=21&category=BlackBerry+Browser).
 
 ### Build application using rhodes gem
 
 Before you build edit build.yml from the application directory. Set the bbver to the target BB OS that you are building for. For example:
 
-	bbver: 4.6
+	bbver: 5.0
 
+#### To build and run using Blackberry simulator 5.0 and higher
+Starting from  Blackberry JDE 5.0, simulator supports loading application cod-files to simulator without restart. This feature greatly improve Blackberry development perfomance.
+There are 2 possible scenarios available:
+
+* Load application cod-file manually using Simulator menu: 'File\Load Blackberry application or theme...'
+	:::term
+	$ rake run:bb:startsim
+	$ rake package:bb:production_sim
+	
+    In simulator window open menu: 'File\Load Blackberry application or theme...' and choose app cod-file:'<app_folder>/bin/target/<bb_ver>/<app_name.cod>'
+
+    After application modification:
+	    :::term
+	    $ rake package:bb:production_sim
+    And reload application cod-file in simulator using menu.
+
+* Use rake commands to reload app on simulator.
+	:::term
+	$ rake run:bbapp
+
+    Start application on simulator and DO NOT close application in simulator.
+    After application modification:
+	    :::term
+	    $ rake run:bbapp
+    
+    In case of simulator errors:
+    * Try load application cod-file manually.
+    * Try to uninstall application: select application icon on simulator and press Menu\Delete
+    * Close simulator and run clean.bat in simulator folder 
+       
 #### To build and run using Blackberry simulator
 
 Run in application root directory:
@@ -433,11 +463,6 @@ Run:
 
 	:::term
 	$ rake device:bb:production
-
-or
-	
-	:::term
-	rake device:bb:debug
 
 Built application will be available at `<application_directory>/bin/target`. For example, if you rake:bb:production, the files will be in a directory named for the SDK version, like /bin/target/4.6/ota-web. You should see many .cod files and a single .jad file.
 
