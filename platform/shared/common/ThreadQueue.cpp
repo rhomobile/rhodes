@@ -15,29 +15,43 @@ CThreadQueue::~CThreadQueue(void)
 {
 }
 
+boolean CThreadQueue::isAlreadyExist(IQueueCommand *pCmd)
+{
+    boolean bExist = false;
+    if ( isSkipDuplicateCmd() )
+    {
+        for (int i = 0; i < (int)m_stackCommands.size(); ++i)
+        {
+            if (m_stackCommands.get(i)->equals(*pCmd))
+            {
+                LOG(INFO) + "Command already exists in queue. Skip it.";
+                bExist = true;
+                break;
+            }
+        }
+    }
+
+    return bExist;
+}
+
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
     LOG(INFO) + "addCommand: " + pCmd->toString();
 
     synchronized(m_mxStackCommands);
 
-	boolean bExist = false;
-    if ( isSkipDuplicateCmd() )
-    {
-	    for ( int i = 0; i < (int)m_stackCommands.size(); i++ )
-	    {
-		    if ( m_stackCommands.get(i)->equals(*pCmd) )
-		    {
-                LOG(INFO) + "Command already exists in queue. Skip it.";
-			    bExist = true;
-			    break;
-		    }
-	    }
-    }
+    if ( !isAlreadyExist(pCmd) )
+        m_stackCommands.add(pCmd);
+}
 
-	if ( !bExist )
-		m_stackCommands.add(pCmd);
+void CThreadQueue::addQueueCommandToFrontInt(IQueueCommand *pCmd)
+{
+    LOG(INFO) + "addCommand to front: " + pCmd->toString();
 
+    synchronized(m_mxStackCommands);
+
+    if (!isAlreadyExist(pCmd))
+        m_stackCommands.addToFront(pCmd);
 }
 
 void CThreadQueue::addQueueCommand(IQueueCommand* pCmd)
@@ -48,6 +62,16 @@ void CThreadQueue::addQueueCommand(IQueueCommand* pCmd)
         processCommands();
     else if ( isAlive() )
 	    stopWait(); 
+}
+
+void CThreadQueue::addQueueCommandToFront(IQueueCommand* pCmd)
+{
+    addQueueCommandToFrontInt(pCmd);
+
+    if ( isNoThreadedMode() )
+        processCommands();
+    else if ( isAlive() )
+        stopWait();
 }
 
 void CThreadQueue::run()
