@@ -5,10 +5,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
+import android.widget.ZoomButtonsController;
 
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
@@ -16,17 +21,61 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
-public class MapView extends BaseActivity {
+public class MapView extends BaseActivity implements MapTouch {
 	
 	private static final String TAG = MapView.class.getSimpleName();
+	
+	private static final boolean ZOOM_ANIMATION_ENABLED = true;
+	
+	private static final int ZOOM_RESOLUTION = 50;
+	
+	private static final boolean ENABLE_MULTI_TOUCH = false;
 	
 	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".MapView";
 	
 	public native void setSize(long nativeDevice, int width, int height);
+	
+	public native int minZoom(long nativeDevice);
+	public native int maxZoom(long nativeDevice);
+	public native int zoom(long nativeDevice);
+	public native void setZoom(long nativeDevice, int zoom);
+	
+	public native void move(long nativeDevice, int dx, int dy);
+	
 	public native void paint(long nativeDevice, Canvas canvas);
 	public native void destroy(long nativeDevice);
 	
+	private TouchHandler mTouchHandler;
+	
+	private Touch mTouchFirst;
+	private Touch mTouchSecond;
+	private double mDistance;
+	private float mScale;
+	
+	private View mSurface;
+	private ZoomButtonsController mZoomController;
+	
 	private long mNativeDevice;
+	
+	private TouchHandler createTouchHandler() {
+		String className;
+		int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+		if (sdkVersion < Build.VERSION_CODES.ECLAIR)
+			className = "OneTouchHandler";
+		else
+			className = "MultiTouchHandler";
+		
+		try {
+			String pkgname = TouchHandler.class.getPackage().getName();
+			String fullName = pkgname + "." + className;
+			Class<? extends TouchHandler> klass =
+				Class.forName(fullName).asSubclass(TouchHandler.class);
+			return klass.newInstance();
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
 
 	public static void create(long nativeDevice) {
 		RhodesActivity r = RhodesActivity.getInstance();
@@ -40,16 +89,6 @@ public class MapView extends BaseActivity {
 		r.startActivity(intent);
 	}
 	
-	private static class Touch {
-		public float x;
-		public float y;
-		
-		public Touch(float x, float y) {
-			this.x = x;
-			this.y = y;
-		}
-	};
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,13 +97,17 @@ public class MapView extends BaseActivity {
 		if (mNativeDevice == 0)
 			throw new IllegalArgumentException();
 		
-		View view = new View(this) {
-			
-			private Touch[] mTouch = {null, null};
+		mTouchHandler = createTouchHandler();
+		mTouchHandler.setMapTouch(this);
+		
+		FrameLayout pv = new FrameLayout(this);
+		setContentView(pv);
+		
+		mSurface = new View(this) {
 			
 			@Override
 			protected void dispatchDraw(Canvas canvas) {
-				super.dispatchDraw(canvas);
+				//super.dispatchDraw(canvas);
 				paint(mNativeDevice, canvas);
 			}
 			
@@ -75,73 +118,37 @@ public class MapView extends BaseActivity {
 					setSize(mNativeDevice, w, h);
 			}
 			
-			private void dumpEvent(MotionEvent event) {
-			   String names[] = { "DOWN" , "UP" , "MOVE" , "CANCEL" , "OUTSIDE" ,
-			      "POINTER_DOWN" , "POINTER_UP" , "7?" , "8?" , "9?" };
-			   StringBuilder sb = new StringBuilder();
-			   int action = event.getAction();
-			   int actionCode = action & MotionEvent.ACTION_MASK;
-			   sb.append("event ACTION_" ).append(names[actionCode]);
-			   if (actionCode == MotionEvent.ACTION_POINTER_DOWN
-			         || actionCode == MotionEvent.ACTION_POINTER_UP) {
-			      sb.append("(pid " ).append(
-			      action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
-			      sb.append(")" );
-			   }
-			   sb.append("[" );
-			   for (int i = 0; i < event.getPointerCount(); i++) {
-			      sb.append("#" ).append(i);
-			      sb.append("(pid " ).append(event.getPointerId(i));
-			      sb.append(")=" ).append((int) event.getX(i));
-			      sb.append("," ).append((int) event.getY(i));
-			      if (i + 1 < event.getPointerCount())
-			         sb.append(";" );
-			   }
-			   sb.append("]" );
-			   Log.d(TAG, sb.toString());
+			@Override
+			protected void onDetachedFromWindow() {
+				mZoomController.setVisible(false);
 			}
 			
 			@Override
 			public boolean onTouchEvent (MotionEvent event) {
-				dumpEvent(event);
-
-				/*
-				int action = event.getAction();
-				int actionCode = action & MotionEvent.ACTION_MASK;
+				mZoomController.setVisible(true);
 				
-				if (actionCode == MotionEvent.ACTION_POINTER_DOWN ||
-						actionCode == MotionEvent.ACTION_UP) {
-					int pointerId = action >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-			      	if (actionCode == MotionEvent.ACTION_POINTER_UP)
-			      		mTouch[pointerId] = null;
-			      	if (actionCode == MotionEvent.ACTION_POINTER_DOWN)
-			      		mTouch[pointerId] = new Touch(event.getX(idx));
-				}
+				if (mTouchHandler.handleTouch(event))
+					return true;
 				
-				switch (actionCode) {
-				case MotionEvent.ACTION_DOWN:
-					for (int i = 0; i < mTouch.length; ++i)
-						mTouch[i] = null;
-				case MotionEvent.ACTION_POINTER_DOWN:
-					for (int i = 0; i < event.getPointerCount(); ++i) {
-						int pointerId = event.getPointerId(i);
-						float x = event.getX(i);
-						float y = event.getY(i);
-						mTouch[pointerId] = new Touch(x, y);
-					}
-					break;
-				case MotionEvent.ACTION_POINTER_UP:
-					for (int i = 0; i < event.getPointerCount(); ++i) {
-						int pointerId = event.getPointerId(i);
-						
-					}
-				}
-				*/
-				
-				return true;
+				return super.onTouchEvent(event);
 			}
 		};
-		setContentView(view);
+		
+		pv.addView(mSurface, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		
+		mZoomController = new ZoomButtonsController(mSurface);
+		mZoomController.setAutoDismissed(false);
+		mZoomController.setVisible(true);
+		mZoomController.setOnZoomListener(new ZoomButtonsController.OnZoomListener() {
+			
+			@Override
+			public void onZoom(boolean zoomIn) {
+				zoomAnimated(zoomIn ? 1 : -1);
+			}
+			
+			@Override
+			public void onVisibilityChanged(boolean visible) {}
+		});
 	}
 	
 	@Override
@@ -155,6 +162,48 @@ public class MapView extends BaseActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+	
+	public int zoom(int n) {
+		int min = minZoom(mNativeDevice);
+		int max = maxZoom(mNativeDevice);
+		int zoom = zoom(mNativeDevice);
+		zoom += n;
+		if (zoom < min) zoom = min;
+		if (zoom > max) zoom = max;
+		
+		mZoomController.setZoomOutEnabled(zoom > min);
+		mZoomController.setZoomInEnabled(zoom < max);
+		return zoom;
+	}
+	
+	public void zoomAnimated(int n) {
+		int zoom = zoom(n);
+		
+		if (!ZOOM_ANIMATION_ENABLED)
+			setZoom(mNativeDevice, zoom);
+		else {
+			final int finalZoom = zoom;
+			
+			float from = 1f;
+			float to = from * (n > 0 ? 2f : 0.5f);
+			Animation anim = new ScaleAnimation(from, to, from, to,
+					Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+			anim.setDuration(400);
+			anim.setFillAfter(false);
+			anim.setAnimationListener(new Animation.AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {}
+				@Override
+				public void onAnimationRepeat(Animation animation) {}
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					setZoom(mNativeDevice, finalZoom);
+				}
+			});
+
+			mSurface.startAnimation(anim);
+		}
 	}
 	
 	public void drawImage(Canvas canvas, int x, int y, Bitmap bm) {
@@ -171,7 +220,7 @@ public class MapView extends BaseActivity {
 	public void redraw() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				getWindow().getDecorView().invalidate();
+				mSurface.invalidate();
 			}
 		}, false);
 	}
@@ -186,5 +235,78 @@ public class MapView extends BaseActivity {
 	
 	public static void destroyImage(Bitmap bm) {
 		bm.recycle();
+	}
+
+	@Override
+	public void touchDown(Touch first, Touch second) {
+		mTouchFirst = first;
+		mTouchSecond = second;
+		if (ENABLE_MULTI_TOUCH) {
+			if (first != null && second != null) {
+				mDistance = Math.sqrt(Math.pow(first.x - second.x, 2) +
+						Math.pow(first.y - second.y, 2));
+				mScale = 1f;
+			}
+		}
+	}
+
+	@Override
+	public void touchUp(Touch first, Touch second) {
+		mTouchFirst = first;
+		mTouchSecond = second;
+		if (ENABLE_MULTI_TOUCH) {
+			if (ZOOM_ANIMATION_ENABLED) {
+				if (first != null && second != null) {
+					double newDistance = Math.sqrt(Math.pow(first.x - second.x, 2) +
+							Math.pow(first.y - second.y, 2));
+					int n = (int)((newDistance - mDistance)/ZOOM_RESOLUTION);
+					int zoom = zoom(n);
+					setZoom(mNativeDevice, zoom);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void touchMove(Touch first, Touch second) {
+		if (first == null || second == null) {
+			// Move
+			Touch t = first == null ? second : first;
+			Touch prev = first == null ? mTouchSecond : mTouchFirst;
+			
+			int dx = (int)(prev.x - t.x);
+			int dy = (int)(prev.y - t.y);
+			prev.x = t.x;
+			prev.y = t.y;
+			
+			if (dx != 0 || dy != 0)
+				move(mNativeDevice, dx, dy);
+		}
+		
+		if (ENABLE_MULTI_TOUCH) {
+			if (first != null && second != null) {
+				double oldDistance = Math.sqrt(Math.pow(mTouchFirst.x - mTouchSecond.x, 2) +
+						Math.pow(mTouchFirst.y - mTouchSecond.y, 2));
+				double newDistance = Math.sqrt(Math.pow(first.x - second.x, 2) +
+						Math.pow(first.y - second.y, 2));
+				
+				if (ZOOM_ANIMATION_ENABLED) {
+					float newScale = mScale * (float)Math.pow(2, newDistance - oldDistance);
+					Animation anim = new ScaleAnimation(mScale, newScale, mScale, newScale,
+							Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+					anim.setDuration(400);
+					anim.setFillAfter(true);
+					mSurface.startAnimation(anim);
+				}
+				else {
+					int n = (int)((newDistance - oldDistance)/ZOOM_RESOLUTION);
+					int zoom = zoom(n);
+					setZoom(mNativeDevice, zoom);
+				}
+				
+				mTouchFirst = first;
+				mTouchSecond = second;
+			}
+		}
 	}
 }

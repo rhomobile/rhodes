@@ -9,12 +9,54 @@ extern "C" {
 #endif
 #undef com_rhomobile_rhodes_mapview_MapView_DEBUG
 #define com_rhomobile_rhodes_mapview_MapView_DEBUG 0L
+#undef com_rhomobile_rhodes_mapview_MapView_DEBUG
+#define com_rhomobile_rhodes_mapview_MapView_DEBUG 1L
 /*
  * Class:     com_rhomobile_rhodes_mapview_MapView
  * Method:    setSize
  * Signature: (JII)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
+  (JNIEnv *, jobject, jlong, jint, jint);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    minZoom
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_minZoom
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    maxZoom
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_maxZoom
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    zoom
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_zoom
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    setZoom
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setZoom
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    move
+ * Signature: (JII)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_move
   (JNIEnv *, jobject, jlong, jint, jint);
 
 /*
