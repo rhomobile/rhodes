@@ -197,6 +197,28 @@ describe("Sync client API", function() {
 			expect(lampSwitchFsm.currentState.name).toEqual('Light is OFF');
 		});
 
+		it("can be rendered as a graph in a DOT notation", function() {
+
+			var lampSwitchFsm = api.define('Lamp switch FSM', function(fsm){
+				expect(fsm.state('some fake intact state w/o transitions').immediateTransitsTo).toBeSet();
+
+				fsm.state('Light is OFF')
+						.on('turn switch on').transitsTo('ON click sound produced');
+				fsm.state('ON click sound produced')
+						.immediateTransitsTo('Light is ON');
+				fsm.state('Light is ON')
+						.on('turn switch off').transitsTo('OFF click sound produced');
+				fsm.state('OFF click sound produced')
+						.immediateTransitsTo('Light is OFF');
+			}).withInitialState('Light is OFF').reset();
+
+			var dot = lampSwitchFsm.renderAsDot();
+			expect(dot).toBeSet();
+			expect(dot.length).toBeSet();
+			expect(dot.length).toBeGreaterThan("graph".length);
+			jasmine.log(dot);
+		});
+
 	});
 
 	describe("Rhomobile.fsm.State", function() {
