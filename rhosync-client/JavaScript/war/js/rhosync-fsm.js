@@ -93,6 +93,26 @@ if (Rhomobile) { Rhomobile.fsm = function(){
 		return this;
 	};
 
+	kls.prototype._renderStatesAsDot = function() {
+		var dot = "";
+		var states = this.states;
+		for(var name in states) {
+			if(states.hasOwnProperty(name)) {
+				dot += states[name]._renderAsDot(states[name] == this.initialState ? 'color=green' : null);
+			}
+		}
+		return dot;
+	};
+
+	kls.prototype.renderAsDot = function() {
+		var dot = 'digraph fsm {\n'
+				+'  label = "' +this.name +'";\n'
+				+'  node [style=filled];\n'
+				+this._renderStatesAsDot()
+				+'}';
+		return dot;
+	};
+
 	var klass_Machine = kls;
 
 	// === State ===========================================
@@ -218,6 +238,41 @@ if (Rhomobile) { Rhomobile.fsm = function(){
 		return this;
 	};
 
+
+	kls.prototype._renderInputsAsDot = function() {
+		var dot = "";
+		var inputs = this.inputs;
+		if(this.immediateTransitionState) {
+			dot += '  "' +this.name +'" -> "' +this.immediateTransitionState +'" [color=blue];\n';
+		}
+		for(var name in inputs) {
+			if(inputs.hasOwnProperty(name)) {
+				dot += inputs[name]._renderAsDot(this.name);
+			}
+		}
+		return dot;
+	};
+
+	kls.prototype._renderAsDot = function(addStyle) {
+		var dot = '\n';
+		var attrs = 'label="' +this.name +'"' +(addStyle ? ', ' +addStyle : '');
+
+		var noInputs = true;
+		for(var name in this.inputs) {
+			if(this.inputs.hasOwnProperty(name)) {
+				noInputs = false;
+				break;
+			}
+		}
+		attrs += (noInputs && !this.immediateTransitionState) ? ', color=red' : '';
+		attrs += this.immediateTransitionState ? ', color=blue, fillcolor=lightblue' : '';
+
+		dot += ('  "' +this.name +'" [' +attrs +'];\n');
+		dot += this._renderInputsAsDot();
+		dot += '\n';
+		return dot;
+	};
+
 	var klass_State = kls;
 
 	// === Input ===========================================
@@ -233,6 +288,9 @@ if (Rhomobile) { Rhomobile.fsm = function(){
 		return this.state;
 	};
 
+	kls.prototype._renderAsDot = function(stateName) {
+		return '  "' +stateName +'" -> "' +this.transition +'" [label="' +this.name +'"];\n';
+	};
 	var klass_Input = kls;
 
 	// === Public members ==================================
