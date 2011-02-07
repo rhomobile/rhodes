@@ -66,7 +66,7 @@ public:
     AndroidMapDevice(rho_param *p);
     ~AndroidMapDevice();
 
-    void attach(jobject jDevice) {m_jdevice = jDevice;}
+    void attach(JNIEnv *env, jobject jDevice);
 
     rho_param *params() const {return m_params;}
 
@@ -91,17 +91,21 @@ private:
 AndroidImage::AndroidImage(jobject bitmap)
     :m_count(new int(1)), m_bitmap(new jobject(bitmap))
 {
+    RHO_MAP_TRACE("AndroidImage: ctor start");
     JNIEnv *env = jnienv();
     env->NewGlobalRef(bitmap);
     env->DeleteLocalRef(bitmap);
     init(env);
+    RHO_MAP_TRACE("AndroidImage: ctor finish");
 }
 
 AndroidImage::AndroidImage(int *count, jobject *bitmap)
     :m_count(count), m_bitmap(bitmap)
 {
+    RHO_MAP_TRACE("AndroidImage: private ctor start");
     ++*m_count;
     init(jnienv());
+    RHO_MAP_TRACE("AndroidImage: private ctor finish");
 }
 
 void AndroidImage::init(JNIEnv *env)
@@ -119,6 +123,7 @@ void AndroidImage::init(JNIEnv *env)
 
 AndroidImage::~AndroidImage()
 {
+    RHO_MAP_TRACE("AndroidImage: dtor start");
     if (--*m_count == 0)
     {
         JNIEnv *env = jnienv();
@@ -133,6 +138,7 @@ AndroidImage::~AndroidImage()
         delete m_bitmap;
         delete m_count;
     }
+    RHO_MAP_TRACE("AndroidImage: dtor finish");
 }
 
 AndroidImage *AndroidImage::clone()
@@ -145,7 +151,7 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
     if (!image)
         return;
 
-    //RHO_MAP_TRACE3("drawImage: x=%d, y=%d, image=%p", x, y, image);
+    RHO_MAP_TRACE3("drawImage: x=%d, y=%d, image=%p", x, y, image);
 
     jobject bitmap = ((AndroidImage*)image)->bitmap();
 
@@ -156,11 +162,13 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
     if (!mid) return;
 
     env->CallVoidMethod(m_device, mid, m_canvas, x, y, bitmap);
+
+    RHO_MAP_TRACE("drawImage done");
 }
 
 void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
 {
-    //RHO_MAP_TRACE4("drawText: x=%d, y=%d, text=%s, color=%d", x, y, text.c_str(), color);
+    RHO_MAP_TRACE4("drawText: x=%d, y=%d, text=%s, color=%d", x, y, text.c_str(), color);
 
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
@@ -170,27 +178,42 @@ void AndroidDrawingContext::drawText(int x, int y, String const &text, int color
 
     env->CallVoidMethod(m_device, mid, m_canvas, x, y,
         rho_cast<jhstring>(text).get(), color);
+
+    RHO_MAP_TRACE("drawText done");
 }
 
 AndroidMapDevice::AndroidMapDevice(rho_param *p)
     :m_params(rho_param_dup(p)), m_mapview(NULL), m_jdevice(NULL)
 {
+    RHO_MAP_TRACE("AndroidMapDevice: ctor start");
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(J)V");
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid, (jlong)this);
+    RHO_MAP_TRACE("AndroidMapDevice: ctor finish");
 }
 
 AndroidMapDevice::~AndroidMapDevice()
 {
+    RHO_MAP_TRACE("AndroidMapDevice: dtor start");
     rho_param_free(m_params);
+    if (m_jdevice)
+        jnienv()->DeleteGlobalRef(m_jdevice);
+    RHO_MAP_TRACE("AndroidMapDevice: dtor finish");
+}
+
+void AndroidMapDevice::attach(JNIEnv *env, jobject jDevice)
+{
+    RHO_MAP_TRACE2("AndroidMapDevice: attach m_jdevice=%p, jDevice=%p", m_jdevice, jDevice);
+    m_jdevice = env->NewGlobalRef(jDevice);
+    RHO_MAP_TRACE("AndroidMapDevice: attach done");
 }
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path)
 {
-    //RHO_MAP_TRACE1("createImage: %s", path.c_str());
+    RHO_MAP_TRACE1("createImage: %s", path.c_str());
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
@@ -201,13 +224,13 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path)
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(path).get());
     IDrawingImage *image = new AndroidImage(bitmap);
 
-    //RHO_MAP_TRACE1("createImage: return image=%p", image);
+    RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
 }
 
 IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
 {
-    //RHO_MAP_TRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
+    RHO_MAP_TRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
@@ -222,53 +245,53 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get());
     IDrawingImage *image = new AndroidImage(bitmap);
 
-    //RHO_MAP_TRACE1("createImage: return image=%p", image);
+    RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
 }
 
 IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
 {
-    //RHO_MAP_TRACE1("cloneImage: image=%p", image);
+    RHO_MAP_TRACE1("cloneImage: image=%p", image);
     IDrawingImage *cloned = image ? ((AndroidImage *)image)->clone() : NULL;
-    //RHO_MAP_TRACE1("cloneImage: return image=%p", cloned);
+    RHO_MAP_TRACE1("cloneImage: return image=%p", cloned);
     return cloned;
 }
 
 void AndroidMapDevice::destroyImage(IDrawingImage *image)
 {
-    //RHO_MAP_TRACE1("destroyImage: image=%p", image);
+    RHO_MAP_TRACE1("destroyImage: image=%p", image);
     delete image;
-    //RHO_MAP_TRACE("destroyImage done");
+    RHO_MAP_TRACE("destroyImage done");
 }
 
 void AndroidMapDevice::requestRedraw()
 {
-    //RHO_MAP_TRACE("requestRedraw");
+    RHO_MAP_TRACE1("requestRedraw: m_jdevice=%p", m_jdevice);
 
-    if (!m_jdevice)
-        return;
+    if (m_jdevice)
+    {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        if (!cls) return;
+        jmethodID mid = getJNIClassMethod(env, cls, "redraw", "()V");
+        if (!mid) return;
+        env->CallVoidMethod(m_jdevice, mid);
+    }
 
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
-    if (!cls) return;
-    jmethodID mid = getJNIClassMethod(env, cls, "redraw", "()V");
-    if (!mid) return;
-    env->CallVoidMethod(m_jdevice, mid);
-
-    //RHO_MAP_TRACE("requestRedraw done");
+    RHO_MAP_TRACE("requestRedraw done");
 }
 
 void AndroidMapDevice::paint(jobject canvas)
 {
-    //RHO_MAP_TRACE("paint");
+    RHO_MAP_TRACE1("paint: m_jdevice=%p", m_jdevice);
 
-    if (!m_mapview)
-        return;
+    if (m_mapview)
+    {
+        std::auto_ptr<AndroidDrawingContext> context(new AndroidDrawingContext(m_jdevice, canvas));
+        m_mapview->paint(context.get());
+    }
 
-    std::auto_ptr<AndroidDrawingContext> context(new AndroidDrawingContext(m_jdevice, canvas));
-    m_mapview->paint(context.get());
-
-    //RHO_MAP_TRACE("paint done");
+    RHO_MAP_TRACE("paint done");
 }
 
 } // namespace map
@@ -306,76 +329,88 @@ static rhomap::IMapView *mapview(JNIEnv *env, jlong nativeDevice)
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
-  (JNIEnv *env, jobject jDevice, jlong nativeDevice, jint width, jint height)
+  (JNIEnv *env, jobject, jobject jDevice, jlong nativeDevice, jint width, jint height)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setSize: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
     rhomap::IMapView *mv = d->mapView();
     if (!mv) {
         mv = rho_map_create(d->params(), d, width, height);
         d->setMapView(mv);
-        d->attach(jDevice);
+        d->attach(env, jDevice);
     }
     if (mv)
         mv->setSize(width, height);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setSize: finish");
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_minZoom
   (JNIEnv *env, jobject, jlong nativeDevice)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_minZoom: start");
+    jint ret = 0;
     rhomap::IMapView *mv = mapview(env, nativeDevice);
-    if (!mv)
-        return 0;
+    if (mv)
+        ret = mv->minZoom();
 
-    return mv->minZoom();
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_minZoom: finish");
+    return ret;
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_maxZoom
   (JNIEnv *env, jobject, jlong nativeDevice)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_maxZoom: start");
+    jint ret = 0;
     rhomap::IMapView *mv = mapview(env, nativeDevice);
-    if (!mv)
-        return 0;
+    if (mv)
+        ret = mv->maxZoom();
 
-    return mv->maxZoom();
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_maxZoom: finish");
+    return ret;
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_zoom
   (JNIEnv *env, jobject, jlong nativeDevice)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_zoom: start");
+    jint ret = 0;
     rhomap::IMapView *mv = mapview(env, nativeDevice);
-    if (!mv)
-        return 0;
+    if (mv)
+        ret = mv->zoom();
 
-    return mv->zoom();
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_zoom: finish");
+    return ret;
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setZoom
   (JNIEnv *env, jobject, jlong nativeDevice, jint zoom)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setZoom: start");
     rhomap::IMapView *mv = mapview(env, nativeDevice);
-    if (!mv)
-        return;
-
-    mv->setZoom(zoom);
+    if (mv)
+        mv->setZoom(zoom);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setZoom: finish");
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_move
   (JNIEnv *env, jobject, jlong nativeDevice, jint dx, jint dy)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_move: start");
     rhomap::IMapView *mv = mapview(env, nativeDevice);
-    if (!mv)
-        return;
-
-    mv->move(dx, dy);
+    if (mv)
+        mv->move(dx, dy);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_move: finish");
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
   (JNIEnv *env, jobject, jlong nativeDevice, jobject canvas)
 {
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_paint: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
-    if (!d)
-        return;
-    d->paint(canvas);
+    if (d)
+        d->paint(canvas);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_paint: finish");
 }
 
 RHO_GLOBAL void mapview_close();
