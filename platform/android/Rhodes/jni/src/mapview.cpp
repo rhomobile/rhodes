@@ -67,10 +67,11 @@ public:
     ~AndroidMapDevice();
 
     void attach(JNIEnv *env, jobject jDevice);
+    void setPinImage(JNIEnv *env, jobject bitmap);
 
     rho_param *params() const {return m_params;}
 
-    void setMapView(IMapView *mv) {m_mapview = mv;}
+    void setMapView(IMapView *mv);
     IMapView *mapView() const {return m_mapview;}
 
     IDrawingImage* createImage(String const &path);
@@ -86,6 +87,7 @@ private:
     rho_param *m_params;
     IMapView *m_mapview;
     jobject m_jdevice;
+    std::auto_ptr<IDrawingImage> m_pin_image;
 };
 
 AndroidImage::AndroidImage(jobject bitmap)
@@ -199,8 +201,9 @@ AndroidMapDevice::~AndroidMapDevice()
 {
     RHO_MAP_TRACE("AndroidMapDevice: dtor start");
     rho_param_free(m_params);
+    JNIEnv *env = jnienv();
     if (m_jdevice)
-        jnienv()->DeleteGlobalRef(m_jdevice);
+        env->DeleteGlobalRef(m_jdevice);
     RHO_MAP_TRACE("AndroidMapDevice: dtor finish");
 }
 
@@ -209,6 +212,25 @@ void AndroidMapDevice::attach(JNIEnv *env, jobject jDevice)
     RHO_MAP_TRACE2("AndroidMapDevice: attach m_jdevice=%p, jDevice=%p", m_jdevice, jDevice);
     m_jdevice = env->NewGlobalRef(jDevice);
     RHO_MAP_TRACE("AndroidMapDevice: attach done");
+}
+
+void AndroidMapDevice::setMapView(IMapView *mv)
+{
+    RHO_MAP_TRACE("AndroidMapDevice: setMapView: start");
+    m_mapview = mv;
+    if (m_mapview && m_pin_image.get())
+        m_mapview->setPinImage(m_pin_image.get());
+    RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
+}
+
+void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
+{
+    RHO_MAP_TRACE("AndroidMapDevice: setPinImage: start");
+    m_pin_image.reset(new AndroidImage(bitmap));
+    IMapView *mv = mapView();
+    if (mv)
+        mv->setPinImage(m_pin_image.get());
+    RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path)
@@ -342,6 +364,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
     if (mv)
         mv->setSize(width, height);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setSize: finish");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinImage
+  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinImage: start");
+    rhomap::AndroidMapDevice *d = device(env, nativeDevice);
+    d->setPinImage(env, bitmap);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinImage: finish");
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_minZoom

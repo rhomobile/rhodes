@@ -62,6 +62,14 @@ class Annotation
 {
 public:
     Annotation(String const &title, String const &subtitle,
+        double latitude, double longitude, String const &address,
+        String const &url)
+        :m_title(title), m_subtitle(subtitle), m_resolved(true),
+        m_latitude(latitude), m_longitude(longitude),
+        m_address(address), m_url(url)
+    {}
+
+    Annotation(String const &title, String const &subtitle,
         double latitude, double longitude, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
         m_latitude(latitude), m_longitude(longitude),
@@ -132,6 +140,8 @@ public:
     virtual bool handleClick(int x, int y) = 0;
 
     virtual void paint(IDrawingContext *device) = 0;
+
+    virtual void setPinImage(IDrawingImage *pin) = 0;
 };
 
 class GeoCodingCallback

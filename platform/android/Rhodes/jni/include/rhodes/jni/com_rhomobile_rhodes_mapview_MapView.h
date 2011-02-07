@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
 
 /*
  * Class:     com_rhomobile_rhodes_mapview_MapView
+ * Method:    setPinImage
+ * Signature: (JLandroid/graphics/Bitmap;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinImage
+  (JNIEnv *, jobject, jlong, jobject);
+
+/*
+ * Class:     com_rhomobile_rhodes_mapview_MapView
  * Method:    minZoom
  * Signature: (J)I
  */
