@@ -379,15 +379,6 @@ Creates a new rhom object and assigns given attributes, or initializes an empty 
 	@account.name 
 	  #=> "ABC Inc."
 
-### `save`
-Saves the current rhom object to the database.
-
-	:::ruby
-	@account = Account.new(
-	  {"name" => "some new record", "industry" => "electronics"}
-	)
-	@account.save
-
 ### `create(attributes)`
 Creates a new rhom object and saves to the database. 
 
@@ -438,6 +429,8 @@ Set a notification to be called when the sync is complete for this model.  This 
 ### `update_attributes(attributes)`
 Updates the current rhom object's attributes and saves it to the database
 
+**NOTE: This is the fastest way to add or update item attributes.**
+
 	:::ruby
 	@account = Account.find(
 	  :all, 
@@ -448,6 +441,15 @@ Updates the current rhom object's attributes and saves it to the database
 	)
 	@account.industry   
 	  #=> "Technology"
+
+### `save`
+Saves the current rhom object to the database.
+
+	:::ruby
+	@account = Account.new(
+	  {"name" => "some new record", "industry" => "electronics"}
+	)
+	@account.save
 
 ### `can_modify`
 Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process.  If it is, you should disable editing of the object.  `can_modify` could return true, for example, on a new local record that was created and sent to the RhoSync application, but no response has been received yet.
@@ -792,3 +794,27 @@ If your application requires that the local database is encrypted on the filesys
 	:::yaml
 	bb:   
 	  use_sqlite: 0
+	  
+## Perfomance Tips
+* All database modification operations can be slow, especially on big databases. So optimize item modification - prepare data and call create/update_attributes once
+* Use Model.create to insert item to database
+* Use update_attributes to add or modify item attributes
+* To insert/update multiple items/models use database transaction
+
+        db = ::Rho::RHO.get_src_db('Model')
+        db.start_transaction
+        begin
+          items.each do |item|
+            # create hash of attribute/value pairs
+            data = {
+              :field1 => item['value1'], 
+              :field2 => item['value2'] 
+            } 
+            # Creates a new Model object and saves it
+            new_item = Model.create(data)
+          end
+         db.commit
+        rescue
+         db.rollback
+        end
+* Do not put a lot of code to Model files. All Models are loaded at startup, so it may decrease startup perfomance
