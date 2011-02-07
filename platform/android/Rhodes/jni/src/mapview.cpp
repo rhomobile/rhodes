@@ -6,6 +6,36 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "AndroidMapEngine"
 
+#define RHO_MAP_DISABLE_TRACE
+#ifdef RHO_MAP_DISABLE_TRACE
+
+#   ifdef RHO_MAP_TRACE
+#   undef RHO_MAP_TRACE
+#   endif
+#   define RHO_MAP_TRACE(...)
+
+#   ifdef RHO_MAP_TRACE1
+#   undef RHO_MAP_TRACE1
+#   endif
+#   define RHO_MAP_TRACE1(...)
+
+#   ifdef RHO_MAP_TRACE2
+#   undef RHO_MAP_TRACE2
+#   endif
+#   define RHO_MAP_TRACE2(...)
+
+#   ifdef RHO_MAP_TRACE3
+#   undef RHO_MAP_TRACE3
+#   endif
+#   define RHO_MAP_TRACE3(...)
+
+#   ifdef RHO_MAP_TRACE4
+#   undef RHO_MAP_TRACE4
+#   endif
+#   define RHO_MAP_TRACE4(...)
+
+#endif /* #ifdef RHO_MAP_DISABLE_TRACE */
+
 namespace rho
 {
 namespace common
