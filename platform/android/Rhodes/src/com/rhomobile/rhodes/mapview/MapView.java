@@ -15,6 +15,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ZoomButtonsController;
 
+import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -34,6 +35,8 @@ public class MapView extends BaseActivity implements MapTouch {
 	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".MapView";
 	
 	public native void setSize(MapView javaDevice, long nativeDevice, int width, int height);
+	
+	public native void setPinImage(long nativeDevice, Bitmap pin);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -96,6 +99,9 @@ public class MapView extends BaseActivity implements MapTouch {
 		mNativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
 		if (mNativeDevice == 0)
 			throw new IllegalArgumentException();
+		
+		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
+		setPinImage(mNativeDevice, pin);
 		
 		mTouchHandler = createTouchHandler();
 		mTouchHandler.setMapTouch(this);

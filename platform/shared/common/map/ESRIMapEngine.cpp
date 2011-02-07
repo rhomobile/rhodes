@@ -161,8 +161,6 @@ ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
 ESRIMapView::MapFetch::~MapFetch()
 {
     stop(1000);
-    delete m_net_request;
-    m_net_request = NULL;
 }
 
 void ESRIMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
@@ -274,10 +272,10 @@ void ESRIMapView::CacheUpdate::processCommand(IQueueCommand *c)
 
     // Coordinates of the most bottom-right tile visible on the screen
     int64 latEnd = latBegin;
-    while (latEnd < latBegin + h) latEnd += ts;
+    while (latEnd < latBegin + (int64)h) latEnd += ts;
     if (latEnd - ts/2 < latitude + h/2) latEnd += ts;
     int64 lonEnd = lonBegin;
-    while (lonEnd < lonBegin + w) lonEnd += ts;
+    while (lonEnd < lonBegin + (int64)w) lonEnd += ts;
     if (lonEnd - ts/2 < longitude + w/2) lonEnd += ts;
     RHO_MAP_TRACE2("CacheUpdate: latEnd=%lld, lonEnd=%lld", latEnd, lonEnd);
 
@@ -546,11 +544,17 @@ void ESRIMapView::addAnnotation(Annotation const &ann)
 {
     if (ann.resolved())
     {
+        RHO_MAP_TRACE("Add resolved annotation");
         m_annotations.addElement(ann);
         redraw();
     }
-    else
+    else if (!ann.address().empty())
+    {
+        RHO_MAP_TRACE1("Resolve annotation: address=%s", ann.address().c_str());
         m_geo_coding->resolve(ann.address(), new AnnotationResolved(this, ann));
+    }
+    else
+        RAWLOG_ERROR("Attempt to add annotation with empty address");
 }
 
 Annotation const *ESRIMapView::getAnnotation(int x, int y)
@@ -597,6 +601,42 @@ bool ESRIMapView::handleClick(int x, int y)
     return false;
 }
 
+void ESRIMapView::setPinImage(IDrawingImage *pin)
+{
+    m_pin = pin;
+}
+
+void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
+{
+    m_map_fetch->fetchTile(getMapUrl(), zoom, latitude, longitude);
+}
+
+void ESRIMapView::updateCache()
+{
+    m_cache_update->updateCache();
+}
+
+void ESRIMapView::redraw()
+{
+    m_drawing_device->requestRedraw();
+}
+
+int64 ESRIMapView::toScreenCoordinateX(double n)
+{
+    int64 v = (int64)degreesToPixelsX(n, m_zoom);
+    int64 center = toCurrentZoom(m_longitude, m_zoom);
+    int64 begin = center - m_width/2;
+    return v - begin;
+}
+
+int64 ESRIMapView::toScreenCoordinateY(double n)
+{
+    int64 v = (int64)degreesToPixelsY(n, m_zoom);
+    int64 center = toCurrentZoom(m_latitude, m_zoom);
+    int64 begin = center - m_height/2;
+    return v - begin;
+}
+
 void ESRIMapView::paint(IDrawingContext *context)
 {
     paintBackground(context);
@@ -609,6 +649,12 @@ void ESRIMapView::paint(IDrawingContext *context)
 
     for (TilesCache::iterator it = cache.begin(), lim = cache.end(); it != lim; ++it)
         paintTile(context, *it);
+
+    for (annotations_list_t::iterator it = m_annotations.begin(), lim = m_annotations.end(); it != lim; ++it)
+        paintAnnotation(context, *it);
+
+    if (m_selected_annotation)
+        paintCallout(context, *m_selected_annotation);
 }
 
 void ESRIMapView::paintBackground(IDrawingContext *context)
@@ -673,19 +719,29 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
     }
 }
 
-void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
+void ESRIMapView::paintAnnotation(IDrawingContext *context, Annotation const &ann)
 {
-    m_map_fetch->fetchTile(getMapUrl(), zoom, latitude, longitude);
+    if (!ann.resolved())
+        return;
+    if (!m_pin)
+        return;
+
+    int pinWidth = m_pin->width();
+    int pinHeight = m_pin->height();
+
+    int64 x = toScreenCoordinateX(ann.longitude());
+    if (x + pinWidth/2 < 0 || x - pinWidth/2 > m_width)
+        return;
+    int64 y = toScreenCoordinateY(ann.latitude());
+    if (y + pinHeight/2 < 0 || y - pinHeight/2 > m_height)
+        return;
+
+    context->drawImage((int)x, (int)y, m_pin);
 }
 
-void ESRIMapView::updateCache()
+void ESRIMapView::paintCallout(IDrawingContext *context, Annotation const &ann)
 {
-    m_cache_update->updateCache();
-}
-
-void ESRIMapView::redraw()
-{
-    m_drawing_device->requestRedraw();
+    // TODO:
 }
 
 } // namespace map

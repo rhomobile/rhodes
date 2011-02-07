@@ -103,7 +103,7 @@ private:
 
     private:
         ESRIMapView *m_mapview;
-        net::INetRequest *m_net_request;
+        std::auto_ptr<net::INetRequest> m_net_request;
     };
 
     friend class CacheUpdate;
@@ -171,6 +171,8 @@ public:
 
     void paint(IDrawingContext *context);
 
+    void setPinImage(IDrawingImage *pin);
+
 private:
     String const &getMapUrl();
     void setCoordinates(int64 latitude, int64 longitude);
@@ -183,11 +185,16 @@ private:
 
     void paintBackground(IDrawingContext *context);
     void paintTile(IDrawingContext *context, Tile const &tile);
+    void paintAnnotation(IDrawingContext *context, Annotation const &ann);
+    void paintCallout(IDrawingContext *context, Annotation const &ann);
 
     CMutex &tilesCacheLock() {return m_tiles_cache_mtx;}
     TilesCache &tilesCache() {return m_tiles_cache;}
 
     Annotation const *getAnnotation(int x, int y);
+
+    int64 toScreenCoordinateX(double n);
+    int64 toScreenCoordinateY(double n);
 
 private:
     IDrawingDevice *m_drawing_device;
@@ -216,6 +223,8 @@ private:
 
     CMutex m_tiles_cache_mtx;
     TilesCache m_tiles_cache;
+
+    IDrawingImage *m_pin;
 };
 
 class ESRIMapEngine : public IMapEngine

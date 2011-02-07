@@ -26,6 +26,7 @@ public:
 
     int getInt(const char* name);
     uint64 getUInt64(const char* name);
+    double getDouble(const char* name);
     const char* getString(const char* name);
     const char* getString();
 
