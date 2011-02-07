@@ -9,15 +9,19 @@ extern "C" {
 #endif
 #undef com_rhomobile_rhodes_mapview_MapView_DEBUG
 #define com_rhomobile_rhodes_mapview_MapView_DEBUG 0L
-#undef com_rhomobile_rhodes_mapview_MapView_DEBUG
-#define com_rhomobile_rhodes_mapview_MapView_DEBUG 1L
+#undef com_rhomobile_rhodes_mapview_MapView_ZOOM_ANIMATION_ENABLED
+#define com_rhomobile_rhodes_mapview_MapView_ZOOM_ANIMATION_ENABLED 1L
+#undef com_rhomobile_rhodes_mapview_MapView_ZOOM_RESOLUTION
+#define com_rhomobile_rhodes_mapview_MapView_ZOOM_RESOLUTION 50L
+#undef com_rhomobile_rhodes_mapview_MapView_ENABLE_MULTI_TOUCH
+#define com_rhomobile_rhodes_mapview_MapView_ENABLE_MULTI_TOUCH 0L
 /*
  * Class:     com_rhomobile_rhodes_mapview_MapView
  * Method:    setSize
- * Signature: (JII)V
+ * Signature: (Lcom/rhomobile/rhodes/mapview/MapView;JII)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
-  (JNIEnv *, jobject, jlong, jint, jint);
+  (JNIEnv *, jobject, jobject, jlong, jint, jint);
 
 /*
  * Class:     com_rhomobile_rhodes_mapview_MapView
