@@ -33,7 +33,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	
 	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".MapView";
 	
-	public native void setSize(long nativeDevice, int width, int height);
+	public native void setSize(MapView javaDevice, long nativeDevice, int width, int height);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -115,7 +115,7 @@ public class MapView extends BaseActivity implements MapTouch {
 			protected void onSizeChanged(int w, int h, int oldW, int oldH) {
 				super.onSizeChanged(w, h, oldW, oldH);
 				if (w != oldW || h != oldH)
-					setSize(mNativeDevice, w, h);
+					setSize(MapView.this, mNativeDevice, w, h);
 			}
 			
 			@Override

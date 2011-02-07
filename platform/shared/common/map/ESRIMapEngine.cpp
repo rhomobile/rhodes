@@ -267,20 +267,22 @@ void ESRIMapView::CacheUpdate::processCommand(IQueueCommand *c)
 
     // Coordinates of the most top-left tile visible on the screen
     uint64 tileIndex = latitude <= h/2 ? 0 : (latitude - h/2)/ts;
-    uint64 latBegin = tileIndex*ts + ts/2;
+    int64 latBegin = tileIndex*ts + ts/2;
     tileIndex = longitude <= w/2 ? 0 : (longitude - w/2)/ts;
-    uint64 lonBegin = tileIndex*ts + ts/2;
-    RHO_MAP_TRACE2("CacheUpdate: latBegin=%llu, lonBegin=%llu", latBegin, lonBegin);
+    int64 lonBegin = tileIndex*ts + ts/2;
+    RHO_MAP_TRACE2("CacheUpdate: latBegin=%lld, lonBegin=%lld", latBegin, lonBegin);
 
     // Coordinates of the most bottom-right tile visible on the screen
-    uint64 latEnd = latBegin;
-    while (latEnd < latBegin + h + ts) latEnd += ts;
-    uint64 lonEnd = lonBegin;
-    while (lonEnd < lonBegin + w + ts) lonEnd += ts;
-    RHO_MAP_TRACE2("CacheUpdate: latEnd=%llu, lonEnd=%llu", latEnd, lonEnd);
+    int64 latEnd = latBegin;
+    while (latEnd < latBegin + h) latEnd += ts;
+    if (latEnd - ts/2 < latitude + h/2) latEnd += ts;
+    int64 lonEnd = lonBegin;
+    while (lonEnd < lonBegin + w) lonEnd += ts;
+    if (lonEnd - ts/2 < longitude + w/2) lonEnd += ts;
+    RHO_MAP_TRACE2("CacheUpdate: latEnd=%lld, lonEnd=%lld", latEnd, lonEnd);
 
-    for (uint64 lat = latEnd; lat >= latBegin; lat -= ts)
-        for (uint64 lon = lonEnd; lon >= lonBegin; lon -= ts)
+    for (int64 lat = latEnd; lat >= latBegin; lat -= ts)
+        for (int64 lon = lonEnd; lon >= lonBegin; lon -= ts)
         {
             uint64 latitude = normalize_latitude(lat);
             uint64 longitude = normalize_longitude(lon);
