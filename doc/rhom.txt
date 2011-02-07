@@ -796,6 +796,10 @@ If your application requires that the local database is encrypted on the filesys
 	  use_sqlite: 0
 	  
 ## Perfomance Tips
+* Before test application for perfomance set warning log level in rhoconfig.txt(MUST set for Blackberry testing):
+
+        MinSeverity = 3
+    
 * All database modification operations can be slow, especially on big databases. So optimize item modification - prepare data and call create/update_attributes once
 * Use Model.create to insert item to database
 * Use update_attributes to add or modify item attributes
