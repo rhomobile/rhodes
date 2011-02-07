@@ -25,7 +25,7 @@ public class SqliteStorage implements IDBStorage
 	private int m_nInsideTransaction = 0;
 	private boolean m_bNeedProcessCallback = false;
 	private IDBCallback m_dbCallback;
-	private Hashtable m_mapStatements = new Hashtable();
+	//private Hashtable m_mapStatements = new Hashtable();
 	
 	public SqliteStorage()
 	{
@@ -95,7 +95,7 @@ public class SqliteStorage implements IDBStorage
 				String strCommand = strStatement.length() > 6 ? strStatement.substring(0, 6) : ""; 
 				boolean bSelect = strCommand.equalsIgnoreCase("SELECT") || strCommand.equalsIgnoreCase("PRAGMA");
 				
-				Statement st = (Statement)m_mapStatements.get(strStatement);
+				Statement st = null;//(Statement)m_mapStatements.get(strStatement);
 				boolean bCachedStatement = st != null;
 				if ( st == null )
 					st = m_db.createStatement(strStatement);
@@ -108,11 +108,11 @@ public class SqliteStorage implements IDBStorage
 						st.prepare();
 	                	strStatement = st.getTail();
 	                	
-	                	if ( strStatement == null || strStatement.length() == 0 )
+	                	/*if ( strStatement == null || strStatement.length() == 0 )
 	                	{
 	                		m_mapStatements.put(strStatementOrig, st);
 	                		bCachedStatement = true;
-	                	}
+	                	}*/
 	                	
 					}else
 						strStatement = "";
@@ -350,7 +350,7 @@ public class SqliteStorage implements IDBStorage
 	{
 		try
 		{
-			Enumeration values = m_mapStatements.elements();
+			/*Enumeration values = m_mapStatements.elements();
 			while( values.hasMoreElements() )
 			{
 				Statement st = (Statement)values.nextElement();
@@ -361,7 +361,7 @@ public class SqliteStorage implements IDBStorage
 				{
 					LOG.ERROR("close statement failed.", exc);
 				}
-			}
+			}*/
 			if ( m_db!= null )
 				m_db.close();
 			
