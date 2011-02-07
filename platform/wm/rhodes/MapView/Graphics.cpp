@@ -17,6 +17,9 @@
 
 #else
 
+
+extern "C" HWND getMainWnd();
+
 #undef DEFINE_GUID
 #define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
 	EXTERN_C const GUID name \
@@ -61,38 +64,37 @@ DrawingImageImpl::DrawingImageImpl(const char* path) {
 	init(path, NULL, 0, NULL);
 }
 
-DrawingImageImpl::DrawingImageImpl(IImage* img) {
-	init(NULL, NULL, 0, img);	
+DrawingImageImpl::DrawingImageImpl(WMBitmap* bitmap) {
+	init(NULL, NULL, 0, bitmap);	
 }
 
 
 static int ourDrawingImageID = 0;
 
 DrawingImageImpl::~DrawingImageImpl() {
-	RHO_MAP_TRACE1("DrawingImage destroy with ID = %d", ourDrawingImageID);
-	if (mImage != NULL) {
-		mImage->Release();
-		mImage = NULL;
+	RHO_MAP_TRACE1("DrawingImage destroy with ID = %d", mID);
+	if (mBitmap != NULL) {
+		mBitmap->release();
+		mBitmap = NULL;
 	}
 }
 
-void DrawingImageImpl::init(const char* path, void const *p, int size, IImage* img) {
-	RHO_MAP_TRACE1("DrawingImage create with ID = %d", ++ourDrawingImageID);
+void DrawingImageImpl::init(const char* path, void const *p, int size, WMBitmap* bitmap) {
+	mID = ++ourDrawingImageID;
+	RHO_MAP_TRACE1("DrawingImage create with ID = %d", mID);
 
 	IImagingFactory *pImgFactory = NULL;
 	IImage *pImage = NULL;
 
 	mWidth = 0;
 	mHeight = 0;
-	mImage = NULL;
+	mBitmap = NULL;
 
-	if (img != NULL) {
-		mImage = img;
-		mImage->AddRef();
-		ImageInfo imgInfo;
-		mImage->GetImageInfo(&imgInfo);
-		mWidth = imgInfo.Width;
-		mHeight = imgInfo.Height;
+	if (bitmap != NULL) {
+		mBitmap = bitmap;
+		mBitmap->addRef();
+		mWidth = bitmap->width();
+		mHeight = bitmap->height();
 		return;
 	}
 
@@ -125,13 +127,14 @@ void DrawingImageImpl::init(const char* path, void const *p, int size, IImage* i
 			}
 			if (SUCCEEDED(res))
 			{
-				mImage = pImage;
+				IImage* mimage = pImage;
 				ImageInfo imgInfo;
-				mImage->GetImageInfo(&imgInfo);
+				mimage->GetImageInfo(&imgInfo);
 				mWidth = imgInfo.Width;
 				mHeight = imgInfo.Height;
 				RHO_MAP_TRACE2("Drawing Image was created with WIDTH = %d, HEIGHT = %d", mWidth, mHeight);
-				//pImage->Release();
+				mBitmap = new WMBitmap(mimage);
+				mimage->Release();
 			}
 			else {
 				err_out("Image not created !");
@@ -149,21 +152,17 @@ void DrawingImageImpl::init(const char* path, void const *p, int size, IImage* i
 }
 
 IDrawingImage* DrawingImageImpl::clone() {
-	return new DrawingImageImpl(mImage);
+	RHO_MAP_TRACE1("clone DrawingImage from ID = %d", mID);
+	return new DrawingImageImpl(mBitmap);
 }
 
 
 void DrawingImageImpl::draw(HDC hdc, int x, int y) {
 	RHO_MAP_TRACE2("draw DrawingImage with x = %d, y = %d", x, y);
-	if (mImage == NULL) {
+	if (mBitmap == NULL) {
 		return;
 	}
-	RECT r;
-	r.left = x;
-	r.right = x+mWidth;
-	r.top = y;
-	r.bottom = y+mHeight;
-	mImage->Draw(hdc, &r, NULL);
+	mBitmap->draw(hdc, x, y);
 }
 
 
@@ -230,3 +229,91 @@ void DrawingContextImpl::drawLine(int x1, int y1, int x2, int y2, int color) {
 }
 
 
+WMBitmap::WMBitmap(IImage* img/*unsigned short* buf, int width, int height, int row_byte_size*/) {
+	mReferenceCount = 1;
+
+	ImageInfo imgInfo;
+	img->GetImageInfo(&imgInfo);
+	mWidth = imgInfo.Width;
+	mHeight = imgInfo.Height;
+
+
+	HDC windowDC = ::GetDC(getMainWnd());
+	HGDIOBJ resObj;
+	BITMAP bmp;
+
+	mMemoryDC = CreateCompatibleDC(windowDC);
+
+	int mRowByteSize = mWidth*2;
+	if (((mWidth*2) & 0x3) != 0) {
+		mRowByteSize = ((mWidth*2) & (~0x3)) + 0x4;
+	}
+
+	char	buf[sizeof(BITMAPINFOHEADER) + 100];
+	BITMAPINFO* bmi = (BITMAPINFO*)buf;
+
+	bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi->bmiHeader.biWidth = mWidth;
+	bmi->bmiHeader.biHeight = mHeight;
+	bmi->bmiHeader.biPlanes = 1;
+	bmi->bmiHeader.biBitCount = 16;
+	bmi->bmiHeader.biCompression = BI_BITFIELDS;
+	bmi->bmiHeader.biSizeImage = mRowByteSize  * mHeight;
+	bmi->bmiHeader.biXPelsPerMeter = 0;
+	bmi->bmiHeader.biYPelsPerMeter = 0;
+	bmi->bmiHeader.biClrUsed = 0;
+	bmi->bmiHeader.biClrImportant = 0;
+
+	*((DWORD*)&(bmi->bmiColors[0])) = 0x1F << 11;
+	*((DWORD*)&(bmi->bmiColors[1])) = 0x3F << 5;
+	*((DWORD*)&(bmi->bmiColors[2])) = 0x1F;
+
+	mMemoryBitmap = CreateDIBSection(	mMemoryDC,
+		bmi,
+		DIB_RGB_COLORS,
+		(void**)&mBuf,
+		NULL,
+		0);
+
+	resObj = ::SelectObject(mMemoryDC, mMemoryBitmap);
+
+	::GetObject( mMemoryBitmap, sizeof(BITMAP), &bmp );
+
+	RECT r;
+	r.left = 0;
+	r.right = mWidth;
+	r.top = 0;
+	r.bottom = mHeight;
+	img->Draw(mMemoryDC, &r, NULL);
+}
+
+WMBitmap::~WMBitmap() {
+	if (mMemoryBitmap != NULL) {
+		DeleteObject(mMemoryBitmap);
+		mMemoryBitmap = NULL;
+	}
+	if (mMemoryDC != NULL) {
+		DeleteDC(mMemoryDC);
+		mMemoryDC = NULL;
+	}
+}
+
+void WMBitmap::draw(HDC hdc, int x, int y) {
+	::BitBlt(	hdc,
+		x, y,
+		mWidth, mHeight,
+		mMemoryDC,
+		0,0,
+		SRCCOPY);
+}
+
+void WMBitmap::addRef() {
+	mReferenceCount++;
+}
+
+void WMBitmap::release() {
+	mReferenceCount--;
+	if (mReferenceCount <= 0) {
+		delete this;
+	}
+}

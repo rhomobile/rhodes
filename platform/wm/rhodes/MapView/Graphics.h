@@ -65,11 +65,35 @@ public:
 };
 */
 
+class WMBitmap {
+public:
+	WMBitmap(IImage* img);
+	virtual public ~WMBitmap();
+
+	virtual void draw(HDC hdc, int x, int y);
+
+	virtual void addRef();
+	virtual void release();
+
+	virtual int width() const {return mWidth;}
+	virtual int height() const {return mHeight;}
+
+private:
+	HDC mMemoryDC;
+	HBITMAP mMemoryBitmap;
+	unsigned short* mBuf; // do not delete it - it controlled by Bitmap
+	int mWidth;
+	int mHeight;
+	int mRowByteSize;
+	int mReferenceCount;
+};
+
+
 class DrawingImageImpl : public IDrawingImage {
 public:
 	DrawingImageImpl(void const *p, int size);
 	DrawingImageImpl(const char* path);
-	DrawingImageImpl(IImage* img);
+	DrawingImageImpl(WMBitmap* bitmap);
 	virtual ~DrawingImageImpl();
 	
 	virtual void draw(HDC hdc, int x, int y);
@@ -80,10 +104,12 @@ public:
 	virtual int height() const {return mHeight;}
 
 private:
-	void init(const char* path, void const *p, int size, IImage* img);
-	IImage* mImage;
+	void init(const char* path, void const *p, int size, WMBitmap* bitmap);
+	//IImage* mImage;
+	WMBitmap* mBitmap;
 	int mWidth;
 	int mHeight;
+	int mID;
 };
 
 
