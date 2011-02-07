@@ -84,7 +84,7 @@ namespace rhomap = rho::common::map;
 rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, int width, int height)
 {
     if (!p || p->type != RHO_PARAM_HASH)
-		rho_ruby_raise_argerror("Wrong input parameter (expect Hash)");
+        rho_ruby_raise_argerror("Wrong input parameter (expect Hash)");
 
     rho_param *provider = NULL;
     rho_param *settings = NULL;
@@ -127,7 +127,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     if (settings)
     {
         if (settings->type != RHO_PARAM_HASH)
-			rho_ruby_raise_argerror("Wrong 'settings' value (expect Hash)");
+            rho_ruby_raise_argerror("Wrong 'settings' value (expect Hash)");
 
         for (int i = 0, lim = settings->v.hash->size; i < lim; ++i)
         {
@@ -212,12 +212,10 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     ann_list_t ann_list;
     if (annotations)
     {
-        RHO_MAP_TRACE("Annotations: parse");
         if (annotations->type != RHO_PARAM_ARRAY)
             rho_ruby_raise_argerror("Wrong 'annotations' value (expect Array)");
         for (int i = 0, lim = annotations->v.array->size; i < lim; ++i)
         {
-            RHO_MAP_TRACE1("Annotations: get %d", i);
             rho_param *ann = annotations->v.array->value[i];
             if (!ann)
                 continue;
@@ -240,12 +238,10 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 if (!name || !value)
                     continue;
 
-                RHO_MAP_TRACE3("Annotations: get %d/%d: %s", i, j, name);
                 if (value->type != RHO_PARAM_STRING)
                     rho_ruby_raise_argerror("Wrong annotation value");
 
                 char *v = value->v.string;
-                RHO_MAP_TRACE4("Annotations: got %d/%d: %s = %s", i, j, name, v);
                 if (strcasecmp(name, "latitude") == 0)
                 {
                     latitude = strtod(v, NULL);
@@ -257,10 +253,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     longitude_set = true;
                 }
                 else if (strcasecmp(name, "street_address") == 0)
-                {
-                    RHO_MAP_TRACE1("Annotations: set address=\"%s\"", v);
                     address = v;
-                }
                 else if (strcasecmp(name, "title") == 0)
                     title = v;
                 else if (strcasecmp(name, "subtitle") == 0)
@@ -269,7 +262,6 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     url = v;
             }
 
-            RHO_MAP_TRACE1("Annotations: after all, address is \"%s\"", address);
             if (latitude_set && longitude_set)
                 ann_list.push_back(ann_t(title, subtitle, latitude, longitude, url));
             else
@@ -301,10 +293,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     mapview->setScrollEnabled(scroll_enabled);
 
     for (ann_list_t::const_iterator it = ann_list.begin(), lim = ann_list.end(); it != lim; ++it)
-    {
-        RHO_MAP_TRACE1("Annotations: add annotation: address=%s", it->address().c_str());
         mapview->addAnnotation(*it);
-    }
 
     return mapview;
 }
