@@ -27,6 +27,8 @@ DEFINE_GUID(CLSID_ImagingFactory, 0x327abda8,0x072b,0x11d3,0x9d,0x7b,0x00,0x00,0
 
 #endif
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "WM MapView Graphics"
 
 
 
@@ -50,10 +52,12 @@ static void err_out(const char* text) {
 
 
 DrawingImageImpl::DrawingImageImpl(void const *p, int size) {
+	RHO_MAP_TRACE1("create DrawingImage with buffer length = %d", size);
 	init(NULL, p, size, NULL);
 }
 
 DrawingImageImpl::DrawingImageImpl(const char* path) {
+	RHO_MAP_TRACE1("create DrawingImage with filename = %s", path);
 	init(path, NULL, 0, NULL);
 }
 
@@ -62,7 +66,10 @@ DrawingImageImpl::DrawingImageImpl(IImage* img) {
 }
 
 
+static int ourDrawingImageID = 0;
+
 DrawingImageImpl::~DrawingImageImpl() {
+	RHO_MAP_TRACE1("DrawingImage destroy with ID = %d", ourDrawingImageID);
 	if (mImage != NULL) {
 		mImage->Release();
 		mImage = NULL;
@@ -70,6 +77,8 @@ DrawingImageImpl::~DrawingImageImpl() {
 }
 
 void DrawingImageImpl::init(const char* path, void const *p, int size, IImage* img) {
+	RHO_MAP_TRACE1("DrawingImage create with ID = %d", ++ourDrawingImageID);
+
 	IImagingFactory *pImgFactory = NULL;
 	IImage *pImage = NULL;
 
@@ -121,6 +130,7 @@ void DrawingImageImpl::init(const char* path, void const *p, int size, IImage* i
 				mImage->GetImageInfo(&imgInfo);
 				mWidth = imgInfo.Width;
 				mHeight = imgInfo.Height;
+				RHO_MAP_TRACE2("Drawing Image was created with WIDTH = %d, HEIGHT = %d", mWidth, mHeight);
 				//pImage->Release();
 			}
 			else {
@@ -144,6 +154,7 @@ IDrawingImage* DrawingImageImpl::clone() {
 
 
 void DrawingImageImpl::draw(HDC hdc, int x, int y) {
+	RHO_MAP_TRACE2("draw DrawingImage with x = %d, y = %d", x, y);
 	if (mImage == NULL) {
 		return;
 	}
@@ -158,6 +169,7 @@ void DrawingImageImpl::draw(HDC hdc, int x, int y) {
 
 
 DrawingContextImpl::DrawingContextImpl(HDC hdc, int width, int height) {
+	RHO_MAP_TRACE2("DrawingContext create with WIDTH = %d, HEIGHT = %d", width, height);
 	mHDC = hdc;
 	mWidth = width;
 	mHeight = height;
@@ -177,6 +189,7 @@ void DrawingContextImpl::drawImage(int x, int y, IDrawingImage* image) {
 }
 
 void DrawingContextImpl::drawText(int x, int y, String const &text, int color) {
+	RHO_MAP_TRACE2("DrawingContext drawText with x = %d, y = %d", x, y);
 	StringW pathW = convertToStringW(text);
 	SetBkMode(mHDC, TRANSPARENT);
 	SetTextColor(mHDC, color);

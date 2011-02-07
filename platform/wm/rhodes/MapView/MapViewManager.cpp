@@ -19,6 +19,10 @@
 //#include "ESRIMapProvider.h"
 
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "WM MapView"
+
+
 extern "C" HWND getMainWnd();
 
 
@@ -27,9 +31,20 @@ static IMapView* ourMapView = NULL;
 static CRhoMapViewDlg ourMapViewDlg;
 
 
+class RhoMapViewRedrawViewCommand : public RhoNativeViewRunnable {
+public:
+	RhoMapViewRedrawViewCommand() {}
+	virtual void run() {
+		ourMapViewDlg.requestRedraw();
+	}
+};
+
+
 class DrawingDeviceMapViewImpl : public DrawingDeviceImpl {
 	virtual void requestRedraw(){
-		ourMapViewDlg.requestRedraw();
+		RHO_MAP_TRACE("MapView requested redraw -> post command to UI thread");
+		RhoMapViewRedrawViewCommand* command = new RhoMapViewRedrawViewCommand();
+		RhoNativeViewUtil::executeInUIThread_WM(command);
 	}
 };
 
@@ -70,14 +85,18 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	RECT r;
 	::GetClientRect(m_hWnd, &r);
 
+	RHO_MAP_TRACE2("execute rho_map_create( w = %d,  h = %d )", r.right - r.left, r.bottom - r.top);
 	ourMapView = rho_map_create(mParams, &ourDrawingDevice, r.right - r.left, r.bottom - r.top);
 	rho_param_free(mParams);
 	mParams = NULL;
 
 
 	if (ourMapView != NULL) {
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMIN, FALSE, ourMapView->minZoom()); 
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMAX, FALSE, ourMapView->maxZoom()); 
+		int minz = ourMapView->minZoom();
+		int maxz = ourMapView->maxZoom();
+		RHO_MAP_TRACE2("request Zoom limits: minZoom = %d,  maxZoom = %d", minz, maxz);
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMIN, FALSE, minz); 
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMAX, FALSE, maxz); 
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
 		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
@@ -101,6 +120,7 @@ LRESULT CRhoMapViewDlg::OnSliderScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lP
 		int dwPos = ::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_GETPOS, 0, 0); 
 		if (ourMapView != NULL) {
 			dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
+			RHO_MAP_TRACE1("MapView->setZoom( %d)", dwPos);
 			ourMapView->setZoom(dwPos);
 		}
 		requestRedraw();
@@ -135,7 +155,9 @@ LRESULT CRhoMapViewDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 
 LRESULT CRhoMapViewDlg::OnZoomIn(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if (ourMapView != NULL	) {
-		ourMapView->setZoom(ourMapView->zoom()+1);
+		int nz = ourMapView->zoom()+1;
+		RHO_MAP_TRACE1("MapView->setZoom( %d)", nz);
+		ourMapView->setZoom(nz);
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
 		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
@@ -146,7 +168,9 @@ LRESULT CRhoMapViewDlg::OnZoomIn(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 
 LRESULT CRhoMapViewDlg::OnZoomOut(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if (ourMapView != NULL	) {
-		ourMapView->setZoom(ourMapView->zoom()-1);
+		int nz = ourMapView->zoom()-1;
+		RHO_MAP_TRACE1("MapView->setZoom( %d)", nz);
+		ourMapView->setZoom(nz);
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
 		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
@@ -158,6 +182,8 @@ LRESULT CRhoMapViewDlg::OnZoomOut(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 
 LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {	
+	RHO_MAP_TRACE("WM_PAINT start");
+
 	PAINTSTRUCT ps;
 	HDC hDC;
 
@@ -170,11 +196,13 @@ LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	// call MapView draw !!!
 	if (ourMapView != NULL) {
+		RHO_MAP_TRACE("execute MapView paint");
 		ourMapView->paint(context);
 	}
 
 	::EndPaint(m_hWnd,&ps);
 	
+	RHO_MAP_TRACE("WM_PAINT finish");
 	return 0;
 }
 
@@ -191,6 +219,7 @@ void CRhoMapViewDlg::doClose() {
 }
 
 void CRhoMapViewDlg::requestRedraw() {
+	RHO_MAP_TRACE("redraw requested !");
 	InvalidateRect(NULL, FALSE);
 }
 
@@ -210,6 +239,7 @@ LRESULT CRhoMapViewDlg::OnTouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 LRESULT CRhoMapViewDlg::OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if ( (MABS(mInitialX - mLastX) < 8) && (MABS(mInitialY - mLastY) < 8) && mIsPossibleClick) {
 		if (ourMapView != NULL) {
+			RHO_MAP_TRACE2("MapView->handleClick( %d, %d)", mLastX, mLastY);
 			if (ourMapView->handleClick(mLastX, mLastY)) {
 				rho_map_destroy(ourMapView);
 				ourMapView = NULL;
@@ -224,6 +254,7 @@ LRESULT CRhoMapViewDlg::OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 	int xPos = LOWORD(lParam); 
 	int yPos = HIWORD(lParam);
 	if (ourMapView != NULL) {
+		RHO_MAP_TRACE2("MapView->move( %d, %d)", mLastX-xPos, mLastY-yPos);
 		ourMapView->move(mLastX-xPos, mLastY-yPos);
 		requestRedraw();
 	}
@@ -260,9 +291,8 @@ public:
 
 
 
-
-
 extern "C" void mapview_create(rho_param *p) {
+	RHO_MAP_TRACE("MapView create executed");
 	RhoMapViewOpenViewCommand* command = new RhoMapViewOpenViewCommand();
 	ourMapViewDlg.mParams = rho_param_dup(p);
 
@@ -270,6 +300,7 @@ extern "C" void mapview_create(rho_param *p) {
 }
 
 extern "C" void mapview_close() {
+	RHO_MAP_TRACE("MapView close executed");
 	RhoMapViewCloseViewCommand* command = new RhoMapViewCloseViewCommand();
 	RhoNativeViewUtil::executeInUIThread_WM(command);
 }
