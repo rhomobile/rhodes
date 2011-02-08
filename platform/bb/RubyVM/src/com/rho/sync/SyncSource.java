@@ -735,19 +735,26 @@ public class SyncSource
 	    {
 	        String strObject = objIter.getCurKey();
 	        JSONStructIterator attrIter = new JSONStructIterator( objIter.getCurValue() );
-	        if ( m_bSchemaSource )
-	            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
-	        else
+	        
+	        try
 	        {
-	            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
-	            {
-	                String strAttrib = attrIter.getCurKey();
-	                String strValue = attrIter.getCurString();
-
-	                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
-	            }
-	        }
-
+		        if ( m_bSchemaSource )
+		            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
+		        else
+		        {
+		            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+		            {
+		                String strAttrib = attrIter.getCurKey();
+		                String strValue = attrIter.getCurString();
+	
+		                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+		            }
+		        }
+	        }catch(DBException exc)
+		    {
+		    	LOG.ERROR("Sync of server changes failed for " + getName() + ";object: " + strObject, exc);
+		    }
+		    
 	        if ( getSyncType().compareTo("none") == 0 )
 	        	continue;
 	        
