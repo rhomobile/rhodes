@@ -133,6 +133,7 @@ public:
     void updateAssociation(const String& strOldObject, const String& strNewObject, const String& strAttrib);
 
     void applyChangedValues();
+    boolean processServerErrors(json::CJSONEntry& oCmds);
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();
