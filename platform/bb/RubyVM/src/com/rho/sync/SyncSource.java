@@ -521,6 +521,7 @@ public class SyncSource
 	        //String szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":28},{\"total_count\":28},{\"source-error\":{\"login-error\":{\"message\":\"s currently connected from another machine\"}}}]";
 		    //String szData =  "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"0_broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"0_broken_object_id-error\":{\"message\":\"error create\"}}}]";
 	        //String szData =  "[{\"version\":3},{\"token\":\"35639160294387\"},{\"count\":3},{\"progress_count\":0},{\"total_count\":3},{\"metadata\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"insert\":{\"1\":{\"price\":\"199.99\",\"brand\":\"Apple\",\"name\":\"iPhone\"}}}]";
+	        //String szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":1},{\"total_count\":1},{\"update-error\":{\"1-error\":{\"message\":\"Update failed!\"},\"1\":{\"foo\":\"bar5\"}}}]";
 
 	        PROF.START("Parse");
 	        JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
@@ -539,6 +540,73 @@ public class SyncSource
 	    	getSync().stopSync();	    
 	}
 
+	boolean processServerErrors(JSONEntry oCmds)throws Exception
+	{
+	    if ( oCmds.hasName("source-error") )
+	    {
+	        JSONEntry errSrc = oCmds.getEntry("source-error");
+	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
+	        for( ; !errIter.isEnd(); errIter.next() )
+	        {
+	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+	            m_strError = errIter.getCurValue().getString("message");
+	            m_strErrorType = errIter.getCurKey();
+	        }
+	    }else if ( oCmds.hasName("search-error") )
+	    {
+	        JSONEntry errSrc = oCmds.getEntry("search-error");
+	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
+	        for( ; !errIter.isEnd(); errIter.next() )
+	        {
+	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+	            m_strError = errIter.getCurValue().getString("message");
+	            m_strErrorType = errIter.getCurKey();
+	        }
+	    }else if ( oCmds.hasName("create-error") )
+	    {
+	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+	        m_strErrorType = "create-error";
+
+	        JSONEntry errSrc = oCmds.getEntry(m_strErrorType);
+	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
+	        for( ; !errIter.isEnd(); errIter.next() )
+	        {
+	            String strKey = errIter.getCurKey();
+	            if ( strKey.endsWith("-error") )
+	                m_strError = errIter.getCurValue().getString("message");
+	        }
+	    }else if ( oCmds.hasName("update-error") )
+	    {
+	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+	        m_strErrorType = "update-error";
+
+	        JSONEntry errSrc = oCmds.getEntry(m_strErrorType);
+	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
+	        for( ; !errIter.isEnd(); errIter.next() )
+	        {
+	            String strKey = errIter.getCurKey();
+	            if ( strKey.endsWith("-error") )
+	                m_strError = errIter.getCurValue().getString("message");
+	        }
+	    }else if ( oCmds.hasName("delete-error") )
+	    {
+	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+	        m_strErrorType = "delete-error";
+
+	        JSONEntry errSrc = oCmds.getEntry(m_strErrorType);
+	        JSONStructIterator errIter=new JSONStructIterator(errSrc);
+	        for( ; !errIter.isEnd(); errIter.next() )
+	        {
+	            String strKey = errIter.getCurKey();
+	            if ( strKey.endsWith( "-error") )
+	                m_strError = errIter.getCurValue().getString("message");
+	        }
+	    }else
+	        return false;
+
+	    return true;
+	}
+	
 	void processServerResponse_ver3(JSONArrayIterator oJsonArr)throws Exception
 	{
 	    PROF.START("Data1");
@@ -619,39 +687,7 @@ public class SyncSource
 	        if ( oCmds.hasName("schema-changed") )
 	        {
 	            getSync().setSchemaChanged(true);
-	        }else if ( oCmds.hasName("source-error") )
-	        {
-	            JSONEntry errSrc = oCmds.getEntry("source-error");
-	            JSONStructIterator errIter = new JSONStructIterator(errSrc);
-	            for( ; !errIter.isEnd(); errIter.next() )
-	            {
-	                m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	                m_strError = errIter.getCurValue().getString("message");
-	                m_strErrorType = errIter.getCurKey();
-	            }
-	        }else if ( oCmds.hasName("search-error") )
-	        {
-	            JSONEntry errSrc = oCmds.getEntry("search-error");
-	            JSONStructIterator errIter = new JSONStructIterator(errSrc);
-	            for( ; !errIter.isEnd(); errIter.next() )
-	            {
-	                m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	                m_strError = errIter.getCurValue().getString("message");
-	                m_strErrorType = errIter.getCurKey();
-	            }
-	        }else if ( oCmds.hasName("create-error") )
-	        {
-	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	            m_strErrorType = "create-error";
-	        }else if ( oCmds.hasName("update-error") )
-	        {
-	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	            m_strErrorType = "update-error";
-	        }else if ( oCmds.hasName("delete-error") )
-	        {
-	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	            m_strErrorType = "delete-error";
-	        }else
+	        }else if ( !processServerErrors(oCmds) )
 	        {
 		        getDB().startTransaction();
 		        
