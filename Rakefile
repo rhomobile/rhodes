@@ -54,50 +54,46 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database']
 
 def make_application_build_config_header_file
-  inc_file = File.join($startdir, "platform", "shared", "common", "app_build_configs.c")
-  
-  #return if FileUtils.uptodate?(inc_file,[File.join($app_path, "build.yml")])
-  
-  File.open(inc_file, "w") do |f|
-    f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-    #f.puts "// Generated #{Time.now.to_s}"
-    f.puts ""
-    f.puts "#include <string.h>"
-    f.puts ""
-    f.puts '#include "app_build_configs.h"'
-    f.puts ""
+  f = StringIO.new("", "w+")      
+  f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+  #f.puts "// Generated #{Time.now.to_s}"
+  f.puts ""
+  f.puts "#include <string.h>"
+  f.puts ""
+  f.puts '#include "app_build_configs.h"'
+  f.puts ""
       
-    f.puts 'static const char* keys[] = { ""'
-    $application_build_configs.keys.each do |key|
-      f.puts ',"'+key+'"'
-    end
-    f.puts '};'
-    f.puts ''
+  f.puts 'static const char* keys[] = { ""'
+  $application_build_configs.keys.each do |key|
+    f.puts ',"'+key+'"'
+  end
+  f.puts '};'
+  f.puts ''
+  
+  count = 1
 
-    count = 1
+  f.puts 'static const char* values[] = { ""'
+  $application_build_configs.keys.each do |key|
+    f.puts ',"'+$application_build_configs[key]+'"'
+    count = count + 1
+  end
+  f.puts '};'
+  f.puts ''
 
-    f.puts 'static const char* values[] = { ""'
-    $application_build_configs.keys.each do |key|
-      f.puts ',"'+$application_build_configs[key]+'"'
-      count = count + 1
-    end
-    f.puts '};'
-    f.puts ''
-
-    f.puts '#define APP_BUILD_CONFIG_COUNT '+count.to_s
-    f.puts ''
-    f.puts 'const char* get_app_build_config_item(const char* key) {'
-    f.puts '  int i;'
-    f.puts '  for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
-    f.puts '    if (strcmp(key, keys[i]) == 0) {'
-    f.puts '      return values[i];'
-    f.puts '    }'
-    f.puts '  }'
-    f.puts '  return 0;'
-    f.puts '}'
-    f.puts ''
-
-  end	 
+  f.puts '#define APP_BUILD_CONFIG_COUNT '+count.to_s
+  f.puts ''
+  f.puts 'const char* get_app_build_config_item(const char* key) {'
+  f.puts '  int i;'
+  f.puts '  for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
+  f.puts '    if (strcmp(key, keys[i]) == 0) {'
+  f.puts '      return values[i];'
+  f.puts '    }'
+  f.puts '  }'
+  f.puts '  return 0;'
+  f.puts '}'
+  f.puts ''
+  
+  Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_configs.c"), f)
 end
 
 def make_application_build_config_java_file
@@ -139,14 +135,7 @@ def make_application_build_config_java_file
     f.puts '}'
     f.puts "}"
 
-    file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/AppBuildConfig.java"
-    f.rewind
-    content = f.read()
-    old_content = File.exists?(file_name) ? File.read(file_name) : ""
-  
-    File.open(file_name, "w"){|file| file.write(content)}  if old_content != content
-    
-    f.close
+    Jake.modify_file_if_content_changed( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/AppBuildConfig.java" ), f )
 end
 
 namespace "config" do
