@@ -459,16 +459,7 @@ namespace "build" do
       f.puts "  public static final boolean USE_SQLITE = #{$use_sqlite.to_s};"
       f.puts "}"
 
-      file_name = File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java")
-      f.rewind
-      content = f.read()
-      old_content = File.exists?(file_name) ? File.read(file_name) : ""
-      if old_content != content  
-        puts "Modify Capabilities.java"      
-        File.open(file_name, "w"){|file| file.write(content)}
-      end
-      f.close
-      
+      Jake.modify_file_if_content_changed( File.join($builddir, "..", "..", "..", "platform", "bb", "RubyVM", "src", "com", "rho", "Capabilities.java"), f )      
       extentries = []
 
       if $app_config["extensions"]
@@ -512,15 +503,7 @@ namespace "build" do
       f.puts " "
       f.puts "}"
       
-      file_name = $startdir + "/platform/bb/RubyVM/src/com/rho/Extensions.java"
-      f.rewind
-      content = f.read()
-      old_content = File.exists?(file_name) ? File.read(file_name) : ""
-      if old_content != content  
-        puts "Modify Extensions.java"      
-        File.open(file_name, "w"){|file| file.write(content)}
-      end
-      f.close
+      Jake.modify_file_if_content_changed(File.join($startdir,"/platform/bb/RubyVM/src/com/rho/Extensions.java"), f)
 
     end
     
@@ -872,7 +855,7 @@ namespace "package" do
         $target_sim = true
     end
     
-#   desc "Package all production (all parts in one package) for simulator"
+    desc "Package all production (all parts in one package) for simulator"
     task :production_sim => [:set_simulator, :production] do
     end
 
