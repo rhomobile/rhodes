@@ -249,7 +249,6 @@ module Rhom
                     cond.each do |key, value|
                         if key.is_a?(Hash)
                             sqlCond, valsCond = makeCondWhereEx(key, value, nil)
-                            puts "sqlCond : #{sqlCond}"
                             
                             sql << ' ' + op + ' ' if !bSimpleHash
                             sql << sqlCond                        
