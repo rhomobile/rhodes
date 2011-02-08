@@ -190,12 +190,12 @@ class RhomDbAdapter
             end
 
             if val.nil?        
-                quests << "\"#{key}\" IS ?" 
+                quests << "\"#{key}\" IS NULL" 
             else
                 quests << "\"#{key}\"=?"
+				vals << val
             end
-                
-            vals << val
+            
         end
         
         return quests,vals
