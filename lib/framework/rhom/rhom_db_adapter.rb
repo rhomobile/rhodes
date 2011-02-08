@@ -178,6 +178,29 @@ class RhomDbAdapter
           end  
         end
       end
+      
+      def make_where_params(condition,op)
+        raise ArgumentError if !condition || !op || op.length == 0
+        quests = ""
+        vals = []
+      
+        condition.each do |key,val|
+            if quests.length > 0
+                quests << ' ' << op << ' '
+            end
+
+            if val.nil?        
+                quests << "\"#{key}\" IS ?" 
+            else
+                quests << "\"#{key}\"=?"
+            end
+                
+            vals << val
+        end
+        
+        return quests,vals
+      end
+      
     end #self
 
   # support for select statements
@@ -195,7 +218,7 @@ class RhomDbAdapter
     vals = nil
 
     if condition
-        quests,vals = make_where_params(condition,'AND') 
+        quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
         if params and params['distinct']
             query = "select distinct #{columns} from #{table} where #{quests}"
         elsif params and params['order by']
@@ -208,23 +231,6 @@ class RhomDbAdapter
     end
     
     execute_sql query, vals
-  end
-
-  def make_where_params(condition,op)
-    raise ArgumentError if !condition || !op || op.length == 0
-    quests = ""
-    vals = []
-  
-    condition.each do |key,val|
-        if quests.length > 0
-            quests << ' ' << op << ' '
-        end
-    
-        quests << "\"#{key}\"=?"
-        vals << val
-    end
-    
-    return quests,vals
   end
 
   # inserts a single row into the database
@@ -269,7 +275,7 @@ class RhomDbAdapter
   # delete from object_values where object="some-object"
   def delete_from_table(table,condition)
     raise ArgumentError if !table
-    quests,vals = make_where_params(condition,'AND') 
+    quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
     query = "delete from #{table} where #{quests}"
     execute_sql query, vals
   end
@@ -309,7 +315,7 @@ class RhomDbAdapter
     vals = nil
     if condition
         quests_set, vals_set = make_set_params(values)
-        quests_where,vals_where = make_where_params(condition,'AND') 
+        quests_where,vals_where = RhomDbAdapter.make_where_params(condition,'AND') 
         query = "update #{table} set #{quests_set} where #{quests_where}"
         vals = vals_set + vals_where
     else
