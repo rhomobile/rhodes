@@ -200,7 +200,72 @@ module Rhom
                     
                     res
                 end
-                
+
+                def convertSqlConditionToStr(cond, op)
+                  if cond.is_a?(String)
+                    return cond
+                  end
+
+                  if cond.is_a?(Array) && !op
+                    condition_str = cond[0].split(/\?/).each_with_index { |param,i| 
+                      param << cond[i+1].to_s
+                    }.join(' ').to_s 
+                    
+                    puts "condition_str : #{condition_str}"
+                    return condition_str
+                  end
+                  
+                  nil
+                end
+
+                def convertConditionToStatement(cond, op, sql, vals)
+                    if cond.is_a?(Array)
+                    
+                        return unless op
+                    
+                        sqlRes = ""
+                        valsRes = []
+                        cond.each do |item|
+                            sqlRes += ' ' + op + ' ' if sqlRes.length() > 0
+                            
+                            sqlCond = ""
+                            valsCond = []
+                            convertConditionToStatement(item[:conditions], item[:op], sqlCond, valsCond )
+                            
+                            sqlRes << "(" + sqlCond + ")"
+                            valsRes.concat(valsCond)
+                        end
+
+                        sql << sqlRes
+                        vals.concat(valsRes)
+                    
+                        return
+                    end
+
+                    return if !cond.is_a?(Hash)
+
+                    bSimpleHash = true
+                    op = "AND" unless op
+                    cond.each do |key, value|
+                        if key.is_a?(Hash)
+                            sqlCond, valsCond = makeCondWhereEx(key, value, nil)
+                            puts "sqlCond : #{sqlCond}"
+                            
+                            sql << ' ' + op + ' ' if !bSimpleHash
+                            sql << sqlCond                        
+                            vals.concat(valsCond)
+                            
+                            bSimpleHash = false
+                        end
+                    end
+                    
+                    if bSimpleHash
+                        sqlCond, valsCond = ::Rhom::RhomDbAdapter.make_where_params(cond,'AND')
+                        sql << sqlCond                        
+                        vals.concat(valsCond)
+                    end
+                end
+=begin                                
                 def convertConditionToStr(cond, op, condition_hash)
                   if cond.is_a?(String)
                     return cond
@@ -256,7 +321,7 @@ module Rhom
 
                   condition_str                      
                 end
-                
+=end                
                 def makeCondWhere(key,value,srcid_value)
                     sql = ""
                     val_op = '='
@@ -295,11 +360,15 @@ module Rhom
                         attrib_name = key
                     end
                     
-                    sql << "attrib=?"
-					vals << attrib_name
-                    sql << " AND source_id=?"
-					vals << srcid_value					
-                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                    if srcid_value.nil?
+                        sql << (val_func.length > 0 ? val_func + "(#{attrib_name})" : "#{attrib_name}") + ' '
+                    else
+                        sql << "attrib=?"
+					    vals << attrib_name
+                        sql << " AND source_id=?"
+					    vals << srcid_value					
+                        sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                    end
                     
                     if val_op == 'IN' or val_op == 'in'
 
@@ -735,13 +804,13 @@ module Rhom
                   
                   # do we have conditions?
                   # if so, add them to the query
-                  condition_hash = nil
+                  #condition_hash = nil
                   select_arr = nil
                   condition_str = nil
                   order_dir=""
                   nSrcID = get_source_id.to_i
                   if args[1]
-                    condition_str = convertConditionToStr(args[1][:conditions], args[1][:op], condition_hash)  if args[1][:conditions]
+                    condition_str = convertSqlConditionToStr(args[1][:conditions], args[1][:op])  if args[1][:conditions]
                     
                     if args[1][:per_page] #and args[1][:offset]
                       limit = args[1][:per_page].to_i
@@ -771,7 +840,7 @@ module Rhom
                   # | 3560c0a0-ef58-2f40-68a5-48f39f63741b |A.G. Parr PLC 37862 |Entertainment|
                   if select_arr
                     attribs = select_arr
-                    attribs = attribs | condition_hash.keys if condition_hash
+                    #attribs = attribs | condition_hash.keys if condition_hash
                   else
                     attribs = '*'
                   end
@@ -784,7 +853,7 @@ module Rhom
                     
                     if !is_schema_source()
                       objects = nil
-                      if !condition_hash && !condition_str
+                      if !condition_str
                         #srcid_value = ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(get_source_id)
                         values = [] 
 
@@ -896,7 +965,7 @@ module Rhom
                             end    
                           
                             if attribs and attribs.length > 0                      
-                                sql << "SELECT * FROM (\n" if condition_hash or condition_str
+                                sql << "SELECT * FROM (\n" if condition_str
                                 sql << "SELECT object, \n"
                                 #attribs.reject! {|attrib| select_arr.index(attrib).nil?} if select_arr
                                 attribs.each do |attrib|
@@ -924,18 +993,25 @@ module Rhom
                        attribs = attribs.join(',') if attribs.is_a?(Array)
                        
                        sql << "SELECT #{attribs} FROM #{get_schema_table_name}"
+                       vals = []
                        if where_cond and where_cond.length > 0
                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(where_cond)
-                       else 
-                           sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
-                           sql << " WHERE " + condition_str if condition_str
+                       elsif condition_str
+                           sql << " WHERE " + condition_str
+                       elsif args[1] && args[1][:conditions]
+                           sqlCond = ""
+                           convertConditionToStatement(args[1][:conditions], args[1][:op], sqlCond, vals)
+                           #condHash = {}
+                           #sqlCond = convertConditionToStr(args[1][:conditions], args[1][:op], condHash)
+                           
+                           sql << " WHERE " + sqlCond if sqlCond.length() > 0
                        end
                            
                        sql << " order by " + make_sql_order(args[1]) if !block_given? && order_attr
                        sql << strLimit if strLimit
                        
                        #puts "Database query start" #: #{sql}"
-                       list = db.execute_sql(sql)
+                       list = db.execute_sql(sql, vals)
                        #puts "Database query end"
                        
                     end
@@ -1026,14 +1102,17 @@ module Rhom
                       db.start_transaction
                       
                       if is_schema_source()
-                        condition_hash = nil
-                        condition_str = convertConditionToStr(conditions, op, condition_hash) if conditions
+                      
+                        vals = []
+                        sqlCond = ""
+                        convertConditionToStatement(conditions, op, sqlCond, vals)
                       
                         if is_sync_source()
                             sql = "SELECT object FROM #{tableName}"
-                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
-                            sql << " WHERE " + condition_str if condition_str
-                            listObjs = db.execute_sql(sql)
+                            #sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                            #sql << " WHERE " + condition_str if condition_str
+                            sql << " WHERE " + sqlCond if sqlCond.length() > 0
+                            listObjs = db.execute_sql(sql, vals)
                             
                             listObjs.each do |item|
                             
@@ -1057,9 +1136,10 @@ module Rhom
                             
                         else #just delete objects
                             sql = "DELETE FROM #{tableName}"
-                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
-                            sql << " WHERE " + condition_str if condition_str
-                            db.execute_sql(sql)
+                            #sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
+                            #sql << " WHERE " + condition_str if condition_str
+                            sql << " WHERE " + sqlCond if sqlCond.length() > 0
+                            db.execute_sql(sql, vals)
                         end  
                       else
                         listObjs = []
