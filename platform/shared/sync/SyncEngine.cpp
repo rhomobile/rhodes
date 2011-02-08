@@ -361,6 +361,13 @@ void CSyncEngine::applyChangedValues(db::CDBAdapter& db)
 
 void CSyncEngine::loadAllSources()
 {
+    if (isNoThreadedMode())
+        RhoAppAdapter.loadAllSyncSources();
+    else
+    {
+        NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null ));
+    }
+
     m_sources.removeAllElements();
 
     Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
