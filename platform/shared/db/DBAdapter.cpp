@@ -1054,6 +1054,12 @@ void rho_db_init_attr_manager()
     rho::db::CDBAdapter::initAttrManager();
 }
 
+void rho_sync_update_blob_attribs(const char* szPartition, int source_id)
+{
+    rho::db::CDBAdapter& db = rho::db::CDBAdapter::getDB(szPartition);
+    db.getAttrMgr().loadBlobAttrs(db);
+}
+
 void rho_db_encrypt( const char* szPartition, int nPartLen, int size, unsigned char* data, unsigned char* dataOut )
 {
     String strPartition(szPartition, nPartLen);

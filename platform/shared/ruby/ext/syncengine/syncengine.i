@@ -31,6 +31,9 @@
 	#define get_src_attrs rho_sync_get_attrs
 	extern VALUE rho_sync_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
 	#define is_blob_attr rho_sync_is_blob_attr
+
+	extern void rho_sync_update_blob_attribs(const char* szPartition, int source_id);
+	#define update_blob_attribs rho_sync_update_blob_attribs
 	
     extern void  rho_sync_setobjectnotify_url(const char* szUrl);
     #define set_objectnotify_url rho_sync_setobjectnotify_url
@@ -98,3 +101,4 @@ extern void  set_threaded_mode(bool b);
 extern void  enable_status_popup(bool b);
 extern void  set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
 extern void  set_ssl_verify_peer(bool b);
+extern void  update_blob_attribs(const char* szPartition, int source_id);

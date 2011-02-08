@@ -1844,6 +1844,9 @@ static VALUE mSyncEngine;
 	#define get_src_attrs rho_sync_get_attrs
 	extern VALUE rho_sync_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
 	#define is_blob_attr rho_sync_is_blob_attr
+
+	extern void rho_sync_update_blob_attribs(const char* szPartition, int source_id);
+	#define update_blob_attribs rho_sync_update_blob_attribs
 	
     extern void  rho_sync_setobjectnotify_url(const char* szUrl);
     #define set_objectnotify_url rho_sync_setobjectnotify_url
@@ -2700,6 +2703,38 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_update_blob_attribs(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","update_blob_attribs", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","update_blob_attribs", 2, argv[1] ));
+  } 
+  arg2 = (int)(val2);
+  update_blob_attribs((char const *)arg1,arg2);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2997,5 +3032,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "enable_status_popup", _wrap_enable_status_popup, -1);
   rb_define_module_function(mSyncEngine, "set_source_property", _wrap_set_source_property, -1);
   rb_define_module_function(mSyncEngine, "set_ssl_verify_peer", _wrap_set_ssl_verify_peer, -1);
+  rb_define_module_function(mSyncEngine, "update_blob_attribs", _wrap_update_blob_attribs, -1);
 }
 
