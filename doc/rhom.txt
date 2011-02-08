@@ -801,6 +801,7 @@ If your application requires that the local database is encrypted on the filesys
         MinSeverity = 3
     
 * All database modification operations can be slow, especially on big databases. So optimize item modification - prepare data and call create/update_attributes once
+* Do not use sql conditions in Model.find, use Advanced Queries.
 * Use Model.create to insert item to database
 * Use update_attributes to add or modify item attributes
 * To insert/update multiple items/models use database transaction
