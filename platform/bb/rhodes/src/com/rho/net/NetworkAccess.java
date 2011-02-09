@@ -254,16 +254,16 @@ public class NetworkAccess implements INetworkAccess {
 		//Try wifi first
 		if ( WIFIsuffix != null && isWifiActive() )
 		{
-			conn = doConnect(strUrl + WIFIsuffix + URLsuffix, false);
-			if ( conn == null )
-				conn = doConnect(strUrl + WIFIsuffix, false);				
+			conn = doConnect(strUrl + WIFIsuffix + (URLsuffix.startsWith(";ConnectionUID=")? "":URLsuffix), false);
+			//if ( conn == null )
+			//	conn = doConnect(strUrl + WIFIsuffix, false);				
 		}
 		
 		if ( conn == null )
 		{
 			conn = doConnect(strUrl + URLsuffix, false);
-			if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
-				conn = doConnect(strUrl, true);				
+			//if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
+			//	conn = doConnect(strUrl, true);				
 		}
 		
 		return conn;
