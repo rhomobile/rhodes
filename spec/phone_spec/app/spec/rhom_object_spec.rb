@@ -69,6 +69,8 @@ class Test_Helper
     def before_all(tables, folder)
         @tables = tables
         @folder = folder
+        
+        Rho::RHO.load_all_sources()
         @save_sync_types = getTestDB().select_from_table('sources','name, sync_type')
         getTestDB().update_into_table('sources',{'sync_type'=>'none'})
         
