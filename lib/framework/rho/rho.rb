@@ -27,7 +27,7 @@ module Rho
     def self.get_instance
         @@rho_framework
     end
-=begin    
+
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
 
@@ -44,8 +44,8 @@ module Rho
       partition = 'user'
       @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
     end
-=end    
 
+=begin    
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
       
@@ -60,7 +60,7 @@ module Rho
       @db_partitions = {}
       init_sources()
     end
-
+=end    
     attr_reader :db_partitions
     
     def self.get_src_db(src_name=nil)
@@ -337,6 +337,10 @@ module Rho
         raise ArgumentError, "load_server_sources should be called only from bulk sync with partition parameter!"     
     end
 
+    def self.load_all_sources
+        Rho::RHO.get_instance().load_all_sync_sources()
+    end
+    
     @all_models_loaded = false
     def load_all_sync_sources()
         return if @all_models_loaded
@@ -357,7 +361,7 @@ module Rho
     end
 
     def load_model(modelName, init_db = true)
-        return if !Rho::RhoConfig.sources.has_key?(modelName) || Rho::RhoConfig.sources[modelName][:loaded]
+        return nil if !Rho::RhoConfig.sources.has_key?(modelName) || Rho::RhoConfig.sources[modelName][:loaded]
         Rho::RhoConfig.sources[modelName][:loaded] = true
 
         puts "load_model: #{modelName}"        
@@ -467,6 +471,8 @@ module Rho
             db.start_transaction
             begin
                 init_db_sources(db, uniq_sources, partition,hash_migrate)
+                SyncEngine.update_blob_attribs(partition, -1 )
+                
                 db.commit
             rescue Exception => e
                 trace_msg = e.backtrace.join("\n")
@@ -1160,11 +1166,19 @@ end
 
 
 class Module
+    alias base_const_missing const_missing
     def const_missing(name)
         puts "const_missing: #{name}"
         
-        #raise new ArgumentError("TEST") if name.to_s() != 'ModuleManager' && name.to_s() != 'I18n'
+        res = Rho::RHO.get_instance().load_model(name.to_s)
+        return res if res
         
-        Rho::RHO.get_instance().load_model(name.to_s)
+        return base_const_missing(name)
     end
 end
+
+module Kernel   
+    def require_source(name)
+        Rho::RHO.get_instance().load_model(name.to_s)        
+    end
+end    

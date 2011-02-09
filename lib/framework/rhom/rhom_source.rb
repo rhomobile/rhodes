@@ -51,6 +51,11 @@ module Rhom
     
     class << self
       include ::Rhom::RhomObject
+      
+      def load_all_sources
+        Rho::RHO.load_all_sources()
+      end
+       
       def find(*args)
         if args.first == :all || args.first == :first
           list = []
