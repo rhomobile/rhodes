@@ -385,25 +385,22 @@ Before you build edit build.yml from the application directory. Set the bbver to
 Starting from  Blackberry JDE 5.0, simulator supports loading application cod-files to simulator without restart. This feature greatly improve Blackberry development perfomance.
 There are 2 possible scenarios available:
 
-* Load application cod-file manually using Simulator menu: 'File\Load Blackberry application or theme...'
-	:::term
-	$ rake run:bb:startsim
-	$ rake package:bb:production_sim
+* Load application cod-file manually using Simulator menu: 'File\Load Blackberry application or theme...':
+        $ rake run:bb:startsim
+        $ rake package:bb:production_sim
 	
     In simulator window open menu: 'File\Load Blackberry application or theme...' and choose app cod-file:'<app_folder>/bin/target/<bb_ver>/<app_name.cod>'
 
     After application modification:
-	    :::term
 	    $ rake package:bb:production_sim
     And reload application cod-file in simulator using menu.
 
 * Use rake commands to reload app on simulator.
-	:::term
-	$ rake run:bbapp
+
+    	$ rake run:bbapp
 
     Start application on simulator and DO NOT close application in simulator.
     After application modification:
-	    :::term
 	    $ rake run:bbapp
     
     In case of simulator errors:
