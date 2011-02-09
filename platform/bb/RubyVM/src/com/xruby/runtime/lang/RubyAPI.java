@@ -579,7 +579,7 @@ public class RubyAPI {
                     }
                 }
             }*/
-            throwUninitializedConstant(receiver, name);
+            return callUninitializedConstant(receiver, name);
         }
 
         return v;
@@ -600,7 +600,7 @@ public class RubyAPI {
         RubyModule m = (RubyModule) receiver;
         RubyValue v = m.getConstant(name);
         if (null == v) {
-            throwUninitializedConstant(m, name);
+            return callUninitializedConstant(m, name);
         }
 
         return v;
@@ -618,10 +618,17 @@ public class RubyAPI {
         return RubyConstant.QTRUE;
     }
     
-    private static void throwUninitializedConstant(RubyModule m, String name) {
+    private static RubyValue callUninitializedConstant(RubyModule module, String name) 
+    {
+        RubyMethod m = module.findMethod(RubyID.constMissingId);
+        if (null != m && !UndefMethod.isUndef(m)) {
+           	RubyArray args = new RubyArray(ObjectFactory.createSymbol(name));
+            return m.invoke(module, args, (RubyBlock)null);
+        }
+    	
         RubyString str = ObjectFactory.createString();
-        if (m != RubyRuntime.ObjectClass) {
-            m.to_s(str);
+        if (module != RubyRuntime.ObjectClass) {
+        	module.to_s(str);
             if (str.length() > 0) {
                 str.appendString("::");
             }

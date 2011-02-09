@@ -663,6 +663,9 @@ public class RhoConnection implements IHttpConnection {
 			}else if ( model.equalsIgnoreCase("loadserversources") ){
 				RhoAppAdapter.loadServerSources(postData.toString());
 				return true;
+			}else if ( model.equalsIgnoreCase("loadallsyncsources") ){
+				RhoAppAdapter.loadAllSyncSources();
+				return true;
 			}else if ( model.equalsIgnoreCase("resetDBOnSyncUserChanged") ){
 				RhoAppAdapter.resetDBOnSyncUserChanged();
 				return true;

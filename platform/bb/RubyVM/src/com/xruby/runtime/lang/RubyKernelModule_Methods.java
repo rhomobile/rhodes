@@ -138,6 +138,11 @@ klass.defineModuleMethod( "method_missing", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyKernelModule.methodMissing(receiver, args);}
 });
+klass.defineModuleMethod( "const_missing", new RubyOneArgMethod(){ 
+	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
+		return RubyKernelModule.constMissing(receiver, arg);}
+});
+
 klass.defineModuleMethod( "binding", new RubyVarArgMethod(){ 
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyKernelModule.binding(receiver, args);}
