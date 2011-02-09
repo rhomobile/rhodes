@@ -241,12 +241,16 @@ public class SyncSource
 	    boolean bSyncedServer = false;
 	    if ( isPendingClientChanges() )
 	    {
+	    	LOG.INFO( "Client has unconfirmed created items. Call server to update them." );	    	    	
 	        syncServerChanges();
 	        bSyncedServer = true;
 	    }
 
 	    if ( bSyncedServer && isPendingClientChanges() )
+	    {
+            LOG.INFO( "Server does not sent created items. Stop sync." );	    	    	
 	        getSync().setState(SyncEngine.esStop);
+	    }
 	    else
 	    {   
 	      	PROF.START("Pull");

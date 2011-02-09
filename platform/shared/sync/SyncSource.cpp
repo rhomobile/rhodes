@@ -142,12 +142,16 @@ boolean CSyncSource::syncClientChanges()
     boolean bSyncedServer = false;
     if ( isPendingClientChanges() )
     {
+     	LOG(INFO) + "Client has unconfirmed created items. Call server to update them.";
         syncServerChanges();
         bSyncedServer = true;
     }
 
     if ( bSyncedServer && isPendingClientChanges() )
+    {
+        LOG(INFO) + "Server does not sent created items. Stop sync.";
         getSync().setState(CSyncEngine::esStop);
+    }
     else
     {   
       	PROF_START("Pull");
