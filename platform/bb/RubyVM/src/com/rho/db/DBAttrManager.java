@@ -49,7 +49,7 @@ public class DBAttrManager {
         return false;
     }
 
-    void loadBlobAttrs(DBAdapter db)throws DBException
+    public void loadBlobAttrs(DBAdapter db)throws DBException
     {
         loadAttrs(db, m_mapBlobAttrs, "blob_attribs", m_mapSrcNames);
         //TODO: update/delete trigger for schema sources
