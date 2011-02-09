@@ -64,6 +64,7 @@ describe "Contacts" do
     
   end
 
+if System.get_property('platform') != 'Blackberry' || System.get_property('os_version')[0].to_i() < 5
   it "should remove" do
     contacts = Rho::RhoContact.find(:all)
     puts "contacts: #{contacts.inspect.to_s}"
@@ -80,5 +81,6 @@ describe "Contacts" do
 
     (size - contacts.size).should == 1 
   end
+end
 
 end
