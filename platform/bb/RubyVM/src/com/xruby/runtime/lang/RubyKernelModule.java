@@ -657,6 +657,22 @@ public class RubyKernelModule {
     }
     
     //@RubyLevelMethod(name="method_missing", module=true)
+    public static RubyValue constMissing(RubyValue receiver, RubyValue arg) 
+    {
+        RubySymbol const_name = (RubySymbol)arg;
+    	
+        RubyString str = ObjectFactory.createString();
+        if (receiver != RubyRuntime.ObjectClass) {
+        	((RubyModule)receiver).to_s(str);
+            if (str.length() > 0) {
+                str.appendString("::");
+            }
+        }
+        str.appendString(const_name);
+        throw new RubyException(RubyRuntime.NameErrorClass, "uninitialized constant " + str.toString());
+    }
+
+    //@RubyLevelMethod(name="const_missing", module=true)
     public static RubyValue methodMissing(RubyValue receiver, RubyArray args) {
         RubySymbol method_name = (RubySymbol)args.get(0);
         RubyClass klass = receiver.getRubyClass();
