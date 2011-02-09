@@ -1,30 +1,64 @@
-Automated Testing
-=================
+Contributing
+===
+Want to add features to Rhodes?  Found a bug that you want report or fix?
+
+## Report Rhodes Issues
+Please report bugs/features/enhancements to the [google group](http://groups.google.com/group/rhomobile).
+
+## Run Rhodes Specs
+First run the rhodes specs to make sure your environment is up-to-date for development (currently the specs only run on OSX):
+
+1. [Fork](http://help.github.com/forking/) the [Rhodes repository](http://github.com/rhomobile/rhodes).
+2. Clone your new repo: 
+
+		$ git clone git://github.com/<yourhandle>/rhodes.git
+		$ cd rhodes
+		$ bin/rhodes-setup
+		$ rake run:allspecs #=> runs rhodes framework_spec and phone_spec targets
+
+
+If everything passes (pending specs are OK), then your environment is ready for development.  If you have trouble installing a particular gem or the specs just won't run properly, please feel free to ping the [google group](mailto:rhomobile@googlegroups.com rhomobile) or [hop on IRC](http://webchat.freenode.net/?channels=rhomobile) to chat with other Rhodes developers.
+
+## Contributing your Patch
+Now that you're environment is ready, make your changes!
+
+1. Create a topic branch:
+		$ git checkout -b cool_new_feature
+2. Write tests([example](http://github.com/rhomobile/rhodes/blob/a905e9c9781bfe6e5003e8c8a11cd5418b08df73/spec/framework_spec/app/spec/rhom_object_spec.rb#L239))
+3. Make changes...
+4. Add relevant documentation(RDoc, update the README if relevant)
+5. Push to your branch:
+		$ git push origin cool_new_feature
+6. Send a note to the [google group](http://groups.google.com/group/rhomobile)
+
+That's it!  We recommend following [these ruby style guidelines](http://github.com/chneukirchen/styleguide/blob/master/RUBY-STYLE) when coding.
+
+If you are interested us using your patch to Rhodes you will need to submit a  [contribution agreement](http://rhomobile.com/community/contributing/) to us.
+
+## Automated Tests
 Rhodes includes automated tests that can (and should) be run periodically against the codebase if you're modifying the Rhodes framework itself.
 
-Install Rhodes
---------------
+### Install Rhodes
 The automated tests are a part of the Rhodes project on GitHub. To obtain the Rhodes source code and access the automated tests, follow the instructions in the [Setup Rhodes Source Code](http://rhodocs.rhohub.com/rhodes/build#setup-rhodes-source-code) section. You will find two automated test sets under rhodes/spec/. One is called phone_spec, the other is framework_spec.
 
-Running Tests
--------------
+### Running Tests
 Assuming you have already downloaded the necessary SDKs (instructions can be found [here](http://rhodocs.rhohub.com/rhodes/build)), all you need to do is execute the appropriate rake task. To execute the phone_spec, for example, you can do the following in Terminal:
 
     :::term
-    cd rhodes/spec/phone_spec
-    rake run:platform:spec
+    $ cd rhodes/spec/phone_spec
+    $ rake run:platform:spec
 
 Where platform is "android" to run it for Android, "iphone" for iPhone, "bb" for BlackBerry. As a shortcut, you can also execute any of the following supported tasks:
 
     :::term
-    rake run:iphone:spec           # Runs spec tests for the current directory
-    rake run:iphone:phone_spec     # Runs spec tests for rhodes/spec/phone_spec
-    rake run:iphone:framework_spec # Runs spec tests for rhodes/spec/framework_spec
+    $ rake run:iphone:spec           # Runs spec tests for the current directory
+    $ rake run:iphone:phone_spec     # Runs spec tests for rhodes/spec/phone_spec
+    $ rake run:iphone:framework_spec # Runs spec tests for rhodes/spec/framework_spec
 
-    rake run:android:spec          # Runs spec tests for the current directory
-    rake run:android:phone_spec    # Runs spec tests for rhodes/spec/phone_spec
+    $ rake run:android:spec          # Runs spec tests for the current directory
+    $ rake run:android:phone_spec    # Runs spec tests for rhodes/spec/phone_spec
 
-    rake run:bb:spec               # Runs spec tests for the current directory
-    rake run:bb:phone_spec         # Runs spec tests for rhodes/spec/phone_spec
+    $ rake run:bb:spec               # Runs spec tests for the current directory
+    $ rake run:bb:phone_spec         # Runs spec tests for rhodes/spec/phone_spec
 
 Rhomobile performs continuous testing of the framework_spec on iPhone and the phone_spec on iPhone and BlackBerry via a customized branch of the CIJoe project. Support for the Android phone_spec is currently functional but under development.
