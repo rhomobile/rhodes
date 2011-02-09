@@ -1,0 +1,30 @@
+Automated Testing
+=================
+Rhodes includes automated tests that can (and should) be run periodically against the codebase if you're modifying the Rhodes framework itself.
+
+Install Rhodes
+--------------
+The automated tests are a part of the Rhodes project on GitHub. To obtain the Rhodes source code and access the automated tests, follow the instructions in the [Setup Rhodes Source Code](http://rhodocs.rhohub.com/rhodes/build#setup-rhodes-source-code) section. You will find two automated test sets under rhodes/spec/. One is called phone_spec, the other is framework_spec.
+
+Running Tests
+-------------
+Assuming you have already downloaded the necessary SDKs (instructions can be found [here](http://rhodocs.rhohub.com/rhodes/build)), all you need to do is execute the appropriate rake task. To execute the phone_spec, for example, you can do the following in Terminal:
+
+    :::term
+    cd rhodes/spec/phone_spec
+    rake run:platform:spec
+
+Where platform is "android" to run it for Android, "iphone" for iPhone, "bb" for BlackBerry. As a shortcut, you can also execute any of the following supported tasks:
+
+    :::term
+    rake run:iphone:spec           # Runs spec tests for the current directory
+    rake run:iphone:phone_spec     # Runs spec tests for rhodes/spec/phone_spec
+    rake run:iphone:framework_spec # Runs spec tests for rhodes/spec/framework_spec
+
+    rake run:android:spec          # Runs spec tests for the current directory
+    rake run:android:phone_spec    # Runs spec tests for rhodes/spec/phone_spec
+
+    rake run:bb:spec               # Runs spec tests for the current directory
+    rake run:bb:phone_spec         # Runs spec tests for rhodes/spec/phone_spec
+
+Rhomobile performs continuous testing of the framework_spec on iPhone and the phone_spec on iPhone and BlackBerry via a customized branch of the CIJoe project. Support for the Android phone_spec is currently functional but under development.
