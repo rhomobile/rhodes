@@ -809,6 +809,25 @@ public class SyncThread extends ThreadQueue
 						return RubyConstant.QNIL;
 					}
 			});
+
+		klass.getSingletonClass().defineMethod("update_blob_attribs",
+				new RubyTwoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
+						try{
+							String strPartition = arg1.toStr();
+							//Integer nSrcID = new Integer(arg2.toInt());
+							DBAdapter db = DBAdapter.getDB(strPartition); 
+							db.getAttrMgr().loadBlobAttrs(db);
+							return RubyConstant.QNIL;
+						}catch(Exception e)
+						{
+							LOG.ERROR("add_objectnotify failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+						
+						
+					}
+			});
 		
 	}
 
