@@ -800,11 +800,11 @@ If your application requires that the local database is encrypted on the filesys
 
         MinSeverity = 3
     
-* All database modification operations can be slow, especially on big databases. So optimize item modification - prepare data and call create/update_attributes once
+* All database modification operations can be slow, especially on big databases. So optimize object modification - prepare data and call create/update_attributes once
 * Do not use sql conditions in Model.find, use Advanced Queries.
-* Use Model.create to insert item to database
-* Use update_attributes to add or modify item attributes
-* To insert/update multiple items/models use database transaction
+* Use Model.create to insert object to database
+* Use update_attributes to add or modify object attributes
+* To insert/update multiple object/models use database transaction
 
         db = ::Rho::RHO.get_src_db('Model')
         db.start_transaction
@@ -822,4 +822,3 @@ If your application requires that the local database is encrypted on the filesys
         rescue
          db.rollback
         end
-* Do not put a lot of code to Model files. All Models are loaded at startup, so it may decrease startup perfomance
