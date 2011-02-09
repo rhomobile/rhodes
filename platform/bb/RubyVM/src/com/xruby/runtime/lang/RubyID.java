@@ -76,6 +76,7 @@ public class RubyID {
 
     public static final RubyID methodAddedID = intern("method_added");
     public static final RubyID methodMissingId = intern("method_missing");
+    public static final RubyID constMissingId = intern("const_missing");    
     public static final RubyID extendObjectID = intern("extend_object");
 
     public static final RubyID RESPOND_TO_P = intern("respond_to?");
