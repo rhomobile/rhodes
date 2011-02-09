@@ -28,6 +28,41 @@ public class NetworkAccess implements INetworkAccess {
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
 	private static long  m_nMaxPacketSize = 0;
+/*	
+	void checkWAP(ServiceRecord[] records)
+	{
+        for(int i=0; i < records.length; i++)
+        {
+            //Search through all service records to find the
+            //valid non-Wi-Fi and non-MMS
+            //WAP 2.0 Gateway Service Record.
+            if (records[i].isValid() && !records[i].isDisabled())
+            {
+
+                if (records[i].getUid() != null && records[i].getUid().length() != 0)
+                {
+                    if ((records[i].getUid().toLowerCase().indexOf("wifi") == -1) &&
+                        (records[i].getUid().toLowerCase().indexOf("mms") == -1))
+                    {
+                            uid = records[i].getUid();
+                            break;
+                    }
+                }
+            }
+        }
+
+        if (uid != null)
+        {
+
+            //open a WAP 2 connection
+            Connector.open(_url + ";ConnectionUID=" + uid);
+        }
+        else
+        {
+
+            //Consider another transport or alternative action.
+        }	
+	}*/
 	
 	public void configure() 
 	{
@@ -62,7 +97,9 @@ public class NetworkAccess implements INetworkAccess {
 					
 					break;
 				}
-				
+                
+                //checkWAP(wifis);
+                
 				ServiceRecord[] srs = sb.getRecords();
 				// search for BIS-B transport
 				for (int i = 0; i < srs.length; i++) {
