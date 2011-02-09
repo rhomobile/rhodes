@@ -31,7 +31,9 @@ describe "RhoConfig" do
   
   it "should populate configuration in sources table" do
     sources = ::Rho::RHO.get_user_db().select_from_table('sources','*')
-    sources.size.should > 1
+    sources.size.should == 0
+    
+    Rho::RhoConfig.sources().size.should > 0
   end
   
   it "should have start_path" do
@@ -104,6 +106,7 @@ end
 describe "RhomSource" do
 
   it "should find first source" do
+    Rhom::RhomSource.load_all_sources
     src = Rhom::RhomSource.find(:first)
     src.should_not be_nil
   end

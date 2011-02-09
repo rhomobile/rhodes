@@ -60,6 +60,8 @@ describe "SyncEngine_test" do
     
     SyncEngine.set_syncserver(SYNC_SERVER_URL)
 
+    Rho::RHO.load_all_sources()
+
     @save_sync_types = ::Rho::RHO.get_user_db().select_from_table('sources','name, sync_type')
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'})
     ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>getProduct_str})
