@@ -28,7 +28,7 @@ public class NetworkAccess implements INetworkAccess {
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
 	private static long  m_nMaxPacketSize = 0;
-/*	
+	
 	void checkWAP(ServiceRecord[] records)
 	{
         for(int i=0; i < records.length; i++)
@@ -44,25 +44,15 @@ public class NetworkAccess implements INetworkAccess {
                     if ((records[i].getUid().toLowerCase().indexOf("wifi") == -1) &&
                         (records[i].getUid().toLowerCase().indexOf("mms") == -1))
                     {
-                            uid = records[i].getUid();
+                    	 	URLsuffix = ";ConnectionUID=" + records[i].getUid();
+                    	 	networkConfigured = true;
+                    	 	LOG.INFO("Found WAP2 provider. Suffix: " + URLsuffix);                    	 	
                             break;
                     }
                 }
             }
         }
-
-        if (uid != null)
-        {
-
-            //open a WAP 2 connection
-            Connector.open(_url + ";ConnectionUID=" + uid);
-        }
-        else
-        {
-
-            //Consider another transport or alternative action.
-        }	
-	}*/
+	}
 	
 	public void configure() 
 	{
@@ -98,7 +88,7 @@ public class NetworkAccess implements INetworkAccess {
 					break;
 				}
                 
-                //checkWAP(wifis);
+                checkWAP(wifis);
                 
 				ServiceRecord[] srs = sb.getRecords();
 				// search for BIS-B transport
