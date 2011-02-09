@@ -486,8 +486,15 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    }
 	}
 	
-	void loadAllSources()throws DBException
+	void loadAllSources()throws Exception
 	{
+		if (isNoThreadedMode())
+	        RhoAppAdapter.loadAllSyncSources();
+	    else
+	    {
+	        getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null );
+	    }
+		
 	    m_sources.removeAllElements();
 	    Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
 
@@ -614,7 +621,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            RhoAppAdapter.loadServerSources(strSources);            
 	        else
 	        {
-	        	NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
+	        	getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
 	        }
 	        
 	        loadAllSources();
