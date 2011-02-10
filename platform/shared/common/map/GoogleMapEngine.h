@@ -14,6 +14,7 @@ namespace map
 
 class GoogleGeoCoding : public IGeoCoding, public CThreadQueue
 {
+    DEFINE_LOGCLASS;
 private:
     struct Command : public IQueueCommand
     {
@@ -32,7 +33,7 @@ public:
     GoogleGeoCoding();
     ~GoogleGeoCoding();
 
-    void stop();
+    //void stop();
     void resolve(String const &address, GeoCodingCallback *cb);
 
 private:
