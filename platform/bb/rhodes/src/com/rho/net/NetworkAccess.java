@@ -282,7 +282,7 @@ public class NetworkAccess implements INetworkAccess {
 		{
 			if ( isNetworkAvailable() )
 			{
-				conn = doConnect(strUrl + URLsuffix, false);
+				conn = doConnect(strUrl + URLsuffix, true);
 				//if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
 				//	conn = doConnect(strUrl, true);
 			}else
