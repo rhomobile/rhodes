@@ -141,7 +141,7 @@ public:
 
     virtual void paint(IDrawingContext *device) = 0;
 
-    virtual void setPinImage(IDrawingImage *pin) = 0;
+    virtual void setPinImage(IDrawingImage *pin, int x_offset, int y_offset) = 0;
 };
 
 class GeoCodingCallback
