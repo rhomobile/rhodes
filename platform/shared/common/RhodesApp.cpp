@@ -41,6 +41,7 @@ String CRhodesApp::m_strStartParameters;
 
 class CAppCallbacksQueue : public CThreadQueue
 {
+    DEFINE_LOGCLASS;
 public:
     enum callback_t
     {
@@ -74,6 +75,7 @@ private:
     callback_t m_expected;
     Vector<int> m_commands;
 };
+IMPLEMENT_LOGCLASS(CAppCallbacksQueue,"AppCallbacks");
 
 char const *CAppCallbacksQueue::toString(int type)
 {
@@ -93,6 +95,7 @@ char const *CAppCallbacksQueue::toString(int type)
 CAppCallbacksQueue::CAppCallbacksQueue(IRhoClassFactory *factory)
     :CThreadQueue(factory), m_expected(local_server_started)
 {
+    CThreadQueue::setLogCategory(getLogCategory());
     //setPollInterval(1);
     start(epNormal);
 }
@@ -249,6 +252,8 @@ void CRhodesApp::run()
         m_httpServer->run();
         if (m_bExit)
             break;
+
+        LOG(INFO) + "RhodesApp thread wait.";
         wait(-1);
     }
 
@@ -402,8 +407,11 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // Restart server each time when we go to foreground
         if (m_activateCounter++ > 0)
         {
+#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
             m_httpServer->stop();
+#endif
             this->stopWait();
+
         }
 
         if (!m_appCallbacksQueue)

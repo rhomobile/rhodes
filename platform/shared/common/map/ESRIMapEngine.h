@@ -72,6 +72,8 @@ private:
 
     class MapFetch : public CThreadQueue
     {
+        DEFINE_LOGCLASS;
+
     private:
         MapFetch(MapFetch const &);
         MapFetch &operator=(MapFetch const &);
@@ -109,6 +111,7 @@ private:
     friend class CacheUpdate;
     class CacheUpdate : public CThreadQueue
     {
+        DEFINE_LOGCLASS;
     private:
         CacheUpdate(CacheUpdate const &);
         CacheUpdate &operator=(CacheUpdate const &);
@@ -191,7 +194,7 @@ private:
     CMutex &tilesCacheLock() {return m_tiles_cache_mtx;}
     TilesCache &tilesCache() {return m_tiles_cache;}
 
-    Annotation const *getAnnotation(int x, int y);
+    int getAnnotation(int x, int y);
 
     int64 toScreenCoordinateX(double n);
     int64 toScreenCoordinateY(double n);
@@ -218,8 +221,9 @@ private:
     uint64 m_longitude;
 
     typedef Vector<Annotation> annotations_list_t;
+    CMutex m_annotations_mtx;
     annotations_list_t m_annotations;
-    Annotation const *m_selected_annotation;
+    int m_selected_annotation_index;
 
     CMutex m_tiles_cache_mtx;
     TilesCache m_tiles_cache;

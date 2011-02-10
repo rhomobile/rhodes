@@ -156,7 +156,7 @@ class IGeoCoding
 public:
     virtual ~IGeoCoding() {}
 
-    virtual void stop() = 0;
+    //virtual void stop() = 0;
 
     virtual void resolve(String const &address, GeoCodingCallback *callback) = 0;
 };

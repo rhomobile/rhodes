@@ -159,10 +159,13 @@ void ESRIMapView::Tile::swap(ESRIMapView::Tile &tile)
     std::swap(m_image, tile.m_image);
 }
 
+IMPLEMENT_LOGCLASS(ESRIMapView::MapFetch,"MapFetch");
 ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
     :CThreadQueue(rho_impl_createClassFactory()),
     m_mapview(view), m_net_request(getFactory()->createNetRequest())
 {
+    CThreadQueue::setLogCategory(getLogCategory());
+
     start(epNormal);
 }
 
@@ -237,9 +240,11 @@ String ESRIMapView::MapFetch::Command::toString()
     return String(&buf[0]);
 }
 
+IMPLEMENT_LOGCLASS(ESRIMapView::CacheUpdate,"CacheUpdate");
 ESRIMapView::CacheUpdate::CacheUpdate(ESRIMapView *view)
     :CThreadQueue(rho_impl_createClassFactory()), m_mapview(view)
 {
+    CThreadQueue::setLogCategory(getLogCategory());
     start(epNormal);
 }
 
@@ -409,7 +414,7 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
     m_width(0), m_height(0),
     m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
     m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
-    m_selected_annotation(NULL)
+    m_selected_annotation_index(-1)
 {
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
@@ -554,7 +559,10 @@ void ESRIMapView::addAnnotation(Annotation const &ann)
     if (ann.resolved())
     {
         RHO_MAP_TRACE("Add resolved annotation");
-        m_annotations.addElement(ann);
+        {
+            synchronized(m_annotations_mtx);
+            m_annotations.addElement(ann);
+        }
         redraw();
     }
     else if (!ann.address().empty())
@@ -566,12 +574,12 @@ void ESRIMapView::addAnnotation(Annotation const &ann)
         RAWLOG_ERROR("Attempt to add annotation with empty address");
 }
 
-Annotation const *ESRIMapView::getAnnotation(int x, int y)
+int ESRIMapView::getAnnotation(int x, int y)
 {
-    for (annotations_list_t::const_iterator it = m_annotations.begin(), lim = m_annotations.end();
-        it != lim; ++it)
+    synchronized(m_annotations_mtx);
+    for ( int i = 0; i < (int)m_annotations.size(); i++ )
     {
-        Annotation const &ann = *it;
+        Annotation const &ann = m_annotations.elementAt(i);
 
         int64 ann_lon = (int64)degreesToPixelsX(ann.longitude(), m_zoom);
         int64 topleft_lon = toCurrentZoom(m_longitude, m_zoom) - m_width/2;
@@ -588,22 +596,24 @@ Annotation const *ESRIMapView::getAnnotation(int x, int y)
         if ((int)distance > ANNOTATION_SENSITIVITY_AREA_RADIUS)
             continue;
 
-        return &ann;
+        return i;
     }
 
-    return NULL;
+    return -1;
 }
 
 bool ESRIMapView::handleClick(int x, int y)
 {
-    Annotation const *ann = getAnnotation(x, y);
-    Annotation const *selected = m_selected_annotation;
-    m_selected_annotation = ann;
-    if (ann && selected == ann)
+    int old_selected = m_selected_annotation_index;
+    m_selected_annotation_index = getAnnotation(x, y);
+    if (m_selected_annotation_index>=0 && m_selected_annotation_index == old_selected)
     {
+        synchronized(m_annotations_mtx);
+        Annotation& ann = m_annotations.elementAt(m_selected_annotation_index);
+
         // We have clicked already selected annotation
-        RHODESAPP().navigateToUrl(ann->url());
-        m_selected_annotation = NULL;
+        RHODESAPP().navigateToUrl(ann.url());
+        m_selected_annotation_index = -1;
         return true;
     }
     redraw();
@@ -656,14 +666,22 @@ void ESRIMapView::paint(IDrawingContext *context)
         cache = m_tiles_cache.clone();
     }
 
+    annotations_list_t annotations;
+    int selected_annotation_index = -1;
+    {
+        synchronized(m_annotations_mtx);
+        annotations = m_annotations;
+        selected_annotation_index = m_selected_annotation_index;
+    }
+
     for (TilesCache::iterator it = cache.begin(), lim = cache.end(); it != lim; ++it)
         paintTile(context, *it);
 
-    for (annotations_list_t::iterator it = m_annotations.begin(), lim = m_annotations.end(); it != lim; ++it)
+    for (annotations_list_t::iterator it = annotations.begin(), lim = annotations.end(); it != lim; ++it)
         paintAnnotation(context, *it);
 
-    if (m_selected_annotation)
-        paintCallout(context, *m_selected_annotation);
+    if (selected_annotation_index >= 0)
+        paintCallout(context, annotations.elementAt(selected_annotation_index));
 }
 
 void ESRIMapView::paintBackground(IDrawingContext *context)
