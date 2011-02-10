@@ -7,6 +7,7 @@ import javax.microedition.io.HttpConnection;
 import javax.microedition.io.Connection;
 import javax.microedition.io.SocketConnection;
 
+import net.rim.device.api.io.SocketConnectionEnhanced;
 import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.RadioInfo;
 import com.rho.BBVersionSpecific;
@@ -44,8 +45,7 @@ public class NetworkAccess implements INetworkAccess {
                     if ((records[i].getUid().toLowerCase().indexOf("wifi") == -1) &&
                         (records[i].getUid().toLowerCase().indexOf("mms") == -1))
                     {
-                    	 	//URLsuffix = ";ConnectionUID=" + records[i].getUid()+";deviceside=true";
-                    	    URLsuffix = ";ConnectionUID=" + records[i].getUid();
+                    	 	URLsuffix = ";ConnectionUID=" + records[i].getUid()+";connectionhandler=none;deviceside=true";
                     	 	networkConfigured = true;
                     	 	LOG.INFO("Found WAP2 provider. Suffix: " + URLsuffix);                    	 	
                             break;
@@ -207,6 +207,13 @@ public class NetworkAccess implements INetworkAccess {
 		return (SocketConnection)baseConnect(strUrl, ignoreSuffix);
 	}
 	
+	void setConnectionTimeout(Connection conn, int nTimeOutMS)throws  java.io.IOException
+	{
+		SocketConnectionEnhanced sce = (SocketConnectionEnhanced) conn;
+		short sceOption = SocketConnectionEnhanced.READ_TIMEOUT;
+		sce.setSocketOptionEx(sceOption, nTimeOutMS);
+	}
+	
 	private Connection doConnect(String urlArg, boolean bThrowIOException) throws IOException
 	{
 		Connection conn = null;		
@@ -215,9 +222,20 @@ public class NetworkAccess implements INetworkAccess {
 			String url = new String(urlArg);
             if (url.startsWith("https"))
 				url += ";EndToEndDesired;RdHTTPS";
+
+			int nTimeoutMS = RhoConf.getInstance().getInt("net_timeout")*1000;
+			if (nTimeoutMS == 0)
+				nTimeoutMS = 30000; //30 sec by default
+			
+			if ( url.indexOf(";deviceside=true") == 0 && nTimeoutMS > 0 )
+				url += ";ConnectionTimeout=" + nTimeoutMS;
 			
 			LOG.INFO("Connect to url: " + url);
             conn = Connector.open(url, Connector.READ_WRITE, true);
+            
+            if ( url.indexOf(";deviceside=true") >= 0 && nTimeoutMS > 0 )
+            	setConnectionTimeout(conn, nTimeoutMS);
+            
 		} catch (java.io.InterruptedIOException ioe) 
 		{
 			LOG.ERROR("Connector.open InterruptedIOException", ioe );
