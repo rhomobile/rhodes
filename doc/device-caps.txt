@@ -990,6 +990,10 @@ You can allow your users to send email messages, call phone numbers and send SMS
 	<a href="mailto:test@host.com?subject=testing123">Mailto</a>
 Note, even for an empty address, you must add the @ symbol: <a href="mailto:@?subject=testing123">Mailto</a>
 
+Blackberry: if you need cc, bcc feilds, use rhomailto scheme:
+	:::html
+    <a href="rhomailto:test@host.com?cc=geny@mail.ru&bcc=vasy@gmail.com&body=testMessage&subject=sub1">Send e-mail to test@host.com</a>
+    
 **tel**
 	:::html
 	<a href="tel:1-555-531-3255!8335033#!#!9582#">Tel</a>
