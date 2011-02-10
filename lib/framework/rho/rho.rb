@@ -108,10 +108,10 @@ module Rho
 
     def on_config_conflicts(conflicts)
       begin
-          get_app(APPNAME).on_config_conflicts(conflicts)
+          get_app(APPNAME).on_reinstall_config_update(conflicts)
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
-        puts 'Application on_config_conflicts failed: ' + e.inspect + ";Trace: #{trace_msg}"
+        puts 'Application on_reinstall_config_update failed: ' + e.inspect + ";Trace: #{trace_msg}"
       end    
     end
 
