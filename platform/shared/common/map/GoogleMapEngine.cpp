@@ -21,10 +21,12 @@ String GoogleGeoCoding::Command::toString()
     return address;
 }
 
+IMPLEMENT_LOGCLASS(GoogleGeoCoding,"GGeoCoding");
 GoogleGeoCoding::GoogleGeoCoding()
     :CThreadQueue(rho_impl_createClassFactory()),
     m_net_request(getFactory()->createNetRequest())
 {
+    CThreadQueue::setLogCategory(getLogCategory());
     RHO_MAP_TRACE("GoogleGeoCoding: ctor start");
     start(epNormal);
     RHO_MAP_TRACE("GoogleGeoCoding: ctor finish");
@@ -33,13 +35,14 @@ GoogleGeoCoding::GoogleGeoCoding()
 GoogleGeoCoding::~GoogleGeoCoding()
 {
     RHO_MAP_TRACE("GoogleGeoCoding: dtor");
+    CThreadQueue::stop(200);
 }
-
+/*
 void GoogleGeoCoding::stop()
 {
     RHO_MAP_TRACE("GoogleGeoCoding: stop");
     CThreadQueue::stop(200);
-}
+}*/
 
 bool GoogleGeoCoding::fetchData(String const &url, void **data, size_t *datasize)
 {
