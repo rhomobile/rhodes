@@ -274,7 +274,7 @@ void CHttpServer::stop()
     // to the listener. This surely unblock accept on listener and,
     // therefore, stop server thread (because m_active set to false).
     m_active = false;
-    RAWTRACE("Stopping server...");
+    RAWLOG_INFO("Stopping server...");
     SOCKET conn = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
