@@ -610,7 +610,7 @@ bool ESRIMapView::handleClick(int x, int y)
     return false;
 }
 
-void ESRIMapView::setPinImage(IDrawingImage *pin)
+void ESRIMapView::setPinImage(IDrawingImage *pin, int x_offset, int y_offset)
 {
     m_pin = pin;
 }

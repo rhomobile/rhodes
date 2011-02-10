@@ -249,7 +249,7 @@ void AndroidMapDevice::setMapView(IMapView *mv)
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: start");
     m_mapview = mv;
     if (m_mapview && m_pin_image.get())
-        m_mapview->setPinImage(m_pin_image.get());
+        m_mapview->setPinImage(m_pin_image.get(), 0 ,0);
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
 }
 
@@ -259,7 +259,7 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
     m_pin_image.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
     if (mv)
-        mv->setPinImage(m_pin_image.get());
+        mv->setPinImage(m_pin_image.get(), 0 , 0);
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
 
