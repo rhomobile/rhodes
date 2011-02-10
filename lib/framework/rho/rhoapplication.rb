@@ -80,8 +80,8 @@ module Rho
         Rhom::Rhom.database_full_reset(false, false)    
     end
     
-    def on_config_conflicts(conflicts)
-        puts "on_config_conflicts: #{conflicts}"
+    def on_reinstall_config_update(conflicts)
+        puts "on_reinstall_config_update: #{conflicts}"
     end
 
     # works for schema sources
