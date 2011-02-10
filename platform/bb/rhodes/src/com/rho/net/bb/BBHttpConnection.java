@@ -125,8 +125,10 @@ public class BBHttpConnection implements IHttpConnection {
 		return m_conn.openInputStream();
 	}
 
-	public void close() throws IOException {
-		m_conn.close();
+	public void close() throws IOException 
+	{
+		if ( m_conn )
+			m_conn.close();
 	}
 
 	public DataOutputStream openDataOutputStream() throws IOException {
