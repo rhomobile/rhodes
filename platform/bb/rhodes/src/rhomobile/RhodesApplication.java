@@ -40,6 +40,8 @@ import net.rim.device.api.ui.Manager;
 import net.rim.device.api.math.Fixed32;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
 import net.rim.blackberry.api.invoke.MessageArguments;
+import net.rim.blackberry.api.mail.Address;
+import net.rim.blackberry.api.mail.Message.RecipientType;
 
 import com.rho.*;
 //import com.rho.db.DBAdapter;
@@ -1548,6 +1550,64 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     		
     	};
     	
+    	void runMailApplication(URI uri)
+    	{
+    		net.rim.blackberry.api.mail.Message msg = new net.rim.blackberry.api.mail.Message();
+    		
+    		String strTo = uri.getPath();
+    		
+    		try
+    		{
+	    		if ( strTo != null && strTo.length() > 0 )
+	    			msg.addRecipient(RecipientType.TO, new Address( strTo, strTo) );
+	    		
+    		}catch(Exception exc)
+    		{
+    			LOG.ERROR("Error setting mail TO: " + strTo, exc);
+    		}
+    		
+        	String query = uri.getQueryString();
+        	if (query != null) 
+        	{
+        		StringParser tok = new StringParser(query, "&");
+        		while (tok.hasMoreElements()) {
+        			String pair = (String)tok.nextElement();
+        			StringParser nv = new StringParser(pair, "=");
+        			String name = (String)nv.nextElement();
+        			String value = (String)nv.nextElement();
+        			if (name == null || value == null)
+        				continue;
+
+            		try
+            		{
+	        			if (name.equalsIgnoreCase("subject") )
+	        				msg.setSubject(value);
+	        			else if (name.equalsIgnoreCase("body")) 
+	        				msg.setContent(value);
+	        			else if (name.equalsIgnoreCase("cc")) 
+	        				msg.addRecipient(RecipientType.CC, new Address( value, value) );
+	        			else if (name.equalsIgnoreCase("bcc")) 
+	        				msg.addRecipient(RecipientType.BCC, new Address( value, value) );
+	        			else if (name.equalsIgnoreCase("from")) 
+	        				msg.addRecipient(RecipientType.FROM, new Address( value, value) );
+	        			else if (name.equalsIgnoreCase("to")) 
+	        				msg.addRecipient(RecipientType.TO, new Address( value, value) );
+	        			else if (name.equalsIgnoreCase("sender")) 
+	        				msg.addRecipient(RecipientType.SENDER, new Address( value, value) );
+	        			else if (name.equalsIgnoreCase("reply_to")) 
+	        				msg.addRecipient(RecipientType.REPLY_TO, new Address( value, value) );
+	        			else
+	        				msg.addHeader(name.toUpperCase(), value);
+
+            		}catch(Exception exc)
+            		{
+            			LOG.ERROR("Error setting message property: " + name + ";value:" + value, exc);
+            		}
+        		}
+        	}
+    		Invoke.invokeApplication(Invoke.APP_TYPE_MESSAGES, new MessageArguments( msg ));
+    	}
+    	
         void processCommand()throws IOException
         {
         	if ( m_bActivateApp )
@@ -1575,18 +1635,22 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         				return;
         			}
         			
-        			if (name.equals("body")) 
+        			if (name.equalsIgnoreCase("body")) 
         			{
         				strMsgBody = value;
         			}
         		}
         	}
 
-        	if ( uri.getScheme().equalsIgnoreCase("sms"))
+        	if ( uri.getScheme().equalsIgnoreCase("rhomailto"))
+        	{
+        		runMailApplication(uri);
+        		return;
+        	}else if ( uri.getScheme().equalsIgnoreCase("sms"))
         	{
         		RhoTextMessage msg = new RhoTextMessage(uri.getPath(), URI.urlDecode(strMsgBody) );
         		
-        		MessageArguments args = new MessageArguments( msg ); 
+        		MessageArguments args = new MessageArguments( msg );
         		Invoke.invokeApplication(Invoke.APP_TYPE_MESSAGES, args);
         		return;
         	}
