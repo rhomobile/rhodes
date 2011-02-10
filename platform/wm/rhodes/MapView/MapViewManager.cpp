@@ -132,11 +132,6 @@ LRESULT CRhoMapViewDlg::OnSliderScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lP
 
 LRESULT CRhoMapViewDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
 {
-	if (ourMapView != NULL) {
-		rho_map_destroy(ourMapView);
-		ourMapView = NULL;
-	}
-
 	EndDialog(wID);
 	return 0;
 }
@@ -144,11 +139,6 @@ LRESULT CRhoMapViewDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*
 
 LRESULT CRhoMapViewDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if (ourMapView != NULL) {
-		rho_map_destroy(ourMapView);
-		ourMapView = NULL;
-	}
-
 	EndDialog(wID);
 	return 0;
 }
@@ -206,15 +196,20 @@ LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 0;
 }
 
+LRESULT CRhoMapViewDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	if (ourMapView != NULL) {
+		rho_map_destroy(ourMapView);
+		ourMapView = NULL;
+	}
+	return 0;
+}
+
+
 void CRhoMapViewDlg::doOpen() {
 
 }
 
 void CRhoMapViewDlg::doClose() {
-	if (ourMapView != NULL) {
-		rho_map_destroy(ourMapView);
-		ourMapView = NULL;
-	}
 	EndDialog(0);
 }
 
@@ -241,8 +236,6 @@ LRESULT CRhoMapViewDlg::OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		if (ourMapView != NULL) {
 			RHO_MAP_TRACE2("MapView->handleClick( %d, %d)", mLastX, mLastY);
 			if (ourMapView->handleClick(mLastX, mLastY)) {
-				rho_map_destroy(ourMapView);
-				ourMapView = NULL;
 				EndDialog(0);
 			}
 		}
@@ -270,11 +263,6 @@ class RhoMapViewOpenViewCommand : public RhoNativeViewRunnable {
 public:
 	RhoMapViewOpenViewCommand() {}
 	virtual void run() {
-
-
-		//ourMapView = new MapViewESRI();
-		//ourMapView->setGraphicsDevice(&ourDrawingDevice);
-
 		ourMapViewDlg.DoModal(getMainWnd());
 	}
 
