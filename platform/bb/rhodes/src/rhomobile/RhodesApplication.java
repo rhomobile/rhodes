@@ -788,7 +788,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			return super.navigationClick(status, time);
 		}
 
-    	protected boolean onTouchUnclick() {
+    	protected boolean onTouchUnclick(int x, int y) {
 			if ( m_bDisableInput )
 				return true;
     		
