@@ -44,7 +44,8 @@ public class NetworkAccess implements INetworkAccess {
                     if ((records[i].getUid().toLowerCase().indexOf("wifi") == -1) &&
                         (records[i].getUid().toLowerCase().indexOf("mms") == -1))
                     {
-                    	 	URLsuffix = ";ConnectionUID=" + records[i].getUid();
+                    	 	//URLsuffix = ";ConnectionUID=" + records[i].getUid()+";deviceside=true";
+                    	    URLsuffix = ";ConnectionUID=" + records[i].getUid();
                     	 	networkConfigured = true;
                     	 	LOG.INFO("Found WAP2 provider. Suffix: " + URLsuffix);                    	 	
                             break;
@@ -259,11 +260,15 @@ public class NetworkAccess implements INetworkAccess {
 			//	conn = doConnect(strUrl + WIFIsuffix, false);				
 		}
 		
-		if ( conn == null )
+		if ( conn == null  )
 		{
-			conn = doConnect(strUrl + URLsuffix, false);
-			//if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
-			//	conn = doConnect(strUrl, true);				
+			if ( isNetworkAvailable() )
+			{
+				conn = doConnect(strUrl + URLsuffix, false);
+				//if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
+				//	conn = doConnect(strUrl, true);
+			}else
+				throw new IOException("No network coverage.");				
 		}
 		
 		return conn;
@@ -272,16 +277,18 @@ public class NetworkAccess implements INetworkAccess {
 	public void close() {
 	}
 
-	public boolean isNetworkAvailable() {
+	public boolean isNetworkAvailable() 
+	{
 		if (!(RadioInfo.getState() == RadioInfo.STATE_ON))
 			return false;
 		if ((RadioInfo.getNetworkService() & RadioInfo.NETWORK_SERVICE_DATA) == 0)
 			return false;
-		if (bes)
-			return true;
-		if (URLsuffix == null)
-			return false;
-		return networkConfigured;
+		//if (bes)
+		//	return true;
+		//if (URLsuffix == null)
+		//	return false;
+		//return networkConfigured;
+		return true;
 	}
 	
 }
