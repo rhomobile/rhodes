@@ -122,10 +122,10 @@ Method on_deactivate_app will be invoked before application goes to background.
 	  	# return "stop_local_server" 
 	end
 
-Method on_config_conflicts may be called after application was upgraded. If application bundle contain rhoconfig with properties modified locally on the phone conflicts is a hash name to array of conflicted values(old local value, new upgrade value). By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade.
+Method on_reinstall_config_update may be called after application was upgraded. If application bundle contain rhoconfig with properties modified locally on the phone conflicts is a hash name to array of conflicted values(old local value, new upgrade value). By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade.
 	:::ruby
-	def on_config_conflicts(conflicts)
-	    # puts "on_config_conflicts: #{conflicts}"
+	def on_reinstall_config_update(conflicts)
+	    # puts "on_reinstall_config_update: #{conflicts}"
 	end
 
 ### Relative order of callbacks and conditions where they occurs
