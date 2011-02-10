@@ -15,11 +15,12 @@ import net.rim.device.api.system.KeypadListener;
 import net.rim.device.api.ui.Color;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.MenuItem;
-import net.rim.device.api.ui.TouchEvent;
+//import net.rim.device.api.ui.TouchEvent;
 import net.rim.device.api.ui.UiApplication;
-import net.rim.device.api.ui.container.MainScreen;
+//import net.rim.device.api.ui.container.MainScreen;
+import com.rho.RhoMainScreen;
 
-public class MapViewScreen extends MainScreen {
+public class MapViewScreen extends RhoMainScreen {
 	
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("MapViewScreen");
@@ -447,6 +448,48 @@ public class MapViewScreen extends MainScreen {
 		return true;
 	}
 	
+	protected boolean onTouchClick(int x, int y)
+	{ 
+		handleClick(x, y);
+		return true; 
+	}
+	
+	protected boolean onTouchDown(int x, int y)
+	{ 
+		mTouchDown = true;
+		mTouchX = x;
+		mTouchY = y;
+		return false; 
+	}
+	
+	protected boolean onTouchUp(int x, int y)
+	{ 
+		mTouchDown = false;
+		return false; 
+	}
+	
+	protected boolean onTouchMove(int x, int y)
+	{ 
+		if (mTouchDown) 
+		{
+			int dx = x - mTouchX;
+			int dy = y - mTouchY;
+			if (mode == PAN_MODE) {
+				dx = -dx;
+				dy = -dy;
+			}
+			
+			handleMove(dx, dy);
+			
+			mTouchX = x;
+			mTouchY = y;
+			return true;
+		}
+		
+		return false; 
+	}
+	
+/*	
 	protected boolean touchEvent(TouchEvent message) {
 		switch (message.getEvent()) {
 		case TouchEvent.CLICK:
@@ -481,7 +524,7 @@ public class MapViewScreen extends MainScreen {
 		}
 		
 		return super.touchEvent(message);
-	}
+	}*/
 	
 	public double getCenterLatitude() {
 		return mapField.getCenterLatitude();
