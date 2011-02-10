@@ -171,7 +171,7 @@ public:
 
     void paint(IDrawingContext *context);
 
-    void setPinImage(IDrawingImage *pin);
+    void setPinImage(IDrawingImage *pin, int x_offset, int y_offset);
 
 private:
     String const &getMapUrl();
