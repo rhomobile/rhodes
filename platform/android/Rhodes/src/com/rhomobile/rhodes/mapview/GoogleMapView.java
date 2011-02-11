@@ -28,7 +28,7 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class GoogleMapView extends MapActivity {
 
-	private static final String TAG = "MapView";
+	private static final String TAG = "GoogleMapView";
 	
 	private static final String SETTINGS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "settings.";
 	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "annotations.";
@@ -284,7 +284,7 @@ public class GoogleMapView extends MapActivity {
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
 		try {
-			Intent intent = new Intent(RhodesActivity.getContext(), MapView.class);
+			Intent intent = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
