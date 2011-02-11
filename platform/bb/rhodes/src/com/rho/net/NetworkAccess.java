@@ -15,6 +15,7 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhoConf;
 import com.rho.RhodesApp;
+import com.rho.Version;
 import com.rho.net.bb.BBHttpConnection;
 import net.rim.device.api.servicebook.ServiceRecord;
 import net.rim.device.api.servicebook.ServiceBook;
@@ -209,9 +210,13 @@ public class NetworkAccess implements INetworkAccess {
 	
 	void setConnectionTimeout(Connection conn, int nTimeOutMS)throws  java.io.IOException
 	{
-		SocketConnectionEnhanced sce = (SocketConnectionEnhanced) conn;
-		short sceOption = SocketConnectionEnhanced.READ_TIMEOUT;
-		sce.setSocketOptionEx(sceOption, nTimeOutMS);
+        Version.SoftVersion ver = Version.getSoftVersion();
+        if ( ver.nMajor < 6 )
+        {
+			SocketConnectionEnhanced sce = (SocketConnectionEnhanced) conn;
+			short sceOption = SocketConnectionEnhanced.READ_TIMEOUT;
+			sce.setSocketOptionEx(sceOption, nTimeOutMS);
+        }
 	}
 	
 	private Connection doConnect(String urlArg, boolean bThrowIOException) throws IOException
