@@ -359,7 +359,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	GetObject(hbitmap, sizeof(bmp), &bmp);
 
 	HDC hdcMem = CreateCompatibleDC(hDC);
-	SelectObject(hdcMem, hbitmap);
+	HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
 
     CRect rcClient;
     GetClientRect(&rcClient);
@@ -377,7 +377,9 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
 
+    SelectObject(hdcMem, resObj);
 	DeleteObject(hbitmap);
+	DeleteObject(hdcMem);
 
 	EndPaint(&ps);
     bHandled = TRUE;
