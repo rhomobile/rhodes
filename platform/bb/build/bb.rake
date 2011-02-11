@@ -388,6 +388,7 @@ namespace "build" do
     
     task :devrhobundle => [:set_dev_outname,:rhobundle] do
       cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
+	  #cp $preverified + "/RhoBundle.jar", "platform/bb/Rhodes/RhoBundle.jar"
       
       sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes"
       
@@ -1026,6 +1027,7 @@ namespace "run" do
       load_to_sim(false)
     end
 
+	desc "Start Blackberry simulator"
     task :startsim => ["config:bb"] do
       startsim
     end  
@@ -1051,6 +1053,7 @@ namespace "run" do
     $stdout.flush
   end
 
+  desc "Builds everything and loads application on simulator"
   task :bbapp => ["run:bb:stopmdsandsim_ex", "package:bb:production_sim"] do
     jde = $config["env"]["paths"][$bbver]["jde"]
     
