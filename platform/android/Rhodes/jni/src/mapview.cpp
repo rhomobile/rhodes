@@ -249,7 +249,7 @@ void AndroidMapDevice::setMapView(IMapView *mv)
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: start");
     m_mapview = mv;
     if (m_mapview && m_pin_image.get())
-        m_mapview->setPinImage(m_pin_image.get(), 0 ,0);
+        m_mapview->setPinImage(m_pin_image.get(), -10 , -33);
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
 }
 
@@ -259,7 +259,7 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
     m_pin_image.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
     if (mv)
-        mv->setPinImage(m_pin_image.get(), 0 , 0);
+        mv->setPinImage(m_pin_image.get(), -10 , -33);
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
 
@@ -482,49 +482,18 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_destroy
     mapview_close();
 }
 
-RHO_GLOBAL void mapview_close()
-{
-    if (s_mapdevice)
-    {
-        rhomap::IMapView *mv = s_mapdevice->mapView();
-        rho_map_destroy(mv);
-    }
-    delete s_mapdevice;
-    s_mapdevice = NULL;
-}
 
-RHO_GLOBAL void mapview_create(rho_param *p)
-{
-    mapview_close();
 
-    s_mapdevice = new rhomap::AndroidMapDevice(p);
-}
 
-RHO_GLOBAL VALUE mapview_state_started()
-{
-    return rho_ruby_create_boolean(!!s_mapdevice);
-}
 
-RHO_GLOBAL double mapview_state_center_lat()
-{
-    if (!s_mapdevice)
-        return 0;
-    return s_mapdevice->mapView()->latitude();
-}
 
-RHO_GLOBAL double mapview_state_center_lon()
-{
-    if (!s_mapdevice)
-        return 0;
-    return s_mapdevice->mapView()->longitude();
-}
 
-#if 0
-RHO_GLOBAL void mapview_create(rho_param *p)
+//#if 0
+RHO_GLOBAL void google_mapview_create(rho_param *p)
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!clsMapView) return;
     jmethodID midCreate = getJNIClassStaticMethod(env, clsMapView, "create", "(Ljava/lang/String;Ljava/util/Map;)V");
     if (!midCreate) return;
@@ -542,11 +511,11 @@ RHO_GLOBAL void mapview_create(rho_param *p)
 #endif
 }
 
-RHO_GLOBAL void mapview_close()
+RHO_GLOBAL void google_mapview_close()
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!clsMapView) return;
     jmethodID midClose = getJNIClassStaticMethod(env, clsMapView, "close", "()V");
     if (!midClose) return;
@@ -555,12 +524,12 @@ RHO_GLOBAL void mapview_close()
 #endif
 }
 
-RHO_GLOBAL VALUE mapview_state_started()
+RHO_GLOBAL VALUE google_mapview_state_started()
 {
 #ifdef RHO_GOOGLE_API_KEY
     VALUE nil = rho_ruby_get_NIL();
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!cls) return nil;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isStarted", "()Z");
     if (!mid) return nil;
@@ -571,11 +540,11 @@ RHO_GLOBAL VALUE mapview_state_started()
 #endif
 }
 
-RHO_GLOBAL double mapview_state_center_lat()
+RHO_GLOBAL double google_mapview_state_center_lat()
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLatitude", "()D");
     if (!mid) return 0;
@@ -586,11 +555,11 @@ RHO_GLOBAL double mapview_state_center_lat()
 #endif
 }
 
-RHO_GLOBAL double mapview_state_center_lon()
+RHO_GLOBAL double google_mapview_state_center_lon()
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLongitude", "()D");
     if (!mid) return 0;
@@ -600,4 +569,94 @@ RHO_GLOBAL double mapview_state_center_lon()
     return 0;
 #endif
 }
-#endif
+//#endif
+
+
+
+
+static bool ourIsOldGoogleEngineUsed = false;
+
+
+
+RHO_GLOBAL void mapview_close()
+{
+    if (ourIsOldGoogleEngineUsed) {
+        google_mapview_close();
+    }
+    else {
+		if (s_mapdevice)
+		{
+			rhomap::IMapView *mv = s_mapdevice->mapView();
+			rho_map_destroy(mv);
+		}
+		delete s_mapdevice;
+		s_mapdevice = NULL;
+	}
+}
+
+RHO_GLOBAL void mapview_create(rho_param *p)
+{
+    mapview_close();
+
+    ourIsOldGoogleEngineUsed = false;
+
+    // detect engine
+    char* engine = "Google";
+    if (p && p->type == RHO_PARAM_HASH) {
+	rho_param *eng_p = NULL;
+        for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+            char *name = p->v.hash->name[i];
+            rho_param *value = p->v.hash->value[i];
+            if (strcasecmp(name, "provider") == 0)
+                eng_p = value;
+        }
+	if (eng_p && eng_p->type == RHO_PARAM_STRING) {
+	   engine = eng_p->v.string;
+	}
+    }
+    if (strcasecmp(engine, "Google") == 0) {
+        ourIsOldGoogleEngineUsed = true;
+    }
+
+    if (ourIsOldGoogleEngineUsed) {
+        google_mapview_create(p);
+    }
+    else {
+        s_mapdevice = new rhomap::AndroidMapDevice(p);
+    }
+}
+
+RHO_GLOBAL VALUE mapview_state_started()
+{
+    if (ourIsOldGoogleEngineUsed) {
+        return google_mapview_state_started();
+    }
+    else {
+	    return rho_ruby_create_boolean(!!s_mapdevice);
+	}
+}
+
+RHO_GLOBAL double mapview_state_center_lat()
+{
+    if (ourIsOldGoogleEngineUsed) {
+        return google_mapview_state_center_lat();
+    }
+    else {
+		if (!s_mapdevice)
+			return 0;
+		return s_mapdevice->mapView()->latitude();
+	}
+}
+
+RHO_GLOBAL double mapview_state_center_lon()
+{
+    if (ourIsOldGoogleEngineUsed) {
+        return google_mapview_state_center_lon();
+    }
+    else {
+		if (!s_mapdevice)
+			return 0;
+		return s_mapdevice->mapView()->longitude();
+	}
+}
+
