@@ -83,6 +83,7 @@ void DrawingImageImpl::init(const char* path, void const *p, int size, WMBitmap*
 	mID = ++ourDrawingImageID;
 	RHO_MAP_TRACE1("DrawingImage create with ID = %d", mID);
 
+#if defined(_WIN32_WCE)
 	IImagingFactory *pImgFactory = NULL;
 	IImage *pImage = NULL;
 
@@ -149,6 +150,7 @@ void DrawingImageImpl::init(const char* path, void const *p, int size, WMBitmap*
 	else {
 		err_out("CoInitializeEx not initialized !");
 	}
+#endif //#if defined(_WIN32_WCE)
 }
 
 IDrawingImage* DrawingImageImpl::clone() {
@@ -215,9 +217,9 @@ void DrawingContextImpl::fillRect(int x, int y, int width, int height, int color
 	hOldBrush = (HBRUSH)SelectObject(mHDC, hBrush);
 
 	FillRect(mHDC, &r, hBrush);
-	
-	DeleteObject(hBrush);
+
 	SelectObject(mHDC, hOldBrush);
+	DeleteObject(hBrush);
 }
 
 void DrawingContextImpl::getTextRect(int x, int y, String &text, RECT* resultRect) {
@@ -232,6 +234,7 @@ void DrawingContextImpl::drawLine(int x1, int y1, int x2, int y2, int color) {
 WMBitmap::WMBitmap(IImage* img, bool useAlpha) {
 	mReferenceCount = 1;
 
+#if defined(_WIN32_WCE)
 	ImageInfo imgInfo;
 	img->GetImageInfo(&imgInfo);
 	mWidth = imgInfo.Width;
@@ -241,10 +244,9 @@ WMBitmap::WMBitmap(IImage* img, bool useAlpha) {
 	mBuf = NULL;
 
 	HDC windowDC = ::GetDC(getMainWnd());
-	HGDIOBJ resObj;
 	BITMAP bmp;
 
-	mMemoryDC = CreateCompatibleDC(windowDC);
+	HDC mMemoryDC = CreateCompatibleDC(windowDC);
 
 	mRowByteSize = mWidth*2;
 	if (((mWidth*2) & 0x3) != 0) {
@@ -277,7 +279,7 @@ WMBitmap::WMBitmap(IImage* img, bool useAlpha) {
 		NULL,
 		0);
 
-	resObj = ::SelectObject(mMemoryDC, mMemoryBitmap);
+	HGDIOBJ resObj = ::SelectObject(mMemoryDC, mMemoryBitmap);
 
 	::GetObject( mMemoryBitmap, sizeof(BITMAP), &bmp );
 
@@ -293,6 +295,10 @@ WMBitmap::WMBitmap(IImage* img, bool useAlpha) {
 	else {
 		img->Draw(mMemoryDC, &r, NULL);
 	}
+
+    ::SelectObject(mMemoryDC, resObj);
+    DeleteDC(mMemoryDC);
+#endif //#if defined(_WIN32_WCE)
 }
 
 WMBitmap::~WMBitmap() {
@@ -300,17 +306,21 @@ WMBitmap::~WMBitmap() {
 		DeleteObject(mMemoryBitmap);
 		mMemoryBitmap = NULL;
 	}
-	if (mMemoryDC != NULL) {
+/*	if (mMemoryDC != NULL) {
 		DeleteDC(mMemoryDC);
 		mMemoryDC = NULL;
-	}
+	}*/
 	if (mAlphaBitmap != NULL) {
 		delete mAlphaBitmap;
 		mAlphaBitmap = NULL;
 	}
 }
 
-void WMBitmap::draw(HDC hdc, int x, int y) {
+void WMBitmap::draw(HDC hdc, int x, int y) 
+{
+    HDC mMemoryDC = CreateCompatibleDC(hdc);
+    HGDIOBJ resObj = ::SelectObject(mMemoryDC, mMemoryBitmap);
+
 	if (mAlphaBitmap != NULL) {
 		::BitBlt(	mMemoryDC,
 					0, 0,
@@ -320,12 +330,15 @@ void WMBitmap::draw(HDC hdc, int x, int y) {
 					SRCCOPY);
 		mAlphaBitmap->draw(mBuf, mRowByteSize);
 	}
-	::BitBlt(	hdc,
+	::BitBlt( hdc,
 		x, y,
 		mWidth, mHeight,
 		mMemoryDC,
 		0,0,
 		SRCCOPY);
+
+    ::SelectObject(mMemoryDC, resObj);
+    DeleteDC(mMemoryDC);
 }
 
 void WMBitmap::addRef() {
@@ -339,12 +352,9 @@ void WMBitmap::release() {
 	}
 }
 
-
-
-
-
-WMAlphaBitmap::WMAlphaBitmap(IImage* img) {
-	
+WMAlphaBitmap::WMAlphaBitmap(IImage* img) 
+{
+#if defined(_WIN32_WCE)	
 	IImagingFactory *pImgFactory = NULL;
 
 	mWidth = 0;
@@ -425,6 +435,7 @@ WMAlphaBitmap::WMAlphaBitmap(IImage* img) {
 	else {
 		err_out("CoInitializeEx not initialized !");
 	}
+#endif //#if defined(_WIN32_WCE)
 }
 
 WMAlphaBitmap::~WMAlphaBitmap() {
