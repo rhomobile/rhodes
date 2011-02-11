@@ -50,6 +50,8 @@ static int const MAX_TILES_CACHE_SIZE = 100;
 
 static int const ANNOTATION_SENSITIVITY_AREA_RADIUS = 16;
 
+static int const BACKGROUND_COLOR = 0x7F7F7F;
+
 static uint64 degreesToPixelsX(double n, int zoom)
 {
     while (n < -180) n += 360;
@@ -131,7 +133,7 @@ ESRIMapView::Tile::Tile(IDrawingDevice *device, int z, uint64 lat, uint64 lon)
 
 ESRIMapView::Tile::Tile(IDrawingDevice *device, int z, uint64 lat, uint64 lon, void *data, size_t datasize)
     :m_device(device), m_zoom(z), m_latitude(lat), m_longitude(lon),
-    m_image(m_device->createImage(data, datasize))
+    m_image(m_device->createImage(data, datasize, false))
 {}
 
 ESRIMapView::Tile::Tile(ESRIMapView::Tile const &c)
@@ -623,6 +625,8 @@ bool ESRIMapView::handleClick(int x, int y)
 void ESRIMapView::setPinImage(IDrawingImage *pin, int x_offset, int y_offset)
 {
     m_pin = pin;
+	m_pin_offset_x = x_offset;
+	m_pin_offset_y = y_offset;
 }
 
 void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
@@ -692,10 +696,9 @@ void ESRIMapView::paintBackground(IDrawingContext *context)
 void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
 {
     IDrawingImage *image = tile.image();
-    if (!image)
+	if (tile.zoom() != m_zoom) {
         return;
-    if (tile.zoom() != m_zoom)
-        return;
+	}
 
     //RHO_MAP_TRACE3("=== paintTile: tile.zoom=%d, tile.latitude=%llu, tile.longitude=%llu",
     //    tile.zoom(), tile.latitude(), tile.longitude());
@@ -707,8 +710,10 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
     int64 deltaY = toCurrentZoom(m_latitude - tile.latitude(), m_zoom);
     //RHO_MAP_TRACE2("paintTile: deltaX=%lld, deltaY=%lld", deltaX, deltaY);
 
-    int imgWidth = image->width();
-    int imgHeight = image->height();
+    int imgWidth = TILE_SIZE;
+	if (image != NULL) image->width();
+    int imgHeight = TILE_SIZE;
+	if (image != NULL) image->height();
 
     //RHO_MAP_TRACE2("paintTile: imgWidth=%d, imgHeight=%d", imgWidth, imgHeight);
     //RHO_MAP_TRACE2("paintTile: m_width=%d, m_height=%d", m_width, m_height);
@@ -741,7 +746,12 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
             if (y + imgHeight < 0)
                 continue;
 
-            context->drawImage((int)x, (int)y, image);
+			if (image != NULL) {
+				context->drawImage((int)x, (int)y, image);
+			}
+			else {
+				context->fillRect((int)x, (int)y, imgWidth, imgHeight, BACKGROUND_COLOR);
+			}
         }
     }
 }
@@ -756,11 +766,11 @@ void ESRIMapView::paintAnnotation(IDrawingContext *context, Annotation const &an
     int pinWidth = m_pin->width();
     int pinHeight = m_pin->height();
 
-    int64 x = toScreenCoordinateX(ann.longitude());
-    if (x + pinWidth/2 < 0 || x - pinWidth/2 > m_width)
+    int64 x = toScreenCoordinateX(ann.longitude()) + m_pin_offset_x;
+    if (((x + pinWidth) < 0) || (x > m_width))
         return;
-    int64 y = toScreenCoordinateY(ann.latitude());
-    if (y + pinHeight/2 < 0 || y - pinHeight/2 > m_height)
+    int64 y = toScreenCoordinateY(ann.latitude()) + m_pin_offset_y;
+    if (((y + pinHeight) < 0) || (y > m_height))
         return;
 
     context->drawImage((int)x, (int)y, m_pin);

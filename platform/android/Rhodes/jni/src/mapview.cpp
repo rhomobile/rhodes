@@ -80,7 +80,7 @@ public:
 
     void drawImage(int x, int y, IDrawingImage *image);
     void drawText(int x, int y, String const &text, int color);
-
+    void fillRect(int x, int y, int width, int height, int color) {}
 private:
     jobject m_device;
     jobject m_canvas;
@@ -104,8 +104,8 @@ public:
     void setMapView(IMapView *mv);
     IMapView *mapView() const {return m_mapview;}
 
-    IDrawingImage* createImage(String const &path);
-    IDrawingImage* createImage(void const *p, size_t s);
+    IDrawingImage* createImage(String const &path, bool useAlpha);
+    IDrawingImage* createImage(void const *p, size_t s, bool useAlpha);
     IDrawingImage* cloneImage(IDrawingImage *image);
     void destroyImage(IDrawingImage* image);
 
@@ -263,7 +263,7 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
 
-IDrawingImage *AndroidMapDevice::createImage(String const &path)
+IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
 {
     RHO_MAP_TRACE1("createImage: %s", path.c_str());
 
@@ -280,7 +280,7 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path)
     return image;
 }
 
-IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size)
+IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool useAlpha)
 {
     RHO_MAP_TRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
 
