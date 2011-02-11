@@ -6,7 +6,11 @@
 #include <windows.h>
 #include <commctrl.h>
 
+#if defined(_WIN32_WCE)
 #include <imaging.h>
+#else
+struct IImage;
+#endif
 
 #include <string>
 #include <string>
@@ -53,7 +57,7 @@ public:
 	virtual int height() const {return mHeight;}
 
 private:
-	HDC mMemoryDC;
+//	HDC mMemoryDC;
 	HBITMAP mMemoryBitmap;
 	unsigned short* mBuf; // do not delete it - it controlled by Bitmap
 	int mWidth;

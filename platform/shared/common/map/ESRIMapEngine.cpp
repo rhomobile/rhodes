@@ -750,7 +750,8 @@ void ESRIMapView::paintTile(IDrawingContext *context, Tile const &tile)
 				context->drawImage((int)x, (int)y, image);
 			}
 			else {
-				context->fillRect((int)x, (int)y, imgWidth, imgHeight, BACKGROUND_COLOR);
+                //TODO: draw grey image
+				//context->fillRect((int)x, (int)y, imgWidth, imgHeight, BACKGROUND_COLOR);
 			}
         }
     }
