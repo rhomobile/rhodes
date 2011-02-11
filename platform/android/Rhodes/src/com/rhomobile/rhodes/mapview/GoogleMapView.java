@@ -33,6 +33,8 @@ public class GoogleMapView extends MapActivity {
 	private static final String SETTINGS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "settings.";
 	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "annotations.";
 	
+	private static GoogleMapView mc = null;
+	
 	private ServiceConnection mServiceConnection = null;
 	
 	private com.google.android.maps.MapView view;
@@ -45,7 +47,6 @@ public class GoogleMapView extends MapActivity {
 	
 	private Vector<Annotation> annotations;
 	
-	/*
 	private static class Coordinates {
 		public double latitude;
 		public double longitude;
@@ -55,15 +56,12 @@ public class GoogleMapView extends MapActivity {
 			longitude = 0;
 		}
 	};
-	*/
 	
-	//private Coordinates center = new Coordinates();
+	private Coordinates center = new Coordinates();
 	
-	/*
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
-	*/
 	
 	@Override
 	public void onDestroy() {
@@ -86,6 +84,8 @@ public class GoogleMapView extends MapActivity {
 			public void onServiceConnected(ComponentName name, IBinder service) {}
 		};
 		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		
+		mc = this;
 		
 		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		
@@ -165,8 +165,8 @@ public class GoogleMapView extends MapActivity {
 				try {
 					double lat = Double.parseDouble(latitude);
 					double lon = Double.parseDouble(longitude);
-					//center.latitude = lat;
-					//center.longitude = lon;
+					center.latitude = lat;
+					center.longitude = lon;
 					controller.setCenter(new GeoPoint((int)(lat*1000000), (int)(lon*1000000)));
 				}
 				catch (NumberFormatException e) {
@@ -257,8 +257,8 @@ public class GoogleMapView extends MapActivity {
 				ann.longitude = addr.getLongitude();
 				if (ann.type.equals("center")) {
 					MapController controller = view.getController();
-					//center.latitude = ann.latitude;
-					//center.longitude = ann.longitude;
+					center.latitude = ann.latitude;
+					center.longitude = ann.longitude;
 					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
 					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
 				}
@@ -281,11 +281,10 @@ public class GoogleMapView extends MapActivity {
 		return false;
 	}
 	
-	/*
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
 		try {
-			Intent intent = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
+			Intent intent = new Intent(RhodesActivity.getContext(), MapView.class);
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
@@ -388,9 +387,7 @@ public class GoogleMapView extends MapActivity {
 			reportFail("create", e);
 		}
 	}
-	*/
 	
-	/*
 	public static void close() {
 		try {
 			PerformOnUiThread.exec(new Runnable() {
@@ -434,5 +431,4 @@ public class GoogleMapView extends MapActivity {
 			return 0;
 		}
 	}
-	*/
 }
