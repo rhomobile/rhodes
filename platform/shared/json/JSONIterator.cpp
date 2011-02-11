@@ -231,6 +231,16 @@ uint64 CJSONEntry::getUInt64(const char* name)
     return nRes;
 }
 
+double CJSONEntry::getDouble(const char* name)
+{
+    double res = 0;
+    struct json_object* obj = json_object_object_get(m_object, const_cast<char*>(name));
+    if (obj != 0)
+        res = json_object_get_double(obj);
+
+    return res;
+}
+
 /*
 uint64 CJSONEntry::getUInt64(const char* name)
 {

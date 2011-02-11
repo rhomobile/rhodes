@@ -11,10 +11,10 @@ import com.rhomobile.rhodes.WebView;
 
 public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 
-	private MapView mainView;
+	private GoogleMapView mainView;
 	private Vector<Annotation> annotations;
 	
-	public AnnotationsOverlay(MapView view, Drawable marker) {
+	public AnnotationsOverlay(GoogleMapView view, Drawable marker) {
 		super(boundCenterBottom(marker));
 		mainView = view;
 		annotations = new Vector<Annotation>();

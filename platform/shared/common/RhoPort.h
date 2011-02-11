@@ -8,6 +8,17 @@
 #include <windows.h>
 #include <time.h>
 
+#if defined(OS_WINDOWS)
+#define _USE_MATH_DEFINES
+#endif
+
+#if defined(OS_WINCE)
+#define M_PI 3.14159265358979323846
+#define M_LN2 0.69314718055994530942
+#endif
+
+#include <math.h>
+
 typedef int socklen_t;
 
 #if defined(OS_WINCE)
