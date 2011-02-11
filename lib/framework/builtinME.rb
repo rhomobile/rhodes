@@ -93,7 +93,7 @@ module Enumerable
 
     def sort_by &block
         array_of_tuples = []
-        each {|x| puts "x: #{x}"; array_of_tuples.push([x, yield(x)])}
+        each {|x| array_of_tuples.push([x, yield(x)])}
         array_of_tuples = array_of_tuples.sort {|x, y| x[1] <=> y[1]}
         return array_of_tuples.collect {|x| x[0]}
     end
