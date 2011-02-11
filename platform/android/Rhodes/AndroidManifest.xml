@@ -42,6 +42,9 @@
             android:name="com.rhomobile.rhodes.mapview.MapView" />
         
         <activity
+            android:name="com.rhomobile.rhodes.mapview.GoogleMapView" />
+        
+        <activity
             android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity" />
         
         <receiver
