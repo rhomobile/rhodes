@@ -717,7 +717,7 @@ public class GoogleMapField extends Field implements RhoMapField {
 		public int compare (Object o1, Object o2) {
 			long l1 = ((CachedImage)o1).lastUsed;
 			long l2 = ((CachedImage)o2).lastUsed;
-			return l1 < l2 ? 1 : l1 > l2 ? -1 : 0;
+			return l1 < l2 ? -1 : l1 > l2 ? 1 : 0;
 		}
 		
 	};
