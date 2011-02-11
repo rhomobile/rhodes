@@ -98,22 +98,9 @@ public:
 };
 */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class CRhoMapViewDlg : public //CDialog
 #if defined(OS_WINDOWS)
-	COkCancelModalDialog<CRhoMapViewDlg>
+	CDialogImpl<CRhoMapViewDlg>
 #else
 	CDialogImpl <CRhoMapViewDlg>
 #endif	

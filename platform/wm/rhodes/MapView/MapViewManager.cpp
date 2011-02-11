@@ -111,8 +111,8 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 #else 
 
-	CreateButtons();
-	GotoDlgCtrl(m_btnOk);
+	//CreateButtons();
+	//GotoDlgCtrl(m_btnOk);
 
 #endif
 
@@ -223,6 +223,7 @@ void CRhoMapViewDlg::doClose() {
 void CRhoMapViewDlg::requestRedraw() {
 	RHO_MAP_TRACE("redraw requested !");
 	InvalidateRect(NULL, FALSE);
+    //UpdateWindow();
 }
 
 LRESULT CRhoMapViewDlg::OnTouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
