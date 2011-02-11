@@ -1,434 +1,318 @@
 package com.rhomobile.rhodes.mapview;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.RelativeLayout;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
+import android.widget.ZoomButtonsController;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
-public class MapView extends MapActivity {
+public class MapView extends BaseActivity implements MapTouch {
+	
+	private static final String TAG = MapView.class.getSimpleName();
+	
+	private static final boolean ZOOM_ANIMATION_ENABLED = true;
+	
+	private static final int ZOOM_RESOLUTION = 50;
+	
+	private static final boolean ENABLE_MULTI_TOUCH = false;
+	
+	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".MapView";
+	
+	public native void setSize(MapView javaDevice, long nativeDevice, int width, int height);
+	
+	public native void setPinImage(long nativeDevice, Bitmap pin);
+	
+	public native int minZoom(long nativeDevice);
+	public native int maxZoom(long nativeDevice);
+	public native int zoom(long nativeDevice);
+	public native void setZoom(long nativeDevice, int zoom);
+	
+	public native void move(long nativeDevice, int dx, int dy);
+	
+	public native void paint(long nativeDevice, Canvas canvas);
+	public native void destroy(long nativeDevice);
+	
+	private TouchHandler mTouchHandler;
+	
+	private Touch mTouchFirst;
+	private Touch mTouchSecond;
+	private double mDistance;
+	private float mScale;
+	
+	private View mSurface;
+	private ZoomButtonsController mZoomController;
+	
+	private long mNativeDevice;
+	
+	private TouchHandler createTouchHandler() {
+		String className;
+		int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+		if (sdkVersion < Build.VERSION_CODES.ECLAIR)
+			className = "OneTouchHandler";
+		else
+			className = "MultiTouchHandler";
+		
+		try {
+			String pkgname = TouchHandler.class.getPackage().getName();
+			String fullName = pkgname + "." + className;
+			Class<? extends TouchHandler> klass =
+				Class.forName(fullName).asSubclass(TouchHandler.class);
+			return klass.newInstance();
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
 
-	private static final String TAG = "MapView";
-	
-	private static final String SETTINGS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "settings.";
-	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "annotations.";
-	
-	private static MapView mc = null;
-	
-	private ServiceConnection mServiceConnection = null;
-	
-	private com.google.android.maps.MapView view;
-	private AnnotationsOverlay annOverlay;
-	
-	private double spanLat = 0;
-	private double spanLon = 0;
-	
-	private String apiKey;
-	
-	private Vector<Annotation> annotations;
-	
-	private static class Coordinates {
-		public double latitude;
-		public double longitude;
-		
-		public Coordinates() {
-			latitude = 0;
-			longitude = 0;
+	public static void create(long nativeDevice) {
+		RhodesActivity r = RhodesActivity.getInstance();
+		if (r == null) {
+			Logger.E(TAG, "Can't create map view because main activity is null");
+			return;
 		}
-	};
-	
-	private Coordinates center = new Coordinates();
-	
-	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+		
+		Intent intent = new Intent(r, MapView.class);
+		intent.putExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", nativeDevice);
+		r.startActivity(intent);
 	}
 	
 	@Override
-	public void onDestroy() {
-		if (mServiceConnection != null) {
-			unbindService(mServiceConnection);
-			mServiceConnection = null;
-		}
-		super.onDestroy();
-	}
-	
-	@Override
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		
-		Intent intent = new Intent(this, RhodesService.class);
-		mServiceConnection = new ServiceConnection() {
+		mNativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
+		if (mNativeDevice == 0)
+			throw new IllegalArgumentException();
+		
+		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
+		setPinImage(mNativeDevice, pin);
+		
+		mTouchHandler = createTouchHandler();
+		mTouchHandler.setMapTouch(this);
+		
+		FrameLayout pv = new FrameLayout(this);
+		setContentView(pv);
+		
+		mSurface = new View(this) {
+			
 			@Override
-			public void onServiceDisconnected(ComponentName name) {}
+			protected void dispatchDraw(Canvas canvas) {
+				//super.dispatchDraw(canvas);
+				paint(mNativeDevice, canvas);
+			}
+			
 			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {}
+			protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+				super.onSizeChanged(w, h, oldW, oldH);
+				if (w != oldW || h != oldH)
+					setSize(MapView.this, mNativeDevice, w, h);
+			}
+			
+			@Override
+			protected void onDetachedFromWindow() {
+				mZoomController.setVisible(false);
+			}
+			
+			@Override
+			public boolean onTouchEvent (MotionEvent event) {
+				mZoomController.setVisible(true);
+				
+				if (mTouchHandler.handleTouch(event))
+					return true;
+				
+				return super.onTouchEvent(event);
+			}
 		};
-		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 		
-		mc = this;
+		pv.addView(mSurface, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
-		
-		RelativeLayout layout = new RelativeLayout(this);
-		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		
-		// Extrace parameters
-		Bundle extras = getIntent().getExtras();
-		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
-		
-		// Extract settings
-		String map_type = extras.getString(SETTINGS_PREFIX + "map_type");
-		if (map_type == null)
-			map_type = "roadmap";
-		
-		boolean zoom_enabled = extras.getBoolean(SETTINGS_PREFIX + "zoom_enabled");
-		//boolean scroll_enabled = extras.getBoolean(SETTINGS_PREFIX + "scroll_enabled");
-		//boolean shows_user_location = extras.getBoolean(SETTINGS_PREFIX + "shows_user_location");
-		
-		// Extract annotations
-		int size = extras.getInt(ANNOTATIONS_PREFIX + "size") + 1;
-		annotations = new Vector<Annotation>(size);
-		for (int i = 0; i < size; ++i) {
-			Annotation ann = new Annotation();
-			String prefix = ANNOTATIONS_PREFIX + Integer.toString(i) + ".";
+		mZoomController = new ZoomButtonsController(mSurface);
+		mZoomController.setAutoDismissed(false);
+		mZoomController.setVisible(true);
+		mZoomController.setOnZoomListener(new ZoomButtonsController.OnZoomListener() {
 			
-			ann.latitude = 10000;
-			ann.longitude = 10000;
-			
-			String lat = extras.getString(prefix + "latitude");
-			if (lat != null) {
-				try {
-					ann.latitude = Double.parseDouble(lat);
-				}
-				catch (NumberFormatException e) {}
+			@Override
+			public void onZoom(boolean zoomIn) {
+				zoomAnimated(zoomIn ? 1 : -1);
 			}
 			
-			String lon = extras.getString(prefix + "longitude");
-			if (lon != null) {
-				try {
-					ann.longitude = Double.parseDouble(lon);
-				}
-				catch (NumberFormatException e) {}
-			}
-			
-			ann.type = "ann";
-			ann.address = extras.getString(prefix + "address");
-			ann.title = extras.getString(prefix + "title");
-			ann.subtitle = extras.getString(prefix + "subtitle");
-			ann.url = extras.getString(prefix + "url");
-			if (ann.url != null)
-				ann.url = RhodesService.getInstance().normalizeUrl(ann.url);
-			annotations.addElement(ann);
-		}
-		
-		// Create view
-		view = new com.google.android.maps.MapView(this, apiKey);
-		view.setClickable(true);
-		layout.addView(view);
-		
-		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
-		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
-		annOverlay = new AnnotationsOverlay(this, marker);
-		view.getOverlays().add(annOverlay);
-		
-		// Apply extracted parameters
-		view.setBuiltInZoomControls(zoom_enabled);
-		view.setSatellite(map_type.equals("hybrid") || map_type.equals("satellite"));
-		view.setTraffic(false);
-		
-		MapController controller = view.getController();
-		String type = extras.getString(SETTINGS_PREFIX + "region");
-		if (type.equals("square")) {
-			String latitude = extras.getString(SETTINGS_PREFIX + "region.latitude");
-			String longitude = extras.getString(SETTINGS_PREFIX + "region.longitude");
-			if (latitude != null && longitude != null) {
-				try {
-					double lat = Double.parseDouble(latitude);
-					double lon = Double.parseDouble(longitude);
-					center.latitude = lat;
-					center.longitude = lon;
-					controller.setCenter(new GeoPoint((int)(lat*1000000), (int)(lon*1000000)));
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, "Wrong region center: " + e.getMessage());
-				}
-			}
-			
-			String latSpan = extras.getString(SETTINGS_PREFIX + "region.latSpan");
-			String lonSpan = extras.getString(SETTINGS_PREFIX + "region.lonSpan");
-			if (latSpan != null && lonSpan != null) {
-				try {
-					double lat = Double.parseDouble(latSpan);
-					double lon = Double.parseDouble(lonSpan);
-					controller.zoomToSpan((int)(lat*1000000), (int)(lon*1000000));
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, "Wrong region span: " + e.getMessage());
-				}
-			}
-		}
-		else if (type.equals("circle")) {
-			String center = extras.getString(SETTINGS_PREFIX + "region.center");
-			String radius = extras.getString(SETTINGS_PREFIX + "region.radius");
-			if (center != null && radius != null) {
-				try {
-					double span = Double.parseDouble(radius);
-					spanLat = spanLon = span;
-					Annotation ann = new Annotation();
-					ann.type = "center";
-					ann.latitude = ann.longitude = 10000;
-					ann.address = center;
-					annotations.insertElementAt(ann, 0);
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, "Wrong region radius: " + e.getMessage());
-				}
-			}
-		}
-		
-		view.preLoad();
-		
-		Thread geocoding = new Thread(new Runnable() {
-			public void run() {
-				doGeocoding();
-			}
+			@Override
+			public void onVisibilityChanged(boolean visible) {}
 		});
-		geocoding.start();
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		RhodesService.activityStarted();
 	}
 	
 	@Override
 	protected void onStop() {
-		RhodesService.activityStopped();
+		destroy(mNativeDevice);
+		mNativeDevice = 0;
+		finish();
 		super.onStop();
 	}
 	
-	private void doGeocoding() {
-		Context context = RhodesActivity.getContext();
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+	}
+	
+	public int zoom(int n) {
+		int min = minZoom(mNativeDevice);
+		int max = maxZoom(mNativeDevice);
+		int zoom = zoom(mNativeDevice);
+		zoom += n;
+		if (zoom < min) zoom = min;
+		if (zoom > max) zoom = max;
 		
-		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
-			Annotation ann = annotations.elementAt(i);
-			if (ann.latitude == 10000 || ann.longitude == 10000)
-				continue;
-			annOverlay.addAnnotation(ann);
+		mZoomController.setZoomOutEnabled(zoom > min);
+		mZoomController.setZoomInEnabled(zoom < max);
+		return zoom;
+	}
+	
+	public void zoomAnimated(int n) {
+		int zoom = zoom(n);
+		
+		if (!ZOOM_ANIMATION_ENABLED)
+			setZoom(mNativeDevice, zoom);
+		else {
+			final int finalZoom = zoom;
+			
+			float from = 1f;
+			float to = from * (n > 0 ? 2f : 0.5f);
+			Animation anim = new ScaleAnimation(from, to, from, to,
+					Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+			anim.setDuration(400);
+			anim.setFillAfter(false);
+			anim.setAnimationListener(new Animation.AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {}
+				@Override
+				public void onAnimationRepeat(Animation animation) {}
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					setZoom(mNativeDevice, finalZoom);
+				}
+			});
+
+			mSurface.startAnimation(anim);
 		}
-		
-		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
-			Annotation ann = annotations.elementAt(i);
-			if (ann.latitude != 10000 && ann.longitude != 10000)
-				continue;
-			if (ann.address == null)
-				continue;
-			
-			Geocoder gc = new Geocoder(context);
-			try {
-				List<Address> addrs = gc.getFromLocationName(ann.address, 1);
-				if (addrs.size() == 0)
-					continue;
-				
-				Address addr = addrs.get(0);
-				
-				ann.latitude = addr.getLatitude();
-				ann.longitude = addr.getLongitude();
-				if (ann.type.equals("center")) {
-					MapController controller = view.getController();
-					center.latitude = ann.latitude;
-					center.longitude = ann.longitude;
-					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
-					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
-				}
-				else
-					annOverlay.addAnnotation(ann);
-			} catch (IOException e) {
-				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
+	}
+	
+	public void drawImage(Canvas canvas, int x, int y, Bitmap bm) {
+		Paint paint = new Paint();
+		canvas.drawBitmap(bm, x, y, paint);
+	}
+	
+	public void drawText(Canvas canvas, int x, int y, String text, int color) {
+		Paint paint = new Paint();
+		paint.setColor(color);
+		canvas.drawText(text, x, y, paint);
+	}
+	
+	public void redraw() {
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				mSurface.invalidate();
 			}
-			
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					view.invalidate();
-				}
-			}, false);
+		}, false);
+	}
+	
+	public static Bitmap createImage(String path) {
+		return BitmapFactory.decodeFile(path);
+	}
+	
+	public static Bitmap createImage(byte[] data) {
+		return BitmapFactory.decodeByteArray(data, 0, data.length);
+	}
+	
+	public static void destroyImage(Bitmap bm) {
+		bm.recycle();
+	}
+
+	@Override
+	public void touchDown(Touch first, Touch second) {
+		mTouchFirst = first;
+		mTouchSecond = second;
+		if (ENABLE_MULTI_TOUCH) {
+			if (first != null && second != null) {
+				mDistance = Math.sqrt(Math.pow(first.x - second.x, 2) +
+						Math.pow(first.y - second.y, 2));
+				mScale = 1f;
+			}
 		}
 	}
 
 	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void create(String gapiKey, Map<String, Object> params) {
-		try {
-			Intent intent = new Intent(RhodesActivity.getContext(), MapView.class);
-			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
-			
-			Object settings = params.get("settings");
-			if (settings != null && (settings instanceof Map<?,?>)) {
-				Map<Object, Object> hash = (Map<Object, Object>)settings;
-				Object map_type = hash.get("map_type");
-				if (map_type != null && (map_type instanceof String))
-					intent.putExtra(SETTINGS_PREFIX + "map_type", (String)map_type);
-				
-				Object zoom_enabled = hash.get("zoom_enabled");
-				if (zoom_enabled != null && (zoom_enabled instanceof String))
-					intent.putExtra(SETTINGS_PREFIX + "zoom_enabled", ((String)zoom_enabled).equalsIgnoreCase("true"));
-				
-				Object scroll_enabled = hash.get("scroll_enabled");
-				if (scroll_enabled != null && (scroll_enabled instanceof String))
-					intent.putExtra(SETTINGS_PREFIX + "scroll_enabled", ((String)scroll_enabled).equalsIgnoreCase("true"));
-				
-				Object shows_user_location = hash.get("shows_user_location");
-				if (shows_user_location != null && (shows_user_location instanceof String))
-					intent.putExtra(SETTINGS_PREFIX + "shows_user_location", ((String)shows_user_location).equalsIgnoreCase("true"));
-				
-				Object region = hash.get("region");
-				if (region != null) {
-					if (region instanceof Vector<?>) {
-						Vector<String> reg = (Vector<String>)region;
-						if (reg.size() == 4) {
-							intent.putExtra(SETTINGS_PREFIX + "region", "square");
-							intent.putExtra(SETTINGS_PREFIX + "region.latitude", reg.elementAt(0));
-							intent.putExtra(SETTINGS_PREFIX + "region.longitude", reg.elementAt(1));
-							intent.putExtra(SETTINGS_PREFIX + "region.latSpan", reg.elementAt(2));
-							intent.putExtra(SETTINGS_PREFIX + "region.lonSpan", reg.elementAt(3));
-						}
-					}
-					else if (region instanceof Map<?,?>) {
-						Map<Object, Object> reg = (Map<Object,Object>)region;
-						String center = null;
-						String radius = null;
-						
-						Object centerObj = reg.get("center");
-						if (centerObj != null && (centerObj instanceof String))
-							center = (String)centerObj;
-						
-						Object radiusObj = reg.get("radius");
-						if (radiusObj != null && (radiusObj instanceof String))
-							radius = (String)radiusObj;
-						
-						if (center != null && radius != null) {
-							intent.putExtra(SETTINGS_PREFIX + "region", "circle");
-							intent.putExtra(SETTINGS_PREFIX + "region.center", center);
-							intent.putExtra(SETTINGS_PREFIX + "region.radius", radius);
-						}
-					}
+	public void touchUp(Touch first, Touch second) {
+		mTouchFirst = first;
+		mTouchSecond = second;
+		if (ENABLE_MULTI_TOUCH) {
+			if (ZOOM_ANIMATION_ENABLED) {
+				if (first != null && second != null) {
+					double newDistance = Math.sqrt(Math.pow(first.x - second.x, 2) +
+							Math.pow(first.y - second.y, 2));
+					int n = (int)((newDistance - mDistance)/ZOOM_RESOLUTION);
+					int zoom = zoom(n);
+					setZoom(mNativeDevice, zoom);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void touchMove(Touch first, Touch second) {
+		if (first == null || second == null) {
+			// Move
+			Touch t = first == null ? second : first;
+			Touch prev = first == null ? mTouchSecond : mTouchFirst;
 			
-			Object annotations = params.get("annotations");
-			if (annotations != null && (annotations instanceof Vector<?>)) {
-				Vector<Object> arr = (Vector<Object>)annotations;
+			int dx = (int)(prev.x - t.x);
+			int dy = (int)(prev.y - t.y);
+			prev.x = t.x;
+			prev.y = t.y;
+			
+			if (dx != 0 || dy != 0)
+				move(mNativeDevice, dx, dy);
+		}
+		
+		if (ENABLE_MULTI_TOUCH) {
+			if (first != null && second != null) {
+				double oldDistance = Math.sqrt(Math.pow(mTouchFirst.x - mTouchSecond.x, 2) +
+						Math.pow(mTouchFirst.y - mTouchSecond.y, 2));
+				double newDistance = Math.sqrt(Math.pow(first.x - second.x, 2) +
+						Math.pow(first.y - second.y, 2));
 				
-				intent.putExtra(ANNOTATIONS_PREFIX + "size", arr.size());
-				
-				for (int i = 0, lim = arr.size(); i < lim; ++i) {
-					Object annObj = arr.elementAt(i);
-					if (annObj == null || !(annObj instanceof Map<?, ?>))
-						continue;
-					
-					Map<Object, Object> ann = (Map<Object, Object>)annObj;
-					
-					String prefix = ANNOTATIONS_PREFIX + Integer.toString(i) + ".";
-					
-					Object latitude = ann.get("latitude");
-					if (latitude != null && (latitude instanceof String))
-						intent.putExtra(prefix + "latitude", (String)latitude);
-					
-					Object longitude = ann.get("longitude");
-					if (longitude != null && (longitude instanceof String))
-						intent.putExtra(prefix + "longitude", (String)longitude);
-					
-					Object address = ann.get("street_address");
-					if (address != null && (address instanceof String))
-						intent.putExtra(prefix + "address", (String)address);
-					
-					Object title = ann.get("title");
-					if (title != null && (title instanceof String))
-						intent.putExtra(prefix + "title", (String)title);
-					
-					Object subtitle = ann.get("subtitle");
-					if (subtitle != null && (subtitle instanceof String))
-						intent.putExtra(prefix + "subtitle", (String)subtitle);
-					
-					Object url = ann.get("url");
-					if (url != null && (url instanceof String))
-						intent.putExtra(prefix + "url", (String)url);
+				if (ZOOM_ANIMATION_ENABLED) {
+					float newScale = mScale * (float)Math.pow(2, newDistance - oldDistance);
+					Animation anim = new ScaleAnimation(mScale, newScale, mScale, newScale,
+							Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+					anim.setDuration(400);
+					anim.setFillAfter(true);
+					mSurface.startAnimation(anim);
 				}
+				else {
+					int n = (int)((newDistance - oldDistance)/ZOOM_RESOLUTION);
+					int zoom = zoom(n);
+					setZoom(mNativeDevice, zoom);
+				}
+				
+				mTouchFirst = first;
+				mTouchSecond = second;
 			}
-			
-			RhodesService.getInstance().startActivity(intent);
-		}
-		catch (Exception e) {
-			reportFail("create", e);
-		}
-	}
-	
-	public static void close() {
-		try {
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					if (mc != null) {
-						mc.finish();
-						mc = null;
-					}
-				}
-			}, false);
-		}
-		catch (Exception e) {
-			reportFail("close", e);
-		}
-	}
-	
-	public static boolean isStarted() {
-		return mc != null;
-	}
-	
-	public static double getCenterLatitude() {
-		try {
-			if (mc == null)
-				return 0;
-			return mc.center.latitude;
-		}
-		catch (Exception e) {
-			reportFail("getCenterLatitude", e);
-			return 0;
-		}
-	}
-	
-	public static double getCenterLongitude() {
-		try {
-			if (mc == null)
-				return 0;
-			return mc.center.longitude;
-		}
-		catch (Exception e) {
-			reportFail("getCenterLongitude", e);
-			return 0;
 		}
 	}
 }
