@@ -77,6 +77,8 @@ public class GoogleGeoCoding extends Thread implements GeoCoding {
 			}
 			catch (Exception e) {
 				LOG.ERROR("Processing of geo coding command failed", e);
+			}finally{
+				LOG.INFO("Thread exit.");
 			}
 		}
 	}
