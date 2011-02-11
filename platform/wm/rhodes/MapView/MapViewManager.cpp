@@ -16,6 +16,8 @@
 #include "MapViewManager.h"
 #include "common/RhoNativeViewManager.h"
 
+#include "common/RhoFilePath.h"
+
 //#include "ESRIMapProvider.h"
 
 
@@ -100,6 +102,11 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
 		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
+
+		String strImagePath = "lib/res/blue_pushpin.png";
+		String fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
+		IDrawingImage* pinImg = ourDrawingDevice.createImage(fullImagePath, true);
+		ourMapView->setPinImage(pinImg, -10, -35);
 	}
 
 #else 

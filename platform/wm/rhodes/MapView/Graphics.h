@@ -22,52 +22,26 @@ using namespace rho::common::map;
 using namespace rho;
 using namespace stdext;
 
-/*
-class IDrawingImage {
+
+
+class WMAlphaBitmap {
 public:
-	virtual ~IDrawingImage(){}
-	virtual int width() const = 0;
-	virtual int height() const = 0;
+	WMAlphaBitmap(IImage* img);
+	virtual ~WMAlphaBitmap();
+	virtual int width() const {return mWidth;}
+	virtual int height() const {return mHeight;}
+	
+	virtual void draw(unsigned short int *buf, int lineSizeInBytes);
+
+private:
+	unsigned int *mImgBuf;
+	int mWidth;
+	int mHeight;
 };
-
-class IDrawingDevice
-{
-public:
-	virtual ~IDrawingDevice(){}
-
-	virtual IDrawingImage* createImage(String path) = 0;
-	virtual IDrawingImage* createImage(void* p, size_t s) = 0;
-	virtual void destroyImage(IDrawingImage* image) = 0;
-
-	virtual void requestRedraw() = 0;
-
-
-
-};
-
-class IDrawingContext {
-public:
-	virtual ~IDrawingContext(){}
-
-	virtual int getWidth() = 0;
-	virtual int getHeight() = 0;
-
-	virtual void drawImage(int x, int y, IDrawingImage* image) = 0;
-
-	virtual void drawText(int x, int y, String &text, int color) = 0;
-
-	virtual void getTextRect(int x, int y, String &text, RECT* resultRect) = 0;
-
-	virtual void fillRect(int x, int y, int width, int height, int color) = 0;
-
-	virtual void drawLine(int x1, int y1, int x2, int y2, int color) = 0;
-
-};
-*/
 
 class WMBitmap {
 public:
-	WMBitmap(IImage* img);
+	WMBitmap(IImage* img, bool useAlpha);
 	virtual public ~WMBitmap();
 
 	virtual void draw(HDC hdc, int x, int y);
@@ -86,13 +60,14 @@ private:
 	int mHeight;
 	int mRowByteSize;
 	int mReferenceCount;
+	WMAlphaBitmap* mAlphaBitmap;
 };
 
 
 class DrawingImageImpl : public IDrawingImage {
 public:
-	DrawingImageImpl(void const *p, int size);
-	DrawingImageImpl(const char* path);
+	DrawingImageImpl(void const *p, int size, bool useAlpha);
+	DrawingImageImpl(const char* path, bool useAlpha);
 	DrawingImageImpl(WMBitmap* bitmap);
 	virtual ~DrawingImageImpl();
 	
@@ -104,7 +79,7 @@ public:
 	virtual int height() const {return mHeight;}
 
 private:
-	void init(const char* path, void const *p, int size, WMBitmap* bitmap);
+	void init(const char* path, void const *p, int size, WMBitmap* bitmap, bool useAlpha);
 	//IImage* mImage;
 	WMBitmap* mBitmap;
 	int mWidth;
@@ -135,11 +110,11 @@ class DrawingDeviceImpl : public IDrawingDevice
 {
 public:
 
-	virtual IDrawingImage* createImage(String const &path) {
-		return new DrawingImageImpl(path.c_str());
+	virtual IDrawingImage* createImage(String const &path, bool useAlpha) {
+		return new DrawingImageImpl(path.c_str(), useAlpha);
 	}
-	virtual IDrawingImage* createImage(void const *p, size_t s) {
-		return new DrawingImageImpl(p, s);
+	virtual IDrawingImage* createImage(void const *p, size_t s, bool useAlpha) {
+		return new DrawingImageImpl(p, s, useAlpha);
 	}
 
 	virtual IDrawingImage* cloneImage(IDrawingImage *image) {
