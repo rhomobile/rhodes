@@ -244,8 +244,8 @@ void CRhodesApp::run()
 
     //rho_clientregister_create("iphone_client");
 #if defined( OS_WINCE ) || defined( OS_WINDOWS )
-    LOG(INFO) + "navigate to first start url";
-    RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
+//    LOG(INFO) + "navigate to first start url";
+//    RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
 #endif
 
     while (!m_bExit) {
