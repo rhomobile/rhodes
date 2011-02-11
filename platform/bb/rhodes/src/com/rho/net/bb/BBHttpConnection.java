@@ -127,7 +127,7 @@ public class BBHttpConnection implements IHttpConnection {
 
 	public void close() throws IOException 
 	{
-		if ( m_conn )
+		if ( m_conn != null )
 			m_conn.close();
 	}
 
