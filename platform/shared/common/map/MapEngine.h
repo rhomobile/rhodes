@@ -41,8 +41,8 @@ class IDrawingDevice
 public:
     virtual ~IDrawingDevice(){}
 
-    virtual IDrawingImage* createImage(String const &path) = 0;
-    virtual IDrawingImage* createImage(void const *p, size_t s) = 0;
+    virtual IDrawingImage* createImage(String const &path, bool useAlpha) = 0;
+    virtual IDrawingImage* createImage(void const *p, size_t s, bool useAlpha) = 0;
     virtual IDrawingImage* cloneImage(IDrawingImage *image) = 0;
     virtual void destroyImage(IDrawingImage* image) = 0;
 
@@ -56,6 +56,7 @@ public:
 
     virtual void drawImage(int x, int y, IDrawingImage *image) = 0;
     virtual void drawText(int x, int y, String const &text, int color) = 0;
+	virtual void fillRect(int x, int y, int width, int height, int color) = 0;
 };
 
 class Annotation

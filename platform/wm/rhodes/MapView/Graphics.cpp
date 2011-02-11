@@ -54,18 +54,18 @@ static void err_out(const char* text) {
 
 
 
-DrawingImageImpl::DrawingImageImpl(void const *p, int size) {
+DrawingImageImpl::DrawingImageImpl(void const *p, int size, bool useAlpha) {
 	RHO_MAP_TRACE1("create DrawingImage with buffer length = %d", size);
-	init(NULL, p, size, NULL);
+	init(NULL, p, size, NULL, useAlpha);
 }
 
-DrawingImageImpl::DrawingImageImpl(const char* path) {
+DrawingImageImpl::DrawingImageImpl(const char* path, bool useAlpha) {
 	RHO_MAP_TRACE1("create DrawingImage with filename = %s", path);
-	init(path, NULL, 0, NULL);
+	init(path, NULL, 0, NULL, useAlpha);
 }
 
 DrawingImageImpl::DrawingImageImpl(WMBitmap* bitmap) {
-	init(NULL, NULL, 0, bitmap);	
+	init(NULL, NULL, 0, bitmap, false);	
 }
 
 
@@ -79,7 +79,7 @@ DrawingImageImpl::~DrawingImageImpl() {
 	}
 }
 
-void DrawingImageImpl::init(const char* path, void const *p, int size, WMBitmap* bitmap) {
+void DrawingImageImpl::init(const char* path, void const *p, int size, WMBitmap* bitmap, bool useAlpha) {
 	mID = ++ourDrawingImageID;
 	RHO_MAP_TRACE1("DrawingImage create with ID = %d", mID);
 
@@ -133,7 +133,7 @@ void DrawingImageImpl::init(const char* path, void const *p, int size, WMBitmap*
 				mWidth = imgInfo.Width;
 				mHeight = imgInfo.Height;
 				RHO_MAP_TRACE2("Drawing Image was created with WIDTH = %d, HEIGHT = %d", mWidth, mHeight);
-				mBitmap = new WMBitmap(mimage);
+				mBitmap = new WMBitmap(mimage, useAlpha);
 				mimage->Release();
 			}
 			else {
@@ -229,7 +229,7 @@ void DrawingContextImpl::drawLine(int x1, int y1, int x2, int y2, int color) {
 }
 
 
-WMBitmap::WMBitmap(IImage* img/*unsigned short* buf, int width, int height, int row_byte_size*/) {
+WMBitmap::WMBitmap(IImage* img, bool useAlpha) {
 	mReferenceCount = 1;
 
 	ImageInfo imgInfo;
@@ -237,6 +237,8 @@ WMBitmap::WMBitmap(IImage* img/*unsigned short* buf, int width, int height, int 
 	mWidth = imgInfo.Width;
 	mHeight = imgInfo.Height;
 
+	mAlphaBitmap = NULL;
+	mBuf = NULL;
 
 	HDC windowDC = ::GetDC(getMainWnd());
 	HGDIOBJ resObj;
@@ -244,7 +246,7 @@ WMBitmap::WMBitmap(IImage* img/*unsigned short* buf, int width, int height, int 
 
 	mMemoryDC = CreateCompatibleDC(windowDC);
 
-	int mRowByteSize = mWidth*2;
+	mRowByteSize = mWidth*2;
 	if (((mWidth*2) & 0x3) != 0) {
 		mRowByteSize = ((mWidth*2) & (~0x3)) + 0x4;
 	}
@@ -284,7 +286,13 @@ WMBitmap::WMBitmap(IImage* img/*unsigned short* buf, int width, int height, int 
 	r.right = mWidth;
 	r.top = 0;
 	r.bottom = mHeight;
-	img->Draw(mMemoryDC, &r, NULL);
+
+	if (useAlpha) {
+		mAlphaBitmap = new WMAlphaBitmap(img);
+	}
+	else {
+		img->Draw(mMemoryDC, &r, NULL);
+	}
 }
 
 WMBitmap::~WMBitmap() {
@@ -296,9 +304,22 @@ WMBitmap::~WMBitmap() {
 		DeleteDC(mMemoryDC);
 		mMemoryDC = NULL;
 	}
+	if (mAlphaBitmap != NULL) {
+		delete mAlphaBitmap;
+		mAlphaBitmap = NULL;
+	}
 }
 
 void WMBitmap::draw(HDC hdc, int x, int y) {
+	if (mAlphaBitmap != NULL) {
+		::BitBlt(	mMemoryDC,
+					0, 0,
+					mWidth, mHeight,
+					hdc,
+					x, y,
+					SRCCOPY);
+		mAlphaBitmap->draw(mBuf, mRowByteSize);
+	}
 	::BitBlt(	hdc,
 		x, y,
 		mWidth, mHeight,
@@ -315,5 +336,164 @@ void WMBitmap::release() {
 	mReferenceCount--;
 	if (mReferenceCount <= 0) {
 		delete this;
+	}
+}
+
+
+
+
+
+WMAlphaBitmap::WMAlphaBitmap(IImage* img) {
+	
+	IImagingFactory *pImgFactory = NULL;
+
+	mWidth = 0;
+	mHeight = 0;
+	mImgBuf = NULL;
+
+	HRESULT co_init_result = CoInitializeEx(NULL, 0/*COINIT_APARTMENTTHREADED*/);
+	if ( (co_init_result == S_OK) || (co_init_result == S_FALSE)  ) {
+		msg_out("CoInitializeEx OK");
+		if (SUCCEEDED(CoCreateInstance (CLSID_ImagingFactory,
+			NULL,
+			CLSCTX_INPROC_SERVER,
+			IID_IImagingFactory,
+			(void **)&pImgFactory)))
+		{
+			ImageInfo imgInfo;
+			img->GetImageInfo(&imgInfo);
+			mWidth = imgInfo.Width;
+			mHeight = imgInfo.Height;
+			IBitmapImage* pBitmap = 0;
+
+			if ( SUCCEEDED(pImgFactory->CreateBitmapFromImage(	img,
+																mWidth,
+																mHeight,
+																PixelFormat32bppARGB,
+																InterpolationHintDefault,
+																&pBitmap) )) {
+				msg_out("Create Bitmap OK");
+				RECT rc = { 0, 0, mWidth, mHeight};
+				BitmapData bitmap_data;
+				if ( SUCCEEDED(pBitmap->LockBits(	&rc,
+													ImageLockModeRead,
+													PixelFormatDontCare,
+													&bitmap_data))) {
+					//
+					msg_out("Lock Bits OK");
+					void* src_buf = bitmap_data.Scan0;
+					int stride = bitmap_data.Stride;
+					int w = bitmap_data.Width;
+					int h = bitmap_data.Height;
+					mImgBuf = new unsigned int[w*h];
+					if (mImgBuf != 0) {
+						msg_out("Img buffer allocated OK");
+						// start convert
+						{
+							unsigned int* dst = mImgBuf;
+							unsigned int* src;
+							int x;
+							int y;
+							for (y = 0 ; y < h; y++) {
+								if (stride < 0) {
+									src = (unsigned int*)(((unsigned char*)src_buf) + (h-1-y)*(-stride));
+								}
+								else {
+									src = (unsigned int*)(((unsigned char*)src_buf) + y*(stride));
+								}
+								for (x = w; x > 0; x--) {
+									*dst++ = *src++;
+								}
+							}
+						}
+						msg_out("Convert to img buffer finished OK");
+						// finish convert
+					}
+					else {
+						err_out("Image Buffer not allocated !");
+					}
+					pBitmap->UnlockBits(&bitmap_data);
+				}
+				else {
+					err_out("Bitmap bits not locked !");
+				}
+				pBitmap->Release();
+			}
+		}
+		CoUninitialize();
+	}
+	else {
+		err_out("CoInitializeEx not initialized !");
+	}
+}
+
+WMAlphaBitmap::~WMAlphaBitmap() {
+	if (mImgBuf != NULL) {
+		delete mImgBuf;
+		mImgBuf = NULL;
+	}
+}
+
+#define GET_R_32(dw)  (((dw) & 0x00FF0000) >> 16)
+#define GET_G_32(dw)  (((dw) & 0x0000FF00) >> 8)
+#define GET_B_32(dw)  ((dw) & 0x000000FF)
+#define GET_A_32(dw)  (((dw) & 0xFF000000) >> 24)
+
+#define GET_R_16(dw)  (((dw) & 0xF800) >> 8)
+#define GET_G_16(dw)  (((dw) & 0x7E0) >> 3)
+#define GET_B_16(dw)  (((dw) & 0x1F) << 3)
+
+#define SET_R_16(dw,dwc)  dw = (unsigned short)(((dw) & (~0xF800)) | (((unsigned short)(dwc & 0xF8)) << 8))
+#define SET_G_16(dw,dwc)  dw = (unsigned short)(((dw) & (~0x7E0)) | (((unsigned short)(dwc & 0xF8)) << 3))
+#define SET_B_16(dw,dwc)  dw = (unsigned short)(((dw) & (~0x1F)) | (((unsigned short)(dwc & 0xF8)) >> 3))
+
+// Normalize - stretch from 0..255 to 0..256
+#define NORMALIZE_ALPHA(a)				a = (unsigned int)(a) + ((unsigned int)(a) >> 7)
+#define DENORMALIZE_ALPHA(a)			a = (unsigned int)(a) - ((unsigned int)(a - 1) >> 7)
+
+#define RENDER_R_16_32(dest, src, a)			SET_R_16( (dest), ( ((int)GET_R_16(dest) << 8) + ((int)GET_R_32(src) - (int)GET_R_16(dest))*(int)(a) ) >> 8 )
+#define RENDER_G_16_32(dest, src, a)			SET_G_16( (dest), ( ((int)GET_G_16(dest) << 8) + ((int)GET_G_32(src) - (int)GET_G_16(dest))*(int)(a) ) >> 8 )
+#define RENDER_B_16_32(dest, src, a)			SET_B_16( (dest), ( ((int)GET_B_16(dest) << 8) + ((int)GET_B_32(src) - (int)GET_B_16(dest))*(int)(a) ) >> 8 )
+#define RENDER_A_16_32(dest, src, a)			SET_A_16( (dest), ( ((int)GET_A_16(dest) << 8) + ((int)GET_A_32(src) - (int)GET_A_16(dest))*(int)(a) ) >> 8 )
+
+#define COLOR_32_TO_16(c)    ((unsigned short)(  ((c & 0xF80000) >> 8) | ((c & 0xF800) >> 5) | ((c & 0xF8) >> 3)))
+
+
+void RENDER_DST16_SRC32(unsigned short* pdst, unsigned int* psrc)
+{
+	register unsigned int src= *psrc;
+	register unsigned int srca = GET_A_32(src);
+	if (srca == 255)
+	{
+		*pdst = COLOR_32_TO_16(src);
+	}
+	else
+	{
+		if (srca != 0)
+		{
+			register unsigned short dst = *pdst;
+			NORMALIZE_ALPHA(srca);
+			RENDER_R_16_32(dst, src, srca);
+			RENDER_G_16_32(dst, src, srca);			
+			RENDER_B_16_32(dst, src, srca);			
+			*pdst = dst;
+		}
+	}
+}
+
+void WMAlphaBitmap::draw(unsigned short int *buf, int lineSizeInBytes) {
+	unsigned short* dst;
+	unsigned int* src = mImgBuf;
+
+	int x;
+	int y;
+
+	for (y = 0; y < mHeight; y++) {
+		src = mImgBuf + (mHeight-1-y)*mWidth;
+		dst = (unsigned short*)( ((unsigned char*)buf) + (lineSizeInBytes*y) );
+		
+		for (x = 0; x < mWidth; x++) {
+			RENDER_DST16_SRC32(dst++, src++);
+		}
 	}
 }

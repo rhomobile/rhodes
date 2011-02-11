@@ -229,6 +229,8 @@ private:
     TilesCache m_tiles_cache;
 
     IDrawingImage *m_pin;
+	int m_pin_offset_x;
+	int m_pin_offset_y;
 };
 
 class ESRIMapEngine : public IMapEngine
