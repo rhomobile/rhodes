@@ -60,6 +60,14 @@ public class MapViewScreen extends RhoMainScreen {
 	private int mTouchX;
 	private int mTouchY;
 	
+	private class Rect
+	{
+		public int left, right, top, bottom;
+		
+		boolean isInside( int x, int y){ return x >= left && x <= right && y >= top && y<=bottom;}
+	};
+	Rect mCalloutRect;
+	
 	private class PanModeMenuItem extends MenuItem {
 		
 		private MapViewScreen screen;
@@ -311,17 +319,31 @@ public class MapViewScreen extends RhoMainScreen {
 		graphics.drawLine(left, bottom + r, right, bottom + r);
 	}
 	
-	private void drawTitle(Graphics graphics, Annotation ann) {
-		String textToDraw = ann.title;
-		int width = graphics.getFont().getAdvance(textToDraw);
-		int height = graphics.getFont().getHeight();
+	private void drawTitle(Graphics graphics, Annotation ann) 
+	{
+		int nLines = 1;
+		if ( ann.title.length()>0 && ann.subtitle.length()>0 )
+			nLines++;
+		
+		int width = graphics.getFont().getAdvance(ann.title);
+		int wSubtitle = graphics.getFont().getAdvance(ann.subtitle);
+		if ( wSubtitle > width )
+			width = wSubtitle;
+		
+		int height = graphics.getFont().getHeight()*nLines;
 		
 		int annX = (int)mapField.toScreenCoordinateX(ann.coordinates.longitude);
 		int annY = (int)mapField.toScreenCoordinateY(ann.coordinates.latitude);
 		
 		int left = annX - width/2;
-		int top = annY - height/2 - mapPinImage.getHeight()/2;
+		int top = annY - height - 7*(mapPinImage.getHeight()/8);
 
+		mCalloutRect = new Rect();
+		mCalloutRect.left = left;
+		mCalloutRect.top = top;
+		mCalloutRect.right = left+width;
+		mCalloutRect.bottom = top+height;
+		
 		final int roundRadius = 6;
 		
 		// Shadow
@@ -334,7 +356,16 @@ public class MapViewScreen extends RhoMainScreen {
 		drawRectWithRoundedCorners(graphics, left, top, width, height, roundRadius);
 		
 		graphics.setColor(Color.BLACK);
-		graphics.drawText(textToDraw, left, top);
+		
+		if ( ann.title.length() > 0 )
+		{
+			graphics.drawText(ann.title, left, top);
+			top += height/2;
+		}
+		
+		if ( ann.subtitle.length() > 0 )
+			graphics.drawText(ann.subtitle, left, top);
+		
 	}
 	
 	private int calcDxSmooth(int dx, long curTime) {
@@ -411,13 +442,19 @@ public class MapViewScreen extends RhoMainScreen {
 		}
 	}
 	
-	private void handleClick(int x, int y) {
-		Annotation a = getCurrentAnnotation(x, y);
-		Annotation selectedAnnotation = mSelectedAnnotation;
-		mSelectedAnnotation = a;
-		if (a != null && selectedAnnotation != null && selectedAnnotation.equals(a)) {
+	private void handleClick(int x, int y) 
+	{
+		Annotation old_selectedAnnotation = mSelectedAnnotation;
+		if ( mSelectedAnnotation != null && mCalloutRect!=null && mCalloutRect.isInside(x, y) )
+		{
+			
+		}else
+			mSelectedAnnotation = getCurrentAnnotation(x, y);
+		
+		if (mSelectedAnnotation != null && old_selectedAnnotation != null && mSelectedAnnotation.equals(old_selectedAnnotation)) 
+		{
 			// We have clicked already selected annotation
-			WebView.navigate(a.url);
+			WebView.navigate(mSelectedAnnotation.url);
 			mapParent.close();
 			mSelectedAnnotation = null;
 		}
