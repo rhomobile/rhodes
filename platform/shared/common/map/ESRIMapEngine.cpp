@@ -46,7 +46,11 @@ static int const MAX_ZOOM = 19;
 
 static int const TILE_SIZE = 256;
 
+#ifdef OS_WINCE
+static int const MAX_TILES_CACHE_SIZE = 70;
+#else
 static int const MAX_TILES_CACHE_SIZE = 100;
+#endif
 
 static int const ANNOTATION_SENSITIVITY_AREA_RADIUS = 16;
 
@@ -174,7 +178,7 @@ ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
 
 ESRIMapView::MapFetch::~MapFetch()
 {
-    stop(1000);
+    //stop(1000);
 }
 
 void ESRIMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
@@ -229,8 +233,11 @@ void ESRIMapView::MapFetch::processCommand(IQueueCommand *c)
 
     IDrawingDevice *device = m_mapview->drawingDevice();
 
-    synchronized (m_mapview->tilesCacheLock());
-    m_mapview->tilesCache().put(Tile(device, zoom, latitude, longitude, data, datasize));
+    {
+        synchronized (m_mapview->tilesCacheLock());
+        m_mapview->tilesCache().put(Tile(device, zoom, latitude, longitude, data, datasize));
+    }
+
     free(data);
     m_mapview->redraw();
 }
@@ -253,7 +260,7 @@ ESRIMapView::CacheUpdate::CacheUpdate(ESRIMapView *view)
 
 ESRIMapView::CacheUpdate::~CacheUpdate()
 {
-    stop(200);
+    //stop(200);
 }
 
 void ESRIMapView::CacheUpdate::updateCache()
@@ -433,6 +440,11 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
 
 ESRIMapView::~ESRIMapView()
 {
+    if ( m_map_fetch.get() != 0)
+        m_map_fetch->stop(1000);
+
+    if ( m_cache_update.get() != 0)
+        m_cache_update->stop(200);
 }
 
 void ESRIMapView::setSize(int width, int height)
