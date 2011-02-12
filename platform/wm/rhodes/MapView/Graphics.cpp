@@ -189,7 +189,7 @@ void DrawingContextImpl::drawImage(int x, int y, IDrawingImage* image) {
 	img->draw(mHDC, x, y);
 }
 
-void DrawingContextImpl::drawText(int x, int y, String const &text, int color) {
+void DrawingContextImpl::drawText(int x, int y,  int nWidth, int nHeight, String const &text, int color) {
 	RHO_MAP_TRACE2("DrawingContext drawText with x = %d, y = %d", x, y);
 	StringW pathW = convertToStringW(text);
 	SetBkMode(mHDC, TRANSPARENT);
@@ -198,8 +198,8 @@ void DrawingContextImpl::drawText(int x, int y, String const &text, int color) {
 	RECT r;
 	r.left = x;
 	r.top = y;
-	r.right = x+10000;
-	r.bottom = y + 10000;
+	r.right = x+nWidth;
+	r.bottom = y + nHeight;
 	DrawText(mHDC, pathW.c_str(), -1, &r, DT_LEFT | DT_TOP);
 }
 

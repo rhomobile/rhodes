@@ -105,6 +105,8 @@ class CRhoMapViewDlg : public //CDialog
 	CDialogImpl <CRhoMapViewDlg>
 #endif	
 {
+    HBRUSH m_hBrush;
+    HBITMAP m_hMemBitmap;
 public:
 	CRhoMapViewDlg  ();
 	~CRhoMapViewDlg ();
@@ -123,7 +125,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnTouch)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnUntouch)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnDrag)
-
+        MESSAGE_HANDLER(WM_CTLCOLORSTATIC,OnCtlColor)
 	END_MSG_MAP()
 
 public:
@@ -140,6 +142,7 @@ public:
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnZoomIn(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnZoomOut(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void doOpen();
 	void doClose();
