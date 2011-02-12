@@ -1002,7 +1002,15 @@ namespace "build" do
         while line = f.gets
           line.chomp!
           next if line =~ /\/AndroidR\.java\s*$/
-          next if !$use_geomapping and line =~ /\/mapview\//
+
+		  if !$use_geomapping
+			next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java"
+			next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java"
+		  end
+
+          #next if !$use_geomapping and line =~ /\/GoogleMapView\//
+          #next if !$use_geomapping and line =~ /\/AnnotationsOverlay\//
+
           lines << line
         end
       end
