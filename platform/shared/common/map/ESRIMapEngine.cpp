@@ -417,7 +417,8 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
     m_width(0), m_height(0),
     m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
     m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
-    m_selected_annotation_index(-1)
+    m_selected_annotation_index(-1),
+    m_pinCallout(0), m_pin(0)
 {
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
