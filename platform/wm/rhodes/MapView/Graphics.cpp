@@ -10,11 +10,13 @@
 #include "Graphics.h"
 
 
-#if 0
+//#if 0
 
 #include <initguid.h>
 #include <imgguids.h>
 
+extern "C" HWND getMainWnd();
+/*
 #else
 
 
@@ -28,7 +30,7 @@ extern "C" HWND getMainWnd();
 DEFINE_GUID(IID_IImagingFactory, 0x327abda7,0x072b,0x11d3,0x9d,0x7b,0x00,0x00,0xf8,0x1e,0xf3,0x2e);
 DEFINE_GUID(CLSID_ImagingFactory, 0x327abda8,0x072b,0x11d3,0x9d,0x7b,0x00,0x00,0xf8,0x1e,0xf3,0x2e);
 
-#endif
+#endif*/
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WM MapView Graphics"
@@ -429,6 +431,8 @@ WMAlphaBitmap::WMAlphaBitmap(IImage* img)
 				}
 				pBitmap->Release();
 			}
+
+            pImgFactory->Release();
 		}
 		CoUninitialize();
 	}
