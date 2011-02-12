@@ -37,7 +37,7 @@ public:
 
     virtual const char* getCharData()
     {
-        return &m_data[0];
+        return m_data.size() > 0 ? &m_data[0] : "";
     }
 
     virtual unsigned int getDataSize()
