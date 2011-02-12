@@ -55,7 +55,7 @@ public:
     virtual ~IDrawingContext(){}
 
     virtual void drawImage(int x, int y, IDrawingImage *image) = 0;
-    virtual void drawText(int x, int y, String const &text, int color) = 0;
+    virtual void drawText(int x, int y, int width, int height, String const &text, int color) = 0;
 	virtual void fillRect(int x, int y, int width, int height, int color) = 0;
 };
 
@@ -153,6 +153,8 @@ public:
     virtual void paint(IDrawingContext *device) = 0;
 
     virtual void setPinImage(IDrawingImage *pin, PIN_INFO pin_info) = 0;
+    virtual void setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
+
 };
 
 class GeoCodingCallback

@@ -98,7 +98,7 @@ public:
 	virtual int getWidth();
 	virtual int getHeight();
 	virtual void drawImage(int x, int y, IDrawingImage* image);
-	virtual void drawText(int x, int y, String const &text, int color);
+	virtual void drawText(int x, int y, int nWidth, int nHeight, String const &text, int color);
 	virtual void getTextRect(int x, int y, String &text, RECT* resultRect);
 	virtual void fillRect(int x, int y, int width, int height, int color);
 	virtual void drawLine(int x1, int y1, int x2, int y2, int color);

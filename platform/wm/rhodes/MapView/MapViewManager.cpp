@@ -27,11 +27,10 @@
 
 extern "C" HWND getMainWnd();
 
-
-
 static IMapView* ourMapView = NULL;
 static CRhoMapViewDlg ourMapViewDlg;
 
+static int const BACKGROUND_COLOR = 0x7F7F7F;
 
 class RhoMapViewRedrawViewCommand : public RhoNativeViewRunnable {
 public:
@@ -53,7 +52,7 @@ class DrawingDeviceMapViewImpl : public DrawingDeviceImpl {
 static DrawingDeviceMapViewImpl ourDrawingDevice;
 
 
-CRhoMapViewDlg::CRhoMapViewDlg ()
+CRhoMapViewDlg::CRhoMapViewDlg () : m_hBrush(0), m_hMemBitmap(0)
 {
 }
 
@@ -107,15 +106,28 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		String fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
 		IDrawingImage* pinImg = ourDrawingDevice.createImage(fullImagePath, true);
 
-		PIN_INFO pin_info;
+        PIN_INFO pin_info = {0};
 		pin_info.x_offset = -10;
 		pin_info.y_offset = -35;
 		pin_info.click_rect_x = -10;
 		pin_info.click_rect_y = -35;
-		pin_info.click_rect_width = 20;
-		pin_info.click_rect_height = 30;
+		pin_info.click_rect_width = 72;
+		pin_info.click_rect_height = 72;
 
 		ourMapView->setPinImage(pinImg, pin_info);
+
+		strImagePath = "lib/res/callout.png";
+		fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
+		IDrawingImage* pinCalloutImg = ourDrawingDevice.createImage(fullImagePath, true);
+
+        PIN_INFO pin_callout_info = {0};
+		pin_callout_info.x_offset = 5;
+		pin_callout_info.y_offset = 0;
+		pin_callout_info.click_rect_width = 179;
+		pin_callout_info.click_rect_height = 64;
+
+		ourMapView->setPinCalloutImage(pinCalloutImg, pin_callout_info);
+
 	}
 
 #else 
@@ -195,16 +207,33 @@ LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	hDC = ::BeginPaint(m_hWnd,&ps);
 
-	RECT rect;
+	CRect rect;
 	::GetClientRect(m_hWnd,&rect);
 
-	DrawingContextImpl* context = new DrawingContextImpl(hDC, rect.right - rect.left, rect.bottom - rect.top);
+    HDC mMemoryDC = CreateCompatibleDC(hDC);
+    if ( !m_hMemBitmap)
+        m_hMemBitmap  = CreateCompatibleBitmap(hDC, rect.Width(), rect.Height() );
+
+    HBITMAP hOldBitmap  = (HBITMAP)SelectObject(mMemoryDC, m_hMemBitmap );
+
+    DrawingContextImpl* context = new DrawingContextImpl(mMemoryDC, rect.Width(), rect.Height());
+
+    context->fillRect(0, 0, rect.Width(), rect.Height(), BACKGROUND_COLOR);
 
 	// call MapView draw !!!
 	if (ourMapView != NULL) {
 		RHO_MAP_TRACE("execute MapView paint");
 		ourMapView->paint(context);
 	}
+
+	::BitBlt( hDC,
+		0, 0, rect.Width(), rect.Height(),
+		mMemoryDC,
+		0,0,
+		SRCCOPY);
+
+    ::SelectObject(mMemoryDC, hOldBitmap);
+    DeleteDC(mMemoryDC);
 
 	::EndPaint(m_hWnd,&ps);
 	
@@ -217,6 +246,15 @@ LRESULT CRhoMapViewDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		rho_map_destroy(ourMapView);
 		ourMapView = NULL;
 	}
+
+    if ( m_hBrush ) 
+        DeleteObject(m_hBrush);
+    if ( m_hMemBitmap ) 
+        DeleteObject(m_hMemBitmap);
+
+    m_hBrush = 0;
+    m_hMemBitmap = 0;
+
 	return 0;
 }
 
@@ -263,7 +301,7 @@ LRESULT CRhoMapViewDlg::OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 LRESULT CRhoMapViewDlg::OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	int xPos = LOWORD(lParam); 
 	int yPos = HIWORD(lParam);
-	if (ourMapView != NULL) {
+	if (ourMapView != NULL && (abs(mInitialX-xPos) > 10 || abs(mInitialY-yPos) > 10) ) {
 		RHO_MAP_TRACE2("MapView->move( %d, %d)", mLastX-xPos, mLastY-yPos);
 		ourMapView->move(mLastX-xPos, mLastY-yPos);
 		requestRedraw();
@@ -273,6 +311,24 @@ LRESULT CRhoMapViewDlg::OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 	return 0;
 }
 
+LRESULT CRhoMapViewDlg::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+{
+    HDC hdcStatic = (HDC) wParam; 
+    HWND hwndStatic = (HWND) lParam;
+    HWND hwndSlider = GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd;
+    bHandled = FALSE;
+
+    if ( hwndSlider != hwndStatic )
+    {
+        return (LRESULT)0;
+    }
+
+    if ( !m_hBrush )
+        m_hBrush = CreateSolidBrush(RGB(220,220,220));
+
+    bHandled = TRUE;
+    return (LRESULT)m_hBrush;
+}
 
 
 
