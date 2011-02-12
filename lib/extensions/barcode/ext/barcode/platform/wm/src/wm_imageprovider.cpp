@@ -11,7 +11,7 @@
 #include <commctrl.h>
 
 #include <imaging.h>
-#include <initguid.h>
+//#include <initguid.h>
 #include <imgguids.h>
 
 
