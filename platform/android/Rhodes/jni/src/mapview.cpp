@@ -98,6 +98,7 @@ public:
 
     void attach(JNIEnv *env, jobject jDevice);
     void setPinImage(JNIEnv *env, jobject bitmap);
+    void setPinCalloutImage(JNIEnv *env, jobject bitmap);
 
     rho_param *params() const {return m_params;}
 
@@ -118,6 +119,7 @@ private:
     IMapView *m_mapview;
     jobject m_jdevice;
     std::auto_ptr<IDrawingImage> m_pin_image;
+	std::auto_ptr<IDrawingImage> m_pin_calloutimage;
 };
 
 AndroidImage::AndroidImage(jobject bitmap)
@@ -259,6 +261,12 @@ void AndroidMapDevice::setMapView(IMapView *mv)
 	pin_info.click_rect_height = 30;
 
         m_mapview->setPinImage(m_pin_image.get(), pin_info);
+
+		PIN_INFO pin_info1 = {0};
+		pin_info1.x_offset = 5;
+
+        mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info1);
+
     }
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
 }
@@ -279,6 +287,21 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
 	pin_info.click_rect_height = 30;
 
         mv->setPinImage(m_pin_image.get(), pin_info);
+    }
+    RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
+}
+
+void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, jobject bitmap)
+{
+    RHO_MAP_TRACE("AndroidMapDevice: setPinImage: start");
+    m_pin_calloutimage.reset(new AndroidImage(bitmap));
+    IMapView *mv = mapView();
+    if (mv) {
+
+		PIN_INFO pin_info = {0};
+		pin_info.x_offset = 5;
+
+        mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info);
     }
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
@@ -423,6 +446,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinImage
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
     d->setPinImage(env, bitmap);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinImage: finish");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutImage
+  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutImage: start");
+    rhomap::AndroidMapDevice *d = device(env, nativeDevice);
+    d->setPinCalloutImage(env, bitmap);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutImage: finish");
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_minZoom
