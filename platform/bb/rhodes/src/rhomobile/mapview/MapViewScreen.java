@@ -34,7 +34,7 @@ public class MapViewScreen extends RhoMainScreen {
 	private static final int MOVE_TIMEOUT_DOUBLING = 300;
 	
 	// Sensivity of annotations area (in pixels)
-	private static final int ANNOTATION_SENSIVITY_AREA_RADIUS = 16;
+	private static final int ANNOTATION_SENSIVITY_AREA_RADIUS = 32;
 	
 	private static final MapProvider[] providers = {
 		new GoogleMapProvider(),
