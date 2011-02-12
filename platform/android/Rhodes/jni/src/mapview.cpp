@@ -248,8 +248,18 @@ void AndroidMapDevice::setMapView(IMapView *mv)
 {
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: start");
     m_mapview = mv;
-    if (m_mapview && m_pin_image.get())
-        m_mapview->setPinImage(m_pin_image.get(), -10 , -33);
+    if (m_mapview && m_pin_image.get()) {
+
+	PIN_INFO pin_info;
+	pin_info.x_offset = -10;
+	pin_info.y_offset = -35;
+	pin_info.click_rect_x = -10;
+	pin_info.click_rect_y = -35;
+	pin_info.click_rect_width = 20;
+	pin_info.click_rect_height = 30;
+
+        m_mapview->setPinImage(m_pin_image.get(), pin_info);
+    }
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
 }
 
@@ -258,8 +268,18 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: start");
     m_pin_image.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
-    if (mv)
-        mv->setPinImage(m_pin_image.get(), -10 , -33);
+    if (mv) {
+
+	PIN_INFO pin_info;
+	pin_info.x_offset = -10;
+	pin_info.y_offset = -35;
+	pin_info.click_rect_x = -10;
+	pin_info.click_rect_y = -35;
+	pin_info.click_rect_width = 20;
+	pin_info.click_rect_height = 30;
+
+        mv->setPinImage(m_pin_image.get(), pin_info);
+    }
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
 
@@ -464,6 +484,27 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_move
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_move: finish");
 }
 
+
+RHO_GLOBAL void mapview_close();
+
+
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_click
+  (JNIEnv *env, jobject, jlong nativeDevice, jint x, jint y)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_click: start");
+    rhomap::IMapView *mv = mapview(env, nativeDevice);
+    if (mv) {
+        if (mv->handleClick(x, y) ) {
+            // close
+            mapview_close();
+	}
+    }
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_click: finish");
+}
+
+
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
   (JNIEnv *env, jobject, jlong nativeDevice, jobject canvas)
 {
@@ -473,8 +514,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_paint
         d->paint(canvas);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_paint: finish");
 }
-
-RHO_GLOBAL void mapview_close();
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_destroy
   (JNIEnv *, jobject, jlong nativeDevice)
@@ -591,6 +630,14 @@ RHO_GLOBAL void mapview_close()
 		}
 		delete s_mapdevice;
 		s_mapdevice = NULL;
+
+	JNIEnv *env = jnienv();
+    	jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    	if (!cls) return;
+    	jmethodID mid = getJNIClassStaticMethod(env, cls, "destroy", "()V");
+    	if (!mid) return;
+    	env->CallStaticVoidMethod(cls, mid);
+
 	}
 }
 
