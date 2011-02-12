@@ -174,7 +174,7 @@ public:
 
     void paint(IDrawingContext *context);
 
-    void setPinImage(IDrawingImage *pin, int x_offset, int y_offset);
+    void setPinImage(IDrawingImage *pin, PIN_INFO pin_info);
 
 private:
     String const &getMapUrl();
@@ -229,8 +229,7 @@ private:
     TilesCache m_tiles_cache;
 
     IDrawingImage *m_pin;
-	int m_pin_offset_x;
-	int m_pin_offset_y;
+	PIN_INFO m_pin_info;
 };
 
 class ESRIMapEngine : public IMapEngine

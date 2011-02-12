@@ -591,13 +591,22 @@ int ESRIMapView::getAnnotation(int x, int y)
         int annX = (int)(ann_lon - topleft_lon);
         int annY = (int)(ann_lat - topleft_lat);
 
+		int click_rect_left = annX+m_pin_info.click_rect_x;
+		int click_rect_top = annY+m_pin_info.click_rect_y;
+		int click_rect_right = click_rect_left + m_pin_info.click_rect_width;
+		int click_rect_bottom = click_rect_top + m_pin_info.click_rect_height;
+
+		if ((x < click_rect_left) || (click_rect_right < x) || (y < click_rect_top) || (click_rect_bottom < y)) {
+			continue;
+		}
+		/*
         int deltaX = x - annX;
         int deltaY = y - annY;
 
         double distance = rho_math_sqrt(deltaX*deltaX + deltaY*deltaY);
         if ((int)distance > ANNOTATION_SENSITIVITY_AREA_RADIUS)
             continue;
-
+		*/
         return i;
     }
 
@@ -608,25 +617,26 @@ bool ESRIMapView::handleClick(int x, int y)
 {
     int old_selected = m_selected_annotation_index;
     m_selected_annotation_index = getAnnotation(x, y);
-    if (m_selected_annotation_index>=0 && m_selected_annotation_index == old_selected)
+    if (m_selected_annotation_index>=0 /*&& m_selected_annotation_index == old_selected*/)
     {
         synchronized(m_annotations_mtx);
         Annotation& ann = m_annotations.elementAt(m_selected_annotation_index);
 
-        // We have clicked already selected annotation
-        RHODESAPP().navigateToUrl(ann.url());
-        m_selected_annotation_index = -1;
-        return true;
+        // We have clicked on annotation - go to URL
+		if (ann.url().size() > 0) {
+			RHODESAPP().navigateToUrl(ann.url());
+			m_selected_annotation_index = -1;
+			return true;
+		}
     }
     redraw();
     return false;
 }
 
-void ESRIMapView::setPinImage(IDrawingImage *pin, int x_offset, int y_offset)
+void ESRIMapView::setPinImage(IDrawingImage *pin, PIN_INFO pin_info)
 {
     m_pin = pin;
-	m_pin_offset_x = x_offset;
-	m_pin_offset_y = y_offset;
+	m_pin_info = pin_info;
 }
 
 void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
@@ -767,10 +777,10 @@ void ESRIMapView::paintAnnotation(IDrawingContext *context, Annotation const &an
     int pinWidth = m_pin->width();
     int pinHeight = m_pin->height();
 
-    int64 x = toScreenCoordinateX(ann.longitude()) + m_pin_offset_x;
+	int64 x = toScreenCoordinateX(ann.longitude()) + m_pin_info.x_offset;
     if (((x + pinWidth) < 0) || (x > m_width))
         return;
-    int64 y = toScreenCoordinateY(ann.latitude()) + m_pin_offset_y;
+	int64 y = toScreenCoordinateY(ann.latitude()) + m_pin_info.y_offset;
     if (((y + pinHeight) < 0) || (y > m_height))
         return;
 

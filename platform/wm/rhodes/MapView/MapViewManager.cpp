@@ -106,7 +106,16 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		String strImagePath = "lib/res/blue_pushpin.png";
 		String fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
 		IDrawingImage* pinImg = ourDrawingDevice.createImage(fullImagePath, true);
-		ourMapView->setPinImage(pinImg, -10, -35);
+
+		PIN_INFO pin_info;
+		pin_info.x_offset = -10;
+		pin_info.y_offset = -35;
+		pin_info.click_rect_x = -10;
+		pin_info.click_rect_y = -35;
+		pin_info.click_rect_width = 20;
+		pin_info.click_rect_height = 30;
+
+		ourMapView->setPinImage(pinImg, pin_info);
 	}
 
 #else 
@@ -237,7 +246,7 @@ LRESULT CRhoMapViewDlg::OnTouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
-#define MABS(x) ((x)>=0)?(x):-(x)
+#define MABS(x) (((x)>=0)?(x):(-(x)))
 
 LRESULT CRhoMapViewDlg::OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if ( (MABS(mInitialX - mLastX) < 8) && (MABS(mInitialY - mLastY) < 8) && mIsPossibleClick) {
