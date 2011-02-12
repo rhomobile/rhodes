@@ -251,40 +251,57 @@ public class GoogleMapField extends Field implements RhoMapField {
 			interrupt();
 		}
 		
-		private byte[] fetchData(String url) throws IOException {
-			IHttpConnection conn = RhoClassFactory.getNetworkAccess().connect(url,false);
+		private byte[] fetchData(String url) throws IOException 
+		{
+			IHttpConnection conn = null; 
+			InputStream is = null;
 			
-			conn.setRequestMethod("GET");
-			
-			//conn.setRequestProperty("User-Agent", "Blackberry");
-			//conn.setRequestProperty("Accept", "*/*");
-			
-			InputStream is = conn.openInputStream();
-			
-			int code = conn.getResponseCode();
-			if (code/100 != 2)
-				throw new IOException("Google map respond with " + code + " " + conn.getResponseMessage());
-			
-			int size = conn.getHeaderFieldInt("Content-Length", 0);
-			byte[] data = new byte[size];
-			if (size == 0)
-				size = 1073741824; // 1Gb :)
-			
-			byte[] buf = new byte[BLOCK_SIZE];
-			for (int offset = 0; offset < size;) {
-				int n = is.read(buf, 0, BLOCK_SIZE);
-				if (n <= 0)
-					break;
-				if (offset + n > data.length) {
-					byte[] newData = new byte[offset + n];
-					System.arraycopy(data, 0, newData, 0, data.length);
-					data = newData;
+			try
+			{
+				conn = RhoClassFactory.getNetworkAccess().connect(url,false);
+				
+				conn.setRequestMethod("GET");
+				
+				//conn.setRequestProperty("User-Agent", "Blackberry");
+				//conn.setRequestProperty("Accept", "*/*");
+				
+				is = conn.openInputStream();
+				
+				int code = conn.getResponseCode();
+				if (code/100 != 2)
+					throw new IOException("Google map respond with " + code + " " + conn.getResponseMessage());
+				
+				int size = conn.getHeaderFieldInt("Content-Length", 0);
+				byte[] data = new byte[size];
+				if (size == 0)
+					size = 1073741824; // 1Gb :)
+				
+				byte[] buf = new byte[BLOCK_SIZE];
+				for (int offset = 0; offset < size;) {
+					int n = is.read(buf, 0, BLOCK_SIZE);
+					if (n <= 0)
+						break;
+					if (offset + n > data.length) {
+						byte[] newData = new byte[offset + n];
+						System.arraycopy(data, 0, newData, 0, data.length);
+						data = newData;
+					}
+					System.arraycopy(buf, 0, data, offset, n);
+					offset += n;
 				}
-				System.arraycopy(buf, 0, data, offset, n);
-				offset += n;
+				
+				return data;
+			}finally
+			{
+				if ( is != null )
+					try{ is.close(); }catch(IOException e){}
+
+				if ( conn != null )
+					try{ conn.close(); }catch(IOException e){}
+				
+				is = null;
+				conn = null;
 			}
-			
-			return data;
 		}
 		
 		private void processCommand(MapFetchCommand cmd) throws IOException {
