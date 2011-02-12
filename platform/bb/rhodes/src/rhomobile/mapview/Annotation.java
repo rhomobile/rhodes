@@ -12,8 +12,8 @@ public class Annotation {
 		}
 	};
 	
-	public String title = null;
-	public String subtitle = null;
+	public String title = "";
+	public String subtitle = "";
 	public String street_address = null;
 	public String resolved_address = null;
 	public String url = null;
