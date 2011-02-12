@@ -38,6 +38,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setSize(MapView javaDevice, long nativeDevice, int width, int height);
 	
 	public native void setPinImage(long nativeDevice, Bitmap pin);
+	public native void setPinCalloutImage(long nativeDevice, Bitmap pin);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -115,7 +116,9 @@ public class MapView extends BaseActivity implements MapTouch {
 		
 		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
 		setPinImage(mNativeDevice, pin);
-		
+		Bitmap pinCallout = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout);
+		setPinCalloutImage(mNativeDevice, pinCallout );
+				
 		mTouchHandler = createTouchHandler();
 		mTouchHandler.setMapTouch(this);
 		
@@ -231,9 +234,11 @@ public class MapView extends BaseActivity implements MapTouch {
 		canvas.drawBitmap(bm, x, y, paint);
 	}
 	
-	public void drawText(Canvas canvas, int x, int y, String text, int color) {
+	public void drawText(Canvas canvas, int x, int y, String text, int color) 
+	{
+		Logger.I(TAG, "drawText: " + text);
 		Paint paint = new Paint();
-		paint.setColor(color);
+		//paint.setColor(color);
 		canvas.drawText(text, x, y, paint);
 	}
 	

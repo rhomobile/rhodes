@@ -831,7 +831,11 @@ bool ESRIMapView::isClickOnCallout(int x, int y, Annotation const &ann)
 	int64 yLoc = toScreenCoordinateY(ann.latitude());
 
     int64 xCallout = xLoc - pinCalloutWidth/2;
-    int64 yCallout = yLoc - m_pin->height() + m_pin_info.y_offset;
+    //int64 yCallout = yLoc - m_pin->height() + m_pin_info.y_offset;
+    int64 yCallout = yLoc - m_pin->height() - pinCalloutHeight;//- m_pin_info.y_offset;
+#ifndef OS_ANDROID
+	yCallout -= m_pin_info.y_offset;
+#endif
 
     return x > xCallout && x < xCallout + pinCalloutWidth && y > yCallout && y < yCallout + pinCalloutHeight;
 }
@@ -848,7 +852,10 @@ void ESRIMapView::paintCallout(IDrawingContext *context, Annotation const &ann)
 	int64 yLoc = toScreenCoordinateY(ann.latitude());
 
     int64 xCallout = xLoc - pinCalloutWidth/2;
-    int64 yCallout = yLoc - m_pin->height() + m_pin_info.y_offset;
+    int64 yCallout = yLoc - m_pin->height() - pinCalloutHeight;
+#ifndef OS_ANDROID
+	yCallout -= m_pin_info.y_offset;
+#endif
 
     context->drawImage((int)xCallout, (int)yCallout, m_pinCallout);
 
