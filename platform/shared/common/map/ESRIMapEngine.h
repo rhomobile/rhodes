@@ -61,6 +61,8 @@ private:
 
         void put(Tile const &tile);
         Tile const *get(int zoom, uint64 latitude, uint64 longitude) const;
+        std::map<String, Tile *>& get_by_coordinates(){ return m_by_coordinates; }
+        std::list<Tile>& get_tiles(){ return m_tiles; }
 
     private:
         static String makeKey(int zoom, uint64 latitude, uint64 longitude);
@@ -175,6 +177,7 @@ public:
     void paint(IDrawingContext *context);
 
     void setPinImage(IDrawingImage *pin, PIN_INFO pin_info);
+    void setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
 
 private:
     String const &getMapUrl();
@@ -199,6 +202,7 @@ private:
     int64 toScreenCoordinateX(double n);
     int64 toScreenCoordinateY(double n);
 
+    bool isClickOnCallout(int x, int y, Annotation const &ann);
 private:
     IDrawingDevice *m_drawing_device;
 
@@ -230,6 +234,8 @@ private:
 
     IDrawingImage *m_pin;
 	PIN_INFO m_pin_info;
+    IDrawingImage *m_pinCallout;
+	PIN_INFO m_pin_callout_info;
 };
 
 class ESRIMapEngine : public IMapEngine
