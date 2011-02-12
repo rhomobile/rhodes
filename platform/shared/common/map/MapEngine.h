@@ -59,6 +59,16 @@ public:
 	virtual void fillRect(int x, int y, int width, int height, int color) = 0;
 };
 
+typedef struct {
+	int x_offset;
+	int y_offset;
+	int click_rect_x;
+	int click_rect_y;
+	int click_rect_width;
+	int click_rect_height;
+}PIN_INFO;
+
+
 class Annotation
 {
 public:
@@ -142,7 +152,7 @@ public:
 
     virtual void paint(IDrawingContext *device) = 0;
 
-    virtual void setPinImage(IDrawingImage *pin, int x_offset, int y_offset) = 0;
+    virtual void setPinImage(IDrawingImage *pin, PIN_INFO pin_info) = 0;
 };
 
 class GeoCodingCallback
