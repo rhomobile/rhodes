@@ -269,7 +269,8 @@ void CRhoMapViewDlg::doClose() {
 
 void CRhoMapViewDlg::requestRedraw() {
 	RHO_MAP_TRACE("redraw requested !");
-	InvalidateRect(NULL, FALSE);
+    if ( m_hWnd )
+	    InvalidateRect(NULL, FALSE);
     //UpdateWindow();
 }
 
