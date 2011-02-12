@@ -79,7 +79,7 @@ public:
     {}
 
     void drawImage(int x, int y, IDrawingImage *image);
-    void drawText(int x, int y, String const &text, int color);
+    void drawText(int x, int y, int width, int height, String const &text, int color);
     void fillRect(int x, int y, int width, int height, int color) {}
 private:
     jobject m_device;
@@ -198,7 +198,7 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
     RHO_MAP_TRACE("drawImage done");
 }
 
-void AndroidDrawingContext::drawText(int x, int y, String const &text, int color)
+void AndroidDrawingContext::drawText(int x, int y, int width, int height, String const &text, int color)
 {
     RHO_MAP_TRACE4("drawText: x=%d, y=%d, text=%s, color=%d", x, y, text.c_str(), color);
 

@@ -51,6 +51,7 @@ static int const MAX_TILES_CACHE_SIZE = 100;
 static int const ANNOTATION_SENSITIVITY_AREA_RADIUS = 16;
 
 static int const BACKGROUND_COLOR = 0x7F7F7F;
+static int const CALLOUT_TEXT_COLOR = 0x0;
 
 static uint64 degreesToPixelsX(double n, int zoom)
 {
@@ -615,11 +616,17 @@ int ESRIMapView::getAnnotation(int x, int y)
 
 bool ESRIMapView::handleClick(int x, int y)
 {
+    synchronized(m_annotations_mtx);
+
     int old_selected = m_selected_annotation_index;
-    m_selected_annotation_index = getAnnotation(x, y);
-    if (m_selected_annotation_index>=0 /*&& m_selected_annotation_index == old_selected*/)
+
+    if ( m_selected_annotation_index >=0 && isClickOnCallout(x,y,m_annotations.elementAt(m_selected_annotation_index) ))
     {
-        synchronized(m_annotations_mtx);
+    }else
+        m_selected_annotation_index = getAnnotation(x, y);
+
+    if (m_selected_annotation_index>=0 && m_selected_annotation_index == old_selected )
+    {
         Annotation& ann = m_annotations.elementAt(m_selected_annotation_index);
 
         // We have clicked on annotation - go to URL
@@ -637,6 +644,12 @@ void ESRIMapView::setPinImage(IDrawingImage *pin, PIN_INFO pin_info)
 {
     m_pin = pin;
 	m_pin_info = pin_info;
+}
+
+void ESRIMapView::setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info)
+{
+    m_pinCallout = pinCallout;
+	m_pin_callout_info = pin_callout_info;
 }
 
 void ESRIMapView::fetchTile(int zoom, uint64 latitude, uint64 longitude)
@@ -674,6 +687,24 @@ void ESRIMapView::paint(IDrawingContext *context)
 {
     paintBackground(context);
 
+    {
+        synchronized(m_tiles_cache_mtx);
+
+        TilesCache::list mapTiles = m_tiles_cache.get_tiles();
+        for (TilesCache::list::iterator it = mapTiles.begin(), lim = mapTiles.end(); it != lim; ++it)
+            paintTile(context, *it);
+    }
+
+    {
+        synchronized(m_annotations_mtx);
+        for (annotations_list_t::iterator it = m_annotations.begin(), lim = m_annotations.end(); it != lim; ++it)
+            paintAnnotation(context, *it);
+
+        if (m_selected_annotation_index >= 0)
+            paintCallout(context, m_annotations.elementAt(m_selected_annotation_index));
+    }
+
+/*
     TilesCache::list cache;
     {
         synchronized(m_tiles_cache_mtx);
@@ -695,7 +726,7 @@ void ESRIMapView::paint(IDrawingContext *context)
         paintAnnotation(context, *it);
 
     if (selected_annotation_index >= 0)
-        paintCallout(context, annotations.elementAt(selected_annotation_index));
+        paintCallout(context, annotations.elementAt(selected_annotation_index));  */
 }
 
 void ESRIMapView::paintBackground(IDrawingContext *context)
@@ -787,9 +818,58 @@ void ESRIMapView::paintAnnotation(IDrawingContext *context, Annotation const &an
     context->drawImage((int)x, (int)y, m_pin);
 }
 
+bool ESRIMapView::isClickOnCallout(int x, int y, Annotation const &ann)
+{
+    if (!m_pinCallout || !m_pin)
+        return false;
+
+    int pinCalloutWidth = m_pinCallout->width();
+    int pinCalloutHeight = m_pinCallout->height();
+
+	int64 xLoc = toScreenCoordinateX(ann.longitude());
+	int64 yLoc = toScreenCoordinateY(ann.latitude());
+
+    int64 xCallout = xLoc - pinCalloutWidth/2;
+    int64 yCallout = yLoc - m_pin->height() + m_pin_info.y_offset;
+
+    return x > xCallout && x < xCallout + pinCalloutWidth && y > yCallout && y < yCallout + pinCalloutHeight;
+}
+
 void ESRIMapView::paintCallout(IDrawingContext *context, Annotation const &ann)
 {
-    // TODO:
+    if (!m_pinCallout || !m_pin)
+        return;
+
+    int pinCalloutWidth = m_pinCallout->width();
+    int pinCalloutHeight = m_pinCallout->height();
+
+	int64 xLoc = toScreenCoordinateX(ann.longitude());
+	int64 yLoc = toScreenCoordinateY(ann.latitude());
+
+    int64 xCallout = xLoc - pinCalloutWidth/2;
+    int64 yCallout = yLoc - m_pin->height() + m_pin_info.y_offset;
+
+    context->drawImage((int)xCallout, (int)yCallout, m_pinCallout);
+
+    String strText;
+    if ( ann.title().length() > 0 )
+        strText += ann.title();
+
+    if ( ann.subtitle().length() > 0 )
+    {
+        if ( strText.length() > 0 )
+            strText += "\r\n";
+
+        strText += ann.subtitle();
+    }
+
+    int nTextX = (int)xCallout + m_pin_callout_info.x_offset;
+    int nTextY = (int)yCallout + m_pin_callout_info.y_offset;
+    int nTextWidth = pinCalloutWidth - m_pin_callout_info.x_offset;
+    int nTextHeight = pinCalloutHeight - m_pin_callout_info.y_offset;
+
+    if ( strText.length() > 0 )
+        context->drawText( nTextX, nTextY, nTextWidth, nTextHeight, strText, CALLOUT_TEXT_COLOR);
 }
 
 } // namespace map
