@@ -20,6 +20,7 @@ import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.mapview.MapTouch.Touch;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class MapView extends BaseActivity implements MapTouch {
@@ -44,11 +45,14 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setZoom(long nativeDevice, int zoom);
 	
 	public native void move(long nativeDevice, int dx, int dy);
+	public native void click(long nativeDevice, int x, int y);
 	
 	public native void paint(long nativeDevice, Canvas canvas);
 	public native void destroy(long nativeDevice);
 	
 	private TouchHandler mTouchHandler;
+	
+	private static MapView mc = null;
 	
 	private Touch mTouchFirst;
 	private Touch mTouchSecond;
@@ -92,9 +96,18 @@ public class MapView extends BaseActivity implements MapTouch {
 		r.startActivity(intent);
 	}
 	
+	public static void destroy() {
+		if (mc != null) {
+			mc.finish();
+			mc = null;
+		}
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mc = this;
 		
 		mNativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
 		if (mNativeDevice == 0)
@@ -161,6 +174,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	protected void onStop() {
 		destroy(mNativeDevice);
 		mNativeDevice = 0;
+		mc = null;
 		finish();
 		super.onStop();
 	}
@@ -243,6 +257,11 @@ public class MapView extends BaseActivity implements MapTouch {
 		bm.recycle();
 	}
 
+	@Override
+	public void touchClick(Touch touch) {
+		click(mNativeDevice, (int)touch.x, (int)touch.y);
+	}
+	
 	@Override
 	public void touchDown(Touch first, Touch second) {
 		mTouchFirst = first;

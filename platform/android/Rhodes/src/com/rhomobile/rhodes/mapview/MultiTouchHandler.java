@@ -17,6 +17,12 @@ public class MultiTouchHandler implements TouchHandler {
 		mMapTouch = mapTouch;
 	}
 	
+	private static final float CLICK_TOLERANCE = 8;
+	private float mFirstTouchX;
+	private float mFirstTouchY;
+	private boolean mIsClickPossible;
+	
+	
 	private void dumpEvent(MotionEvent event) {
 		String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE",
 				"POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
@@ -58,16 +64,34 @@ public class MultiTouchHandler implements TouchHandler {
 		for (; i < data.length; ++i)
 			data[i] = null;
 		
+		boolean isSingleTouch = (event.getPointerCount() < 2);
+		
 		switch (actionCode) {
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:
+			mIsClickPossible = isSingleTouch;
+			mFirstTouchX = data[0].x;
+			mFirstTouchY = data[0].y;
 			mMapTouch.touchDown(data[0], data[1]);
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
 			mMapTouch.touchUp(data[0], data[1]);
+			if (isSingleTouch) {
+				if (checkDistance(data[0].x, data[0].y, mFirstTouchX, mFirstTouchY, CLICK_TOLERANCE)) {
+					mMapTouch.touchClick(data[0]);
+				}
+			}
 			break;
 		case MotionEvent.ACTION_MOVE:
+			if (isSingleTouch) {
+				if (!checkDistance(data[0].x, data[0].y, mFirstTouchX, mFirstTouchY, CLICK_TOLERANCE)) {
+					mIsClickPossible = false;
+				}
+			}
+			else {
+				mIsClickPossible = false;
+			}
 			mMapTouch.touchMove(data[0], data[1]);
 			break;
 		}
@@ -75,4 +99,13 @@ public class MultiTouchHandler implements TouchHandler {
 		return true;
 	}
 
+	private boolean checkDistance(float x1, float y1, float x2, float y2, float delta) {
+		float dx = x1 - x2;
+		if (dx < 0) dx = -dx;
+		float dy = y1 - y2;
+		if (dy < 0) dy = -dy;
+		return ((dx <= delta) && (dy <= delta));
+	}
+	
+	
 }

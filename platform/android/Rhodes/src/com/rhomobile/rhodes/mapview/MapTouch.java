@@ -15,5 +15,6 @@ public interface MapTouch {
 	public void touchDown(Touch first, Touch second);
 	public void touchUp(Touch first, Touch second);
 	public void touchMove(Touch first, Touch second);
+	public void touchClick(Touch touch);
 	
 }
