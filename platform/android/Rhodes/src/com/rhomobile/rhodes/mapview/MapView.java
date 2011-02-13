@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -234,12 +235,32 @@ public class MapView extends BaseActivity implements MapTouch {
 		canvas.drawBitmap(bm, x, y, paint);
 	}
 	
-	public void drawText(Canvas canvas, int x, int y, String text, int color) 
+	public void drawText(Canvas canvas, int x, int y, int width, int height, String text, int color) 
 	{
-		Logger.I(TAG, "drawText: " + text);
+		//Logger.I(TAG, "drawText: " + text);
+
+		String [] lines = text.split("\r\n");
+
+		canvas.save();
+		Rect rcClip = new Rect( x, y, x+width, y+height);
+		canvas.clipRect(rcClip);
+
 		Paint paint = new Paint();
-		//paint.setColor(color);
-		canvas.drawText(text, x, y, paint);
+		paint.setColor(color);
+		paint.setTextSize(18);
+		paint.setAntiAlias(true);
+
+		for( int i = 0; i < lines.length; i++ )
+		{
+		    Rect rcLine = new Rect();
+			paint.getTextBounds( lines[i], 0, lines[i].length()-1, rcLine );
+			int nTextHeight = rcLine.height();
+			y += nTextHeight + nTextHeight/4;
+
+			canvas.drawText(lines[i], x, y, paint);
+		}
+
+		canvas.restore();
 	}
 	
 	public void redraw() {
