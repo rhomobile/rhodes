@@ -63,7 +63,7 @@ static int const MAX_TILES_CACHE_SIZE = 100;
 static int const ANNOTATION_SENSITIVITY_AREA_RADIUS = 16;
 
 static int const BACKGROUND_COLOR = 0x7F7F7F;
-static int const CALLOUT_TEXT_COLOR = 0x0;
+static int const CALLOUT_TEXT_COLOR = 0xff000000;
 
 static uint64 degreesToPixelsX(double n, int zoom)
 {
