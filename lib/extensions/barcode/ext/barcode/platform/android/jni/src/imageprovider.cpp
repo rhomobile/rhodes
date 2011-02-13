@@ -35,7 +35,7 @@ RHO_GLOBAL void rho_platform_image_load_grayscale(const char* url, void** image_
 		return;
 	}
 
-	jstring jstrFileUrl = rho_cast<jstring>(url);
+	jstring jstrFileUrl = env->NewStringUTF(url);//rho_cast<jstring>(url);
 	if (!jstrFileUrl) {
 		RAWLOG_ERROR("rho_platform_image_load_grayscale() : invalid URL !");
 		return;
