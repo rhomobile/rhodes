@@ -6,6 +6,14 @@
 #include "common/RhodesApp.h"
 #include "net/INetRequest.h"
 
+//TODO:
+//0. create rho::graphics namespace, move all draw interfaces there, create Rect and Point class
+//1. move classes to files, raname namespace to rho::map
+//2. image cache: remove only unvisible images
+//3. see TODO inside
+//4. when stop thread - cancel current net request. Add cancelCurrentCommand to ThreadQueue and call it from stop
+//5. move all platform code to appropriate folders
+
 #ifdef min
 #undef min
 #endif
@@ -346,6 +354,7 @@ void ESRIMapView::TilesCache::put(Tile const &tile)
     m_by_coordinates.insert(std::make_pair(key, ptile));
 
     // Throw away oldest tiles if limit reached
+    //TODO: remove only unvisible images
     for (int i = MAX_TILES_CACHE_SIZE, lim = (int)m_tiles.size(); i < lim; ++i)
     {
         Tile const &tile = m_tiles.front();
@@ -441,10 +450,10 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
 ESRIMapView::~ESRIMapView()
 {
     if ( m_map_fetch.get() != 0)
-        m_map_fetch->stop(1000);
+        m_map_fetch->stop(2000);
 
     if ( m_cache_update.get() != 0)
-        m_cache_update->stop(200);
+        m_cache_update->stop(2000);
 }
 
 void ESRIMapView::setSize(int width, int height)
@@ -633,6 +642,7 @@ bool ESRIMapView::handleClick(int x, int y)
 
     int old_selected = m_selected_annotation_index;
 
+    //TODO: use m_rcCallout, remove isClickOnCallout
     if ( m_selected_annotation_index >=0 && isClickOnCallout(x,y,m_annotations.elementAt(m_selected_annotation_index) ))
     {
     }else
@@ -833,6 +843,7 @@ void ESRIMapView::paintAnnotation(IDrawingContext *context, Annotation const &an
 
 bool ESRIMapView::isClickOnCallout(int x, int y, Annotation const &ann)
 {
+    //TODO: remove this method. use m_rcCallout
     if (!m_pinCallout || !m_pin)
         return false;
 
@@ -857,6 +868,7 @@ void ESRIMapView::paintCallout(IDrawingContext *context, Annotation const &ann)
     if (!m_pinCallout || !m_pin)
         return;
 
+    //TODO: create m_rcCallout
     int pinCalloutWidth = m_pinCallout->width();
     int pinCalloutHeight = m_pinCallout->height();
 
