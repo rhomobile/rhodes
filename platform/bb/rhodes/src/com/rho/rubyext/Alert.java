@@ -261,16 +261,12 @@ public class Alert
     	
     }
     
-    public static void vibrate(final String duration) 
+    public static void vibrate(final int duration) 
     {
     	Application.getApplication().invokeLater(new Runnable() {
-            public void run() {    	
-		    	int dt = 2500;
-		    	try {
-		    		dt = Integer.parseInt(duration);
-		    	} catch (NumberFormatException e) {    		
-		    	}
-		    	
+            public void run() 
+            {
+            	int dt = duration;
 		    	if (dt > 25500) dt = 25500;
 		    	
 		    	if (dt > 0) {
@@ -415,10 +411,10 @@ public class Alert
 							"in Alert.vibrate: wrong number of arguments ( " + args.size() + " for " + 1 + " )");			
 				
 				try {
-					String duration = "2500";
+					int nDuration = 2500;
 					if ((args != null) && (args.size() > 0))
-						duration = args.get(0).toStr();
-					Alert.vibrate(duration);
+						nDuration = args.get(0).toInt();
+					Alert.vibrate(nDuration);
 					
 					return RubyConstant.QNIL;
 				} catch(Exception e) {
