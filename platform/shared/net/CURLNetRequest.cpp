@@ -24,7 +24,8 @@ IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
 
 class CURLNetResponseImpl : public INetResponse
 {
-    Vector<char> m_data;
+    //Vector<char> m_data;
+	String m_data;
     int   m_nRespCode;
     String m_cookies;
 
@@ -32,12 +33,12 @@ public:
     CURLNetResponseImpl(char const *data, size_t size, int nRespCode)
         :m_nRespCode(nRespCode)
     {
-        m_data.assign(data, data + size);
+        m_data.assign(data, size);
     }
 
     virtual const char* getCharData()
     {
-        return m_data.size() > 0 ? &m_data[0] : "";
+        return m_data.c_str();
     }
 
     virtual unsigned int getDataSize()
@@ -74,7 +75,7 @@ public:
 
     void setCharData(const String &data)
     {
-        m_data.assign(data.begin(), data.end());
+        m_data = data;//.assign(data.begin(), data.end());
     }
     
     void setCookies(String s)
