@@ -1,5 +1,7 @@
 #include "ThreadQueue.h"
 
+//1. when stop thread - cancel current command. Add cancelCurrentCommand to ThreadQueue and call it from stop
+
 namespace rho {
 namespace common {
 
