@@ -1,3 +1,23 @@
+## 2.3
+* ESRI map support on all platforms
+* Add Infinite Peripherals extension
+* Encryption database support for all platforms
+* Support built-in sqlite database on Blackberry
+* Fix IN operation in Rhom find conditions
+* Add browser_helper methods to partials
+* Native Toolbar improvements, add support for Windows Mobile
+* Add Range to DateTime Picker
+* Add rake commands to reuse Blackberry simulator
+* Stop GPS by inactivity.
+* Run external application with parameters
+* Improve startup time on iPhone and Blackberry
+* Add NativeToolbar and NativeTabbar classes
+* Place non-synced sources in 'local' partition
+* Rhoconfig support conflict resolution after application upgrade
+* Fix Barcode for Blackbery 6
+* Fix issue with input type="number" in jquery
+* Support on_ui_created and on_ui_destroyed in Application class
+
 ## 2.2.6
 * Fix issue with adding new model(duplicate source_id)
 * Fix issue with JSON parse of Unicode codes(\u00AB)
