@@ -207,10 +207,10 @@ void AndroidDrawingContext::drawText(int x, int y, int width, int height, String
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
     if (!cls) return;
-    jmethodID mid = getJNIClassMethod(env, cls, "drawText", "(Landroid/graphics/Canvas;IILjava/lang/String;I)V");
+    jmethodID mid = getJNIClassMethod(env, cls, "drawText", "(Landroid/graphics/Canvas;IIIILjava/lang/String;I)V");
     if (!mid) return;
 
-    env->CallVoidMethod(m_device, mid, m_canvas, x, y,
+    env->CallVoidMethod(m_device, mid, m_canvas, x, y, width, height,
         rho_cast<jhstring>(text).get(), color);
 
     RHO_MAP_TRACE("drawText done");
