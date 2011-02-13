@@ -240,8 +240,15 @@ public class PushListeningThread extends Thread {
     	com.rho.rubyext.Alert.showPopup(message);
 	}
     
-    private static void vibrate(String duration) {
-    	com.rho.rubyext.Alert.vibrate(duration);
+    private static void vibrate(String duration) 
+    {
+    	int dt = 2500;
+    	try {
+    		dt = Integer.parseInt(duration);
+    	} catch (NumberFormatException e) {    		
+    	}
+    	
+    	com.rho.rubyext.Alert.vibrate(dt);
     }
 
     private static void play_file(String file_name, String media_type) {
