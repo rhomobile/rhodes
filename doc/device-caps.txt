@@ -882,9 +882,11 @@ NOTE: in order to use it on Android, you need to install Google Add-on API and r
 Provider:
 
 There are two providers supported now - 'Google' and 'ESRI'. 'Google supported on iPhone, Android and BB. 'ESRI' supported on iPhone, Android, BB and WM. 
+
 For use ESRI maps in your projects on iPhone:
-1. Install [http://resources.arcgis.com/content/arcgis-iphone/api  ESRI iOS SDK] - use default folders during installations !
-2. Add "esri" to your applications extensions list in build.yml file.
+
+* Install [http://resources.arcgis.com/content/arcgis-iphone/api  ESRI iOS SDK] - use default folders during installations !
+* Add "esri" to your applications extensions list in build.yml file.
 
 Map settings:
 
