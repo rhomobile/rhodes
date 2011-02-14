@@ -473,6 +473,7 @@ static Rhodes *instance = NULL;
         
         NSLog(@"Start rhodes app");
         rho_rhodesapp_start();
+		rho_rhodesapp_callUiCreatedCallback();
     }
     @finally {
         [pool release];
@@ -707,7 +708,6 @@ static Rhodes *instance = NULL;
 		}
 	}	
 	[self doStartUp];
-    rho_rhodesapp_callUiCreatedCallback();
 	[self processDoSync:launchOptions];
 
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
