@@ -85,20 +85,27 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(mSetup);
 		
 		sInstance = this;
-		
-		mHandler.post(new Runnable() {
-			public void run() {
-				RhodesService r = RhodesService.getInstance();
-				if (r == null) {
-					// If there is no yet running RhodesService instance,
-					// try to do the same after 100ms
-					mHandler.postDelayed(this, 100);
-					return;
-				}
+
+		RhodesService r = RhodesService.getInstance();
+		if ( r != null )
+		{
+			r.callUiCreatedCallback();
+		}else
+		{
+			mHandler.post(new Runnable() {
+				public void run() {
+					RhodesService r = RhodesService.getInstance();
+					if (r == null) {
+						// If there is no yet running RhodesService instance,
+						// try to do the same after 100ms
+						mHandler.postDelayed(this, 100);
+						return;
+					}
 				
-				r.callUiCreatedCallback();
-			}
-		});
+					r.callUiCreatedCallback();
+				}
+			});
+		}
 	}
 	
 	public static void setFullscreen(int enable) {
@@ -126,16 +133,20 @@ public class RhodesActivity extends BaseActivity {
 	}
 	
 	@Override
-	public void onStop() {
-		//sInstance = null;
+	public void onStop() 
+	{
 		super.onStop();
+
+		RhodesService r = RhodesService.getInstance();
+		if (r != null)
+			r.callUiDestroyedCallback();
 	}
 	
 	@Override
 	public void onDestroy() {
-		RhodesService r = RhodesService.getInstance();
-		if (r != null)
-			r.callUiDestroyedCallback();
+		//RhodesService r = RhodesService.getInstance();
+		//if (r != null)
+		//	r.callUiDestroyedCallback();
 		
 		sInstance = null;
 		super.onDestroy();
