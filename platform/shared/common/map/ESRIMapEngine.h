@@ -178,6 +178,7 @@ public:
 
     void setPinImage(IDrawingImage *pin, PIN_INFO pin_info);
     void setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
+    void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
 
 private:
     String const &getMapUrl();
@@ -236,6 +237,8 @@ private:
 	PIN_INFO m_pin_info;
     IDrawingImage *m_pinCallout;
 	PIN_INFO m_pin_callout_info;
+    IDrawingImage *m_pinCalloutLink;
+	PIN_INFO m_pin_calloutlink_info;
 };
 
 class ESRIMapEngine : public IMapEngine

@@ -128,6 +128,11 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 		ourMapView->setPinCalloutImage(pinCalloutImg, pin_callout_info);
 
+		strImagePath = "lib/res/callout_link.png";
+		fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
+		IDrawingImage* pinCalloutLinkImg = ourDrawingDevice.createImage(fullImagePath, true);
+		ourMapView->setPinCalloutLinkImage(pinCalloutLinkImg, pin_callout_info);
+
 	}
 
 #else 
