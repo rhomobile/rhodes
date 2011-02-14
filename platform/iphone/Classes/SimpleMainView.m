@@ -977,13 +977,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		self.view.hidden = NO;
 		[self.view.superview bringSubviewToFront:self.view];
     }
-	if ([self.webView superview] == nil) {
-		[self.view addSubview:self.webView];
+	if (self.nativeViewView == nil) {
+		if ([self.webView superview] == nil) {
+			[self.view addSubview:self.webView];
+		}
+		if (self.webView.hidden) {
+			self.webView.hidden = NO;
+			[self.webView.superview bringSubviewToFront:self.webView];
+		}
 	}
-	if (self.webView.hidden) {
-		self.webView.hidden = NO;
-		[self.webView.superview bringSubviewToFront:self.webView];
-    }
 	
 	if (!self.isBackgroundSetted) {
 		self.isBackgroundSetted = YES;
