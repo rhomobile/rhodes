@@ -810,8 +810,10 @@ static RhoCloseMapTaskESRI* instance_close = nil;
     NSLog(@"Callout tapped... Url = %@\n", url);
     //id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
     //[mainView navigateRedirect:url tab:[mainView activeTab]];
-    rho_webview_navigate([url UTF8String], 0);	
-	[self close];
+	if ([url length] > 0) {
+		rho_webview_navigate([url UTF8String], 0);	
+		[self close];
+	}
 }
 
 
