@@ -193,9 +193,36 @@ void DrawingContextImpl::drawImage(int x, int y, IDrawingImage* image) {
 
 void DrawingContextImpl::drawText(int x, int y,  int nWidth, int nHeight, String const &text, int color) {
 	RHO_MAP_TRACE2("DrawingContext drawText with x = %d, y = %d", x, y);
+
+	HFONT hfontTahoma;         
+	LOGFONT logfont;          
+	HFONT hfontSave = NULL;
+  
+    memset (&logfont, 0, sizeof (logfont));
+	logfont.lfHeight = 18;
+	logfont.lfWidth = 0;
+	logfont.lfEscapement = 0;
+	logfont.lfOrientation = 0;
+	logfont.lfWeight = FW_BOLD;
+	logfont.lfItalic = FALSE;
+	logfont.lfUnderline = FALSE;
+	logfont.lfStrikeOut = FALSE;
+	logfont.lfCharSet = DEFAULT_CHARSET;
+	logfont.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	logfont.lfQuality = DEFAULT_QUALITY;
+	logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	_tcsncpy (logfont.lfFaceName, TEXT("Tahoma"), LF_FACESIZE);
+	logfont.lfFaceName[LF_FACESIZE-1] = TEXT('\0');  // Ensure null termination
+	hfontTahoma = CreateFontIndirect (&logfont);
+
+	if (hfontTahoma) {
+		hfontSave = (HFONT) SelectObject(mHDC, hfontTahoma);
+	}
+
 	StringW pathW = convertToStringW(text);
 	SetBkMode(mHDC, TRANSPARENT);
-	SetTextColor(mHDC, color);
+	SetTextColor(mHDC, color & 0xFFFFFF);
 	//TextOut(mHDC, x, y, pathW.c_str(), pathW.length());
 	RECT r;
 	r.left = x;
@@ -203,6 +230,11 @@ void DrawingContextImpl::drawText(int x, int y,  int nWidth, int nHeight, String
 	r.right = x+nWidth;
 	r.bottom = y + nHeight;
 	DrawText(mHDC, pathW.c_str(), -1, &r, DT_LEFT | DT_TOP);
+
+	if (hfontTahoma) {
+		SelectObject(mHDC, hfontSave);
+		DeleteObject (hfontTahoma);
+	}
 }
 
 void DrawingContextImpl::fillRect(int x, int y, int width, int height, int color) {
