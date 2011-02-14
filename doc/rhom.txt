@@ -90,7 +90,9 @@ There are several features you can enable or disable in the model, below is a co
 	  # model settings
 	
 	  # Define how data is partitioned for this model.
-      # Default is :user.  If you have an :app partition
+      # For synced models default is :user. 
+      # For non-synced models default is :local
+      # If you have an :app partition
 	  # for your RhoSync source adapter and use bulk sync,
 	  # set this to :app also.
 	  set :partition, :app
