@@ -360,7 +360,7 @@ bool CHttpServer::init()
 
 bool CHttpServer::run()
 {
-    RAWTRACE("Start HTTP server");
+    LOG(INFO) + "Start HTTP server";
     if (!init())
         return false;
     

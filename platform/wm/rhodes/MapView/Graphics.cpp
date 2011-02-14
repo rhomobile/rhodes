@@ -11,9 +11,10 @@
 
 
 //#if 0
-
+#ifdef OS_WINCE
 #include <initguid.h>
 #include <imgguids.h>
+#endif //OS_WINCE
 
 extern "C" HWND getMainWnd();
 /*
