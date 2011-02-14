@@ -58,7 +58,6 @@ public:
 
     //void call(callback_t type);
 
-private:
     friend class Command;
     struct Command : public IQueueCommand
     {
@@ -68,6 +67,8 @@ private:
         boolean equals(IQueueCommand const &) {return false;}
         String toString() {return CAppCallbacksQueue::toString(type);}
     };
+
+private:
 
     void processCommand(IQueueCommand* pCmd);
 
