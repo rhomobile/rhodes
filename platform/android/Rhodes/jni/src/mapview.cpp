@@ -99,6 +99,7 @@ public:
     void attach(JNIEnv *env, jobject jDevice);
     void setPinImage(JNIEnv *env, jobject bitmap);
     void setPinCalloutImage(JNIEnv *env, jobject bitmap);
+    void setPinCalloutLinkImage(JNIEnv *env, jobject bitmap);
 
     rho_param *params() const {return m_params;}
 
@@ -119,7 +120,8 @@ private:
     IMapView *m_mapview;
     jobject m_jdevice;
     std::auto_ptr<IDrawingImage> m_pin_image;
-	std::auto_ptr<IDrawingImage> m_pin_calloutimage;
+    std::auto_ptr<IDrawingImage> m_pin_calloutimage;
+    std::auto_ptr<IDrawingImage> m_pin_calloutlinkimage;
 };
 
 AndroidImage::AndroidImage(jobject bitmap)
@@ -266,6 +268,7 @@ void AndroidMapDevice::setMapView(IMapView *mv)
 		pin_info1.x_offset = 5;
 
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info1);
+        mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info1);
 
     }
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
@@ -293,7 +296,7 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
 
 void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, jobject bitmap)
 {
-    RHO_MAP_TRACE("AndroidMapDevice: setPinImage: start");
+    RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutImage: start");
     m_pin_calloutimage.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
     if (mv) {
@@ -303,8 +306,24 @@ void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, jobject bitmap)
 
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info);
     }
-    RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
+    RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutImage: finish");
 }
+
+void AndroidMapDevice::setPinCalloutLinkImage(JNIEnv *env, jobject bitmap)
+{
+    RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutLinkImage: start");
+    m_pin_calloutlinkimage.reset(new AndroidImage(bitmap));
+    IMapView *mv = mapView();
+    if (mv) {
+
+		PIN_INFO pin_info = {0};
+		pin_info.x_offset = 5;
+
+        mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info);
+    }
+    RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutLinkImage: finish");
+}
+
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
 {
@@ -456,6 +475,16 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutI
     d->setPinCalloutImage(env, bitmap);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutImage: finish");
 }
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutLinkImage
+  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutLinkImage: start");
+    rhomap::AndroidMapDevice *d = device(env, nativeDevice);
+    d->setPinCalloutLinkImage(env, bitmap);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutLinkImage: finish");
+}
+
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_minZoom
   (JNIEnv *env, jobject, jlong nativeDevice)
