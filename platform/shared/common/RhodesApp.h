@@ -26,7 +26,7 @@ public:
 private:
 
     CRhodesApp(const String& strRootPath);
-    boolean m_bExit;
+    boolean m_bExit, m_bRestartServer;
 
     common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
     common::CAutoPtr<net::INetRequest> m_NetRequest;
@@ -38,7 +38,7 @@ private:
     CAppMenu m_oAppMenu;
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
-    String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl, m_strFirstStartUrl;
+    String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
     static String m_strStartParameters;
     String m_strRhoMessage;
 
@@ -55,7 +55,7 @@ private:
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
     
     boolean m_bDeactivationMode;
-    int m_activateCounter;
+    //int m_activateCounter;
 
     common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
 
@@ -67,6 +67,7 @@ public:
     static CRhodesApp* getInstance(){ return (CRhodesApp*)m_pInstance; }
     void startApp();
     void stopApp();
+    void restartLocalServer(common::CThreadQueue& waitThread);
 
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
@@ -79,7 +80,7 @@ public:
     const String& getStartUrl();
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
-    const String& getFirstStartUrl();
+    //const String& getFirstStartUrl();
     boolean isOnStartPage();
 
 	const String& getLoadingPngPath(){return m_strLoadingPngPath;}
@@ -151,7 +152,7 @@ void rho_rhodesapp_start();
 void rho_rhodesapp_destroy();
 	
 const char* rho_rhodesapp_getstarturl();
-const char* rho_rhodesapp_getfirststarturl();
+//const char* rho_rhodesapp_getfirststarturl();
 
 const char* rho_rhodesapp_gethomeurl();
 const char* rho_rhodesapp_getoptionsurl();

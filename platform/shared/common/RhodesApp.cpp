@@ -45,6 +45,8 @@ class CAppCallbacksQueue : public CThreadQueue
 public:
     enum callback_t
     {
+        app_deactivated,
+        local_server_restart,
         local_server_started,
         ui_created,
         app_activated
@@ -54,7 +56,7 @@ public:
     CAppCallbacksQueue(IRhoClassFactory *factory);
 	~CAppCallbacksQueue();
 
-    void call(callback_t type);
+    //void call(callback_t type);
 
 private:
     friend class Command;
@@ -87,6 +89,10 @@ char const *CAppCallbacksQueue::toString(int type)
         return "UI-CREATED";
     case app_activated:
         return "APP-ACTIVATED";
+    case app_deactivated:
+        return "APP-DEACTIVATED";
+    case local_server_restart:
+        return "LOCAL-SERVER-RESTART";
     default:
         return "UNKNOWN";
     }
@@ -102,34 +108,59 @@ CAppCallbacksQueue::CAppCallbacksQueue(IRhoClassFactory *factory)
 
 CAppCallbacksQueue::~CAppCallbacksQueue()
 {
-	stop(1000);
 }
-
+/*
 void CAppCallbacksQueue::call(CAppCallbacksQueue::callback_t type)
 {
     addQueueCommand(new Command(type));
-}
+}*/
 
 void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 {
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
-
+/*
     if (cmd->type < m_expected)
     {
-        RAWLOG_ERROR2("CAppCallbacksQueue: we've received command %s which is less than expected (%s) - ignore it",
-            toString(cmd->type), toString(m_expected));
+        LOG(ERROR) + "received command " + toString(cmd->type) + " which is less than expected "+toString(m_expected)+" - ignore it";
         return;
+    }
+*/
+    if ( m_expected == app_deactivated && cmd->type == app_activated )
+    {
+        LOG(INFO) + "received duplicate activate skip it";
+        return;
+    }
+
+    if ( m_expected == local_server_restart )
+    {
+        RHODESAPP().restartLocalServer(*this);
+        m_expected = local_server_started;
     }
 
     if (cmd->type > m_expected)
     {
-        // Don't do that now
-        RAWTRACE2("CAppCallbacksQueue: we've received command %s which is greater than expected (%s) - postpone it",
-            toString(cmd->type), toString(m_expected));
-        m_commands.push_back(cmd->type);
-        std::sort(m_commands.begin(), m_commands.end());
+        boolean bDuplicate = false;
+        for( int i = 0; i < m_commands.size() ; i++)
+        {
+            if ( m_commands.elementAt(i) == cmd->type )
+            {
+                bDuplicate = true;
+                break;
+            }
+        }
+
+        if ( bDuplicate )
+        {
+            LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+        }else
+        {
+            // Don't do that now
+            LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
+            m_commands.push_back(cmd->type);
+            std::sort(m_commands.begin(), m_commands.end());
+        }
         return;
     }
 
@@ -137,9 +168,17 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
-        RAWTRACE1("CAppCallbacksQueue: process command %s", toString(type));
+        LOG(INFO) + "process command: " + toString(type);
         switch (type)
         {
+        case app_deactivated:
+#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+            m_expected = local_server_restart;
+#else
+            m_expected = app_activated;
+#endif
+            break;
+
         case local_server_started:
             // Nothing
             break;
@@ -152,17 +191,19 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
                 NetResponse(resp, pNetRequest->pullData( strUrl, null ) );
                 if ( !resp.isOK() )
                     LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+
+                m_expected = app_activated;
             }
             break;
         case app_activated:
             {
-                static bool navigatedToStartUrl = false;
+/*                static bool navigatedToStartUrl = false;
                 if (!navigatedToStartUrl)
                 {
                     LOG(INFO) + "navigate to first start url";
                     RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
                     navigatedToStartUrl = true;
-                }
+                }*/
 
                 common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
                 common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
@@ -171,11 +212,13 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
                 NetResponse(resp, pNetRequest->pullData( strUrl, null ) );
                 if ( !resp.isOK() )
                     LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+
+                m_expected = app_deactivated;
             }
             break;
         }
-        if (type < app_activated)
-            m_expected = (callback_t)(type + 1);
+        //if (type < app_activated && type != app_deactivated)
+        //    m_expected = (callback_t)(type + 1);
     }
     m_commands.clear();
 }
@@ -202,7 +245,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
-    m_activateCounter = 0;
+    m_bRestartServer = false;
+    //m_activateCounter = 0;
 
     m_ptrFactory = rho_impl_createClassFactory();
     m_NetRequest = m_ptrFactory->createNetRequest();
@@ -242,19 +286,17 @@ void CRhodesApp::run()
     rho_ruby_call_config_conflicts();
     RHOCONF().conflictsResolved();
 
-    //rho_clientregister_create("iphone_client");
-#if defined( OS_WINCE ) || defined( OS_WINDOWS )
-//    LOG(INFO) + "navigate to first start url";
-//    RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
-#endif
-
     while (!m_bExit) {
         m_httpServer->run();
         if (m_bExit)
             break;
 
-        LOG(INFO) + "RhodesApp thread wait.";
-        wait(-1);
+        if ( !m_bRestartServer )
+        {
+            LOG(INFO) + "RhodesApp thread wait.";
+            wait(-1);
+        }
+        m_bRestartServer = false;
     }
 
     LOG(INFO) + "RhodesApp thread shutdown";
@@ -274,8 +316,17 @@ CRhodesApp::~CRhodesApp(void)
 
 }
 
+void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
+{
+    LOG(INFO) + "restart local server.";
+    m_bRestartServer = true;
+    m_httpServer->stop();
+}
+
 void CRhodesApp::stopApp()
 {
+   	m_appCallbacksQueue->stop(1000);
+
     if (!m_bExit)
     {
         m_bExit = true;
@@ -384,9 +435,7 @@ static void callback_resetDBOnSyncUserChanged(void *arg, String const &strQuery)
 
 void CRhodesApp::callUiCreatedCallback()
 {
-    if (!m_appCallbacksQueue)
-        return;
-    ((CAppCallbacksQueue*)&*m_appCallbacksQueue)->call(CAppCallbacksQueue::ui_created);
+    m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::ui_created));
 }
 
 void CRhodesApp::callUiDestroyedCallback()
@@ -405,18 +454,16 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     if (bActive)
     {
         // Restart server each time when we go to foreground
-        if (m_activateCounter++ > 0)
+/*        if (m_activateCounter++ > 0)
         {
 #if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
             m_httpServer->stop();
 #endif
             this->stopWait();
 
-        }
+        } */
 
-        if (!m_appCallbacksQueue)
-            return;
-        ((CAppCallbacksQueue*)&*m_appCallbacksQueue)->call(CAppCallbacksQueue::app_activated);
+        m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_activated));
     }
     else
     {
@@ -428,6 +475,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // To fix this problem, new mode 'deactivation' introduced. When this mode active, no UI operations allowed.
         // All such operation will throw exception in ruby code when calling in 'deactivate' mode.
         m_bDeactivationMode = true;
+        m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
+
         String strUrl = m_strHomeUrl + "/system/deactivateapp";
         NetResponse(resp,getNet().pullData( strUrl, null ));
         if ( !resp.isOK() )
@@ -861,7 +910,7 @@ const String& CRhodesApp::getCurrentUrl(int /*index*/)
 { 
     return m_currentUrls[m_currentTabIndex]; 
 }
-
+/*
 const String& CRhodesApp::getFirstStartUrl()
 {
     m_strFirstStartUrl = getStartUrl();
@@ -874,7 +923,7 @@ const String& CRhodesApp::getFirstStartUrl()
 
     LOG(INFO) + "Start url: " + m_strFirstStartUrl;
     return m_strFirstStartUrl;
-}
+}*/
 
 const String& CRhodesApp::getRhobundleReloadUrl() 
 {
@@ -1087,15 +1136,7 @@ void CRhodesApp::loadUrl(String url)
 
 void CRhodesApp::notifyLocalServerStarted()
 {
-    static boolean already_notified = false;
-
-    if (already_notified)
-        return;
-
-    if (!m_appCallbacksQueue)
-        return;
-    ((CAppCallbacksQueue*)&*m_appCallbacksQueue)->call(CAppCallbacksQueue::local_server_started);
-    already_notified = true;
+    m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::local_server_started));
 }
 
 } //namespace common
@@ -1208,11 +1249,11 @@ void rho_rhodesapp_destroy()
 {
     rho::common::CRhodesApp::Destroy();
 }
-
+/*
 const char* rho_rhodesapp_getfirststarturl()
 {
     return RHODESAPP().getFirstStartUrl().c_str();
-}
+}*/
 
 const char* rho_rhodesapp_getstarturl()
 {
