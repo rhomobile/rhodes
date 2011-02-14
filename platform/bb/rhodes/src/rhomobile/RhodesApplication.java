@@ -201,7 +201,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			LOG.TRACE("Saved LastVisitedPage: " + url);
 		}   	
     }
-
+/*
     boolean restoreLocation() {
     	LOG.TRACE("Restore Location to LastVisitedPage");
     	if (RhoConf.getInstance().getBool("KeepTrackOfLastVisitedPage")) {
@@ -217,7 +217,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 			}
 		} 
 		return false;
-    }
+    }*/
    
     public void navigateBack()
     {
@@ -582,9 +582,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 		    	
 				RhoRuby.rho_ruby_activateApp();
 		
-		        if(!restoreLocation()) {
-		        	navigateHome();
-		        }    
+		        //if(!restoreLocation()) {
+		        //	navigateHome();
+		        //}    
 		
 		    	onPlatformActivate();	    		
 
