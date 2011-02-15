@@ -266,7 +266,7 @@ namespace "config" do
     $shareddir = File.join($androidpath, "..", "shared")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, "target")
-    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
     $libs = File.join($androidpath, "Rhodes", "libs")

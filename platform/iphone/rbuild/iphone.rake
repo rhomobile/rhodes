@@ -252,7 +252,7 @@ namespace "config" do
     $bindir = Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = iphonepath + "/target" 
-    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
     $devroot = '/Developer' if $devroot.nil?
