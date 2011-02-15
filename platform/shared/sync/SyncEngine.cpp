@@ -812,7 +812,10 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     }
 
    	if ( isStoppedByUser() )
+	{
+		LOG(INFO) + "Login was stopped by application.";
         return;
+	}
 
 	{
 		DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );

@@ -228,6 +228,8 @@ void rho_sync_stop()
 	
 	if (CSyncThread::getSyncEngine().isSyncing() )
 	{
+		LOG(INFO)+"STOP sync in progress.";
+
 		CSyncThread::getSyncEngine().stopSyncByUser();
         CSyncThread::getInstance()->stopWait();
 
@@ -333,9 +335,12 @@ int rho_sync_logged_in()
 
 void rho_sync_logout()
 {
+	LOG(INFO) + "Logout";
+
     rho_sync_stop();
 
 	//CDBAdapter& db = CDBAdapter::getUserDB();
+	LOG(INFO) + "stopSyncByUser";
     CSyncThread::getSyncEngine().stopSyncByUser();
     CSyncThread::getSyncEngine().logout();
 }
