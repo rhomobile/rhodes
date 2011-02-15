@@ -23,9 +23,11 @@ require 'date'
 require 'time'
 
 describe "System" do
-
-   [1..1000].each do |i|
-   		System::app_installed?("mythebesttestandroidapplication")
+   
+   it "should test app_installed?" do
+   	[1..1000].each do |i|
+   			System::app_installed?("mythebesttestandroidapplication")
+   	end
    end
   
 end
