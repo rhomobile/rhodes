@@ -44,7 +44,7 @@ public:
 
 private:
     VectorPtr<CSyncSource*> m_sources;
-    common::CAutoPtr<net::INetRequest> m_NetRequest;
+    common::CAutoPtr<net::INetRequest> m_NetRequest, m_NetRequestClientID;
     common::CAutoPtr<ISyncProtocol> m_SyncProtocol;
     ESyncState m_syncState;
     String     m_clientID;
@@ -65,6 +65,8 @@ public:
 
     void setFactory(common::IRhoClassFactory* factory){ 
         m_NetRequest = factory->createNetRequest();
+        //clientID may be requested by ClientRegister thread
+        m_NetRequestClientID = factory->createNetRequest();
         m_oSyncNotify.setFactory(factory);
     }
     static CSourceOptions& getSourceOptions(){ return m_oSourceOptions; }
