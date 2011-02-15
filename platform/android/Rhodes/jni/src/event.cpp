@@ -165,7 +165,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     RHO_TRACE("eventFromRuby (3)");
     jmethodID mid = getJNIClassMethod(env, clsEvent, "<init>", "(Ljava/lang/String;)V");
     if (!mid) return NULL;
-    jobject jEvent = env->NewObject(clsEvent, mid, env->NewStringUTF(RSTRING_PTR(rId)));
+    jobject jEvent = env->NewObject(clsEvent, mid, rho_cast<jhstring>(RSTRING_PTR(rId)).get());
     if (!jEvent) return NULL;
 
     RHO_TRACE("eventFromRuby (4)");
@@ -173,7 +173,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rTitle))
     {
         Check_Type(rTitle, T_STRING);
-        env->SetObjectField(jEvent, fidTitle, env->NewStringUTF(RSTRING_PTR(rTitle)));
+        env->SetObjectField(jEvent, fidTitle, rho_cast<jhstring>(RSTRING_PTR(rTitle)).get());
     }
 
     RHO_TRACE("eventFromRuby (5)");
@@ -196,7 +196,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rLocation))
     {
         Check_Type(rLocation, T_STRING);
-        env->SetObjectField(jEvent, fidLocation, env->NewStringUTF(RSTRING_PTR(rLocation)));
+        env->SetObjectField(jEvent, fidLocation, rho_cast<jhstring>(RSTRING_PTR(rLocation)).get());
     }
 
     RHO_TRACE("eventFromRuby (9)");
@@ -204,7 +204,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rNotes))
     {
         Check_Type(rNotes, T_STRING);
-        env->SetObjectField(jEvent, fidNotes, env->NewStringUTF(RSTRING_PTR(rNotes)));
+        env->SetObjectField(jEvent, fidNotes, rho_cast<jhstring>(RSTRING_PTR(rNotes)).get());
     }
 
     RHO_TRACE("eventFromRuby (10)");
@@ -212,7 +212,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rPrivacy))
     {
         Check_Type(rPrivacy, T_STRING);
-        env->SetObjectField(jEvent, fidPrivacy, env->NewStringUTF(RSTRING_PTR(rPrivacy)));
+        env->SetObjectField(jEvent, fidPrivacy, rho_cast<jhstring>(RSTRING_PTR(rPrivacy)).get());
     }
 
     RHO_TRACE("eventFromRuby: return");
