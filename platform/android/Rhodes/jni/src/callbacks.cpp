@@ -188,7 +188,7 @@ RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "runApplication", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
     jobject jParams = rho_cast<jobject>(env, params);
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(appname), jParams);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(appname).get(), jParams);
 }
 
 RHO_GLOBAL void rho_sys_open_url(const char *url)
@@ -198,7 +198,7 @@ RHO_GLOBAL void rho_sys_open_url(const char *url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(url).get());
 }
 
 RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
@@ -218,7 +218,7 @@ RHO_GLOBAL void rho_sys_app_install(const char *url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "installApplication", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(url));
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(url).get());
 }
 
 RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
@@ -228,5 +228,5 @@ RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "uninstallApplication", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, env->NewStringUTF(appname));
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(appname).get());
 }
