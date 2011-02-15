@@ -68,7 +68,7 @@ class Time
 
     end
 
-	puts "strftime: " + fmt
+	#puts "strftime: " + fmt
 
     DateTime.new(self).strftime(fmt)
   end
