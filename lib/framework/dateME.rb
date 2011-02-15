@@ -19,7 +19,7 @@ class Time
         nHour = nHour-12 if nHour > 12
     end
 
-	strPM, nHour
+	return strPM, nHour
   end
 
   def strftime(fmt='%F')
