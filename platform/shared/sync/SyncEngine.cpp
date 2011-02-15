@@ -556,6 +556,12 @@ String CSyncEngine::requestClientIDByNet()
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
+        if ( !szData || !*szData )
+        {
+            LOG(ERROR) + "Server return empy clientcreate response.";
+            return String();
+        }
+
         /*
         "{\"client\":{\"client_id\":\"vasy\"},\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
         "\"schema\":{\"version\":\"1.0\","
