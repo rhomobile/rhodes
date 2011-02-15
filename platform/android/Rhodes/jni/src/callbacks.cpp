@@ -208,7 +208,7 @@ RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isAppInstalled", "(Ljava/lang/String;)Z");
     if (!mid) return 0;
-    return (int)env->CallStaticBooleanMethod(cls, mid, env->NewStringUTF(appname));
+    return (int)env->CallStaticBooleanMethod(cls, mid, rho_cast<jhstring>(appname).get());
 }
 
 RHO_GLOBAL void rho_sys_app_install(const char *url)
