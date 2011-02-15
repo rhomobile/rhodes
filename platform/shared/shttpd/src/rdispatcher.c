@@ -295,7 +295,7 @@ extern void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char
 void* rho_dispatch(struct conn *c, const char* path) {
   RouteRef route;
   
-  if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg") )
+  if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg,jpeg,gif") )
     return NULL;
 
 /*#ifdef __SYMBIAN32__
