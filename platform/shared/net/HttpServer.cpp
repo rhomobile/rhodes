@@ -126,7 +126,8 @@ static bool isknowntype(String const &uri)
         {".png", 4},
         {".bmp", 4},
         {".jpg", 4},
-        {".jpeg", 5}
+        {".jpeg", 5},
+        {".gif", 4}
     };
     
     // Convert uri to lower case
