@@ -514,7 +514,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     //if ( CClientRegister::getInstance() != null )
     //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse( resp, getNet().pullData(getProtocol().getClientResetUrl(strClientID), this) );
+    NetResponse( resp, m_NetRequestClientID->pullData(getProtocol().getClientResetUrl(strClientID), this) );
 
 
 /*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
@@ -552,16 +552,10 @@ String CSyncEngine::requestClientIDByNet()
     //if ( CClientRegister::getInstance() != null )
     //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse(resp,getNet().pullData(getProtocol().getClientCreateUrl(), this));
+    NetResponse(resp,m_NetRequestClientID->pullData(getProtocol().getClientCreateUrl(), this));
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
-        if ( !szData || !*szData )
-        {
-            LOG(ERROR) + "Server return empy clientcreate response.";
-            return String();
-        }
-
         /*
         "{\"client\":{\"client_id\":\"vasy\"},\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
         "\"schema\":{\"version\":\"1.0\","
