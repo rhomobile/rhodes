@@ -898,7 +898,7 @@ public class DBAdapter extends RubyBasic
 			
 		    copyTable("client_info", m_dbStorage, db.m_dbStorage );
 		    copyChangedValues(db);
-		    
+/*		    
 		    //update User partition
 		    if ( m_strDbPartition.compareTo(USER_PARTITION_NAME()) == 0 )
 		    {
@@ -916,7 +916,8 @@ public class DBAdapter extends RubyBasic
 		        dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
 		        copyTable("sources", db.m_dbStorage, dbUser.m_dbStorage );
 		        dbUser.endTransaction();
-		    }
+		    }*/
+		    
 		    getDBPartitions().put(m_strDbPartition, db);
 		    com.rho.sync.SyncThread.getSyncEngine().applyChangedValues(db);
 		    getDBPartitions().put(m_strDbPartition, this);
