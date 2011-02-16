@@ -190,13 +190,13 @@ namespace "config" do
 
     $bbver = $app_config["bbver"].to_s
     unless $app_config[$current_platform] && $app_config[$current_platform]["ignore_bb6_suffix"]  && $app_config[$current_platform]['ignore_bb6_suffix'].to_s == '1'
-        $bb6 = true if $bbver[0].to_i >= 6
+        $bb6 = true if $bbver.split('.')[0].to_i >= 6
         
         puts "use bb6 suffix" if $bb6
     end    
     
     use_sqlite = $app_config[$current_platform] && $app_config[$current_platform]['use_sqlite']  && $app_config[$current_platform]['use_sqlite'].to_s == '1'
-    $use_sqlite = $bbver[0].to_i >= 5 && use_sqlite ? true : false
+    $use_sqlite = $bbver.split('.')[0].to_i >= 5 && use_sqlite ? true : false
     puts "$use_sqlite : #{$use_sqlite}"
     
     $builddir = $config["build"]["bbpath"] + "/build"
@@ -1034,7 +1034,7 @@ namespace "run" do
 
     task :stopmdsandsim_ex => ["config:bb"] do
         
-        stopsim if $bbver[0].to_i < 5
+        stopsim if $bbver.split('.')[0].to_i < 5
 
         stopmds
     end  
@@ -1059,7 +1059,7 @@ namespace "run" do
     
     startmds
 
-    if $bbver[0].to_i < 5
+    if $bbver.split('.')[0].to_i < 5
       cp_r File.join($targetdir,"/."), jde + "/simulator"
       startsim 
     elsif !load_to_sim(false)

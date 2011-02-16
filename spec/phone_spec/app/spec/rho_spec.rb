@@ -22,6 +22,16 @@
 require 'date'
 require 'time'
 
+describe "System" do
+   
+   it "should test app_installed?" do
+   	[1..1000].each do |i|
+   			System::app_installed?("mythebesttestandroidapplication")
+   	end
+   end
+  
+end
+
 describe "RhoConfig" do
 
   before(:each) do
