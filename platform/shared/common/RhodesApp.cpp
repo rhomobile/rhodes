@@ -322,6 +322,7 @@ void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
     LOG(INFO) + "restart local server.";
     m_bRestartServer = true;
     m_httpServer->stop();
+	stopWait();
 }
 
 void CRhodesApp::stopApp()
