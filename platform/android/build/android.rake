@@ -277,6 +277,7 @@ namespace "config" do
     $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
     $app_package_name = $app_config["android"] ? $app_config["android"]["package_name"] : nil
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
+    $app_package_name.gsub!(/\.[\d]/, "._")
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
@@ -367,6 +368,7 @@ namespace "config" do
     $adb = File.join( $androidsdkpath, "platform-tools", "adb" + $exe_ext ) unless File.exists? $adb
     $zipalign = File.join( $androidsdkpath, "tools", "zipalign" + $exe_ext )
     $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
+    $dxjar = File.join( $androidsdkpath, "platform-tools", "lib", "dx.jar")
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
@@ -1014,17 +1016,18 @@ namespace "build" do
           lines << line
         end
       end
-      lines << File.join($app_rjava_dir, "R.java")
-      lines << $app_android_r
-      lines << $app_native_libs_java
-      lines << $app_capabilities_java
-      lines << $app_push_java
+      lines << "\"" +File.join($app_rjava_dir, "R.java")+"\""
+      lines << "\"" +$app_android_r+"\""
+      lines << "\"" +$app_native_libs_java+"\""
+      lines << "\"" +$app_capabilities_java+"\""
+      lines << "\"" +$app_push_java+"\""
       if File.exists? File.join($extensionsdir, "ext_build.files")
         puts 'ext_build.files found ! Addditional files for compilation :'
         File.open(File.join($extensionsdir, "ext_build.files")) do |f|
           while line = f.gets
+            line=line.gsub("\n","\"")
             puts 'java file : ' + line
-            lines << line
+            lines << "\""+line
           end
         end
       else
@@ -1092,10 +1095,12 @@ namespace "package" do
   task :android => "build:android:all" do
     puts "Running dx utility"
     args = []
+    args << "-jar"
+    args << $dxjar
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
     args << "#{$bindir}/Rhodes.jar"
-    puts Jake.run($dx, args)
+    puts Jake.run("java", args)
     unless $?.success?
       puts "Error running DX utility"
       exit 1
