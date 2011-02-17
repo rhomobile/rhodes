@@ -619,7 +619,7 @@ namespace "build" do
 
         fvsrc = File.new( vsrclist, "w" )
         Dir.glob( vsrcdir + "/**/*.java" ).each do |line|
-          fvsrc.puts line
+          fvsrc.puts "\""+line+"\""
         end
         fvsrc.close
 
