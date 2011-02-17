@@ -183,6 +183,9 @@
 }
 
 - (void)setSelection:(int)index {
+	if ((index < 0) || (index >= [self.itemsData count])) {
+		return;
+	}
 	NSIndexPath* path = [NSIndexPath indexPathForRow:index inSection:0];
 	[self performSelectorOnMainThread:@selector(setSelectionCommand:) withObject:path waitUntilDone:NO];	
 }
