@@ -147,6 +147,11 @@
 	return YES;
 }
 
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	[[self getSimpleView:-1] didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
+
 
 
 - (SimpleMainView*) getSimpleView:(int)index {

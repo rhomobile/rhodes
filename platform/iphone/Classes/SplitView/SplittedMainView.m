@@ -162,6 +162,14 @@
 }
  */
 
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	[[self getRightViewController] didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
+
+
+
 - (RightViewController*)getRightViewController {
 	RightViewController* rvc = (RightViewController*)[self.viewControllers objectAtIndex:1];
 	return rvc;

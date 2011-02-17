@@ -397,7 +397,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-	if ([self interfaceOrientation] == fromInterfaceOrientation) {
+	if ([[UIApplication sharedApplication] statusBarOrientation] == fromInterfaceOrientation) {
 		return;
 	}
 	int width = rho_sys_get_screen_width();
