@@ -155,6 +155,9 @@
 
 
 - (SimpleMainView*) getSimpleView:(int)index {
+	if ((index < 0) || (index >= [self.itemsData count])) {
+		index = -1;
+	}
 	if (index == -1) {
 		index = self.tabindex;
 	}
@@ -227,9 +230,6 @@
 		}
 	}
 	SimpleMainView* cur_v = [self getSimpleView:tabindex];
-	if (cur_v == new_v) {
-		return;
-	}
 	tabindex = index;
     RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
     if (!ri.loaded || ri.reload) {
@@ -237,14 +237,14 @@
         rho_rhodesapp_load_url(s);
         ri.loaded = YES;
     }
+	if (cur_v == new_v) {
+		return;
+	}
 	CGRect myframe = self.view.bounds;
 	new_v.view.frame = myframe;
 	[cur_v.view removeFromSuperview];
 	[self.view addSubview:new_v.view];
 	[self.view setNeedsLayout];
-	//[self.view layoutSubviews];
-	//[self.view.superview setNeedsLayout];
-	//[new_v.view setNeedsDisplay];
 }
 
 - (void)switchTab:(int)index {
