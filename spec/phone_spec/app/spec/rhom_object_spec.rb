@@ -20,7 +20,7 @@
 require 'rhom'
 require 'rho/rhoutils'
 
-USE_HSQLDB = System.get_property('platform') == 'Blackberry' #&& System.get_property('os_version')[0].to_i() < 5
+USE_HSQLDB = !System.get_property('has_sqlite')
 USE_COPY_FILES = !defined? RHO_ME
 
 def getAccount
