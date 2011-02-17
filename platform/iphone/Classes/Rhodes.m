@@ -33,6 +33,40 @@ static BOOL app_created = NO;
 @end
 
 
+@interface RhoFullScreenEnableTask : NSObject {}
++ (void)run;
+@end
+
+@implementation RhoFullScreenEnableTask
++ (void)run {
+#ifdef __IPHONE_3_2
+    [[Rhodes application] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+#else
+    [[Rhodes application] setStatusBarHidden:YES animated:YES];
+#endif
+    [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
+}
+@end
+
+@interface RhoFullScreenDisableTask : NSObject {}
++ (void)run;
+@end
+
+@implementation RhoFullScreenDisableTask
++ (void)run {
+#ifdef __IPHONE_3_2
+    [[Rhodes application] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+#else
+    [[Rhodes application] setStatusBarHidden:NO animated:YES];
+#endif
+    [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
+}
+@end
+
+
+
+
+
 @implementation Rhodes
 
 @synthesize window, player, cookies, signatureDelegate, nvDelegate;
@@ -51,20 +85,24 @@ static Rhodes *instance = NULL;
 }
 
 + (CGRect)applicationFrame {
-    CGRect frame = [[UIScreen mainScreen] bounds];
-    CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
-    frame.origin.y += sbFrame.size.height;
-    frame.size.height -= sbFrame.size.height;
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
+    //frame.origin.y += sbFrame.size.height;
+    //frame.size.height -= sbFrame.size.height;
     return frame;
 }
 
+
+
+
+
 + (void)setStatusBarHidden:(BOOL)v {
-#ifdef __IPHONE_3_2
-    [[Rhodes application] setStatusBarHidden:v withAnimation:UIStatusBarAnimationFade];
-#else
-    [[Rhodes application] setStatusBarHidden:v animated:YES];
-#endif
-    [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
+	if (v) {
+		[Rhodes performOnUiThread:[RhoFullScreenEnableTask class] wait:NO];
+	}
+	else {
+		[Rhodes performOnUiThread:[RhoFullScreenDisableTask class] wait:NO];
+	}
 }
 
 
