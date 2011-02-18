@@ -343,6 +343,8 @@
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
+	BOOL is_load_initial_url = YES;
+	int tab_to_initial_select = -1;
     
     for (int i = 0; i < count; ++i) {
 		
@@ -357,7 +359,16 @@
 		NSString *disabled = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_DISABLED];
 		
 		NSString *web_bkg_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
+		
+		NSString *use_current_view_for_tab = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB];
         
+		
+		BOOL is_use_current_view_for_tab = NO;
+		if (use_current_view_for_tab != nil) {
+			if ([use_current_view_for_tab caseInsensitiveCompare:@"true"] == NSOrderedSame) {
+				is_use_current_view_for_tab = YES;
+			}
+		}
 		
         if (!initUrl)
             initUrl = url;
@@ -366,7 +377,20 @@
             RhoTabBarData *td = [[RhoTabBarData alloc] init];
             td.url = url;
 			td.reload = [reload isEqualToString:@"true"];
+			td.loaded = is_use_current_view_for_tab;
+			
+			if (is_use_current_view_for_tab) {
+				td.url = [v currentLocation:-1];
+			}
+			
 			SimpleMainView *subController = nil;
+			
+			if (is_use_current_view_for_tab) {
+				web_bkg_color = nil;
+				is_load_initial_url = NO;
+				tab_to_initial_select = i;
+			}
+			
 			if (web_bkg_color != nil) {
 				int bkgc = [web_bkg_color intValue];
 				int cR = (bkgc & 0xFF0000) >> 16;
@@ -377,7 +401,12 @@
 				subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame web_bkg_color:bc];
 			}
 			else {
-				subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
+				if (is_use_current_view_for_tab) {
+					subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame webview:[v detachWebView]];
+				}
+				else {
+					subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
+				}
 			}
             
 			
@@ -438,9 +467,13 @@
     self.tabbarData = tabs;
     [tabs release];
     
-    if (initUrl)
+	if (initUrl && is_load_initial_url) {
         [self navigateRedirect:initUrl tab:0];
-    
+    }
+	if (tab_to_initial_select >= 0) {
+		tabbar.selectedIndex = tab_to_initial_select;
+	}
+									 
     return self;
 }
 
@@ -465,6 +498,9 @@
 }
 
 - (SimpleMainView*)subView:(int)index {
+	if (index == -1) {
+		index = [self activeTab];
+	}
     return (SimpleMainView*)[tabbar.viewControllers objectAtIndex:index];
 }
 
