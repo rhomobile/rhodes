@@ -515,9 +515,9 @@ public class SyncNotify {
 						    else  if ( src != null )
 						    	strBody += "&error_message=" + URI.urlEncode(src.m_strError);
 						    
-						    if ( strServerError.length() > 0 )
+						    if ( strServerError != null && strServerError.length() > 0 )
 						    	strBody += "&" + strServerError;
-						    else if ( src != null && src.m_strServerError.length() > 0  )
+						    else if ( src != null && src.m_strServerError != null && src.m_strServerError.length() > 0  )
 						    	strBody += "&" + src.m_strServerError;						    
 				        }
 				        
@@ -528,7 +528,7 @@ public class SyncNotify {
 			        	strBody += "in_progress";
 			        
 			        strBody += "&rho_callback=1";
-			        if ( pSN.m_strParams.length() > 0 )
+			        if ( pSN.m_strParams != null && pSN.m_strParams.length() > 0 )
 			        {
 			        	if ( !pSN.m_strParams.startsWith("&") )
 			        		strBody += "&";
