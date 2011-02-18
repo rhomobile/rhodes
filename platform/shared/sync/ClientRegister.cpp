@@ -15,12 +15,12 @@ IMPLEMENT_LOGCLASS(CClientRegister,"ClientRegister");
 
 CClientRegister* CClientRegister::m_pInstance = 0;
 	
-/*static*/ CClientRegister* CClientRegister::Create(common::IRhoClassFactory* factory,const char* device_pin) 
+/*static*/ CClientRegister* CClientRegister::Create(const char* device_pin) 
 {
 	if ( m_pInstance ) 
 		return m_pInstance;
 
-	m_pInstance = new CClientRegister(factory, device_pin);
+	m_pInstance = new CClientRegister(device_pin);
 	return m_pInstance;
 }
 
@@ -32,13 +32,11 @@ CClientRegister* CClientRegister::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CClientRegister::CClientRegister(common::IRhoClassFactory* factory,const char* device_pin) : CRhoThread(factory) 
+CClientRegister::CClientRegister(const char* device_pin) : CRhoThread() 
 {
 	m_strDevicePin = device_pin;
-	m_NetRequest = factory->createNetRequest();
+	m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
     m_nPollInterval = POLL_INTERVAL_SECONDS;
-
-    delete factory;
 
     startUp();
 }

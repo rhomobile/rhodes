@@ -11,6 +11,11 @@ namespace rho {
 namespace net {
 IMPLEMENT_LOGCLASS(CNetRequest,"Net");
 
+CNetRequest::~CNetRequest(void)
+{
+    LOG(INFO) + "~CNetRequest";
+}
+
 INetResponse* CNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
 {
     return doRequest("GET",strUrl,String(),oSession,null);

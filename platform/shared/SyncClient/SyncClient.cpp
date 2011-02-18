@@ -122,7 +122,7 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
     rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
-    CSyncThread::Create(common::rho_impl_createClassFactory());
+    CSyncThread::Create();
 
 }
 

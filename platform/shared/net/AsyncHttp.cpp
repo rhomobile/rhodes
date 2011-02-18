@@ -18,7 +18,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CAsyncHttp( rho_impl_createClassFactory());
+    m_pInstance = new CAsyncHttp( );
     return m_pInstance;
 }
 
@@ -30,7 +30,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory) : CThreadQueue(factory)
+CAsyncHttp::CAsyncHttp() : CThreadQueue()
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
@@ -93,9 +93,14 @@ CAsyncHttp::CHttpCommand::CHttpCommand(String strCmd, rho_param *p) : m_params(p
 
     m_params.getHash("headers", m_mapHeaders);
 
-    m_pNetRequest = CAsyncHttp::getInstance()->getFactory()->createNetRequest();
+    m_pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
     m_pNetRequest->sslVerifyPeer(m_params.getBool("ssl_verify_peer"));
 
+}
+
+CAsyncHttp::CHttpCommand::~CHttpCommand()
+{
+    LOG(INFO) + "~CHttpCommand";
 }
 
 void CAsyncHttp::CHttpCommand::cancel()
