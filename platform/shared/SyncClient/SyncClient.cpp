@@ -67,7 +67,7 @@ void rho_syncclient_processmodels(RHOM_MODEL* pModels, int nModels)
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
     int nStartModelID = 1;
     {
-        DBResult( res, oUserDB.executeSQL("SELECT MAX(source_id) AS maxid FROM sources"));
+        IDBResult  res = oUserDB.executeSQL("SELECT MAX(source_id) AS maxid FROM sources");
         if ( !res.isEnd() )
             nStartModelID = res.getIntByIdx(0)+2;
     }
@@ -75,8 +75,8 @@ void rho_syncclient_processmodels(RHOM_MODEL* pModels, int nModels)
     for ( int i = 0; i < nModels; i++ )
     { 
         RHOM_MODEL& model = pModels[i];
-        DBResult( res, oUserDB.executeSQL("SELECT sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs FROM sources WHERE name=?",
-            model.name) );
+        IDBResult res = oUserDB.executeSQL("SELECT sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs FROM sources WHERE name=?",
+            model.name);
 
         if ( !res.isEnd() )
         {
@@ -241,14 +241,14 @@ unsigned long rhom_load_item_by_object(db::CDBAdapter& db, const String& src_nam
     if (!isSchemaSrc)
     {
         String sql = "SELECT attrib,value FROM object_values WHERE object=? AND source_id=?";
-        DBResult( res1, db.executeSQL(sql.c_str(), szObject, nSrcID) );
+        IDBResult res1 = db.executeSQL(sql.c_str(), szObject, nSrcID);
         item = rhom_make_object(res1, nSrcID, isSchemaSrc);
         if (item)
             rho_syncclient_hash_put(item, "object", szObject.c_str() );
     }else
     {
         String sql = "SELECT * FROM " + src_name + " WHERE object=? OFFSET 0 LIMIT 1";
-        DBResult( res1, db.executeSQL(sql.c_str(), szObject) );
+        IDBResult res1 = db.executeSQL(sql.c_str(), szObject);
         item = rhom_make_object(res1, nSrcID, isSchemaSrc);
     }
 
@@ -259,7 +259,7 @@ unsigned long rho_syncclient_find(const char* szModel,const char* szObject )
 {
     String src_name = szModel;
 
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -279,7 +279,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 {
     String src_name = szModel;
 
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -331,7 +331,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 		}
     }
 
-    DBResult( res1, db.executeSQLEx(sql.c_str(), arValues ) );
+    IDBResult  res1 = db.executeSQLEx(sql.c_str(), arValues ) );
 
     if ( nCount == 1 )
     {
@@ -363,7 +363,7 @@ unsigned long rho_syncclient_find_first(const char* szModel, unsigned long hash 
 void rho_syncclient_start_bulkupdate(const char* szModel)
 {
     String src_name = szModel;
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -378,7 +378,7 @@ void rho_syncclient_start_bulkupdate(const char* szModel)
 void rho_syncclient_stop_bulkupdate(const char* szModel)
 {
     String src_name = szModel;
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -398,7 +398,7 @@ void rho_syncclient_itemdestroy( const char* szModel, unsigned long hash )
     String obj = hashObject.get("object");
     String update_type="delete";
 
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -419,12 +419,12 @@ void rho_syncclient_itemdestroy( const char* szModel, unsigned long hash )
     
     if ( isSchemaSrc )
     {
-        DBResult( attrsList, db.executeSQL( ("SELECT * FROM " + tableName + " WHERE object=?").c_str(), obj) );
+        IDBResult attrsList = db.executeSQL( ("SELECT * FROM " + tableName + " WHERE object=?").c_str(), obj);
         if ( !attrsList.isEnd() )
             item = rhom_make_object(attrsList,nSrcID,isSchemaSrc);
     }else
     {
-        DBResult( attrsList, db.executeSQL( ("SELECT attrib, value FROM " + tableName + " WHERE object=? and source_id=?").c_str(), obj, nSrcID) );
+        IDBResult attrsList = db.executeSQL( ("SELECT attrib, value FROM " + tableName + " WHERE object=? and source_id=?").c_str(), obj, nSrcID);
         if ( !attrsList.isEnd() )
             item = rhom_make_object(attrsList,nSrcID,isSchemaSrc);
     }
@@ -434,8 +434,8 @@ void rho_syncclient_itemdestroy( const char* szModel, unsigned long hash )
 
     if ( isSyncSrc )
     {
-        DBResult( resCreateType, db.executeSQL("SELECT update_type FROM changed_values WHERE object=? and update_type=? and sent=?",
-            obj, "create", 0) );
+        IDBResult resCreateType = db.executeSQL("SELECT update_type FROM changed_values WHERE object=? and update_type=? and sent=?",
+            obj, "create", 0);
 
         db.executeSQL("DELETE FROM changed_values WHERE object=? and sent=?", obj, 0);
 
@@ -472,7 +472,7 @@ void rho_syncclient_save( const char* szModel, unsigned long hash )
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
     String src_name = szModel;
 
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -504,13 +504,13 @@ void rho_syncclient_save( const char* szModel, unsigned long hash )
         arValues.addElement(obj);
         arValues.addElement(convertToStringA(nSrcID));
     }
-    DBResult( res1, db.executeSQLEx(sql.c_str(), arValues ) );
+    IDBResult res1 = db.executeSQLEx(sql.c_str(), arValues );
     if (!res1.isEnd())
     {
         if (isSyncSrc)
         {
-            DBResult( resUpdateType, db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and sent=?", 
-                obj, nSrcID, 0 ) );
+            IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and sent=?", 
+                obj, nSrcID, 0 );
             if (!resUpdateType.isEnd()) 
                 update_type = resUpdateType.getStringByIdx(0);
             else
@@ -553,8 +553,8 @@ void rho_syncclient_save( const char* szModel, unsigned long hash )
                 {
                     if (isSyncSrc)
                     {
-                        DBResult( resUpdateType, db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
-                            obj, key, nSrcID, 0 ) );
+                        IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
+                            obj, key, nSrcID, 0 );
                         if (!resUpdateType.isEnd()) 
                         {
                             fields.put("update_type", resUpdateType.getStringByIdx(0) );
@@ -595,7 +595,7 @@ void rho_syncclient_create_object(const char* szModel, unsigned long hash)
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
     String src_name = szModel;
 
-    DBResult( res, db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source

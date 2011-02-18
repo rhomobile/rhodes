@@ -96,7 +96,7 @@ int CSyncThread::getLastPollInterval()
     {
         db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
 
-        DBResult( res, dbPart.executeSQL("SELECT last_updated from sources") );
+        IDBResult res = dbPart.executeSQL("SELECT last_updated from sources");
         for ( ; !res.isEnd(); res.next() )
         { 
             uint64 timeUpdated = res.getUInt64ByIdx(0);

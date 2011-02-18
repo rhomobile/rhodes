@@ -293,7 +293,7 @@ private:
     void createTriggers();
     boolean checkDbError(int rc);
     boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);
-    sqlite3_stmt* createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
+    sqlite3_stmt* createInsertStatement(IDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
 
     boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
     void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);

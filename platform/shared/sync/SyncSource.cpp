@@ -67,7 +67,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
 
     m_nErrCode = RhoAppAdapter.ERR_NONE;
 
-    DBResult( res, db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID) );
+    IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
     if ( !res.isEnd() )
     {
         m_token = res.getUInt64ByIdx(0);
@@ -158,7 +158,7 @@ boolean CSyncSource::syncClientChanges()
 
         boolean bSyncClient = false;
         {
-            DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", getID()) );
+            IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", getID());
             bSyncClient = !res.isEnd();
         }
         if ( bSyncClient )
@@ -175,7 +175,7 @@ boolean CSyncSource::syncClientChanges()
 
 boolean CSyncSource::isPendingClientChanges()
 {
-    DBResult( res, getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID()) );
+    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
     return !res.isEnd();
 }
 
@@ -290,8 +290,8 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
     if ( isSync )
         getDB().updateAllAttribChanges();
 
-    DBResult( res , getDB().executeSQL("SELECT attrib, object, value, attrib_type "
-        "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY object", getID(), strUpdateType.c_str() ) );
+    IDBResult res = getDB().executeSQL("SELECT attrib, object, value, attrib_type "
+        "FROM changed_values where source_id=? and update_type =? and sent<=1 ORDER BY object", getID(), strUpdateType.c_str() );
 
     if ( res.isEnd() )
     {
@@ -724,7 +724,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         if ( !getSync().isContinueSync() )
             return;
 
-        DBResult(resInsert, getDB().executeSQLReportNonUniqueEx(strSqlInsert.c_str(), vecValues ) );
+        IDBResult resInsert = getDB().executeSQLReportNonUniqueEx(strSqlInsert.c_str(), vecValues );
         if ( resInsert.isNonUnique() )
         {
             String strSqlUpdate = "UPDATE ";
@@ -771,7 +771,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         getDB().executeSQL(strSqlUpdate.c_str(), strObject);
         //Remove item if all nulls
         String strSelect = String("SELECT * FROM ") + getName() + " WHERE object=?";
-        DBResult(res, getDB().executeSQL( strSelect.c_str(), strObject ) );
+        IDBResult res = getDB().executeSQL( strSelect.c_str(), strObject );
         if ( !res.isEnd() )
         {
             boolean bAllNulls = true;
@@ -832,7 +832,7 @@ boolean CSyncSource::processBlob( const String& strCmd, const String& strObject,
         if ( m_bSchemaSource )
         {
             String strSelect = String("SELECT ") + oAttrValue.m_strAttrib + " FROM " + getName() + " WHERE object=?";
-            DBResult(res, getDB().executeSQL( strSelect.c_str(), strObject));
+            IDBResult res = getDB().executeSQL( strSelect.c_str(), strObject);
             if (!res.isEnd())
             {
                 strDbValue = res.getStringByIdx(0);
@@ -840,9 +840,9 @@ boolean CSyncSource::processBlob( const String& strCmd, const String& strObject,
             }
         }else
         {
-            DBResult(res, getDB().executeSQL(
+            IDBResult res = getDB().executeSQL(
                 "SELECT value FROM object_values WHERE object=? and attrib=? and source_id=?",
-                strObject, oAttrValue.m_strAttrib, getID() ) );
+                strObject, oAttrValue.m_strAttrib, getID() );
             if (!res.isEnd())
             {
                 strDbValue = res.getStringByIdx(0);
@@ -873,9 +873,9 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
         if ( !processBlob(strCmd,strObject,oAttrValue) )
             return;
 
-        DBResult(resInsert, getDB().executeSQLReportNonUnique("INSERT INTO object_values \
+        IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values \
             (attrib, source_id, object, value) VALUES(?,?,?,?)", 
-            oAttrValue.m_strAttrib, getID(), strObject, oAttrValue.m_strValue ) );
+            oAttrValue.m_strAttrib, getID(), strObject, oAttrValue.m_strValue );
         if ( resInsert.isNonUnique() )
         {
             getDB().executeSQL("UPDATE object_values \
