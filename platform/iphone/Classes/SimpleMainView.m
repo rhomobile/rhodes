@@ -504,6 +504,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return [self initWithMainView:v parent:p bar_info:nil];
 }
 
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame webview:(UIWebView*)webview {
+    id result = [self init:p webView:webview frame:frame bar_info:nil web_bkg_color:nil];
+    return result;
+}
+
+
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
     CGRect frame = [[v view] frame];
 	frame.origin.x = 0;
