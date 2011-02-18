@@ -50,6 +50,7 @@ public:
 //    void    setErrorCode(int nError){ m_nErrorCode=nError; }
 
     virtual bool isEnd(){ return m_dbStatement == null; }
+    virtual bool isOneEnd(){ return m_dbStatement == null; }
     void next()
     {
         if ( sqlite3_step(m_dbStatement) != SQLITE_ROW )
@@ -90,9 +91,35 @@ public:
 };
 
 typedef rho::common::CAutoPtr<rho::db::CDBResult> DBResultPtr;
-#define DBResult(name, call)\
-    rho::db::DBResultPtr p##name = call;\
-    rho::db::CDBResult& name = *p##name;
+//#define DBResult(name, call)\
+//    rho::db::DBResultPtr p##name = call;\
+//    rho::db::CDBResult& name = *p##name;
+
+
+class CDBResultWrapper
+{
+    DBResultPtr m_dbRes;
+public:
+    CDBResultWrapper(DBResultPtr& dbRes) : m_dbRes(dbRes){}
+    CDBResultWrapper& operator=( DBResultPtr& dbRes){ m_dbRes = dbRes; }
+
+    sqlite3_stmt* getStatement(){ return m_dbRes->getStatement(); }
+    boolean isNonUnique(){ return m_dbRes->isNonUnique(); }
+    bool isEnd(){ return m_dbRes->isEnd(); }
+    bool isOneEnd(){ return m_dbRes->isOneEnd(); }
+    void next(){ m_dbRes->next(); }
+    String getStringByIdx(int nCol){ return m_dbRes->getStringByIdx(nCol); }
+    int getIntByIdx(int nCol){ return m_dbRes->getIntByIdx(nCol); }
+    uint64 getUInt64ByIdx(int nCol){ return m_dbRes->getUInt64ByIdx(nCol); }
+    int getColCount(){ return m_dbRes->getColCount(); }
+    boolean isNullByIdx(int nCol){ return m_dbRes->isNullByIdx(nCol); }
+    String getColName(int nCol){ return m_dbRes->getColName(nCol); }
+
+};
 
 }
 }
+
+typedef rho::db::CDBResultWrapper IDBResult;
+
+

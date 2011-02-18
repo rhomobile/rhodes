@@ -366,11 +366,11 @@ CSyncSource* CSyncEngine::findSourceByName(const String& strSrcName)
 
 void CSyncEngine::applyChangedValues(db::CDBAdapter& db)
 {
-    DBResult( resSrc , db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" ) );
+    IDBResult resSrc = db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" );
     for ( ; !resSrc.isEnd(); resSrc.next() )
     {
         int nSrcID = resSrc.getIntByIdx(0);
-        DBResult( res, db.executeSQL("SELECT source_id,sync_type,name, partition from sources WHERE source_id=?", nSrcID) );
+        IDBResult res = db.executeSQL("SELECT source_id,sync_type,name, partition from sources WHERE source_id=?", nSrcID);
         if ( res.isEnd() )
             continue;
 
@@ -396,7 +396,7 @@ void CSyncEngine::loadAllSources()
     for( int i = 0; i < (int)arPartNames.size(); i++ )
     {
         db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
-        DBResult( res, dbPart.executeSQL("SELECT source_id,sync_type,name from sources ORDER BY sync_priority") );
+        IDBResult  res = dbPart.executeSQL("SELECT source_id,sync_type,name from sources ORDER BY sync_priority");
         for ( ; !res.isEnd(); res.next() )
         { 
             String strShouldSync = res.getStringByIdx(1);
@@ -458,7 +458,7 @@ String CSyncEngine::readClientID()
     String clientID = "";
     synchronized(m_mxLoadClientID)
     {
-        DBResult( res, getUserDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
+        IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info limit 1");
         if ( !res.isEnd() )
             clientID = res.getStringByIdx(0);
     }
@@ -473,7 +473,7 @@ String CSyncEngine::loadClientID()
     {
         boolean bResetClient = false;
         {
-            DBResult( res, getUserDB().executeSQL("SELECT client_id,reset from client_info limit 1") );
+            IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info limit 1");
             if ( !res.isEnd() )
             {
                 clientID = res.getStringByIdx(0);
@@ -485,7 +485,7 @@ String CSyncEngine::loadClientID()
         {
             clientID = requestClientIDByNet();
 
-            DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
+            IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
             if ( !res.isEnd() )
                 getUserDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
             else
@@ -834,7 +834,7 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
 	}
 
 	{
-		DBResult( res , getUserDB().executeSQL("SELECT * FROM client_info") );
+		IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
 		if ( !res.isEnd() )
 			getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
 		else
@@ -873,8 +873,8 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
 boolean CSyncEngine::isLoggedIn()
  {
     String strRes = "";
-    DBResult( res , getUserDB().executeSQL("SELECT session FROM client_info") );
-    if ( !res.isEnd() )
+    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
+    if ( !res.isOneEnd() )
     	strRes = res.getStringByIdx(0);
     
     return strRes.length() > 0;
@@ -883,7 +883,7 @@ boolean CSyncEngine::isLoggedIn()
 String CSyncEngine::loadSession()
 {
     m_strSession = "";
-    DBResult( res , getUserDB().executeSQL("SELECT session FROM client_info") );
+    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
     
     if ( !res.isEnd() )
     	m_strSession = res.getStringByIdx(0);
