@@ -43,6 +43,7 @@
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame webview:(UIWebView*)webview;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame web_bkg_color:(UIColor*)web_bkg_color;
 
