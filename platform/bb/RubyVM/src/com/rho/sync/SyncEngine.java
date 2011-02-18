@@ -101,12 +101,11 @@ public class SyncEngine implements NetRequest.IRhoSession
                 }
             }
 
-            return res;
+            return res != null ? res : "";
         }
         public boolean getBoolProperty(Integer nSrcID, String szPropName)
         {
             String strValue = getProperty(nSrcID, szPropName);
-
             return strValue.compareTo("1") == 0 || strValue.compareTo("true") == 0 ? true : false;
         	
         }
@@ -321,7 +320,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        }
 		
 		        String szData = null;
-		        if ( strTestResp.length() > 0 )
+		        if ( strTestResp != null && strTestResp.length() > 0 )
 		        	szData = strTestResp;
 		        else
 		        	szData = resp.getCharData();		        
