@@ -124,7 +124,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     int m_nSyncPageSize = 2000;
     boolean m_bNoThreaded = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
-    String m_strError = "";
+    String m_strError = "",m_strServerError = "";
     boolean m_bIsSearch, m_bIsSchemaChanged;
     static SourceOptions m_oSourceOptions = new SourceOptions();
     
@@ -187,6 +187,7 @@ public class SyncEngine implements NetRequest.IRhoSession
         m_bStopByUser = false;
         m_nErrCode = RhoAppAdapter.ERR_NONE;
         m_strError = "";
+        m_strServerError = "";
         m_bIsSchemaChanged = false;
         
         loadAllSources();
@@ -216,7 +217,7 @@ public class SyncEngine implements NetRequest.IRhoSession
             getNotify().fireSyncNotification(src, true, src.m_nErrCode, "");
         }else
         {
-            getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError);
+            getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, "");
         }
         
         stopSync();
@@ -293,6 +294,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        if ( strParams.length() > 0 )
 		            strQuery += strParams;
 		
+		        String strTestResp = "";
 		        for ( int i = 0; i < (int)arSources.size(); i++ )
 		        {
 		            SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
@@ -302,6 +304,8 @@ public class SyncEngine implements NetRequest.IRhoSession
 		
 		                if ( !pSrc.isTokenFromDB() && pSrc.getToken() > 1 )
 		                    strQuery += "&sources[][token]=" + pSrc.getToken();
+		                
+		                strTestResp = getSourceOptions().getProperty(pSrc.getID(), "rho_server_response");
 		            }
 		        }
 		
@@ -316,7 +320,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            continue;
 		        }
 		
-		        String szData = resp.getCharData();
+		        String szData = null;
+		        if ( strTestResp.length() > 0 )
+		        	szData = strTestResp;
+		        else
+		        	szData = resp.getCharData();		        
 		
 		        JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
 		
@@ -338,8 +346,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		                LOG.ERROR( "Sync server send search data with incompatible version. Client version: " + getProtocol().getVersion() +
 		                    "; Server response version: " + nVersion );
 		                stopSync();
-		                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
-		                m_strError = resp.getCharData();
+		                m_nErrCode = RhoAppAdapter.ERR_SYNCVERSION;
 		                continue;
 		            }
 		
@@ -353,7 +360,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		                LOG.ERROR( "Sync server send search data without source name." );
 		                stopSync();
 		                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
-		                m_strError = resp.getCharData();
+		                m_strError = szData;
 		                continue;
 		            }
 		
@@ -364,7 +371,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		                LOG.ERROR("Sync server send search data for unknown source name:" + strSrcName);
 		                stopSync();
 		                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
-		                m_strError = resp.getCharData();
+		                m_strError = szData;
 		                continue;
 		            }
 		
@@ -373,13 +380,22 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            pSrc.processServerResponse_ver3(oSrcArr);
 		
 		            nSearchCount += pSrc.getCurPageCount();
+		            
+		            if ( pSrc.getServerError().length() > 0 )
+		            {
+		            	if ( m_strServerError.length() > 0 )
+		            		m_strServerError +=  "&";
+		            	
+		            	m_strServerError += pSrc.getServerError();
+		            	m_nErrCode = pSrc.getErrorCode();
+		            }		            
 		        }
 		
 		        if ( nSearchCount == 0 )
 		            break;
 		    }  
 		
-		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError);
+		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
 		
 		    //update db info
 		    TimeInterval endTime = TimeInterval.getCurrentTime();
@@ -404,7 +420,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    } catch(Exception exc) {
     		LOG.ERROR("Search failed.", exc);
 
-    		getNotify().fireAllSyncNotifications(true, RhoAppAdapter.ERR_RUNTIME, "");
+    		getNotify().fireAllSyncNotifications(true, RhoAppAdapter.ERR_RUNTIME, "", "");
 	    }
 		    
     }
