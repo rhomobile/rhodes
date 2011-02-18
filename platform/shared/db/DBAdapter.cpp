@@ -168,7 +168,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
         db.open( strDbPath+"_oldver", m_strDbVer, true );
         copyTable( "client_info", db, *this );
         {
-            DBResult( res, executeSQL( "SELECT client_id FROM client_info" ));
+            IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
             if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
             {
                 LOG(INFO) + "Set reset=1 in client_info";
@@ -215,19 +215,19 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 
         CDBAdapter db(m_strDbPartition.c_str(), true);
         db.open( m_strDbPath, m_strDbVer, true );
-        DBResult( res, db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" ));
-        DBResult( res1, db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" ));
+        IDBResult res = db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" );
+        IDBResult res1 = db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" );
 
         {
             Vector<int> vecSrcIds;
-            DBResult( res2, db.executeSQL( "SELECT source_id FROM sources" ));
+            IDBResult res2 = db.executeSQL( "SELECT source_id FROM sources" );
             for ( ; !res2.isEnd(); res2.next() )
                 vecSrcIds.addElement(res2.getIntByIdx(0));
 
             for( size_t i = 0; i < vecSrcIds.size(); i++)
             {
-                DBResult( res3, db.executeSQL( "UPDATE sources SET priority=? where source_id=?", 
-                    vecSrcIds.elementAt(i), vecSrcIds.elementAt(i) ));
+                IDBResult res3 = db.executeSQL( "UPDATE sources SET priority=? where source_id=?", 
+                    vecSrcIds.elementAt(i), vecSrcIds.elementAt(i) );
             }
         }
         db.close();
@@ -311,7 +311,7 @@ void CDBAdapter::writeDBVersion(const CDBVersion& ver)//throws Exception
     oFile.write(strFullVer.c_str(), strFullVer.length() );
 }
 
-sqlite3_stmt* CDBAdapter::createInsertStatement(rho::db::CDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert)
+sqlite3_stmt* CDBAdapter::createInsertStatement(IDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert)
 {
     sqlite3_stmt* stInsert = 0;
     int nColCount = sqlite3_data_count(res.getStatement());
@@ -399,7 +399,7 @@ boolean CDBAdapter::isTableExist(String strTableName)
 {
     Vector<String> vecTables;
 
-    DBResult( res , executeSQL( "SELECT name FROM sqlite_master WHERE type='table' AND name=?", strTableName.c_str() ) );
+    IDBResult res = executeSQL( "SELECT name FROM sqlite_master WHERE type='table' AND name=?", strTableName.c_str() );
     return !res.isEnd();
 }
 
@@ -419,7 +419,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     //Copy all tables
 
     Vector<String> vecTables;
-    DBResult( res , executeSQL( "SELECT name FROM sqlite_master WHERE type='table' " ) );
+    IDBResult res = executeSQL( "SELECT name FROM sqlite_master WHERE type='table' " );
     for ( ; !res.isEnd(); res.next() )
         vecTables.addElement(res.getStringByIdx(0));
 
@@ -449,7 +449,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
 void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo)
 {
     String strSelect = "SELECT * from " + tableName;
-    DBResult( res , dbFrom.executeSQL( strSelect.c_str() ) );
+    IDBResult res = dbFrom.executeSQL( strSelect.c_str() );
 	String strInsert = "";
     int rc = 0;
     for ( ; !res.isEnd(); res.next() )
@@ -468,8 +468,8 @@ void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbT
 void CDBAdapter::updateAllAttribChanges()
 {
     //Check for attrib = object
-    DBResult( res , executeSQL("SELECT object, source_id, update_type "
-        "FROM changed_values where attrib = 'object' and sent=0") );
+    IDBResult res = executeSQL("SELECT object, source_id, update_type "
+        "FROM changed_values where attrib = 'object' and sent=0");
 
     if ( res.isEnd() )
         return;
@@ -487,7 +487,7 @@ void CDBAdapter::updateAllAttribChanges()
 
     for( int i = 0; i < (int)arObj.size(); i++ )
     {
-        DBResult( resSrc , executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) ) );
+        IDBResult resSrc = executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) );
         boolean bSchemaSource = false;
         String strTableName = "object_values";
         if ( !resSrc.isEnd() )
@@ -499,7 +499,7 @@ void CDBAdapter::updateAllAttribChanges()
 
         if (bSchemaSource)
         {
-            DBResult( res2 , executeSQL((String("SELECT * FROM ") + strTableName + " where object=?").c_str(), arObj.elementAt(i) ) );
+            IDBResult res2 = executeSQL((String("SELECT * FROM ") + strTableName + " where object=?").c_str(), arObj.elementAt(i) );
             for( int j = 0; j < res2.getColCount(); j ++)
             {
                 String strAttrib = res2.getColName(j);
@@ -511,8 +511,8 @@ void CDBAdapter::updateAllAttribChanges()
             }
         }else
         {
-            DBResult( res2 , executeSQL((String("SELECT attrib, value FROM ") + strTableName + " where object=? and source_id=?").c_str(), 
-                arObj.elementAt(i), arSrcID.elementAt(i) ) );
+            IDBResult res2 = executeSQL((String("SELECT attrib, value FROM ") + strTableName + " where object=? and source_id=?").c_str(), 
+                arObj.elementAt(i), arSrcID.elementAt(i) );
 
             for( ; !res2.isEnd(); res2.next() )
             {
@@ -539,7 +539,7 @@ void CDBAdapter::copyChangedValues(CDBAdapter& db)
     {
         Vector<int> arOldSrcs;
         {
-            DBResult( resSrc , db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" ) );
+            IDBResult resSrc = db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" );
             for ( ; !resSrc.isEnd(); resSrc.next() )
                 arOldSrcs.addElement( resSrc.getIntByIdx(0) );
         }
@@ -547,12 +547,12 @@ void CDBAdapter::copyChangedValues(CDBAdapter& db)
         {
             int nOldSrcID = arOldSrcs.elementAt(i);
 
-            DBResult( res, executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID) );
+            IDBResult res = executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID);
             if ( !res.isEnd() )
             {
                 String strSrcName = res.getStringByIdx(0);
 
-                DBResult( res2, db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName) );
+                IDBResult res2 = db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName);
                 if ( !res2.isEnd() )
                 {
                     if ( nOldSrcID != res2.getIntByIdx(0) )
