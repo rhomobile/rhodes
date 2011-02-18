@@ -55,7 +55,7 @@ private:
     int m_nSyncPageSize;
 	boolean m_bNoThreaded;
     int m_nErrCode;
-    String m_strError;
+    String m_strError, m_strServerError;
     boolean m_bIsSearch, m_bIsSchemaChanged;
     static CSourceOptions m_oSourceOptions;
 
