@@ -608,7 +608,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrat
   (JNIEnv *env, jobject, jstring jId)
 {
     std::string id = rho_cast<std::string>(env, jId);
-    rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, id.c_str());
+    rho::sync::CClientRegister::Create(id.c_str());
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
