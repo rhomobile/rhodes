@@ -101,7 +101,7 @@ void CSyncNotify::fireObjectsNotification()
                 if ( nNotifyType == enDelete )
                 {
                     //TODO: get db for source
-                    DBResult( res , getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", itObject->first ));
+                    IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", itObject->first );
                     if ( !res.isEnd() )
                         nNotifyType = enUpdate;    
                 }

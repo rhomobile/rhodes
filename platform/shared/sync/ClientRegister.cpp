@@ -99,7 +99,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 	if ( client_id.length() == 0 )
 		return false;
 
-    DBResult( res, CDBAdapter::getUserDB().executeSQL("SELECT token,token_sent from client_info") );
+    IDBResult res = CDBAdapter::getUserDB().executeSQL("SELECT token,token_sent from client_info");
     if ( !res.isEnd() ) {
 		String token = res.getStringByIdx(0); 
 		int token_sent = res.getIntByIdx(1);

@@ -149,7 +149,7 @@ void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
     {
         int nSrcID = it->first;
 
-        DBResult( res, db.executeSQL("SELECT name FROM sources WHERE source_id=?", nSrcID) );
+        IDBResult res = db.executeSQL("SELECT name FROM sources WHERE source_id=?", nSrcID);
         if ( res.isEnd() )
             continue;
 
@@ -167,7 +167,7 @@ void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
     String strSql = "SELECT source_id,";
     strSql += strDBAttr + " from sources";
 
-    DBResult( res, db.executeSQL(strSql.c_str()) );
+    IDBResult res = db.executeSQL(strSql.c_str());
     for ( ; !res.isEnd(); res.next() )
     { 
         int nSrcID = res.getIntByIdx(0);

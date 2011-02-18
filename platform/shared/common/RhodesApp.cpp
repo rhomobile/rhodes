@@ -143,7 +143,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     if (cmd->type > m_expected)
     {
         boolean bDuplicate = false;
-        for( int i = 0; i < m_commands.size() ; i++)
+        for( int i = 0; i < (int)m_commands.size() ; i++)
         {
             if ( m_commands.elementAt(i) == cmd->type )
             {
