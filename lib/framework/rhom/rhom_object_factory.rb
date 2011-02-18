@@ -1088,6 +1088,51 @@ module Rhom
                 def clear_notification
                   SyncEngine.clear_notification(get_source_id.to_i)
                 end
+
+                def on_sync_create_error( objects, action )
+                    raise ArgumentError, 'on_create_error action should be :delete or :recreate' unless action == :delete || action == :recreate
+                    return  unless is_sync_source()
+                    
+                    ar_objs = objects.is_a?(Array) ? objects : [objects]
+                    puts "ar_objs : #{ar_objs}"
+                    tableName = is_schema_source() ? get_schema_table_name : 'object_values'
+                    nSrcID = get_source_id()
+                    
+                    db = ::Rho::RHO.get_src_db(get_source_name)                            
+                    db.start_transaction
+
+                    begin
+                        ar_objs.each do |obj|
+                            if action == :recreate
+                                deletes =  db.select_from_table('changed_values', 'object', {"update_type"=>'delete', "object"=>obj, "source_id"=>nSrcID })
+                                unless ( deletes && deletes.length() > 0 )
+                                
+                                    db.delete_from_table('changed_values', {'object'=>obj, "source_id"=>nSrcID})
+
+                                    db.insert_into_table('changed_values', 
+                                        {'update_type'=>'create', 'attrib'=>'object', "source_id"=>nSrcID, "object"=>obj} )
+
+                                    next                                        
+                                end
+                            end
+                            
+                            db.delete_from_table('changed_values', {'object'=>obj, "source_id"=>nSrcID})
+                            if is_schema_source()                                
+                                db.delete_from_table(tableName, {'object'=>obj } )
+                            else
+                                db.delete_from_table(tableName, {'object'=>obj, "source_id"=>nSrcID} )
+                            end
+                        end
+                        
+                        db.commit
+                    rescue Exception => e
+                        puts 'on_create_error Exception: ' + e.inspect
+                        db.rollback
+
+                        raise    
+                    end    
+
+                end
                 
                 # deletes all records matching conditions (optionally nil)
                 def delete_all(*args)
