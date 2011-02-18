@@ -808,7 +808,7 @@ public class DBAdapter extends RubyBasic
             IDBResult resSrc = executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) );
             boolean bSchemaSource = false;
             String strTableName = "object_values";
-            if ( !resSrc.isEnd() )
+            if ( !resSrc.isOneEnd() )
             {
                 bSchemaSource = resSrc.getStringByIdx(1).length() > 0;
                 if ( bSchemaSource )
