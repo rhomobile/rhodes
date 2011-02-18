@@ -18,12 +18,12 @@ using namespace rho::db;
 IMPLEMENT_LOGCLASS(CSyncThread,"Sync");
 CSyncThread* CSyncThread::m_pInstance = 0;
 
-/*static*/ CSyncThread* CSyncThread::Create(common::IRhoClassFactory* factory)
+/*static*/ CSyncThread* CSyncThread::Create()
 {
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CSyncThread(factory);
+    m_pInstance = new CSyncThread();
     return m_pInstance;
 }
 
@@ -35,14 +35,14 @@ CSyncThread* CSyncThread::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CThreadQueue(factory)
+CSyncThread::CSyncThread() : CThreadQueue()
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
     if( RHOCONF().isExist("sync_poll_interval") )
         setPollInterval(RHOCONF().getInt("sync_poll_interval"));
 
-    m_oSyncEngine.setFactory(factory);
+    m_oSyncEngine.setFactory();
 
     LOG(INFO) + "sync_poll_interval: " + RHOCONF().getInt("sync_poll_interval");
     LOG(INFO) + "syncserver: " + RHOCONF().getString("syncserver");

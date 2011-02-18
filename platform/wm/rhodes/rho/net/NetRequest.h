@@ -16,7 +16,7 @@ public:
     CNetRequestImpl* m_pCurNetRequestImpl;
 
     CNetRequest(void) : m_pCurNetRequestImpl(null), m_bCancel(false), m_sslVerifyPeer(true) {}
-    virtual ~CNetRequest(void){}
+    virtual ~CNetRequest(void);
 
     virtual INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
     virtual INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);

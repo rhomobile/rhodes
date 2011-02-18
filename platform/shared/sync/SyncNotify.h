@@ -75,8 +75,8 @@ public:
     CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), 
         m_bEnableReportingGlobal(false){}
 
-    void setFactory(common::IRhoClassFactory* factory){ 
-        m_NetRequest = factory->createNetRequest();
+    void setFactory(){ 
+        m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
     }
 
     //Object notifications

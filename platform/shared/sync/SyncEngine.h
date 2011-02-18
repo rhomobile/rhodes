@@ -63,11 +63,11 @@ public:
     CSyncEngine();
     ~CSyncEngine(void){}
 
-    void setFactory(common::IRhoClassFactory* factory){ 
-        m_NetRequest = factory->createNetRequest();
+    void setFactory(){ 
+        m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
         //clientID may be requested by ClientRegister thread
-        m_NetRequestClientID = factory->createNetRequest();
-        m_oSyncNotify.setFactory(factory);
+        m_NetRequestClientID = rho_get_RhoClassFactory()->createNetRequest();
+        m_oSyncNotify.setFactory();
     }
     static CSourceOptions& getSourceOptions(){ return m_oSourceOptions; }
 

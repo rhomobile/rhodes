@@ -29,14 +29,13 @@ public:
 
 private:
 
-    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
 	int           m_nPollInterval;
    	common::CMutex m_mxStackCommands;
 	LinkedListPtr<IQueueCommand*> m_stackCommands;
 
     boolean m_bNoThreaded;
 public:
-    CThreadQueue(common::IRhoClassFactory* factory);
+    CThreadQueue();
 
     ~CThreadQueue(void);
 
@@ -50,7 +49,6 @@ public:
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
     void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
 
-    common::IRhoClassFactory* getFactory(){ return m_ptrFactory; }
 protected:
     virtual int getLastPollInterval(){ return 0;}
     virtual void processCommand(IQueueCommand* pCmd) = 0;

@@ -131,8 +131,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     const char* szEncrypt = get_app_build_config_item("encrypt_database");
     if ( szEncrypt && strcmp(szEncrypt, "1") == 0 )
     {
-        common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-        m_ptrCrypt = factory->createRhoCrypt();
+        m_ptrCrypt = rho_get_RhoClassFactory()->createRhoCrypt();
         if ( m_strCryptKey.length() > 0 )
             m_ptrCrypt->set_db_CryptKey( m_strDbPartition.c_str(), m_strCryptKey.c_str(), !bTemp );
 
