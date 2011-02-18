@@ -35,11 +35,11 @@ private:
 
     static CGeoLocation* m_pInstance;
 
-    CGeoLocation(common::IRhoClassFactory* pFactory);
+    CGeoLocation();
 
 public:
 
-    static CGeoLocation* Create(common::IRhoClassFactory* factory);
+    static CGeoLocation* Create();
     static void Destroy();
     static CGeoLocation* getInstance(){ return m_pInstance; }
 

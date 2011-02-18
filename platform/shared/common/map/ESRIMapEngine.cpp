@@ -176,8 +176,8 @@ void ESRIMapView::Tile::swap(ESRIMapView::Tile &tile)
 
 IMPLEMENT_LOGCLASS(ESRIMapView::MapFetch,"MapFetch");
 ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
-    :CThreadQueue(rho_impl_createClassFactory()),
-    m_mapview(view), m_net_request(getFactory()->createNetRequest())
+    :CThreadQueue(),
+    m_mapview(view), m_net_request(rho_get_RhoClassFactory()->createNetRequest())
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
@@ -260,7 +260,7 @@ String ESRIMapView::MapFetch::Command::toString()
 
 IMPLEMENT_LOGCLASS(ESRIMapView::CacheUpdate,"CacheUpdate");
 ESRIMapView::CacheUpdate::CacheUpdate(ESRIMapView *view)
-    :CThreadQueue(rho_impl_createClassFactory()), m_mapview(view)
+    :CThreadQueue(), m_mapview(view)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     start(epNormal);

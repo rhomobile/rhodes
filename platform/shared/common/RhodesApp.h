@@ -28,7 +28,6 @@ private:
     CRhodesApp(const String& strRootPath);
     boolean m_bExit, m_bRestartServer;
 
-    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
     common::CAutoPtr<net::INetRequest> m_NetRequest;
 
     String m_strListeningPorts;

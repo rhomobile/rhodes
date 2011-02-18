@@ -25,7 +25,7 @@ CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CRhodesAppBase::CRhodesAppBase(const String& strRootPath) : CRhoThread(rho_impl_createClassFactory())
+CRhodesAppBase::CRhodesAppBase(const String& strRootPath) : CRhoThread()
 {
     m_strRhoRootPath = strRootPath;
 

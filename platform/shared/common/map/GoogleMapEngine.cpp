@@ -23,8 +23,8 @@ String GoogleGeoCoding::Command::toString()
 
 IMPLEMENT_LOGCLASS(GoogleGeoCoding,"GGeoCoding");
 GoogleGeoCoding::GoogleGeoCoding()
-    :CThreadQueue(rho_impl_createClassFactory()),
-    m_net_request(getFactory()->createNetRequest())
+    :CThreadQueue(),
+    m_net_request(rho_get_RhoClassFactory()->createNetRequest())
 {
     CThreadQueue::setLogCategory(getLogCategory());
     RHO_MAP_TRACE("GoogleGeoCoding: ctor start");
