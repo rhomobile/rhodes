@@ -12,7 +12,7 @@ extern "C" {
 	
 void rho_clientregister_create(const char* szDevicePin)
 {
-	rho::sync::CClientRegister::Create(new rho::common::CRhoClassFactory, szDevicePin);
+	rho::sync::CClientRegister::Create(szDevicePin);
 }
 	
 };
