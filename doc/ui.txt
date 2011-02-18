@@ -536,6 +536,7 @@ Each tabbar item defined in the above sample defines following tab elements:
 * :selected_color => 0xFFFF00 - Optional parameter for change selected color of this tabs (if you use it on Android - you should defined it for all tabs! and also define :background_color for TabBar!)
 * :disabled => true - Optional parameter for disable this tab
 * :web_bkg_color = > int hex value (like HTML color) - background color for tab (use when your app bkg is not white for remove blink during switch tabs)
+* :use_current_view_for_tab => true - Optional argument which tells rhodes to smooth transfer WebView from current view into this Tab and make this Tab active. Defaults to false. Only one Tab can have this parameter!
 
 
 Behind the scenes, Rho::RhoApplication will detect the @tabs array in its initialize method and build the native bar through the following function:
