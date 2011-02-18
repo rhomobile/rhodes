@@ -613,7 +613,7 @@ Note that Windows Mobile versions of your Rhodes app must be built in a Windows 
 * .NET Compact Framework
 * Windows Mobile 6 Professional SDK(s) 
 * Microsoft Active Sync 4.5
-* Visual Studio 2005 Service Pack 1 installed. 
+* Visual Studio 2005 Service Pack 1 installed or Visual Studio 2008. 
 * [7-zip](http://www.7-zip.org/)
 
 Open ActiveSync main window, go to the File -> Connection Settings, select checkbox "Allow connections to one of the following" and select "DMA" from the list box. It is required to work with emulator.
@@ -630,35 +630,29 @@ Add path to CabWiz.exe to rhobuild.yml in the Rhodes folder:
 	  paths:
 	    cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
 
-If you use Visual Studio 2010 : add path to msbuild to rhobuild.yml in rhodes folder:
-
-	env:
-	  paths:
-	    vcbuild: msbuild
-
-Go to your application directory. From here you can run all of the Windows Mobile rake tasks.
+### To run application on device or emulator(Visual Studio 2008 only) :
 
 To build and run application on emulator, run (fastest way):
 	
 	:::term
-	$ rake run:wm:emu 
+	$ rake run:wm
 
 To build cab-file, install it and run application on emulator, run:
 
 	:::term
-	$ rake run:wm:emucab 
+	$ rake run:wm:cab 
 
 To build and run application on device, run (fastest way):
 
 	:::term
-	$ rake run:wm:dev 
+	$ rake run:wm:device
 
 To build cab-file, install it and run application on device, run:
 
 	:::term 
-	$ rake run:wm:devcab 
+	$ rake run:wm:device:cab 
 
-To build application cab-file for the device, run:
+### To build application cab-file for the device, run:
 
 	:::term
 	$ rake device:wm:production 
