@@ -137,6 +137,7 @@ describe "BlobSync_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     item2 = BlobTest.find(saved_obj)
+    item2.should_not be_nil
     
     item2.image_uri.should == file_name
 #    new_file_name = File.join(Rho::RhoApplication::get_blob_path(item2.image_uri))
