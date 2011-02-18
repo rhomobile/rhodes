@@ -53,7 +53,7 @@ public:
     };
 
 public:
-    CAppCallbacksQueue(IRhoClassFactory *factory);
+    CAppCallbacksQueue();
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -99,8 +99,8 @@ char const *CAppCallbacksQueue::toString(int type)
     }
 }
 
-CAppCallbacksQueue::CAppCallbacksQueue(IRhoClassFactory *factory)
-    :CThreadQueue(factory), m_expected(local_server_started)
+CAppCallbacksQueue::CAppCallbacksQueue()
+    :CThreadQueue(), m_expected(local_server_started)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     //setPollInterval(1);
@@ -185,8 +185,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-                common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
+                common::CAutoPtr<net::INetRequest> pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
                 String strUrl = RHODESAPP().getBaseUrl();
                 strUrl += "/system/uicreated";
                 NetResponse(resp, pNetRequest->pullData( strUrl, null ) );
@@ -206,8 +205,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
                     navigatedToStartUrl = true;
                 }*/
 
-                common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-                common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
+                common::CAutoPtr<net::INetRequest> pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
                 String strUrl = RHODESAPP().getBaseUrl();
                 strUrl += "/system/activateapp";
                 NetResponse(resp, pNetRequest->pullData( strUrl, null ) );
@@ -249,9 +247,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath)
     m_bRestartServer = false;
     //m_activateCounter = 0;
 
-    m_ptrFactory = rho_impl_createClassFactory();
-    m_NetRequest = m_ptrFactory->createNetRequest();
-    m_appCallbacksQueue = new CAppCallbacksQueue(rho_impl_createClassFactory());
+    m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
+    m_appCallbacksQueue = new CAppCallbacksQueue();
 
 #if defined( OS_WINCE ) || defined (OS_WINDOWS)
     //initializing winsock
@@ -275,12 +272,12 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
     RhoRubyStart();
-    rubyext::CGeoLocation::Create(m_ptrFactory);
+    rubyext::CGeoLocation::Create();
 
     rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
-    sync::CSyncThread::Create(rho_impl_createClassFactory());
+    sync::CSyncThread::Create();
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
@@ -345,7 +342,7 @@ class CRhoCallInThread : public common::CRhoThread
 {
 public:
     CRhoCallInThread(T* cb)
-        :CRhoThread(rho_impl_createClassFactory()), m_cb(cb)
+        :CRhoThread(), m_cb(cb)
     {
         start(epNormal);
     }
@@ -369,23 +366,22 @@ void rho_rhodesapp_call_in_thread(T *cb)
 
 class CRhoCallbackCall
 {
-    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
     String m_strCallback, m_strBody;
 public:
-    CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory)
-      :m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
+    CRhoCallbackCall(const String& strCallback, const String& strBody)
+      : m_strCallback(strCallback), m_strBody(strBody)
     {}
 
     void run(common::CRhoThread &)
     {
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        common::CAutoPtr<net::INetRequest> pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
         common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
     }
 };
 
 void CRhodesApp::runCallbackInThread(const String& strCallback, const String& strBody)
 {
-    rho_rhodesapp_call_in_thread(new CRhoCallbackCall(strCallback, strBody, rho_impl_createClassFactory() ) );
+    rho_rhodesapp_call_in_thread(new CRhoCallbackCall(strCallback, strBody ) );
 }
 
 static void callback_activateapp(void *arg, String const &strQuery)
@@ -1047,7 +1043,7 @@ boolean CRhodesApp::callPushCallback(String strData)
         if ( m_strPushCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
 
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        common::CAutoPtr<net::INetRequest> pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
         NetResponse(resp,pNetRequest->pushData( m_strPushCallback, strBody, null ));
         if (!resp.isOK())
             LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -1086,7 +1082,7 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
         if ( m_strScreenRotationCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
 			
-		common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+		common::CAutoPtr<net::INetRequest> pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
 		NetResponse(resp, pNetRequest->pushData( m_strScreenRotationCallback, strBody, null));
 		
         if (!resp.isOK()) {
@@ -1130,7 +1126,7 @@ void CRhodesApp::loadUrl(String url)
     url = canonicalizeRhoUrl(url);
     if (callback)
     {
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
+        common::CAutoPtr<net::INetRequest> pNetRequest = rho_get_RhoClassFactory()->createNetRequest();
         NetResponse(resp, pNetRequest->pushData( url,  "rho_callback=1", null ));
         (void)resp;
     }
@@ -1390,14 +1386,12 @@ int rho_conf_send_log()
 
 void rho_net_request(const char *url)
 {
-    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
+    rho::common::CAutoPtr<rho::net::INetRequest> request = rho_get_RhoClassFactory()->createNetRequest();
     request->pullData(url, null);
 }
 
 void rho_net_request_with_data(const char *url, const char *str_body) {
-    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
+    rho::common::CAutoPtr<rho::net::INetRequest> request = rho_get_RhoClassFactory()->createNetRequest();
     request->pushData(url, str_body, null);
 }
 	

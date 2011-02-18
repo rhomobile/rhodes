@@ -5,12 +5,14 @@
 #include "sync/ClientRegister.h"
 #include "RhoCryptImpl.h"
 
+static rho::common::CRhoClassFactory g_oRhoClassFactory;
+rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
+{
+    return &g_oRhoClassFactory;
+}
+
 namespace rho{
 namespace common{
-IRhoClassFactory* rho_impl_createClassFactory()
-{
-    return new rho::common::CRhoClassFactory;
-}
 
 IRhoCrypt* CRhoClassFactory::createRhoCrypt()
 {
@@ -23,7 +25,7 @@ IRhoCrypt* CRhoClassFactory::createRhoCrypt()
 extern "C" {
 void rho_clientregister_create(const char* szDevicePin)
 {
-    rho::sync::CClientRegister::Create(rho::common::rho_impl_createClassFactory(), szDevicePin);
+    rho::sync::CClientRegister::Create(szDevicePin);
 }
 
 void rho_clientregister_destroy()

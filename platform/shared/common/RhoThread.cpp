@@ -4,10 +4,10 @@
 namespace rho {
 namespace common {
 
-CRhoThread::CRhoThread(IRhoClassFactory* factory)
+CRhoThread::CRhoThread()
 {
     m_nState = TS_NONE;
-    m_pImpl = factory->createThreadImpl();
+    m_pImpl = rho_get_RhoClassFactory()->createThreadImpl();
 }
 
 void CRhoThread::start(EPriority ePriority)

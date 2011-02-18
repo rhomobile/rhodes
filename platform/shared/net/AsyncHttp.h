@@ -48,6 +48,7 @@ public:
         CRhoParams    m_params;
 
         CHttpCommand(String strCmd, rho_param *p);
+        virtual ~CHttpCommand();
 
         EHttpCommands translateCommand(String strCmd)
         {
@@ -108,7 +109,7 @@ public:
     virtual void addQueueCommand(IQueueCommand* pCmd);
 
 private:
-    CAsyncHttp(common::IRhoClassFactory* factory);
+    CAsyncHttp();
     ~CAsyncHttp();
 
     virtual void processCommand(IQueueCommand* pCmd);

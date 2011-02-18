@@ -7,7 +7,6 @@
 namespace rho {
 namespace common {
 
-struct IRhoClassFactory;
 class CRhoThread : public IRhoRunnable
 {
     CAutoPtr<IRhoThreadImpl> m_pImpl;
@@ -19,7 +18,7 @@ class CRhoThread : public IRhoRunnable
     int m_nState;
 public:
 
-    CRhoThread(IRhoClassFactory* factory);
+    CRhoThread();
     virtual ~CRhoThread(void){};
 
     virtual void start(EPriority ePriority);
