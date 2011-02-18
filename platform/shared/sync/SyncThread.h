@@ -104,7 +104,7 @@ private:
 public:
     ~CSyncThread(void);
 
-    static CSyncThread* Create(common::IRhoClassFactory* factory);
+    static CSyncThread* Create();
     static void Destroy();
     static CSyncThread* getInstance(){ return m_pInstance; }
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
@@ -113,7 +113,7 @@ public:
 
     unsigned long getRetValue();
 private:
-    CSyncThread(common::IRhoClassFactory* factory);
+    CSyncThread();
 
     virtual int getLastPollInterval();
     virtual void processCommand(IQueueCommand* pCmd);

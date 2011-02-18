@@ -21,12 +21,12 @@ namespace rubyext{
 IMPLEMENT_LOGCLASS(CGeoLocation,"GeoLocation");
 CGeoLocation* CGeoLocation::m_pInstance = 0;
 
-/*static*/ CGeoLocation* CGeoLocation::Create(common::IRhoClassFactory* factory)
+/*static*/ CGeoLocation* CGeoLocation::Create()
 {
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CGeoLocation(factory);
+    m_pInstance = new CGeoLocation();
     return m_pInstance;
 }
 
@@ -38,10 +38,10 @@ CGeoLocation* CGeoLocation::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CGeoLocation::CGeoLocation(common::IRhoClassFactory* pFactory)
+CGeoLocation::CGeoLocation()
 {
     m_nGeoPingTimeoutSec = 0;
-    m_NetRequest = pFactory->createNetRequest();
+    m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
 }
 
 void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bError, boolean bRunInThread)

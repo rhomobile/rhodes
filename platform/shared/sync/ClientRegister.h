@@ -25,7 +25,7 @@ class CClientRegister : public common::CRhoThread
 	String                                 m_strDevicePin;
     unsigned int                           m_nPollInterval;
 public:
-    static CClientRegister* Create(common::IRhoClassFactory* factory,const char* device_pin);
+    static CClientRegister* Create(const char* device_pin);
     static void Destroy();
 	static CClientRegister* getInstance() { return m_pInstance; }
 	
@@ -37,7 +37,7 @@ public:
 
     void startUp();
 private:
-	CClientRegister(common::IRhoClassFactory* factory,const char* device_pin);
+	CClientRegister(const char* device_pin);
     ~CClientRegister();
 
     boolean doRegister(CSyncEngine& oSync);

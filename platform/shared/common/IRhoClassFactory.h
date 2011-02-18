@@ -27,7 +27,8 @@ struct IRhoClassFactory
     virtual IRhoCrypt* createRhoCrypt() = 0;
 };
 
-IRhoClassFactory* rho_impl_createClassFactory();
+}
+}
 
-}
-}
+rho::common::IRhoClassFactory* rho_get_RhoClassFactory();
+

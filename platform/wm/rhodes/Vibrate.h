@@ -19,7 +19,7 @@ class CVibrate :  public CRhoThread
     void untoggle ();
     
   private:
-    CVibrate (IRhoClassFactory* factory);
+    CVibrate ();
     ~CVibrate ();
     
     virtual void run();
