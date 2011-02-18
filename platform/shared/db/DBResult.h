@@ -91,17 +91,18 @@ public:
 };
 
 typedef rho::common::CAutoPtr<rho::db::CDBResult> DBResultPtr;
-//#define DBResult(name, call)\
-//    rho::db::DBResultPtr p##name = call;\
-//    rho::db::CDBResult& name = *p##name;
-
+/*
+#define DBResult(name, call)\
+    rho::db::DBResultPtr p##name = call;\
+    rho::db::CDBResult& name = *p##name;
+*/
 
 class CDBResultWrapper
 {
     DBResultPtr m_dbRes;
 public:
-    CDBResultWrapper(DBResultPtr& dbRes) : m_dbRes(dbRes){}
-    CDBResultWrapper& operator=( DBResultPtr& dbRes){ m_dbRes = dbRes; }
+    CDBResultWrapper(const DBResultPtr& dbRes) : m_dbRes(dbRes){}
+    void operator=( const DBResultPtr& dbRes){ m_dbRes = dbRes; }
 
     sqlite3_stmt* getStatement(){ return m_dbRes->getStatement(); }
     boolean isNonUnique(){ return m_dbRes->isNonUnique(); }
