@@ -180,6 +180,7 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 		//const char *selected_color_enable = NULL;
 		const char *disabled = NULL;
 		const char* web_bkg_color = NULL;
+		const char* use_current_view_for_tab = NULL;
 		
         BOOL skip_item = NO;
         for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
@@ -213,17 +214,24 @@ void create_nativebar_innner(int bar_type, rho_param *p)
                 disabled = value->v.string;
             else if (strcasecmp(name, "web_bkg_color") == 0)
                 web_bkg_color = value->v.string;
+			else if (strcasecmp(name, "use_current_view_for_tab") == 0) {
+                use_current_view_for_tab = value->v.string;
+				if (strcasecmp(use_current_view_for_tab, "true") == 0) {
+					action = "none";
+				}
+			}
+				
         }
         
         if (label == NULL && bar_type == TOOLBAR_TYPE)
             label = "";
         
-        if ((label == NULL || action == NULL) && (!skip_item)) {
+        if ((label == NULL || (action == NULL)) && (!skip_item)) {
             RAWLOG_ERROR("Illegal argument for create_nativebar");
             return;
         }
 		if (!skip_item) {
-			NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:9];	
+			NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:10];	
 			
 			[item setObject:[NSString stringWithUTF8String:label] forKey:NATIVE_BAR_ITEM_LABEL];
 			[item setObject:[NSString stringWithUTF8String:action] forKey:NATIVE_BAR_ITEM_ACTION];
@@ -237,6 +245,7 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 			if (web_bkg_color != NULL) {
 				[item setObject:[NSString stringWithUTF8String:web_bkg_color] forKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
 			}
+			[item setObject:[NSString stringWithUTF8String:(use_current_view_for_tab ? use_current_view_for_tab : "false")] forKey:NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB];
 			
 			[items addObject:item];
 		}
