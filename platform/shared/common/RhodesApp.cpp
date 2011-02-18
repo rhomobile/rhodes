@@ -491,8 +491,10 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
 
             if (bStop)
             {
+#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
                 LOG(INFO) + "Stopping local server.";
                 m_httpServer->stop();
+#endif
             }
         }
 
