@@ -524,7 +524,7 @@ public class SyncSource
 
 		    String szData = null;
 		    String strTestResp = getSync().getSourceOptions().getProperty(getID(), "rho_server_response");
-		    if ( strTestResp.length() > 0 )
+		    if ( strTestResp != null && strTestResp.length() > 0 )
 		    	szData = strTestResp;
 		    else
 		    	szData = resp.getCharData();		    
