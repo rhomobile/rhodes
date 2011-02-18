@@ -150,8 +150,13 @@ These parameters are included in all notifications.
 #### "error"
 * `@params["error_code"]` - HTTP response code of the RhoSync server error: 401, 500, 404, etc.
 * `@params["error_message"]` - Response body (if any)
-* `@params["error_type"]` - Type of RhoSync adapter error (if exists): "login-error", "query-error", "create-error", "update-error", "delete-error", "logoff-error"
-* `@params["create_error"]` - Array of hashes each containing an "object" (that failed to create) and a corresponding "error_message".
+* `@params["server_errors"]` - Hash of Type objects of RhoSync adapter error (if exists): "login-error", "query-error", "create-error", "update-error", "delete-error", "logoff-error"
+
+For "login-error", "query-error", "logoff-error": Type object is hash contains 'message'  from server: @params["server_errors"]["query-error"]['message']
+
+For "create-error", "update-error", "delete-error": Type object is hash each containing an "object" as a key (that failed to create) and a corresponding "message": @params["server_errors"]["create-error"][object]['message']
+
+**NOTE: "create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error**
 
 #### "ok"
 * `@params["total_count"]` - Total number of records that exist for this RhoSync source.
@@ -166,6 +171,21 @@ This status returns for bulk-sync models that use [`FixedSchema`](/rhom#fixed-sc
 
 **NOTE: In this scenario the sync callback should notify the user with a wait screen and start the bulk sync process.**
 
+### Server create-error processing on client
+"create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error:
+
+	:::ruby
+	SyncEngine.on_sync_create_error( src_name, objects, action )
+	Model.on_sync_create_error( objects, action )
+
+* objects - One or more error objects
+* action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
+
+For example:
+	:::ruby
+    SyncEngine.on_sync_create_error( @params['source_name'], 
+        @params['server_errors']['create-error'].keys(), :delete)
+    
 ### Notification Example
 Here is a simple example of a sync notification method that uses some of the parameters described above:
 
@@ -181,6 +201,13 @@ Here is a simple example of a sync notification method that uses some of the par
 	    WebView.navigate Rho::RhoConfig.start_path
 	
 	  elsif status == "error"
+	  
+        if @params['server_errors'] && 
+           @params['server_errors']['create-error']
+            SyncEngine.on_sync_create_error( @params['source_name'], 
+                @params['server_errors']['create-error'].keys(), :delete)
+        end
+	  
 	    err_code = @params['error_code'].to_i
 	    rho_error = Rho::RhoError.new(err_code)
    
@@ -427,6 +454,16 @@ Clears the sync notification for a given source id.
 
 	:::ruby
 	SyncEngine.clear_notification(Product.get_source_id)
+	
+### `on_sync_create_error( src_name, objects, action )`
+"create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error.
+
+	:::ruby
+    SyncEngine.on_sync_create_error( @params['source_name'], 
+        @params['server_errors']['create-error'].keys(), :delete)
+    
+* objects - One or more error objects
+* action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
 
 ### `set_pollinterval(interval)`
 Update the `SyncEngine` poll interval. Setting this to 0 will disable polling-based sync.  However, you may still use [push-based-sync](/rhosync/push).
