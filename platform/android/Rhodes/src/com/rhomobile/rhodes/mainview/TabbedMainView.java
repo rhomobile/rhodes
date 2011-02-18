@@ -488,8 +488,19 @@ public class TabbedMainView implements MainView {
 				throw new IllegalArgumentException("'label' should be String");
 			
 			Object actionObj = hash.get("action");
+			
+			boolean use_current_view_for_tab = false;
+			Object use_current_view_for_tab_Obj = hash.get("use_current_view_for_tab");
+			if (use_current_view_for_tab_Obj != null) {
+				use_current_view_for_tab = ((String)use_current_view_for_tab_Obj).equalsIgnoreCase("true");
+			}
+
+			if (use_current_view_for_tab) {
+				actionObj = new String("none");
+			}
 			if (actionObj == null || !(actionObj instanceof String))
 				throw new IllegalArgumentException("'action' should be String");
+			
 			
 			String label = (String)labelObj;
 			String action = (String)actionObj;
@@ -557,11 +568,22 @@ public class TabbedMainView implements MainView {
 			else
 				spec.setIndicator(label, drawable);
 			
+			SimpleMainView view = null;
+			if (use_current_view_for_tab) {
+				RhodesService r = RhodesService.getInstance();
+				MainView mainView = r.getMainView();
+				action = mainView.currentLocation(-1);
+				view = new SimpleMainView(mainView);
+			}
+			else {
+				view = new SimpleMainView();
+			}
 			// Set view factory
-			SimpleMainView view = new SimpleMainView();
 			
 			if (web_bkg_color_Obj != null) {
-				view.setWebBackgroundColor(web_bkg_color);
+				if (!use_current_view_for_tab) {
+					view.setWebBackgroundColor(web_bkg_color);
+				}
 				host.setBackgroundColor(web_bkg_color);
 			}
 			
@@ -569,6 +591,11 @@ public class TabbedMainView implements MainView {
 			data.view = view;
 			data.url = action;
 			data.reload = reload;
+			
+			if (use_current_view_for_tab) {
+				data.loaded = true;
+				tabIndex = i;
+			}
 			
 			data.selected_color = selected_color;
 			data.selected_color_enabled = selected_color_enable;
@@ -596,22 +623,31 @@ public class TabbedMainView implements MainView {
 		int sel_col = 0;
 		boolean sel_col_enable = false;
 		
-		tabIndex = 0;
+		int cur_tabIndex = 0;
 		TabData data = null; 
 		boolean founded_not_disabled = false;
 		
-		while ((!founded_not_disabled) && (tabIndex < tabData.size())) {
-			data = tabData.elementAt(tabIndex); 
+		while ((!founded_not_disabled) && (cur_tabIndex < tabData.size())) {
+			data = tabData.elementAt(cur_tabIndex); 
 			if ((data != null) && (!data.disabled)) {
 				founded_not_disabled = true;
 			}
 			else {
-				tabIndex++;
+				cur_tabIndex++;
 			}
 		}
 		if (!founded_not_disabled) {
 			Logger.E(TAG, "ERROR : All tabs is disabled !!! ");
 		}
+		
+		if ((tabIndex != cur_tabIndex) && (tabIndex != 0)) {
+			data = tabData.elementAt(tabIndex); 
+		}
+		else {
+			tabIndex = cur_tabIndex;
+		}
+		
+		
 		
 		if (data != null) {
 			sel_col = data.selected_color;
@@ -658,8 +694,10 @@ public class TabbedMainView implements MainView {
 
 		if (data != null) {
 			try {
-				RhodesService.loadUrl(data.url);
-				data.loaded = true;
+				if (!data.loaded) {
+					RhodesService.loadUrl(data.url);
+					data.loaded = true;
+				}
 				sel_col = data.selected_color;
 				sel_col_enable = data.selected_color_enabled;
 			}
@@ -691,8 +729,10 @@ public class TabbedMainView implements MainView {
 					}
 				}
 				TabData selected_data = tabData.elementAt(tabIndex);
-				RhodesService.loadUrl(selected_data.url);
-				selected_data.loaded = true;
+				if (!selected_data.loaded) {
+					RhodesService.loadUrl(selected_data.url);
+					selected_data.loaded = true;
+				}
 				mIsReallyOnScreen = true;
 			}
 		});
