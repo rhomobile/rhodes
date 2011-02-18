@@ -311,6 +311,8 @@ public class System {
     		return ObjectFactory.createBoolean(RhoCalendar.has_calendar());
     	if ( strPropName.equalsIgnoreCase("has_touchscreen") )
     		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.getInstance().hasTouchScreen());
+    	if ( strPropName.equalsIgnoreCase("has_sqlite") )
+    		return ObjectFactory.createBoolean(com.rho.Capabilities.USE_SQLITE);
     	    	
     	return RubyConstant.QNIL;
     }
