@@ -77,6 +77,10 @@ describe "SyncEngine_test" do
   
   after (:each) do
     Rho::RhoConfig.syncserver = SYNC_SERVER_URL
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", "" )        
+    ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
+    
   end
     
   it "should update syncserver at runtime" do
@@ -349,7 +353,222 @@ describe "SyncEngine_test" do
     item2 = getProduct.find(item.object)    
     item2.should be_nil
   end
+
+  it "should process create-error : delete" do    
+ 
+    item = getProduct.create({:name => 'Test', :brand => "Rho"})
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
     
+    item.update_attributes({:price => "123"})
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"" + item.object + "\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"" + item.object + "-error\":{\"message\":\"error create\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['create-error'].should_not be_nil
+    res['server_errors']['create-error'][item.object].should_not be_nil    
+    res['server_errors']['create-error'][item.object]['message'].should == "error create"
+
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 2
+
+    item.update_attributes({:price => "456"})
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 2
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records2.length.should == 1
+    records2[0]['attrib'].should == 'price'        
+    records2[0]['sent'].should == 0
+
+    getProduct.on_sync_create_error( res['server_errors']['create-error'].keys(), :delete)
+    
+    records3 = getTestDB().select_from_table('changed_values','*', 'object' => item.object)
+    records3.length.should == 0
+    records4 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records4.length.should == 0
+    
+    item = getProduct.find(item.object)
+    item.should be_nil
+  end
+  
+  it "should process create-error : recreate" do    
+ 
+    item = getProduct.create({:name => 'Test', :brand => "Rho"})
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+    
+    item.update_attributes({:price => "123"})
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"" + item.object + "\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"" + item.object + "-error\":{\"message\":\"error create\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['create-error'].should_not be_nil
+    res['server_errors']['create-error'][item.object].should_not be_nil    
+    res['server_errors']['create-error'][item.object]['message'].should == "error create"
+
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 2
+
+    item.update_attributes({:price => "456"})
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 2
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records2.length.should == 1
+    records2[0]['attrib'].should == 'price'        
+    records2[0]['sent'].should == 0
+
+    getProduct.on_sync_create_error( res['server_errors']['create-error'].keys(), :recreate)
+    
+    records3 = getTestDB().select_from_table('changed_values','*', 'object' => item.object)
+    records3.length.should == 1
+    records3[0]['attrib'].should == 'object'        
+    
+    records4 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records4.length.should == 0
+    
+    item = getProduct.find(item.object)
+    item.should_not be_nil
+    
+  end
+
+  it "should process create-error : recreate deleted item" do    
+ 
+    item = getProduct.create({:name => 'Test', :brand => "Rho"})
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+    
+    item.update_attributes({:price => "123"})
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"" + item.object + "\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"" + item.object + "-error\":{\"message\":\"error create\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['create-error'].should_not be_nil
+    res['server_errors']['create-error'][item.object].should_not be_nil    
+    res['server_errors']['create-error'][item.object]['message'].should == "error create"
+
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 2
+
+    item.destroy
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 2
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'delete')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2[0]['attrib'].should_not == 'object'        
+    records2[0]['sent'].should == 0
+
+    getProduct.on_sync_create_error( res['server_errors']['create-error'].keys(), :recreate)
+    
+    records3 = getTestDB().select_from_table('changed_values','*', 'object' => item.object)
+    records3.length.should == 0
+    
+    records4 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records4.length.should == 0
+    
+    item = getProduct.find(item.object)
+    item.should be_nil
+    
+  end
+    
+  it "should process update-error" do    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-error\":{\"broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error update\"},\"broken_object_id-error\":{\"message\":\"error update\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    puts "res : #{res}"
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['update-error'].should_not be_nil
+    res['server_errors']['update-error']['broken_object_id'].should_not be_nil    
+    res['server_errors']['update-error']['broken_object_id']['message'].should == "error update"
+    
+  end
+
+  it "should process delete-error" do    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"delete-error\":{\"broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error delete\"},\"broken_object_id-error\":{\"message\":\"Error delete record\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    puts "res : #{res}"
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['delete-error'].should_not be_nil
+    res['server_errors']['delete-error']['broken_object_id'].should_not be_nil    
+    res['server_errors']['delete-error']['broken_object_id']['message'].should == "Error delete record"
+    
+  end
+
+  it "should process source-error" do    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"source-error\":{\"query-error\":{\"message\":\"Error during query\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    puts "res : #{res}"
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['source-error'].should_not be_nil
+    res['server_errors']['source-error']['message'].should == "Error during query"
+    
+  end
+
+  it "should process search-error" do    
+    err_resp = "[[{\"version\":3},{\"source\":\"" + getProduct_str() + "\"},{\"search-error\":{\"search-error\":{\"message\":\"Error during search\"}}}]]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    _search_id = Time.now.to_i.to_s
+    search_res = getProduct.search(
+      :from => 'search',
+      :search_params => { :filterData => "Test", :search_id => _search_id },
+      :offset => 0,
+      :max_results => 1000,
+      :progress_step => 10,
+      :callback => '/app/Contact/search_callback',
+      :callback_param => "")
+    res = ::Rho::RhoSupport::parse_query_parameters(search_res)      
+    puts "res : #{res}"
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['search-error'].should_not be_nil
+    res['server_errors']['search-error']['message'].should == "Error during search"
+    
+  end
+
   it "should logout" do
     SyncEngine.logout()
   

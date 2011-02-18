@@ -1139,6 +1139,10 @@ module SyncEngine
         Rho::RhoConfig.rho_sync_user        
     end
     
+    def self.on_sync_create_error( src_name, objects, action )
+        Object.const_get(src_name).on_sync_create_error(objects, action)
+    end
+    
     def self.search(args)
         searchParams = ""
 

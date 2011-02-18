@@ -284,7 +284,7 @@ public class SyncNotify {
         	if ( pSN != null )        	
         		fireSyncNotification(src, true, src.m_nErrCode, "");
         	else
-        		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
+        		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, "" );
         }
         else
             fireSyncNotification( src, true, src.m_nErrCode, "");
@@ -394,10 +394,10 @@ public class SyncNotify {
 	    strParams += "&bulk_status="+status;
 	    strParams += "&sync_type=bulk";
 
-	    doFireSyncNotification( null, bFinish, nErrCode, "", strParams );
+	    doFireSyncNotification( null, bFinish, nErrCode, "", strParams, "" );
 	}
 
-	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError )
+	void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, String strServerError )
 	{
 	    if ( getSync().getState() == SyncEngine.esExit )
 			return;
@@ -416,7 +416,7 @@ public class SyncNotify {
 	    {
 	        SyncNotification pSN = getSyncNotifyBySrc(null);    
 	        if ( pSN != null )
-	            doFireSyncNotification( null, bFinish, nErrCode, strError, "" );
+	            doFireSyncNotification( null, bFinish, nErrCode, strError, "", strServerError );
 	    }
 	}
 
@@ -436,7 +436,7 @@ public class SyncNotify {
 			}
 		}
 		
-		doFireSyncNotification(src, bFinish, nErrCode, "", "" );
+		doFireSyncNotification(src, bFinish, nErrCode, "", "", "" );
 	}
 	
 	SyncNotification getSyncNotifyBySrc(SyncSource src)
@@ -459,7 +459,7 @@ public class SyncNotify {
 	    return pSN != null ? pSN : m_emptyNotify;
 	}
 	
-	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError, String strParams )
+	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError )
 	{
 		if ( getSync().isStoppedByUser() )
 			return;
@@ -509,12 +509,16 @@ public class SyncNotify {
 				        	
 				        	strBody += "error";				        	
 						    strBody += "&error_code=" + nErrCode;
-						    strBody += "&error_type=" + (src != null ? src.m_strErrorType : "");
 						    
 						    if ( strError != null && strError.length() > 0 )
 						    	strBody += "&error_message=" + URI.urlEncode(strError);
 						    else  if ( src != null )
 						    	strBody += "&error_message=" + URI.urlEncode(src.m_strError);
+						    
+						    if ( strServerError.length() > 0 )
+						    	strBody += "&" + strServerError;
+						    else if ( src != null && src.m_strServerError.length() > 0  )
+						    	strBody += "&" + src.m_strServerError;						    
 				        }
 				        
 		                if ( src != null )
@@ -525,7 +529,12 @@ public class SyncNotify {
 			        
 			        strBody += "&rho_callback=1";
 			        if ( pSN.m_strParams.length() > 0 )
-			            strBody += "&" + pSN.m_strParams;
+			        {
+			        	if ( !pSN.m_strParams.startsWith("&") )
+			        		strBody += "&";
+			        	
+			        	strBody += pSN.m_strParams;
+			        }			        	
 			        
 			        bRemoveAfterFire = bRemoveAfterFire && pSN.m_bRemoveAfterFire;
 		        }

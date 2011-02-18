@@ -115,7 +115,7 @@ public:
     const String& getNotifyBody(){ return m_strNotifyBody; }
     void cleanNotifyBody(){ m_strNotifyBody = ""; }
 
-    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError );
+    void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, String strServerError );
     void reportSyncStatus(String status, int error, String strDetails);
     void showStatusPopup(const String& status);
 private:
@@ -124,7 +124,7 @@ private:
     String makeCreateObjectErrorBody(int nSrcID);
     void processSingleObject();
 
-    void doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams);
+    void doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError);
 
     boolean callNotify(const CSyncNotification& oNotify, const String& strBody );
 
