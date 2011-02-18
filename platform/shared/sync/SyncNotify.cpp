@@ -217,7 +217,7 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 		if ( pSN != null )
 			fireSyncNotification(&src, true, src.m_nErrCode, "");
 		else
-			fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError );
+			fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, "" );
     }
     else
         fireSyncNotification(&src, true, src.m_nErrCode, "");
@@ -329,10 +329,10 @@ void CSyncNotify::fireBulkSyncNotification( boolean bFinish, String status, Stri
     strParams += "&bulk_status="+status;
     strParams += "&sync_type=bulk";
 
-    doFireSyncNotification( null, bFinish, nErrCode, "", strParams );
+    doFireSyncNotification( null, bFinish, nErrCode, "", strParams, "" );
 }
 
-void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError )
+void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, String strServerError )
 {
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
@@ -341,7 +341,7 @@ void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, Strin
     {
         CSyncNotification* pSN = getSyncNotifyBySrc(null);    
         if ( pSN != null )
-            doFireSyncNotification( null, bFinish, nErrCode, strError, "" );
+            doFireSyncNotification( null, bFinish, nErrCode, strError, "", strServerError );
     }
 }
 
@@ -361,7 +361,7 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
         }
 	}
 
-    doFireSyncNotification(src, bFinish, nErrCode, "", "" );
+    doFireSyncNotification(src, bFinish, nErrCode, "", "", "" );
 }
 
 CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
@@ -384,7 +384,7 @@ CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
     return pSN != null ? pSN : &m_emptyNotify;
 }
 
-void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams)
+void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError)
 {
 	if ( getSync().isStoppedByUser() )
 		return;
@@ -432,13 +432,17 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 
 	        	    strBody += "error";				        	
 			        strBody += "&error_code=" + convertToStringA(nErrCode);
-                    strBody += "&error_type=" + (src != null ? (*src).m_strErrorType : String());
 		            strBody += "&error_message=";
 
                     if ( strError.length() > 0 )
                         URI::urlEncode(strError,strBody);
                     else if ( src != null )
                         URI::urlEncode( (*src).m_strError,strBody);
+
+                    if ( strServerError.length() > 0 )
+                        strBody += "&" + strServerError;
+                    else if ( src != null && (*src).m_strServerError.length() > 0  )
+                        strBody += "&" + (*src).m_strServerError;
 	            }
 
                 if ( src != null )
@@ -449,7 +453,12 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 
             strBody += "&rho_callback=1";
             if ( pSN->m_strParams.length() > 0 )
-                strBody += "&" + pSN->m_strParams;
+            {
+                if ( !String_startsWith( pSN->m_strParams, "&" ) )
+                    strBody += "&";
+
+                strBody += pSN->m_strParams;
+            }
 
             bRemoveAfterFire = bRemoveAfterFire && pSN->m_bRemoveAfterFire;
         }
@@ -548,11 +557,7 @@ int CSyncNotify::getLastSyncObjectCount(int nSrcID)
 void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCode, String strMessage)
 {
 	if ( getSync().isStoppedByUser() )
-	{
-		LOG(INFO) + "Login was stopped by application.";
-
 		return;
-	}
 
 	//try{
     String strBody = "error_code=" + convertToStringA(nErrCode);

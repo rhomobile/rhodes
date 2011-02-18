@@ -76,8 +76,7 @@ public class SyncSource
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount, m_nAttribCounter=0;
     boolean m_bGetAtLeastOnePage = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
-    String m_strError = "";
-    String m_strErrorType = "";
+    String m_strError = "", m_strServerError = "";
     
 	//String m_strPushBody = "";
     Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
@@ -99,6 +98,8 @@ public class SyncSource
     Integer getID() { return m_nID; }
     String getName() { return m_strName; }
     String getSyncType(){ return m_strSyncType; }
+    String getServerError(){ return m_strServerError; }
+    int getErrorCode(){ return m_nErrCode; }    
     int getServerObjectsCount(){ return m_nInserted+m_nDeleted; }
     
     long getToken(){ return m_token; }
@@ -521,11 +522,12 @@ public class SyncSource
 		    	throw exc;
 		    }
 
-	        String szData = resp.getCharData();
-	        //String szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":28},{\"total_count\":28},{\"source-error\":{\"login-error\":{\"message\":\"s currently connected from another machine\"}}}]";
-		    //String szData =  "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"0_broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"0_broken_object_id-error\":{\"message\":\"error create\"}}}]";
-	        //String szData =  "[{\"version\":3},{\"token\":\"35639160294387\"},{\"count\":3},{\"progress_count\":0},{\"total_count\":3},{\"metadata\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"insert\":{\"1\":{\"price\":\"199.99\",\"brand\":\"Apple\",\"name\":\"iPhone\"}}}]";
-	        //String szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":1},{\"total_count\":1},{\"update-error\":{\"1-error\":{\"message\":\"Update failed!\"},\"1\":{\"foo\":\"bar5\"}}}]";
+		    String szData = null;
+		    String strTestResp = getSync().getSourceOptions().getProperty(getID(), "rho_server_response");
+		    if ( strTestResp.length() > 0 )
+		    	szData = strTestResp;
+		    else
+		    	szData = resp.getCharData();		    
 
 	        PROF.START("Parse");
 	        JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
@@ -544,71 +546,47 @@ public class SyncSource
 	    	getSync().stopSync();	    
 	}
 
+	//{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}
 	boolean processServerErrors(JSONEntry oCmds)throws Exception
 	{
-	    if ( oCmds.hasName("source-error") )
+	    String arErrTypes[] = {"source-error", "search-error", "create-error", "update-error", "delete-error", null};
+	    boolean bRes = false;
+	    for( int i = 0; ; i++ )
 	    {
-	        JSONEntry errSrc = oCmds.getEntry("source-error");
-	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
-	        for( ; !errIter.isEnd(); errIter.next() )
-	        {
-	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	            m_strError = errIter.getCurValue().getString("message");
-	            m_strErrorType = errIter.getCurKey();
-	        }
-	    }else if ( oCmds.hasName("search-error") )
-	    {
-	        JSONEntry errSrc = oCmds.getEntry("search-error");
-	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
-	        for( ; !errIter.isEnd(); errIter.next() )
-	        {
-	            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	            m_strError = errIter.getCurValue().getString("message");
-	            m_strErrorType = errIter.getCurKey();
-	        }
-	    }else if ( oCmds.hasName("create-error") )
-	    {
-	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	        m_strErrorType = "create-error";
+	        if ( arErrTypes[i] == null )
+	            break;
+	        if ( !oCmds.hasName(arErrTypes[i]) )
+	            continue;
 
-	        JSONEntry errSrc = oCmds.getEntry(m_strErrorType);
+	        bRes = true;
+	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+
+	        JSONEntry errSrc = oCmds.getEntry(arErrTypes[i]);
 	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
 	        for( ; !errIter.isEnd(); errIter.next() )
 	        {
 	            String strKey = errIter.getCurKey();
-	            if ( strKey.endsWith("-error") )
-	                m_strError = errIter.getCurValue().getString("message");
-	        }
-	    }else if ( oCmds.hasName("update-error") )
-	    {
-	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	        m_strErrorType = "update-error";
 
-	        JSONEntry errSrc = oCmds.getEntry(m_strErrorType);
-	        JSONStructIterator errIter = new JSONStructIterator(errSrc);
-	        for( ; !errIter.isEnd(); errIter.next() )
-	        {
-	            String strKey = errIter.getCurKey();
-	            if ( strKey.endsWith("-error") )
-	                m_strError = errIter.getCurValue().getString("message");
-	        }
-	    }else if ( oCmds.hasName("delete-error") )
-	    {
-	        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-	        m_strErrorType = "delete-error";
+	            if ( strKey.compareTo("query-error") == 0 || strKey.compareTo("search-error") == 0 )
+	            {
+	                if ( errIter.getCurValue().hasName("message") )
+	                    m_strServerError += "server_errors[" + arErrTypes[i] + "][message]=" + URI.urlEncode(errIter.getCurValue().getString("message"));
+	            }
+	            else
+	            {
+	                //"create-error", "update-error", "delete-error"
+	                String strObject = strKey;
 
-	        JSONEntry errSrc = oCmds.getEntry(m_strErrorType);
-	        JSONStructIterator errIter=new JSONStructIterator(errSrc);
-	        for( ; !errIter.isEnd(); errIter.next() )
-	        {
-	            String strKey = errIter.getCurKey();
-	            if ( strKey.endsWith( "-error") )
-	                m_strError = errIter.getCurValue().getString("message");
+	                if ( strObject.endsWith("-error") )
+	                {
+	                    strObject = strObject.substring(0, strKey.length()-6);
+	                    m_strServerError += "server_errors[" + arErrTypes[i] + "][" + strObject + "][message]=" + URI.urlEncode(errIter.getCurValue().getString("message"));
+	                }
+	            }
 	        }
-	    }else
-	        return false;
+	    }
 
-	    return true;
+	    return bRes;
 	}
 	
 	void processServerResponse_ver3(JSONArrayIterator oJsonArr)throws Exception

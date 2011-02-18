@@ -412,21 +412,22 @@ void CSyncSource::syncServerChanges()
 		LOG(INFO) + "Pull changes from server. Url: " + (strUrl+strQuery);
         PROF_START("Net");	    
         NetResponse(resp,getNet().pullData(strUrl+strQuery, &getSync()));
-		PROF_STOP("Net");
+	    PROF_STOP("Net");
 
         if ( !resp.isOK() )
         {
             getSync().stopSync();
-			m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
+		    m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
             m_strError = resp.getCharData();
             continue;
         }
 
-        const char* szData = resp.getCharData();
-        //const char* szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":28},{\"total_count\":28},{\"source-error\":{\"login-error\":{\"message\":\"s currently connected from another machine\"}}}]";
-        //const char* szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"0_broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"0_broken_object_id-error\":{\"message\":\"error create\"}}}]";
-        //const char* szData = "[{\"version\":3},{\"token\":\"35639160294387\"},{\"count\":3},{\"progress_count\":0},{\"total_count\":3},{\"metadata\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"insert\":{\"1\":{\"price\":\"199.99\",\"brand\":\"Apple\",\"name\":\"iPhone\"}}}]";
-        //const char* szData = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":1},{\"total_count\":1},{\"update-error\":{\"1-error\":{\"message\":\"Update failed!\"},\"1\":{\"foo\":\"bar5\"}}}]";
+        const char* szData = null;
+        String strTestResp = getSync().getSourceOptions().getProperty(getID(), "rho_server_response");
+        if ( strTestResp.length() > 0 )
+            szData = strTestResp.c_str();
+        else
+            szData = resp.getCharData();
 
         //LOG(INFO) + szData;
         PROF_START("Parse");
@@ -446,71 +447,47 @@ void CSyncSource::syncServerChanges()
         getSync().stopSync();
 }
 
+//{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}
 boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
 {
-    if ( oCmds.hasName("source-error") )
+    const char* arErrTypes[] = {"source-error", "search-error", "create-error", "update-error", "delete-error", null};
+    boolean bRes = false;
+    for( int i = 0; ; i++ )
     {
-        CJSONEntry errSrc = oCmds.getEntry("source-error");
-        CJSONStructIterator errIter(errSrc);
-        for( ; !errIter.isEnd(); errIter.next() )
-        {
-            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-            m_strError = errIter.getCurValue().getString("message");
-            m_strErrorType = errIter.getCurKey();
-        }
-    }else if ( oCmds.hasName("search-error") )
-    {
-        CJSONEntry errSrc = oCmds.getEntry("search-error");
-        CJSONStructIterator errIter(errSrc);
-        for( ; !errIter.isEnd(); errIter.next() )
-        {
-            m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-            m_strError = errIter.getCurValue().getString("message");
-            m_strErrorType = errIter.getCurKey();
-        }
-    }else if ( oCmds.hasName("create-error") )
-    {
-        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-        m_strErrorType = "create-error";
+        if ( arErrTypes[i] == null )
+            break;
+        if ( !oCmds.hasName(arErrTypes[i]) )
+            continue;
 
-        CJSONEntry errSrc = oCmds.getEntry(m_strErrorType.c_str());
+        bRes = true;
+        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
+
+        CJSONEntry errSrc = oCmds.getEntry(arErrTypes[i]);
         CJSONStructIterator errIter(errSrc);
         for( ; !errIter.isEnd(); errIter.next() )
         {
             String strKey = errIter.getCurKey();
-            if ( String_endsWith(strKey, "-error") )
-                m_strError = errIter.getCurValue().getString("message");
-        }
-    }else if ( oCmds.hasName("update-error") )
-    {
-        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-        m_strErrorType = "update-error";
 
-        CJSONEntry errSrc = oCmds.getEntry(m_strErrorType.c_str());
-        CJSONStructIterator errIter(errSrc);
-        for( ; !errIter.isEnd(); errIter.next() )
-        {
-            String strKey = errIter.getCurKey();
-            if ( String_endsWith(strKey, "-error") )
-                m_strError = errIter.getCurValue().getString("message");
-        }
-    }else if ( oCmds.hasName("delete-error") )
-    {
-        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
-        m_strErrorType = "delete-error";
+            if ( strKey.compare("query-error") == 0 || strKey.compare("search-error") == 0 )
+            {
+                if ( errIter.getCurValue().hasName("message") )
+                    m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+            }
+            else
+            {
+                //"create-error", "update-error", "delete-error"
+                String strObject = strKey;
 
-        CJSONEntry errSrc = oCmds.getEntry(m_strErrorType.c_str());
-        CJSONStructIterator errIter(errSrc);
-        for( ; !errIter.isEnd(); errIter.next() )
-        {
-            String strKey = errIter.getCurKey();
-            if ( String_endsWith(strKey, "-error") )
-                m_strError = errIter.getCurValue().getString("message");
+                if ( String_endsWith(strObject, "-error") )
+                {
+                    strObject = strObject.substr(0, strKey.length()-6);
+                    m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + strObject + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                }
+            }
         }
-    }else
-        return false;
+    }
 
-    return true;
+    return bRes;
 }
 
 void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)

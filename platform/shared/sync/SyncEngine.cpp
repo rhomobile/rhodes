@@ -89,6 +89,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     m_bStopByUser = false;
     m_nErrCode = RhoAppAdapter.ERR_NONE;
     m_strError = "";
+    m_strServerError = "";
     m_bIsSchemaChanged = false;
 
     loadAllSources();
@@ -118,7 +119,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
         getNotify().fireSyncNotification(src, true, src->m_nErrCode, "");
     }else
     {
-        getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError );
+        getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, "" );
     }
 
     stopSync();
@@ -188,6 +189,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         if ( strParams.length() > 0 )
             strQuery += strParams.at(0) == '&' ? strParams : "&" + strParams;
 
+        String strTestResp = "";
         for ( int i = 0; i < (int)arSources.size(); i++ )
         {
             CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
@@ -197,10 +199,12 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
                 if ( !pSrc->isTokenFromDB() && pSrc->getToken() > 1 )
                     strQuery += "&sources[][token]=" + convertToStringA(pSrc->getToken());
+
+                strTestResp = getSourceOptions().getProperty(pSrc->getID(), "rho_server_response");
             }
         }
 
-		LOG(INFO) + "Call search on server. Url: " + (strUrl+strQuery);
+	    LOG(INFO) + "Call search on server. Url: " + (strUrl+strQuery);
         NetResponse(resp,getNet().pullData(strUrl+strQuery, this));
 
         if ( !resp.isOK() )
@@ -211,7 +215,11 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             continue;
         }
 
-        const char* szData = resp.getCharData();
+        const char* szData = null;
+        if ( strTestResp.length() > 0 )
+            szData = strTestResp.c_str();
+        else
+            szData = resp.getCharData();
 
         CJSONArrayIterator oJsonArr(szData);
 
@@ -233,8 +241,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
                 LOG(ERROR) + "Sync server send search data with incompatible version. Client version: " + convertToStringA(getProtocol().getVersion()) +
                     "; Server response version: " + convertToStringA(nVersion);
                 stopSync();
-                m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
-                m_strError = resp.getCharData();
+                m_nErrCode = RhoAppAdapter.ERR_SYNCVERSION;
                 continue;
             }
 
@@ -248,7 +255,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
                 LOG(ERROR) + "Sync server send search data without source name.";
                 stopSync();
                 m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
-                m_strError = resp.getCharData();
+                m_strError = szData;
                 continue;
             }
 
@@ -259,7 +266,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
                 LOG(ERROR) + "Sync server send search data for unknown source name:" + strSrcName;
                 stopSync();
                 m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
-                m_strError = resp.getCharData();
+                m_strError = szData;
                 continue;
             }
 
@@ -268,13 +275,22 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             pSrc->processServerResponse_ver3(oSrcArr);
 
             nSearchCount += pSrc->getCurPageCount();
+
+            if ( pSrc->getServerError().length() > 0 )
+            {
+                if ( m_strServerError.length() > 0 )
+                    m_strServerError +=  "&";
+
+                m_strServerError += pSrc->getServerError();
+                m_nErrCode = pSrc->getErrorCode();
+            }
         }
 
         if ( nSearchCount == 0 )
             break;
     }  
 
-    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError);
+    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
 
     //update db info
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
