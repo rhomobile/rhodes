@@ -7,6 +7,8 @@
 
 #define RHOSETUP_DLL "rhosetup.dll"
 
+TCHAR *app_name = NULL;
+
 void checkMDEstart(HRESULT hr) 
 {
 	if (FAILED(hr)) {
@@ -431,7 +433,8 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	
 	_tcscpy(exe_fullpath, app_dir);
 	_tcscat(exe_fullpath, _T("\\"));
-	_tcscat(exe_fullpath, _T("rhodes.exe"));
+	_tcscat(exe_fullpath, app_name);
+	_tcscat(exe_fullpath, _T(".exe"));
 
 
 	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -604,7 +607,6 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	TCHAR *emu_name = NULL;
 	TCHAR *cab_file = NULL;
-	TCHAR *app_name = NULL;
 	TCHAR *bundle_path = NULL;
 	TCHAR *app_exe = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
@@ -729,7 +731,9 @@ int _tmain(int argc, _TCHAR* argv[])
 				_tprintf( TEXT("Starting application..."));
 				_tcscpy(params_buf, TEXT("\\Program Files\\"));
 				_tcscat(params_buf, app_name);
-				_tcscat(params_buf, TEXT("\\rhodes.exe"));
+				_tcscat(params_buf, _T("\\"));
+				_tcscat(params_buf, app_name);
+				_tcscat(params_buf, _T(".exe"));
 				if(!wceRunProcess(T2A(params_buf), NULL)) {
 					_tprintf( TEXT("FAILED\n"));
 					goto stop_emu_deploy;
@@ -797,7 +801,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("Starting application..."));
 			_tcscpy(params_buf, TEXT("\\Program Files\\"));
 			_tcscat(params_buf, app_name);
-			_tcscat(params_buf, TEXT("\\rhodes.exe"));
+			_tcscat(params_buf, _T("\\"));
+			_tcscat(params_buf, app_name);
+			_tcscat(params_buf, _T(".exe"));
 			if(!wceRunProcess(T2A(params_buf), NULL)) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
@@ -882,7 +888,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		_tprintf( TEXT("Starting application..."));
 		_tcscpy(params_buf, TEXT("\\Program Files\\"));
 		_tcscat(params_buf, app_name);
-		_tcscat(params_buf, TEXT("\\rhodes.exe"));
+		_tcscat(params_buf, _T("\\"));
+		_tcscat(params_buf, app_name);
+		_tcscat(params_buf, _T(".exe"));
 		_tprintf( TEXT("%s\n"), params_buf);
 
 		
@@ -951,7 +959,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("Starting application..."));
 			_tcscpy(params_buf, TEXT("\\Program Files\\"));
 			_tcscat(params_buf, app_name);
-			_tcscat(params_buf, TEXT("\\rhodes.exe"));
+			_tcscat(params_buf, _T("\\"));
+			_tcscat(params_buf, app_name);
+			_tcscat(params_buf, _T(".exe"));
 			if(!wceRunProcess (T2A(params_buf), NULL)) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;

@@ -250,10 +250,19 @@ end
 
 namespace "run" do
 
+    desc "Build and run on WM6 emulator"
+    task :wm => ["device:wm:production"] do
+   	  cd $startdir + "/res/build-tools"
+	  detool = "detool.exe"    
+	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
+	  puts "\nStarting application on the WM6 emulator\n\n"
+	  Jake.run(detool,args)
+    end
+
   namespace "wm" do
 
     desc "Build and run on the Windows Phone"
-    task :dev => ["device:wm:production"] do
+    task :device => ["device:wm:production"] do
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
 	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
@@ -262,27 +271,20 @@ namespace "run" do
 	  Jake.run(detool,args)
     end
 
-    desc "Build and run on WM6 emulator"
-    task :emu => ["device:wm:production"] do
-   	  cd $startdir + "/res/build-tools"
-	  detool = "detool.exe"    
-	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
-	  puts "\nStarting application on the WM6 emulator\n\n"
-	  Jake.run(detool,args)
-    end
-
-    desc "Build, install .cab  and run on the Windows Phone"
-    task :devcab => ["device:wm:production"] do
-   	  cd $startdir + "/res/build-tools"
-	  detool = "detool.exe"    
-	  args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname]
-	  puts "\nStarting application on the device"
-	  puts "Please, connect you device via ActiveSync.\n\n"
-	  Jake.run(detool,args)
-    end
+  namespace "device" do
+		desc "Build, install .cab  and run on the Windows Phone"
+		task :cab => ["device:wm:production"] do
+   			cd $startdir + "/res/build-tools"
+			detool = "detool.exe"    
+			args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname]
+			puts "\nStarting application on the device"
+			puts "Please, connect you device via ActiveSync.\n\n"
+			Jake.run(detool,args)
+		end
+  end
 
     desc "Build, install .cab and run on WM6 emulator"
-    task :emucab => ["device:wm:production"] do
+    task :cab => ["device:wm:production"] do
   	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"
 	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname]
