@@ -100,8 +100,9 @@ public:
     void setPinImage(JNIEnv *env, jobject bitmap);
     void setPinCalloutImage(JNIEnv *env, jobject bitmap);
     void setPinCalloutLinkImage(JNIEnv *env, jobject bitmap);
-
-    rho_param *params() const {return m_params;}
+    void setESRILogoImage(JNIEnv *env, jobject bitmap);
+ 
+	rho_param *params() const {return m_params;}
 
     void setMapView(IMapView *mv);
     IMapView *mapView() const {return m_mapview;}
@@ -122,6 +123,7 @@ private:
     std::auto_ptr<IDrawingImage> m_pin_image;
     std::auto_ptr<IDrawingImage> m_pin_calloutimage;
     std::auto_ptr<IDrawingImage> m_pin_calloutlinkimage;
+    std::auto_ptr<IDrawingImage> m_esriLogo_image;
 };
 
 AndroidImage::AndroidImage(jobject bitmap)
@@ -269,6 +271,7 @@ void AndroidMapDevice::setMapView(IMapView *mv)
 
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info1);
         mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info1);
+		mv->setESRILogoImage(m_esriLogo_image.get());
 
     }
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
@@ -323,6 +326,17 @@ void AndroidMapDevice::setPinCalloutLinkImage(JNIEnv *env, jobject bitmap)
     }
     RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutLinkImage: finish");
 }
+
+void AndroidMapDevice::setESRILogoImage(JNIEnv *env, jobject bitmap) {
+    RHO_MAP_TRACE("AndroidMapDevice: setESRILogoImage: start");
+    m_esriLogo_image.reset(new AndroidImage(bitmap));
+    IMapView *mv = mapView();
+    if (mv) {
+        mv->setESRILogoImage(m_esriLogo_image.get());
+    }
+    RHO_MAP_TRACE("AndroidMapDevice: setESRILogoImage: finish");
+}
+
 
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
@@ -483,6 +497,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutL
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
     d->setPinCalloutLinkImage(env, bitmap);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutLinkImage: finish");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoImage
+  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoImage: start");
+    rhomap::AndroidMapDevice *d = device(env, nativeDevice);
+    d->setESRILogoImage(env, bitmap);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoImage: finish");
 }
 
 
