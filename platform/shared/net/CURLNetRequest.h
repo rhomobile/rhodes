@@ -12,7 +12,7 @@ namespace rho
 namespace net
 {
 
-class CURLNetRequest : public INetRequest
+class CURLNetRequest : public INetRequestImpl
 {
     DEFINE_LOGCLASS;
     
@@ -50,23 +50,16 @@ class CURLNetRequest : public INetRequest
     };
     
 public:
-    INetResponse *pullData(const String& strUrl, IRhoSession *oSession);
-    INetResponse *pushData(const String& strUrl, const String& strBody, IRhoSession *oSession);
-    INetResponse *pushFile(const String& strUrl, const String& strFileName, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
-    INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
-    INetResponse* pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
-    INetResponse *pullFile(const String& strUrl, const String& strFilePath, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
-    INetResponse *pullCookies(const String& strUrl, const String& strBody, IRhoSession *oSession);
-    INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
+    virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
+    virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
 
-    boolean sslVerifyPeer() {return m_curl.sslVerifyPeer();}
-    void sslVerifyPeer(boolean mode) {m_curl.sslVerifyPeer(mode);}
-    
-    String resolveUrl(const String& strUrl);
+    virtual void cancel();
 
-    void cancel();
-    virtual boolean isCancelled(){return false;}
+    virtual boolean getSslVerifyPeer() {return m_curl.sslVerifyPeer();}
+    virtual void setSslVerifyPeer(boolean mode){m_curl.sslVerifyPeer(mode);}
 
+    virtual INetResponse* createEmptyNetResponse();
 private:
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
     int getResponseCode(CURLcode err, String const &body, IRhoSession* oSession);

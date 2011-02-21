@@ -4,16 +4,13 @@
 #include "logging/RhoLog.h"
 #include "common/AutoPointer.h"
 #include "common/IRhoClassFactory.h"
+#include "net/INetRequest.h"
 
 typedef int (*RHOC_CALLBACK)(const char* szNotify, void* callback_data);
 
 namespace rho {
 namespace db {
     class CDBAdapter;
-}
-
-namespace net {
-    struct INetRequest;
 }
 
 namespace sync {
@@ -67,17 +64,13 @@ private:
     String m_strNotifyBody;
     String m_strStatusHide;
 
-   	common::CAutoPtr<net::INetRequest>     m_NetRequest;
+   	NetRequest     m_NetRequest;
 
-    net::INetRequest& getNet(){ return *m_NetRequest; }
+    net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
     CSyncEngine& getSync(){ return m_syncEngine; }
 public:
     CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), 
         m_bEnableReportingGlobal(false){}
-
-    void setFactory(){ 
-        m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
-    }
 
     //Object notifications
     void fireObjectsNotification();

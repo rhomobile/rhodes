@@ -41,7 +41,6 @@ CGeoLocation* CGeoLocation::m_pInstance = 0;
 CGeoLocation::CGeoLocation()
 {
     m_nGeoPingTimeoutSec = 0;
-    m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
 }
 
 void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bError, boolean bRunInThread)
@@ -68,7 +67,7 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bErr
         RHODESAPP().runCallbackInThread(strFullUrl, strBody);
     else
     {
-        NetRequest( getNet().pushData( strFullUrl, strBody, null ) );
+        getNet().pushData( strFullUrl, strBody, null );
     }
 }
 

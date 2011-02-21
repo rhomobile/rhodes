@@ -29,7 +29,7 @@ using namespace rho::common;
 using namespace rho::json;
 CSyncEngine::CSourceOptions CSyncEngine::m_oSourceOptions;
 
-CSyncEngine::CSyncEngine():m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*this)
+CSyncEngine::CSyncEngine(): m_syncState(esNone), m_oSyncNotify(*this)
 {
     m_bNoThreaded = false;
     m_bStopByUser = false;
@@ -41,6 +41,15 @@ CSyncEngine::CSyncEngine():m_NetRequest(0), m_syncState(esNone), m_oSyncNotify(*
 void CSyncEngine::initProtocol()
 {
     m_SyncProtocol = new CSyncProtocol_3();
+}
+
+void CSyncEngine::setSslVerifyPeer(boolean b)
+{ 
+    m_NetRequest.setSslVerifyPeer(b); 
+    m_NetRequestClientID.setSslVerifyPeer(b); 
+
+    if ( CClientRegister::getInstance() != null )
+        CClientRegister::getInstance()->setSslVerifyPeer(b);
 }
 
 void CSyncEngine::CSourceOptions::setProperty(int nSrcID, const char* szPropName, const char* szPropValue)
@@ -205,7 +214,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         }
 
 	    LOG(INFO) + "Call search on server. Url: " + (strUrl+strQuery);
-        NetResponse(resp,getNet().pullData(strUrl+strQuery, this));
+        NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 
         if ( !resp.isOK() )
         {
@@ -386,7 +395,7 @@ void CSyncEngine::loadAllSources()
         RhoAppAdapter.loadAllSyncSources();
     else
     {
-        NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null ));
+        NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null );
     }
 
     m_sources.removeAllElements();
@@ -514,7 +523,7 @@ void CSyncEngine::processServerSources(String strSources)
             RhoAppAdapter.loadServerSources(strSources);
         else
         {
-            NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null ));
+            NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null );
         }
 
         loadAllSources();
@@ -530,7 +539,7 @@ boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Excep
     //if ( CClientRegister::getInstance() != null )
     //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse( resp, m_NetRequestClientID->pullData(getProtocol().getClientResetUrl(strClientID), this) );
+    NetResponse resp = getNetClientID().pullData(getProtocol().getClientResetUrl(strClientID), this);
 
 
 /*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
@@ -568,7 +577,7 @@ String CSyncEngine::requestClientIDByNet()
     //if ( CClientRegister::getInstance() != null )
     //    strBody += CClientRegister::getInstance()->getRegisterBody();
 
-    NetResponse(resp,m_NetRequestClientID->pullData(getProtocol().getClientCreateUrl(), this));
+    NetResponse resp = getNetClientID().pullData(getProtocol().getClientCreateUrl(), this);
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
@@ -647,7 +656,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
     while(strCmd.length() == 0&&isContinueSync())
     {	    
-        NetResponse( resp, getNet().pullData(strUrl+strQuery, this) );
+        NetResponse resp = getNet().pullData(strUrl+strQuery, this);
         const char* szData = resp.getCharData();
         if ( !resp.isOK() || szData == null || *szData == 0)
         {
@@ -693,7 +702,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     String strSqlDataUrl = CFilePath::join(getHostFromUrl(serverUrl), strDataUrl) +strZip;
     LOG(INFO) + "Bulk sync: download data from server: " + strSqlDataUrl;
     {
-        NetResponse( resp1, getNet().pullFile(strSqlDataUrl, fDataName+strZip, this, null) );
+        NetResponse resp1 = getNet().pullFile(strSqlDataUrl, fDataName+strZip, this, null);
         if ( !resp1.isOK() )
         {
 	        LOG(ERROR) + "Bulk sync failed: cannot download database file.";
@@ -811,7 +820,7 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     m_bStopByUser = false;
 	//try {
 
-    NetResponse( resp, getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this ) );
+    NetResponse resp = getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this );
     int nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
     if ( nErrCode != RhoAppAdapter.ERR_NONE )
     {
@@ -850,7 +859,7 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
                 RhoAppAdapter.resetDBOnSyncUserChanged();
             else
             {
-                NetResponse(resp,getNet().pushData( getNet().resolveUrl("/system/resetDBOnSyncUserChanged"), "", null ));
+                NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/resetDBOnSyncUserChanged"), "", null );
             }
         }
     }
@@ -893,8 +902,7 @@ String CSyncEngine::loadSession()
 
 void CSyncEngine::logout()
 {
-    if(m_NetRequest) 
-        m_NetRequest->cancel();
+    m_NetRequest.cancel();
 
     getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";

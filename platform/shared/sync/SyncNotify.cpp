@@ -485,7 +485,7 @@ boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& 
     if ( strUrl.length() == 0 )
         return true;
 
-    NetResponse(resp,getNet().pushData( strUrl, strBody, null ));
+    NetResponse resp = getNet().pushData( strUrl, strBody, null );
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else

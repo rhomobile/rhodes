@@ -4,6 +4,7 @@
 #include "common/map/MapEngine.h"
 #include "common/RhoThread.h"
 #include "common/ThreadQueue.h"
+#include "net/INetRequest.h"
 
 #include <list>
 
@@ -104,10 +105,11 @@ private:
     private:
         void processCommand(IQueueCommand *cmd);
         bool fetchData(String const &url, void **data, size_t *datasize);
+        net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 
     private:
         ESRIMapView *m_mapview;
-        std::auto_ptr<net::INetRequest> m_net_request;
+        NetRequest   m_NetRequest;
     };
 
     friend class CacheUpdate;

@@ -44,7 +44,7 @@ public:
 
 private:
     VectorPtr<CSyncSource*> m_sources;
-    common::CAutoPtr<net::INetRequest> m_NetRequest, m_NetRequestClientID;
+    NetRequest m_NetRequest, m_NetRequestClientID;
     common::CAutoPtr<ISyncProtocol> m_SyncProtocol;
     ESyncState m_syncState;
     String     m_clientID;
@@ -59,17 +59,14 @@ private:
     boolean m_bIsSearch, m_bIsSchemaChanged;
     static CSourceOptions m_oSourceOptions;
 
+    net::CNetRequestWrapper getNetClientID(){ return getNetRequest(&m_NetRequestClientID); }
+
 public:
     CSyncEngine();
     ~CSyncEngine(void){}
 
-    void setFactory(){ 
-        m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
-        //clientID may be requested by ClientRegister thread
-        m_NetRequestClientID = rho_get_RhoClassFactory()->createNetRequest();
-        m_oSyncNotify.setFactory();
-    }
     static CSourceOptions& getSourceOptions(){ return m_oSourceOptions; }
+    net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 
     void doSyncAllSources();
     void doSyncSource(const CSourceID& oSrcID);
@@ -86,10 +83,12 @@ public:
     boolean isSearch()const{ return m_bIsSearch; }
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
-    void stopSync(){ if (isContinueSync()){ setState(esStop); if(m_NetRequest) m_NetRequest->cancel();} }
+    void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel();m_NetRequestClientID.cancel();} }
     void stopSyncByUser(){ m_bStopByUser = true; stopSync(); }
-    void exitSync(){ setState(esExit); m_NetRequest->cancel(); }
+    void exitSync(){ setState(esExit); m_NetRequest.cancel(); m_NetRequestClientID.cancel();}
     boolean isStoppedByUser(){ return m_bStopByUser; }
+    void setSslVerifyPeer(boolean b);
+
 //private:
     String getClientID()const{ return m_clientID; }
     void setSession(String strSession){m_strSession=strSession;}
@@ -113,7 +112,6 @@ public:
     void doBulkSync();//throws Exception
 
     CSyncNotify& getNotify(){ return m_oSyncNotify; }
-    net::INetRequest& getNet(){ return *m_NetRequest; }
     ISyncProtocol& getProtocol(){ return *m_SyncProtocol; }
 
     CSyncSource* findSourceByName(const String& strSrcName);
