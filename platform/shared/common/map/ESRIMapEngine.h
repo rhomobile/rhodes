@@ -102,6 +102,11 @@ private:
 
         void fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude);
 
+        virtual void cancel()
+        {
+            m_NetRequest.cancel();
+        }
+
     private:
         void processCommand(IQueueCommand *cmd);
         bool fetchData(String const &url, void **data, size_t *datasize);

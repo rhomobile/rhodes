@@ -64,7 +64,6 @@ public:
         }
 
         void execute();
-        void cancel();
 
         void callNotify(NetResponse& resp, int nError );
         unsigned long getRetValue();
@@ -87,6 +86,11 @@ public:
             return "Unknown";
         }
 
+        virtual void cancel()
+        {
+            m_NetRequest.cancel();
+        }
+
     private:
         String makeHeadersString();
         net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
@@ -96,15 +100,13 @@ public:
 private:
     static CAsyncHttp* m_pInstance;
 
-    CHttpCommand* m_pCurCmd;
-
 public:
 
     static CAsyncHttp* Create();
     static void Destroy();
     static CAsyncHttp* getInstance(){ return m_pInstance; }
 
-    void cancelRequest(const char* szCallback, boolean bWait);
+    void cancelRequest(const char* szCallback);
 
     unsigned long addHttpCommand(IQueueCommand* pCmd);
 

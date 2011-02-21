@@ -33,6 +33,8 @@ GoogleGeoCoding::GoogleGeoCoding()
 GoogleGeoCoding::~GoogleGeoCoding()
 {
     RHO_MAP_TRACE("GoogleGeoCoding: dtor");
+
+    m_NetRequest.cancel();
     CThreadQueue::stop(200);
 }
 /*
