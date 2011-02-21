@@ -108,6 +108,8 @@ public class SyncThread extends ThreadQueue
    		    return "Unknown; Code : " + m_nCmdCode;
    		}
    		
+   		public void cancel(){}
+   		
    	};
    	static private class SyncLoginCommand extends SyncCommand
    	{

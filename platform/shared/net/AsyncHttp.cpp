@@ -35,13 +35,11 @@ CAsyncHttp::CAsyncHttp() : CThreadQueue()
     CThreadQueue::setLogCategory(getLogCategory());
 
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
-
-    m_pCurCmd = null;
 }
 
 CAsyncHttp::~CAsyncHttp(void)
 {
-    cancelRequest("*", true);
+    stop(-1);
     LOG(INFO) + "Thread shutdown";
 }
 
@@ -49,7 +47,7 @@ unsigned long CAsyncHttp::addHttpCommand(IQueueCommand* pCmd)
 {
     if ( ((CHttpCommand*)pCmd)->m_strCallback.length()==0)
     {
-        processCommand(pCmd);
+        processCommandBase(pCmd);
         unsigned long ret = ((CHttpCommand*)pCmd)->getRetValue();
         delete pCmd;
         return ret;
@@ -61,7 +59,7 @@ unsigned long CAsyncHttp::addHttpCommand(IQueueCommand* pCmd)
     return ((CHttpCommand*)pCmd)->getRetValue();
 }
 
-void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
+void CAsyncHttp::cancelRequest(const char* szCallback)
 {
     if (!szCallback || !*szCallback )
     {
@@ -69,20 +67,30 @@ void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
         return;
     }
 
-    if ( m_pCurCmd != null )
-        m_pCurCmd->cancel();
+    synchronized(getCommandLock());    
+    CHttpCommand* pCmd = (CHttpCommand*)getCurCommand();
 
-    if ( bWait )
-        stop(-1);
+    if ( pCmd != null && ( *szCallback == '*' || pCmd->m_strCallback.compare(szCallback) == 0) )
+        pCmd->cancel();
 
-    //TODO: find command by callback and cancel it if current, remove if it is still in queue
+    if ( *szCallback == '*' )
+        getCommands().clear();
+    else
+    {
+        for (int i = getCommands().size()-1; i >= 0; i--)
+        {
+            CHttpCommand* pCmd1 = (CHttpCommand*)getCommands().get(i);
+
+            if ( pCmd1 != null && pCmd1->m_strCallback.compare(szCallback) == 0 )
+                getCommands().remove(i);
+        }
+
+    }
 }
 
 void CAsyncHttp::processCommand(IQueueCommand* pCmd)
 {
-    m_pCurCmd = (CHttpCommand*)pCmd;
-    m_pCurCmd->execute();
-    m_pCurCmd = null;
+    ((CHttpCommand*)pCmd)->execute();
 }
 
 extern "C" void header_iter(const char* szName, const char* szValue, void* pHash)
@@ -99,12 +107,6 @@ CAsyncHttp::CHttpCommand::CHttpCommand(String strCmd, rho_param *p) : m_params(p
     m_params.getHash("headers", m_mapHeaders);
 
     m_NetRequest.setSslVerifyPeer(m_params.getBool("ssl_verify_peer"));
-}
-
-void CAsyncHttp::CHttpCommand::cancel()
-{
-    if ( !m_NetRequest.isCancelled() )
-        m_NetRequest.cancel();
 }
 
 void CAsyncHttp::CHttpCommand::execute()
@@ -283,7 +285,7 @@ using namespace rho::net;
 void rho_asynchttp_cancel(const char* cancel_callback)
 {
     if ( CAsyncHttp::getInstance() != null )
-        CAsyncHttp::getInstance()->cancelRequest(cancel_callback, false);
+        CAsyncHttp::getInstance()->cancelRequest(cancel_callback);
 }
 
 unsigned long rho_asynchttp_request(const char* command, rho_param *p)

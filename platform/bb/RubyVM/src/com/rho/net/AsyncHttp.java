@@ -22,7 +22,6 @@ public class AsyncHttp extends ThreadQueue
 	private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
     static AsyncHttp m_pInstance;
-    HttpCommand m_pCurCmd;
 
     static AsyncHttp Create()
     {
@@ -37,7 +36,7 @@ public class AsyncHttp extends ThreadQueue
     {
     	if ( m_pInstance != null )
     	{
-    		m_pInstance.cancelRequest("*", true);
+    		m_pInstance.stop(-1);
 	        LOG.INFO("Thread shutdown");
 	        
 	        m_pInstance = null;
@@ -52,11 +51,9 @@ public class AsyncHttp extends ThreadQueue
         ThreadQueue.setLogCategory(LOG.getLogCategory());
 
         setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
-
-        m_pCurCmd = null;
     }
     
-    void cancelRequest(String szCallback, boolean bWait)
+    void cancelRequest(String szCallback)
     {
         if (szCallback == null || szCallback.length() == 0 )
         {
@@ -64,31 +61,48 @@ public class AsyncHttp extends ThreadQueue
             return;
         }
 
-        if ( m_pCurCmd != null )
-            m_pCurCmd.cancel();
-
-        if ( bWait )
-            stop(-1);
-
-        //TODO: find command by callback and cancel it if current, remove if it is still in queue
+        synchronized(getCommandLock())
+        {
+	        HttpCommand pCmd = (HttpCommand)getCurCommand();
+	
+	        if ( pCmd != null && ( szCallback.compareTo("*") == 0 || pCmd.m_strCallback.compareTo(szCallback) == 0) )
+	            pCmd.cancel();
+	
+	        if ( szCallback.compareTo("*") == 0 )
+	            getCommands().clear();
+	        else
+	        {
+	            for (int i = getCommands().size()-1; i >= 0; i--)
+	            {
+	                HttpCommand pCmd1 = (HttpCommand)getCommands().get(i);
+	
+	                if ( pCmd1 != null && pCmd1.m_strCallback.compareTo(szCallback) == 0 )
+	                    getCommands().remove(i);
+	            }
+	
+	        }
+        }
     }
     
-    public void addQueueCommand(IQueueCommand pCmd)
+    public RubyValue addHttpCommand(IQueueCommand pCmd)
     {
         if ( ((HttpCommand)pCmd).m_strCallback.length()==0)
-        	processCommand(pCmd);
+        {
+        	processCommandBase(pCmd);
+        	return ((HttpCommand)pCmd).getRetValue();
+        }
         else
         {
             super.addQueueCommand(pCmd);
             start(epLow);
+            
+            return ((HttpCommand)pCmd).getRetValue();
         }
     }
     
     public void processCommand(IQueueCommand pCmd)
     {
-        m_pCurCmd = (HttpCommand)pCmd;
-        m_pCurCmd.execute();
-        m_pCurCmd = null;
+        ((HttpCommand)pCmd).execute();
     }
     
 	public final static int  hcNone = 0, hcGet = 1, hcPost=2, hcDownload=3, hcUpload =4;
@@ -245,9 +259,9 @@ public class AsyncHttp extends ThreadQueue
     	    }
         }
         
-        void cancel()
+        public void cancel()
         {
-            if (m_pNetRequest!=null && !m_pNetRequest.isCancelled() )
+            if (m_pNetRequest!=null )
                 m_pNetRequest.cancel();
         }
 
@@ -355,9 +369,7 @@ public class AsyncHttp extends ThreadQueue
 				    AsyncHttp.Create();
 				    
 				    String command = arg1.toStr();
-				    AsyncHttp.HttpCommand pHttp = new AsyncHttp.HttpCommand( command, arg2 );
-				    AsyncHttp.getInstance().addQueueCommand(pHttp);
-				    return pHttp.getRetValue();
+				    return AsyncHttp.getInstance().addHttpCommand(new AsyncHttp.HttpCommand( command, arg2 ));
 				} catch(Exception e) {
 					LOG.ERROR("do_request failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -371,7 +383,7 @@ public class AsyncHttp extends ThreadQueue
 				try {
 					String cancel_callback = arg.toStr();
 				    if ( AsyncHttp.getInstance() != null )
-				        AsyncHttp.getInstance().cancelRequest(cancel_callback, false);
+				        AsyncHttp.getInstance().cancelRequest(cancel_callback);
 					
 				} catch(Exception e) {
 					LOG.ERROR("cancel failed", e);
