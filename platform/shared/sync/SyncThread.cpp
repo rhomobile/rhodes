@@ -18,12 +18,12 @@ using namespace rho::db;
 IMPLEMENT_LOGCLASS(CSyncThread,"Sync");
 CSyncThread* CSyncThread::m_pInstance = 0;
 
-/*static*/ CSyncThread* CSyncThread::Create(common::IRhoClassFactory* factory)
+/*static*/ CSyncThread* CSyncThread::Create()
 {
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CSyncThread(factory);
+    m_pInstance = new CSyncThread();
     return m_pInstance;
 }
 
@@ -35,14 +35,12 @@ CSyncThread* CSyncThread::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CSyncThread::CSyncThread(common::IRhoClassFactory* factory) : CThreadQueue(factory)
+CSyncThread::CSyncThread() : CThreadQueue()
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
     if( RHOCONF().isExist("sync_poll_interval") )
         setPollInterval(RHOCONF().getInt("sync_poll_interval"));
-
-    m_oSyncEngine.setFactory(factory);
 
     LOG(INFO) + "sync_poll_interval: " + RHOCONF().getInt("sync_poll_interval");
     LOG(INFO) + "syncserver: " + RHOCONF().getString("syncserver");
@@ -96,7 +94,7 @@ int CSyncThread::getLastPollInterval()
     {
         db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
 
-        DBResult( res, dbPart.executeSQL("SELECT last_updated from sources") );
+        IDBResult res = dbPart.executeSQL("SELECT last_updated from sources");
         for ( ; !res.isEnd(); res.next() )
         { 
             uint64 timeUpdated = res.getUInt64ByIdx(0);
@@ -435,7 +433,7 @@ void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char
 
 void rho_sync_set_ssl_verify_peer(int b)
 {
-    CSyncThread::getSyncEngine().getNet().sslVerifyPeer(b == 0 ? false : true);
+    CSyncThread::getSyncEngine().setSslVerifyPeer(b == 0 ? false : true);
 }
 
 }

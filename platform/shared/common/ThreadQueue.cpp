@@ -5,12 +5,10 @@
 namespace rho {
 namespace common {
 
-CThreadQueue::CThreadQueue(common::IRhoClassFactory* factory) : CRhoThread(factory)
+CThreadQueue::CThreadQueue() : CRhoThread()
 {
     m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
     m_bNoThreaded = false;
-
-    m_ptrFactory = factory;
 }
 
 CThreadQueue::~CThreadQueue(void)

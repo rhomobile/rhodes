@@ -9,18 +9,11 @@
 
 extern "C" void rho_webview_navigate(const char* url, int index);
 
-namespace rho
+static rho::common::CRhoClassFactory g_oRhoClassFactory;
+rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
 {
-namespace common
-{
-
-IRhoClassFactory* rho_impl_createClassFactory()
-{
-    return new CRhoClassFactory();
+    return &g_oRhoClassFactory;
 }
-
-} // namespace common
-} // namespace rho
 
 RHO_GLOBAL void rho_map_location(char* query)
 {

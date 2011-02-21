@@ -18,7 +18,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     if ( m_pInstance ) 
         return m_pInstance;
 
-    m_pInstance = new CAsyncHttp( rho_impl_createClassFactory());
+    m_pInstance = new CAsyncHttp( );
     return m_pInstance;
 }
 
@@ -30,7 +30,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CAsyncHttp::CAsyncHttp(common::IRhoClassFactory* factory) : CThreadQueue(factory)
+CAsyncHttp::CAsyncHttp() : CThreadQueue()
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
@@ -45,15 +45,20 @@ CAsyncHttp::~CAsyncHttp(void)
     LOG(INFO) + "Thread shutdown";
 }
 
-void CAsyncHttp::addQueueCommand(IQueueCommand* pCmd)
+unsigned long CAsyncHttp::addHttpCommand(IQueueCommand* pCmd)
 {
     if ( ((CHttpCommand*)pCmd)->m_strCallback.length()==0)
-        processCommand(pCmd);
-    else
     {
-        CThreadQueue::addQueueCommand(pCmd);
-        start(epLow);
+        processCommand(pCmd);
+        unsigned long ret = ((CHttpCommand*)pCmd)->getRetValue();
+        delete pCmd;
+        return ret;
     }
+
+    CThreadQueue::addQueueCommand(pCmd);
+    start(epLow);
+
+    return ((CHttpCommand*)pCmd)->getRetValue();
 }
 
 void CAsyncHttp::cancelRequest(const char* szCallback, boolean bWait)
@@ -93,33 +98,31 @@ CAsyncHttp::CHttpCommand::CHttpCommand(String strCmd, rho_param *p) : m_params(p
 
     m_params.getHash("headers", m_mapHeaders);
 
-    m_pNetRequest = CAsyncHttp::getInstance()->getFactory()->createNetRequest();
-    m_pNetRequest->sslVerifyPeer(m_params.getBool("ssl_verify_peer"));
-
+    m_NetRequest.setSslVerifyPeer(m_params.getBool("ssl_verify_peer"));
 }
 
 void CAsyncHttp::CHttpCommand::cancel()
 {
-    if (m_pNetRequest!=null && !m_pNetRequest->isCancelled() )
-        m_pNetRequest->cancel();
+    if ( !m_NetRequest.isCancelled() )
+        m_NetRequest.cancel();
 }
 
 void CAsyncHttp::CHttpCommand::execute()
 {
-    INetResponse* resp = null;
+    NetResponse resp;
     switch( m_eCmd )
     {
     case hcGet:
-        resp = m_pNetRequest->doRequest( m_params.getString("http_command", "GET").c_str(), 
+        resp = getNet().doRequest( m_params.getString("http_command", "GET").c_str(), 
             m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);
         break;
     case hcPost:
-        resp = m_pNetRequest->doRequest(m_params.getString("http_command", "POST").c_str(), 
+        resp = getNet().doRequest(m_params.getString("http_command", "POST").c_str(), 
             m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);
         break;
 
     case hcDownload:
-        resp = m_pNetRequest->pullFile(m_params.getString("url"), m_params.getString("filename"), null, &m_mapHeaders);
+        resp = getNet().pullFile(m_params.getString("url"), m_params.getString("filename"), null, &m_mapHeaders);
         break;
 
     case hcUpload:
@@ -169,12 +172,12 @@ void CAsyncHttp::CHttpCommand::execute()
                 }
             }
 
-            resp = m_pNetRequest->pushMultipartData( m_params.getString("url"), arMultipartItems, null, &m_mapHeaders );
+            resp = getNet().pushMultipartData( m_params.getString("url"), arMultipartItems, null, &m_mapHeaders );
             break;
         }
     }
 
-    if ( !m_pNetRequest->isCancelled())
+    if ( !m_NetRequest.isCancelled())
         callNotify(resp,0);
 
     m_params.free_params();
@@ -206,10 +209,8 @@ String CAsyncHttp::CHttpCommand::makeHeadersString()
     return strRes;
 }
 
-void CAsyncHttp::CHttpCommand::callNotify(rho::net::INetResponse* pResp, int nError )
+void CAsyncHttp::CHttpCommand::callNotify(NetResponse& resp, int nError )
 {
-    rho::net::INetResponse& resp = *pResp;
-
     m_strResBody = "rho_callback=1";
     m_strResBody += "&status=";
     if ( nError > 0 )
@@ -236,7 +237,7 @@ void CAsyncHttp::CHttpCommand::callNotify(rho::net::INetResponse* pResp, int nEr
             m_strResBody += "&" + strHeaders;
 
         m_strResBody += "&" + RHODESAPP().addCallbackObject(
-            new CAsyncHttpResponse(pResp, m_mapHeaders.get("content-type")), "body");
+            new CAsyncHttpResponse(resp, m_mapHeaders.get("content-type")), "body");
     }
 
     if ( m_strCallbackParams.length() > 0 )
@@ -244,8 +245,8 @@ void CAsyncHttp::CHttpCommand::callNotify(rho::net::INetResponse* pResp, int nEr
 
     if ( m_strCallback.length() > 0 )
     {
-        String strFullUrl = m_pNetRequest->resolveUrl(m_strCallback);
-        m_pNetRequest->pushData( strFullUrl, m_strResBody, null );
+        String strFullUrl = m_NetRequest.resolveUrl(m_strCallback);
+        getNet().pushData( strFullUrl, m_strResBody, null );
     }
 }
 
@@ -254,13 +255,12 @@ CAsyncHttp::CAsyncHttpResponse::~CAsyncHttpResponse(){}
 extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
 unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
 { 
-    rho::net::INetResponse& resp = *m_pNetResponse;
-    if (resp.isOK())
+    if (m_NetResponse.isOK())
     {
         if ( m_strContentType.find("application/json") != String::npos )
         {
             char* szError = 0;
-            unsigned long valBody = rjson_tokener_parse(resp.getCharData(), &szError);
+            unsigned long valBody = rjson_tokener_parse(m_NetResponse.getCharData(), &szError);
             if ( valBody != 0 )
                 return valBody;
 
@@ -270,7 +270,7 @@ unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
         }
     }
 
-    return rho_ruby_create_string(resp.getCharData()); 
+    return rho_ruby_create_string(m_NetResponse.getCharData()); 
 }
 
 } // namespace net
@@ -290,9 +290,7 @@ unsigned long rho_asynchttp_request(const char* command, rho_param *p)
 {
     CAsyncHttp::Create();
 
-    CAsyncHttp::CHttpCommand* pHttp = new CAsyncHttp::CHttpCommand( command, p );
-    CAsyncHttp::getInstance()->addQueueCommand(pHttp);
-    return pHttp->getRetValue();
+    return CAsyncHttp::getInstance()->addHttpCommand(new CAsyncHttp::CHttpCommand( command, p ));
 }
 
 }

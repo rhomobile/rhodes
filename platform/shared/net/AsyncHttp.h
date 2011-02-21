@@ -18,12 +18,12 @@ class CAsyncHttp : public common::CThreadQueue
 
     class CAsyncHttpResponse : public rho::ICallbackObject
     {
-        common::CAutoPtr<INetResponse> m_pNetResponse;
+        NetResponse m_NetResponse;
         String m_strContentType;
     public:
-        CAsyncHttpResponse(INetResponse* pResp, const String& strContentType)
+        CAsyncHttpResponse(NetResponse& resp, const String& strContentType)
         {
-            m_pNetResponse = pResp;
+            m_NetResponse = resp;
             m_strContentType = strContentType;
         }
         ~CAsyncHttpResponse();
@@ -42,7 +42,7 @@ public:
         String m_strCallback, m_strCallbackParams;
         Hashtable<String,String> m_mapHeaders;
 
-        common::CAutoPtr<INetRequest> m_pNetRequest;
+        NetRequest m_NetRequest;
         String m_strResBody;
 
         CRhoParams    m_params;
@@ -66,7 +66,7 @@ public:
         void execute();
         void cancel();
 
-        void callNotify(INetResponse* pResp, int nError );
+        void callNotify(NetResponse& resp, int nError );
         unsigned long getRetValue();
 
 	    boolean equals(const IQueueCommand& cmd){ return false; }
@@ -89,7 +89,8 @@ public:
 
     private:
         String makeHeadersString();
-
+        net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
+    
     };
 
 private:
@@ -105,10 +106,10 @@ public:
 
     void cancelRequest(const char* szCallback, boolean bWait);
 
-    virtual void addQueueCommand(IQueueCommand* pCmd);
+    unsigned long addHttpCommand(IQueueCommand* pCmd);
 
 private:
-    CAsyncHttp(common::IRhoClassFactory* factory);
+    CAsyncHttp();
     ~CAsyncHttp();
 
     virtual void processCommand(IQueueCommand* pCmd);

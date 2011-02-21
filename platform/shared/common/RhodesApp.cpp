@@ -53,7 +53,7 @@ public:
     };
 
 public:
-    CAppCallbacksQueue(IRhoClassFactory *factory);
+    CAppCallbacksQueue();
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -99,8 +99,8 @@ char const *CAppCallbacksQueue::toString(int type)
     }
 }
 
-CAppCallbacksQueue::CAppCallbacksQueue(IRhoClassFactory *factory)
-    :CThreadQueue(factory), m_expected(local_server_started)
+CAppCallbacksQueue::CAppCallbacksQueue()
+    :CThreadQueue(), m_expected(local_server_started)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     //setPollInterval(1);
@@ -143,7 +143,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     if (cmd->type > m_expected)
     {
         boolean bDuplicate = false;
-        for( int i = 0; i < m_commands.size() ; i++)
+        for( int i = 0; i < (int)m_commands.size() ; i++)
         {
             if ( m_commands.elementAt(i) == cmd->type )
             {
@@ -185,11 +185,9 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-                common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
                 String strUrl = RHODESAPP().getBaseUrl();
                 strUrl += "/system/uicreated";
-                NetResponse(resp, pNetRequest->pullData( strUrl, null ) );
+                NetResponse resp = getNetRequest().pullData( strUrl, null );
                 if ( !resp.isOK() )
                     LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
@@ -198,19 +196,9 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case app_activated:
             {
-/*                static bool navigatedToStartUrl = false;
-                if (!navigatedToStartUrl)
-                {
-                    LOG(INFO) + "navigate to first start url";
-                    RHODESAPP().navigateToUrl(RHODESAPP().getFirstStartUrl());
-                    navigatedToStartUrl = true;
-                }*/
-
-                common::CAutoPtr<common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-                common::CAutoPtr<net::INetRequest> pNetRequest = factory->createNetRequest();
                 String strUrl = RHODESAPP().getBaseUrl();
                 strUrl += "/system/activateapp";
-                NetResponse(resp, pNetRequest->pullData( strUrl, null ) );
+                NetResponse resp = getNetRequest().pullData( strUrl, null );
                 if ( !resp.isOK() )
                     LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
@@ -249,9 +237,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath)
     m_bRestartServer = false;
     //m_activateCounter = 0;
 
-    m_ptrFactory = rho_impl_createClassFactory();
-    m_NetRequest = m_ptrFactory->createNetRequest();
-    m_appCallbacksQueue = new CAppCallbacksQueue(rho_impl_createClassFactory());
+    m_appCallbacksQueue = new CAppCallbacksQueue();
 
 #if defined( OS_WINCE ) || defined (OS_WINDOWS)
     //initializing winsock
@@ -275,12 +261,12 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
     RhoRubyStart();
-    rubyext::CGeoLocation::Create(m_ptrFactory);
+    rubyext::CGeoLocation::Create();
 
     rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
-    sync::CSyncThread::Create(rho_impl_createClassFactory());
+    sync::CSyncThread::Create();
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
@@ -345,7 +331,7 @@ class CRhoCallInThread : public common::CRhoThread
 {
 public:
     CRhoCallInThread(T* cb)
-        :CRhoThread(rho_impl_createClassFactory()), m_cb(cb)
+        :CRhoThread(), m_cb(cb)
     {
         start(epNormal);
     }
@@ -369,23 +355,21 @@ void rho_rhodesapp_call_in_thread(T *cb)
 
 class CRhoCallbackCall
 {
-    common::CAutoPtr<common::IRhoClassFactory> m_ptrFactory;
     String m_strCallback, m_strBody;
 public:
-    CRhoCallbackCall(const String& strCallback, const String& strBody, common::IRhoClassFactory* factory)
-      :m_ptrFactory(factory), m_strCallback(strCallback), m_strBody(strBody)
+    CRhoCallbackCall(const String& strCallback, const String& strBody)
+      : m_strCallback(strCallback), m_strBody(strBody)
     {}
 
     void run(common::CRhoThread &)
     {
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-        common::CAutoPtr<net::INetResponse> presp = pNetRequest->pushData( m_strCallback, m_strBody, null );
+        getNetRequest().pushData( m_strCallback, m_strBody, null );
     }
 };
 
 void CRhodesApp::runCallbackInThread(const String& strCallback, const String& strBody)
 {
-    rho_rhodesapp_call_in_thread(new CRhoCallbackCall(strCallback, strBody, rho_impl_createClassFactory() ) );
+    rho_rhodesapp_call_in_thread(new CRhoCallbackCall(strCallback, strBody ) );
 }
 
 static void callback_activateapp(void *arg, String const &strQuery)
@@ -443,7 +427,7 @@ void CRhodesApp::callUiCreatedCallback()
 void CRhodesApp::callUiDestroyedCallback()
 {
     String strUrl = m_strHomeUrl + "/system/uidestroyed";
-    NetResponse(resp,getNet().pullData( strUrl, null ));
+    NetResponse resp = getNetRequest().pullData( strUrl, null );
     if ( !resp.isOK() )
     {
         LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -480,7 +464,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
 
         String strUrl = m_strHomeUrl + "/system/deactivateapp";
-        NetResponse(resp,getNet().pullData( strUrl, null ));
+        NetResponse resp = getNetRequest().pullData( strUrl, null );
         if ( !resp.isOK() )
         {
             LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -517,7 +501,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
         strBody = "status=ok&image_uri=db%2Fdb-files%2F" + strImagePath;
 
     strBody += "&rho_callback=1";
-    NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+    getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
 void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, 
@@ -535,7 +519,7 @@ void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strS
 			strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
 		
 		strBody += "&rho_callback=1";
-		NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+		getNetRequest().pushData( strCallbackUrl, strBody, null );
 	}
 	
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
@@ -554,14 +538,14 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     }
 
     strBody += "&rho_callback=1";
-    NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+    getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
 void CRhodesApp::callBluetoothCallback(String strCallbackUrl, const char* body) {
 	strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 	String strBody = body;
 	strBody += "&rho_callback=1";
-	NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+	getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
 void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, const String &title)
@@ -572,7 +556,7 @@ void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, cons
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody = "button_id=" + id + "&button_title=" + title;
     strBody += "&rho_callback=1";
-    NetRequest( getNet().pushData( strCallbackUrl, strBody, null ) );
+    getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
 static void callback_syncdb(void *arg, String const &/*query*/ )
@@ -644,7 +628,7 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
         strUrl += szName;
     }
 
-    NetResponse(resp,getNet().pullData( strUrl, null ));
+    NetResponse resp = getNetRequest().pullData( strUrl, null );
     if ( !resp.isOK() )
     {
         LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -977,7 +961,7 @@ boolean CRhodesApp::sendLog()
 
     boolean bOldSaveToFile = LOGCONF().isLogToFile();
     LOGCONF().setLogToFile(false);
-    NetResponse( resp, getNet().pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null ) );
+    NetResponse resp = getNetRequest().pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
     LOGCONF().setLogToFile(bOldSaveToFile);
 
     if ( !resp.isOK() )
@@ -1047,8 +1031,7 @@ boolean CRhodesApp::callPushCallback(String strData)
         if ( m_strPushCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
 
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-        NetResponse(resp,pNetRequest->pushData( m_strPushCallback, strBody, null ));
+        NetResponse resp = getNetRequest().pushData( m_strPushCallback, strBody, null );
         if (!resp.isOK())
             LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         else
@@ -1086,9 +1069,7 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
         if ( m_strScreenRotationCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
 			
-		common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-		NetResponse(resp, pNetRequest->pushData( m_strScreenRotationCallback, strBody, null));
-		
+		NetResponse resp = getNetRequest().pushData( m_strScreenRotationCallback, strBody, null);
         if (!resp.isOK()) {
             LOG(ERROR) + "Screen rotation notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         }
@@ -1130,9 +1111,7 @@ void CRhodesApp::loadUrl(String url)
     url = canonicalizeRhoUrl(url);
     if (callback)
     {
-        common::CAutoPtr<net::INetRequest> pNetRequest = m_ptrFactory->createNetRequest();
-        NetResponse(resp, pNetRequest->pushData( url,  "rho_callback=1", null ));
-        (void)resp;
+        getNetRequest().pushData( url,  "rho_callback=1", null );
     }
     else
         navigateToUrl(url);
@@ -1390,15 +1369,12 @@ int rho_conf_send_log()
 
 void rho_net_request(const char *url)
 {
-    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
-    request->pullData(url, null);
+    getNetRequest().pullData(url, null);
 }
 
-void rho_net_request_with_data(const char *url, const char *str_body) {
-    rho::common::CAutoPtr<rho::common::IRhoClassFactory> factory = rho_impl_createClassFactory();
-    rho::common::CAutoPtr<rho::net::INetRequest> request = factory->createNetRequest();
-    request->pushData(url, str_body, null);
+void rho_net_request_with_data(const char *url, const char *str_body) 
+{
+    getNetRequest().pushData(url, str_body, null);
 }
 	
 void rho_rhodesapp_load_url(const char *url)

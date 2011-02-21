@@ -567,10 +567,10 @@ public class SyncSource
 	        {
 	            String strKey = errIter.getCurKey();
 
-	            if ( strKey.compareTo("query-error") == 0 || strKey.compareTo("search-error") == 0 )
+	            if ( i == 0 || i == 1 )//"source-error", "search-error" 
 	            {
 	                if ( errIter.getCurValue().hasName("message") )
-	                    m_strServerError += "server_errors[" + arErrTypes[i] + "][message]=" + URI.urlEncode(errIter.getCurValue().getString("message"));
+	                    m_strServerError += "server_errors[" + strKey + "][message]=" + URI.urlEncode(errIter.getCurValue().getString("message"));
 	            }
 	            else
 	            {
