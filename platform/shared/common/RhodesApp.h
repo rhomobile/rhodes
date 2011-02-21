@@ -28,8 +28,6 @@ private:
     CRhodesApp(const String& strRootPath);
     boolean m_bExit, m_bRestartServer;
 
-    common::CAutoPtr<net::INetRequest> m_NetRequest;
-
     String m_strListeningPorts;
 
     common::CAutoPtr<net::CHttpServer> m_httpServer;
@@ -131,8 +129,6 @@ protected:
 
     void initHttpServer();
     void initAppUrls();
-
-    net::INetRequest& getNet(){ return *m_NetRequest; }
 };
 
 }

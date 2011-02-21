@@ -19,7 +19,6 @@
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "camera/Camera.h"
-#include "rho/net/NetRequest.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"

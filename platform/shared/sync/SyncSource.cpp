@@ -105,7 +105,7 @@ void CSyncSource::parseAssociations(const String& strAssociations)
     }
 }
 
-INetRequest& CSyncSource::getNet(){ return getSync().getNet(); }
+net::CNetRequestWrapper CSyncSource::getNet(){ return getSync().getNet(); }
 CSyncNotify& CSyncSource::getNotify(){ return getSync().getNotify(); }
 ISyncProtocol& CSyncSource::getProtocol(){ return getSync().getProtocol(); }
 
@@ -229,7 +229,7 @@ void CSyncSource::doSyncClientChanges()
             oItem.m_strName = "cud";
             m_arMultipartItems.addElement(pItem);
 
-            NetResponse( resp, getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, &getSync(), null) );
+            NetResponse resp = getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, &getSync(), null);
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
@@ -238,7 +238,7 @@ void CSyncSource::doSyncClientChanges()
             }
         }else
         {
-            NetResponse( resp, getNet().pushData( getProtocol().getClientChangesUrl(), strBody, &getSync()) );
+            NetResponse resp = getNet().pushData( getProtocol().getClientChangesUrl(), strBody, &getSync());
             if ( !resp.isOK() )
             {
                 getSync().setState(CSyncEngine::esStop);
@@ -411,7 +411,7 @@ void CSyncSource::syncServerChanges()
 
 		LOG(INFO) + "Pull changes from server. Url: " + (strUrl+strQuery);
         PROF_START("Net");	    
-        NetResponse(resp,getNet().pullData(strUrl+strQuery, &getSync()));
+        NetResponse resp = getNet().pullData(strUrl+strQuery, &getSync());
 	    PROF_STOP("Net");
 
         if ( !resp.isOK() )
@@ -981,7 +981,7 @@ boolean CSyncSource::downloadBlob(CAttrValue& value)//throws Exception
 		url += "?";
 	url += "client_id=" + getSync().getClientID();
 
-    NetResponse(resp, getNet().pullFile(url, fName, &getSync(), null));
+    NetResponse resp = getNet().pullFile(url, fName, &getSync(), null);
     if ( !resp.isOK() )
     {
         getSync().stopSync();

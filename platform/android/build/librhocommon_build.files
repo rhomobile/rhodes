@@ -18,6 +18,7 @@ platform/shared/net/CURLNetRequest.cpp
 platform/shared/net/HttpServer.cpp
 platform/shared/net/ssl.cpp
 platform/shared/net/URI.cpp
+platform/shared/net/INetRequest.cpp
 platform/shared/rubyext/GeoLocation.cpp
 platform/shared/rubyext/RhoAppAdapter.cpp
 platform/shared/rubyext/System.cpp
