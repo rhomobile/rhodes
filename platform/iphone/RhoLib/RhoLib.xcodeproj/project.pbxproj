@@ -52,6 +52,7 @@
 		5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */; };
 		5CA2DE9011B01EF000B868D5 /* ThreadQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2DE8E11B01EF000B868D5 /* ThreadQueue.cpp */; };
 		5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CA2DE8F11B01EF000B868D5 /* ThreadQueue.h */; };
+		5CB821AE1312487100778441 /* INetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB821AD1312487000778441 /* INetRequest.cpp */; };
 		5CBD462A1087399700107D0D /* URI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBD46271087399700107D0D /* URI.cpp */; };
 		5CBD462B1087399700107D0D /* URI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBD46281087399700107D0D /* URI.h */; };
 		5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */; };
@@ -122,6 +123,7 @@
 		5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irhoclassfactory.h; path = ../../shared/common/irhoclassfactory.h; sourceTree = SOURCE_ROOT; };
 		5CA2DE8E11B01EF000B868D5 /* ThreadQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadQueue.cpp; path = ../../shared/common/ThreadQueue.cpp; sourceTree = SOURCE_ROOT; };
 		5CA2DE8F11B01EF000B868D5 /* ThreadQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadQueue.h; path = ../../shared/common/ThreadQueue.h; sourceTree = SOURCE_ROOT; };
+		5CB821AD1312487000778441 /* INetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = INetRequest.cpp; path = ../../shared/net/INetRequest.cpp; sourceTree = SOURCE_ROOT; };
 		5CBD46271087399700107D0D /* URI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = URI.cpp; path = ../../shared/net/URI.cpp; sourceTree = SOURCE_ROOT; };
 		5CBD46281087399700107D0D /* URI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URI.h; path = ../../shared/net/URI.h; sourceTree = SOURCE_ROOT; };
 		5CCD7EBA116CE2D5005E6CA3 /* AppMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppMenu.cpp; path = ../../shared/common/AppMenu.cpp; sourceTree = SOURCE_ROOT; };
@@ -282,6 +284,7 @@
 		5CBD46251087397B00107D0D /* net */ = {
 			isa = PBXGroup;
 			children = (
+				5CB821AD1312487000778441 /* INetRequest.cpp */,
 				BDFCB13B112EE2B500AE3724 /* ssl.cpp */,
 				BDFCB13C112EE2B500AE3724 /* ssl.h */,
 				5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */,
@@ -439,6 +442,7 @@
 				5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */,
 				FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */,
 				5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */,
+				5CB821AE1312487100778441 /* INetRequest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
