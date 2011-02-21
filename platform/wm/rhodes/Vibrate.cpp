@@ -10,7 +10,7 @@ IMPLEMENT_LOGCLASS(CVibrate, "Vibrate");
 CVibrate *CVibrate::m_pInstance = NULL;
 CMutex CVibrate::m_mxLocker;
 
-CVibrate::CVibrate (IRhoClassFactory* factory) : CRhoThread(factory), m_nDuration(2), m_bToggled(false)
+CVibrate::CVibrate () : CRhoThread(), m_nDuration(2), m_bToggled(false)
 {
 }
 
@@ -21,7 +21,7 @@ CVibrate::~CVibrate ()
 
 void CVibrate::createCVibrate()
 {
-    static CVibrate instance(rho_impl_createClassFactory());
+    static CVibrate instance;
     m_pInstance = &instance;
 }
 

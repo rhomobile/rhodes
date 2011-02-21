@@ -20,12 +20,15 @@ class CNetResponseImpl : public INetResponse
 public:
     CNetResponseImpl() : m_bValid(false),m_nRespCode(-1){}
 
-    bool isValid()const{ return m_bValid; }
-    void setValid(bool b){ m_bValid = b; }
-
     virtual const char* getCharData()
     {
         return m_bValid ? m_data.c_str() : "";
+    }
+
+    virtual void setCharData(const char* szData)
+    {
+        m_bValid = true;
+        m_data = szData;
     }
 
     virtual unsigned int getDataSize()
@@ -33,12 +36,36 @@ public:
         return m_bValid ? m_data.size() : 0;
     }
 
+    virtual String getCookies()
+    {
+        return m_cookies;
+    }
+    virtual int getRespCode(){ return m_nRespCode;}
+
+    bool isValid()const{ return m_bValid; }
+    void setValid(bool b){ m_bValid = b; }
+
     String& getRawData(){ return m_data; }
 
-    boolean isResponseRecieved(){ return m_nRespCode!=-1;}
+    void setCookies(String s)
+    {
+        m_cookies = s;
+    }
+    
     void setResponseCode(int nRespCode){ m_nRespCode = nRespCode;}
 
-    int getRespCode(){ return m_nRespCode;}
+    boolean isSuccess()
+    {
+        return m_nRespCode > 0 && m_nRespCode < 400;
+    }
+
+	boolean isOK()
+	{
+		return m_nRespCode == 200 || m_nRespCode == 206;
+	}
+
+/*
+    boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 
 	boolean isOK()
 	{
@@ -59,20 +86,11 @@ public:
     {
         return m_nRespCode > 0 && m_nRespCode < 400;
     }
-
-    void setCookies(String s)
-    {
-        m_cookies = s;
-    }
-    
-    String getCookies()
-    {
-        return m_cookies;
-    }
+*/
 };
 
 class CNetRequest;
-class CNetRequestImpl
+class CNetRequestImpl : public INetRequestImpl
 {
     DEFINE_LOGCLASS;
 
@@ -86,28 +104,34 @@ class CNetRequestImpl
     URL_COMPONENTS m_uri;
     CAtlStringW m_strReqUrlW;
     String      m_strUrl;
-    CNetRequest* m_pParent;
     Hashtable<String,String>* m_pHeaders;
     boolean m_bCancel;
     IRhoSession* m_pSession;
     boolean m_sslVerifyPeer;
 
 public :
-    CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, 
-        IRhoSession* oSession, Hashtable<String,String>* pHeaders, boolean sslVerifyPeer);
+    CNetRequestImpl();
     ~CNetRequestImpl();
 
-    void close();
-    void cancel();
-    bool isError(){ return m_pszErrFunction!= null; }
-    CNetResponseImpl* sendString(const String& strBody);
+    virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
+    virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
 
-    CNetResponseImpl* sendMultipartData(VectorPtr<CMultipartItem*>& arItems);
+    virtual void cancel();
 
-    CNetResponseImpl* downloadFile(common::CRhoFile& oFile);
+    virtual boolean getSslVerifyPeer() { return m_sslVerifyPeer; }
+    virtual void setSslVerifyPeer(boolean mode){ m_sslVerifyPeer = mode; }
+
+    virtual INetResponse* createEmptyNetResponse(){ return new CNetResponseImpl(); }
 
     static void deinitConnection();
+
 private:
+    void close();
+    bool isError(){ return m_pszErrFunction!= null; }
+
+    void init( const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+
     String makeClientCookie();
 
     void ErrorMessage(LPCTSTR pszFunction);

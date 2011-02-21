@@ -2,7 +2,7 @@
 
 namespace rho {
 namespace net{
-    struct INetRequest;
+    struct INetRequestImpl;
     struct ISSL;
 }
 
@@ -20,14 +20,16 @@ struct IRhoClassFactory
 {
     virtual ~IRhoClassFactory(void){;}
 
-    virtual net::INetRequest* createNetRequest() = 0;
     virtual IRhoThreadImpl* createThreadImpl() = 0;
     virtual net::ISSL* createSSLEngine() = 0;
 
     virtual IRhoCrypt* createRhoCrypt() = 0;
+
+    virtual net::INetRequestImpl* createNetRequestImpl() = 0;
 };
 
-IRhoClassFactory* rho_impl_createClassFactory();
+}
+}
 
-}
-}
+rho::common::IRhoClassFactory* rho_get_RhoClassFactory();
+

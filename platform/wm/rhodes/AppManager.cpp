@@ -3,7 +3,7 @@
 #include "AppManager.h"
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-#include "rho/net/NetRequest.h"
+#include "net/INetRequest.h"
 
 #include "common/RhodesApp.h"
 
@@ -107,10 +107,10 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 	}
 
 	//trying to load file
-	rho::net::CNetRequest request;
 	//NB: for mobile devices should use filesystem instead of RAM
-	NetResponse (resp, request.pullData(szUrl, null));
-	if (resp.getDataSize() > 0 && resp.getCharData()) {
+	NetResponse resp = getNetRequest().pullData(szUrl, null);
+	if (resp.getDataSize() > 0 && resp.getCharData()) 
+    {
 		loadData = resp.getCharData();
 		loadSize = resp.getDataSize();
 		errCode = RRB_NONE_ERR;

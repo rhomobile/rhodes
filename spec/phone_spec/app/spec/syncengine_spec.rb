@@ -542,8 +542,8 @@ describe "SyncEngine_test" do
     puts "res : #{res}"
     
     res['server_errors'].should_not be_nil
-    res['server_errors']['source-error'].should_not be_nil
-    res['server_errors']['source-error']['message'].should == "Error during query"
+    res['server_errors']['query-error'].should_not be_nil
+    res['server_errors']['query-error']['message'].should == "Error during query"
     
   end
 

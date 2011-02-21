@@ -12,7 +12,7 @@ namespace common {
 class CRhoClassFactory : public common::IRhoClassFactory
 {
 public:
-    net::INetRequest* createNetRequest()
+    net::INetRequestImpl* createNetRequestImpl()
     {
         return new net::CURLNetRequest();
     }
