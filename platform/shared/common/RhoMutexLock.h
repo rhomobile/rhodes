@@ -60,7 +60,7 @@ private:
     void operator=(const CMutexLock&);
 };
 
-#define synchronized(mutex) CMutexLock __lock(mutex);
+#define synchronized(mutex) rho::common::CMutexLock __lock(mutex);
 
 class CLocalMutexLock {
 public:

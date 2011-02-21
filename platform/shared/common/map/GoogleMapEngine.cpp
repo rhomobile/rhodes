@@ -23,8 +23,6 @@ String GoogleGeoCoding::Command::toString()
 
 IMPLEMENT_LOGCLASS(GoogleGeoCoding,"GGeoCoding");
 GoogleGeoCoding::GoogleGeoCoding()
-    :CThreadQueue(),
-    m_net_request(rho_get_RhoClassFactory()->createNetRequest())
 {
     CThreadQueue::setLogCategory(getLogCategory());
     RHO_MAP_TRACE("GoogleGeoCoding: ctor start");
@@ -47,7 +45,7 @@ void GoogleGeoCoding::stop()
 bool GoogleGeoCoding::fetchData(String const &url, void **data, size_t *datasize)
 {
     RHO_MAP_TRACE1("GoogleGeoCoding: fetchData: url=%s", url.c_str());
-    NetResponse(resp, m_net_request->doRequest("GET", url, "", 0, 0));
+    NetResponse resp = getNet().doRequest("GET", url, "", 0, 0);
     if (!resp.isOK())
         return false;
     *datasize = resp.getDataSize();

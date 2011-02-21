@@ -16,7 +16,7 @@ public:
     DEFINE_LOGCLASS;
 private:
 
-    common::CAutoPtr<net::INetRequest> m_NetRequest;
+    NetRequest m_NetRequest;
 	int m_nGeoPingTimeoutSec;
 
     struct CGeoNotification
@@ -55,7 +55,7 @@ private:
     void setPingTimeoutSec( int nTimeout );
     void callGeoCallback(const CGeoNotification& oNotify, boolean bError, boolean bRunInThread);
 
-    net::INetRequest& getNet(){ return *m_NetRequest; }
+    net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 };
 
 }

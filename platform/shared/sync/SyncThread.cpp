@@ -42,8 +42,6 @@ CSyncThread::CSyncThread() : CThreadQueue()
     if( RHOCONF().isExist("sync_poll_interval") )
         setPollInterval(RHOCONF().getInt("sync_poll_interval"));
 
-    m_oSyncEngine.setFactory();
-
     LOG(INFO) + "sync_poll_interval: " + RHOCONF().getInt("sync_poll_interval");
     LOG(INFO) + "syncserver: " + RHOCONF().getString("syncserver");
     LOG(INFO) + "bulksync_state: " + RHOCONF().getInt("bulksync_state");
@@ -435,7 +433,7 @@ void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char
 
 void rho_sync_set_ssl_verify_peer(int b)
 {
-    CSyncThread::getSyncEngine().getNet().sslVerifyPeer(b == 0 ? false : true);
+    CSyncThread::getSyncEngine().setSslVerifyPeer(b == 0 ? false : true);
 }
 
 }

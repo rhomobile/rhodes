@@ -15,7 +15,7 @@ namespace common
 class CRhoClassFactory : public IRhoClassFactory
 {
 public:
-    net::INetRequest *createNetRequest();
+    net::INetRequestImpl* createNetRequestImpl();
     IRhoThreadImpl *createThreadImpl();
     net::ISSL *createSSLEngine();
     IRhoCrypt* createRhoCrypt();
