@@ -62,6 +62,8 @@ public class ESRIMapField extends Field implements RhoMapField {
 	
 	private int mWidth;
 	private int mHeight;
+
+	private Bitmap mapLogoImage;
 	
 	private static class ByCoordinatesComparator implements Comparator {
 		
@@ -427,6 +429,8 @@ public class ESRIMapField extends Field implements RhoMapField {
 		mMapUrls.put("satellite", url);
 		
 		mMapType = "roadmap";
+
+		mapLogoImage = Bitmap.getBitmapResource("esri.png");
 		
 		LOG.TRACE("ESRIMapField ctor: mLatitude=" + mLatitude + ", mLongitude=" + mLongitude);
 		
@@ -476,6 +480,11 @@ public class ESRIMapField extends Field implements RhoMapField {
 			
 			paintImage(graphics, img);
 		}
+
+		int logoWidth = mapPinImage.getWidth();
+		int logoHeight = mapLogoImage.getHeight();
+		graphics.drawBitmap(0, mHeight - logoHeight, logoWidth, logoHeight, mapLogoImage, 0, 0); 
+
 	}
 	
 	private void paintImage(Graphics graphics, CachedImage img) {
