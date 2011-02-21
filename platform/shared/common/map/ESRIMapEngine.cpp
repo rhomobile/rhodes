@@ -11,8 +11,7 @@
 //1. move classes to files, raname namespace to rho::map
 //2. image cache: remove only unvisible images
 //3. see TODO inside
-//4. when stop thread - cancel current net request. Add cancelCurrentCommand to ThreadQueue and call it from stop
-//5. move all platform code to appropriate folders
+//4. move all platform code to appropriate folders
 
 #ifdef min
 #undef min
