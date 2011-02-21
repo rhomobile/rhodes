@@ -23,7 +23,7 @@ static const int ERR_GEOLOCATION = 12;
 
 static String getMessageText(const char* szName);
 static String getErrorText(int nError);
-static int    getErrorFromResponse(net::INetResponse& resp);
+static int    getErrorFromResponse(NetResponse& resp);
 static void   loadServerSources(const String& strSources);
 static void   loadAllSyncSources();
 static const char* getRhoDBVersion();

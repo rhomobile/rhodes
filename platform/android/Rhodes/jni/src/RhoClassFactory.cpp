@@ -10,7 +10,7 @@ namespace rho
 namespace common
 {
 
-net::INetRequest *CRhoClassFactory::createNetRequest()
+net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
 {
     return new net::CURLNetRequest();
 }

@@ -21,9 +21,9 @@ class CClientRegister : public common::CRhoThread
     DEFINE_LOGCLASS;
 
 	static CClientRegister* m_pInstance;
-	common::CAutoPtr<net::INetRequest>     m_NetRequest;
-	String                                 m_strDevicePin;
-    unsigned int                           m_nPollInterval;
+	NetRequest              m_NetRequest;
+	String                  m_strDevicePin;
+    unsigned int            m_nPollInterval;
 public:
     static CClientRegister* Create(const char* device_pin);
     static void Destroy();
@@ -36,12 +36,14 @@ public:
     String getRegisterBody(const String& strClientID);
 
     void startUp();
+
+    void setSslVerifyPeer(boolean b){m_NetRequest.setSslVerifyPeer(b);}
 private:
 	CClientRegister(const char* device_pin);
     ~CClientRegister();
 
     boolean doRegister(CSyncEngine& oSync);
-    net::INetRequest& getNet(){ return *m_NetRequest; }
+    net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 
 };
 
