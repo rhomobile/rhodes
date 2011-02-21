@@ -432,7 +432,7 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
     m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
     m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
     m_selected_annotation_index(-1),
-    m_pinCallout(0), m_pinCalloutLink(0), m_pin(0)
+    m_pinCallout(0), m_pinCalloutLink(0), m_pin(0), m_esriLogo(0)
 {
     String url = RHOCONF().getString("esri_map_url_roadmap");
     if (url.empty())
@@ -667,6 +667,11 @@ void ESRIMapView::setPinImage(IDrawingImage *pin, PIN_INFO pin_info)
 	m_pin_info = pin_info;
 }
 
+void ESRIMapView::setESRILogoImage(IDrawingImage *esriLogoImg) {
+    m_esriLogo = esriLogoImg;	
+}
+
+
 void ESRIMapView::setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info)
 {
     m_pinCallout = pinCallout;
@@ -729,6 +734,13 @@ void ESRIMapView::paint(IDrawingContext *context)
 
         if (m_selected_annotation_index >= 0)
             paintCallout(context, m_annotations.elementAt(m_selected_annotation_index));
+    }
+
+    // draw esri logo
+    if (m_esriLogo != 0) {
+       int left = 0;
+	   int top = m_height - m_esriLogo->height();
+	   context->drawImage(left, top, m_esriLogo);
     }
 
 /*
