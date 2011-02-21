@@ -155,6 +155,7 @@ public:
     virtual void setPinImage(IDrawingImage *pin, PIN_INFO pin_info) = 0;
     virtual void setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
     virtual void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
+    virtual void setESRILogoImage(IDrawingImage *esriLogoImg) = 0;
 
 };
 
