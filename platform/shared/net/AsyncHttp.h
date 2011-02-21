@@ -48,7 +48,6 @@ public:
         CRhoParams    m_params;
 
         CHttpCommand(String strCmd, rho_param *p);
-        virtual ~CHttpCommand();
 
         EHttpCommands translateCommand(String strCmd)
         {
@@ -107,7 +106,7 @@ public:
 
     void cancelRequest(const char* szCallback, boolean bWait);
 
-    virtual void addQueueCommand(IQueueCommand* pCmd);
+    unsigned long addHttpCommand(IQueueCommand* pCmd);
 
 private:
     CAsyncHttp();
