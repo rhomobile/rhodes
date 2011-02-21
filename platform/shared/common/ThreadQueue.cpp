@@ -9,6 +9,7 @@ CThreadQueue::CThreadQueue() : CRhoThread()
 {
     m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
     m_bNoThreaded = false;
+    m_pCurCmd = null;
 }
 
 CThreadQueue::~CThreadQueue(void)
@@ -74,6 +75,34 @@ void CThreadQueue::addQueueCommandToFront(IQueueCommand* pCmd)
         stopWait();
 }
 
+void CThreadQueue::stop(unsigned int nTimeoutToKill)
+{
+    cancelCurrentCommand();
+    CRhoThread::stop(nTimeoutToKill);
+}
+
+void CThreadQueue::cancelCurrentCommand()
+{
+    synchronized(m_mxStackCommands);
+    if ( m_pCurCmd != null )
+        m_pCurCmd->cancel();
+}
+
+void CThreadQueue::processCommandBase(IQueueCommand* pCmd)
+{
+    {
+        synchronized(m_mxStackCommands);
+        m_pCurCmd = pCmd;
+    }
+
+    processCommand(pCmd);
+
+    {
+        synchronized(m_mxStackCommands);
+        m_pCurCmd = null;
+    }
+}
+
 void CThreadQueue::run()
 {
 	LOG(INFO) + "Starting main routine...";
@@ -128,7 +157,7 @@ void CThreadQueue::processCommands()//throws Exception
     		pCmd = (IQueueCommand*)m_stackCommands.removeFirst();
     	}
 		
-		processCommand(pCmd);
+		processCommandBase(pCmd);
 	}
 }
 

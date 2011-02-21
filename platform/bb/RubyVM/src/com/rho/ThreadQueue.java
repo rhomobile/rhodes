@@ -20,13 +20,16 @@ public abstract class ThreadQueue extends RhoThread
     {
         public abstract boolean equals(IQueueCommand cmd);
         public abstract String toString();
+        
+        public abstract void cancel();
     };
 
     private RhoClassFactory m_ptrFactory;
 	private int           m_nPollInterval;
 	private Object m_mxStackCommands;// = new Mutex();
    	private LinkedList	  m_stackCommands = new LinkedList();
-
+   	private IQueueCommand m_pCurCmd;
+   	
     boolean m_bNoThreaded;
 
     public abstract void processCommand(IQueueCommand pCmd);
@@ -42,6 +45,10 @@ public abstract class ThreadQueue extends RhoThread
     public int getLastPollInterval(){ return 0;}
     public boolean isSkipDuplicateCmd() { return false; }
 
+    protected Object getCommandLock(){ return m_mxStackCommands; }
+    protected IQueueCommand getCurCommand(){ return m_pCurCmd; }
+    protected LinkedList/*Ptr<IQueueCommand*>&*/ getCommands(){ return m_stackCommands; }
+    
     public ThreadQueue(RhoClassFactory factory)
     {
         super(factory);
@@ -87,6 +94,36 @@ public abstract class ThreadQueue extends RhoThread
             processCommands();
         else if ( isAlive() )
     	    stopWait(); 
+    }
+    
+    public void stop(int nTimeoutToKill)
+    {
+        cancelCurrentCommand();
+        super.stop(nTimeoutToKill);
+    }
+
+    void cancelCurrentCommand()
+    {
+        synchronized(m_mxStackCommands)
+        {
+	        if ( m_pCurCmd != null )
+	            m_pCurCmd.cancel();
+        }
+    }
+
+    protected void processCommandBase(IQueueCommand pCmd)
+    {
+        synchronized(m_mxStackCommands)
+        {
+            m_pCurCmd = pCmd;
+        }
+
+        processCommand(pCmd);
+
+        synchronized(m_mxStackCommands)
+        {
+            m_pCurCmd = null;
+        }
     }
     
     public void run()
@@ -155,7 +192,7 @@ public abstract class ThreadQueue extends RhoThread
     		    pCmd = (IQueueCommand)m_stackCommands.removeFirst();
     	    }
     		
-		    processCommand(pCmd);
+		    processCommandBase(pCmd);
 	    }
     }
 
