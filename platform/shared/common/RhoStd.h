@@ -196,6 +196,11 @@ public:
     {
         return VectorPtr<Type>::elementAt(i);
     }
+
+    void remove(int nItem)
+    {
+        VectorPtr<Type>::removeElementAt(nItem);
+    }
 };
 
 template<class TKEY, class TVALUE>

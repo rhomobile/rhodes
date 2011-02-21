@@ -25,6 +25,7 @@ public:
         virtual ~IQueueCommand(){};
         virtual boolean equals(const IQueueCommand& cmd) = 0;
         virtual String toString() = 0;
+        virtual void cancel(){}
     };
 
 private:
@@ -32,6 +33,7 @@ private:
 	int           m_nPollInterval;
    	common::CMutex m_mxStackCommands;
 	LinkedListPtr<IQueueCommand*> m_stackCommands;
+    IQueueCommand* m_pCurCmd;
 
     boolean m_bNoThreaded;
 public:
@@ -42,12 +44,18 @@ public:
     virtual void addQueueCommand(IQueueCommand* pCmd);
     virtual void addQueueCommandToFront(IQueueCommand* pCmd);
 	virtual void run();
+    virtual void stop(unsigned int nTimeoutToKill);
 
 	void setPollInterval(int nInterval);
     int  getPollInterval()const{ return m_nPollInterval;}
 
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
     void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
+
+    void cancelCurrentCommand();
+    common::CMutex& getCommandLock(){ return m_mxStackCommands; }
+    IQueueCommand* getCurCommand(){ return m_pCurCmd; }
+    LinkedListPtr<IQueueCommand*>& getCommands(){ return m_stackCommands; }
 
 protected:
     virtual int getLastPollInterval(){ return 0;}
@@ -58,6 +66,7 @@ protected:
     boolean isAlreadyExist(IQueueCommand *pCmd);
 
     void processCommands();
+    void processCommandBase(IQueueCommand* pCmd);
 
     void addQueueCommandInt(IQueueCommand* pCmd);
     void addQueueCommandToFrontInt(IQueueCommand* pCmd);
