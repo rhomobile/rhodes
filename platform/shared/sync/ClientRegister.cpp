@@ -35,7 +35,6 @@ CClientRegister* CClientRegister::m_pInstance = 0;
 CClientRegister::CClientRegister(const char* device_pin) : CRhoThread() 
 {
 	m_strDevicePin = device_pin;
-	m_NetRequest = rho_get_RhoClassFactory()->createNetRequest();
     m_nPollInterval = POLL_INTERVAL_SECONDS;
 
     startUp();
@@ -43,7 +42,7 @@ CClientRegister::CClientRegister(const char* device_pin) : CRhoThread()
 
 CClientRegister::~CClientRegister()
 {
-	m_NetRequest->cancel();
+	m_NetRequest.cancel();
 	
     stop(WAIT_BEFOREKILL_SECONDS);
     m_pInstance = null;
@@ -109,7 +108,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 		}
     }
 	String strBody = getRegisterBody(client_id);
-    NetResponse(resp, getNet().pushData( oSync.getProtocol().getClientRegisterUrl(), strBody, &oSync ));
+    NetResponse resp = getNet().pushData( oSync.getProtocol().getClientRegisterUrl(), strBody, &oSync );
 	if( resp.isOK() )
     {
 //				try {

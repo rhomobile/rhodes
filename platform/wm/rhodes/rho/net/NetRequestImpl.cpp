@@ -3,7 +3,6 @@
 #include "NetRequestImpl.h"
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
-#include "NetRequest.h"
 #include "common/StringConverter.h"
 #include "net/URI.h"
 #include "common/RhoConf.h"
@@ -23,15 +22,25 @@ common::CMutex CNetRequestImpl::m_mxInternet;
 HINTERNET CNetRequestImpl::m_hInternet;
 HANDLE    CNetRequestImpl::m_hWceConnMgrConnection;
 
-CNetRequestImpl::CNetRequestImpl(CNetRequest* pParent, const char* method, const String& strUrl, 
-    IRhoSession* oSession, Hashtable<String,String>* pHeaders, boolean sslVerifyPeer)
+CNetRequestImpl::CNetRequestImpl()
 {
-    m_pParent = pParent;
-    m_pParent->m_pCurNetRequestImpl = this;
+    m_hConnection = 0;
+    m_hRequest = 0;
+
+    m_pszErrFunction = 0;
+
+    memset(&m_uri, 0, sizeof(m_uri) );
+    m_pHeaders = 0;
+    m_bCancel = false;
+    m_pSession = 0;
+    m_sslVerifyPeer = true;
+}
+
+void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+{
     m_pHeaders = pHeaders;
     m_bCancel = false;
     m_pSession = oSession;
-    m_sslVerifyPeer = sslVerifyPeer;
 
     m_pszErrFunction = NULL;
     m_hConnection = NULL;
@@ -166,8 +175,10 @@ String CNetRequestImpl::getBodyContentType()
         return "application/x-www-form-urlencoded";
 }
 
-CNetResponseImpl* CNetRequestImpl::sendString(const String& strBody)
+INetResponse* CNetRequestImpl::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
+    init( method, strUrl, oSession, pHeaders );
+
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
 
     do
@@ -362,8 +373,10 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
         pNetResp->setCookies(makeClientCookie());
 }
 
-CNetResponseImpl* CNetRequestImpl::downloadFile(common::CRhoFile& oFile)
+INetResponse* CNetRequestImpl::pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
+    init("GET", strUrl, oSession, pHeaders);
+
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
     const int nDownloadBufferSize = 1024*100;
     char* pDownloadBuffer = 0;
@@ -495,8 +508,10 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
     return nSize;
 }
 
-CNetResponseImpl* CNetRequestImpl::sendMultipartData(VectorPtr<CMultipartItem*>& arItems)
+INetResponse* CNetRequestImpl::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
+    init("POST", strUrl, oSession, pHeaders );
+
     CNetResponseImpl* pNetResp = new CNetResponseImpl;
 
     do
@@ -669,7 +684,6 @@ void CNetRequestImpl::close()
 CNetRequestImpl::~CNetRequestImpl()
 {
     close();
-    m_pParent->m_pCurNetRequestImpl = null;
 }
 
 void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetResp, common::CRhoFile* pFile /*=NULL*/,

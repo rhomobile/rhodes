@@ -46,32 +46,42 @@ public:
         return m_data.size();
     }
 
-    void setRespCode(int nRespCode) 
-    {
-        m_nRespCode = nRespCode;
-    }
-
     virtual int getRespCode() 
     {
         return m_nRespCode;
     }
 
-    virtual boolean isOK()
+    virtual String getCookies()
+    {
+        return m_cookies;
+    }
+
+    virtual void setCharData(const char* szData)
+    {
+        m_data = szData;
+    }
+
+    void setRespCode(int nRespCode) 
+    {
+        m_nRespCode = nRespCode;
+    }
+
+    boolean isOK()
     {
         return m_nRespCode == 200 || m_nRespCode == 206;
     }
     
-    virtual boolean isUnathorized()
+    boolean isUnathorized()
     {
         return m_nRespCode == 401;
     }
 
-    virtual boolean isSuccess()
+    boolean isSuccess()
     {
         return m_nRespCode > 0 && m_nRespCode < 400;
     }
 
-    virtual boolean isResponseRecieved(){ return m_nRespCode!=-1;}
+    boolean isResponseRecieved(){ return m_nRespCode!=-1;}
 
     void setCharData(const String &data)
     {
@@ -82,11 +92,7 @@ public:
     {
         m_cookies = s;
     }
-    
-    String getCookies()
-    {
-        return m_cookies;
-    }
+   
 };
 
 INetResponse *CURLNetRequest::makeResponse(String const &body, int nErrorCode)
@@ -159,27 +165,6 @@ static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void 
 }
 
 extern "C" int rho_net_ping_network(const char* szHost);	
-INetResponse* CURLNetRequest::pullData(const String& strUrl, IRhoSession* oSession )
-{
-    RAWLOG_INFO1("GET url: %s", strUrl.c_str());
-    return doRequest("GET", strUrl, String(), oSession, null );
-}
-
-INetResponse* CURLNetRequest::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
-{
-    RAWLOG_INFO1("POST url: %s", strUrl.c_str());
-    return doRequest("POST", strUrl, strBody, oSession, null );
-}
-
-INetResponse* CURLNetRequest::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
-{
-    RAWLOG_INFO1("POST url: %s (requesting cookies)", strUrl.c_str());
-    INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
-    if ( pResp->isOK() )
-        ((CURLNetResponseImpl*)pResp)->setCharData(pResp->getCookies());
-
-    return pResp;
-}
 
 INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl,
                                         const String& strBody, IRhoSession *oSession,
@@ -277,19 +262,13 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     return makeResponse(respBody, nRespCode);
 }
 
-INetResponse* CURLNetRequest::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+INetResponse* CURLNetRequest::createEmptyNetResponse()
 {
-    int nRespCode = -1;
-    
-    RAWLOG_INFO2("Pull file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
-    
-    common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
-    {
-        RAWLOG_ERROR1("pullFile: cannot create file: %s", strFilePath.c_str());
-        return new CURLNetResponseImpl("", 0, nRespCode);
-    }
-    
+    return new CURLNetResponseImpl("", 0, -1);
+}
+
+INetResponse* CURLNetRequest::pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+{
     return doPull("GET", strUrl, String(), &oFile, oSession, pHeaders);
 }
 
@@ -364,58 +343,6 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     return makeResponse(strRespBody, nRespCode);
 }
 
-INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
-{
-    VectorPtr<CMultipartItem*> arItems;
-    arItems.addElement(&oItem);
-
-    INetResponse* pResp = pushMultipartData(strUrl, arItems, oSession, pHeaders);
-
-    arItems[0] = 0; //do not delete item
-    return pResp;
-}
-
-INetResponse* CURLNetRequest::pushFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
-{
-    int nRespCode = -1;
-    String strRespBody;
-	
-    RAWLOG_INFO2("Push file. Url: %s; File: %s", strUrl.c_str(), strFilePath.c_str());
-	
-    common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
-    {
-        LOG(ERROR) + "pushFile: cannot find file :" + strFilePath;
-        return new CURLNetResponseImpl(strRespBody.c_str(), strRespBody.size(), nRespCode);
-    }
-	
-    rho_net_impl_network_indicator(1);
-	
-    curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders);
-    CURL *curl = m_curl.curl();
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
-	
-    curl_httppost *post = NULL, *last = NULL;
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
-    curl_formadd(&post, &last,
-                 CURLFORM_COPYNAME, "blob",
-                 CURLFORM_FILE, strFilePath.c_str(),
-                 CURLFORM_CONTENTTYPE, "application/octet-stream",
-                 CURLFORM_END);
-    curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-    
-	CURLcode err = doCURLPerform(strUrl);
-	
-    curl_slist_free_all(hdrs);
-    curl_formfree(post);
-	
-    rho_net_impl_network_indicator(0);
-    
-    nRespCode = getResponseCode(err, strRespBody, oSession);
-    return makeResponse(strRespBody, nRespCode);
-}
-
 int CURLNetRequest::getResponseCode(CURLcode err, String const &body, IRhoSession* oSession)
 {
     return getResponseCode(err, body.c_str(), body.size(), oSession);
@@ -459,11 +386,6 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
     }
 
     return (int)statusCode;
-}
-
-String CURLNetRequest::resolveUrl(const String& strUrl)
-{
-    return RHODESAPP().canonicalizeRhoUrl(strUrl);
 }
 
 void CURLNetRequest::cancel()

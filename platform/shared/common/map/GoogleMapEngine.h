@@ -40,9 +40,9 @@ private:
     bool fetchData(String const &url, void **data, size_t *datasize);
 
     void processCommand(IQueueCommand* cmd);
-
+    net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 private:
-    std::auto_ptr<net::INetRequest> m_net_request;
+    NetRequest              m_NetRequest;
 };
 
 } // namespace map

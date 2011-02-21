@@ -176,8 +176,7 @@ void ESRIMapView::Tile::swap(ESRIMapView::Tile &tile)
 
 IMPLEMENT_LOGCLASS(ESRIMapView::MapFetch,"MapFetch");
 ESRIMapView::MapFetch::MapFetch(ESRIMapView *view)
-    :CThreadQueue(),
-    m_mapview(view), m_net_request(rho_get_RhoClassFactory()->createNetRequest())
+    :CThreadQueue(), m_mapview(view)
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
@@ -198,7 +197,7 @@ void ESRIMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 la
 bool ESRIMapView::MapFetch::fetchData(String const &url, void **data, size_t *datasize)
 {
     RHO_MAP_TRACE1("fetchData: url=%s", url.c_str());
-    NetResponse(resp, m_net_request->doRequest("GET", url, "", 0, 0));
+    NetResponse resp = getNet().doRequest("GET", url, "", 0, 0);
     if (!resp.isOK())
         return false;
     *datasize = resp.getDataSize();

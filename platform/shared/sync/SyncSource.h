@@ -10,8 +10,8 @@ namespace db {
     class CDBAdapter;
 }
 namespace net {
-    struct INetRequest;
     struct CMultipartItem;
+    class CNetRequestWrapper;
 }
 namespace json {
     class CJSONEntry;
@@ -138,7 +138,7 @@ public:
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();
-    net::INetRequest& getNet();
+    net::CNetRequestWrapper getNet();
     ISyncProtocol& getProtocol();
 
 };

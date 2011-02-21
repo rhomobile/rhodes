@@ -21,7 +21,7 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
     return rho_ruby_getErrorText(nError);
 }
 
-/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(net::INetResponse& resp)
+/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
 {
     if ( !resp.isResponseRecieved())
         return ERR_NETWORK;
