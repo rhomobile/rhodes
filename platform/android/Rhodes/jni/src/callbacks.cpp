@@ -62,7 +62,12 @@ RHO_GLOBAL void rho_net_impl_network_indicator(int enable)
 
 RHO_GLOBAL int rho_net_ping_network(const char* szHost)
 {
-    return 0;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "pingHost", "(Ljava/lang/String;)Z");
+    if (!mid) return 0;
+	return (int)env->CallStaticBooleanMethod(cls, mid, rho_cast<jhstring>(szHost).get());
 }
 
 RHO_GLOBAL void *rho_nativethread_start()
