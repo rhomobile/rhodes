@@ -481,7 +481,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 			paintImage(graphics, img);
 		}
 
-		int logoWidth = mapPinImage.getWidth();
+		int logoWidth = mapLogoImage.getWidth();
 		int logoHeight = mapLogoImage.getHeight();
 		graphics.drawBitmap(0, mHeight - logoHeight, logoWidth, logoHeight, mapLogoImage, 0, 0); 
 
