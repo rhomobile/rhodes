@@ -41,6 +41,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setPinImage(long nativeDevice, Bitmap pin);
 	public native void setPinCalloutImage(long nativeDevice, Bitmap pin);
 	public native void setPinCalloutLinkImage(long nativeDevice, Bitmap pin);
+	public native void setESRILogoImage(long nativeDevice, Bitmap esriLogo);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -122,6 +123,8 @@ public class MapView extends BaseActivity implements MapTouch {
 		setPinCalloutImage(mNativeDevice, pinCallout );
 		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout_link);
 		setPinCalloutLinkImage(mNativeDevice, pinCalloutLink );
+		Bitmap esriLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.esri);
+		setESRILogoImage(mNativeDevice, esriLogo);
 
 		
 		mTouchHandler = createTouchHandler();

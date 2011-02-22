@@ -560,6 +560,46 @@ public class RhodesService extends Service {
 		}
 	}
 	
+	public static boolean pingHost(String host) {
+		HttpURLConnection conn = null;
+		boolean hostExists = false;
+		try {
+				URL url = new URL(host);
+				HttpURLConnection.setFollowRedirects(false);
+				conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("HEAD");
+				conn.setAllowUserInteraction( false );
+				conn.setDoInput( true );
+				conn.setDoOutput( true );
+				conn.setUseCaches( false );
+
+				hostExists = (conn.getContentLength() > 0);
+				if(hostExists)
+					Logger.I(TAG, "PING network SUCCEEDED.");
+				else
+					Logger.E(TAG, "PING network FAILED.");
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
+		finally {            
+		    if (conn != null) 
+		    {
+		    	try
+		    	{
+		    		conn.disconnect(); 
+		    	}
+		    	catch(Exception e) 
+		    	{
+		    		Logger.E(TAG, e);
+		    	}
+		    }
+		}
+		
+		return hostExists;
+	}
+	
 	private static boolean hasNetwork() {
 		if (!Capabilities.NETWORK_STATE_ENABLED) {
 			Logger.E(TAG, "HAS_NETWORK: Capability NETWORK_STATE disabled");

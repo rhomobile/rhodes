@@ -133,6 +133,10 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		IDrawingImage* pinCalloutLinkImg = ourDrawingDevice.createImage(fullImagePath, true);
 		ourMapView->setPinCalloutLinkImage(pinCalloutLinkImg, pin_callout_info);
 
+		strImagePath = "lib/res/esri.png";
+		fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
+		IDrawingImage* esriLogoImg = ourDrawingDevice.createImage(fullImagePath, true);
+		ourMapView->setESRILogoImage(esriLogoImg);
 	}
 
 #else 
