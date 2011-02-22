@@ -181,10 +181,10 @@ CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
 	{
 		long statusCode = 0;
 		curl_easy_getinfo(m_curl.curl(), CURLINFO_RESPONSE_CODE, &statusCode);
-		if ( statusCode == 0 && rho_net_ping_network(strUrl.c_str()) )
+		if ( statusCode == 0 && rho_net_ping_network(strUrl.substr(0, strUrl.find("?")).c_str()) )
 			err = m_curl.perform();
 	}
-	
+
 	return err;
 }
 	

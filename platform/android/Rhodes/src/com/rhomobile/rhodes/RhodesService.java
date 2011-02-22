@@ -561,7 +561,6 @@ public class RhodesService extends Service {
 	}
 	
 	public static boolean pingHost(String host) {
-		Logger.I(TAG, "PINGqqq network SUCCEEDED.");
 		HttpURLConnection conn = null;
 		boolean hostExists = false;
 		try {
@@ -575,11 +574,11 @@ public class RhodesService extends Service {
 				conn.setDoOutput( true );
 				conn.setUseCaches( false );
 
-				hostExists = (conn.getResponseCode() == HttpURLConnection.HTTP_OK);
+				hostExists = (conn.getContentLength() > 0);
 				if(hostExists)
 					Logger.I(TAG, "PING network SUCCEEDED.");
 				else
-					Logger.E(TAG, "PING network FAILED. Error Info: " + conn.getResponseMessage());
+					Logger.E(TAG, "PING network FAILED.");
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);
