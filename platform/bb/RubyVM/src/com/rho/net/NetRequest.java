@@ -181,13 +181,13 @@ public class NetRequest
 				writeHeaders(headers);
 				m_connection.setRequestMethod(strMethod);
 			}
+
+			is = m_connection.openInputStream();
+			LOG.INFO("openInputStream done");
 			
 			code = m_connection.getResponseCode();
 			LOG.INFO("getResponseCode : " + code);
 			
-			is = m_connection.openInputStream();
-			LOG.INFO("openInputStream done");
-
 			readHeaders(headers);
 			copyHashtable(m_OutHeaders, headers);
 			
@@ -529,6 +529,8 @@ public class NetRequest
 			
 			m_connection.setRequestMethod(IHttpConnection.GET);
 			
+			is = m_connection.openInputStream();
+			
 			code = m_connection.getResponseCode();
 			
 			LOG.INFO("getResponseCode : " + code);
@@ -552,16 +554,11 @@ public class NetRequest
 						oSession.logout();
 					}
 					
-					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					{
-						is = m_connection.openInputStream();
-						strRespBody = readFully(is, getResponseEncoding());
-					}
+					strRespBody = readFully(is, getResponseEncoding());
 				}else
 				{
 					int nRead = 0;
 					
-					is = m_connection.openInputStream();
 					byte[]  byteBuffer = new byte[1024*20]; 
 
 		    		do{
