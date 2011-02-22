@@ -688,7 +688,7 @@ module Rho
             if attribs['sync_priority'].to_i != sync_priority.to_i
                 db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
             end
-            if sync_type != 'server_only' && attribs['sync_type'] != sync_type
+            if attribs['sync_type'] != sync_type
                 db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
             if attribs['schema_version'] != schema_version
@@ -720,12 +720,9 @@ module Rho
                 
                 start_id += 1
             end
-
-            sync_type = 'none' if sync_type == 'server_only'
-            
+          
             db.insert_into_table('sources',
-                {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, 
-                "sync_type"=> sync_type, "partition"=>partition,
+                {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
                 "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
                 
           end
@@ -1035,7 +1032,6 @@ module Rho
 
         #@@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
         @@sources[modelname]['sync_type'] ||= 'none'
-        @@sources[modelname]['sync_type'] = @@sources[modelname]['sync_type'].to_s
         
         if @@sources[modelname]['partition']
             @@sources[modelname]['partition'] = @@sources[modelname]['partition'].to_s
