@@ -1376,10 +1376,14 @@ namespace "run" do
         start = Time.now
 
         puts "waiting for log"
-      
-        while !File.exist?(log_name)
-            get_app_log($appname, false, true)
-            sleep(1)
+        
+        for i in 0..60
+			if !File.exist?(log_name)
+				get_app_log($appname, false, true)
+				sleep(1)
+			else
+				break
+			end
         end
 
         puts "start read log"
@@ -1418,13 +1422,11 @@ namespace "run" do
     end
 
     task :phone_spec do
-      exit 1 if Jake.run_spec_app('android','phone_spec')
-      exit 0
+      exit Jake.run_spec_app('android','phone_spec')
     end
 
     task :framework_spec do
-      exit 1 if Jake.run_spec_app('android','framework_spec')
-      exit 0
+      exit Jake.run_spec_app('android','framework_spec')
     end
     
     task :emulator => "device:android:debug" do
@@ -1551,13 +1553,23 @@ namespace "uninstall" do
     args << flag
     args << "uninstall"
     args << $app_package_name
-    Jake.run($adb, args)
-    unless $?.success?
-      puts "Error uninstalling application"
-      exit 1
-    end
+    for i in 0..10
+		result = Jake.run($adb, args)
+		unless $?.success?
+			puts "Error uninstalling application"
+			exit 1
+		end
 
-    puts "Application uninstalled successfully"
+		if result.include?("Success")
+			puts "Application uninstalled successfully"
+			break
+		else
+			puts "Error uninstalling application"
+			exit 1 if i == 10
+		end
+		sleep(5)
+    end
+    
   end
 
   namespace "android" do
