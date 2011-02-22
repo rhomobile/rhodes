@@ -73,7 +73,6 @@ There are several features you can enable or disable in the model, below is a co
 	  # will use (default :incrmental).
 	  # Set to :bulk_only to disable incremental
 	  # sync and only use bulk sync.
-	  # Set to :server_only to sync only if source exists on server
 	  set :sync_type, :bulk_only 
 	
 	  # Set the sync priority for this model.
@@ -164,7 +163,6 @@ Below is a full list of options available to fixed schema models:
 	  # will use (default :incrmental).
 	  # Set to :bulk_only to disable incremental
 	  # sync and only use bulk sync.
-	  # Set to :server_only to sync only if source exists on server
 	  set :sync_type, :bulk_only 
 
 	  # Set the sync priority for this model.
