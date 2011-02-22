@@ -12,6 +12,7 @@ import android.os.Build;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 
 public class EventStore {
@@ -106,7 +107,7 @@ public class EventStore {
 				
 				eventCursor = r.query(builder.build(),
 						new String[] {"event_id", EVENTS_TITLE, "begin", "end", EVENTS_LOCATION,
-							EVENTS_NOTES, EVENTS_PRIVACY},
+							EVENTS_NOTES, EVENTS_PRIVACY, "deleted"},
 						null, //"Calendars._id=" + id,
 						null, "startDay ASC, startMinute ASC");
 			}
@@ -117,7 +118,7 @@ public class EventStore {
 				String end = Long.toString(endDate.getTime());
 				eventCursor = r.query(EVENTS_URI,
 					new String[] {"_id", EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
-						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
+						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY, "deleted"},
 					where, new String[] {start, end, start, end},
 					null);
 			}
@@ -125,6 +126,15 @@ public class EventStore {
 				throw new RuntimeException("Calendar provider not found");
 			try {
 				while (eventCursor.moveToNext()) {
+
+					int deleted_index = eventCursor.getColumnIndex("deleted");
+					if (deleted_index >= 0) {
+						long is_deleted = eventCursor.getLong(deleted_index);
+						if (is_deleted != 0) {
+							continue;
+						}
+					}
+					
 					String eid = eventCursor.getString(0);
 					Event event = new Event(eid);
 					
@@ -192,6 +202,7 @@ public class EventStore {
 					Logger.D(TAG, "fetch(id): result set is empty");
 					return null;
 				}
+				
 				Event event = new Event(id);
 				event.title = eventCursor.getString(0);
 				event.startDate = new Date(eventCursor.getLong(1));
@@ -256,6 +267,7 @@ public class EventStore {
 			if (event.id == null || event.id.equalsIgnoreCase("")) {
 				Logger.D(TAG, "Insert new event...");
 				Uri euri = r.insert(EVENTS_URI, values);
+				r.notifyChange(EVENTS_URI, null);
 				event.id = Long.toString(ContentUris.parseId(euri));
 				Logger.D(TAG, "Event id of event is " + event.id);
 			}
@@ -263,6 +275,7 @@ public class EventStore {
 				Logger.D(TAG, "Update event...");
 				Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(event.id));
 				r.update(uri, values, null, null);
+				r.notifyChange(EVENTS_URI, null);
 				Logger.D(TAG, "Event updated");
 			}
 			
@@ -279,16 +292,22 @@ public class EventStore {
 		try {
 			checkCapabilities();
 			
-			Logger.D(TAG, "delete(id)");
+			Logger.D(TAG, "delete("+id+")");
 			
 			ContentResolver r = getContentResolver();
 			int rows;
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+				Logger.D(TAG, " use old delete scheme");
 				Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
 				rows = getContentResolver().delete(uri, null, null);
 			}
 			else {
-				rows = r.delete(EVENTS_URI, "_id=?", new String[] {id});
+				Logger.D(TAG, " use new delete scheme");
+				int idn = Integer.decode(id).intValue();
+				Uri du = Uri.withAppendedPath(EVENTS_URI, id);
+				rows = r.delete(du, null, null);
+				//rows = r.delete(EVENTS_URI, "_id=?", new String[] {id});
+				r.notifyChange(EVENTS_URI, null);
 			}
 			Logger.D(TAG, String.format("%d rows deleted", rows));
 			

@@ -493,6 +493,8 @@ See [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-sa
 
 See [/app/NativeView/controller.rb](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/app/NativeView/controller.rb) and [/app/NativeView/index.erb](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/app/NativeView/index.erb) for details how to call native view from your controller.
 
+** NOTE:  Windows Mobile: Visual Studio 2005 has issues with long paths. If you have problems with building rainbow extension, move rhodes folder to shorter path. **
+
 * To navigate to rainbow view in your controller you should call `WebView.navigate('rainbow_view:red')`. In your url schema indicates view type you want to open and rest of the url (red) passed to the after it was created. 
 
 * To pass parameters to created view you may call WebView.navigate again: `WebView.navigate('rainbow_view:green')`. In your native code you may pass parameters to the native view by calling `pNativeView->navigate(url)` where pNativeView is an instance of native view created by the `RhoNativeViewManager` using registered factory. 
