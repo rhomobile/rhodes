@@ -139,6 +139,8 @@ class Jake
     ensure
       server.shutdown
     end
+    
+    $failed.to_i
   end
 
   def self.before_run_spec()
@@ -244,6 +246,7 @@ class Jake
                     Process.kill( 9, f.pid ) 
                 end    
             else
+                retval += line
                 puts "RET: " + line
                 $stdout.flush
             end    
