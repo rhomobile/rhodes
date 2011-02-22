@@ -79,7 +79,7 @@ module Rhom
         
           ::Rho::RHO.get_db_partitions.each_value do |db|
               result = ::Rho::RHO.get_src_db().select_from_table('sources', '*', 
-                                                                {"source_id" => strip_braces(args.first)})
+                                                                {"name" => args.first})
               next unless result && result.length() > 0 
               
               return RhomSource.new(result.first)

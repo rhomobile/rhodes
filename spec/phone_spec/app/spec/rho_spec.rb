@@ -129,7 +129,7 @@ describe "RhomSource" do
   end
   
   it "should find Product_s source" do
-    src = Rhom::RhomSource.find(Product_s.get_source_id)
+    src = Rhom::RhomSource.find("Product_s")
     src.should_not be_nil
     
     #src.get_lastsync_objectcount.should == 0
