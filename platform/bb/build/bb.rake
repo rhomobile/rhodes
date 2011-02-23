@@ -1019,8 +1019,7 @@ namespace "run" do
       end
 
       task :phone_spec do
-        exit 1 if Jake.run_spec_app('bb','phone_spec')
-        exit 0
+        exit Jake.run_spec_app('bb','phone_spec')
       end
 
     task :testsim => ["config:bb"] do
