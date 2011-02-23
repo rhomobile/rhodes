@@ -572,7 +572,10 @@ public class SimpleMainView implements MainView {
 	public void navigate(String url, int index) {
 		String cleared_url = processForNativeView(url);
 		if (cleared_url.length() > 0) {
-			webView.loadUrl(url);
+			// check for handle because if we call loadUrl - WebView do not check this url for handle
+			if (!RhodesService.getInstance().handleUrlLoading(cleared_url)) {
+				webView.loadUrl(cleared_url);
+			}
 		}
 	}
 	
