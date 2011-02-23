@@ -91,9 +91,12 @@ public class RhodesService extends Service {
 	private static final Class[] mStartForegroundSignature = new Class[] {int.class, Notification.class};
 	@SuppressWarnings("rawtypes")
 	private static final Class[] mStopForegroundSignature = new Class[] {boolean.class};
+	@SuppressWarnings("rawtypes")
+	private static final Class[] mSetForegroundSignature = new Class[] {boolean.class};
 	
 	private Method mStartForeground;
 	private Method mStopForeground;
+	private Method mSetForeground;
 	
 	private NotificationManager mNM;
 	
@@ -379,10 +382,12 @@ public class RhodesService extends Service {
 		try {
 			mStartForeground = getClass().getMethod("startForeground", mStartForegroundSignature);
 			mStopForeground = getClass().getMethod("stopForeground", mStopForegroundSignature);
+			mSetForeground = getClass().getMethod("setForeground", mSetForegroundSignature);
 		}
 		catch (NoSuchMethodException e) {
 			mStartForeground = null;
 			mStopForeground = null;
+			mSetForeground = null;
 		}
 	}
 	
@@ -458,7 +463,17 @@ public class RhodesService extends Service {
 			return;
 		}
 		
-		setForeground(true);
+		if (mSetForeground != null) {
+			try {
+				mSetForeground.invoke(this, new Object[] {Boolean.valueOf(true)});
+			}
+			catch (InvocationTargetException e) {
+				Log.e(TAG, "Unable to invoke setForeground", e);
+			}
+			catch (IllegalAccessException e) {
+				Log.e(TAG, "Unable to invoke setForeground", e);
+			}
+		}
 		mNM.notify(id, notification);
 	}
 	
@@ -477,7 +492,17 @@ public class RhodesService extends Service {
 		}
 		
 		mNM.cancel(id);
-		setForeground(false);
+		if (mSetForeground != null) {
+			try {
+				mSetForeground.invoke(this, new Object[] {Boolean.valueOf(false)});
+			}
+			catch (InvocationTargetException e) {
+				Log.e(TAG, "Unable to invoke setForeground", e);
+			}
+			catch (IllegalAccessException e) {
+				Log.e(TAG, "Unable to invoke setForeground", e);
+			}
+		}
 	}
 	
 	public void setMainView(MainView v) {
