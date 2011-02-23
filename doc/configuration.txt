@@ -157,6 +157,10 @@ Turn on Persistent Storage usage mode for Blackberry
 	use_persistent_storage = 1
 	
 
+To use only models from bulk database. If true, application will not create models and will use models from bulk sync database
+
+	use_bulk_model = true
+	
 ### Last Visited Page
 Rhodes can keep track of the last visited page, so that next time you start your application, it will open to the same page. To enable this feature, use 
 

@@ -714,17 +714,20 @@ module Rho
             end
             
           else
-            if !source['source_id']
-                source['source_id'] = start_id
-                Rho::RhoConfig::sources[name]['source_id'] = start_id
-                
-                start_id += 1
-            end
           
-            db.insert_into_table('sources',
-                {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
-                "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
-                
+            #puts "Rho::RhoConfig.use_bulk_model :  #{Rho::RhoConfig.use_bulk_model}"
+            if Rho::RhoConfig.use_bulk_model.to_s != 'true' && Rho::RhoConfig.use_bulk_model.to_s != '1'
+                if !source['source_id']
+                    source['source_id'] = start_id
+                    Rho::RhoConfig::sources[name]['source_id'] = start_id
+                    
+                    start_id += 1
+                end
+              
+                db.insert_into_table('sources',
+                    {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
+                    "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
+            end                
           end
           
         end
