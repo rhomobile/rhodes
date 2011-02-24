@@ -1,0 +1,699 @@
+# LineaSDK as native extension in RHodes applications
+
+## Definition
+LineaSDK Ruby interface provide access to Linea device from Ruby code in Rhodes application.
+Before using it please read the original LineaSDK documentation and see Linea objective-C API, because current API is very similar to objective-C API.
+
+All constants and methods have the same name and practically the same results/parameters (with little Ruby specific)
+All method can raise Ruby exception like methods of Linea objective-C class
+
+We use HASH instead of structure.
+
+Instead of special delegate class (in objective-C interface) we use callback mechanism for any feedback from device. if you want listen events from Line device - make Ruby function in your controller and post his url to addDelegate() function after it you will receive events from device in your controller's function. All events receive in one callback function, use  @params['delegateEvent'] for detect type of event. See more detail in description of addDelegate(url) of Line class (below).
+
+## Linea API
+
+Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master/extensions/linea/linea.rb linea.rb]
+
+	:::ruby
+	#
+	#   Ruby interface of LineaSDK.
+	#   see LineaSDK.h and Linea documentation for details
+	#   This main class Linea have the very simiilar interface with main Linea class in objective-C LineaSDK
+	#   All constants and methods have the same name and practically the same results/parameters (with little Ruby specific)
+	#   All method can raise Ruby exception like methods of Linea objective-C class
+	#
+
+	 
+	class Linea
+
+
+	# BARCODES
+		BAR_ALL = 0 
+		BAR_UPC = 1
+		BAR_CODABAR = 2
+		BAR_CODE25_NI2OF5 = 3
+		BAR_CODE25_I2OF5 = 4
+		BAR_CODE39 = 5
+		BAR_CODE93 = 6
+		BAR_CODE128 = 7
+		BAR_CODE11 = 8
+		BAR_CPCBINARY = 9
+		BAR_DUN14 = 10
+		BAR_EAN2 = 11
+		BAR_EAN5 = 12
+		BAR_EAN8 = 13
+		BAR_EAN13 = 14
+		BAR_EAN128 =15
+		BAR_GS1DATABAR =16
+		BAR_ITF14 = 17
+		BAR_LATENT_IMAGE = 18
+		BAR_PHARMACODE = 19
+		BAR_PLANET = 20
+		BAR_POSTNET = 21
+		BAR_INTELLIGENT_MAIL = 22
+		BAR_MSI = 23
+		BAR_POSTBAR = 24
+		BAR_RM4SCC = 25
+		BAR_TELEPEN = 26
+		BAR_PLESSEY = 27
+		BAR_PDF417 = 28
+		BAR_MICROPDF417 = 29
+		BAR_DATAMATRIX = 30
+		BAR_AZTEK = 31
+		BAR_QRCODE = 32
+		BAR_MAXICODE = 33
+		BAR_LAST = 34
+
+	# BARCODES_EX
+		BAR_EX_ALL = 0 
+		BAR_EX_UPCA = 1
+		BAR_EX_CODABAR = 2
+		BAR_EX_CODE25_NI2OF5 = 3
+		BAR_EX_CODE25_I2OF5 = 4
+		BAR_EX_CODE39 = 5
+		BAR_EX_CODE93 = 6
+		BAR_EX_CODE128 = 7
+		BAR_EX_CODE11 = 8
+		BAR_EX_CPCBINARY = 9
+		BAR_EX_DUN14 = 10
+		BAR_EX_EAN2 = 11
+		BAR_EX_EAN5 = 12
+		BAR_EX_EAN8 = 13
+		BAR_EX_EAN13 = 14
+		BAR_EX_EAN128 = 15
+		BAR_EX_GS1DATABAR = 16
+		BAR_EX_ITF14 = 17
+		BAR_EX_LATENT_IMAGE = 18
+		BAR_EX_PHARMACODE = 19
+		BAR_EX_PLANET = 20
+		BAR_EX_POSTNET = 21
+		BAR_EX_INTELLIGENT_MAIL = 22
+		BAR_EX_MSI_PLESSEY = 23
+		BAR_EX_POSTBAR = 24
+		BAR_EX_RM4SCC = 25
+		BAR_EX_TELEPEN = 26
+		BAR_EX_UK_PLESSEY = 27
+		BAR_EX_PDF417 = 28
+		BAR_EX_MICROPDF417 = 29
+		BAR_EX_DATAMATRIX = 30
+		BAR_EX_AZTEK = 31
+		BAR_EX_QRCODE = 32
+		BAR_EX_MAXICODE = 33
+		BAR_EX_RESERVED1 = 34
+		BAR_EX_RESERVED2 = 35
+		BAR_EX_RESERVED3 = 36
+		BAR_EX_RESERVED4 = 37
+		BAR_EX_RESERVED5 = 38
+		BAR_EX_UPCA_2 = 39
+		BAR_EX_UPCA_5 = 40
+		BAR_EX_UPCE = 41
+		BAR_EX_UPCE_2 = 42
+		BAR_EX_UPCE_5 = 43
+		BAR_EX_EAN13_2 = 44
+		BAR_EX_EAN13_5 = 45
+		BAR_EX_EAN8_2 = 46
+		BAR_EX_EAN8_5 = 47
+		BAR_EX_CODE39_FULL = 48
+		BAR_EX_ITA_PHARMA = 49
+		BAR_EX_CODABAR_ABC = 50
+		BAR_EX_CODABAR_CX = 51
+		BAR_EX_SCODE = 52
+		BAR_EX_MATRIX_2OF5 = 53
+		BAR_EX_IATA = 54
+		BAR_EX_KOREAN_POSTAL = 55
+		BAR_EX_CCA = 56
+		BAR_EX_CCB = 57
+		BAR_EX_CCC = 58
+		BAR_EX_LAST = 59
+
+	# CONN_STATES
+		CONN_DISCONNECTED = 0
+		CONN_CONNECTING = 1
+		CONN_CONNECTED = 2
+
+	# SCAN_MODES
+		MODE_SINGLE_SCAN = 0
+		MODE_MULTI_SCAN = 1
+
+	# BUTTON_STATES 
+		BUTTON_DISABLED = 0
+		BUTTON_ENABLED = 1
+
+	# MS_MODES
+		MS_PROCESSED_CARD_DATA = 0
+		MS_RAW_CARD_DATA = 1
+
+	# BT_MODES
+		BARCODE_TYPE_DEFAULT = 0
+		BARCODE_TYPE_EXTENDED = 1
+
+
+	# Printer types
+		PRINTER_PP50 = 0
+		PRINTER_PP55 = 1
+		PRINTER_CMP10 = 2
+		PRINTER_DPP350 = 3
+		PRINTER_DPP250 = 4
+		PRINTER_PP60 = 5
+
+	# Data channels
+		CHANNEL_PRN	= 1
+		CHANNEL_SMARTCARD = 2
+		CHANNEL_GPRS = 5
+		CHANNEL_MIFARE = 16
+
+	# Print aligning
+		ALIGN_LEFT = 0
+		ALIGN_CENTER = 1
+		ALIGN_RIGHT = 2
+		
+	# BARCODE MODULE SPECIFIC CONSTANTS
+	# Barcode Printing Types
+	# Prints UPC-A barcode
+		BAR_PRN_UPCA = 0
+	# Prints UPC-E barcode
+		BAR_PRN_UPCE = 1
+	# Prints EAN-13 barcode
+		BAR_PRN_EAN13 = 2
+	# Prints EAN-8 barcode
+		BAR_PRN_EAN8 = 3
+	# Prints CODE39 barcode
+		BAR_PRN_CODE39 = 4
+	# Prints ITF barcode
+		BAR_PRN_ITF = 5
+	# Prints CODABAR barcode
+		BAR_PRN_CODABAR = 6
+	# Prints CODE93 barcode
+		BAR_PRN_CODE93 = 7
+	# Prints CODE128 barcode
+		BAR_PRN_CODE128 = 8
+	# Prints 2D PDF-417 barcode
+		BAR_PRN_PDF417 = 9
+	# Prints CODE128 optimized barcode. Supported only on PP-60, DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
+		BAR_PRN_CODE128AUTO	= 10
+	# Prints EAN128 optimized barcode. Supported only on PP-60, DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
+		BAR_PRN_EAN128AUTO = 11
+
+	# Barcode Text Positopn
+		BAR_TEXT_NONE = 0
+		BAR_TEXT_ABOVE = 1
+		BAR_TEXT_BELOW = 2
+		BAR_TEXT_BOTH = 3
+
+	# Intensity Levels 
+		INTENSITY70 = 0
+		INTENSITY80 = 1
+		INTENSITY90 = 2
+		INTENSITY100 = 3
+		INTENSITY120 = 4
+		INTENSITY150 = 5
+
+	# Font Sizes 
+		FONT_9X16 = 0
+		FONT_18X16 = 1
+		FONT_9X32 = 2
+		FONT_18X32 = 3
+		FONT_12X24 = 4
+		FONT_24X24 = 5
+		FONT_12X48 = 6
+		FONT_24X48 = 7
+		FONT_DEFAULT = FONT_12X24
+
+	# Font Styles
+		FONT_PLAIN = 0
+		FONT_BOLD = 1
+		FONT_ITALIC = 2
+		FONT_UNDERLINE = 4
+		FONT_INVERSE = 8
+
+
+	# ResetDefaults Flags
+		RESET_PRINTSETTINGS = 1
+		RESET_FONTSETTINGS = 2
+		RESET_BARCODESETTINGS = 4
+		RESET_DONTSETPRINTER = 128
+
+	# Align Flags
+		ALIGN_LEFT = 0
+		ALIGN_CENTER = 1
+		ALIGN_RIGHT = 2
+		TEXT_WORDWRAP = 1
+
+		TEXT_ROTATE_0 = 0
+		TEXT_ROTATE_90 = 1
+		TEXT_ROTATE_180 = 2
+
+		LINESPACE_DEFAULT = 34
+
+		BLACKMARK_TRESHOLD_DEFAULT = 104
+
+	# Encryptions
+		ALG_AES256 = 0
+
+	# Encryptions
+	# Authentication key
+		KEY_AUTHENTICATION = 0
+	# Encryption key, if set magnetic card data will be encrypted
+		KEY_ENCRYPTION  = 1
+
+	  # Creates and initializes new Linea class instance or returns already initalized one. Use this function, if you want to \
+	  # access Linea from multiple classes
+	  # return instance of Linea device class (Linea)
+	  def self.sharedDevice
+		if $our_line_object == nil
+		  $our_line_object = Linea.new
+		end	
+		return $our_line_object
+	  end
+	  # get current connection state
+	  # return int 
+	  def get_connstate
+	  end
+	  
+	  # get Linea device name
+	  # return string
+	  def get_deviceName
+	  end	
+
+	  # get Linea device model
+	  # return string 
+	  def get_deviceModel
+	  end	
+
+	  # get firmware revision
+	  # return string
+	  def get_firmwareRevision
+	  end	
+
+	  # get hardware revision
+	  # return string
+	  def get_hardwareRevision
+	  end	
+	 
+	  # get serial number
+	  # return string
+	  def get_serialNumber
+	  end	
+	 
+	  # Instead of special delegate class (in objective-C interface) we use callback mechanism for any feedback from device :
+	  # if you want listen events from Line device - make Ruby function in your controller
+	  # and post his url to this function
+	  # after it you will receive events from device in your controller's function
+	  # All events receive in one callback function
+	  # use  @params['delegateEvent'] for detect type of event
+	  # List of events (equal to LineaDelegate interface methods, also see LineaSDK documentation for details about parameters) :
+	  #
+	  # @params['delegateEvent'] == 'connectionState'
+	  #       @params['state'] - int value
+	  #
+	  # @params['delegateEvent'] == 'buttonPressed'
+	  #       @params['which'] - int value
+	  #
+	  # @params['delegateEvent'] == 'buttonReleased'
+	  #       @params['which'] - int value
+	  #
+	  # @params['delegateEvent'] == 'barcodeData'
+	  #       @params['type'] - int value
+	  #       @params['barcode'] - string value
+	  #
+	  # @params['delegateEvent'] == 'magneticCardData'
+	  #       @params['track1'] - string value
+	  #       @params['track2'] - string value
+	  #       @params['track3'] - string value
+	  #
+	  # @params['delegateEvent'] == 'magneticCardRawData'
+	  #       @params['tracks'] - array of bytes value
+	  #
+	  # @params['delegateEvent'] == 'magneticCardEncryptedData'
+	  #       @params['encryption'] - int value
+	  #       @params['data'] - array of bytes value
+	  #
+	  # @params['delegateEvent'] == 'magneticCardEncryptedRawData'
+	  #       @params['encryption'] - int value
+	  #       @params['data'] - array of bytes value
+	  #
+	  # 
+	  #  example (code in controller.rb) :
+	  # 
+	  #  require 'linea'
+	  #  
+	  #  class YoupageController < Rho::RhoController
+	  #
+	  #    def index
+	  #        Linea.sharedDevice.addDelegate(url_for(:action => :linea_callback))
+	  #        render
+	  #    end
+	  #  
+	  #    def linea_callback
+	  #       puts 'callback'
+	  #       if @params['delegateEvent'] == 'connectionState'
+	  #         state = @params['state']
+	  #       end
+	  #    end
+	  #
+	  #    ....
+	  #
+	  #  delegate_callback - string
+	  def addDelegate(delegate_callback)
+	  end	
+
+	  # remove callback - see addDelegate function for more detail
+	  # delegate_callback - string
+	  def removeDelegate(delegate_callback)
+	  end	
+
+	  def connect
+	  end	
+
+	  def disconnect
+	  end	
+
+	  # type - int
+	  # return string
+	  def barcodeType2Text(type)
+	  end	 
+
+	  def startScan
+	  end
+
+	  def stopScan
+	  end
+
+	  # return int
+	  def getScanTimeout
+	  end	 
+	 
+	  # timeout - int
+	  def setScanTimeout(timeout)
+	  end	 
+	 
+	  # return int
+	  def getScanButtonMode
+	  end	 
+
+	  # mode - int
+	  def setScanButtonMode(mode)
+	  end	 
+
+	  # return int
+	  def getScanMode
+	  end	 
+
+	  # mode - int
+	  def setScanMode(mode)
+	  end	 
+	  
+	  # barcode_type - int
+	  # enabled - BOOL
+	  def enableBarcode(barcode_type, enabled)
+	  end	 
+	 
+	  # enabled - BOOL
+	  # volume - int
+	  # beepData - array of int/fixnums
+	  def setScanBeep(enabled, volume, beepData) 
+	  end	
+
+	  # return int
+	  def getBatteryCapacity
+	  end	 
+
+	  # return int
+	  def getBatteryVoltage
+	  end	 
+	 
+	  # type - int
+	  # return BOOL
+	  def isBarcodeEnabled?(type)
+	  end	 
+
+	  # type - int
+	  # return BOOL
+	  def isBarcodeSupported?(type)
+	  end	 
+
+	  # volume - int
+	  # beepData - array of int/fixnums
+	  def playSound(volume, beepData)
+	  end	
+
+	  def msStartScan
+	  end	
+	 
+	  def msStopScan
+	  end	
+
+	  # return int
+	  def getMSCardDataMode
+	  end	 
+
+	  # mode - int
+	  def setMSCardDataMode(mode)
+	  end	 
+
+	  # return BOOL
+	  def getCharging?
+	  end	 
+
+	  # enabled - BOOL
+	  def setCharging(enabled) 
+	  end	
+
+	  # path - string
+	  # return HASH with firmwareInfo struct fields (all keys with value type):
+	  #      'deviceName' - string
+	  #      'deviceModel' - string
+	  #      'firmwareRevision' - string
+	  #      'firmwareRevisionNumber' - int
+	  def getFirmwareFileInformation(path)
+	  end	 
+
+	  # path - string
+	  def updateFirmware(path)
+	  end	
+	 
+	  # return int
+	  def getSyncButtonMode
+	  end	 
+
+	  # mode - int
+	  def setSyncButtonMode(mode)
+	  end	
+	 
+	  # track1 - string
+	  # track2 - string
+	  # return nil if nothing or HASH with financialCard struct (all keys with value type):
+	  #      'accountNumber' - string
+	  #      'cardholderName' - string
+	  #      'exirationYear' - int
+	  #      'exirationMonth' - int
+	  #      'serviceCode' - string
+	  #      'discretionaryData' - string
+	  #      'firstName' - string
+	  #      'lastName' - string  
+	  def msProcessFinancialCard(track1, track2)
+	  end
+	 
+	  # return int
+	  def getBarcodeTypeMode
+	  end	 
+
+	  # mode - int
+	  # return BOOL
+	  def setBarcodeTypeMode?(mode)
+	  end	
+
+	  # return array of bytes
+	  def cryptoRawGenerateRandomData
+	  end	
+
+	  # keyID - int
+	  # encryptedData - array of bytes
+	  def cryptoRawSetKey(keyID, encryptedData)
+	  end	
+
+	  # keyID - int
+	  # key - arrays of byte
+	  # oldKey - arrays of byte
+	  def cryptoSetKey(keyID, key, oldKey)
+	  end	
+
+	  # randomData - array of bytes 
+	  # return array of bytes
+	  def cryptoRawAuthenticateLinea(randomData)
+	  end
+
+	  # key - array of bytes
+	  # return BOOL
+	  def cryptoAuthenticateLinea?(key)
+	  end
+	 
+	  # data - array of bytes
+	  # return BOOL
+	  def barcodeEngineWrite?(data)
+	  end	
+
+	  # data - string
+	  # return BOOL
+	  def barcodeEngineWriteString?(data)
+	  end	
+
+	  # max_length - int with maximum length of readed data in bytes
+	  # timeout - float
+	  # return array of bytes or nil if nothing
+	  def barcodeEngineRead(max_length, timeout)
+	  end	
+
+	  # enabled - BOOL
+	  def barcodeEnginePowerControl(enable)
+	  end	    
+
+	  # params - string
+	  def barcodeOpticonSetParams(params)
+	  end	
+
+	end
+
+
+## Simple example of using Line API in ruby controller
+
+This is simple example of ruby code where you can see how LineSDK is used in ruby controller.
+
+	:::ruby
+	require 'rho/rhocontroller'
+	require 'linea'
+
+	 
+	class ScanbarcodeController < Rho::RhoController
+
+	  
+	  def index
+		puts 'ScanBarcodeController.index'
+		Linea.sharedDevice.addDelegate(url_for(:action => :linea_callback))
+		render
+	  end
+
+
+	  def do_connect
+		begin
+		  Linea.sharedDevice.connect
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def do_disconnect
+		begin
+		  Linea.sharedDevice.disconnect
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def do_startScan
+		begin
+		  Linea.sharedDevice.startScan
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def do_stopScan
+		begin
+		  Linea.sharedDevice.stopScan
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def do_msStartScan
+		begin
+		  Linea.sharedDevice.msStartScan
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def do_msStopScan
+		begin
+		  Linea.sharedDevice.msStopScan
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def do_enableAllBarcodeTypes
+		begin
+			Linea.sharedDevice.enableBarcode(Linea::BAR_ALL, true)
+		rescue
+		  puts 'Linea exception catched : '+$!.to_s
+		end
+	  end
+
+	  def linea_callback
+		 puts 'linea delegate : '+@params['delegateEvent']
+		 if @params['delegateEvent'] == 'connectionState'
+			 state = @params['state']
+			 puts 'connection state : ' + state.to_s
+		 end
+
+		 if @params['delegateEvent'] == 'barcodeData'
+			 barcode = @params['barcode']
+			 type = @params['type']
+			 puts 'recognized barcode data : '+barcode+'  barcode type = '+type.to_s
+		 end
+
+		 if @params['delegateEvent'] == 'magneticCardData'
+			 track1 = @params['track1']
+			 track2 = @params['track2']
+			 track3 = @params['track3']
+			 if track1 != nil
+				 puts ' card recognized track1 = '+track1
+			 end
+			 if track2 != nil
+				 puts ' card recognized track2 = '+track2
+			 end
+			 if track3 != nil
+				 puts ' card recognized track3 = '+track3
+			 end
+		 end
+
+	  end
+
+
+	end
+
+## Complete example  of using Linea API
+
+You can find complete example of using Linea API in  <b>https://github.com/rhomobile/linea-rhodes-demo</b> complete Rhodes application.  In this example you can see native extension with implementation of Ruby interface of LineSDK for Rhodes platform and example application with this native extension.
+Please read the next part of this document for setup you Rhodes XCode project for build for using Linea device - require few changes in XCode project.
+
+In application you can see two pages:
+
+* Info page - where you can see few Linea device parameters
+
+* Barcode scan page - where you can do some Linea operations.
+
+   In Barcode scan page try to use next sequence of buttons :
+   [addDelegate]
+   [connect]
+   see events in Log box
+     
+   for scan barcode use hardware button or [startScan] - scan code by device [stopScan]
+
+## How to use Linea native extension in your application
+
+* copy <b>https://github.com/rhomobile/linea-rhodes-demo/tree/master/extensions/linea</b> native extension folder from <b>linea-rhodes</b> example application to you <b>extensions</b> folder in root folder of your application.
+
+* add <b>linea</b> to list of your extension list in application's <b>build.yml</b> file
+
+* Make following changes in rhodes XCode project (located in $RHODES_ROOT/platform/iphone/rhorunner.xcodeproj ):
+    - go to <b>Frameworks</b> and add <b>ExternalAccessory</b> framework
+    - open <b>info.plist</b> file and add <b>"UISupportedExternalAccessoryProtocols"</b> parameter (array type) with two items : <b> com.datecs.linea.pro.msr</b> and <b>com.datecs.linea.pro.bar</b>
+
+* Put LineaSDK binary and header ( <b>linLineSDK.a</b> and <b>LineSDK.h</b>) into <b>[your application root]/extensions/linea/ext/linea/platform/iphone/LineaSDK/</b>.
+
+build/run application by <b>"rake run:iphone"</b> or <b>"rake device:iphone:production"</b>
+
+Also see Rhodes documentation about ExtendingRhodes - how add and use extension in Rhodes.
