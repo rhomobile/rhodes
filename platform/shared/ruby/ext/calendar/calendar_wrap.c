@@ -1820,7 +1820,7 @@ extern VALUE event_fetch(VALUE params);
 #define fetch event_fetch
 extern VALUE event_fetch_by_id(const char *id);
 #define fetch_by_id event_fetch_by_id
-extern void event_save(VALUE event);
+extern const char* event_save(VALUE event);
 #define save event_save
 extern void event_delete(const char *id);
 #define delete event_delete
@@ -1879,6 +1879,30 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, (long)(size));
+    }
+  } else {
+    return Qnil;
+  }
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
 SWIGINTERN VALUE
 _wrap_fetch(int argc, VALUE *argv, VALUE self) {
   VALUE arg1 = (VALUE) 0 ;
@@ -1930,6 +1954,8 @@ fail:
 SWIGINTERN VALUE
 _wrap_save(int argc, VALUE *argv, VALUE self) {
   VALUE arg1 = (VALUE) 0 ;
+  char *result = 0 ;
+  VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
@@ -1938,8 +1964,9 @@ _wrap_save(int argc, VALUE *argv, VALUE self) {
   {
     Check_Type(arg1, T_HASH);
   }
-  save(arg1);
-  return Qnil;
+  result = (char *)save(arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
 fail:
   return Qnil;
 }
@@ -2248,4 +2275,3 @@ SWIGEXPORT void Init_Calendar(void) {
   rb_define_module_function(mCalendar, "save", _wrap_save, -1);
   rb_define_module_function(mCalendar, "delete", _wrap_delete, -1);
 }
-

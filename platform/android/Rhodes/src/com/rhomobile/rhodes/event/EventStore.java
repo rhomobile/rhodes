@@ -234,6 +234,7 @@ public class EventStore {
 	}
 	
 	public static String save(Event event) {
+		String return_id = null;
 		try {
 			checkCapabilities();
 			
@@ -270,22 +271,23 @@ public class EventStore {
 				r.notifyChange(EVENTS_URI, null);
 				event.id = Long.toString(ContentUris.parseId(euri));
 				Logger.D(TAG, "Event id of event is " + event.id);
+				return_id = event.id;
 			}
 			else {
+				return_id = event.id;
 				Logger.D(TAG, "Update event...");
 				Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(event.id));
 				r.update(uri, values, null, null);
 				r.notifyChange(EVENTS_URI, null);
 				Logger.D(TAG, "Event updated");
 			}
-			
-			return null;
 		}
 		catch (Exception e) {
 			reportFail("save", e);
-			String error = e.getMessage();
-			return error == null ? "unknown" : error;
+			//String error = e.getMessage();
+			return null;//error == null ? "unknown" : error;
 		}
+		return return_id;
 	}
 	
 	public static String delete(String id) {
