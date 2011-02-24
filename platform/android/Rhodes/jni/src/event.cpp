@@ -384,24 +384,32 @@ RHO_GLOBAL VALUE event_fetch_by_id(const char *id)
     return rEvent;
 }
 
-RHO_GLOBAL void event_save(VALUE rEvent)
+static std::string return_string;
+
+RHO_GLOBAL const char* event_save(VALUE rEvent)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
-    if (!cls) return;
+    if (!cls) return NULL;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "save", "(Lcom/rhomobile/rhodes/event/Event;)Ljava/lang/String;");
-    if (!mid) return;
+    if (!mid) return NULL;
 
     jobject jEvent = event_cast<jobject>(rEvent);
-    jstring jError = (jstring)env->CallStaticObjectMethod(cls, mid, jEvent);
+    jstring new_id = (jstring)env->CallStaticObjectMethod(cls, mid, jEvent);
     env->DeleteLocalRef(jEvent);
 
-    if (jError)
-    {
-        std::string error = rho_cast<std::string>(env, jError);
-        env->DeleteLocalRef(jError);
-        rb_raise(rb_eRuntimeError, "Event save failed: %s", error.c_str());
+    //if (jError)
+    //{
+    //    std::string error = rho_cast<std::string>(env, jError);
+    //   env->DeleteLocalRef(jError);
+    //    rb_raise(rb_eRuntimeError, "Event save failed: %s", error.c_str());
+    //}
+    if (new_id) {
+        return_string = rho_cast<std::string>(env, new_id);
+        env->DeleteLocalRef(new_id);
+        return return_string.c_str();
     }
+    return NULL;
 }
 
 RHO_GLOBAL void event_delete(const char *id)
