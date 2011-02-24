@@ -40,7 +40,13 @@ describe "Events" do
     event['end_date'] = end_date
 
     puts "event: #{event}"    
-    Rho::RhoEvent.create!(event)
+
+    event = Rho::RhoEvent.create!(event)
+
+    event.should_not be_nil
+    event['id'].should_not be_nil
+
+    @id = event['id']
 
     newevents = Rho::RhoEvent.find(:all)
     #puts "newevents: #{newevents.inspect.to_s}"
@@ -50,7 +56,12 @@ describe "Events" do
     c = newevents[0]
     puts "c: #{c}"
     
-    @id = c['id']
+    c['id'].should == @id
+    c['title'].should == event['title']
+    c['location'].should == event['location']
+    c['notes'].should == event['notes']
+    c['start_date'].to_s.should == event['start_date'].to_s
+    c['end_date'].to_s.should == event['end_date'].to_s
         
     c['title'].should == title
     c['location'].should == 'loc1'
