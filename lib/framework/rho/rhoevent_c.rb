@@ -35,7 +35,10 @@ module Rho
 
     def self.create!(event)
       event['id'] = nil #indicate that event should be created
-      Rho::Calendar.save(event)
+      event['reminder'] = event['reminder'].to_i if event['reminder'] != nil
+      new_id = Rho::Calendar.save(event)
+      event['id'] = new_id
+      return event
     end
 
     def self.destroy(id)

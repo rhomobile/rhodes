@@ -27,6 +27,7 @@ module Rho
 
     def self.create!(properties)
       pb = Calendar::openCalendar
+      return_event = nil
       unless pb.nil?
         record = Calendar::createEvent(pb)
         if record.nil?
@@ -41,10 +42,11 @@ module Rho
             end
             Calendar::setEventValue(record,key,value)
           end
-          Calendar::addEvent(pb,record)
+          return_event = Calendar::addEvent(pb,record)
         end
         Calendar::closeCalendar(pb)
       end
+      return return_event
     end
 
     def self.destroy(recordId)

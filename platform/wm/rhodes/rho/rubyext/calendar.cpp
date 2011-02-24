@@ -430,7 +430,9 @@ extern "C" VALUE event_fetch_by_id(const char *eid)
     return rho_ruby_get_NIL();
 }
 
-extern "C" void event_save(VALUE rEvent)
+static rho::String return_string_value;
+
+extern "C" const char* event_save(VALUE rEvent)
 {
     calendar_check();
     IPOutlookApp * polApp = COutlookApp::getInstance()->getApp();
@@ -447,7 +449,18 @@ extern "C" void event_save(VALUE rEvent)
         eventFromRuby(rEvent, pEvent);
 
         CHECK(pEvent->Save());
+
+    	if (pEvent != NULL) {
+    		long lOid = 0;
+    		if ( SUCCEEDED(pEvent->get_Oid(&lOid)) )  {
+				return_string_value = convertToStringA(lOid);
+				const char* rrr = return_string_value.c_str();
+        		return rrr;
+ 			}
+    	}
+
     END_CHECK
+    return NULL;
 }
 
 extern "C" void event_delete(const char *eid)
@@ -476,7 +489,7 @@ extern "C" VALUE event_fetch_by_id(const char *eid)
     return  rho_ruby_get_NIL();
 }
 
-extern "C" void event_save(VALUE rEvent)
+extern "C" const char* event_save(VALUE rEvent)
 {
 }
 

@@ -278,7 +278,7 @@ VALUE event_fetch_by_id(const char *eid)
 #endif
 }
 
-void event_save(VALUE rEvent)
+const char* event_save(VALUE rEvent)
 {
     calendar_check();
     
@@ -293,6 +293,7 @@ void event_save(VALUE rEvent)
     if (!saved)
         rb_raise(rb_eRuntimeError, "Event save failed: %s", [[err localizedDescription] UTF8String]);
 #endif
+    return NULL;
 }
 
 void event_delete(const char *eid)
