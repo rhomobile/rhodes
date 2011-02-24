@@ -315,9 +315,9 @@ Return hash of all properties of the events found by specified parameters (index
 	* 'occurring' searches for events that have any part of the event occurring during the period specified by start_date and end_date. 
 * include_repeating -  if false then only search based on an Event's START and END values and do not calculate repeating occurrences of the event; if true then repeating occurrences of an Event are included during the search. 
  
-Create new event in the calendar, set properties of the event from passed as parameter hash, and save created calendar event (create):
+Create new event in the calendar, set properties of the event from passed as parameter hash, and save created calendar event (create), also return hash of all properties of the created event(include 'id' property):
 	:::ruby
-	Rho::RhoEvent.create!(@params['event'])
+	created_event = Rho::RhoEvent.create!(@params['event'])
 
 Find event in the calendar, update record properties from the has passed as parameter and save updated event. Event id passed in the hash (update):
 	:::ruby
