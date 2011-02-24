@@ -278,6 +278,8 @@ VALUE event_fetch_by_id(const char *eid)
 #endif
 }
 
+static NSString* return_string = nil;
+
 const char* event_save(VALUE rEvent)
 {
     calendar_check();
@@ -290,9 +292,16 @@ const char* event_save(VALUE rEvent)
     NSError *err;
     BOOL saved = [eventStore saveEvent:event span:EKSpanFutureEvents error:&err];
     
-    if (!saved)
+    if (saved) {
+		return_string = event.eventIdentifier;
+	}
+	else {
         rb_raise(rb_eRuntimeError, "Event save failed: %s", [[err localizedDescription] UTF8String]);
+	}
 #endif
+	if (return_string != nil) {
+		return [return_string UTF8String];
+	}
     return NULL;
 }
 
