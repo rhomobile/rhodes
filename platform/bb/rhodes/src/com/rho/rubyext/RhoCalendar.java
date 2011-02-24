@@ -478,7 +478,10 @@ public class RhoCalendar extends RubyBasic {
 
 	public static RubyValue addEvent(RubyValue arg0, RubyValue arg1)throws Exception 
 	{
-		return saveEvent(arg0, arg1);
+		saveEvent(arg0, arg1);
+		RhoCalendar pb = (RhoCalendar)arg0;		
+		EVRecord record = (EVRecord)arg1;
+		return pb.getEVRecord(record.m_event);
 	}
 	
 	public static RubyValue deleteEvent(RubyValue arg0, RubyValue arg1)throws Exception 
