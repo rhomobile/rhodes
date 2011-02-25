@@ -1463,7 +1463,7 @@ namespace "run" do
 
       if !running
         # Start the emulator, check on it every 5 seconds until it's running
-        Thread.new { system("\"#{$emulator}\" -avd #{$avdname}") }
+        Thread.new { system("\"#{$emulator}\" -cpu-delay 0 -no-boot-anim -avd #{$avdname}") }
         puts "Waiting up to 180 seconds for emulator..."
         startedWaiting = Time.now
         adbRestarts = 1
