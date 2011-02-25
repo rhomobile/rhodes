@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 require 'pathname'
 
 USE_OWN_STLPORT = false
-USE_TRACES = false
+USE_TRACES = true
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
