@@ -742,7 +742,9 @@ RHO_GLOBAL void mapview_create(rho_param *p)
                 eng_p = value;
         }
 	if (eng_p && eng_p->type == RHO_PARAM_STRING) {
-	   engine = eng_p->v.string;
+           if ((eng_p->v.string != NULL) && (eng_p->v.string[0] != 0)) {
+	      engine = eng_p->v.string;
+           }
 	}
     }
     if (strcasecmp(engine, "Google") == 0) {
