@@ -11,7 +11,7 @@ describe "NavBar" do
     NavBar.started.should ==  false 
 
     NavBar.create :title => "", :left => {:action => :back}
-    sleep 20
+    sleep 2
     NavBar.started.should ==  true
 
     NavBar.remove
