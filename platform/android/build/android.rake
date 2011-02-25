@@ -1553,7 +1553,7 @@ namespace "uninstall" do
     args << flag
     args << "uninstall"
     args << $app_package_name
-    for i in 0..10
+    for i in 0..20
 		result = Jake.run($adb, args)
 		unless $?.success?
 			puts "Error uninstalling application"
@@ -1564,8 +1564,13 @@ namespace "uninstall" do
 			puts "Application uninstalled successfully"
 			break
 		else
-			puts "Error uninstalling application"
-			exit 1 if i == 10
+			if result.include?("Failure")					
+				puts "Application is not installed on the device"
+				break
+			else		
+				puts "Error uninstalling application"
+				exit 1 if i == 20
+			end
 		end
 		sleep(5)
     end
