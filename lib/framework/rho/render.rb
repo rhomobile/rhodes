@@ -163,6 +163,8 @@ module Rho
         data[sym.to_s] = self.instance_variable_get sym
       end
 
+      data["self"] = self
+      
       prepared = bind(data,metadata[action])
       
       translate(prepared,action)
