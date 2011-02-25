@@ -45,6 +45,14 @@ void MapProvider::unregisterMapEngine(String const &id)
     m_engines.remove(id);
 }
 
+bool MapProvider::isRegisteredMapEngine(String const &id) {
+    IMapEngine *engine = m_engines.get(id);
+    if (!engine)
+        return false;
+    return true;
+}
+
+
 IMapView *MapProvider::createMapView(String const &id, IDrawingDevice *device)
 {
     IMapEngine *engine = m_engines.get(id);
@@ -80,6 +88,35 @@ String Annotation::make_address(double latitude, double longitude)
 } // namespace rho
 
 namespace rhomap = rho::common::map;
+
+
+bool rho_map_check_param(rho_param *p) {
+    if (!p || p->type != RHO_PARAM_HASH)
+        rho_ruby_raise_argerror("Wrong input parameter (expect Hash)");
+
+    rho_param *provider = NULL;
+    for (int i = 0, lim = p->v.hash->size; i < lim; ++i)
+    {
+        char *name = p->v.hash->name[i];
+        rho_param *value = p->v.hash->value[i];
+        if (!name || !value)
+            continue;
+
+        if (strcasecmp(name, "provider") == 0)
+            provider = value;
+    }
+
+    std::string providerId = "google";
+    if (provider)
+    {
+        if (provider->type != RHO_PARAM_STRING)
+            rho_ruby_raise_argerror("Wrong 'provider' value (expect String)");
+        providerId = provider->v.string;
+    }
+    std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);
+	return RHOMAPPROVIDER().isRegisteredMapEngine(providerId);
+}
+
 
 rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, int width, int height)
 {
