@@ -3,11 +3,11 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 require 'pathname'
 
 USE_OWN_STLPORT = false
-USE_TRACES = true
+USE_TRACES = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3", 10 => "3.0" }.each do |k,v|
+{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3", 10 => "3.0", 11 => "3.0" }.each do |k,v|
   ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
   ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
 end
