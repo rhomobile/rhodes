@@ -112,7 +112,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     };
     
     Vector/*<SyncSource*>*/ m_sources = new Vector();
-    NetRequest m_NetRequest;
+    NetRequest m_NetRequest, m_NetRequestClientID;
     ISyncProtocol m_SyncProtocol;
     int         m_syncState;
     String     m_clientID = "";
@@ -132,9 +132,28 @@ public class SyncEngine implements NetRequest.IRhoSession
     boolean isSearch(){ return m_bIsSearch; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
 	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
-    void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel(); } }
+    void stopSync()
+    { 
+    	if (isContinueSync())
+    	{ 
+	    	setState(esStop); 
+	    	if (m_NetRequest!=null) 
+	    		m_NetRequest.cancel(); 
+	    	
+	    	if (m_NetRequestClientID!=null) 
+	    		m_NetRequestClientID.cancel(); 
+    	} 
+    }
     void stopSyncByUser(){ m_bStopByUser = true; stopSync(); }
-    void exitSync(){ setState(esExit); m_NetRequest.cancel(); }
+    void exitSync()
+    { 
+    	setState(esExit); 
+    	if (m_NetRequest!=null) 
+    		m_NetRequest.cancel(); 
+    	
+    	if (m_NetRequestClientID!=null) 
+    		m_NetRequestClientID.cancel(); 
+    }
     boolean isStoppedByUser(){ return m_bStopByUser; }
     
     String getClientID(){ return m_clientID; }
@@ -153,6 +172,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     
     SyncNotify getNotify(){ return m_oSyncNotify; }
     NetRequest getNet() { return m_NetRequest;}
+    NetRequest getNetClientID(){ return m_NetRequestClientID; }
     ISyncProtocol getProtocol(){ return m_SyncProtocol; }
     
     boolean isNoThreadedMode(){ return m_bNoThreaded; }
@@ -161,6 +181,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     
     SyncEngine(){
 		m_NetRequest = null;
+		m_NetRequestClientID = null;
     	m_syncState = esNone;
     	
     	initProtocol();
@@ -176,6 +197,8 @@ public class SyncEngine implements NetRequest.IRhoSession
     
     void setFactory(RhoClassFactory factory)throws Exception{ 
 		m_NetRequest = RhoClassFactory.createNetRequest();
+		m_NetRequestClientID = RhoClassFactory.createNetRequest();
+		
 		m_oSyncNotify.setFactory(factory);		
     }
     
@@ -652,7 +675,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 //        if ( ClientRegister.getInstance() != null )
 //            strBody += ClientRegister.getInstance().getRegisterBody();
 
-	    NetResponse resp = getNet().pullData(getProtocol().getClientResetUrl(strClientID), this);
+	    NetResponse resp = getNetClientID().pullData(getProtocol().getClientResetUrl(strClientID), this);
 /*	    
 	    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","+
 	    	    "\"schema_version\":\"7.0\",\"schema\":{"+
@@ -680,7 +703,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 //        if ( ClientRegister.getInstance() != null )
 //            strBody += ClientRegister.getInstance().getRegisterBody();
 	
-	    NetResponse resp = getNet().pullData(getProtocol().getClientCreateUrl(), this);
+	    NetResponse resp = getNetClientID().pullData(getProtocol().getClientCreateUrl(), this);
 	    if ( resp.isOK() && resp.getCharData() != null )
 	    {
 	    	String szData = resp.getCharData();

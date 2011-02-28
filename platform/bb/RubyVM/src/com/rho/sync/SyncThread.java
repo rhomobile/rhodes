@@ -802,6 +802,7 @@ public class SyncThread extends ThreadQueue
 						try{
 							boolean bVerify = arg1 == RubyConstant.QTRUE;
 							getSyncEngine().getNet().sslVerifyPeer(bVerify);
+							getSyncEngine().getNetClientID().sslVerifyPeer(bVerify);
 						}catch(Exception e)
 						{
 							LOG.ERROR("set_ssl_verify_peer failed", e);

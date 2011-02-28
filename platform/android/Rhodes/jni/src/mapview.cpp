@@ -755,7 +755,12 @@ RHO_GLOBAL void mapview_create(rho_param *p)
         google_mapview_create(p);
     }
     else {
-        s_mapdevice = new rhomap::AndroidMapDevice(p);
+		if (rho_map_check_param(p)) {
+			s_mapdevice = new rhomap::AndroidMapDevice(p);
+		}
+		else {
+		        RAWLOG_ERROR("MapView.create: wrong input parameters ! (parameters not validated !)");
+		}
     }
 }
 

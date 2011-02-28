@@ -37,6 +37,12 @@ public class SqliteStorage implements IDBStorage
 		String strDbName = getNameNoExt(strPath);
 		m_fs.delete(strDbName + ".data");
 		m_fs.delete(strDbName + ".data-journal");
+
+		//hsql old files
+		m_fs.delete(strDbName + ".script");
+		m_fs.delete(strDbName + ".script.new");
+		m_fs.delete(strDbName + ".journal");
+		m_fs.delete(strDbName + ".properties");		
 	}
 
 	public IDBResult createResult() {
@@ -245,7 +251,7 @@ public class SqliteStorage implements IDBStorage
 		executeBatchSQL( strTriggers );
 	}
 	
-	public void open(String strPath, String strSqlScript) throws DBException 
+	public void open(String strPath, String strSqlScript, String strEncryptionInfo) throws DBException 
 	{
 		try{
 			String strDbName = getNameNoExt(strPath) + ".data";
@@ -253,8 +259,7 @@ public class SqliteStorage implements IDBStorage
 			//m_dbSess.setDBCallback(this);
 
 			URI myURI = URI.create(strDbName);
-			boolean bEncrypted =  AppBuildConfig.getItem("encrypt_database") != null && 
-           		 AppBuildConfig.getItem("encrypt_database").compareTo("1") == 0;
+			boolean bEncrypted =  strEncryptionInfo != null && strEncryptionInfo.length() >0;
 			DatabaseSecurityOptions dbso = new DatabaseSecurityOptions(bEncrypted);
 			
 			if ( !m_fs.exists(strDbName) )

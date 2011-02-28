@@ -7,6 +7,7 @@ import com.rho.db.IDBResult;
 import com.rho.db.IDBStorage;
 import org.hsqldb.*;
 import org.hsqldb.persist.*;
+import com.rho.AppBuildConfig;
 
 public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
 {
@@ -31,6 +32,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
 		m_fs.delete(strDbName + ".script");
 		m_fs.delete(strDbName + ".script.new");
 		m_fs.delete(strDbName + ".journal");
+		m_fs.delete(strDbName + ".properties");
 	}
 	
 	private String getNameNoExt(String strPath){
@@ -50,7 +52,7 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
 		return m_fs.exists(strDbName + ".data");
 	}
 	
-	public void open(String strPath, String strSqlScript) throws DBException 
+	public void open(String strPath, String strSqlScript, String strEncryptionInfo) throws DBException 
 	{
 		try{
 			m_strSqlScript = strSqlScript;
@@ -59,6 +61,9 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
 			HsqlProperties props = new HsqlProperties();
 			props.setProperty(HsqlDatabaseProperties.hsqldb_default_table_type, "cached");
 
+			if ( strEncryptionInfo != null && strEncryptionInfo.length() > 0 )
+				props.setProperty(HsqlDatabaseProperties.hsqldb_encrypted, strEncryptionInfo);
+			
 			if ( !m_fs.exists(strDbName + ".script") && m_fs.exists(strDbName + ".script.new") )
 				m_fs.renameElement(strDbName + ".script.new", strDbName + ".script");
 				

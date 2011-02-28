@@ -9,7 +9,7 @@ describe "MapView" do
     MapView.create :settings => {:map_type => 'roadmap', :region => [37, -122, 10, 10]}
     w = 5
     #w = 5 if System::get_property('platform') == 'ANDROID'
-    sleep w
+    sleep 20
 
     state = MapView.state
     state.should_not be_nil
@@ -19,7 +19,7 @@ describe "MapView" do
     (state[:center][:longitude] - (-122.0)).abs.should  < delta
 
     MapView.close
-    sleep 2
+    sleep 20
 
     state = MapView.state
     state.should be_nil

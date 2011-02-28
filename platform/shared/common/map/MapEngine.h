@@ -194,6 +194,8 @@ public:
     void registerMapEngine(String const &id, IMapEngine *engine);
     void unregisterMapEngine(String const &id);
 
+	bool isRegisteredMapEngine(String const &id);
+
     IMapView *createMapView(String const &id, IDrawingDevice *device);
     void destroyMapView(IMapView *view);
 
@@ -210,6 +212,8 @@ inline rho::common::map::MapProvider &RHOMAPPROVIDER() {return rho::common::map:
 
 rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDrawingDevice *device, int width, int height);
 void rho_map_destroy(rho::common::map::IMapView *mapview);
+// check param for valid - now check only :provider (must be supported)
+bool rho_map_check_param(rho_param *p);
 
 #endif
 
