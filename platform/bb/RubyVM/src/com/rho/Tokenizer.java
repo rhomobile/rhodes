@@ -15,17 +15,22 @@ public class Tokenizer {
 	}
 	
 	public String nextToken() {
-		eatDelimeters();
+		//eatDelimeters();
 		int start = m_position;
 		while (m_position<m_length && m_delims.indexOf(m_str.charAt(m_position))==-1) {
 			m_position++;
 		}
 		
-		return m_str.substring(start,m_position);
+		String strToken = m_str.substring(start,m_position);
+		eatDelimeters();
+		return strToken;
 	}
 	
-	public void eatDelimeters() {
-		while (m_position<m_length) {
+	public void eatDelimeters() 
+	{
+		if ( m_position == m_length )
+			m_position++;
+		else if (m_position<m_length) {
 			char c = m_str.charAt(m_position);
 			if (m_delims.indexOf(c)>=0) {
 				m_position++;		
@@ -37,8 +42,8 @@ public class Tokenizer {
 	}
 	
     public boolean hasMoreTokens() {
-    	eatDelimeters();
-    	return (m_position < m_length);
+    	//eatDelimeters();
+    	return (m_position <= m_length);
     }
 	
 

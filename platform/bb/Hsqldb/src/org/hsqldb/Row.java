@@ -243,7 +243,7 @@ public class Row implements CachedObject {
 
     public void setInMemory(boolean in) {}
 
-    public void write(RowOutputInterface out) {}
+    public void write(RowOutputInterface out, boolean bFullSave) {}
 
     public void write(RowOutputInterface out, IntLookup lookup) {}
 

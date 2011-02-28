@@ -35,6 +35,21 @@ public class RhoFile
 		return strRes;
 	}
 	
+	public static void writeStringToFile(String szFilePath, String strData)throws Exception
+	{
+		IRAFile file = null;
+		try{
+			file = RhoClassFactory.createRAFile();
+			file.open(szFilePath, "w");
+	        byte[] buf = strData.getBytes();
+	        file.write(buf, 0, buf.length);
+	    }finally
+	    {
+	    	if (file!=null)
+	    		try{ file.close(); }catch(Exception exc){}
+	    }
+	}
+	
 	public static String readStringFromJarFile(String szFilePath, Object root)
 	{
 		java.io.InputStream fstream = null;
