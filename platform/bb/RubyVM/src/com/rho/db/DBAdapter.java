@@ -18,7 +18,7 @@ public class DBAdapter extends RubyBasic
 	
 	private IDBStorage m_dbStorage;
 	private boolean m_bIsOpen = false;
-	private String  m_strDBPath, m_strDBVerPath;
+	private String  m_strDBPath, m_strDbVerPath;
 	private String  m_strDbPartition;
 	private DBAttrManager m_attrMgr = new DBAttrManager();
 	static Hashtable/*Ptr<String,CDBAdapter*>*/ m_mapDBPartitions = new Hashtable();
@@ -259,7 +259,7 @@ public class DBAdapter extends RubyBasic
     	
     	String strPath = RhoClassFactory.createFile().getDirPath(strDBDir);
     	m_strDBPath = strPath + strDBName.substring(nSlash+1);
-    	m_strDBVerPath = strPath + getNameNoExt(strDBName.substring(nSlash+1)) +  ".version";
+    	m_strDbVerPath = strPath + getNameNoExt(strDBName.substring(nSlash+1)) +  ".version";
     }
     
     private String getSqlScript()
@@ -306,88 +306,80 @@ public class DBAdapter extends RubyBasic
     {
     	String m_strRhoVer = "";
     	String m_strAppVer = "";
+    	boolean m_bEncrypted = false;
+    	boolean m_bSqlite = false;
     	
-    	DBVersion(){}
-    	
-    	DBVersion( String strRhoVer, String strAppVer )
+    	boolean isRhoVerChanged(DBVersion dbNewVer)
     	{
-    		m_strRhoVer = strRhoVer;
-    		m_strAppVer = strAppVer;
+    		return m_strRhoVer.compareTo(dbNewVer.m_strRhoVer) != 0;
     	}
+    	boolean isAppVerChanged(DBVersion dbNewVer)
+    	{
+    		return m_strAppVer.compareTo(dbNewVer.m_strAppVer) != 0;
+    	}
+    	
+    	boolean isDbFormatChanged(DBVersion dbNewVer)
+    	{
+    		return m_bEncrypted != dbNewVer.m_bEncrypted || 
+    			m_bSqlite != dbNewVer.m_bSqlite;
+    	}
+    	
+	    void fromFile(String strFilePath)throws Exception
+		{
+	        String strData = RhoFile.readStringFromFile(strFilePath);
+	        
+	        Tokenizer oTokenizer = new Tokenizer( strData, ";" );
+	        int nPos = 0;
+			while (oTokenizer.hasMoreTokens()) 
+	        {
+				String tok = oTokenizer.nextToken();
+				tok.trim();
+				
+				switch(nPos)
+				{
+				case 0:
+					m_strRhoVer = tok;
+					break;
+				case 1:
+					m_strAppVer = tok;
+					break;
+				case 2:
+					m_bEncrypted = tok.compareTo("encrypted") == 0;
+					break;
+				case 3:
+					m_bSqlite = tok.compareTo("sqlite") == 0;
+					break;				
+				}
+				nPos++;
+	        }
+		}
+		
+		void toFile(String strFilePath)throws Exception
+		{
+			String strFullVer = m_strRhoVer + ";" + m_strAppVer + 
+        		";" + (m_bEncrypted ? "encrypted":"") + 
+        		";" + (m_bSqlite ? "sqlite" : "");
+			
+			try{
+				RhoClassFactory.createFile().delete(strFilePath);
+				RhoFile.writeStringToFile(strFilePath, strFullVer);
+			}catch (Exception e) {
+		    	LOG.ERROR("writeDBVersion failed.", e);
+		    	throw e;
+		    }
+		}
     };
     
-    /*private void testError()throws Exception
-    {
-    	throw new net.rim.device.api.io.file.FileIOException(net.rim.device.api.io.file.FileIOException.FILESYSTEM_FULL);
-    }*/
-    DBVersion readDBVersion()throws Exception
+	boolean migrateDB(DBVersion dbVer, DBVersion dbNewVer )
 	{
-    	String strFullVer = "";
-    	IRAFile file = null;
-    	try {
-	    	file = RhoClassFactory.createRAFile();
-	    	try{
-	    		file.open(m_strDBVerPath);
-	    	}catch(j2me.io.FileNotFoundException exc)
-	    	{
-	    		//file not exist
-	    		return new DBVersion();
-	    	}
-	    	
-	        byte buf[] = new byte[20];
-//	        testError();
-	        int len = file.read(buf, 0, buf.length);
-			if ( len > 0 )
-				strFullVer = new String(buf,0,len);
-			
-			if ( strFullVer.length() == 0 )
-				return new DBVersion();
-			
-			int nSep = strFullVer.indexOf(';');
-			if ( nSep == -1 )
-				return new DBVersion(strFullVer, "");
-			
-			return new DBVersion(strFullVer.substring(0,nSep), strFullVer.substring(nSep+1) );
-    	}
-    	catch (Exception e) {
-    		LOG.ERROR("readDBVersion failed.", e);
-    		throw e;
-    	}finally
-    	{
-    		if (file!=null)
-    			try{ file.close(); }catch(Exception exc){}
-    	}
-	}
-	
-	void writeDBVersion(DBVersion ver)throws Exception
-	{
-		IRAFile file = null;
-		try{
-			file = RhoClassFactory.createRAFile();
-			file.open(m_strDBVerPath, "rw");
-	        String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
-	        byte[] buf = strFullVer.getBytes();
-	        file.write(buf, 0, buf.length);
-		}catch (Exception e) {
-	    	LOG.ERROR("writeDBVersion failed.", e);
-	    	throw e;
-	    }finally
-	    {
-	    	if (file!=null)
-	    		try{ file.close(); }catch(Exception exc){}
-	    }
-	}
-    
-	boolean migrateDB(DBVersion dbVer, String strRhoDBVer, String strAppDBVer )
-	{
-	    LOG.INFO( "Try migrate database from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (strRhoDBVer !=null ? strRhoDBVer:"") );
-	    if ( dbVer != null && strRhoDBVer != null &&
-	    	 (dbVer.m_strRhoVer.startsWith("1.4")||dbVer.m_strRhoVer.startsWith("1.4")) && (strRhoDBVer.startsWith("1.5")||strRhoDBVer.startsWith("1.4")) )
+	    LOG.INFO( "Try migrate database from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (dbNewVer.m_strRhoVer !=null ? dbNewVer.m_strRhoVer:"") );
+	    if ( dbVer != null && dbNewVer.m_strRhoVer != null &&
+	    	 (dbVer.m_strRhoVer.startsWith("1.4")||dbVer.m_strRhoVer.startsWith("1.4")) && (dbNewVer.m_strRhoVer.startsWith("1.5")||dbNewVer.m_strRhoVer.startsWith("1.4")) )
 		{
-            LOG.INFO( "No migration required from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (strRhoDBVer !=null ? strRhoDBVer:"") );
+            LOG.INFO( "No migration required from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (dbNewVer.m_strRhoVer !=null ? dbNewVer.m_strRhoVer:"") );
             
             try{
-	        	writeDBVersion( new DBVersion(strRhoDBVer, strAppDBVer) );
+            	dbNewVer.toFile(m_strDbVerPath);
 			}catch(Exception e)
 			{
 	    		LOG.ERROR("migrateDB failed.", e);
@@ -398,18 +390,18 @@ public class DBAdapter extends RubyBasic
 		}
 		
 	    //1.2.x -> 1.5.x,1.4.x
-	    if ( dbVer != null && strRhoDBVer != null &&
-	    	 (dbVer.m_strRhoVer.startsWith("1.2")||dbVer.m_strRhoVer.startsWith("1.4")) && (strRhoDBVer.startsWith("1.5")||strRhoDBVer.startsWith("1.4")) )
+	    if ( dbVer != null && dbNewVer.m_strRhoVer != null &&
+	    	 (dbVer.m_strRhoVer.startsWith("1.2")||dbVer.m_strRhoVer.startsWith("1.4")) && (dbNewVer.m_strRhoVer.startsWith("1.5")||dbNewVer.m_strRhoVer.startsWith("1.4")) )
 	    {
 	    //sources
 	    //priority INTEGER, ADD
 	    //backend_refresh_time int default 0, ADD
-	    	LOG.INFO("Migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer);
+	    	LOG.INFO("Migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer);
 	    	
 			IDBStorage db = null;
 			try{
 			    db = RhoClassFactory.createDBStorage();	    
-				db.open( m_strDBPath, getSqlScript() );
+				db.open( m_strDBPath, getSqlScript(), getEncryptionInfo() );
 	
 		        db.executeSQL( "ALTER TABLE sources ADD priority INTEGER", null, false);
 		        db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0", null, false);
@@ -429,7 +421,7 @@ public class DBAdapter extends RubyBasic
 		        db.close();
 		        db = null;
 		        
-		        writeDBVersion( new DBVersion(strRhoDBVer, strAppDBVer) );
+		        dbNewVer.toFile(m_strDbVerPath);
 	
 		        return true;
 			}catch(Exception e)
@@ -451,85 +443,100 @@ public class DBAdapter extends RubyBasic
 	    return false;
 	}
 	
+	String getEncryptionInfo()
+	{
+		boolean bEncrypted =  AppBuildConfig.getItem("encrypt_database") != null &&
+			AppBuildConfig.getItem("encrypt_database").compareTo("1") == 0;
+		
+		String strRes = "";
+		
+		if (bEncrypted)
+		{
+			String strAppName = "rhodes";
+			try{
+				strAppName = RhoClassFactory.createRhoRubyHelper().getModuleName();
+			}catch(Exception e){}
+			
+			strRes = m_strDbPartition + "_" + strAppName; 
+		}
+		return strRes;
+	}
+	
 	void checkDBVersion()throws Exception
 	{
-		String strRhoDBVer = RhoSupport.getRhoDBVersion();
-		String strAppDBVer = RhoConf.getInstance().getString("app_db_version");
-		
-		DBVersion dbVer = readDBVersion();
+		DBVersion dbNewVer = new DBVersion();
+		dbNewVer.m_strRhoVer = RhoSupport.getRhoDBVersion(); 
+		dbNewVer.m_strAppVer = RhoConf.getInstance().getString("app_db_version");
+		String strEncryptionInfo = getEncryptionInfo();
+		dbNewVer.m_bEncrypted = strEncryptionInfo != null && strEncryptionInfo.length() > 0;
+		dbNewVer.m_bSqlite = Capabilities.USE_SQLITE;
+			
+		DBVersion dbVer = new DBVersion();  
+		dbVer.fromFile(m_strDbVerPath);
 
-		boolean bRhoReset = false;
-	    boolean bAppReset = false;
-		
-		if ( strRhoDBVer != null && strRhoDBVer.length() > 0 )
+		if (dbVer.m_strRhoVer.length() == 0 )
 		{
-			if ( dbVer == null || dbVer.m_strRhoVer == null || !dbVer.m_strRhoVer.equalsIgnoreCase(strRhoDBVer) )
-				bRhoReset = true;
-		}
-		if ( strAppDBVer != null && strAppDBVer.length() > 0 )
-		{
-			if ( dbVer == null || dbVer.m_strAppVer == null || !dbVer.m_strAppVer.equalsIgnoreCase(strAppDBVer) )
-				bAppReset = true;
+			dbNewVer.toFile(m_strDbVerPath);
+			return;
 		}
 		
-	    if ( bRhoReset && !bAppReset )
-	        bRhoReset = !migrateDB(dbVer, strRhoDBVer, strAppDBVer);
-	    else if ( Capabilities.USE_SQLITE )
-	    {
-	    	IFileAccess fs = RhoClassFactory.createFileAccess();
-			String dbName = getNameNoExt(m_strDBPath);
-		    String dbNameScript = dbName + ".script";
-			String dbNameData = dbName + ".data";
-		    String dbNameJournal = dbName + ".journal";
-		    String dbNameProperties = dbName + ".properties";
-	    	
-	    	if ( fs.exists(dbNameScript) )
-	    	{
-	    		LOG.INFO("Remove hsqldb and use sqlite for Blackberry>=5.");
-	    		
-	    		fs.delete(dbNameScript);
-	    		fs.delete(dbNameData);
-	    		fs.delete(dbNameJournal);
-	    		fs.delete(dbNameProperties);
-	    		bRhoReset = true;
-	    	}
-	    }
+		boolean bRhoReset = dbVer.isRhoVerChanged(dbNewVer);
+	    boolean bAppReset = dbVer.isAppVerChanged(dbNewVer);
+		
+		boolean bDbFormatChanged = dbVer.isDbFormatChanged(dbNewVer);
+		if ( !bDbFormatChanged && dbVer.m_bEncrypted )
+		{
+			if (!com.rho.RhoCrypto.isKeyExist(strEncryptionInfo) )
+				bDbFormatChanged = true;
+		}
+		
+		if ( bDbFormatChanged )
+			LOG.INFO("Reset Database( format changed ):" + m_strDBPath);
+		
+	    if ( bRhoReset && !bAppReset && !bDbFormatChanged )
+	        bRhoReset = !migrateDB(dbVer, dbNewVer);
 	    
-		if ( bRhoReset || bAppReset )
+		if ( bRhoReset || bAppReset || bDbFormatChanged)
 		{
-			IDBStorage db = null;
-			try
+			if ( !bDbFormatChanged )
 			{
-			    db = RhoClassFactory.createDBStorage();
-				if ( db.isDbFileExists(m_strDBPath) )
+				IDBStorage db = null;
+				try
 				{
-					db.open( m_strDBPath, "" );
-			    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false);
-			    	if ( !res.isOneEnd() )
-			    	{
-			    		m_strClientInfoInsert = createInsertStatement(res, "client_info");
-			    		m_dataClientInfo = res.getCurData();
-			    	}
+				    db = RhoClassFactory.createDBStorage();
+					if ( db.isDbFileExists(m_strDBPath) )
+					{
+						db.open( m_strDBPath, "", strEncryptionInfo );
+				    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false);
+				    	if ( !res.isOneEnd() )
+				    	{
+				    		m_strClientInfoInsert = createInsertStatement(res, "client_info");
+				    		m_dataClientInfo = res.getCurData();
+				    	}
+					}
+				}catch(Exception exc)
+				{
+					LOG.ERROR("Copy client_info table failed.", exc);
+				}catch(Throwable e)
+				{
+					LOG.ERROR("Copy client_info table crashed.", e);
+				}finally
+				{
+					if (db != null )
+						try{ db.close(); }catch(Exception e){}
 				}
-			}catch(Exception exc)
-			{
-				LOG.ERROR("Copy client_info table failed.", exc);
-			}catch(Throwable e)
-			{
-				LOG.ERROR("Copy client_info table crashed.", e);
-			}finally
-			{
-				if (db != null )
-					try{ db.close(); }catch(Exception e){}
 			}
-		
+			
 			m_dbStorage.deleteAllFiles(m_strDBPath);
 			
-			String fName = makeBlobFolderName();
-			RhoClassFactory.createFile().delete(fName);
-			DBAdapter.makeBlobFolderName(); //Create folder back
+			if ( this.m_strDbPartition.compareTo("user") == 0 ) //do it only once
+			{
+				String fName = makeBlobFolderName();
+				RhoClassFactory.createFile().delete(fName);
+				DBAdapter.makeBlobFolderName(); //Create folder back
+			}
 			
-            writeDBVersion(new DBVersion(strRhoDBVer, strAppDBVer) );
+			dbNewVer.toFile(m_strDbVerPath);
             
             if ( RhoConf.getInstance().isExist("bulksync_state") && RhoConf.getInstance().getInt("bulksync_state") != 0)
             	RhoConf.getInstance().setInt("bulksync_state", 0, true);            
@@ -579,7 +586,7 @@ public class DBAdapter extends RubyBasic
 	    if ( !bTemp )
 	    	checkDBVersion();
 	    
-		m_dbStorage.open(m_strDBPath, getSqlScript() );
+		m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 		
 		//executeSQL("CREATE INDEX by_src ON object_values (source_id)", null);
 		m_bIsOpen = true;
@@ -694,7 +701,7 @@ public class DBAdapter extends RubyBasic
 		    LOG.TRACE("1. Size of " + dbNameData + ": " + fs.size(dbNameData));
 		    
 		    db = RhoClassFactory.createDBStorage();	    
-			db.open( dbNewName, getSqlScript() );
+			db.open( dbNewName, getSqlScript(), getEncryptionInfo() );
 			
 			String[] vecTables = m_dbStorage.getAllTableNames();
 			//IDBResult res;
@@ -734,7 +741,7 @@ public class DBAdapter extends RubyBasic
 		    LOG.TRACE("3. Size of " + dbNameData + ": " + fs.size(dbNameData));
 		    
 		    m_dbStorage = RhoClassFactory.createDBStorage();
-			m_dbStorage.open(m_strDBPath, getSqlScript() );
+			m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 			m_bIsOpen = true;
 			
 			//getAttrMgr().load(this);
@@ -749,7 +756,7 @@ public class DBAdapter extends RubyBasic
 			{
 				LOG.ERROR("destroy_table error.Try to open old DB.");
 				try{
-					m_dbStorage.open(m_strDBPath, getSqlScript() );
+					m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 					m_bIsOpen = true;
 				}catch(Exception exc)
 				{
@@ -889,10 +896,10 @@ public class DBAdapter extends RubyBasic
     {
 		DBAdapter db = null;
 		try{
-			db = (DBAdapter)alloc(null); 
+			db = (DBAdapter)alloc(null);
+			db.setDbPartition(m_strDbPartition);			
     		db.openDB(fDbName, true);
     		db.m_dbStorage.createTriggers();
-    		db.setDbPartition(m_strDbPartition);
 			
 		    db.startTransaction();
 			
@@ -951,7 +958,7 @@ public class DBAdapter extends RubyBasic
 		    	fs.renameOverwrite(fScriptName, dbNameScript);
 		    
 		    m_dbStorage = RhoClassFactory.createDBStorage();
-			m_dbStorage.open(m_strDBPath, getSqlScript() );
+			m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 			m_bIsOpen = true;
 			
 			//getAttrMgr().load(this);
@@ -966,7 +973,7 @@ public class DBAdapter extends RubyBasic
 			{
 				LOG.ERROR("destroy_table error.Try to open old DB.");
 				try{
-					m_dbStorage.open(m_strDBPath, getSqlScript() );
+					m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 					m_bIsOpen = true;
 				}catch(Exception exc)
 				{
@@ -1152,8 +1159,8 @@ public class DBAdapter extends RubyBasic
 		    	{
 		    		String szDbName = arg1.toStr();
 		    		String szDbPartition = arg2.toStr();
+		    		((DBAdapter)receiver).setDbPartition(szDbPartition);		    		
 		    		((DBAdapter)receiver).openDB(szDbName, false);
-		    		((DBAdapter)receiver).setDbPartition(szDbPartition);
 		    		
 		    		DBAdapter.getDBPartitions().put(szDbPartition, receiver);
 		    		
