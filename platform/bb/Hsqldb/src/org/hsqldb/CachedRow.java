@@ -310,12 +310,13 @@ public class CachedRow extends Row {
      * @throws IOException
      * @throws HsqlException
      */
-    public void write(RowOutputInterface out) {
+    public void write(RowOutputInterface out, boolean bFullSave) {
 
         try {
             writeNodes(out);
 
-            if (hasDataChanged) {
+            if (bFullSave || hasDataChanged) 
+            {
                 out.writeData(oData, tTable);
                 out.writeEnd();
 
