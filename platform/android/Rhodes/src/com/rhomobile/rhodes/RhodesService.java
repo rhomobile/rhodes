@@ -281,8 +281,11 @@ public class RhodesService extends Service {
 		createRhodesApp();
 		
 		RhodesActivity ra = RhodesActivity.getInstance();
-		SplashScreen splashScreen = ra.getSplashScreen();
-		splashScreen.start();
+		if (ra != null) {
+			// Show splash screen only if we have active activity
+			SplashScreen splashScreen = ra.getSplashScreen();
+			splashScreen.start();
+		}
 		
 		initForegroundServiceApi();
 		
@@ -404,7 +407,7 @@ public class RhodesService extends Service {
 		if (DEBUG)
 			Log.d(TAG, "+++ onStart");
 		try {
-			handleCommand(intent);
+			handleCommand(intent, startId);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "Can't handle service command: " + e.getMessage());
@@ -416,7 +419,7 @@ public class RhodesService extends Service {
 		if (DEBUG)
 			Log.d(TAG, "+++ onStartCommand");
 		try {
-			handleCommand(intent);
+			handleCommand(intent, startId);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "Can't handle service command: " + e.getMessage());
@@ -424,13 +427,16 @@ public class RhodesService extends Service {
 		return Service.START_STICKY;
 	}
 	
-	private void handleCommand(Intent intent) {
+	private void handleCommand(Intent intent, int startId) {
 		String source = intent.getStringExtra(INTENT_SOURCE);
+		Logger.D(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
 			throw new IllegalArgumentException("Service command received from empty source");
 		
-		Logger.D(TAG, "Service command received from " + source);
-		if (source.equals(PushReceiver.INTENT_SOURCE)) {
+		if (source.equals(BaseActivity.INTENT_SOURCE)) {
+			Logger.D(TAG, "New activity was created");
+		}
+		else if (source.equals(PushReceiver.INTENT_SOURCE)) {
 			int type = intent.getIntExtra(PushReceiver.INTENT_TYPE, PushReceiver.INTENT_TYPE_UNKNOWN);
 			switch (type) {
 			case PushReceiver.INTENT_TYPE_REGISTRATION_ID:
