@@ -207,7 +207,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
     private static final String hsqldb_original_version =
         "hsqldb.original_version";
     public static final String hsqldb_script_format = "hsqldb.script_format";
-
+    public static final String hsqldb_encrypted =  "hsqldb.encrypted";
     //
     private static final String sql_compare_in_locale =
         "sql.compare_in_locale";

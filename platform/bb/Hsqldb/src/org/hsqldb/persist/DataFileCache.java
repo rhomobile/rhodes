@@ -48,6 +48,7 @@ import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.rowio.RowOutputBinary;
 import org.hsqldb.rowio.RowOutputInterface;
 import org.hsqldb.store.BitMap;
+import com.rho.RhoCrypto;
 
 /**
  * Acts as a manager for CACHED table persistence.<p>
@@ -107,6 +108,10 @@ public class DataFileCache {
     public long maxDataFileSize;
 
     //
+    
+    protected boolean m_bEncrypted = false;
+    RhoCrypto m_RhoCrypto;
+    
     protected Storage dataFile;
     protected long    fileFreePosition;
     protected int     maxCacheSize;                // number of Rows
@@ -161,6 +166,16 @@ public class DataFileCache {
                                               : (long) Integer.MAX_VALUE * 4;
         maxFreeBlocks   = 1 << cacheFreeCountScale;
         dataFile        = null;
+        
+        String strEncryptionInfo = database.getURLProperties().getProperty(
+                HsqlDatabaseProperties.hsqldb_encrypted, "");
+        
+        if ( strEncryptionInfo != null && strEncryptionInfo.length() > 0  )
+        {
+        	m_bEncrypted = true;        	
+        	cachedRowPadding = 16;
+        	m_RhoCrypto = new RhoCrypto(strEncryptionInfo,128); 
+        }
     }
 
     public void sync()throws IOException
@@ -378,6 +393,9 @@ public class DataFileCache {
                 fa.removeElement(fileName);
                 fa.removeElement(backupFileName);
             }
+            
+            if ( m_RhoCrypto != null )
+            	m_RhoCrypto.close();
         } catch (Exception e) {
             appLog.logContext(e, null);
 
@@ -560,8 +578,12 @@ public class DataFileCache {
 
         int size = object.getRealSize(rowOut);
 
-        size = ((size + cachedRowPadding - 1) / cachedRowPadding)
-               * cachedRowPadding;
+        if ( m_bEncrypted )
+        	size = (((size-4) + cachedRowPadding - 1) / cachedRowPadding)
+               * cachedRowPadding + 4;
+        else
+        	size = ((size + cachedRowPadding - 1) / cachedRowPadding)
+            	* cachedRowPadding;        	
 
         object.setStorageSize(size);
 
@@ -658,16 +680,32 @@ public class DataFileCache {
         return dataFile.readInt();
     }
 
-    protected synchronized RowInputBinary readObject(int pos)
-    throws IOException {
-
+    private byte[] m_decryptBuffer;
+    protected synchronized RowInputBinary readObject(int pos) throws IOException 
+    {
         dataFile.seek((long) pos * cacheFileScale);
-
         int size = dataFile.readInt();
 
         rowIn.resetRow(pos, size);
-        dataFile.read(rowIn.getBuffer(), 4, size - 4);
-
+        
+        if ( m_bEncrypted )
+        {
+	        if ( m_decryptBuffer == null || m_decryptBuffer.length < size-4 )
+	        	m_decryptBuffer = new byte[size-4];
+	        
+	        dataFile.read(m_decryptBuffer, 0, size-4);
+        
+	        try
+	        {
+	        	m_RhoCrypto.decrypt(m_decryptBuffer, 0, size-4, rowIn.getBuffer(), 4 );
+	        }catch(Exception exc)
+	        {
+	        	database.logger.appLog.logContext(exc, "decrypt failed");
+	        	throw new IOException("decrypt page failed.");
+	        }
+        }else
+        	dataFile.read(rowIn.getBuffer(), 4, size - 4);
+        
         return rowIn;
     }
 
@@ -675,9 +713,8 @@ public class DataFileCache {
         return cache.release(i);
     }
 
-    protected synchronized void saveRows(CachedObject[] rows, int offset,
-                                         int count) throws IOException {
-
+    protected synchronized void saveRows(CachedObject[] rows, int offset, int count) throws IOException 
+    {
         if (count == 0) {
             return;
         }
@@ -707,14 +744,27 @@ public class DataFileCache {
      * Writes out the specified Row. Will write only the Nodes or both Nodes
      * and table row data depending on what is not already persisted to disk.
      */
-    public synchronized void saveRow(CachedObject row) throws IOException {
-
+    public synchronized void saveRow(CachedObject row) throws IOException 
+    {
         setFileModified();
         rowOut.reset();
-        row.write(rowOut);
+        row.write(rowOut, m_bEncrypted);
+        int nOutSize = rowOut.getOutputStream().size();
+        byte[] outBuf = rowOut.getOutputStream().getBuffer();
+        
+        if ( m_bEncrypted )
+        {
+	        try{
+	        	m_RhoCrypto.encrypt(outBuf, 4, nOutSize-4, outBuf, 4 );
+	        }catch(Exception exc)
+	        {
+	         	database.logger.appLog.logContext(exc, "encrypt failed");
+	         	throw new IOException("encrypt page failed.");
+	        }
+        }
+        
         dataFile.seek((long) row.getPos() * cacheFileScale);
-        dataFile.write(rowOut.getOutputStream().getBuffer(), 0,
-                       rowOut.getOutputStream().size());
+        dataFile.write(outBuf, 0, nOutSize);
     }
 
     /**
