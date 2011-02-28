@@ -181,7 +181,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
 
         case local_server_started:
-            // Nothing
+            m_expected = ui_created;
             break;
         case ui_created:
             {
