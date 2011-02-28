@@ -491,6 +491,7 @@ extern "C" VALUE event_fetch_by_id(const char *eid)
 
 extern "C" const char* event_save(VALUE rEvent)
 {
+    return NULL;
 }
 
 extern "C" void event_delete(const char *eid)
