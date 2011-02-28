@@ -28,9 +28,11 @@ module Rho
       		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
   	  end
 
-      if @tabs
+      if @vtabs != nil
+        @@native_bar_data = {:type => :vtabbar, :data => @vtabs}
+      elsif @tabs != nil
         @@native_bar_data = {:type => :tabbar, :data => @tabs}
-      elsif @@toolbar
+      elsif @@toolbar != nil
         @@native_bar_data = {:type => :toolbar, :data => @@toolbar}
       else
         @@native_bar_data = nil #{:type => :nobar}
@@ -44,7 +46,15 @@ module Rho
     def init_nativebar
       return unless @@native_bar_data
       
-      if @@native_bar_data[:type] == :tabbar
+      if @@native_bar_data[:type] == :vtabbar
+        tabs = @@native_bar_data[:data]
+        # normalize the list
+        tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+        puts "Initializing application with vertical tabs: #{tabs.inspect}"
+        NativeTabbar.create_vertical(tabs)
+        #NativeTabbar.create(tabs)
+        NativeTabbar.switch_tab(0)
+      elsif @@native_bar_data[:type] == :tabbar
         tabs = @@native_bar_data[:data]
         # normalize the list
         tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
