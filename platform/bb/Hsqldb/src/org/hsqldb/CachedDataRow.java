@@ -118,7 +118,7 @@ class CachedDataRow extends CachedRow {
      *  to true when changes are made to the Nodes. (Nodes are in-memory).
      *  The only time this is used is when a new Row is added to the Caches.
      */
-    public void write(RowOutputInterface out) {
+    public void write(RowOutputInterface out, boolean bFullSave) {
 
         out.writeSize(storageSize);
         out.writeData(oData, tTable);

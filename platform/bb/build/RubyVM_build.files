@@ -46,6 +46,7 @@ platform/bb/RubyVM/src/com/rho/StringScanner.java
 platform/bb/RubyVM/src/com/rho/Capabilities.java
 platform/bb/RubyVM/src/com/rho/AppBuildConfig.java
 platform/bb/RubyVM/src/com/rho/Extensions.java
+platform/bb/RubyVM/src/com/rho/RhoCrypto.java
 platform/bb/RubyVM/src/com/rho/sync/JSONArrayIterator.java
 platform/bb/RubyVM/src/com/rho/sync/JSONStructIterator.java
 platform/bb/RubyVM/src/com/rho/sync/JSONEntry.java

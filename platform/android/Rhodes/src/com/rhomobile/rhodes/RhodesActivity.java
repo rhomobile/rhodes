@@ -85,13 +85,16 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(mSetup);
 		
 		sInstance = this;
-
+		
+		notifyUiCreated();
+	}
+	
+	private void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
-		if ( r != null )
-		{
+		if ( r != null ) {
 			r.callUiCreatedCallback();
-		}else
-		{
+		}
+		else {
 			mHandler.post(new Runnable() {
 				public void run() {
 					RhodesService r = RhodesService.getInstance();

@@ -7,7 +7,7 @@ USE_TRACES = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3", 10 => "3.0" }.each do |k,v|
+{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3", 10 => "2.3.3", 11 => "3.0" }.each do |k,v|
   ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
   ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
 end
@@ -1553,7 +1553,7 @@ namespace "uninstall" do
     args << flag
     args << "uninstall"
     args << $app_package_name
-    for i in 0..10
+    for i in 0..20
 		result = Jake.run($adb, args)
 		unless $?.success?
 			puts "Error uninstalling application"
@@ -1564,8 +1564,13 @@ namespace "uninstall" do
 			puts "Application uninstalled successfully"
 			break
 		else
-			puts "Error uninstalling application"
-			exit 1 if i == 10
+			if result.include?("Failure")					
+				puts "Application is not installed on the device"
+				break
+			else		
+				puts "Error uninstalling application"
+				exit 1 if i == 20
+			end
 		end
 		sleep(5)
     end

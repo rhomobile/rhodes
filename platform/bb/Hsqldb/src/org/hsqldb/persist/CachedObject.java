@@ -63,7 +63,7 @@ public interface CachedObject {
 
     void setInMemory(boolean in);
 
-    void write(RowOutputInterface out);
+    void write(RowOutputInterface out, boolean bFullSave);
 
     void write(RowOutputInterface out, IntLookup lookup);
 }
