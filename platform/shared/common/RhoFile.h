@@ -43,6 +43,7 @@ public:
     static void         loadTextFile(const char* szFilePath, String& strFile);
     static void         createFolder(const char* szDirPath);
     static void         readStringFromFile( const char* szFilePath, String& strData );
+    static void         writeStringToFile( const char* szFilePath, String& strData );
 private:
     CRhoFile(const CRhoFile&);
     void operator=(const CRhoFile&);

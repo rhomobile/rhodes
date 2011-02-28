@@ -245,5 +245,15 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     }
 }
 
+/*static*/ void  CRhoFile::writeStringToFile( const char* szFilePath, String& strData )
+{
+    common::CRhoFile oFile;
+    if ( oFile.open( szFilePath, common::CRhoFile::OpenForWrite) )
+    {
+        oFile.write(strData.c_str(), strData.length() );
+        oFile.close();
+    }
+}
+
 }
 }
