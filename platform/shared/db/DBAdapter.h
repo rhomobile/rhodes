@@ -44,8 +44,26 @@ class CDBAdapter
     {
     	String m_strRhoVer;
     	String m_strAppVer;
+        boolean m_bEncrypted;
+
+        boolean isRhoVerChanged(CDBVersion& dbNewVer)
+    	{
+    		return m_strRhoVer.compare(dbNewVer.m_strRhoVer) != 0;
+    	}
+    	boolean isAppVerChanged(CDBVersion& dbNewVer)
+    	{
+    		return m_strAppVer.compare(dbNewVer.m_strAppVer) != 0;
+    	}
     	
-        CDBVersion(){}
+    	boolean isDbFormatChanged(CDBVersion& dbNewVer)
+    	{
+    		return m_bEncrypted != dbNewVer.m_bEncrypted;// || 
+    			//m_bSqlite != dbNewVer.m_bSqlite;
+    	}
+        void fromFile(const String& strFilePath);//throws Exception
+        void toFile(const String& strFilePath)const;//throws Exception
+
+        CDBVersion() : m_bEncrypted(false){}
     	CDBVersion( String strRhoVer, String strAppVer )
     	{
     		m_strRhoVer = strRhoVer;
@@ -287,15 +305,13 @@ public:
 private:
 
     void checkDBVersion(String& strVer);
-    CDBVersion readDBVersion();//throws Exception
-    void       writeDBVersion(const CDBVersion& ver);//throws Exception
     void createSchema();
     void createTriggers();
     boolean checkDbError(int rc);
     boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);
     sqlite3_stmt* createInsertStatement(IDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert);
 
-    boolean migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer);
+    boolean migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer);
     void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);
     void copyChangedValues(CDBAdapter& db);
 };
