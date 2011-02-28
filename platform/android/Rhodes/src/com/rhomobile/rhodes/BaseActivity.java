@@ -17,6 +17,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	
 	private static final boolean DEBUG = false;
 	
+	public static final String INTENT_SOURCE = BaseActivity.class.getName();
+	
 	protected RhodesService mRhodesService;
 	private boolean mBoundToService;
 
@@ -25,6 +27,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		super.onCreate(savedInstanceState);
 		
 		Intent intent = new Intent(this, RhodesService.class);
+		intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 		ComponentName serviceName = startService(intent);
 		if (serviceName == null)
 			throw new RuntimeException("Can not start Rhodes service");
