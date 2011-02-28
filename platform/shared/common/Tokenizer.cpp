@@ -12,32 +12,36 @@ CTokenizer::CTokenizer(String str,String delims) {
 	
 String CTokenizer::nextToken() 
 {
-	eatDelimeters();
+	//eatDelimeters();
 	int start = m_position;
 	while (m_position<m_length && m_delims.find(m_str.at(m_position)) == String::npos ) {
 		m_position++;
 	}
-	
-	return m_str.substr(start,m_position-start);
+
+    String strToken = m_str.substr(start,m_position-start);
+	eatDelimeters();
+	return strToken;
 }
 	
 void CTokenizer::eatDelimeters() 
 {
-	while (m_position<m_length) {
-		char c = m_str.at(m_position);
+    if ( m_position == m_length )
+		m_position++;
+	else if (m_position<m_length)
+    {
+        char c = m_str.at(m_position);
 		if (m_delims.find(c) != String::npos ) {
 			m_position++;		
 		} else {
 			return;
 		}
-		
 	}
 }
 	
 boolean CTokenizer::hasMoreTokens() 
 {
-	eatDelimeters();
-	return (m_position < m_length);
+	//eatDelimeters();
+	return (m_position <= m_length);
 }
 
 }	
