@@ -7,6 +7,7 @@
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 #include "common/RhoAppAdapter.h"
+#include "common/Tokenizer.h"
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
@@ -182,26 +183,68 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 
 }
 
-boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer, const String& strAppDBVer )
+void CDBAdapter::CDBVersion::fromFile(const String& strFilePath)//throws Exception
 {
-    LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
-    if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (strRhoDBVer.find("1.5")==0||strRhoDBVer.find("1.4")==0) )
+    String strData;
+    CRhoFile::readStringFromFile(strFilePath.c_str(), strData);
+    
+    CTokenizer oTokenizer( strData, ";" );
+    int nPos = 0;
+	while (oTokenizer.hasMoreTokens()) 
     {
-        LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
-        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+		String tok = oTokenizer.nextToken();
+		tok = String_trim(tok);
+		
+		switch(nPos)
+		{
+		case 0:
+			m_strRhoVer = tok;
+			break;
+		case 1:
+			m_strAppVer = tok;
+			break;
+		case 2:
+			m_bEncrypted = tok.compare("encrypted") == 0;
+			break;
+		}
+		nPos++;
+    }
+}
+
+void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exception
+{
+	String strFullVer = m_strRhoVer + ";" + m_strAppVer + 
+		";" + (m_bEncrypted ? "encrypted":"");
+	
+	//try{
+        CRhoFile::deleteFile( strFilePath.c_str() );
+        CRhoFile::writeStringToFile(strFilePath.c_str(), strFullVer);
+	//}catch (Exception e) {
+   // 	LOG.ERROR("writeDBVersion failed.", e);
+    //	throw e;
+    //}
+}
+
+boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer )
+{
+    LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
+    if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (dbNewVer.m_strRhoVer.find("1.5")==0||dbNewVer.m_strRhoVer.find("1.4")==0) )
+    {
+        LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
+        dbNewVer.toFile(m_strDbVerPath);
         return true;
     }
 
     if ( (dbVer.m_strRhoVer.find("2.0") == 0||dbVer.m_strRhoVer.find("2.1") == 0||dbVer.m_strRhoVer.find("2.2") == 0)&& 
-         (strRhoDBVer.find("2.0")==0||strRhoDBVer.find("2.1")==0||strRhoDBVer.find("2.2")==0) )
+         (dbNewVer.m_strRhoVer.find("2.0")==0||dbNewVer.m_strRhoVer.find("2.1")==0||dbNewVer.m_strRhoVer.find("2.2")==0) )
     {
-        LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
-        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+        LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
+        dbNewVer.toFile(m_strDbVerPath);
         return true;
     }
 
     //1.2.x -> 1.5.x,1.4.x
-    if ( (dbVer.m_strRhoVer.find("1.2") == 0)&& (strRhoDBVer.find("1.5")==0||strRhoDBVer.find("1.4")==0) )
+    if ( (dbVer.m_strRhoVer.find("1.2") == 0)&& (dbNewVer.m_strRhoVer.find("1.5")==0||dbNewVer.m_strRhoVer.find("1.4")==0) )
     {
     //sources
     //priority INTEGER, ADD
@@ -210,7 +253,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 
     //changed_values
     //id INTEGER PRIMARY KEY, REMOVE
-        LOG(INFO) + "Migrate database from " + dbVer.m_strRhoVer + " to " + strRhoDBVer;
+        LOG(INFO) + "Migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
 
         CDBAdapter db(m_strDbPartition.c_str(), true);
         db.open( m_strDbPath, m_strDbVer, true );
@@ -231,7 +274,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
         }
         db.close();
 
-        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+        dbNewVer.toFile(m_strDbVerPath);
 
         return true;
     }
@@ -241,73 +284,63 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const String& strRhoDBVer
 
 void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 {
-	String strAppDBVer = RHOCONF().getString("app_db_version");
+    CDBVersion dbNewVer;
+	dbNewVer.m_strRhoVer = strRhoDBVer; 
+	dbNewVer.m_strAppVer = RHOCONF().getString("app_db_version");
+
+    const char* szEncrypt = get_app_build_config_item("encrypt_database");
+	dbNewVer.m_bEncrypted = szEncrypt && strcmp(szEncrypt, "1") == 0;
+		
+	CDBVersion dbVer;  
+	dbVer.fromFile(m_strDbVerPath);
+
+	if (dbVer.m_strRhoVer.length() == 0 )
+	{
+		dbNewVer.toFile(m_strDbVerPath);
+		return;
+	}
 	
-	CDBVersion dbVer = readDBVersion();
-
-	boolean bRhoReset = false;
-    boolean bAppReset = false;
-
-	if ( strRhoDBVer.length() > 0 )
+	boolean bRhoReset = dbVer.isRhoVerChanged(dbNewVer);
+    boolean bAppReset = dbVer.isAppVerChanged(dbNewVer);
+	
+	boolean bDbFormatChanged = dbVer.isDbFormatChanged(dbNewVer);
+	if ( !bDbFormatChanged && dbVer.m_bEncrypted )
 	{
-		if ( dbVer.m_strRhoVer.compare(strRhoDBVer) != 0 )
-			bRhoReset = true;
+		//if (!com.rho.RhoCrypto.isKeyExist(strEncryptionInfo) )
+		//	bDbFormatChanged = true;
 	}
-	if ( strAppDBVer.length() > 0 )
-	{
-		if ( dbVer.m_strAppVer.compare(strAppDBVer) != 0 )
-			bAppReset = true;
-	}
+	
+	if ( bDbFormatChanged )
+		LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
+	
+    if ( bRhoReset && !bAppReset && !bDbFormatChanged )
+        bRhoReset = !migrateDB(dbVer, dbNewVer);
 
-    if ( bRhoReset && !bAppReset )
-        bRhoReset = !migrateDB(dbVer, strRhoDBVer, strAppDBVer);
-
-	if ( bRhoReset || bAppReset )
+    if ( bRhoReset || bAppReset || bDbFormatChanged)
 	{
         LOG(INFO) + "Reset database because version is changed.";
 
         CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
         CRhoFile::deleteFile( (m_strDbPath+"_oldver-journal").c_str());
 
-        CRhoFile::renameFile( m_strDbPath.c_str(), (m_strDbPath+"_oldver").c_str());
-        CRhoFile::renameFile((m_strDbPath+"-journal").c_str(), (m_strDbPath+"_oldver-journal").c_str());
+        if ( bDbFormatChanged )
+        {
+            CRhoFile::deleteFile( m_strDbPath.c_str() );
+            CRhoFile::deleteFile((m_strDbPath+"-journal").c_str());
+        }else
+        {
+            CRhoFile::renameFile( m_strDbPath.c_str(), (m_strDbPath+"_oldver").c_str());
+            CRhoFile::renameFile((m_strDbPath+"-journal").c_str(), (m_strDbPath+"_oldver-journal").c_str());
+        }
 
-        CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
+        if ( m_strDbPartition.compare("user") == 0 ) //do it only once
+            CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
-        writeDBVersion( CDBVersion(strRhoDBVer, strAppDBVer) );
+        dbNewVer.toFile(m_strDbVerPath);
 
         if ( RHOCONF().isExist("bulksync_state") && RHOCONF().getInt("bulksync_state") != 0)
             RHOCONF().setInt("bulksync_state", 0, true);
-	}
-}
-
-CDBAdapter::CDBVersion CDBAdapter::readDBVersion()//throws Exception
-{
-    String strFullVer;
-    CRhoFile oFile;
-    if ( !oFile.open(m_strDbVerPath.c_str(),CRhoFile::OpenReadOnly) )
-        return CDBVersion();
-
-    oFile.readString(strFullVer);
-	
-	if ( strFullVer.length() == 0 )
-		return CDBVersion();
-	
-	int nSep = strFullVer.find(';');
-	if ( nSep == -1 )
-		return CDBVersion(strFullVer, "");
-	
-	return CDBVersion(strFullVer.substr(0,nSep), strFullVer.substr(nSep+1) );
-}
-
-void CDBAdapter::writeDBVersion(const CDBVersion& ver)//throws Exception
-{
-    String strFullVer = ver.m_strRhoVer + ";" + ver.m_strAppVer;
-    CRhoFile oFile;
-    if ( !oFile.open(m_strDbVerPath.c_str(),CRhoFile::OpenForWrite) )
-        return;
-
-    oFile.write(strFullVer.c_str(), strFullVer.length() );
+    }
 }
 
 sqlite3_stmt* CDBAdapter::createInsertStatement(IDBResult& res, const String& tableName, CDBAdapter& db, String& strInsert)
