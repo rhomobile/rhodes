@@ -37,9 +37,9 @@ This will generate a model file, controller file, and several views (correspondi
 
 ## More Resources
 
-There is a [tutorial available](http://wiki.rhomobile.com/index.php/Tutorial) on the [Rhomobile site](http://www.rhomobile.com).  This includes thorough and current platform-by-platform build instructions.
+There is a [tutorial available](http://docs.rhomobile.com/rhodes/tutorial) on the [Rhomobile site](http://www.rhomobile.com).  This includes thorough and current platform-by-platform build instructions.
 
-The [Rhodes Developer Reference](http://wiki.rhomobile.com/index.php/Rhodes) for full documentation on the Rhodes framework.
+The [Rhodes Developer Reference](http://docs.rhomobile.com/rhodes/introduction) for full documentation on the Rhodes framework.
 
 For further questions [email us](mailto:info@rhomobile.com) or join the [Google Group](http://groups.google.com/group/rhomobile).
 
