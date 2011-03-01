@@ -785,7 +785,8 @@ If your application requires that the local database is encrypted on the filesys
 * Windows Mobile: Uses RC4 algorithm from Windows Mobile SDK.
 
 ### Blackberry Notes
-* Blackberry JDE >= 5.0: Uses built-in encryption library for SQLite database.
+* Any Blackberry versions: Uses AES 128 ecryption algorithm from Blackberry JDK with HSQL database
+* Blackberry JDE >= 5.0 with SQLITE: Uses built-in encryption library for SQLite database.
 
 **NOTE: Bulk sync is not supported in this mode.**
 

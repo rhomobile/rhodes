@@ -1,3 +1,9 @@
+## 2.3.1
+* iPhone XCode 4 support
+* Android 3.0 SDK support
+* Encryption for HSQL DB on Blackberry
+* Support rake commands to start Windows Mobile emulator
+
 ## 2.3
 * ESRI map support on all platforms
 * Add Infinite Peripherals extension
