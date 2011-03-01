@@ -12,7 +12,6 @@ Below is the list of available `AsyncHttp` methods you can use to asyncrhonously
 * `:callback_params` - (optional) Parameters to send to the callback.
 * `:authentication` - (optional) Send Basic Auth header with request.  This takes the form:
 		
-		:::ruby
 		:authentication => {
 		  :type => :basic, 
 		  :username => "john", 
