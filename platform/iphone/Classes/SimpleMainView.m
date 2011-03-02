@@ -397,8 +397,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
-	if (current_orientation == fromInterfaceOrientation) {
+	if ([[UIApplication sharedApplication] statusBarOrientation] == fromInterfaceOrientation) {
 		return;
 	}
 	int width = rho_sys_get_screen_width();
@@ -408,7 +407,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	int angle = 0;
 	switch (fromInterfaceOrientation) {
 		case UIInterfaceOrientationPortrait: {
-			switch (current_orientation) {
+			switch ([self interfaceOrientation]) {
 				case UIInterfaceOrientationLandscapeLeft: {
 					angle = 90;
 				}
@@ -425,7 +424,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		}
 		break;
 		case UIInterfaceOrientationLandscapeLeft: {
-			switch (current_orientation) {
+			switch ([self interfaceOrientation]) {
 				case UIInterfaceOrientationPortrait: {
 					angle = -90;
 				}
@@ -442,7 +441,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		}
 		break;
 		case UIInterfaceOrientationPortraitUpsideDown: {
-			switch (current_orientation) {
+			switch ([self interfaceOrientation]) {
 				case UIInterfaceOrientationPortrait: {
 					angle = 180;
 				}
@@ -459,7 +458,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		}
 		break;
 		case UIInterfaceOrientationLandscapeRight: {
-			switch (current_orientation) {
+			switch ([self interfaceOrientation]) {
 				case UIInterfaceOrientationPortrait: {
 					angle = 90;
 				}
@@ -476,7 +475,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		}
 		break;
 	}
-	if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+	if (([self interfaceOrientation] == UIInterfaceOrientationLandscapeLeft) || ([self interfaceOrientation] == UIInterfaceOrientationLandscapeRight)) {
 		int t = width;
 		width = height;
 		height = t;
