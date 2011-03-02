@@ -528,3 +528,6 @@ Make sure following folder added to your compiler include path:
 * [$(RHO_ROOT)/platform/shared/ruby/iphone](http://github.com/rhomobile/rhodes/tree/master/platform/shared/ruby/iphone/)
 * [$(RHO_ROOT)/platform/shared/common](http://github.com/rhomobile/rhodes/tree/master/platform/shared/common/)
 
+## Using LineaSDK in Rhodes (with using special Linea native extension)
+Please see documentation :  [LineaSDK as native extension in Rhodes applications](linea) 
+
