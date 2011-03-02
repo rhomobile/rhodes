@@ -1,4 +1,4 @@
-# LineaSDK as native extension in RHodes applications
+# LineaSDK as native extension in Rhodes applications
 
 ## Definition
 LineaSDK Ruby interface provide access to Linea device from Ruby code in Rhodes application.
