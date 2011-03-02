@@ -354,6 +354,16 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_width()); return 1; }
     else if (strcasecmp("screen_height", szPropName) == 0)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_height()); return 1; }
+    else if (strcasecmp("orientation", szPropName) == 0) {
+        UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+            *resValue = rho_ruby_create_string("landscape");
+        }
+        else {
+            *resValue = rho_ruby_create_string("portrait");
+        }
+        return 1;
+    }
     else if (strcasecmp("has_network", szPropName) == 0)
         {*resValue = rho_sys_has_network(); return 1; }
     else if (strcasecmp("has_camera", szPropName) == 0) {
