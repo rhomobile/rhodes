@@ -250,12 +250,20 @@ VALUE rho_sys_get_locale()
 int rho_sys_get_screen_width()
 {
     CGRect rect = [[UIScreen mainScreen] bounds];
+    UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+        return rect.size.height;
+	}
     return rect.size.width;
 }
 
 int rho_sys_get_screen_height()
 {
     CGRect rect = [[UIScreen mainScreen] bounds];
+    UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+        return rect.size.width;
+	}
     return rect.size.height;
 }
 
