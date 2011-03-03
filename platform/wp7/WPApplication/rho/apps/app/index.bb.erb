@@ -1,0 +1,26 @@
+<div id="pageTitle">
+    <h1>Wptest</h1>
+</div>
+
+<div id="toolbar">
+        <%= link_to "Sync", :controller => :Settings, :action => :do_sync %>
+    	<% if SyncEngine::logged_in > 0 %>
+    	    <%= link_to "Logout", :controller => :Settings, :action => :logout %>
+    	<% else %>
+            <%= link_to "Login", :controller => :Settings, :action => :login %>
+    	<% end %>
+</div>
+
+
+<div id="content">
+    <table>
+      <tr>
+        <td class="recordLabel">Add links here...</td>
+      </tr>
+    </table>
+</div>
+
+
+
+
+

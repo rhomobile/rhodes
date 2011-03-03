@@ -1,0 +1,31 @@
+<div class="pageTitle">
+  <h1>New <%= @model1.title %></h1>
+</div>
+
+<div class="toolbar">
+  <div class="leftItem backButton">
+    <a class="cancel" href="<%= url_for :action => :index %>">Cancel</a>
+  </div>
+</div>
+
+<div class="content">
+  <form method="POST" action="<%= url_for :action => :create %>">
+    <input type="hidden" name="id" value="<%= @model1.object %>"/>
+    <ul>
+      
+          <li>
+            <label for="model1[name]" class="fieldLabel">Name</label>
+            <input type="text" name="model1[name]" <%=
+            placeholder("Name") %> />
+          </li>
+      
+          <li>
+            <label for="model1[address]" class="fieldLabel">Address</label>
+            <input type="text" name="model1[address]" <%=
+            placeholder("Address") %> />
+          </li>
+      
+    </ul>
+    <input type="submit" class="standardButton" value="Create"/>
+  </form>
+</div>
