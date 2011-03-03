@@ -116,6 +116,12 @@ See the [Configuration](configuration#build-time-configuration) section for more
 
 The GPS receiver consumes a significant amount of energy, and should be switched off most of the time in order to preserve the device's battery life. Any call to get location information will power up the GPS receiver. Also note that it usually takes a while to acquire the device's current position; in some cases, it may take several minutes and may not work at all indoors.
 
+Note that in old rhodes versions (up to 2.3.1) this feature uses only GPS location provider;
+however, in new rhodes it also use network based location determination. Network based location
+is not so precise as GPS but in most cases it consume less power and return results faster than GPS.
+Rhodes will update location using network data until GPS has started; then only GPS will be used
+as more precise data.
+
 ### Asynchronous Ajax calls
 
 The Rhodes framework provides a simple HTML tag for accessing Geolocation information. To use it, include the appropriate javascript library on your page:
