@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5C1CD2E9-92F9-460A-9606-9F01AF614428}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WPApplication</RootNamespace>
+    <AssemblyName>WPApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile>WindowsPhone</TargetFrameworkProfile>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>WPApplication.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>WPApplication.App</SilverlightAppEntry>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IronRuby">
+      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries">
+      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Phone" />
+    <Reference Include="Microsoft.Phone.Interop" />
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core">
+      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\Microsoft.Scripting.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WP_PlatformAdaptationLayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="windows_mobile.css" />
+    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\WMAppManifest.xml" />
+    <Content Include="readme.htm" />
+    <Content Include="rho\apps\app\loading.html" />
+    <Content Include="rho\db\syncdb.schema" />
+    <Content Include="rho\db\syncdb.triggers" />
+    <Content Include="rho\lib\bsearch.rb" />
+    <Content Include="rho\lib\date.rb" />
+    <Content Include="rho\lib\dateOrig.rb" />
+    <Content Include="rho\lib\erb.rb" />
+    <Content Include="rho\lib\indifferent_access.rb" />
+    <Content Include="rho\lib\rational.rb" />
+    <Content Include="rho\lib\rho.rb" />
+    <Content Include="rho\lib\rhodes.rb" />
+    <Content Include="rho\lib\rhoframework.rb" />
+    <Content Include="rho\lib\rhofsconnector.rb" />
+    <Content Include="rho\lib\rhom.rb" />
+    <Content Include="rho\lib\singleton.rb" />
+    <Content Include="rho\lib\time.rb" />
+    <Content Include="rho\lib\version.rb" />
+    <Content Include="rho\apps\app\application.rb" />
+    <Content Include="rho\apps\app\index.bb.erb" />
+    <Content Include="rho\apps\app\index.erb" />
+    <Content Include="rho\apps\app\layout.erb" />
+    <Content Include="rho\apps\app\helpers\application_helper.rb" />
+    <Content Include="rho\apps\app\helpers\browser_helper.rb" />
+    <Content Include="rho\apps\app\Model1\edit.bb.erb" />
+    <Content Include="rho\apps\app\Model1\edit.erb" />
+    <Content Include="rho\apps\app\Model1\index.bb.erb" />
+    <Content Include="rho\apps\app\Model1\index.erb" />
+    <Content Include="rho\apps\app\Model1\model1.rb" />
+    <Content Include="rho\apps\app\Model1\model1_controller.rb" />
+    <Content Include="rho\apps\app\Model1\new.bb.erb" />
+    <Content Include="rho\apps\app\Model1\new.erb" />
+    <Content Include="rho\apps\app\Model1\show.bb.erb" />
+    <Content Include="rho\apps\app\Model1\show.erb" />
+    <Content Include="rho\apps\app\Settings\controller.rb" />
+    <Content Include="rho\apps\app\Settings\home.bb.erb" />
+    <Content Include="rho\apps\app\Settings\home.erb" />
+    <Content Include="rho\apps\app\Settings\index.bb.erb" />
+    <Content Include="rho\apps\app\Settings\index.erb" />
+    <Content Include="rho\apps\app\Settings\login.bb.erb" />
+    <Content Include="rho\apps\app\Settings\login.erb" />
+    <Content Include="rho\apps\app\Settings\reset.bb.erb" />
+    <Content Include="rho\apps\app\Settings\reset.erb" />
+    <Content Include="rho\apps\app\Settings\wait.bb.erb" />
+    <Content Include="rho\apps\app\Settings\wait.erb" />
+    <Content Include="rho\lib\date\format.rb" />
+    <Content Include="rho\lib\rho\mapview.rb" />
+    <Content Include="rho\lib\rho\render.rb" />
+    <Content Include="rho\lib\rho\rho.rb" />
+    <Content Include="rho\lib\rho\rhoapplication.rb" />
+    <Content Include="rho\lib\rho\rhobluetooth.rb" />
+    <Content Include="rho\lib\rho\rhocontact.rb" />
+    <Content Include="rho\lib\rho\rhocontroller.rb" />
+    <Content Include="rho\lib\rho\rhoerror.rb" />
+    <Content Include="rho\lib\rho\rhoevent.rb" />
+    <Content Include="rho\lib\rho\rhoevent_bb.rb" />
+    <Content Include="rho\lib\rho\rhoevent_c.rb" />
+    <Content Include="rho\lib\rho\rhofsconnector.rb" />
+    <Content Include="rho\lib\rho\rhomsg.rb" />
+    <Content Include="rho\lib\rho\rhosupport.rb" />
+    <Content Include="rho\lib\rho\rhoutils.rb" />
+    <Content Include="rho\lib\rho\rhoviewhelpers.rb" />
+    <Content Include="rho\lib\rholang\lang_en.rb" />
+    <Content Include="rho\lib\rholang\lang_es.rb" />
+    <Content Include="rho\lib\rholang\localization_simplified.rb" />
+    <Content Include="rho\lib\rholang\rhoerror_de.rb" />
+    <Content Include="rho\lib\rholang\rhoerror_en.rb" />
+    <Content Include="rho\lib\rholang\rhoerror_es.rb" />
+    <Content Include="rho\lib\rholang\rhomsg_de.rb" />
+    <Content Include="rho\lib\rholang\rhomsg_en.rb" />
+    <Content Include="rho\lib\rholang\rhomsg_es.rb" />
+    <Content Include="rho\lib\rhom\rhom.rb" />
+    <Content Include="rho\lib\rhom\rhom_db_adapter.rb" />
+    <Content Include="rho\lib\rhom\rhom_model.rb" />
+    <Content Include="rho\lib\rhom\rhom_object.rb" />
+    <Content Include="rho\lib\rhom\rhom_object_factory.rb" />
+    <Content Include="rho\lib\rhom\rhom_source.rb" />
+    <Content Include="rho\lib\rhosystem.rb" />
+    <Content Include="rho\lib\rho\rhotabbar.rb" />
+    <Content Include="rho\lib\rho\rhotoolbar.rb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="rho\apps\app_manifest.txt" />
+    <Content Include="rho\apps\rhoconfig.txt" />
+    <Content Include="SplashScreenImage.jpg" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions />
+</Project>

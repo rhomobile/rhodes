@@ -1,0 +1,17 @@
+<div id="pageTitle">
+	<h1>Home</h1>
+</div>
+
+<div id="toolbar">
+    <% if SyncEngine::logged_in > 0 %>
+	    <%=  link_to "Logout", :action => :logout %>
+	<% else %>
+	    <%=  link_to "Login", :action => :login %>
+	<% end %>
+</div>
+
+<div id="content">
+    <ul>
+    	<li>Add links here...</li>
+    </ul>
+</div>
