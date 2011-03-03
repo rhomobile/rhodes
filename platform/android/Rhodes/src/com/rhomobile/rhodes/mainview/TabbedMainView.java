@@ -44,6 +44,7 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
@@ -618,6 +619,89 @@ public class TabbedMainView implements MainView {
 		
 	}
 
+	private class TabHostClickListener implements View.OnTouchListener, View.OnClickListener, TabHost.OnTabChangeListener {
+		
+		public TabHost tabHost;
+		private float x = -1000;
+		private float y = -1000;
+		private int sel_col = 0;
+		private boolean sel_col_enable = false;
+		
+		public boolean onTouch(View v, MotionEvent event) {
+			x = event.getX() + v.getLeft();
+			y = event.getY() + v.getTop();
+			//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "onTouch( "+String.valueOf((int)x)+" , "+String.valueOf((int)y)+" )");
+			return false;
+		}
+
+		public void onClick(View v) {
+			//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "onClick( "+String.valueOf((int)x)+" , "+String.valueOf((int)y)+" )");
+			// found child item
+			for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) { 
+				int curIndex = i;
+				int left = tabHost.getTabWidget().getChildAt(curIndex).getLeft();
+				int top = tabHost.getTabWidget().getChildAt(curIndex).getTop();
+				int width = tabHost.getTabWidget().getChildAt(curIndex).getWidth();
+				int height = tabHost.getTabWidget().getChildAt(curIndex).getHeight();
+				//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "current item have rect [ "+String.valueOf(left)+" , "+String.valueOf(top)+" , "+String.valueOf(width)+" , "+String.valueOf(height)+" ]");
+				if (	( ( left <= x) && (x <= (left+width))) &&
+						( (top <= y) && (y <= (top+height))) ) {
+					//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "clicked item no "+String.valueOf(curIndex));
+					onTabChangedIndex(curIndex);
+					return;
+				}
+			}
+			//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "not found clicked item");
+		}
+		
+		private void onTabChangedIndex(int index) {
+			//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "onTabChangedIndex( "+String.valueOf(index)+" )");
+			int new_tabIndex = index;
+			sel_col = 0;
+			sel_col_enable = false;
+			TabData data = tabData.elementAt(new_tabIndex);
+			if (data == null) {
+				return;
+			}
+			if (data.disabled) {
+				// return to previous selected
+				tabHost.setCurrentTab(tabIndex);
+				return;
+			}
+			boolean real_change = (tabIndex != new_tabIndex);
+			tabIndex = new_tabIndex;
+			if (real_change) {
+				tabHost.setCurrentTab(tabIndex);
+				// all will processed when onTabChanged received
+				return;
+			}
+			if ((data.reload || real_change) || !data.loaded ) {
+				if (mIsReallyOnScreen) {
+					RhodesService.loadUrl(data.url);
+					data.loaded = true;
+				}
+			}
+			sel_col = data.selected_color;
+			sel_col_enable = data.selected_color_enabled;
+			
+			//if (real_change && mIsReallyOnScreen) {
+			processTabHostColors(tabHost, sel_col, sel_col_enable);
+			//}
+		}
+		
+		public void onTabChanged(String tabId) {
+			try {
+				int new_tabIndex = Integer.parseInt(tabId);
+				onTabChangedIndex(new_tabIndex);
+			}
+			catch (NumberFormatException e) {
+				Logger.E(TAG, e);
+			}
+		}
+		
+		
+	}
+	
 	public void loadFirstPage() {
 
 		int sel_col = 0;
@@ -657,40 +741,15 @@ public class TabbedMainView implements MainView {
 		
 		host.requestLayout();
 
-		host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-			private TabHost tabHost = host;
-			
-			public void onTabChanged(String tabId) {
-				//Utils.platformLog("TabbedMainView", "onTabChangeListener( "+tabId+" )");
-				int sel_col = 0;
-				boolean sel_col_enable = false;
-				try {
-					int new_tabIndex = Integer.parseInt(tabId);
-					TabData data = tabData.elementAt(new_tabIndex);
-					if (data != null) {
-						if (data.disabled) {
-							// return to previous selected
-							tabHost.setCurrentTab(tabIndex);
-							return;
-						}
-					}
-					boolean real_change = (tabIndex != new_tabIndex);
-					tabIndex = new_tabIndex;
-					if ((data.reload && real_change) || !data.loaded ) {
-						if (mIsReallyOnScreen) {
-							RhodesService.loadUrl(data.url);
-							data.loaded = true;
-						}
-					}
-					sel_col = data.selected_color;
-					sel_col_enable = data.selected_color_enabled;
-				}
-				catch (NumberFormatException e) {
-					Logger.E(TAG, e);
-				}
-				processTabHostColors(tabHost, sel_col, sel_col_enable);
-			}
-		});
+		TabHostClickListener listener = new TabHostClickListener();
+		listener.tabHost = host;
+		
+		host.setOnTabChangedListener(listener);
+		
+		for (int i = 0; i < host.getTabWidget().getChildCount(); i++) { 
+				host.getTabWidget().getChildAt(i).setOnTouchListener( listener);
+				host.getTabWidget().getChildAt(i).setOnClickListener(listener);
+		}
 
 		if (data != null) {
 			try {
