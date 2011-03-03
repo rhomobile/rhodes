@@ -1,0 +1,28 @@
+<div class="pageTitle">
+  <h1><%= @model1.name %></h1>
+</div>
+
+<div class="toolbar">
+  <div class="leftItem backButton">
+    <a href="<%= url_for :action => :index %>">Back</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a href="<%= url_for :action => :edit, :id => @model1.object %>">Edit</a>
+  </div>
+</div>
+
+<div class="content">
+  <ul>
+    
+        <li>
+          <div class="itemLabel">Name</div>
+          <div class="itemValue"><%= @model1.name %></div>
+        </li>
+    
+        <li>
+          <div class="itemLabel">Address</div>
+          <div class="itemValue"><%= @model1.address %></div>
+        </li>
+    
+  </ul>
+</div>

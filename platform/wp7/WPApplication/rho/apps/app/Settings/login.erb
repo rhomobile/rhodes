@@ -1,0 +1,27 @@
+<div class="pageTitle">
+  <h1>Login</h1>
+</div>
+
+<div class="toolbar">
+</div>
+
+
+<div class="content" >
+  <form method="POST" action="<%= url_for :action => :do_login %>">
+    <% if @msg %>
+        <p style="color: red"><%= @msg %></p>
+    <% end %>
+    <ul>
+      <li>
+        <label for="login" class="fieldLabel">Login</label>
+        <input type="text" name="login" <%= placeholder("Login") %> />
+      </li>
+
+      <li>
+        <label for="password" class="fieldLabel">Password</label>
+        <input type="password" name="password" <%= placeholder("Password") %> />
+      </li>
+    </ul>
+    <input type="submit" class="standardButton" value="Login"/>
+  </form>
+</div>

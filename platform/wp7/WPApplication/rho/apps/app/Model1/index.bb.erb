@@ -1,0 +1,21 @@
+<div id="pageTitle">
+	<h1>Model1s</h1>
+</div>
+
+
+<div id="toolbar">
+    <%= link_to "New", :action => :new %>
+    <%= link_to "Home", RhoConfig::start_path %>
+</div>
+
+<div id="content">
+  <table>
+    <tr>
+    <% @model1s.each do |obj| %>
+    	
+    	    <td class="recordLabel"><%= link_to "#{obj.name}", :action => :show, :id => obj.object %></td>
+    	
+    <% end %>
+    </tr>
+  </table>
+</div>
