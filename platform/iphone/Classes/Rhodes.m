@@ -516,6 +516,11 @@ static Rhodes *instance = NULL;
     @finally {
         [pool release];
     }
+    
+    if (rho_conf_getBool("full_screen") != 0) {
+        [Rhodes setStatusBarHidden:YES];
+    }
+    
 }
 
 - (void)doStartUp {
@@ -530,6 +535,8 @@ static Rhodes *instance = NULL;
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
     
     NSLog(@"Init all windows");
+    
+    
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -548,7 +555,8 @@ static Rhodes *instance = NULL;
 	}
 	
     [window makeKeyAndVisible];
-	
+
+ 
 	CGRect rrr = [application statusBarFrame];
 	
     NSLog(@"Init cookies");
