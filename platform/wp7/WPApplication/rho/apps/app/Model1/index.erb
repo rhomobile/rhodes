@@ -1,0 +1,26 @@
+<div class="pageTitle">
+  <h1>Model1s</h1>
+</div>
+
+<div class="toolbar">
+  <div class="leftItem regularButton">
+    <a href="<%= Rho::RhoConfig.start_path %>">Home</a>
+  </div>
+  <div class="rightItem regularButton">
+    <a class="button" href="<%= url_for :action => :new %>">New</a>
+  </div>
+</div>
+
+<div class="content">
+  <ul>
+    <% @model1s.each do |model1| %>
+    
+        <li>
+          <a href="<%= url_for :action => :show, :id => model1.object %>">
+            <span class="title"><%= model1.name %></span><span class="disclosure_indicator"></span>
+          </a>
+        </li>
+    
+    <% end %>
+  </ul>
+</div>

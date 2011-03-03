@@ -1,0 +1,37 @@
+<html>
+   <head><title>Sample Readme File</title></head>
+   <body>
+      <p>Sample Readme Content</p>
+
+	  <a href="#" onClick="test_call2();">Make call</a>
+   </body>
+
+   <script type="text/javascript">
+	function test_call2()
+	{
+	  window.external.notify("test")
+	}
+
+	function test_call3(arg)
+	{
+	  window.external.notify(arg)
+	}
+
+	function createXMLHttpRequest() {
+	   try { return new XMLHttpRequest(); } catch(e) {alert("err1");}
+	   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e) {alert("err1");}
+	   alert("XMLHttpRequest not supported");
+	   return null;
+	 }
+
+	function test_call()
+	{
+		//var xhReq = new XMLHttpRequest();
+		var xhReq = createXMLHttpRequest();
+		xhReq.open("GET", "http://ajaxify.com/run/xmlHtttpRequestCall/sumGet.phtml?figure1=5&figure2=10", false);
+		xhReq.send(null);
+		var serverResponse = xhReq.responseText;
+		alert(serverResponse); // Shows "15"
+	}
+   </script>
+</html>
