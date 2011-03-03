@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010 Express for Windows Phone
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPApplication", "WPApplication\WPApplication.csproj", "{5C1CD2E9-92F9-460A-9606-9F01AF614428}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		FxCop|Any CPU = FxCop|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Silverlight3Debug|Any CPU = Silverlight3Debug|Any CPU
+		Silverlight3Release|Any CPU = Silverlight3Release|Any CPU
+		Silverlight4Debug|Any CPU = Silverlight4Debug|Any CPU
+		Silverlight4Release|Any CPU = Silverlight4Release|Any CPU
+		v2Debug|Any CPU = v2Debug|Any CPU
+		v2Release|Any CPU = v2Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.FxCop|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.FxCop|Any CPU.Build.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.FxCop|Any CPU.Deploy.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight3Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight3Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight3Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight3Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight3Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight3Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight4Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight4Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight4Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight4Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight4Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.Silverlight4Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.v2Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.v2Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.v2Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.v2Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.v2Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1CD2E9-92F9-460A-9606-9F01AF614428}.v2Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

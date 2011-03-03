@@ -1,0 +1,29 @@
+<div id="pageTitle">
+		<h1>Edit <%= @model1.name%></h1>
+</div>
+
+<div id="toolbar">
+    <%= link_to "Back", :action => :show, :id => @model1.object %>
+    <%= link_to "Delete", :action => :delete, :id => @model1.object %>
+</div>
+
+
+<div id="content">
+    <form method="POST" action="<%= url_for :action => :update %>">
+    	<input type="hidden" name="id" value="<%= @model1.object %>"/>
+            <table>
+        		
+                    <tr>
+            			<td class="itemLabel">Name: </td>
+              			<td class="itemValue"><input type="text" name="model1[name]" value="<%= @model1.name %>"/></td>
+          		    </tr>
+        		
+                    <tr>
+            			<td class="itemLabel">Address: </td>
+              			<td class="itemValue"><input type="text" name="model1[address]" value="<%= @model1.address %>"/></td>
+          		    </tr>
+        		
+            </table>
+            <input type="submit" class="standardButton" value="Update" />
+    </form>
+</div>
