@@ -1437,16 +1437,19 @@ namespace "run" do
     def  run_emulator
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
 
-      Jake.run($adb, ['kill-server'])	
+      Jake.run($adb, ['kill-server'])
+      sleep 5	
       #Jake.run($adb, ['start-server'])	
       #adb_start_server = $adb + ' start-server'
-      Thread.new { Jake.run($adb, ['start-server']) }
+      Thread.new { Jake.run($adb, ['start-server'], nil, true) }
+      puts $adb
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
 
       if $appavdname != nil
         $avdname = $appavdname
       end
+
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M " #--skin HVGA"
       system(createavd) unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
@@ -1481,7 +1484,7 @@ namespace "run" do
               # Restart the adb server every 60 seconds to prevent eternal waiting
               puts "Appears hung, restarting adb server"
               Jake.run($adb, ['kill-server'])
-              Thread.new { Jake.run($adb, ['start-server']) }
+              Thread.new { Jake.run($adb, ['start-server'], nil, true) }
               adbRestarts += 1
             else
               puts "Still waiting..."
