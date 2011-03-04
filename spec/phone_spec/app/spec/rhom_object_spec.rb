@@ -1328,7 +1328,17 @@ describe "Rhom::RhomObject" do
         @accts[0].name.should == "Aeroprise"
     end        
   end
-  
+
+  it "should find by sql" do
+    if $spec_settings[:schema_model]
+    
+        @accts = getAccount.find_by_sql("SELECT * FROM " + getAccount_str() )
+        @accts.length.should == 2
+        
+        @accts[0].name.should_not be_nil
+        @accts[1].name.should_not be_nil
+    end    
+  end  
 #=end
 end
 #=begin
