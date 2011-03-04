@@ -371,6 +371,12 @@ The `:order` argument accepts several forms:
 ### `find_all(*args)`
 Alias for find(:all,*args).
 
+### `find_by_sql(sql_query)`
+Returns rhom object(s) based on sql_query. This method works only for schema models:
+
+    :::ruby
+    @accts = Account.find_by_sql("SELECT * FROM Account")
+
 ### `new(attributes = nil)`
 Creates a new rhom object and assigns given attributes, or initializes an empty rhom object.
 
