@@ -23,12 +23,16 @@ module LocalizationSimplified
   end
   
   def self.requre_loc(file,check_exist)
-      curLocale = System::get_locale()
-      puts 'Current locale: ' + curLocale.to_s
+      curLocale = System::get_locale().downcase
+      curCountry = System::get_property("country").downcase
+      
+      puts "Current locale: #{curLocale}; Country code: #{curCountry}"
       @@cur_locale = curLocale
       
       if check_exist
-        if Rho::file_exist?(file + curLocale + '.iseq')
+        if curCountry && curCountry.length() > 0 && Rho::file_exist?(file + curLocale + '_' + curCountry + '.iseq') 
+            require file + curLocale + '_' + curCountry
+        elsif Rho::file_exist?(file + curLocale + '.iseq')
             require file + curLocale
         else    
             puts 'Could not find resources for locale: ' + curLocale.to_s if curLocale != 'en'
@@ -38,12 +42,24 @@ module LocalizationSimplified
             end    
         end
       else
-        begin
-            require file + curLocale
-        rescue Exception => e
-            puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
-            require file + 'en' unless curLocale == 'en'
+        bLoaded = false
+        
+        if curCountry && curCountry.length() > 0
+            begin
+                require file + curLocale + '_' + curCountry
+                bLoaded = true
+            rescue Exception => e      
+            end
         end
+                
+        unless bLoaded
+            begin
+                require file + curLocale
+            rescue Exception => e
+                puts 'Could not load locale: ' + curLocale.to_s + '. Load english.'
+                require file + 'en' unless curLocale == 'en'
+            end
+        end    
       end
   end
 end
