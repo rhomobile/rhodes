@@ -24,24 +24,11 @@ import android.provider.ContactsContract.RawContacts;
 public class ContactAccessorNew implements ContactAccessor {
 	
 	private static final String TAG = "ContactsAccessorNew";
-	private static final boolean logging_enable = false;
-	
-	/*
-	private static final String PB_ID = Phonebook.PB_ID;
-	private static final String PB_FIRST_NAME = Phonebook.PB_FIRST_NAME;
-	private static final String PB_LAST_NAME = Phonebook.PB_LAST_NAME;
-	private static final String PB_MOBILE_NUMBER = Phonebook.PB_MOBILE_NUMBER;
-	private static final String PB_HOME_NUMBER = Phonebook.PB_HOME_NUMBER;
-	private static final String PB_BUSINESS_NUMBER = Phonebook.PB_BUSINESS_NUMBER;
-	private static final String PB_EMAIL_ADDRESS = Phonebook.PB_EMAIL_ADDRESS;
-	private static final String PB_COMPANY_NAME = Phonebook.PB_COMPANY_NAME;
-	*/
+	private static final boolean DEBUG = false;
 	
 	private ContentResolver cr;
 	private String accName;
 	private String accType;
-	
-	
 	
 	public ContactAccessorNew() throws Exception {
 		Context ctx = RhodesService.getContext();
@@ -61,36 +48,54 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	public void fillName(String id, Contact contact) {
-		if (logging_enable) Logger.I(TAG, "fillName("+id+")");
+		if (DEBUG)
+			Logger.D(TAG, "fillName("+id+")");
+		
 		contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, "");
 		contact.setFieldInner(Phonebook.PB_I_LAST_NAME, "");
 		
 		Cursor cursor = cr.query(Data.CONTENT_URI,
-				new String[] {StructuredName.DISPLAY_NAME},
+				new String[] {StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME, StructuredName.DISPLAY_NAME},
 				Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] {id, StructuredName.CONTENT_ITEM_TYPE},
 				null);
 		try {
 			if (!cursor.moveToFirst()) {
-				if (logging_enable) Logger.I(TAG, "fillName() not found record with ID");
+				if (DEBUG)
+					Logger.D(TAG, "fillName() not found record with ID");
 				return;
 			}
 			
-			String name = cursor.getString(cursor.getColumnIndex(StructuredName.DISPLAY_NAME));
-			if (name != null) {
-				String[] names = name.split(" ");
-				if (logging_enable) Logger.I(TAG, "fillName() names = "+name);
-				if (names.length == 1) {
-					contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, name);
-				}
-				else if (names.length > 1) {
-					contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
-					contact.setFieldInner(Phonebook.PB_I_LAST_NAME, names[1]);
-				}
+			String firstName = cursor.getString(cursor.getColumnIndex(StructuredName.GIVEN_NAME));
+			String lastName = cursor.getString(cursor.getColumnIndex(StructuredName.FAMILY_NAME));
+			if (firstName != null || lastName != null) {
+				if (DEBUG)
+					Logger.D(TAG, "fillName() firstName=" + firstName + ", lastName=" + lastName);
+				
+				if (firstName != null)
+					contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, firstName);
+				if (lastName != null)
+					contact.setFieldInner(Phonebook.PB_I_LAST_NAME, lastName);
 			}
 			else {
-				if (logging_enable) Logger.I(TAG, "fillName() name == NULL");
+				String displayName = cursor.getString(cursor.getColumnIndex(StructuredName.DISPLAY_NAME));
+				if (DEBUG)
+					Logger.D(TAG, "fillName() displayName=" + displayName);
 				
+				if (displayName != null) {
+					String[] names = displayName.split(" ");
+					if (names.length == 1) {
+						contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
+					}
+					else if (names.length > 1) {
+						contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
+						contact.setFieldInner(Phonebook.PB_I_LAST_NAME, names[1]);
+					}
+				}
+				else {
+					if (DEBUG)
+						Logger.D(TAG, "fillName() name is null");
+				}
 			}
 		}
 		finally {
@@ -198,7 +203,8 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	public Contact getContactByID(String id) {
-		if (logging_enable) Logger.I(TAG, "getContactByID("+id+")");
+		if (DEBUG)
+			Logger.D(TAG, "getContactByID("+id+")");
 		
 		Contact contact = null; 
 		
@@ -210,7 +216,8 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		try {
 			if (!cursor.moveToFirst()) {
-				if (logging_enable) Logger.I(TAG, "getContactByID() not found");
+				if (DEBUG)
+					Logger.D(TAG, "getContactByID() not found");
 				return null;
 			}
 			contact = new Contact();
@@ -222,7 +229,8 @@ public class ContactAccessorNew implements ContactAccessor {
 		finally {
 			cursor.close();
 		}
-		if (logging_enable) Logger.I(TAG, "getContactByID() found");
+		if (DEBUG)
+			Logger.D(TAG, "getContactByID() found");
 		return contact;
 	}
 	
