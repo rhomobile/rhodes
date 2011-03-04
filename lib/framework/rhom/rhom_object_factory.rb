@@ -1049,6 +1049,26 @@ module Rhom
                   ret_list
                 end
               
+                def find_by_sql(sql_query)
+                    raise ArgumentError, 'find_by_sql works only with schema models' if !is_schema_source
+                    
+                    db = ::Rho::RHO.get_src_db(get_source_name)
+                    list = db.execute_sql(sql_query)
+
+                    ret_list = []
+                    list.each do |rowhash|
+                        new_obj = self.new({:object=>"#{rowhash['object']}"})
+
+                        rowhash.each do |attrName, attrVal|
+                            new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
+                        end
+
+                        ret_list << new_obj
+                    end
+                    
+                    ret_list
+                end
+                
                 def search(args)
                     args[:source_names] = [self.name.to_s]
 
