@@ -1,0 +1,20 @@
+<div class="pageTitle">
+  <h1>Home</h1>
+</div>
+
+<div class="toolbar">
+  <%% if SyncEngine::logged_in > 0 %>
+  <a class="leftItem blueButton" href="<%%= url_for :action => :do_sync %>">Sync</a>
+  <a class="rightItem regularButton" href="<%%= url_for :action => :logout %>">Logout</a>
+  <%% else %>
+  <a class="rightItem regularButton" href="<%%= url_for :action => :login %>">Login</a>
+  <%% end %>
+</div>
+
+<div class="content">
+  <ul>
+    <li class="arrow">
+      <a href="#">Add Links Here...</a>
+    </li>
+  </ul>
+</div>

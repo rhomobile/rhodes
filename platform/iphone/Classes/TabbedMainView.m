@@ -577,7 +577,7 @@
 	int new_index = tabbar.selectedIndex;
     RhoTabBarData *td = [self tabData:new_index];
 	if (td != nil) {
-		if (tabindex != new_index) {
+		//if (tabindex != new_index) {
 			tabindex = new_index;
 			if (!td.loaded || td.reload) {
 				const char *s = [td.url UTF8String];
@@ -585,7 +585,7 @@
 				td.loaded = YES;
 			}
 			[[[self subView:tabindex] view] setNeedsDisplay];
-		}
+		//}
 	}
 }
 
