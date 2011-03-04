@@ -1,0 +1,35 @@
+<div id="pageTitle">
+    <h1>Login</h1>
+</div>
+
+<div id="toolbar">
+    <%=  link_to "Back", :action => :index %>
+</div>
+
+<div id="content">
+    <form method="POST" action="<%= url_for :action => :do_login %>">  
+
+        <% if @msg %>
+          <div class="alert" align="center"><%= @msg %></div>
+        <% end %>
+
+        <table>
+
+            <tr>
+                 <td width="125" class="fieldLabel">Login</td>
+                 <td><input type="text" maxlength="100" name="login"/></td>
+             </tr>
+
+             <tr>
+                 <td width="125" class="fieldLabel">Password</td>
+                 <td><input type="password" maxlength="100" name="password"/></td>
+             </tr>
+        </table>
+
+        <input type="submit" class="standardButton" value="Login" />
+    </form>
+</div>
+
+
+
+

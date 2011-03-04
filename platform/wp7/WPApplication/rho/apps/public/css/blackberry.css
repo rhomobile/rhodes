@@ -1,0 +1,115 @@
+/* bb main containers */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica;
+    font-size:16px;
+	background: white;
+    color: black;
+    overflow-x: hidden;
+}
+
+div#pageTitle {
+	background: black;
+    width: auto;
+}
+
+div#pageTitle h1 {
+	margin: 0;
+	padding: 4px;
+    width: auto;
+    font-size: 16px;
+    max-height: 16px;
+    font-weight: normal;
+    text-align: left;
+    white-space: nowrap;
+    color: white;
+    font-weight: bold;
+}
+
+/*toolbar */
+div#toolbar{
+	border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height: 25px;
+	padding-left: 4px;
+	width:100%;
+}
+
+div#toolbar .noButton {
+    display:hidden;
+}
+
+/*content div styling*/
+div#content h2 {
+	font-size:15px;
+	display:block;
+	margin:4px;
+}
+
+div#content h2.groupTitle{
+	background:black;
+	height:14px;
+	font-size:10px;
+	padding:5px;
+	border-bottom:1px solid lightgray;
+}
+
+div#content div.alert{
+	color:red;
+}
+
+div#content div.warning{
+	margin-left:4px;
+}
+
+div#content p{
+	font-size:14px;
+}
+
+/* bb table styles */
+
+div#content table {
+    display:block;
+	border:none;
+	border-spacing:0;
+    font-size: 80%;
+    width:100%;
+}
+
+div#content table th {
+	width:100%;
+	display: block;
+	border-bottom:1px solid #BBBBBB;
+}
+
+div#content table tr {
+    width:100%;
+}
+div#content table tr td {
+	margin:0;
+    border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height:25px;
+}
+
+div#content table tr td a {
+	text-decoration: none;
+	font-weight:bold;
+	color:black;
+	display:block;
+	overflow: hidden;
+}
+
+div#content table tr td.recordLabel {
+    width:100%;
+    padding: 5px;
+}
+
+div#content table tr td.itemLabel {
+    width:50%;
+    font-weight:bold;
+}
+
+div#content table tr td.itemValue {
+    width:50%;
+}

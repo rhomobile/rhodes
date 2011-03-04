@@ -1,0 +1,9 @@
+body {
+   -webkit-perspective: 800;
+   -webkit-transform-style: preserve-3d;
+}
+
+body > * {
+   -webkit-backface-visibility: hidden;
+   -webkit-transform: translate3d(0,0,0) rotate(0) scale(1);
+}

@@ -1,4 +1,5 @@
 begin
+	#require 'rhosystem'
 
     if defined? RHO_ME
 	    require 'rationalME'
