@@ -31,8 +31,8 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
-    <BaseIntermediateOutputPath>..\obj\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\obj\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -43,8 +43,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
-    <BaseIntermediateOutputPath>..\obj\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\obj\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
