@@ -1,3 +1,11 @@
+module Rho
+  def self.file_exist?(fname)
+      return File.exist_injar?(fname) if defined? RHO_ME
+            
+      File.exist?(fname)
+  end
+end
+  
 begin
 	#require 'rhosystem'
 

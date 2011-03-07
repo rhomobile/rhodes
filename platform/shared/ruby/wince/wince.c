@@ -449,7 +449,7 @@ HANDLE CreateFileA(LPCSTR filename, DWORD access,
 LPSTR CharNextA(LPCSTR a)
 {
 	char *p=(char *)a;
-	if( TRUE==IsDBCSLeadByteEx(CP_ACP, (BYTE)*a) )
+	if( TRUE==IsDBCSLeadByteEx(CP_UTF8, (BYTE)*a) )
 		p+=2;
 	else
 		p++;
@@ -461,7 +461,7 @@ LPSTR CharPrevA(LPCSTR start, LPCSTR ptr)
 {
 	if( start==ptr ) return (LPSTR)start;
 	else if( start+1==ptr ) return (LPSTR)start;
-	else if( TRUE==IsDBCSLeadByteEx(CP_ACP, (BYTE)*(ptr-2)) )
+	else if( TRUE==IsDBCSLeadByteEx(CP_UTF8, (BYTE)*(ptr-2)) )
 		return (LPSTR)(ptr-2);
 	else
 		return (LPSTR)(ptr-1);
@@ -593,10 +593,10 @@ wchar_t* wce_mbtowc(const char* a)
 	int length;
 	wchar_t *wbuf;
 
-	length = MultiByteToWideChar(CP_ACP, 0, 
+	length = MultiByteToWideChar(CP_UTF8, 0, 
 		a, -1, NULL, 0);
 	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
-	MultiByteToWideChar(CP_ACP, 0,
+	MultiByteToWideChar(CP_UTF8, 0,
 		a, -1, wbuf, length);
 
 	return wbuf;
@@ -608,10 +608,10 @@ char* wce_wctomb(const wchar_t* w)
 	DWORD charlength;
 	char* pChar;
 
-	charlength = WideCharToMultiByte(CP_ACP, 0, w,
+	charlength = WideCharToMultiByte(CP_UTF8, 0, w,
 					-1, NULL, 0, NULL, NULL);
 	pChar = (char*)malloc(charlength+1);
-	WideCharToMultiByte(CP_ACP, 0, w,
+	WideCharToMultiByte(CP_UTF8, 0, w,
 		-1, pChar, charlength, NULL, NULL);
 
 	return pChar;
