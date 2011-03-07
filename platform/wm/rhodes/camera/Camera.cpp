@@ -16,12 +16,6 @@
 
 extern "C" HWND getMainWnd();
 
-#if defined(_WIN32_WCE)
-// strdup is implemented as part of ruby CE port
-extern "C" char *strdup(const char * str);
-extern "C" wchar_t* wce_mbtowc(const char* a);
-#endif
-
 //#if defined(_WIN32_WCE)
 
 static bool copy_file(LPTSTR from, LPTSTR to);
@@ -41,9 +35,9 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 #if defined(_WIN32_WCE)
     SHCAMERACAPTURE shcc;
 
-    wchar_t* root  = wce_mbtowc(rho_rhodesapp_getblobsdirpath());
-    wsprintf(pszFilename,L"%s",root );
-    free(root);
+    StringW root;
+    convertToStringW(rho_rhodesapp_getblobsdirpath(), root);
+    wsprintf( pszFilename, L"%s", root.c_str() );
 
 	create_folder(pszFilename);
 

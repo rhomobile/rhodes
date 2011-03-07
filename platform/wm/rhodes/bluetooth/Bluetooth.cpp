@@ -25,15 +25,6 @@
 
 extern "C" HWND getMainWnd();
 
-#if defined(_WIN32_WCE)
-// strdup is implemented as part of ruby CE port
-extern "C" char *strdup(const char * str);
-extern "C" wchar_t* wce_mbtowc(const char* a);
-extern "C" char* wce_wctomb(const wchar_t*);
-
-#endif
-
-
 extern "C" int rho_sys_get_screen_height();
 extern "C" int rho_sys_get_screen_width();
 

@@ -16,13 +16,5 @@
 
 extern "C" HWND getMainWnd();
 
-#if defined(_WIN32_WCE)
-// strdup is implemented as part of ruby CE port
-extern "C" char *strdup(const char * str);
-extern "C" wchar_t* wce_mbtowc(const char* a);
-#endif
-
-
-
 void rho_signature_take_signature(char* callback_url, char* image_format) {
 }

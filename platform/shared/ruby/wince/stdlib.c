@@ -29,7 +29,7 @@ int mblen(const char *mbstr, size_t count)
 	for( i=0; i<count; i++ )
 	{
 		if( *p=='\0' ) break;
-		if( IsDBCSLeadByteEx( CP_ACP, *p ) )
+		if( IsDBCSLeadByteEx( CP_UTF8, *p ) )
 			n+=2, p+=2;
 		else
 			n+=1, p+=1;
