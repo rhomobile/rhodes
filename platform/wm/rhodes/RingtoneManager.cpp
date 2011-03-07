@@ -53,9 +53,9 @@ void CRingtoneManager::play (String ringtone_name)
     
     stop();
     
-    USES_CONVERSION;
-    
-    hr = SndOpen(A2T(ringtone_name.c_str()), &m_hSound);
+    StringW ringtone_nameW = convertToStringW(ringtone_name);
+
+    hr = SndOpen( ringtone_nameW.c_str(), &m_hSound);
     if (hr != S_OK || !m_hSound) {
         //TODO: log extended error
         LOG(ERROR) + "RingtoneManager: failed to open file";

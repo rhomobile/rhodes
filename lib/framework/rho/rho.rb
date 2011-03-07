@@ -11,12 +11,6 @@ module Rho
     RHO.get_instance().get_app('app')
   end
 
-  def self.file_exist?(fname)
-      return File.exist_injar?(fname) if defined? RHO_ME
-            
-      File.exist?(fname)
-  end
-  
   class RHO
     APPLICATIONS = {}
     APPNAME = 'app'
