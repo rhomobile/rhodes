@@ -283,6 +283,26 @@ int rho_wmsys_has_touchscreen()
 #endif
 }
 
+
+int rho_sys_get_screen_width()
+{
+#ifdef OS_WINCE
+	return GetSystemMetrics(SM_CXSCREEN);
+#else
+	return CMainWindow::getScreenWidth();
+#endif
+}
+
+int rho_sys_get_screen_height()
+{
+#ifdef OS_WINCE
+	return GetSystemMetrics(SM_CYSCREEN);
+#else
+	return CMainWindow::getScreenHeight();
+#endif
+}
+
+
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("has_camera",szPropName) == 0) 
@@ -378,26 +398,17 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         *resValue = rho_ruby_create_boolean( rho_wmsys_has_touchscreen() );
         return 1;
     }
-
+	if (strcasecmp("screen_orientation",szPropName) == 0)
+    {
+        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) {
+		*resValue = rho_ruby_create_string("portrait");
+	}
+	else {
+		*resValue = rho_ruby_create_string("landscape");
+	}                                                          
+        return 1;
+    }
     return 0;
-}
-
-int rho_sys_get_screen_width()
-{
-#ifdef OS_WINCE
-	return GetSystemMetrics(SM_CXSCREEN);
-#else
-	return CMainWindow::getScreenWidth();
-#endif
-}
-
-int rho_sys_get_screen_height()
-{
-#ifdef OS_WINCE
-	return GetSystemMetrics(SM_CYSCREEN);
-#else
-	return CMainWindow::getScreenHeight();
-#endif
 }
 
 VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values) 
