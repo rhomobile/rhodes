@@ -45,6 +45,7 @@ Properties:
 * has_camera - is camera available on the device
 * screen_width - screen width in pixels
 * screen_height - screen height in pixels
+* screen_orientation - screen orientation 'portrait', 'landscape'
 * ppi_x - horizontal PPI (Pixels Per Inch)
 * ppi_y - vertical PPI (Pixels Per Inch)
 * has_network - is device connected to the network
