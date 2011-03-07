@@ -401,8 +401,12 @@ namespace "config" do
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
  
-#>>>>>>>>>>>>>>>>>>>>>>>>>
-    $applog_path = File.join( $config["env"]["app"], $app_config["applog"] )
+    $applog_path = nil
+    $applog_file = $app_config["applog"]
+
+    if !$applog_file.nil?
+      $applog_path = File.join( $config["env"]["app"], $applog_file )
+    end 
 
     # Detect android targets
     if $androidtargets.nil?
@@ -1448,7 +1452,10 @@ namespace "run" do
       Thread.new { Jake.run($adb, ['start-server'], nil, true) }
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
-      Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
+
+      if !$applog_file.nil?
+        Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
+      end
 
       if $appavdname != nil
         $avdname = $appavdname
@@ -1491,7 +1498,11 @@ namespace "run" do
               Thread.new { Jake.run($adb, ['start-server'], nil, true) }
               sleep 5
               adbRestarts += 1
-              Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
+
+              if !$applog_file.nil?
+                Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
+              end
+
             else
               puts "Still waiting..."
             end
