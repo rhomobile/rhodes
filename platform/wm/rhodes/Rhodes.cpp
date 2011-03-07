@@ -23,8 +23,6 @@ typedef unsigned long VALUE;
 char* parseToken( const char* start, int len );
 #endif
 
-extern "C" char* wce_wctomb(const wchar_t* w);
-extern "C" wchar_t* wce_mbtowc(const char* a);
 extern "C" void rho_ringtone_manager_stop();
 
 #if defined(_WIN32_WCE)
@@ -39,10 +37,6 @@ HREGNOTIFY g_hNotify = NULL;
 #define SN_CONNECTIONSNETWORKCOUNT_PATH TEXT("System\\State\\Connections\\Network")
 #define SN_CONNECTIONSNETWORKCOUNT_VALUE TEXT("Count")
 
-#endif
-
-#ifdef OS_WINDOWS
-String httpProxy;
 #endif
 
 static String g_strCmdLine;
@@ -66,22 +60,24 @@ public :
 			}
 
 #if defined(OS_WINDOWS)
-			if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) {
-				char *token = wce_wctomb(lpszToken);
-				char *proxy =parseToken(token,strlen(token));
+			if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
+            {
+				String token = convertToStringA(lpszToken);
+                char *proxy = parseToken( token.c_str(), token.length() );
 				
 				if (proxy)
-					httpProxy = proxy;
+                {
+					m_strHttpProxy = proxy;
+                    free(proxy);
+                }
 				else 
 					LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
 
-				if (proxy) free(proxy);
-				if (token) free(token);
-
-			} else if (wcsncmp(lpszToken, _T("approot"),7)==0) {
-				char* token = wce_wctomb(lpszToken);
+			} else if (wcsncmp(lpszToken, _T("approot"),7)==0) 
+            {
+				String token = convertToStringA(lpszToken);
 				//parseToken will allocate extra byte at the end of the returned token value
-				char* path = parseToken( token, strlen(token) );
+                char* path = parseToken( token.c_str(), token.length() );
 				if (path) {
 					int len = strlen(path);
 					if (!(path[len]=='\\' || path[len]=='/')) {
@@ -91,7 +87,6 @@ public :
 					m_strRootPath = path;
 					free(path);
 				}
-				free(token);
 			}
 #endif
 			lpszToken = FindOneOf(lpszToken, szTokens);
@@ -144,8 +139,8 @@ public :
 
 		LOG(INFO) + "Rhodes started";
 #ifdef OS_WINDOWS
-		if (httpProxy.length() > 0) {
-			parseHttpProxyURI(httpProxy);
+		if (m_strHttpProxy.length() > 0) {
+			parseHttpProxyURI(m_strHttpProxy);
 		} else {
 			if (RHOCONF().isExist("http_proxy_url")) {
 				parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
@@ -425,6 +420,10 @@ private:
     CMainWindow m_appWindow;
     rho::String m_strRootPath;
 	int m_nRestarting;
+
+#ifdef OS_WINDOWS
+    String m_strHttpProxy;
+#endif
 };
 
 CRhodesModule _AtlModule;
@@ -590,17 +589,17 @@ char* parseToken( const char* start, int len ) {
 
 	return value;
 }
-
+/*
 // char -> wchar_t 
 wchar_t* wce_mbtowc(const char* a)
 {
 	int length;
 	wchar_t *wbuf;
 
-	length = MultiByteToWideChar(CP_ACP, 0, 
+	length = MultiByteToWideChar(CP_UTF8, 0, 
 		a, -1, NULL, 0);
 	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
-	MultiByteToWideChar(CP_ACP, 0,
+	MultiByteToWideChar(CP_UTF8, 0,
 		a, -1, wbuf, length);
 
 	return wbuf;
@@ -612,14 +611,14 @@ char* wce_wctomb(const wchar_t* w)
 	DWORD charlength;
 	char* pChar;
 
-	charlength = WideCharToMultiByte(CP_ACP, 0, w,
+	charlength = WideCharToMultiByte(CP_UTF8, 0, w,
 					-1, NULL, 0, NULL, NULL);
 	pChar = (char*)malloc(charlength+1);
-	WideCharToMultiByte(CP_ACP, 0, w,
+	WideCharToMultiByte(CP_UTF8, 0, w,
 		-1, pChar, charlength, NULL, NULL);
 
 	return pChar;
-}
+}*/
 
 #endif
 

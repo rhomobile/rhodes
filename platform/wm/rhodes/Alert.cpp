@@ -347,9 +347,8 @@ void CAlert::playFile(String fileName)
         pos++;
     }
 
-    USES_CONVERSION;
-    //SndPlaySync(A2T(path.c_str()),  SND_PLAY_IGNOREUSERSETTINGS);
-    HRESULT hr = SndOpen(A2T(path.c_str()), &hSound);
+    StringW strPathW = convertToStringW(path);
+    HRESULT hr = SndOpen( strPathW.c_str(), &hSound);
     hr = SndPlayAsync (hSound, 0);
       
     if (hr != S_OK) {
