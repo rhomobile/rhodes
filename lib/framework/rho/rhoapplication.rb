@@ -81,9 +81,8 @@ module Rho
     end
 
     def on_ui_created
-        start_url = ""
-        start_url = Rho::RhoConfig.LastVisitedPage if Rho::RhoConfig.KeepTrackOfLastVisitedPage
-        start_url = Rho::RhoConfig.start_path if start_url.nil? || start_url.length() == 0
+        start_url = Rho::RhoConfig.start_path
+        start_url = "" unless start_url
         
         puts "on_ui_created.navigate to start url: '#{start_url}'"
 		WebView.navigate(start_url)
