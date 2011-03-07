@@ -898,20 +898,6 @@ const String& CRhodesApp::getCurrentUrl(int /*index*/)
 { 
     return m_currentUrls[m_currentTabIndex]; 
 }
-/*
-const String& CRhodesApp::getFirstStartUrl()
-{
-    m_strFirstStartUrl = getStartUrl();
-    if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") ) 
-    {
-        rho::String strLastPage = RHOCONF().getString("LastVisitedPage");
-        if (strLastPage.length() > 0)
-            m_strFirstStartUrl = canonicalizeRhoUrl(strLastPage);
-    }
-
-    LOG(INFO) + "Start url: " + m_strFirstStartUrl;
-    return m_strFirstStartUrl;
-}*/
 
 const String& CRhodesApp::getRhobundleReloadUrl() 
 {

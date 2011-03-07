@@ -162,10 +162,15 @@ To use only models from bulk database. If true, application will not create mode
 	use_bulk_model = true
 	
 ### Last Visited Page
-Rhodes can keep track of the last visited page, so that next time you start your application, it will open to the same page. To enable this feature, use 
+Rhodes can keep track of the last visited page. To enable this feature, use 
 
 	KeepTrackOfLastVisitedPage=1
 
+To get last visited page call:
+
+    :::ruby
+	    Rho::RhoConfig.LastVisitedPage
+	    
 Keep in mind, POST requests will be converted to GETs.
 
 ### Application Database Version
