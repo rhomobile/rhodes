@@ -279,6 +279,7 @@ namespace "config" do
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
     $app_package_name.gsub!(/\.[\d]/, "._")
 
+
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
@@ -399,6 +400,9 @@ namespace "config" do
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
+ 
+#>>>>>>>>>>>>>>>>>>>>>>>>>
+    $applog_path = File.join( $config["env"]["app"], $app_config["applog"] )
 
     # Detect android targets
     if $androidtargets.nil?
@@ -1442,9 +1446,9 @@ namespace "run" do
       #Jake.run($adb, ['start-server'])	
       #adb_start_server = $adb + ' start-server'
       Thread.new { Jake.run($adb, ['start-server'], nil, true) }
-      puts $adb
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
+      Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
 
       if $appavdname != nil
         $avdname = $appavdname
@@ -1485,7 +1489,9 @@ namespace "run" do
               puts "Appears hung, restarting adb server"
               Jake.run($adb, ['kill-server'])
               Thread.new { Jake.run($adb, ['start-server'], nil, true) }
+              sleep 5
               adbRestarts += 1
+              Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
             else
               puts "Still waiting..."
             end
