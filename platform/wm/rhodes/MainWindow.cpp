@@ -1139,9 +1139,13 @@ void CMainWindow::createCustomMenu()
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
         if (oItem.m_eType == CAppMenuItem::emtSeparator) 
 			popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, (UINT_PTR)0, (LPCTSTR)0);
-		else 
+		else
+        {
+            StringW strLabelW = convertToStringW(oItem.m_strLabel);
+
 			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, 
-                oItem.m_eType == CAppMenuItem::emtClose ? _T("Exit") : A2T(oItem.m_strLabel.c_str()) );
+                oItem.m_eType == CAppMenuItem::emtClose ? _T("Exit") : strLabelW.c_str() );
+        }
     }
 
 	RECT  rect; 
@@ -1154,10 +1158,7 @@ void CMainWindow::createCustomMenu()
 						m_hWnd);
 	sub.Detach();
 }
-
-#endif//OS_WINDOWS
-
-#if defined (OS_WINCE)
+#else
 
 void CMainWindow::createCustomMenu()
 {
@@ -1175,10 +1176,12 @@ void CMainWindow::createCustomMenu()
     for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
     {
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
+        StringW strLabelW = convertToStringW(oItem.m_strLabel);
+
 		if (oItem.m_eType == CAppMenuItem::emtSeparator) 
 			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
 		else if (oItem.m_eType != CAppMenuItem::emtExit && oItem.m_eType != CAppMenuItem::emtClose)
-    		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, A2T(oItem.m_strLabel.c_str()));
+    		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
 	}
 }
 #endif //OS_WINCE

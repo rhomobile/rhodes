@@ -14,8 +14,6 @@
 
 using namespace rho::common;
 
-extern "C" wchar_t* wce_mbtowc(const char* a);
-
 CAppManager::CAppManager(void)
 {
 }
@@ -26,10 +24,11 @@ CAppManager::~CAppManager(void)
 
 bool CAppManager::RemoveFolder(String pathname)
 {
-	if (pathname.length() > 0) {
-		LPWSTR  swPath = wce_mbtowc(pathname.c_str());
+	if (pathname.length() > 0) 
+    {
+		StringW  swPath = convertToStringW(pathname);
 		TCHAR name[MAX_PATH+2];
-		wsprintf(name, L"%s%c", swPath, '\0');
+        wsprintf(name, L"%s%c", swPath.c_str(), '\0');
 
 		SHFILEOPSTRUCT fop;
 
@@ -40,9 +39,6 @@ bool CAppManager::RemoveFolder(String pathname)
 		fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
 		int result = SHFileOperation(&fop);
 
-		if (swPath)
-			free (swPath);
-
 		return result == 0;
 	}
 	return false;
@@ -52,14 +48,14 @@ bool CAppManager::MoveFolder(const String& pathFrom, const String &pathTo)
 {
 	if (pathFrom.length() > 0 && pathTo.length() > 0) {
 		
-		LPWSTR  swPathFrom = wce_mbtowc(pathFrom.c_str());
-		LPWSTR  swPathTo   = wce_mbtowc(pathTo.c_str());
+		StringW  swPathFrom = convertToStringW(pathFrom);
+		StringW  swPathTo   = convertToStringW(pathTo);
 
 		TCHAR tcPathFrom[MAX_PATH+2];
 		TCHAR tcPathTo[MAX_PATH+2];
 
-		wsprintf(tcPathFrom, L"%s%c", swPathFrom,'\0');
-		wsprintf(tcPathTo, L"%s%c", swPathTo,'\0');
+        wsprintf(tcPathFrom, L"%s%c", swPathFrom.c_str(),'\0');
+		wsprintf(tcPathTo, L"%s%c", swPathTo.c_str(),'\0');
 
 		SHFILEOPSTRUCT fop;
 		
@@ -70,11 +66,6 @@ bool CAppManager::MoveFolder(const String& pathFrom, const String &pathTo)
 		fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
 		
 		int result = SHFileOperation(&fop);
-
-		if (swPathFrom)
-			free (swPathFrom);
-		if (swPathTo)
-			free (swPathTo);
 
 		return result == 0;
 	}

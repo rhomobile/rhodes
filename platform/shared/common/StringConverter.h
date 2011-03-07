@@ -19,18 +19,30 @@ template<typename T>  inline StringW convertToStringW( const T& value ){ return 
 template<typename T>  inline void convertFromStringA( const char* szValue, T& value ){ value = szValue; }
 template<typename T>  inline String convertToStringA( const T& value ){ return value; }
 
-inline String convertToStringA( const wchar_t* szValue ){ 
+inline String convertToStringA( const wchar_t* szValue )
+{ 
     String res;
+    if ( !szValue || !*szValue )
+        return res;
+
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    int nSize = WideCharToMultiByte(CP_UTF8, 0, szValue, -1, NULL, 0, NULL, NULL);
+    if ( nSize > 1 )
+    {
+        res.resize(nSize-1);
+        WideCharToMultiByte(CP_UTF8, 0, szValue, -1, &res[0], nSize, NULL, NULL);
+    }
+#else
     int nSize = wcstombs( NULL, szValue, 0 );
-    if ( nSize >= 0 ){
-        char* buf = new char[nSize+1];
-        int nRes = wcstombs( buf, szValue, nSize );
+    if ( nSize >= 0 )
+    {
+        res.resize(nSize);
+        int nRes = wcstombs( &res[0], szValue, nSize );
         if ( nRes >= 0 ){
-            buf[nRes] = 0;
-            res = buf; 
+            res[nRes] = 0;
         }
     }
-
+#endif
     return res;
 }
 
@@ -46,18 +58,33 @@ template<>  inline String convertToStringA<StringW>( const StringW& strValue ){
     return convertToStringA(strValue.c_str());
 }
 
-inline void convertToStringW( const char* szValue, StringW& res ){ 
+inline void convertToStringW( const char* szValue, StringW& res )
+{ 
+    if ( !szValue || !*szValue )
+        return;
+
 #ifdef OS_ANDROID
 	res = szValue;
 #else
-    int nSize = mbstowcs( NULL, szValue, 0 );
-    if ( nSize >= 0 ){
+
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    int nSize = MultiByteToWideChar(CP_UTF8, 0, szValue, -1, NULL, 0);
+    if ( nSize > 1 )
+    {
+        res.resize(nSize-1);
+        MultiByteToWideChar(CP_UTF8, 0, szValue, -1, &res[0], nSize);
+    }
+#else
+    int nSize =mbstowcs( NULL, szValue, 0 );
+    if ( nSize >= 0 )
+    {
         res.resize(nSize);
         int nRes = mbstowcs( &res[0], szValue, nSize );
         if ( nRes >= 0 ){
             res[nRes] = 0;
         }
     }
+#endif
 #endif
 }
 
