@@ -696,7 +696,7 @@ public class RhodesService extends Service {
 				return new Integer(getScreenWidth());
 			else if (name.equalsIgnoreCase("screen_height"))
 				return new Integer(getScreenHeight());
-			else if (name.equalsIgnoreCase("orientation")) {
+			else if (name.equalsIgnoreCase("screen_orientation")) {
 				if (getScreenWidth() <= getScreenHeight()) {
 					return "portrait";
 				}
