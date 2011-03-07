@@ -287,6 +287,12 @@ public class System {
     		return ObjectFactory.createInteger(getScreenWidth()); 
     	if ( strPropName.equalsIgnoreCase("screen_height") )
     		return ObjectFactory.createInteger(getScreenHeight());
+    	if ( strPropName.equalsIgnoreCase("screen_orientation")) {
+    		if (getScreenHeight() >= getScreenWidth()) {
+    			return ObjectFactory.createString("portrait");
+    		}
+			return ObjectFactory.createString("landscape");
+    	}
     	if ( strPropName.equalsIgnoreCase("ppi_x"))
     		return ObjectFactory.createFloat(getScreenPpiX());
     	if ( strPropName.equalsIgnoreCase("ppi_y"))
