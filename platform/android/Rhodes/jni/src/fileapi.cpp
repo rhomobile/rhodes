@@ -620,14 +620,6 @@ RHO_GLOBAL int link(const char *src, const char *dst)
     RHO_NOT_IMPLEMENTED;
 }
 
-RHO_GLOBAL int unlink(const char *path)
-{
-    if (!need_java_way(path))
-        return real_unlink(path);
-
-    RHO_NOT_IMPLEMENTED;
-}
-
 RHO_GLOBAL int chdir(const char *)
 {
     RHO_NOT_IMPLEMENTED;
@@ -911,6 +903,26 @@ RHO_GLOBAL int lstat(const char *path, struct stat *buf)
         return real_lstat(path, buf);
 
     return stat_impl(fpath, buf);
+}
+
+RHO_GLOBAL int unlink(const char *path)
+{
+    RHO_LOG("unlink: %s", path);
+    std::string fpath = make_full_path(path);
+    if (!need_java_way(fpath))
+        return real_unlink(path);
+
+    // Check is there file with specified name in java package
+    struct stat st;
+    int e = stat_impl(fpath, &st);
+    // If no such file in java package, then call real "unlink" function
+    if (e == -1 && errno == ENOENT)
+        return real_unlink(path);
+
+    // Otherwise, return permission error (because there is no way remove
+    // file from assets package
+    errno = EPERM;
+    return -1;
 }
 
 static int __sread(void *cookie, char *buf, int n)
