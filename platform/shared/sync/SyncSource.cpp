@@ -471,7 +471,12 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
             if ( i == 0 || i == 1 )//"source-error", "search-error" 
             {
                 if ( errIter.getCurValue().hasName("message") )
-                    m_strServerError += "server_errors[" + strKey + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                {
+                    if ( m_strServerError.length() > 0 )
+                        m_strServerError += "&";
+
+                    m_strServerError += "server_errors[" + URI::urlEncode(strKey) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                }
             }
             else
             {
@@ -481,7 +486,22 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
                 if ( String_endsWith(strObject, "-error") )
                 {
                     strObject = strObject.substr(0, strKey.length()-6);
-                    m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + strObject + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                    if ( m_strServerError.length() > 0 )
+                        m_strServerError += "&";
+                    m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + URI::urlEncode(strObject) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                }else
+                {
+                    CJSONStructIterator attrIter(errIter.getCurValue());
+                    for( ; !attrIter.isEnd(); attrIter.next() )
+                    {
+                        String strAttrName = attrIter.getCurKey();
+                        String strAttrValue = attrIter.getCurString();
+
+                        if ( m_strServerError.length() > 0 )
+                            m_strServerError += "&";
+
+                        m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + URI::urlEncode(strObject) + "][attributes][" + URI::urlEncode(strAttrName) + "]=" + URI::urlEncode(strAttrValue);
+                    }
                 }
             }
         }
