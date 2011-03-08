@@ -154,7 +154,7 @@ These parameters are included in all notifications.
 
 For "login-error", "query-error", "logoff-error": Type object is hash contains 'message'  from server: @params["server_errors"]["query-error"]['message']
 
-For "create-error", "update-error", "delete-error": Type object is hash each containing an "object" as a key (that failed to create) and a corresponding "message": @params["server_errors"]["create-error"][object]['message']
+For "create-error", "update-error", "delete-error": Type object is hash each containing an "object" as a key (that failed to create) and a corresponding "message" and "attributes": @params["server_errors"]["create-error"][object]['message'], @params["server_errors"]["create-error"][object]['attributes']
 
 **NOTE: "create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error**
 
