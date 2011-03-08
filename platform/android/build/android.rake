@@ -1442,14 +1442,21 @@ namespace "run" do
         load_app_and_run
     end
 
+    def  kill_adb
+        # stop app
+        if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+          # Windows
+          `taskkill /F /IM adb.exe`
+        else
+          `killall -9 adb`
+        end
+    end
+
     def  run_emulator
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
 
-      Jake.run($adb, ['kill-server'])
-      sleep 5	
-      #Jake.run($adb, ['start-server'])	
-      #adb_start_server = $adb + ' start-server'
-      Thread.new { Jake.run($adb, ['start-server'], nil, true) }
+      kill_adb
+      Jake.run($adb, ['start-server'], nil, true)
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
 
@@ -1494,15 +1501,13 @@ namespace "run" do
             if (now - startedWaiting) > (60 * adbRestarts)
               # Restart the adb server every 60 seconds to prevent eternal waiting
               puts "Appears hung, restarting adb server"
-              Jake.run($adb, ['kill-server'])
-              Thread.new { Jake.run($adb, ['start-server'], nil, true) }
-              sleep 5
+              kill_adb
+              Jake.run($adb, ['start-server'], nil, true)
               adbRestarts += 1
 
               if !$applog_file.nil?
                 Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
               end
-
             else
               puts "Still waiting..."
             end
