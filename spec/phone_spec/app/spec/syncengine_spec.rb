@@ -376,6 +376,7 @@ describe "SyncEngine_test" do
     res['server_errors']['create-error'].should_not be_nil
     res['server_errors']['create-error'][item.object].should_not be_nil    
     res['server_errors']['create-error'][item.object]['message'].should == "error create"
+    res['server_errors']['create-error'][item.object]['attributes']['name'].should == "wrongname"
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
     records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
@@ -425,6 +426,7 @@ describe "SyncEngine_test" do
     res['server_errors']['create-error'].should_not be_nil
     res['server_errors']['create-error'][item.object].should_not be_nil    
     res['server_errors']['create-error'][item.object]['message'].should == "error create"
+    res['server_errors']['create-error'][item.object]['attributes']['name'].should == "wrongname"
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
     records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
@@ -477,6 +479,7 @@ describe "SyncEngine_test" do
     res['server_errors']['create-error'].should_not be_nil
     res['server_errors']['create-error'][item.object].should_not be_nil    
     res['server_errors']['create-error'][item.object]['message'].should == "error create"
+    res['server_errors']['create-error'][item.object]['attributes']['name'].should == "wrongname"
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
     records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
@@ -517,7 +520,7 @@ describe "SyncEngine_test" do
     res['server_errors']['update-error'].should_not be_nil
     res['server_errors']['update-error']['broken_object_id'].should_not be_nil    
     res['server_errors']['update-error']['broken_object_id']['message'].should == "error update"
-    
+    res['server_errors']['update-error']['broken_object_id']['attributes']['name'].should == "wrongname"    
   end
 
   it "should process delete-error" do    
@@ -531,7 +534,7 @@ describe "SyncEngine_test" do
     res['server_errors']['delete-error'].should_not be_nil
     res['server_errors']['delete-error']['broken_object_id'].should_not be_nil    
     res['server_errors']['delete-error']['broken_object_id']['message'].should == "Error delete record"
-    
+    res['server_errors']['delete-error']['broken_object_id']['attributes']['name'].should == "wrongname"
   end
 
   it "should process source-error" do    
@@ -544,7 +547,6 @@ describe "SyncEngine_test" do
     res['server_errors'].should_not be_nil
     res['server_errors']['query-error'].should_not be_nil
     res['server_errors']['query-error']['message'].should == "Error during query"
-    
   end
 
   it "should process search-error" do    
