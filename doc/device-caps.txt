@@ -1029,6 +1029,9 @@ Open link in external application (browser for http:// links):
 
 Open appstore on iphone: [http://wiki.akosma.com/IPhone_URL_Schemes#App_Store](http://wiki.akosma.com/IPhone_URL_Schemes#App_Store)
 
+### Blackberry
+On Blackberry 5.0 and later you can use JavaScript [blackberry.launch object](http://docs.blackberry.com/en/developers/deliverables/18446/blackberry_launch_971534_11.jsp#blackberry_launch_newMap_971532_11)
+to create SMS, make Phone call etc.
 
 ## BlackBerry network connection
 Rhodes may use any Blackberry network connection available on the device. What particular network connection will be selected depends on the url suffix used to connect. Here is the algorithm:
