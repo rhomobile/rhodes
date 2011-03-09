@@ -21,6 +21,7 @@ load File.join(pwd, 'platform/android/build/android.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
+load File.join(pwd, 'platform/wp7/build/wp.rake')
 
 def get_dir_hash(dir, init = nil)
   hash = init
@@ -653,6 +654,23 @@ namespace "build" do
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
+  
+      chdir startdir
+
+      cp_r "platform/shared/db/res/db", $srcdir 
+    end
+    
+    task :noiseq do
+      app = $app_path
+      rhodeslib = File.dirname(__FILE__) + "/lib/framework"
+      startdir = pwd
+      dest = $srcdir + "/lib"      
+
+      common_bundle_start(startdir,dest)
+      process_exclude_folders
+      chdir startdir
+      
+      create_manifest
   
       chdir startdir
 

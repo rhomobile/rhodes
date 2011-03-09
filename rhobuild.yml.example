@@ -16,6 +16,7 @@ env:
 build:
   bbpath: platform/bb
   wmpath: platform/wm
+  wppath: platform/wp7
   androidpath: platform/android
   iphonepath: platform/iphone
   symbianpath: platform/symbian
