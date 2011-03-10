@@ -793,18 +793,6 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
     //LOG(INFO) + "Current URL: " + strUrl;
 
     m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
-
-    if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
-    {
-        if ( strUrl.compare( 0, m_strHomeUrl.length(), m_strHomeUrl ) == 0 )
-            strUrl = strUrl.substr(m_strHomeUrl.length());
-
-        size_t nFragment = strUrl.find('#');
-        if ( nFragment != String::npos )
-            strUrl = strUrl.substr(0, nFragment);
-
-        RHOCONF().setString("LastVisitedPage",strUrl, true);		
-    }
 }
 
 void CRhodesApp::setAppBackUrl(const String& url)
