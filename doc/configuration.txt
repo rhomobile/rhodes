@@ -98,11 +98,6 @@ Log file prefix - contain human-readable text
 
 	logname='helloworld'
 
-Keep track of the last visited page
-
-	KeepTrackOfLastVisitedPage = 0 
-	LastVisitedPage = ''
-
 Sync server url, typically this will look like 'http://<hostname>:<port>/application'. For example:
 
 	syncserver = 'http://localhost:9292/application'
@@ -162,16 +157,7 @@ To use only models from bulk database. If true, application will not create mode
 	use_bulk_model = true
 	
 ### Last Visited Page
-Rhodes can keep track of the last visited page. To enable this feature, use 
-
-	KeepTrackOfLastVisitedPage=1
-
-To get last visited page call:
-
-    :::ruby
-	    Rho::RhoConfig.LastVisitedPage
-	    
-Keep in mind, POST requests will be converted to GETs.
+To save/restore last visited page use WebView.current_location in on_ui_created/on_ui_destroyed of [AppAplication class](application#appapplication-class).
 
 ### Application Database Version
 If you want the next version of your application to start from a clean database, set app_db_version in rhoconfig.txt.
