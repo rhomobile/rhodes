@@ -777,13 +777,13 @@ In your controller, you may call on system alert methods to show popup, vibrate,
 
 You can also customize popup window's title, icon, buttons and specify callback to be called on button click:
 	:::ruby
-	Alert.show_popup {
+	Alert.show_popup( {
 		:message => 'Some message', 
 		:title => 'Custom title', 
 		:icon => '/public/images/icon.png',
 	    :buttons => ["Yes", "No", 
 			{:id => 'cancel', :title => 'Cancel all'}],
-	    :callback => url_for(:action => :on_dissmiss_popup) }
+	    :callback => url_for(:action => :on_dissmiss_popup) } )
 
 Popup window always close after clicking on any button.
 
