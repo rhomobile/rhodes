@@ -96,5 +96,15 @@ const char* rho_sys_get_start_params()
     return rho::common::CRhodesApp::getStartParameters().c_str();
 }
 
+void rho_sys_start_timer( int interval, const char *url, const char* params)
+{
+    RHODESAPP().getTimer().addTimer(interval, url, params);
+}
+
+
+void rho_sys_stop_timer( const char *url )
+{
+    RHODESAPP().getTimer().stopTimer(url);
+}
 
 } //extern "C"
