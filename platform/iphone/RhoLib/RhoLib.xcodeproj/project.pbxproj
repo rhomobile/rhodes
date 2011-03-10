@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0F94DE132979140093FA1B /* RhoTime.cpp */; };
 		5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */; };
 		5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */; };
 		5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */; };
@@ -78,6 +79,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5C0F94DE132979140093FA1B /* RhoTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoTime.cpp; path = ../../shared/common/RhoTime.cpp; sourceTree = SOURCE_ROOT; };
 		5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoAppAdapter.cpp; path = ../../shared/rubyext/RhoAppAdapter.cpp; sourceTree = SOURCE_ROOT; };
 		5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoAppAdapter.h; path = ../../shared/common/RhoAppAdapter.h; sourceTree = SOURCE_ROOT; };
 		5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoThreadImpl.h; path = ../../shared/common/IRhoThreadImpl.h; sourceTree = SOURCE_ROOT; };
@@ -213,6 +215,7 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				5C0F94DE132979140093FA1B /* RhoTime.cpp */,
 				FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */,
 				FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */,
 				5C2CE254122AEC87005EDBC4 /* RhoAppAdapter.h */,
@@ -443,6 +446,7 @@
 				FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */,
 				5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */,
 				5CB821AE1312487100778441 /* INetRequest.cpp in Sources */,
+				5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
