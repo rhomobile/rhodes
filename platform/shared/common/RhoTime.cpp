@@ -11,10 +11,12 @@ CRhoTimer::CTimerItem::CTimerItem(int nInterval, const char* szCallback, const c
     m_oFireTime.addMillis(nInterval);
 }
 
-unsigned long CRhoTimer::getNextTimeout()
+timeval CRhoTimer::getNextTimeout()
 {
+    timeval tv = {0};
+
     if ( m_arItems.size() == 0 )
-        return 0;
+        return tv;
 
     CTimeInterval curTime = CTimeInterval::getCurrentTime();
     unsigned long nMinInterval = ((unsigned long)-1);
@@ -32,7 +34,9 @@ unsigned long CRhoTimer::getNextTimeout()
     if ( nMinInterval < 100 )
         nMinInterval = 100;
 
-    return nMinInterval;
+    tv.tv_sec = nMinInterval/1000;
+    tv.tv_usec = (nMinInterval - tv.tv_sec*1000)*1000;
+    return tv;
 }
 
 boolean CRhoTimer::checkTimers()
