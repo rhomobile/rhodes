@@ -75,10 +75,9 @@ end
 			chdir $startdir
 		end 
 
-		task :devrhobundle => ["config:set_wm_platform", "win32:devrhobundlexap"]
 	end
 
-	namespace "win32" do
+	namespace "win32__" do
 	
 		task :extensions => "config:wm" do
 			$app_config["extensions"].each do |ext|
