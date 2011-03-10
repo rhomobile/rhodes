@@ -165,7 +165,7 @@ public:
         m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
     }
 
-    unsigned long getNextTimeout();
+    timeval getNextTimeout();
     boolean checkTimers();
     void stopTimer(const char* szCallback);
 };
