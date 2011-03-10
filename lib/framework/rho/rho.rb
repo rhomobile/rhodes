@@ -1128,7 +1128,17 @@ module Rho
         end
         
     end
-  
+
+    module Timer
+        def self.start( interval_ms, callback, callback_data )
+            System.start_timer(interval_ms, callback, callback_data)
+        end
+        
+        def self.stop( callback )
+            System.stop_timer( callback )
+        end        
+    end
+      
 end # Rho
 
 module SyncEngine
