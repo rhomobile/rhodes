@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 public class PushReceiver extends BroadcastReceiver {
@@ -35,6 +36,7 @@ public class PushReceiver extends BroadcastReceiver {
 			Log.d(TAG, "Unregistered: " + unregistered);
 		}
 		else if (id != null) {
+			Log.d(TAG, "Registered: " + id);
 			Intent serviceIntent = new Intent(context, RhodesService.class);
 			serviceIntent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 			serviceIntent.putExtra(INTENT_TYPE, INTENT_TYPE_REGISTRATION_ID);
@@ -46,10 +48,12 @@ public class PushReceiver extends BroadcastReceiver {
 	}
 	
 	private void handleMessage(Context context, Intent intent) {
+		Bundle extras = intent.getExtras();
+		Log.d(TAG, "Message: " + extras);
 		Intent serviceIntent = new Intent(context, RhodesService.class);
 		serviceIntent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 		serviceIntent.putExtra(INTENT_TYPE, INTENT_TYPE_MESSAGE);
-		serviceIntent.putExtra(INTENT_EXTRAS, intent.getExtras());
+		serviceIntent.putExtra(INTENT_EXTRAS, extras);
 		context.startService(serviceIntent);
 	}
 	

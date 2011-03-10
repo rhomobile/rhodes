@@ -1,6 +1,7 @@
 #include "rhodes/JNIRhodes.h"
 
 #include "rhodes/jni/com_rhomobile_rhodes_alert_Alert.h"
+#include "rhodes/jni/com_rhomobile_rhodes_alert_PopupActivity.h"
 
 #include <common/rhoparams.h>
 #include <common/RhodesApp.h>
@@ -8,7 +9,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_alert_Alert_doCallback
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_alert_PopupActivity_doCallback
   (JNIEnv *env, jclass, jstring url, jstring id, jstring title)
 {
     rho_rhodesapp_callPopupCallback(rho_cast<std::string>(env, url).c_str(),

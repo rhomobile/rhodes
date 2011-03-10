@@ -26,6 +26,10 @@
         </activity>
         
         <activity
+            android:name="com.rhomobile.rhodes.alert.PopupActivity"
+            android:theme="@style/PopupTheme" />
+        
+        <activity
             android:name="com.rhomobile.rhodes.camera.FileList" />
         
         <activity
