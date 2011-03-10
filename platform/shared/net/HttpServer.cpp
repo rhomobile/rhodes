@@ -371,11 +371,15 @@ bool CHttpServer::run()
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
-
-        /*fd_set readfds;
+/*
+        fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
-        timeval tv = RHODESAPP().getTimer().getNextTimeout();
+
+        timeval tv = {0};
+        unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
+        tv.tv_sec = nTimeout/1000;
+        tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(0, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 
         rho_ruby_stop_threadidle();
@@ -386,8 +390,8 @@ bool CHttpServer::run()
             {*/
                 //RAWTRACE("Before accept...");
                 SOCKET conn = accept(m_listener, NULL, NULL);
-				rho_ruby_stop_threadidle();
                 //RAWTRACE("After accept...");
+                rho_ruby_stop_threadidle();
                 if (!m_active) {
                     RAWTRACE("Stop HTTP server");
                     return true;
@@ -406,7 +410,7 @@ bool CHttpServer::run()
 
                 RAWTRACE("Close connected socket");
                 closesocket(conn);
-            /*}
+/*            }
         }else if ( ret == 0 ) //timeout
         {
             bProcessed = RHODESAPP().getTimer().checkTimers();
