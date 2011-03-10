@@ -99,7 +99,7 @@ namespace "build" do
       raise "SDKROOT is not set" if $sdkroot.nil?
       $arch = ENV['ARCHS']
       raise "ARCHS is not set" if $arch.nil?
-      $gccbin = $bindir + '/gcc-4.0'
+      $gccbin = $bindir + '/gcc'
       $arbin = $bindir + '/ar'
 
     elsif ENV['RHO_PLATFORM'] == 'wm'
