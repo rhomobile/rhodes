@@ -44,10 +44,11 @@ namespace Rhodes
         {
             //SaveFilesToIsoStore();
             //webBrowser1.Navigate(new Uri("http://www.google.com", UriKind.Absolute));
-            SaveFilesToIsoStore();
+            //Rybas K.
+            /*SaveFilesToIsoStore();
 
             webBrowser1.IsScriptEnabled = true;
-            webBrowser1.Navigate(new Uri("readme.htm", UriKind.Relative));
+            webBrowser1.Navigate(new Uri("readme.htm", UriKind.Relative));*/
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
