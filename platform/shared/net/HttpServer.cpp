@@ -371,28 +371,49 @@ bool CHttpServer::run()
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
-        //RAWTRACE("Before accept...");
-        SOCKET conn = accept(m_listener, NULL, NULL);
-        //RAWTRACE("After accept...");
+
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(m_listener, &readfds);
+        timeval tv = RHODESAPP().getTimer().getNextTimeout();
+        int ret = select(0, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
+
         rho_ruby_stop_threadidle();
-        if (!m_active) {
-            RAWTRACE("Stop HTTP server");
-            return true;
-        }
-        if (conn == INVALID_SOCKET) {
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
-            if (RHO_NET_ERROR_CODE == EINTR)
-                continue;
-#endif
-            RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
+        bool bProcessed = false;
+        if (ret > 0) 
+        {
+            if (FD_ISSET(m_listener, &readfds))
+            {
+                //RAWTRACE("Before accept...");
+                SOCKET conn = accept(m_listener, NULL, NULL);
+                //RAWTRACE("After accept...");
+                if (!m_active) {
+                    RAWTRACE("Stop HTTP server");
+                    return true;
+                }
+                if (conn == INVALID_SOCKET) {
+        #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+                    if (RHO_NET_ERROR_CODE == EINTR)
+                        continue;
+        #endif
+                    RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
+                    return false;
+                }
+
+                RAWTRACE("Connection accepted, process it...");
+                bProcessed = process(conn);
+
+                RAWTRACE("Close connected socket");
+                closesocket(conn);
+            }
+        }else if ( ret == 0 ) //timeout
+        {
+            bProcessed = RHODESAPP().getTimer().checkTimers();
+        }else
+        {
+            RAWLOG_ERROR1("select error: %d", ret);
             return false;
         }
-
-        RAWTRACE("Connection accepted, process it...");
-        bool bProcessed = process(conn);
-
-        RAWTRACE("Close connected socket");
-        closesocket(conn);
 
         if ( bProcessed )
             rb_gc();
@@ -989,6 +1010,23 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     
     fclose(fp);
     if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
+    return true;
+}
+
+bool CHttpServer::call_ruby_method(String const &uri, String const &body, String& strReply)
+{
+    Route route;
+    if (!dispatch(uri, route)) 
+        return false;
+
+    HeaderList headers;
+    headers.addElement(HttpHeader("Content-Type","application/x-www-form-urlencoded"));
+    VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
+                                    "POST", uri, String(), headers, body);
+    VALUE data = callFramework(req);
+    strReply = String(getStringFromValue(data), getStringLenFromValue(data));
+    rho_ruby_releaseValue(data);
+
     return true;
 }
 
