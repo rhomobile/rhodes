@@ -109,7 +109,7 @@ namespace Rhodes
             string code = "def foo; 'haha'; end; foo()";
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
 
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri("RhoBundle/lib/rhoframework.rb", UriKind.Relative));
+            StreamResourceInfo sr = Application.GetResourceStream(new Uri("rho/lib/rhoframework.rb", UriKind.Relative));
             using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
             {
                 char[] str = br.ReadChars((int)sr.Stream.Length);
