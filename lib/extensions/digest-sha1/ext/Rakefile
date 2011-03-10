@@ -93,7 +93,7 @@ namespace "build" do
       raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
       $arch = ENV['ARCHS']
       raise "ARCHS is not set" if $arch.nil?
-      $gccbin = $bindir + '/gcc-4.0'
+      $gccbin = $bindir + '/gcc'
       $arbin = $bindir + '/ar'
       $lipobin = 'lipo'
 
