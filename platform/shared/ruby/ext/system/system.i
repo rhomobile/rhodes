@@ -51,6 +51,12 @@ extern void rho_sys_app_install(const char *url);
 #define app_uninstall rho_sys_app_uninstall
 extern void rho_sys_app_uninstall(const char *appname);
 
+#define start_timer rho_sys_start_timer
+extern void rho_sys_start_timer( int interval, const char *url, const char* params);
+
+#define stop_timer rho_sys_stop_timer
+extern void rho_sys_stop_timer( const char *url );
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -101,3 +107,5 @@ extern void open_url(const char *url);
 extern int app_installed(const char *appname);
 extern void app_install(const char *url);
 extern void app_uninstall(const char *appname);
+extern void start_timer( int interval, const char *url, const char* params);
+extern void stop_timer( const char *url);

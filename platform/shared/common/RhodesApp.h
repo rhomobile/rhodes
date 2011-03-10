@@ -33,6 +33,7 @@ private:
     common::CAutoPtr<net::CHttpServer> m_httpServer;
     CSplashScreen m_oSplashScreen;
     CAppMenu m_oAppMenu;
+    CRhoTimer m_oTimer;
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
@@ -99,9 +100,11 @@ public:
     void callUiCreatedCallback();
     void callUiDestroyedCallback();
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
+    boolean callTimerCallback(const String& strUrl, const String& strData);
 
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
+    CRhoTimer&     getTimer(){ return m_oTimer; }
 
     boolean sendLog();
 
