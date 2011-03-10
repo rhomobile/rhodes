@@ -119,4 +119,7 @@
   </Target>
   -->
   <ProjectExtensions />
+  <PropertyGroup>
+    <PostBuildEvent>rake build:wp:devrhobundle</PostBuildEvent>
+  </PropertyGroup>
 </Project>
