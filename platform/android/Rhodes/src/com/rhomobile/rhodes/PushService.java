@@ -22,8 +22,10 @@ public class PushService {
 	}
 	
 	public static void register() throws IllegalAccessException {
-		if (!isOsVersionEnough())
+		if (!isOsVersionEnough()) {
+			Logger.E(TAG, "OS version is not enough for C2DM");
 			return;
+		}
 		
 		checkCapabilities();
 		
@@ -37,8 +39,10 @@ public class PushService {
 	}
 	
 	public static void unregister() throws IllegalAccessException {
-		if (!isOsVersionEnough())
+		if (!isOsVersionEnough()) {
+			Logger.E(TAG, "OS version is not enough for C2DM");
 			return;
+		}
 		
 		checkCapabilities();
 		

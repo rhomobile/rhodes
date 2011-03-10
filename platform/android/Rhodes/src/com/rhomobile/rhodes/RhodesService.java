@@ -443,10 +443,12 @@ public class RhodesService extends Service {
 				String id = intent.getStringExtra(PushReceiver.INTENT_REGISTRATION_ID);
 				if (id == null)
 					throw new IllegalArgumentException("Empty registration id received in service command");
+				Logger.D(TAG, "Received PUSH registration id: " + id);
 				setPushRegistrationId(id);
 				break;
 			case PushReceiver.INTENT_TYPE_MESSAGE:
 				Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_EXTRAS);
+				Logger.D(TAG, "Received PUSH message: " + extras);
 				handlePushMessage(extras);
 				break;
 			default:
