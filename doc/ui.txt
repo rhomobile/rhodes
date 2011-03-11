@@ -573,6 +573,11 @@ Means the same as above and setup background color for tabbar.
 	:::ruby
 	Rho::NativeTabbar.create( :tabs => tabs, 
 		:background_color => 0x0000FF)
+
+Means the same as above and place TabBar in bottom of screen (actual only on Android, where TabBar placed in top of screen by default).	
+	:::ruby
+	Rho::NativeTabbar.create( :tabs => tabs, 
+		:background_color => 0x0000FF, :place_tabs_bottom => true)
 	
 **NOTE: If you setup :background_color on Android you should also setup :selected_color for each tab **	 
 
