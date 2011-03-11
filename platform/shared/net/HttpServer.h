@@ -86,8 +86,6 @@ public:
     String create_response(String const &reason, HeaderList const &headers, String const &body);
 
     static int isIndex(String const &uri);
-
-    bool call_ruby_method(String const &uri, String const &body, String& strReply);
 private:
     bool init();
     void close_listener();
