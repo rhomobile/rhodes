@@ -9,11 +9,11 @@ wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 applog: rholog.txt
 iphone:
   configuration: Debug
-  sdk: iphonesimulator4.0
+  sdk: iphonesimulator4.3
   provisionprofile:
   codesignidentity:
   entitlements:
-  BundleIdentifier: com.rhomobile.<%=@app_name%>
-  BundleURLScheme: <%=@app_name%>
+  BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
+  BundleURLScheme: <%=@app_name_cleared%>
 
 extensions: ["json", "another-extension"]
