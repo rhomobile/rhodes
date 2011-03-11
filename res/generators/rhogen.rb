@@ -54,6 +54,7 @@ module Rhogen
       @sdk_path = File.expand_path(File.join(File.dirname(__FILE__),'..','..'))
       @sdk_path.gsub!("\\","/")
       @app_name = name
+      @app_name_cleared = name.downcase.split(/[^a-z]/).map{|w| w.downcase}.join("_")
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
