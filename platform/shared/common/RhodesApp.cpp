@@ -303,17 +303,6 @@ CRhodesApp::~CRhodesApp(void)
 
 }
 
-boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strData)
-{
-    String strBody = "rho_callback=1";
-		
-    if ( strData.length() > 0 )
-        strBody += "&" + strData;
-
-    String strReply;
-    return m_httpServer->call_ruby_method(strUrl, strBody, strReply);
-}
-
 void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
 {
     LOG(INFO) + "restart local server.";

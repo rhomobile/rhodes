@@ -820,14 +820,13 @@ void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri)
 
 bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 {
+    common::CMutexLock lock(m_mxInternet);
+
     if (!bLocalHost)
     {
-        common::CMutexLock lock(m_mxInternet);
         if ( !SetupInternetConnection(url) )
             return false;
     }
-
-    common::CMutexLock lock(m_mxInternet);
 
     if (m_hInternet)
         return true;

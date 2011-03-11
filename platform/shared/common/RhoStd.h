@@ -111,11 +111,6 @@ public:
         }
     }
 
-    void removeElementAt(int nItem)
-    {
-        std::vector<Type>::erase( std::vector<Type>::begin() + nItem );
-    }
-
     int indexOf(const Type& item)
     {
         for (int i = 0; i < (int)std::vector<Type>::size(); i++)
