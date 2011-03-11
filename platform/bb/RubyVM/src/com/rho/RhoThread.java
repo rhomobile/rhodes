@@ -64,6 +64,22 @@ public class RhoThread extends Thread
 			m_nState &= ~TS_STOPPING;
 		}
     }
+
+    public void waitMs(int nTimeoutMs)
+    {
+		synchronized (m_syncObj) {
+			try{
+				m_nState |= TS_WAIT;
+				m_syncObj.wait(nTimeoutMs);
+			}catch(Exception e)
+			{
+				LOG.ERROR("waitMs failed", e);
+			}finally{
+				m_nState &= ~TS_WAIT;
+			}
+		}
+    	
+    }
     
     public void wait(int nTimeout)
     {

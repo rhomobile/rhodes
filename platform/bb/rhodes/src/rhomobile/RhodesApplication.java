@@ -1423,7 +1423,14 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         	    	synchronized(m_mxStackCommands)
         	    	{
         	    		if ( m_stackCommands.isEmpty() )
-        	    			wait(INTERVAL_INFINITE);
+        	    		{
+        	    			int nTimeout = (int)RHODESAPP().getTimer().getNextTimeout();
+        	    			waitMs(nTimeout == 0 ? INTERVAL_INFINITE : nTimeout);
+        	    			
+        	    			if ( !m_bExit && m_stackCommands.isEmpty() )
+        	    				RHODESAPP().getTimer().checkTimers();
+        	    				
+        	    		}
         	    	}
         		}
         		
