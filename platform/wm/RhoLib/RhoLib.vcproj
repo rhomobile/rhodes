@@ -878,10 +878,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\common\RhoTime.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\shared\common\RhoTime.h"
 				>
 			</File>
