@@ -30,6 +30,11 @@ public class TimeInterval
         return res;
     }
 
+    public void addMillis(int nMs)
+    {
+    	m_nativeTime += nMs;
+    }
+    
     public TimeInterval plusAssign(TimeInterval time){
         m_nativeTime += time.m_nativeTime;
         return this;

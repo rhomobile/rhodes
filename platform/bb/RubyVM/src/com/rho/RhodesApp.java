@@ -28,7 +28,9 @@ public class RhodesApp
     
     int m_currentTabIndex = 0;
     String[] m_currentUrls = new String[5];
+    RhoTimer m_oTimer = new RhoTimer();
     
+    public RhoTimer     getTimer(){ return m_oTimer; }
     String getAppBackUrl(){return m_strAppBackUrl;}
 
     public static RhodesApp Create(String strRootPath)
@@ -308,4 +310,21 @@ public class RhodesApp
     	}
     }
     
-}
+    public boolean callTimerCallback( String strUrl, String strData)
+    {
+        String strBody = "rho_callback=1";
+    		
+        if ( strData != null && strData.length() > 0 )
+            strBody += "&" + strData;
+
+        try
+        {
+	        IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+			NetResponse resp = helper.postUrlSync(canonicalizeRhoUrl(strUrl),strBody);
+        }catch(Exception exc)
+        {
+        	LOG.ERROR("callTimerCallback failed.", exc);
+        	return false;
+        }
+        return true;
+    }}
