@@ -57,8 +57,8 @@ public class TabbedMainView implements MainView {
 	
 	private static final String TAG = "TabbedMainView";
 	
-	private static final int DISABLED_BKG_COLOR = 0xFF000000 | (128 << 16) | (128 << 8) | (128);
-	private static final int DISABLED_IMG_COLOR = 0xFF000000 | (164 << 16) | (164 << 8) | (164);
+	private static final int DISABLED_BKG_COLOR = 0xFF000000 | (110 << 16) | (110 << 8) | (110);
+	private static final int DISABLED_IMG_COLOR = 0xFF000000 | (140 << 16) | (140 << 8) | (140);
 	
 	private TabHost host;
 	private Vector<TabData> tabData;
@@ -270,7 +270,7 @@ public class TabbedMainView implements MainView {
 					c_G = (DISABLED_BKG_COLOR & 0xFF00) >> 8;
 					c_B = (DISABLED_BKG_COLOR & 0xFF);
 					
-					int dark_k = 8;
+					int dark_k = 0;
 					int dark_k2 = 32;
 					int c_dark_R = modifyColorComponent( c_R, -dark_k);
 					int c_dark_G = modifyColorComponent( c_G, -dark_k);
@@ -426,6 +426,7 @@ public class TabbedMainView implements MainView {
 		mBackgroundColorEnable = false;		
 
 		Vector<Object> tabs = null;
+		boolean place_tabs_bottom = false;
 		if (params instanceof Vector<?>)
 			tabs = (Vector<Object>)params;
 		else if (params instanceof Map<?,?>) {
@@ -437,6 +438,12 @@ public class TabbedMainView implements MainView {
 				mBackgroundColor = color;
 				mBackgroundColorEnable = true;
 			}
+
+			Object placeBottomObj = settings.get("place_tabs_bottom");
+			if ((placeBottomObj != null) && (placeBottomObj instanceof String)) {
+				place_tabs_bottom = ((String)placeBottomObj).equalsIgnoreCase("true");
+			}
+			
 			
 			Object tabsObj = settings.get("tabs");
 			if (tabsObj != null && (tabsObj instanceof Vector<?>))
@@ -455,17 +462,31 @@ public class TabbedMainView implements MainView {
 		
 		TabWidget tabWidget = new TabWidget(ctx);
 		tabWidget.setId(android.R.id.tabs);
-		TabHost.LayoutParams lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.WRAP_CONTENT, Gravity.TOP);
-		host.addView(tabWidget, lpt);
 
 		FrameLayout frame = new FrameLayout(ctx);
-		frame.setId(android.R.id.tabcontent);
-		FrameLayout.LayoutParams lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT, Gravity.BOTTOM);
-		// TODO: detect tab widget height and use it here instead of hardcoded value
-		//lpf.setMargins(0, 128, 0, 0);
-		host.addView(frame, lpf);
+		FrameLayout.LayoutParams lpf = null;
+		TabHost.LayoutParams lpt = null;
+		if (place_tabs_bottom) {
+			frame.setId(android.R.id.tabcontent);
+			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.FILL_PARENT, Gravity.TOP);
+			host.addView(frame, lpf);
+
+			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
+			host.addView(tabWidget, lpt);
+		}
+		else {
+			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.WRAP_CONTENT, Gravity.TOP);
+			host.addView(tabWidget, lpt);
+
+			frame = new FrameLayout(ctx);
+			frame.setId(android.R.id.tabcontent);
+			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.FILL_PARENT, Gravity.BOTTOM);
+			host.addView(frame, lpf);
+		}
 		
 		host.setup();
 		
@@ -611,12 +632,16 @@ public class TabbedMainView implements MainView {
 		
 		tabWidget.measure(host.getWidth(), host.getHeight());
 		int hh = tabWidget.getMeasuredHeight();
-		if (hh < 64) {
-			hh = 64;
+		//if (hh < 64) {
+		//	hh = 64;
+		//}
+		if (place_tabs_bottom) {
+			lpf.setMargins(0, 0, 0, hh);
 		}
-		lpf.setMargins(0, hh, 0, 0);
+		else {
+			lpf.setMargins(0, hh, 0, 0);
+		}
 		host.updateViewLayout(frame, lpf);
-		
 	}
 
 	private class TabHostClickListener implements View.OnTouchListener, View.OnClickListener, TabHost.OnTabChangeListener {
@@ -647,14 +672,14 @@ public class TabbedMainView implements MainView {
 				if (	( ( left <= x) && (x <= (left+width))) &&
 						( (top <= y) && (y <= (top+height))) ) {
 					//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "clicked item no "+String.valueOf(curIndex));
-					onTabChangedIndex(curIndex);
+					onTabChangedIndex(curIndex, true);
 					return;
 				}
 			}
 			//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "not found clicked item");
 		}
-		
-		private void onTabChangedIndex(int index) {
+
+		private void onTabChangedIndex(int index, boolean byself) {
 			//Utils.platformLog("#$#$#$#$#$#$#$#$#$", "onTabChangedIndex( "+String.valueOf(index)+" )");
 			int new_tabIndex = index;
 			sel_col = 0;
@@ -669,13 +694,13 @@ public class TabbedMainView implements MainView {
 				return;
 			}
 			boolean real_change = (tabIndex != new_tabIndex);
-			tabIndex = new_tabIndex;
-			if (real_change) {
-				tabHost.setCurrentTab(tabIndex);
+			if (real_change && byself) {
+				tabHost.setCurrentTab(new_tabIndex);
 				// all will processed when onTabChanged received
 				return;
 			}
-			if ((data.reload || real_change) || !data.loaded ) {
+			tabIndex = new_tabIndex;
+			if ((data.reload /*|| real_change*/) || !data.loaded ) {
 				if (mIsReallyOnScreen) {
 					RhodesService.loadUrl(data.url);
 					data.loaded = true;
@@ -684,15 +709,15 @@ public class TabbedMainView implements MainView {
 			sel_col = data.selected_color;
 			sel_col_enable = data.selected_color_enabled;
 			
-			//if (real_change && mIsReallyOnScreen) {
-			processTabHostColors(tabHost, sel_col, sel_col_enable);
-			//}
+			if (mIsReallyOnScreen && real_change) {
+				processTabHostColors(tabHost, sel_col, sel_col_enable);
+			}
 		}
 		
 		public void onTabChanged(String tabId) {
 			try {
 				int new_tabIndex = Integer.parseInt(tabId);
-				onTabChangedIndex(new_tabIndex);
+				onTabChangedIndex(new_tabIndex, false);
 			}
 			catch (NumberFormatException e) {
 				Logger.E(TAG, e);

@@ -31,6 +31,7 @@ import com.xruby.runtime.builtin.RubyArray;
 import com.xruby.runtime.lang.RubyProgram;
 import com.xruby.runtime.lang.RubyRuntime;
 import com.rho.net.NetResponse;
+import javax.microedition.io.HttpConnection;
 
 public class RhoRubyHelper implements IRhoRubyHelper {
 
@@ -117,6 +118,27 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		netCallback.waitForResponse();
 		
 		return netCallback.m_response;
+	}
+	
+	public NetResponse postUrlSync(String url, String body)throws Exception
+	{
+		HttpHeaders headers = new HttpHeaders();
+		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+		
+		HttpConnection connection = rhomobile.Utilities.makeConnection(url, headers, body.getBytes(), null);
+		
+		java.io.InputStream is = connection.openInputStream();		
+		int nRespCode = connection.getResponseCode();
+		
+		String strRespBody = "";
+		if ( is != null )
+		{
+			byte[] buffer = new byte[is.available()];
+			is.read(buffer);
+			strRespBody = new String(buffer);
+		}
+			
+		return new NetResponse(strRespBody, nRespCode);
 	}
 	
 	public void navigateUrl(String url)
