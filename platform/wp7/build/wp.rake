@@ -110,7 +110,7 @@ end
 end
 
 namespace "run" do
-	namespace "wp" 
+	namespace "wp" do
 		desc "Build, install .xap and run on WP7 emulator"
 		task :cab => ["device:wp:production"]
 	end
