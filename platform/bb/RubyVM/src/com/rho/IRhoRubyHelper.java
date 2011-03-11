@@ -27,6 +27,8 @@ public interface IRhoRubyHelper {
 	public void wakeUpGeoLocation();
 	
 	public NetResponse postUrl(String url, String body);
+	public NetResponse postUrlSync(String url, String body)throws Exception;
+	
 	public void navigateUrl(String url);
 	public void navigateBack();
 	public void app_exit();

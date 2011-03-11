@@ -11,8 +11,8 @@ import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
-import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
+import com.xruby.runtime.builtin.*;
 import com.rho.RhoRubyHelper;
 import com.rho.file.IRAFile;
 
@@ -28,6 +28,8 @@ public class System {
 
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("System");
+	
+	private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
 	public static void initMethods(RubyClass klass){
 		klass.getSingletonClass().defineMethod( "get_property", new RubyOneArgMethod(){ 
@@ -267,6 +269,43 @@ public class System {
 			}
 		});
 		
+		klass.getSingletonClass().defineMethod( "start_timer", new RubyVarArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
+			{
+				try 
+				{
+					if ( args == null || args.size() != 3 )
+						throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+								"in System.start_timer: wrong number of arguments ( " + args.size() + " for " + 3 + " )");
+					
+					int nInterval = args.get(0).toInt();
+					String url = args.get(1).toStr();
+					String params = args.get(2).toStr();
+					
+					RHODESAPP().getTimer().addTimer(nInterval, url, params);
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("start_timer failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
+		klass.getSingletonClass().defineMethod( "stop_timer", new RubyOneArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block )
+			{
+				try 
+				{
+					String url = arg1.toStr();
+					
+					RHODESAPP().getTimer().stopTimer(url);
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("stop_timer failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});		
 	}
     
     //@RubyLevelMethod(name="get_property", module=true)
