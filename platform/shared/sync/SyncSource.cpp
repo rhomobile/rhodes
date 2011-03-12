@@ -376,7 +376,7 @@ void CSyncSource::applyChangedValues()
     if ( strBody.length() > 0 )
     {
         CJSONEntry oEntry(strBody.c_str());
-        processSyncCommand("insert", oEntry );
+        processSyncCommand("insert", oEntry, false );
     }
 
     strBody = "";
@@ -384,7 +384,7 @@ void CSyncSource::applyChangedValues()
     if ( strBody.length() > 0 )
     {
         CJSONEntry oEntry(strBody.c_str());
-        processSyncCommand("delete", oEntry );
+        processSyncCommand("delete", oEntry, false );
     }
 
     strBody = "";
@@ -392,7 +392,7 @@ void CSyncSource::applyChangedValues()
     if ( strBody.length() > 0 )
     {
         CJSONEntry oEntry(strBody.c_str());
-        processSyncCommand("insert", oEntry );
+        processSyncCommand("insert", oEntry, false );
     }
 }
 
@@ -615,11 +615,11 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
                 getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
             }
             if ( oCmds.hasName("links") && getSync().isContinueSync() )
-                processSyncCommand("links", oCmds.getEntry("links") );
+                processSyncCommand("links", oCmds.getEntry("links"), true );
             if ( oCmds.hasName("delete") && getSync().isContinueSync() )
-                processSyncCommand("delete", oCmds.getEntry("delete") );
+                processSyncCommand("delete", oCmds.getEntry("delete"), true );
             if ( oCmds.hasName("insert") && getSync().isContinueSync() )
-                processSyncCommand("insert", oCmds.getEntry("insert") );
+                processSyncCommand("insert", oCmds.getEntry("insert"), true );
 
             PROF_STOP("Data");
 
@@ -637,7 +637,7 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 	PROF_STOP("Data1");
 }
 
-void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
+void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry, boolean bCheckUIRequest)
 {
     CJSONStructIterator objIter(oCmdEntry);
 
@@ -661,18 +661,20 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry)
         if ( getSyncType().compare("none") == 0 )
             continue;
 
-        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
-        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-            getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
-
-        if ( getDB().isUIWaitDB() )
+        if ( bCheckUIRequest )
         {
-	        LOG(INFO) + "Commit transaction because of UI request.";
-            getDB().endTransaction();
-            CSyncThread::getInstance()->sleep(1000);
-            getDB().startTransaction();
-        }
+            int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
+            if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+                getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
 
+            if ( getDB().isUIWaitDB() )
+            {
+	            LOG(INFO) + "Commit transaction because of UI request.";
+                getDB().endTransaction();
+                CSyncThread::getInstance()->sleep(1000);
+                getDB().startTransaction();
+            }
+        }
     }
 }
 
