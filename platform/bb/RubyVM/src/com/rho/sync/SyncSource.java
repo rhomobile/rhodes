@@ -470,21 +470,21 @@ public class SyncSource
 	    if ( strBody != null && strBody.length() > 0 )
 	    {
 	        JSONEntry oEntry = new JSONEntry(strBody);
-	        processSyncCommand("insert", oEntry );
+	        processSyncCommand("insert", oEntry, false );
 	    }
 
 	    strBody = makePushBody_Ver3("delete", false);
 	    if ( strBody != null && strBody.length() > 0 )
 	    {
 	        JSONEntry oEntry = new JSONEntry(strBody);
-	        processSyncCommand("delete", oEntry );
+	        processSyncCommand("delete", oEntry, false );
 	    }
 
 	    strBody = makePushBody_Ver3("update", false);
 	    if ( strBody != null && strBody.length() > 0 )
 	    {
 	        JSONEntry oEntry = new JSONEntry(strBody);
-	        processSyncCommand("insert", oEntry );
+	        processSyncCommand("insert", oEntry, false );
 	    }
 	}
 	
@@ -708,11 +708,11 @@ public class SyncSource
 		            getDB().executeSQL("UPDATE sources SET metadata=? WHERE source_id=?", strMetadata, getID() );
 		        }
 		        if ( oCmds.hasName("links") && getSync().isContinueSync() )
-		            processSyncCommand("links", oCmds.getEntry("links") );
+		            processSyncCommand("links", oCmds.getEntry("links"), true );
 		        if ( oCmds.hasName("delete") && getSync().isContinueSync() )
-		            processSyncCommand("delete", oCmds.getEntry("delete") );
+		            processSyncCommand("delete", oCmds.getEntry("delete"), true );
 		        if ( oCmds.hasName("insert") && getSync().isContinueSync() )
-		            processSyncCommand("insert", oCmds.getEntry("insert") );
+		            processSyncCommand("insert", oCmds.getEntry("insert"), true );
 	
 		        PROF.STOP("Data");
 	
@@ -730,7 +730,7 @@ public class SyncSource
 		PROF.STOP("Data1");
 	}
 	
-	void processSyncCommand(String strCmd, JSONEntry oCmdEntry)throws Exception
+	void processSyncCommand(String strCmd, JSONEntry oCmdEntry, boolean bCheckUIRequest)throws Exception
 	{
 	    JSONStructIterator objIter = new JSONStructIterator(oCmdEntry);
 
@@ -761,16 +761,19 @@ public class SyncSource
 	        if ( getSyncType().compareTo("none") == 0 )
 	        	continue;
 	        
-	        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
-	        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-	            getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
-	        
-	        if ( getDB().isUIWaitDB() )
+	        if ( bCheckUIRequest )
 	        {
-		        LOG.INFO("Commit transaction because of UI request.");
-	            getDB().endTransaction();
-	            SyncThread.getInstance().sleep(1000);
-	            getDB().startTransaction();
+		        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
+		        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+		            getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
+		        
+		        if ( getDB().isUIWaitDB() )
+		        {
+			        LOG.INFO("Commit transaction because of UI request.");
+		            getDB().endTransaction();
+		            SyncThread.getInstance().sleep(1000);
+		            getDB().startTransaction();
+		        }
 	        }
 	    }
 	}
