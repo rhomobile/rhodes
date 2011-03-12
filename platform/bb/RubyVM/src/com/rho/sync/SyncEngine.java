@@ -414,7 +414,15 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        }
 		
 		        if ( nSearchCount == 0 )
+		        {
+		        	for ( int i = 0; i < (int)arSources.size(); i++ )
+					{
+						SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
+						if ( pSrc != null )
+							pSrc.processToken(0);
+					}		        	
 		            break;
+		        }
 		    }  
 		
 		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);

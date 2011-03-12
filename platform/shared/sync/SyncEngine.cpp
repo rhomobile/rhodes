@@ -230,6 +230,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         else
             szData = resp.getCharData();
 
+        //LOG(INFO) + szData;
         CJSONArrayIterator oJsonArr(szData);
 
         for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
@@ -296,7 +297,16 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         }
 
         if ( nSearchCount == 0 )
+        {
+            for ( int i = 0; i < (int)arSources.size(); i++ )
+            {
+                CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
+                if ( pSrc != null )
+                    pSrc->processToken(0);
+            }
+
             break;
+        }
     }  
 
     getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
