@@ -39,7 +39,7 @@ begin
     require 'rho'
 	
     puts 'RHO loaded'
-    Rho::RHO.new
+    RH_FRAMEWORK = Rho::RHO.new
 rescue Exception => e
     trace_msg = e.backtrace.join("\n")
     puts 'Create RHO framework failed: ' + e.inspect + ";Trace: #{trace_msg}"
