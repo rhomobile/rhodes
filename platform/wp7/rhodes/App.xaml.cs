@@ -18,6 +18,7 @@ using Microsoft.Scripting;
 using System.Windows.Resources;
 using System.IO;
 using IronRuby.Builtins;
+using IronRuby.Runtime;
 
 namespace Rhodes
 {
@@ -93,7 +94,12 @@ namespace Rhodes
             _runtime = IronRuby.Ruby.CreateRuntime(runtimeSetup);
             _engine = IronRuby.Ruby.GetEngine(_runtime);
 
-            _runtime.Globals.SetVariable("RHO_WP7", 1);
+            //_runtime.Globals.SetVariable("RHO_WP7", 1);
+
+            RubyContext _context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(_engine);
+
+            _context.ObjectClass.SetConstant("RHO_WP7", 1);
+            //RubyUtils.SetConstant(null, "RHO_WP7", 1);
             _runtime.Globals.SetVariable("RHO_FRAMEWORK", "");
 
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
