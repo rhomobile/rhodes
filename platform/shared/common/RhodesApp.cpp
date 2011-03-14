@@ -1091,6 +1091,10 @@ void CRhodesApp::loadUrl(String url)
     {
         navigateBack();
         return;
+    }else if ( strcasecmp(url.c_str(), "sync")==0 )
+    {
+        rho_sync_doSyncAllSources(1);
+        return;
     }
 
     url = canonicalizeRhoUrl(url);

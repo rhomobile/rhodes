@@ -3,8 +3,6 @@ package com.rhomobile.rhodes;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rhomobile.rhodes.mainview.MainView;
-
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -60,45 +58,18 @@ public class RhoMenu {
 		
 		Item ri = (Item)obj;
 		
-		RhodesService r = RhodesService.getInstance();
-		MainView mainView = r.getMainView();
-		
 		String type = ri.type;
-		if (type.equalsIgnoreCase("refresh")) {
-			mainView.reload(mainView.activeTab());
-		}
-		else if (type.equalsIgnoreCase("home")) {
-			mainView.navigate(RhodesAppOptions.getStartUrl(), mainView.activeTab());
-		}
-		else if (type.equalsIgnoreCase("back")) {
-			mainView.back(mainView.activeTab());
-		}
-		else if (type.equalsIgnoreCase("forward")) {
-			mainView.forward(mainView.activeTab());
-		}
-		else if (type.equalsIgnoreCase("options")) {
-			mainView.navigate(RhodesAppOptions.getOptionsUrl(), mainView.activeTab());
-		}
-		else if (type.equalsIgnoreCase("sync")) {
-			r.doSyncAllSources(true);
-		}
-		else if (type.equalsIgnoreCase("log")) {
+		if (type.equalsIgnoreCase("log"))
 			RhodesService.showLogView();
-		}
-		else if (type.equalsIgnoreCase("logOptions")) {
+		else if (type.equalsIgnoreCase("logOptions"))
 			RhodesService.showLogOptions();
-		}
-		else if (type.equalsIgnoreCase("close") || type.equalsIgnoreCase("exit")) {
-			RhodesService.exit();
-		}
-		else if (type.equalsIgnoreCase("url")) {
-			String url = ri.url;
-			mainView.navigate(r.normalizeUrl(url), mainView.activeTab());
-		}
 		else {
-			Logger.E(TAG, "Unknown type of menu item: \"" + type + "\"");
-			return false;
+			String url = ri.type;
+			if (url.equalsIgnoreCase("url"))
+				url = ri.url;
+			RhodesService.loadUrl(url);
 		}
+		
 		return true;
 	}
 	
