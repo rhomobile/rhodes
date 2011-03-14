@@ -7,7 +7,9 @@ module Rho
 end
   
 begin
-	#require 'rhosystem'
+	if RHO_WP7
+		require 'rhosystem'
+	end
 
     if defined? RHO_ME
 	    require 'rationalME'

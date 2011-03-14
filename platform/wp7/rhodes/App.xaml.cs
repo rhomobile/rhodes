@@ -17,6 +17,7 @@ using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
 using System.Windows.Resources;
 using System.IO;
+using IronRuby.Builtins;
 
 namespace Rhodes
 {
@@ -92,6 +93,8 @@ namespace Rhodes
             _runtime = IronRuby.Ruby.CreateRuntime(runtimeSetup);
             _engine = IronRuby.Ruby.GetEngine(_runtime);
 
+            _runtime.Globals.SetVariable("RHO_WP7", 1);
+
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
             paths.Add("lib");
             paths.Add("apps/app");
@@ -123,7 +126,7 @@ namespace Rhodes
             _rhoframework = src.Execute(_engine.CreateScope());
             if (_rhoframework == null)
                 return;
-
+            _engine.Operations.InvokeMember(_rhoframework, "ui_created");
         }
 
         // Code to execute when the application is launching (eg, from Start)
