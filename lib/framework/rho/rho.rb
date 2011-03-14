@@ -36,7 +36,7 @@ module Rho
       @db_partitions = {}
 
       partition = 'user'
-      if !::RHO_WP7
+      if !defined?(RHO_WP7)
 		@db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
       end
     end
