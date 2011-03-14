@@ -102,6 +102,11 @@ By default, Rhodes framework uses a modified version of jQTouch version 1, beta 
 * Conversely, Ajax requests inspect for a 'Wait-Page' response header. This informs jQTouch that the page it received was returned after an asynchronous HTTP request was spawned by the controller. Wait pages are not added to the jQtouch history. The animation is then deferred until the expected page is returned to the user interface via the Rho.insertAsyncPage() call. This method is typically invoked after an async HTTP callback function has been triggered in the controller.
 * You can override the slide animated transition for forms by setting an animation class on the form like '\<form class="pop"\>...\</form\>'.
 
+### Submit form
+If you need to submit form programmatically, please use the expression **jQT.submitForm('.current form.yourFormClass');**. Here **jQT** is defined as it shown above.  To specify the exact form on the page it is recommended to use **class** instead of **id**.
+
+Be careful, using expressions like **$('#form_id').submit();** with jQTouch it lead to an incorrect result!
+
 ## Loading screen
 
 Rhodes supports the display of a custom "Loading" screen while your application is launching. This screen's source is the file loading.html, located at <application-root>/app/loading.html.
@@ -679,10 +684,6 @@ Animated transitions are supported on the iPhone and Android. Rhodes uses a cust
 Also make sure to add jqtouch_mode=1 to your application's [rhoconfig.txt](configuration#run-time-configuration). Setting this property enables animation for the back button in the bottom toolbar and hides the forward button.
 
 Once these lines are included, links in the application will run animated transitions between screens. Each link must be a full path; relative paths won't work with transitions. If you use [helper functions](application#application-helpers) like __url_for__ and __link_to__, you should be safe.
-
-If you need to submit form programmatically, please use the expression **jQT.submitForm('.current form.yourFormClass');**. Here **jQT** is defined as it shown above.  To specify the exact form on the page it is recommended to use **class** instead of **id**.
-
-Be careful, using expressions like **$('#form_id').submit();** with jQTouch it lead to an incorrect result!
 
 ## Adding transitions to older applications
 
