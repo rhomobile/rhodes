@@ -94,6 +94,7 @@ namespace Rhodes
             _engine = IronRuby.Ruby.GetEngine(_runtime);
 
             _runtime.Globals.SetVariable("RHO_WP7", 1);
+            _runtime.Globals.SetVariable("RH_FRAMEWORK", "");
 
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
             paths.Add("lib");
@@ -126,6 +127,7 @@ namespace Rhodes
             _rhoframework = src.Execute(_engine.CreateScope());
             if (_rhoframework == null)
                 return;
+            _engine.Execute("RH_FRAMEWORK.ui_created");
             _engine.Operations.InvokeMember(_rhoframework, "ui_created");
         }
 
