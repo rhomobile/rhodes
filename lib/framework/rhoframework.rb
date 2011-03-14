@@ -7,7 +7,7 @@ module Rho
 end
   
 begin
-	if RHO_WP7
+	if defined? RHO_WP7
 		require 'rhosystem'
 	end
 
