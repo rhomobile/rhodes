@@ -1,7 +1,15 @@
 module Rho
   def self.file_exist?(fname)
       return File.exist_injar?(fname) if defined? RHO_ME
-            
+
+	  if defined? RHO_WP7
+	     if fname.end_with?('_erb.iseq')
+			fname = fname[0,fname.length-9] + '.erb'
+		 elsif fname.end_with?('.iseq')
+			fname = fname[0,fname.length-5] + '.rb'
+		 end
+	  end
+	              
       File.exist?(fname)
   end
 end
