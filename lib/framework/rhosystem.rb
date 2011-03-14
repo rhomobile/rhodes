@@ -9,6 +9,7 @@ module System
 	def self.get_property(name)
 		return "WP7" if name == "platform"
 		return "7.0" if name == "os_version"
+		return "us" if name == "country"
 		""
 	end
 end
