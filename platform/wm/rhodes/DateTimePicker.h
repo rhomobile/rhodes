@@ -116,4 +116,6 @@ extern "C" void  choose_datetime(char* callback, char* title,
 extern "C" void  choose_datetime_with_range(char* callback, char* title, 
 								 long initial_time, int format, char* data, long min_time, long max_time);
 
+extern "C" void set_change_value_callback_datetime(char* callback);
+
 #endif //__DATETIMEPICKER_H__
