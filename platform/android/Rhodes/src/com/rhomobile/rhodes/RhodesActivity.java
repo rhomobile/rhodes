@@ -11,8 +11,8 @@ import com.rhomobile.rhodes.webview.RhoWebSettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +38,7 @@ public class RhodesActivity extends BaseActivity {
 	public static int MAX_PROGRESS = 10000;
 	
 	static final String RHO_START_PARAMS_KEY = "RhoStartParams";
+	static final String RHO_URL_START_KEY = "RhoUrlStart";
 	
 	private static RhodesActivity sInstance;
 	
@@ -72,6 +73,11 @@ public class RhodesActivity extends BaseActivity {
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
+		
+		Intent intent = getIntent();
+		//intent.putExtra(RHO_URL_START_KEY, "/app/BrowserStart");
+		//intent.putExtra(RHO_URL_PARAMS_KEY, "param1=value1&param2=value2");
+		Log.d(TAG, "MY URI: " + intent.toUri(Intent.URI_INTENT_SCHEME));
 
 		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
@@ -337,29 +343,32 @@ public class RhodesActivity extends BaseActivity {
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
 		
-		if (!isValidSecurityToken()) {
+		Bundle startParams = null;
+		Object params = getIntent().getExtras();
+		if (params != null && params instanceof Bundle)
+			startParams = (Bundle)params;
+		
+		String rhoStartParams = null;
+		if (startParams != null)
+			rhoStartParams = startParams.getString(RHO_START_PARAMS_KEY);
+		if (rhoStartParams == null)
+			rhoStartParams = "";
+		
+		if (!RhodesService.canStartApp(rhoStartParams, ", ")) {
 			Logger.E(TAG, "This is hidden app and can be started only with security key.");
 			getRhodesApplication().exit();
 			return;
 		}
 		
+		String urlStart = startParams == null ? null : startParams.getString(RHO_URL_START_KEY);
+		if (urlStart != null) {
+			Logger.D(TAG, "PROCESS URL START: " + urlStart);
+			RhoConf.setString("start_path", Uri.decode(urlStart));
+		}
+		
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 
-	private boolean isValidSecurityToken() 
-	{
-	    String rho_start_params = "";
-	    
-		Object params = getIntent().getExtras();
-		if (params != null && params instanceof Bundle) 
-		{
-			Bundle startParams = (Bundle)params;
-			rho_start_params = startParams.getString(RHO_START_PARAMS_KEY);
-	    }
-	    
-	    return RhodesService.canStartApp(rho_start_params, ", ");
-	}
-	
 	public static Context getContext() {
 		RhodesActivity ra = RhodesActivity.getInstance();
 		if (ra == null)
