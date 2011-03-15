@@ -76,6 +76,8 @@ end
 			end
 			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2 }
 			
+			chdir $startdir
+
 			mkdir_p $config["build"]["wppath"] + "/rhodes/obj/debug" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/debug"
 			cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/debug"
 		end
