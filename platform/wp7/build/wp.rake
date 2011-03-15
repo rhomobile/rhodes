@@ -69,6 +69,13 @@ end
 
 		task :devrhobundle => [:rhobundle, "device:wp:addbundletoxap"] do
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
+			chdir $srcdir
+			Dir.glob(File.join("**", '*.*')).each do |f|
+				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
+			end
+			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2 }
+			
 			mkdir_p $config["build"]["wppath"] + "/rhodes/obj/debug" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/debug"
 			cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/debug"
 		end
