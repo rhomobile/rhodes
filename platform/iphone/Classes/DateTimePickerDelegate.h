@@ -31,4 +31,6 @@
 - (IBAction)cancelAction:(id)sender;
 - (void)createPicker:(UIView*)parent;
 
++(void)setChangeValueCallback:(NSString*)callback;
+
 @end
