@@ -38,3 +38,5 @@ RHO_GLOBAL void choose_datetime(char* callback, char* title, long initial_time, 
     choose_datetime_with_range(callback, title, initial_time, format, data, 0, 0);
 }
 
+RHO_GLOBAL void set_change_value_callback_datetime(char* callback) {
+}
