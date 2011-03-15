@@ -707,6 +707,10 @@ namespace IronRuby.Runtime {
                 ResolvedFile file = ResolveFile(RubyUtils.CombinePaths(dir, path), extension, appendExtensions, sourceFileExtensions);
                 if (file != null) {
                     result.Add(file);
+
+                    //RHO
+                    break;
+                    //RHO
                 }
             }
 
