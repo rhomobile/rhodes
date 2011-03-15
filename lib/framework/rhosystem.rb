@@ -14,10 +14,20 @@ module System
 	end
 end
 
-module Kernel   
-	def __rhoGetCurrentDir
-		"/rho"
+module Rho
+
+class RhoConf
+	def self.set_property_by_name(name, val)
+		puts "set_property_by_name: #{name}"
 	end
+
+	def self.get_property_by_name(name)
+	    puts "get_property_by_name: #{name}"
+		""
+	end
+
+end
+
 end
 
 class RhoLog

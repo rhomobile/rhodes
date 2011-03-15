@@ -13,7 +13,25 @@ module Rho
       File.exist?(fname)
   end
 end
-  
+
+if defined? RHO_WP7
+
+module Kernel   
+	def __rhoGetCurrentDir
+		"/rho"
+	end
+
+	alias :orig_require :require
+
+	def require(file_name)
+		 file_name += '.rb' unless file_name.end_with?('.rb')
+		 orig_require( file_name )
+	end
+
+end
+
+end
+
 begin
 	if defined? RHO_WP7
 		require 'rhosystem'
