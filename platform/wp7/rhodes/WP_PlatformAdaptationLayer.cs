@@ -45,7 +45,7 @@ public class WP_PlatformAdaptationLayer : PlatformAdaptationLayer
     }
     public override bool IsAbsolutePath(string path)
     {
-        return false;
+        return path.StartsWith(CurrentDirectory);
     }
 
     public override string CurrentDirectory
