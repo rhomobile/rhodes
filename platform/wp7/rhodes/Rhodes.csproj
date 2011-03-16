@@ -23,7 +23,7 @@
     <XapFilename>Rhodes.xap</XapFilename>
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
     <SilverlightAppEntry>Rhodes.App</SilverlightAppEntry>
-    <ValidateXaml>true</ValidateXaml>
+    <ValidateXaml>true</ValidateXaml> 
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
