@@ -74,7 +74,15 @@ void rho_sys_set_push_notification(const char *url, const char* params)
 
 void rho_sys_set_screen_rotation_notification(const char *url, const char* params)
 {
-	RHODESAPP().setScreenRotationNotification(url, params);
+    rho::String s_url = "";
+    rho::String s_params = "";
+    if (url != NULL) {
+        s_url = url;
+    }
+    if (params != NULL) {
+        s_params = params;
+    }
+	RHODESAPP().setScreenRotationNotification(s_url, s_params);
 }
 
 void rho_sys_unzip_file(const char *url)

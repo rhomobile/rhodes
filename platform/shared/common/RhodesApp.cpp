@@ -1033,7 +1033,12 @@ void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
 {
     synchronized(m_mxScreenRotationCallback)
     {
-        m_strScreenRotationCallback = canonicalizeRhoUrl(strUrl);
+        if (strUrl.length() > 0) {
+            m_strScreenRotationCallback = canonicalizeRhoUrl(strUrl);
+        }
+        else {
+            m_strScreenRotationCallback = "";
+        }
         m_strScreenRotationCallbackParams = strParams;
     }
 }
