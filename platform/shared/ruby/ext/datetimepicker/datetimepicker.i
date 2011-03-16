@@ -5,6 +5,8 @@
 	#define choose choose_datetime
 	extern void choose_datetime_with_range(char* callback, char* title, long initial_time, int format, char* data, long min_time, long max_time);
 	#define choose_with_range choose_datetime_with_range
+	extern void set_change_value_callback_datetime(char* callback);
+	#define set_change_value_callback set_change_value_callback_datetime
 %}
 
 %typemap(in) long initial_time {
@@ -71,3 +73,4 @@
 
 extern void choose(char* callback, char* title, long initial_time, int format, char* data);
 extern void choose_with_range(char* callback, char* title, long initial_time, int format, char* data, long min_time, long max_time);
+extern void set_change_value_callback(char* callback);
