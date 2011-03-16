@@ -639,6 +639,7 @@ The Date/Time picker API allows the user to choose date or time:
 * DateTimePicker.choose(callback, title, initial_time, fmt)
 * DateTimePicker.choose(callback, title, initial_time, fmt, opaque)
 * DateTimePicker.choose_with_range(callback, title, initial_time, fmt, user_data, mindatetime, maxdatetime)
+* DateTimePicker.set_change_value_callback(callback)   - set callback for listen "on change" event. If you want set this callback, you should do it before each call of "choose" methods.
 
 The "fmt" parameter can have the following values (any other value throws an exception):
 
@@ -650,7 +651,7 @@ The "user_data" parameter is an optional string. It is non-interpreted and will 
 
 Once user chooses a date/time and presses OK or Cancel, the callback URL you specified will be called. The callback is a POST message; the body of the message contains 'status', 'result' and, 'user_data' if provided.
 
-* 'status' can be 'ok' or 'cancel'
+* 'status' can be 'ok' or 'cancel' or 'change' (for change value callback only)
 * 'result' is a string representation of the selected date, as the number of seconds since Epoch. Ruby time can be created from it using the Time::at method.
 * There is no 'result' if status is 'cancel'
 * 'user_data' - if it exists, 'user_data' will be the same string that was passed into the choose method.
