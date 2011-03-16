@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Windows;
+using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -12,13 +13,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting;
-using System.Windows.Resources;
-using System.IO;
-using IronRuby.Builtins;
-using IronRuby.Runtime;
 
 namespace Rhodes
 {
@@ -59,90 +53,14 @@ namespace Rhodes
             InitializePhoneApplication();
         }
 
-        public class RhoHost : ScriptHost
-        {
-            private readonly PlatformAdaptationLayer/*!*/ _pal;
-
-            public RhoHost()
-            {
-                _pal = new WP_PlatformAdaptationLayer();
-            }
-
-            public override PlatformAdaptationLayer PlatformAdaptationLayer
-            {
-                get { return _pal; }
-            }
-        }
-
-        ScriptRuntime _runtime;
-        ScriptEngine _engine;
-
-        private void initRuby()
-        {
-            ScriptRuntimeSetup runtimeSetup = ScriptRuntimeSetup.ReadConfiguration();
-            var languageSetup = IronRuby.RubyHostingExtensions.AddRubySetup(runtimeSetup);
-
-            runtimeSetup.DebugMode = false;
-            runtimeSetup.PrivateBinding = false;
-            runtimeSetup.HostType = typeof(RhoHost);
-
-            //runtimeSetup.HostArguments = new object[] { testCase.Options };
-            languageSetup.Options["NoAdaptiveCompilation"] = false;
-            languageSetup.Options["CompilationThreshold"] = 0;
-            languageSetup.Options["Verbosity"] = 2;
-
-            _runtime = IronRuby.Ruby.CreateRuntime(runtimeSetup);
-            _engine = IronRuby.Ruby.GetEngine(_runtime);
-
-            //_runtime.Globals.SetVariable("RHO_WP7", 1);
-
-            RubyContext _context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(_engine);
-
-            _context.ObjectClass.SetConstant("RHO_WP7", 1);
-            //RubyUtils.SetConstant(null, "RHO_WP7", 1);
-            _runtime.Globals.SetVariable("RHO_FRAMEWORK", "");
-
-            System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
-            paths.Add("lib");
-            paths.Add("apps/app");
-            _engine.SetSearchPaths(paths);
-
-            //IronRuby.Runtime.Loader
-            //context.Loader.LoadAssembly(assemblyName.ConvertToString(), initializer, true, true);
-            //IronRuby.Libraries
-            //IronRuby.StandardLibrary.StringScanner.StringScannerLibraryInitializer
-        }
-
-        object _rhoframework;
-        private void RhoRubyStart()
-        {
-            string code = "def foo; 'haha'; end; foo()";
-            //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
-
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri("rho/lib/rhoframework.rb", UriKind.Relative));
-            using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
-            {
-                char[] str = br.ReadChars((int)sr.Stream.Length);
-                code = new string(str);
-            }
-
-            ScriptSource src = _engine.CreateScriptSourceFromString(code);
-            if (src == null)
-                return;
-
-            _rhoframework = src.Execute(_engine.CreateScope());
-            if (_rhoframework == null)
-                return;
-            _engine.Execute("RHO_FRAMEWORK.ui_created");
-            //_engine.Operations.InvokeMember(_rhoframework, "ui_created");
-        }
+        
 
         // Code to execute when the application is launching (eg, from Start)
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-            initRuby();
-            RhoRubyStart();
+            //initRuby();
+            //RhoRubyStart();
         }
 
         // Code to execute when the application is activated (brought to foreground)
