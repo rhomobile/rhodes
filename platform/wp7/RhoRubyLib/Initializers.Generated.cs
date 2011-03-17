@@ -14,32 +14,33 @@
  * ***************************************************************************/
 
 #pragma warning disable 169 // mcs: unused private method
-[assembly: IronRuby.Runtime.RubyLibraryAttribute(typeof(RhoRuby.RhoRubyLibraryInitializer))]
+[assembly: IronRuby.Runtime.RubyLibraryAttribute(typeof(rho.rubyext.RhoRubyLibraryInitializer))]
 
-namespace RhoRuby {
+namespace rho.rubyext
+{
     using System;
     using Microsoft.Scripting.Utils;
     using System.Runtime.InteropServices;
     
     public sealed class RhoRubyLibraryInitializer : IronRuby.Builtins.LibraryInitializer {
         protected override void LoadModules() {
-            
-            
-            DefineGlobalModule("WebView", typeof(RhoRuby.RhoWebView), 0x00000008, LoadWebView_Instance, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+
+
+            DefineGlobalModule("WebView", typeof(rho.rubyext.RhoWebView), 0x00000008, LoadWebView_Instance, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
         }
         
         private static void LoadWebView_Instance(IronRuby.Builtins.RubyModule/*!*/ module) {
             DefineLibraryMethod(module, "navigate", 0x12, 
-                0x00010000U, 
-                new Func<System.Object, System.String, System.Boolean>(RhoRuby.RhoWebView.Navigate)
+                0x00010000U,
+                new Func<System.Object, System.String, System.Boolean>(rho.rubyext.RhoWebView.Navigate)
             );
             
         }
         
         private static void LoadWebView_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
             DefineLibraryMethod(module, "navigate", 0x21, 
-                0x00010000U, 
-                new Func<System.Object, System.String, System.Boolean>(RhoRuby.RhoWebView.Navigate)
+                0x00010000U,
+                new Func<System.Object, System.String, System.Boolean>(rho.rubyext.RhoWebView.Navigate)
             );
             
         }

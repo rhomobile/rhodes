@@ -10,44 +10,29 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using rho.net;
-using RhoRuby;
+using rho;
 
 namespace rho.common
 {
     public sealed class CRhodesApp
     {
-        private static readonly CRhodesApp instance = new CRhodesApp();
+        private static readonly CRhodesApp m_instance = new CRhodesApp();
+        public static CRhodesApp Instance { get { return m_instance; } }
+        private CRhodesApp() { }
 
-        private WebBrowser _webBrowser;
-        private RhoRubyFramework _rhoframework;
+        private WebBrowser m_webBrowser;
         private CHttpServer m_httpServer;
 
-        public WebBrowser WebBrowser
-        {
-            get { return _webBrowser; }
-            set { _webBrowser = value; }
-        }
-        public CHttpServer HttpServer
-        {
-            get { return m_httpServer; }
-        }
+        public WebBrowser WebBrowser{ get { return m_webBrowser; } }
+        public CHttpServer HttpServer{ get { return m_httpServer; } }
+        public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
-        private CRhodesApp() {}
-
-        public static CRhodesApp Instance
+        public void Init(WebBrowser browser)
         {
-            get
-            {
-                return instance;
-            }
-        }
-
-        public void Init()
-        {
+            m_webBrowser = browser;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
 
-            RhoRubyFramework.WebBrowser = _webBrowser;
-            _rhoframework = new RhoRubyFramework();
+            RhoRuby.Init(m_webBrowser);
         }
 
         String getRhoRootPath()

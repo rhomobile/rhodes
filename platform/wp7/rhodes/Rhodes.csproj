@@ -61,9 +61,6 @@
     <Reference Include="IronRuby.Libraries">
       <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
     </Reference>
-    <Reference Include="RhoRuby">
-      <HintPath>..\bin\RhoRuby\Debug\RhoRuby.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Scripting">
@@ -114,7 +111,12 @@
     </Content>
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\RhoRubyLib\RhoRubyLib.csproj">
+      <Project>{9CAF724B-1466-4A76-9251-5ADB132F636F}</Project>
+      <Name>RhoRubyLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
