@@ -1,5 +1,6 @@
 ﻿using System;
 using rho.common;
+using rho;
 using System.Collections.Generic;
 
 namespace rho.net
@@ -7,6 +8,9 @@ namespace rho.net
     public class CHttpServer
     {
         String m_root;
+
+        private CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
+        private CRhoRuby RhoRuby() { return CRhodesApp.Instance.RhoRuby; }
 
         class CRoute
         {
@@ -26,12 +30,12 @@ namespace rho.net
             m_root = strFileRoot;
         }
 
-        public bool process_registered(Uri uri)
+        public bool process_registered(String uri)
         {
             return false;
         }
 
-        public String decide(String strMethod, Uri uri, String strBody)
+        public String decide(String method, String uri, String query, String body)
         {
             if (process_registered(uri))
                 return "";
@@ -39,28 +43,41 @@ namespace rho.net
             CRoute route = new CRoute();
             if (dispatch(uri, route))
             {
-                return "";
+                String strPage = "";
+                String strFilePath = "";
+                return strFilePath;
             }
 
-            String fullPath = CFilePath.join(m_root, uri.OriginalString);
+            String fullPath = uri.StartsWith(m_root) ? uri : CFilePath.join(m_root, uri);
+
             String strIndexFile = getIndex(fullPath);
             if (strIndexFile.Length > 0 )
             {
                 if (!CRhoFile.isResourceFileExist(strIndexFile))
                 {
                     String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
-                    //TODO: return error page
-                    return "";
+                    String strFilePath = CFilePath.join(m_root,"rhodes_error.html");
+                    CRhoFile.writeStringToFile(strFilePath, error);
+                    return strFilePath;
                 }
 
-                return "";
+                if ( CFilePath.getExtension(fullPath).Length > 0 )
+                {
+                    String strPage = "<html><font size=\"+4\">TEST.</font></html>";
+
+                    Object req = create_request_hash(route, method, uri, query, null, body);
+
+                    CRhoFile.recursiveCreateDir(strIndexFile);
+                    CRhoFile.writeStringToFile(strIndexFile, strPage);
+                }
+
+                return strIndexFile;
             }
 
-            //TODO: return file
-            return "";
+            return uri;
         }
 
-        bool dispatch(Uri uri, CRoute route)
+        bool dispatch(String uri, CRoute route)
         {
             if (isknowntype(uri))
                 return false;
@@ -86,10 +103,9 @@ namespace rho.net
             return CRhoFile.isResourceFileExist(model_name_controller) || CRhoFile.isResourceFileExist(controller);
         }
 
-        bool parse_route(Uri uri, CRoute route)
+        bool parse_route(String uri, CRoute route)
         {
-            String strPath = uri.OriginalString;//.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
-            String[] arParts = strPath.Split('/');
+            String[] arParts = uri.Split('/');
 
             if (arParts.Length < 2)
                 return false;
@@ -115,11 +131,11 @@ namespace rho.net
             return true;
         }
 
-        bool isknowntype(Uri uri)
+        bool isknowntype(String uri)
         {
             String[] ignored_exts = { ".css", ".js", ".html", ".htm", ".png", ".bmp", ".jpg", ".jpeg", ".gif" };
 
-            String strExt = CFilePath.getExtension(uri.ToString()).ToLower();
+            String strExt = CFilePath.getExtension(uri).ToLower();
             return find_in_string_array(strExt, ignored_exts);
         }
 
@@ -129,10 +145,43 @@ namespace rho.net
 
             String strExt = CFilePath.getExtension(path);
             if (strExt.Length == 0)
-                return CFilePath.join( path, index_files[0] );
+                return CFilePath.join(path, index_files[0]);
 
             String strFileName = CFilePath.getBaseName(path);
             return find_in_string_array(strFileName, index_files) ? path : "";
+        }
+
+        Object create_request_hash(CRoute route, String method, String uri, String query,
+                                 Dictionary<String, String> headers, String body)
+        {
+            Object hash = RhoRuby().createHash();
+
+            if ( route != null )
+            {
+                RhoRuby().hashAdd(hash, "application", route.application);
+                RhoRuby().hashAdd(hash, "model", route.model);
+
+                if ( route.action.Length > 0 )
+                    RhoRuby().hashAdd(hash, "action", route.action);
+                if ( route.id.Length > 0 )
+                    RhoRuby().hashAdd(hash, "id", route.id);
+            }
+
+            RhoRuby().hashAdd(hash, "request-method", method);
+            RhoRuby().hashAdd(hash, "request-uri", uri);
+            RhoRuby().hashAdd(hash, "request-query", query);
+
+            Object hash_headers = RhoRuby().createHash();
+            if (headers != null)
+            {
+                //TODO: add headers
+            }
+            RhoRuby().hashAdd(hash, "headers", hash_headers);
+	
+            if ( body.Length > 0 )
+                RhoRuby().hashAdd(hash, "request-body", body);
+    
+            return hash;
         }
 
         bool find_in_string_array(String str, String[] ar)
