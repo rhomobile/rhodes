@@ -42,7 +42,17 @@ public class RubyParser extends RubyParserBase {
 
 	public Program parse(String filename) throws RecognitionException, TokenStreamException {
 		RubyTreeParser treeparser = new RubyTreeParser();
-		return treeparser.parse(createAST(), filename);
+		
+		try
+		{
+			return treeparser.parse(createAST(), filename);
+		}catch(RecognitionException exc)
+		{
+			if ( exc.line == -1 )
+				exc.line = treeparser.currentLineNumber;
+			
+			throw exc;
+		}
 	}
 
 	protected void setIsInNestedMultipleAssign(boolean v) {
