@@ -2,6 +2,7 @@
 	task :wp => ["config:common"] do
 		$rubypath = "res/build-tools/RhoRuby.exe"
 		$zippath = "res/build-tools/7za.exe"
+		$genpath = "ClassInitGenerator.exe"
 		$builddir = $config["build"]["wppath"] + "/build"
 		$vcbindir = $config["build"]["wppath"] + "/bin"
 		$appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
@@ -49,6 +50,16 @@ end
 			Rake::Task["build:bundle:noiseq"].execute
 		end
 		
+		task :rubyext => ["config:wp"] do
+			chdir $startdir + "/res/build-tools"
+
+			args = []
+			args << $startdir + "/" + $vcbindir + "/RhoRubyExtGen/Debug/RhoRubyExtGen.dll"
+			args << "/libraries:rho.rubyext"
+			args << "/out: " + $startdir + "/"+ $config["build"]["wppath"] +"/RhoRubyLib/" + "Initializers.Generated.cs"
+			puts Jake.run($genpath, args)
+		end 
+
 		task :rhodes => ["config:wp", "build:wp:rhobundle"] do
 		    out_dir = $startdir + "/"+ $config["build"]["wppath"] +"/rhodes"
 			cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"     
