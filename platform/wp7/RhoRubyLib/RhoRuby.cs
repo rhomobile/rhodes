@@ -16,23 +16,26 @@ using System.Windows.Resources;
 using System.IO;
 using Microsoft.Phone.Controls;
 
-namespace RhoRuby
+namespace rho
 {
-    public class RhoRubyFramework
+    public class CRhoRuby
     {
+        private static readonly CRhoRuby m_instance = new CRhoRuby();
+        public static CRhoRuby Instance { get { return m_instance; } }
 
-        private static WebBrowser _webBrowser;
+        private WebBrowser m_webBrowser;
+        private ScriptRuntime m_runtime;
+        private ScriptEngine m_engine;
+        RubyContext m_context;
+        private object m_rhoframework;
 
-        public static WebBrowser WebBrowser
+        public WebBrowser WebBrowser{ get { return m_webBrowser; } }
+
+        public void Init(WebBrowser browser)
         {
-            get { return _webBrowser; }
-            set { _webBrowser = value; }
-        }
-
-        public RhoRubyFramework()
-        {
+            m_webBrowser = browser;
             initRuby();
-            RhoRubyStart();
+            Start();
         }
         
         public class RhoHost : ScriptHost
@@ -50,11 +53,6 @@ namespace RhoRuby
             }
         }
 
-        private ScriptRuntime _runtime;
-        private ScriptEngine _engine;
-        private object _rhoframework;
-
-
         private void initRuby()
         {
             ScriptRuntimeSetup runtimeSetup = ScriptRuntimeSetup.ReadConfiguration();
@@ -68,23 +66,21 @@ namespace RhoRuby
             languageSetup.Options["CompilationThreshold"] = 0;
             languageSetup.Options["Verbosity"] = 2;
 
-            _runtime = IronRuby.Ruby.CreateRuntime(runtimeSetup);
-            _engine = IronRuby.Ruby.GetEngine(_runtime);
+            m_runtime = IronRuby.Ruby.CreateRuntime(runtimeSetup);
+            m_engine = IronRuby.Ruby.GetEngine(m_runtime);
+            m_context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(m_engine);
 
-
-            RubyContext _context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(_engine);
-
-            _context.ObjectClass.SetConstant("RHO_WP7", 1);
-            _context.Loader.LoadAssembly("RhoRuby", "RhoRuby.RhoRubyLibraryInitializer", true, true);
-            _runtime.Globals.SetVariable("RHO_FRAMEWORK", "");
+            m_context.ObjectClass.SetConstant("RHO_WP7", 1);
+            m_context.Loader.LoadAssembly("RhoRubyLib", "rho.rubyext.RhoRubyLibraryInitializer", true, true);
+            m_runtime.Globals.SetVariable("RHO_FRAMEWORK", "");
 
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
             paths.Add("lib");
             paths.Add("apps/app");
-            _engine.SetSearchPaths(paths);
+            m_engine.SetSearchPaths(paths);
         }
 
-        private void RhoRubyStart()
+        private void Start()
         {
             string code = "def foo; 'haha'; end; foo()";
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
@@ -96,16 +92,26 @@ namespace RhoRuby
                 code = new string(str);
             }
 
-            ScriptSource src = _engine.CreateScriptSourceFromString(code);
+            ScriptSource src = m_engine.CreateScriptSourceFromString(code);
             if (src == null)
                 return;
 
-            _rhoframework = src.Execute(_engine.CreateScope());
-            if (_rhoframework == null)
+            m_rhoframework = src.Execute(m_engine.CreateScope());
+            if (m_rhoframework == null)
                 return;
-            _engine.Execute("RHO_FRAMEWORK.ui_created");
+            m_engine.Execute("RHO_FRAMEWORK.ui_created");
 
             ////_engine.Operations.InvokeMember(_rhoframework, "ui_created");
+        }
+
+        public Hash createHash()
+        {
+            return new Hash(m_context);
+        }
+
+        public void hashAdd(Object hash, Object key, Object value)
+        {
+            ((Hash)hash).Add(key, value);
         }
     }
 }
