@@ -15,7 +15,7 @@ using Microsoft.Phone.Controls;
 using System.IO.IsolatedStorage;
 using System.IO;
 using System.Windows.Resources;
-
+   
 namespace Rhodes
 {
     public partial class MainPage : PhoneApplicationPage
@@ -34,6 +34,16 @@ namespace Rhodes
             webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
         }
 
+        private CRhodesApp RHODESAPP()
+        {
+            return CRhodesApp.Instance;
+        }
+
+        private void Navigate(string url)
+        {
+            webBrowser1.NavigateToString("Hello!!!");
+        }
+
         //window.external.notify(<data>)
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
         {
@@ -49,6 +59,8 @@ namespace Rhodes
 
             webBrowser1.IsScriptEnabled = true;
             webBrowser1.Navigate(new Uri("readme.htm", UriKind.Relative));*/
+            RHODESAPP().WebBrowser = webBrowser1;
+            RHODESAPP().Init();
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
@@ -128,6 +140,5 @@ namespace Rhodes
                 bw.Close();
             }
         }
-
     }
 }
