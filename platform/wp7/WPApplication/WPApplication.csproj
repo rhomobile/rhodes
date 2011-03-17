@@ -49,21 +49,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IronRuby">
-      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\IronRuby.dll</HintPath>
+      <HintPath>..\..\..\..\IronRuby\bin\Silverlight3Debug\IronRuby.dll</HintPath>
     </Reference>
     <Reference Include="IronRuby.Libraries">
-      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
+      <HintPath>..\..\..\..\IronRuby\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\..\IronRuby\bin\Silverlight3Debug\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\IronRuby\bin\Silverlight3Debug\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting.Core">
-      <HintPath>..\..\IronRuby_orig\bin\Silverlight3Debug\Microsoft.Scripting.Core.dll</HintPath>
+      <HintPath>..\..\..\..\IronRuby\bin\Silverlight3Debug\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />

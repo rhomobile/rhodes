@@ -8,6 +8,10 @@
 
 #import "DateTimePickerDelegate.h"
 #import "common/RhodesApp.h"
+#import "ruby/ext/rho/rhoruby.h"
+
+
+static NSString* ourChangeValueCallback = nil;
 
 @implementation DateTimePickerDelegate
 
@@ -67,6 +71,26 @@
     [flexItem release];
     [doneItem release];
 }
+
+
+-(void) onChangeValue:(id)sender {
+    if (ourChangeValueCallback == nil) {
+        return;
+    }
+    
+    long long ldate = [self.pickerView.date timeIntervalSince1970];
+
+	NSString* strBody = @"&rho_callback=1";
+	strBody = [strBody stringByAppendingString:@"&status=change&result="];
+	strBody = [strBody stringByAppendingString:[[NSString alloc] initWithFormat:@"%qi" , ldate]];
+	strBody = [strBody stringByAppendingString:@"&opaque="];
+	strBody = [strBody stringByAppendingString:self.dateTime.data];
+
+	const char* cb = [ourChangeValueCallback UTF8String];
+	const char* b = [strBody UTF8String];
+	rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+}
+
 
 - (void)createPicker:(UIView*)parent
 {
@@ -145,14 +169,13 @@
     // the date picker has finished sliding upwards, so add toolbar
     [self.parentView addSubview:self.toolbar];
     [self.parentView addSubview:self.barLabel];
+    [self.pickerView addTarget:self action:@selector(onChangeValue:) forControlEvents:UIControlEventValueChanged]; 
 }
 
 - (void)slideDownDidStop
 {
     // the date picker has finished sliding downwards, so remove it
     [self.pickerView removeFromSuperview];
-    [self.barLabel removeFromSuperview];
-    [self.toolbar removeFromSuperview];
 	[self.pickerView release];
 	self.pickerView = nil;
     [self.barLabel release];
@@ -175,13 +198,17 @@
     [UIView setAnimationDidStopSelector:@selector(slideDownDidStop)];
     
     // Remove toolbar immediately
+    [self.barLabel removeFromSuperview];
     [self.toolbar removeFromSuperview];
+
     self.pickerView.frame = endFrame;
     [UIView commitAnimations];
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+    ourChangeValueCallback = nil;
+    [self.pickerView removeTarget:self action:@selector(onChangeValue:) forControlEvents:UIControlEventValueChanged];
     //NSString *message = @"status=cancel";
     //[self doCallback:message];
     rho_rhodesapp_callDateTimeCallback(
@@ -192,6 +219,8 @@
 
 - (IBAction)dateAction:(id)sender
 {
+    ourChangeValueCallback = nil;
+    [self.pickerView removeTarget:self action:@selector(onChangeValue:) forControlEvents:UIControlEventValueChanged];
     long ldate = [self.pickerView.date timeIntervalSince1970];
     //NSMutableString *message = [[NSMutableString alloc] initWithFormat:@"status=ok&result=%@", [NSNumber numberWithLong:ldate]];
     //if (self.dateTime.data) {
@@ -204,5 +233,10 @@
     
     [self animateDown];
 }
+
++(void)setChangeValueCallback:(NSString*)callback {
+    ourChangeValueCallback = callback;
+}
+
 
 @end
