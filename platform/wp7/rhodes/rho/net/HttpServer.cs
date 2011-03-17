@@ -10,14 +10,14 @@ namespace rho.net
         String m_root;
 
         private CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
-        private CRhoRuby RhoRuby() { return CRhodesApp.Instance.RhoRuby; }
+        private CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         class CRoute
         {
-            public String application;
-            public String model;
-            public String id;
-            public String action;
+            public String application = "";
+            public String model = "";
+            public String id = "";
+            public String action = "";
 
             public static bool isid(String s)
             {
@@ -34,7 +34,8 @@ namespace rho.net
         {
             return false;
         }
-
+        
+        
         public String decide(String method, String uri, String query, String body)
         {
             if (process_registered(uri))
@@ -43,9 +44,15 @@ namespace rho.net
             CRoute route = new CRoute();
             if (dispatch(uri, route))
             {
-                String strPage = "";
-                String strFilePath = "";
-                return strFilePath;
+                Object req = create_request_hash(route, method, uri, query, null, body);
+
+                String strFilePath = RHODESAPP().canonicalizeRhoUrl(uri);
+                String strPage = RhoRuby.callServe(req);
+
+                CRhoFile.recursiveCreateDir(strFilePath);
+                CRhoFile.writeStringToFile(strFilePath, strPage);
+
+                return uri;
             }
 
             String fullPath = uri.StartsWith(m_root) ? uri : CFilePath.join(m_root, uri);
@@ -63,9 +70,8 @@ namespace rho.net
 
                 if ( CFilePath.getExtension(fullPath).Length > 0 )
                 {
-                    String strPage = "<html><font size=\"+4\">TEST.</font></html>";
-
                     Object req = create_request_hash(route, method, uri, query, null, body);
+                    String strPage = RhoRuby.callServeIndex(fullPath, req);
 
                     CRhoFile.recursiveCreateDir(strIndexFile);
                     CRhoFile.writeStringToFile(strIndexFile, strPage);
@@ -105,6 +111,9 @@ namespace rho.net
 
         bool parse_route(String uri, CRoute route)
         {
+            if (uri.StartsWith(m_root))
+                uri = uri.Substring(m_root.Length+1);
+
             String[] arParts = uri.Split('/');
 
             if (arParts.Length < 2)
@@ -154,32 +163,32 @@ namespace rho.net
         Object create_request_hash(CRoute route, String method, String uri, String query,
                                  Dictionary<String, String> headers, String body)
         {
-            Object hash = RhoRuby().createHash();
+            Object hash = RhoRuby.createHash();
 
             if ( route != null )
             {
-                RhoRuby().hashAdd(hash, "application", route.application);
-                RhoRuby().hashAdd(hash, "model", route.model);
+                RhoRuby.hashAdd(hash, "application", route.application);
+                RhoRuby.hashAdd(hash, "model", route.model);
 
                 if ( route.action.Length > 0 )
-                    RhoRuby().hashAdd(hash, "action", route.action);
+                    RhoRuby.hashAdd(hash, "action", route.action);
                 if ( route.id.Length > 0 )
-                    RhoRuby().hashAdd(hash, "id", route.id);
+                    RhoRuby.hashAdd(hash, "id", route.id);
             }
 
-            RhoRuby().hashAdd(hash, "request-method", method);
-            RhoRuby().hashAdd(hash, "request-uri", uri);
-            RhoRuby().hashAdd(hash, "request-query", query);
+            RhoRuby.hashAdd(hash, "request-method", method);
+            RhoRuby.hashAdd(hash, "request-uri", uri);
+            RhoRuby.hashAdd(hash, "request-query", query);
 
-            Object hash_headers = RhoRuby().createHash();
+            Object hash_headers = RhoRuby.createHash();
             if (headers != null)
             {
                 //TODO: add headers
             }
-            RhoRuby().hashAdd(hash, "headers", hash_headers);
+            RhoRuby.hashAdd(hash, "headers", hash_headers);
 	
             if ( body.Length > 0 )
-                RhoRuby().hashAdd(hash, "request-body", body);
+                RhoRuby.hashAdd(hash, "request-body", body);
     
             return hash;
         }
