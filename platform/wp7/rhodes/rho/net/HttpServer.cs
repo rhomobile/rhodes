@@ -31,15 +31,15 @@ namespace rho.net
             return false;
         }
 
-        public bool decide(String strMethod, Uri uri, String strBody)
+        public String decide(String strMethod, Uri uri, String strBody)
         {
             if (process_registered(uri))
-                return true;
+                return "";
 
             CRoute route = new CRoute();
             if (dispatch(uri, route))
             {
-                return true;
+                return "";
             }
 
             String fullPath = CFilePath.join(m_root, uri.OriginalString);
@@ -50,14 +50,14 @@ namespace rho.net
                 {
                     String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
                     //TODO: return error page
-                    return false;
+                    return "";
                 }
 
-                return true;
+                return "";
             }
 
             //TODO: return file
-            return false;
+            return "";
         }
 
         bool dispatch(Uri uri, CRoute route)
