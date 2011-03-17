@@ -86,7 +86,10 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="rho\common\CRhodesApp.cs" />
+    <Compile Include="rho\common\RhodesApp.cs" />
+    <Compile Include="rho\common\RhoFile.cs" />
+    <Compile Include="rho\common\RhoFilePath.cs" />
+    <Compile Include="rho\net\HttpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

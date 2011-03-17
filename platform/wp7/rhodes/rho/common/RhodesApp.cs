@@ -9,9 +9,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using rho.net;
 using RhoRuby;
 
-namespace Rhodes
+namespace rho.common
 {
     public sealed class CRhodesApp
     {
@@ -19,17 +20,16 @@ namespace Rhodes
 
         private WebBrowser _webBrowser;
         private RhoRubyFramework _rhoframework;
+        private CHttpServer m_httpServer;
 
         public WebBrowser WebBrowser
         {
             get { return _webBrowser; }
             set { _webBrowser = value; }
         }
-
-        public void Init()
+        public CHttpServer HttpServer
         {
-            RhoRubyFramework.WebBrowser = _webBrowser;
-            _rhoframework = new RhoRubyFramework();
+            get { return m_httpServer; }
         }
 
         private CRhodesApp() {}
@@ -40,6 +40,19 @@ namespace Rhodes
             {
                 return instance;
             }
+        }
+
+        public void Init()
+        {
+            m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
+
+            RhoRubyFramework.WebBrowser = _webBrowser;
+            _rhoframework = new RhoRubyFramework();
+        }
+
+        String getRhoRootPath()
+        {
+            return "/rho/";
         }
     }
 }
