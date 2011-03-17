@@ -27,7 +27,9 @@ public class CameraFilesListener implements FileSystemJournalListener {
 	
 	private final String[] _folders = {
 			"file:///store/home/user/pictures/",
-			"file:///sdcard/blackberry/pictures/"
+			"file:///sdcard/blackberry/pictures/",
+			"file:///store/home/user/camera/",
+			"file:///sdcard/blackberry/camera/"			
 	};
 	
 	public CameraFilesListener(CameraScreen screen) {
@@ -72,8 +74,16 @@ public class CameraFilesListener implements FileSystemJournalListener {
         		continue;
         	
         	String lpath = path.toLowerCase();
-        	if (!lpath.startsWith("file:///sdcard/blackberry/pictures/") &&
-        			!lpath.startsWith("file:///store/home/user/pictures/"))
+        	boolean bKnownFolder = false;
+        	for( int i = 0; i < _folders.length; i++)
+        	{
+        		if ( lpath.startsWith(_folders[i]))
+        		{
+        			bKnownFolder = true;
+        			break;
+        		}
+        	}
+        	if (!bKnownFolder)
         		continue;
         	
         	if (lpath.endsWith(".dat"))
