@@ -15,6 +15,7 @@ using Microsoft.Phone.Controls;
 using System.IO.IsolatedStorage;
 using System.IO;
 using System.Windows.Resources;
+using rho.common;
    
 namespace Rhodes
 {
@@ -69,6 +70,8 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
+            RHODESAPP().HttpServer.decide("GET", e.Uri, "");
+
             /* if (e.Uri.AbsoluteUri.Equals("http://www.google.com/") )
              {
                  e.Cancel = true;
