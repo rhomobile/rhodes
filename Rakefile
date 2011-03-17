@@ -663,6 +663,7 @@ namespace "build" do
     task :noiseq do
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
+	  compileERB = "lib/build/compileERB/bb.rb"
       startdir = pwd
       dest = $srcdir + "/lib"      
 
@@ -672,8 +673,18 @@ namespace "build" do
       
       create_manifest
   
-      chdir startdir
+	  cp   compileERB, $srcdir
+      puts "Running bb.rb"
 
+      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/bb.rb"`
+      unless $? == 0
+        puts "Error interpreting erb code"
+        exit 1
+      end
+
+      rm "#{$srcdir}/bb.rb"
+
+	  chdir startdir
       cp_r "platform/shared/db/res/db", $srcdir 
     end
   end
