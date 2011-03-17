@@ -3,11 +3,12 @@ using IronRuby.Runtime;
 using Microsoft.Phone.Controls;
 using System;
 
-namespace RhoRuby
+namespace rho.rubyext
 {
     [RubyModule("WebView")]
     public static class RhoWebView
     {
+        private static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         #region Private Implementation Details
 
@@ -19,7 +20,7 @@ namespace RhoRuby
         [RubyMethodAttribute("navigate", RubyMethodAttributes.PublicSingleton)]
         public static bool Navigate(object self, [DefaultProtocol]string url)
         {
-            RhoRubyFramework.WebBrowser.Navigate(new Uri(url, UriKind.Relative));
+            RhoRuby.WebBrowser.Navigate(new Uri(url, UriKind.Relative));
             return true;
         }
 
