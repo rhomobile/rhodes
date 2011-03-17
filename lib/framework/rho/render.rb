@@ -24,7 +24,14 @@ module Rho
 
     def self.renderfile(filename, req = {}, res = {})
       res = ""
-      if File.extname(filename) == '.iseq'
+	  if defined?(RHO_WP7)
+		if File.extname(filename) == '.iseq'
+			filename = filename[0,filename.length-5] + '.rb'
+		end
+	  end
+
+	  render_ext = defined?(RHO_WP7) ? '.rb' : '.iseq'
+      if File.extname(filename) == render_ext
         res = (RhoController.new).inst_render_index(filename, req, res)
       else
         res = IO.read(filename)

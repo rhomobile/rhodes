@@ -14,6 +14,34 @@ module System
 	end
 end
 
+module WebView
+	def self.set_menu_items(disp_menu)
+		#TODO: set_menu_items
+	end
+end
+
+module GeoLocation
+  def self.set_view_notification(geoview_callback, geoview_callback_data, geoview_timeout_sec)
+	#TODO: set_view_notification
+  end
+end
+
+module NativeBar
+ 
+  def self.create_native_toolbar(type, params)
+  end
+ 
+  def self.remove_native_toolbar()
+  end
+
+end
+
+module SyncEngine
+	def self.clean_objectnotify
+	#TODO: clean_objectnotify
+	end
+end
+
 module Rho
 
 class RhoConf

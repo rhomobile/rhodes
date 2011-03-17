@@ -4,7 +4,7 @@ module Rho
 
 	  if defined? RHO_WP7
 	     if fname.end_with?('_erb.iseq')
-			fname = fname[0,fname.length-9] + '.erb'
+			fname = fname[0,fname.length-9] + '_erb.rb'
 		 elsif fname.end_with?('.iseq')
 			fname = fname[0,fname.length-5] + '.rb'
 		 end
@@ -28,6 +28,14 @@ module Kernel
 		 orig_require( file_name )
 	end
 
+	def eval_compiled_file(fname, bind)
+		if fname.end_with?('_erb.iseq')
+			fname = fname[0,fname.length-9] + '_erb.rb'
+		end
+
+	    code = IO.read(fname)
+		eval(code, bind)
+	end
 end
 
 end
