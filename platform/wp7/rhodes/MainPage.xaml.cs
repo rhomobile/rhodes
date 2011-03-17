@@ -35,10 +35,7 @@ namespace Rhodes
             webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
         }
 
-        private CRhodesApp RHODESAPP()
-        {
-            return CRhodesApp.Instance;
-        }
+        private CRhodesApp RHODESAPP(){return CRhodesApp.Instance;}
 
         private void Navigate(string url)
         {
@@ -60,8 +57,7 @@ namespace Rhodes
 
             webBrowser1.IsScriptEnabled = true;
             webBrowser1.Navigate(new Uri("readme.htm", UriKind.Relative));*/
-            RHODESAPP().WebBrowser = webBrowser1;
-            RHODESAPP().Init();
+            RHODESAPP().Init(webBrowser1);
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
@@ -70,7 +66,7 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            String strUrl = RHODESAPP().HttpServer.decide("GET", e.Uri, "");
+            String strUrl = RHODESAPP().HttpServer.decide("GET", e.Uri.OriginalString, "", "");
             if (strUrl.CompareTo(e.Uri.OriginalString) == 0)
                 return;
 

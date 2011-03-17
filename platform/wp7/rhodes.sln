@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhodes", "Rhodes\Rhodes.csp
 		{9CAF724B-1466-4A76-9251-5ADB132F636F} = {9CAF724B-1466-4A76-9251-5ADB132F636F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhoRuby", "RhoRuby\RhoRuby.csproj", "{9CAF724B-1466-4A76-9251-5ADB132F636F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhoRubyLib", "RhoRubyLib\RhoRubyLib.csproj", "{9CAF724B-1466-4A76-9251-5ADB132F636F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
