@@ -71,8 +71,7 @@ namespace rho
             m_context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(m_engine);
 
             m_context.ObjectClass.SetConstant("RHO_WP7", 1);
-            m_context.Loader.LoadAssembly("RhoRubyLib", "rho.rubyext.RhoRubyLibraryInitializer", true, true);
-            m_runtime.Globals.SetVariable("RHO_FRAMEWORK", "");
+            m_context.Loader.LoadAssembly("RhoRubyLib", "rho.rubyext.rubyextLibraryInitializer", true, true);
 
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
             paths.Add("lib");
@@ -102,6 +101,37 @@ namespace rho
             m_engine.Execute("RHO_FRAMEWORK.ui_created");
 
             ////_engine.Operations.InvokeMember(_rhoframework, "ui_created");
+        }
+
+        public String callServeIndex(String indexPath, Object req)
+        {
+            m_context.ObjectClass.SetConstant("RHO__wp_index_path", indexPath);
+            m_context.ObjectClass.SetConstant("RHO__wp_headers", req);
+
+            Object res = m_engine.Execute("RHO_FRAMEWORK.serve_index_hash(RHO__wp_index_path, RHO__wp_headers)");
+            if (res != null && res.GetType() == typeof(Hash))
+            {
+                Hash hash = (Hash)res;
+                Object body = hash["request-body"];
+                return body.ToString();
+            }
+
+            return String.Empty;
+        }
+
+        public String callServe(Object req)
+        {
+            m_context.ObjectClass.SetConstant("RHO__wp_headers", req);
+
+            Object res = m_engine.Execute("RHO_FRAMEWORK.serve_hash(RHO__wp_headers)");
+            if (res != null && res.GetType() == typeof(Hash))
+            {
+                Hash hash = (Hash)res;
+                Object body = hash["request-body"];
+                return body.ToString();
+            }
+
+            return String.Empty;
         }
 
         public Hash createHash()

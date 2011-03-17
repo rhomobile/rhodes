@@ -35,6 +35,14 @@ namespace rho.common
             RhoRuby.Init(m_webBrowser);
         }
 
+        public String canonicalizeRhoUrl(String url)
+        {
+            if (!url.StartsWith(getRhoRootPath()))
+                return CFilePath.join(getRhoRootPath(), url);
+
+            return url;
+        }
+
         String getRhoRootPath()
         {
             return "/rho/";
