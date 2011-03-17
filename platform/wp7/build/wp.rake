@@ -50,6 +50,25 @@ end
 			Rake::Task["build:bundle:noiseq"].execute
 		end
 		
+		task :rhobundlemap => ["config:wp"] do
+			chdir $srcdir
+			file = File.open("RhoBundleMap.txt", "w+")
+			chdir $srcdir
+			stamp = 0
+			Dir.glob(File.join("**", '*.*')).each do |f|
+				if !f.match("rhoconfig.txt|app_manifest.txt|syncdb|RhoBundleMap.txt")
+				    if stamp < File.mtime(f).to_i
+						stamp = File.mtime(f).to_i
+					end
+					file.puts f
+				end
+			end
+			file.close
+			file = File.open("timestamp.txt", "w+")
+			file.puts stamp
+			file.close
+		end 
+
 		task :rubyext => ["config:wp"] do
 			chdir $startdir + "/res/build-tools"
 
@@ -78,14 +97,14 @@ end
 			chdir $startdir
 		end 
 
-		task :devrhobundle => [:rhobundle, "device:wp:addbundletoxap"] do
+		task :devrhobundle => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxap"] do
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
 			Dir.glob(File.join("**", '*.*')).each do |f|
 				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
 			end
-			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2 }
+			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
 			
 			chdir $startdir
 
@@ -102,6 +121,8 @@ end
 			cp_r $srcdir + "/apps", $bindir + "/rho"
 			cp_r $srcdir + "/db", $bindir + "/rho"
 			cp_r $srcdir + "/lib", $bindir + "/rho"
+			cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
+			cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
 			
