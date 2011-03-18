@@ -753,6 +753,7 @@ static Rhodes *instance = NULL;
 			}
 		}
 	}	
+    
 	[self doStartUp];
 	[self processDoSync:launchOptions];
 
@@ -783,7 +784,7 @@ static Rhodes *instance = NULL;
 	
 	char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	RAWLOG_INFO1("device pin: %s\n", szpin);
-    
+
 	rho_clientregister_create(szpin);
 	free(szpin);
 }
@@ -845,7 +846,29 @@ static Rhodes *instance = NULL;
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
 {
     if (!url) {  return NO; }
-	/*
+
+    NSBundle* mb = [NSBundle mainBundle];
+    NSDictionary* md = [mb infoDictionary];
+    NSArray* schemes = [md objectForKey:@"CFBundleURLTypes"];
+    NSDictionary* scheme = [schemes objectAtIndex:0];
+    NSArray* urls = [scheme objectForKey:@"CFBundleURLSchemes"];
+    NSString* url0 = [urls objectAtIndex:0];
+    
+    if ([[url scheme] isEqualToString:url0]) {
+        NSString *startparams = @"";
+        NSString *fullurl = [[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSRange range = [fullurl rangeOfString:@":"];
+        if ((range.location > 0) && (range.length > 0)) {
+            startparams = [fullurl substringFromIndex:range.location + 1];
+        }
+
+        // set start params
+        rho_rhodesapp_canstartapp([startparams UTF8String], ", ");
+        return YES;
+    }
+    return NO;	
+    /*
     NSString *URLString = [url absoluteString];
     [[NSUserDefaults standardUserDefaults] setObject:URLString forKey:@"url"];
     [[NSUserDefaults standardUserDefaults] synchronize];
