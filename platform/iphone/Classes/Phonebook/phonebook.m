@@ -604,7 +604,7 @@ bool setAddressValue(void* record, const char* property, const char* value) {
 		return false;
 	}
 		
-	CFStringRef v = CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
+	CFStringRef v = (CFStringRef)[NSString stringWithUTF8String:value];//CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
 	ABMutableMultiValueRef mv = ABRecordCopyValue(record,kABPersonAddressProperty);
 	if (!mv) {
 		mv = ABMultiValueCreateMutable(kABMultiDictionaryPropertyType);
@@ -689,8 +689,7 @@ int setRecordValue(void* record, char* property, char* value) {
 						} else {
 							label = _getDatesLabel(property);
 							if (label) {
-								CFStringRef v = CFStringCreateWithCString(NULL, value, 
-																		  CFStringGetSystemEncoding());
+								CFStringRef v = (CFStringRef)[NSString stringWithUTF8String:value];//CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
 								NSDate *date = string2date(v);
 								__updateMultiValueProperty(record,kABPersonDateProperty,label,date);
 							}
