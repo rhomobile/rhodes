@@ -813,6 +813,7 @@ static Rhodes *instance = NULL;
 - (void)applicationWillResignActive:(UIApplication *)application {
     RAWLOG_INFO("Application will resign active");
     rho_rhodesapp_callAppActiveCallback(0);
+    rho_rhodesapp_canstartapp("", ", ");
     [self saveLastUsedTime];
 }
 
@@ -820,6 +821,7 @@ static Rhodes *instance = NULL;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
+    rho_rhodesapp_canstartapp("", ", ");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
