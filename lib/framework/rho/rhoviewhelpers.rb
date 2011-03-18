@@ -130,6 +130,23 @@ module Rho
       #return amurl +'/'+ (id.nil? ? action : id + '/' + action) + query + fragment
     end
 
+
+   def url_for_nativeview(params = {})
+      return params.to_s if params.is_a?( String ) or params.is_a?( Symbol )
+      return '/' if not params.is_a?( Hash ) or params.nil?
+
+      params = params.symbolize_keys if params.is_a? Hash
+
+      name = params[:name] 
+      param = params[:param] 
+      
+      amurl = ''
+
+      amurl << name << ':' << param
+
+      amurl
+   end
+
   private
     def query_to_s(query)
       return '' if query.nil?
