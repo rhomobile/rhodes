@@ -18,7 +18,7 @@ if defined? RHO_WP7
 
 module Kernel   
 	def __rhoGetCurrentDir
-		"/rho"
+		""
 	end
 
 	alias :orig_require :require

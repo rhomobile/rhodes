@@ -87,7 +87,26 @@ namespace rho.common
             {
                 char[] str = br.ReadChars((int)sr.Stream.Length);
                 content = new string(str);
-                br.Close();
+            }
+
+            return content;
+        }
+
+        public static byte[] readResourceFile(String path)
+        {
+            byte[] content = new byte[0];
+
+            if (path.StartsWith("/"))
+                path = path.Substring(1);
+
+            if (!CRhoFile.isResourceFileExist(path))
+                return content;
+
+            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
+
+            using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
+            {
+                content = br.ReadBytes((int)sr.Stream.Length);
             }
 
             return content;
@@ -102,6 +121,18 @@ namespace rho.common
             {
                 bw.Write(strData);
                 bw.Close();
+            }
+        }
+
+        public static void writeDataToFile(String strPath, byte[] data)
+        {
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+
+            //Write the file
+            using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            {
+                bw.Write(data);
+                //bw.Close();
             }
         }
     }

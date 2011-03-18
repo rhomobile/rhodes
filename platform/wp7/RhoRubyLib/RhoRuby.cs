@@ -84,13 +84,12 @@ namespace rho
             string code = "def foo; 'haha'; end; foo()";
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
 
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri("rho/lib/rhoframework.rb", UriKind.Relative));
+            StreamResourceInfo sr = Application.GetResourceStream(new Uri("lib/rhoframework.rb", UriKind.Relative));
 
             using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
             {
                 char[] str = br.ReadChars((int)sr.Stream.Length);
                 code = new string(str);
-                br.Close();
             }
 
             ScriptSource src = m_engine.CreateScriptSourceFromString(code);
@@ -105,35 +104,27 @@ namespace rho
             ////_engine.Operations.InvokeMember(_rhoframework, "ui_created");
         }
 
-        public String callServeIndex(String indexPath, Object req)
+        public Object callServeIndex(String indexPath, Object req)
         {
             m_context.ObjectClass.SetConstant("RHO__wp_index_path", indexPath);
             m_context.ObjectClass.SetConstant("RHO__wp_headers", req);
 
-            Object res = m_engine.Execute("RHO_FRAMEWORK.serve_index_hash(RHO__wp_index_path, RHO__wp_headers)");
-            if (res != null && res.GetType() == typeof(Hash))
-            {
-                Hash hash = (Hash)res;
-                Object body = hash["request-body"];
-                return body.ToString();
-            }
-
-            return String.Empty;
+            return m_engine.Execute("RHO_FRAMEWORK.serve_index_hash(RHO__wp_index_path, RHO__wp_headers)");
         }
 
-        public String callServe(Object req)
+        public Object callServe(Object req)
         {
             m_context.ObjectClass.SetConstant("RHO__wp_headers", req);
 
-            Object res = m_engine.Execute("RHO_FRAMEWORK.serve_hash(RHO__wp_headers)");
-            if (res != null && res.GetType() == typeof(Hash))
-            {
-                Hash hash = (Hash)res;
-                Object body = hash["request-body"];
-                return body.ToString();
-            }
+            return m_engine.Execute("RHO_FRAMEWORK.serve_hash(RHO__wp_headers)");
+        }
 
-            return String.Empty;
+        public byte[] getBytesFromString(Object body)
+        {
+            if (body != null && body.GetType() == typeof(MutableString))
+                return ((MutableString)body).ToByteArray();
+
+            return new byte[0];
         }
 
         public Hash createHash()
@@ -144,6 +135,30 @@ namespace rho
         public void hashAdd(Object hash, Object key, Object value)
         {
             ((Hash)hash).Add(key, value);
+        }
+
+        public Object hashGet(Object hash, Object key)
+        {
+            return ((Hash)hash)[key];
+        }
+
+        public int hashGetInt(Object hash, Object key)
+        {
+            Object value = hashGet(hash, key);
+            if (value != null && value.GetType() == typeof(System.Int32))
+                return ((System.Int32)value);
+
+            return 0;
+        }
+
+        public String hashGetString(Object hash, Object key)
+        {
+            Object value = hashGet(hash, key);
+
+            if (value != null && value.GetType() == typeof(MutableString))
+                return ((MutableString)value).ToString();
+
+            return String.Empty;
         }
     }
 }
