@@ -24,6 +24,14 @@ namespace rho.net
                 return s.Length > 2 && s[0] == '{' && s[s.Length - 1] == '}';
             }
         };
+        public class CResponse
+        {
+            public String m_strUrl = "";
+            public bool m_bRedirect = true;
+
+            public CResponse(String strUrl) { m_strUrl = strUrl; m_bRedirect = true;  }
+            public CResponse(bool bRedirect) { m_bRedirect = bRedirect; }
+        };
 
         public CHttpServer(String strFileRoot)
         {
@@ -34,25 +42,31 @@ namespace rho.net
         {
             return false;
         }
-        
-        
-        public String decide(String method, String uri, String query, String body)
+
+
+        public CResponse decide(String method, String uri, String query, String body)
         {
+            if ( uri.EndsWith(".gen.html") || (isknowntype(uri) && uri.StartsWith(m_root)) )
+                return new CResponse(false);
+
             if (process_registered(uri))
-                return "";
+                return new CResponse(false);
 
             CRoute route = new CRoute();
             if (dispatch(uri, route))
             {
-                Object req = create_request_hash(route, method, uri, query, null, body);
+                Object rhoReq = create_request_hash(route, method, uri, query, null, body);
+                Object rhoResp = RhoRuby.callServe(rhoReq);
 
-                String strFilePath = RHODESAPP().canonicalizeRhoUrl(uri);
-                String strPage = RhoRuby.callServe(req);
+                String strRedirectUrl = getRedirectUrl(rhoResp);
+                if (strRedirectUrl.Length > 0)
+                    return new CResponse(strRedirectUrl);
 
+                String strFilePath = RHODESAPP().canonicalizeRhoUrl(uri) + ".gen.html";
                 CRhoFile.recursiveCreateDir(strFilePath);
-                CRhoFile.writeStringToFile(strFilePath, strPage);
+                CRhoFile.writeDataToFile(strFilePath, getResponseBody(rhoResp));
 
-                return uri;
+                return new CResponse(strFilePath);
             }
 
             String fullPath = uri.StartsWith(m_root) ? uri : CFilePath.join(m_root, uri);
@@ -63,24 +77,44 @@ namespace rho.net
                 if (!CRhoFile.isResourceFileExist(strIndexFile))
                 {
                     String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
-                    String strFilePath = CFilePath.join(m_root,"rhodes_error.html");
+                    String strFilePath = CFilePath.join(m_root,"rhodes_error") + ".gen.html";
+                    CRhoFile.recursiveCreateDir(strFilePath);
                     CRhoFile.writeStringToFile(strFilePath, error);
-                    return strFilePath;
+                    return new CResponse(strFilePath);
                 }
 
-                if ( CFilePath.getExtension(fullPath).Length > 0 )
-                {
-                    Object req = create_request_hash(route, method, uri, query, null, body);
-                    String strPage = RhoRuby.callServeIndex(fullPath, req);
+                if (CFilePath.getExtension(fullPath).Length > 0)
+                    return new CResponse(strIndexFile);
 
-                    CRhoFile.recursiveCreateDir(strIndexFile);
-                    CRhoFile.writeStringToFile(strIndexFile, strPage);
-                }
+                Object rhoReq = create_request_hash(route, method, uri, query, null, body);
+                Object rhoResp = RhoRuby.callServeIndex(strIndexFile, rhoReq);
 
-                return strIndexFile;
+                String strRedirectUrl = getRedirectUrl(rhoResp);
+                if (strRedirectUrl.Length > 0)
+                    return new CResponse(strRedirectUrl);
+
+                strIndexFile += ".gen.html";
+                CRhoFile.recursiveCreateDir(strIndexFile);
+                CRhoFile.writeDataToFile(strIndexFile, getResponseBody(rhoResp));
+                return new CResponse(strIndexFile);
             }
 
-            return uri;
+            return new CResponse(false);
+        }
+
+        byte[] getResponseBody(Object resp)
+        {
+            Object body = RhoRuby.hashGet(resp, "request-body");
+            return RhoRuby.getBytesFromString(body);
+        }
+
+        String getRedirectUrl(Object resp)
+        {
+            int nStatus = RhoRuby.hashGetInt(resp, "status");
+            if ( nStatus != 302 )
+                return String.Empty;
+
+            return RhoRuby.hashGetString(resp, "Location");
         }
 
         bool dispatch(String uri, CRoute route)
@@ -113,6 +147,8 @@ namespace rho.net
         {
             if (uri.StartsWith(m_root))
                 uri = uri.Substring(m_root.Length+1);
+            else if ( uri.StartsWith("/") )
+                uri = uri.Remove(0, 1 );
 
             String[] arParts = uri.Split('/');
 
@@ -122,18 +158,21 @@ namespace rho.net
             route.application = arParts[0];
             route.model = arParts[1];
 
-            if (arParts.Length < 4)
+            if (arParts.Length < 3)
                 return true;
 
             String aoi = arParts[2];
             if (CRoute.isid(aoi))
             {
                 route.id = aoi;
-                route.action = arParts[3];
+                if (arParts.Length > 3)
+                    route.action = arParts[3];
             }
             else 
             {
-                route.id = arParts[3];
+                if (arParts.Length > 3)
+                    route.id = arParts[3];
+
                 route.action = aoi;
             }
 
@@ -152,8 +191,7 @@ namespace rho.net
         {
             String[] index_files = { "index_erb.rb", "index.html", "index.htm", "index.php", "index.cgi" };
 
-            String strExt = CFilePath.getExtension(path);
-            if (strExt.Length == 0)
+            if (CFilePath.getExtension(path).Length == 0)
                 return CFilePath.join(path, index_files[0]);
 
             String strFileName = CFilePath.getBaseName(path);
