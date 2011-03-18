@@ -43,6 +43,8 @@ namespace rho.common
                 CRhoFile.recursiveCreateDir(RHODESAPP().canonicalizeRhoUrl(strFile));
                 CRhoFile.writeStringToFile(strFile, CRhoFile.readResourceFiletoString(strFile));
             }
+
+            CRhoFile.writeStringToFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"), strMap);
         }
 
         public static bool DeployContent() 
@@ -59,8 +61,6 @@ namespace rho.common
                 clearMap(curMap);
                 copyMap(newMap);   
             }
-
-            CRhoFile.writeStringToFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"), newMap);
 
             return true;
         }
