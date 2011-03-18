@@ -48,6 +48,10 @@ end
 		#task :rhobundle => ["config:wp", :extensions] do
 		task :rhobundle => ["config:wp"] do
 			Rake::Task["build:bundle:noiseq"].execute
+
+			#move public folder to root
+			cp_r $srcdir + "/apps/public", $srcdir + "/public"
+			rm_r $srcdir + "/apps/public"
 		end
 		
 		task :rhobundlemap => ["config:wp"] do
@@ -56,12 +60,14 @@ end
 			chdir $srcdir
 			stamp = 0
 			Dir.glob(File.join("**", '*.*')).each do |f|
-				if !f.match("rhoconfig.txt|app_manifest.txt|syncdb|RhoBundleMap.txt")
+				if f.start_with?('db') || f.end_with?('.rb') || f.end_with?('.erb') || f == "apps/app_manifest.txt" || f == "apps/rhoconfig.txt" ||
+					f == "apps/rhoconfig.txt.timestamp" || f == "RhoBundleMap.txt"
+					next;
+				end
 				    #if stamp < File.mtime(f).to_i
 					#	stamp = File.mtime(f).to_i
 					#end
-					file.puts f + "|" + File.mtime(f).to_i.to_s
-				end
+				file.puts f + "|" + File.mtime(f).to_i.to_s
 			end
 			file.close
 			#file = File.open("timestamp.txt", "w+")
@@ -102,7 +108,7 @@ end
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
 			Dir.glob(File.join("**", '*.*')).each do |f|
-				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
+				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
 			end
 			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
 			
@@ -117,11 +123,11 @@ end
  namespace "device" do
 	namespace "wp" do
 		task :addbundletoxap do
-			mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
-			cp_r $srcdir + "/apps", $bindir + "/rho"
-			cp_r $srcdir + "/db", $bindir + "/rho"
-			cp_r $srcdir + "/lib", $bindir + "/rho"
-			cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
+			#mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
+			#cp_r $srcdir + "/apps", $bindir + "/rho"
+			#cp_r $srcdir + "/db", $bindir + "/rho"
+			#cp_r $srcdir + "/lib", $bindir + "/rho"
+			#cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
 			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
@@ -131,10 +137,10 @@ end
 			args << "a"
 			args << "-tzip"
 			args << out_dir + "rhodes.xap"
-			args << $bindir + "/rho/"
+			args << $srcdir + "/*"
 			puts Jake.run($zippath, args)
 
-			rm_r $bindir + "/rho"
+			#rm_r $bindir + "/rho"
 		end
 
 		desc "Build production for device or emulator"
