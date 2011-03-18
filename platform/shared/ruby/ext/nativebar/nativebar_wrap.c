@@ -1564,6 +1564,8 @@ extern void remove_native_tabbar();
 extern void native_tabbar_switch_tab(int index);
 extern void native_tabbar_set_tab_badge(int index,char *val);
 
+extern int native_tabbar_get_current_tab();
+
 
 #include <limits.h>
 #ifndef LLONG_MIN
@@ -1681,6 +1683,16 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+
+
+  #define SWIG_From_long   LONG2NUM 
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_int  (int value)
+{    
+  return SWIG_From_long  (value);
+}
 
 SWIGINTERN VALUE
 _wrap_create(int argc, VALUE *argv, VALUE self) {
@@ -1897,6 +1909,22 @@ _wrap_native_tabbar_set_tab_badge(int argc, VALUE *argv, VALUE self) {
   return Qnil;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_native_tabbar_get_current_tab(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)native_tabbar_get_current_tab();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -2177,5 +2205,6 @@ SWIGEXPORT void Init_NativeBar(void) {
   rb_define_module_function(mNativeBar, "remove_native_tabbar", _wrap_remove_native_tabbar, -1);
   rb_define_module_function(mNativeBar, "native_tabbar_switch_tab", _wrap_native_tabbar_switch_tab, -1);
   rb_define_module_function(mNativeBar, "native_tabbar_set_tab_badge", _wrap_native_tabbar_set_tab_badge, -1);
+  rb_define_module_function(mNativeBar, "native_tabbar_get_current_tab", _wrap_native_tabbar_get_current_tab, -1);
 }
 
