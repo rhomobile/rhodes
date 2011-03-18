@@ -817,7 +817,8 @@ static Rhodes *instance = NULL;
 
 #ifdef __IPHONE_4_0
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    // Nothing right now
+    RAWLOG_INFO("Application go to background");
+    rho_rhodesapp_callUiDestroyedCallback();
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
