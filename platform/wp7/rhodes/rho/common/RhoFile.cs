@@ -8,7 +8,7 @@ namespace rho.common
 {
     public class CRhoFile
     {
-        public static void DeleteFile(String path)
+        public static void deleteFile(String path)
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
             isoStore.DeleteFile(path);

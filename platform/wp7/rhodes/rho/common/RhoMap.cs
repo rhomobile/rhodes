@@ -26,7 +26,7 @@ namespace rho.common
                 String strFile = RHODESAPP().canonicalizeRhoUrl(values[0]);
                 if (CRhoFile.isFileExist(strFile))
                 {
-                    CRhoFile.DeleteFile(strFile);
+                    CRhoFile.deleteFile(strFile);
                 }
             } 
         }
@@ -47,7 +47,7 @@ namespace rho.common
             CRhoFile.writeStringToFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"), strMap);
         }
 
-        public static bool DeployContent() 
+        public static bool deployContent() 
         {
             String newMap = CRhoFile.readResourceFiletoString(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
             String curMap = CRhoFile.readFiletoString(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
