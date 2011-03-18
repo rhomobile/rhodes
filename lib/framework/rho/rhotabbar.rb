@@ -23,6 +23,14 @@ class NativeTabbar
     NativeBar.native_tabbar_set_tab_badge(tab_index, value)
   end
 
+  def self.get_current_tab
+      if System::get_property('platform') == 'APPLE' or System::get_property('platform') == 'ANDROID'
+          return NativeBar.native_tabbar_get_current_tab
+      else 
+          return 0
+      end
+  end
+
 end
  
  

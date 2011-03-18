@@ -492,6 +492,11 @@ void nativebar_set_tab_badge(int index,char* val)
 {
 }
 
+int native_tabbar_get_current_tab() 
+{
+	return 0;
+}
+
 void nativebar_switch_tab(int index) {
 	//TODO: Implement me!
 }

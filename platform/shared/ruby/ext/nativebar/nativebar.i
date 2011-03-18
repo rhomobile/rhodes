@@ -20,6 +20,8 @@ extern void create_native_tabbar(int bar_type, rho_param *p);
 extern void remove_native_tabbar();
 extern void native_tabbar_switch_tab(int index);
 extern void native_tabbar_set_tab_badge(int index,char *val);
+
+extern int native_tabbar_get_current_tab();
 %}
 
 %typemap(in) (rho_param *p) {
@@ -43,3 +45,4 @@ extern void create_native_tabbar(int bar_type, rho_param *p);
 extern void remove_native_tabbar();
 extern void native_tabbar_switch_tab(int index);
 extern void native_tabbar_set_tab_badge(int index,char *val);
+extern int native_tabbar_get_current_tab();
