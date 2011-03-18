@@ -143,4 +143,10 @@ public class NativeBar {
 	public static boolean isStarted() {
 		return started;
 	}
+	
+	public static int activeTab() {
+		RhodesService r = RhodesService.getInstance();
+		MainView mainView = r.getMainView();
+		return mainView.activeTab();
+	}
 }

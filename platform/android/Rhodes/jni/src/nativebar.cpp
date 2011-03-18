@@ -110,3 +110,11 @@ RHO_GLOBAL void native_tabbar_set_tab_badge(int index,char *val) {
 	RAWLOG_INFO("Rho::NativeTabbar.set_tab_badge() unsupported on Android !");
 }
 
+RHO_GLOBAL int native_tabbar_get_current_tab() {
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_NATIVEBAR);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "activeTab", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
