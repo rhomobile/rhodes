@@ -54,7 +54,7 @@ namespace rho
         {
             get
             {
-                return "/rho";
+                return "/";
             }
             set
             {
@@ -70,8 +70,8 @@ namespace rho
         {
             System.Diagnostics.Debug.WriteLine("open_file: " + path, "");
 
-            if (!path.StartsWith("/rho"))
-                path = "rho/" + path;
+            //if (!path.StartsWith("/rho"))
+            //    path = "rho/" + path;
 
             if (path.StartsWith("/"))
                 path = path.Substring(1);

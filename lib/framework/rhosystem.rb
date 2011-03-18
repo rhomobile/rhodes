@@ -12,6 +12,10 @@ module System
 		return "us" if name == "country"
 		""
 	end
+
+	def self.open_url(url)
+		#TODO: open_url
+	end
 end
 
 module WebView

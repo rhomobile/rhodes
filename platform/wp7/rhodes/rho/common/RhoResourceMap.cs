@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace rho.common
 {
-    public sealed class CRhoMap
+    public sealed class CRhoResourceMap
     {
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
 
@@ -41,7 +41,7 @@ namespace rho.common
 
                 String strFile = RHODESAPP().canonicalizeRhoUrl(values[0]);
                 CRhoFile.recursiveCreateDir(RHODESAPP().canonicalizeRhoUrl(strFile));
-                CRhoFile.writeStringToFile(strFile, CRhoFile.readResourceFiletoString(strFile));
+                CRhoFile.writeDataToFile(strFile, CRhoFile.readResourceFile(strFile));
             }
 
             CRhoFile.writeStringToFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"), strMap);
@@ -62,5 +62,7 @@ namespace rho.common
                 copyMap(newMap);   
             }
         }
+
+
     }
 }

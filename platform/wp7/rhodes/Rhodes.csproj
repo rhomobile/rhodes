@@ -86,7 +86,7 @@
     <Compile Include="rho\common\RhodesApp.cs" />
     <Compile Include="rho\common\RhoFile.cs" />
     <Compile Include="rho\common\RhoFilePath.cs" />
-    <Compile Include="rho\common\RhoMap.cs" />
+    <Compile Include="rho\common\RhoResourceMap.cs" />
     <Compile Include="rho\net\HttpServer.cs" />
   </ItemGroup>
   <ItemGroup>
