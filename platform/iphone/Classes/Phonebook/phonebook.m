@@ -76,10 +76,11 @@ static void _getAllPeople(LocalPhonebook* phonebook) {
 
 static void _addPropertyToHash(VALUE hash, const char* key, CFStringRef property) {
 	if (property) {
+        NSString* ns_property = (NSString*)property;
 		char buf[256];
-		snprintf(buf, sizeof(buf), "%s", CFStringGetCStringPtr(property, CFStringGetSystemEncoding()));
-		addStrToHash(hash, key, buf);
-		CFRelease(property);
+		snprintf(buf, sizeof(buf), "%s", [ns_property UTF8String]);
+        addStrToHash(hash, key, buf);
+        CFRelease(property);
 	}
 }
 
@@ -508,7 +509,7 @@ static void __updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, 
 }
 
 static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, CFStringRef label, const char* value) {
-	CFStringRef v = CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
+	CFStringRef v = (CFStringRef)[NSString stringWithUTF8String:value];//CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
 	__updateMultiValueProperty(record, propId, label, v);
 }
 
@@ -660,8 +661,7 @@ int setRecordValue(void* record, char* property, char* value) {
 	if (record && (value!=NULL) && strlen(value)) {
 		int prop = _getProperty(property);
 		if (prop >= 0) {
-			CFStringRef v = CFStringCreateWithCString(NULL, value, 
-													  CFStringGetSystemEncoding());
+			CFStringRef v = (CFStringRef)[NSString stringWithUTF8String:value];//CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
 			if (prop == kABPersonBirthdayProperty) {
 				NSDate *birthdate = string2date(v);
 				ABRecordSetValue(record, prop, birthdate, nil);
