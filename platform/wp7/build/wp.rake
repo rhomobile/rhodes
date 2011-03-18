@@ -57,16 +57,16 @@ end
 			stamp = 0
 			Dir.glob(File.join("**", '*.*')).each do |f|
 				if !f.match("rhoconfig.txt|app_manifest.txt|syncdb|RhoBundleMap.txt")
-				    if stamp < File.mtime(f).to_i
-						stamp = File.mtime(f).to_i
-					end
-					file.puts f
+				    #if stamp < File.mtime(f).to_i
+					#	stamp = File.mtime(f).to_i
+					#end
+					file.puts f + "|" + File.mtime(f).to_i.to_s
 				end
 			end
 			file.close
-			file = File.open("timestamp.txt", "w+")
-			file.puts stamp
-			file.close
+			#file = File.open("timestamp.txt", "w+")
+			#file.puts stamp
+			#file.close
 		end 
 
 		task :rubyext => ["config:wp"] do
@@ -122,7 +122,7 @@ end
 			cp_r $srcdir + "/db", $bindir + "/rho"
 			cp_r $srcdir + "/lib", $bindir + "/rho"
 			cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
-			cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
+			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
 			
