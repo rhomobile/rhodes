@@ -358,6 +358,9 @@ void native_tabbar_set_tab_badge(int index,char *val) {
 	nativebar_set_tab_badge_innner(index, val);
 }
 
-
+int native_tabbar_get_current_tab() {
+    Rhodes *r = [Rhodes sharedInstance];
+    return [[r mainView] activeTab];
+}
 
 
