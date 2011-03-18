@@ -66,13 +66,17 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            String strUrl = RHODESAPP().HttpServer.decide("GET", e.Uri.OriginalString, "", "");
-            if (strUrl.CompareTo(e.Uri.OriginalString) == 0)
+            if (e.Uri.IsAbsoluteUri || e.Uri.OriginalString.StartsWith("res:"))
+                return;
+
+            rho.net.CHttpServer.CResponse resp = RHODESAPP().HttpServer.decide("GET", e.Uri.OriginalString, "", "");
+
+            if (!resp.m_bRedirect)
                 return;
 
             e.Cancel = true;
             webBrowser1.IsScriptEnabled = true;
-            webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+            webBrowser1.Navigate(new Uri(resp.m_strUrl, UriKind.Relative));
         }
 
         private void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)

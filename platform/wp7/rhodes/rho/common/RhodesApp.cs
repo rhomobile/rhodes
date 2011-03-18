@@ -31,7 +31,7 @@ namespace rho.common
         {
             m_webBrowser = browser;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
-            CRhoMap.deployContent();
+            CRhoResourceMap.deployContent();
             RhoRuby.Init(m_webBrowser);
         }
 
@@ -45,7 +45,7 @@ namespace rho.common
 
         String getRhoRootPath()
         {
-            return "/rho/";
+            return "/";
         }
     }
 }
