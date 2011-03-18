@@ -528,6 +528,13 @@ Make sure following folder added to your compiler include path:
 * [$(RHO_ROOT)/platform/shared/ruby/iphone](http://github.com/rhomobile/rhodes/tree/master/platform/shared/ruby/iphone/)
 * [$(RHO_ROOT)/platform/shared/common](http://github.com/rhomobile/rhodes/tree/master/platform/shared/common/)
 
+### url_for_nativeview
+Examples of how to use the url_for_nativeview method:
+    
+	url_for_nativeview :name => 'rainbow_view', :param => 'red'
+	==> rainbow_view:red
+
+
 ## Using LineaSDK in Rhodes (with using special Linea native extension)
 Please see documentation :  [LineaSDK as native extension in Rhodes applications](linea) 
 
