@@ -103,6 +103,8 @@ Method on_ui_destroyed will be invoked when application's UI was destroyed (usua
 		# example:
 		# @forbid_ui_operations = true
 	end
+**NOTE: On iPhone, on_ui_destroyed invoked when also when application goes to background, because if application killed in background by user (via multitasking UI) then no any events sended to application. So if you want save state of your application, you can do it in on_ui_destoyed, but keep in mind - is just save - do not process destroy of your UI in this method**
+
 
 Method on_activate_app will be invoked after application is activated. 
 	:::ruby

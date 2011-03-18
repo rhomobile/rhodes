@@ -594,6 +594,11 @@ Switch active tab to second (numeration is zero based i.e. 0 means first tab, 1 
 	:::ruby
 	Rho::NativeTabbar.switch_tab(1) 
 
+Get current tab index
+	:::ruby
+	Rho::NativeTabbar.get_current_tab 
+
+
 Rho::NativeTabbar.create() create native tab bar UI element and activate its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create:
 
 	:::ruby
