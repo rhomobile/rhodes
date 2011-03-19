@@ -63,6 +63,9 @@ namespace rho.net
                     return new CResponse(strRedirectUrl);
 
                 String strFilePath = RHODESAPP().canonicalizeRhoUrl(uri) + ".gen.html";
+                if ( route.id.Length > 0 )
+                    strFilePath = CFilePath.join(m_root, route.application + "/" + route.model + "/" + route.action) + ".gen.html";
+
                 CRhoFile.recursiveCreateDir(strFilePath);
                 CRhoFile.writeDataToFile(strFilePath, getResponseBody(rhoResp));
 
