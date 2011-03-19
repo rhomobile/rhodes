@@ -124,11 +124,23 @@ module Rho
         key = post_key_check(key)
 
         # Then scan as many nestings as present
-        until eos?
-          r = scan(BRACKETED_KEY_REGEXP) or return
-          key = self[1]
-          key = post_key_check(key)
-        end
+		if defined? RHO_WP7
+			unless eos?
+			  for i in (0..1000)
+				  r = scan(BRACKETED_KEY_REGEXP) or return
+				  key = self[1]
+				  key = post_key_check(key)
+
+				  break if eos?
+              end
+			end			
+		else
+			until eos?
+			  r = scan(BRACKETED_KEY_REGEXP) or return
+			  key = self[1]
+			  key = post_key_check(key)
+			end
+		end
 
         bind(key, value)
       end
