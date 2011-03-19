@@ -58,6 +58,8 @@ namespace Rhodes
             webBrowser1.IsScriptEnabled = true;
             webBrowser1.Navigate(new Uri("readme.htm", UriKind.Relative));*/
             RHODESAPP().Init(webBrowser1);
+
+            //webBrowser1.Navigate(new Uri("/app/CustomUri/open_external_url?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com", UriKind.Relative));
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
@@ -69,7 +71,20 @@ namespace Rhodes
             if (e.Uri.IsAbsoluteUri || e.Uri.OriginalString.StartsWith("res:"))
                 return;
 
-            rho.net.CHttpServer.CResponse resp = RHODESAPP().HttpServer.decide("GET", e.Uri.OriginalString, "", "");
+            String query = "";
+            String url = e.Uri.OriginalString;
+            int nFrag = url.LastIndexOf('#');
+            if ( nFrag >= 0 )
+                url = url.Substring(0, nFrag);
+
+            int nQuery = url.IndexOf('?');
+            if (nQuery >= 0)
+            {
+                query = url.Substring(nQuery + 1);
+                url = url.Substring(0, nQuery);
+            }
+
+            rho.net.CHttpServer.CResponse resp = RHODESAPP().HttpServer.decide("GET", url, query, "");
 
             if (!resp.m_bRedirect)
                 return;
