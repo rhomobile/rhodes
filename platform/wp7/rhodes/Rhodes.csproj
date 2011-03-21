@@ -55,20 +55,8 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IronRuby">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.dll</HintPath>
-    </Reference>
-    <Reference Include="IronRuby.Libraries">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
-    <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Scripting.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Scripting.Core">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Scripting.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -83,12 +71,6 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="rho\common\RhodesApp.cs" />
-    <Compile Include="rho\common\RhoFile.cs" />
-    <Compile Include="rho\common\RhoFilePath.cs" />
-    <Compile Include="rho\common\RhoResourceMap.cs" />
-    <Compile Include="rho\db\RhoDBAdapter.cs" />
-    <Compile Include="rho\net\HttpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -114,13 +96,9 @@
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RhoRubyLib\RhoRubyLib.csproj">
-      <Project>{9CAF724B-1466-4A76-9251-5ADB132F636F}</Project>
-      <Name>RhoRubyLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\sqlite3\sqlite3.csproj">
-      <Project>{527EEB7D-2879-498D-90AE-05C97D0A0B0F}</Project>
-      <Name>sqlite3</Name>
+    <ProjectReference Include="..\RhoLib\RhoLib.csproj">
+      <Project>{5372CC13-FD13-49A3-BDCD-472E24842CE6}</Project>
+      <Name>RhoLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
