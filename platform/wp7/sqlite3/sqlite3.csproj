@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{527EEB7D-2879-498D-90AE-05C97D0A0B0F}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sqlite3</RootNamespace>
+    <AssemblyName>sqlite3</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile>WindowsPhone</TargetFrameworkProfile>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
+    <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;SQLITE_SILVERLIGHT TRUE WIN32 _MSC_VER NDEBUG NO_TCL SQLITE_ASCII SQLITE_DISABLE_LFS SQLITE_MEM_POOL SQLITE_MUTEX_OMIT SQLITE_OMIT_AUTHORIZATION SQLITE_OMIT_DEPRECATED SQLITE_OMIT_GET_TABLE SQLITE_OMIT_INCRBLOB SQLITE_OMIT_LOOKASIDE SQLITE_OMIT_SHARED_CACHE SQLITE_OMIT_UTF16 SQLITE_OMIT_VIRTUALTABLE SQLITE_OS_WIN SQLITE_SYSTEM_MALLOC VDBE_PROFILE_OFF</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SQLITE_SILVERLIGHT TRUE WIN32 _MSC_VER NDEBUG NO_TCL SQLITE_ASCII SQLITE_DISABLE_LFS SQLITE_MEM_POOL SQLITE_MUTEX_OMIT SQLITE_OMIT_AUTHORIZATION SQLITE_OMIT_DEPRECATED SQLITE_OMIT_GET_TABLE SQLITE_OMIT_INCRBLOB SQLITE_OMIT_LOOKASIDE SQLITE_OMIT_SHARED_CACHE SQLITE_OMIT_UTF16 SQLITE_OMIT_VIRTUALTABLE SQLITE_OS_WIN SQLITE_SYSTEM_MALLOC VDBE_PROFILE_OFF </DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SQLiteClient.cs" />
+    <Compile Include="SqliteWrapper\alter_c.cs" />
+    <Compile Include="SqliteWrapper\analyze_c.cs" />
+    <Compile Include="SqliteWrapper\attach_c.cs" />
+    <Compile Include="SqliteWrapper\auth_c.cs" />
+    <Compile Include="SqliteWrapper\backup_c.cs" />
+    <Compile Include="SqliteWrapper\bitvec_c.cs" />
+    <Compile Include="SqliteWrapper\btmutex_c.cs" />
+    <Compile Include="SqliteWrapper\BtreeInt_h.cs" />
+    <Compile Include="SqliteWrapper\btree_c.cs" />
+    <Compile Include="SqliteWrapper\Btree_h.cs" />
+    <Compile Include="SqliteWrapper\build_c.cs" />
+    <Compile Include="SqliteWrapper\callback_c.cs" />
+    <Compile Include="SqliteWrapper\complete_c.cs" />
+    <Compile Include="SqliteWrapper\ctime_cs.cs" />
+    <Compile Include="SqliteWrapper\date_c.cs" />
+    <Compile Include="SqliteWrapper\Delagates.cs" />
+    <Compile Include="SqliteWrapper\delete_c.cs" />
+    <Compile Include="SqliteWrapper\expr_c.cs" />
+    <Compile Include="SqliteWrapper\fault_c.cs" />
+    <Compile Include="SqliteWrapper\fkey_c.cs" />
+    <Compile Include="SqliteWrapper\func_c.cs" />
+    <Compile Include="SqliteWrapper\global_c.cs" />
+    <Compile Include="SqliteWrapper\hash_c.cs" />
+    <Compile Include="SqliteWrapper\Hash_h.cs" />
+    <Compile Include="SqliteWrapper\hwtime_c.cs" />
+    <Compile Include="SqliteWrapper\insert_c.cs" />
+    <Compile Include="SqliteWrapper\journal_c.cs" />
+    <Compile Include="SqliteWrapper\keywordhash_h.cs" />
+    <Compile Include="SqliteWrapper\legacy_c.cs" />
+    <Compile Include="SqliteWrapper\loadext_c.cs" />
+    <Compile Include="SqliteWrapper\main_c.cs" />
+    <Compile Include="SqliteWrapper\malloc_c.cs" />
+    <Compile Include="SqliteWrapper\memjournal_c.cs" />
+    <Compile Include="SqliteWrapper\mem_Pool.cs" />
+    <Compile Include="SqliteWrapper\mutex_c.cs" />
+    <Compile Include="SqliteWrapper\mutex_h.cs" />
+    <Compile Include="SqliteWrapper\mutex_noop_c.cs" />
+    <Compile Include="SqliteWrapper\mutex_w32.cs" />
+    <Compile Include="SqliteWrapper\notify_c.cs" />
+    <Compile Include="SqliteWrapper\opcodes_c.cs" />
+    <Compile Include="SqliteWrapper\opcodes_h.cs" />
+    <Compile Include="SqliteWrapper\os_c.cs" />
+    <Compile Include="SqliteWrapper\os_common_h.cs" />
+    <Compile Include="SqliteWrapper\os_h.cs" />
+    <Compile Include="SqliteWrapper\os_win_c.cs" />
+    <Compile Include="SqliteWrapper\pager_c.cs" />
+    <Compile Include="SqliteWrapper\pager_h.cs" />
+    <Compile Include="SqliteWrapper\parse_c.cs" />
+    <Compile Include="SqliteWrapper\parse_h.cs" />
+    <Compile Include="SqliteWrapper\pcache1_c.cs" />
+    <Compile Include="SqliteWrapper\pcache_c.cs" />
+    <Compile Include="SqliteWrapper\pcache_h.cs" />
+    <Compile Include="SqliteWrapper\pragma_c.cs" />
+    <Compile Include="SqliteWrapper\prepare_c.cs" />
+    <Compile Include="SqliteWrapper\printf_c.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqliteWrapper\random_c.cs" />
+    <Compile Include="SqliteWrapper\resolve_c.cs" />
+    <Compile Include="SqliteWrapper\rowset_c.cs" />
+    <Compile Include="SqliteWrapper\select_c.cs" />
+    <Compile Include="SqliteWrapper\sqlite3ext_h.cs" />
+    <Compile Include="SqliteWrapper\sqlite3_h.cs" />
+    <Compile Include="SqliteWrapper\sqliteicu_h.cs" />
+    <Compile Include="SqliteWrapper\sqliteInt_h.cs" />
+    <Compile Include="SqliteWrapper\sqliteLimit_h.cs" />
+    <Compile Include="SqliteWrapper\status_c.cs" />
+    <Compile Include="SqliteWrapper\table_c.cs" />
+    <Compile Include="SqliteWrapper\tokenize_c.cs" />
+    <Compile Include="SqliteWrapper\trigger_c.cs" />
+    <Compile Include="SqliteWrapper\update_c.cs" />
+    <Compile Include="SqliteWrapper\utf_c.cs" />
+    <Compile Include="SqliteWrapper\util_c.cs" />
+    <Compile Include="SqliteWrapper\vacuum_c.cs" />
+    <Compile Include="SqliteWrapper\vdbeapi_c.cs" />
+    <Compile Include="SqliteWrapper\vdbeaux_c.cs" />
+    <Compile Include="SqliteWrapper\vdbeblob_c.cs" />
+    <Compile Include="SqliteWrapper\VdbeInt_h.cs" />
+    <Compile Include="SqliteWrapper\vdbemem_c.cs" />
+    <Compile Include="SqliteWrapper\vdbetrace_c.cs" />
+    <Compile Include="SqliteWrapper\vdbe_c.cs" />
+    <Compile Include="SqliteWrapper\Vdbe_h.cs" />
+    <Compile Include="SqliteWrapper\vtab_c.cs" />
+    <Compile Include="SqliteWrapper\walker_c.cs" />
+    <Compile Include="SqliteWrapper\where_c.cs" />
+    <Compile Include="SqliteWrapper\_Custom.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SqliteWrapper\ClassDiagram1.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
