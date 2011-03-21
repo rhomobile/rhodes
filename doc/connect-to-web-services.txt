@@ -9,7 +9,7 @@ Below is the list of available `AsyncHttp` methods you can use to asyncrhonously
 * `:url` - URL of the request.
 * `:headers` - Hash of headers to send with the request.
 * `:callback` - Callback action to execute when the request is done.
-* `:callback_params` - (optional) Parameters to send to the callback.
+* `:callback_param` - (optional) Parameters to send to the callback.
 * `:authentication` - (optional) Send Basic Auth header with request.  This takes the form:
 		
 		:authentication => {
@@ -20,8 +20,8 @@ Below is the list of available `AsyncHttp` methods you can use to asyncrhonously
 		
 * `:ssl_verify_peer` - (optional) Verify SSL certificates, `true` by default.
 
-### `get(:url, :headers, :callback, :callback_params)`
-Perform HTTP GET request to the specified `:url`.  You can also provide an optional hash of `:headers` and `:callback_params`.
+### `get(:url, :headers, :callback, :callback_param)`
+Perform HTTP GET request to the specified `:url`.  You can also provide an optional hash of `:headers` and `:callback_param`.
 
 	:::ruby
 	Rho::AsyncHttp.get(
@@ -55,7 +55,7 @@ Example of synchronous call:
 **NOTE: WARNING! Do NOT use synchronous calls unless you know what you are doing.  This is a blocking call and will cause your UI to freeze.**
 
 
-### `post(:url, :headers, :body, :callback, :callback_params)`
+### `post(:url, :headers, :body, :callback, :callback_param)`
 Perform HTTP POST request to the specified `:url`.  As with `get`, you can specify optional arguments:
 
 	:::ruby
@@ -70,7 +70,7 @@ Perform HTTP POST request to the specified `:url`.  As with `get`, you can speci
 	  :callback_param => "post=complete" 
 	)
 	
-### `download_file(:url, :headers, :filename, :callback, :callback_params)`
+### `download_file(:url, :headers, :filename, :callback, :callback_param)`
 Download a file to the specified filename.
 
 	:::ruby
@@ -84,7 +84,7 @@ Download a file to the specified filename.
 	  :callback => url_for(:action => :httpdownload_callback),
 	)
 	
-### `upload_file(:url, :headers, :filename, :body, :callback, :callback_params)`
+### `upload_file(:url, :headers, :filename, :body, :callback, :callback_param)`
 Upload the specified file using HTTP POST:
 
 	:::ruby	
