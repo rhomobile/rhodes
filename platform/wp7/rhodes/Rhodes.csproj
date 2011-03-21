@@ -118,6 +118,10 @@
       <Project>{9CAF724B-1466-4A76-9251-5ADB132F636F}</Project>
       <Name>RhoRubyLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\sqlite3\sqlite3.csproj">
+      <Project>{527EEB7D-2879-498D-90AE-05C97D0A0B0F}</Project>
+      <Name>sqlite3</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
