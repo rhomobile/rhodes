@@ -3,6 +3,8 @@
 
 if defined? RHO_ME
 	require 'rationalME'
+elsif defined? RHO_WP7
+	require 'rational18'
 else	
     require 'rational'
 end

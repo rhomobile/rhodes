@@ -26,8 +26,8 @@ namespace rho
     {
         public override bool FileExists(string path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            System.Diagnostics.Debug.WriteLine("exist_file: " + path, "");
+            //IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+            //System.Diagnostics.Debug.WriteLine("exist_file: " + path, "");
 
             if (path.StartsWith("/"))
                 path = path.Substring(1);
@@ -39,12 +39,31 @@ namespace rho
             return sr != null;
         }
 
+        public override string GetDirectoryName(string path)
+        {
+            if (path.EndsWith("/"))
+                path = path.Substring(0, path.Length-1);
+
+            return Path.GetDirectoryName(path);
+        }
+
+        public override void CreateDirectory(string path)
+        {
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+            if (path.EndsWith("/"))
+                path = path.Substring(0, path.Length - 1);
+
+            //path = path.Replace("/", "\\");
+
+            isoStore.CreateDirectory(path);
+        }
+
         public override bool DirectoryExists(string path)
         {
-            //StreamResourceInfo sr1 = Application.GetResourceStream(new Uri("rho/", UriKind.Relative));
-
-            return false;
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+            return isoStore.DirectoryExists(path);
         }
+
         public override bool IsAbsolutePath(string path)
         {
             return path.StartsWith(CurrentDirectory);
