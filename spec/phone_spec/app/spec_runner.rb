@@ -15,17 +15,18 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/array/pack_spec"
     
     config[:files] << "spec/rho_spec"
-
+if !defined?(RHO_WP7)
     config[:files] << "spec/asynchttp_spec"
     config[:files] << "spec/crypt_spec"
     config[:files] << "spec/json_spec"
     config[:files] << "spec/xml_spec"
     config[:files] << "spec/rhofile_spec"
+end
     config[:files] << "spec/date_spec"
     config[:files] << "spec/bsearch_spec"
 
     config[:files] << "spec/rho_controller_spec"
-
+if !defined?(RHO_WP7)
     config[:files] << [ "spec/rhom_object_spec",
         [ {:schema_model=>true, :sync_model=>true},  {:schema_model=>true, :sync_model=>false},
           {:schema_model=>false, :sync_model=>true}, {:schema_model=>false, :sync_model=>false} ] ]
@@ -46,7 +47,7 @@ class SpecRunner < MSpecScript
 
     config[:files] << "spec/blobsync_spec"
     config[:files] << "spec/bulksync_spec"
-
+end
   end
 
   def run

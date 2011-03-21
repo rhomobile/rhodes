@@ -523,22 +523,31 @@ class Date
 
     # Convert an +h+ hour, +min+ minutes, +s+ seconds period
     # to a fractional day.
+if !defined?(RHO_WP7)
     begin
       Rational(Rational(1, 2), 2) # a challenge
 
       def time_to_day_fraction(h, min, s)
-	Rational(h * 3600 + min * 60 + s, 86400) # 4p
+		Rational(h * 3600 + min * 60 + s, 86400) # 4p
       end
     rescue
       def time_to_day_fraction(h, min, s)
-	if Integer === h && Integer === min && Integer === s
-	  Rational(h * 3600 + min * 60 + s, 86400) # 4p
-	else
-	  (h * 3600 + min * 60 + s).to_r/86400 # 4p
-	end
+		if Integer === h && Integer === min && Integer === s
+			Rational(h * 3600 + min * 60 + s, 86400) # 4p
+		else
+			(h * 3600 + min * 60 + s).to_r/86400 # 4p
+		end
       end
     end
-
+else
+	def time_to_day_fraction(h, min, s)
+		if Integer === h && Integer === min && Integer === s
+			Rational(h * 3600 + min * 60 + s, 86400) # 4p
+		else
+			(h * 3600 + min * 60 + s).to_r/86400 # 4p
+		end
+    end
+end
     # Convert an Astronomical Modified Julian Day Number to an
     # Astronomical Julian Day Number.
     def amjd_to_ajd(amjd) amjd + MJD_EPOCH_IN_AJD end # :nodoc:
@@ -1442,7 +1451,7 @@ class Date
     end
     da = self
     op = %w(- <= >=)[step <=> 0]
-    while da.__send__(op, limit)
+	while da.__send__(op, limit)
       yield da
       da += step
     end

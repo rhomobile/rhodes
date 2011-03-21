@@ -10,10 +10,11 @@ ruby_version_is '1.8.7' do
       s.end_with?('llo').should be_true
       s.end_with?('ll').should be_false
     end
-
+if !defined?(RHO_WP7)
     it "returns true only if any ending match" do
       "hello".end_with?('x', 'y', 'llo', 'z').should be_true
     end
+end
 
 #    it "converts its argument using :to_str" do
 #      s = "hello"
@@ -24,9 +25,11 @@ ruby_version_is '1.8.7' do
 
     it "ignores arguments not convertible to string" do
       "hello".end_with?().should be_false
+if !defined?(RHO_WP7)
       "hello".end_with?(1).should be_false
       "hello".end_with?(["o"]).should be_false
       "hello".end_with?(1, nil, "o").should be_true
+end
     end
 
 #    it "uses only the needed arguments" do

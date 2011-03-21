@@ -12,7 +12,9 @@ ruby_version_is '1.8.7' do
     end
 
     it "returns true only if any beginning match" do
+if !defined?(RHO_WP7)
       "hello".start_with?('x', 'y', 'he', 'z').should be_true
+end
     end
 
 #    it "converts its argument using :to_str" do
@@ -24,9 +26,11 @@ ruby_version_is '1.8.7' do
 
     it "ignores arguments not convertible to string" do
       "hello".start_with?().should be_false
+if !defined?(RHO_WP7)
       "hello".start_with?(1).should be_false
       "hello".start_with?(["h"]).should be_false
       "hello".start_with?(1, nil, "h").should be_true
+end
     end
 
 #    it "uses only the needed arguments" do

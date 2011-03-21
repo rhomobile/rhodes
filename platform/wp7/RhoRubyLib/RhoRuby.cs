@@ -83,6 +83,8 @@ namespace rho
         {
             string code = "def foo; 'haha'; end; foo()";
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
+            //m_engine.Execute("class MyClass < Exception; def initialize(arg1); end; end; MyClass.new('');");
+            //m_engine.Execute("def test; while false; end; end; test();");
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri("lib/rhoframework.rb", UriKind.Relative));
 
@@ -99,9 +101,9 @@ namespace rho
             m_rhoframework = src.Execute(m_engine.CreateScope());
             if (m_rhoframework == null)
                 return;
-            m_engine.Execute("RHO_FRAMEWORK.ui_created");
+            //m_engine.Execute("RHO_FRAMEWORK.ui_created");
 
-            ////_engine.Operations.InvokeMember(_rhoframework, "ui_created");
+            m_engine.Operations.InvokeMember(m_rhoframework, "ui_created");
         }
 
         public Object callServeIndex(String indexPath, Object req)
