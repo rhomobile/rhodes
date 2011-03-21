@@ -16,6 +16,9 @@ namespace rho.common
 {
     public sealed class CRhodesApp
     {
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+		    new RhoLogger("RhodesApp");
+
         private static readonly CRhodesApp m_instance = new CRhodesApp();
         public static CRhodesApp Instance { get { return m_instance; } }
         private CRhodesApp() { }
@@ -29,6 +32,7 @@ namespace rho.common
 
         public void Init(WebBrowser browser)
         {
+            LOG.INFO("Init");
             m_webBrowser = browser;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
             CRhoResourceMap.deployContent();
