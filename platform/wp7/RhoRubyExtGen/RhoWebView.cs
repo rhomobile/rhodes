@@ -15,9 +15,8 @@ namespace rho.rubyext
 
         [RubyMethodAttribute("navigate", RubyMethodAttributes.PrivateInstance)]
         [RubyMethodAttribute("navigate", RubyMethodAttributes.PublicSingleton)]
-        public static bool Navigate(object self, [DefaultProtocol]string url)
+        public static void Navigate(object self, [DefaultProtocol]string url)
         {
-            return true;
         }
 
         #endregion
