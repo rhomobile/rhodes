@@ -3,7 +3,7 @@ using rho.common;
 
 namespace rho.db
 {
-    interface IDBResult
+    public interface IDBResult
     {
     int getColCount();
 	String getColName(int nCol);
