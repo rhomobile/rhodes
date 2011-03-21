@@ -62,13 +62,16 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\RhoStd.cs" />
+    <Compile Include="db\IDBCallback.cs" />
+    <Compile Include="db\IDBResult.cs" />
+    <Compile Include="db\IDBStorage.cs" />
     <Compile Include="net\HttpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="common\RhodesApp.cs" />
     <Compile Include="common\RhoFile.cs" />
     <Compile Include="common\RhoFilePath.cs" />
     <Compile Include="common\RhoResourceMap.cs" />
-    <Compile Include="db\RhoDBAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RhoRubyLib\RhoRubyLib.csproj">
@@ -76,7 +79,7 @@
       <Name>RhoRubyLib</Name>
     </ProjectReference>
   </ItemGroup>
-   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
