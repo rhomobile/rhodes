@@ -3,7 +3,7 @@ using rho.common;
 
 namespace rho.db
 {
-    interface IDBStorage
+    public interface IDBStorage
     {
         void open(String strPath, String strSqlScript, String strEncryptionInfo);
         void close();

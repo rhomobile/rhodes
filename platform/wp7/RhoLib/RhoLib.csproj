@@ -62,6 +62,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\RhoLogger.cs" />
     <Compile Include="common\RhoStd.cs" />
     <Compile Include="db\IDBCallback.cs" />
     <Compile Include="db\IDBResult.cs" />
