@@ -158,7 +158,7 @@ Set callback to track location changes.
 
 	:::ruby
 	GeoLocation.set_notification(
-		callback, callback_params="", ping_gpssystem_timeout=0)
+		callback, callback_param="", ping_gpssystem_timeout=0)
 
 * callback - callback url; it will be called only once, to have it called again, you need to call set_notification again.
 * ping_gpssystem_timeout  - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
