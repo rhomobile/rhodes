@@ -30,8 +30,12 @@ end
 describe "String#slice! with index" do
   it "deletes and return the char at the given position" do
     a = "hello"
+if !defined?(RHO_WP7)
     a.slice!(1).should == ?e
-    a.should == "hllo"
+else
+	a.slice!(1).should == 101
+end
+	a.should == "hllo"
     #a.slice!(-1).should == ?o
     #a.should == "hll"
   end

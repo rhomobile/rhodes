@@ -16,6 +16,10 @@ module System
 	def self.open_url(url)
 		#TODO: open_url
 	end
+
+	def self.app_installed?(app_name)
+		return false
+	end
 end
 
 module WebView
@@ -103,6 +107,14 @@ class RhoConf
       end
     end
 
+	def self.read_log(size)
+	    res = ""
+		(1..size).each do |i|
+			res += 'a'
+		end
+
+		res
+	end
 end
 
 end
