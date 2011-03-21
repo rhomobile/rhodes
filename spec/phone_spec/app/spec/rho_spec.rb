@@ -39,12 +39,14 @@ describe "RhoConfig" do
     Rho::RhoConfig.options_path = '/app/Settings'
   end
   
+if !defined?(RHO_WP7)
   it "should populate configuration in sources table" do
     sources = ::Rho::RHO.get_user_db().select_from_table('sources','*')
     sources.size.should == 0
     
     Rho::RhoConfig.sources().size.should > 0
   end
+end
   
   it "should have start_path" do
     Rho::RhoConfig.start_path.should == '/app'
@@ -82,6 +84,7 @@ describe "RhoConfig" do
     Rho::RhoConfig.start_path.should == oldpath
   end  
   
+if !defined?(RHO_WP7)
   it "should read log" do
   #  log_text = Rho::RhoConfig.read_log
   #  log_text.length.should > 0
@@ -92,6 +95,7 @@ describe "RhoConfig" do
     log_text = Rho::RhoConfig.read_log(1000)
     log_text.length.should == 1000
   end  
+end
   
 end
 
@@ -113,6 +117,7 @@ describe "RhoError" do
 
 end
 
+if !defined?(RHO_WP7)
 describe "RhomSource" do
 
   it "should find first source" do
@@ -148,6 +153,7 @@ describe "RhomSource" do
     
   end
 
+end
 end
 
 describe "RhoRuby" do
@@ -292,19 +298,24 @@ end
   it "should array count" do
     ary = [1, 2, 4, 2]
     ary.count.should == 4
+if !defined?(RHO_WP7)
     ary.count(2).should == 2
     ary.count{|x|x%2==0}.should == 3
+end
   end
 
+if !defined?(RHO_WP7)
   it "should array group_by" do
     res = [1,2,3,4,5,6].group_by {|i| i%3}
     res.should == {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
   end
 
+
   it "should range group_by" do
     res = (1..6).group_by {|i| i%3}
     res.should == {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
   end
+end
 
   it "should split with regex"  do
     str = "http://www.abc.com/abc/servlet/SearchServlet?act=viewDetail&amp;LanguageCountry=en_US&amp;searchLang=en_US&amp;caseLang=en_US&amp;orgPrefix=NCMC&amp;caseNum=1234567&amp;seqNum=1"
