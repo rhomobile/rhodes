@@ -55,6 +55,9 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+<Reference Include="IronRuby.Libraries">
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="System.Core" />
