@@ -1,0 +1,1306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Community.CsharpSqlite.Sqlite3">
+    <Position X="10.5" Y="0.5" Width="4" />
+    <NestedTypes>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMallocMem" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDlError" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Mem0Global" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>malloc_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_file" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>memjournal_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexHeld" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.RowSet" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rowset_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxBegin" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.RowSetChunk" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rowset_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxColumn" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Module" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxCommit" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.et_info" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>printf_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMalloc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.ExprList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PCacheGlobal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pcache1_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxLog" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_backup" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>backup_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDestructor" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCompare4" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxColumn_I" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexEnter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereCost" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>where_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCollNeeded" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_pcache_methods" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCheckReservedLock" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.VdbeOpIter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>vdbeaux_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDlClose" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.UnpackedRecord" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMemInit" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_mutex" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>mutex_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Truncate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFileControl" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxFindFunction" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxExprTreeFunction_NC" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.LockingStrategy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>os_win_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.SrcList_item" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxAccess" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.DbFixer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCurrentTime" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Schema" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Rekey" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereAndInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>where_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PCache1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pcache1_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxUnlock" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxExprCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Db" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxGetLastError" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFullPathname" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxUpdateCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.yColCache" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.IndexSample" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxTruncate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.tm" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>_Custom.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.InLoop" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3StatType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>status_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.compareInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>func_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.SrcList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.EncName" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pragma_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCompare" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.BusyHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.IntegrityCk" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PgHdr1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pcache1_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.VdbeCursor" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3AutoExtList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>loadext_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxTrace" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxSync" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.VdbeFunc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereTerm" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>where_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxConnect" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxInit" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_context" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxRealloc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxRead" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.HashElem" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Hash_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.BenignMallocHooks" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>fault_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxAuth" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMemShutdown" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.sPragmaType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pragma_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxNext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDelete" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxalarmCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.YYMINORTYPE" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Cachesize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.AggInfo_func" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxIter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxStress" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3._OvflCell" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.BtLock" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexInit" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxEof" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexEnd" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFreeMem" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_io_methods" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_mutex_methods" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxDestroy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PgHdr" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pcache_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxSectorSize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDeviceCharacteristics" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxRollback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.LookasideSlot" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxBusy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexAlloc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxDisconnect" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxSize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Column" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Expr" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Pager" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pager_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.yyParser" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.LikeOp" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxSync" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxColumn" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.InitData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.FuncDef" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Unpin" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_index_info" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereOrInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>where_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.VTable" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxCommitCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.StrAccum" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFreeAux" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.DateTime" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>date_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFuncBtree" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_api_routines" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3ext_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.NameContext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.TrigEvent" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxClose" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxExprTreeFunction" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Mem" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxRename" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Hash" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Hash_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Trigger" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3._aTable" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>analyze_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.ExprSpan" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.sqlite3_mem_methods" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxRollbackCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.LimitVal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxRowid" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexLeave" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Table" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Sqlite3Config" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Keyword" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>select_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxRoundup" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.AuthContext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereClause" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>where_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Btree" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.FKey" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMallocInt" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.IdList_item" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.union_p4" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Vdbe_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxCreate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Parse" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.FILETIME" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>_Custom.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFreeInt" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxBusyHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.CollSeq" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.MediumTrustLockingStrategy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>os_win_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.SelectDest" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.yyStackEntry" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFileSize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.AuxData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxUpdate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PCache" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pcache_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.AttachKey" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.ExprList_item" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxProgress" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexFree" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3._yyRuleInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.KeyInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Select" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDestroy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxSelectCallback" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereMaskSet" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>where_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxStep" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.TriggerPrg" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.IdList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxExprTreeFunction_OBJ" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxBestIndex" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PagerSavepoint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pager_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.TriggerStep" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.AggInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.AggInfo_col" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.FilePoint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>memjournal_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFinal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Create" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3PrngType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>random_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.analysisInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>analyze_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Shutdown" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.PgFreeslot" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>pcache1_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.CountCtx" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>func_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDlSym" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.BtShared" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxLock" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_index_orderby" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.VdbeOp" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Vdbe_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxClose" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDel" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDlOpen" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Destroy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Pagecount" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.MemPage" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.VdbeFrame" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.FileChunk" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>memjournal_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.BtreeMutexArray" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Btree_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxWrite" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxColname" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxReiniter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_index_constraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxDelCollSeq" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxOpen" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxSleep" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.FuncDefHash" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Savepoint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxRandomness" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxOpen" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_module" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexNotheld" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Bitvec" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>bitvec_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.sFuncs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>func_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Init" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.VdbeOpList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Vdbe_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WhereLevel" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Index" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.sAggs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>func_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.sqlite3_vtab" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Vdbe" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxMutexTry" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Set" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>VdbeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_vfs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Token" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="Community.CsharpSqlite.Sqlite3.CellInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="Community.CsharpSqlite.Sqlite3.WherePlan" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3._ht" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Hash_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFree" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.smdxFilter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Lookaside" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxProfile" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxPC_Fetch" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_vtab_cursor" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFreeSchema" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.SumCtx" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>func_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.AutoincInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.void_function" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.yymsp" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>parse_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.RowSetEntry" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rowset_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.SubProgram" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Vdbe_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.sqlite3_index_constraint_usage" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqlite3_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Delegate Name="Community.CsharpSqlite.Sqlite3.dxFunc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Delagates.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="Community.CsharpSqlite.Sqlite3.Walker" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sqliteInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3._u" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>bitvec_c.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Community.CsharpSqlite.Sqlite3.BtCursor" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BtreeInt_h.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>//////////////////////////////////////////8=</HashCode>
+      <FileName>_Custom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Community.CsharpSqlite.HelperMethods" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>os_win_c.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Delegate Name="System.Action&lt;T1, T2, T3, T4, T5&gt;" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAEAAAAAEAAAAABAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Delagates.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="System.Func&lt;T1, T2, T3, T4, TResult&gt;">
+    <Position X="1.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAEAAAAAEAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Delagates.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="System.Func&lt;T1, T2, T3, T4, T5, TResult&gt;">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAEAAAAAEAAAAABAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Delagates.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
