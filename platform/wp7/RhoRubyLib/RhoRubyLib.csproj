@@ -64,7 +64,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="db\SqliteStorage.cs" />
+    <Compile Include="db\SqliteResult.cs" />
     <Compile Include="logging\RhoLogFileSink.cs" />
     <Compile Include="logging\IRhoLogSink.cs" />
     <Compile Include="logging\RhoLogConf.cs" />
@@ -82,7 +82,6 @@
     <Compile Include="db\DBAttrManager.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="db\DBCommand.cs" />
     <Compile Include="db\DBException.cs" />
     <Compile Include="db\IDBCallback.cs" />
     <Compile Include="db\IDBResult.cs" />
