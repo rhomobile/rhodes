@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace rho.db
 {
-    public class DBException : Exception
+    public class CDBException : Exception
     {
         private int _errorCode;
         public int ErrorCode
@@ -19,7 +19,14 @@ namespace rho.db
             get { return _errorCode; }
             set { _errorCode = value; }
         }
-        public DBException(int errorCode, string message)
+
+        public CDBException(Exception exc)
+            : base("Message: " + exc.Message)
+        {
+            _errorCode = 0;
+	    }
+
+        public CDBException(int errorCode, string message)
             : base(message)
         {
             _errorCode = errorCode;
