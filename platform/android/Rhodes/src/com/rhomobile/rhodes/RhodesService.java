@@ -77,6 +77,7 @@ public class RhodesService extends Service {
 	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+	public static boolean ANDROID_TITLE = true;
 	
 	private static final int DOWNLOAD_PACKAGE_ID = 1;
 	
@@ -183,6 +184,9 @@ public class RhodesService extends Service {
 		return sInstance;
 	}
 	
+	public static native boolean isEnableTitle();
+	
+	
 	private void initRootPath() {
 		ApplicationInfo appInfo = getAppInfo();
 		String dataDir = appInfo.dataDir;
@@ -235,6 +239,7 @@ public class RhodesService extends Service {
 	
 	@Override
 	public void onCreate() {
+		
 		if (DEBUG)
 			Log.d(TAG, "+++ onCreate");
 		

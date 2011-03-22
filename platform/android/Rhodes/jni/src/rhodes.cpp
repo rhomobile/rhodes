@@ -557,6 +557,18 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
     return (jboolean)res;
 }
 
+
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
+  (JNIEnv *, jclass, jstring cmdLine, jstring sep)
+{
+    bool value = true;
+    const char* svalue = get_app_build_config_item("android_title");
+    if (svalue != NULL) {
+        value = svalue[0] != '0';
+    } 
+    return (jboolean)value;
+}
+
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp
   (JNIEnv *, jclass, jstring cmdLine, jstring sep)
 {
