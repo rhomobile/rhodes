@@ -14,6 +14,12 @@ namespace rho.common
             isoStore.DeleteFile(path);
         }
 
+        public static void deleteDirectory(String path)
+        {
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+            isoStore.DeleteDirectory(CFilePath.removeLastSlash(path));
+        }
+
         public static bool isDirectoryExist(String path)
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
@@ -72,7 +78,7 @@ namespace rho.common
             return content;
         }
 
-        public static String readResourceFiletoString(String path)
+        public static String readStringFromResourceFile(String path)
         {
             string content = "";
             path = CFilePath.removeFirstSlash(path);

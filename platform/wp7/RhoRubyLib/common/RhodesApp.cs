@@ -57,9 +57,17 @@ namespace rho.common
             return url;
         }
 
-        String getRhoRootPath()
+        public static String getRhoRootPath()
         {
             return "/";
+        }
+
+        public String resolveDBFilesPath(String strFilePath)
+        {
+            if (strFilePath.startsWith(getRhoRootPath()))
+                return strFilePath;
+
+            return CFilePath.join(getRhoRootPath(), strFilePath);
         }
     }
 }
