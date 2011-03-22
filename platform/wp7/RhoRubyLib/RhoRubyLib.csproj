@@ -64,11 +64,15 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="db\SqliteStorage.cs" />
+    <Compile Include="logging\RhoLogFileSink.cs" />
+    <Compile Include="logging\IRhoLogSink.cs" />
+    <Compile Include="logging\RhoLogConf.cs" />
     <Compile Include="common\RhoConf.cs" />
     <Compile Include="common\RhodesApp.cs" />
     <Compile Include="common\RhoFile.cs" />
     <Compile Include="common\RhoFilePath.cs" />
-    <Compile Include="common\RhoLogger.cs" />
+    <Compile Include="logging\RhoLogger.cs" />
     <Compile Include="common\RhoResourceMap.cs" />
     <Compile Include="common\RhoStd.cs" />
     <Compile Include="common\Tokenizer.cs" />
@@ -90,7 +94,6 @@
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoWebView.cs" />
-    <Compile Include="rubyext\RhoSQLite3.cs" />
     <Compile Include="WP_PlatformAdaptationLayer.cs" />
   </ItemGroup>
   <ItemGroup>
