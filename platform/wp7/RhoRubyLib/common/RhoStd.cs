@@ -26,10 +26,57 @@ namespace rho.common
         {
             return str[pos];
         }
+
+        public static String toUpperCase(this String str)
+        {
+            return str.ToUpper();
+        }
+
+        public static int indexOf(this String str, Char ch)
+        {
+            return str.IndexOf(ch);
+        }
+    }
+
+    public class Vector<TValue> : System.Collections.Generic.List<TValue>
+    {
+        public int size()
+        {
+            return base.Count;
+        }
+
+        public TValue elementAt(int pos)
+        {
+            return base[pos];
+        }
     }
 
     public class Hashtable<TKey, TValue> : System.Collections.Generic.Dictionary<TKey, TValue>
     {
+        public TValue get(TKey key)
+        {
+            return base[key];
+        }
+
+        public boolean containsKey(TKey key)
+        {
+            return base.ContainsKey(key);
+        }
+
+        public int size()
+        {
+            return base.Count;
+        }
+
+        public void clear()
+        {
+            base.Clear();
+        }
+
+        public void put(TKey key, TValue value)
+        {
+            base.Add(key, value);
+        }
     }
 
     public class Mutex

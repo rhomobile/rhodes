@@ -149,6 +149,10 @@ namespace rho.common
 	    	    String emsg = e.Message;
 	    	    if ( emsg != null )
 	    		    m_strMessage += emsg;
+
+                String trace = e.StackTrace;
+                if (trace != null)
+                    m_strMessage += ";TRACE: \n" + trace;
 	        }
 	    
 		    if (m_strMessage.length() > 0 || m_strMessage.charAt(m_strMessage.length() - 1) != '\n')
@@ -163,10 +167,6 @@ namespace rho.common
                 //TODO: log to file
 		       /* synchronized( m_SinkLock ){
 		    	    getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
-			        if ( (isSimulator() || m_severity == L_FATAL) && e != null ){
-					    //TODO: redirect printStackTrace to our log
-					    //e.printStackTrace();
-			        }
 		        }*/
 		    }
 	        if ( m_severity == L_FATAL )
@@ -175,8 +175,7 @@ namespace rho.common
 
         static boolean isSimulator()
         {
-            //TODO: isSimulator
-            return true;
+            return Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Emulator;
         }
 
         protected void processFatalError()
@@ -232,13 +231,6 @@ namespace rho.common
         public void ERROR_OUT(String message, Exception e) 
         {
 		    logMessage( L_ERROR, message, e, true );
-
-		    //System.out.print(m_category + ": " + message + ". " + ( e != null ? e.getClass().getName() : "Exception") + 
-		    //		(e != null ? e.getMessage() : "" ) +"\n");
-		    //if ( e != null )
-			//    e.printStackTrace();
-		
-		    //System.out.flush();
 	    }
 
         public void ERROR_EVENT(String message, Exception e)
