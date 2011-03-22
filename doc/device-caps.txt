@@ -96,7 +96,7 @@ Unzip file to the same folder where zip file is
 	:::ruby
 	System.unzip_file(local_path_to_zip)
 
-Return command line parameters as a string
+Return command line parameters as a string. Worked only on iPhone now. Resetting when application go to background. If your URLBundle is "myapp" and you open application by url: "myapp:/app/page1", then start params will "/app/page1". 
 	:::ruby
 	System.get_start_params() 
 
