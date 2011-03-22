@@ -68,6 +68,7 @@ public class RhodesActivity extends BaseActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		
 		Thread ct = Thread.currentThread();
@@ -79,8 +80,11 @@ public class RhodesActivity extends BaseActivity {
 		//intent.putExtra(RHO_URL_PARAMS_KEY, "param1=value1&param2=value2");
 		Log.d(TAG, "MY URI: " + intent.toUri(Intent.URI_INTENT_SCHEME));
 
-		//requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+		if (!RhodesService.isEnableTitle()) {
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+		}
+		else {
+		}
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
 

@@ -52,7 +52,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database']
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title']
 
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
