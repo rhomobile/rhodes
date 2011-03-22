@@ -70,8 +70,7 @@ public class SplashScreen
 				int nEq = tok.indexOf('=');
 				if (nEq>=0)
 				{
-					String val = tok.substring(nEq+1);
-					val.trim();
+					String val = tok.substring(nEq+1).trim();
 					if ( val.length() > 0 )
 						m_nDelay = Integer.parseInt(val);
 				}

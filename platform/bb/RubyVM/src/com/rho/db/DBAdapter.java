@@ -332,8 +332,7 @@ public class DBAdapter extends RubyBasic
 	        int nPos = 0;
 			while (oTokenizer.hasMoreTokens()) 
 	        {
-				String tok = oTokenizer.nextToken();
-				tok.trim();
+				String tok = oTokenizer.nextToken().trim();
 				
 				switch(nPos)
 				{
@@ -543,7 +542,7 @@ public class DBAdapter extends RubyBasic
 		}
 		
 	}
-	
+/*	
 	static Vector m_dbAdapters = new Vector();
 	
 	public static DBAdapter findDBAdapterByBaseName(String strBaseName)
@@ -576,7 +575,7 @@ public class DBAdapter extends RubyBasic
 			item.commit();
 		}
 	}
-	
+*/	
     private void openDB(String strDBName, boolean bTemp)throws Exception
     {
     	if ( m_bIsOpen )
@@ -595,7 +594,7 @@ public class DBAdapter extends RubyBasic
 		
 		m_dbStorage.setDbCallback(new DBCallback(this));
 		
-		m_dbAdapters.addElement(this);
+		//m_dbAdapters.addElement(this);
 
 	    //copy client_info table
         if ( !bTemp && m_strClientInfoInsert != null && m_strClientInfoInsert.length() > 0 &&
@@ -988,30 +987,6 @@ public class DBAdapter extends RubyBasic
 		}
     	
     }
-/*    
-    public RubyValue rb_execute(RubyValue v) 
-    {
-    	RubyArray res = new RubyArray(); 
-    	try{
-    		IDBResult rows = executeSQL(v.toStr(), null);
-    		RubyString[] colNames = getColNames(rows);
-    		
-    		for( ; !rows.isEnd(); rows.next() )
-    		{
-    			RubyHash row = ObjectFactory.createHash();
-    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
-    			
-    			res.add( row );
-    		}
-		}catch(Exception e)
-		{
-    		LOG.ERROR("execute failed.", e);
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-		}
-    	
-        return res;
-    }*/
 
     public RubyValue rb_execute(RubyValue v, RubyValue batch, RubyValue arg) 
     {
