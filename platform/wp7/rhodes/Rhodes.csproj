@@ -55,7 +55,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-<Reference Include="IronRuby.Libraries">
+    <Reference Include="IronRuby.Libraries">
       <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
@@ -99,9 +99,9 @@
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RhoLib\RhoLib.csproj">
-      <Project>{5372CC13-FD13-49A3-BDCD-472E24842CE6}</Project>
-      <Name>RhoLib</Name>
+    <ProjectReference Include="..\RhoRubyLib\RhoRubyLib.csproj">
+      <Project>{9CAF724B-1466-4A76-9251-5ADB132F636F}</Project>
+      <Name>RhoRubyLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
