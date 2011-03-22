@@ -51,7 +51,6 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SQLiteClient.cs" />
     <Compile Include="SqliteWrapper\alter_c.cs" />
     <Compile Include="SqliteWrapper\analyze_c.cs" />
     <Compile Include="SqliteWrapper\attach_c.cs" />
