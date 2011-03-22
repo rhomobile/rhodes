@@ -93,14 +93,14 @@ section "uninstall"
     Push "PATH" 
     Push "R" 
     Push "HKLM" 
-    Push "$INSTDIR\redis-1.2.6-windows"
+    Push "$INSTDIR\redis-2.2.2"
     Call un.EnvVarUpdate
     Pop $R0
 
     Push "REDIS_HOME" 
     Push "R" 
     Push "HKLM" 
-    Push "$INSTDIR\redis-1.2.6-windows"
+    Push "$INSTDIR\redis-2.2.2"
     Call un.EnvVarUpdate
     Pop $R0
 
@@ -157,21 +157,21 @@ Section "Redis" redisSection
  
   SetOutPath $INSTDIR
  
-  File /r "redis-1.2.6-windows"
+  File /r "redis-2.2.2"
  
   ;add to path here
 
   Push "PATH" 
   Push "P" 
   Push "HKLM" 
-  Push "$INSTDIR\redis-1.2.6-windows"
+  Push "$INSTDIR\redis-2.2.2"
   Call EnvVarUpdate
   Pop $R0
 
   Push "REDIS_HOME" 
   Push "P" 
   Push "HKLM" 
-  Push "$INSTDIR\redis-1.2.6-windows"
+  Push "$INSTDIR\redis-2.2.2"
   Call EnvVarUpdate
   Pop $R0
 
@@ -211,7 +211,7 @@ SectionEnd
  
   ;Language strings
   LangString DESC_InstallRuby ${LANG_ENGLISH} "This installs ruby 1.8.7, rubygems 1.3.7, Rhodes and RhoSync gems."
-  LangString DESC_InstallRedis ${LANG_ENGLISH} "This installs redis 1.2.6 (required to run RhoSync)."
+  LangString DESC_InstallRedis ${LANG_ENGLISH} "This installs redis 2.2.2 (required to run RhoSync)."
   LangString DESC_InstallGit ${LANG_ENGLISH} "This installs Git (which includes the Git Bash)."
   LangString DESC_InstallGnuMake ${LANG_ENGLISH} "This installs GNU Make (sometimes required to update gems)."
   
