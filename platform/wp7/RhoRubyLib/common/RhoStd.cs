@@ -22,6 +22,11 @@ namespace rho.common
             return str.Substring(start, end-start);
         }
 
+        public static String substring(this String str, int start)
+        {
+            return str.Substring(start);
+        }
+
         public static Char charAt(this String str, int pos)
         {
             return str[pos];
@@ -35,6 +40,21 @@ namespace rho.common
         public static int indexOf(this String str, Char ch)
         {
             return str.IndexOf(ch);
+        }
+
+        public static int lastIndexOf(this String str, Char ch)
+        {
+            return str.LastIndexOf(ch);
+        }
+
+        public static int compareTo(this String str, String strToCmp)
+        {
+            return str.CompareTo(strToCmp);
+        }
+
+        public static String trim(this String str)
+        {
+            return str.Trim();
         }
     }
 
@@ -81,6 +101,13 @@ namespace rho.common
 
     public class Mutex
     {
+        public void Lock()
+        {
+        }
+
+        public void Unlock()
+        {
+        }
     }
 
     public class RhoClassFactory
