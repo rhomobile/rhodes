@@ -25,6 +25,8 @@ namespace rho.common
 
         private WebBrowser m_webBrowser;
         private CHttpServer m_httpServer;
+        int m_currentTabIndex = 0;
+        String[] m_currentUrls = new String[5];
 
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
         public CHttpServer HttpServer{ get { return m_httpServer; } }
@@ -32,16 +34,9 @@ namespace rho.common
 
         public void Init(WebBrowser browser)
         {
-            LOG.INFO("Init");
+            RhoLogger.InitRhoLog();
 
-            try
-            {
-                throw new InvalidOperationException("My OP");
-            }
-            catch (Exception e)
-            {
-                LOG.ERROR("Test error.", e);
-            }
+            LOG.INFO("Init");
 
             m_webBrowser = browser;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
@@ -68,6 +63,16 @@ namespace rho.common
                 return strFilePath;
 
             return CFilePath.join(getRhoRootPath(), strFilePath);
+        }
+
+        public String getCurrentUrl(int index)
+        {
+            return m_currentUrls[m_currentTabIndex];
+        }
+
+        public void keepLastVisitedUrl(String strUrl)
+        {
+            m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
         }
     }
 }
