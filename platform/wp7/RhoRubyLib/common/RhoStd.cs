@@ -56,6 +56,21 @@ namespace rho.common
         {
             return str.Trim();
         }
+
+        public static bool startsWith(this String str, String test)
+        {
+            return str.StartsWith(test);
+        }
+
+        public static bool endsWith(this String str, String test)
+        {
+            return str.endsWith(test);
+        }
+
+        public static bool equalsIgnoreCase(this String str, String test)
+        {
+            return str.ToUpper().CompareTo(test.ToUpper()) == 0;
+        }
     }
 
     public class Vector<TValue> : System.Collections.Generic.List<TValue>
@@ -68,6 +83,11 @@ namespace rho.common
         public TValue elementAt(int pos)
         {
             return base[pos];
+        }
+
+        public void addElement(TValue value)
+        {
+            base.Add(value);
         }
     }
 
