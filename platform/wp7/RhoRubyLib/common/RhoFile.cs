@@ -28,10 +28,7 @@ namespace rho.common
 
         public static bool isResourceFileExist(String path)
         {
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
+            StreamResourceInfo sr = Application.GetResourceStream(new Uri(CFilePath.removeFirstSlash(path), UriKind.Relative));
             if (sr == null)
                 return false;
 
@@ -52,12 +49,16 @@ namespace rho.common
             }
         }
 
-        public static String readFiletoString(String path)
+        public static void createDirectory(string path)
+        {
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+            isoStore.CreateDirectory(CFilePath.removeLastSlash(path));
+        }
+
+        public static String readStringFromFile(String path)
         {
             string content = "";
-
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
+            path = CFilePath.removeFirstSlash(path);
 
             if (!isFileExist(path)) return content; 
 
@@ -65,7 +66,6 @@ namespace rho.common
             Stream st = isoStore.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.None);
             using (System.IO.BinaryReader br = new BinaryReader(st))
             {
-                //char[] str = br.ReadChars((int)st.Length);
                 content = br.ReadString();
             }
 
@@ -75,9 +75,7 @@ namespace rho.common
         public static String readResourceFiletoString(String path)
         {
             string content = "";
-
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
+            path = CFilePath.removeFirstSlash(path);
 
             if (!CRhoFile.isResourceFileExist(path)) return content;
 
@@ -95,9 +93,7 @@ namespace rho.common
         public static byte[] readResourceFile(String path)
         {
             byte[] content = new byte[0];
-
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
+            path = CFilePath.removeFirstSlash(path);
 
             if (!CRhoFile.isResourceFileExist(path))
                 return content;
@@ -116,11 +112,9 @@ namespace rho.common
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
 
-            //Write the file
             using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
                 bw.Write(strData);
-                bw.Close();
             }
         }
 
@@ -128,11 +122,9 @@ namespace rho.common
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
 
-            //Write the file
             using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
                 bw.Write(data);
-                //bw.Close();
             }
         }
     }
