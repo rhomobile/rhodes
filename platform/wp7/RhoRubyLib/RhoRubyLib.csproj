@@ -64,7 +64,18 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\RhodesApp.cs" />
+    <Compile Include="common\RhoFile.cs" />
+    <Compile Include="common\RhoFilePath.cs" />
+    <Compile Include="common\RhoLogger.cs" />
+    <Compile Include="common\RhoResourceMap.cs" />
+    <Compile Include="common\RhoStd.cs" />
+    <Compile Include="common\Tokenizer.cs" />
+    <Compile Include="db\IDBCallback.cs" />
+    <Compile Include="db\IDBResult.cs" />
+    <Compile Include="db\IDBStorage.cs" />
     <Compile Include="Initializers.Generated.cs" />
+    <Compile Include="net\HttpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />

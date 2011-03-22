@@ -33,6 +33,16 @@ namespace rho.common
         public void Init(WebBrowser browser)
         {
             LOG.INFO("Init");
+
+            try
+            {
+                throw new InvalidOperationException("My OP");
+            }
+            catch (Exception e)
+            {
+                LOG.ERROR("Test error.", e);
+            }
+
             m_webBrowser = browser;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
             CRhoResourceMap.deployContent();
