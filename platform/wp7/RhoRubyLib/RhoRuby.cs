@@ -165,7 +165,7 @@ namespace rho
         {
             String strVer = "";
 
-            object val = m_engine.Execute("Rhodes.DBVERSION");
+            object val = m_engine.Execute("Rhodes::DBVERSION");
 
             if (val != null && val.GetType() == typeof(MutableString))
                 strVer = ((MutableString)val).ToString();

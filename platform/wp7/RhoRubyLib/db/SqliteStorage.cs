@@ -13,7 +13,7 @@ using rho.common;
 
 namespace rho.db
 {
-    public class SqliteStorage : IDBStorage, IDisposable
+    public class CSqliteStorage : IDBStorage, IDisposable
     {
         private Sqlite3.sqlite3 _db;
         private bool _open;
@@ -47,6 +47,11 @@ namespace rho.db
             return res;
         }
 
+        public void createTriggers()
+        {
+            
+        }
+
         public void deleteAllFiles(String strPath)
         {
         }
@@ -74,6 +79,26 @@ namespace rho.db
             return res;
         }
 
+        public string[] getAllTableNames()
+        {
+            return null;
+        }
+
+        public boolean isDbFileExists(string strPath)
+        {
+            return false;
+        }
+        
+        public boolean isTableExists(string strName)
+        {
+            return false;
+        }
+
+        public void onBeforeCommit()
+        {
+            
+        }
+
         public void open(String strPath, String strSqlScript, String strEncryptionInfo)
         {
             int n = Sqlite3.sqlite3_open(strPath, ref _db);
@@ -99,7 +124,7 @@ namespace rho.db
             TransactionOpened = false;
         }
 
-        void setDbCallback(IDBCallback callback)
+        public void setDbCallback(IDBCallback callback)
         {
         }
 

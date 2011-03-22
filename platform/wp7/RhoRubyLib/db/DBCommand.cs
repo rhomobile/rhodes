@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Community.CsharpSqlite;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace rho.db
 {
