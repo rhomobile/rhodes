@@ -49,7 +49,7 @@ namespace rho.common
 
         public static void deployContent() 
         {
-            String newMap = CRhoFile.readResourceFiletoString(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
+            String newMap = CRhoFile.readStringFromResourceFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
             String curMap = CRhoFile.readStringFromFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
 
             if (curMap == "")
