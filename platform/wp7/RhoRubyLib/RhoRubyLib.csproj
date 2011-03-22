@@ -64,6 +64,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\RhoConf.cs" />
     <Compile Include="common\RhodesApp.cs" />
     <Compile Include="common\RhoFile.cs" />
     <Compile Include="common\RhoFilePath.cs" />
@@ -71,6 +72,12 @@
     <Compile Include="common\RhoResourceMap.cs" />
     <Compile Include="common\RhoStd.cs" />
     <Compile Include="common\Tokenizer.cs" />
+    <Compile Include="db\DBAdapter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="db\DBAttrManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="db\IDBCallback.cs" />
     <Compile Include="db\IDBResult.cs" />
     <Compile Include="db\IDBStorage.cs" />
