@@ -8,6 +8,24 @@ namespace rho.common
 {
     public class CRhoFile
     {
+        public enum EOpenModes{ OpenForAppend = 1, OpenReadOnly = 2, OpenForWrite = 3, OpenForReadWrite = 4 };
+
+        public bool isOpened() { return false; }
+        public bool open(String szFilePath, EOpenModes eMode) { return false; }
+        public int write(byte[] data, int len) { return 0; }
+        public int writeString(String data) { return data.Length; }
+        public void flush() { }
+        public void close() { }
+        public void movePosToStart() { }
+        public void movePosToEnd() { }
+        public void setPosTo(int nPos) { }
+        public int size() { return 0; }
+
+        public String readString() { return ""; }
+
+        //int readByte() { return 0;  }
+        //int readData(void* buffer, int bufOffset, int bytesToRead);
+
         public static void deleteFile(String path)
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
@@ -83,7 +101,8 @@ namespace rho.common
             string content = "";
             path = CFilePath.removeFirstSlash(path);
 
-            if (!CRhoFile.isResourceFileExist(path)) return content;
+            if (!CRhoFile.isResourceFileExist(path)) 
+                return content;
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
 

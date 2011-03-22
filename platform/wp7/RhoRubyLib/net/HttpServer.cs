@@ -69,6 +69,9 @@ namespace rho.net
                 CRhoFile.recursiveCreateDir(strFilePath);
                 CRhoFile.writeDataToFile(strFilePath, getResponseBody(rhoResp));
 
+                if (method == "GET")
+                    RHODESAPP().keepLastVisitedUrl(uri);
+
                 return new CResponse(strFilePath);
             }
 
@@ -99,6 +102,10 @@ namespace rho.net
                 strIndexFile += ".gen.html";
                 CRhoFile.recursiveCreateDir(strIndexFile);
                 CRhoFile.writeDataToFile(strIndexFile, getResponseBody(rhoResp));
+
+                if (method == "GET")
+                    RHODESAPP().keepLastVisitedUrl(uri);
+
                 return new CResponse(strIndexFile);
             }
 
