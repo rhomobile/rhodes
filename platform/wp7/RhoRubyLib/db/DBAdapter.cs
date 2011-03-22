@@ -27,7 +27,7 @@ namespace rho.db
     String m_strClientInfoInsert = "";
     Object[] m_dataClientInfo = null;
     
-	DBAdapter() 
+	public DBAdapter() 
     {
 		try{
 			m_dbStorage = RhoClassFactory.createDBStorage();
@@ -238,13 +238,14 @@ namespace rho.db
 	
     private void initFilePaths(String strDBName)
     {
+        CRhoFile.recursiveCreateDir(strDBName);
     	m_strDBPath = strDBName;
     	m_strDbVerPath = m_strDBPath+".version";
     }
     
     private String getSqlScript()
     {
-        return CRhoFile.readStringFromResourceFile("apps/db/syncdb.schema");
+        return CRhoFile.readStringFromResourceFile("db/syncdb.schema");
     }
     
     public void startTransaction()
@@ -455,7 +456,15 @@ namespace rho.db
 		}
 		
 	}
-	
+
+    public void rb_open(String szDbName, String szDbPartition)
+    {
+        setDbPartition(szDbPartition);
+        openDB(szDbName, false);
+
+        DBAdapter.getDBPartitions().put(szDbPartition, this);
+    }
+
     private void openDB(String strDBName, boolean bTemp)
     {
     	if ( m_bIsOpen )
