@@ -19,6 +19,7 @@ using System.IO.IsolatedStorage;
 using System.Windows;
 using System.Windows.Resources;
 using System.IO;
+using rho.common;
 
 namespace rho
 {
@@ -26,42 +27,22 @@ namespace rho
     {
         public override bool FileExists(string path)
         {
-            //IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            //System.Diagnostics.Debug.WriteLine("exist_file: " + path, "");
-
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
-            if (sr == null)
-                return false;
-
-            return sr != null;
+            return CRhoFile.isResourceFileExist(path) || CRhoFile.isFileExist(path);
         }
 
         public override string GetDirectoryName(string path)
         {
-            if (path.EndsWith("/"))
-                path = path.Substring(0, path.Length-1);
-
-            return Path.GetDirectoryName(path);
+            return Path.GetDirectoryName(CFilePath.removeLastSlash(path));
         }
 
         public override void CreateDirectory(string path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            if (path.EndsWith("/"))
-                path = path.Substring(0, path.Length - 1);
-
-            //path = path.Replace("/", "\\");
-
-            isoStore.CreateDirectory(path);
+            CRhoFile.createDirectory(path);
         }
 
         public override bool DirectoryExists(string path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            return isoStore.DirectoryExists(path);
+            return CRhoFile.isDirectoryExist(path);
         }
 
         public override bool IsAbsolutePath(string path)
@@ -89,13 +70,7 @@ namespace rho
         {
             System.Diagnostics.Debug.WriteLine("open_file: " + path, "");
 
-            //if (!path.StartsWith("/rho"))
-            //    path = "rho/" + path;
-
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
+            StreamResourceInfo sr = Application.GetResourceStream(new Uri(CFilePath.removeFirstSlash(path), UriKind.Relative));
             if (sr == null)
                 throw new System.IO.FileNotFoundException();
 
@@ -104,6 +79,7 @@ namespace rho
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
+            //TODO: OpenInputFileStream with params
             return OpenInputFileStream(path);
         }
     }

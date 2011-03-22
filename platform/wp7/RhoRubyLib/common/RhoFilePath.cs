@@ -46,5 +46,21 @@ namespace rho.common
 
             return path.LastIndexOf('\\');
         }
+
+        public static String removeFirstSlash(String path)
+        {
+            if (path.StartsWith("/") || path.StartsWith("\\") )
+                return path.Substring(1);
+
+            return path;
+        }
+
+        public static String removeLastSlash(String path)
+        {
+            if (path.EndsWith("/") || path.EndsWith("\\") )
+                return path.Substring(1);
+
+            return path;
+        }
     }
 }

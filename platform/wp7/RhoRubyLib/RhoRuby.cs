@@ -154,5 +154,11 @@ namespace rho
 
             return String.Empty;
         }
+
+        public bool isMainRubyThread()
+        {
+            //TODO: isMainRubyThread
+            return true;
+        }
     }
 }
