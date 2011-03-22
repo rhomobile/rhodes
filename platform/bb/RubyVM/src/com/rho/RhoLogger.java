@@ -171,16 +171,24 @@ public class RhoLogger {
 		if ( bOutputOnly )
 		{
 			System.out.print(m_strMessage);
+			if ( e != null && !(e instanceof com.xruby.runtime.lang.RubyException) )
+			{
+				System.out.print("TRACE: \n");
+				e.printStackTrace();
+			}
 			System.out.flush();
 		}else
 		{
 		    synchronized( m_SinkLock ){
 		    	getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
-			    if ( (isSimulator() || m_severity == L_FATAL) && e != null ){
-					//TODO: redirect printStackTrace to our log
-					//e.printStackTrace();
-			    }
 		    }
+		    
+		    if ( e != null&& !(e instanceof com.xruby.runtime.lang.RubyException) )
+			{
+				System.out.print("TRACE: \n");
+				e.printStackTrace();
+			}
+			System.out.flush();		    
 		}
 	    if ( m_severity == L_FATAL )
 	    	processFatalError();
@@ -234,12 +242,6 @@ public class RhoLogger {
 	}
 	public void ERROR_OUT(String message,Throwable e) {
 		logMessage( L_ERROR, message, e, true );
-		//System.out.print(m_category + ": " + message + ". " + ( e != null ? e.getClass().getName() : "Exception") + 
-		//		(e != null ? e.getMessage() : "" ) +"\n");
-		if ( e != null )
-			e.printStackTrace();
-		
-		System.out.flush();
 	}
 
 	public void ERROR_EVENT(String message,Throwable e) 
