@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
 using IronRuby.Builtins;
 using IronRuby.Runtime;
 using System.Windows.Resources;
+using System.Windows;
 using System.IO;
 using Microsoft.Phone.Controls;
 
