@@ -41,6 +41,10 @@ namespace rho.common
         {
             return str.IndexOf(ch);
         }
+        public static int indexOf(this String str, String test)
+        {
+            return str.IndexOf(test);
+        }
 
         public static int lastIndexOf(this String str, Char ch)
         {
@@ -64,12 +68,17 @@ namespace rho.common
 
         public static bool endsWith(this String str, String test)
         {
-            return str.endsWith(test);
+            return str.EndsWith(test);
         }
 
         public static bool equalsIgnoreCase(this String str, String test)
         {
             return str.ToUpper().CompareTo(test.ToUpper()) == 0;
+        }
+
+        public static bool equals(this String str, String test)
+        {
+            return str.CompareTo(test) == 0;
         }
     }
 
@@ -95,7 +104,12 @@ namespace rho.common
     {
         public TValue get(TKey key)
         {
-            return base[key];
+            try
+            {
+                return base[key];
+            }catch (Exception){
+            }
+            return default(TValue);
         }
 
         public boolean containsKey(TKey key)
@@ -132,6 +146,6 @@ namespace rho.common
 
     public class RhoClassFactory
     {
-        public static rho.db.IDBStorage createDBStorage() { return null; }
+        public static rho.db.IDBStorage createDBStorage() { return new rho.db.CSqliteStorage(); }
     }
 }
