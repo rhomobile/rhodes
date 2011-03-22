@@ -78,9 +78,12 @@
     <Compile Include="db\DBAttrManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="db\DBCommand.cs" />
+    <Compile Include="db\DBException.cs" />
     <Compile Include="db\IDBCallback.cs" />
     <Compile Include="db\IDBResult.cs" />
     <Compile Include="db\IDBStorage.cs" />
+    <Compile Include="db\SqliteStorage.cs" />
     <Compile Include="Initializers.Generated.cs" />
     <Compile Include="net\HttpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -89,6 +92,12 @@
     <Compile Include="rubyext\RhoWebView.cs" />
     <Compile Include="rubyext\RhoSQLite3.cs" />
     <Compile Include="WP_PlatformAdaptationLayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\sqlite3\sqlite3.csproj">
+      <Project>{527EEB7D-2879-498D-90AE-05C97D0A0B0F}</Project>
+      <Name>sqlite3</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
