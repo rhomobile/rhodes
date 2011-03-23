@@ -460,7 +460,8 @@ namespace rho.db
     public void rb_open(String szDbName, String szDbPartition)
     {
         setDbPartition(szDbPartition);
-        openDB(szDbName, false);
+        //TODO: openDB
+        //openDB(szDbName, false);
 
         DBAdapter.getDBPartitions().put(szDbPartition, this);
     }
