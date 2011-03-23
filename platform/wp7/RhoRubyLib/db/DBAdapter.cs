@@ -461,7 +461,7 @@ namespace rho.db
     {
         setDbPartition(szDbPartition);
         //TODO: openDB
-        //openDB(szDbName, false);
+        openDB(szDbName, false);
 
         DBAdapter.getDBPartitions().put(szDbPartition, this);
     }
