@@ -37,7 +37,7 @@ namespace rho.logging
 	    	
 		    CRhoFile.deleteFile(m_oLogConf.getLogFilePath());
 		    CRhoFile.deleteFile(m_oLogConf.getLogFilePath()+"_pos");
-		}catch(Exception exc){
+		}catch(Exception ){
 			
 		}
     }
