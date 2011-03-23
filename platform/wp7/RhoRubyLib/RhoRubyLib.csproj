@@ -96,6 +96,7 @@
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoWebView.cs" />
+    <Compile Include="sync\ISyncStatusListener.cs" />
     <Compile Include="WP_PlatformAdaptationLayer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +105,7 @@
       <Name>sqlite3</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions />

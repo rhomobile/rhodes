@@ -100,5 +100,10 @@ namespace rho.common
                 Monitor.PulseAll(m_syncObj);
             }
         }
+
+        public static void sleep(int nMS)
+        {
+            Thread.Sleep(nMS);
+        }
     }
 }
