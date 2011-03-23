@@ -179,8 +179,6 @@ public class SyncThread extends ThreadQueue
 		m_oSyncEngine = new SyncEngine();
 		m_oSyncEngine.setFactory(factory);
 	
-	    m_oSyncEngine.setFactory(factory);
-
 	    LOG.INFO("sync_poll_interval: " + RhoConf.getInstance().getInt("sync_poll_interval"));
 	    LOG.INFO("syncserver: " + RhoConf.getInstance().getString("syncserver"));
 	    LOG.INFO("bulksync_state: " + RhoConf.getInstance().getInt("bulksync_state"));

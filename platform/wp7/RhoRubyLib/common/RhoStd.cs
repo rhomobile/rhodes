@@ -104,12 +104,11 @@ namespace rho.common
     {
         public TValue get(TKey key)
         {
-            try
-            {
-                return base[key];
-            }catch (Exception){
-            }
-            return default(TValue);
+            TValue value;
+            if ( !base.TryGetValue( key, out value) )
+                return default(TValue);
+
+            return value;
         }
 
         public boolean containsKey(TKey key)
