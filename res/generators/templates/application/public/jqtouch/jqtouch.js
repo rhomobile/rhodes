@@ -319,6 +319,12 @@
 
             var href = $el.attr("href");
 
+            if (href.indexOf("mp4") != -1){
+                  animation = null;
+                  window.location = href;
+                  return false;
+            }
+
             // User clicked an internal link, fullscreen mode
             if (target == '_webapp') {
                 window.location = href;
