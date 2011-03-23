@@ -1,0 +1,20 @@
+2011.03.23 
+jqtouch.js
+
+  Fix problem with open local MP4 video by link.
+
+  in  function liveTap(e) {
+
+  change 
+
+           var href = $el.attr("href");
+
+  to
+
+           var href = $el.attr("href");
+
+            if (href.indexOf("mp4") != -1){
+                  animation = null;
+                  window.location = href;
+                  return false;
+            }
