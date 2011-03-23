@@ -33,6 +33,8 @@ public class RhodesActivity extends BaseActivity {
 	
 	private static final boolean DEBUG = false;
 	
+	private static final boolean USE_DELAYED_MAINVIEW_DISPLAY = false;
+	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
 	public static int MAX_PROGRESS = 10000;
@@ -245,7 +247,7 @@ public class RhodesActivity extends BaseActivity {
 			}
 		};
 		
-		if (true/*!waitUntilNavigationDone*/) {
+		if (!USE_DELAYED_MAINVIEW_DISPLAY /* || !waitUntilNavigationDone*/) {
 			// Make new MainView visible right now
 			setMainViewVisible.run();
 		}

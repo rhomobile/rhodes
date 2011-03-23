@@ -12,7 +12,6 @@ import android.os.Build;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 
 public class EventStore {
@@ -305,7 +304,7 @@ public class EventStore {
 			}
 			else {
 				Logger.D(TAG, " use new delete scheme");
-				int idn = Integer.decode(id).intValue();
+				//int idn = Integer.decode(id).intValue();
 				Uri du = Uri.withAppendedPath(EVENTS_URI, id);
 				rows = r.delete(du, null, null);
 				//rows = r.delete(EVENTS_URI, "_id=?", new String[] {id});
