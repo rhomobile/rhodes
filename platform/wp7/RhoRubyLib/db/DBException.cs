@@ -11,25 +11,25 @@ using System.Windows.Shapes;
 
 namespace rho.db
 {
-    public class CDBException : Exception
+    public class DBException : Exception
     {
-        private int _errorCode;
+        private int m_errorCode;
         public int ErrorCode
         {
-            get { return _errorCode; }
-            set { _errorCode = value; }
+            get { return m_errorCode; }
+            set { m_errorCode = value; }
         }
 
-        public CDBException(Exception exc)
+        public DBException(Exception exc)
             : base("Message: " + exc.Message)
         {
-            _errorCode = 0;
+            m_errorCode = 0;
 	    }
 
-        public CDBException(int errorCode, string message)
+        public DBException(int errorCode, string message)
             : base(message)
         {
-            _errorCode = errorCode;
+            m_errorCode = errorCode;
         }
     }
 }

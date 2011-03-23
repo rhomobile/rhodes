@@ -29,7 +29,7 @@ namespace rho.db
                 res = Sqlite3.sqlite3_close(m_db);
 
             if (res != Sqlite3.SQLITE_OK)
-                throw new CDBException(res, DBLastError());  
+                throw new DBException(res, DBLastError());  
     
             m_db = null;
         }
@@ -44,7 +44,7 @@ namespace rho.db
                     res =Sqlite3.sqlite3_exec(m_db, "COMMIT", 0, 0, 0);
 
             if (res != Sqlite3.SQLITE_OK)
-                throw new CDBException(res, DBLastError());
+                throw new DBException(res, DBLastError());
         }
 
         public IDBResult createResult()
@@ -68,7 +68,7 @@ namespace rho.db
         {
             int res = Sqlite3.sqlite3_exec(m_db, strStatement, 0, 0, 0);
             if (res != Sqlite3.SQLITE_OK)
-                throw new CDBException(res, DBLastError());
+                throw new DBException(res, DBLastError());
         }
 
         public void executeBatchSQL(string strStatement)
@@ -134,7 +134,7 @@ namespace rho.db
                     //m_db = DatabaseFactory.create(myURI, dbso);
                     int res = Sqlite3.sqlite3_open(dbURI, ref m_db);
                     if (res != Sqlite3.SQLITE_OK)
-                        throw new CDBException(res, "Could not open database file: " + strPath);
+                        throw new DBException(res, "Could not open database file: " + strPath);
 
                     startTransaction();
                     try
@@ -142,7 +142,7 @@ namespace rho.db
                         executeBatchSQL(strSqlScript);
                         createTriggers();
                     }
-                    catch (CDBException exc)
+                    catch (DBException exc)
                     {
                         rollback();
                         throw exc;
@@ -161,7 +161,7 @@ namespace rho.db
             }
             catch (Exception exc)
             {
-                throw new CDBException(exc);
+                throw new DBException(exc);
             }
             finally
             {
@@ -179,7 +179,7 @@ namespace rho.db
                 res = Sqlite3.sqlite3_exec(m_db, "ROLLBACK", 0, 0, 0);
             
             if (res != Sqlite3.SQLITE_OK)
-                throw new CDBException(res, DBLastError());
+                throw new DBException(res, DBLastError());
         }
 
         public void onBeforeCommit()
@@ -195,7 +195,7 @@ namespace rho.db
             {
                 int res = Sqlite3.sqlite3_exec(m_db, "BEGIN", 0, 0, 0);
                 if (res != Sqlite3.SQLITE_OK)
-                    throw new CDBException(res, DBLastError());
+                    throw new DBException(res, DBLastError());
             }
 
             m_nInsideTransaction++;
@@ -218,37 +218,37 @@ namespace rho.db
                 if (obj == null)
                 {
                     res = Sqlite3.sqlite3_bind_null(stmt, i + 1);
-                    if (res > 0) throw new CDBException(res, DBLastError());
+                    if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
                 if (obj is Byte || obj is UInt16 || obj is SByte || obj is Int16 || obj is Int32 || obj is Boolean)
                 {
                     res = Sqlite3.sqlite3_bind_int(stmt, i + 1, Convert.ToInt32(obj, CultureInfo.InvariantCulture));
-                    if (res > 0) throw new CDBException(res, DBLastError());
+                    if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
                 if (obj is UInt32 || obj is Int64)
                 {
                     res = Sqlite3.sqlite3_bind_int64(stmt, i + 1, Convert.ToInt64(obj, CultureInfo.InvariantCulture));
-                    if (res > 0) throw new CDBException(res, DBLastError());
+                    if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
                 if (obj is Single || obj is Double || obj is Decimal)
                 {
                     res = Sqlite3.sqlite3_bind_double(stmt, i + 1, Convert.ToDouble(obj, CultureInfo.InvariantCulture));
-                    if (res > 0) throw new CDBException(res, DBLastError());
+                    if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
                 if (obj is String)
                 {
                     res = Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), -1, null);
-                    if (res > 0) throw new CDBException(res, DBLastError());
+                    if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
                 if (obj is byte[])
                 {
                     res = Sqlite3.sqlite3_bind_blob(stmt, i + 1, (byte[])obj, ((byte[])obj).Length, null);
-                    if (res > 0) throw new CDBException(res, DBLastError());
+                    if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
             }
@@ -259,7 +259,7 @@ namespace rho.db
             Sqlite3.Vdbe ppStmt=new Sqlite3.Vdbe();
             int res = Sqlite3.sqlite3_prepare_v2(m_db, strStatement, strStatement.Length, ref ppStmt, 0);
             if ( res != Sqlite3.SQLITE_OK)
-                throw new CDBException(res, DBLastError());
+                throw new DBException(res, DBLastError());
             
             Bind(ppStmt, values);
             return ppStmt;
