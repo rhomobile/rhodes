@@ -26,7 +26,6 @@ import java.util.Vector;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
 import android.content.Context;
@@ -39,9 +38,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
-import android.graphics.drawable.shapes.Shape;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -69,7 +65,7 @@ public class TabbedMainView implements MainView {
 	
 	
 	private boolean mIsReallyOnScreen = false;
-	private String mLoadUrlAfterLoadToScreen = null;
+	//private String mLoadUrlAfterLoadToScreen = null;
 	
 	private static class TabData {
 		public MainView view;

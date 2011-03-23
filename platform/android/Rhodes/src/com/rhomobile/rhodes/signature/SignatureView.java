@@ -47,6 +47,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public static String mStateID = "SignatureViewState";
 
+	@SuppressWarnings("serial")
 	public class SignatureViewState extends Object implements Serializable {
 		public Vector<PointSequence> mSequences;
 

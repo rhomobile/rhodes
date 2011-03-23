@@ -1215,7 +1215,8 @@ public class RhodesService extends Service {
 			PerformOnUiThread.exec( new Runnable() {
 				public void run() {
 					if (wakeLockObject == null) {
-						PowerManager pm = (PowerManager)getInstance().getContext().getSystemService(Context.POWER_SERVICE);
+						getInstance();
+						PowerManager pm = (PowerManager)RhodesService.getContext().getSystemService(Context.POWER_SERVICE);
 						if (pm != null) {
 							wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
 							wakeLockObject.acquire();
