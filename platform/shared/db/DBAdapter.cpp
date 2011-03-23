@@ -612,28 +612,6 @@ void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
     copyTable("client_info", *this, db );
     copyChangedValues(db);
 
-    /*
-    //update User partition
-    if ( m_strDbPartition.compare(USER_PARTITION_NAME())==0 )
-    {
-        //copy all NOT user sources from current db to bulk db
-        startTransaction();
-        executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
-        copyTable("sources", *this, db );
-        rollback();
-    }else
-    {
-        //remove all m_strDbPartition sources from user db
-        //copy all sources from bulk db to user db
-        CDBAdapter& dbUser  = getDB(USER_PARTITION_NAME());
-        dbUser.startTransaction();
-        dbUser.executeSQL("DELETE FROM sources WHERE partition=?", m_strDbPartition);
-
-        copyTable("sources", db, dbUser );
-
-        dbUser.endTransaction();
-    }*/
-
     getDBPartitions().put(m_strDbPartition.c_str(), &db);
     sync::CSyncThread::getSyncEngine().applyChangedValues(db);
     getDBPartitions().put(m_strDbPartition.c_str(), this);
