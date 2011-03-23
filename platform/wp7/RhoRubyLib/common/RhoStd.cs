@@ -133,14 +133,29 @@ namespace rho.common
         }
     }
 
-    public class Mutex
+    public class LinkedList<TValue> : Vector<TValue>
     {
-        public void Lock()
+        public TValue get(int pos)
         {
+            return base[pos];
         }
 
-        public void Unlock()
+        public void add(TValue value)
         {
+            base.Add(value);
+        }
+
+        public bool isEmpty()
+        {
+            return base.Count == 0;
+        }
+
+        public TValue removeFirst()
+        {
+            TValue res = base[0];
+            base.RemoveAt(0);
+
+            return res;
         }
     }
 
