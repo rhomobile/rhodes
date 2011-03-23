@@ -1,5 +1,7 @@
+#define RHO_ENABLE_LOG
 #include "rhodes/JNIRhodes.h"
 
+#include <dirent.h>
 #include <dlfcn.h>
 #include <android/log.h>
 
@@ -7,10 +9,10 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
 
-#ifdef RHO_LOG
-#undef RHO_LOG
-#endif
-#define RHO_LOG(...)
+//#ifdef RHO_LOG
+//#undef RHO_LOG
+//#endif
+//#define RHO_LOG(...)
 
 #ifdef RHO_NOT_IMPLEMENTED
 #undef RHO_NOT_IMPLEMENTED
@@ -84,6 +86,18 @@ typedef loff_t (*func_lseek64_t)(int fd, loff_t offset, int whence);
 typedef off_t (*func_lseek_t)(int fd, off_t offset, int whence);
 typedef ssize_t (*func_read_t)(int fd, void *buf, size_t count);
 typedef ssize_t (*func_write_t)(int fd, const void *buf, size_t count);
+typedef int (*func_getdents_t)(unsigned int, struct dirent *, unsigned int);
+typedef DIR *(*func_opendir_t)(const char *dirpath);
+typedef DIR *(*func_fdopendir_t)(int fd);
+typedef struct dirent *(*func_readdir_t)(DIR *dirp);
+typedef int (*func_readdir_r_t)(DIR *dirp, struct dirent *entry, struct dirent **result);
+typedef int (*func_closedir_t)(DIR *dirp);
+typedef void (*func_rewinddir_t)(DIR *dirp);
+typedef int (*func_dirfd_t)(DIR *dirp);
+typedef int (*func_alphasort_t)(const void *a, const void *b);
+typedef int (*func_scandir_t)(const char *dir, struct dirent ***namelist,
+    int (*filter)(const struct dirent *),
+    int (*compar)(const struct dirent **, const struct dirent **));
 
 static func_access_t real_access;
 static func_close_t real_close;
@@ -105,6 +119,16 @@ static func_select_t real_select;
 static func_stat_t real_stat;
 static func_unlink_t real_unlink;
 static func_write_t real_write;
+static func_getdents_t real_getdents;
+static func_opendir_t real_opendir;
+static func_fdopendir_t real_fdopendir;
+static func_readdir_t real_readdir;
+static func_readdir_r_t real_readdir_r;
+static func_closedir_t real_closedir;
+static func_rewinddir_t real_rewinddir;
+static func_dirfd_t real_dirfd;
+static func_alphasort_t real_alphasort;
+static func_scandir_t real_scandir;
 
 struct stat librhodes_st;
 
@@ -189,6 +213,16 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_stat = (func_stat_t)dlsym(pc, "stat");
     real_unlink = (func_unlink_t)dlsym(pc, "unlink");
     real_write = (func_write_t)dlsym(pc, "write");
+    real_getdents = (func_getdents_t)dlsym(pc, "getdents");
+    real_opendir = (func_opendir_t)dlsym(pc, "opendir");
+    real_fdopendir = (func_fdopendir_t)dlsym(pc, "fdopendir");
+    real_readdir = (func_readdir_t)dlsym(pc, "readdir");
+    real_readdir_r = (func_readdir_r_t)dlsym(pc, "readdir_r");
+    real_closedir = (func_closedir_t)dlsym(pc, "closedir");
+    real_rewinddir = (func_rewinddir_t)dlsym(pc, "rewinddir");
+    real_dirfd = (func_dirfd_t)dlsym(pc, "dirfd");
+    real_alphasort = (func_alphasort_t)dlsym(pc, "alphasort");
+    real_scandir = (func_scandir_t)dlsym(pc, "scandir");
     dlclose(pc);
 
     // This is just to get typical stat of file
@@ -1033,3 +1067,63 @@ RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct t
     return count;
 }
 
+RHO_GLOBAL int getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
+{
+    RHO_LOG("getdents: fd=%u, dirp=%p, count=%u", fd, (void*)dirp, count);
+    return real_getdents(fd, dirp, count);
+}
+
+RHO_GLOBAL DIR *opendir(const char *dirpath)
+{
+    RHO_LOG("opendir: dirpath=%s", dirpath);
+    return real_opendir(dirpath);
+}
+
+RHO_GLOBAL DIR *fdopendir(int fd)
+{
+    RHO_LOG("fdopendir: fd=%d", fd);
+    return real_fdopendir(fd);
+}
+
+RHO_GLOBAL int dirfd(DIR *dirp)
+{
+    RHO_LOG("dirfd: dirp=%p", (void*)dirp);
+    return real_dirfd(dirp);
+}
+
+RHO_GLOBAL struct dirent *readdir(DIR *dirp)
+{
+    RHO_LOG("readdir: dirp=%p", (void*)dirp);
+    return real_readdir(dirp);
+}
+
+RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
+{
+    RHO_LOG("readdir_r: dirp=%p", (void*)dirp);
+    return real_readdir_r(dirp, entry, result);
+}
+
+RHO_GLOBAL int closedir(DIR *dirp)
+{
+    RHO_LOG("closedir: dirp=%p", (void*)dirp);
+    return real_closedir(dirp);
+}
+
+RHO_GLOBAL void rewinddir(DIR *dirp)
+{
+    RHO_LOG("rewinddir: dirp=%p", (void*)dirp);
+    return real_rewinddir(dirp);
+}
+
+RHO_GLOBAL int alphasort(const void *a, const void *b)
+{
+    RHO_LOG("alphasort: a=%p, b=%p", a, b);
+    return real_alphasort(a, b);
+}
+
+RHO_GLOBAL int scandir(const char *dir, struct dirent ***namelist, int (*filter)(const struct dirent *),
+    int (*compar)(const struct dirent **, const struct dirent **))
+{
+    RHO_LOG("scandir: dir=%s", dir);
+    return real_scandir(dir, namelist, filter, compar);
+}
