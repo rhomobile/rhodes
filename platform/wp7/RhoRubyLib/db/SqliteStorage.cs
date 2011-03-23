@@ -60,20 +60,15 @@ namespace rho.db
 
         public void deleteAllFiles(String strPath)
         {
-            String strDbName = getNameNoExt(strPath);
-            CRhoFile.deleteFile(strDbName + ".data");
-            CRhoFile.deleteFile(strDbName + ".data-journal");
-
-            //hsql old files
-            CRhoFile.deleteFile(strDbName + ".script");
-            CRhoFile.deleteFile(strDbName + ".script.new");
-            CRhoFile.deleteFile(strDbName + ".journal");
-            CRhoFile.deleteFile(strDbName + ".properties");	
+            CRhoFile.deleteFile(strPath);
+            CRhoFile.deleteFile(strPath + "-journal");
         }
 
         public IDBResult executeSQL(string strStatement, object[] values, common.boolean bReportNonUnique)
         {
-            executeSQL(strStatement, null, false);
+            int res = Sqlite3.sqlite3_exec(m_db, strStatement, 0, 0, 0);
+            if (res != Sqlite3.SQLITE_OK)
+                throw new CDBException(res, DBLastError());
         }
 
         public void executeBatchSQL(string strStatement)
@@ -105,8 +100,7 @@ namespace rho.db
 
         public boolean isDbFileExists(string strPath)
         {
-            String strDbName = getNameNoExt(strPath);
-            return CRhoFile.isFileExist(strDbName + ".data");
+            return CRhoFile.isFileExist(strPath);
         }
         
         public boolean isTableExists(string strName)
@@ -130,13 +124,12 @@ namespace rho.db
         {
             try
             {
-                String strDbName = getNameNoExt(strPath) + ".data";
-
-                String dbURI = RHODESAPP().resolveDBFilesPath(strDbName);
+                String dbURI = RHODESAPP().resolveDBFilesPath(strPath);
+                dbURI = CFilePath.removeFirstSlash(dbURI);
                 boolean bEncrypted = strEncryptionInfo != null && strEncryptionInfo.length() > 0;
                 //DatabaseSecurityOptions dbso = new DatabaseSecurityOptions(bEncrypted);
 
-                if (!CRhoFile.isFileExist(strDbName))
+                if (!CRhoFile.isFileExist(strPath))
                 {
                     //m_db = DatabaseFactory.create(myURI, dbso);
                     int res = Sqlite3.sqlite3_open(dbURI, ref m_db);
@@ -216,21 +209,9 @@ namespace rho.db
             return Sqlite3.sqlite3_errmsg(m_db);
         }
 
-        private String getNameNoExt(String strPath)
-        {
-            int nDot = strPath.lastIndexOf('.');
-            String strDbName = "";
-            if (nDot > 0)
-                strDbName = strPath.substring(0, nDot);
-            else
-                strDbName = strPath;
-
-            return strDbName;
-        }
-
         private void Bind(Sqlite3.Vdbe stmt, Object[] values)
         {
-            for(int i = 0; i < values.Length; i++)
+            for (int i = 0; values != null && i < values.Length; i++)
             {
                 int res = 0;
                 var obj = values[i];

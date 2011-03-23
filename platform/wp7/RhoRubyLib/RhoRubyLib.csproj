@@ -64,6 +64,9 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\Mutex.cs" />
+    <Compile Include="common\RhoThread.cs" />
+    <Compile Include="common\ThreadQueue.cs" />
     <Compile Include="db\SqliteResult.cs" />
     <Compile Include="logging\RhoLogFileSink.cs" />
     <Compile Include="logging\IRhoLogSink.cs" />
