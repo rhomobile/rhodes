@@ -685,7 +685,7 @@ namespace Community.CsharpSqlite
         zRandom.Append((char)zChars[(int)(iRandom % (zChars.Length - 1))]);
       }
       //zBuf.Append(Path.GetTempPath() + SQLITE_TEMP_FILE_PREFIX + zRandom.ToString());
-      zBuf.Append(SQLITE_TEMP_FILE_PREFIX + zRandom.ToString());
+      zBuf.Append("db/" + SQLITE_TEMP_FILE_PREFIX + zRandom.ToString());
       return SQLITE_OK;
     }
 
