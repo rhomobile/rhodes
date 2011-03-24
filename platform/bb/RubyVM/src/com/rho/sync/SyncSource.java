@@ -73,13 +73,10 @@ public class SyncSource
     String m_strSyncType = "";
     boolean m_bTokenFromDB; 
     
-    int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount, m_nAttribCounter=0;
+    int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
     boolean m_bGetAtLeastOnePage = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "", m_strServerError = "";
-    
-	//String m_strPushBody = "";
-    Vector/*Ptr<CSyncBlob*>*/ m_arSyncBlobs = new Vector();
     
     int m_nRefreshTime = 0;
     int m_nProgressStep = -1;
@@ -986,12 +983,14 @@ public class SyncSource
 	        
 	        return bRes;
 	    }
-	    
+/*	    
 	    String fName = makeFileName( oAttrValue );	  
 	    String fOldName = RhodesApp.getInstance().resolveDBFilesPath(strDbValue);
 	    RhoClassFactory.createFile().renameOverwrite(fOldName, fName); 
 	    
 	    oAttrValue.m_strValue = FilePath.getRelativePath( fName, RhodesApp.getInstance().getRhoRootPath());
+*/	    
+	    oAttrValue.m_strValue = strDbValue;
 	    return true;
 	}
 	
