@@ -37,13 +37,26 @@ namespace rho.common
             return str.ToUpper();
         }
 
+        public static String toLowerCase(this String str)
+        {
+            return str.ToLower();
+        }
+
         public static int indexOf(this String str, Char ch)
         {
             return str.IndexOf(ch);
         }
+        public static int indexOf(this String str, Char ch, int nStart)
+        {
+            return str.IndexOf(ch, nStart);
+        }
         public static int indexOf(this String str, String test)
         {
             return str.IndexOf(test);
+        }
+        public static int indexOf(this String str, String test, int nStart)
+        {
+            return str.IndexOf(test, nStart);
         }
 
         public static int lastIndexOf(this String str, Char ch)
@@ -98,6 +111,21 @@ namespace rho.common
         {
             base.Add(value);
         }
+
+        public void removeAllElements()
+        {
+            base.Clear();
+        }
+
+        public void removeElementAt(int nPos)
+        {
+            base.RemoveAt(nPos);
+        }
+
+        public void insertElementAt(TValue value, int nPos)
+        {
+            base.Insert(nPos, value);
+        }
     }
 
     public class Hashtable<TKey, TValue> : System.Collections.Generic.Dictionary<TKey, TValue>
@@ -130,6 +158,12 @@ namespace rho.common
         {
             base.Add(key, value);
         }
+
+        public void remove(TKey key)
+        {
+            base.Remove(key);
+        }
+
     }
 
     public class LinkedList<TValue> : Vector<TValue>
@@ -161,5 +195,7 @@ namespace rho.common
     public class RhoClassFactory
     {
         public static rho.db.IDBStorage createDBStorage() { return new rho.db.CSqliteStorage(); }
+
+        public static rho.net.NetRequest createNetRequest() {  return new rho.net.NetRequest(); }
     }
 }
