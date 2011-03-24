@@ -459,7 +459,7 @@
         }
     }
     tabbar.viewControllers = views;
-    tabbar.customizableViewControllers = NO;
+    tabbar.customizableViewControllers = nil;
     tabbar.view.hidden = NO;
     tabbar.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     tabbar.view.autoresizesSubviews = YES;
