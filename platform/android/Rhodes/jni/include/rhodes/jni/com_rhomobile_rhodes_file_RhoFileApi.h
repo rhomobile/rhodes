@@ -35,10 +35,10 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePat
 
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
- * Method:    needJavaWay
+ * Method:    needEmulate
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate
   (JNIEnv *, jclass, jstring);
 
 /*
