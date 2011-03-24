@@ -1,4 +1,4 @@
- namespace "config" do
+namespace "config" do
 	task :wp => ["config:common"] do
 		$rubypath = "res/build-tools/RhoRuby.exe"
 		$zippath = "res/build-tools/7za.exe"
