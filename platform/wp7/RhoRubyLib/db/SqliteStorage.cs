@@ -16,6 +16,9 @@ namespace rho.db
 {
     public class CSqliteStorage : IDBStorage
     {
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+            new RhoLogger("SqliteStorage");
+
         private boolean m_bPendingTransaction = false;
         private Sqlite3.sqlite3 m_db;
         private int m_nInsideTransaction = 0;
@@ -54,8 +57,8 @@ namespace rho.db
 
         public void createTriggers()
         {
-            String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
-            executeBatchSQL(strTriggers);
+            //String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
+            //executeBatchSQL(strTriggers);
         }
 
         public void deleteAllFiles(String strPath)
@@ -129,30 +132,28 @@ namespace rho.db
                 boolean bEncrypted = strEncryptionInfo != null && strEncryptionInfo.length() > 0;
                 //DatabaseSecurityOptions dbso = new DatabaseSecurityOptions(bEncrypted);
 
-                if (!CRhoFile.isFileExist(strPath))
-                {
-                    //m_db = DatabaseFactory.create(myURI, dbso);
-                    int res = Sqlite3.sqlite3_open(dbURI, ref m_db);
-                    if (res != Sqlite3.SQLITE_OK)
-                        throw new DBException(res, "Could not open database file: " + strPath);
+                boolean bExist = CRhoFile.isFileExist(strPath);
 
-                    startTransaction();
-                    try
-                    {
-                        executeBatchSQL(strSqlScript);
-                        createTriggers();
-                    }
-                    catch (DBException exc)
-                    {
-                        rollback();
-                        throw exc;
-                    }
-                    commit();
-                }
-                else
+                int res = Sqlite3.sqlite3_open(dbURI, ref m_db);
+                if (res != Sqlite3.SQLITE_OK)
+                    throw new DBException(res, "Could not open database file: " + strPath);
+
+                if ( !bExist )
+                    createSchema(strSqlScript);
+
+                /*startTransaction();
+                try
                 {
-                    //m_db = DatabaseFactory.openOrCreate(myURI, dbso);
+                    executeBatchSQL(strSqlScript);
+                    createTriggers();
                 }
+                catch (DBException exc)
+                {
+                    rollback();
+                    throw exc;
+                }
+                commit();*/
+
 
                 if (m_bPendingTransaction)
                     startTransaction();
@@ -203,6 +204,31 @@ namespace rho.db
         }
 
         #region Helpers
+
+        private void createSchema(String strSqlScript)
+        {
+            //String strSqlScript;
+            //strSqlScript = CRhoFile.readStringFromFile(RHODESAPP().canonicalizeRhoUrl("db/syncdb.schema"));
+
+            if ( strSqlScript.length() == 0 )
+            {
+                LOG.ERROR("createSchema failed. Cannot read schema: " + strSqlScript);
+                return;
+            }
+
+            startTransaction();
+            try
+            {
+                executeBatchSQL(strSqlScript);
+                createTriggers();
+            }
+            catch (DBException exc)
+            {
+                rollback();
+                throw exc;
+            }
+            commit();
+        }
 
         private string DBLastError()
         {
