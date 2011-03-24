@@ -419,11 +419,12 @@ Start the `SyncEngine` process and display an optional status popup (defaults to
 	SyncEngine.dosync(false)
 	  #=> no status popups are displayed
 
-### `dosync_source(source_id, show_sync_status = true)`
-Star the `SyncEngine` process for a given source_id and display an optional status popup (defaults to true).
+### `dosync_source(source_id_or_name, show_sync_status = true)`
+Star the `SyncEngine` process for a given source id or source name and display an optional status popup (defaults to true).
 
 	:::ruby
-	SyncEngine.dosync_source(Product.get_source_id, true)
+	SyncEngine.dosync_source(Product.get_source_id.to_i, false) #sync by source id
+    SyncEngine.dosync_source(Product.get_source_name, false) #sync by source name	
 
 ### `lock_sync_mutex`
 Blocking call to wait for `SyncEngine` lock (useful for performing batch operations).
