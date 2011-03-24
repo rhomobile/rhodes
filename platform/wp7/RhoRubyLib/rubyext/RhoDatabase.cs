@@ -36,62 +36,98 @@ namespace rho.rubyext
             [RubyMethod("close")]
             public static int Close(RhoDatabase/*!*/ self)
             {
-                return 1;
+                self.m_db.close();
+
+                return 0;
             }
 
             [RubyMethod("commit")]
             public static int Commit(RhoDatabase/*!*/ self)
             {
-                return 1;
+                self.m_db.commit();
+
+                return 0;
             }
 
             [RubyMethod("destroy_tables")]
             public static int destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
             {
-                return 1;
+                return 0;
             }
 
             [RubyMethod("execute")]
-            public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement)
+            public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement, Boolean isBatch, RubyArray args)
             {
-                RubyArray ret = new RubyArray();
-                return ret;
+                RubyArray retArr = new RubyArray();
+
+                if ( isBatch )
+                {
+                   self.m_db.Lock();
+                   self.m_db.executeBatchSQL(sqlStatement.ToString());
+                   self.m_db.Unlock();
+                }
+                else
+                {
+                    self.m_db.Lock();
+
+                    IDBResult dbRes = self.m_db.executeSQL(sqlStatement.ToString(), args.ToArray());
+                    if(dbRes != null)
+                    {
+                        while (!dbRes.isEnd())
+                        {
+                            retArr.Add(dbRes.getCurData());
+                            dbRes.next();
+                        }
+                    }
+
+                    self.m_db.Unlock();
+                }
+
+                return retArr;
             }
 
             [RubyMethod("is_ui_waitfordb")]
             public static Boolean isUiWaitForDb(RhoDatabase/*!*/ self)
             {
-                return true;
+                return self.m_db.isUIWaitDB();
             }
 
             [RubyMethod("lock_db")]
             public static int Lock(RhoDatabase/*!*/ self)
             {
-                return 1;
+                self.m_db.Lock();
+
+                return 0;
             }
 
             [RubyMethod("rollback")]
             public static int Rollback(RhoDatabase/*!*/ self)
             {
-                return 1;
+                self.m_db.rollback();
+
+                return 0;
             }
 
             [RubyMethod("start_transaction")]
             public static int startTransaction(RhoDatabase/*!*/ self)
             {
-                return 1;
+                self.m_db.startTransaction();
+
+                return 0;
             }
 
             [RubyMethod("table_exist?")]
             public static Boolean isTableExist(RhoDatabase/*!*/ self, MutableString/*!*/ tblName)
             {
-                return true;
+                return self.m_db.isTableExist( tblName.ToString() );
             }
 
             [RubyMethod("unlock_db")]
             public static int Unlock(RhoDatabase/*!*/ self)
             {
-                return 1;
+                self.m_db.Unlock();
+
+                return 0;
             }
 
             #endregion
