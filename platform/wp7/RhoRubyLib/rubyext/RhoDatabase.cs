@@ -3,6 +3,7 @@ using Microsoft.Scripting.Runtime;
 using IronRuby.Runtime;
 using IronRuby.Builtins;
 using System;
+using System.Collections.Generic;
 using rho.db;
 
 namespace rho.rubyext
@@ -59,7 +60,7 @@ namespace rho.rubyext
             public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement, Boolean isBatch, RubyArray args)
             {
                 RubyArray retArr = new RubyArray();
-
+                int g = args.Count;
                 if ( isBatch )
                 {
                    self.m_db.Lock();
@@ -70,7 +71,14 @@ namespace rho.rubyext
                 {
                     self.m_db.Lock();
 
-                    IDBResult dbRes = self.m_db.executeSQL(sqlStatement.ToString(), args.ToArray());
+                    Object[] values = null;
+                    if (args != null && args[0] != null)
+                    {
+                        RubyArray arr = (RubyArray)args[0];
+                        values = arr.ToArray();
+                    }
+
+                    IDBResult dbRes = self.m_db.executeSQL(sqlStatement.ToString(), values);
                     if(dbRes != null)
                     {
                         while (!dbRes.isEnd())

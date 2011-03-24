@@ -10,6 +10,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Community.CsharpSqlite;
 using System.Globalization;
+using IronRuby.Runtime;
+using IronRuby.Builtins;
 using rho.common;
 
 namespace rho.db
@@ -274,7 +276,7 @@ namespace rho.db
                     if (res > 0) throw new DBException(res, DBLastError());
                     continue;
                 }
-                if (obj is String)
+                if (obj is String || obj is MutableString)
                 {
                     res = Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), -1, null);
                     if (res > 0) throw new DBException(res, DBLastError());
