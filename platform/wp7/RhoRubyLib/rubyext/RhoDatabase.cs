@@ -36,12 +36,16 @@ namespace rho.rubyext
             [RubyMethod("close")]
             public static int Close(RhoDatabase/*!*/ self)
             {
+                self.m_db.close();
+
                 return 1;
             }
 
             [RubyMethod("commit")]
             public static int Commit(RhoDatabase/*!*/ self)
             {
+                self.m_db.commit();
+
                 return 1;
             }
 
@@ -61,36 +65,44 @@ namespace rho.rubyext
             [RubyMethod("is_ui_waitfordb")]
             public static Boolean isUiWaitForDb(RhoDatabase/*!*/ self)
             {
-                return true;
+                return self.m_db.isUIWaitDB();
             }
 
             [RubyMethod("lock_db")]
             public static int Lock(RhoDatabase/*!*/ self)
             {
+                self.m_db.Lock();
+
                 return 1;
             }
 
             [RubyMethod("rollback")]
             public static int Rollback(RhoDatabase/*!*/ self)
             {
+                self.m_db.rollback();
+
                 return 1;
             }
 
             [RubyMethod("start_transaction")]
             public static int startTransaction(RhoDatabase/*!*/ self)
             {
+                self.m_db.startTransaction();
+
                 return 1;
             }
 
             [RubyMethod("table_exist?")]
             public static Boolean isTableExist(RhoDatabase/*!*/ self, MutableString/*!*/ tblName)
             {
-                return true;
+                return self.m_db.isTableExist( tblName.ToString() );
             }
 
             [RubyMethod("unlock_db")]
             public static int Unlock(RhoDatabase/*!*/ self)
             {
+                self.m_db.Unlock();
+
                 return 1;
             }
 
