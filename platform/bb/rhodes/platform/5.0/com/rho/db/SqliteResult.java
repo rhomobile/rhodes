@@ -104,7 +104,10 @@ public class SqliteResult implements IDBResult
 		}
 		
 		if (m_resCopy == null )
+		{
 			m_resCopy = new SqliteCopyResult(this);
+			close();
+		}
 		
 		return false;
 	}

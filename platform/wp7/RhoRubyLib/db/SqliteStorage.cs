@@ -16,6 +16,9 @@ namespace rho.db
 {
     public class CSqliteStorage : IDBStorage
     {
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+            new RhoLogger("SqliteStorage");
+
         private boolean m_bPendingTransaction = false;
         private Sqlite3.sqlite3 m_db;
         private int m_nInsideTransaction = 0;
@@ -41,7 +44,7 @@ namespace rho.db
             
             int res = 0;    
             if (m_db != null)
-                    res =Sqlite3.sqlite3_exec(m_db, "COMMIT", 0, 0, 0);
+                    res = Sqlite3.sqlite3_exec(m_db, "COMMIT", 0, 0, 0);
 
             if (res != Sqlite3.SQLITE_OK)
                 throw new DBException(res, DBLastError());
@@ -54,8 +57,9 @@ namespace rho.db
 
         public void createTriggers()
         {
-            String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
-            executeBatchSQL(strTriggers);
+            //TODO: createTriggers
+            //String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
+            //executeBatchSQL(strTriggers);
         }
 
         public void deleteAllFiles(String strPath)
@@ -129,30 +133,22 @@ namespace rho.db
                 boolean bEncrypted = strEncryptionInfo != null && strEncryptionInfo.length() > 0;
                 //DatabaseSecurityOptions dbso = new DatabaseSecurityOptions(bEncrypted);
 
-                if (!CRhoFile.isFileExist(strPath))
-                {
-                    //m_db = DatabaseFactory.create(myURI, dbso);
-                    int res = Sqlite3.sqlite3_open(dbURI, ref m_db);
-                    if (res != Sqlite3.SQLITE_OK)
-                        throw new DBException(res, "Could not open database file: " + strPath);
+                boolean bExist = CRhoFile.isFileExist(strPath);
 
-                    startTransaction();
-                    try
-                    {
-                        executeBatchSQL(strSqlScript);
-                        createTriggers();
-                    }
-                    catch (DBException exc)
-                    {
-                        rollback();
-                        throw exc;
-                    }
-                    commit();
-                }
-                else
+                int res = Sqlite3.sqlite3_open(dbURI, ref m_db);
+                if (res != Sqlite3.SQLITE_OK)
+                    throw new DBException(res, "Could not open database file: " + strPath);
+
+                res = Sqlite3.sqlite3_exec(m_db, "PRAGMA journal_mode=PERSIST", 0, 0, 0);
+                if (res != Sqlite3.SQLITE_OK)
                 {
-                    //m_db = DatabaseFactory.openOrCreate(myURI, dbso);
-                }
+                    Sqlite3.sqlite3_close(m_db);
+                    m_db = null;
+                    throw new DBException(res, "Cannot set journal mode to PERSIST: " + strPath);
+                } 
+
+                if (!bExist)
+                    createSchema(strSqlScript);
 
                 if (m_bPendingTransaction)
                     startTransaction();
@@ -203,6 +199,28 @@ namespace rho.db
         }
 
         #region Helpers
+
+        private void createSchema(String strSqlScript)
+        {
+            if ( strSqlScript.length() == 0 )
+            {
+                LOG.ERROR("createSchema failed. Cannot read schema: " + strSqlScript);
+                return;
+            }
+
+            startTransaction();
+            try
+            {
+                executeBatchSQL(strSqlScript);
+                createTriggers();
+            }
+            catch (DBException exc)
+            {
+                rollback();
+                throw exc;
+            }
+            commit();
+        }
 
         private string DBLastError()
         {

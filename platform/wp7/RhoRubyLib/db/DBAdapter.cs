@@ -155,7 +155,7 @@ namespace rho.db
 		return res; 
 	}
 	
-	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector<Object> vecValues){
+	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector<String> vecValues){
 		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
 		Object[] values = new Object[vecValues.size()];
@@ -174,7 +174,7 @@ namespace rho.db
 		return res; 
 	}
 	
-	public IDBResult executeSQLEx(String strStatement, Vector<Object> vecValues){
+	public IDBResult executeSQLEx(String strStatement, Vector<String> vecValues){
 		Object[] values = new Object[vecValues.size()];
 		for (int i = 0; i < vecValues.size(); i++ )
 			values[i] = vecValues.elementAt(i);
@@ -779,9 +779,11 @@ namespace rho.db
             }
         }
     }
-/*    
+    
     public void setBulkSyncDB(String fDbName, String fScriptName)
     {
+        //TODO: setBulkSyncDB
+/*
 		DBAdapter db = null;
 		try{
 			db = (DBAdapter)alloc(null);
@@ -855,8 +857,8 @@ namespace rho.db
     		
 			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 		}
-    	
-    }*/
+*/    	
+    }
 /*
     public RubyValue rb_execute(RubyValue v, RubyValue batch, RubyValue arg) 
     {
