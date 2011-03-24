@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using rho.net;
 using rho;
+using rho.db;
+using rho.sync;
 
 namespace rho.common
 {
@@ -18,6 +11,7 @@ namespace rho.common
     {
         private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		    new RhoLogger("RhodesApp");
+        RhoConf RHOCONF() { return RhoConf.getInstance(); }
 
         private static readonly CRhodesApp m_instance = new CRhodesApp();
         public static CRhodesApp Instance { get { return m_instance; } }
@@ -46,6 +40,24 @@ namespace rho.common
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
             CRhoResourceMap.deployContent();
             RhoRuby.Init(m_webBrowser);
+
+            //DBAdapter.initAttrManager();
+
+            LOG.INFO("Starting sync engine...");
+            SyncThread sync = null;
+            try{
+	        	sync = SyncThread.Create();
+	        	
+	        }catch(Exception exc){
+	        	LOG.ERROR("Create sync failed.", exc);
+	        }
+	        if (sync != null) {
+	        	//sync.setStatusListener(this);
+	        }
+	        
+	        RhoRuby.InitApp();
+	        RhoRuby.call_config_conflicts();
+            RHOCONF().conflictsResolved();
         }
 
         void initAppUrls()

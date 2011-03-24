@@ -57,6 +57,7 @@ namespace rho.db
 
         public void createTriggers()
         {
+            //TODO: createTriggers
             //String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
             //executeBatchSQL(strTriggers);
         }
