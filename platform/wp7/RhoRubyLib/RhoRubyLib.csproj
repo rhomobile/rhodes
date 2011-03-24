@@ -64,6 +64,10 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\TimeInterval.cs" />
+    <Compile Include="common\RhoEmptyProfiler.cs" />
+    <Compile Include="common\RhoProfiler.cs" />
+    <Compile Include="RhoAppAdapter.cs" />
     <Compile Include="common\Mutex.cs" />
     <Compile Include="common\RhoThread.cs" />
     <Compile Include="common\ThreadQueue.cs" />
@@ -91,12 +95,27 @@
     <Compile Include="db\IDBStorage.cs" />
     <Compile Include="db\SqliteStorage.cs" />
     <Compile Include="Initializers.Generated.cs" />
+    <Compile Include="net\NetResponse.cs" />
+    <Compile Include="net\URI.cs" />
+    <Compile Include="net\NetRequest.cs" />
     <Compile Include="net\HttpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoWebView.cs" />
+    <Compile Include="sync\JSONStructIterator.cs" />
+    <Compile Include="sync\JSONArrayIterator.cs" />
+    <Compile Include="sync\JSONEntry.cs" />
+    <Compile Include="sync\SyncSource.cs" />
+    <Compile Include="sync\SyncProtocol_3.cs" />
+    <Compile Include="sync\ISyncProtocol.cs" />
+    <Compile Include="sync\SyncEngine.cs" />
+    <Compile Include="sync\SyncNotify.cs" />
+    <Compile Include="sync\ClientRegister.cs" />
     <Compile Include="sync\ISyncStatusListener.cs" />
+    <Compile Include="sync\SyncThread.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WP_PlatformAdaptationLayer.cs" />
   </ItemGroup>
   <ItemGroup>

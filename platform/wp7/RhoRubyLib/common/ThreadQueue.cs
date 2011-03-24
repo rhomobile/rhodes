@@ -32,15 +32,15 @@ namespace rho.common
         boolean m_bNoThreaded;
 
         public abstract void processCommand(IQueueCommand pCmd);
-        public void onTimeout(){}
+        public virtual void onTimeout(){}
     
         public int  getPollInterval(){ return m_nPollInterval;}
 
         public boolean isNoThreadedMode(){ return m_bNoThreaded; }
         public void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
 
-        public int getLastPollInterval(){ return 0;}
-        public boolean isSkipDuplicateCmd() { return false; }
+        public virtual int getLastPollInterval(){ return 0;}
+        public virtual boolean isSkipDuplicateCmd() { return false; }
 
         protected Object getCommandLock(){ return m_mxStackCommands; }
         protected IQueueCommand getCurCommand(){ return m_pCurCmd; }
@@ -189,7 +189,7 @@ namespace rho.common
 	        }
         }
 
-        public void setPollInterval(int nInterval)
+        public virtual void setPollInterval(int nInterval)
         { 
             m_nPollInterval = nInterval;
             if ( isAlive() )        
