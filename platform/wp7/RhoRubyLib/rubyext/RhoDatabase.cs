@@ -38,7 +38,7 @@ namespace rho.rubyext
             {
                 self.m_db.close();
 
-                return 1;
+                return 0;
             }
 
             [RubyMethod("commit")]
@@ -46,13 +46,13 @@ namespace rho.rubyext
             {
                 self.m_db.commit();
 
-                return 1;
+                return 0;
             }
 
             [RubyMethod("destroy_tables")]
             public static int destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
             {
-                return 1;
+                return 0;
             }
 
             [RubyMethod("execute")]
@@ -73,7 +73,7 @@ namespace rho.rubyext
             {
                 self.m_db.Lock();
 
-                return 1;
+                return 0;
             }
 
             [RubyMethod("rollback")]
@@ -81,7 +81,7 @@ namespace rho.rubyext
             {
                 self.m_db.rollback();
 
-                return 1;
+                return 0;
             }
 
             [RubyMethod("start_transaction")]
@@ -89,7 +89,7 @@ namespace rho.rubyext
             {
                 self.m_db.startTransaction();
 
-                return 1;
+                return 0;
             }
 
             [RubyMethod("table_exist?")]
@@ -103,7 +103,7 @@ namespace rho.rubyext
             {
                 self.m_db.Unlock();
 
-                return 1;
+                return 0;
             }
 
             #endregion
