@@ -62,5 +62,28 @@ namespace rho.common
 
             return path;
         }
+
+        public static String changeBaseName( String path, String szFileName )
+        {
+            int basePos = findLastSlash(path);
+            if (basePos >= 0 && basePos < path.length() - 1)
+            {
+                String res = path.substring(0, basePos + 1);
+                res += szFileName;
+
+                return res;
+            }
+
+            return join(path, szFileName);
+        }
+
+        static public String getRelativePath(String path1, String path2)
+        {
+            if (!path1.startsWith(path2))
+                return path1;
+
+            return path1.substring(path2.length());
+        }
+
     }
 }

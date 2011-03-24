@@ -44,7 +44,7 @@ namespace rho.db
             
             int res = 0;    
             if (m_db != null)
-                    res =Sqlite3.sqlite3_exec(m_db, "COMMIT", 0, 0, 0);
+                    res = Sqlite3.sqlite3_exec(m_db, "COMMIT", 0, 0, 0);
 
             if (res != Sqlite3.SQLITE_OK)
                 throw new DBException(res, DBLastError());
@@ -57,6 +57,7 @@ namespace rho.db
 
         public void createTriggers()
         {
+            //TODO: createTriggers
             //String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
             //executeBatchSQL(strTriggers);
         }
@@ -138,22 +139,8 @@ namespace rho.db
                 if (res != Sqlite3.SQLITE_OK)
                     throw new DBException(res, "Could not open database file: " + strPath);
 
-                if ( !bExist )
+                if (!bExist)
                     createSchema(strSqlScript);
-
-                /*startTransaction();
-                try
-                {
-                    executeBatchSQL(strSqlScript);
-                    createTriggers();
-                }
-                catch (DBException exc)
-                {
-                    rollback();
-                    throw exc;
-                }
-                commit();*/
-
 
                 if (m_bPendingTransaction)
                     startTransaction();
@@ -207,9 +194,6 @@ namespace rho.db
 
         private void createSchema(String strSqlScript)
         {
-            //String strSqlScript;
-            //strSqlScript = CRhoFile.readStringFromFile(RHODESAPP().canonicalizeRhoUrl("db/syncdb.schema"));
-
             if ( strSqlScript.length() == 0 )
             {
                 LOG.ERROR("createSchema failed. Cannot read schema: " + strSqlScript);

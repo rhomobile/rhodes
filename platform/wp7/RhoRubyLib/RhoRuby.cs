@@ -7,11 +7,14 @@ using System.Windows.Resources;
 using System.Windows;
 using System.IO;
 using Microsoft.Phone.Controls;
+using rho.common;
 
 namespace rho
 {
     public class CRhoRuby
     {
+        RhoConf RHOCONF() { return RhoConf.getInstance(); }
+
         private static readonly CRhoRuby m_instance = new CRhoRuby();
         public static CRhoRuby Instance { get { return m_instance; } }
 
@@ -27,7 +30,7 @@ namespace rho
         {
             m_webBrowser = browser;
             initRuby();
-            Start();
+            createRhoFramework();
         }
         
         public class RhoHost : ScriptHost
@@ -71,7 +74,7 @@ namespace rho
             m_engine.SetSearchPaths(paths);
         }
 
-        private void Start()
+        private void createRhoFramework()
         {
             string code = "def foo; 'haha'; end; foo()";
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
@@ -91,10 +94,14 @@ namespace rho
                 return;
 
             m_rhoframework = src.Execute(m_engine.CreateScope());
+        }
+
+        public void InitApp()
+        {
             if (m_rhoframework == null)
                 return;
-            //m_engine.Execute("RHO_FRAMEWORK.ui_created");
 
+            m_engine.Operations.InvokeMember(m_rhoframework, "init_app");
             m_engine.Operations.InvokeMember(m_rhoframework, "ui_created");
         }
 
@@ -171,6 +178,16 @@ namespace rho
                 strVer = ((MutableString)val).ToString();
 		
 	        return strVer;        
+        }
+
+        public void call_config_conflicts()
+        {
+            //TODO: call_config_conflicts
+            /*RubyHash hashConflicts = RHOCONF().getRubyConflicts();
+            if (hashConflicts.size().toInt() == 0)
+                return;
+
+            m_engine.Operations.InvokeMember(m_rhoframework, "on_config_conflicts", hashConflicts);*/
         }
     }
 }
