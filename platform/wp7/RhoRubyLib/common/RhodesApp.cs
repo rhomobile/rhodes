@@ -41,7 +41,7 @@ namespace rho.common
             CRhoResourceMap.deployContent();
             RhoRuby.Init(m_webBrowser);
 
-            //DBAdapter.initAttrManager();
+            DBAdapter.initAttrManager();
 
             LOG.INFO("Starting sync engine...");
             SyncThread sync = null;

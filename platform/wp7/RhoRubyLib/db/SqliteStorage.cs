@@ -139,6 +139,14 @@ namespace rho.db
                 if (res != Sqlite3.SQLITE_OK)
                     throw new DBException(res, "Could not open database file: " + strPath);
 
+                res = Sqlite3.sqlite3_exec(m_db, "PRAGMA journal_mode=PERSIST", 0, 0, 0);
+                if (res != Sqlite3.SQLITE_OK)
+                {
+                    Sqlite3.sqlite3_close(m_db);
+                    m_db = null;
+                    throw new DBException(res, "Cannot set journal mode to PERSIST: " + strPath);
+                } 
+
                 if (!bExist)
                     createSchema(strSqlScript);
 
