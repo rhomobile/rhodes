@@ -56,10 +56,34 @@ namespace rho.rubyext
             }
 
             [RubyMethod("execute")]
-            public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement)
+            public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement, Boolean isBatch, RubyArray args)
             {
-                RubyArray ret = new RubyArray();
-                return ret;
+                RubyArray retArr = new RubyArray();
+
+                if ( isBatch )
+                {
+                   self.m_db.Lock();
+                   self.m_db.executeBatchSQL(sqlStatement.ToString());
+                   self.m_db.Unlock();
+                }
+                else
+                {
+                    self.m_db.Lock();
+
+                    IDBResult dbRes = self.m_db.executeSQL(sqlStatement.ToString(), args.ToArray());
+                    if(dbRes != null)
+                    {
+                        while (!dbRes.isEnd())
+                        {
+                            retArr.Add(dbRes.getCurData());
+                            dbRes.next();
+                        }
+                    }
+
+                    self.m_db.Unlock();
+                }
+
+                return retArr;
             }
 
             [RubyMethod("is_ui_waitfordb")]
