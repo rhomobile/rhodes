@@ -51,8 +51,8 @@ namespace rho.rubyext {
             );
             
             DefineLibraryMethod(module, "execute", 0x11, 
-                0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, IronRuby.Builtins.MutableString, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoSQLite3.RhoDatabase.Execute)
+                0x00000000U,
+                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, IronRuby.Builtins.MutableString, System.Boolean, IronRuby.Builtins.RubyArray, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoSQLite3.RhoDatabase.Execute)
             );
             
             DefineLibraryMethod(module, "is_ui_waitfordb", 0x11, 
