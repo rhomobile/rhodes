@@ -1,4 +1,4 @@
-#define RHO_ENABLE_LOG
+//#define RHO_ENABLE_LOG
 #include "rhodes/JNIRhodes.h"
 
 #include <dirent.h>
@@ -8,11 +8,6 @@
 #include <hash_map>
 
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
-
-//#ifdef RHO_LOG
-//#undef RHO_LOG
-//#endif
-//#define RHO_LOG(...)
 
 #ifdef RHO_NOT_IMPLEMENTED
 #undef RHO_NOT_IMPLEMENTED
@@ -53,12 +48,28 @@ rho_fd_map_t rho_fd_map;
 static std::vector<int> rho_fd_free;
 static int rho_fd_counter = RHO_FD_BASE;
 
+struct rho_dir_data_t
+{
+    std::string path;
+    size_t index;
+    std::vector<struct dirent> childs;
+
+    rho_dir_data_t() :index(0) {}
+};
+
+static rho::common::CMutex rho_dir_mtx;
+typedef std::map<DIR*, rho_dir_data_t> rho_dir_map_t;
+rho_dir_map_t rho_dir_map;
+static std::vector<DIR*> rho_dir_free;
+static int rho_dir_counter = -1;
+
 static jclass clsFileApi;
 static jmethodID midCopy;
 static jmethodID midOpen;
 static jmethodID midClose;
 static jmethodID midRead;
 static jmethodID midSeek;
+static jmethodID midGetChildren;
 
 typedef FILE *(*func_sfp_t)();
 typedef int (*func_sflags_t)(const char *mode, int *optr);
@@ -94,7 +105,6 @@ typedef int (*func_readdir_r_t)(DIR *dirp, struct dirent *entry, struct dirent *
 typedef int (*func_closedir_t)(DIR *dirp);
 typedef void (*func_rewinddir_t)(DIR *dirp);
 typedef int (*func_dirfd_t)(DIR *dirp);
-typedef int (*func_alphasort_t)(const void *a, const void *b);
 typedef int (*func_scandir_t)(const char *dir, struct dirent ***namelist,
     int (*filter)(const struct dirent *),
     int (*compar)(const struct dirent **, const struct dirent **));
@@ -127,7 +137,6 @@ static func_readdir_r_t real_readdir_r;
 static func_closedir_t real_closedir;
 static func_rewinddir_t real_rewinddir;
 static func_dirfd_t real_dirfd;
-static func_alphasort_t real_alphasort;
 static func_scandir_t real_scandir;
 
 struct stat librhodes_st;
@@ -188,6 +197,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!midRead) return;
     midSeek = getJNIClassStaticMethod(env, clsFileApi, "seek", "(Ljava/io/InputStream;I)V");
     if (!midSeek) return;
+    midGetChildren = getJNIClassStaticMethod(env, clsFileApi, "getChildren", "(Ljava/lang/String;)[Ljava/lang/String;");
+    if (!midGetChildren) return;
 
     const char *libc = "/system/lib/libc.so";
     void *pc = dlopen(libc, RTLD_LAZY);
@@ -221,7 +232,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_closedir = (func_closedir_t)dlsym(pc, "closedir");
     real_rewinddir = (func_rewinddir_t)dlsym(pc, "rewinddir");
     real_dirfd = (func_dirfd_t)dlsym(pc, "dirfd");
-    real_alphasort = (func_alphasort_t)dlsym(pc, "alphasort");
     real_scandir = (func_scandir_t)dlsym(pc, "scandir");
     dlclose(pc);
 
@@ -236,7 +246,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 
 static std::string normalize_path(std::string path)
 {
-    //RHO_LOG("normalize_path: (1): path: %s", path.c_str());
+    RHO_LOG("normalize_path: (1): path: %s", path.c_str());
 
     bool has_leading_slash = !path.empty() && path[0] == '/';
 
@@ -250,6 +260,8 @@ static std::string normalize_path(std::string path)
             //RHO_LOG("normalize_path: (2)");
             if (!parts.empty())
                 parts.erase(parts.end() - 1);
+            else
+                parts.push_back(part);
         }
         else if (!part.empty() && part != ".")
         {
@@ -272,7 +284,7 @@ static std::string normalize_path(std::string path)
     if (!has_leading_slash)
         path.erase(0, 1);
 
-    //RHO_LOG("normalize_path: return %s", path.c_str());
+    RHO_LOG("normalize_path: return %s", path.c_str());
     return path;
 }
 
@@ -290,7 +302,7 @@ static std::string make_full_path(const char *path)
         return "";
 
     if (*path == '/')
-        return path;
+        return normalize_path(path);
 
     std::string fpath = rho_root_path() + "/" + path;
 
@@ -368,19 +380,33 @@ static void dump_stat(struct stat const &st)
 }
 #endif
 
-static bool need_java_way(std::string const &path)
+static bool need_emulate_dir(std::string const &path)
 {
-    //RHO_LOG("need_java_way: %s", path.c_str());
     std::string fpath = make_full_path(path);
-    //RHO_LOG("need_java_way: (1): %s", fpath.c_str());
     std::string const &root_path = rho_root_path();
-    if (strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0)
+    if (fpath.size() < root_path.size())
+        return false;
+    return ::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0;
+}
+
+static bool need_emulate_dir(const char *path)
+{
+    return path ? need_emulate_dir(std::string(path)) : false;
+}
+
+static bool need_emulate(std::string const &path)
+{
+    //RHO_LOG("need_emulate: %s", path.c_str());
+    std::string fpath = make_full_path(path);
+    //RHO_LOG("need_emulate: (1): %s", fpath.c_str());
+    std::string const &root_path = rho_root_path();
+    if (::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0)
     {
-        //RHO_LOG("need_java_way: (2)");
+        //RHO_LOG("need_emulate: (2)");
         struct stat st;
         if (real_stat(fpath.c_str(), &st) == -1)
         {
-            //RHO_LOG("need_java_way: (3)");
+            //RHO_LOG("need_emulate: (3)");
             if (errno == ENOENT)
             {
                 //RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
@@ -390,37 +416,37 @@ static bool need_java_way(std::string const &path)
         }
         else if (S_ISREG(st.st_mode))
         {
-            //RHO_LOG("need_java_way: (4)");
+            //RHO_LOG("need_emulate: (4)");
             rho_stat_t *rst = rho_stat(fpath);
-            //RHO_LOG("need_java_way: (5)");
+            //RHO_LOG("need_emulate: (5)");
             if (rst && rst->mtime > st.st_mtime)
             {
-                //RHO_LOG("need_java_way: %s, st.st_mtime: %lu", fpath.c_str(), st.st_mtime);
-                //RHO_LOG("need_java_way: %s, rst->mtime: %lu", fpath.c_str(), rst ? rst->mtime : -1);
-                //RHO_LOG("need_java_way: file %s in Android package is newer than one located on FS, unlink FS one", fpath.c_str());
+                //RHO_LOG("need_emulate: %s, st.st_mtime: %lu", fpath.c_str(), st.st_mtime);
+                //RHO_LOG("need_emulate: %s, rst->mtime: %lu", fpath.c_str(), rst ? rst->mtime : -1);
+                //RHO_LOG("need_emulate: file %s in Android package is newer than one located on FS, unlink FS one", fpath.c_str());
                 real_unlink(fpath.c_str());
                 return true;
             }
         }
     }
 
-    //RHO_LOG("need_java_way: return false");
+    //RHO_LOG("need_emulate: return false");
     return false;
 }
 
-static bool need_java_way(const char *path)
+static bool need_emulate(const char *path)
 {
-    return path ? need_java_way(make_full_path(path)) : false;
+    return path ? need_emulate(std::string(path)) : false;
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate
   (JNIEnv *env, jclass, jstring pathObj)
 {
-    //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay");
+    //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate");
     std::string path = rho_cast<std::string>(env, pathObj);
-    //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay: %s", path.c_str());
-    bool need = need_java_way(path);
-    //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needJavaWay: need: %d", (int)need);
+    //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate: %s", path.c_str());
+    bool need = need_emulate(path);
+    //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate: need: %d", (int)need);
     return need;
 }
 
@@ -439,15 +465,15 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
 
     RHO_LOG("open: %s...", path);
     fpath = make_full_path(fpath);
-    //RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
+    RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
 
-    bool java_way = need_java_way(fpath);
-    if (java_way && has_pending_exception())
+    bool emulate = need_emulate(fpath);
+    if (emulate && has_pending_exception())
     {
         errno = EFAULT;
         return -1;
     }
-    if (java_way && (oflag & (O_WRONLY | O_RDWR)))
+    if (emulate && (oflag & (O_WRONLY | O_RDWR)))
     {
         //RHO_LOG("open: %s: copy from Android package", path);
         JNIEnv *env = jnienv();
@@ -459,11 +485,11 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
             return -1;
         }
 
-        java_way = false;
+        emulate = false;
     }
-    
+
     int fd;
-    if (java_way)
+    if (emulate)
     {
         JNIEnv *env = jnienv();
         jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
@@ -899,7 +925,7 @@ static int stat_impl(std::string const &fpath, struct stat *buf)
 RHO_GLOBAL int stat(const char *path, struct stat *buf)
 {
     std::string fpath = make_full_path(path);
-    if (!need_java_way(fpath))
+    if (!need_emulate(fpath))
         return real_stat(path, buf);
 
     return stat_impl(fpath, buf);
@@ -933,7 +959,7 @@ RHO_GLOBAL int lstat(const char *path, struct stat *buf)
 {
     RHO_LOG("lstat: %s", path);
     std::string fpath = make_full_path(path);
-    if (!need_java_way(fpath))
+    if (!need_emulate(fpath))
         return real_lstat(path, buf);
 
     return stat_impl(fpath, buf);
@@ -943,7 +969,7 @@ RHO_GLOBAL int unlink(const char *path)
 {
     RHO_LOG("unlink: %s", path);
     std::string fpath = make_full_path(path);
-    if (!need_java_way(fpath))
+    if (!need_emulate(fpath))
         return real_unlink(path);
 
     // Check is there file with specified name in java package
@@ -1075,55 +1101,198 @@ RHO_GLOBAL int getdents(unsigned int fd, struct dirent *dirp, unsigned int count
 
 RHO_GLOBAL DIR *opendir(const char *dirpath)
 {
+    std::string fpath;
+    if (dirpath)
+        fpath = make_full_path(dirpath);
+
+    if (fpath.empty())
+    {
+        RHO_LOG("opendir: dirpath is empty");
+        errno = EFAULT;
+        return NULL;
+    }
+
     RHO_LOG("opendir: dirpath=%s", dirpath);
-    return real_opendir(dirpath);
+
+    bool emulate = need_emulate_dir(fpath);
+    if (emulate && has_pending_exception())
+    {
+        errno = EFAULT;
+        return NULL;
+    }
+
+    DIR *dirp = NULL;
+    if (emulate)
+    {
+        std::vector<std::string> children;
+        {
+            JNIEnv *env = jnienv();
+            jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
+            jholder<jobjectArray> jChildren = jholder<jobjectArray>((jobjectArray)env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
+
+            if (!!jChildren)
+                for (jsize i = 0, lim = env->GetArrayLength(jChildren.get()); i != lim; ++i)
+                {
+                    jhstring jc = jhstring((jstring)env->GetObjectArrayElement(jChildren.get(), i));
+                    std::string const &ch = rho_cast<std::string>(env, jc);
+                    RHO_LOG("opendir: next children: %s", ch.c_str());
+                    children.push_back(ch);
+                }
+        }
+
+        scoped_lock_t guard(rho_dir_mtx);
+        if (!rho_dir_free.empty())
+        {
+            dirp = rho_dir_free[0];
+            rho_dir_free.erase(rho_dir_free.begin());
+        }
+        else
+            dirp = reinterpret_cast<DIR *>(rho_dir_counter--);
+
+        rho_dir_data_t d;
+        d.path = make_rel_path(fpath);
+        for (std::vector<std::string>::const_iterator it = children.begin(), lim = children.end(); it != lim; ++it)
+        {
+            struct dirent de;
+            de.d_ino = (uint64_t)-1;
+            de.d_off = -1;
+            de.d_reclen = -1;
+            de.d_type = DT_UNKNOWN;
+            strlcpy(de.d_name, it->c_str(), sizeof(de.d_name));
+            d.childs.push_back(de);
+        }
+        rho_dir_map[dirp] = d;
+
+        RHO_LOG("opendir: return %p (emulated)", (void*)dirp);
+    }
+    else
+    {
+        dirp = real_opendir(dirpath);
+        RHO_LOG("opendir: return %p (native)", (void*)dirp);
+    }
+
+    return dirp;
 }
 
 RHO_GLOBAL DIR *fdopendir(int fd)
 {
     RHO_LOG("fdopendir: fd=%d", fd);
-    return real_fdopendir(fd);
+    if (fd < RHO_FD_BASE)
+        return real_fdopendir(fd);
+
+    errno = EBADF;
+    return NULL;
 }
 
 RHO_GLOBAL int dirfd(DIR *dirp)
 {
     RHO_LOG("dirfd: dirp=%p", (void*)dirp);
-    return real_dirfd(dirp);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::const_iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+        return real_dirfd(dirp);
+
+    errno = EINVAL;
+    return -1;
 }
 
 RHO_GLOBAL struct dirent *readdir(DIR *dirp)
 {
     RHO_LOG("readdir: dirp=%p", (void*)dirp);
-    return real_readdir(dirp);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+    {
+        struct dirent *ret = real_readdir(dirp);
+        RHO_LOG("readdir: return %p (native)", (void*)ret);
+        return ret;
+    }
+
+    rho_dir_data_t &d = it->second;
+    if (d.index >= d.childs.size())
+    {
+        RHO_LOG("readdir: end of directory reached, return NULL");
+        return NULL;
+    }
+
+    struct dirent *ret = &d.childs[d.index++];
+    RHO_LOG("readdir: return %p (emulated)", (void*)ret);
+    return ret;
 }
 
 RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 {
     RHO_LOG("readdir_r: dirp=%p", (void*)dirp);
-    return real_readdir_r(dirp, entry, result);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+    {
+        int ret = real_readdir_r(dirp, entry, result);
+        RHO_LOG("readdir_r: return %p (native)", (void*)*result);
+        return ret;
+    }
+
+    rho_dir_data_t &d = it->second;
+    if (d.index >= d.childs.size())
+    {
+        RHO_LOG("readdir_r: end of directory reached, return NULL");
+        *result = NULL;
+        return 0;
+    }
+
+    struct dirent const &de = d.childs[d.index++];
+    entry->d_ino = de.d_ino;
+    entry->d_off = de.d_off;
+    entry->d_reclen = de.d_reclen;
+    entry->d_type = de.d_type;
+    ::strlcpy(entry->d_name, de.d_name, sizeof(entry->d_name));
+
+    *result = entry;
+
+    RHO_LOG("readdir_r: return %p (emulated)", (void*)*result);
+    return 0;
 }
 
 RHO_GLOBAL int closedir(DIR *dirp)
 {
     RHO_LOG("closedir: dirp=%p", (void*)dirp);
-    return real_closedir(dirp);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+    {
+        int ret = real_closedir(dirp);
+        RHO_LOG("closedir: return %d (native)", ret);
+        return ret;
+    }
+
+    rho_dir_map.erase(it);
+    rho_dir_free.push_back(dirp);
+    RHO_LOG("closedir: return 0 (emulated)");
+    return 0;
 }
 
 RHO_GLOBAL void rewinddir(DIR *dirp)
 {
     RHO_LOG("rewinddir: dirp=%p", (void*)dirp);
-    return real_rewinddir(dirp);
-}
-
-RHO_GLOBAL int alphasort(const void *a, const void *b)
-{
-    RHO_LOG("alphasort: a=%p, b=%p", a, b);
-    return real_alphasort(a, b);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+        real_rewinddir(dirp);
+    else
+        it->second.index = 0;
 }
 
 RHO_GLOBAL int scandir(const char *dir, struct dirent ***namelist, int (*filter)(const struct dirent *),
     int (*compar)(const struct dirent **, const struct dirent **))
 {
     RHO_LOG("scandir: dir=%s", dir);
-    return real_scandir(dir, namelist, filter, compar);
+    std::string fpath = make_full_path(dir);
+    if (!need_emulate(fpath))
+    {
+        int ret = real_scandir(dir, namelist, filter, compar);
+        RHO_LOG("scandir: return %d (native)", ret);
+        return ret;
+    }
+
+    RHO_NOT_IMPLEMENTED;
 }
