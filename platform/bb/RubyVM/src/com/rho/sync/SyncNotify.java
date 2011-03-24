@@ -242,8 +242,8 @@ public class SyncNotify {
             if ( hashErrors == null )
                 return "";
 
-        	Enumeration valsErrors = m_hashSrcIDAndObject.elements();
-        	Enumeration keysErrors = m_hashSrcIDAndObject.keys();
+        	Enumeration valsErrors = hashErrors.elements();
+        	Enumeration keysErrors = hashErrors.keys();
     		while (valsErrors.hasMoreElements()) 
     		{
     			String strObject = (String)keysErrors.nextElement();
