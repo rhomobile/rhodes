@@ -47,7 +47,7 @@ namespace rho.rubyext
             }
 
             [RubyMethod("execute")]
-            public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement)
+            public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement, Boolean isBatch, RubyArray args)
             {
                 RubyArray ret = new RubyArray();
                 return ret;

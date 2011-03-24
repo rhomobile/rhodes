@@ -59,7 +59,7 @@
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
-    <Reference Include="System.Core" />
+    <Reference Include="system.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
   </ItemGroup>
