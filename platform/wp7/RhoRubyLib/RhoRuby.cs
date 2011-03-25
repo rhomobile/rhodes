@@ -128,6 +128,14 @@ namespace rho
             return new byte[0];
         }
 
+        public String getStringFromObject(Object body)
+        {
+            if (body != null && body.GetType() == typeof(MutableString))
+                return ((MutableString)body).ToString();
+
+            return String.Empty;
+        }
+
         public Hash createHash()
         {
             return new Hash(m_context);
@@ -188,6 +196,11 @@ namespace rho
                 return;
 
             m_engine.Operations.InvokeMember(m_rhoframework, "on_config_conflicts", hashConflicts);*/
+        }
+
+        public void raise_RhoError(int errCode)
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "raise_rhoerror", errCode);
         }
     }
 }
