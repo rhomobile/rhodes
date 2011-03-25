@@ -3,7 +3,7 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/com
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/closed'
 
 describe "Dir#close" do
-  platform_is_not :windows do
+  platform_is_not :windows, :android do
   it "closes the stream and fd and returns nil" do
     # This is a bit convoluted but we are trying to ensure the file gets closed.
     # To do that, we peek to see what the next FD number is and then probe that
