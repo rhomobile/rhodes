@@ -1045,7 +1045,7 @@ module Rho
       
       @@g_base_temp_id = nil
       def generate_id
-        @@g_base_temp_id = ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i unless @@g_base_temp_id
+        @@g_base_temp_id = ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6) unless @@g_base_temp_id
         
         @@g_base_temp_id = @@g_base_temp_id + 1
         @@g_base_temp_id
