@@ -1359,7 +1359,7 @@ namespace "run" do
   namespace "android" do
     
     task :spec => ["device:android:debug"] do
-        run_emulator
+        run_emulator :hidden => true
         do_uninstall('-e')
         
         log_name  = $app_path + '/RhoLog.txt'
@@ -1453,7 +1453,7 @@ namespace "run" do
         end
     end
 
-    def  run_emulator
+    def  run_emulator(options = {})
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
 
       kill_adb
@@ -1485,19 +1485,28 @@ namespace "run" do
 
       if !running
         # Start the emulator, check on it every 5 seconds until it's running
-        Thread.new { system("\"#{$emulator}\" -cpu-delay 0 -no-boot-anim -avd #{$avdname}") }
+        cmd = "\"#{$emulator}\" -cpu-delay 0 -no-boot-anim"
+        cmd << " -no-window" if options[:hidden]
+        cmd << " -avd #{$avdname}"
+        Thread.new { system(cmd) }
         puts "Waiting up to 180 seconds for emulator..."
         startedWaiting = Time.now
         adbRestarts = 1
         while (Time.now - startedWaiting < 180 )
           sleep 5
           now = Time.now
-          emulatorState = ""
-          Jake.run2($adb,["-e", "get-state"],{:system => false, :hideerrors => :false}) do |line|
-            puts "RET: " + line
-            emulatorState += line
+          #emulatorState = ""
+          #Jake.run2($adb,["-e", "get-state"],{:system => false, :hideerrors => :false}) do |line|
+          #  puts "RET: " + line
+          #  emulatorState += line
+          #end
+          started = false
+          Jake.run2 $adb, ["-e", "shell", "ps"], :system => false, :hideerrors => false do |line|
+            started = true if line =~ /android\.process\.acore/
+            true
           end
-          if emulatorState =~ /unknown/
+          #if emulatorState =~ /unknown/
+          unless started
             printf("%.2fs: ",(now - startedWaiting))
             if (now - startedWaiting) > (60 * adbRestarts)
               # Restart the adb server every 60 seconds to prevent eternal waiting
