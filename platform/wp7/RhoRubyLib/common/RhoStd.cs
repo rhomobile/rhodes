@@ -156,7 +156,7 @@ namespace rho.common
 
         public void put(TKey key, TValue value)
         {
-            base.Add(key, value);
+            base[key] = value;
         }
 
         public void remove(TKey key)
