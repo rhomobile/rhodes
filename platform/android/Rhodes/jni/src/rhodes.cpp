@@ -199,6 +199,14 @@ std::string const &rho_apk_path()
     return g_apk_path;
 }
 
+std::string rho_cur_path()
+{
+    char buf[PATH_MAX];
+    if (::getcwd(buf, sizeof(buf)) == NULL)
+        return "";
+    return buf;
+}
+
 jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 {
     g_jvm = vm;
@@ -501,6 +509,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
     }
 
     if (!set_posix_environment(env, clsRE)) return;
+
+    if (::chdir(rho_root_path().c_str()) == -1)
+    {
+        env->ThrowNew(clsRE, "Can not chdir to HOME directory");
+        return;
+    }
 
     if (!set_capabilities(env)) return;
 
