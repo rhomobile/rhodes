@@ -12,7 +12,7 @@ namespace rho.sync
 	
    	    public const int scNone = 0, scSyncAll = 1, scSyncOne = 2, scLogin = 3, scSearchOne=4; 
     
-   	    private class SyncCommand : CThreadQueue.IQueueCommand
+   	    public class SyncCommand : CThreadQueue.IQueueCommand
    	    {
    		    public int m_nCmdCode;
    		    public int m_nCmdParam;
@@ -78,7 +78,7 @@ namespace rho.sync
    		
    	    };
 
-   	    private class SyncLoginCommand : SyncCommand
+   	    public class SyncLoginCommand : SyncCommand
    	    {
    		    public String m_strName, m_strPassword;
    		    public /*common::CAutoPtr<C*/SyncNotify.SyncNotification/*>*/ m_pNotify;
@@ -153,18 +153,20 @@ namespace rho.sync
 		    if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
 			    start(epLow);
 	    }
-/*
-        RubyValue getRetValue()
+
+        public object getRetValue()
         {
-    	    RubyValue ret = RubyConstant.QNIL;
+            //TODO: getRetValue
+    	    /*RubyValue ret = RubyConstant.QNIL;
             if ( isNoThreadedMode()  )
             {
                 ret = ObjectFactory.createString( getSyncEngine().getNotify().getNotifyBody() );
                 getSyncEngine().getNotify().cleanNotifyBody();
             }
 
-            return ret;
-        }*/
+            return ret;*/
+            return null;
+        }
 	
         public override int getLastPollInterval()
         {
