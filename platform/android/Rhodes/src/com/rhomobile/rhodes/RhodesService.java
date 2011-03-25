@@ -1297,4 +1297,8 @@ public class RhodesService extends Service {
 		return r;
 	}
 	
+	public static boolean isJQTouch_mode() {
+		return RhoConf.getBool("jqtouch_mode");
+	}
+	
 }

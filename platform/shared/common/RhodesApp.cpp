@@ -917,13 +917,15 @@ void CRhodesApp::navigateBack()
         loadUrl(m_strAppBackUrlOrig);
     else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
 	{
+/* Now JQTouch is fixed for back issue - we do not need make back by this hack
 #ifdef OS_MACOSX
 		if (RHOCONF().getBool("jqtouch_mode"))
 		{
 			rho_webview_execute_js("window.Rho.jqt.goBack()", 0);
 			return;
 		}
-#endif		
+#endif
+*/		
         rho_webview_navigate_back();
 	}
 }

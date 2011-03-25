@@ -7,14 +7,14 @@ class <%= class_name %>Controller < Rho::RhoController
   #GET /<%= class_name %>
   def index
     @<%= name.downcase.pluralize %> = <%= class_name %>.find(:all)
-    render
+    render :back => '/app'
   end
 
   # GET /<%= class_name %>/{1}
   def show
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     if @<%= name.downcase %>
-      render :action => :show
+      render :action => :show, :back => url_for(:action => :index)
     else
       redirect :action => :index
     end
@@ -23,14 +23,14 @@ class <%= class_name %>Controller < Rho::RhoController
   # GET /<%= class_name %>/new
   def new
     @<%= name.downcase %> = <%= class_name %>.new
-    render :action => :new
+    render :action => :new, :back => url_for(:action => :index)
   end
 
   # GET /<%= class_name %>/{1}/edit
   def edit
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     if @<%= name.downcase %>
-      render :action => :edit
+      render :action => :edit, :back => url_for(:action => :index)
     else
       redirect :action => :index
     end
@@ -53,6 +53,5 @@ class <%= class_name %>Controller < Rho::RhoController
   def delete
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     @<%= name.downcase %>.destroy if @<%= name.downcase %>
-    redirect :action => :index
-  end
+    redirect :action => :index  end
 end

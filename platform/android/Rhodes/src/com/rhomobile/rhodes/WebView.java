@@ -49,10 +49,14 @@ public class WebView {
 	};
 	
 	private static class NavigateBackTask implements Runnable {
+		public NavigateBackTask(int index) {
+			mIndex = index;
+		}
 		public void run() {
 			RhodesService r = RhodesService.getInstance();
-			r.getMainView().goBack();
+			r.getMainView().back(mIndex);
 		}
+		private int mIndex;
 	};
 	
 	private static class RefreshTask implements Runnable {
@@ -95,7 +99,7 @@ public class WebView {
 	
 	public static void navigateBack() {
 		try {
-			PerformOnUiThread.exec(new NavigateBackTask(), false);
+			PerformOnUiThread.exec(new NavigateBackTask(activeTab()), false);
 		}
 		catch (Exception e) {
 			reportFail("navigateBack", e);
