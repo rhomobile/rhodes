@@ -22,13 +22,14 @@ namespace rho.common
         int m_currentTabIndex = 0;
         String[] m_currentUrls = new String[5];
         private String m_strBlobsDirPath, m_strDBDirPath;
-        //private String m_strStartUrl, m_strHomeUrl;
+        private String m_strHomeUrl;
 
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
         public CHttpServer HttpServer{ get { return m_httpServer; } }
         public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         public String getBlobsDirPath() { return m_strBlobsDirPath; }
+        public String getHomeUrl() { return m_strHomeUrl; }
 
         public void Init(WebBrowser browser)
         {
@@ -62,17 +63,57 @@ namespace rho.common
 
         void initAppUrls()
         {
-            //m_strHomeUrl = "http://localhost:2375";
+            m_strHomeUrl = "http://localhost:2375";
             m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
             m_strDBDirPath = getRhoRootPath() + "db";
         }
 
+        boolean isExternalUrl(String strUrl)
+        {
+            return strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
+                strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
+                 || strUrl.startsWith("tel:") || strUrl.startsWith("wtai:") ||
+                 strUrl.startsWith("sms:");
+        }
+
+        public String canonicalizeRhoPath(String path)
+        {
+            return path;
+        }
+
         public String canonicalizeRhoUrl(String url)
         {
-            if (!url.StartsWith(getRhoRootPath()))
-                return CFilePath.join(getRhoRootPath(), url);
+            if (url == null || url.length() == 0)
+                return getHomeUrl();
 
-            return url;
+            String strUrl = url.Replace('\\', '/');
+            if (!strUrl.startsWith(getHomeUrl()) && !isExternalUrl(strUrl))
+                strUrl = CFilePath.join(getHomeUrl(), strUrl);
+
+            return strUrl;
+        }
+
+        public boolean isRhodesAppUrl(String url)
+        {
+            return url.startsWith(getHomeUrl());
+        }
+
+        private delegate void CallbackDelegate(String strUrl, String strBody);
+
+        private void doProcessCallback(String strUrl, String strBody)
+        {
+            String strReply;
+            m_httpServer.call_ruby_method(strUrl, strBody, out strReply);
+        }
+
+        public NetResponse processCallback(String strUrl, String strBody)
+        {
+            if (m_webBrowser.Dispatcher.CheckAccess())
+                doProcessCallback(strUrl, strBody);
+            else
+                m_webBrowser.Dispatcher.BeginInvoke(new CallbackDelegate(doProcessCallback), strUrl, strBody);
+
+            return new NetResponse("", 200);
         }
 
         public static String getRhoRootPath()
@@ -101,12 +142,6 @@ namespace rho.common
         public String getPlatform()
         {
             return "WINDOWS_PHONE";
-        }
-
-        public bool isRhodesAppUrl(String url)
-        {
-            //TODO: isRhodesAppUrl
-            return false;
         }
 
         public boolean unzip_file(String path)
