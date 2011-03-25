@@ -21,7 +21,7 @@ require 'rhom'
 require 'rho/rhoutils'
 
 USE_HSQLDB = !System.get_property('has_sqlite')
-USE_COPY_FILES = !defined? RHO_ME
+USE_COPY_FILES = !defined? RHO_ME && !defined? RHO_WP7
 
 def getAccount
     return Account_s if $spec_settings[:schema_model]
