@@ -81,7 +81,25 @@ namespace rho.db
         public Object /*RubyValue*/ getRubyValueByIdx(int nCol)
         {
             Object val = getCurData()[nCol];
-            String d = val.ToString();
+
+            if (val == null)
+			    return null;
+		    else if ( val is string)
+			    return MutableString.Create((string)val);
+		    else if ( val is int )
+			    return (int)val;
+		    else if ( val is short )
+			    return (short)val;
+		    else if ( val is long)
+			    return (long)val;
+		    else if ( val is float )
+			    return (float)val;
+		    else if ( val is double)
+			    return (double)val;
+		    else if (val is byte[])
+                return MutableString.Create(((byte[])val).ToString());
+		
+
             return MutableString.Create(val.ToString());
         }
 
@@ -118,7 +136,7 @@ namespace rho.db
                         res[i] = null;
                         break;
                     case Sqlite3.SQLITE_INTEGER:
-                        res[i] = val.r;
+                        res[i] = (int)val.r;
                         break;
                     case Sqlite3.SQLITE_FLOAT:
                         res[i] = val.r;
