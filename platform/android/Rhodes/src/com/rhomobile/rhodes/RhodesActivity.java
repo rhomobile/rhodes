@@ -178,7 +178,7 @@ public class RhodesActivity extends BaseActivity {
 				return false;
 			
 			MainView v = r.getMainView();
-			v.back(v.activeTab());
+			v.goBack();//back(v.activeTab());
 			return true;
 		}
 		
