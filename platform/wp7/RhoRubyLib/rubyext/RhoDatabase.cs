@@ -58,13 +58,13 @@ namespace rho.rubyext
               
                 if ( isBatch )
                 {
-                   self.m_db.Lock();
+                   //self.m_db.Lock();
                    self.m_db.executeBatchSQL(sqlStatement.ToString());
-                   self.m_db.Unlock();
+                   //self.m_db.Unlock();
                 }
                 else
                 {
-                    self.m_db.Lock();
+                    //self.m_db.Lock();
        
                     Object[] values = null;
                     try
@@ -93,14 +93,14 @@ namespace rho.rubyext
                             {
                                 if (colNames == null)
                                     colNames = getOrigColNames(rows);
-
+                               
                                 row.Add(colNames[nCol], rows.getRubyValueByIdx(nCol));
                             }
                             retArr.Add(row);
                         }
                     }
 
-                    self.m_db.Unlock();
+                    //self.m_db.Unlock();
                 }
 
                 return retArr;
