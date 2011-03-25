@@ -3,6 +3,8 @@ using System.Net;
 using System.Windows.Shapes;
 using Community.CsharpSqlite;
 using System.Collections;
+using IronRuby.Runtime;
+using IronRuby.Builtins;
 using rho.common;
 
 namespace rho.db
@@ -78,7 +80,9 @@ namespace rho.db
 
         public Object /*RubyValue*/ getRubyValueByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_value(m_st, nCol);
+            Object val = getCurData()[nCol];
+            String d = val.ToString();
+            return MutableString.Create(val.ToString());
         }
 
         public boolean isNullByIdx(int nCol)
@@ -106,7 +110,29 @@ namespace rho.db
             String[] cols = getColumnNames();
             Object[] res = new Object[cols.Length];
             for (int i = 0; i < cols.Length; i++)
-                res[i] = Sqlite3.sqlite3_column_name(m_st, i);
+            {
+                Sqlite3.Mem val = Sqlite3.sqlite3_column_value(m_st, i);
+                switch (val.type)
+                {
+                    case Sqlite3.SQLITE_NULL:
+                        res[i] = null;
+                        break;
+                    case Sqlite3.SQLITE_INTEGER:
+                        res[i] = val.r;
+                        break;
+                    case Sqlite3.SQLITE_FLOAT:
+                        res[i] = val.r;
+                        break;
+                    case Sqlite3.SQLITE_TEXT:
+                        res[i] = val.z;
+                        break;
+                    case Sqlite3.SQLITE_BLOB:
+                        res[i] = val.zBLOB;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             return res;
         }

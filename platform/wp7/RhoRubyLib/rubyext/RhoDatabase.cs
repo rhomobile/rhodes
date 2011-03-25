@@ -78,13 +78,23 @@ namespace rho.rubyext
                         values = arr.ToArray();
                     }
 
-                    IDBResult dbRes = self.m_db.executeSQL(sqlStatement.ToString(), values);
-                    if(dbRes != null)
+                    IDBResult rows = self.m_db.executeSQL(sqlStatement.ToString(), values);
+                    if (rows != null)
                     {
-                        while (!dbRes.isEnd())
+                        MutableString[] colNames = null;
+                        for (; !rows.isEnd(); rows.next())
                         {
-                            retArr.Add(dbRes.getCurData());
-                            dbRes.next();
+                            IDictionary<object, object> map = new Dictionary<object, object>();
+                            Hash row = new Hash(map);
+                            for (int nCol = 0; nCol < rows.getColCount(); nCol++)
+                            {
+                                if (colNames == null)
+                                    colNames = getOrigColNames(rows);
+
+                                String f = rows.getRubyValueByIdx(nCol).ToString();
+                                row.Add(colNames[nCol], MutableString.Create(rows.getRubyValueByIdx(nCol).ToString()));
+                            }
+                            retArr.Add(row);
                         }
                     }
 
@@ -141,6 +151,15 @@ namespace rho.rubyext
             #endregion
 
             #region Helpers
+
+            private static MutableString[] getOrigColNames(IDBResult rows)
+            {
+                MutableString[] colNames = new MutableString[rows.getColCount()];
+                for (int nCol = 0; nCol < rows.getColCount(); nCol++)
+                    colNames[nCol] = MutableString.Create(rows.getOrigColName(nCol));
+
+                return colNames;
+            }
 
             #endregion
         }
