@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.rhomobile.rhodes.RhodesService;
 
@@ -27,7 +29,7 @@ public class RhoFileApi {
 	
 	public static native String normalizePath(String path);
 	
-	private static native boolean needJavaWay(String path);
+	private static native boolean needEmulate(String path);
 	private static native String makeRelativePath(String path);
 	
 	private static void fillStatTable() throws IOException
@@ -120,7 +122,7 @@ public class RhoFileApi {
 	public static InputStream open(String path)
 	{
 		//Log.d(TAG, "open: " + path);
-		if (needJavaWay(path)) {
+		if (needEmulate(path)) {
 			String relPath = makeRelativePath(path);
 			//Log.d(TAG, "open: (1): " + relPath);
 			return openInPackage(relPath);
@@ -184,6 +186,31 @@ public class RhoFileApi {
 		}
 		catch (Exception e) {
 			// Ignore
+		}
+	}
+	
+	public static String[] getChildren(String path) {
+		try {
+			// Merge children from both packed assets and file system 
+			String[] list1 = am.list(path);
+			File f = new File(RhodesService.getInstance().getRootPath(), path);
+			String[] list2 = f.list();
+			
+			List<String> list = new ArrayList<String>();
+			if (list1 != null)
+				for (String child : list1)
+					list.add(child);
+			if (list2 != null)
+				for (String child : list2) {
+					if (list.contains(child))
+						continue;
+					list.add(child);
+				}
+			
+			return list.toArray(new String[] {});
+		}
+		catch (IOException e) {
+			return null;
 		}
 	}
 	

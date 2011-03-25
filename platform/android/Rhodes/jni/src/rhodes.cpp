@@ -12,6 +12,7 @@
 
 #include <sys/stat.h>
 #include <sys/resource.h>
+#include <pwd.h>
 
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/RhoClassFactory.h"
@@ -391,6 +392,58 @@ static bool set_capabilities(JNIEnv *env)
     return true;
 }
 
+static bool set_posix_environment(JNIEnv *env, jclass clsRE)
+{
+    // Set USER variable
+    struct passwd *pwd = ::getpwuid(::getuid());
+    if (!pwd)
+    {
+        env->ThrowNew(clsRE, "Can't find user name for current user");
+        return false;
+    }
+
+    size_t len = ::strlen(pwd->pw_name) + 16;
+    char *buf = (char *)::malloc(len + 1);
+    buf[len] = '\0';
+    ::snprintf(buf, len, "USER=%s", pwd->pw_name);
+    int e = ::putenv(buf);
+    ::free(buf);
+    if (e != 0)
+    {
+        env->ThrowNew(clsRE, "Can't set USER environment variable");
+        return false;
+    }
+
+    // Set HOME variable
+    std::string const &root_path = rho_root_path();
+    len = root_path.size() + 16;
+    buf = (char *)::malloc(len + 1);
+    buf[len] = '\0';
+    ::snprintf(buf, len, "HOME=%s", root_path.c_str());
+    e = ::putenv(buf);
+    ::free(buf);
+    if (e != 0)
+    {
+        env->ThrowNew(clsRE, "Can't set HOME environment variable");
+        return false;
+    }
+
+    // Set TMP variable
+    len = root_path.size() + 32;
+    buf = (char *)::malloc(len + 1);
+    buf[len] = '\0';
+    ::snprintf(buf, len, "TMP=%s/tmp", root_path.c_str());
+    e = ::putenv(buf);
+    ::free(buf);
+    if (e != 0)
+    {
+        env->ThrowNew(clsRE, "Can't set TMP environment variable");
+        return false;
+    }
+
+    return true;
+}
+
 static jobject g_classLoader = NULL;
 static jmethodID g_loadClass = NULL;
 
@@ -446,6 +499,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
             return;
         }
     }
+
+    if (!set_posix_environment(env, clsRE)) return;
 
     if (!set_capabilities(env)) return;
 

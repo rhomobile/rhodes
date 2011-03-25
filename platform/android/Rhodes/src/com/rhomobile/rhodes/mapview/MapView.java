@@ -21,7 +21,6 @@ import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.mapview.MapTouch.Touch;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class MapView extends BaseActivity implements MapTouch {
