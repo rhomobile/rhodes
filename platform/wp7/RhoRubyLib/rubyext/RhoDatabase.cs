@@ -34,25 +34,21 @@ namespace rho.rubyext
             #region Public Instance Methods
 
             [RubyMethod("close")]
-            public static int Close(RhoDatabase/*!*/ self)
+            public static void Close(RhoDatabase/*!*/ self)
             {
                 self.m_db.close();
-
-                return 0;
             }
 
             [RubyMethod("commit")]
-            public static int Commit(RhoDatabase/*!*/ self)
+            public static void Commit(RhoDatabase/*!*/ self)
             {
                 self.m_db.commit();
 
-                return 0;
             }
 
             [RubyMethod("destroy_tables")]
-            public static int destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
+            public static void destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
             {
-                return 0;
             }
 
             [RubyMethod("execute")]
@@ -69,12 +65,20 @@ namespace rho.rubyext
                 else
                 {
                     self.m_db.Lock();
-
+       
                     Object[] values = null;
-                    if (args.Count > 0 && args[0] != null)
+                    try
                     {
-                        RubyArray arr = (RubyArray)args[0];
-                        values = arr.ToArray();
+                        if (args.Count > 0 && args[0] != null)
+                        {
+                            RubyArray arr = (RubyArray)args[0];
+                            values = arr.ToArray();
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        values = args.ToArray();
                     }
 
                     IDBResult rows = self.m_db.executeSQL(sqlStatement.ToString(), values);
@@ -109,27 +113,21 @@ namespace rho.rubyext
             }
 
             [RubyMethod("lock_db")]
-            public static int Lock(RhoDatabase/*!*/ self)
+            public static void Lock(RhoDatabase/*!*/ self)
             {
                 self.m_db.Lock();
-
-                return 0;
             }
 
             [RubyMethod("rollback")]
-            public static int Rollback(RhoDatabase/*!*/ self)
+            public static void Rollback(RhoDatabase/*!*/ self)
             {
                 self.m_db.rollback();
-
-                return 0;
             }
 
             [RubyMethod("start_transaction")]
-            public static int startTransaction(RhoDatabase/*!*/ self)
+            public static void startTransaction(RhoDatabase/*!*/ self)
             {
                 self.m_db.startTransaction();
-
-                return 0;
             }
 
             [RubyMethod("table_exist?")]
@@ -139,11 +137,9 @@ namespace rho.rubyext
             }
 
             [RubyMethod("unlock_db")]
-            public static int Unlock(RhoDatabase/*!*/ self)
+            public static void Unlock(RhoDatabase/*!*/ self)
             {
                 self.m_db.Unlock();
-
-                return 0;
             }
 
             #endregion
