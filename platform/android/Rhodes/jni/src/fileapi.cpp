@@ -28,6 +28,7 @@ struct rho_stat_t
 {
     rho_fileapi_type_t type;
     size_t size;
+    uint64_t ino;
     unsigned long mtime;
 };
 
@@ -36,28 +37,31 @@ static rho_stat_map_t rho_stat_map;
 
 struct rho_fd_data_t
 {
+    rho_fileapi_type_t type;
     jobject is;
+    DIR *dirp;
     std::string fpath;
     loff_t pos;
 };
 
 typedef rho::common::CMutexLock scoped_lock_t;
-static rho::common::CMutex rho_fd_mtx;
+static rho::common::CMutex rho_file_mtx;
 typedef std::map<int, rho_fd_data_t> rho_fd_map_t;
 rho_fd_map_t rho_fd_map;
 static std::vector<int> rho_fd_free;
 static int rho_fd_counter = RHO_FD_BASE;
 
+static uint64_t rho_ino = (uint64_t)-1;
+
 struct rho_dir_data_t
 {
-    std::string path;
+    int fd;
     size_t index;
     std::vector<struct dirent> childs;
 
-    rho_dir_data_t() :index(0) {}
+    rho_dir_data_t() :fd(-1), index(0) {}
 };
 
-static rho::common::CMutex rho_dir_mtx;
 typedef std::map<DIR*, rho_dir_data_t> rho_dir_map_t;
 rho_dir_map_t rho_dir_map;
 static std::vector<DIR*> rho_dir_free;
@@ -81,6 +85,7 @@ typedef int (*func_access_t)(const char *path, int mode);
 typedef int (*func_close_t)(int fd);
 typedef int (*func_dup2_t)(int fd, int fd2);
 typedef int (*func_dup_t)(int fd);
+typedef int (*func_mkdir_t)(const char *path, mode_t mode);
 typedef int (*func_fchdir_t)(int fd);
 typedef int (*func_fcntl_t)(int fd, int command, ...);
 typedef int (*func_fdatasync_t)(int fd);
@@ -114,6 +119,7 @@ static func_access_t real_access;
 static func_close_t real_close;
 static func_dup2_t real_dup2;
 static func_dup_t real_dup;
+static func_mkdir_t real_mkdir;
 static func_fchdir_t real_fchdir;
 static func_fcntl_t real_fcntl;
 static func_fdatasync_t real_fdatasync;
@@ -172,6 +178,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
         return;
     }
     st.size = (size_t)size;
+    st.ino = rho_ino--;
     st.mtime = (unsigned long)mtime;
 
     rho_stat_map.insert(std::make_pair(path, st));
@@ -210,6 +217,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_close = (func_close_t)dlsym(pc, "close");
     real_dup = (func_dup_t)dlsym(pc, "dup");
     real_dup2 = (func_dup2_t)dlsym(pc, "dup2");
+    real_mkdir = (func_mkdir_t)dlsym(pc, "mkdir");
     real_fchdir = (func_fchdir_t)dlsym(pc, "fchdir");
     real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
     real_fdatasync = (func_fdatasync_t)dlsym(pc, "fdatasync");
@@ -307,7 +315,8 @@ static std::string make_full_path(const char *path)
     if (*path == '/')
         return normalize_path(path);
 
-    std::string fpath = rho_root_path() + "/" + path;
+    //std::string fpath = rho_root_path() + "/" + path;
+    std::string fpath = rho_cur_path() + "/" + path;
 
     return normalize_path(fpath);
 }
@@ -350,7 +359,7 @@ static rho_stat_t *rho_stat(int fd)
     if (fd < RHO_FD_BASE)
         return NULL;
 
-    scoped_lock_t guard(rho_fd_mtx);
+    scoped_lock_t guard(rho_file_mtx);
 
     rho_fd_map_t::iterator it = rho_fd_map.find(fd);
     if (it == rho_fd_map.end())
@@ -505,7 +514,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         }
         else
         {
-            scoped_lock_t guard(rho_fd_mtx);
+            scoped_lock_t guard(rho_file_mtx);
             if (!rho_fd_free.empty())
             {
                 fd = rho_fd_free[0];
@@ -514,7 +523,9 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
             else
                 fd = rho_fd_counter++;
             rho_fd_data_t d;
+            d.type = rho_type_file;
             d.is = env->NewGlobalRef(is.get());
+            d.dirp = NULL;
             d.fpath = fpath;
             d.pos = 0;
             rho_fd_map[fd] = d;
@@ -543,7 +554,7 @@ RHO_GLOBAL int creat(const char* path, mode_t mode)
 
 RHO_GLOBAL int fcntl(int fd, int command, ...)
 {
-    RHO_LOG("fcntl: fd %d", fd);
+    RHO_LOG("fcntl: fd %d, command: %d", fd, command);
     if (fd < RHO_FD_BASE)
     {
         va_list vl;
@@ -551,6 +562,41 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
         int arg = va_arg(vl, int);
         va_end(vl);
         return real_fcntl(fd, command, arg);
+    }
+
+    if (has_pending_exception())
+    {
+        errno = EFAULT;
+        return -1;
+    }
+
+    switch (command)
+    {
+    case F_DUPFD: RHO_LOG("fcntl: F_DUPFD"); break;
+    case F_GETFD:
+        {
+            RHO_LOG("fcntl: F_GETFD");
+            scoped_lock_t guard(rho_file_mtx);
+            rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+            if (it == rho_fd_map.end())
+            {
+                errno = EBADF;
+                return -1;
+            }
+            return FD_CLOEXEC;
+        }
+        break;
+    case F_SETFD: RHO_LOG("fcntl: F_SETFD"); break;
+    case F_GETFL: RHO_LOG("fcntl: F_GETFL"); break;
+    case F_SETFL: RHO_LOG("fcntl: F_SETFL"); break;
+    case F_SETLK: RHO_LOG("fcntl: F_SETLK"); break;
+    case F_SETLKW: RHO_LOG("fcntl: F_SETLKW"); break;
+    case F_GETLK: RHO_LOG("fcntl: F_GETLK"); break;
+    case F_SETOWN: RHO_LOG("fcntl: F_SETOWN"); break;
+    case F_GETOWN: RHO_LOG("fcntl: F_GETOWN"); break;
+    case F_SETSIG: RHO_LOG("fcntl: F_SETSIG"); break;
+    case F_GETSIG: RHO_LOG("fcntl: F_GETSIG"); break;
+    default: RHO_LOG("fcntl: unknown command: %d", command);
     }
 
     RHO_NOT_IMPLEMENTED;
@@ -570,7 +616,7 @@ RHO_GLOBAL int close(int fd)
 
     jobject is = NULL;
     {
-        scoped_lock_t guard(rho_fd_mtx);
+        scoped_lock_t guard(rho_file_mtx);
 
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
@@ -579,14 +625,18 @@ RHO_GLOBAL int close(int fd)
             return -1;
         }
 
-        is = it->second.is;
+        if (it->second.type == rho_type_file)
+            is = it->second.is;
         rho_fd_map.erase(it);
         rho_fd_free.push_back(fd);
     }
 
-    JNIEnv *env = jnienv();
-    env->CallStaticVoidMethod(clsFileApi, midClose, is);
-    env->DeleteGlobalRef(is);
+    if (is)
+    {
+        JNIEnv *env = jnienv();
+        env->CallStaticVoidMethod(clsFileApi, midClose, is);
+        env->DeleteGlobalRef(is);
+    }
     return 0;
 }
 
@@ -608,7 +658,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 
     jobject is = NULL;
     {
-        scoped_lock_t guard(rho_fd_mtx);
+        scoped_lock_t guard(rho_file_mtx);
 
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
@@ -628,7 +678,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
     if (result > 0)
     {
         {
-            scoped_lock_t guard(rho_fd_mtx);
+            scoped_lock_t guard(rho_file_mtx);
             rho_fd_map_t::iterator it = rho_fd_map.find(fd);
             if (it == rho_fd_map.end())
             {
@@ -683,17 +733,27 @@ RHO_GLOBAL int link(const char *src, const char *dst)
     RHO_NOT_IMPLEMENTED;
 }
 
-RHO_GLOBAL int chdir(const char *)
-{
-    RHO_NOT_IMPLEMENTED;
-}
-
 RHO_GLOBAL int fchdir(int fd)
 {
     if (fd < RHO_FD_BASE)
         return real_fchdir(fd);
 
     RHO_NOT_IMPLEMENTED;
+}
+
+/*
+RHO_GLOBAL int chdir(const char *path)
+{
+    RHO_NOT_IMPLEMENTED;
+}
+*/
+
+RHO_GLOBAL int mkdir(const char *path, mode_t mode)
+{
+    RHO_LOG("mkdir: path=%s, mode=0x%x", path, (int)mode);
+    std::string fpath = make_full_path(path);
+    RHO_LOG("mkdir: fpath=%s", fpath.c_str());
+    return real_mkdir(fpath.c_str(), mode);
 }
 
 RHO_GLOBAL int rmdir(const char *path)
@@ -771,7 +831,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
     RHO_LOG("lseek64: fd %d: java", fd);
 
     {
-        scoped_lock_t guard(rho_fd_mtx);
+        scoped_lock_t guard(rho_file_mtx);
 
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
@@ -928,6 +988,7 @@ static int stat_impl(std::string const &fpath, struct stat *buf)
         return -1;
     }
     buf->st_size = rst->size;
+    buf->st_ino = rst->ino;
     time_t tm = rst->mtime;
     buf->st_atime = tm;
     buf->st_mtime = tm;
@@ -956,7 +1017,7 @@ RHO_GLOBAL int fstat(int fd, struct stat *buf)
     std::string fpath;
 
     {
-        scoped_lock_t guard(rho_fd_mtx);
+        scoped_lock_t guard(rho_file_mtx);
 
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
@@ -1124,7 +1185,7 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
     if (fpath.empty())
     {
         RHO_LOG("opendir: dirpath is empty");
-        errno = EFAULT;
+        errno = ENOENT;
         return NULL;
     }
 
@@ -1140,23 +1201,40 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
     DIR *dirp = NULL;
     if (emulate)
     {
+        struct stat st;
+        if (::stat(fpath.c_str(), &st) == -1)
+            return NULL;
+        if (!S_ISDIR(st.st_mode))
+        {
+            errno = ENOTDIR;
+            return NULL;
+        }
+
         std::vector<std::string> children;
+        children.push_back(".");
+        children.push_back("..");
         {
             JNIEnv *env = jnienv();
             jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
             jholder<jobjectArray> jChildren = jholder<jobjectArray>((jobjectArray)env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
 
-            if (!!jChildren)
-                for (jsize i = 0, lim = env->GetArrayLength(jChildren.get()); i != lim; ++i)
-                {
-                    jhstring jc = jhstring((jstring)env->GetObjectArrayElement(jChildren.get(), i));
-                    std::string const &ch = rho_cast<std::string>(env, jc);
-                    RHO_LOG("opendir: next children: %s", ch.c_str());
-                    children.push_back(ch);
-                }
+            if (!jChildren)
+            {
+                errno = EFAULT;
+                return NULL;
+            }
+
+            for (jsize i = 0, lim = env->GetArrayLength(jChildren.get()); i != lim; ++i)
+            {
+                jhstring jc = jhstring((jstring)env->GetObjectArrayElement(jChildren.get(), i));
+                std::string const &ch = rho_cast<std::string>(env, jc);
+                RHO_LOG("opendir: next children: %s", ch.c_str());
+                children.push_back(ch);
+            }
         }
 
-        scoped_lock_t guard(rho_dir_mtx);
+        // Allocate dirp
+        scoped_lock_t guard(rho_file_mtx);
         if (!rho_dir_free.empty())
         {
             dirp = rho_dir_free[0];
@@ -1165,21 +1243,49 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
         else
             dirp = reinterpret_cast<DIR *>(rho_dir_counter--);
 
-        rho_dir_data_t d;
-        d.path = make_rel_path(fpath);
+        // Allocate fd
+        int fd;
+        if (!rho_fd_free.empty())
+        {
+            fd = rho_fd_free[0];
+            rho_fd_free.erase(rho_fd_free.begin());
+        }
+        else
+            fd = rho_fd_counter++;
+        rho_fd_data_t d;
+        d.type = rho_type_dir;
+        d.is = NULL;
+        d.dirp = dirp;
+        d.fpath = fpath;
+        d.pos = 0;
+        rho_fd_map[fd] = d;
+
+        // Collect children
+        rho_dir_data_t dd;
+        dd.fd = fd;
         for (std::vector<std::string>::const_iterator it = children.begin(), lim = children.end(); it != lim; ++it)
         {
+            std::string cpath = fpath + "/" + *it;
+            struct stat st;
+            if (::stat(cpath.c_str(), &st) == -1)
+                return NULL;
+
             struct dirent de;
-            de.d_ino = (uint64_t)-1;
+            de.d_ino = st.st_ino;
             de.d_off = 0;
             de.d_reclen = sizeof(struct dirent);
-            de.d_type = DT_UNKNOWN;
+            if (S_ISDIR(st.st_mode))
+                de.d_type = DT_DIR;
+            else if (S_ISREG(st.st_mode))
+                de.d_type = DT_REG;
+            else
+                de.d_type = DT_UNKNOWN;
             strlcpy(de.d_name, it->c_str(), sizeof(de.d_name));
-            d.childs.push_back(de);
+            dd.childs.push_back(de);
         }
-        rho_dir_map[dirp] = d;
+        rho_dir_map[dirp] = dd;
 
-        RHO_LOG("opendir: return %p (emulated)", (void*)dirp);
+        RHO_LOG("opendir: return %p (emulated), fd %d", (void*)dirp, fd);
     }
     else
     {
@@ -1196,6 +1302,15 @@ RHO_GLOBAL DIR *fdopendir(int fd)
     if (fd < RHO_FD_BASE)
         return real_fdopendir(fd);
 
+    scoped_lock_t guard(rho_file_mtx);
+    for (rho_dir_map_t::const_iterator it = rho_dir_map.begin(), lim = rho_dir_map.end(); it != lim; ++it)
+    {
+        if (it->second.fd != fd)
+            continue;
+
+        return it->first;
+    }
+
     errno = EBADF;
     return NULL;
 }
@@ -1203,19 +1318,18 @@ RHO_GLOBAL DIR *fdopendir(int fd)
 RHO_GLOBAL int dirfd(DIR *dirp)
 {
     RHO_LOG("dirfd: dirp=%p", (void*)dirp);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::const_iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         return real_dirfd(dirp);
 
-    errno = EINVAL;
-    return -1;
+    return it->second.fd;
 }
 
 RHO_GLOBAL struct dirent *readdir(DIR *dirp)
 {
     RHO_LOG("readdir: dirp=%p", (void*)dirp);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
     {
@@ -1232,6 +1346,7 @@ RHO_GLOBAL struct dirent *readdir(DIR *dirp)
     }
 
     struct dirent *ret = &d.childs[d.index++];
+    ret->d_off = ret->d_reclen;
     RHO_LOG("readdir: return %p (emulated)", (void*)ret);
     return ret;
 }
@@ -1239,7 +1354,7 @@ RHO_GLOBAL struct dirent *readdir(DIR *dirp)
 RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 {
     RHO_LOG("readdir_r: dirp=%p", (void*)dirp);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
     {
@@ -1256,7 +1371,8 @@ RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result
         return 0;
     }
 
-    struct dirent const &de = d.childs[d.index++];
+    struct dirent &de = d.childs[d.index++];
+    de.d_off = de.d_reclen;
     entry->d_ino = de.d_ino;
     entry->d_off = de.d_off;
     entry->d_reclen = de.d_reclen;
@@ -1272,7 +1388,7 @@ RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result
 RHO_GLOBAL int closedir(DIR *dirp)
 {
     RHO_LOG("closedir: dirp=%p", (void*)dirp);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
     {
@@ -1280,6 +1396,16 @@ RHO_GLOBAL int closedir(DIR *dirp)
         RHO_LOG("closedir: return %d (native)", ret);
         return ret;
     }
+
+    rho_fd_map_t::iterator itt = rho_fd_map.find(it->second.fd);
+    if (itt == rho_fd_map.end())
+    {
+        errno = EBADF;
+        return -1;
+    }
+
+    rho_fd_map.erase(itt);
+    rho_fd_free.push_back(it->second.fd);
 
     rho_dir_map.erase(it);
     rho_dir_free.push_back(dirp);
@@ -1290,13 +1416,14 @@ RHO_GLOBAL int closedir(DIR *dirp)
 RHO_GLOBAL void seekdir(DIR *dirp, long offset)
 {
     RHO_LOG("seekdir: dirp=%p, offset=%ld", (void*)dirp, offset);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         return;
 
     rho_dir_data_t &d = it->second;
-    for (std::vector<struct dirent>::iterator itt = d.childs.begin(), limm = d.childs.end(); itt != limm; ++itt)
+    d.index = 0;
+    for (std::vector<struct dirent>::iterator itt = d.childs.begin(), limm = d.childs.end(); itt != limm; ++itt, ++d.index)
     {
         if (offset >= itt->d_reclen)
         {
@@ -1312,7 +1439,7 @@ RHO_GLOBAL void seekdir(DIR *dirp, long offset)
 RHO_GLOBAL long telldir(DIR *dirp)
 {
     RHO_LOG("telldir: dirp=%p", (void*)dirp);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         return 0;
@@ -1332,12 +1459,17 @@ RHO_GLOBAL long telldir(DIR *dirp)
 RHO_GLOBAL void rewinddir(DIR *dirp)
 {
     RHO_LOG("rewinddir: dirp=%p", (void*)dirp);
-    scoped_lock_t guard(rho_dir_mtx);
+    scoped_lock_t guard(rho_file_mtx);
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         real_rewinddir(dirp);
     else
-        it->second.index = 0;
+    {
+        rho_dir_data_t &d = it->second;
+        d.index = 0;
+        if (d.childs.size() > 0)
+            d.childs[0].d_off = 0;
+    }
 }
 
 RHO_GLOBAL int scandir(const char *dir, struct dirent ***namelist, int (*filter)(const struct dirent *),
