@@ -29,21 +29,18 @@ namespace rho.rubyext
             #region Public Instance Methods
 
             [RubyMethod("close")]
-            public static int Close(RhoDatabase/*!*/ self)
+            public static void Close(RhoDatabase/*!*/ self)
             {
-                return 1;
             }
 
             [RubyMethod("commit")]
-            public static int Commit(RhoDatabase/*!*/ self)
+            public static void Commit(RhoDatabase/*!*/ self)
             {
-                return 1;
             }
 
             [RubyMethod("destroy_tables")]
-            public static int destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
+            public static void destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
             {
-                return 1;
             }
 
             [RubyMethod("execute")]
@@ -60,21 +57,19 @@ namespace rho.rubyext
             }
 
             [RubyMethod("lock_db")]
-            public static int Lock(RhoDatabase/*!*/ self)
+            public static void Lock(RhoDatabase/*!*/ self)
             {
-                return 1;
             }
 
             [RubyMethod("rollback")]
-            public static int Rollback(RhoDatabase/*!*/ self)
+            public static void Rollback(RhoDatabase/*!*/ self)
             {
-                return 1;
+ 
             }
 
             [RubyMethod("start_transaction")]
-            public static int startTransaction(RhoDatabase/*!*/ self)
+            public static void startTransaction(RhoDatabase/*!*/ self)
             {
-                return 1;
             }
 
             [RubyMethod("table_exist?")]
@@ -84,9 +79,8 @@ namespace rho.rubyext
             }
 
             [RubyMethod("unlock_db")]
-            public static int Unlock(RhoDatabase/*!*/ self)
+            public static void Unlock(RhoDatabase/*!*/ self)
             {
-                return 1;
             }
 
             #endregion
