@@ -91,7 +91,6 @@ namespace rho.rubyext
                                 if (colNames == null)
                                     colNames = getOrigColNames(rows);
 
-                                String f = rows.getRubyValueByIdx(nCol).ToString();
                                 row.Add(colNames[nCol], MutableString.Create(rows.getRubyValueByIdx(nCol).ToString()));
                             }
                             retArr.Add(row);
