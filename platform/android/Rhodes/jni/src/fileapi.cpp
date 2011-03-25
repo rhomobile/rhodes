@@ -85,6 +85,12 @@ typedef int (*func_access_t)(const char *path, int mode);
 typedef int (*func_close_t)(int fd);
 typedef int (*func_dup2_t)(int fd, int fd2);
 typedef int (*func_dup_t)(int fd);
+typedef int (*func_chown_t)(const char *path, uid_t uid, gid_t gid);
+typedef int (*func_fchown_t)(int fd, uid_t uid, gid_t gid);
+typedef int (*func_lchown_t)(const char *path, uid_t uid, gid_t gid);
+typedef int (*func_link_t)(const char *src, const char *dst);
+typedef int (*func_symlink_t)(const char *src, const char *dst);
+typedef int (*func_readlink_t)(const char *path, char *buf, size_t bufsize);
 typedef int (*func_mkdir_t)(const char *path, mode_t mode);
 typedef int (*func_fchdir_t)(int fd);
 typedef int (*func_fcntl_t)(int fd, int command, ...);
@@ -119,6 +125,12 @@ static func_access_t real_access;
 static func_close_t real_close;
 static func_dup2_t real_dup2;
 static func_dup_t real_dup;
+static func_chown_t real_chown;
+static func_fchown_t real_fchown;
+static func_lchown_t real_lchown;
+static func_link_t real_link;
+static func_symlink_t real_symlink;
+static func_readlink_t real_readlink;
 static func_mkdir_t real_mkdir;
 static func_fchdir_t real_fchdir;
 static func_fcntl_t real_fcntl;
@@ -217,6 +229,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_close = (func_close_t)dlsym(pc, "close");
     real_dup = (func_dup_t)dlsym(pc, "dup");
     real_dup2 = (func_dup2_t)dlsym(pc, "dup2");
+    real_chown = (func_chown_t)dlsym(pc, "chown");
+    real_fchown = (func_fchown_t)dlsym(pc, "fchown");
+    real_lchown = (func_lchown_t)dlsym(pc, "lchown");
+    real_link = (func_link_t)dlsym(pc, "link");
+    real_symlink = (func_symlink_t)dlsym(pc, "symlink");
+    real_readlink = (func_readlink_t)dlsym(pc, "readlink");
     real_mkdir = (func_mkdir_t)dlsym(pc, "mkdir");
     real_fchdir = (func_fchdir_t)dlsym(pc, "fchdir");
     real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
@@ -728,11 +746,6 @@ RHO_GLOBAL int access(const char *path, int mode)
     return 0;
 }
 
-RHO_GLOBAL int link(const char *src, const char *dst)
-{
-    RHO_NOT_IMPLEMENTED;
-}
-
 RHO_GLOBAL int fchdir(int fd)
 {
     if (fd < RHO_FD_BASE)
@@ -740,13 +753,6 @@ RHO_GLOBAL int fchdir(int fd)
 
     RHO_NOT_IMPLEMENTED;
 }
-
-/*
-RHO_GLOBAL int chdir(const char *path)
-{
-    RHO_NOT_IMPLEMENTED;
-}
-*/
 
 RHO_GLOBAL int mkdir(const char *path, mode_t mode)
 {
@@ -781,32 +787,111 @@ RHO_GLOBAL int chroot(const char *)
 
 RHO_GLOBAL int chown(const char *path, uid_t uid, gid_t gid)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("chown: path=%s, uid=%d, gid=%d", path, (int)uid, (int)gid);
+    std::string fpath = make_full_path(path);
+    if (!need_emulate(fpath))
+        return real_chown(path, uid, gid);
+
+    errno = EACCES;
+    return -1;
 }
 
 RHO_GLOBAL int fchown(int fd, uid_t uid, gid_t gid)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("fchown: fd=%d, uid=%d, gid=%d", fd, (int)uid, (int)gid);
+    if (fd < RHO_FD_BASE)
+        return real_fchown(fd, uid, gid);
+
+    std::string fpath;
+
+    {
+        scoped_lock_t guard(rho_file_mtx);
+
+        rho_fd_map_t::iterator it = rho_fd_map.find(fd);
+        if (it == rho_fd_map.end())
+        {
+            errno = EBADF;
+            return -1;
+        }
+
+        fpath = it->second.fpath;
+    }
+
+    return chown(fpath.c_str(), uid, gid);
 }
 
 RHO_GLOBAL int lchown(const char *path, uid_t uid, gid_t gid)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("lchown: path=%s, uid=%d, gid=%d", path, (int)uid, (int)gid);
+    std::string fpath = make_full_path(path);
+    if (!need_emulate(fpath))
+        return real_lchown(path, uid, gid);
+
+    return chown(path, uid, gid);
 }
 
-RHO_GLOBAL int mknod(const char *path, mode_t mode, dev_t dev)
+RHO_GLOBAL int link(const char *src, const char *dst)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("link: src=%s, dst=%s");
+    std::string fsrc = make_full_path(src);
+    if (need_emulate(fsrc))
+    {
+        RHO_LOG("link: %s: copy from Android package", src);
+        JNIEnv *env = jnienv();
+        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fsrc).c_str());
+        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
+        if (has_pending_exception())
+        {
+            errno = EFAULT;
+            return -1;
+        }
+    }
+
+    rho_stat_t *st = rho_stat(dst);
+    if (st)
+    {
+        errno = EEXIST;
+        return -1;
+    }
+
+    return real_link(src, dst);
 }
 
 RHO_GLOBAL int symlink(const char *src, const char *dst)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("symlink: src=%s, dst=%s", src, dst);
+    std::string fsrc = make_full_path(src);
+    if (need_emulate(fsrc))
+    {
+        RHO_LOG("symlink: %s: copy from Android package", src);
+        JNIEnv *env = jnienv();
+        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fsrc).c_str());
+        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
+        if (has_pending_exception())
+        {
+            errno = EFAULT;
+            return -1;
+        }
+    }
+
+    rho_stat_t *st = rho_stat(dst);
+    if (st)
+    {
+        errno = EEXIST;
+        return -1;
+    }
+
+    return real_symlink(src, dst);
 }
 
 RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("readlink: path=%s", path);
+    if (!need_emulate(path))
+        return real_readlink(path, buf, bufsize);
+
+    errno = EINVAL;
+    return -1;
 }
 
 RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
