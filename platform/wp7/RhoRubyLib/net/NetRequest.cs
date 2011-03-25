@@ -229,11 +229,7 @@ namespace rho.net
 		    m_bCancel = false;
 		
 		    if ( RHODESAPP().isRhodesAppUrl(strUrl) )
-		    {
-			    //IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			    //return helper.postUrl(strUrl,strBody);
-                //TODO: process local url
-		    }
+                return RHODESAPP().processCallback(strUrl, strBody);
 		
 		    return doRequest("POST", strUrl, strBody, oSession, null);
         }

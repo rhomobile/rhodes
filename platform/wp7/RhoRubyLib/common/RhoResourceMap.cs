@@ -23,7 +23,7 @@ namespace rho.common
             {
                 String[] values = files[i].Split('|');
 
-                String strFile = RHODESAPP().canonicalizeRhoUrl(values[0]);
+                String strFile = RHODESAPP().canonicalizeRhoPath(values[0]);
                 if (CRhoFile.isFileExist(strFile))
                 {
                     CRhoFile.deleteFile(strFile);
@@ -39,18 +39,18 @@ namespace rho.common
             {
                 String[] values = files[i].Split('|');
 
-                String strFile = RHODESAPP().canonicalizeRhoUrl(values[0]);
-                CRhoFile.recursiveCreateDir(RHODESAPP().canonicalizeRhoUrl(strFile));
+                String strFile = RHODESAPP().canonicalizeRhoPath(values[0]);
+                CRhoFile.recursiveCreateDir(strFile);
                 CRhoFile.writeDataToFile(strFile, CRhoFile.readResourceFile(strFile));
             }
 
-            CRhoFile.writeStringToFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"), strMap);
+            CRhoFile.writeStringToFile(RHODESAPP().canonicalizeRhoPath("RhoBundleMap.txt"), strMap);
         }
 
         public static void deployContent() 
         {
-            String newMap = CRhoFile.readStringFromResourceFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
-            String curMap = CRhoFile.readStringFromFile(RHODESAPP().canonicalizeRhoUrl("RhoBundleMap.txt"));
+            String newMap = CRhoFile.readStringFromResourceFile(RHODESAPP().canonicalizeRhoPath("RhoBundleMap.txt"));
+            String curMap = CRhoFile.readStringFromFile(RHODESAPP().canonicalizeRhoPath("RhoBundleMap.txt"));
 
             if (curMap == "")
             {
