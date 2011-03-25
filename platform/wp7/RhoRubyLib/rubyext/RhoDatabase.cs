@@ -15,7 +15,6 @@ namespace rho.rubyext
         public class RhoDatabase
         {
             DBAdapter m_db;
-
             RhoDatabase() { }
 
             #region Construction
@@ -91,7 +90,7 @@ namespace rho.rubyext
                                 if (colNames == null)
                                     colNames = getOrigColNames(rows);
 
-                                row.Add(colNames[nCol], MutableString.Create(rows.getRubyValueByIdx(nCol).ToString()));
+                                row.Add(colNames[nCol], rows.getRubyValueByIdx(nCol));
                             }
                             retArr.Add(row);
                         }
