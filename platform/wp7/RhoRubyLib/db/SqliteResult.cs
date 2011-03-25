@@ -57,7 +57,8 @@ namespace rho.db
 
         public String getStringByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_text(m_st, nCol);
+            String val = Sqlite3.sqlite3_column_text(m_st, nCol);
+            return val != null ? val : String.Empty;
         }
 
         public int getIntByIdx(int nCol)
