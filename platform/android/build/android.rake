@@ -1470,7 +1470,7 @@ namespace "run" do
       end
 
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M "
-      system("echo \"\" | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+      system("echo no | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
       if $use_google_addon_api
         avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
