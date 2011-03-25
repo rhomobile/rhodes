@@ -1034,9 +1034,9 @@ namespace "build" do
         puts 'ext_build.files found ! Addditional files for compilation :'
         File.open(File.join($extensionsdir, "ext_build.files")) do |f|
           while line = f.gets
-            line=line.gsub("\n","\"")
+            line.chomp!
             puts 'java file : ' + line
-            lines << "\""+line
+            lines << "\""+line+"\""
           end
         end
       else
