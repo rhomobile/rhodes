@@ -60,7 +60,7 @@ namespace rho.rubyext
             public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement, Boolean isBatch, RubyArray args)
             {
                 RubyArray retArr = new RubyArray();
-                int g = args.Count;
+              
                 if ( isBatch )
                 {
                    self.m_db.Lock();
@@ -72,7 +72,7 @@ namespace rho.rubyext
                     self.m_db.Lock();
 
                     Object[] values = null;
-                    if (args != null && args[0] != null)
+                    if (args.Count > 0 && args[0] != null)
                     {
                         RubyArray arr = (RubyArray)args[0];
                         values = arr.ToArray();
