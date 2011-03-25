@@ -232,7 +232,11 @@
 #define RUBY_SITE_LIB2 "/apps/app"
 #define RUBY_VENDOR_LIB "/lib"
 #define RUBY_VENDOR_LIB2 "/lib"
+#ifndef OS_ANDROID
 #define RUBY_PLATFORM "i686-linux"
+#else
+#define RUBY_PLATFORM "arm-android"
+#endif
 #define RUBY_ARCHLIB "/lib"
 #define RUBY_SITE_ARCHLIB "/lib"
 #define RUBY_VENDOR_ARCHLIB "/lib"
@@ -243,6 +247,9 @@
 #define HAVE_GETNAMEINFO 1
 #define HAVE_GETHOSTNAME 1
 #define HAVE_UNAME 1
+
+#define HAVE_TELLDIR 1
+#define HAVE_SEEKDIR 1
 
 #if defined(OS_ANDROID)
 #  define HAVE_SYS_SYSCALL_H 1
@@ -270,8 +277,6 @@ typedef unsigned long rlim_t;
 #  define HAVE_EACCESS 1
 #  define HAVE_UTIMENSAT 1
 #  define HAVE_GROUP_MEMBER 1
-#  define HAVE_TELLDIR 1
-#  define HAVE_SEEKDIR 1
 #  define HAVE_TIMEGM 1
 #  define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
 #  define HAVE_BACKTRACE 1

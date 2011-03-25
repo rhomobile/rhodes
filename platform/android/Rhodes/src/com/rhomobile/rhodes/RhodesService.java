@@ -203,6 +203,8 @@ public class RhodesService extends Service {
 		f.mkdirs();
 		f = new File(sqliteJournalsPath);
 		f.mkdirs();
+		f = new File(mRootPath, "tmp");
+		f.mkdirs();
 		
 		String apkPath = appInfo.sourceDir;
 		
