@@ -98,6 +98,7 @@ typedef off_t (*func_lseek_t)(int fd, off_t offset, int whence);
 typedef ssize_t (*func_read_t)(int fd, void *buf, size_t count);
 typedef ssize_t (*func_write_t)(int fd, const void *buf, size_t count);
 typedef int (*func_getdents_t)(unsigned int, struct dirent *, unsigned int);
+typedef int (*func_rmdir_t)(const char *path);
 typedef DIR *(*func_opendir_t)(const char *dirpath);
 typedef DIR *(*func_fdopendir_t)(int fd);
 typedef struct dirent *(*func_readdir_t)(DIR *dirp);
@@ -130,6 +131,7 @@ static func_stat_t real_stat;
 static func_unlink_t real_unlink;
 static func_write_t real_write;
 static func_getdents_t real_getdents;
+static func_rmdir_t real_rmdir;
 static func_opendir_t real_opendir;
 static func_fdopendir_t real_fdopendir;
 static func_readdir_t real_readdir;
@@ -225,6 +227,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_unlink = (func_unlink_t)dlsym(pc, "unlink");
     real_write = (func_write_t)dlsym(pc, "write");
     real_getdents = (func_getdents_t)dlsym(pc, "getdents");
+    real_rmdir = (func_rmdir_t)dlsym(pc, "rmdir");
     real_opendir = (func_opendir_t)dlsym(pc, "opendir");
     real_fdopendir = (func_fdopendir_t)dlsym(pc, "fdopendir");
     real_readdir = (func_readdir_t)dlsym(pc, "readdir");
@@ -246,7 +249,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 
 static std::string normalize_path(std::string path)
 {
-    RHO_LOG("normalize_path: (1): path: %s", path.c_str());
+    //RHO_LOG("normalize_path: (1): path: %s", path.c_str());
 
     bool has_leading_slash = !path.empty() && path[0] == '/';
 
@@ -284,7 +287,7 @@ static std::string normalize_path(std::string path)
     if (!has_leading_slash)
         path.erase(0, 1);
 
-    RHO_LOG("normalize_path: return %s", path.c_str());
+    //RHO_LOG("normalize_path: return %s", path.c_str());
     return path;
 }
 
@@ -693,9 +696,22 @@ RHO_GLOBAL int fchdir(int fd)
     RHO_NOT_IMPLEMENTED;
 }
 
-RHO_GLOBAL int rmdir(const char *)
+RHO_GLOBAL int rmdir(const char *path)
 {
-    RHO_NOT_IMPLEMENTED;
+    RHO_LOG("rmdir: path=%s", path);
+    if (need_emulate(path))
+    {
+        rho_stat_t *st = rho_stat(path);
+        if (!st)
+            errno = ENOENT;
+        else if (st->type != rho_type_dir)
+            errno = ENOTDIR;
+        else
+            errno = EACCES;
+        return -1;
+    }
+
+    return real_rmdir(path);
 }
 
 RHO_GLOBAL int chroot(const char *)
@@ -1155,8 +1171,8 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
         {
             struct dirent de;
             de.d_ino = (uint64_t)-1;
-            de.d_off = -1;
-            de.d_reclen = -1;
+            de.d_off = 0;
+            de.d_reclen = sizeof(struct dirent);
             de.d_type = DT_UNKNOWN;
             strlcpy(de.d_name, it->c_str(), sizeof(de.d_name));
             d.childs.push_back(de);
@@ -1269,6 +1285,48 @@ RHO_GLOBAL int closedir(DIR *dirp)
     rho_dir_free.push_back(dirp);
     RHO_LOG("closedir: return 0 (emulated)");
     return 0;
+}
+
+RHO_GLOBAL void seekdir(DIR *dirp, long offset)
+{
+    RHO_LOG("seekdir: dirp=%p, offset=%ld", (void*)dirp, offset);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+        return;
+
+    rho_dir_data_t &d = it->second;
+    for (std::vector<struct dirent>::iterator itt = d.childs.begin(), limm = d.childs.end(); itt != limm; ++itt)
+    {
+        if (offset >= itt->d_reclen)
+        {
+            offset -= itt->d_reclen;
+            itt->d_off = itt->d_reclen;
+            continue;
+        }
+        itt->d_off = offset;
+        break;
+    }
+}
+
+RHO_GLOBAL long telldir(DIR *dirp)
+{
+    RHO_LOG("telldir: dirp=%p", (void*)dirp);
+    scoped_lock_t guard(rho_dir_mtx);
+    rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
+    if (it == rho_dir_map.end())
+        return 0;
+
+    rho_dir_data_t &d = it->second;
+    long offset = 0;
+    for (std::vector<struct dirent>::const_iterator itt = d.childs.begin(), limm = d.childs.end(); itt != limm; ++itt)
+    {
+        offset += itt->d_off;
+        if (itt->d_off < itt->d_reclen)
+            break;
+    }
+
+    return offset;
 }
 
 RHO_GLOBAL void rewinddir(DIR *dirp)
