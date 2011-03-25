@@ -4382,7 +4382,7 @@ break;
       n = pParse.nRangeReg;
       if ( nReg <= n )
       {
-        Debug.Assert( 0 == usedAsColumnCache( pParse, i, i + n - 1 ) );
+        //Debug.Assert( 0 == usedAsColumnCache( pParse, i, i + n - 1 ) );
         pParse.iRangeReg += nReg;
         pParse.nRangeReg -= nReg;
       }
