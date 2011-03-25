@@ -58,7 +58,7 @@ public class SimpleMainView implements MainView {
 	
 	private class ActionBack implements View.OnClickListener {
 		public void onClick(View v) {
-			back(0);
+			goBack();//back(0);
 		}
 	};
 	
@@ -316,6 +316,9 @@ public class SimpleMainView implements MainView {
 			onClick = new ActionBack();
 		}
 		else if (action.equalsIgnoreCase("forward")) {
+			if (RhodesService.isJQTouch_mode()) {
+				return null;
+			}
 			icon = ctx.getResources().getDrawable(AndroidR.drawable.next);
 			onClick = new ActionForward();
 		}
@@ -545,15 +548,10 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public void back(int index) {
-		RhodesService.navigateBack();
-	}
-	
-	public void goBack() 
-	{
 		restoreWebView();
         
         boolean bStartPage = RhodesService.isOnStartPage();
-        
+
         if ( !bStartPage && webView.canGoBack() )		
             webView.goBack();
         else
@@ -562,6 +560,11 @@ public class SimpleMainView implements MainView {
 	        if ( ra != null )
 	            ra.moveTaskToBack(true);
         }		
+	}
+	
+	public void goBack() 
+	{
+		RhodesService.navigateBack();
 	}
 
 	public void forward(int index) {
