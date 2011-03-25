@@ -34,6 +34,12 @@ namespace rho.rubyext
             return null;
         }
 
+        [RubyMethod("is_blob_attr", RubyMethodAttributes.PublicSingleton)]
+        public static long is_blob_attr(RubyModule/*!*/ self, MutableString szPartition, int srcID, MutableString szAttrName)
+        {
+            return 0;
+        }
+
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
         public static int logged_in(RubyModule/*!*/ self)
         {

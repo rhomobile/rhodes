@@ -38,17 +38,17 @@ namespace rho.rubyext {
         private static void LoadSQLite3__Database_Instance(IronRuby.Builtins.RubyModule/*!*/ module) {
             DefineLibraryMethod(module, "close", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.Close)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Close)
             );
             
             DefineLibraryMethod(module, "commit", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.Commit)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Commit)
             );
             
             DefineLibraryMethod(module, "destroy_tables", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int64, System.Int64, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.destroyTables)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int64, System.Int64>(rho.rubyext.RhoSQLite3.RhoDatabase.destroyTables)
             );
             
             DefineLibraryMethod(module, "execute", 0x11, 
@@ -63,17 +63,17 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "lock_db", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.Lock)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Lock)
             );
             
             DefineLibraryMethod(module, "rollback", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.Rollback)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Rollback)
             );
             
             DefineLibraryMethod(module, "start_transaction", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.startTransaction)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.startTransaction)
             );
             
             DefineLibraryMethod(module, "table_exist?", 0x11, 
@@ -83,7 +83,7 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "unlock_db", 0x11, 
                 0x00000000U, 
-                new Func<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int32>(rho.rubyext.RhoSQLite3.RhoDatabase.Unlock)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Unlock)
             );
             
         }
@@ -104,6 +104,11 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "enable_status_popup", 0x21, 
                 0x00000000U, 
                 new Action<IronRuby.Builtins.RubyModule, System.Boolean>(rho.rubyext.RhoSyncEngine.enable_status_popup)
+            );
+            
+            DefineLibraryMethod(module, "is_blob_attr", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, IronRuby.Builtins.MutableString, System.Int32, IronRuby.Builtins.MutableString, System.Int64>(rho.rubyext.RhoSyncEngine.is_blob_attr)
             );
             
             DefineLibraryMethod(module, "logged_in", 0x21, 
