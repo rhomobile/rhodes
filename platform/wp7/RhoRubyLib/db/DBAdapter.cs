@@ -60,13 +60,20 @@ namespace rho.db
 	public void executeBatchSQL(String strStatement)
     {
 		LOG.TRACE("executeBatchSQL: " + strStatement);
-		
-		m_dbStorage.executeBatchSQL(strStatement);
+
+        Lock();
+		try{		
+		    m_dbStorage.executeBatchSQL(strStatement);
+        }
+        finally
+        {
+            Unlock();
+        }
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)
     {
-		LOG.TRACE("executeSQL: " + strStatement);
+		LOG.TRACE("executeSQL: " + strStatement + ";" + values);
 		IDBResult res = null;
 		Lock();
 		try{
@@ -222,7 +229,7 @@ namespace rho.db
 		
 		return colNames;
 	} */
-
+    
 	private String getNameNoExt(String strPath){
 		int nDot = strPath.lastIndexOf('.');
 		String strDbName = "";
@@ -232,7 +239,7 @@ namespace rho.db
 			strDbName = strPath;
 		
 		return strDbName;
-	}
+	} 
     
 	public String getDBPath(){ return getNameNoExt(m_strDBPath); }
 	
@@ -549,45 +556,20 @@ namespace rho.db
 	{
 		return m_dbStorage.isTableExists(strTableName);
 	}
-/*	
-    private RubyValue rb_destroy_tables(RubyValue vInclude, RubyValue vExclude) 
+	
+    public void rb_destroy_tables(Vector<String> vecIncludes, Vector<String> vecExcludes) 
     {
 		if ( !m_bIsOpen )
-			return RubyConstant.QNIL;
+			return;
 		
 		IDBStorage db = null;
 		try{
-		    //getAttrMgr().reset(this);
-			
-			Vector vecIncludes = RhoRuby.makeVectorStringFromArray(vInclude);
-			Vector vecExcludes = RhoRuby.makeVectorStringFromArray(vExclude);
-			
-			String dbName = getNameNoExt(m_strDBPath);
-			String dbNewName  = dbName + "new";
-			
-			IFileAccess fs = RhoClassFactory.createFileAccess();
-			
-			String dbNameData = dbName + ".data";
-		    String dbNewNameData = dbNewName + ".data";
-		    String dbNameScript = dbName + ".script";
-		    String dbNewNameScript = dbNewName + ".script";
-		    String dbNameJournal = dbName + ".journal";
-		    String dbNameJournal2 = dbName + ".data-journal";
-		    String dbNewNameJournal = dbNewName + ".journal";
-		    String dbNewNameJournal2 = dbNewName + ".data-journal";
-		    String dbNewNameProps = dbNewName + ".properties";
-		    
-			//LOG.TRACE("DBAdapter: " + dbNewNameDate + ": " + (fs.exists(dbNewNameData) ? "" : "not ") + "exists");
-		    fs.delete(dbNewNameData);
-		    //LOG.TRACE("DBAdapter: " + dbNewNameScript + ": " + (fs.exists(dbNewNameScript) ? "" : "not ") + "exists");
-		    fs.delete(dbNewNameScript);
-		    //LOG.TRACE("DBAdapter: " + dbNewNameJournal + ": " + (fs.exists(dbNewNameJournal) ? "" : "not ") + "exists");
-		    fs.delete(dbNewNameJournal);
-		    fs.delete(dbNewNameJournal2);
-		    fs.delete(dbNewNameProps);
-		    
-		    LOG.TRACE("1. Size of " + dbNameData + ": " + fs.size(dbNameData));
-		    
+            String dbNewName  = CFilePath.changeBaseName(m_strDBPath, "resetdbtemp.sqlite");
+
+            CRhoFile.deleteFile(dbNewName);
+            CRhoFile.deleteFile(dbNewName+"-journal");
+            CRhoFile.deleteFile(dbNewName+".version");
+
 		    db = RhoClassFactory.createDBStorage();	    
 			db.open( dbNewName, getSqlScript(), getEncryptionInfo() );
 			
@@ -596,7 +578,7 @@ namespace rho.db
 	
 		    db.startTransaction();
 			
-			for ( int i = 0; i< vecTables.length; i++ )
+			for ( int i = 0; i< vecTables.Length; i++ )
 			{
 				String tableName = vecTables[i];
 				if ( destroyTableName( tableName, vecIncludes, vecExcludes ) )
@@ -607,33 +589,29 @@ namespace rho.db
 			
 		    db.commit();
 		    db.close();
-		    
+
+		    String dbOldName = m_strDBPath;
+
 		    m_dbStorage.close();
 		    m_dbStorage = null;
 		    m_bIsOpen = false;
-		    
-		    LOG.TRACE("2. Size of " + dbNewNameData + ": " + fs.size(dbNewNameData));
-		    
-		    fs.delete(dbNewNameProps);
-		    fs.delete(dbNameJournal);
-		    fs.delete(dbNameJournal2);
-		    
-			String fName = makeBlobFolderName();
-			RhoClassFactory.createFile().delete(fName);
-			DBAdapter.makeBlobFolderName(); //Create folder back
-		    
-		    fs.renameOverwrite(dbNewNameData, dbNameData);
-		    if ( !Capabilities.USE_SQLITE )
-		    	fs.renameOverwrite(dbNewNameScript, dbNameScript);
-		    
-		    LOG.TRACE("3. Size of " + dbNameData + ": " + fs.size(dbNameData));
-		    
+
+            CRhoFile.deleteFilesInFolder(RHODESAPP().getBlobsDirPath());
+
+            string[] ar1 = CRhoFile.enumDirectory("db");
+
+            CRhoFile.deleteFile(dbOldName);
+            CRhoFile.deleteFile(dbOldName + "-journal");
+            CRhoFile.renameFile(dbNewName,dbOldName);
+            CRhoFile.renameFile(dbNewName + "-journal", dbOldName + "-journal");
+
+            string[] ar2 = CRhoFile.enumDirectory("db");
+
 		    m_dbStorage = RhoClassFactory.createDBStorage();
 			m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 			m_bIsOpen = true;
-			
-			//getAttrMgr().load(this);
-			
+
+            string[] ar3 = CRhoFile.enumDirectory("db");
 			m_dbStorage.setDbCallback(new DBCallback(this));
 			
 		}catch(Exception e)
@@ -656,15 +634,14 @@ namespace rho.db
 				if ( db != null)
 					db.close();
 			} catch (DBException e1) {
-				LOG.ERROR("closing of DB caused exception: " + e1.getMessage());
+				LOG.ERROR("closing of DB caused exception: " + e1.Message);
 			}
     		
-			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+			//throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+            //TODO: threw ruby exception
 		}
-		
-		return RubyConstant.QNIL;
     }
-*/    
+    
     private void copyTable(String tableName, IDBStorage dbFrom, IDBStorage dbTo)
     {
     	IDBResult res = dbFrom.executeSQL("SELECT * from " + tableName, null, false);

@@ -18,11 +18,19 @@ namespace rho.db
         {
         }
 
+        public CSqliteResult(boolean bNonUnique)
+	    {
+		    m_bNonUnique = bNonUnique;
+	    }
+
         public CSqliteResult(Sqlite3.Vdbe stmt)
         {
             m_st = stmt;
-            if (m_st != null)
-                executeStatement(stmt);
+        }
+
+        public boolean isNonUnique()
+        {
+            return m_bNonUnique;
         }
 
         public int getColCount()
@@ -40,7 +48,6 @@ namespace rho.db
             return Sqlite3.sqlite3_column_name(m_st, nCol);
         }
 
-        //New
         public boolean isEnd()
         {
             return m_st == null;
@@ -48,13 +55,55 @@ namespace rho.db
 
         public boolean isOneEnd()
         {
-            return m_st == null;
+            if (m_st == null)
+                return true;
+            /*
+            if (m_resCopy == null)
+            {
+                m_resCopy = new SqliteCopyResult(this);
+                close();
+            }*/
+            //TODO: SqliteCopyResult
+
+            return false;
         }
 
         public void next()
         {
             if (m_st != null)
-                executeStatement(m_st);
+            {
+                int res = executeStatement();
+                checkError();
+                if (res != Sqlite3.SQLITE_ROW)
+                    close();
+            }
+        }
+
+        public void checkError()
+        {
+            if (m_st == null)
+                return;
+
+            int res = Sqlite3.sqlite3_errcode(m_st.db);
+            if (res != Sqlite3.SQLITE_OK && res != Sqlite3.SQLITE_ROW && res != Sqlite3.SQLITE_DONE)
+            {
+                close();
+                throw new DBException(res, Sqlite3.sqlite3_errmsg(m_st.db));
+            }
+        }
+
+        public int executeStatement()
+        {
+            return Sqlite3.sqlite3_step(m_st);
+        }
+
+        public void close()
+        {
+            if (m_st != null)
+            {
+                Sqlite3.sqlite3_finalize(ref m_st);
+                m_st = null;
+            }
         }
 
         public String getStringByIdx(int nCol)
@@ -84,7 +133,7 @@ namespace rho.db
 
             if (val == null)
 			    return null;
-		    else if ( val is string)
+		    else if ( val is string || val is String)
 			    return MutableString.Create((string)val);
 		    else if ( val is int )
 			    return (int)val;
@@ -98,7 +147,6 @@ namespace rho.db
 			    return (double)val;
 		    else if (val is byte[])
                 return MutableString.Create(((byte[])val).ToString());
-		
 
             return MutableString.Create(val.ToString());
         }
@@ -129,47 +177,28 @@ namespace rho.db
             Object[] res = new Object[cols.Length];
             for (int i = 0; i < cols.Length; i++)
             {
-                Sqlite3.Mem val = Sqlite3.sqlite3_column_value(m_st, i);
-                switch (val.type)
+                int type = Sqlite3.sqlite3_column_type(m_st, i);
+                switch (type)
                 {
-                    case Sqlite3.SQLITE_NULL:
-                        res[i] = null;
-                        break;
                     case Sqlite3.SQLITE_INTEGER:
-                        res[i] = (int)val.r;
+                        res[i] = Sqlite3.sqlite3_column_int64(m_st, i);
                         break;
                     case Sqlite3.SQLITE_FLOAT:
-                        res[i] = val.r;
-                        break;
-                    case Sqlite3.SQLITE_TEXT:
-                        res[i] = val.z;
+                        res[i] = Sqlite3.sqlite3_column_double(m_st, i);
                         break;
                     case Sqlite3.SQLITE_BLOB:
-                        res[i] = val.zBLOB;
+                        res[i] = Sqlite3.sqlite3_column_blob(m_st, i);
                         break;
-                    default:
+                    case Sqlite3.SQLITE_TEXT:
+                        res[i] = Sqlite3.sqlite3_column_text(m_st, i);
+                        break;
+                    case Sqlite3.SQLITE_NULL:
+                        res[i] = null;
                         break;
                 }
             }
 
             return res;
-        }
-
-        public boolean isNonUnique()
-        {
-            return m_bNonUnique;
-        }
-
-        public void close()
-        {
-            if (m_st != null)
-            {
-                int res = Sqlite3.sqlite3_finalize( ref m_st );
-                if (res != Sqlite3.SQLITE_OK)
-                    throw new DBException(res, DBLastError());
-
-                m_st = null;
-            }
         }
 
         #region Helpers
@@ -184,25 +213,6 @@ namespace rho.db
             }
 
             return res;
-        }
-
-        private string DBLastError()
-        {
-            return Sqlite3.sqlite3_errmsg(m_st.db);
-        }
-
-        private bool executeStatement(Sqlite3.Vdbe pStmt)
-        {
-            int res = Sqlite3.sqlite3_step(pStmt);
-
-            if (res != Sqlite3.SQLITE_ROW)
-            {
-                close();
-                if (res != Sqlite3.SQLITE_OK && res != Sqlite3.SQLITE_ROW && res != Sqlite3.SQLITE_DONE)
-                    throw new DBException(res, DBLastError());
-            }
-
-            return res == Sqlite3.SQLITE_ROW;
         }
 
         private int findColIndex(String colname)

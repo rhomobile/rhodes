@@ -48,7 +48,7 @@ namespace rho.sync
         Mutex m_mxSyncNotifications = new Mutex();
         ISyncStatusListener m_syncStatusListener = null;
         boolean m_bEnableReporting = false;
-        boolean m_bEnableReportingGlobal = true;
+        boolean m_bEnableReportingGlobal = false;
         String m_strNotifyBody = "";
         NetRequest m_NetRequest;
     
@@ -60,7 +60,7 @@ namespace rho.sync
 
         public boolean isReportingEnabled(){return m_bEnableReporting&&m_bEnableReportingGlobal;}
         public void enableReporting(boolean bEnable) {	m_bEnableReporting = bEnable; }
-        void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
+        public void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
     
         public SyncNotify( SyncEngine syncEngine ) 
         {
@@ -247,7 +247,7 @@ namespace rho.sync
             return strBody;
         }
 
-        static void setObjectNotifyUrl(String strUrl)
+        public static void setObjectNotifyUrl(String strUrl)
         { 
             lock(m_mxObjectNotify)
             {
@@ -304,7 +304,7 @@ namespace rho.sync
 		        }
 		    }
 	    }*/
-        void setSyncNotification(int source_id, SyncNotification pNotify)
+        public void setSyncNotification(int source_id, SyncNotification pNotify)
         {
             LOG.INFO("Set notification. Source ID: " + source_id + ";" + (pNotify != null? pNotify.ToString() : "") );
 

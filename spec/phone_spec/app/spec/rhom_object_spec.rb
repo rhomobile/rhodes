@@ -223,17 +223,20 @@ describe "Rhom::RhomObject" do
     getAccount.find(:count, :conditions => {'name'=>'Aeroprise'}).should == 1
   end
 
+if !defined?(RHO_WP7)
   it "should raise RecordNotFound error if nil given as find argument" do
   
     bExc = false
     begin
       getAccount.find(nil)
     rescue Exception => e
+	    puts "Exception : #{e}"
         bExc = e.is_a?(::Rhom::RecordNotFound)
     end  
     bExc.should == true
     
   end
+end
 
   it "should save string with zero" do
     val = "\1\2\3\0\5\8\6\7\34"

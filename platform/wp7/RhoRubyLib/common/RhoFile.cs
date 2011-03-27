@@ -28,26 +28,51 @@ namespace rho.common
 
         public static void deleteFile(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            isoStore.DeleteFile(path);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                isoStore.DeleteFile(path);
+            }
+        }
+
+        public static void renameFile(String oldName, String newName)
+        {
+            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            using (var readStream = new IsolatedStorageFileStream(oldName, FileMode.Open, store))
+            using (var writeStream = new IsolatedStorageFileStream(newName, FileMode.Create, store))
+            using (var reader = new BinaryReader(readStream))
+            using (var writer = new BinaryWriter(writeStream))
+            {
+                writer.Write(reader.ReadBytes((int)readStream.Length));
+            }
+
+            using (var store1 = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                store1.DeleteFile(oldName);
+            }
         }
 
         public static void deleteDirectory(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            isoStore.DeleteDirectory(CFilePath.removeLastSlash(path));
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                isoStore.DeleteDirectory(CFilePath.removeLastSlash(path));
+            }
         }
 
         public static bool isDirectoryExist(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            return isoStore.DirectoryExists(path);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                return isoStore.DirectoryExists(path);
+            }
         }
 
         public static bool isFileExist(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            return isoStore.FileExists(path);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                return isoStore.FileExists(path);
+            }
         }
 
         public static bool isResourceFileExist(String path)
@@ -65,18 +90,42 @@ namespace rho.common
             string[] dirsPath = strPath.Split(sep, StringSplitOptions.RemoveEmptyEntries);
             string strBaseDir = string.Empty;
 
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            for (int i = 0; i < dirsPath.Length - 1; i++)
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                strBaseDir = System.IO.Path.Combine(strBaseDir, dirsPath[i]);
-                isoStore.CreateDirectory(strBaseDir);
+                for (int i = 0; i < dirsPath.Length - 1; i++)
+                {
+                    strBaseDir = System.IO.Path.Combine(strBaseDir, dirsPath[i]);
+                    isoStore.CreateDirectory(strBaseDir);
+                }
+            }
+        }
+
+        public static string[] enumDirectory(String path)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                return isoStore.GetFileNames(CFilePath.join(path, "*"));
+            }
+        }
+
+        public static void deleteFilesInFolder(String path)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                string[] arFiles = isoStore.GetFileNames(CFilePath.join(path, "*"));
+                foreach (string strFile in arFiles)
+                {
+                    isoStore.DeleteFile(CFilePath.join(path, strFile));
+                }
             }
         }
 
         public static void createDirectory(string path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            isoStore.CreateDirectory(CFilePath.removeLastSlash(path));
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                isoStore.CreateDirectory(CFilePath.removeLastSlash(path));
+            }
         }
 
         public static String readStringFromFile(String path)
@@ -84,10 +133,10 @@ namespace rho.common
             string content = "";
             path = CFilePath.removeFirstSlash(path);
 
-            if (!isFileExist(path)) return content; 
+            if (!isFileExist(path)) return content;
 
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            Stream st = isoStore.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.None);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (Stream st = isoStore.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.None))
             using (System.IO.BinaryReader br = new BinaryReader(st))
             {
                 content = br.ReadString();
@@ -135,9 +184,9 @@ namespace rho.common
 
         public static void writeStringToFile(String strPath, String strData)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-
-            using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (var file = isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (BinaryWriter bw = new BinaryWriter(file))
             {
                 bw.Write(strData);
             }
@@ -145,9 +194,9 @@ namespace rho.common
 
         public static void writeDataToFile(String strPath, byte[] data)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-
-            using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (var file = isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (BinaryWriter bw = new BinaryWriter(file))
             {
                 bw.Write(data);
             }
