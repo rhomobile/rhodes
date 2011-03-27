@@ -191,6 +191,8 @@ namespace rho.db
                         break;
                     case Sqlite3.SQLITE_TEXT:
                         res[i] = Sqlite3.sqlite3_column_text(m_st, i);
+                        if (res[i] == null)
+                            res[i] = String.Empty;
                         break;
                     case Sqlite3.SQLITE_NULL:
                         res[i] = null;
