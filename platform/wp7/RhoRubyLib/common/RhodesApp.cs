@@ -4,6 +4,7 @@ using rho.net;
 using rho;
 using rho.db;
 using rho.sync;
+using System.Threading;
 
 namespace rho.common
 {
@@ -23,6 +24,7 @@ namespace rho.common
         String[] m_currentUrls = new String[5];
         private String m_strBlobsDirPath, m_strDBDirPath;
         private String m_strHomeUrl;
+        ManualResetEvent m_UIWaitEvent = new ManualResetEvent(false);
 
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
         public CHttpServer HttpServer{ get { return m_httpServer; } }
@@ -36,6 +38,8 @@ namespace rho.common
             initAppUrls();
             RhoLogger.InitRhoLog();
             LOG.INFO("Init");
+
+            CRhoFile.recursiveCreateDir(CFilePath.join(getBlobsDirPath()," "));
 
             m_webBrowser = browser;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
@@ -59,6 +63,20 @@ namespace rho.common
 	        RhoRuby.InitApp();
 	        RhoRuby.call_config_conflicts();
             RHOCONF().conflictsResolved();
+        }
+
+        public void stopApp()
+        {
+            string[] ar1 = CRhoFile.enumDirectory("db");
+
+            RhoRuby.Stop();
+            SyncThread.getInstance().Destroy();
+            RhoLogger.close();
+            m_UIWaitEvent.Close();
+
+            string[] ar2 = CRhoFile.enumDirectory("db");
+            int i = 0;
+            //net::CAsyncHttp::Destroy();
         }
 
         void initAppUrls()
@@ -104,6 +122,8 @@ namespace rho.common
         {
             String strReply;
             m_httpServer.call_ruby_method(strUrl, strBody, out strReply);
+
+            m_UIWaitEvent.Set();
         }
 
         public NetResponse processCallback(String strUrl, String strBody)
@@ -111,7 +131,11 @@ namespace rho.common
             if (m_webBrowser.Dispatcher.CheckAccess())
                 doProcessCallback(strUrl, strBody);
             else
+            {
                 m_webBrowser.Dispatcher.BeginInvoke(new CallbackDelegate(doProcessCallback), strUrl, strBody);
+                m_UIWaitEvent.Reset();
+                m_UIWaitEvent.WaitOne();
+            }
 
             return new NetResponse("", 200);
         }

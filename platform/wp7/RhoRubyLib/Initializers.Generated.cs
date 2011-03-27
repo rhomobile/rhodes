@@ -48,7 +48,7 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "destroy_tables", 0x11, 
                 0x00000000U, 
-                new Action<rho.rubyext.RhoSQLite3.RhoDatabase, System.Int64, System.Int64>(rho.rubyext.RhoSQLite3.RhoDatabase.destroyTables)
+                new Action<rho.rubyext.RhoSQLite3.RhoDatabase, IronRuby.Builtins.RubyArray, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoSQLite3.RhoDatabase.destroyTables)
             );
             
             DefineLibraryMethod(module, "execute", 0x11, 
@@ -107,8 +107,8 @@ namespace rho.rubyext {
             );
             
             DefineLibraryMethod(module, "is_blob_attr", 0x21, 
-                0x00000000U, 
-                new Func<IronRuby.Builtins.RubyModule, IronRuby.Builtins.MutableString, System.Int32, IronRuby.Builtins.MutableString, System.Int64>(rho.rubyext.RhoSyncEngine.is_blob_attr)
+                0x0000000eU, 
+                new Func<IronRuby.Builtins.RubyModule, System.String, System.Int32, System.String, System.Boolean>(rho.rubyext.RhoSyncEngine.is_blob_attr)
             );
             
             DefineLibraryMethod(module, "logged_in", 0x21, 
@@ -129,6 +129,21 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "set_objectnotify_url", 0x21, 
                 0x00000002U, 
                 new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSyncEngine.set_objectnotify_url)
+            );
+            
+            DefineLibraryMethod(module, "set_pollinterval", 0x21, 
+                0x00000002U, 
+                new Func<IronRuby.Builtins.RubyModule, System.Int32, System.Int32>(rho.rubyext.RhoSyncEngine.set_pollinterval)
+            );
+            
+            DefineLibraryMethod(module, "set_source_property", 0x21, 
+                0x0000000eU, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String, System.String>(rho.rubyext.RhoSyncEngine.set_source_property)
+            );
+            
+            DefineLibraryMethod(module, "stop_sync", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoSyncEngine.set_pollinterval)
             );
             
             DefineLibraryMethod(module, "update_blob_attribs", 0x21, 

@@ -14,6 +14,7 @@ namespace rho.sync
 
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
 	    RhoConf RHOCONF(){ return RhoConf.getInstance(); }
+        public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 	
         public static int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esSearch=3, esStop = 4, esExit = 5;
 
@@ -510,7 +511,7 @@ namespace rho.sync
 	    void loadAllSources()
 	    {
 		    if (isNoThreadedMode())
-	            RhoAppAdapter.loadAllSyncSources();
+	            RhoRuby.loadAllSyncSources();
 	        else
 	        {
 	            getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null );
@@ -639,7 +640,7 @@ namespace rho.sync
 	        if ( strSources.length() > 0 )
 	        {
 	            if (isNoThreadedMode())
-	                RhoAppAdapter.loadServerSources(strSources);            
+	                RhoRuby.loadServerSources(strSources);            
 	            else
 	            {
 	        	    getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
@@ -959,7 +960,7 @@ namespace rho.sync
 		            if ( name.compareTo(strOldUser) != 0 )
 		            {
 		                if (isNoThreadedMode())
-		                    RhoAppAdapter.resetDBOnSyncUserChanged();
+                            RhoRuby.resetDBOnSyncUserChanged();
 		                else
 		                {
 		                    NetResponse resp1 = getNet().pushData( getNet().resolveUrl("/system/resetDBOnSyncUserChanged"), "", null );
@@ -980,7 +981,7 @@ namespace rho.sync
 		    }
 	    }
 
-	    boolean isLoggedIn()
+	    public boolean isLoggedIn()
 	    {
 	        String strRes = "";
 	        IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
