@@ -13,11 +13,14 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using rho.common;
 
 namespace Rhodes
 {
     public partial class App : Application
     {
+        private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
@@ -79,6 +82,7 @@ namespace Rhodes
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+            RHODESAPP().stopApp();
         }
 
         // Code to execute if a navigation fails
