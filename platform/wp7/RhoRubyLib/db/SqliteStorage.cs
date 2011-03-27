@@ -253,8 +253,10 @@ namespace rho.db
                     Sqlite3.sqlite3_bind_int64(stmt, i + 1, Convert.ToInt64(obj, CultureInfo.InvariantCulture));
                 else if (obj is Single || obj is Double || obj is Decimal)
                     Sqlite3.sqlite3_bind_double(stmt, i + 1, Convert.ToDouble(obj, CultureInfo.InvariantCulture));
-                else if (obj is String || obj is MutableString)
-                    Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), -1, null);
+                else if (obj is String)
+                    Sqlite3.sqlite3_bind_text(stmt, i + 1, (String)obj, ((String)obj).Length, null);
+                else if (obj is MutableString)
+                    Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), ((MutableString)obj).Length, null);
                 else if (obj is byte[])
                     Sqlite3.sqlite3_bind_blob(stmt, i + 1, (byte[])obj, ((byte[])obj).Length, null);
                 else
