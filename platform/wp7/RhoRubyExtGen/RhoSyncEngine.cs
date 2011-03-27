@@ -34,12 +34,6 @@ namespace rho.rubyext
             return null;
         }
 
-        [RubyMethod("is_blob_attr", RubyMethodAttributes.PublicSingleton)]
-        public static long is_blob_attr(RubyModule/*!*/ self, MutableString szPartition, int srcID, MutableString szAttrName)
-        {
-            return 0;
-        }
-
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
         public static int logged_in(RubyModule/*!*/ self)
         {
@@ -62,12 +56,33 @@ namespace rho.rubyext
         {
         }
 
+        [RubyMethod("is_blob_attr", RubyMethodAttributes.PublicSingleton)]
+        public static bool is_blob_attr(RubyModule/*!*/ self, [NotNull]String/*!*/ szPartition, [NotNull]int/*!*/ srcID, [NotNull]String/*!*/ szAttrName)
+        {
+            return false;
+        }
+
         [RubyMethod("update_blob_attribs", RubyMethodAttributes.PublicSingleton)]
         public static void update_blob_attribs(RubyModule/*!*/ self, [NotNull]String/*!*/ szPartition, [NotNull]int/*!*/ srcID)
         {
         }
-        
 
+        [RubyMethod("set_pollinterval", RubyMethodAttributes.PublicSingleton)]
+        public static int set_pollinterval(RubyModule/*!*/ self, [NotNull]int/*!*/ nInterval)
+        {
+            return 0;
+        }
+
+        [RubyMethod("stop_sync", RubyMethodAttributes.PublicSingleton)]
+        public static void set_pollinterval(RubyModule/*!*/ self)
+        {
+        }
+
+        [RubyMethod("set_source_property", RubyMethodAttributes.PublicSingleton)]
+        public static void set_source_property(RubyModule/*!*/ self, [NotNull]int/*!*/ srcID, [NotNull]String/*!*/ szPropName, [NotNull]String/*!*/ szPropValue )
+        {
+        }        
+        
         [RubyMethod("set_objectnotify_url", RubyMethodAttributes.PublicSingleton)]
         public static void set_objectnotify_url(RubyModule/*!*/ self, [NotNull]string/*!*/ url)
         {

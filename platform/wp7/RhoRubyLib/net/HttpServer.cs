@@ -115,9 +115,34 @@ namespace rho.net
         public bool call_ruby_method(String uri, String body, out String strReply)
         {
             CRoute route = new CRoute();
+            strReply = String.Empty;
             if (!dispatch(uri, route))
             {
-                strReply = String.Empty;
+                if (route.application.equalsIgnoreCase("system"))
+                {
+                    if (route.model.equalsIgnoreCase("geolocation"))
+                    {
+                        //TODO: geolocation
+                        //showGeoLocation();
+                        return true;
+                    }
+                    else if (route.model.equalsIgnoreCase("loadserversources"))
+                    {
+                        RhoRuby.loadServerSources(body);
+                        return true;
+                    }
+                    else if (route.model.equalsIgnoreCase("loadallsyncsources"))
+                    {
+                        RhoRuby.loadAllSyncSources();
+                        return true;
+                    }
+                    else if (route.model.equalsIgnoreCase("resetDBOnSyncUserChanged"))
+                    {
+                        RhoRuby.resetDBOnSyncUserChanged();
+                        return true;
+                    }
+                }
+
                 return false;
             }
 

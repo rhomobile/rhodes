@@ -35,7 +35,7 @@ namespace rho.common
         public String getLogCategory() { return m_category; }
         public void setLogCategory(String category) { m_category = category; }
 
-        public static void close() { RhoLogConf.close(); }
+        public static void close() { m_oLogConf.close(); }
 
         private boolean isEnabled()
         {
@@ -47,7 +47,7 @@ namespace rho.common
                 return getLogConf().isCategoryEnabled(m_category);
             } 
 
-            return true;
+            return false;
         }
 
         private String get2FixedDigit(int nDigit)

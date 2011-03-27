@@ -39,7 +39,7 @@ namespace rho.rubyext
             }
 
             [RubyMethod("destroy_tables")]
-            public static void destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
+            public static void destroyTables(RhoDatabase/*!*/ self, RubyArray arInclude, RubyArray arExclude)
             {
             }
 

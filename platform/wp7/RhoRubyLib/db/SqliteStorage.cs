@@ -29,27 +29,24 @@ namespace rho.db
 
         public void open(string strPath, string strSqlScript, string strEncryptionInfo)
         {
-            int res = 0;
             if (m_db != null)
-                res = Sqlite3.sqlite3_close(m_db);
-
-            if (res != Sqlite3.SQLITE_OK)
-                throw new DBException(res, DBLastError());  
-    
-            m_db = null;
+            {
+                int rc = Sqlite3.sqlite3_close(m_db);
+                checkError(rc);
+                m_db = null;
+            }
         }
 
         public void commit()
         {
             if (m_nInsideTransaction > 0)
                 m_nInsideTransaction--;
-            
-            int res = 0;    
-            if (m_db != null)
-                    res =Sqlite3.sqlite3_exec(m_db, "COMMIT", 0, 0, 0);
 
-            if (res != Sqlite3.SQLITE_OK)
-                throw new DBException(res, DBLastError());
+            if (m_db != null)
+            {
+                Sqlite3.sqlite3_exec(m_db, "END;", 0, 0, 0);
+                checkError();
+            }
         }
 
         public IDBResult createResult()
@@ -72,9 +69,20 @@ namespace rho.db
 
         public IDBResult executeSQL(string strStatement, object[] values, common.boolean bReportNonUnique)
         {
-            int res = Sqlite3.sqlite3_exec(m_db, strStatement, 0, 0, 0);
+            Sqlite3.sqlite3_exec(m_db, strStatement, 0, 0, 0);
+            checkError();
+        }
+
+        void checkError()
+        {
+            int res = Sqlite3.sqlite3_errcode(m_db);
+            checkError(res);
+        }
+
+        void checkError(int res)
+        {
             if (res != Sqlite3.SQLITE_OK)
-                throw new DBException(res, DBLastError());
+                throw new DBException(res, Sqlite3.sqlite3_errmsg(m_db));
         }
 
         public void executeBatchSQL(string strStatement)
@@ -83,8 +91,21 @@ namespace rho.db
                 throw new Exception("executeSQL: m_db == null");
 
             var stmt = Prepare(strStatement, values);
-            
-            return new CSqliteResult(stmt);
+            CSqliteResult res = new CSqliteResult(stmt);
+            int rc = res.executeStatement();
+            if (rc != Sqlite3.SQLITE_ROW)
+            {
+                if (bReportNonUnique && rc == Sqlite3.SQLITE_CONSTRAINT)
+                {
+                    res.close();
+                    return new CSqliteResult(true); 
+                }
+
+                res.checkError();
+                res.close();
+            }
+
+            return res;
         }
 
         public IDBResult createResult()
@@ -147,24 +168,14 @@ namespace rho.db
                     Sqlite3.sqlite3_close(m_db);
                     m_db = null;
                     throw new DBException(res, "Cannot set journal mode to PERSIST: " + strPath);
-                } 
+                }
+
+                string[] ar1 = CRhoFile.enumDirectory("db");
 
                 if (!bExist)
                     createSchema(strSqlScript);
 
-                /*startTransaction();
-                try
-                {
-                    executeBatchSQL(strSqlScript);
-                    createTriggers();
-                }
-                catch (DBException exc)
-                {
-                    rollback();
-                    throw exc;
-                }
-                commit();*/
-
+                string[] ar2 = CRhoFile.enumDirectory("db");
 
                 if (m_bPendingTransaction)
                     startTransaction();
@@ -186,12 +197,11 @@ namespace rho.db
             if (m_nInsideTransaction > 0)
                 m_nInsideTransaction--;
 
-            int res = 0;
-            if (m_db != null) 
-                res = Sqlite3.sqlite3_exec(m_db, "ROLLBACK", 0, 0, 0);
-            
-            if (res != Sqlite3.SQLITE_OK)
-                throw new DBException(res, DBLastError());
+            if (m_db != null)
+            {
+                Sqlite3.sqlite3_exec(m_db, "ROLLBACK;", 0, 0, 0);
+                checkError();
+            }
         }
 
         public void onBeforeCommit()
@@ -205,9 +215,8 @@ namespace rho.db
                 m_bPendingTransaction = true;
             else
             {
-                int res = Sqlite3.sqlite3_exec(m_db, "BEGIN", 0, 0, 0);
-                if (res != Sqlite3.SQLITE_OK)
-                    throw new DBException(res, DBLastError());
+                Sqlite3.sqlite3_exec(m_db, "BEGIN IMMEDIATE;", 0, 0, 0);
+                checkError();
             }
 
             m_nInsideTransaction++;
@@ -227,76 +236,39 @@ namespace rho.db
                 return;
             }
 
-            startTransaction();
-            try
-            {
-                executeBatchSQL(strSqlScript);
-                createTriggers();
-            }
-            catch (DBException exc)
-            {
-                rollback();
-                throw exc;
-            }
-            commit();
-        }
-
-        private string DBLastError()
-        {
-            return Sqlite3.sqlite3_errmsg(m_db);
+            executeBatchSQL(strSqlScript);
+            createTriggers();
         }
 
         private void Bind(Sqlite3.Vdbe stmt, Object[] values)
         {
             for (int i = 0; values != null && i < values.Length; i++)
             {
-                int res = 0;
                 var obj = values[i];
                 if (obj == null)
-                {
-                    res = Sqlite3.sqlite3_bind_null(stmt, i + 1);
-                    if (res > 0) throw new DBException(res, DBLastError());
-                    continue;
-                }
-                if (obj is Byte || obj is UInt16 || obj is SByte || obj is Int16 || obj is Int32 || obj is Boolean)
-                {
-                    res = Sqlite3.sqlite3_bind_int(stmt, i + 1, Convert.ToInt32(obj, CultureInfo.InvariantCulture));
-                    if (res > 0) throw new DBException(res, DBLastError());
-                    continue;
-                }
-                if (obj is UInt32 || obj is Int64)
-                {
-                    res = Sqlite3.sqlite3_bind_int64(stmt, i + 1, Convert.ToInt64(obj, CultureInfo.InvariantCulture));
-                    if (res > 0) throw new DBException(res, DBLastError());
-                    continue;
-                }
-                if (obj is Single || obj is Double || obj is Decimal)
-                {
-                    res = Sqlite3.sqlite3_bind_double(stmt, i + 1, Convert.ToDouble(obj, CultureInfo.InvariantCulture));
-                    if (res > 0) throw new DBException(res, DBLastError());
-                    continue;
-                }
-                if (obj is String || obj is MutableString)
-                {
-                    res = Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), -1, null);
-                    if (res > 0) throw new DBException(res, DBLastError());
-                    continue;
-                }
-                if (obj is byte[])
-                {
-                    res = Sqlite3.sqlite3_bind_blob(stmt, i + 1, (byte[])obj, ((byte[])obj).Length, null);
-                    if (res > 0) throw new DBException(res, DBLastError());
-                    continue;
-                }
+                    Sqlite3.sqlite3_bind_null(stmt, i + 1);
+                else if (obj is Byte || obj is UInt16 || obj is SByte || obj is Int16 || obj is Int32 || obj is Boolean)
+                    Sqlite3.sqlite3_bind_int(stmt, i + 1, Convert.ToInt32(obj, CultureInfo.InvariantCulture));
+                else if (obj is UInt32 || obj is Int64)
+                    Sqlite3.sqlite3_bind_int64(stmt, i + 1, Convert.ToInt64(obj, CultureInfo.InvariantCulture));
+                else if (obj is Single || obj is Double || obj is Decimal)
+                    Sqlite3.sqlite3_bind_double(stmt, i + 1, Convert.ToDouble(obj, CultureInfo.InvariantCulture));
+                else if (obj is String || obj is MutableString)
+                    Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), -1, null);
+                else if (obj is byte[])
+                    Sqlite3.sqlite3_bind_blob(stmt, i + 1, (byte[])obj, ((byte[])obj).Length, null);
+                else
+                    new DBException(Sqlite3.SQLITE_ERROR, "unknown data type.");
+
+                checkError();
             }
         }
 
         private Sqlite3.Vdbe Prepare(String strStatement, Object[] values)
         {
             Sqlite3.Vdbe ppStmt=new Sqlite3.Vdbe();
-            int res = Sqlite3.sqlite3_prepare_v2(m_db, strStatement, strStatement.Length, ref ppStmt, 0);
-            if ( res != Sqlite3.SQLITE_OK)
-                throw new DBException(res, DBLastError());
+            Sqlite3.sqlite3_prepare_v2(m_db, strStatement, strStatement.Length, ref ppStmt, 0);
+            checkError();
             
             Bind(ppStmt, values);
             return ppStmt;
