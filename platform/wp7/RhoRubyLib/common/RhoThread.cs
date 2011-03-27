@@ -49,7 +49,10 @@ namespace rho.common
         }
 
         public virtual void stop(int nTimeoutToKill)
-        { 
+        {
+            if (!isAlive())
+                return;
+
     	    m_nState |= TS_STOPPING;
     	    stopWait();
 
