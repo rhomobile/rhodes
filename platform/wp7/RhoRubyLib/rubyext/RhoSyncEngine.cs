@@ -19,37 +19,35 @@ namespace rho.rubyext
         [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
         public static object dosync(RubyModule/*!*/ self)
         {
-            return null;
+            SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncAll, false));
+            return SyncThread.getInstance().getRetValue();
         }
 
         [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
         public static object dosync(RubyModule/*!*/ self, bool/*!*/ show_status_popup)
         {
-            return null;
+            SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncAll, show_status_popup));
+            return SyncThread.getInstance().getRetValue();
         }
 
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
         public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID)
         {
+            //TODO: dosync_source
             return null;
         }
 
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
         public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID, bool/*!*/ show_status_popup)
         {
+            //TODO: dosync_source
             return null;
-        }
-
-        [RubyMethod("is_blob_attr", RubyMethodAttributes.PublicSingleton)]
-        public static long is_blob_attr(RubyModule/*!*/ self, MutableString szPartition, int srcID, MutableString szAttrName)
-        {
-            return 0;
         }
 
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
         public static int logged_in(RubyModule/*!*/ self)
         {
-            return 0;
+            return SyncThread.getSyncEngine().isLoggedIn() ? 1 : 0;
         }
 
         [RubyMethod("login", RubyMethodAttributes.PublicSingleton)]
@@ -72,13 +70,22 @@ namespace rho.rubyext
         }
 
         [RubyMethod("set_notification", RubyMethodAttributes.PublicSingleton)]
-        public static void set_notification(RubyModule/*!*/ self, [NotNull]int/*!*/ srcID, [NotNull]String/*!*/ url, string/*!*/ callback_param)
+        public static void set_notification(RubyModule/*!*/ self, [NotNull]int/*!*/ nSrcID, [NotNull]String/*!*/ url, string/*!*/ callback_param)
         {
+            SyncThread.getSyncEngine().getNotify().setSyncNotification(nSrcID,
+                new SyncNotify.SyncNotification(url, callback_param != null ? callback_param : "", nSrcID != -1));
         }
 
         [RubyMethod("enable_status_popup", RubyMethodAttributes.PublicSingleton)]
-        public static void enable_status_popup(RubyModule/*!*/ self, bool/*!*/ enable)
+        public static void enable_status_popup(RubyModule/*!*/ self, bool/*!*/ bEnable)
         {
+            SyncThread.getSyncEngine().getNotify().enableStatusPopup(bEnable);
+        }
+
+        [RubyMethod("is_blob_attr", RubyMethodAttributes.PublicSingleton)]
+        public static bool is_blob_attr(RubyModule/*!*/ self, [NotNull]String/*!*/ strPartition, [NotNull]int/*!*/ nSrcID, [NotNull]String/*!*/ strAttrName)
+        {
+            return DBAdapter.getDB(strPartition).getAttrMgr().isBlobAttr(nSrcID, strAttrName);
         }
 
         [RubyMethod("update_blob_attribs", RubyMethodAttributes.PublicSingleton)]
@@ -88,9 +95,30 @@ namespace rho.rubyext
             db.getAttrMgr().loadBlobAttrs(db);
         }
 
+        [RubyMethod("set_pollinterval", RubyMethodAttributes.PublicSingleton)]
+        public static int set_pollinterval(RubyModule/*!*/ self, [NotNull]int/*!*/ nInterval)
+        {
+            int nOldInterval = SyncThread.getInstance().getPollInterval();
+            SyncThread.getInstance().setPollInterval(nInterval);
+            return nOldInterval;
+        }
+
+        [RubyMethod("stop_sync", RubyMethodAttributes.PublicSingleton)]
+        public static void set_pollinterval(RubyModule/*!*/ self)
+        {
+            SyncThread.stopSync();
+        }
+
+        [RubyMethod("set_source_property", RubyMethodAttributes.PublicSingleton)]
+        public static void set_source_property(RubyModule/*!*/ self, [NotNull]int/*!*/ nSrcID, [NotNull]String/*!*/ strPropName, [NotNull]String/*!*/ strPropValue)
+        {
+            SyncEngine.getSourceOptions().setProperty(nSrcID, strPropName, strPropValue);
+        }
+
         [RubyMethod("set_objectnotify_url", RubyMethodAttributes.PublicSingleton)]
         public static void set_objectnotify_url(RubyModule/*!*/ self, [DefaultProtocol, NotNull]string/*!*/ url)
         {
+            SyncNotify.setObjectNotifyUrl(url);
         }
     }
 }

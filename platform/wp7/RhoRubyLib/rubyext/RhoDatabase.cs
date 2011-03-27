@@ -5,6 +5,7 @@ using IronRuby.Builtins;
 using System;
 using System.Collections.Generic;
 using rho.db;
+using rho.common;
 
 namespace rho.rubyext
 {
@@ -14,6 +15,8 @@ namespace rho.rubyext
         [RubyClass("Database")]
         public class RhoDatabase
         {
+            static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
+
             DBAdapter m_db;
             RhoDatabase() { }
 
@@ -47,63 +50,62 @@ namespace rho.rubyext
             }
 
             [RubyMethod("destroy_tables")]
-            public static void destroyTables(RhoDatabase/*!*/ self, long arInclude, long arExclude)
+            public static void destroyTables(RhoDatabase/*!*/ self, RubyArray arInclude, RubyArray arExclude)
             {
+                Vector<String> vecIncludes = RhoRuby.makeVectorStringFromArray(arInclude);
+                Vector<String> vecExcludes = RhoRuby.makeVectorStringFromArray(arExclude);
+
+                self.m_db.rb_destroy_tables(vecIncludes, vecExcludes);
             }
 
             [RubyMethod("execute")]
             public static RubyArray Execute(RhoDatabase/*!*/ self, MutableString/*!*/ sqlStatement, Boolean isBatch, RubyArray args)
             {
-                RubyArray retArr = new RubyArray();
-              
-                if ( isBatch )
+                try
                 {
-                   //self.m_db.Lock();
-                   self.m_db.executeBatchSQL(sqlStatement.ToString());
-                   //self.m_db.Unlock();
-                }
-                else
-                {
-                    //self.m_db.Lock();
-       
-                    Object[] values = null;
-                    try
+                    RubyArray retArr = new RubyArray();
+
+                    if (isBatch)
                     {
-                        if (args.Count > 0 && args[0] != null)
+                        self.m_db.executeBatchSQL(sqlStatement.ToString());
+                    }
+                    else
+                    {
+                        Object[] values = null;
+                        if (args != null && args.Count > 0)
                         {
-                            RubyArray arr = (RubyArray)args[0];
-                            values = arr.ToArray();
+                            if (args[0] != null && args[0] is RubyArray)
+                                values = ((RubyArray)args[0]).ToArray();
+                            else
+                                values = args.ToArray();
                         }
 
-                    }
-                    catch (Exception)
-                    {
-                        values = args.ToArray();
-                    }
-
-                    IDBResult rows = self.m_db.executeSQL(sqlStatement.ToString(), values);
-                    if (rows != null)
-                    {
-                        MutableString[] colNames = null;
-                        for (; !rows.isEnd(); rows.next())
+                        IDBResult rows = self.m_db.executeSQL(sqlStatement.ToString(), values);
+                        if (rows != null)
                         {
-                            IDictionary<object, object> map = new Dictionary<object, object>();
-                            Hash row = new Hash(map);
-                            for (int nCol = 0; nCol < rows.getColCount(); nCol++)
+                            MutableString[] colNames = null;
+                            for (; !rows.isEnd(); rows.next())
                             {
-                                if (colNames == null)
-                                    colNames = getOrigColNames(rows);
-                               
-                                row.Add(colNames[nCol], rows.getRubyValueByIdx(nCol));
+                                IDictionary<object, object> map = new Dictionary<object, object>();
+                                Hash row = new Hash(map);
+                                for (int nCol = 0; nCol < rows.getColCount(); nCol++)
+                                {
+                                    if (colNames == null)
+                                        colNames = getOrigColNames(rows);
+
+                                    row.Add(colNames[nCol], rows.getRubyValueByIdx(nCol));
+                                }
+                                retArr.Add(row);
                             }
-                            retArr.Add(row);
                         }
                     }
 
-                    //self.m_db.Unlock();
+                    return retArr;
+                }catch (Exception exc)
+                {
+                    //TODO: throw ruby exception
+                    throw exc;
                 }
-
-                return retArr;
             }
 
             [RubyMethod("is_ui_waitfordb")]

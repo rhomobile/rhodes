@@ -80,7 +80,7 @@ namespace rho
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
             //m_engine.Execute("class MyClass < Exception; def initialize(arg1); end; end; MyClass.new('');");
             //m_engine.Execute("def test; while false; end; end; test();");
-
+            //m_engine.Execute("class RecordNotFound < StandardError;end; raise RecordNotFound;");
             StreamResourceInfo sr = Application.GetResourceStream(new Uri("lib/rhoframework.rb", UriKind.Relative));
 
             using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
@@ -103,6 +103,11 @@ namespace rho
 
             m_engine.Operations.InvokeMember(m_rhoframework, "init_app");
             m_engine.Operations.InvokeMember(m_rhoframework, "ui_created");
+        }
+
+        public void Stop()
+        {
+            m_runtime.Shutdown();
         }
 
         public Object callServeIndex(String indexPath, Object req)
@@ -164,10 +169,25 @@ namespace rho
         {
             Object value = hashGet(hash, key);
 
-            if (value != null && value.GetType() == typeof(MutableString))
+            if (value != null && value is MutableString)
                 return ((MutableString)value).ToString();
 
             return String.Empty;
+        }
+
+        public Vector<String> makeVectorStringFromArray(RubyArray ar)
+        {
+            Vector<String> arRes = new Vector<String>();
+            for (int i = 0; ar != null && i < ar.Count; i++)
+            {
+                Object item = ar[i];
+                if (item != null && item is MutableString)
+                    arRes.Add( ((MutableString)item).ToString() );
+                else
+                    arRes.Add(String.Empty);
+            }
+
+            return arRes;
         }
 
         public bool isMainRubyThread()
@@ -201,6 +221,23 @@ namespace rho
         public void raise_RhoError(int errCode)
         {
             m_engine.Operations.InvokeMember(m_rhoframework, "raise_rhoerror", errCode);
+        }
+
+        public void loadServerSources(String strData)
+        {
+            MutableString strParam = new MutableString();
+            strParam.Append(strData);
+            m_engine.Operations.InvokeMember(m_rhoframework, "load_server_sources", strParam);
+        }
+
+        public void loadAllSyncSources()
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "load_all_sync_sources");
+        }
+
+        public void resetDBOnSyncUserChanged()
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "reset_db_on_sync_user_changed");
         }
     }
 }

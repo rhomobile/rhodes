@@ -92,21 +92,5 @@ namespace rho
 		    return res.toStr();*/
             return "";
 	    }
-
-	    public static void loadServerSources(String strData)
-	    {
-		    //RubyAPI.callPublicOneArgMethod(RhoRuby.getFrameworkObj(), ObjectFactory.createString(strData), null, loadServerSources_mid);
-	    }
-
-	    public static void loadAllSyncSources()
-	    {
-		    //RubyAPI.callPublicNoArgMethod(RhoRuby.getFrameworkObj(), null, loadAllSyncSources_mid);
-	    }
-	
-	    public static void resetDBOnSyncUserChanged()
-	    {
-		    //RubyAPI.callPublicNoArgMethod(RhoRuby.getFrameworkObj(), null, resetDBOnSyncUserChanged_mid);
-	    }
-     
     }
 }
