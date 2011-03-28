@@ -247,7 +247,7 @@ namespace rho.db
                 var obj = values[i];
                 if (obj == null)
                     Sqlite3.sqlite3_bind_null(stmt, i + 1);
-                else if (obj is Byte || obj is UInt16 || obj is SByte || obj is Int16 || obj is Int32 || obj is Boolean)
+                else if (obj is Byte || obj is UInt16 || obj is SByte || obj is Int16 || obj is Int32)
                     Sqlite3.sqlite3_bind_int(stmt, i + 1, Convert.ToInt32(obj, CultureInfo.InvariantCulture));
                 else if (obj is UInt32 || obj is Int64)
                     Sqlite3.sqlite3_bind_int64(stmt, i + 1, Convert.ToInt64(obj, CultureInfo.InvariantCulture));
@@ -264,8 +264,16 @@ namespace rho.db
                     String val = ((RubySymbol)obj).ToString();
                     Sqlite3.sqlite3_bind_text(stmt, i + 1, val, val.Length, null);
                 }
+                else if (obj is Boolean)
+                {
+                    String val = ((Boolean)obj) ? "true" : "false";
+                    Sqlite3.sqlite3_bind_text(stmt, i + 1, val, val.Length, null);
+                }
                 else
-                    throw new DBException(Sqlite3.SQLITE_ERROR, "unknown data type.");
+                {
+                    String val = obj.ToString();
+                    Sqlite3.sqlite3_bind_text(stmt, i + 1, val, val.Length, null);
+                }
 
                 checkError();
             }
