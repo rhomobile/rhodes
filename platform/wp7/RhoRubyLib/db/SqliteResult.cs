@@ -12,7 +12,7 @@ namespace rho.db
     public class CSqliteResult : IDBResult
     {
         private Sqlite3.Vdbe m_st;
-        //private SqliteCopyResult m_resCopy;
+        private CSqliteCopyResult m_resCopy;
         private boolean m_bNonUnique = false;
         public CSqliteResult()
         {
@@ -35,16 +35,25 @@ namespace rho.db
 
         public int getColCount()
         {
+            if (m_resCopy != null)
+                return m_resCopy.getColCount();
+
             return Sqlite3.sqlite3_data_count(m_st);
         }
 
         public String getColName(int nCol)
         {
+            if (m_resCopy != null)
+                return m_resCopy.getColName(nCol);
+
             return Sqlite3.sqlite3_column_name(m_st, nCol);
         }
 
         public String getOrigColName(int nCol)
         {
+            if (m_resCopy != null)
+                return m_resCopy.getOrigColName(nCol);
+
             return Sqlite3.sqlite3_column_name(m_st, nCol);
         }
 
@@ -57,19 +66,18 @@ namespace rho.db
         {
             if (m_st == null)
                 return true;
-            /*
+            
             if (m_resCopy == null)
-            {
-                m_resCopy = new SqliteCopyResult(this);
-                close();
-            }*/
-            //TODO: SqliteCopyResult
+                m_resCopy = new CSqliteCopyResult(this);
 
             return false;
         }
 
         public void next()
         {
+            if (m_resCopy != null)
+                m_resCopy.next();
+            
             if (m_st != null)
             {
                 int res = executeStatement();
@@ -108,18 +116,27 @@ namespace rho.db
 
         public String getStringByIdx(int nCol)
         {
-            String val = Sqlite3.sqlite3_column_text(m_st, nCol);
-            return val != null ? val : String.Empty;
+            Object val = getCurValue(nCol);
+            return val != null ? val.ToString() : ""; 
+            
+            //String val = Sqlite3.sqlite3_column_text(m_st, nCol);
+            //return val != null ? val : String.Empty;
         }
 
         public int getIntByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_int(m_st, nCol);
+            Object val = getCurValue(nCol);
+            return val != null ? (int)val : 0; 
+            
+            //return Sqlite3.sqlite3_column_int(m_st, nCol);
         }
 
         public long getLongByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_int64(m_st, nCol);
+            Object val = getCurValue(nCol);
+            return val != null ? (long)val : 0; 
+
+            //return Sqlite3.sqlite3_column_int64(m_st, nCol);
         }
 
         public String getUInt64ByIdx(int nCol)
@@ -129,7 +146,8 @@ namespace rho.db
 
         public Object /*RubyValue*/ getRubyValueByIdx(int nCol)
         {
-            Object val = getCurData()[nCol];
+            Object val = getCurValue(nCol);
+            //Object val = getCurData()[nCol];
 
             if (val == null)
 			    return null;
@@ -153,7 +171,9 @@ namespace rho.db
 
         public boolean isNullByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_type(m_st, nCol) == Sqlite3.SQLITE_NULL;
+            Object val = getCurValue(nCol);
+            return val == null; 
+            //return Sqlite3.sqlite3_column_type(m_st, nCol) == Sqlite3.SQLITE_NULL;
         }
 
         public Object /*RubyValue*/ getRubyValue(String colname)
@@ -173,6 +193,9 @@ namespace rho.db
 
         public Object[] getCurData()
         {
+            if (m_resCopy != null)
+                return m_resCopy.getCurData();
+            
             String[] cols = getColumnNames();
             Object[] res = new Object[cols.Length];
             for (int i = 0; i < cols.Length; i++)
@@ -205,6 +228,15 @@ namespace rho.db
 
         #region Helpers
 
+        private Object getCurValue(int nCol)
+        {
+            if (m_resCopy != null)
+                return m_resCopy.getCurValue(nCol);
+
+
+            return getCurData()[nCol];
+        }
+
         private String[] getColumnNames()
         {
             int cnt = Sqlite3.sqlite3_data_count(m_st);
@@ -219,6 +251,9 @@ namespace rho.db
 
         private int findColIndex(String colname)
         {
+            if (m_resCopy != null)
+                return m_resCopy.findColIndex(colname);
+            
             int cnt = Sqlite3.sqlite3_data_count(m_st);
 
             for (int i = 0; i < cnt; i++)
