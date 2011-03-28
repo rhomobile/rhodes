@@ -66,9 +66,12 @@ namespace rho.db
         {
             if (m_st == null)
                 return true;
-            
+
             if (m_resCopy == null)
+            {
                 m_resCopy = new CSqliteCopyResult(this);
+                close();
+            }
 
             return false;
         }
