@@ -26,11 +26,11 @@ end
     config[:files] << "spec/bsearch_spec"
 
     config[:files] << "spec/rho_controller_spec"
-if !defined?(RHO_WP7)
     config[:files] << [ "spec/rhom_object_spec",
         [ {:schema_model=>true, :sync_model=>true},  {:schema_model=>true, :sync_model=>false},
-          {:schema_model=>false, :sync_model=>true}, {:schema_model=>false, :sync_model=>false} ] ]
+          {:schema_model=>false, :sync_model=>true} , {:schema_model=>false, :sync_model=>false} ] ]
 
+if !defined?(RHO_WP7)
     config[:files] << "spec/contacts_spec" unless System.get_property('device_name') == 'Win32'
 
     # Disable events specs on Android because emulator doesn't contain Calendar provider
@@ -48,6 +48,7 @@ if !defined?(RHO_WP7)
     config[:files] << "spec/blobsync_spec"
     config[:files] << "spec/bulksync_spec"
 end
+
   end
 
   def run
