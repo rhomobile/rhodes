@@ -65,8 +65,19 @@ namespace rho.db
 		    // TODO Auto-generated method stub
 		    return false;
 	    }
-	
-        protected Object getCurValue(int nCol)
+
+        public int findColIndex(String colname)
+        {
+            for (int i = 0; i < m_arColumns.size(); i++)
+            {
+                if (((String)m_arColumns.elementAt(i)).equalsIgnoreCase(colname))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public Object getCurValue(int nCol)
         {
     	    return ((Object[])m_arRows.elementAt(m_nCurPos))[nCol];
         }
