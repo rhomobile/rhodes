@@ -949,7 +949,7 @@ end
     @accts[1].industry.should == "Technology"
     
   end
-  
+
   it "should order by multiple columns" do
     getAccount.create(:name=>'ZMobile', :industry => 'IT', :modified_by_name => 'user')
     getAccount.create(:name=>'Aeroprise', :industry => 'Accounting', :modified_by_name => 'admin')
@@ -979,7 +979,7 @@ end
     @accts[2].industry.should == "Technology"
     
   end
-  
+
   it "should delete_all" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = getAccount.create(vars)
@@ -1205,7 +1205,7 @@ end
     accts.length.should == 0    
  end
       
-
+if !defined?(RHO_WP7)
   it "should support blob type" do
     
     #TODO: fix blob for schema models    
@@ -1235,6 +1235,7 @@ end
         File.exists?(file_name).should == false
     end        
   end
+end
 
   it "should include only selected column" do
     @accts = getAccount.find(:all, :select => ['name'], :order => 'name', :orderdir => 'DESC' )
