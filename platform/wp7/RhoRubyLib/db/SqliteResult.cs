@@ -128,10 +128,10 @@ namespace rho.db
 
         public int getIntByIdx(int nCol)
         {
-            //Object val = getCurValue(nCol);
-            //return val != null ? (int)val : 0; 
+            Object val = getCurValue(nCol);
+            return val != null ? Convert.ToInt32(val) : 0; 
             
-            return Sqlite3.sqlite3_column_int(m_st, nCol);
+            //return Sqlite3.sqlite3_column_int(m_st, nCol);
         }
 
         public long getLongByIdx(int nCol)
