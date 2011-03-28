@@ -259,8 +259,13 @@ namespace rho.db
                     Sqlite3.sqlite3_bind_text(stmt, i + 1, obj.ToString(), ((MutableString)obj).Length, null);
                 else if (obj is byte[])
                     Sqlite3.sqlite3_bind_blob(stmt, i + 1, (byte[])obj, ((byte[])obj).Length, null);
+                else if (obj is RubySymbol)
+                {
+                    String val = ((RubySymbol)obj).ToString();
+                    Sqlite3.sqlite3_bind_text(stmt, i + 1, val, val.Length, null);
+                }
                 else
-                    new DBException(Sqlite3.SQLITE_ERROR, "unknown data type.");
+                    throw new DBException(Sqlite3.SQLITE_ERROR, "unknown data type.");
 
                 checkError();
             }

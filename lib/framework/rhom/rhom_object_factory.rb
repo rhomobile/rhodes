@@ -164,7 +164,7 @@ module Rhom
                 end
                 
                 def get_source_id
-                  Rho::RhoConfig.sources[get_source_name]['source_id'].to_s
+                  Rho::RhoConfig.sources[get_source_name]['source_id'].to_i
                 end
 
                 def convertOpToStr(val_op, value)
