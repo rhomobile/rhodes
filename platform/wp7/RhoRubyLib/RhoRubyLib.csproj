@@ -68,6 +68,7 @@
     <Compile Include="common\RhoEmptyProfiler.cs" />
     <Compile Include="common\RhoProfiler.cs" />
     <Compile Include="db\SqliteCopyResult.cs" />
+    <Compile Include="json\JsonParser.cs" />
     <Compile Include="RhoAppAdapter.cs" />
     <Compile Include="common\Mutex.cs" />
     <Compile Include="common\RhoThread.cs" />
@@ -105,9 +106,9 @@
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoSyncEngine.cs" />
     <Compile Include="rubyext\RhoWebView.cs" />
-    <Compile Include="sync\JSONStructIterator.cs" />
-    <Compile Include="sync\JSONArrayIterator.cs" />
-    <Compile Include="sync\JSONEntry.cs" />
+    <Compile Include="json\JSONStructIterator.cs" />
+    <Compile Include="json\JSONArrayIterator.cs" />
+    <Compile Include="json\JSONEntry.cs" />
     <Compile Include="sync\SyncSource.cs" />
     <Compile Include="sync\SyncProtocol_3.cs" />
     <Compile Include="sync\ISyncProtocol.cs" />
