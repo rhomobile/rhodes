@@ -1,7 +1,7 @@
 ﻿using System;
 using rho.common;
 
-namespace rho.sync
+namespace rho.json
 {
     public class RhoJSONObject
     {
