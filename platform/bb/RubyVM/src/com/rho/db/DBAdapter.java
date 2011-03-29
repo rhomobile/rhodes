@@ -72,8 +72,14 @@ public class DBAdapter extends RubyBasic
 
 	public void executeBatchSQL(String strStatement)throws DBException{
 		LOG.TRACE("executeBatchSQL: " + strStatement);
-		
-		m_dbStorage.executeBatchSQL(strStatement);
+
+		Lock();
+		try{		
+			m_dbStorage.executeBatchSQL(strStatement);
+		}finally
+		{
+			Unlock();
+		}			
 	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
