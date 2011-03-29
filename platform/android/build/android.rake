@@ -406,7 +406,7 @@ namespace "config" do
     $applog_file = $app_config["applog"]
 
     if !$applog_file.nil?
-      $applog_path = File.join( $config["env"]["app"], $applog_file )
+      $applog_path = File.join( $app_path, $applog_file )
     end 
 
     # Detect android targets
