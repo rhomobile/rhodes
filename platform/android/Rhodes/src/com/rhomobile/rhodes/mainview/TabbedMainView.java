@@ -451,7 +451,7 @@ public class TabbedMainView implements MainView {
 		
 		int size = tabs.size();
 		
-		host = new TabHost(ctx);
+		host = new TabHost(ctx, null);
 		
 		tabData = new Vector<TabData>(size);
 		tabIndex = 0;
