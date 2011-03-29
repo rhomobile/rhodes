@@ -26,8 +26,10 @@ namespace rho.logging
 		m_pOutputSink = new rho.logging.RhoLogOutputSink(this);
     }
 
-	public static void close(){ 
-		//TODO: should we close log file? some threads may still logging 
+	public void close()
+    {
+        if (m_pFileSink != null)
+            m_pFileSink.close();
 	}
 	
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }

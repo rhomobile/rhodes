@@ -12,35 +12,51 @@ namespace rho.db
     public class CSqliteResult : IDBResult
     {
         private Sqlite3.Vdbe m_st;
-        //private SqliteCopyResult m_resCopy;
+        private CSqliteCopyResult m_resCopy;
         private boolean m_bNonUnique = false;
         public CSqliteResult()
         {
         }
 
+        public CSqliteResult(boolean bNonUnique)
+	    {
+		    m_bNonUnique = bNonUnique;
+	    }
+
         public CSqliteResult(Sqlite3.Vdbe stmt)
         {
             m_st = stmt;
-            if (m_st != null)
-                executeStatement(stmt);
+        }
+
+        public boolean isNonUnique()
+        {
+            return m_bNonUnique;
         }
 
         public int getColCount()
         {
+            if (m_resCopy != null)
+                return m_resCopy.getColCount();
+
             return Sqlite3.sqlite3_data_count(m_st);
         }
 
         public String getColName(int nCol)
         {
+            if (m_resCopy != null)
+                return m_resCopy.getColName(nCol);
+
             return Sqlite3.sqlite3_column_name(m_st, nCol);
         }
 
         public String getOrigColName(int nCol)
         {
+            if (m_resCopy != null)
+                return m_resCopy.getOrigColName(nCol);
+
             return Sqlite3.sqlite3_column_name(m_st, nCol);
         }
 
-        //New
         public boolean isEnd()
         {
             return m_st == null;
@@ -48,29 +64,82 @@ namespace rho.db
 
         public boolean isOneEnd()
         {
-            return m_st == null;
+            if (m_st == null)
+                return true;
+
+            if (m_resCopy == null)
+            {
+                m_resCopy = new CSqliteCopyResult(this);
+                close();
+            }
+
+            return false;
         }
 
         public void next()
         {
+            if (m_resCopy != null)
+                m_resCopy.next();
+            
             if (m_st != null)
-                executeStatement(m_st);
+            {
+                int res = executeStatement();
+                checkError();
+                if (res != Sqlite3.SQLITE_ROW)
+                    close();
+            }
+        }
+
+        public void checkError()
+        {
+            if (m_st == null)
+                return;
+
+            int res = Sqlite3.sqlite3_errcode(m_st.db);
+            if (res != Sqlite3.SQLITE_OK && res != Sqlite3.SQLITE_ROW && res != Sqlite3.SQLITE_DONE)
+            {
+                close();
+                throw new DBException(res, Sqlite3.sqlite3_errmsg(m_st.db));
+            }
+        }
+
+        public int executeStatement()
+        {
+            return Sqlite3.sqlite3_step(m_st);
+        }
+
+        public void close()
+        {
+            if (m_st != null)
+            {
+                Sqlite3.sqlite3_finalize(ref m_st);
+                m_st = null;
+            }
         }
 
         public String getStringByIdx(int nCol)
         {
-            String val = Sqlite3.sqlite3_column_text(m_st, nCol);
-            return val != null ? val : String.Empty;
+            Object val = getCurValue(nCol);
+            return val != null ? val.ToString() : ""; 
+            
+            //String val = Sqlite3.sqlite3_column_text(m_st, nCol);
+            //return val != null ? val : String.Empty;
         }
 
         public int getIntByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_int(m_st, nCol);
+            Object val = getCurValue(nCol);
+            return val != null ? Convert.ToInt32(val) : 0; 
+            
+            //return Sqlite3.sqlite3_column_int(m_st, nCol);
         }
 
         public long getLongByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_int64(m_st, nCol);
+            Object val = getCurValue(nCol);
+            return val != null ? (long)val : 0; 
+
+            //return Sqlite3.sqlite3_column_int64(m_st, nCol);
         }
 
         public String getUInt64ByIdx(int nCol)
@@ -80,11 +149,12 @@ namespace rho.db
 
         public Object /*RubyValue*/ getRubyValueByIdx(int nCol)
         {
-            Object val = getCurData()[nCol];
+            Object val = getCurValue(nCol);
+            //Object val = getCurData()[nCol];
 
             if (val == null)
 			    return null;
-		    else if ( val is string)
+		    else if ( val is string || val is String)
 			    return MutableString.Create((string)val);
 		    else if ( val is int )
 			    return (int)val;
@@ -98,14 +168,15 @@ namespace rho.db
 			    return (double)val;
 		    else if (val is byte[])
                 return MutableString.Create(((byte[])val).ToString());
-		
 
             return MutableString.Create(val.ToString());
         }
 
         public boolean isNullByIdx(int nCol)
         {
-            return Sqlite3.sqlite3_column_type(m_st, nCol) == Sqlite3.SQLITE_NULL;
+            Object val = getCurValue(nCol);
+            return val == null; 
+            //return Sqlite3.sqlite3_column_type(m_st, nCol) == Sqlite3.SQLITE_NULL;
         }
 
         public Object /*RubyValue*/ getRubyValue(String colname)
@@ -125,29 +196,32 @@ namespace rho.db
 
         public Object[] getCurData()
         {
+            if (m_resCopy != null)
+                return m_resCopy.getCurData();
+            
             String[] cols = getColumnNames();
             Object[] res = new Object[cols.Length];
             for (int i = 0; i < cols.Length; i++)
             {
-                Sqlite3.Mem val = Sqlite3.sqlite3_column_value(m_st, i);
-                switch (val.type)
+                int type = Sqlite3.sqlite3_column_type(m_st, i);
+                switch (type)
                 {
-                    case Sqlite3.SQLITE_NULL:
-                        res[i] = null;
-                        break;
                     case Sqlite3.SQLITE_INTEGER:
-                        res[i] = (int)val.r;
+                        res[i] = Sqlite3.sqlite3_column_int64(m_st, i);
                         break;
                     case Sqlite3.SQLITE_FLOAT:
-                        res[i] = val.r;
-                        break;
-                    case Sqlite3.SQLITE_TEXT:
-                        res[i] = val.z;
+                        res[i] = Sqlite3.sqlite3_column_double(m_st, i);
                         break;
                     case Sqlite3.SQLITE_BLOB:
-                        res[i] = val.zBLOB;
+                        res[i] = Sqlite3.sqlite3_column_blob(m_st, i);
                         break;
-                    default:
+                    case Sqlite3.SQLITE_TEXT:
+                        res[i] = Sqlite3.sqlite3_column_text(m_st, i);
+                        if (res[i] == null)
+                            res[i] = String.Empty;
+                        break;
+                    case Sqlite3.SQLITE_NULL:
+                        res[i] = null;
                         break;
                 }
             }
@@ -155,24 +229,16 @@ namespace rho.db
             return res;
         }
 
-        public boolean isNonUnique()
-        {
-            return m_bNonUnique;
-        }
-
-        public void close()
-        {
-            if (m_st != null)
-            {
-                int res = Sqlite3.sqlite3_finalize( ref m_st );
-                if (res != Sqlite3.SQLITE_OK)
-                    throw new DBException(res, DBLastError());
-
-                m_st = null;
-            }
-        }
-
         #region Helpers
+
+        private Object getCurValue(int nCol)
+        {
+            if (m_resCopy != null)
+                return m_resCopy.getCurValue(nCol);
+
+
+            return getCurData()[nCol];
+        }
 
         private String[] getColumnNames()
         {
@@ -186,27 +252,11 @@ namespace rho.db
             return res;
         }
 
-        private string DBLastError()
-        {
-            return Sqlite3.sqlite3_errmsg(m_st.db);
-        }
-
-        private bool executeStatement(Sqlite3.Vdbe pStmt)
-        {
-            int res = Sqlite3.sqlite3_step(pStmt);
-
-            if (res != Sqlite3.SQLITE_ROW)
-            {
-                close();
-                if (res != Sqlite3.SQLITE_OK && res != Sqlite3.SQLITE_ROW && res != Sqlite3.SQLITE_DONE)
-                    throw new DBException(res, DBLastError());
-            }
-
-            return res == Sqlite3.SQLITE_ROW;
-        }
-
         private int findColIndex(String colname)
         {
+            if (m_resCopy != null)
+                return m_resCopy.findColIndex(colname);
+            
             int cnt = Sqlite3.sqlite3_data_count(m_st);
 
             for (int i = 0; i < cnt; i++)

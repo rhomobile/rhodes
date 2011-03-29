@@ -50,6 +50,12 @@ module SyncEngine
 	end
 end
 
+module Alert
+	def self.show_status( title, msg, hide)
+		#TODO: show_status
+	end
+end
+
 module Rho
 
 class RhoConf
@@ -59,7 +65,7 @@ class RhoConf
 	def self.set_property_by_name(name, val)
 		process_rhoconfig
 
-		puts "set_property_by_name: #{name}"
+		#puts "set_property_by_name: #{name}"
 
 		@@config[name] = val
 	end
@@ -67,8 +73,12 @@ class RhoConf
 	def self.get_property_by_name(name)
 		process_rhoconfig
 
-	    puts "get_property_by_name: #{name} : #{@@config[name]}"
+	    #puts "get_property_by_name: #{name} : #{@@config[name]}"
 		@@config[name]
+	end
+
+	def self.is_property_exists(name)
+		@@config.has_key?(name)	
 	end
 
 	def self.process_rhoconfig

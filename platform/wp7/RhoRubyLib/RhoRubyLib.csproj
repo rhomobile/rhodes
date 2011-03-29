@@ -67,6 +67,7 @@
     <Compile Include="common\TimeInterval.cs" />
     <Compile Include="common\RhoEmptyProfiler.cs" />
     <Compile Include="common\RhoProfiler.cs" />
+    <Compile Include="db\SqliteCopyResult.cs" />
     <Compile Include="RhoAppAdapter.cs" />
     <Compile Include="common\Mutex.cs" />
     <Compile Include="common\RhoThread.cs" />
