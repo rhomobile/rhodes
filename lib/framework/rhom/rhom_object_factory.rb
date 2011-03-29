@@ -169,7 +169,7 @@ module Rhom
 
                 def convertOpToStr(val_op, value)
                     res = ""
-                    if val_op == 'IN' or val_op == 'in'
+                    if val_op.upcase == 'IN'
                     
                         if value.is_a?(String)
                             value = value.split(",")
@@ -333,10 +333,16 @@ module Rhom
                     else
                         attrib_name = key
                     end
-                    
-                    sql << "attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(attrib_name)
+
+                    sql << "attrib=" + ::Rhom::RhomDbAdapter.get_value_for_sql_stmt(
+                        val_func.upcase == 'CAST' ? attrib_name.split(' ')[0] : attrib_name)
                     sql << " AND source_id=" + srcid_value 
-                    sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                    
+                    if val_func.upcase == 'CAST'
+                        sql << " AND " + val_func + "(value " + attrib_name.split(' ')[1] + ' ' + attrib_name.split(' ')[2] + " ) "
+                    else                    
+                        sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                    end
                     
                     sql << convertOpToStr(val_op, value)
                     
@@ -362,11 +368,17 @@ module Rhom
                     if srcid_value.nil?
                         sql << (val_func.length > 0 ? val_func + "(#{attrib_name})" : "#{attrib_name}") + ' '
                     else
-                        sql << "attrib=?"
-					    vals << attrib_name
+                        sql << "attrib=?"                    
+					    vals << (val_func.upcase == 'CAST' ? attrib_name.split(' ')[0] : attrib_name)
+					    
                         sql << " AND source_id=?"
-					    vals << srcid_value					
-                        sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+					    vals << srcid_value
+
+                        if val_func.upcase == 'CAST'
+                            sql << " AND " + val_func + "(value " + attrib_name.split(' ')[1] + ' ' + attrib_name.split(' ')[2] + " ) "
+                        else
+                            sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                        end    
                     end
                     
                     if val_op == 'IN' or val_op == 'in'
