@@ -152,29 +152,33 @@ namespace rho.net
             readHeaders(m_headers);
             copyHashtable(m_OutHeaders, m_headers);
 
+            try
+            {
+                if (m_code >= 400)
+                {
+                    LOG.ERROR("Error retrieving data: " + m_code);
+                    if (m_code == Convert.ToInt32(HttpStatusCode.Unauthorized) && m_oSession != null)
+                    {
+                        LOG.ERROR("Unauthorize error.Client will be logged out");
+                        m_oSession.logout();
+                    }
 
-            if (m_code >= 400) 
-			{
-                LOG.ERROR("Error retrieving data: " + m_code);
-                if (m_code == Convert.ToInt32(HttpStatusCode.Unauthorized) && m_oSession != null)
-				{
-			        LOG.ERROR("Unauthorize error.Client will be logged out");
-					m_oSession.logout();
-				}
-				
-                m_strRespBody = readFully(stream, getResponseEncoding());
-                LOG.TRACE("Response body: " + m_strRespBody);
+                    m_strRespBody = readFully(stream, getResponseEncoding());
+                    LOG.TRACE("Response body: " + m_strRespBody);
+                }
+                else
+                {
+                    long len = response.ContentLength;
+                    LOG.INFO("fetchRemoteData data size:" + len);
+
+                    m_strRespBody = readFully(stream, getResponseEncoding());
+                    LOG.INFO("fetchRemoteData data readFully.");
+                }
             }
-            else
-			{
-				long len = response.ContentLength;
-				LOG.INFO("fetchRemoteData data size:" + len );
-		
-				m_strRespBody = readFully(stream, getResponseEncoding());
-				LOG.INFO("fetchRemoteData data readFully.");
-			}
-
-            m_respWaitEvent.Set();
+            finally
+            {
+                m_respWaitEvent.Set();
+            }
         }
 
         private void GetRequestStreamCallback(IAsyncResult asyncResult)
