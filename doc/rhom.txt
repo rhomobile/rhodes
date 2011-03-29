@@ -777,6 +777,16 @@ You can also group `:conditions`:
 	  :select => ['name','industry','description']
 	)
 
+## Find by numeric field
+To use number comparison conditions in find use CAST :
+    :::ruby
+    @accts = Account.find(:all, 
+        :conditions => { {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'<'} => 3 } )
+    #or using sql query:
+    size = 3
+    @accts = Account.find(:all, 
+        :conditions => ["CAST(rating as INTEGER)< ?", "#{size}"], :select => ['rating'] )
+        
 ## Database Encryption
 If your application requires that the local database is encrypted on the filesystem, you can enable it by setting a flag in `build.yml`:
 
