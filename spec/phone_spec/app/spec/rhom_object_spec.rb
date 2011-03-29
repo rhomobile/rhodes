@@ -1343,7 +1343,89 @@ end
         @accts[1].name.should_not be_nil
     end    
   end  
-#=end
+
+  it "should find by number" do
+    getAccount.create('rating'=>1)
+    getAccount.create('rating'=>2)
+    getAccount.create('rating'=>3)
+    getAccount.create('rating'=>4)    
+    getAccount.create('rating'=>11)
+    getAccount.create('rating'=>12)
+    getAccount.create('rating'=>13)
+    getAccount.create('rating'=>14)
+    
+    size = 3
+    @accts = getAccount.find(:all, :conditions => { {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'<'} => size } )    
+    @accts.length.should == 2
+    @accts[0].rating.to_i.should < size
+    @accts[1].rating.to_i.should < size
+    
+    size = 11
+    @accts = getAccount.find(:all, :conditions => { {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'>'} => size } )    
+    @accts.length.should == 3
+    @accts[0].rating.to_i.should > size
+    @accts[1].rating.to_i.should > size    
+    @accts[2].rating.to_i.should > size
+  end
+  
+  it "should find with sql by number" do
+    getAccount.create('rating'=>1)
+    getAccount.create('rating'=>2)
+    getAccount.create('rating'=>3)
+    getAccount.create('rating'=>4)    
+    getAccount.create('rating'=>11)
+    getAccount.create('rating'=>12)
+    getAccount.create('rating'=>13)
+    getAccount.create('rating'=>14)
+    
+    size = 3
+    @accts = getAccount.find(:all, :conditions => ["CAST(rating as INTEGER)< ?", "#{size}"], :select => ['rating'] )    
+    @accts.length.should == 2
+    @accts[0].rating.to_i.should < size
+    @accts[1].rating.to_i.should < size
+    
+    size = 11
+    @accts = getAccount.find(:all, :conditions => ["CAST(rating as INTEGER)> ?", "#{size}"], :select => ['rating'] )    
+    @accts.length.should == 3
+    @accts[0].rating.to_i.should > size
+    @accts[1].rating.to_i.should > size    
+    @accts[2].rating.to_i.should > size
+  end
+
+  it "should complex find by number" do
+    getAccount.create('rating'=>1)
+    getAccount.create('rating'=>2)
+    getAccount.create('rating'=>3)
+    getAccount.create('rating'=>4)    
+    getAccount.create('rating'=>11)
+    getAccount.create('rating'=>12)
+    getAccount.create('rating'=>13)
+    getAccount.create('rating'=>14)
+    
+    size = 3
+    @accts = getAccount.find(:all, 
+        :conditions => { 
+         {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'<'} => size,
+         {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => '%ZERO%'},
+         :op => 'OR' )    
+        
+    @accts.length.should == 2
+    @accts[0].rating.to_i.should < size
+    @accts[1].rating.to_i.should < size
+    
+    size = 11
+    @accts = getAccount.find(:all, 
+        :conditions => { 
+         {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'>'} => size,
+         {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => '%ZERO%'}, 
+         :op => 'OR' )
+         
+    @accts.length.should == 3
+    @accts[0].rating.to_i.should > size
+    @accts[1].rating.to_i.should > size    
+    @accts[2].rating.to_i.should > size
+  end
+      
 end
 #=begin
 describe "Rhom#paginate" do
