@@ -2,6 +2,7 @@
 using rho.common;
 using rho.net;
 using rho.db;
+using rho.json;
 
 namespace rho.sync
 {
