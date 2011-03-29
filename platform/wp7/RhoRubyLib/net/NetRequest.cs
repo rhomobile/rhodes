@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net;
 using rho.common;
+using System.Threading;
+using System.Text;
+using System.IO;
 
 namespace rho.net
 {
@@ -12,6 +15,16 @@ namespace rho.net
 	
 	    boolean m_bCancel = false;
 	    boolean m_sslVerifyPeer = true;
+        ManualResetEvent m_respWaitEvent = new ManualResetEvent(false);
+        ManualResetEvent m_reqWaitEvent = new ManualResetEvent(false);
+        HttpWebRequest m_webRequest;
+        IRhoSession m_oSession;
+        String m_strRespBody = null;
+        String m_strBody = null;
+        String m_strUrl = null;
+        int m_code = -1;
+        Hashtable<String, String> m_headers = null;
+
 	
 	    public interface IRhoSession
 	    {
@@ -61,6 +74,7 @@ namespace rho.net
 		        {
 				    String strName = hashEnum.Current.Key;
 				    String strValue = hashEnum.Current.Value;
+                    m_webRequest.Headers[strName] = strValue;
 				    //m_connection.setRequestProperty(strName,strValue);
 		        }
 			
@@ -72,14 +86,14 @@ namespace rho.net
 		    if ( headers != null )
 		    {
 			    m_OutHeaders = new Hashtable<String, String>();
-			    for (int i = 0;; i++) {
-                    String strField = "";// m_connection.getHeaderFieldKey(i);
+			    for (int i = 0; i < m_webRequest.Headers.Count; i++) {
+                    String strField = m_webRequest.Headers.AllKeys[i];// m_connection.getHeaderFieldKey(i);
 				    if (strField == null && i > 0)
 					    break;
 
 				    if (strField != null ) 
 				    {
-                        String header_field = "";// m_connection.getHeaderField(i);
+                        String header_field = m_webRequest.Headers[m_webRequest.Headers.AllKeys[i]];// m_connection.getHeaderField(i);
 					
 					    String strKeyName = strField.toLowerCase();
 					    if ( m_OutHeaders.containsKey(strKeyName))
@@ -121,98 +135,108 @@ namespace rho.net
 		    {
 			    String strSession = oSession.getSession();
 			    LOG.INFO("Cookie : " + (strSession != null ? strSession : "") );
-			    if ( strSession != null && strSession.length() > 0 && !strSession.equals("rho_empty") )
-                    ;// m_connection.setRequestProperty("Cookie", strSession);
+                if (strSession != null && strSession.length() > 0 && !strSession.equals("rho_empty"))
+                    m_webRequest.CookieContainer.SetCookies(new Uri(m_strUrl),strSession);
 		    }
 	    }
-	
+
+        private void GetResponseCallback(IAsyncResult asyncResult)
+        {
+            HttpWebResponse response = m_webRequest.EndGetResponse(asyncResult) as HttpWebResponse;
+            Stream stream = response.GetResponseStream();
+		    LOG.INFO("openInputStream done");
+			
+		    m_code = Convert.ToInt32(response.StatusCode);
+            LOG.INFO("getResponseCode : " + m_code);
+
+            readHeaders(m_headers);
+            copyHashtable(m_OutHeaders, m_headers);
+
+
+            if (m_code >= 400) 
+			{
+                LOG.ERROR("Error retrieving data: " + m_code);
+                if (m_code == Convert.ToInt32(HttpStatusCode.Unauthorized) && m_oSession != null)
+				{
+			        LOG.ERROR("Unauthorize error.Client will be logged out");
+					m_oSession.logout();
+				}
+				
+                m_strRespBody = readFully(stream, getResponseEncoding());
+                LOG.TRACE("Response body: " + m_strRespBody);
+            }
+            else
+			{
+				long len = response.ContentLength;
+				LOG.INFO("fetchRemoteData data size:" + len );
+		
+				m_strRespBody = readFully(stream, getResponseEncoding());
+				LOG.INFO("fetchRemoteData data readFully.");
+			}
+
+            m_respWaitEvent.Set();
+        }
+
+        private void GetRequestStreamCallback(IAsyncResult asyncResult)
+        {
+            Stream stream = null;
+            try
+            {
+                stream = m_webRequest.EndGetRequestStream(asyncResult);
+                stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                LOG.INFO("write body done");
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+                m_reqWaitEvent.Set();
+            }
+        }
+
+
+
 	    public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable<String, String> headers )
         {
-/*		    String strRespBody = null;
-		    InputStream is = null;
-		    OutputStream os = null;
-		    int code = -1;
+            m_oSession = oSession;
+            m_strBody = strBody;
+            m_strUrl = strUrl;
+            m_headers = headers;
+		    String strRespBody = null;
 		
 		    m_bCancel = false;
-		    try{
-			    closeConnection();
-			    m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
-			    LOG.INFO("connection done");
-			
-			    handleCookie(oSession);
-			    //m_connection.setRequestProperty("Connection", "keep-alive");
-			    //m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
-			
-			    if ( strBody != null && strBody.length() > 0 )
-			    {
-				    if ( oSession != null )
-					    m_connection.setRequestProperty("Content-Type", oSession.getContentType());
-				    else
-					    m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-				    writeHeaders(headers);
-				    LOG.INFO("writeHeaders done");
-				    //m_connection.setRequestMethod(IHttpConnection.POST);
-				    m_connection.setRequestMethod(strMethod);
+			handleCookie(oSession);
+            m_webRequest = WebRequest.Create(strUrl) as HttpWebRequest; // TODO m_bIgnoreSuffixOnSim ???
+			LOG.INFO("connection done");
+
+			if ( strBody != null && strBody.length() > 0 )
+			{
+		        if ( oSession != null )
+                    m_webRequest.ContentType = oSession.getContentType();
+				else
+                    m_webRequest.ContentType = "application/x-www-form-urlencoded";
+
+				writeHeaders(headers);
+				LOG.INFO("writeHeaders done");
+                m_webRequest.Method = strMethod;
 				
-				    os = m_connection.openOutputStream();
-				    os.write(strBody.getBytes(), 0, strBody.length());
-				    LOG.INFO("write body done");
-			    }else
-			    {
-				    writeHeaders(headers);
-				    m_connection.setRequestMethod(strMethod);
-			    }
+                m_webRequest.BeginGetRequestStream(GetRequestStreamCallback, null);
+                m_reqWaitEvent.WaitOne();
+			}else
+			{
+				writeHeaders(headers);
+                m_webRequest.Method = strMethod;
+			}
 
-			    is = m_connection.openInputStream();
-			    LOG.INFO("openInputStream done");
-			
-			    code = m_connection.getResponseCode();
-			    LOG.INFO("getResponseCode : " + code);
-			
-			    readHeaders(headers);
-			    copyHashtable(m_OutHeaders, headers);
-			
-			    if ( code >= 400 ) 
-			    {
-				    LOG.ERROR("Error retrieving data: " + code);
-				    if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null)
-				    {
-					    LOG.ERROR("Unauthorize error.Client will be logged out");
-					    oSession.logout();
-				    }
-				
-				    //if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-				    {
-					    strRespBody = readFully(is, getResponseEncoding());
-					    LOG.TRACE("Response body: " + strRespBody );
-				    }
-			    }else
-			    {
-				    long len = m_connection.getLength();
-				    LOG.INFO("fetchRemoteData data size:" + len );
-		
-				    strRespBody = readFully(is, getResponseEncoding());
-				
-				    LOG.INFO("fetchRemoteData data readFully.");
-			    }
+            m_webRequest.BeginGetResponse(GetResponseCallback, null);
+            m_respWaitEvent.WaitOne();
 
-		    }finally
-		    {
-			    if ( is != null )
-				    try{ is.close(); }catch(IOException exc){}
-			    if ( os != null )
-				    try{ os.close(); }catch(IOException exc){}
-			
-			    closeConnection();
-			
-			    m_bIgnoreSuffixOnSim = true;
-		    }
-		
-		    return makeResponse(strRespBody, code );
-            */
+            m_bIgnoreSuffixOnSim = true;
 
-            return makeResponse("", 200 );
+            return makeResponse(strRespBody, m_code);
+
+            ///return makeResponse("", 200 );
         }
 	
 	    private NetResponse makeResponse(String strRespBody, int nErrorCode)
@@ -643,12 +667,13 @@ namespace rho.net
 
 		    return strRes;
 	    }
-/*
-	    public static String readFully(InputStream in, String strContType) throws Exception 
+
+	    public static String readFully(Stream stream, String strContType) 
 	    {
 		    String strRes = "";
-		    byte[]  byteBuffer = new byte[1024*4];
+            byte[]  byteBuffer = new byte[1024*4];
 		    boolean bUTF8 = false;
+            StreamReader reader = null;
 		
 		    if ( strContType != null )
 		    {
@@ -658,24 +683,25 @@ namespace rho.net
 				    String strEnc = strContType.substring(nCharsetPos+1);
 				    bUTF8 = strEnc.equalsIgnoreCase("UTF-8");
 			    }
-		    }			
+		    }
 
-		    int nRead = 0;
-		    do{
-			    nRead = in.read(byteBuffer);
-			    if (nRead>0)
-			    {
-				    String strTemp;
-				    if (bUTF8)
-					    strTemp = new String(byteBuffer,0,nRead, "UTF-8");
-				    else	
-					    strTemp = new String(byteBuffer,0,nRead);
-				    strRes += strTemp;
-			    }
-		    }while( nRead > 0 );
-		
-		    return strRes;
-	    }*/
+            try
+            {
+                if(bUTF8)
+                    reader = new StreamReader(stream, Encoding.UTF8);
+                else
+                    reader = new StreamReader(stream);
+
+                strRes = reader.ReadToEnd();
+            }
+            finally
+            {
+                if(reader != null)
+                    reader.Close();
+            }
+
+            return strRes;
+	    }
 	
 	    public void closeConnection(){
 		    if ( m_connection != null ){
