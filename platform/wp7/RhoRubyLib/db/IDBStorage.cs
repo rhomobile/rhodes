@@ -8,7 +8,7 @@ namespace rho.db
         void open(String strPath, String strSqlScript, String strEncryptionInfo);
         void close();
 	
-        IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique);
+        IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique, boolean bNoCopy);
 	
         void executeBatchSQL(String strStatement);
 	

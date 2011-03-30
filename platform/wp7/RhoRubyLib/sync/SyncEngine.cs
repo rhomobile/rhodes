@@ -500,7 +500,7 @@ namespace rho.sync
 	        {
 	            int nSrcID = resSrc.getIntByIdx(0);
 	            IDBResult res = db.executeSQL("SELECT source_id,sync_type,name, partition from sources WHERE source_id=?", nSrcID);
-	            if ( res.isOneEnd() )
+	            if ( res.isEnd() )
 	                continue;
 
 	            SyncSource src = new SyncSource( res.getIntByIdx(0), res.getStringByIdx(2), "none", db, this );
@@ -588,7 +588,7 @@ namespace rho.sync
 		    lock( m_mxLoadClientID )
 		    {
 	            IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info");
-	            if ( !res.isOneEnd() )
+	            if ( !res.isEnd() )
 	                clientID = res.getStringByIdx(0);
 		    }
 		
@@ -604,7 +604,7 @@ namespace rho.sync
 		        boolean bResetClient = false;
 		        {
 		            IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info");
-		            if ( !res.isOneEnd() )
+		            if ( !res.isEnd() )
 		            {
 		                clientID = res.getStringByIdx(0);
 		                bResetClient = res.getIntByIdx(1) > 0;
@@ -616,7 +616,7 @@ namespace rho.sync
 		            clientID = requestClientIDByNet();
 		
 	                IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
-	                if ( !res.isOneEnd() )
+	                if ( !res.isEnd() )
 	            	    getUserDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
 	                else
 	            	    getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
@@ -950,7 +950,7 @@ namespace rho.sync
 		    	    return;
 		    
 		        IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
-		        if ( !res.isOneEnd() )
+		        if ( !res.isEnd() )
 		    	    getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
 		        else
 		    	    getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
@@ -987,7 +987,7 @@ namespace rho.sync
 	        String strRes = "";
 	        IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
 	    
-	        if ( !res.isOneEnd() )
+	        if ( !res.isEnd() )
 	    	    strRes = res.getStringByIdx(0);
 	    
 	        return strRes.length() > 0;
@@ -998,7 +998,7 @@ namespace rho.sync
 		    m_strSession = "";
 	        IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
 	    
-	        if ( !res.isOneEnd() )
+	        if ( !res.isEnd() )
 	    	    m_strSession = res.getStringByIdx(0);
 
             return m_strSession;
