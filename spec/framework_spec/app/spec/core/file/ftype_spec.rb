@@ -30,8 +30,8 @@ describe "File.ftype" do
     end
   end
 
-  # Both FreeBSD and Windows does not have block devices
-  platform_is_not :freebsd, :windows do
+  # Both FreeBSD and Windows (and Android) does not have block devices
+  platform_is_not :freebsd, :windows, :android do
     it "returns 'blockSpecial' when the file is a block" do
       FileSpecs.block_device do |block|
         File.ftype(block).should == 'blockSpecial'
@@ -51,12 +51,15 @@ describe "File.ftype" do
         File.ftype(link).should == 'link'
       end
     end
+  end
 
+  platform_is_not :windows, :android do
     it "returns fifo when the file is a fifo" do
       FileSpecs.fifo do |fifo|
         File.ftype(fifo).should == 'fifo'
       end
     end
+  end
 
 # XXX we dont support unix sockets
 #    it "returns 'socket' when the file is a socket" do
@@ -64,5 +67,4 @@ describe "File.ftype" do
 #        File.ftype(socket).should == 'socket'
 #      end
 #    end
-  end
 end

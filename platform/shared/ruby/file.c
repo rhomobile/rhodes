@@ -274,7 +274,8 @@ rb_stat_dev(VALUE self)
 static VALUE
 rb_stat_dev_major(VALUE self)
 {
-#if defined(major)
+    /* On Android "major" is inline function rather than macro */
+#if defined(major) || defined(OS_ANDROID)
     long dev = get_stat(self)->st_dev;
     return ULONG2NUM(major(dev));
 #else
@@ -296,7 +297,8 @@ rb_stat_dev_major(VALUE self)
 static VALUE
 rb_stat_dev_minor(VALUE self)
 {
-#if defined(minor)
+    /* On Android "minor" is inline function rather than macro */
+#if defined(minor) || defined(OS_ANDROID)
     long dev = get_stat(self)->st_dev;
     return ULONG2NUM(minor(dev));
 #else
@@ -429,7 +431,7 @@ rb_stat_rdev(VALUE self)
 static VALUE
 rb_stat_rdev_major(VALUE self)
 {
-#if defined(HAVE_ST_RDEV) && defined(major)
+#if defined(HAVE_ST_RDEV) && (defined(major) || defined(OS_ANDROID))
     long rdev = get_stat(self)->st_rdev;
     return ULONG2NUM(major(rdev));
 #else
@@ -451,7 +453,7 @@ rb_stat_rdev_major(VALUE self)
 static VALUE
 rb_stat_rdev_minor(VALUE self)
 {
-#if defined(HAVE_ST_RDEV) && defined(minor)
+#if defined(HAVE_ST_RDEV) && (defined(minor) || defined(OS_ANDROID))
     long rdev = get_stat(self)->st_rdev;
     return ULONG2NUM(minor(rdev));
 #else

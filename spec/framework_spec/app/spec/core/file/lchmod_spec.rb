@@ -1,7 +1,7 @@
 require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
 
 describe "File.lchmod" do
-  platform_is_not :os => [:linux, :windows, :openbsd] do
+  platform_is_not :os => [:linux, :windows, :openbsd, :android] do
     before :each do
       @fname = tmp('file_chmod_test')
       @lname = @fname + '.lnk'
