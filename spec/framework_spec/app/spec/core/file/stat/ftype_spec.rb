@@ -26,7 +26,7 @@ describe "File::Stat#ftype" do
     end
   end
 
-  platform_is_not :freebsd do  # FreeBSD does not have block devices
+  platform_is_not :freebsd, :android do  # FreeBSD does not have block devices
     it "returns 'blockSpecial' when the file is a block" do
       FileSpecs.block_device do |block|
         File.lstat(block).ftype.should == 'blockSpecial'
@@ -40,9 +40,11 @@ describe "File::Stat#ftype" do
     end
   end
 
-  it "returns fifo when the file is a fifo" do
-    FileSpecs.fifo do |fifo|
-      File.lstat(fifo).ftype.should == 'fifo'
+  platform_is_not :android do
+    it "returns fifo when the file is a fifo" do
+      FileSpecs.fifo do |fifo|
+        File.lstat(fifo).ftype.should == 'fifo'
+      end
     end
   end
 

@@ -20,7 +20,7 @@ describe "Float#to_s" do
     -100000000000000.to_f.to_s.should == "-1.0e+14"
   end
 
-  platform_is_not :openbsd do
+  platform_is_not :openbsd, :android do
     it "returns the correct values for -0.0" do
       -0.0.to_s.should == "-0.0"
     end
