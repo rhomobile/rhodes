@@ -142,7 +142,18 @@ namespace rho.net
 
         private void GetResponseCallback(IAsyncResult asyncResult)
         {
-            HttpWebResponse response = m_webRequest.EndGetResponse(asyncResult) as HttpWebResponse;
+            
+            HttpWebResponse response = null;
+            try
+            {
+                response = m_webRequest.EndGetResponse(asyncResult) as HttpWebResponse;
+            }
+            catch (WebException e)
+            {
+                response = (HttpWebResponse)e.Response;
+                m_code = Convert.ToInt32(response.StatusCode);
+            }
+            
             Stream stream = response.GetResponseStream();
 		    LOG.INFO("openInputStream done");
 			
@@ -177,6 +188,8 @@ namespace rho.net
             }
             finally
             {
+                stream.Close();
+                response.Close();
                 m_respWaitEvent.Set();
             }
         }
