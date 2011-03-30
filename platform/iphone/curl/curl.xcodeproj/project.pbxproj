@@ -756,7 +756,7 @@
 					"-DUSE_RHOSSL",
 				);
 				PRODUCT_NAME = curl;
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Debug;
@@ -774,7 +774,7 @@
 					"-DUSE_RHOSSL",
 				);
 				PRODUCT_NAME = curl;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Release;
@@ -833,7 +833,7 @@
 					"-DUSE_RHOSSL",
 				);
 				PRODUCT_NAME = curl;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Distribution;
