@@ -930,7 +930,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    if ( isSessionExist() && getState() != esStop )
 		        src.sync();
 	
-		    getNotify().onSyncSourceEnd(i, m_sources);
+		    //getNotify().onSyncSourceEnd(i, m_sources);
     	}catch(Exception exc)
     	{
 	    	if ( src.m_nErrCode == RhoAppAdapter.ERR_NONE )

@@ -55,8 +55,8 @@ namespace rho.sync
         SyncEngine getSync(){ return m_syncEngine; }
         NetRequest getNet() { return m_NetRequest;}
 
-	    String getNotifyBody(){ return m_strNotifyBody; }
-	    void cleanNotifyBody(){ m_strNotifyBody = ""; }
+	    public String getNotifyBody(){ return m_strNotifyBody; }
+	    public void cleanNotifyBody(){ m_strNotifyBody = ""; }
 
         public boolean isReportingEnabled(){return m_bEnableReporting&&m_bEnableReportingGlobal;}
         public void enableReporting(boolean bEnable) {	m_bEnableReporting = bEnable; }

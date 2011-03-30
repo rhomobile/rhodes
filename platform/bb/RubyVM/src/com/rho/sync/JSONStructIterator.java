@@ -49,7 +49,7 @@ class JSONStructIterator
     void reset()
     {
     	m_enumKeys = m_object.keys();
-    	if ( !isEnd() )
+    	if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
     		m_strCurKey = (String)m_enumKeys.nextElement();
     }
 

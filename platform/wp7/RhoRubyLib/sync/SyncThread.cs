@@ -8,6 +8,8 @@ namespace rho.sync
     {
         private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		    new RhoLogger("Sync");
+        public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
+
 	    private static int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
 	
    	    public const int scNone = 0, scSyncAll = 1, scSyncOne = 2, scLogin = 3, scSearchOne=4; 
@@ -156,15 +158,14 @@ namespace rho.sync
 
         public object getRetValue()
         {
-            //TODO: getRetValue
-    	    /*RubyValue ret = RubyConstant.QNIL;
             if ( isNoThreadedMode()  )
             {
-                ret = ObjectFactory.createString( getSyncEngine().getNotify().getNotifyBody() );
+                object res = RhoRuby.createString(getSyncEngine().getNotify().getNotifyBody());
                 getSyncEngine().getNotify().cleanNotifyBody();
+
+                return res;
             }
 
-            return ret;*/
             return null;
         }
 	
