@@ -220,11 +220,11 @@ namespace rho.net
 
 	    public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable<String, String> headers )
         {
+            //strUrl = "http://www.yandex.ru";
             m_oSession = oSession;
             m_strBody = strBody;
             m_strUrl = strUrl;
             m_headers = headers;
-		    String strRespBody = null;
 		
 		    m_bCancel = false;
 
@@ -258,7 +258,7 @@ namespace rho.net
 
             m_bIgnoreSuffixOnSim = true;
 
-            return makeResponse(strRespBody, m_code);
+            return makeResponse(m_strRespBody, m_code);
         }
 	
 	    private NetResponse makeResponse(String strRespBody, int nErrorCode)
