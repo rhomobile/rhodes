@@ -14,13 +14,13 @@ For Windows use [Instant Rhodes](install#install-on-windows). On Mac, Linux, and
 * Rhodes gem. Run `[sudo] gem install rhodes` to install the latest rhodes gem.
 **NOTE: If you get any "no such file to load -- something" messages while running the rake tasks or rhogen commands, this can usually be resolved by running '[sudo] gem install something'. **
 
-Setup HOME environment variable: 
+For Windows setup HOME environment variable:
 
 	C:\Documents and Settings\<account_name>
 
 If you are planning to build for Blackberry or Android, make sure you have JDK version 1.6.0_2 or higher installed. Recommended version 6.0 update 11.
 
-* Version 1.6.0_13 for Mac OSX 10.5 available [here](http://support.apple.com/downloads/Java_for_Mac_OS_X_10_5_Update_4). Install it and then run "Java Preferences" utility to change default version.
+* Version 1.6.0_24 for Mac OSX 10.6 available [here](http://support.apple.com/downloads/DL1360/en_US/JavaForMacOSX10.6Update4.dmg). Install it and then run "Java Preferences" utility to change default version.
 * Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). The 32-bit Windows version is required for Blackberry tools. 
 
 Make sure you set JAVA_HOME and that JAVA_HOME/bin is on your path.
@@ -29,7 +29,7 @@ Make sure you set JAVA_HOME and that JAVA_HOME/bin is on your path.
 
 If you planning to modify or [extend](extensions) Rhodes, you will need Rhodes source code. It is distributed under MIT license and it is perfectly all right for you to hack it if you want to. But you don't need it otherwise, having Rhodes gem installed is enough.
 
-Rhodes source code is available on github.com and you will need Git to get it form there. If you used [Instant Rhodes](install#install-on-windows) you probably already have it installed on your system. Otherwise, load it form [here](http://git-scm.com).
+Rhodes source code is available on github.com and you will need Git to get it from there. If you used [Instant Rhodes](install#install-on-windows) you probably already have it installed on your system. Otherwise, load it from [here](http://git-scm.com).
 
 To clone Rhodes, execute following from the command line:
 	
