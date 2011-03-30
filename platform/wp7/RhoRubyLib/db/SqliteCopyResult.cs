@@ -31,11 +31,6 @@ namespace rho.db
 		    return m_nCurPos >= m_arRows.size(); 
 	    }
 	
-        public boolean isOneEnd()
-	    {
-		    return isEnd();
-	    }
-	
 	    public void next()
 	    {
 		    m_nCurPos++;

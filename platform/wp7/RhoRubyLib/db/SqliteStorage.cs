@@ -85,13 +85,13 @@ namespace rho.db
                 throw new DBException(res, Sqlite3.sqlite3_errmsg(m_db));
         }
 
-        public void executeBatchSQL(string strStatement)
+        public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique, boolean bNoCopy)
         {
             if (m_db == null)
                 throw new Exception("executeSQL: m_db == null");
 
             var stmt = Prepare(strStatement, values);
-            CSqliteResult res = new CSqliteResult(stmt);
+            CSqliteResult res = new CSqliteResult(stmt, bNoCopy);
             int rc = res.executeStatement();
             if (rc != Sqlite3.SQLITE_ROW)
             {
@@ -110,7 +110,7 @@ namespace rho.db
 
         public IDBResult createResult()
         {
-            IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null, false);
+            IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null, false, false);
 
             Vector<Object> arTables = new Vector<Object>();
             for (; !res.isEnd(); res.next())
@@ -133,7 +133,7 @@ namespace rho.db
         public boolean isTableExists(string strName)
         {
             Object[] vals = { strName };
-		    IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table' AND name=?", vals, false );
+		    IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table' AND name=?", vals, false, false );
 		    boolean bRes = !res.isEnd();
 		    res.close();
 		
