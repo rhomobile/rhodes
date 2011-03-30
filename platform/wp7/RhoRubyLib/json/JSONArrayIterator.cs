@@ -1,29 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using rho.common;
+using fastJSON;
 
 namespace rho.json
 {
-    class RhoJSONArray
-    {
-        public RhoJSONArray(String data){}
-        public object get(String strName){ return null; }
-        public int length(){ return 0; }
-    }
-
     public class JSONArrayIterator
     {
-        RhoJSONArray m_array;
+        List<Object> m_array;
         int    m_nCurItem;
 	
 	    public JSONArrayIterator(String szData)
 	    {
-	        m_array = new RhoJSONArray(szData);
+            m_array = (List<Object>)JsonParser.JsonDecode(szData);
 	        m_nCurItem = 0;
 	    }
 
 	    public JSONArrayIterator(JSONEntry oEntry, String strName)
 	    {
-	        //m_array = (RhoJSONArray)oEntry.m_object.get(strName);
+	        m_array = (List<Object>)oEntry.getObject(strName);
 	        m_nCurItem = 0;
 	    }
 
@@ -35,7 +30,7 @@ namespace rho.json
 
         public boolean isEnd()
 	    {
-	        return !(m_array != null && m_nCurItem < m_array.length());
+	        return !(m_array != null && m_nCurItem < m_array.Count);
 	    }
 
         public void next()
@@ -52,7 +47,7 @@ namespace rho.json
 
         public JSONEntry getCurItem()
 	    {
-	        return null;//new JSONEntry( isEnd() ? null : (RhoJSONObject) m_array.get(m_nCurItem) );
+            return new JSONEntry(isEnd() ? null : (Dictionary<string, object>)m_array[m_nCurItem]);
 	    }
 
         public JSONArrayIterator getCurArrayIter()
@@ -60,8 +55,8 @@ namespace rho.json
 		    JSONArrayIterator res = new JSONArrayIterator();
 		    if ( isEnd() )
 			    return res;
-		
-		    //res.m_array = (RhoJSONArray)m_array.get(m_nCurItem);
+
+            res.m_array = (List<Object>)m_array[m_nCurItem];
 	        return res;
 	    }
     }

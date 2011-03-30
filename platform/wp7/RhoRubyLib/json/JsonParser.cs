@@ -430,9 +430,10 @@ namespace fastJSON
 			builder.Append("]");
 			return true;
 		}
-
-		protected static bool SerializeString(string aString, StringBuilder builder)
+*/
+		public static String SerializeString(string aString)
 		{
+            StringBuilder builder = new StringBuilder();
 			builder.Append("\"");
 
 			char[] charArray = aString.ToCharArray();
@@ -463,9 +464,9 @@ namespace fastJSON
 			}
 
 			builder.Append("\"");
-			return true;
+			return builder.ToString();
 		}
-
+/*
 		protected static bool SerializeNumber(double number, StringBuilder builder)
 		{
 			builder.Append(Convert.ToString(number, CultureInfo.InvariantCulture));
