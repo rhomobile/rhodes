@@ -423,7 +423,9 @@ static bool set_posix_environment(JNIEnv *env, jclass clsRE)
     }
 
     // Set HOME variable
-    std::string const &root_path = rho_root_path();
+    std::string root_path = rho_root_path();
+    if (!root_path.empty() && root_path[root_path.size() - 1] == '/')
+        root_path.erase(root_path.size() - 1);
     len = root_path.size() + 16;
     buf = (char *)::malloc(len + 1);
     buf[len] = '\0';
