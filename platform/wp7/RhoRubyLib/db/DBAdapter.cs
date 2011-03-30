@@ -70,14 +70,19 @@ namespace rho.db
             Unlock();
         }
 	}
+
+    public IDBResult executeSQL(String strStatement, Object[] values)
+    {
+        return executeSQL(strStatement, values, false);
+    }
 	
-	public IDBResult executeSQL(String strStatement, Object[] values)
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bNoCopy)
     {
 		LOG.TRACE("executeSQL: " + strStatement + ";" + values);
 		IDBResult res = null;
 		Lock();
 		try{
-			res = m_dbStorage.executeSQL(strStatement,values,false);
+            res = m_dbStorage.executeSQL(strStatement, values, false, bNoCopy);
 		}finally
 		{
 			Unlock();
@@ -137,7 +142,7 @@ namespace rho.db
 		IDBResult res = null;
 		Lock();
 		try{
-			res = m_dbStorage.executeSQL(strStatement,values, true);
+			res = m_dbStorage.executeSQL(strStatement,values, true, false);
 		}finally
 		{
 			Unlock();
@@ -153,7 +158,7 @@ namespace rho.db
 		IDBResult res = null;
 		Lock();
 		try{
-			res = m_dbStorage.executeSQL(strStatement,values, true);
+			res = m_dbStorage.executeSQL(strStatement,values, true, false);
 		}finally
 		{
 			Unlock();
@@ -172,7 +177,7 @@ namespace rho.db
 		IDBResult res = null;
 		Lock();
 		try{
-			res = m_dbStorage.executeSQL(strStatement,values, true);
+			res = m_dbStorage.executeSQL(strStatement,values, true, false);
 		}finally
 		{
 			Unlock();
@@ -430,8 +435,8 @@ namespace rho.db
 					if ( db.isDbFileExists(m_strDBPath) )
 					{
 						db.open( m_strDBPath, "", strEncryptionInfo );
-				    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false);
-				    	if ( !res.isOneEnd() )
+				    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false, false);
+				    	if ( !res.isEnd() )
 				    	{
 				    		m_strClientInfoInsert = createInsertStatement(res, "client_info");
 				    		m_dataClientInfo = res.getCurData();
@@ -498,10 +503,10 @@ namespace rho.db
         {
             LOG.INFO("Copy client_info table from old database");
     		
-        	m_dbStorage.executeSQL(m_strClientInfoInsert, m_dataClientInfo, false );
+        	m_dbStorage.executeSQL(m_strClientInfoInsert, m_dataClientInfo, false, false );
         	
             IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
-            if ( !res.isOneEnd() &&  res.getStringByIdx(0).length() > 0 )
+            if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
             {
                 LOG.INFO("Set reset=1 in client_info");
                 executeSQL( "UPDATE client_info SET reset=1" );
@@ -644,14 +649,14 @@ namespace rho.db
     
     private void copyTable(String tableName, IDBStorage dbFrom, IDBStorage dbTo)
     {
-    	IDBResult res = dbFrom.executeSQL("SELECT * from " + tableName, null, false);
+    	IDBResult res = dbFrom.executeSQL("SELECT * from " + tableName, null, false, false);
 		String strInsert = "";
 	    for ( ; !res.isEnd(); res.next() )
 	    {
 	    	if ( strInsert.length() == 0 )
 	    		strInsert = createInsertStatement(res, tableName);
 	    	
-	    	dbTo.executeSQL(strInsert, res.getCurData(), false );
+	    	dbTo.executeSQL(strInsert, res.getCurData(), false, false );
 	    }
     }
     
@@ -680,7 +685,7 @@ namespace rho.db
             IDBResult resSrc = executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) );
             boolean bSchemaSource = false;
             String strTableName = "object_values";
-            if ( !resSrc.isOneEnd() )
+            if ( !resSrc.isEnd() )
             {
                 bSchemaSource = resSrc.getStringByIdx(1).length() > 0;
                 if ( bSchemaSource )
@@ -737,11 +742,11 @@ namespace rho.db
                 int nOldSrcID = arOldSrcs.elementAt(i);
 
                 IDBResult res = executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID);
-                if ( !res.isOneEnd() )
+                if ( !res.isEnd() )
                 {
                     String strSrcName = res.getStringByIdx(0);
                     IDBResult res2 = db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName );
-                    if ( !res2.isOneEnd() )
+                    if ( !res2.isEnd() )
                     {
                         if ( nOldSrcID != res2.getIntByIdx(0) )
                         {
