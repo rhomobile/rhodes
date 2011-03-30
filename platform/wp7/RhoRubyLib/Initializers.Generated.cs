@@ -121,6 +121,11 @@ namespace rho.rubyext {
                 new Func<IronRuby.Builtins.RubyModule, System.String, System.String, System.String, System.Object>(rho.rubyext.RhoSyncEngine.login)
             );
             
+            DefineLibraryMethod(module, "logout", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoSyncEngine.logout)
+            );
+            
             DefineLibraryMethod(module, "set_notification", 0x21, 
                 0x00000006U, 
                 new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String, System.String>(rho.rubyext.RhoSyncEngine.set_notification)
@@ -139,6 +144,16 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "set_source_property", 0x21, 
                 0x0000000eU, 
                 new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String, System.String>(rho.rubyext.RhoSyncEngine.set_source_property)
+            );
+            
+            DefineLibraryMethod(module, "set_syncserver", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSyncEngine.set_syncserver)
+            );
+            
+            DefineLibraryMethod(module, "set_threaded_mode", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Boolean>(rho.rubyext.RhoSyncEngine.set_threaded_mode)
             );
             
             DefineLibraryMethod(module, "stop_sync", 0x21, 
