@@ -1,76 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
 using rho.common;
+using fastJSON;
 
 namespace rho.json
 {
     public class JSONStructIterator
     {
-        //object m_object;
-	    //Enumeration m_enumKeys;
-	    //String m_strCurKey;
+        Dictionary<string, object> m_object;
+	    Dictionary<string, object>.Enumerator m_enumStruct;
+	    String m_strCurKey = null;
 	
         public JSONStructIterator(String szData)
         {
-    	    /*m_object = new RhoJSONObject(szData);
-    	    m_enumKeys = m_object.keys();
-    	    if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
-    		    m_strCurKey = (String)m_enumKeys.nextElement(); */
+            m_object = (Dictionary<string, object>)JsonParser.JsonDecode(szData);
+
+            m_enumStruct = m_object.GetEnumerator();
+            if ( m_enumStruct.MoveNext() )
+                m_strCurKey = m_enumStruct.Current.Key;
         }
 
         public JSONStructIterator(JSONEntry oEntry, String strName)
         {
-    	    /*m_object = (RhoJSONObject)oEntry.m_object.get(strName);
-    	    m_enumKeys = m_object.keys();
-    	    if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
-    		    m_strCurKey = (String)m_enumKeys.nextElement(); */
+    	    m_object = (Dictionary<string, object>)oEntry.getObject(strName);
+            m_enumStruct = m_object.GetEnumerator();
+            if (m_enumStruct.MoveNext())
+                m_strCurKey = m_enumStruct.Current.Key;
         }
 
         public JSONStructIterator(JSONEntry oEntry)
         {
-    	    /*m_object = oEntry.m_object;
-    	    m_enumKeys = m_object.keys();
-    	    if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
-    		    m_strCurKey = (String)m_enumKeys.nextElement();*/
+    	    m_object = oEntry.getObject();
+            m_enumStruct = m_object.GetEnumerator();
+            if (m_enumStruct.MoveNext())
+                m_strCurKey = m_enumStruct.Current.Key;
         }
 
         public boolean isEnd()
         {
-            return false;// m_strCurKey == null;
+            return m_strCurKey == null;
         }
 
         public void next()
         {
-    	   /* if ( m_enumKeys != null && m_enumKeys.hasMoreElements() )
-    		    m_strCurKey = (String)m_enumKeys.nextElement();
-    	    else
-    		    m_strCurKey = null;*/
+            if (m_enumStruct.MoveNext())
+                m_strCurKey = m_enumStruct.Current.Key;
+            else
+                m_strCurKey = null;
         }
 
         public void reset()
         {
-    	    /*m_enumKeys = m_object.keys();
-    	    if ( !isEnd() )
-    		    m_strCurKey = (String)m_enumKeys.nextElement();*/
+            m_enumStruct = m_object.GetEnumerator();
+            if (m_enumStruct.MoveNext())
+                m_strCurKey = m_enumStruct.Current.Key;
         }
 
         public String getCurKey()
         {
-            return "";//isEnd() ? new String() : m_strCurKey;
+            return isEnd() ? String.Empty : m_strCurKey;
         }
 
         public String getCurString()
 	    {
-		    return "";//m_object.getString(m_strCurKey);
+            return m_enumStruct.Current.Value.ToString();
 	    }
 
         public JSONEntry getCurValue()
         {
-    	    /*if ( isEnd() )
-    		    return new JSONEntry( (RhoJSONObject)null );
-    	
-		    return new JSONEntry( (RhoJSONObject)m_object.getJSONObject(m_strCurKey) ); */
+    	    if ( isEnd() )
+                return new JSONEntry((Dictionary<string, object>)null);
 
-            return null;
+            return new JSONEntry((Dictionary<string, object>)m_enumStruct.Current.Value);
         }
     }
 }
