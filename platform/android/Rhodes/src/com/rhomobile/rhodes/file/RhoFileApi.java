@@ -144,7 +144,7 @@ public class RhoFileApi {
 			is.mark(MAX_SIZE);
 			return is;
 		}
-		catch (Exception e) {
+		catch (IOException e) {
 			//Log.e(TAG, "Can not open " + path);
 			return null;
 		}
