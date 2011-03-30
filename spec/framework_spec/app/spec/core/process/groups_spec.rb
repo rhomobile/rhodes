@@ -6,7 +6,7 @@ describe "Process.groups" do
       lambda { Process.groups(1) }.should raise_error(ArgumentError)
     end
 
-    platform_is_not :android do
+    platform_is_not :android, :darwin do
       it "gets an Array of the gids of groups in the supplemental group access list" do
         groups = `id -G`.scan(/\d+/).map {|i| i.to_i}
 
