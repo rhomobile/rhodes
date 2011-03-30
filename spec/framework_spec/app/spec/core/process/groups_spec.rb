@@ -6,16 +6,18 @@ describe "Process.groups" do
       lambda { Process.groups(1) }.should raise_error(ArgumentError)
     end
 
-    it "gets an Array of the gids of groups in the supplemental group access list" do
-      groups = `id -G`.scan(/\d+/).map {|i| i.to_i}
+    platform_is_not :android do
+      it "gets an Array of the gids of groups in the supplemental group access list" do
+        groups = `id -G`.scan(/\d+/).map {|i| i.to_i}
 
-      # NOTE: if/when this fails, make sure you are running in the most
-      # basic environment you have available. This spec fails
-      # consistently on me (Ryan Davis) when I'm running the specs
-      # inside a shell inside emacs that was launched by OSX's
-      # windowserver (double click in finder or quicksilver/launchbar
-      # etc). When run any other way the spec passes.
-      Process.groups.uniq.sort.should == groups.uniq.sort
+        # NOTE: if/when this fails, make sure you are running in the most
+        # basic environment you have available. This spec fails
+        # consistently on me (Ryan Davis) when I'm running the specs
+        # inside a shell inside emacs that was launched by OSX's
+        # windowserver (double click in finder or quicksilver/launchbar
+        # etc). When run any other way the spec passes.
+        Process.groups.uniq.sort.should == groups.uniq.sort
+      end
     end
 
     # NOTE: This is kind of sketchy.
