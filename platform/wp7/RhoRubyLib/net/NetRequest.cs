@@ -22,6 +22,7 @@ namespace rho.net
         String m_strRespBody = null;
         String m_strBody = null;
         String m_strUrl = null;
+        String m_strCookies = null;
         int m_code = -1;
         Hashtable<String, String> m_headers = null;
 
@@ -75,7 +76,6 @@ namespace rho.net
 				    String strName = hashEnum.Current.Key;
 				    String strValue = hashEnum.Current.Value;
                     m_webRequest.Headers[strName] = strValue;
-				    //m_connection.setRequestProperty(strName,strValue);
 		        }
 			
 		    }
@@ -86,6 +86,7 @@ namespace rho.net
 		    if ( headers != null )
 		    {
 			    m_OutHeaders = new Hashtable<String, String>();
+
 			    for (int i = 0; i < m_webRequest.Headers.Count; i++) {
                     String strField = m_webRequest.Headers.AllKeys[i];// m_connection.getHeaderFieldKey(i);
 				    if (strField == null && i > 0)
@@ -156,6 +157,10 @@ namespace rho.net
             
             Stream stream = response.GetResponseStream();
 		    LOG.INFO("openInputStream done");
+
+            CookieContainer container = new CookieContainer();
+            container.Add(new Uri(m_strUrl), response.Cookies);
+            m_strCookies = container.GetCookieHeader(new Uri(m_strUrl));
 			
 		    m_code = Convert.ToInt32(response.StatusCode);
             LOG.INFO("getResponseCode : " + m_code);
@@ -223,9 +228,11 @@ namespace rho.net
 		
 		    m_bCancel = false;
 
-			handleCookie(oSession);
             m_webRequest = WebRequest.Create(strUrl) as HttpWebRequest; // TODO m_bIgnoreSuffixOnSim ???
-			LOG.INFO("connection done");
+            LOG.INFO("connection done");
+
+            m_webRequest.CookieContainer = new CookieContainer();
+            handleCookie(oSession);
 
 			if ( strBody != null && strBody.length() > 0 )
 			{
@@ -252,15 +259,13 @@ namespace rho.net
             m_bIgnoreSuffixOnSim = true;
 
             return makeResponse(strRespBody, m_code);
-
-            ///return makeResponse("", 200 );
         }
 	
 	    private NetResponse makeResponse(String strRespBody, int nErrorCode)
 	    {
 		    NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
 		    if (pResp.isSuccess())
-			    pResp.setCookies(makeClientCookie(m_OutHeaders));
+                pResp.setCookies(m_strCookies);
 		
 		    return pResp;
 	    }
