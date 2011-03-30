@@ -67,15 +67,7 @@ namespace rho.net
                 else
                 {
                     sb.Append('%');
-                    if (c > 15)
-                    { // is it a non-control char, ie. >x0F so 2 chars
-                        sb.Append(String.Format("0x{0:x2}",(int)c));
-                    }
-                    else
-                    {
-                        sb.Append("0" + String.Format("0x{0:x2}", (int)c));
-                        // otherwise need to add a leading 0
-                    }
+                    sb.Append(String.Format("{0:X2}", (int)c));
                 }
 
             }

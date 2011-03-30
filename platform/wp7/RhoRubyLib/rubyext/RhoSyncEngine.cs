@@ -33,15 +33,33 @@ namespace rho.rubyext
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
         public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID)
         {
-            //TODO: dosync_source
-            return null;
-        }
+            int nSrcID = 0;
+			String strName = "";
+            if (srcID is long)
+                nSrcID = (int)(long)srcID;
+            else if (srcID is int)
+                nSrcID = (int)srcID;
+            else
+                strName = srcID.ToString();
 
+            SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncOne, strName, nSrcID, true));
+            return SyncThread.getInstance().getRetValue();
+        }
+        
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
         public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID, bool/*!*/ show_status_popup)
         {
-            //TODO: dosync_source
-            return null;
+            int nSrcID = 0;
+            String strName = "";
+            if (srcID is long)
+                nSrcID = (int)(long)srcID;
+            else if (srcID is int)
+                nSrcID = (int)srcID;
+            else
+                strName = srcID.ToString();
+
+            SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncOne, strName, nSrcID, show_status_popup));
+            return SyncThread.getInstance().getRetValue();
         }
 
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
@@ -93,6 +111,35 @@ namespace rho.rubyext
         {
             DBAdapter db = DBAdapter.getDB(strPartition);
             db.getAttrMgr().loadBlobAttrs(db);
+        }
+
+        [RubyMethod("set_threaded_mode", RubyMethodAttributes.PublicSingleton)]
+        public static void set_threaded_mode(RubyModule/*!*/ self, [NotNull]bool/*!*/ bThreadMode)
+        {
+            SyncThread.getInstance().setNonThreadedMode(!bThreadMode);
+            SyncThread.getSyncEngine().setNonThreadedMode(!bThreadMode);
+        }
+
+        [RubyMethod("logout", RubyMethodAttributes.PublicSingleton)]
+        public static void logout(RubyModule/*!*/ self)
+        {
+            SyncThread.stopSync();
+            SyncThread.getSyncEngine().stopSyncByUser();
+            SyncThread.getSyncEngine().logout();
+        }
+
+        [RubyMethod("set_syncserver", RubyMethodAttributes.PublicSingleton)]
+        public static void set_syncserver(RubyModule/*!*/ self, [NotNull]String/*!*/ syncserver)
+        {
+            SyncThread.stopSync();
+            SyncThread.getSyncEngine().setSyncServer(syncserver);
+
+            if (syncserver != null && syncserver.length() > 0)
+            {
+                SyncThread.getInstance().start(SyncThread.epLow);
+                if (ClientRegister.getInstance() != null)
+                    ClientRegister.getInstance().startUp();
+            }
         }
 
         [RubyMethod("set_pollinterval", RubyMethodAttributes.PublicSingleton)]

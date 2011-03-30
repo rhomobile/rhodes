@@ -67,6 +67,21 @@ namespace rho.rubyext
         {
         }
 
+        [RubyMethod("set_threaded_mode", RubyMethodAttributes.PublicSingleton)]
+        public static void set_threaded_mode(RubyModule/*!*/ self, [NotNull]bool/*!*/ bThreadMode)
+        {
+        }
+
+        [RubyMethod("logout", RubyMethodAttributes.PublicSingleton)]
+        public static void logout(RubyModule/*!*/ self)
+        {
+        }
+
+        [RubyMethod("set_syncserver", RubyMethodAttributes.PublicSingleton)]
+        public static void set_syncserver(RubyModule/*!*/ self, [NotNull]String/*!*/ syncserver)
+        {
+        }
+
         [RubyMethod("set_pollinterval", RubyMethodAttributes.PublicSingleton)]
         public static int set_pollinterval(RubyModule/*!*/ self, [NotNull]int/*!*/ nInterval)
         {

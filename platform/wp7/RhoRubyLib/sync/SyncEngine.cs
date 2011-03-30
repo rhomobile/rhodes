@@ -152,7 +152,7 @@ namespace rho.sync
         public ISyncProtocol getProtocol(){ return m_SyncProtocol; }
     
         public boolean isNoThreadedMode(){ return m_bNoThreaded; }
-        void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
+        public void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
         public static SourceOptions getSourceOptions(){ return m_oSourceOptions; }
     
         public SyncEngine(){
@@ -597,7 +597,7 @@ namespace rho.sync
 	
 	    public String loadClientID()
 	    {
-	        String clientID = "";
+	        String clientID = "test";
 		
 		    lock( m_mxLoadClientID )
 		    {
@@ -873,7 +873,7 @@ namespace rho.sync
 		        if ( isSessionExist() && getState() != esStop )
 		            src.sync();
 	
-		        getNotify().onSyncSourceEnd(i, m_sources);
+		        //getNotify().onSyncSourceEnd(i, m_sources);
     	    }catch(Exception exc)
     	    {
 	    	    if ( src.m_nErrCode == RhoAppAdapter.ERR_NONE )
@@ -1000,8 +1000,8 @@ namespace rho.sync
 	    
 	        if ( !res.isOneEnd() )
 	    	    m_strSession = res.getStringByIdx(0);
-	    
-	        return m_strSession;
+
+            return "rho_empty";// m_strSession;
 	    }
 	
 	    public void logout()
