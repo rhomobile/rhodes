@@ -141,6 +141,14 @@ namespace rho
             return String.Empty;
         }
 
+        public object createString(String str)
+        {
+            MutableString res = new MutableString();
+            res.Append(str);
+
+            return res;
+        }
+
         public Hash createHash()
         {
             return new Hash(m_context);
