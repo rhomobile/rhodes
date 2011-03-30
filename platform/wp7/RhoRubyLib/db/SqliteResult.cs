@@ -14,6 +14,8 @@ namespace rho.db
         private Sqlite3.Vdbe m_st;
         private CSqliteCopyResult m_resCopy;
         private boolean m_bNonUnique = false;
+        private boolean m_bNoCopy = false;
+
         public CSqliteResult()
         {
         }
@@ -23,8 +25,9 @@ namespace rho.db
 		    m_bNonUnique = bNonUnique;
 	    }
 
-        public CSqliteResult(Sqlite3.Vdbe stmt)
+        public CSqliteResult(Sqlite3.Vdbe stmt, boolean bNoCopy)
         {
+            m_bNoCopy = bNoCopy;
             m_st = stmt;
         }
 
@@ -59,29 +62,17 @@ namespace rho.db
 
         public boolean isEnd()
         {
+            if (m_resCopy != null)
+                return m_resCopy.isEnd();
+
             return m_st == null;
-        }
-
-        public boolean isOneEnd()
-        {
-            if (m_st == null)
-                return true;
-
-            if (m_resCopy == null)
-            {
-                m_resCopy = new CSqliteCopyResult(this);
-                close();
-            }
-
-            return false;
         }
 
         public void next()
         {
             if (m_resCopy != null)
                 m_resCopy.next();
-            
-            if (m_st != null)
+            else  if (m_st != null)
             {
                 int res = executeStatement();
                 checkError();
@@ -105,7 +96,20 @@ namespace rho.db
 
         public int executeStatement()
         {
-            return Sqlite3.sqlite3_step(m_st);
+            int rc = Sqlite3.sqlite3_step(m_st);
+
+            if (rc == Sqlite3.SQLITE_ROW && !m_bNoCopy)
+            {
+                m_resCopy = new CSqliteCopyResult(this);
+                close();
+            }
+
+            return rc;
+        }
+
+        public void Dispose()
+        {
+            close();
         }
 
         public void close()
@@ -121,25 +125,18 @@ namespace rho.db
         {
             Object val = getCurValue(nCol);
             return val != null ? val.ToString() : ""; 
-            
-            //String val = Sqlite3.sqlite3_column_text(m_st, nCol);
-            //return val != null ? val : String.Empty;
         }
 
         public int getIntByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
             return val != null ? Convert.ToInt32(val) : 0; 
-            
-            //return Sqlite3.sqlite3_column_int(m_st, nCol);
         }
 
         public long getLongByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
             return val != null ? (long)val : 0; 
-
-            //return Sqlite3.sqlite3_column_int64(m_st, nCol);
         }
 
         public String getUInt64ByIdx(int nCol)
@@ -150,12 +147,11 @@ namespace rho.db
         public Object /*RubyValue*/ getRubyValueByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
-            //Object val = getCurData()[nCol];
 
             if (val == null)
 			    return null;
 		    else if ( val is string || val is String)
-			    return MutableString.Create((string)val);
+                return CRhoRuby.Instance.createString((String)val);
 		    else if ( val is int )
 			    return (int)val;
 		    else if ( val is short )
@@ -167,16 +163,15 @@ namespace rho.db
 		    else if ( val is double)
 			    return (double)val;
 		    else if (val is byte[])
-                return MutableString.Create(((byte[])val).ToString());
+                return CRhoRuby.Instance.createString(((byte[])val).ToString());
 
-            return MutableString.Create(val.ToString());
+            return CRhoRuby.Instance.createString(val.ToString());
         }
 
         public boolean isNullByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
             return val == null; 
-            //return Sqlite3.sqlite3_column_type(m_st, nCol) == Sqlite3.SQLITE_NULL;
         }
 
         public Object /*RubyValue*/ getRubyValue(String colname)
@@ -235,7 +230,6 @@ namespace rho.db
         {
             if (m_resCopy != null)
                 return m_resCopy.getCurValue(nCol);
-
 
             return getCurData()[nCol];
         }

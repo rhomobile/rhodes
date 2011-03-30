@@ -143,10 +143,7 @@ namespace rho
 
         public object createString(String str)
         {
-            MutableString res = new MutableString();
-            res.Append(str);
-
-            return res;
+            return MutableString.Create(str);
         }
 
         public Hash createHash()
@@ -233,8 +230,7 @@ namespace rho
 
         public void loadServerSources(String strData)
         {
-            MutableString strParam = new MutableString();
-            strParam.Append(strData);
+            MutableString strParam = MutableString.Create(strData);
             m_engine.Operations.InvokeMember(m_rhoframework, "load_server_sources", strParam);
         }
 

@@ -3,7 +3,7 @@ using rho.common;
 
 namespace rho.db
 {
-    public interface IDBResult
+    public interface IDBResult : IDisposable
     {
     int getColCount();
 	String getColName(int nCol);
@@ -11,7 +11,6 @@ namespace rho.db
 	
 	//New
     boolean isEnd();
-    boolean isOneEnd();
     void next();
 	String getStringByIdx(int nCol);
 	int getIntByIdx(int nCol);
