@@ -597,7 +597,7 @@ namespace rho.sync
 	
 	    public String loadClientID()
 	    {
-	        String clientID = "test";
+	        String clientID = "";
 		
 		    lock( m_mxLoadClientID )
 		    {
@@ -1001,7 +1001,7 @@ namespace rho.sync
 	        if ( !res.isOneEnd() )
 	    	    m_strSession = res.getStringByIdx(0);
 
-            return "rho_empty";// m_strSession;
+            return m_strSession;
 	    }
 	
 	    public void logout()
