@@ -1052,10 +1052,16 @@ RHO_GLOBAL int fdatasync(int fd)
 
 RHO_GLOBAL int ftruncate(int fd, off_t offset)
 {
+    RHO_LOG("ftruncate: fd %d", fd);
+    if (offset < 0)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
     if (fd < RHO_FD_BASE)
         return real_ftruncate(fd, offset);
 
-    RHO_LOG("ftruncate: fd %d", fd);
     errno = EINVAL;
     return -1;
 }
