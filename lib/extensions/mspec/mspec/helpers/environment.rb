@@ -5,6 +5,8 @@ class Object
     env = ""
     if SpecGuard.windows?
       env = Hash[*`cmd.exe /C set`.split("\n").map { |e| e.split("=", 2) }.flatten]
+    elsif SpecGuard.android?
+      env = {}
     else
       env = Hash[*`env`.split("\n").map { |e| e.split("=", 2) }.flatten]
     end
@@ -19,6 +21,8 @@ class Object
     user = ""
     if SpecGuard.windows?
       user = windows_env_echo('USERNAME')
+    elsif SpecGuard.android?
+      user = ENV['USER']
     else
       user = `whoami`.strip
     end

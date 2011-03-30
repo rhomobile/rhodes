@@ -78,8 +78,9 @@ describe "File.expand_path" do
 
     it "expands ~ENV['USER'] to the user's home directory" do
       # See ticket ID:7732225,  https://www.pivotaltracker.com/story/show/7732225
-      File.expand_path("~#{ENV['USER']}").should == ENV['HOME']  unless System.get_property('platform') == 'APPLE'
-      File.expand_path("~#{ENV['USER']}/a").should == "#{ENV['HOME']}/a" unless System.get_property('platform') == 'APPLE'
+      platform = System.get_property('platform')
+      File.expand_path("~#{ENV['USER']}").should == ENV['HOME']  unless platform == 'APPLE' or platform == 'ANDROID'
+      File.expand_path("~#{ENV['USER']}/a").should == "#{ENV['HOME']}/a" unless platform == 'APPLE' or platform= 'ANDROID'
       a = 1
       a.should == 1 
     end

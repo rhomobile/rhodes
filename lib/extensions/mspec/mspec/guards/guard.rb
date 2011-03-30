@@ -60,6 +60,10 @@ class SpecGuard
     !!key.match(/(mswin|mingw)/)
   end
 
+  def self.android?(key = RUBY_PLATFORM)
+    !!key.match(/android/)
+  end
+
   attr_accessor :name, :parameters
 
   def initialize(*args)

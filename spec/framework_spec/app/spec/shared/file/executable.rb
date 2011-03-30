@@ -19,7 +19,13 @@ describe :file_executable, :shared => true do
 
   platform_is_not :windows do
     it "returns true if named file is executable by the effective user id of the process, otherwise false" do
-      @object.send(@method, '/etc/passwd').should == false
+      # No /etc/passwd on Android
+      platform_is_not :android do
+        @object.send(@method, '/etc/passwd').should == false
+      end
+      platform_is :android do
+        @object.send(@method, '/etc/hosts').should == false
+      end
       @object.send(@method, @file1).should == true
       @object.send(@method, @file2).should == false
     end

@@ -2,7 +2,14 @@ require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_h
 
 describe "File#flock" do
   before :each do
-    system "echo 'rubinius' > flock_test"
+    platform_is_not :android do
+      system "echo 'rubinius' > flock_test"
+    end
+    platform_is :android do
+      File.open('flock_test', 'w') do |f|
+        f.write('rubinius')
+      end
+    end
   end
 
   after :each do

@@ -5,7 +5,12 @@ describe :file_directory, :shared => true do
       @file = "C:\\winnt\\notepad.exe"
     end
 
-    platform_is_not :windows do
+    platform_is :android do
+      @dir = "/"
+      @file = "/etc/hosts"
+    end
+
+    platform_is_not :windows, :android do
       @dir  = "/"
       @file = "/bin/ls"
     end
