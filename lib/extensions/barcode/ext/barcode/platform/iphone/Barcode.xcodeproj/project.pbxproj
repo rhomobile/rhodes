@@ -508,7 +508,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Barcode;
-				VALID_ARCHS = "i386 armv6";
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv6 armv7";
 			};
 			name = Debug;
 		};
@@ -525,7 +526,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Barcode;
-				VALID_ARCHS = "i386 armv6";
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv6 armv7";
 			};
 			name = Release;
 		};
