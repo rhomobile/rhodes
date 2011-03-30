@@ -833,7 +833,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Debug;
@@ -854,7 +854,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Release;
@@ -916,7 +916,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Distribution;
