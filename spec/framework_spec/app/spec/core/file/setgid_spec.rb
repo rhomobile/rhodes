@@ -24,7 +24,7 @@ describe "File.setgid?" do
     File.setgid?(@name).should == false
   end
   
-  platform_is_not :windows do
+  platform_is_not :windows, :android do
     it "should return true when the gid bit is set" do
       system "chmod g+s #{@name}"
       

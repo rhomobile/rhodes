@@ -440,7 +440,8 @@ static bool need_emulate(std::string const &path)
             if (errno == ENOENT)
             {
                 //RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
-                return true;
+                rho_stat_t *rst = rho_stat(fpath);
+                return rst != NULL;
             }
 
         }
@@ -498,29 +499,34 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
 
     bool emulate = need_emulate(fpath);
+    RHO_LOG("open: %s: emulate: %d", path, (int)emulate);
     if (emulate && has_pending_exception())
     {
+        RHO_LOG("open: %s: has_pending_exception, return -1", path);
         errno = EFAULT;
         return -1;
     }
     if (emulate && (oflag & (O_WRONLY | O_RDWR)))
     {
-        //RHO_LOG("open: %s: copy from Android package", path);
+        RHO_LOG("open: %s: copy from Android package", path);
         JNIEnv *env = jnienv();
         jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
         {
+            RHO_LOG("open: %s: has_pending_exception, return -1", path);
             errno = EFAULT;
             return -1;
         }
 
         emulate = false;
     }
+    RHO_LOG("open: %s: emulate: %d", path, (int)emulate);
 
     int fd;
     if (emulate)
     {
+        RHO_LOG("open: %s: emulate", path);
         JNIEnv *env = jnienv();
         jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
         jhobject is = jhobject(env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get()));
@@ -551,6 +557,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     }
     else
     {
+        RHO_LOG("open: %s: native", path);
         mode_t mode = 0;
         if (oflag & O_CREAT)
         {
@@ -832,7 +839,7 @@ RHO_GLOBAL int lchown(const char *path, uid_t uid, gid_t gid)
 
 RHO_GLOBAL int link(const char *src, const char *dst)
 {
-    RHO_LOG("link: src=%s, dst=%s");
+    RHO_LOG("link: src=%s, dst=%s", src, dst);
     std::string fsrc = make_full_path(src);
     if (need_emulate(fsrc))
     {
@@ -896,7 +903,7 @@ RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
 
 RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 {
-    RHO_LOG("lseek64: fd %d, offset %llu, whence %d", fd, (unsigned long long)offset, whence);
+    RHO_LOG("lseek64: fd %d, offset %lld, whence %d", fd, (long long)offset, whence);
     if (fd < RHO_FD_BASE)
     {
         loff_t ret = real_lseek64(fd, offset, whence);
@@ -935,24 +942,35 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         is = it->second.is;
         pos = it->second.pos;
 
+        RHO_LOG("lseek64: fd %d: pos=%lld, size=%llu", fd, (long long)pos, (unsigned long long)st->size);
         switch (whence)
         {
         case SEEK_SET:
+            if (offset < 0)
+                offset = 0;
             if (offset > st->size)
                 offset = st->size;
             pos = offset;
+            RHO_LOG("lseek64: fd %d: SEEK_SET: pos=%lld", fd, (long long)pos);
             break;
         case SEEK_CUR:
+            if (pos + offset < 0)
+                offset = -pos;
             if (pos + offset > st->size)
                 offset = st->size - pos;
             pos += offset;
+            RHO_LOG("lseek64: fd %d: SEEK_CUR: pos=%lld", fd, (long long)pos);
             break;
         case SEEK_END:
-            if (offset > st->size)
-                offset = st->size;
-            pos = st->size - offset;
+            if (offset > 0)
+                offset = 0;
+            if (-offset > st->size)
+                offset = -st->size;
+            pos = st->size + offset;
+            RHO_LOG("lseek64: fd %d: SEEK_END: pos=%lld", fd, (long long)pos);
             break;
         default:
+            RHO_LOG("lseek64: fd %d: unknown whence value", fd);
             errno = EINVAL;
             return -1;
         }
@@ -960,10 +978,11 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         it->second.pos = pos;
     }
 
-    RHO_LOG("lseek64: fd %d: is: %p, pos: %llu", fd, is, (unsigned long long)pos);
+    RHO_LOG("lseek64: fd %d: is: %p, pos: %lld", fd, is, (long long)pos);
 
     if (is == NULL)
     {
+        RHO_LOG("lseek64: fd %d: return EBADF", fd);
         errno = EBADF;
         return -1;
     }
@@ -971,7 +990,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
     JNIEnv *env = jnienv();
     env->CallStaticVoidMethod(clsFileApi, midSeek, is, pos);
 
-    RHO_LOG("lseek64: fd %d: return %llu (java)", fd, (unsigned long long)pos);
+    RHO_LOG("lseek64: fd %d: return %lld (java)", fd, (long long)pos);
     return pos;
 }
 
@@ -1086,9 +1105,14 @@ static int stat_impl(std::string const &fpath, struct stat *buf)
 
 RHO_GLOBAL int stat(const char *path, struct stat *buf)
 {
+    RHO_LOG("stat: %s", path);
     std::string fpath = make_full_path(path);
     if (!need_emulate(fpath))
-        return real_stat(path, buf);
+    {
+        int e = real_stat(path, buf);
+        RHO_LOG("stat: %s: native, return %d (errno %d)", path, e, errno);
+        return e;
+    }
 
     return stat_impl(fpath, buf);
 }

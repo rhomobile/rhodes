@@ -5,7 +5,12 @@ describe :file_file, :shared => true do
       @dir  = "C:\\"
     end
 
-    platform_is_not :windows do
+    platform_is :android do
+      @null = "/dev/null"
+      @dir = "/system/bin"
+    end
+
+    platform_is_not :windows, :android do
       @null = "/dev/null"
       @dir  = "/bin"
     end
