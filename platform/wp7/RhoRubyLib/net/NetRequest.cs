@@ -15,7 +15,7 @@ namespace rho.net
 	
 	    boolean m_bCancel = false;
 	    boolean m_sslVerifyPeer = true;
-        ManualResetEvent m_respWaitEvent = new ManualResetEvent(false);
+        ManualResetEvent m_respWaitEvent = new ManualResetEvent(true);
         ManualResetEvent m_reqWaitEvent = new ManualResetEvent(false);
         HttpWebRequest m_webRequest;
         IRhoSession m_oSession;
@@ -220,7 +220,10 @@ namespace rho.net
 
 	    public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable<String, String> headers )
         {
-            //strUrl = "http://www.yandex.ru";
+            m_respWaitEvent.WaitOne();
+            m_respWaitEvent.Reset();
+
+
             m_oSession = oSession;
             m_strBody = strBody;
             m_strUrl = strUrl;
