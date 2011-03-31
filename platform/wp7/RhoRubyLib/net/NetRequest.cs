@@ -48,7 +48,6 @@ namespace rho.net
 	
 	    private Object /*IHttpConnection*/ m_connection = null;
 	
-	    private boolean m_bIgnoreSuffixOnSim = true;
 	    private Hashtable<String, String> m_OutHeaders;
 	    public boolean isCancelled(){ return m_bCancel;}
 	
@@ -60,11 +59,6 @@ namespace rho.net
         {
 		    return doRequest("GET", strUrl, "", oSession, null);
         }
-
-	    public void setIgnoreSuffixOnSim(boolean bset)
-	    {
-		    m_bIgnoreSuffixOnSim = bset;
-	    }
 
 	    private void writeHeaders(Hashtable<String, String> headers)
 	    {
@@ -151,6 +145,7 @@ namespace rho.net
             }
             catch (WebException e)
             {
+                LOG.ERROR("EndGetResponse", e);
                 response = (HttpWebResponse)e.Response;
                 m_code = Convert.ToInt32(response.StatusCode);
             }
@@ -231,7 +226,7 @@ namespace rho.net
 		
 		    m_bCancel = false;
 
-            m_webRequest = WebRequest.Create(strUrl) as HttpWebRequest; // TODO m_bIgnoreSuffixOnSim ???
+            m_webRequest = WebRequest.Create(strUrl) as HttpWebRequest;
             LOG.INFO("connection done");
 
             m_webRequest.CookieContainer = new CookieContainer();
@@ -249,6 +244,7 @@ namespace rho.net
                 m_webRequest.Method = strMethod;
 				
                 m_webRequest.BeginGetRequestStream(GetRequestStreamCallback, null);
+                m_reqWaitEvent.Reset();
                 m_reqWaitEvent.WaitOne();
 			}else
 			{
@@ -257,9 +253,8 @@ namespace rho.net
 			}
 
             m_webRequest.BeginGetResponse(GetResponseCallback, null);
+            m_respWaitEvent.Reset();
             m_respWaitEvent.WaitOne();
-
-            m_bIgnoreSuffixOnSim = true;
 
             return makeResponse(m_strRespBody, m_code);
         }
@@ -294,7 +289,6 @@ namespace rho.net
 	    public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)
 	    {
 		    Hashtable<String,String> headers = new Hashtable<String,String>();
-		    m_bIgnoreSuffixOnSim = false;
 		    m_bCancel = false;
     	
 		    NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
