@@ -89,6 +89,11 @@ namespace rho.rubyext {
         }
         
         private static void LoadSyncEngine_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "add_objectnotify", 0x21, 
+                0x00000006U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String>(rho.rubyext.RhoSyncEngine.add_objectnotify)
+            );
+            
             DefineLibraryMethod(module, "dosync", 0x21, 
                 0x00000000U, 0x00000000U, 
                 new Func<IronRuby.Builtins.RubyModule, System.Object>(rho.rubyext.RhoSyncEngine.dosync), 
