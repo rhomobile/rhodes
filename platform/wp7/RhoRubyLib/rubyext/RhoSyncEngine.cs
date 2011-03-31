@@ -167,5 +167,11 @@ namespace rho.rubyext
         {
             SyncNotify.setObjectNotifyUrl(url);
         }
+
+        [RubyMethod("add_objectnotify", RubyMethodAttributes.PublicSingleton)]
+        public static void add_objectnotify(RubyModule/*!*/ self, [NotNull]int/*!*/ nSrcID, [NotNull]string/*!*/ strObject)
+        {
+            SyncThread.getSyncEngine().getNotify().addObjectNotify(nSrcID, strObject);
+        }
     }
 }
