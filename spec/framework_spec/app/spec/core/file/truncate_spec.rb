@@ -88,7 +88,11 @@ describe "File.truncate" do
 
   platform_is_not :windows do
     it "truncates an absolute pathname file" do
-      absolute_pathname_file = "/tmp/#{@name}"
+      if System.get_property('platform') == 'ANDROID'
+        absolute_pathname_file = "#{ENV['TMP']}/#{@name}"
+      else
+        absolute_pathname_file = "/tmp/#{@name}"
+      end
       File.open(absolute_pathname_file,"w") { |f| f.write("1234567890") }
       File.truncate(absolute_pathname_file, 5)
       File.size(absolute_pathname_file).should == 5
