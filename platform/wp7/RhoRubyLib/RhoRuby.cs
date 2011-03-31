@@ -153,6 +153,11 @@ namespace rho
 
         public void hashAdd(Object hash, Object key, Object value)
         {
+            if (key is String)
+                key = createString(key as String);
+            if (value is String)
+                value = createString(value as String);
+
             ((Hash)hash).Add(key, value);
         }
 
