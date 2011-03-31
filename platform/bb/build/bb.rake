@@ -1090,7 +1090,12 @@ namespace "config" do
     jdehome  = $config["env"]["paths"][$bbver]["jde"]
     mdshome  = $config["env"]["paths"][$bbver]["mds"]
 
-    puts Jake.run('javac', [], nil, false)
+    begin
+      puts Jake.run('javac', [], nil, false)
+    rescue
+      puts "Java directory does not in your PATH enviroment variable."
+      throw "main JAVA directory missing"
+    end
 
 #    if $retJava == nil or $retJava == ""
 #      puts "Java directory does not in your PATH enviroment variable."
