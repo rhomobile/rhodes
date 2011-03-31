@@ -1,6 +1,5 @@
 #
 
-
 def extract_value_from_strings(line)
    pre_str = '<string>'
    post_str = '</string>'
@@ -396,7 +395,7 @@ namespace "build" do
     
 #    desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
-  
+      
       saved_name = ''
       saved_version = ''
       saved_identifier = ''
@@ -456,12 +455,8 @@ end
 namespace "run" do
   namespace "iphone" do
 
- 
-
-
-
     task :spec => ["clean:iphone",:buildsim] do
-
+ 	
       # Run local http server
       $iphonespec = true
       httpserver = false
@@ -488,13 +483,13 @@ namespace "run" do
             commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
             puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
             puts 'execute command : ' + commandis
-            system(commandis)  	
+            system(commandis)
             $iphone_end_spec = true
-     }
+      }
 
-        start = Time.now        
+      start = Time.now        
 
-        puts "waiting for log"
+      puts "waiting for log"
       
         while !File.exist?(log_name)
             sleep(1)
@@ -533,6 +528,7 @@ namespace "run" do
       NetHTTPSpecs.stop_server if httpserver
 
       exit $failed.to_i unless $dont_exit_on_failure
+ 
     end
 
     task :spec_old => ["clean:iphone",:buildsim] do
@@ -753,19 +749,22 @@ namespace "run" do
   # testing we will not launch emulator directly
   desc "Builds everything, launches iphone simulator"
   task :iphone => :buildsim do
-
+    
     iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
 
     commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget
 
-    if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-        puts  'use old execution way - just open iPhone Simulator'
-        system("open \"#{$sim}/iPhone Simulator.app\"")
-    else
-        puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
-        system(commandis)  	
-    end
-
+    Thread.new {
+       if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+           puts  'use old execution way - just open iPhone Simulator'
+           system("open \"#{$sim}/iPhone Simulator.app\"")
+       else
+           puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+           system(commandis)
+       end
+    }
+  
+    puts "end build iphone app"  
   end
   
   task :allspecs do
