@@ -265,8 +265,8 @@ namespace "build" do
     
 #    desc "Build rhoBundle"
     #XXX change to ns build, rhobundle
-    task :rhobundle => :rubyvm do
-	  jpath = $config["env"]["paths"]["java"]  
+    task :rhobundle => ["config:checkbb", :rubyvm] do
+      jpath = $config["env"]["paths"]["java"]  
       java = jpath && jpath.length()>0 ? File.join( jpath, "java") : "jar"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
       jarexe =  jpath && jpath.length()>0 ? File.join( jpath, "jar" ) : "jar"
@@ -573,8 +573,8 @@ namespace "build" do
 
    
 #    desc "Build rhodes"
-    task :rhodes => [ :rubyvm, :rhobundle ] do
-	  jpath = $config["env"]["paths"]["java"]
+    task :rhodes => ["config:checkbb",:rubyvm, :rhobundle ] do
+      jpath = $config["env"]["paths"]["java"]
       javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
       jdehome = $config["env"]["paths"][$bbver]["jde"]
 
@@ -975,7 +975,7 @@ namespace "run" do
         startsim
       end
 
-      task :spec => ["run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
+      task :spec => ["config:checkbb", "run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
         jde = $config["env"]["paths"][$bbver]["jde"]
         cp_r File.join($targetdir,"/."), jde + "/simulator"
         rm_rf jde + "/simulator/sdcard/Rho"
@@ -1026,7 +1026,7 @@ namespace "run" do
       load_to_sim(false)
     end
 
-	desc "Start Blackberry simulator"
+    desc "Start Blackberry simulator"
     task :startsim => ["config:bb"] do
       startsim
     end  
@@ -1034,7 +1034,6 @@ namespace "run" do
     task :stopmdsandsim_ex => ["config:bb"] do
         
         stopsim if $bbver.split('.')[0].to_i < 5
-
         stopmds
     end  
 
@@ -1090,6 +1089,13 @@ namespace "config" do
     javahome = $config["env"]["paths"]["java"]
     jdehome  = $config["env"]["paths"][$bbver]["jde"]
     mdshome  = $config["env"]["paths"][$bbver]["mds"]
+
+    puts Jake.run('javac', [], nil, false)
+
+#    if $retJava == nil or $retJava == ""
+#      puts "Java directory does not in your PATH enviroment variable."
+#      throw "main JAVA directory missing"
+#    end
 
     puts "BBVER: " + $bbver
     puts "JAVAHOME: " + javahome
