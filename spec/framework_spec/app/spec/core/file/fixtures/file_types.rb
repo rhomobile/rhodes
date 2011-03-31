@@ -5,7 +5,7 @@ module FileSpecs
     @dir    = Dir.pwd
     @fifo   = tmp("test_fifo")
 
-    platform_is_not :windows do
+    platform_is_not :windows, :android do
       @block  = `find /dev /devices -type b 2> /dev/null`.split("\n").first
       @char   = `find /dev /devices -type c 2> /dev/null`.split("\n").last
 
@@ -16,6 +16,12 @@ module FileSpecs
         break
       end
 
+    end
+
+    platform_is :android do
+      @block = nil
+      @char = "/dev/ashmem"
+      @link = "/etc"
     end
   end
 
