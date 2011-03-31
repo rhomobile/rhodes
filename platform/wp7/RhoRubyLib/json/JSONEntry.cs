@@ -87,6 +87,9 @@ namespace rho.json
 
         public JSONEntry getEntry(String name)
 	    {
+            if (m_object == null )
+                return new JSONEntry((Dictionary<string, object>)null);
+
             return new JSONEntry((Dictionary<string, object>)m_object[name]);
 	    }
     }
