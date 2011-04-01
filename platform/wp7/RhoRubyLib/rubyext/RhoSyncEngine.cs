@@ -62,6 +62,22 @@ namespace rho.rubyext
             return SyncThread.getInstance().getRetValue();
         }
 
+        [RubyMethod("dosearch", RubyMethodAttributes.PublicSingleton)]
+        public static object dosearch(RubyModule/*!*/ self, [NotNull]RubyArray/*!*/ arSourcesR, [NotNull]String/*!*/ from, [NotNull]String/*!*/ strParams,
+            [NotNull]bool/*!*/ bSearchSyncChanges, [NotNull]int/*!*/ nProgressStep, String/*!*/ strCallback, String/*!*/ strCallbackParams)
+        {
+            SyncThread.stopSync();
+
+			if ( strCallback != null && strCallback.Length > 0 )
+				SyncThread.getSyncEngine().getNotify().setSearchNotification(strCallback, strCallbackParams);
+
+            Vector<String> arSources = RhoRuby.makeVectorStringFromArray(arSourcesR);
+
+            SyncThread.getInstance().addQueueCommand(new SyncThread.SyncSearchCommand(from, strParams, arSources, bSearchSyncChanges, nProgressStep));        
+
+            return SyncThread.getInstance().getRetValue();
+        }
+
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
         public static int logged_in(RubyModule/*!*/ self)
         {
