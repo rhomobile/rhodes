@@ -81,6 +81,8 @@ namespace rho
             //m_engine.Execute("class MyClass < Exception; def initialize(arg1); end; end; MyClass.new('');");
             //m_engine.Execute("def test; while false; end; end; test();");
             //m_engine.Execute("class RecordNotFound < StandardError;end; raise RecordNotFound;");
+            //m_engine.Execute("test = {}; test.__id__;");
+
             StreamResourceInfo sr = Application.GetResourceStream(new Uri("lib/rhoframework.rb", UriKind.Relative));
 
             using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
@@ -144,6 +146,11 @@ namespace rho
         public object createString(String str)
         {
             return MutableString.Create(str);
+        }
+
+        public RubyArray createArray()
+        {
+            return new IronRuby.Builtins.RubyArray();
         }
 
         public Hash createHash()
