@@ -8,6 +8,7 @@
 
 #ifdef OS_WINCE
 #include <cfgmgrapi.h>
+#include <getdeviceuniqueid.h>
 #endif
 
 #ifdef OS_WINCE__
@@ -302,6 +303,29 @@ int rho_sys_get_screen_height()
 #endif
 }
 
+static void toHexString(int i, String& strRes, int radix)
+{
+    char buf[33];
+	bool neg= false;
+	int f, n;
+	if(i<0) { neg= true; i= -i; };
+	f= 32;
+	buf[f--]= 0;
+	do
+	{
+		n= i%radix;
+		if(n<10) buf[f]= '0'+n;
+		else buf[f]= 'a'+n-10;
+		i= i/radix;
+		f--;
+	}
+	while(i>0);
+
+	if(neg) 
+        buf[f--]= '-';
+
+    strRes += (buf+f+1);
+}
 
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
@@ -400,14 +424,44 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 	if (strcasecmp("screen_orientation",szPropName) == 0)
     {
-        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) {
-		*resValue = rho_ruby_create_string("portrait");
-	}
-	else {
-		*resValue = rho_ruby_create_string("landscape");
-	}                                                          
+        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) 
+        {
+		    *resValue = rho_ruby_create_string("portrait");
+	    }
+	    else {
+		    *resValue = rho_ruby_create_string("landscape");
+	    }                                                          
         return 1;
     }
+
+#ifdef OS_WINCE
+    if (strcasecmp("device_id",szPropName) == 0) 
+    {
+        rho::String strDeviceID = "";
+        String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
+
+        BYTE rgDeviceId[20];
+        DWORD cbDeviceId = sizeof(rgDeviceId);
+        HRESULT hr = GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
+           strAppData.length(),
+           GETDEVICEUNIQUEID_V1,
+           rgDeviceId,
+           &cbDeviceId);
+
+        if ( SUCCEEDED(hr) )
+        {
+            for( int i = 0; i < cbDeviceId; i++)
+            {
+                toHexString( rgDeviceId[i], strDeviceID, 16);
+            }
+        }
+
+        *resValue = rho_ruby_create_string(strDeviceID.c_str());
+
+        return 1;
+    }
+#endif
+
     return 0;
 }
 
