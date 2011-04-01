@@ -34,6 +34,13 @@ namespace rho.rubyext
             return null;
         }
 
+        [RubyMethod("dosearch", RubyMethodAttributes.PublicSingleton)]
+        public static object dosearch(RubyModule/*!*/ self, [NotNull]RubyArray/*!*/ arSources, [NotNull]String/*!*/ from, [NotNull]String/*!*/ strParams,
+            [NotNull]bool/*!*/ bSearchSyncChanges, [NotNull]int/*!*/ nProgressStep, [NotNull]String/*!*/ strCallback, [NotNull]String/*!*/ strCallbackParams )
+        {
+            return null;
+        }
+
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
         public static int logged_in(RubyModule/*!*/ self)
         {

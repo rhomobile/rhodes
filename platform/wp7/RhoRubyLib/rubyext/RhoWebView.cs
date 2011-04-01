@@ -1,7 +1,9 @@
 using Microsoft.Scripting.Utils;
+using Microsoft.Scripting.Runtime;
 using IronRuby.Runtime;
-using Microsoft.Phone.Controls;
+using IronRuby.Builtins;
 using System;
+using System.Runtime.InteropServices;
 
 namespace rho.rubyext
 {
@@ -16,11 +18,16 @@ namespace rho.rubyext
 
         #region Private Instance & Singleton Methods
 
-        [RubyMethodAttribute("navigate", RubyMethodAttributes.PrivateInstance)]
         [RubyMethodAttribute("navigate", RubyMethodAttributes.PublicSingleton)]
-        public static void Navigate(object self, [DefaultProtocol]string url)
+        public static void Navigate(RubyModule/*!*/ self, [NotNull]String/*!*/ url)
         {
             RhoRuby.WebBrowser.Navigate(new Uri(url, UriKind.Relative));
+        }
+
+        [RubyMethodAttribute("execute_js", RubyMethodAttributes.PublicSingleton)]
+        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript)
+        {
+            RhoRuby.WebBrowser.InvokeScript(strScript);
         }
 
         #endregion
