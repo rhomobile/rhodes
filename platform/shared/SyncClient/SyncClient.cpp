@@ -129,10 +129,16 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
 void rho_syncclient_database_full_reset_and_logout()
 {
     rho_sync_logout();
-	rho_syncclient_database_full_reset();
+	rho_syncclient_database_full_reset(false);
+}
+
+void rho_syncclient_database_fullclient_reset_and_logout()
+{
+	rho_sync_logout();
+	rho_syncclient_database_full_reset(true);
 }
 	
-void rho_syncclient_database_full_reset()
+void rho_syncclient_database_full_reset(bool bClientReset)
 {
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
     oUserDB.executeSQL("UPDATE client_info SET reset=1");
@@ -144,7 +150,8 @@ void rho_syncclient_database_full_reset()
 
     Vector<String> arExclude;
     arExclude.addElement("sources");
-    arExclude.addElement("client_info");
+	if (!bClientReset)
+		arExclude.addElement("client_info");
 
     Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
     for( int i = 0; i < (int)arPartNames.size(); i++ )
@@ -854,7 +861,7 @@ namespace rho {
 	
 	/*static*/ void _CRhoAppAdapter::resetDBOnSyncUserChanged()
 	{
-		rho_syncclient_database_full_reset();
+		rho_syncclient_database_full_reset(false);
 	}	
 }
 
