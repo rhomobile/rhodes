@@ -960,6 +960,15 @@ end
 namespace "run" do
   namespace "bb" do
 
+      def getLogFilePath
+        jde = $config["env"]["paths"][$bbver]["jde"]
+        return jde + "/simulator/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
+      end
+      # >>>>>>>>>>>>>>>>>>>>>
+      task :get_log => ["config:bb"] do
+         puts "log_file=" + getLogFilePath
+      end
+
       task :stopmdsandsim => ["config:bb"] do
         stopsim  
         stopmds
