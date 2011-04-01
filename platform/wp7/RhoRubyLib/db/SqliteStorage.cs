@@ -56,9 +56,8 @@ namespace rho.db
 
         public void createTriggers()
         {
-            //TODO: createTriggers
-            //String strTriggers = CRhoFile.readStringFromFile("apps/db/syncdb.triggers");
-            //executeBatchSQL(strTriggers);
+            String strTriggers = CRhoFile.readStringFromResourceFile("db/syncdb.triggers");
+            executeBatchSQL(strTriggers);
         }
 
         public void deleteAllFiles(String strPath)
@@ -174,6 +173,11 @@ namespace rho.db
 
                 if (!bExist)
                     createSchema(strSqlScript);
+
+                Sqlite3.sqlite3_create_function(m_db, "rhoOnDeleteObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
+                                                DBAdapter.SyncBlob_DeleteCallback, null, null);
+                Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
+                                                DBAdapter.SyncBlob_UpdateCallback, null, null);
 
                 string[] ar2 = CRhoFile.enumDirectory("db");
 
