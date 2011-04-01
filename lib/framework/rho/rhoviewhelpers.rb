@@ -116,7 +116,7 @@ module Rho
       amurl << '/' << application.to_s << '/' if application
       amurl << model.to_s
 
-      if action.nil? or action == 'create' or action == 'index'  
+      if action.nil? or ( !defined?(RHO_WP7) && action == 'create') or action == 'index'  
         amurl << query << fragment 
       else
         amurl << '/' << (id.nil? ? action : id + '/' + action) << query << fragment          

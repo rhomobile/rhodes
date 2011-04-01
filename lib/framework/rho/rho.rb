@@ -36,9 +36,7 @@ module Rho
       @db_partitions = {}
 
       partition = 'user'
-      if !defined?(RHO_WP7)
-		@db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
-      end
+      @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
     end
 
 =begin    
@@ -1047,7 +1045,7 @@ module Rho
       
       @@g_base_temp_id = nil
       def generate_id
-        @@g_base_temp_id = ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i unless @@g_base_temp_id
+        @@g_base_temp_id = ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6) unless @@g_base_temp_id
         
         @@g_base_temp_id = @@g_base_temp_id + 1
         @@g_base_temp_id
@@ -1130,7 +1128,17 @@ module Rho
         end
         
     end
-  
+
+    module Timer
+        def self.start( interval_ms, callback, callback_data )
+            System.start_timer(interval_ms, callback, callback_data)
+        end
+        
+        def self.stop( callback )
+            System.stop_timer( callback )
+        end        
+    end
+      
 end # Rho
 
 module SyncEngine

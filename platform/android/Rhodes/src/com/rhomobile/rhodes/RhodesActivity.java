@@ -33,6 +33,8 @@ public class RhodesActivity extends BaseActivity {
 	
 	private static final boolean DEBUG = false;
 	
+	private static final boolean USE_DELAYED_MAINVIEW_DISPLAY = false;
+	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
 	public static int MAX_PROGRESS = 10000;
@@ -68,6 +70,7 @@ public class RhodesActivity extends BaseActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		
 		Thread ct = Thread.currentThread();
@@ -79,8 +82,11 @@ public class RhodesActivity extends BaseActivity {
 		//intent.putExtra(RHO_URL_PARAMS_KEY, "param1=value1&param2=value2");
 		Log.d(TAG, "MY URI: " + intent.toUri(Intent.URI_INTENT_SCHEME));
 
-		//requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+		if (!RhodesService.isEnableTitle()) {
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+		}
+		else {
+		}
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
 
@@ -172,7 +178,7 @@ public class RhodesActivity extends BaseActivity {
 				return false;
 			
 			MainView v = r.getMainView();
-			v.back(v.activeTab());
+			v.goBack();//back(v.activeTab());
 			return true;
 		}
 		
@@ -241,7 +247,7 @@ public class RhodesActivity extends BaseActivity {
 			}
 		};
 		
-		if (true/*!waitUntilNavigationDone*/) {
+		if (!USE_DELAYED_MAINVIEW_DISPLAY /* || !waitUntilNavigationDone*/) {
 			// Make new MainView visible right now
 			setMainViewVisible.run();
 		}

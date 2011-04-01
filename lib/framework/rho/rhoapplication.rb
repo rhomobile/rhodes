@@ -148,7 +148,9 @@ module Rho
       req[:modelpath] = self.class.get_model_path req['application'], req['model']
       controller_class = req['model']+'Controller'
       undercase = controller_class.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
-
+	  undercase.slice!(0) if undercase.start_with?('_')
+	  #TODO: WP7 - for some reason it added _ at the start
+	  	
       if Rho::file_exist?(  req[:modelpath]+ undercase +'.iseq' )
         require req['model'] + '/' + undercase #req[:modelpath]+ undercase
       else

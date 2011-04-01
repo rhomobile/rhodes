@@ -77,6 +77,7 @@ public class RhodesService extends Service {
 	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+	public static boolean ANDROID_TITLE = true;
 	
 	private static final int DOWNLOAD_PACKAGE_ID = 1;
 	
@@ -183,6 +184,9 @@ public class RhodesService extends Service {
 		return sInstance;
 	}
 	
+	public static native boolean isEnableTitle();
+	
+	
 	private void initRootPath() {
 		ApplicationInfo appInfo = getAppInfo();
 		String dataDir = appInfo.dataDir;
@@ -198,6 +202,8 @@ public class RhodesService extends Service {
 		f = new File(f, "db/db-files");
 		f.mkdirs();
 		f = new File(sqliteJournalsPath);
+		f.mkdirs();
+		f = new File(mRootPath, "tmp");
 		f.mkdirs();
 		
 		String apkPath = appInfo.sourceDir;
@@ -235,6 +241,7 @@ public class RhodesService extends Service {
 	
 	@Override
 	public void onCreate() {
+		
 		if (DEBUG)
 			Log.d(TAG, "+++ onCreate");
 		
@@ -1210,7 +1217,8 @@ public class RhodesService extends Service {
 			PerformOnUiThread.exec( new Runnable() {
 				public void run() {
 					if (wakeLockObject == null) {
-						PowerManager pm = (PowerManager)getInstance().getContext().getSystemService(Context.POWER_SERVICE);
+						getInstance();
+						PowerManager pm = (PowerManager)RhodesService.getContext().getSystemService(Context.POWER_SERVICE);
 						if (pm != null) {
 							wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
 							wakeLockObject.acquire();
@@ -1287,6 +1295,10 @@ public class RhodesService extends Service {
 		if (r == null)
 			throw new IllegalStateException("No rhodes service instance at this moment");
 		return r;
+	}
+	
+	public static boolean isJQTouch_mode() {
+		return RhoConf.getBool("jqtouch_mode");
 	}
 	
 }

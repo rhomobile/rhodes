@@ -21,7 +21,7 @@ require 'rhom'
 require 'rho/rhoutils'
 
 USE_HSQLDB = !System.get_property('has_sqlite')
-USE_COPY_FILES = !defined? RHO_ME
+USE_COPY_FILES = !defined? RHO_ME && !defined? RHO_WP7
 
 def getAccount
     return Account_s if $spec_settings[:schema_model]
@@ -223,17 +223,20 @@ describe "Rhom::RhomObject" do
     getAccount.find(:count, :conditions => {'name'=>'Aeroprise'}).should == 1
   end
 
+if !defined?(RHO_WP7)
   it "should raise RecordNotFound error if nil given as find argument" do
   
     bExc = false
     begin
       getAccount.find(nil)
     rescue Exception => e
+	    puts "Exception : #{e}"
         bExc = e.is_a?(::Rhom::RecordNotFound)
     end  
     bExc.should == true
     
   end
+end
 
   it "should save string with zero" do
     val = "\1\2\3\0\5\8\6\7\34"
@@ -946,7 +949,7 @@ describe "Rhom::RhomObject" do
     @accts[1].industry.should == "Technology"
     
   end
-  
+
   it "should order by multiple columns" do
     getAccount.create(:name=>'ZMobile', :industry => 'IT', :modified_by_name => 'user')
     getAccount.create(:name=>'Aeroprise', :industry => 'Accounting', :modified_by_name => 'admin')
@@ -976,7 +979,7 @@ describe "Rhom::RhomObject" do
     @accts[2].industry.should == "Technology"
     
   end
-  
+
   it "should delete_all" do
     vars = {"name"=>"foobarthree", "industry"=>"entertainment"}
     account = getAccount.create(vars)
@@ -1202,7 +1205,7 @@ describe "Rhom::RhomObject" do
     accts.length.should == 0    
  end
       
-
+if !defined?(RHO_WP7)
   it "should support blob type" do
     
     #TODO: fix blob for schema models    
@@ -1232,6 +1235,7 @@ describe "Rhom::RhomObject" do
         File.exists?(file_name).should == false
     end        
   end
+end
 
   it "should include only selected column" do
     @accts = getAccount.find(:all, :select => ['name'], :order => 'name', :orderdir => 'DESC' )
@@ -1339,7 +1343,89 @@ describe "Rhom::RhomObject" do
         @accts[1].name.should_not be_nil
     end    
   end  
-#=end
+
+  it "should find by number" do
+    getAccount.create('rating'=>1)
+    getAccount.create('rating'=>2)
+    getAccount.create('rating'=>3)
+    getAccount.create('rating'=>4)    
+    getAccount.create('rating'=>11)
+    getAccount.create('rating'=>12)
+    getAccount.create('rating'=>13)
+    getAccount.create('rating'=>14)
+    
+    size = 3
+    @accts = getAccount.find(:all, :conditions => { {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'<'} => size } )    
+    @accts.length.should == 2
+    @accts[0].rating.to_i.should < size
+    @accts[1].rating.to_i.should < size
+    
+    size = 11
+    @accts = getAccount.find(:all, :conditions => { {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'>'} => size } )    
+    @accts.length.should == 3
+    @accts[0].rating.to_i.should > size
+    @accts[1].rating.to_i.should > size    
+    @accts[2].rating.to_i.should > size
+  end
+  
+  it "should find with sql by number" do
+    getAccount.create('rating'=>1)
+    getAccount.create('rating'=>2)
+    getAccount.create('rating'=>3)
+    getAccount.create('rating'=>4)    
+    getAccount.create('rating'=>11)
+    getAccount.create('rating'=>12)
+    getAccount.create('rating'=>13)
+    getAccount.create('rating'=>14)
+    
+    size = 3
+    @accts = getAccount.find(:all, :conditions => ["CAST(rating as INTEGER)< ?", "#{size}"], :select => ['rating'] )    
+    @accts.length.should == 2
+    @accts[0].rating.to_i.should < size
+    @accts[1].rating.to_i.should < size
+    
+    size = 11
+    @accts = getAccount.find(:all, :conditions => ["CAST(rating as INTEGER)> ?", "#{size}"], :select => ['rating'] )    
+    @accts.length.should == 3
+    @accts[0].rating.to_i.should > size
+    @accts[1].rating.to_i.should > size    
+    @accts[2].rating.to_i.should > size
+  end
+
+  it "should complex find by number" do
+    getAccount.create('rating'=>1)
+    getAccount.create('rating'=>2)
+    getAccount.create('rating'=>3)
+    getAccount.create('rating'=>4)    
+    getAccount.create('rating'=>11)
+    getAccount.create('rating'=>12)
+    getAccount.create('rating'=>13)
+    getAccount.create('rating'=>14)
+    
+    size = 3
+    @accts = getAccount.find(:all, 
+        :conditions => { 
+         {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'<'} => size,
+         {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => '%ZERO%'},
+         :op => 'OR' )    
+        
+    @accts.length.should == 2
+    @accts[0].rating.to_i.should < size
+    @accts[1].rating.to_i.should < size
+    
+    size = 11
+    @accts = getAccount.find(:all, 
+        :conditions => { 
+         {:func=> 'CAST', :name=>'rating as INTEGER', :op=>'>'} => size,
+         {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => '%ZERO%'}, 
+         :op => 'OR' )
+         
+    @accts.length.should == 3
+    @accts[0].rating.to_i.should > size
+    @accts[1].rating.to_i.should > size    
+    @accts[2].rating.to_i.should > size
+  end
+      
 end
 #=begin
 describe "Rhom#paginate" do

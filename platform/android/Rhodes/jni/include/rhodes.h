@@ -13,6 +13,7 @@ extern "C" void rho_nativethread_end(void *);
 
 std::string const &rho_root_path();
 std::string const &rho_apk_path();
+std::string rho_cur_path();
 
 template <typename T>
 class jholder

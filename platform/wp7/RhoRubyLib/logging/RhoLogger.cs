@@ -1,4 +1,5 @@
 ﻿using System;
+using rho.logging;
 
 namespace rho.common
 {
@@ -15,10 +16,10 @@ namespace rho.common
 	    private String[] LogSeverityNames = { "TRACE", "INFO", "WARNING", "ERROR", "FATAL" };
 	
 	    private String m_category;
-	    //private static RhoLogConf m_oLogConf = new RhoLogConf();
+	    private static RhoLogConf m_oLogConf = new RhoLogConf();
 	    private String m_strMessage;
 	    private int    m_severity;
-	    private static String m_SinkLock = "";
+	    private static Mutex m_SinkLock = new Mutex();
 	    //private static IRhoRubyHelper m_sysInfo;
 	    public static String LOGFILENAME = "RhoLog.txt";
 
@@ -27,9 +28,18 @@ namespace rho.common
 		    m_category = name;
 	    }
 
+        public static RhoLogConf getLogConf(){
+		    return m_oLogConf;
+	    }
+
+        public String getLogCategory() { return m_category; }
+        public void setLogCategory(String category) { m_category = category; }
+
+        public static void close() { m_oLogConf.close(); }
+
         private boolean isEnabled()
         {
-            /*if (m_severity >= getLogConf().getMinSeverity())
+            if (m_severity >= getLogConf().getMinSeverity())
             {
                 if (m_category.length() == 0 || m_severity >= L_ERROR)
                     return true;
@@ -38,8 +48,6 @@ namespace rho.common
             } 
 
             return false;
-             */
-            return true;
         }
 
         private String get2FixedDigit(int nDigit)
@@ -136,7 +144,7 @@ namespace rho.common
 			    return;
 		
 		    m_strMessage = "";
-	        //if ( getLogConf().isLogPrefix() )
+	        if ( getLogConf().isLogPrefix() )
 	            addPrefix();
 		
 	        if ( msg != null )
@@ -163,11 +171,9 @@ namespace rho.common
                 System.Diagnostics.Debug.WriteLine(m_strMessage);
 		    }else
 		    {
-                System.Diagnostics.Debug.WriteLine(m_strMessage);
-                //TODO: log to file
-		       /* synchronized( m_SinkLock ){
+		        lock( m_SinkLock ){
 		    	    getLogConf().sinkLogMessage( m_strMessage, bOutputOnly );
-		        }*/
+		        }
 		    }
 	        if ( m_severity == L_FATAL )
 	    	    processFatalError();
@@ -257,6 +263,53 @@ namespace rho.common
         {
             if (!exp)
                 logMessage(L_FATAL, message);
+        }
+
+        public static String getLogText(){
+		    return m_oLogConf.getLogText();
+	    }
+	
+	    public static int getLogTextPos(){
+		    return m_oLogConf.getLogTextPos();
+	    }
+	
+	    public static void clearLog(){
+	        lock( m_SinkLock ){
+	    	    getLogConf().clearLog();
+	        }
+	    }
+	
+        public static void InitRhoLog()
+        {
+            RhoConf.InitRhoConf();
+        
+            //Set defaults
+    	    m_oLogConf.setLogPrefix(true);		
+    	
+    	    m_oLogConf.setLogToFile(true);
+        
+		    if ( isSimulator() ) {
+			    m_oLogConf.setMinSeverity( L_INFO );
+			    m_oLogConf.setLogToOutput(true);
+			    m_oLogConf.setEnabledCategories("*");
+			    m_oLogConf.setDisabledCategories("");
+	    	    m_oLogConf.setMaxLogFileSize(0);//No limit
+		    }else{
+			    m_oLogConf.setMinSeverity( L_ERROR );
+			    m_oLogConf.setLogToOutput(false);
+			    m_oLogConf.setEnabledCategories("");
+	    	    m_oLogConf.setMaxLogFileSize(1024*50);
+		    }
+		
+    	    if ( RhoConf.getInstance().getRhoRootPath().length() > 0 )
+	    	    m_oLogConf.setLogFilePath( RhoConf.getInstance().getRhoRootPath() + LOGFILENAME );
+
+            //load configuration if exist
+    	    //
+    	    //m_oLogConf.saveToFile("");
+    	    //
+    	    RhoConf.getInstance().loadConf();
+    	    m_oLogConf.loadFromConf(RhoConf.getInstance());
         }
     }
 

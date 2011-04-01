@@ -62,12 +62,15 @@ namespace rho.net
                 if (strRedirectUrl.Length > 0)
                     return new CResponse(strRedirectUrl);
 
-                String strFilePath = RHODESAPP().canonicalizeRhoUrl(uri) + ".gen.html";
+                String strFilePath = RHODESAPP().canonicalizeRhoPath(uri) + ".gen.html";
                 if ( route.id.Length > 0 )
                     strFilePath = CFilePath.join(m_root, route.application + "/" + route.model + "/" + route.action) + ".gen.html";
 
                 CRhoFile.recursiveCreateDir(strFilePath);
                 CRhoFile.writeDataToFile(strFilePath, getResponseBody(rhoResp));
+
+                if (method == "GET")
+                    RHODESAPP().keepLastVisitedUrl(uri);
 
                 return new CResponse(strFilePath);
             }
@@ -99,16 +102,69 @@ namespace rho.net
                 strIndexFile += ".gen.html";
                 CRhoFile.recursiveCreateDir(strIndexFile);
                 CRhoFile.writeDataToFile(strIndexFile, getResponseBody(rhoResp));
+
+                if (method == "GET")
+                    RHODESAPP().keepLastVisitedUrl(uri);
+
                 return new CResponse(strIndexFile);
             }
 
             return new CResponse(false);
         }
 
+        public bool call_ruby_method(String uri, String body, out String strReply)
+        {
+            CRoute route = new CRoute();
+            strReply = String.Empty;
+            if (!dispatch(uri, route))
+            {
+                if (route.application.equalsIgnoreCase("system"))
+                {
+                    if (route.model.equalsIgnoreCase("geolocation"))
+                    {
+                        //TODO: geolocation
+                        //showGeoLocation();
+                        return true;
+                    }
+                    else if (route.model.equalsIgnoreCase("loadserversources"))
+                    {
+                        RhoRuby.loadServerSources(body);
+                        return true;
+                    }
+                    else if (route.model.equalsIgnoreCase("loadallsyncsources"))
+                    {
+                        RhoRuby.loadAllSyncSources();
+                        return true;
+                    }
+                    else if (route.model.equalsIgnoreCase("resetDBOnSyncUserChanged"))
+                    {
+                        RhoRuby.resetDBOnSyncUserChanged();
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            Dictionary<String, String> headers = new Dictionary<String, String>();
+            headers.Add("Content-Type","application/x-www-form-urlencoded");
+            Object rhoReq = create_request_hash(route, "POST", uri, String.Empty, headers, body);
+            Object rhoResp = RhoRuby.callServe(rhoReq);
+            strReply = getResponseBodyString(rhoResp);
+
+            return true;
+        }
+
         byte[] getResponseBody(Object resp)
         {
             Object body = RhoRuby.hashGet(resp, "request-body");
             return RhoRuby.getBytesFromString(body);
+        }
+
+        String getResponseBodyString(Object resp)
+        {
+            Object body = RhoRuby.hashGet(resp, "request-body");
+            return RhoRuby.getStringFromObject(body);
         }
 
         String getRedirectUrl(Object resp)
@@ -148,6 +204,9 @@ namespace rho.net
 
         bool parse_route(String uri, CRoute route)
         {
+            if (uri.StartsWith(RHODESAPP().getHomeUrl()))
+                uri = uri.Substring(RHODESAPP().getHomeUrl().Length + 1);
+
             if (uri.StartsWith(m_root))
                 uri = uri.Substring(m_root.Length+1);
             else if ( uri.StartsWith("/") )
@@ -224,7 +283,11 @@ namespace rho.net
             Object hash_headers = RhoRuby.createHash();
             if (headers != null)
             {
-                //TODO: add headers
+                Dictionary<String, String>.Enumerator hashEnum = headers.GetEnumerator();
+                while (hashEnum.MoveNext())
+                {
+                    RhoRuby.hashAdd(hash_headers, hashEnum.Current.Key, hashEnum.Current.Value);
+                }
             }
             RhoRuby.hashAdd(hash, "headers", hash_headers);
 	

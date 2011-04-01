@@ -215,7 +215,7 @@ class RhomDbAdapter
   
     raise ArgumentError if !table || !columns
     query = nil
-    vals = nil
+    vals = []
 
     if condition
         quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
@@ -312,7 +312,7 @@ class RhomDbAdapter
   def update_into_table(table=nil,values=nil,condition=nil)
     raise ArgumentError if !table || !values
     query = nil
-    vals = nil
+    vals = []
     if condition
         quests_set, vals_set = make_set_params(values)
         quests_where,vals_where = RhomDbAdapter.make_where_params(condition,'AND') 
