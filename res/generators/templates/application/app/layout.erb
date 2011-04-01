@@ -32,12 +32,19 @@
         <link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'Blackberry' %>
         <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
-    <%% else %>
-        <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
+    <%% elsif System::get_property('platform') == 'WP7' %>
+        <script src="/public/js/wp7.js" type="text/javascript"></script>
+	<link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
+    <%% else %>        
+	<link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
     <%% end %>
 </head>
 
-<body>
+<%% if System::get_property('platform') == 'WP7' %>
+	<body onload="wp7_change_forms_action_to_get()">
+<%% else %>
+	<body>
+<%% end %>
     <%%= @content %>
 </body>
 
