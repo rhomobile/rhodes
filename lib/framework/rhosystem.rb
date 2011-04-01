@@ -44,12 +44,6 @@ module NativeBar
 
 end
 
-module SyncEngine
-	def self.clean_objectnotify
-	#TODO: clean_objectnotify
-	end
-end
-
 module Alert
 	def self.show_status( title, msg, hide)
 		#TODO: show_status

@@ -95,7 +95,7 @@ namespace rho.sync
     	    }
         }
 
-        void cleanObjectNotifications()
+        public void cleanObjectNotifications()
         {
             lock(m_mxObjectNotify)
             {
