@@ -325,7 +325,7 @@ namespace rho.sync
     	
         }
 
-	    void setSearchNotification(String strUrl, String strParams )
+	    public void setSearchNotification(String strUrl, String strParams )
 	    {
 		    LOG.INFO( "Set search notification. Url :" + strUrl + "; Params: " + strParams );
 	        String strFullUrl = getNet().resolveUrl(strUrl);

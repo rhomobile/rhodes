@@ -37,29 +37,20 @@ namespace Rhodes
 
         private CRhodesApp RHODESAPP(){return CRhodesApp.Instance;}
 
-        private void Navigate(string url)
-        {
-            webBrowser1.NavigateToString("Hello!!!");
-        }
+        //private void Navigate(string url)
+        //{
+            //webBrowser1.NavigateToString("Hello!!!");
+        //}
 
         //window.external.notify(<data>)
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
         {
-            webBrowser1.InvokeScript("test_call3", "one");
+            //webBrowser1.InvokeScript("test_call3", "one");
         }
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
-            //SaveFilesToIsoStore();
-            //webBrowser1.Navigate(new Uri("http://www.google.com", UriKind.Absolute));
-            //Rybas K.
-            /*SaveFilesToIsoStore();
-
-            webBrowser1.IsScriptEnabled = true;
-            webBrowser1.Navigate(new Uri("readme.htm", UriKind.Relative));*/
             RHODESAPP().Init(webBrowser1);
-
-            //webBrowser1.Navigate(new Uri("/app/CustomUri/open_external_url?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com", UriKind.Relative));
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)

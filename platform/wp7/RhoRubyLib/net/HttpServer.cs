@@ -213,11 +213,12 @@ namespace rho.net
                 uri = uri.Remove(0, 1 );
 
             String[] arParts = uri.Split('/');
+            if (arParts.Length > 0 )
+                route.application = arParts[0];
 
             if (arParts.Length < 2)
                 return false;
 
-            route.application = arParts[0];
             route.model = arParts[1];
 
             if (arParts.Length < 3)
