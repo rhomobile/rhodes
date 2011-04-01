@@ -136,8 +136,7 @@ namespace rho.sync
 
             lock(m_mxObjectNotify)
             {
-                //TODO: fireObjectsNotification
-                //if ( m_strObjectNotifyUrl.length() == 0 )
+                if ( m_strObjectNotifyUrl.length() == 0 )
                     return;
 
                 strUrl = getNet().resolveUrl(m_strObjectNotifyUrl);
@@ -182,7 +181,14 @@ namespace rho.sync
                             strBody += "&created[][source_id]=" + nSrcID;
                         }
 
-                        hashObject.put(strObject, enNone);
+                        //hashObject.put(strObject, enNone);
+                    }
+
+                    String[] arObjects = new String[hashObject.Keys.Count];
+                    hashObject.Keys.CopyTo(arObjects, 0);
+                    for (int i = 0; i < arObjects.Length; i++)
+                    {
+                        hashObject.put(arObjects[i], enNone);
                     }
                 }
 
