@@ -760,6 +760,49 @@ To clean all binaries run:
 
 Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 
+## Build for Windows Phone 7
+
+### Prerequisites
+
+* Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
+* Windows 7 OS
+* Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
+* Get IronRuby master branch to parent folder of rhodes:
+
+        $ git clone https://github.com/IronLanguages/main.git
+  
+  rename IronLanguages folder to IronRuby
+
+### Build IronRuby(Once)
+* Checkout rhodes source code from github 
+
+* Copy folder `rhodes\platform\wp7\IronRuby\Languages` to `IronRuby`
+
+* Open `IronRuby\Solutions\Ruby.sln` in VS 2010 or VS Express 2010 for C#.
+
+* Select 'Silverlight3Debug|Any CPU' in solution configuration and build solution
+
+### Build from IDE
+* Checkout rhodes source code from github
+* Open the file `rhobuild.yml` using a text editor:
+
+    define the path to your application
+    
+* Open `rhodes\platform\wp7\rhodes.sln` in VS 2010 or VS Express 2010 for Windows Phone.
+* Select Debug configuration, Windows Phone 7 Emulator target and build solution.
+* Run emulator by pressing Start Debugging or Start Without Debugging
+* After Application code modifications , build Rhodes solution and Start Debugging. DO NOT close emulator!
+
+### Logging
+See log in VS output console
+
+### Run store sample
+* Checkout store sample:
+
+        $ git clone https://github.com/rhomobile/store.git
+        
+* Run application in emulator and login with empty credentials
+
 ## How to set application name and icon
 
 ### Application Name
