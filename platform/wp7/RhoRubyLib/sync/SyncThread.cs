@@ -92,7 +92,7 @@ namespace rho.sync
    			    m_pNotify = pNotify; 
    		    }
    	    };
-        private class SyncSearchCommand : SyncCommand
+        public class SyncSearchCommand : SyncCommand
         {
 	        public String m_strFrom;
 	        public boolean   m_bSyncChanges;
