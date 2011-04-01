@@ -25,6 +25,8 @@
 #define IDD_DIALOG1                     122
 #define IDD_SYNCSTATUS                  122
 #define IDD_MAPVIEW                     123
+#define IDD_DIALOG2                     124
+#define IDD_TAKE_SIGNATURE              124
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
@@ -83,7 +85,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        123
+#define _APS_NEXT_RESOURCE_VALUE        125
 #define _APS_NEXT_COMMAND_VALUE         40031
 #define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           111
