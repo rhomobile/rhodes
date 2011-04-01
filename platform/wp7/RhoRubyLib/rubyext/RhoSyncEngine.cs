@@ -189,5 +189,11 @@ namespace rho.rubyext
         {
             SyncThread.getSyncEngine().getNotify().addObjectNotify(nSrcID, strObject);
         }
+
+        [RubyMethod("clean_objectnotify", RubyMethodAttributes.PublicSingleton)]
+        public static void clean_objectnotify(RubyModule/*!*/ self)
+        {
+            SyncThread.getSyncEngine().getNotify().cleanObjectNotifications();
+        }
     }
 }

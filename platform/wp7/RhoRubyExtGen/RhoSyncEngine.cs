@@ -114,6 +114,10 @@ namespace rho.rubyext
         public static void add_objectnotify(RubyModule/*!*/ self, [NotNull]int/*!*/ srcID,  [NotNull]string/*!*/ obj)
         {
         }
-        
+
+        [RubyMethod("clean_objectnotify", RubyMethodAttributes.PublicSingleton)]
+        public static void clean_objectnotify(RubyModule/*!*/ self)
+        {
+        }        
     }
 }
