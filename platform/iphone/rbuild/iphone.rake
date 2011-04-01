@@ -647,7 +647,7 @@ namespace "run" do
 
 
 
-     if use_old_scheme
+     #if use_old_scheme
 
           elements = []
           binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')
@@ -757,7 +757,7 @@ namespace "run" do
         f = File.new("#{simapp}/#{$guid}.sb","w")
         f << "(version 1)\n(debug deny)\n(allow default)\n"
         f.close
-     end    
+     #end    
   end
 
   # split this off separate so running it normally is run:iphone
