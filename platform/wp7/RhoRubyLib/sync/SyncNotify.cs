@@ -136,7 +136,8 @@ namespace rho.sync
 
             lock(m_mxObjectNotify)
             {
-                if ( m_strObjectNotifyUrl.length() == 0 )
+                //TODO: fireObjectsNotification
+                //if ( m_strObjectNotifyUrl.length() == 0 )
                     return;
 
                 strUrl = getNet().resolveUrl(m_strObjectNotifyUrl);
