@@ -212,7 +212,7 @@ void db_insert_into_table( db::CDBAdapter& db, const String& table, Hashtable<St
     db.executeSQLEx(query.c_str(), vals);
 }
 
-unsigned long rhom_make_object(rho::db::CDBResult& res1, int nSrcID, bool isSchemaSrc)
+unsigned long rhom_make_object(IDBResult& res1, int nSrcID, bool isSchemaSrc)
 {
     unsigned long item = 0;
     if ( res1.isEnd() )
@@ -279,7 +279,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 {
     String src_name = szModel;
 
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -331,7 +331,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 		}
     }
 
-    IDBResult  res1 = db.executeSQLEx(sql.c_str(), arValues ) );
+    IDBResult  res1 = db.executeSQLEx(sql.c_str(), arValues );
 
     if ( nCount == 1 )
     {
@@ -823,7 +823,7 @@ namespace rho {
 		return String();
 	}
 	
-	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(net::INetResponse& resp)
+	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
 	{
 		if ( !resp.isResponseRecieved())
 			return ERR_NETWORK;
@@ -838,6 +838,11 @@ namespace rho {
 	}
 	
 	/*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
+	{
+		
+	}
+
+	/*static*/ void  _CRhoAppAdapter::loadAllSyncSources()
 	{
 		
 	}
