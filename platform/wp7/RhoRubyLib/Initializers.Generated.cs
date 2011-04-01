@@ -110,6 +110,11 @@ namespace rho.rubyext {
                 new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String>(rho.rubyext.RhoSyncEngine.add_objectnotify)
             );
             
+            DefineLibraryMethod(module, "clean_objectnotify", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoSyncEngine.clean_objectnotify)
+            );
+            
             DefineLibraryMethod(module, "dosearch", 0x21, 
                 0x000000feU, 
                 new Func<IronRuby.Builtins.RubyModule, IronRuby.Builtins.RubyArray, System.String, System.String, System.Boolean, System.Int32, System.String, System.String, System.Object>(rho.rubyext.RhoSyncEngine.dosearch)
