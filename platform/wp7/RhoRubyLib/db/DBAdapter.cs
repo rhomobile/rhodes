@@ -1,6 +1,7 @@
 ﻿using System;
 using rho.common;
 using rho;
+using Community.CsharpSqlite;
 
 namespace rho.db
 {
@@ -35,6 +36,50 @@ namespace rho.db
     		LOG.ERROR("createDBStorage failed.", exc);
 		}
 	}
+
+    private static DBAdapter getDBByHandle(Sqlite3.sqlite3 db)
+    {
+        Hashtable<String, DBAdapter>.Enumerator hashEnum = m_mapDBPartitions.GetEnumerator();
+		while( hashEnum.MoveNext() )
+		{
+            if(hashEnum.Current.Value.m_dbStorage == db)
+			    return hashEnum.Current.Value;
+		}
+
+        return getDBPartitions().get(USER_PARTITION_NAME());
+    }
+
+    public static void SyncBlob_DeleteCallback(Sqlite3.sqlite3_context dbContext, int nArgs, Sqlite3.Mem[] Args)
+    {
+        if (nArgs < 3)
+            return;
+
+        DBAttrManager attrMgr = getDBByHandle(Sqlite3.sqlite3_context_db_handle(dbContext)).getAttrMgr();
+
+        String szAttrName = Sqlite3.sqlite3_value_text(Args[2]);
+        int nSrcID = Sqlite3.sqlite3_value_int(Args[1]);
+        if (attrMgr.isBlobAttr(nSrcID, szAttrName))
+        {
+            String strFilePath = RHODESAPP().resolveDBFilesPath(Sqlite3.sqlite3_value_text(Args[0]));
+            CRhoFile.deleteFile(strFilePath);
+        }
+    }
+
+    public static void SyncBlob_UpdateCallback(Sqlite3.sqlite3_context dbContext, int nArgs, Sqlite3.Mem[] Args)
+    {
+        if (nArgs < 3)
+            return;
+
+        DBAttrManager attrMgr = getDBByHandle(Sqlite3.sqlite3_context_db_handle(dbContext)).getAttrMgr();
+
+        String szAttrName = Sqlite3.sqlite3_value_text(Args[2]);
+        int nSrcID = Sqlite3.sqlite3_value_int(Args[1]);
+        if (attrMgr.isBlobAttr(nSrcID, szAttrName))
+        {
+            String strFilePath = RHODESAPP().resolveDBFilesPath(Sqlite3.sqlite3_value_text(Args[0]));
+            CRhoFile.deleteFile(strFilePath);
+        }
+    }
 
 	private void setDbPartition(String strPartition)
 	{
