@@ -477,10 +477,13 @@ namespace "run" do
       log_name  =   File.join($tmpdir, 'logout')
       File.delete(log_name) if File.exist?(log_name)
 
+      $iphone_end_spec = false
+
       Thread.new {
             # run spec
+            rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
             iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
-            commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+            commandis = iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
             puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
             puts 'execute command : ' + commandis
             system(commandis)
@@ -491,13 +494,13 @@ namespace "run" do
 
       puts "waiting for log"
       
-        while !File.exist?(log_name)
+        while (!File.exist?(log_name)) && (!$iphone_end_spec)
             sleep(1)
         end
 
         puts "start read log"
         
-        $iphone_end_spec = false
+        #$iphone_end_spec = false
 
         while !$iphone_end_spec do
             io = File.new(log_name, "r")
@@ -629,120 +632,132 @@ namespace "run" do
      end
      `killall "iPhone Simulator"`
 
+
+      puts 'kill iPhone Simulator'
+      `killall -9  "iPhone Simulator"`
+      `killall -9 iphonesim`
+
+     use_old_scheme = ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+
+
      $sdkver = $sdk.gsub(/^iphonesimulator/, '')
      # Workaround: sometimes sdkver could differ from emulator version.
      # Example: iPhone SDK 4.0.1. In this case sdk is still iphonesimulator4.0 but version of simulator is 4.0.1
      $sdkver = $emulator_version.to_s unless $emulator_version.nil?
 
-     elements = []
-     binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')
-     xmlplist = '/tmp/iphone.plist'
-     if File.exists? binplist
-       `plutil -convert xml1 -o #{xmlplist} #{binplist}`
 
-       elements = []
-       doc = REXML::Document.new(File.new(xmlplist))
-       nextignore = false
-       doc.elements.each('plist/dict/*') do |element|
-         if nextignore
-           nextignore = false
-           next
-         end
-         if element.name == 'key'
-           if element.text == 'currentSDKRoot' or element.text == 'SimulateDevice'
-             nextignore = true
-             next
-           end
-         end
+
+     if use_old_scheme
+
+          elements = []
+          binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')
+          xmlplist = '/tmp/iphone.plist'
+          if File.exists? binplist
+              `plutil -convert xml1 -o #{xmlplist} #{binplist}`
+
+              elements = []
+              doc = REXML::Document.new(File.new(xmlplist))
+              nextignore = false
+              doc.elements.each('plist/dict/*') do |element|
+                  if nextignore
+                      nextignore = false
+                      next
+                  end
+                  if element.name == 'key'
+                      if element.text == 'currentSDKRoot' or element.text == 'SimulateDevice'
+                          nextignore = true
+                          next
+                      end
+                  end
          
-         elements << element
-       end
-     end
-
-     e = REXML::Element.new 'key'
-     e.text = 'SimulateDevice'
-     elements << e
-     e = REXML::Element.new 'string'
-     e.text = $sdkver == '3.2' ? 'iPad' : 'iPhone'
-     elements << e
-     e = REXML::Element.new 'key'
-     e.text = 'currentSDKRoot'
-     elements << e
-     e = REXML::Element.new 'string'
-     e.text = $sdkroot
-     elements << e
-
-     File.open(xmlplist, 'w') do |f|
-       f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-       f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
-       f.puts "<plist version=\"1.0\">"
-       f.puts "<dict>"
-       elements.each do |e|
-         f.puts "\t#{e.to_s}"
-       end
-       f.puts "</dict>"
-       f.puts "</plist>"
-     end
-
-     `plutil -convert binary1 -o #{binplist} #{xmlplist}`
-
-     rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
-     puts "rhorunner: #{rhorunner}"
-
-     puts "our app name: #{$app_config['name']}"
-     puts "simdir: #{$simdir}"
-
-     Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
-       need_rm = true if File.directory? simapppath
-       if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
-         name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
-         puts "found app name: #{name}"
-         guid = File.basename(simapppath)
-         puts "found guid: #{guid}"
-         if name == $app_config['name']
-           $guid = guid
-           need_rm = false
+                  elements << element
+              end
          end
-       end
-       rm_rf simapppath if need_rm
-       rm_rf simapppath + ".sb" if need_rm
-     end
 
-     puts "app guid: #{$guid}"
+         e = REXML::Element.new 'key'
+         e.text = 'SimulateDevice'
+         elements << e
+         e = REXML::Element.new 'string'
+         e.text = $sdkver == '3.2' ? 'iPad' : 'iPhone'
+         elements << e
+         e = REXML::Element.new 'key'
+         e.text = 'currentSDKRoot'
+         elements << e
+         e = REXML::Element.new 'string'
+         e.text = $sdkroot
+         elements << e
 
-     mkdir_p File.join($simdir, $sdkver)
+         File.open(xmlplist, 'w') do |f|
+             f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+             f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+             f.puts "<plist version=\"1.0\">"
+             f.puts "<dict>"
+             elements.each do |e|
+                 f.puts "\t#{e.to_s}"
+             end
+             f.puts "</dict>"
+             f.puts "</plist>"
+         end
 
-     simapp = File.join($simdir, $sdkver, "Applications")
-     simlink = File.join($simdir, $sdkver, "Library", "Preferences")
+         `plutil -convert binary1 -o #{binplist} #{xmlplist}`
 
-     $simrhodes = File.join(simapp, $guid)
+         rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
+         puts "rhorunner: #{rhorunner}"
 
-     mkdir_p File.join($simrhodes, "Documents")
-     mkdir_p File.join($simrhodes, "Library", "Preferences")
+         puts "our app name: #{$app_config['name']}"
+         puts "simdir: #{$simdir}"
 
-     rm_rf File.join($simrhodes, 'rhorunner.app')
-     cp_r rhorunner, $simrhodes
-     ['com.apple.PeoplePicker.plist', '.GlobalPreferences.plist'].each do |f|
-       `ln -f -s "#{simlink}/#{f}" "#{$simrhodes}/Library/Preferences/#{f}"`
-     end
+         Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
+             need_rm = true if File.directory? simapppath
+             if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
+                 name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
+                 puts "found app name: #{name}"
+                 guid = File.basename(simapppath)
+                 puts "found guid: #{guid}"
+                 if name == $app_config['name']
+                     $guid = guid
+                     need_rm = false
+                 end
+             end
+             rm_rf simapppath if need_rm
+             rm_rf simapppath + ".sb" if need_rm
+         end
 
-     `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
-     rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+         puts "app guid: #{$guid}"
+
+         mkdir_p File.join($simdir, $sdkver)
+
+         simapp = File.join($simdir, $sdkver, "Applications")
+         simlink = File.join($simdir, $sdkver, "Library", "Preferences")
+
+         $simrhodes = File.join(simapp, $guid)
+
+         mkdir_p File.join($simrhodes, "Documents")
+         mkdir_p File.join($simrhodes, "Library", "Preferences")
+
+         rm_rf File.join($simrhodes, 'rhorunner.app')
+         cp_r rhorunner, $simrhodes
+         ['com.apple.PeoplePicker.plist', '.GlobalPreferences.plist'].each do |f|
+             `ln -f -s "#{simlink}/#{f}" "#{$simrhodes}/Library/Preferences/#{f}"`
+         end
+
+        `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
+        rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
 
 
-     simpublic = simapp + "/" + $guid + "/Documents/apps/public"
-     apppublic = $app_path + "/sim-public-#{$sdkver}"
+        simpublic = simapp + "/" + $guid + "/Documents/apps/public"
+        apppublic = $app_path + "/sim-public-#{$sdkver}"
 
-     apprholog = $app_path + "/rholog-#{$sdkver}.txt"
-     rm_f apprholog
-     rm_f apppublic
-     `ln -f -s "#{simpublic}" "#{apppublic}"`
-     `ln -f -s "#{rholog}" "#{apprholog}"`
-     `echo > "#{rholog}"`
-     f = File.new("#{simapp}/#{$guid}.sb","w")
-     f << "(version 1)\n(debug deny)\n(allow default)\n"
-     f.close
-     
+        apprholog = $app_path + "/rholog-#{$sdkver}.txt"
+        rm_f apprholog
+        rm_f apppublic
+        `ln -f -s "#{simpublic}" "#{apppublic}"`
+        `ln -f -s "#{rholog}" "#{apprholog}"`
+        `echo > "#{rholog}"`
+        f = File.new("#{simapp}/#{$guid}.sb","w")
+        f << "(version 1)\n(debug deny)\n(allow default)\n"
+        f.close
+     end    
   end
 
   # split this off separate so running it normally is run:iphone
@@ -752,7 +767,8 @@ namespace "run" do
     
     iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
 
-    commandis = iphonesim + ' launch "' + File.join($simrhodes, 'rhorunner.app') + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget
+    rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
+    commandis = iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget
 
     Thread.new {
        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
@@ -765,6 +781,7 @@ namespace "run" do
     }
   
     puts "end build iphone app"  
+    exit
   end
   
   task :allspecs do
