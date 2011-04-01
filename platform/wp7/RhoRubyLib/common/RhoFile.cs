@@ -8,30 +8,76 @@ namespace rho.common
 {
     public class CRhoFile
     {
+        public enum EOpenModes{ OpenForAppend = 1, OpenReadOnly = 2, OpenForWrite = 3, OpenForReadWrite = 4 };
+
+        public bool isOpened() { return false; }
+        public bool open(String szFilePath, EOpenModes eMode) { return false; }
+        public int write(byte[] data, int len) { return 0; }
+        public int writeString(String data) { return data.Length; }
+        public void flush() { }
+        public void close() { }
+        public void movePosToStart() { }
+        public void movePosToEnd() { }
+        public void setPosTo(int nPos) { }
+        public int size() { return 0; }
+
+        public String readString() { return ""; }
+
+        //int readByte() { return 0;  }
+        //int readData(void* buffer, int bufOffset, int bytesToRead);
+
         public static void deleteFile(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            isoStore.DeleteFile(path);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                isoStore.DeleteFile(path);
+            }
+        }
+
+        public static void renameFile(String oldName, String newName)
+        {
+            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            using (var readStream = new IsolatedStorageFileStream(oldName, FileMode.Open, store))
+            using (var writeStream = new IsolatedStorageFileStream(newName, FileMode.Create, store))
+            using (var reader = new BinaryReader(readStream))
+            using (var writer = new BinaryWriter(writeStream))
+            {
+                writer.Write(reader.ReadBytes((int)readStream.Length));
+            }
+
+            using (var store1 = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                store1.DeleteFile(oldName);
+            }
+        }
+
+        public static void deleteDirectory(String path)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                isoStore.DeleteDirectory(CFilePath.removeLastSlash(path));
+            }
         }
 
         public static bool isDirectoryExist(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            return isoStore.DirectoryExists(path);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                return isoStore.DirectoryExists(path);
+            }
         }
 
         public static bool isFileExist(String path)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            return isoStore.FileExists(path);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                return isoStore.FileExists(path);
+            }
         }
 
         public static bool isResourceFileExist(String path)
         {
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
+            StreamResourceInfo sr = Application.GetResourceStream(new Uri(CFilePath.removeFirstSlash(path), UriKind.Relative));
             if (sr == null)
                 return false;
 
@@ -44,42 +90,68 @@ namespace rho.common
             string[] dirsPath = strPath.Split(sep, StringSplitOptions.RemoveEmptyEntries);
             string strBaseDir = string.Empty;
 
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            for (int i = 0; i < dirsPath.Length - 1; i++)
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                strBaseDir = System.IO.Path.Combine(strBaseDir, dirsPath[i]);
-                isoStore.CreateDirectory(strBaseDir);
+                for (int i = 0; i < dirsPath.Length - 1; i++)
+                {
+                    strBaseDir = System.IO.Path.Combine(strBaseDir, dirsPath[i]);
+                    isoStore.CreateDirectory(strBaseDir);
+                }
             }
         }
 
-        public static String readFiletoString(String path)
+        public static string[] enumDirectory(String path)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                return isoStore.GetFileNames(CFilePath.join(path, "*"));
+            }
+        }
+
+        public static void deleteFilesInFolder(String path)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                string[] arFiles = isoStore.GetFileNames(CFilePath.join(path, "*"));
+                foreach (string strFile in arFiles)
+                {
+                    isoStore.DeleteFile(CFilePath.join(path, strFile));
+                }
+            }
+        }
+
+        public static void createDirectory(string path)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                isoStore.CreateDirectory(CFilePath.removeLastSlash(path));
+            }
+        }
+
+        public static String readStringFromFile(String path)
         {
             string content = "";
+            path = CFilePath.removeFirstSlash(path);
 
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
+            if (!isFileExist(path)) return content;
 
-            if (!isFileExist(path)) return content; 
-
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            Stream st = isoStore.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.None);
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (Stream st = isoStore.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.None))
             using (System.IO.BinaryReader br = new BinaryReader(st))
             {
-                //char[] str = br.ReadChars((int)st.Length);
                 content = br.ReadString();
             }
 
             return content;
         }
 
-        public static String readResourceFiletoString(String path)
+        public static String readStringFromResourceFile(String path)
         {
             string content = "";
+            path = CFilePath.removeFirstSlash(path);
 
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-
-            if (!CRhoFile.isResourceFileExist(path)) return content;
+            if (!CRhoFile.isResourceFileExist(path)) 
+                return content;
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
 
@@ -95,9 +167,7 @@ namespace rho.common
         public static byte[] readResourceFile(String path)
         {
             byte[] content = new byte[0];
-
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
+            path = CFilePath.removeFirstSlash(path);
 
             if (!CRhoFile.isResourceFileExist(path))
                 return content;
@@ -114,25 +184,21 @@ namespace rho.common
 
         public static void writeStringToFile(String strPath, String strData)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-
-            //Write the file
-            using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (var file = isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (BinaryWriter bw = new BinaryWriter(file))
             {
                 bw.Write(strData);
-                bw.Close();
             }
         }
 
         public static void writeDataToFile(String strPath, byte[] data)
         {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-
-            //Write the file
-            using (BinaryWriter bw = new BinaryWriter(isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (var file = isoStore.OpenFile(strPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (BinaryWriter bw = new BinaryWriter(file))
             {
                 bw.Write(data);
-                //bw.Close();
             }
         }
     }

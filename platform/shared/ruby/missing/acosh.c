@@ -81,10 +81,10 @@ atanh(double x)
     z = log(z > 1 ? -1 : (1 + z) / (1 - z)) / 2;
     if (neg) z = -z;
     if (isinf(z))
-#if defined(ERANGE)
-	errno = ERANGE;
-#elif defined(EDOM)
+#if defined(EDOM)
 	errno = EDOM;
+#elif defined(ERANGE)
+	errno = ERANGE;
 #else
 	;
 #endif

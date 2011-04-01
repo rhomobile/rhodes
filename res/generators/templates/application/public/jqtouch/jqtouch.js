@@ -319,6 +319,12 @@
 
             var href = $el.attr("href");
 
+            if (href.indexOf("mp4") != -1){
+                  animation = null;
+                  window.location = href;
+                  return false;
+            }
+
             // User clicked an internal link, fullscreen mode
             if (target == '_webapp') {
                 window.location = href;
@@ -377,6 +383,8 @@
             // Make sure we are scrolled up to hide location bar
             scrollTo(0, 0);
 
+            clearInterval(dumbLoop);
+
             // Define callback to run after animation completes
             var callback = function(event) {
 
@@ -400,7 +408,6 @@
                 toPage.trigger('pageAnimationEnd', { direction: 'in' });
                 fromPage.trigger('pageAnimationEnd', { direction: 'out' });
 
-                clearInterval(dumbLoop);
                 currentPage = toPage;
                 location.hash = currentPage.attr('id');
                 dumbLoopStart();
@@ -449,9 +456,10 @@
         function dumbLoopStart() {
             dumbLoop = setInterval(function() {
                 var curid = currentPage.attr('id');
-                if (location.hash == '') {
-                    location.hash = '#' + curid;
-                } else if (location.hash != '#' + curid) {
+                //if (location.hash == '') {
+                //    location.hash = '#' + curid;
+                //} else 
+                if (location.hash != '#' + curid) {
                     try {
                         goBack(location.hash)
                     } catch(e) {

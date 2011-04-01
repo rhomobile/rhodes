@@ -227,18 +227,6 @@ public class RhodesApp
 
     	try{
 	        m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
-	
-	        if ( RHOCONF().getBool("KeepTrackOfLastVisitedPage") )
-	        {
-	            if ( strUrl.startsWith(m_strHomeUrl) )
-	                strUrl = strUrl.substring(m_strHomeUrl.length());
-	
-	            int nFragment = strUrl.indexOf('#');
-	            if ( nFragment >= 0 )
-	                strUrl = strUrl.substring(0, nFragment);
-	
-	            RHOCONF().setString("LastVisitedPage",strUrl, true);		
-	        }
     	}catch(Exception exc)
     	{
     		LOG.ERROR("Save current location failed.", exc);

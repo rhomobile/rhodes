@@ -12,6 +12,7 @@
 
 #include <sys/stat.h>
 #include <sys/resource.h>
+#include <pwd.h>
 
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/RhoClassFactory.h"
@@ -196,6 +197,14 @@ const char* rho_native_rhopath()
 std::string const &rho_apk_path()
 {
     return g_apk_path;
+}
+
+std::string rho_cur_path()
+{
+    char buf[PATH_MAX];
+    if (::getcwd(buf, sizeof(buf)) == NULL)
+        return "";
+    return buf;
 }
 
 jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
@@ -391,6 +400,60 @@ static bool set_capabilities(JNIEnv *env)
     return true;
 }
 
+static bool set_posix_environment(JNIEnv *env, jclass clsRE)
+{
+    // Set USER variable
+    struct passwd *pwd = ::getpwuid(::getuid());
+    if (!pwd)
+    {
+        env->ThrowNew(clsRE, "Can't find user name for current user");
+        return false;
+    }
+
+    size_t len = ::strlen(pwd->pw_name) + 16;
+    char *buf = (char *)::malloc(len + 1);
+    buf[len] = '\0';
+    ::snprintf(buf, len, "USER=%s", pwd->pw_name);
+    int e = ::putenv(buf);
+    ::free(buf);
+    if (e != 0)
+    {
+        env->ThrowNew(clsRE, "Can't set USER environment variable");
+        return false;
+    }
+
+    // Set HOME variable
+    std::string root_path = rho_root_path();
+    if (!root_path.empty() && root_path[root_path.size() - 1] == '/')
+        root_path.erase(root_path.size() - 1);
+    len = root_path.size() + 16;
+    buf = (char *)::malloc(len + 1);
+    buf[len] = '\0';
+    ::snprintf(buf, len, "HOME=%s", root_path.c_str());
+    e = ::putenv(buf);
+    ::free(buf);
+    if (e != 0)
+    {
+        env->ThrowNew(clsRE, "Can't set HOME environment variable");
+        return false;
+    }
+
+    // Set TMP variable
+    len = root_path.size() + 32;
+    buf = (char *)::malloc(len + 1);
+    buf[len] = '\0';
+    ::snprintf(buf, len, "TMP=%s/tmp", root_path.c_str());
+    e = ::putenv(buf);
+    ::free(buf);
+    if (e != 0)
+    {
+        env->ThrowNew(clsRE, "Can't set TMP environment variable");
+        return false;
+    }
+
+    return true;
+}
+
 static jobject g_classLoader = NULL;
 static jmethodID g_loadClass = NULL;
 
@@ -445,6 +508,14 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
             env->ThrowNew(clsRE, "Can not set maximum number of open files");
             return;
         }
+    }
+
+    if (!set_posix_environment(env, clsRE)) return;
+
+    if (::chdir(rho_root_path().c_str()) == -1)
+    {
+        env->ThrowNew(clsRE, "Can not chdir to HOME directory");
+        return;
     }
 
     if (!set_capabilities(env)) return;
@@ -555,6 +626,18 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
 {
     bool res = RHODESAPP().isOnStartPage();
     return (jboolean)res;
+}
+
+
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
+  (JNIEnv *, jclass, jstring cmdLine, jstring sep)
+{
+    bool value = true;
+    const char* svalue = get_app_build_config_item("android_title");
+    if (svalue != NULL) {
+        value = svalue[0] != '0';
+    } 
+    return (jboolean)value;
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp

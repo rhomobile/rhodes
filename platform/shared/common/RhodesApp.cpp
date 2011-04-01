@@ -303,6 +303,17 @@ CRhodesApp::~CRhodesApp(void)
 
 }
 
+boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strData)
+{
+    String strBody = "rho_callback=1";
+		
+    if ( strData.length() > 0 )
+        strBody += "&" + strData;
+
+    String strReply;
+    return m_httpServer->call_ruby_method(strUrl, strBody, strReply);
+}
+
 void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
 {
     LOG(INFO) + "restart local server.";
@@ -906,13 +917,15 @@ void CRhodesApp::navigateBack()
         loadUrl(m_strAppBackUrlOrig);
     else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
 	{
+/* Now JQTouch is fixed for back issue - we do not need make back by this hack
 #ifdef OS_MACOSX
 		if (RHOCONF().getBool("jqtouch_mode"))
 		{
 			rho_webview_execute_js("window.Rho.jqt.goBack()", 0);
 			return;
 		}
-#endif		
+#endif
+*/		
         rho_webview_navigate_back();
 	}
 }

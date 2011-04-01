@@ -7,11 +7,14 @@ using System.Windows.Resources;
 using System.Windows;
 using System.IO;
 using Microsoft.Phone.Controls;
+using rho.common;
 
 namespace rho
 {
     public class CRhoRuby
     {
+        RhoConf RHOCONF() { return RhoConf.getInstance(); }
+
         private static readonly CRhoRuby m_instance = new CRhoRuby();
         public static CRhoRuby Instance { get { return m_instance; } }
 
@@ -27,7 +30,7 @@ namespace rho
         {
             m_webBrowser = browser;
             initRuby();
-            Start();
+            createRhoFramework();
         }
         
         public class RhoHost : ScriptHost
@@ -71,12 +74,14 @@ namespace rho
             m_engine.SetSearchPaths(paths);
         }
 
-        private void Start()
+        private void createRhoFramework()
         {
             string code = "def foo; 'haha'; end; foo()";
             //string code = "class MyClass; def initialize(arg1); end; end; MyClass.new('');";
             //m_engine.Execute("class MyClass < Exception; def initialize(arg1); end; end; MyClass.new('');");
             //m_engine.Execute("def test; while false; end; end; test();");
+            //m_engine.Execute("class RecordNotFound < StandardError;end; raise RecordNotFound;");
+            //m_engine.Execute("test = {}; test.__id__;");
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri("lib/rhoframework.rb", UriKind.Relative));
 
@@ -91,11 +96,20 @@ namespace rho
                 return;
 
             m_rhoframework = src.Execute(m_engine.CreateScope());
+        }
+
+        public void InitApp()
+        {
             if (m_rhoframework == null)
                 return;
-            //m_engine.Execute("RHO_FRAMEWORK.ui_created");
 
+            m_engine.Operations.InvokeMember(m_rhoframework, "init_app");
             m_engine.Operations.InvokeMember(m_rhoframework, "ui_created");
+        }
+
+        public void Stop()
+        {
+            m_runtime.Shutdown();
         }
 
         public Object callServeIndex(String indexPath, Object req)
@@ -121,6 +135,24 @@ namespace rho
             return new byte[0];
         }
 
+        public String getStringFromObject(Object body)
+        {
+            if (body != null && body.GetType() == typeof(MutableString))
+                return ((MutableString)body).ToString();
+
+            return String.Empty;
+        }
+
+        public object createString(String str)
+        {
+            return MutableString.Create(str);
+        }
+
+        public RubyArray createArray()
+        {
+            return new IronRuby.Builtins.RubyArray();
+        }
+
         public Hash createHash()
         {
             return new Hash(m_context);
@@ -128,6 +160,11 @@ namespace rho
 
         public void hashAdd(Object hash, Object key, Object value)
         {
+            if (key is String)
+                key = createString(key as String);
+            if (value is String)
+                value = createString(value as String);
+
             ((Hash)hash).Add(key, value);
         }
 
@@ -149,10 +186,74 @@ namespace rho
         {
             Object value = hashGet(hash, key);
 
-            if (value != null && value.GetType() == typeof(MutableString))
+            if (value != null && value is MutableString)
                 return ((MutableString)value).ToString();
 
             return String.Empty;
+        }
+
+        public Vector<String> makeVectorStringFromArray(RubyArray ar)
+        {
+            Vector<String> arRes = new Vector<String>();
+            for (int i = 0; ar != null && i < ar.Count; i++)
+            {
+                Object item = ar[i];
+                if (item != null && item is MutableString)
+                    arRes.Add( ((MutableString)item).ToString() );
+                else
+                    arRes.Add(String.Empty);
+            }
+
+            return arRes;
+        }
+
+        public bool isMainRubyThread()
+        {
+            //TODO: isMainRubyThread
+            return true;
+        }
+
+        public String getRhoDBVersion()
+        {
+            String strVer = "";
+
+            object val = m_engine.Execute("Rhodes::DBVERSION");
+
+            if (val != null && val.GetType() == typeof(MutableString))
+                strVer = ((MutableString)val).ToString();
+		
+	        return strVer;        
+        }
+
+        public void call_config_conflicts()
+        {
+            //TODO: call_config_conflicts
+            /*RubyHash hashConflicts = RHOCONF().getRubyConflicts();
+            if (hashConflicts.size().toInt() == 0)
+                return;
+
+            m_engine.Operations.InvokeMember(m_rhoframework, "on_config_conflicts", hashConflicts);*/
+        }
+
+        public void raise_RhoError(int errCode)
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "raise_rhoerror", errCode);
+        }
+
+        public void loadServerSources(String strData)
+        {
+            MutableString strParam = MutableString.Create(strData);
+            m_engine.Operations.InvokeMember(m_rhoframework, "load_server_sources", strParam);
+        }
+
+        public void loadAllSyncSources()
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "load_all_sync_sources");
+        }
+
+        public void resetDBOnSyncUserChanged()
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "reset_db_on_sync_user_changed");
         }
     }
 }
