@@ -33,7 +33,7 @@ namespace rho.rubyext {
                 new Func<IronRuby.Builtins.RubyClass, IronRuby.Builtins.MutableString, IronRuby.Builtins.MutableString, rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Create)
             );
             DefineGlobalModule("SyncEngine", typeof(rho.rubyext.RhoSyncEngine), 0x00000008, null, LoadSyncEngine_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
-            DefineGlobalModule("WebView", typeof(rho.rubyext.RhoWebView), 0x00000008, LoadWebView_Instance, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            DefineGlobalModule("WebView", typeof(rho.rubyext.RhoWebView), 0x00000008, null, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             SetConstant(def1, "JSON", def2);
             SetConstant(def3, "Database", def4);
         }
@@ -108,6 +108,11 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "add_objectnotify", 0x21, 
                 0x00000006U, 
                 new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String>(rho.rubyext.RhoSyncEngine.add_objectnotify)
+            );
+            
+            DefineLibraryMethod(module, "dosearch", 0x21, 
+                0x000000feU, 
+                new Func<IronRuby.Builtins.RubyModule, IronRuby.Builtins.RubyArray, System.String, System.String, System.Boolean, System.Int32, System.String, System.String, System.Object>(rho.rubyext.RhoSyncEngine.dosearch)
             );
             
             DefineLibraryMethod(module, "dosync", 0x21, 
@@ -189,18 +194,15 @@ namespace rho.rubyext {
             
         }
         
-        private static void LoadWebView_Instance(IronRuby.Builtins.RubyModule/*!*/ module) {
-            DefineLibraryMethod(module, "navigate", 0x12, 
-                0x00010000U, 
-                new Action<System.Object, System.String>(rho.rubyext.RhoWebView.Navigate)
+        private static void LoadWebView_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "execute_js", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.execute_js)
             );
             
-        }
-        
-        private static void LoadWebView_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
             DefineLibraryMethod(module, "navigate", 0x21, 
-                0x00010000U, 
-                new Action<System.Object, System.String>(rho.rubyext.RhoWebView.Navigate)
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.Navigate)
             );
             
         }
