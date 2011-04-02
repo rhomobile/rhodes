@@ -95,6 +95,8 @@ namespace "build" do
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
       chdir $config["build"]["wmpath"]
 
+      cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
+
       args = ['/M4', 'rhodes.sln', "\"Release|#{$sdk}\""]
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
@@ -187,8 +189,6 @@ namespace "device" do
 	
       chdir $builddir
       
-      cp $app_path + "/icon/icon.ico", "../rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
-
       args = ['build_inf.js', $appname + ".inf", 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app]
       puts Jake.run('cscript',args)
       unless $? == 0
