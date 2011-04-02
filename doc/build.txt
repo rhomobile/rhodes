@@ -830,4 +830,6 @@ Place your image to use as an icon in a folder called `icon` in your application
 * rhodes\platform\iphone\icon.png, icon57.png, icon72.png, icon114.png - change to your icons
 * check rhodes\platform\iphone\Info.plist it should contain BundleName=${PRODUCT_NAME}
 
-
+### Windows Mobile
+Windows Mobile Shell program caches program icons. This cache is cleared only when device or simulator is restarted.
+So if you change icon of application, you have to restart device/simulator(uninstall/install is not enough).
