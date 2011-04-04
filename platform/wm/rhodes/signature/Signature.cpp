@@ -1,15 +1,16 @@
 #include "stdafx.h"
-#include <imaging.h>
 
 #if defined(_WIN32_WCE)
 #include <aygshell.h>
 #endif
 #include <atltime.h>
 #include <msinkaut_i.c>
+#include <imaging.h>
 #include "ext/rho/rhoruby.h"
 #include "../MainWindow.h"
 #include "Signature.h"
 #include "common/RhodesApp.h"
+
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)
@@ -21,7 +22,6 @@ extern "C" HWND getMainWnd();
 //TODO: 
 //      - review for memory leaks
 //		- expose generic functions to utility class
-//		- fix Imaging_SaveToFile saving to JPG and GIF
 
 static void prepare_filesystem(LPTSTR pszFilename, LPCWSTR szFormat, LPTSTR pszFullName);
 static LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt);
@@ -80,34 +80,6 @@ Signature::Signature(void) {
 
 Signature::~Signature(void) {
 }
-HRESULT Signature::saveInkOverlay(LPTSTR pszFilename, LPCTSTR szFormat) {
-	TCHAR pszFullName[MAX_PATH];
-	prepare_filesystem(pszFilename, szFormat, pszFullName);
-
-	IInkDisp* pInkDisp = NULL;
-	dlg.m_pInkOverlay->get_Ink(&pInkDisp);
-
-	HANDLE hFileTemp;
-	hFileTemp = CreateFile(pszFullName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	
-	VARIANT Data;
-	VariantInit( &Data );
-	pInkDisp->Save(IPF_GIF, IPCM_Default, &Data);
-
-	SAFEARRAY *pSA = V_ARRAY(&Data);
-	unsigned char *pBytes = NULL;
-	
-	::SafeArrayAccessData(pSA, (void HUGEP **)&pBytes);
-	
-	DWORD dwWrittenSize = 0;
-	WriteFile( hFileTemp, pBytes, pSA->rgsabound->cElements, &dwWrittenSize, NULL );
-
-	::SafeArrayUnaccessData(pSA);
-
-	CloseHandle(hFileTemp);
-
-	return S_OK;
-}
 HBITMAP Signature::getScreenHBITMAP() {
 	// get screen rectangle 
 	RECT windowRect; 
@@ -146,16 +118,6 @@ HBITMAP Signature::getScreenHBITMAP() {
 
 	return bitmap;
 }
-HRESULT Signature::saveScreen(LPTSTR pszFilename, LPCTSTR szFormat) {
-	TCHAR pszFullName[MAX_PATH];
-	prepare_filesystem(pszFilename, szFormat, pszFullName);
-
-	HBITMAP bitmap = Signature::getScreenHBITMAP();
-	HRESULT hResult = Imaging_SaveToFile(bitmap, pszFullName, szFormat);
-	DeleteObject(bitmap);
-
-	return hResult;
-}
 HRESULT Signature::takeSignature(HWND hwndOwner,LPTSTR pszFilename,LPCWSTR szFormat)
 {
 	int retVal = dlg.DoModal(getMainWnd());
@@ -165,14 +127,14 @@ HRESULT Signature::takeSignature(HWND hwndOwner,LPTSTR pszFilename,LPCWSTR szFor
 	}
 
 	HRESULT hResult = S_OK;
+	
+	TCHAR pszFullName[MAX_PATH];
+	prepare_filesystem(pszFilename, szFormat, pszFullName);
 
-	if(wcscmp(szFormat, L"gif") == 0) { // save ink overlay as GIF from ink data
-		hResult = Signature::saveInkOverlay(pszFilename, szFormat);
-	}
-	else { // save screenshot as BMP, PNG (if possible also JPG) using encoder
-		hResult = Signature::saveScreen(pszFilename, szFormat); 
-	}
-
+	HBITMAP bitmap = Signature::getScreenHBITMAP();
+	hResult = Imaging_SaveToFile(bitmap, pszFullName, szFormat);
+	DeleteObject(bitmap);
+	
 	return hResult;
 }
 // TODO: move to some general utility class
@@ -231,66 +193,6 @@ LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
 
 	return filename;
 }
-// TODO: move to some general utility class or remove if not neccessary
-// Saves screen as bitmap directly writing to file
-void Screen_Bitmap_SaveToFile(HWND window, const char* filename){ 
-	// get screen rectangle 
-	RECT windowRect; 
-	GetWindowRect(window, &windowRect); 
-	// bitmap dimensions 
-	int bitmap_dx = windowRect.right - windowRect.left; 
-	int bitmap_dy = windowRect.bottom - windowRect.top; 
-	// save bitmap file headers 
-	BITMAPFILEHEADER fileHeader; 
-	BITMAPINFOHEADER infoHeader; 
-	fileHeader.bfType      = 0x4d42; 
-	fileHeader.bfSize      = 0; 
-	fileHeader.bfReserved1 = 0; 
-	fileHeader.bfReserved2 = 0;
-	fileHeader.bfOffBits   = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER); 
-
-	infoHeader.biSize          = sizeof(infoHeader); 
-	infoHeader.biWidth         = bitmap_dx; 
-	infoHeader.biHeight        = bitmap_dy; 
-	infoHeader.biPlanes        = 1; 
-	infoHeader.biBitCount      = 24;
-	infoHeader.biCompression   = BI_RGB; 
-	infoHeader.biSizeImage     = 0;
-	infoHeader.biXPelsPerMeter = 0;
-	infoHeader.biYPelsPerMeter = 0;
-	infoHeader.biClrUsed       = 0;
-	infoHeader.biClrImportant  = 0;
-
-	// dibsection information 
-	BITMAPINFO info; 
-	info.bmiHeader = infoHeader;  
-	
-	// ------------------ // THE IMPORTANT CODE // ------------------ 
-	// create a dibsection and blit the window contents to the bitmap 
-	HDC winDC = GetWindowDC(window); 
-	HDC memDC = CreateCompatibleDC(winDC); 
-	BYTE* memory = 0; 
-	HBITMAP bitmap = CreateDIBSection(winDC, &info, DIB_RGB_COLORS, (void**)&memory, 0, 0); 
-	SelectObject(memDC, bitmap); 
-	BitBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, 0, 0, SRCCOPY); 
-	DeleteDC(memDC); 
-	ReleaseDC(window, winDC); 
-	
-	// save dibsection data 
-	int bytes = (((24*bitmap_dx + 31) & (~31))/8)*bitmap_dy; 
-
-	HANDLE hFileTemp;
-	hFileTemp = CreateFile((LPCWSTR)filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-	DWORD dwWrittenSize = 0;
-	WriteFile( hFileTemp, &fileHeader, sizeof (BITMAPFILEHEADER), &dwWrittenSize, NULL );
-	WriteFile( hFileTemp, &infoHeader, sizeof (BITMAPINFOHEADER), &dwWrittenSize, NULL );
-	WriteFile( hFileTemp, memory, bytes, &dwWrittenSize, NULL );
-
-	CloseHandle(hFileTemp);
-	DeleteObject(bitmap);
-}
-// TODO: saves PNG and BMP, but JPG and GIF fails - should be revised
 // TODO: move to some general utility class
 // Saves HBITMAP using encoder
 HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
@@ -337,35 +239,26 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 				if (factory->CreateImageEncoderToFile(&encoderClassId, filename, &imageEncoder) == S_OK) {
 					IImageSink* imageSink = NULL;
 					res = imageEncoder->GetEncodeSink(&imageSink);
+					
 					if (res != S_OK) {
 						CoUninitialize();
 						return res;
 					}
+
 					BITMAP bm;
 					GetObject (handle, sizeof(BITMAP), &bm);
-
-					ImageInfo* imageInfo = new ImageInfo();
-					imageInfo->Width = bm.bmWidth;
-					imageInfo->Height = bm.bmHeight;
-					imageInfo->RawDataFormat = IMGFMT_MEMORYBMP; //ImageFormatMemoryBMP;
-					imageInfo->Flags |= SinkFlagsTopDown | SinkFlagsFullWidth;
-					// Get pixel format from hBitmap
 					PixelFormatID pixelFormat;
-					int numColors = 0;
 					switch (bm.bmBitsPixel) {
 						case 1: {
 							pixelFormat = PixelFormat1bppIndexed;
-							numColors = 1;
 							break;
 						}
 						case 4: {
 							pixelFormat = PixelFormat4bppIndexed;
-							numColors = 16;
 							break;
 						}
 						case 8: {
 							pixelFormat = PixelFormat8bppIndexed;
-							numColors = 256;
 							break;
 						}
 						case 24: {
@@ -374,74 +267,37 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 						}
 						default: {
 							pixelFormat = PixelFormat32bppARGB;
-							numColors = 3; // according to MSDN 16 and 32 bpp numColors should be 3
 							break;
 						}
 					}
-					imageInfo->PixelFormat = pixelFormat;
-					if (pixelFormat == PixelFormat32bppARGB) imageInfo->Flags |= SinkFlagsHasAlpha;
-					res = imageSink->BeginSink(imageInfo, NULL);
-					if (res != S_OK) {
-						CoUninitialize();
-						return res;
-					}
-					ColorPalette* palette = NULL;
-					if (numColors > 0) {
-						palette = (ColorPalette*)malloc(sizeof(ColorPalette) + (numColors - 1) * sizeof(ARGB));
-						palette->Count = numColors;
-						for (int i=0; i<numColors; i++) {
-							int rgb = i*64;
-							int red = rgb & 0x00FF;
-							int green = (rgb >> 8) & 0x00FF;
-							int blue = (rgb >> 16) & 0x00FF;
-							palette->Entries[i] = MAKEARGB(0, red, green, blue);
-						}
-					} else {
-						palette = (ColorPalette*)malloc(sizeof(ColorPalette));
-						palette->Count = 0;
-						if (pixelFormat == PixelFormat32bppARGB) palette->Flags = PALFLAG_HASALPHA;
-					}
-					res = imageSink->SetPalette(palette);
-					if (res != S_OK) {
-						CoUninitialize();
-						return res;
-					}
-					
+							
 					BitmapData* bmData = new BitmapData();
 					bmData->Height = bm.bmHeight;
 					bmData->Width = bm.bmWidth;
 					bmData->Scan0 = bm.bmBits;
 					bmData->PixelFormat = pixelFormat;
 
-					UINT bitsPerLine = imageInfo->Width * bm.bmBitsPixel;
+					UINT bitsPerLine = bm.bmWidth * bm.bmBitsPixel;
 					UINT bitAlignment = sizeof(LONG) * 8;
 					UINT bitStride = bitAlignment * (bitsPerLine / bitAlignment);	// The image buffer is always padded to LONG boundaries
 					if ((bitsPerLine % bitAlignment) != 0) bitStride += bitAlignment; // Add a bit more for the leftover values
 					bmData->Stride = (bitStride / 8);
 
-					RECT rect;
-					rect.top = 0;
-					rect.bottom = bm.bmHeight;
-					rect.left = 0;
-					rect.right = bm.bmWidth;
-
-					res = imageSink->PushPixelData(&rect, bmData, TRUE);
+					IBitmapImage* pBitmap;
+					factory->CreateBitmapFromBuffer(bmData, &pBitmap);
+					IImage* pImage;
+					pBitmap->QueryInterface(IID_IImage, (void**)&pImage); 
+					res = pImage->PushIntoSink(imageSink);
 					if (res != S_OK) {
 						CoUninitialize();
 						return res;
 					}
-
-					res = imageSink->EndSink(S_OK);
-					if (res != S_OK) {
-						CoUninitialize();
-						return res;
-					}
+					
+					pBitmap->Release();
+					pImage->Release();
 					imageSink->Release();
-					res = imageEncoder->TerminateEncoder();
-					if (res != S_OK) {
-						CoUninitialize();
-						return res;
-					}
+					imageEncoder->TerminateEncoder();
+					imageEncoder->Release();
 				}
 			}
 		}
