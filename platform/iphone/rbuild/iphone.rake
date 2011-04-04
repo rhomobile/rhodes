@@ -620,10 +620,38 @@ namespace "run" do
       puts "Agg Failed: #{$failed}"
       exit $failed.to_i
     end
-
-
   end
 
+   #<<<<<<<<<
+  task :get_log => ["config:iphone"] do
+      puts $simapppath
+      $sdkver = $emulator_version.to_s unless $emulator_version.nil?
+      
+      simapp = File.join($simdir, $sdkver, "Applications")
+      
+     Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
+         need_rm = true if File.directory? simapppath
+         if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
+             name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
+             puts "found app name: #{name}"
+             guid = File.basename(simapppath)
+             puts "found guid: #{guid}"
+             if name == $app_config['name']
+                 $guid = guid
+                 need_rm = false
+             end
+         end
+         rm_rf simapppath if need_rm
+         rm_rf simapppath + ".sb" if need_rm
+     end
+      
+     simapp = File.join($simdir, $emulator_version, "Applications")
+       
+     rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+     
+     puts "log_file=" + rholog
+  end 
+ 
   task :buildsim => ["config:iphone", "build:iphone:rhodes"] do
     
      unless $sdk =~ /^iphonesimulator/
@@ -741,6 +769,7 @@ namespace "run" do
              `ln -f -s "#{simlink}/#{f}" "#{$simrhodes}/Library/Preferences/#{f}"`
          end
 
+#>>>>>>>>>>
         `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
         rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
 
