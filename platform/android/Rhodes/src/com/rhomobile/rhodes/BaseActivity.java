@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Display;
 
 public class BaseActivity extends Activity implements ServiceConnection {
 	
@@ -21,6 +22,27 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	
 	protected RhodesService mRhodesService;
 	private boolean mBoundToService;
+	private int mRuntimeOrientation;
+
+	protected int getScreenOrientation() {
+	    Display display = getWindowManager().getDefaultDisplay();
+	    int orientation = display.getOrientation();
+
+	    if (orientation == Configuration.ORIENTATION_UNDEFINED)
+	    {
+	        orientation = getResources().getConfiguration().orientation;
+
+	        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
+	            if (display.getWidth() == display.getHeight())
+	                orientation = Configuration.ORIENTATION_SQUARE;
+	            else if(display.getWidth() < display.getHeight())
+	                orientation = Configuration.ORIENTATION_PORTRAIT;
+	            else
+	                orientation = Configuration.ORIENTATION_LANDSCAPE;
+	        }
+	    }
+	    return orientation;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +55,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
 			throw new RuntimeException("Can not start Rhodes service");
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 		mBoundToService = true;
+		
+		mRuntimeOrientation = this.getScreenOrientation();
 	}
 	
 	@Override
@@ -59,8 +83,17 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		Logger.T(TAG, "+++ onConfigurationChanged");
-		super.onConfigurationChanged(newConfig);
-		RhodesService.getInstance().rereadScreenProperties();
+		if (RhoConf.getBool("disable_screen_rotation"))
+		{
+			super.onConfigurationChanged(newConfig);
+			this.setRequestedOrientation(mRuntimeOrientation);
+		}
+		else
+		{
+			mRuntimeOrientation = this.getScreenOrientation();
+			super.onConfigurationChanged(newConfig);
+			RhodesService.getInstance().rereadScreenProperties();
+		}
 	}
 	
 	public RhodesApplication getRhodesApplication() {
