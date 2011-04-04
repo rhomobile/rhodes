@@ -1355,40 +1355,62 @@ def application_running(flag, pkgname)
   false
 end
 
+def kill_adb_and_emulator
+  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+    # Windows
+    `taskkill /F /IM adb.exe`
+    `taskkill /F /IM emulator.exe`
+  else
+    `killall -9 adb`
+    `killall -9 emulator`
+  end
+end
+
+def logcat(device_flag = '-e', log_path = $applog_path)
+  if !$applog_file.nil?
+    Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
+  end
+end
+
 namespace "run" do
   namespace "android" do
     
     task :spec => ["device:android:debug"] do
-        run_emulator :hidden => true
-        do_uninstall('-e')
-        
-        log_name  = $app_path + '/RhoLog.txt'
+
+        log_name  = $app_path + '/RhoLogSpec.txt'
         File.delete(log_name) if File.exist?(log_name)
+
+	device_flag = '-e'
+
+        #run_emulator :hidden => true
+        do_uninstall(device_flag)
         
         # Failsafe to prevent eternal hangs
         Thread.new {
           sleep 1000
-
-          if RUBY_PLATFORM =~ /windows|cygwin|mingw/
-            # Windows
-            `taskkill /F /IM adb.exe`
-            `taskkill /F /IM emulator.exe`
-          else
-            `killall -9 adb`
-            `killall -9 emulator`
-          end
+          kill_adb_and_emulator
         }
 
-        load_app_and_run
+        load_app_and_run(device_flag)
+        logcat(device_flag, log_name)
 
         Jake.before_run_spec
         start = Time.now
+
+        puts "waiting for application"
+
+	for i in 0..60
+            if application_running(device_flag, $app_package_name)
+		break
+            else
+                sleep(1)
+            end
+        end
 
         puts "waiting for log"
         
         for i in 0..60
 			if !File.exist?(log_name)
-				get_app_log($appname, false, true)
 				sleep(1)
 			else
 				break
@@ -1399,7 +1421,6 @@ namespace "run" do
         
         end_spec = false
         while !end_spec do
-            get_app_log($appname, false, true)
             io = File.new(log_name, "r")
         
             io.each do |line|
@@ -1410,21 +1431,15 @@ namespace "run" do
             end
             io.close
             
-            break unless application_running('-e', $app_package_name)
+            break unless application_running(device_flag, $app_package_name)
             sleep(5) unless end_spec
         end
 
         Jake.process_spec_results(start)        
         
         # stop app
-        if RUBY_PLATFORM =~ /windows|cygwin|mingw/
-          # Windows
-          `taskkill /F /IM adb.exe`
-          `taskkill /F /IM emulator.exe`
-        else
-          `killall -9 adb`
-          `killall -9 emulator`
-        end
+        do_uninstall(device_flag)
+        kill_adb
 
         $stdout.flush
         
@@ -1540,13 +1555,13 @@ namespace "run" do
       $stdout.flush
     end
     
-    def  load_app_and_run
-      puts "Loading package into emulator"
+    def  load_app_and_run(device_flag = '-e')
+      puts "Loading package"
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
       count = 0
       done = false
       while count < 20
-        f = Jake.run2($adb, ["-e", "install", "-r", apkfile], {:nowait => true})
+        f = Jake.run2($adb, [device_flag, "install", "-r", apkfile], {:nowait => true})
         theoutput = ""
         while c = f.getc
           $stdout.putc c
@@ -1567,7 +1582,7 @@ namespace "run" do
       end
 
       puts "Loading complete, starting application.." if done
-      run_application("-e") if done
+      run_application(device_flag) if done
     end
 
     desc "build and install on device"
