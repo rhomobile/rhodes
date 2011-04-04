@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/net.rim.ejde.BlackBerryVMInstallType/BlackBerry JRE 5.0.0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/RubyVM"/>
+	<classpathentry exported="true" kind="lib" path="RhoBundle.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Hsqldb"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
