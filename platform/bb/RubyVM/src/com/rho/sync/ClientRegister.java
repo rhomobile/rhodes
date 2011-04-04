@@ -119,7 +119,7 @@ public class ClientRegister extends RhoThread
 			return false;
     	
 		IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT token,token_sent from client_info");
-        if ( !res.isOneEnd() ) {
+        if ( !res.isEnd() ) {
 			String token = res.getStringByIdx(0); 
 			int token_sent = res.getIntByIdx(1);
 			if ( m_strDevicePin.equals(token) && token_sent > 0 ) 

@@ -5,6 +5,7 @@ public interface IDBStorage {
 	public abstract void open(String strPath, String strSqlScript, String strEncryptionInfo)throws DBException;
 	public abstract void close()throws DBException;
 	
+	public abstract IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique, boolean bNoCopy)throws DBException;
 	public abstract IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)throws DBException;
 	
 	public abstract void executeBatchSQL(String strStatement)throws DBException;

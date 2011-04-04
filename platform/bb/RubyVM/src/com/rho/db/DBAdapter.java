@@ -81,6 +81,19 @@ public class DBAdapter extends RubyBasic
 			Unlock();
 		}			
 	}
+
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bNoCopy)throws DBException{
+		LOG.TRACE("executeSQL: " + strStatement);
+		IDBResult res = null;
+		Lock();
+		try{
+			res = m_dbStorage.executeSQL(strStatement,values,false, bNoCopy);
+		}finally
+		{
+			Unlock();
+		}
+		return res;
+	}
 	
 	public IDBResult executeSQL(String strStatement, Object[] values)throws DBException{
 		LOG.TRACE("executeSQL: " + strStatement);
@@ -513,7 +526,7 @@ public class DBAdapter extends RubyBasic
 					{
 						db.open( m_strDBPath, "", strEncryptionInfo );
 				    	IDBResult res = db.executeSQL("SELECT * FROM client_info", null, false);
-				    	if ( !res.isOneEnd() )
+				    	if ( !res.isEnd() )
 				    	{
 				    		m_strClientInfoInsert = createInsertStatement(res, "client_info");
 				    		m_dataClientInfo = res.getCurData();
@@ -611,7 +624,7 @@ public class DBAdapter extends RubyBasic
         	m_dbStorage.executeSQL(m_strClientInfoInsert, m_dataClientInfo, false );
         	
             IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
-            if ( !res.isOneEnd() &&  res.getStringByIdx(0).length() > 0 )
+            if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
             {
                 LOG.INFO("Set reset=1 in client_info");
                 executeSQL( "UPDATE client_info SET reset=1" );
@@ -820,7 +833,7 @@ public class DBAdapter extends RubyBasic
             IDBResult resSrc = executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) );
             boolean bSchemaSource = false;
             String strTableName = "object_values";
-            if ( !resSrc.isOneEnd() )
+            if ( !resSrc.isEnd() )
             {
                 bSchemaSource = resSrc.getStringByIdx(1).length() > 0;
                 if ( bSchemaSource )
@@ -877,11 +890,11 @@ public class DBAdapter extends RubyBasic
                 int nOldSrcID = ((Integer)arOldSrcs.elementAt(i)).intValue();
 
                 IDBResult res = executeSQL("SELECT name from sources WHERE source_id=?", nOldSrcID);
-                if ( !res.isOneEnd() )
+                if ( !res.isEnd() )
                 {
                     String strSrcName = res.getStringByIdx(0);
                     IDBResult res2 = db.executeSQL("SELECT source_id from sources WHERE name=?", strSrcName );
-                    if ( !res2.isOneEnd() )
+                    if ( !res2.isEnd() )
                     {
                         if ( nOldSrcID != res2.getIntByIdx(0) )
                         {
@@ -1036,21 +1049,30 @@ public class DBAdapter extends RubyBasic
 		    		}
 	    		}
 	    		
-	    		IDBResult rows = executeSQL( strSql, values);
-	    		RubyString[] colNames = null;
+	    		IDBResult rows = null;
 	    		
-	    		for( ; !rows.isEnd(); rows.next() )
+	    		try
 	    		{
-	    			RubyHash row = ObjectFactory.createHash();
-	    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
-	    			{
-	    				if ( colNames == null )
-	    					colNames = getOrigColNames(rows);
-	    				
-	    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
-	    			}
-	    			
-	    			res.add( row );
+		    		rows = executeSQL( strSql, values, true);
+		    		RubyString[] colNames = null;
+		    		
+		    		for( ; !rows.isEnd(); rows.next() )
+		    		{
+		    			RubyHash row = ObjectFactory.createHash();
+		    			for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
+		    			{
+		    				if ( colNames == null )
+		    					colNames = getOrigColNames(rows);
+		    				
+		    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
+		    			}
+		    			
+		    			res.add( row );
+		    		}
+	    		}finally
+	    		{
+	    			if ( rows != null )
+	    				rows.close();
 	    		}
     		}
 		}catch(Exception e)

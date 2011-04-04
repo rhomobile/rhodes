@@ -155,7 +155,12 @@ public class HsqlDBStorage implements IDBStorage, Session.IDBCallback
 		return new HsqlDBResult();
 	}
 
-	public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique)	throws DBException 
+	{
+		return executeSQL(strStatement, values, bReportNonUnique, false);
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique, boolean bNoCopy)
 			throws DBException {
 		
 		try {

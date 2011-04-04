@@ -196,10 +196,6 @@ public class HsqlDBResult implements IDBResult
     {
     	return m_current == null;
     }
-    public boolean isOneEnd()
-    {
-    	return m_current == null;
-    }
     
     public void next() throws DBException
     {
@@ -261,7 +257,7 @@ public class HsqlDBResult implements IDBResult
         case Types.LONGVARCHAR :
         case Types.CHAR :
         case Types.VARCHAR_IGNORECASE :
-        	return ObjectFactory.createString((String)val);
+        	return ObjectFactory.createString(/*(String)*/val.toString());
         	
         case Types.TINYINT :
         case Types.SMALLINT :

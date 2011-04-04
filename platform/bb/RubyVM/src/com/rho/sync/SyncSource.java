@@ -164,7 +164,7 @@ public class SyncSource
         m_nErrCode = RhoAppAdapter.ERR_NONE;
 
         IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
-        if ( !res.isOneEnd() )
+        if ( !res.isEnd() )
         {
         	m_token = res.getLongByIdx(0);
             m_bTokenFromDB = true;
@@ -256,7 +256,7 @@ public class SyncSource
 	        boolean bSyncClient = false;
 	        {
 	            IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", getID());
-	            bSyncClient = !res.isOneEnd();
+	            bSyncClient = !res.isEnd();
 	        }
 	        if ( bSyncClient )
 	        {
@@ -273,7 +273,7 @@ public class SyncSource
 	boolean isPendingClientChanges()throws DBException
 	{
 	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
-	    return !res.isOneEnd();
+	    return !res.isEnd();
 	}
 
 	void doSyncClientChanges()throws Exception
@@ -891,7 +891,7 @@ public class SyncSource
 	        //Remove item if all nulls
 	        String strSelect = "SELECT * FROM " + getName() + " WHERE object=?";
 	        IDBResult res = getDB().executeSQL( strSelect, strObject );
-	        if ( !res.isOneEnd() )
+	        if ( !res.isEnd() )
 	        {
 	            boolean bAllNulls = true;
 	            for( int i = 0; i < res.getColCount(); i ++)
@@ -952,7 +952,7 @@ public class SyncSource
 	        {
 	            String strSelect = "SELECT " + oAttrValue.m_strAttrib + " FROM " + getName() + " WHERE object=?";
 	            IDBResult res = getDB().executeSQL( strSelect, strObject);
-	            if (!res.isOneEnd())
+	            if (!res.isEnd())
 	            {
 	                strDbValue = res.getStringByIdx(0);
 	                bDownload = strDbValue == null || strDbValue.length() == 0;
@@ -962,7 +962,7 @@ public class SyncSource
 	            IDBResult res = getDB().executeSQL(
 	                "SELECT value FROM object_values WHERE object=? and attrib=? and source_id=?",
 	                strObject, oAttrValue.m_strAttrib, getID() );
-	            if (!res.isOneEnd())
+	            if (!res.isEnd())
 	            {
 	                strDbValue = res.getStringByIdx(0);
 	                bDownload = strDbValue == null || strDbValue.length() == 0;

@@ -204,7 +204,7 @@ implements RowOutputInterface {
                 case Types.VARCHAR :
                 case Types.VARCHAR_IGNORECASE :
                 case Types.LONGVARCHAR :
-                    writeChar((String) o, t);
+                    writeChar(/*(String)*/ o.toString(), t);
                     break;
 
                 case Types.TINYINT :
