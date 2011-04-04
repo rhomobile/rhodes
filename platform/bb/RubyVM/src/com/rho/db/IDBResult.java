@@ -22,7 +22,6 @@ public interface IDBResult {
 	
 	//New
     public abstract boolean isEnd();
-    public abstract boolean isOneEnd() throws DBException;
     public abstract void next() throws DBException;
 	public abstract String getStringByIdx(int nCol);
 	public abstract int getIntByIdx(int nCol);

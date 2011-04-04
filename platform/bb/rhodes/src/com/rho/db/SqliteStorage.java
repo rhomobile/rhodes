@@ -70,8 +70,18 @@ public class SqliteStorage implements IDBStorage
 		
 	}
 
+	IDBResult executeSQL(String strStatement, Object[] values) throws DBException 
+	{
+		return executeSQL(strStatement, values, false, false); 
+	}
+	
+	public IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique) throws DBException 
+	{
+		return executeSQL(strStatement, values, bReportNonUnique, false); 
+	}
+	
 	public IDBResult executeSQL(String strStatement, Object[] values,
-			boolean bReportNonUnique) throws DBException 
+			boolean bReportNonUnique, boolean bNoCopy) throws DBException 
 	{
 		//LOG.INFO(strStatement);// + "; Values: " + values);
 		
@@ -132,7 +142,7 @@ public class SqliteStorage implements IDBStorage
 					{
 		                if ( res == null )
 		                {
-		                	res = new SqliteResult(st, bCachedStatement);
+		                	res = new SqliteResult(st, bCachedStatement, bNoCopy);
 		                	bDontCloseStatement = true;
 		                }
 					}else
@@ -161,7 +171,7 @@ public class SqliteStorage implements IDBStorage
 						}
 						
 	                	if ( res == null )
-	                		res = new SqliteResult(null, false);
+	                		res = new SqliteResult(null, false, false);
 					}
 					
 				}finally
@@ -194,7 +204,7 @@ public class SqliteStorage implements IDBStorage
 	public boolean isTableExists(String strName)throws DBException
 	{
 		Object vals[] = {strName};
-		IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table' AND name=?", vals, false );
+		IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table' AND name=?", vals );
 		boolean bRes = !res.isEnd();
 		res.close();
 		
@@ -203,7 +213,7 @@ public class SqliteStorage implements IDBStorage
 	
 	public String[] getAllTableNames() throws DBException 
 	{
-		IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null ,false );
+		IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null );
 		
 		Vector arTables = new Vector();
 	    for ( ; !res.isEnd(); res.next() )
@@ -237,7 +247,7 @@ public class SqliteStorage implements IDBStorage
 	
 	public void executeBatchSQL(String strSqlScript)throws DBException
 	{
-		executeSQL(strSqlScript, null, false);
+		executeSQL(strSqlScript, null);
 	}
 	
 	public static void OnInsertObjectRecord(Object NEW_source_id, Object NEW_attrib )
@@ -401,7 +411,7 @@ public class SqliteStorage implements IDBStorage
 		}*/
 		
 		{
-			IDBResult rows2Delete = executeSQL("SELECT * FROM object_attribs_to_delete", null, false);
+			IDBResult rows2Delete = executeSQL("SELECT * FROM object_attribs_to_delete", null);
 			if ( rows2Delete == null || rows2Delete.isEnd() )
 			{
 				if (rows2Delete != null)
@@ -412,7 +422,7 @@ public class SqliteStorage implements IDBStorage
 				
 				m_nInsideTransaction++;
 				try{
-					executeSQL("DELETE FROM object_attribs_to_delete", null, false);
+					executeSQL("DELETE FROM object_attribs_to_delete", null);
 				}finally
 				{
 					m_nInsideTransaction--;
@@ -421,7 +431,7 @@ public class SqliteStorage implements IDBStorage
 		}
 		
 		{
-			IDBResult rows2Update = executeSQL("SELECT * FROM object_attribs_to_update", null, false);
+			IDBResult rows2Update = executeSQL("SELECT * FROM object_attribs_to_update", null);
 			if ( rows2Update == null || rows2Update.isEnd() )
 			{
 				if (rows2Update != null)
@@ -433,7 +443,7 @@ public class SqliteStorage implements IDBStorage
 				
 				m_nInsideTransaction++;
 				try{
-					executeSQL("DELETE FROM object_attribs_to_update", null, false);
+					executeSQL("DELETE FROM object_attribs_to_update", null);
 				}finally
 				{
 					m_nInsideTransaction--;

@@ -32,7 +32,7 @@ public class SqliteResult implements IDBResult
 		return m_bNonUnique;
 	}
 	
-	SqliteResult( Statement st, boolean bCachedStatement )throws DatabaseException
+	SqliteResult( Statement st, boolean bCachedStatement, boolean bNoCopy )throws DatabaseException, DBException
 	{
 		m_st = st;
 		m_bCachedStatement = bCachedStatement;
@@ -42,7 +42,14 @@ public class SqliteResult implements IDBResult
 			if ( m_cursor == null )
 				close();
 			else
+			{
 				reset();
+				if (!bNoCopy)
+				{
+					m_resCopy = new SqliteCopyResult(this);
+					close();					
+				}
+			}
 		}
 	}
 	
@@ -86,36 +93,19 @@ public class SqliteResult implements IDBResult
 	
 	public boolean isEnd() 
 	{
-		if ( m_row == null )
-		{
-			close();
-			return true;
-		}
+		if ( m_resCopy != null )
+			return m_resCopy.isEnd();
 		
 		return m_row == null;
 	}
 
-	public boolean isOneEnd() throws DBException 
-	{
-		if ( m_row == null )
-		{
-			close();
-			return true;
-		}
-		
-		if (m_resCopy == null )
-		{
-			m_resCopy = new SqliteCopyResult(this);
-			close();
-		}
-		
-		return false;
-	}
-	
 	public void next() throws DBException
 	{
 		if ( m_resCopy != null )
+		{
 			m_resCopy.next();
+			return;
+		}
 		
 		try
 		{
