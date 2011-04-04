@@ -44,9 +44,7 @@ public:
 	HRESULT takeSignature(HWND hwndOwner,LPTSTR pszFilename,LPCTSTR szFormat);
 
 private:
-	HRESULT saveInkOverlay(LPTSTR pszFilename,LPCTSTR szFormat);
 	HBITMAP getScreenHBITMAP();
-	HRESULT saveScreen(LPTSTR pszFilename,LPCTSTR szFormat);
 private:
 	CRhoTakeSignatureDlg dlg;
 };
