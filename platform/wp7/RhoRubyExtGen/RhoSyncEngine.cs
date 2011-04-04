@@ -34,6 +34,13 @@ namespace rho.rubyext
             return null;
         }
 
+        [RubyMethod("dosearch", RubyMethodAttributes.PublicSingleton)]
+        public static object dosearch(RubyModule/*!*/ self, [NotNull]RubyArray/*!*/ arSources, [NotNull]String/*!*/ from, [NotNull]String/*!*/ strParams,
+            [NotNull]bool/*!*/ bSearchSyncChanges, [NotNull]int/*!*/ nProgressStep, [NotNull]String/*!*/ strCallback, [NotNull]String/*!*/ strCallbackParams )
+        {
+            return null;
+        }
+
         [RubyMethod("logged_in", RubyMethodAttributes.PublicSingleton)]
         public static int logged_in(RubyModule/*!*/ self)
         {
@@ -107,6 +114,10 @@ namespace rho.rubyext
         public static void add_objectnotify(RubyModule/*!*/ self, [NotNull]int/*!*/ srcID,  [NotNull]string/*!*/ obj)
         {
         }
-        
+
+        [RubyMethod("clean_objectnotify", RubyMethodAttributes.PublicSingleton)]
+        public static void clean_objectnotify(RubyModule/*!*/ self)
+        {
+        }        
     }
 }
