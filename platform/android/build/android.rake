@@ -191,7 +191,12 @@ def set_app_name_android(newname)
     p.call manifest
   end
 
-  File.open($appmanifest, "w") { |f| doc.write f, 2 }
+  puts 'save updated application manifest'
+  app_f = File.open($appmanifest, "w")
+  doc.write app_f, 2
+  app_f.close
+
+  #File.open($appmanifest, "w") { |f| doc.write f, 2 }
 
   buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport #{$app_package_name}.R;\n")
   File.open($app_android_r,"w") { |f| f.write(buf) }
@@ -1043,6 +1048,76 @@ namespace "build" do
         puts 'ext_build.files not found - no additional java files for compilation'
       end
 
+      ext_manifest = File.join($extensionsdir, "AndroidManifest.xml")
+      if File.exists? ext_manifest
+        puts 'AndroidManifest.xml from native extension found !'
+
+        #tappmanifest = $appmanifest + '_tmp'
+        
+        #cp_r $appmanifest,tappmanifest
+
+        app_f = File.new($appmanifest)
+        manifest_orig_doc = REXML::Document.new(app_f)
+        app_f.close
+
+        manifest_ext_doc = REXML::Document.new(File.new(ext_manifest))
+        
+        src_manifest =  manifest_ext_doc.elements["manifest"]
+        dst_manifest =  manifest_orig_doc.elements["manifest"]
+        
+
+        src_application =  manifest_ext_doc.elements["manifest/application"]              
+        dst_application =  manifest_orig_doc.elements["manifest/application"]
+
+        if src_application != nil
+            puts 'Extension Manifest process application item :'
+            src_application.elements.each do |e|
+                  puts '         add item ['+e.xpath+']' 
+                  dst_application.add e
+            end
+        end
+        
+        puts 'Extension Manifest process root <manifest> item :'
+        src_manifest.elements.each do |e|
+            p = e.xpath
+            if p != '/manifest/application'
+                  dst_e = manifest_orig_doc.elements[p]
+                  if dst_e != nil
+                        if p == '/manifest/uses-sdk' 
+                            puts '         found and delete original item ['+p+']' 
+                            manifest_orig_doc.elements.delete p
+                        end
+                  end
+                  puts '         and new item ['+p+']' 
+                  dst_manifest.add e
+            end
+        end  
+
+        #puts 'Result Manifest :'
+        #manifest_orig_doc.elements['manifest'].elements.each do |e|
+        #   puts '     + '+e.xpath
+        #   if e.xpath == '/manifest/application'
+        #       manifest_orig_doc.elements['manifest/application'].elements.each do |t|
+        #             puts '              + '+t.xpath
+        #       end
+        #   end
+        #end
+
+        puts 'delete original manifest'
+        File.delete($appmanifest)
+
+        updated_f = File.open($appmanifest, "w") 
+        manifest_orig_doc.write updated_f, 2
+        updated_f.close
+
+        #rm tappmanifest
+        puts 'Manifest updated by extension saved!'
+        
+
+      else
+        puts 'AndroidManifest.xml from native extension not found - no any changes in main AndroidManifest.xml'
+      end
+
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
@@ -1122,7 +1197,8 @@ namespace "package" do
 
     puts "Packaging Assets and Jars"
 
-    set_app_name_android($appname)
+    # this task already caaled during build "build:android:all"
+    #set_app_name_android($appname)
 
     args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
     puts Jake.run($aapt, args)
