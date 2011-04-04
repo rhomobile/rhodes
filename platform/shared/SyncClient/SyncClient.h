@@ -39,7 +39,8 @@ void rho_syncclient_initmodel(RHOM_MODEL* model);
 void rho_syncclient_init(RHOM_MODEL* pModels, int nModels);
 void rho_syncclient_destroy();
 void rho_syncclient_database_full_reset_and_logout();
-void rho_syncclient_database_full_reset();
+void rho_syncclient_database_fullclient_reset_and_logout();
+void rho_syncclient_database_full_reset(bool bClientReset);
 	
 void rho_syncclient_parsenotify(const char* msg, RHO_SYNC_NOTIFY* pNotify);
 void rho_syncclient_free_syncnotify(RHO_SYNC_NOTIFY* pNotify);

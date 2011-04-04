@@ -11,6 +11,11 @@ module Rho
     RHO.get_instance().get_app('app')
   end
 
+  def self.support_transitions?()
+	is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/)
+    System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || is_bb6
+  end
+
   class RHO
     APPLICATIONS = {}
     APPNAME = 'app'

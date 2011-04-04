@@ -129,10 +129,16 @@ void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
 void rho_syncclient_database_full_reset_and_logout()
 {
     rho_sync_logout();
-	rho_syncclient_database_full_reset();
+	rho_syncclient_database_full_reset(false);
+}
+
+void rho_syncclient_database_fullclient_reset_and_logout()
+{
+	rho_sync_logout();
+	rho_syncclient_database_full_reset(true);
 }
 	
-void rho_syncclient_database_full_reset()
+void rho_syncclient_database_full_reset(bool bClientReset)
 {
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
     oUserDB.executeSQL("UPDATE client_info SET reset=1");
@@ -144,7 +150,8 @@ void rho_syncclient_database_full_reset()
 
     Vector<String> arExclude;
     arExclude.addElement("sources");
-    arExclude.addElement("client_info");
+	if (!bClientReset)
+		arExclude.addElement("client_info");
 
     Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
     for( int i = 0; i < (int)arPartNames.size(); i++ )
@@ -212,7 +219,7 @@ void db_insert_into_table( db::CDBAdapter& db, const String& table, Hashtable<St
     db.executeSQLEx(query.c_str(), vals);
 }
 
-unsigned long rhom_make_object(rho::db::CDBResult& res1, int nSrcID, bool isSchemaSrc)
+unsigned long rhom_make_object(IDBResult& res1, int nSrcID, bool isSchemaSrc)
 {
     unsigned long item = 0;
     if ( res1.isEnd() )
@@ -279,7 +286,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 {
     String src_name = szModel;
 
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name) );
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -331,7 +338,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 		}
     }
 
-    IDBResult  res1 = db.executeSQLEx(sql.c_str(), arValues ) );
+    IDBResult  res1 = db.executeSQLEx(sql.c_str(), arValues );
 
     if ( nCount == 1 )
     {
@@ -823,7 +830,7 @@ namespace rho {
 		return String();
 	}
 	
-	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(net::INetResponse& resp)
+	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
 	{
 		if ( !resp.isResponseRecieved())
 			return ERR_NETWORK;
@@ -841,6 +848,11 @@ namespace rho {
 	{
 		
 	}
+
+	/*static*/ void  _CRhoAppAdapter::loadAllSyncSources()
+	{
+		
+	}
 	
     /*static*/ const char* _CRhoAppAdapter::getRhoDBVersion()
 	{
@@ -849,7 +861,7 @@ namespace rho {
 	
 	/*static*/ void _CRhoAppAdapter::resetDBOnSyncUserChanged()
 	{
-		rho_syncclient_database_full_reset();
+		rho_syncclient_database_full_reset(false);
 	}	
 }
 
