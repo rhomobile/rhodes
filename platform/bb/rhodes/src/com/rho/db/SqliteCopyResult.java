@@ -34,10 +34,6 @@ public class SqliteCopyResult// implements IDBResult
 	{
 		return m_nCurPos >= m_arRows.size(); 
 	}
-	public boolean isOneEnd() throws DBException
-	{
-		return isEnd();
-	}
 	
 	public void next() throws DBException
 	{

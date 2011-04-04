@@ -265,7 +265,7 @@ public class RowOutputBinary extends RowOutputBase {
                     case Types.VARCHAR_IGNORECASE :
                     case Types.LONGVARCHAR :
                         s += 4;
-                        s += StringConverter.getUTFSize((String) o);
+                        s += StringConverter.getUTFSize(o.toString());//(String) o);
                         break;
 
                     case Types.TINYINT :
