@@ -1062,7 +1062,7 @@ module Rhom
                 end
               
                 def find_by_sql(sql_query)
-                    raise ArgumentError, 'find_by_sql works only with schema models' if !is_schema_source
+                    raise ArgumentError, 'find_by_sql only works with FixedSchema models' if !is_schema_source
                     
                     db = ::Rho::RHO.get_src_db(get_source_name)
                     list = db.execute_sql(sql_query)
