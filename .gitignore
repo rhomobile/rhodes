@@ -61,15 +61,15 @@ platform/bb/**/bin/*
 platform/bb/target/*
 platform/bb/build/LogFile.txt
 platform/bb/*/.settings
-platform/bb/*/.project
-platform/bb/*/.classpath
+#platform/bb/*/.project
+#platform/bb/*/.classpath
 *.err
 platform/bb/.BB.jdw/*.files
 *.jad
 platform/bb/build/rholog.txt
 platform/bb/preverified
 platform/bb/build/MANIFEST.MF
-platform/bb/*/BlackBerry_App_Descriptor.xml
+#platform/bb/*/BlackBerry_App_Descriptor.xml
 platform/bb/*/deliverables
 
 platform/symbian/.metadata/*

@@ -387,8 +387,8 @@ namespace "build" do
     end
     
     task :devrhobundle => [:set_dev_outname,:rhobundle] do
-      cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
-	  #cp $preverified + "/RhoBundle.jar", "platform/bb/Rhodes/RhoBundle.jar"
+      #cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
+	  cp $preverified + "/RhoBundle.jar", "platform/bb/Rhodes/RhoBundle.jar"
       
       sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes"
       
