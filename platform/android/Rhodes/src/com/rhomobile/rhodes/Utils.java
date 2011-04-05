@@ -103,8 +103,8 @@ public class Utils {
 				    deleteRecursively(f);
 				else if ( !f.getName().startsWith(strIgnore))    
 				{
-		            if (!target.delete())
-			            throw new IOException("Can not delete " + target.getAbsolutePath());
+		            if (!f.delete())
+			            throw new IOException("Can not delete " + f.getAbsolutePath());
 				}
 			}
 		}
