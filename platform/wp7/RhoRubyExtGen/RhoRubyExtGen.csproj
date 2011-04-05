@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RhoJSON.cs" />
+    <Compile Include="RhoNativeBar.cs" />
     <Compile Include="RhoSyncEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RhoDatabase.cs" />
