@@ -151,6 +151,10 @@ public class DateTimePickerScreen extends BaseActivity {
 	
 	private OnClickListener mOkListener = new OnClickListener() {
 		public void onClick(View arg0) {
+			//These force values from internal edit fields being parsed.
+			_datePicker.clearFocus();
+			_timePicker.clearFocus();
+			
 			_init.set(Calendar.YEAR, _datePicker.getYear());
 			_init.set(Calendar.MONTH, _datePicker.getMonth());
 			_init.set(Calendar.DAY_OF_MONTH, _datePicker.getDayOfMonth());
