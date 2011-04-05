@@ -545,33 +545,24 @@ The log.txt file is the extracted log and should appear on the `C:\` drive.
 
 ### Build rhodes from the source code using Eclipse
 
-You should have Blackberry Eclipse IDE installed.
+* You should have Blackberry Eclipse IDE installed.
+* Please make sure that there are no .metadata folder in rhodes\platform\bb folder.
+* Go to `<rhodescheckout>` and run:
 
-Please make sure that there are no .metadata folder in rhodes\platform\bb folder, check also that there are no .project and .classname files in any subfolders of `rhodes\platform\bb`.
-
-Run eclipse and choose rhodes\platform\bb as a workspace directory. Do not create workspace!
-
-Go to File\Import... menu. Select `Blackberry\Blackberry JDE` workspace node. Press Next. Browse for `rhodes\platform\bb\.BB.jdw\BB.jdw`. Press Finish. The project will be automatically build.
-
-Go to Window\Preferences menu. Select `Blackberry JDE\Installed` components node.
-
-Select JDE installation directory for your target device. Please note that Eclipse may not show all your installed JDE in the combobox, in this case press Browse button and choose desired JDE. 
-Eclipse for Blackberry has JDE in the `<Eclipse folder>\plug-ins\net.rim.eide.componentpack<version>`.
-
-Choose Java home directory for selected JDE : jdk1.6.0_2 for JDE 4.2 and above.
-
-Select MDS Simulator node and choose MDS from your JDE directory. Press OK.
-
-Workspace will be recreated. Choose Clean all projects in the dialog. Press OK. RubyVM project should be built, check `rhodes\platform\bb\RubyVM\RubyVM.jar`
-
-Go to `<rhodescheckout>` and run:
-
-	:::term
-	$ rake build:bb:rhobundle
-
-It should create `rhodes\platform\bb\RhoBundle\RhoBundle.jar`
-
-Return to Eclipse and select `Project\Clean...`, Clean all projects, press OK.
+	    $ rake build:bb:devrhobundle
+	
+* Run eclipse and choose rhodes\platform\bb as a workspace directory. Do not create workspace!
+* Open menu Window\Preferences
+    * Blackberry java plug-in\Warnings - check all 3 chekboxes to suppress all warnings
+    * Java\Compiler - set Compiler compliance level to 1.4
+* Go to File\Import... menu. Select `General\Existing projects into Workspace` workspace node. Press Next. 
+    * Browse for `<rhodes>\platform\bb\RubyVM`. Press Finish. The project will be automatically build.
+    * Browse for `<rhodes>\platform\bb\Hsqldb`. Press Finish. The project will be automatically build.
+    * Browse for `<rhodes>\platform\bb\Rhodes`. Press Finish. The project will be automatically build.
+* Go to Run\Debug Configurations - double click on Blackberry simulator
+    * select all projects in Projects tab
+    * got to Simulator tab, select Memory, check Use PC file system for SDCard files, add `Rho` to PC file system for SDCard files edit box
+    * Press Debug
 
 Congratulations! It is all done.
 
