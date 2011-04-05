@@ -10,9 +10,10 @@ namespace rho.rubyext
     [RubyModule("NativeBar")]
     public static class RhoNativeBar
     {
-        private static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         #region Private Implementation Details
+
+        private static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         #endregion
 
@@ -21,13 +22,18 @@ namespace rho.rubyext
         [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
         public static void Create(RubyModule/*!*/ self, int barType, RubyArray args)
         {
-
+            Object[] values = null;
+            if (args != null && args.Count > 0)
+            {
+                values = args.ToArray();
+                RhoRuby.createToolBar(barType, values);
+            }    
         }
 
         [RubyMethodAttribute("remove", RubyMethodAttributes.PublicSingleton)]
         public static void Remove(RubyModule/*!*/ self)
         {
-
+            RhoRuby.removeToolBar();
         }
 
         [RubyMethodAttribute("switch_tab", RubyMethodAttributes.PublicSingleton)]
@@ -87,7 +93,7 @@ namespace rho.rubyext
         [RubyMethodAttribute("native_tabbar_get_current_tab", RubyMethodAttributes.PublicSingleton)]
         public static void nativeTabBarGetCurrentTab(RubyModule/*!*/ self)
         {
-
+      
         }
 
         #endregion
