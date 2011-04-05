@@ -50,7 +50,7 @@ namespace Rhodes
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
-            RHODESAPP().Init(webBrowser1);
+            RHODESAPP().Init(webBrowser1, this);
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
