@@ -19,6 +19,7 @@ namespace rho.common
         private CRhodesApp() { }
 
         private WebBrowser m_webBrowser;
+        private PhoneApplicationPage m_appMainPage;
         private CHttpServer m_httpServer;
         int m_currentTabIndex = 0;
         String[] m_currentUrls = new String[5];
@@ -33,7 +34,7 @@ namespace rho.common
         public String getBlobsDirPath() { return m_strBlobsDirPath; }
         public String getHomeUrl() { return m_strHomeUrl; }
 
-        public void Init(WebBrowser browser)
+        public void Init(WebBrowser browser, PhoneApplicationPage appMainPage)
         {
             initAppUrls();
             RhoLogger.InitRhoLog();
@@ -42,9 +43,11 @@ namespace rho.common
             CRhoFile.recursiveCreateDir(CFilePath.join(getBlobsDirPath()," "));
 
             m_webBrowser = browser;
+            m_appMainPage = appMainPage;
+            m_appMainPage.ApplicationBar = null;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
             CRhoResourceMap.deployContent();
-            RhoRuby.Init(m_webBrowser);
+            RhoRuby.Init(m_webBrowser, m_appMainPage);
 
             DBAdapter.initAttrManager();
 

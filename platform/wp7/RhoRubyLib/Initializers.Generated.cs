@@ -264,6 +264,11 @@ namespace rho.rubyext {
         }
         
         private static void LoadWebView_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "current_location", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.currentLocation)
+            );
+            
             DefineLibraryMethod(module, "execute_js", 0x21, 
                 0x00000002U, 
                 new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.execute_js)
