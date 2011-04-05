@@ -26,6 +26,12 @@ namespace rho.rubyext
         {
         }
 
+        [RubyMethodAttribute("current_location", RubyMethodAttributes.PublicSingleton)]
+        public static String currentLocation(RubyModule/*!*/ self)
+        {
+            return null;
+        }
+
         #endregion
     }
 }
