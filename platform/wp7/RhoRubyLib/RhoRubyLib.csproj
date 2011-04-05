@@ -106,6 +106,7 @@
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoJSON.cs" />
+    <Compile Include="rubyext\RhoNativeBar.cs" />
     <Compile Include="rubyext\RhoSyncEngine.cs" />
     <Compile Include="rubyext\RhoWebView.cs" />
     <Compile Include="json\JSONStructIterator.cs" />
