@@ -4,6 +4,7 @@ using IronRuby.Runtime;
 using IronRuby.Builtins;
 using System;
 using System.Runtime.InteropServices;
+using rho.common;
 
 namespace rho.rubyext
 {
@@ -11,6 +12,7 @@ namespace rho.rubyext
     public static class RhoWebView
     {
         private static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
+        private static CRhodesApp RhodesApp { get { return CRhodesApp.Instance; } }
 
         #region Private Implementation Details
 
@@ -28,6 +30,12 @@ namespace rho.rubyext
         public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript)
         {
             RhoRuby.WebBrowser.InvokeScript(strScript);
+        }
+
+        [RubyMethodAttribute("current_location", RubyMethodAttributes.PublicSingleton)]
+        public static String currentLocation(RubyModule/*!*/ self)
+        {
+            return RhodesApp.getCurrentUrl(0);   
         }
 
         #endregion
