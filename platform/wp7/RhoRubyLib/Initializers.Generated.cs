@@ -26,6 +26,7 @@ namespace rho.rubyext {
             IronRuby.Builtins.RubyClass classRef0 = GetClass(typeof(System.Object));
             
             
+            DefineGlobalModule("NativeBar", typeof(rho.rubyext.RhoNativeBar), 0x00000008, null, LoadNativeBar_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def1 = DefineGlobalModule("Rho", typeof(rho.rubyext.Rho), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def2 = DefineModule("Rho::JSON", typeof(rho.rubyext.Rho.RhoJSON), 0x00000008, null, LoadRho__JSON_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def3 = DefineGlobalModule("SQLite3", typeof(rho.rubyext.RhoSQLite3), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
@@ -36,6 +37,69 @@ namespace rho.rubyext {
             DefineGlobalModule("WebView", typeof(rho.rubyext.RhoWebView), 0x00000008, null, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             SetConstant(def1, "JSON", def2);
             SetConstant(def3, "Database", def4);
+        }
+        
+        private static void LoadNativeBar_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "create", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.Create)
+            );
+            
+            DefineLibraryMethod(module, "create_native_tabbar", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.createNativeTabBar)
+            );
+            
+            DefineLibraryMethod(module, "create_native_toolbar", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.createNativeToolBar)
+            );
+            
+            DefineLibraryMethod(module, "native_tabbar_get_current_tab", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoNativeBar.nativeTabBarGetCurrentTab)
+            );
+            
+            DefineLibraryMethod(module, "native_tabbar_set_tab_badge", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.MutableString>(rho.rubyext.RhoNativeBar.nativeTabBarSetTabBadge)
+            );
+            
+            DefineLibraryMethod(module, "native_tabbar_switch_tab", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoNativeBar.nativeTabBarSwitchTab)
+            );
+            
+            DefineLibraryMethod(module, "remove", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoNativeBar.Remove)
+            );
+            
+            DefineLibraryMethod(module, "remove_native_tabbar", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoNativeBar.removeNativeTabBar)
+            );
+            
+            DefineLibraryMethod(module, "remove_native_toolbar", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoNativeBar.removeNativeToolBar)
+            );
+            
+            DefineLibraryMethod(module, "set_tab_badge", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.MutableString>(rho.rubyext.RhoNativeBar.setTabBadge)
+            );
+            
+            DefineLibraryMethod(module, "started", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.Boolean>(rho.rubyext.RhoNativeBar.isStarted)
+            );
+            
+            DefineLibraryMethod(module, "switch_tab", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoNativeBar.switchTab)
+            );
+            
         }
         
         private static void LoadRho__JSON_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
