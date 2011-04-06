@@ -1,0 +1,12 @@
+#!/bin/sh
+
+
+if [ "$RHO_PLATFORM" = "android" ]; then
+
+cd nfc/platform/android
+rake --trace
+
+fi
+
+
+
