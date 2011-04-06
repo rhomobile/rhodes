@@ -1121,11 +1121,65 @@ module Rhom
                   SyncEngine.clear_notification(get_source_id.to_i)
                 end
 
+                def on_sync_delete_error( objects, action )
+                    raise ArgumentError, 'on_sync_delete_error action should be :retry' unless action == :retry
+                    return  unless is_sync_source()
+
+                    nSrcID = get_source_id()
+                    db_partition = Rho::RhoConfig.sources[get_source_name]['partition'].to_s
+                    
+                    db = ::Rho::RHO.get_src_db(get_source_name)                            
+                    db.start_transaction
+                    
+                    objects.each do |obj, values|
+                      values['attributes'].each do |attrib, value|
+                      
+                          resUpdateType =  db.select_from_table('changed_values', 'update_type', 
+                            {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
+                          next if resUpdateType && resUpdateType.length > 0 
+                      
+                          attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                          db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
+                            "value"=>value, "update_type"=>'delete', "attrib_type"=>attrib_type })
+                      end      
+                    end
+                end
+
+                def on_sync_update_error( objects, action )
+                    raise ArgumentError, 'on_sync_update_error action should be :retry' unless action == :retry
+                    return  unless is_sync_source()
+
+                    nSrcID = get_source_id()
+                    db_partition = Rho::RhoConfig.sources[get_source_name]['partition'].to_s
+                    
+                    db = ::Rho::RHO.get_src_db(get_source_name)                            
+                    db.start_transaction
+                    
+                    objects.each do |obj, values|
+                      values['attributes'].each do |attrib, value|
+                      
+                          resUpdateType =  db.select_from_table('changed_values', 'update_type', 
+                            {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
+                          next if resUpdateType && resUpdateType.length > 0 
+                      
+                          attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                          db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
+                            "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
+                      end      
+                    end
+                end
+                
                 def on_sync_create_error( objects, action )
-                    raise ArgumentError, 'on_create_error action should be :delete or :recreate' unless action == :delete || action == :recreate
+                    raise ArgumentError, 'on_sync_create_error action should be :delete or :recreate' unless action == :delete || action == :recreate
                     return  unless is_sync_source()
                     
-                    ar_objs = objects.is_a?(Array) ? objects : [objects]
+                    ar_objs = objects
+                    if objects.is_a?(Hash)
+                        ar_objs = objects.keys()
+                    elsif !objects.is_a?(Array)
+                        ar_objs = [objects]
+                    end
+                        
                     puts "ar_objs : #{ar_objs}"
                     tableName = is_schema_source() ? get_schema_table_name : 'object_values'
                     nSrcID = get_source_id()
