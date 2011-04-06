@@ -23,12 +23,21 @@ namespace rho.rubyext
         [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
         public static void Create(RubyModule/*!*/ self, int barType, RubyArray args)
         {
-            Object[] values = null;
             if (args != null && args.Count > 0)
-            {
-                values = args.ToArray();
-                RhodesApp.createToolBar(barType, values);
-            }    
+                RhodesApp.createToolBar(barType, (Object)args);
+
+            if (barType == 2)
+                RhodesApp.removeToolBar();
+        }
+
+        [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
+        public static void Create(RubyModule/*!*/ self, int barType, Hash args)
+        {
+            if (args != null && args.Count > 0)
+                RhodesApp.createToolBar(barType, (Object)args);
+
+            if (barType == 2)
+                RhodesApp.removeToolBar();
         }
 
         [RubyMethodAttribute("remove", RubyMethodAttributes.PublicSingleton)]

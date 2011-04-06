@@ -23,6 +23,12 @@ namespace rho.rubyext
 
         }
 
+        [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
+        public static void Create(RubyModule/*!*/ self, int barType, Hash args)
+        {
+
+        }
+
         [RubyMethodAttribute("remove", RubyMethodAttributes.PublicSingleton)]
         public static void Remove(RubyModule/*!*/ self)
         {
