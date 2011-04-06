@@ -59,6 +59,12 @@ namespace rho.rubyext
 
         }
 
+        [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
+        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Hash args)
+        {
+
+        }
+
         [RubyMethodAttribute("remove_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void removeNativeToolBar(RubyModule/*!*/ self)
         {
