@@ -34,15 +34,6 @@ module GeoLocation
   end
 end
 
-module NativeBar
- 
-  def self.create_native_toolbar(type, params)
-  end
- 
-  def self.remove_native_toolbar()
-  end
-
-end
 
 module Alert
 	def self.show_status( title, msg, hide)
