@@ -1,0 +1,94 @@
+require 'fileutils'
+
+
+def build_extension(name, arch, src_files)
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  use_own_stlport = false
+  $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
+  unless File.directory? $std_includes
+      $stlport_includes = "#{$rootdir}/platform/shared/stlport/stlport"
+      use_own_stlport = true
+  end
+
+  #Dir.glob("*.c").each do |f|
+  src_files.each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+    objects << objname
+
+    args = []
+    args << "-I."
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
+    args << "-I#{$rootdir}/platform/shared/common"
+
+    args << "-I#{$std_includes}" unless $std_includes.nil?
+    args << "-D__NEW__" if use_own_stlport
+    args << "-I#{$stlport_includes}" if use_own_stlport
+
+    args << "-I#{$rootdir}/platform/shared/ruby/linux"
+    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+
+    cc_compile f, $tempdir, args or exit 1
+
+  end
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  cc_ar File.join( $targetdir, 'lib' + name + '.a' ), Dir.glob($tempdir + "/**/*.o") or exit 1
+
+end
+
+namespace "build" do
+  task :config do
+    curdir = pwd
+    $nfcdir = curdir.gsub('/ext/nfc/platform/android','');
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+  end
+
+  task :all => :config do
+
+    src_files = []
+
+    src_files << $nfcdir + '/ext/nfc/platform/android/jni/src/nfc.cpp'
+    src_files << $nfcdir + '/ext/nfc/shared/ruby/nfc_wrap.c'
+
+    # build native part
+    build_extension('Nfc', $arch, src_files)
+
+    #build java part
+    javafiles = []	
+    File.open('ext_build.files', "r") do |f|
+        while line = f.gets
+           javafiles << line
+        end
+    end
+
+    flname = $targetdir + '/ext_build.files'
+    File.open(flname, "w") do |f|
+        javafiles.each do |j|
+            f.puts $nfcdir + '/' + j
+        end
+    end
+
+    mymaniname = $nfcdir + '/ext/nfc/platform/android/AndroidManifest.xml'  
+    maniname = $targetdir + '/AndroidManifest.xml'
+
+    cp_r mymaniname, maniname
+
+  end
+end
+
+task :default => "build:all"

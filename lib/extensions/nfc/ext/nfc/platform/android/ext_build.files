@@ -1,0 +1,4 @@
+ext/nfc/platform/android/src/com/nfc/Nfc.java
+ext/nfc/platform/android/src/com/nfc/NfcMessagePack.java
+ext/nfc/platform/android/src/com/nfc/NfcMessage.java
+ext/nfc/platform/android/src/com/nfc/NfcRecord.java
