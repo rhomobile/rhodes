@@ -41,8 +41,9 @@ namespace rho.rubyext {
         
         private static void LoadNativeBar_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
             DefineLibraryMethod(module, "create", 0x21, 
-                0x00000000U, 
-                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.Create)
+                0x00000000U, 0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.Create), 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.Hash>(rho.rubyext.RhoNativeBar.Create)
             );
             
             DefineLibraryMethod(module, "create_native_tabbar", 0x21, 
