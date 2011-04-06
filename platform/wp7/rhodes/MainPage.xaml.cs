@@ -87,6 +87,7 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)
         {
+            RHODESAPP().addToHistory(e.Uri);
         }
 
         private void SaveFilesToIsoStore()
