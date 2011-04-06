@@ -4,6 +4,7 @@ using IronRuby.Runtime;
 using IronRuby.Builtins;
 using System;
 using System.Runtime.InteropServices;
+using rho.common;
 
 namespace rho.rubyext
 {
@@ -13,7 +14,7 @@ namespace rho.rubyext
 
         #region Private Implementation Details
 
-        private static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
+        private static CRhodesApp RhodesApp { get { return CRhodesApp.Instance; } }
 
         #endregion
 
@@ -26,14 +27,14 @@ namespace rho.rubyext
             if (args != null && args.Count > 0)
             {
                 values = args.ToArray();
-                RhoRuby.createToolBar(barType, values);
+                RhodesApp.createToolBar(barType, values);
             }    
         }
 
         [RubyMethodAttribute("remove", RubyMethodAttributes.PublicSingleton)]
         public static void Remove(RubyModule/*!*/ self)
         {
-            RhoRuby.removeToolBar();
+            RhodesApp.removeToolBar();
         }
 
         [RubyMethodAttribute("switch_tab", RubyMethodAttributes.PublicSingleton)]
