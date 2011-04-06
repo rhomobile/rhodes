@@ -171,21 +171,46 @@ This status returns for bulk-sync models that use [`FixedSchema`](/rhom#fixed-sc
 
 **NOTE: In this scenario the sync callback should notify the user with a wait screen and start the bulk sync process.**
 
-### Server create-error processing on client
-"create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error:
+### Server error processing on client
+#### create-error
+has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error:
 
 	:::ruby
 	SyncEngine.on_sync_create_error( src_name, objects, action )
 	Model.on_sync_create_error( objects, action )
 
-* objects - One or more error objects
-* action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
+    * objects - One or more error objects
+    * action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
+
+#### update-error
+
+	:::ruby
+	SyncEngine.on_sync_update_error( src_name, objects, action )
+	Model.on_sync_update_error( objects, action )
+    
+    * objects - One or more error objects
+    * action - May be :retry - will push update object operation to server again at next sync.
+
+#### delete-error
+
+	:::ruby
+	SyncEngine.on_sync_delete_error( src_name, objects, action )
+	Model.on_sync_delete_error( objects, action )
+    
+    * objects - One or more error objects
+    * action - May be :retry - will push delete object operation to server again at next sync.
 
 For example:
 	:::ruby
     SyncEngine.on_sync_create_error( @params['source_name'], 
-        @params['server_errors']['create-error'].keys(), :delete)
-    
+        @params['server_errors']['create-error'], :delete)
+
+    SyncEngine.on_sync_update_error( @params['source_name'], 
+        @params['server_errors']['update-error'], :retry)
+        
+    SyncEngine.on_sync_delete_error( @params['source_name'], 
+        @params['server_errors']['delete-error'], :retry)
+   
 ### Notification Example
 Here is a simple example of a sync notification method that uses some of the parameters described above:
 
@@ -205,7 +230,7 @@ Here is a simple example of a sync notification method that uses some of the par
         if @params['server_errors'] && 
            @params['server_errors']['create-error']
             SyncEngine.on_sync_create_error( @params['source_name'], 
-                @params['server_errors']['create-error'].keys(), :delete)
+                @params['server_errors']['create-error'], :delete)
         end
 	  
 	    err_code = @params['error_code'].to_i
@@ -461,10 +486,28 @@ Clears the sync notification for a given source id.
 
 	:::ruby
     SyncEngine.on_sync_create_error( @params['source_name'], 
-        @params['server_errors']['create-error'].keys(), :delete)
+        @params['server_errors']['create-error'], :delete)
     
 * objects - One or more error objects
 * action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
+
+### `on_sync_update_error( src_name, objects, action )`
+
+	:::ruby
+    SyncEngine.on_sync_update_error( @params['source_name'], 
+        @params['server_errors']['update-error'], :retry)
+    
+* objects - One or more error objects
+* action - May be :retry - will push update object operation to server again at next sync.
+
+### `on_sync_delete_error( src_name, objects, action )`
+
+	:::ruby
+    SyncEngine.on_sync_delete_error( @params['source_name'], 
+        @params['server_errors']['delete-error'], :retry)
+    
+* objects - One or more error objects
+* action - May be :retry - will push delete object operation to server again at next sync.
 
 ### `set_pollinterval(interval)`
 Update the `SyncEngine` poll interval. Setting this to 0 will disable polling-based sync.  However, you may still use [push-based-sync](/rhosync/push).

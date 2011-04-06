@@ -496,7 +496,8 @@ describe "SyncEngine_test" do
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 0
 
-    getProduct.on_sync_create_error( res['server_errors']['create-error'].keys(), :recreate)
+    #getProduct.on_sync_create_error( res['server_errors']['create-error'].keys(), :recreate)
+    SyncEngine.on_sync_create_error( getProduct_str(), res['server_errors']['create-error'], :recreate)
     
     records3 = getTestDB().select_from_table('changed_values','*', 'object' => item.object)
     records3.length.should == 0
@@ -521,6 +522,23 @@ describe "SyncEngine_test" do
     res['server_errors']['update-error']['broken_object_id'].should_not be_nil    
     res['server_errors']['update-error']['broken_object_id']['message'].should == "error update"
     res['server_errors']['update-error']['broken_object_id']['attributes']['name'].should == "wrongname"    
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+    
+    getProduct.on_sync_update_error( res['server_errors']['update-error'], :retry)
+    
+    records1 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records1.length.should == 2
+    records1[0]["object"].should == "broken_object_id"
+    records1[0]["attrib"].should == "name"
+    records1[0]["value"].should == "wrongname"
+    records1[0]["update_type"].should == "update"
+
+    records1[1]["object"].should == "broken_object_id"
+    records1[1]["attrib"].should == "an_attribute"
+    records1[1]["value"].should == "error update"
+    records1[1]["update_type"].should == "update"
   end
 
   it "should process delete-error" do    
@@ -535,6 +553,24 @@ describe "SyncEngine_test" do
     res['server_errors']['delete-error']['broken_object_id'].should_not be_nil    
     res['server_errors']['delete-error']['broken_object_id']['message'].should == "Error delete record"
     res['server_errors']['delete-error']['broken_object_id']['attributes']['name'].should == "wrongname"
+    
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'delete')
+    records.length.should == 0
+    
+    getProduct.on_sync_delete_error( res['server_errors']['delete-error'], :retry)
+    
+    records1 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'delete')
+    records1.length.should == 2
+    records1[0]["object"].should == "broken_object_id"
+    records1[0]["attrib"].should == "name"
+    records1[0]["value"].should == "wrongname"
+    records1[0]["update_type"].should == "delete"
+
+    records1[1]["object"].should == "broken_object_id"
+    records1[1]["attrib"].should == "an_attribute"
+    records1[1]["value"].should == "error delete"
+    records1[1]["update_type"].should == "delete"
+    
   end
 
   it "should process source-error" do    
