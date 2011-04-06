@@ -429,6 +429,10 @@ void rho_ruby_add_to_array(VALUE ar, VALUE val)
     rb_ary_push(ar,val);
 }
 
+void rho_ruby_add_to_hash(VALUE hash, VALUE key, VALUE item) {
+	rb_hash_aset(hash, key, item);
+}
+
 VALUE rho_ruby_create_byte_array(unsigned char* buf, int length) {
 	VALUE ar = rb_ary_new2(length);
 	int i;

@@ -82,6 +82,8 @@ VALUE rho_ruby_create_integer(__int64 i);
 VALUE rho_ruby_create_double(double d);
 VALUE rho_ruby_create_time(long t);
 void rho_ruby_add_to_array(VALUE ar, VALUE val);
+void rho_ruby_add_to_hash(VALUE hash, VALUE key, VALUE item);
+
 
 time_t rho_ruby_get_time(VALUE rTime);
 
