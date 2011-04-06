@@ -218,15 +218,10 @@ namespace rho.common
                         label = ".";//Text can not be empty. it's WP7's restriction!!!
 
                     if (icon == null || action == null)
-                        continue; //icon can not be null. so now i don't know how to create separator
-                    //{
-                    //    LOG.ERROR("Illegal argument for create_nativebar");
-                    //    return;
-                    //}
+                        continue; //icon can not be null or empty. so now i don't know how to create separator
 
                     if (action == "forward" && RHOCONF().getBool("jqtouch_mode"))
                         continue;
-
                     ApplicationBarIconButton button = new ApplicationBarIconButton(new Uri(icon, UriKind.Relative));
                     button.Text = label;
                     button.Click += new EventHandler(processToolBarCommand);

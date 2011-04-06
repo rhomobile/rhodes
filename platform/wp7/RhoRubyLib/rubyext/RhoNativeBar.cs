@@ -67,13 +67,19 @@ namespace rho.rubyext
         [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void createNativeToolBar(RubyModule/*!*/ self, int barType, RubyArray args)
         {
+            Create(self, barType, args);
+        }
 
+        [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
+        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Hash args)
+        {
+            Create(self, barType, args);
         }
 
         [RubyMethodAttribute("remove_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void removeNativeToolBar(RubyModule/*!*/ self)
         {
-
+            Remove(self);
         }
 
         [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
