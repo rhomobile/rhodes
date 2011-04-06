@@ -224,7 +224,7 @@ namespace rho.common
                         continue;
                     ApplicationBarIconButton button = new ApplicationBarIconButton(new Uri(icon, UriKind.Relative));
                     button.Text = label;
-                    button.Click += new EventHandler(processToolBarCommand);
+                    button.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
 
                     m_appMainPage.ApplicationBar.Buttons.Add(button);
                 }
@@ -266,9 +266,12 @@ namespace rho.common
             }
         }
 
-        private void processToolBarCommand(object sender, EventArgs e)
+        private void processToolBarCommand(object sender, EventArgs e,  String strAction)
         {
-
+            /*if (strAction == "forward")
+                m_webBrowser;
+            else
+                loadUrl(strAction);*/
         }
     }
 }
