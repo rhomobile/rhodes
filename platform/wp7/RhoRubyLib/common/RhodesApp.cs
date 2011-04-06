@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Microsoft.Phone.Shell;
 using IronRuby.Builtins;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace rho.common
 {
@@ -24,6 +25,9 @@ namespace rho.common
 
         private WebBrowser m_webBrowser;
         private PhoneApplicationPage m_appMainPage;
+        private Stack<Uri> m_backHistory = new Stack<Uri>();
+        private Stack<Uri> m_forwardHistory = new Stack<Uri>();
+        private Uri m_currentUri = null; 
         private CHttpServer m_httpServer;
         int m_currentTabIndex = 0;
         String[] m_currentUrls = new String[5];
@@ -266,12 +270,47 @@ namespace rho.common
             }
         }
 
+        public void addToHistory(Uri uri)
+        {
+            Uri previous = null;
+            if (m_backHistory.Count > 0)
+                previous = m_backHistory.Peek();
+
+            if (uri == previous)
+            {
+                m_backHistory.Pop();
+                m_forwardHistory.Push(m_currentUri);
+            }
+            else
+            {
+                if (m_currentUri != null)
+                {
+                    m_backHistory.Push(m_currentUri);
+                    if (m_forwardHistory.Count > 0)
+                        m_forwardHistory.Pop();
+                }
+            }
+            m_currentUri = uri; 
+        }
+
         private void processToolBarCommand(object sender, EventArgs e,  String strAction)
         {
-            /*if (strAction == "forward")
-                m_webBrowser;
-            else
-                loadUrl(strAction);*/
+
+            if (strAction == "back" && m_backHistory.Count > 0)
+            {
+                Uri destination = m_backHistory.Peek();
+                m_webBrowser.Navigate(destination);
+            }
+
+            if (strAction == "forward" && m_forwardHistory.Count > 0)
+            {
+                Uri destination = m_forwardHistory.Peek();
+                m_webBrowser.Navigate(destination);
+
+            }
+
+            if (strAction == "refresh" && m_currentUri != null)
+                m_webBrowser.Navigate(m_currentUri);
         }
     }
 }
