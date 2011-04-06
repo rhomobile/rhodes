@@ -5,6 +5,9 @@ using rho;
 using rho.db;
 using rho.sync;
 using System.Threading;
+using System.Collections.Generic;
+using Microsoft.Phone.Shell;
+using IronRuby.Builtins;
 
 namespace rho.common
 {
@@ -47,7 +50,7 @@ namespace rho.common
             m_appMainPage.ApplicationBar = null;
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
             CRhoResourceMap.deployContent();
-            RhoRuby.Init(m_webBrowser, m_appMainPage);
+            RhoRuby.Init(m_webBrowser);
 
             DBAdapter.initAttrManager();
 
@@ -175,6 +178,66 @@ namespace rho.common
         {
             //TODO: unzip_file
             return false;
+        }
+
+        public void createToolBar(int barType, Object[] barParams)
+        {
+            m_appMainPage.ApplicationBar = new ApplicationBar();
+            m_appMainPage.ApplicationBar.IsMenuEnabled = true;
+            m_appMainPage.ApplicationBar.IsVisible = true;
+            m_appMainPage.ApplicationBar.Opacity = 1.0;
+
+            for (int i = 0; barParams != null && i < barParams.Length; i++)
+            {
+                if (barParams[i] != null && barParams[i] is Hash)
+                {
+                    String action = null;
+                    String icon = null;
+                    String label = null;
+                    object val;
+
+                    Hash values = (Hash)barParams[i];
+                    if (values.TryGetValue((object)MutableString.Create("action"), out val))
+                        action = val.ToString();
+                    if (values.TryGetValue((object)MutableString.Create("icon"), out val))
+                        icon = val.ToString();
+                    if (values.TryGetValue((object)MutableString.Create("label"), out val))
+                        label = val.ToString();
+
+                    if (label == null && barType == 0)
+                        label = ".";//Text can not be empty. it's WP7's restriction!!!
+
+                    if (icon == null || action == null)
+                    {
+                        LOG.ERROR("Illegal argument for create_nativebar");
+                        return;
+                    }
+
+                    if (action == "forward" && RHOCONF().getBool("jqtouch_mode"))
+                        continue;
+
+                    ApplicationBarIconButton button = new ApplicationBarIconButton(new Uri(icon, UriKind.Relative));
+                    button.Text = label;
+                    button.Click += new EventHandler(processToolBarCommand);
+
+                    m_appMainPage.ApplicationBar.Buttons.Add(button);
+                }
+            }
+        }
+
+        public void removeToolBar()
+        {
+            if (m_appMainPage.ApplicationBar != null)
+            {
+                m_appMainPage.ApplicationBar.MenuItems.Clear();
+                m_appMainPage.ApplicationBar.IsMenuEnabled = false;
+                m_appMainPage.ApplicationBar.IsVisible = false;
+            }
+        }
+
+        private void processToolBarCommand(object sender, EventArgs e)
+        {
+
         }
     }
 }
