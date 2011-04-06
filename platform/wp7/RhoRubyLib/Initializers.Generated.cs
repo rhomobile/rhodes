@@ -52,8 +52,9 @@ namespace rho.rubyext {
             );
             
             DefineLibraryMethod(module, "create_native_toolbar", 0x21, 
-                0x00000000U, 
-                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.createNativeToolBar)
+                0x00000000U, 0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.RubyArray>(rho.rubyext.RhoNativeBar.createNativeToolBar), 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, IronRuby.Builtins.Hash>(rho.rubyext.RhoNativeBar.createNativeToolBar)
             );
             
             DefineLibraryMethod(module, "native_tabbar_get_current_tab", 0x21, 
