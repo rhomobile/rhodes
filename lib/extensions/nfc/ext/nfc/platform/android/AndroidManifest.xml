@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rhomobile.rhodes"
+    android:installLocation="auto"
+    android:versionCode="29"
+    android:versionName="2.3.1">
+    
+    <uses-sdk android:minSdkVersion="9" />
+    
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+
+    <application>
+        
+        <receiver  android:name="com.nfc.Nfc">
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
+        
+    </application>
+    
+    <uses-permission android:name="android.permission.NFC" />
+
+</manifest> 
