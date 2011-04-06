@@ -7,8 +7,6 @@ using System.Windows.Resources;
 using System.Windows;
 using System.IO;
 using Microsoft.Phone.Controls;
-using System.Collections.Generic;
-using Microsoft.Phone.Shell;
 using rho.common;
 
 namespace rho
@@ -24,7 +22,6 @@ namespace rho
         public static CRhoRuby Instance { get { return m_instance; } }
 
         private WebBrowser m_webBrowser;
-        private PhoneApplicationPage m_appMainPage;
         private ScriptRuntime m_runtime;
         private ScriptEngine m_engine;
         RubyContext m_context;
@@ -32,10 +29,9 @@ namespace rho
 
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
 
-        public void Init(WebBrowser browser, PhoneApplicationPage appMainPage)
+        public void Init(WebBrowser browser)
         {
             m_webBrowser = browser;
-            m_appMainPage = appMainPage;
             initRuby();
             createRhoFramework();
         }
@@ -261,66 +257,6 @@ namespace rho
         public void resetDBOnSyncUserChanged()
         {
             m_engine.Operations.InvokeMember(m_rhoframework, "reset_db_on_sync_user_changed");
-        }
-
-        public void createToolBar(int barType, Object[] barParams)
-        {
-           m_appMainPage.ApplicationBar = new ApplicationBar();
-           m_appMainPage.ApplicationBar.IsMenuEnabled = true;
-           m_appMainPage.ApplicationBar.IsVisible = true;
-           m_appMainPage.ApplicationBar.Opacity = 1.0;
-
-           for (int i = 0; barParams != null && i < barParams.Length; i++)
-           {
-               if (barParams[i] != null && barParams[i] is Hash)
-               {
-                   String action = null;
-                   String icon = null;
-                   String label = null;
-                   object val;
-
-                   Hash values = (Hash)barParams[i];
-                   if (values.TryGetValue((object)MutableString.Create("action"), out val))
-                       action = val.ToString();
-                   if (values.TryGetValue((object)MutableString.Create("icon"), out val))
-                       icon = val.ToString();
-                   if (values.TryGetValue((object)MutableString.Create("label"), out val))
-                       label = val.ToString();
-
-                   if (label == null && barType == 0)
-                       label = ".";//Text can not be empty. it's WP7's restriction!!!
-
-                   if (icon == null || action == null)
-                   {
-                       LOG.ERROR("Illegal argument for create_nativebar");
-                       return;
-                   }
-
-                   if (action == "forward" && RHOCONF().getBool("jqtouch_mode"))
-                       continue;
-
-                   ApplicationBarIconButton button = new ApplicationBarIconButton(new Uri(icon, UriKind.Relative));
-                   button.Text = label;
-                   button.Click += new EventHandler(processToolBarCommand);
-
-                   m_appMainPage.ApplicationBar.Buttons.Add(button); 
-               }
-           }
-        }
-
-        public void removeToolBar()
-        {
-            if (m_appMainPage.ApplicationBar != null)
-            {
-                m_appMainPage.ApplicationBar.MenuItems.Clear();
-                m_appMainPage.ApplicationBar.IsMenuEnabled = false;
-                m_appMainPage.ApplicationBar.IsVisible = false;
-            }
-        }
-
-        private void processToolBarCommand(object sender, EventArgs e)
-        {
-            
         }
     }
 }
