@@ -8,6 +8,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Microsoft.Phone.Shell;
 using IronRuby.Builtins;
+using System.Windows.Media;
 
 namespace rho.common
 {
@@ -180,23 +181,32 @@ namespace rho.common
             return false;
         }
 
-        public void createToolBar(int barType, Object[] barParams)
+        private static Color getColorFromString(String strColor)
         {
-            m_appMainPage.ApplicationBar = new ApplicationBar();
-            m_appMainPage.ApplicationBar.IsMenuEnabled = true;
-            m_appMainPage.ApplicationBar.IsVisible = true;
-            m_appMainPage.ApplicationBar.Opacity = 1.0;
+            if (strColor == null || strColor == "")
+                return Color.FromArgb(255, 0, 0, 0);
 
-            for (int i = 0; barParams != null && i < barParams.Length; i++)
+	        int c = Convert.ToInt32(strColor);
+
+	        int cR = (c & 0xFF0000) >> 16;
+	        int cG = (c & 0xFF00) >> 8;
+	        int cB = (c & 0xFF);
+
+            return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
+        }
+
+        private void createToolBarButtons(int barType, Object[] hashArray)
+        {
+            for (int i = 0; hashArray != null && i < hashArray.Length; i++)
             {
-                if (barParams[i] != null && barParams[i] is Hash)
+                if (hashArray[i] != null && hashArray[i] is Hash)
                 {
                     String action = null;
                     String icon = null;
                     String label = null;
-                    object val;
+                    object val = null;
 
-                    Hash values = (Hash)barParams[i];
+                    Hash values = (Hash)hashArray[i];
                     if (values.TryGetValue((object)MutableString.Create("action"), out val))
                         action = val.ToString();
                     if (values.TryGetValue((object)MutableString.Create("icon"), out val))
@@ -208,10 +218,11 @@ namespace rho.common
                         label = ".";//Text can not be empty. it's WP7's restriction!!!
 
                     if (icon == null || action == null)
-                    {
-                        LOG.ERROR("Illegal argument for create_nativebar");
-                        return;
-                    }
+                        continue; //icon can not be null. so now i don't know how to create separator
+                    //{
+                    //    LOG.ERROR("Illegal argument for create_nativebar");
+                    //    return;
+                    //}
 
                     if (action == "forward" && RHOCONF().getBool("jqtouch_mode"))
                         continue;
@@ -223,6 +234,31 @@ namespace rho.common
                     m_appMainPage.ApplicationBar.Buttons.Add(button);
                 }
             }
+        }
+
+        public void createToolBar(int barType, Object barParams)
+        {          
+            m_appMainPage.ApplicationBar = new ApplicationBar();
+            m_appMainPage.ApplicationBar.IsMenuEnabled = true;
+            m_appMainPage.ApplicationBar.IsVisible = true;
+            m_appMainPage.ApplicationBar.Opacity = 1.0;
+
+            Object[] hashArray = null;
+            Hash paramHash = null;
+            object val = null;
+
+            if (barParams is RubyArray)
+                hashArray = ((RubyArray)barParams).ToArray();
+            else
+                paramHash = (Hash)barParams;
+
+            if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("background_color"), out val))
+                m_appMainPage.ApplicationBar.BackgroundColor = getColorFromString(val.ToString());
+
+            if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("buttons"), out val) && val is RubyArray)
+                hashArray = ((RubyArray)val).ToArray();
+
+            createToolBarButtons(barType, hashArray);
         }
 
         public void removeToolBar()
