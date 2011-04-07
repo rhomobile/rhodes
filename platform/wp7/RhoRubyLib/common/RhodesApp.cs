@@ -324,10 +324,13 @@ namespace rho.common
         private void processToolBarCommand(object sender, EventArgs e,  String strAction)
         {
 
-            if (strAction == "back" && m_backHistory.Count > 0)
+            if (strAction == "back")
             {
-                Uri destination = m_backHistory.Peek();
-                m_webBrowser.Navigate(destination);
+                if (m_backHistory.Count > 0)
+                {
+                    Uri destination = m_backHistory.Peek();
+                    m_webBrowser.Navigate(destination);
+                }
                 return;
             }
 
