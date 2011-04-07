@@ -22,12 +22,6 @@ module System
 	end
 end
 
-module WebView
-	def self.set_menu_items(disp_menu)
-		#TODO: set_menu_items
-	end
-end
-
 module GeoLocation
   def self.set_view_notification(geoview_callback, geoview_callback_data, geoview_timeout_sec)
 	#TODO: set_view_notification
