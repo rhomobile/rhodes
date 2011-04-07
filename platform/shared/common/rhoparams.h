@@ -12,17 +12,19 @@ class CRhoParams
 protected:
     rho_param * m_pParams;
 
-    rho_param * findHashParam(const char* name);
+    const rho_param * findHashParam(const char* name) const;
 
 public:
     CRhoParams(rho_param *p);
-    CRhoParams(const CRhoParams& copy) : m_pParams(copy.m_pParams){} 
+    CRhoParams(const CRhoParams& copy) : m_pParams(copy.m_pParams){}
 
-    String getString(const char* name);
-    String getString(const char* szName, const char* szDefValue);
+    boolean has(const char* name) const;
 
-    void getHash(const char* name, Hashtable<String,String>& mapHeaders);
-    boolean getBool(const char* name);
+    String getString(const char* name) const;
+    String getString(const char* szName, const char* szDefValue) const;
+
+    void getHash(const char* name, Hashtable<String,String>& mapHeaders) const;
+    boolean getBool(const char* name) const;
 
     void free_params();
 };
@@ -32,9 +34,9 @@ class CRhoParamArray : public CRhoParams
     rho_array * m_array;
 public:
     CRhoParamArray(CRhoParams& oParams, const char* name);
-    int size();
+    int size() const;
 
-    CRhoParams getItem(int nIndex);
+    CRhoParams getItem(int nIndex) const;
 };
 
 } // namespace rho

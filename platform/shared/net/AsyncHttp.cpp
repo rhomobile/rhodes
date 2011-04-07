@@ -15,7 +15,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
 
 /*static*/ CAsyncHttp* CAsyncHttp::Create()
 {
-    if ( m_pInstance ) 
+    if ( m_pInstance )
         return m_pInstance;
 
     m_pInstance = new CAsyncHttp( );
@@ -67,7 +67,7 @@ void CAsyncHttp::cancelRequest(const char* szCallback)
         return;
     }
 
-    synchronized(getCommandLock());    
+    synchronized(getCommandLock());
     CHttpCommand* pCmd = (CHttpCommand*)getCurCommand();
 
     if ( pCmd != null && ( *szCallback == '*' || pCmd->m_strCallback.compare(szCallback) == 0) )
@@ -106,7 +106,8 @@ CAsyncHttp::CHttpCommand::CHttpCommand(String strCmd, rho_param *p) : m_params(p
 
     m_params.getHash("headers", m_mapHeaders);
 
-    m_NetRequest.setSslVerifyPeer(m_params.getBool("ssl_verify_peer"));
+    if(m_params.has("ssl_verify_peer"))
+        m_NetRequest.setSslVerifyPeer(m_params.getBool("ssl_verify_peer"));
 }
 
 void CAsyncHttp::CHttpCommand::execute()
@@ -115,11 +116,11 @@ void CAsyncHttp::CHttpCommand::execute()
     switch( m_eCmd )
     {
     case hcGet:
-        resp = getNet().doRequest( m_params.getString("http_command", "GET").c_str(), 
+        resp = getNet().doRequest( m_params.getString("http_command", "GET").c_str(),
             m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);
         break;
     case hcPost:
-        resp = getNet().doRequest(m_params.getString("http_command", "POST").c_str(), 
+        resp = getNet().doRequest(m_params.getString("http_command", "POST").c_str(),
             m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);
         break;
 
@@ -188,7 +189,7 @@ void CAsyncHttp::CHttpCommand::execute()
 unsigned long CAsyncHttp::CHttpCommand::getRetValue()
 {
     if ( m_strCallback.length() == 0 )
-        return rho_ruby_create_string(m_strResBody.c_str()); 
+        return rho_ruby_create_string(m_strResBody.c_str());
 
     return rho_ruby_get_NIL();
 }
@@ -256,7 +257,7 @@ CAsyncHttp::CAsyncHttpResponse::~CAsyncHttpResponse(){}
 
 extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
 unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
-{ 
+{
     if (m_NetResponse.isOK())
     {
         if ( m_strContentType.find("application/json") != String::npos )
@@ -272,7 +273,7 @@ unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
         }
     }
 
-    return rho_ruby_create_string(m_NetResponse.getCharData()); 
+    return rho_ruby_create_string(m_NetResponse.getCharData());
 }
 
 } // namespace net
