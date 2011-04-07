@@ -38,7 +38,8 @@ public class Nfc  extends BroadcastReceiver {
 	
 	
 	public static int isSupported() {
-		NfcAdapter da = NfcAdapter.getDefaultAdapter(RhodesService.getContext());
+		//NfcAdapter da = NfcAdapter.getDefaultAdapter(RhodesService.getContext());
+		NfcAdapter da = NfcAdapter.getDefaultAdapter();
 		if (da == null) {
 			return 0;
 		}
