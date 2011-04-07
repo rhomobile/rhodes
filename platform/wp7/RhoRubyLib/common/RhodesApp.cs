@@ -27,6 +27,7 @@ namespace rho.common
         private PhoneApplicationPage m_appMainPage;
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
+        private Hash m_menuItems = null;
         private Uri m_currentUri = null; 
         private CHttpServer m_httpServer;
         int m_currentTabIndex = 0;
@@ -263,12 +264,39 @@ namespace rho.common
             }
         }
 
-        public void createToolBar(int barType, Object barParams)
-        {          
+        public void setMenuItems(Hash menuItems)
+        {
+            if (m_appMainPage.ApplicationBar == null)
+                createEmptyToolBar();
+
+            m_menuItems = menuItems;
+
+            foreach (KeyValuePair<object, object> kvp in m_menuItems)
+            {
+                ApplicationBarMenuItem item = new ApplicationBarMenuItem();
+                item.Text = kvp.Key.ToString();
+                String action = null; 
+                if (kvp.Value == null) 
+                    continue;
+                else
+                    action = kvp.Value.ToString();
+                item.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
+
+                m_appMainPage.ApplicationBar.MenuItems.Add(item);
+            }
+        }
+
+        private void createEmptyToolBar()
+        {
             m_appMainPage.ApplicationBar = new ApplicationBar();
             m_appMainPage.ApplicationBar.IsMenuEnabled = true;
             m_appMainPage.ApplicationBar.IsVisible = true;
             m_appMainPage.ApplicationBar.Opacity = 1.0;
+        }
+
+        public void createToolBar(int barType, Object barParams)
+        {
+            createEmptyToolBar();
 
             Object[] hashArray = null;
             Hash paramHash = null;
@@ -286,6 +314,7 @@ namespace rho.common
                 hashArray = ((RubyArray)val).ToArray();
 
             createToolBarButtons(barType, hashArray);
+            setMenuItems(m_menuItems);
         }
 
         public void removeToolBar()
@@ -295,6 +324,8 @@ namespace rho.common
                 m_appMainPage.ApplicationBar.MenuItems.Clear();
                 m_appMainPage.ApplicationBar.IsMenuEnabled = false;
                 m_appMainPage.ApplicationBar.IsVisible = false;
+
+                m_appMainPage.ApplicationBar = null;
             }
         }
 

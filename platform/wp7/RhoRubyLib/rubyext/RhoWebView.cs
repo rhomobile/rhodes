@@ -38,6 +38,12 @@ namespace rho.rubyext
             return RhodesApp.getCurrentUrl(0);   
         }
 
+        [RubyMethodAttribute("set_menu_items", RubyMethodAttributes.PublicSingleton)]
+        public static void setMenuItems(RubyModule/*!*/ self, Hash valMenu)
+        {
+            RhodesApp.setMenuItems(valMenu);
+        }
+
         #endregion
     }
 }
