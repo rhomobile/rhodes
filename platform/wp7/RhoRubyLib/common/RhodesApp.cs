@@ -248,7 +248,7 @@ namespace rho.common
                     if (icon == null || action == null)
                         continue;
 
-                    if (action == "forward")// && RHOCONF().getBool("jqtouch_mode"))
+                    if (action == "forward" || action == "close")// && RHOCONF().getBool("jqtouch_mode"))
                         continue;
                     ApplicationBarIconButton button = new ApplicationBarIconButton(new Uri(icon, UriKind.Relative));
                     button.Text = label;
@@ -264,10 +264,13 @@ namespace rho.common
             }
         }
 
+
         public void setMenuItems(Hash menuItems)
         {
             if (m_appMainPage.ApplicationBar == null)
                 createEmptyToolBar();
+            else
+                m_appMainPage.ApplicationBar.MenuItems.Clear();
 
             m_menuItems = menuItems;
 
@@ -280,6 +283,9 @@ namespace rho.common
                     continue;
                 else
                     action = kvp.Value.ToString();
+
+                if (action == "close") continue;
+
                 item.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
 
                 m_appMainPage.ApplicationBar.MenuItems.Add(item);
@@ -322,11 +328,16 @@ namespace rho.common
             if (m_appMainPage.ApplicationBar != null)
             {
                 m_appMainPage.ApplicationBar.MenuItems.Clear();
+                m_appMainPage.ApplicationBar.Buttons.Clear();
                 m_appMainPage.ApplicationBar.IsMenuEnabled = false;
                 m_appMainPage.ApplicationBar.IsVisible = false;
 
                 m_appMainPage.ApplicationBar = null;
             }
+        }
+
+        public void showLogScreen()
+        {
         }
 
         public void addToHistory(Uri uri)
@@ -380,6 +391,12 @@ namespace rho.common
                 return;
             }
 
+            if (strAction == "log")
+            {
+                showLogScreen();
+                return;
+            }
+
             if (strAction == "options")
             {
                 String curUrl = RhoRuby.getOptionsPage();
@@ -394,8 +411,17 @@ namespace rho.common
                 return;
             }
 
+            if (strAction == "sync")
+            {
+                SyncThread.doSyncAllSources(true);
+                return;
+            }
+
             strAction = canonicalizeRhoUrl(strAction);
             m_webBrowser.Navigate(new Uri(strAction));
         }
     }
+
+    public class QuitException : Exception { }
+
 }
