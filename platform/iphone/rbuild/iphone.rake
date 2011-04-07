@@ -646,8 +646,8 @@ namespace "run" do
       
        simapp = File.join($simdir, $emulator_version, "Applications")
        
+       
        rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
-     
        puts "log_file=" + rholog
     end 
 
@@ -778,7 +778,10 @@ namespace "run" do
         simpublic = simapp + "/" + $guid + "/Documents/apps/public"
         apppublic = $app_path + "/sim-public-#{$sdkver}"
 
+
         apprholog = $app_path + "/rholog-#{$sdkver}.txt"
+        apprholog = $app_path + "/" + $app_config["applog"] if $app_config["applog"]
+
         rm_f apprholog
         rm_f apppublic
         `ln -f -s "#{simpublic}" "#{apppublic}"`
