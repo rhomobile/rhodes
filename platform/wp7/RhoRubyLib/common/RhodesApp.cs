@@ -340,8 +340,8 @@ namespace rho.common
             if (strAction == "home")
             {
                 String strHomePage = RhoRuby.getStartPage();
-    	        String strStartPage = canonicalizeRhoUrl(strHomePage);
-                m_webBrowser.Navigate(new Uri(strStartPage));
+                strHomePage = canonicalizeRhoUrl(strHomePage);
+                m_webBrowser.Navigate(new Uri(strHomePage));
             }
 
             if (strAction == "options")
