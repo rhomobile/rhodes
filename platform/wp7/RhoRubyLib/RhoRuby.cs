@@ -258,5 +258,10 @@ namespace rho
         {
             m_engine.Operations.InvokeMember(m_rhoframework, "reset_db_on_sync_user_changed");
         }
+
+        public String getStartPage()
+        {
+            return RhoConf.getInstance().getString("start_path");
+        }
     }
 }
