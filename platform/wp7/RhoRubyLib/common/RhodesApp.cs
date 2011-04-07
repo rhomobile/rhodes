@@ -328,13 +328,14 @@ namespace rho.common
             {
                 Uri destination = m_backHistory.Peek();
                 m_webBrowser.Navigate(destination);
+                return;
             }
 
             if (strAction == "forward" && m_forwardHistory.Count > 0)
             {
                 Uri destination = m_forwardHistory.Peek();
                 m_webBrowser.Navigate(destination);
-
+                return;
             }
 
             if (strAction == "home")
@@ -342,6 +343,7 @@ namespace rho.common
                 String strHomePage = RhoRuby.getStartPage();
                 strHomePage = canonicalizeRhoUrl(strHomePage);
                 m_webBrowser.Navigate(new Uri(strHomePage));
+                return;
             }
 
             if (strAction == "options")
@@ -349,10 +351,17 @@ namespace rho.common
                 String curUrl = RhoRuby.getOptionsPage();
 				curUrl = canonicalizeRhoUrl(curUrl);
 			    m_webBrowser.Navigate(new Uri(curUrl));
+                return;
             }
 
             if (strAction == "refresh" && m_currentUri != null)
+            {
                 m_webBrowser.Navigate(m_currentUri);
+                return;
+            }
+
+            strAction = canonicalizeRhoUrl(strAction);
+            m_webBrowser.Navigate(new Uri(strAction));
         }
     }
 }
