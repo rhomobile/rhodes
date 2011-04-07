@@ -1,5 +1,9 @@
 namespace "config" do
-	task :wp => ["config:common"] do
+	task :set_wp_platform do
+		$current_platform = "wm" unless $current_platform
+	end
+
+	task :wp => [:set_wp_platform, "config:common"] do
 		$rubypath = "res/build-tools/RhoRuby.exe"
 		$zippath = "res/build-tools/7za.exe"
 		$genpath = "ClassInitGenerator.exe"
