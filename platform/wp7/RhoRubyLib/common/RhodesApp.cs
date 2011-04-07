@@ -247,7 +247,7 @@ namespace rho.common
                     if (icon == null || action == null)
                         continue;
 
-                    if (action == "forward" && RHOCONF().getBool("jqtouch_mode"))
+                    if (action == "forward")// && RHOCONF().getBool("jqtouch_mode"))
                         continue;
                     ApplicationBarIconButton button = new ApplicationBarIconButton(new Uri(icon, UriKind.Relative));
                     button.Text = label;
