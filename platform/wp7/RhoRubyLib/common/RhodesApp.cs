@@ -344,6 +344,13 @@ namespace rho.common
                 m_webBrowser.Navigate(new Uri(strStartPage));
             }
 
+            if (strAction == "options")
+            {
+                String curUrl = RhoRuby.getOptionsPage();
+				curUrl = canonicalizeRhoUrl(curUrl);
+			    m_webBrowser.Navigate(new Uri(curUrl));
+            }
+
             if (strAction == "refresh" && m_currentUri != null)
                 m_webBrowser.Navigate(m_currentUri);
         }
