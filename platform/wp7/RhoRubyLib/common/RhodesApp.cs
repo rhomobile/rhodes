@@ -218,12 +218,9 @@ namespace rho.common
 
         private void createToolBarButtons(int barType, Object[] hashArray)
         {
+            int bCount = 0;
             for (int i = 0; hashArray != null && i < hashArray.Length; i++)
             {
-                if (i == 5) break;//ApplicationBar Allows developers to create and display an application bar
-                                  //with between 1 and 4 buttons and a set of text menu items
-                                  //in Windows Phone applications.
-
                 if (hashArray[i] != null && hashArray[i] is Hash)
                 {
                     String action = null;
@@ -257,6 +254,11 @@ namespace rho.common
                     button.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
 
                     m_appMainPage.ApplicationBar.Buttons.Add(button);
+                    //ApplicationBar Allows developers to create and display an application bar
+                    //with between 1 and 4 buttons and a set of text menu items
+                    //in Windows Phone applications.
+                    if (++bCount == 4)
+                        return;
                 }
             }
         }
