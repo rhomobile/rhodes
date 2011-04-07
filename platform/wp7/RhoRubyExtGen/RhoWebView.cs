@@ -32,6 +32,11 @@ namespace rho.rubyext
             return null;
         }
 
+        [RubyMethodAttribute("set_menu_items", RubyMethodAttributes.PublicSingleton)]
+        public static void setMenuItems(RubyModule/*!*/ self, Hash valMenu)
+        {
+        }
+
         #endregion
     }
 }

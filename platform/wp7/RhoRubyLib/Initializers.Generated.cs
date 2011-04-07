@@ -281,6 +281,11 @@ namespace rho.rubyext {
                 new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.Navigate)
             );
             
+            DefineLibraryMethod(module, "set_menu_items", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, IronRuby.Builtins.Hash>(rho.rubyext.RhoWebView.setMenuItems)
+            );
+            
         }
         
     }
