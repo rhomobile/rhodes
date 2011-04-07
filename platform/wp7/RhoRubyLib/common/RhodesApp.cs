@@ -199,10 +199,31 @@ namespace rho.common
             return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
         }
 
+        private String getDefaultImagePath(String strAction)
+        {
+            String strImagePath = "";
+            if ( strAction == "options" )
+                strImagePath = "lib/res/options_btn.png";
+            else if ( strAction == "home" )
+                strImagePath = "lib/res/home_btn.png";
+            else if ( strAction == "refresh" )
+                strImagePath = "lib/res/refresh_btn.png";
+            else if ( strAction == "back" )
+                strImagePath = "lib/res/back_btn.png";
+            else if ( strAction == "forward" )
+                strImagePath = "lib/res/forward_btn.png";
+
+            return strImagePath.Length > 0 ? CFilePath.join(getRhoRootPath(), strImagePath) : null;
+        }   
+
         private void createToolBarButtons(int barType, Object[] hashArray)
         {
             for (int i = 0; hashArray != null && i < hashArray.Length; i++)
             {
+                if (i == 5) break;//ApplicationBar Allows developers to create and display an application bar
+                                  //with between 1 and 4 buttons and a set of text menu items
+                                  //in Windows Phone applications.
+
                 if (hashArray[i] != null && hashArray[i] is Hash)
                 {
                     String action = null;
@@ -221,8 +242,13 @@ namespace rho.common
                     if (label == null && barType == 0)
                         label = ".";//Text can not be empty. it's WP7's restriction!!!
 
+                    if (icon == null)//icon can not be null or empty. so now i don't know how to create separator
+                    {
+                        icon = getDefaultImagePath(action);
+                    }
+
                     if (icon == null || action == null)
-                        continue; //icon can not be null or empty. so now i don't know how to create separator
+                        continue;
 
                     if (action == "forward" && RHOCONF().getBool("jqtouch_mode"))
                         continue;
@@ -307,6 +333,13 @@ namespace rho.common
                 Uri destination = m_forwardHistory.Peek();
                 m_webBrowser.Navigate(destination);
 
+            }
+
+            if (strAction == "home")
+            {
+                String strHomePage = RhoRuby.getStartPage();
+    	        String strStartPage = canonicalizeRhoUrl(strHomePage);
+                m_webBrowser.Navigate(new Uri(strStartPage));
             }
 
             if (strAction == "refresh" && m_currentUri != null)
