@@ -758,6 +758,9 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * Windows 7 OS
 * Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
+    * [Windows Phone Developer Tools RTW](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=04704acf-a63a-4f97-952c-8b51b34b00ce)
+    * [Windows Phone Developer Tools January 2011 Update](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=49b9d0c5-6597-4313-912a-f0cca9c7d277)
+    
 * Get IronRuby master branch to parent folder of rhodes:
 
         $ git clone https://github.com/IronLanguages/main.git

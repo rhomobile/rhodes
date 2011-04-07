@@ -65,6 +65,8 @@ namespace Rhodes
 
             String query = "";
             String url = e.Uri.OriginalString;
+            url = url.StartsWith(RHODESAPP().getHomeUrl()) ? url.substring(RHODESAPP().getHomeUrl().length()) : url;
+
             int nFrag = url.LastIndexOf('#');
             if ( nFrag >= 0 )
                 url = url.Substring(0, nFrag);
