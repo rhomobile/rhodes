@@ -263,5 +263,10 @@ namespace rho
         {
             return RhoConf.getInstance().getString("start_path");
         }
+
+        public String getOptionsPage()
+        {
+            return RhoConf.getInstance().getString("options_path");
+        }
     }
 }
