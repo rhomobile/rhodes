@@ -456,7 +456,7 @@ def common_bundle_start(startdir, dest)
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
   replace_platform = "wm" if replace_platform == 'win32'
-  
+
   [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
       chdir folder
       
@@ -467,6 +467,7 @@ def common_bundle_start(startdir, dest)
       end
       
       Dir.glob("**/*.wm.*").each { |f| rm f }
+	  Dir.glob("**/*.wp7.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
       Dir.glob("**/*.bb.*").each { |f| rm f }
       Dir.glob("**/*.bb6.*").each { |f| rm f }
