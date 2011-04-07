@@ -293,8 +293,12 @@
 	return resImage;
 }
 
-
-
+- (RhoTabBarData*)tabData:(int)index {
+	if ((index < 0) || (index >= [tabbarData count])) {
+		return nil;
+	}
+    return (RhoTabBarData*)[tabbarData objectAtIndex:index];
+}
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
 	[SimpleMainView disableHiddenOnStart];
@@ -469,6 +473,8 @@
     
 	if (initUrl && is_load_initial_url) {
         [self navigateRedirect:initUrl tab:0];
+        RhoTabBarData *td = [self tabData:0];
+        td.loaded = YES;
     }
 	if (tab_to_initial_select >= 0) {
 		tabbar.selectedIndex = tab_to_initial_select;
@@ -502,13 +508,6 @@
 		index = [self activeTab];
 	}
     return (SimpleMainView*)[tabbar.viewControllers objectAtIndex:index];
-}
-
-- (RhoTabBarData*)tabData:(int)index {
-	if ((index < 0) || (index >= [tabbarData count])) {
-		return nil;
-	}
-    return (RhoTabBarData*)[tabbarData objectAtIndex:index];
 }
 
 // RhoMainView implementation
