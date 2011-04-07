@@ -5,11 +5,11 @@ namespace rho
 
 CRhoParams::CRhoParams(rho_param *p): m_pParams(p){}
 
-rho_param * CRhoParams::findHashParam(const char* name)
+const rho_param * CRhoParams::findHashParam(const char* name) const
 {
     if (m_pParams->type == RHO_PARAM_HASH)
     {
-        for (int i = 0; i < m_pParams->v.hash->size; ++i) 
+        for (int i = 0; i < m_pParams->v.hash->size; ++i)
         {
             if (strcasecmp(name, m_pParams->v.hash->name[i]) == 0)
                 return m_pParams->v.hash->value[i];
@@ -18,14 +18,27 @@ rho_param * CRhoParams::findHashParam(const char* name)
     return null;
 }
 
-String CRhoParams::getString(const char* szName)
+boolean CRhoParams::has(const char* name) const
+{
+    if (m_pParams->type == RHO_PARAM_HASH)
+    {
+        for (int i = 0; i < m_pParams->v.hash->size; ++i)
+        {
+            if (strcasecmp(name, m_pParams->v.hash->name[i]) == 0)
+                return true;
+        }
+    }
+    return false;
+}
+
+String CRhoParams::getString(const char* szName) const
 {
     return getString(szName, "");
 }
 
-String CRhoParams::getString(const char* szName, const char* szDefValue)
+String CRhoParams::getString(const char* szName, const char* szDefValue) const
 {
-    rho_param * value = findHashParam(szName);
+    const rho_param * value = findHashParam(szName);
     String strRes = value && value->v.string ? value->v.string : "";
     if (strRes.length() == 0 && szDefValue && *szDefValue)
         strRes = szDefValue;
@@ -33,20 +46,20 @@ String CRhoParams::getString(const char* szName, const char* szDefValue)
     return strRes;
 }
 
-void CRhoParams::getHash(const char* name, rho::Hashtable<rho::String,rho::String>& mapHeaders)
+void CRhoParams::getHash(const char* name, rho::Hashtable<rho::String,rho::String>& mapHeaders) const
 {
-    rho_param * hash = findHashParam(name);
+    const rho_param * hash = findHashParam(name);
     if (!hash || hash->type != RHO_PARAM_HASH)
         return;
 
-    for (int i = 0; i < hash->v.hash->size; ++i) 
+    for (int i = 0; i < hash->v.hash->size; ++i)
     {
         rho_param * value = hash->v.hash->value[i];
         mapHeaders.put( hash->v.hash->name[i], value->v.string );
     }
 }
 
-boolean CRhoParams::getBool(const char* name)
+boolean CRhoParams::getBool(const char* name) const
 {
 	String strValue = getString(name);
 	if ( strValue.length() == 0 )
@@ -64,12 +77,12 @@ void CRhoParams::free_params()
 CRhoParamArray::CRhoParamArray(CRhoParams& oParams, const char* name) : CRhoParams(oParams)
 {
     m_array = null;
-    rho_param * ar = findHashParam(name);
+    const rho_param * ar = findHashParam(name);
     if (ar != null && ar->type == RHO_PARAM_ARRAY)
         m_array = ar->v.array;
 }
 
-int CRhoParamArray::size()
+int CRhoParamArray::size() const
 {
     if ( m_array == null )
         return 0;
@@ -77,7 +90,7 @@ int CRhoParamArray::size()
     return m_array->size;
 }
 
-CRhoParams CRhoParamArray::getItem(int nIndex)
+const CRhoParams& CRhoParamArray::getItem(int nIndex) const
 {
     return m_array->value[nIndex];
 }
