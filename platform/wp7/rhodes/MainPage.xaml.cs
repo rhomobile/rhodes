@@ -59,7 +59,8 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            if (e.Uri.IsAbsoluteUri || e.Uri.OriginalString.StartsWith("res:"))
+            if(!e.Uri.OriginalString.StartsWith(RHODESAPP().getHomeUrl()) 
+               && (e.Uri.IsAbsoluteUri || e.Uri.OriginalString.StartsWith("res:")))
                 return;
 
             String query = "";
