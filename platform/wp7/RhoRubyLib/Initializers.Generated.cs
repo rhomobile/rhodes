@@ -27,16 +27,19 @@ namespace rho.rubyext {
             
             
             DefineGlobalModule("NativeBar", typeof(rho.rubyext.RhoNativeBar), 0x00000008, null, LoadNativeBar_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            IronRuby.Builtins.RubyModule def3 = DefineGlobalModule("Rho", typeof(rho.rubyext.RhoRoot), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def1 = DefineGlobalModule("Rho", typeof(rho.rubyext.Rho), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            IronRuby.Builtins.RubyModule def4 = DefineModule("Rho::AsyncHttp", typeof(rho.rubyext.RhoRoot.RhoAsyncHttp), 0x00000008, null, LoadRho__AsyncHttp_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def2 = DefineModule("Rho::JSON", typeof(rho.rubyext.Rho.RhoJSON), 0x00000008, null, LoadRho__JSON_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
-            IronRuby.Builtins.RubyModule def3 = DefineGlobalModule("SQLite3", typeof(rho.rubyext.RhoSQLite3), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
-            IronRuby.Builtins.RubyClass def4 = DefineClass("SQLite3::Database", typeof(rho.rubyext.RhoSQLite3.RhoDatabase), 0x00000008, classRef0, LoadSQLite3__Database_Instance, null, null, IronRuby.Builtins.RubyModule.EmptyArray, 
+            IronRuby.Builtins.RubyModule def5 = DefineGlobalModule("SQLite3", typeof(rho.rubyext.RhoSQLite3), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            IronRuby.Builtins.RubyClass def6 = DefineClass("SQLite3::Database", typeof(rho.rubyext.RhoSQLite3.RhoDatabase), 0x00000008, classRef0, LoadSQLite3__Database_Instance, null, null, IronRuby.Builtins.RubyModule.EmptyArray, 
                 new Func<IronRuby.Builtins.RubyClass, IronRuby.Builtins.MutableString, IronRuby.Builtins.MutableString, rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Create)
             );
             DefineGlobalModule("SyncEngine", typeof(rho.rubyext.RhoSyncEngine), 0x00000008, null, LoadSyncEngine_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             DefineGlobalModule("WebView", typeof(rho.rubyext.RhoWebView), 0x00000008, null, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            SetConstant(def3, "AsyncHttp", def4);
             SetConstant(def1, "JSON", def2);
-            SetConstant(def3, "Database", def4);
+            SetConstant(def5, "Database", def6);
         }
         
         private static void LoadNativeBar_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
@@ -100,6 +103,19 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "switch_tab", 0x21, 
                 0x00000000U, 
                 new Action<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoNativeBar.switchTab)
+            );
+            
+        }
+        
+        private static void LoadRho__AsyncHttp_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "cancel", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoRoot.RhoAsyncHttp.Cancel)
+            );
+            
+            DefineLibraryMethod(module, "do_request", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, IronRuby.Builtins.Hash>(rho.rubyext.RhoRoot.RhoAsyncHttp.doRequest)
             );
             
         }
