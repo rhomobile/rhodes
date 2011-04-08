@@ -90,7 +90,7 @@ int CRhoParamArray::size() const
     return m_array->size;
 }
 
-const CRhoParams& CRhoParamArray::getItem(int nIndex) const
+CRhoParams CRhoParamArray::getItem(int nIndex) const
 {
     return m_array->value[nIndex];
 }
