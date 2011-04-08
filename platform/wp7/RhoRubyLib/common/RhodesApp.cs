@@ -421,7 +421,4 @@ namespace rho.common
             m_webBrowser.Navigate(new Uri(strAction));
         }
     }
-
-    public class QuitException : Exception { }
-
 }
