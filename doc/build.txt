@@ -263,7 +263,7 @@ It will create (if needed) new virtual sdcard for emulator, then check if emulat
 	android:
 	  version: 2.1
 
-You can also specify emulator name (see Android SDK Manager tool in root of Android SDK folder).
+You can also specify emulator AVD name (see 'Android SDK and AVD Manager').
 
 	android:
 	  emulator: myDeviceEmulator20
