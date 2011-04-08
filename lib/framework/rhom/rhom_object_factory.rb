@@ -1131,18 +1131,27 @@ module Rhom
                     db = ::Rho::RHO.get_src_db(get_source_name)                            
                     db.start_transaction
                     
-                    objects.each do |obj, values|
-                      values['attributes'].each do |attrib, value|
-                      
-                          resUpdateType =  db.select_from_table('changed_values', 'update_type', 
-                            {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
-                          next if resUpdateType && resUpdateType.length > 0 
-                      
-                          attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
-                          db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
-                            "value"=>value, "update_type"=>'delete', "attrib_type"=>attrib_type })
-                      end      
-                    end
+                    begin                    
+                        objects.each do |obj, values|
+                          values['attributes'].each do |attrib, value|
+                          
+                              resUpdateType =  db.select_from_table('changed_values', 'update_type', 
+                                {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
+                              next if resUpdateType && resUpdateType.length > 0 
+                          
+                              attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                              db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
+                                "value"=>value, "update_type"=>'delete', "attrib_type"=>attrib_type })
+                          end      
+                        end
+                        db.commit
+                    rescue Exception => e
+                        puts 'on_sync_delete_error Exception: ' + e.inspect
+                        db.rollback
+
+                        raise    
+                    end                    
+                    
                 end
 
                 def on_sync_update_error( objects, action )
@@ -1154,19 +1163,27 @@ module Rhom
                     
                     db = ::Rho::RHO.get_src_db(get_source_name)                            
                     db.start_transaction
-                    
-                    objects.each do |obj, values|
-                      values['attributes'].each do |attrib, value|
-                      
-                          resUpdateType =  db.select_from_table('changed_values', 'update_type', 
-                            {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
-                          next if resUpdateType && resUpdateType.length > 0 
-                      
-                          attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
-                          db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
-                            "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
-                      end      
-                    end
+
+                    begin                    
+                        objects.each do |obj, values|
+                          values['attributes'].each do |attrib, value|
+                          
+                              resUpdateType =  db.select_from_table('changed_values', 'update_type', 
+                                {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
+                              next if resUpdateType && resUpdateType.length > 0 
+                          
+                              attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                              db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
+                                "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
+                          end      
+                        end
+                        db.commit
+                    rescue Exception => e
+                        puts 'on_sync_update_error Exception: ' + e.inspect
+                        db.rollback
+
+                        raise    
+                    end                        
                 end
                 
                 def on_sync_create_error( objects, action )
