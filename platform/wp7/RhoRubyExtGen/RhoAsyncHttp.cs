@@ -27,9 +27,9 @@ namespace rho.rubyext
             }
 
             [RubyMethodAttribute("do_request", RubyMethodAttributes.PublicSingleton)]
-            public static void doRequest(RubyModule/*!*/ self, [NotNull]String command, Hash args)
+            public static MutableString doRequest(RubyModule/*!*/ self, [NotNull]String command, Hash args)
             {
-
+                return null;
             }
 
             #endregion

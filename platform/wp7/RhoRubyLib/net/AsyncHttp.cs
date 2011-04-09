@@ -25,7 +25,7 @@ namespace rho.net
 	
         static CAsyncHttp m_pInstance;
 
-        static CAsyncHttp Create()
+        public static CAsyncHttp Create()
         {
 	        if ( m_pInstance != null) 
 	           return m_pInstance;
@@ -45,13 +45,44 @@ namespace rho.net
             }
         }
 
-        static CAsyncHttp getInstance(){ return m_pInstance; }
+        public static CAsyncHttp getInstance(){ return m_pInstance; }
     
         public CAsyncHttp()
         {
             CThreadQueue.setLogCategory(LOG.getLogCategory());
 
             setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
+        }
+
+        public void cancelRequest(String szCallback)
+        {
+            if (szCallback == null || szCallback.length() == 0 )
+            {
+                LOG.INFO("Cancel callback should not be empty. Use * for cancel all");
+                return;
+            }
+
+            lock(getCommandLock())
+            {
+	            HttpCommand pCmd = (HttpCommand)getCurCommand();
+	
+	            if ( pCmd != null && ( szCallback.compareTo("*") == 0 || pCmd.m_strCallback.compareTo(szCallback) == 0) )
+	                pCmd.cancel();
+	
+	            if ( szCallback.compareTo("*") == 0 )
+	                getCommands().Clear();
+	            else
+	            {
+	                for (int i = getCommands().size()-1; i >= 0; i--)
+	                {
+	                    HttpCommand pCmd1 = (HttpCommand)getCommands().get(i);
+	
+	                    if ( pCmd1 != null && pCmd1.m_strCallback.compareTo(szCallback) == 0 )
+    	                    getCommands().RemoveAt(i);
+	                }
+	
+	            }
+            }   
         }
 
         public MutableString addHttpCommand(IQueueCommand pCmd)
@@ -77,7 +108,7 @@ namespace rho.net
 
 	    public const int  hcNone = 0, hcGet = 1, hcPost=2, hcDownload=3, hcUpload =4;
 
-        private class HttpCommand : IQueueCommand
+        public class HttpCommand : IQueueCommand
         {
 	        int m_eCmd;
             public String m_strCallback, m_strCallbackParams;
@@ -89,7 +120,7 @@ namespace rho.net
         
             RhoParams    m_params;
 
-            HttpCommand(String strCmd, RhoParams p)
+            public HttpCommand(String strCmd, RhoParams p)
             {
                 m_params = new RhoParams(p); 
                 m_eCmd = translateCommand(strCmd);
