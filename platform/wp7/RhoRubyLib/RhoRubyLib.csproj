@@ -64,12 +64,15 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\RhoParamArray.cs" />
+    <Compile Include="common\RhoParams.cs" />
     <Compile Include="common\TimeInterval.cs" />
     <Compile Include="common\RhoEmptyProfiler.cs" />
     <Compile Include="common\RhoProfiler.cs" />
     <Compile Include="db\SqliteCopyResult.cs" />
     <Compile Include="json\JsonParser.cs" />
     <Compile Include="json\RJSONTokener.cs" />
+    <Compile Include="net\AsyncHttp.cs" />
     <Compile Include="RhoAppAdapter.cs" />
     <Compile Include="common\Mutex.cs" />
     <Compile Include="common\RhoThread.cs" />
