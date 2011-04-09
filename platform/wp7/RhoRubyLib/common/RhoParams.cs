@@ -23,8 +23,11 @@ namespace rho.common
         {
     	    if ( !(m_pParams is Hash) ) 
     		    return null;
-
-            return ((Hash)m_pParams)[name];
+            
+            Object val = null;
+            Hash values = (Hash)m_pParams;
+            values.TryGetValue((object)MutableString.Create(name), out val);
+            return (val != null) ? val : null;
          }
 
         public String getString(String szName)
