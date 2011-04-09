@@ -8,6 +8,7 @@ using System.Windows;
 using System.IO;
 using Microsoft.Phone.Controls;
 using rho.common;
+using System.Collections.Generic;
 
 namespace rho
 {
@@ -267,6 +268,28 @@ namespace rho
         public String getOptionsPage()
         {
             return RhoConf.getInstance().getString("options_path");
+        }
+
+        public static MutableString create_string(String str)
+        {
+            return MutableString.Create(str);
+        }
+
+        public static Hashtable<String, String> enum_strhash(Object valHash)
+        {
+            Hashtable<String, String> hash = new Hashtable<String, String>();
+
+            if (valHash == null || valHash == null)
+                return hash;
+
+            Hash items = (Hash)valHash;
+
+            foreach (KeyValuePair<object, object> kvp in items)
+            {
+                hash.put(kvp.Key.ToString(), kvp.Value.ToString());
+            }
+
+            return hash;
         }
     }
 }

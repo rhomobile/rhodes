@@ -197,5 +197,7 @@ namespace rho.common
         public static rho.db.IDBStorage createDBStorage() { return new rho.db.CSqliteStorage(); }
 
         public static rho.net.NetRequest createNetRequest() {  return new rho.net.NetRequest(); }
+
+        public static rho.net.CAsyncHttp createAsyncHttp() { return new rho.net.CAsyncHttp(); }
     }
 }
