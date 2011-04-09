@@ -115,7 +115,7 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "do_request", 0x21, 
                 0x00000002U, 
-                new Action<IronRuby.Builtins.RubyModule, System.String, IronRuby.Builtins.Hash>(rho.rubyext.RhoRoot.RhoAsyncHttp.doRequest)
+                new Func<IronRuby.Builtins.RubyModule, System.String, IronRuby.Builtins.Hash, IronRuby.Builtins.MutableString>(rho.rubyext.RhoRoot.RhoAsyncHttp.doRequest)
             );
             
         }
