@@ -35,6 +35,7 @@ namespace rho.common
         private String m_strBlobsDirPath, m_strDBDirPath;
         private String m_strHomeUrl;
         ManualResetEvent m_UIWaitEvent = new ManualResetEvent(false);
+        Vector<Object> m_arCallbackObjects = new Vector<Object>();
 
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
         public CHttpServer HttpServer{ get { return m_httpServer; } }
@@ -87,7 +88,7 @@ namespace rho.common
             m_UIWaitEvent.Close();
 
             string[] ar2 = CRhoFile.enumDirectory("db");
-            int i = 0;
+            //int i = 0;
             //net::CAsyncHttp::Destroy();
         }
 
@@ -419,6 +420,37 @@ namespace rho.common
 
             strAction = canonicalizeRhoUrl(strAction);
             m_webBrowser.Navigate(new Uri(strAction));
+        }
+
+        public String addCallbackObject(Object valObject, String strName)
+        {
+            int nIndex = -1;
+            for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+            {
+                if (m_arCallbackObjects.elementAt(i) == null)
+                    nIndex = i;
+            }
+            if (nIndex == -1)
+            {
+                m_arCallbackObjects.addElement(valObject);
+                nIndex = m_arCallbackObjects.size() - 1;
+            }
+            else
+                m_arCallbackObjects[nIndex] = valObject;
+
+            String strRes = "__rho_object[" + strName + "]=" + nIndex;
+
+            return strRes;
+        }
+
+        public Object getCallbackObject(int nIndex)
+        {
+            if (nIndex < 0 || nIndex > m_arCallbackObjects.size())
+                return null;
+
+            Object res = (Object)m_arCallbackObjects.elementAt(nIndex);
+            m_arCallbackObjects[nIndex] = null;
+            return res;
         }
     }
 }
