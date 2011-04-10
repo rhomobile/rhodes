@@ -151,12 +151,11 @@ namespace rho.net
     	    {
     	        if (resp.isOK() && m_mapHeaders != null)
     	        {
-    	    	    String strContType = m_mapHeaders["content-type"].ToString();
+    	    	    String strContType = null;
+                    m_mapHeaders.TryGetValue("content-type", out strContType);
     	    	    if ( strContType != null && strContType.indexOf("application/json") >=0 )
     	    	    {   
     	    		   ///// RJSONTokener json = new RJSONTokener(resp.getCharData());
-
-                        fastJSON.RJSONTokener.JsonDecode(resp.getCharData());
     	    		    try{
     	    			  /////  m_valBody = json.nextRValue();
                             fastJSON.RJSONTokener.JsonDecode(resp.getCharData());
