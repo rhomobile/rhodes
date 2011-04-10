@@ -57,6 +57,9 @@
     <Reference Include="Microsoft.Scripting.Core">
       <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="system.Core" />
@@ -110,6 +113,7 @@
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoJSON.cs" />
+    <Compile Include="rubyext\RhoKernelOps.cs" />
     <Compile Include="rubyext\RhoNativeBar.cs" />
     <Compile Include="rubyext\RhoSyncEngine.cs" />
     <Compile Include="rubyext\RhoWebView.cs" />
