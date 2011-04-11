@@ -19,6 +19,7 @@
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "camera/Camera.h"
+#include "signature/Signature.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
@@ -692,6 +693,22 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	status = camera.selectPicture(this->m_hWnd,image_uri);
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
+        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+    
+    free ((void *)lParam);
+    
+	return 0;
+}
+
+LRESULT CMainWindow::OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+{
+	TCHAR signature_uri[MAX_PATH];
+    HRESULT status = S_OK;
+	Signature::Params* params = (Signature::Params *)lParam;
+	Signature signature;
+	status = signature.takeSignature(this->m_hWnd, signature_uri, convertToStringW(params->m_image_format).c_str());
+
+    RHODESAPP().callSignatureCallback(params->m_callback_url.c_str(), rho::common::convertToStringA(signature_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
     
     free ((void *)lParam);
