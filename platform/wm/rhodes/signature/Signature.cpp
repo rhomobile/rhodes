@@ -28,10 +28,21 @@ static LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt);
 static void create_folder(LPTSTR Path);
 HRESULT Imaging_SaveToFile(HBITMAP source, LPTSTR filename, LPCTSTR format);
 
-CRhoTakeSignatureDlg::CRhoTakeSignatureDlg() {}
+CRhoTakeSignatureDlg::CRhoTakeSignatureDlg() {
+	m_pInkOverlay = NULL;
+}
 
 CRhoTakeSignatureDlg::~CRhoTakeSignatureDlg() {}
 
+LRESULT CRhoTakeSignatureDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if (m_pInkOverlay != NULL) {
+		m_pInkOverlay->Release();
+		m_pInkOverlay = NULL;
+	}
+	return FALSE;
+
+}
 LRESULT CRhoTakeSignatureDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	SetWindowText(_T("Take signature"));
@@ -52,6 +63,7 @@ LRESULT CRhoTakeSignatureDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
                             IID_IInkOverlay,
                             (void **)&m_pInkOverlay);
 
+	ASSERT(SUCCEEDED(hr));
 	// Attach the inkoverlay object to the window and enable it to start collecting ink
     m_pInkOverlay->put_hWnd((long)m_hWnd);
     ASSERT(SUCCEEDED(hr));
@@ -110,9 +122,10 @@ HBITMAP Signature::getScreenHBITMAP() {
 	HDC memDC = CreateCompatibleDC(winDC); 
 	BYTE* memory = 0; 
 	HBITMAP bitmap = CreateDIBSection(winDC, &info, DIB_RGB_COLORS, (void**)&memory, 0, 0); 
-	SelectObject(memDC, bitmap); 
+	HBITMAP old_selected = (HBITMAP)SelectObject(memDC, bitmap); 
 	// Copies screen upside down (as it is already upside down) - if need normal layout, change to BitBlt function call
 	StretchBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, 0, bitmap_dy, bitmap_dx, bitmap_dy * -1, SRCCOPY); 
+	SelectObject(memDC, old_selected);
 	DeleteDC(memDC); 
 	ReleaseDC(getMainWnd(), winDC); 
 
@@ -154,6 +167,8 @@ void prepare_filesystem(LPTSTR pszFilename, LPCWSTR szFormat, LPTSTR pszFullName
 	
 	wcscpy(pszFullName, full_name);
 	wcscpy(pszFilename, filename);
+
+	free(full_name);
 }
 // TODO: move to some general utility class
 // Same as in Camera.cpp
@@ -216,11 +231,13 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 				} else if (wcscmp(format, L"bmp") == 0) {
 					formatString = _T("image/bmp");
 				} else {
+					factory->Release();
 					CoUninitialize();
 					return S_FALSE;
 				}
 				CLSID encoderClassId;
 				if (count == 0) {
+					factory->Release();
 					CoUninitialize();
 					return S_FALSE;
 				}
@@ -232,6 +249,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 					} else {
 						continue;
 					}
+					factory->Release();
 					CoUninitialize();
 					return S_FALSE;
       			} 
@@ -241,6 +259,9 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 					res = imageEncoder->GetEncodeSink(&imageSink);
 					
 					if (res != S_OK) {
+						imageEncoder->TerminateEncoder();
+						imageEncoder->Release();
+						factory->Release();
 						CoUninitialize();
 						return res;
 					}
@@ -289,10 +310,20 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 					pBitmap->QueryInterface(IID_IImage, (void**)&pImage); 
 					res = pImage->PushIntoSink(imageSink);
 					if (res != S_OK) {
+						delete bmData;
+						pBitmap->Release();
+						pImage->Release();
+						if (imageSink != NULL) {
+							imageSink->Release();
+						}
+						imageEncoder->TerminateEncoder();
+						imageEncoder->Release();
+						factory->Release();
 						CoUninitialize();
 						return res;
 					}
 					
+					delete bmData;
 					pBitmap->Release();
 					pImage->Release();
 					imageSink->Release();
@@ -301,6 +332,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 				}
 			}
 		}
+		factory->Release();
 		CoUninitialize();
 	} else {
 		return res;
