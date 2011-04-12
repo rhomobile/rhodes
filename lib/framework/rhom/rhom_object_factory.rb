@@ -1713,7 +1713,7 @@ module Rhom
               end
 	
               def get_inst_source_id
-                Rho::RhoConfig.sources[get_inst_source_name]['source_id'].to_s
+                Rho::RhoConfig.sources[get_inst_source_name]['source_id'].to_i
               end
           
               def is_inst_sync_source

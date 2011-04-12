@@ -3,7 +3,7 @@ module Rho
  
 class NativeToolbar
  
-  def self.create(params)
+  def self.create(params)  
     NativeBar.create_native_toolbar(Rho::RhoApplication::TOOLBAR_TYPE, params)
   end
  

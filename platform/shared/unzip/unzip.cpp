@@ -4,6 +4,7 @@
 #endif
 
 #if defined(WIN32) || defined(_WIN32_WCE)
+#define _CRT_SECURE_NO_DEPRECATE 1
 #else
 #define ZIP_STD
 #endif
