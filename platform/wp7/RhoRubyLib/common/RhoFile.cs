@@ -2,6 +2,7 @@
 using System.IO.IsolatedStorage;
 using System.Windows;
 using System.Windows.Resources;
+using System.Text;
 using System.IO;
 
 namespace rho.common
@@ -25,22 +26,37 @@ namespace rho.common
         public enum EOpenModes{ OpenForAppend = 1, OpenReadOnly = 2, OpenForWrite = 3, OpenForReadWrite = 4 };
         Stream m_st = null;
         IInputStream m_pInputStream = null;
+
         public bool isOpened() 
         {
-            if (m_st == null) return false;
+            if (m_st == null)
+                return false;
+
             return true; 
         }
+
         public bool open(String szFilePath, EOpenModes eMode) 
         { 
             szFilePath = CFilePath.removeFirstSlash(szFilePath);
-            if (!isFileExist(szFilePath)) return false;
-            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+            if (eMode == EOpenModes.OpenForAppend || eMode == EOpenModes.OpenForReadWrite)
             {
-                m_st = isoStore.OpenFile(szFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                if (!isFileExist(szFilePath))
+                {
+                    m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+                }
+
+                if (eMode == EOpenModes.OpenForAppend)
+                    movePosToEnd();
             }
+            else if (eMode == EOpenModes.OpenReadOnly)
+                m_st = isoStore.OpenFile(szFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            else if (eMode == EOpenModes.OpenForWrite)
+                m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read);
+
             if (m_st == null) return false;
-            
-            return true; 
+
+            return isOpened(); 
         }
 
         public IInputStream getInputStream()
@@ -49,31 +65,87 @@ namespace rho.common
             return m_pInputStream;
         }       
 
-        public int write(byte[] data, int len) { return 0; }
-        public int writeString(String data) { return data.Length; }
-        public void flush() { }
+        public void write(byte[] data, int len) 
+        {
+            if (!isOpened())
+                return;
+
+            m_st.Write(data, 0, len);
+        }
+
+        public void writeString(String data) 
+        {
+            if (!isOpened())
+                return;
+
+            m_st.Write(new UTF8Encoding().GetBytes(data), 0, data.length());
+        }
+
+        public void flush()
+        {
+            if (!isOpened())
+                return;
+
+            m_st.Flush();
+        }
+
         public void close()
         {
-            if (m_st != null)
-            {
-                m_st.Close();
-                m_st = null;
-            }
+            if (!isOpened())
+                return;
+
+            m_st.Close();
+            m_st = null;
         }
-        public void movePosToStart() { }
-        public void movePosToEnd() { }
-        public void setPosTo(int nPos) { }
-        public long size() { return m_st.Length; }
+
+        public void movePosToStart()
+        {
+            if (!isOpened())
+                return;
+
+            m_st.Seek(0, SeekOrigin.Begin);
+        }
+
+        public void movePosToEnd()
+        {
+            if (!isOpened())
+                return;
+            
+            m_st.Seek(0, SeekOrigin.End);
+        }
+
+        public void setPosTo(int nPos)
+        {
+            if (!isOpened() || nPos < 0)
+                return;
+
+            m_st.Seek(nPos, SeekOrigin.Current);
+        }
+
+        public long size() 
+        {
+            if (!isOpened())
+                return -1;
+
+            return m_st.Length > 0 ? m_st.Length : -1; 
+        }
 
         public String readString() { return ""; }
 
         public int readByte()
         {
+            if (!isOpened())
+                return -1;
+
             return m_st.ReadByte();
         }
         public int readData(byte[] buffer, int bufOffset, int bytesToRead)
         {
-            return m_st.Read(buffer, bufOffset, bytesToRead);
+            if (!isOpened())
+                return -1;
+
+            int count = m_st.Read(buffer, bufOffset, bytesToRead);
+            return count > 0 ? count : -1;
         }
 
         public static void deleteFile(String path)
