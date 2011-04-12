@@ -1,5 +1,9 @@
 #pragma once
+#if defined(_WIN32_WCE)
 #include <msinkaut.h>
+#else
+struct IInkOverlay{};
+#endif
 
 class CRhoTakeSignatureDlg : public 
 	CDialogImpl <CRhoTakeSignatureDlg>
