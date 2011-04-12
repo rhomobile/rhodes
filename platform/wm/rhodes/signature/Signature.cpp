@@ -3,9 +3,12 @@
 #if defined(_WIN32_WCE)
 #include <aygshell.h>
 #endif
+
 #include <atltime.h>
+#if defined(_WIN32_WCE)
 #include <msinkaut_i.c>
 #include <imaging.h>
+#endif
 #include "ext/rho/rhoruby.h"
 #include "../MainWindow.h"
 #include "Signature.h"
@@ -36,15 +39,18 @@ CRhoTakeSignatureDlg::~CRhoTakeSignatureDlg() {}
 
 LRESULT CRhoTakeSignatureDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
 	if (m_pInkOverlay != NULL) {
 		m_pInkOverlay->Release();
 		m_pInkOverlay = NULL;
 	}
+#endif
 	return FALSE;
 
 }
 LRESULT CRhoTakeSignatureDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+#if defined(_WIN32_WCE)
 	SetWindowText(_T("Take signature"));
 
 	SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
@@ -69,6 +75,7 @@ LRESULT CRhoTakeSignatureDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
     ASSERT(SUCCEEDED(hr));
     hr = m_pInkOverlay->put_Enabled(VARIANT_TRUE);
     ASSERT(SUCCEEDED(hr));
+#endif
 
 	return FALSE;
 }
@@ -210,9 +217,10 @@ LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
 }
 // TODO: move to some general utility class
 // Saves HBITMAP using encoder
-HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
-	HRESULT res;
-
+HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
+{
+	HRESULT res = S_OK;
+#if defined(_WIN32_WCE)
 	res = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	if ((res == S_OK) || (res == S_FALSE)) {
 		IImagingFactory* factory=NULL;
@@ -337,6 +345,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format){
 	} else {
 		return res;
 	}
+#endif
 
 	return res;
 }
