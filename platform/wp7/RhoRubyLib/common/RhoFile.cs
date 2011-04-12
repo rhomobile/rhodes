@@ -36,25 +36,25 @@ namespace rho.common
         }
 
         public bool open(String szFilePath, EOpenModes eMode) 
-        { 
-            szFilePath = CFilePath.removeFirstSlash(szFilePath);
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-            if (eMode == EOpenModes.OpenForAppend || eMode == EOpenModes.OpenForReadWrite)
+        {
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                if (!isFileExist(szFilePath))
+                szFilePath = CFilePath.removeFirstSlash(szFilePath);
+                if (eMode == EOpenModes.OpenForAppend || eMode == EOpenModes.OpenForReadWrite)
                 {
-                    m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+                    if (!isFileExist(szFilePath))
+                    {
+                        m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+                    }
+
+                    if (eMode == EOpenModes.OpenForAppend)
+                        movePosToEnd();
                 }
-
-                if (eMode == EOpenModes.OpenForAppend)
-                    movePosToEnd();
+                else if (eMode == EOpenModes.OpenReadOnly)
+                    m_st = isoStore.OpenFile(szFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                else if (eMode == EOpenModes.OpenForWrite)
+                    m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read);
             }
-            else if (eMode == EOpenModes.OpenReadOnly)
-                m_st = isoStore.OpenFile(szFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            else if (eMode == EOpenModes.OpenForWrite)
-                m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read);
-
-            if (m_st == null) return false;
 
             return isOpened(); 
         }
@@ -114,7 +114,7 @@ namespace rho.common
             m_st.Seek(0, SeekOrigin.End);
         }
 
-        public void setPosTo(int nPos)
+        public void setPosTo(long nPos)
         {
             if (!isOpened() || nPos < 0)
                 return;

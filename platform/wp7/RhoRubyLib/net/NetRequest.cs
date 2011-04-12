@@ -24,7 +24,9 @@ namespace rho.net
         String m_strUrl = null;
         String m_strCookies = null;
         bool m_isMultiPart = false;
+        bool m_isPullFile = false;
         int m_code = -1;
+        CRhoFile m_pulledFile = null;
         Vector<MultipartItem> m_arItems = null;
         Hashtable<String, String> m_headers = null;
 
@@ -190,8 +192,7 @@ namespace rho.net
 	    }
 
         private void GetResponseCallback(IAsyncResult asyncResult)
-        {
-            
+        {       
             HttpWebResponse response = null;
             try
             {
@@ -203,6 +204,7 @@ namespace rho.net
                 response = (HttpWebResponse)e.Response;
                 m_code = Convert.ToInt32(response.StatusCode);
             }
+
             
             Stream stream = response.GetResponseStream();
 
@@ -245,6 +247,81 @@ namespace rho.net
             }
         }
 
+        private void GetPullFileCallback(IAsyncResult asyncResult)
+        {
+            HttpWebResponse response = null;
+            try
+            {
+                response = m_webRequest.EndGetResponse(asyncResult) as HttpWebResponse;
+            }
+            catch (WebException e)
+            {
+                LOG.ERROR("EndGetResponse", e);
+                response = (HttpWebResponse)e.Response;
+                m_code = Convert.ToInt32(response.StatusCode);
+            }
+
+
+            Stream stream = response.GetResponseStream();
+
+            m_code = Convert.ToInt32(response.StatusCode);
+            LOG.INFO("getResponseCode : " + m_code);
+
+            m_strCookies = makeClientCookie(response);
+
+            readHeaders(m_headers, response);
+            copyHashtable(m_OutHeaders, m_headers);
+
+            try
+            {
+                if (m_code == Convert.ToInt32(HttpStatusCode.OK) )
+				    m_pulledFile.setPosTo(0);
+
+                if ( m_code == Convert.ToInt32(HttpStatusCode.RequestedRangeNotSatisfiable) )
+				    m_code = Convert.ToInt32(HttpStatusCode.PartialContent);
+			    else
+			    {
+                    if (m_code >= 400 && m_code != Convert.ToInt32(HttpStatusCode.PartialContent) ) 
+                    {
+                        LOG.ERROR("Error retrieving data: " + m_code);
+                        if (m_code == Convert.ToInt32(HttpStatusCode.Unauthorized) && m_oSession != null)
+                        {
+                            LOG.ERROR("Unauthorize error.Client will be logged out");
+                            m_oSession.logout();
+                        }
+
+                        m_strRespBody = readFully(stream, getResponseEncoding());
+                        LOG.TRACE("Response body: " + m_strRespBody);
+                    }
+                    else
+                    {
+                        int nRead = 0;
+					
+					    byte[]  byteBuffer = new byte[1024*20]; 
+
+		    		    do{
+		    			    nRead = stream.Read(byteBuffer, 0, 1024*20);
+		    			    if ( nRead > 0 )
+		    			    {
+		    				    m_pulledFile.write(byteBuffer, nRead);
+		    				    m_pulledFile.flush();
+		    				    m_nCurDownloadSize += nRead;
+		    			    }
+		    		    }while( !m_bCancel && nRead >= 0 );
+
+                        if (m_code == Convert.ToInt32(HttpStatusCode.OK) || (m_code == Convert.ToInt32(HttpStatusCode.PartialContent) && isFinishDownload(response.Headers["Content-Range"])))
+		    			    m_nCurDownloadSize = 0;
+                    }
+                }
+            }
+            finally
+            {
+                stream.Close();
+                response.Close();
+                m_respWaitEvent.Set();
+            }	
+        }
+
         private void GetRequestStreamCallback(IAsyncResult asyncResult)
         {
             Stream stream = null;
@@ -261,7 +338,7 @@ namespace rho.net
             }
         }
 
-	    public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable<String, String> headers )
+	    public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable<String, String> headers, long nRangePos = -1)
         {
             LOG.INFO("Url: " + strUrl + "; Body: " + strBody);
             m_respWaitEvent.WaitOne();
@@ -281,10 +358,15 @@ namespace rho.net
 
 			if ( strBody != null && strBody.length() > 0 )
 			{
-		        if ( oSession != null )
+                if (oSession != null)
                     m_webRequest.ContentType = oSession.getContentType();
                 else if (m_isMultiPart)
                     m_webRequest.ContentType = "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
+                else if (m_isPullFile)
+                {
+                    m_webRequest.Headers["Connection"] = "keep-alive";
+                    m_webRequest.Headers["Range"] = "bytes=" + nRangePos.ToString() + "-";
+                }
                 else
                     m_webRequest.ContentType = "application/x-www-form-urlencoded";
 
@@ -300,7 +382,11 @@ namespace rho.net
                 m_webRequest.Method = strMethod;
 			}
 
-            m_webRequest.BeginGetResponse(GetResponseCallback, null);
+            if(!m_isPullFile)
+                m_webRequest.BeginGetResponse(GetResponseCallback, null);
+            else
+                m_webRequest.BeginGetResponse(GetPullFileCallback, null);
+
             m_respWaitEvent.Reset();
             m_respWaitEvent.WaitOne();
 
@@ -423,141 +509,50 @@ namespace rho.net
             return doRequest("POST", strUrl, null, oSession, headers);
         }
 	
-	    /*long m_nMaxPacketSize = 0;
 	    int m_nCurDownloadSize = 0;
-	    boolean m_bFlushFileAfterWrite = false;*/
 	    public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable<String, String> headers )
 	    {
-		   /*
-         * IRAFile file = null;
+		   
+            CRhoFile file = null;
 		    NetResponse resp = null;
-		
-		    //m_nMaxPacketSize = RhoClassFactory.getNetworkAccess().getMaxPacketSize();
-		    //m_bFlushFileAfterWrite = RhoConf.getInstance().getBool("use_persistent_storage");
+
 		    m_bCancel = false;
     	
 		    try{
 
 	            if (!strFileName.startsWith("file:")) { 
             	    try{
-	            	    strFileName = CFilePath.join(RhoClassFactory.createFile().getDirPath(""), strFileName);
+	            	    strFileName = CFilePath.join(CRhodesApp.getRhoRootPath(), strFileName);
             	    } catch (IOException x) { 
                  	    LOG.ERROR("getDirPath failed.", x);
                         throw x;
                     }              	
 	            }
-			
-			    file = RhoClassFactory.createFSRAFile();
-			    file.open(strFileName, "rw");
-			    file.seek(file.size());
+
+                m_pulledFile = RhoClassFactory.createFile();
+                m_pulledFile.open(strFileName, CRhoFile.EOpenModes.OpenForReadWrite);
+                m_pulledFile.setPosTo(file.size());
 			
 			    do{
-				    resp = pullFile1( strUrl, file, file.size(), oSession, headers );
-			    }while( !m_bCancel && (resp == null || resp.isOK()) && m_nCurDownloadSize > 0 && m_nMaxPacketSize > 0 );
+                    resp = doRequest("GET", strUrl, null, oSession, headers, m_pulledFile.size());
+			    }while( !m_bCancel && (resp == null || resp.isOK()) && m_nCurDownloadSize > 0);
 			
 		    }finally{
-			    if ( file != null )
+                if (m_pulledFile != null)
 			    {
-				    file.close();
-				    file = null;
+                    m_pulledFile.close();
+                    m_pulledFile = null;
 			    }
 		    }
 		
 		    copyHashtable(m_OutHeaders, headers);
-		
-		    return resp != null && !m_bCancel ? resp : makeResponse("", IHttpConnection.HTTP_INTERNAL_ERROR );*/
-            return makeResponse("",200);
+
+            return resp != null && !m_bCancel ? resp : makeResponse("", Convert.ToInt32(HttpStatusCode.InternalServerError));
 	    }
 	
-	    /*NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable<String, String> headers )
+	    private boolean isFinishDownload(String strContentRange)
 	    {
-		    String strRespBody = null;
-		    InputStream is = null;
-		    int code = -1;
-		
-		    try{
-			    closeConnection();
-			    m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
-			
-			    handleCookie(oSession);
-
-			    m_connection.setRequestProperty("Connection", "keep-alive");
-			
-			    if ( nStartPos > 0 || m_nMaxPacketSize > 0 )
-			    {
-				    if ( m_nMaxPacketSize > 0 )
-					    m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-" + (nStartPos + m_nMaxPacketSize-1));
-				    else
-					    m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-");
-			    }
-			    writeHeaders(headers);
-			
-			    m_connection.setRequestMethod(IHttpConnection.GET);
-			
-			    is = m_connection.openInputStream();
-			
-			    code = m_connection.getResponseCode();
-			
-			    LOG.INFO("getResponseCode : " + code);
-			
-			    m_nCurDownloadSize = 0;
-			    readHeaders(headers);
-
-			    if ( code == IHttpConnection.HTTP_OK )
-				    file.seek(0);
-			
-			    if ( code == IHttpConnection.HTTP_RANGENOTSATISFY )
-				    code = IHttpConnection.HTTP_PARTIAL_CONTENT;
-			    else
-			    {
-				    if (code >= 400 && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
-				    {
-					    LOG.ERROR("Error retrieving data: " + code);
-					    if (code == IHttpConnection.HTTP_UNAUTHORIZED)
-					    {
-						    LOG.ERROR("Unauthorize error.Client will be logged out");
-						    oSession.logout();
-					    }
-					
-					    strRespBody = readFully(is, getResponseEncoding());
-				    }else
-				    {
-					    int nRead = 0;
-					
-					    byte[]  byteBuffer = new byte[1024*20]; 
-
-		    		    do{
-		    			    nRead = is.read(byteBuffer);
-		    			    if ( nRead > 0 )
-		    			    {
-		    				    file.write(byteBuffer, 0, nRead);
-		    				
-		    				    if (m_bFlushFileAfterWrite)
-		    					    file.sync();
-
-		    				    m_nCurDownloadSize += nRead;
-		    			    }
-		    		    }while( !m_bCancel && nRead >= 0 );
-		    		
-		    		    if ( code == IHttpConnection.HTTP_OK || (code == IHttpConnection.HTTP_PARTIAL_CONTENT && isFinishDownload()) )
-		    			    m_nCurDownloadSize = 0;
-				    }
-				
-			    }
-		    }finally
-		    {
-			    if ( is != null )
-				    try{ is.close(); }catch(IOException exc){}
-			
-			    closeConnection();
-		    }
-		
-		    return makeResponse(strRespBody != null ? strRespBody : "", code );
-	    }*/
-	
-	    private boolean isFinishDownload()
-	    {
-            String strContRange = "";// m_connection.getHeaderField("Content-Range");
+            String strContRange = strContentRange;// m_connection.getHeaderField("Content-Range");
 		    if ( strContRange != null )
 		    {
 			    int nMinus = strContRange.indexOf('-');
