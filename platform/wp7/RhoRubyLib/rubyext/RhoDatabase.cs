@@ -80,25 +80,33 @@ namespace rho.rubyext
                                 values = args.ToArray();
                         }
 
-                        using (IDBResult rows = self.m_db.executeSQL(sqlStatement.ToString(), values, true))
+                        try
                         {
-                            if (rows != null)
+                            self.m_db.Lock();
+                            using (IDBResult rows = self.m_db.executeSQL(sqlStatement.ToString(), values, true))
                             {
-                                MutableString[] colNames = null;
-                                for (; !rows.isEnd(); rows.next())
+                                if (rows != null)
                                 {
-                                    IDictionary<object, object> map = new Dictionary<object, object>();
-                                    Hash row = new Hash(map);
-                                    for (int nCol = 0; nCol < rows.getColCount(); nCol++)
+                                    MutableString[] colNames = null;
+                                    for (; !rows.isEnd(); rows.next())
                                     {
-                                        if (colNames == null)
-                                            colNames = getOrigColNames(rows);
+                                        IDictionary<object, object> map = new Dictionary<object, object>();
+                                        Hash row = new Hash(map);
+                                        for (int nCol = 0; nCol < rows.getColCount(); nCol++)
+                                        {
+                                            if (colNames == null)
+                                                colNames = getOrigColNames(rows);
 
-                                        row.Add(colNames[nCol], rows.getRubyValueByIdx(nCol));
+                                            row.Add(colNames[nCol], rows.getRubyValueByIdx(nCol));
+                                        }
+                                        retArr.Add(row);
                                     }
-                                    retArr.Add(row);
                                 }
                             }
+                        }
+                        finally
+                        {
+                            self.m_db.Unlock();
                         }
                     }
 
