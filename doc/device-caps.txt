@@ -72,7 +72,7 @@ Enable\disable phone sleep by timeout, return previous state
 	:::ruby
 	System.set_sleeping
 
-Open application associated with url; behavior may be different on different platforms and depend on installed software
+Open application associated with url; behavior may be different on different platforms and depend on installed software. On iPhone, if you post path of local file, then the specific iOS control (UIDocumentInteractionController) where file will previewed and user will be able open this file by selected application wich supported this filetype.
 	:::ruby
 	System.open_url(url)
 
