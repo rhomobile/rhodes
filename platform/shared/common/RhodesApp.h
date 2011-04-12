@@ -158,6 +158,7 @@ const char* rho_rhodesapp_getcurrenturl(int tabindex);
 
 const char* rho_rhodesapp_getloadingpagepath();
 const char* rho_rhodesapp_getblobsdirpath();
+const char* rho_rhodesapp_getapprootpath();
 	
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
