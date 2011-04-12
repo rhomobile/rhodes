@@ -57,7 +57,7 @@ namespace rho.common
     	    stopWait();
 
 		    try{
-                if (!m_thread.Join(nTimeoutToKill * 100))
+                if (!m_thread.Join(nTimeoutToKill * 1000))
                     m_thread.Abort();			
 		    }catch(Exception e){
 			    LOG.ERROR("stop failed", e);

@@ -9,7 +9,7 @@
 #ifndef __LOCAL_PHONEBOOK_H__
 #define __LOCAL_PHONEBOOK_H__
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 #include "NativeAddressBook.h"
 #endif
 

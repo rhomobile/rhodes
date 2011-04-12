@@ -3,11 +3,14 @@ using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
 using IronRuby.Builtins;
 using IronRuby.Runtime;
+using IronRuby.Runtime.Calls;
 using System.Windows.Resources;
 using System.Windows;
 using System.IO;
 using Microsoft.Phone.Controls;
 using rho.common;
+using System.Collections.Generic;
+using rho.rubyext;
 
 namespace rho
 {
@@ -69,6 +72,11 @@ namespace rho
             m_context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(m_engine);
 
             m_context.ObjectClass.SetConstant("RHO_WP7", 1);
+            m_context.ObjectClass.AddMethod(m_context, "__rhoGetCallbackObject", new RubyLibraryMethodInfo(
+                new[] { LibraryOverload.Create(new Func<System.Object, System.Int32, System.Object>(RhoKernelOps.__rhoGetCallbackObject), false, 0, 0) },
+                RubyMethodVisibility.Public,
+                m_context.ObjectClass
+            ));
             m_context.Loader.LoadAssembly("RhoRubyLib", "rho.rubyext.rubyextLibraryInitializer", true, true);
 
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();
@@ -267,6 +275,28 @@ namespace rho
         public String getOptionsPage()
         {
             return RhoConf.getInstance().getString("options_path");
+        }
+
+        public static MutableString create_string(String str)
+        {
+            return MutableString.Create(str);
+        }
+
+        public static Hashtable<String, String> enum_strhash(Object valHash)
+        {
+            Hashtable<String, String> hash = new Hashtable<String, String>();
+
+            if (valHash == null || valHash == null)
+                return hash;
+
+            Hash items = (Hash)valHash;
+
+            foreach (KeyValuePair<object, object> kvp in items)
+            {
+                hash.put(kvp.Key.ToString(), kvp.Value.ToString());
+            }
+
+            return hash;
         }
     }
 }
