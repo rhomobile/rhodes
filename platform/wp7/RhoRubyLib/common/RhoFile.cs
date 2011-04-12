@@ -6,25 +6,75 @@ using System.IO;
 
 namespace rho.common
 {
+    class CFileInputStream : IInputStream
+    {
+        CRhoFile m_oFile;
+        public CFileInputStream(CRhoFile oFile)
+        {
+            m_oFile = oFile;
+        }
+
+        public long available() { return m_oFile.size(); }
+        public int read() { return m_oFile.readByte(); }
+        public int read(byte[] buffer, int bufOffset, int bytesToRead) { return m_oFile.readData(buffer, bufOffset, bytesToRead); }
+        public void reset() { m_oFile.movePosToStart(); }
+    };
+    
     public class CRhoFile
     {
         public enum EOpenModes{ OpenForAppend = 1, OpenReadOnly = 2, OpenForWrite = 3, OpenForReadWrite = 4 };
+        Stream m_st = null;
+        IInputStream m_pInputStream = null;
+        public bool isOpened() 
+        {
+            if (m_st == null) return false;
+            return true; 
+        }
+        public bool open(String szFilePath, EOpenModes eMode) 
+        { 
+            szFilePath = CFilePath.removeFirstSlash(szFilePath);
+            if (!isFileExist(szFilePath)) return false;
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                m_st = isoStore.OpenFile(szFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+            }
+            if (m_st == null) return false;
+            
+            return true; 
+        }
 
-        public bool isOpened() { return false; }
-        public bool open(String szFilePath, EOpenModes eMode) { return false; }
+        public IInputStream getInputStream()
+        {
+            m_pInputStream = new CFileInputStream(this);
+            return m_pInputStream;
+        }       
+
         public int write(byte[] data, int len) { return 0; }
         public int writeString(String data) { return data.Length; }
         public void flush() { }
-        public void close() { }
+        public void close()
+        {
+            if (m_st != null)
+            {
+                m_st.Close();
+                m_st = null;
+            }
+        }
         public void movePosToStart() { }
         public void movePosToEnd() { }
         public void setPosTo(int nPos) { }
-        public int size() { return 0; }
+        public long size() { return m_st.Length; }
 
         public String readString() { return ""; }
 
-        //int readByte() { return 0;  }
-        //int readData(void* buffer, int bufOffset, int bytesToRead);
+        public int readByte()
+        {
+            return m_st.ReadByte();
+        }
+        public int readData(byte[] buffer, int bufOffset, int bytesToRead)
+        {
+            return m_st.Read(buffer, bufOffset, bytesToRead);
+        }
 
         public static void deleteFile(String path)
         {
