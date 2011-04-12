@@ -1269,6 +1269,11 @@ const char* rho_rhodesapp_getblobsdirpath()
     return RHODESAPP().getBlobsDirPath().c_str();
 }
 
+const char* rho_rhodesapp_getapprootpath() {
+    return RHODESAPP().getAppRootPath().c_str();
+}
+
+
 void rho_rhodesapp_navigate_back()
 {
     RHODESAPP().navigateBack();
