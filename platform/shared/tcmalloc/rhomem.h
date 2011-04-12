@@ -1,6 +1,10 @@
 #ifndef RHO_MEMORY__
 #define RHO_MEMORY__
 
+#ifndef _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE 1
+#endif //_CRT_SECURE_NO_DEPRECATE
+
 //#ifndef __APPLE__
 #if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
 #include <stdlib.h>

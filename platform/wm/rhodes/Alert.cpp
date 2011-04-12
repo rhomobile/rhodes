@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 #include <soundfile.h>
 #endif
 
@@ -329,7 +329,7 @@ void CAlert::showPopup(CAlertDialog::Params *params)
 	::PostMessage(main_wnd, WM_ALERT_SHOW_POPUP, 0, (LPARAM ) params);
 }
 
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
 void CAlert::vibrate()
 {
     CVibrate::getCVibrate().toggle();
@@ -460,13 +460,13 @@ extern "C" void alert_show_popup(rho_param *p)
 }
 
 extern "C" void alert_vibrate(void*) {
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
     CAlert::vibrate();
 #endif
 }
 
 extern "C" void alert_play_file(char* file_name, ...) {
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
     CAlert::playFile(file_name);
 #endif
 }

@@ -7,7 +7,7 @@
 #include "net/URI.h"
 #include "common/RhoConf.h"
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 #include <connmgr.h>
 #endif
 
@@ -282,6 +282,7 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
 
         String strFieldName = common::convertToStringA(strName.GetString());
         String strFieldValue = common::convertToStringA(strValue.GetString());
+        LOG(TRACE) + strFieldName + ":" + strFieldValue;
         if ( oHeaders.containsKey(strFieldName) )
         {
             strFieldValue += ";" + oHeaders.get( strFieldName );
@@ -869,7 +870,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
         InternetCloseHandle(m_hInternet);
     m_hInternet = NULL;
 
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
     if ( m_hWceConnMgrConnection )
         ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
 
@@ -880,7 +881,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;
