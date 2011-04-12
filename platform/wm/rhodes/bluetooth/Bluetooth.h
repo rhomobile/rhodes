@@ -3,8 +3,7 @@
 
 #include <windows.h>
 
-#ifndef OS_WINDOWS
-
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
 
 #include <winsock2.h>
 #include <ws2bth.h>

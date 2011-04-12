@@ -208,7 +208,7 @@ public :
         // Show the main application window
         m_appWindow.ShowWindow(nShowCmd);
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 		// Register for changes in the number of network connections
 		hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
 			SN_CONNECTIONSNETWORKCOUNT_PATH, 
@@ -253,7 +253,7 @@ public :
             }
         }
 
-#if defined(OS_WINCE)
+#if defined(OS_WINCE)&& !defined( OS_PLATFORM_CE )
         CGPSController* pGPS = CGPSController::Instance();
         pGPS->DeleteInstance();
 #endif
@@ -622,6 +622,26 @@ char* wce_wctomb(const wchar_t* w)
 
 #endif
 
+#if defined( OS_PLATFORM_CE )
+HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
+{
+    if ( !pszFileName || !*pszFileName )
+        return 0;
+
+    String strFileName = convertToStringA(pszFileName);
+    if ( String_endsWith(strFileName, ".bmp") )
+    {
+        return (HBITMAP)::LoadImage(NULL, pszFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    }
+
+    if ( !String_endsWith(strFileName, ".png") )
+        return 0;
+    //TODO: show png file
+
+    return 0;
+}
+
+#endif
 
 #if !defined(_WIN32_WCE)
 #include <gdiplus.h>

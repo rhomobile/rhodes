@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <time.h>
 #include <sys/timeb.h>
+#include "wince.h"
 
 time_t wce_FILETIME2time_t(const FILETIME* f);
 

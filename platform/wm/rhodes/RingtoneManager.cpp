@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "RingtoneManager.h"
 
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
 
 IMPLEMENT_LOGCLASS(CRingtoneManager, "RingtoneManager");
 CRingtoneManager *CRingtoneManager::m_pInstance = NULL;
@@ -102,7 +102,7 @@ VALUE rho_ringtone_manager_get_all()
     
     CHoldRubyValue retval(rho_ruby_createHash());
 
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
 
     Hashtable<String, String> ringtones;
     CRingtoneManager::getCRingtoneManager().getAllRingtones(ringtones);
@@ -118,7 +118,7 @@ VALUE rho_ringtone_manager_get_all()
 
 void rho_ringtone_manager_stop()
 {
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
     LOG(INFO) + __FUNCTION__;
     CRingtoneManager::getCRingtoneManager().stop();
 #endif
@@ -126,7 +126,7 @@ void rho_ringtone_manager_stop()
 
 void rho_ringtone_manager_play(char* file_name)
 {
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
     LOG(INFO) + __FUNCTION__;
     CRingtoneManager::getCRingtoneManager().play(String(file_name));
 #endif
