@@ -75,10 +75,6 @@
         
         <uses-library android:name="com.google.android.maps" />
         
-        <provider
-            android:name="LocalFileProvider"
-            android:authorities="com.rhomobile.rhodes"
-        />
     </application>
     
     <uses-permission android:name="android.permission.INTERNET" />
