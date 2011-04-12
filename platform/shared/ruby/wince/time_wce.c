@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <time.h>
+#include "wince.h"
 
 /* globals */
 const __int64 _onesec_in100ns = (__int64)10000000;

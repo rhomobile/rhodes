@@ -12,7 +12,7 @@
 #include "phonebook.h"
 
 void* openPhonebook() {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 	CNativeAddressBook* phonebook = new CNativeAddressBook();
 
 	if (!phonebook->openAB()) {
@@ -27,7 +27,7 @@ void* openPhonebook() {
 }
 
 void  closePhonebook(void* pb) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (pb) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		delete phonebook;
@@ -39,7 +39,7 @@ void _addRecordValue(const char* key, const char* value, void* hash) {
 	addStrToHash(*((unsigned long*)hash), key, value);
 }
 
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 static VALUE _getRecord(CABRecord* record) {
 	if (record) {
         CHoldRubyValue hash(rho_ruby_createHash());
@@ -51,7 +51,7 @@ static VALUE _getRecord(CABRecord* record) {
 #endif
 
 VALUE getallPhonebookRecords(void* pb) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (pb) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
         VALUE valGc = rho_ruby_disable_gc();
@@ -78,7 +78,7 @@ VALUE getallPhonebookRecords(void* pb) {
 }
 
 VALUE getPhonebookRecord(void* pb, char* id) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (pb && id) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		CABRecord* record = phonebook->getRecord(id);
@@ -104,7 +104,7 @@ VALUE getnextPhonebookRecord(void* pb) {
 //==================================================================================
 
 void* createRecord(void* pb) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	return new CABOutlookRecord(NULL);
 #else
 	return NULL;
@@ -112,7 +112,7 @@ void* createRecord(void* pb) {
 }
 
 void* openPhonebookRecord(void* pb, char* id) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (pb && id) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		return phonebook->getRecord(id);
@@ -122,7 +122,7 @@ void* openPhonebookRecord(void* pb, char* id) {
 }
 
 int setRecordValue(void* record, char* prop, char* value) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (record) {
 		CABRecord* r = (CABRecord*)record;
 		r->setValue(prop,value);
@@ -132,7 +132,7 @@ int setRecordValue(void* record, char* prop, char* value) {
 }
 
 int addRecord(void* pb, void* record) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (pb && record) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		phonebook->addRecord((CABRecord*)record);
@@ -143,7 +143,7 @@ int addRecord(void* pb, void* record) {
 }
 
 int saveRecord(void* pb, void* record) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (record) {
 		CABRecord* r = (CABRecord*)record;
 		LOGC(INFO,"Phonebook") + "About to save:";
@@ -156,7 +156,7 @@ int saveRecord(void* pb, void* record) {
 }
 
 int deleteRecord(void* pb, void* record) {
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (record) {
 		CABRecord* r = (CABRecord*)record;
 		r->remove();

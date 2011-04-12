@@ -40,6 +40,8 @@
 #ifndef GOOGLE_BASE_WINDOWS_H_
 #define GOOGLE_BASE_WINDOWS_H_
 
+#define _CRT_SECURE_NO_DEPRECATE 1
+
 // You should never include this file directly, but always include it
 // from either config.h (MSVC) or mingw.h (MinGW/msys).
 #if !defined(GOOGLE_PERFTOOLS_WINDOWS_CONFIG_H_) && \
