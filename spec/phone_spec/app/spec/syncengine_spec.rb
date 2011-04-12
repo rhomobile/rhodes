@@ -530,15 +530,30 @@ end
     
     records1 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
     records1.length.should == 2
-    records1[0]["object"].should == "broken_object_id"
-    records1[0]["attrib"].should == "name"
-    records1[0]["value"].should == "wrongname"
-    records1[0]["update_type"].should == "update"
+    if ( records1[0]["attrib"] == "name" )
+        records1[0]["object"].should == "broken_object_id"
+        records1[0]["attrib"].should == "name"
+        records1[0]["value"].should == "wrongname"
+        records1[0]["update_type"].should == "update"
+    else
+        records1[1]["object"].should == "broken_object_id"
+        records1[1]["attrib"].should == "name"
+        records1[1]["value"].should == "wrongname"
+        records1[1]["update_type"].should == "update"
+    end
 
-    records1[1]["object"].should == "broken_object_id"
-    records1[1]["attrib"].should == "an_attribute"
-    records1[1]["value"].should == "error update"
-    records1[1]["update_type"].should == "update"
+    if ( records1[1]["attrib"] == "an_attribute" )    
+        records1[1]["object"].should == "broken_object_id"
+        records1[1]["attrib"].should == "an_attribute"
+        records1[1]["value"].should == "error update"
+        records1[1]["update_type"].should == "update"
+    else
+        records1[0]["object"].should == "broken_object_id"
+        records1[0]["attrib"].should == "an_attribute"
+        records1[0]["value"].should == "error update"
+        records1[0]["update_type"].should == "update"
+    end
+        
   end
 
   it "should process delete-error" do    
@@ -561,16 +576,30 @@ end
     
     records1 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'delete')
     records1.length.should == 2
-    records1[0]["object"].should == "broken_object_id"
-    records1[0]["attrib"].should == "name"
-    records1[0]["value"].should == "wrongname"
-    records1[0]["update_type"].should == "delete"
+    if ( records1[0]["attrib"] == "name" )
+        records1[0]["object"].should == "broken_object_id"
+        records1[0]["attrib"].should == "name"
+        records1[0]["value"].should == "wrongname"
+        records1[0]["update_type"].should == "delete"
+    else
+        records1[1]["object"].should == "broken_object_id"
+        records1[1]["attrib"].should == "name"
+        records1[1]["value"].should == "wrongname"
+        records1[1]["update_type"].should == "delete"
+    end
 
-    records1[1]["object"].should == "broken_object_id"
-    records1[1]["attrib"].should == "an_attribute"
-    records1[1]["value"].should == "error delete"
-    records1[1]["update_type"].should == "delete"
-    
+    if ( records1[1]["attrib"] == "an_attribute" )
+        records1[1]["object"].should == "broken_object_id"
+        records1[1]["attrib"].should == "an_attribute"
+        records1[1]["value"].should == "error delete"
+        records1[1]["update_type"].should == "delete"
+    else
+        records1[0]["object"].should == "broken_object_id"
+        records1[0]["attrib"].should == "an_attribute"
+        records1[0]["value"].should == "error delete"
+        records1[0]["update_type"].should == "delete"
+    end
+        
   end
 
   it "should process source-error" do    

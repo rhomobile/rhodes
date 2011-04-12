@@ -2,8 +2,8 @@ package com.rho.db;
 
 import j2me.lang.CharacterMe;
 
-import com.rho.AppBuildConfig;
-import com.rho.RhoConf;
+//import com.rho.AppBuildConfig;
+//import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 import com.rho.file.*;
@@ -11,8 +11,8 @@ import com.rho.file.*;
 import net.rim.device.api.io.URI;
 import net.rim.device.api.database.*;
 import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Enumeration;
+//import java.util.Hashtable;
+//import java.util.Enumeration;
 
 public class SqliteStorage implements IDBStorage 
 {
@@ -84,121 +84,123 @@ public class SqliteStorage implements IDBStorage
 			boolean bReportNonUnique, boolean bNoCopy) throws DBException 
 	{
 		//LOG.INFO(strStatement);// + "; Values: " + values);
-		
-		if ( m_db == null )
-			throw new RuntimeException("executeSQL: m_db == null");
-
-		IDBResult res = null;
-		
-		String strStatementOrig = strStatement;
-		
-		try
+		synchronized(m_db)
 		{
-			while( strStatement != null && strStatement.length()> 0)
+			if ( m_db == null )
+				throw new RuntimeException("executeSQL: m_db == null");
+	
+			IDBResult res = null;
+			
+			String strStatementOrig = strStatement;
+			
+			try
 			{
-	            int start = 0;
-	            while ( start < strStatement.length() && (strStatement.charAt(start) == '\n' ||
-	            		strStatement.charAt(start) == '\r' ||
-	            		strStatement.charAt(start) == ';' ||
-	            		CharacterMe.isWhitespace(strStatement.charAt(start) ) ) )
-	            		start++;
-	            if (start > 0 )
-	            	strStatement = strStatement.substring(start);
-	            	
-				if ( strStatement == null || start >= strStatement.length() )
-					break;
-				
-				String strCommand = strStatement.length() > 6 ? strStatement.substring(0, 6) : ""; 
-				boolean bSelect = strCommand.equalsIgnoreCase("SELECT") || strCommand.equalsIgnoreCase("PRAGMA");
-				
-				Statement st = null;//(Statement)m_mapStatements.get(strStatement);
-				boolean bCachedStatement = st != null;
-				if ( st == null )
-					st = m_db.createStatement(strStatement);
-				
-				boolean bDontCloseStatement = false;
-				try
+				while( strStatement != null && strStatement.length()> 0)
 				{
-					if ( !bCachedStatement )
-					{
-						st.prepare();
-	                	strStatement = st.getTail();
-	                	
-	                	/*if ( strStatement == null || strStatement.length() == 0 )
-	                	{
-	                		m_mapStatements.put(strStatementOrig, st);
-	                		bCachedStatement = true;
-	                	}*/
-	                	
-					}else
-						strStatement = "";
+		            int start = 0;
+		            while ( start < strStatement.length() && (strStatement.charAt(start) == '\n' ||
+		            		strStatement.charAt(start) == '\r' ||
+		            		strStatement.charAt(start) == ';' ||
+		            		CharacterMe.isWhitespace(strStatement.charAt(start) ) ) )
+		            		start++;
+		            if (start > 0 )
+		            	strStatement = strStatement.substring(start);
+		            	
+					if ( strStatement == null || start >= strStatement.length() )
+						break;
 					
-					for ( int i = 0; values != null && i < values.length; i++ )
-					{
-						bindObject(st, i+1, values[i]);
-					}
+					String strCommand = strStatement.length() > 6 ? strStatement.substring(0, 6) : ""; 
+					boolean bSelect = strCommand.equalsIgnoreCase("SELECT") || strCommand.equalsIgnoreCase("PRAGMA");
 					
-					if ( bSelect )
+					Statement st = null;//(Statement)m_mapStatements.get(strStatement);
+					boolean bCachedStatement = st != null;
+					if ( st == null )
+						st = m_db.createStatement(strStatement);
+					
+					boolean bDontCloseStatement = false;
+					try
 					{
-		                if ( res == null )
-		                {
-		                	res = new SqliteResult(st, bCachedStatement, bNoCopy);
-		                	bDontCloseStatement = true;
-		                }
-					}else
-					{
-						try
+						if ( !bCachedStatement )
 						{
-							//LOG.INFO("START execute");
-							st.execute();
-							//LOG.INFO("END execute");
-							
-							if ( /*strCommand.equalsIgnoreCase("INSERT")||*/ strCommand.equalsIgnoreCase("DELETE") ||
-								 strCommand.equalsIgnoreCase("UPDATE")  )
-							{
-								if ( m_nInsideTransaction == 0 )
-									processCallbackData();
-								else
-									m_bNeedProcessCallback = true;
-							}
-							
-						}catch(DatabaseException exc)
+							st.prepare();
+		                	strStatement = st.getTail();
+		                	
+		                	/*if ( strStatement == null || strStatement.length() == 0 )
+		                	{
+		                		m_mapStatements.put(strStatementOrig, st);
+		                		bCachedStatement = true;
+		                	}*/
+		                	
+						}else
+							strStatement = "";
+						
+						for ( int i = 0; values != null && i < values.length; i++ )
 						{
-							if ( res == null && bReportNonUnique && exc.getMessage().indexOf("constraint failed") >= 0)
-								res = new SqliteResult(true);
-							else
-								throw exc;
+							bindObject(st, i+1, values[i]);
 						}
 						
-	                	if ( res == null )
-	                		res = new SqliteResult(null, false, false);
-					}
-					
-				}finally
-				{
-					if ( !bDontCloseStatement )
-					{
-						if ( bCachedStatement )
+						if ( bSelect )
 						{
-							//LOG.INFO("START reset");							
-							st.reset();
-							//LOG.INFO("END reset");
+			                if ( res == null )
+			                {
+			                	res = new SqliteResult(st, bCachedStatement, bNoCopy);
+			                	bDontCloseStatement = true;
+			                }
+						}else
+						{
+							try
+							{
+								//LOG.INFO("START execute");
+								st.execute();
+								//LOG.INFO("END execute");
+								
+								if ( /*strCommand.equalsIgnoreCase("INSERT")||*/ strCommand.equalsIgnoreCase("DELETE") ||
+									 strCommand.equalsIgnoreCase("UPDATE")  )
+								{
+									if ( m_nInsideTransaction == 0 )
+										processCallbackData();
+									else
+										m_bNeedProcessCallback = true;
+								}
+								
+							}catch(DatabaseException exc)
+							{
+								if ( res == null && bReportNonUnique && exc.getMessage().indexOf("constraint failed") >= 0)
+									res = new SqliteResult(true);
+								else
+									throw exc;
+							}
+							
+		                	if ( res == null )
+		                		res = new SqliteResult(null, false, false);
 						}
-						else
-							st.close();
+						
+					}finally
+					{
+						if ( !bDontCloseStatement )
+						{
+							if ( bCachedStatement )
+							{
+								//LOG.INFO("START reset");							
+								st.reset();
+								//LOG.INFO("END reset");
+							}
+							else
+								st.close();
+						}
+						
+						st = null;
 					}
-					
-					st = null;
 				}
+			}catch(DatabaseException exc )
+			{
+				LOG.ERROR("executeSQL failed. Statement: " + strStatementOrig, exc);
+				throw new DBException(exc);
 			}
-		}catch(DatabaseException exc )
-		{
-			LOG.ERROR("executeSQL failed. Statement: " + strStatementOrig, exc);
-			throw new DBException(exc);
+			
+			//LOG.INFO("executeSQL END");
+			return res;
 		}
-		
-		//LOG.INFO("executeSQL END");
-		return res;
 	}
 
 	public boolean isTableExists(String strName)throws DBException
@@ -305,20 +307,24 @@ public class SqliteStorage implements IDBStorage
 		}
 	}
 
-	public void startTransaction() throws DBException {
-		try{
-			//LOG.INFO("startTransaction START");
-			if ( m_db == null )
-				m_bPendingTransaction = true;
-			else
-				m_db.beginTransaction();
-			
-			m_nInsideTransaction++;
-			m_bNeedProcessCallback = false;
-			
-			//LOG.INFO("startTransaction END");
-		}catch(DatabaseException exc ){
-			throw new DBException(exc);
+	public void startTransaction() throws DBException 
+	{
+		synchronized(m_db)
+		{
+			try{
+				//LOG.INFO("startTransaction START");
+				if ( m_db == null )
+					m_bPendingTransaction = true;
+				else
+					m_db.beginTransaction();
+				
+				m_nInsideTransaction++;
+				m_bNeedProcessCallback = false;
+				
+				//LOG.INFO("startTransaction END");
+			}catch(DatabaseException exc ){
+				throw new DBException(exc);
+			}
 		}
 	}
 	
@@ -332,57 +338,67 @@ public class SqliteStorage implements IDBStorage
 		//LOG.INFO("onBeforeCommit END");
 	}
 	
-	public void commit() throws DBException {
-		try{
-			//LOG.INFO("commit START");
-			if ( m_db!= null )
-				m_db.commitTransaction();
-			//LOG.INFO("commit END");
-		}catch(DatabaseException exc ){
-			throw new DBException(exc);
-		}finally
+	public void commit() throws DBException 
+	{
+		synchronized(m_db)
 		{
-			if ( m_nInsideTransaction > 0 )
-				m_nInsideTransaction--;
+			try{
+				//LOG.INFO("commit START");
+				if ( m_db!= null )
+					m_db.commitTransaction();
+				//LOG.INFO("commit END");
+			}catch(DatabaseException exc ){
+				throw new DBException(exc);
+			}finally
+			{
+				if ( m_nInsideTransaction > 0 )
+					m_nInsideTransaction--;
+			}
 		}
 	}
 	
 	public void rollback() throws DBException 
 	{
-		try{
-			if ( m_db!= null )
-				m_db.rollbackTransaction();
-		}catch(DatabaseException exc ){
-			throw new DBException(exc);
-		}finally
+		synchronized(m_db)
 		{
-			if ( m_nInsideTransaction > 0 )
-				m_nInsideTransaction--;
+			try{
+				if ( m_db!= null )
+					m_db.rollbackTransaction();
+			}catch(DatabaseException exc ){
+				throw new DBException(exc);
+			}finally
+			{
+				if ( m_nInsideTransaction > 0 )
+					m_nInsideTransaction--;
+			}
 		}
 	}
 
 	public void close() throws DBException 
 	{
-		try
+		synchronized(m_db)
 		{
-			/*Enumeration values = m_mapStatements.elements();
-			while( values.hasMoreElements() )
+			try
 			{
-				Statement st = (Statement)values.nextElement();
-				try{
-					if ( st != null )
-						st.close();
-				}catch( DatabaseException exc  )
+				/*Enumeration values = m_mapStatements.elements();
+				while( values.hasMoreElements() )
 				{
-					LOG.ERROR("close statement failed.", exc);
-				}
-			}*/
-			if ( m_db!= null )
-				m_db.close();
-			
-			m_db = null;
-		}catch(DatabaseException exc ){
-			throw new DBException(exc);
+					Statement st = (Statement)values.nextElement();
+					try{
+						if ( st != null )
+							st.close();
+					}catch( DatabaseException exc  )
+					{
+						LOG.ERROR("close statement failed.", exc);
+					}
+				}*/
+				if ( m_db!= null )
+					m_db.close();
+				
+				m_db = null;
+			}catch(DatabaseException exc ){
+				throw new DBException(exc);
+			}
 		}
 	}
 	

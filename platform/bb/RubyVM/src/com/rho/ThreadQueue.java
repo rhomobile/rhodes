@@ -4,10 +4,10 @@ import j2me.util.LinkedList;
 
 public abstract class ThreadQueue extends RhoThread
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("ThreadQueue");
 	
-	public static void setLogCategory(String category)
+	public void setLogCategory(String category)
 	{
 		LOG.setLogCategory(category);
 	}
