@@ -138,7 +138,7 @@ namespace rho.sync
 
 	    SyncThread()
 	    {
-		    CThreadQueue.setLogCategory(LOG.getLogCategory());
+		    base.setLogCategory(LOG.getLogCategory());
 		
 		    if( RhoConf.getInstance().isExist("sync_poll_interval") )
 			    setPollInterval(RhoConf.getInstance().getInt("sync_poll_interval"));
