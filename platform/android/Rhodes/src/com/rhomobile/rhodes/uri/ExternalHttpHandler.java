@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes.uri;
 
+import java.net.URISyntaxException;
+
 import com.rhomobile.rhodes.Logger;
 
 import android.content.Context;
@@ -15,7 +17,7 @@ public class ExternalHttpHandler implements UriHandler {
 		ctx = c;
 	}
 
-	public boolean handle(String url) {
+	public boolean handle(String url) throws URISyntaxException {
 		Uri uri = Uri.parse(url);
 		String scheme = uri.getScheme();
 		if (!scheme.equals("http") && !scheme.equals("https"))
@@ -27,10 +29,10 @@ public class ExternalHttpHandler implements UriHandler {
 		
 		Logger.D(TAG, "This is external 'http' uri, handle it");
 		
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(uri);
+		//Intent intent = new Intent(Intent.ACTION_VIEW);
+		//intent.setData(uri);
 		
-		ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+		ctx.startActivity(Intent.createChooser(Intent.parseUri(url, 0), "Open in..."));
 		return true;
 	}
 
