@@ -29,23 +29,29 @@ namespace rho.db
 
         public void open(string strPath, string strSqlScript, string strEncryptionInfo)
         {
-            if (m_db != null)
+            lock (m_db)
             {
-                int rc = Sqlite3.sqlite3_close(m_db);
-                checkError(rc);
-                m_db = null;
+                if (m_db != null)
+                {
+                    int rc = Sqlite3.sqlite3_close(m_db);
+                    checkError(rc);
+                    m_db = null;
+                }
             }
         }
 
         public void commit()
         {
-            if (m_nInsideTransaction > 0)
-                m_nInsideTransaction--;
-
-            if (m_db != null)
+            lock (m_db)
             {
-                Sqlite3.sqlite3_exec(m_db, "END;", 0, 0, 0);
-                checkError();
+                if (m_nInsideTransaction > 0)
+                    m_nInsideTransaction--;
+
+                if (m_db != null)
+                {
+                    Sqlite3.sqlite3_exec(m_db, "END;", 0, 0, 0);
+                    checkError();
+                }
             }
         }
 
@@ -57,7 +63,7 @@ namespace rho.db
         public void createTriggers()
         {
             String strTriggers = CRhoFile.readStringFromResourceFile("db/syncdb.triggers");
-            executeBatchSQL(strTriggers);
+            //executeBatchSQL(strTriggers);
         }
 
         public void deleteAllFiles(String strPath)
@@ -68,8 +74,11 @@ namespace rho.db
 
         public IDBResult executeSQL(string strStatement, object[] values, common.boolean bReportNonUnique)
         {
-            Sqlite3.sqlite3_exec(m_db, strStatement, 0, 0, 0);
-            checkError();
+            lock (m_db)
+            {
+                Sqlite3.sqlite3_exec(m_db, strStatement, 0, 0, 0);
+                checkError();
+            }
         }
 
         void checkError()
@@ -89,22 +98,25 @@ namespace rho.db
             if (m_db == null)
                 throw new Exception("executeSQL: m_db == null");
 
-            var stmt = Prepare(strStatement, values);
-            CSqliteResult res = new CSqliteResult(stmt, bNoCopy);
-            int rc = res.executeStatement();
-            if (rc != Sqlite3.SQLITE_ROW)
+            lock (m_db)
             {
-                if (bReportNonUnique && rc == Sqlite3.SQLITE_CONSTRAINT)
+                var stmt = Prepare(strStatement, values);
+                CSqliteResult res = new CSqliteResult(stmt, bNoCopy);
+                int rc = res.executeStatement();
+                if (rc != Sqlite3.SQLITE_ROW)
                 {
-                    res.close();
-                    return new CSqliteResult(true); 
-                }
+                    if (bReportNonUnique && rc == Sqlite3.SQLITE_CONSTRAINT)
+                    {
+                        res.close();
+                        return new CSqliteResult(true);
+                    }
 
-                res.checkError();
-                res.close();
+                    res.checkError();
+                    res.close();
+                }
+                return res;
             }
 
-            return res;
         }
 
         public IDBResult createResult()
@@ -174,10 +186,10 @@ namespace rho.db
                 if (!bExist)
                     createSchema(strSqlScript);
 
-                Sqlite3.sqlite3_create_function(m_db, "rhoOnDeleteObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
-                                                DBAdapter.SyncBlob_DeleteCallback, null, null);
-                Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
-                                                DBAdapter.SyncBlob_UpdateCallback, null, null);
+                //Sqlite3.sqlite3_create_function(m_db, "rhoOnDeleteObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
+                //                                DBAdapter.SyncBlob_DeleteCallback, null, null);
+                //Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
+                //                                DBAdapter.SyncBlob_UpdateCallback, null, null);
 
                 string[] ar2 = CRhoFile.enumDirectory("db");
 
@@ -201,10 +213,13 @@ namespace rho.db
             if (m_nInsideTransaction > 0)
                 m_nInsideTransaction--;
 
-            if (m_db != null)
+            lock (m_db)
             {
-                Sqlite3.sqlite3_exec(m_db, "ROLLBACK;", 0, 0, 0);
-                checkError();
+                if (m_db != null)
+                {
+                    Sqlite3.sqlite3_exec(m_db, "ROLLBACK;", 0, 0, 0);
+                    checkError();
+                }
             }
         }
 
@@ -215,16 +230,19 @@ namespace rho.db
 
         public void setDbCallback(IDBCallback callback)
         {
-            if (m_db == null)
-                m_bPendingTransaction = true;
-            else
+            lock (m_db)
             {
-                Sqlite3.sqlite3_exec(m_db, "BEGIN IMMEDIATE;", 0, 0, 0);
-                checkError();
-            }
+                if (m_db == null)
+                    m_bPendingTransaction = true;
+                else
+                {
+                    Sqlite3.sqlite3_exec(m_db, "BEGIN IMMEDIATE;", 0, 0, 0);
+                    checkError();
+                }
 
-            m_nInsideTransaction++;
-            m_bNeedProcessCallback = false;
+                m_nInsideTransaction++;
+                m_bNeedProcessCallback = false;
+            }
         }
 
         #region Helpers

@@ -55,7 +55,14 @@ namespace rho.common
             m_webBrowser = browser;
             m_appMainPage = appMainPage;
             m_appMainPage.ApplicationBar = null;
+
             m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
+        }
+
+        public void startApp()
+        {
+            LOG.INFO("startApp");
+
             CRhoResourceMap.deployContent();
             RhoRuby.Init(m_webBrowser);
 
@@ -84,6 +91,9 @@ namespace rho.common
 
             RhoRuby.Stop();
             SyncThread.getInstance().Destroy();
+            m_httpServer.stop(2);
+            CAsyncHttp.Destroy();
+
             RhoLogger.close();
             m_UIWaitEvent.Close();
 
@@ -129,30 +139,39 @@ namespace rho.common
             return url.startsWith(getHomeUrl());
         }
 
-        private delegate void CallbackDelegate(String strUrl, String strBody);
-
-        private void doProcessCallback(String strUrl, String strBody)
-        {
-            String strReply;
-            m_httpServer.call_ruby_method(strUrl, strBody, out strReply);
-
-            m_UIWaitEvent.Set();
-        }
-
         public NetResponse processCallback(String strUrl, String strBody)
         {
-            if (m_webBrowser.Dispatcher.CheckAccess())
-                doProcessCallback(strUrl, strBody);
-            else
-            {
-                m_webBrowser.Dispatcher.BeginInvoke(new CallbackDelegate(doProcessCallback), strUrl, strBody);
-                m_UIWaitEvent.Reset();
-                m_UIWaitEvent.WaitOne();
-            }
+//            m_webBrowser.Dispatcher.BeginInvoke( () =>
+//            {
+                String strReply;
+                m_httpServer.call_ruby_method(strUrl, strBody, out strReply);
+
+//                m_UIWaitEvent.Set();
+//            });
+
+//            m_UIWaitEvent.Reset();
+//            m_UIWaitEvent.WaitOne();
 
             return new NetResponse("", 200);
         }
 
+        public void processWebNavigate(String strUrl)
+        {
+            m_webBrowser.Dispatcher.BeginInvoke( () =>
+            {
+                m_webBrowser.IsScriptEnabled = true;
+                m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
+            });
+        }
+
+        public void processInvokeScript(String strScript)
+        {
+            m_webBrowser.Dispatcher.BeginInvoke(() =>
+            {
+                m_webBrowser.InvokeScript(strScript);
+            });
+        }
+        
         public static String getRhoRootPath()
         {
             return "/";
@@ -265,32 +284,34 @@ namespace rho.common
             }
         }
 
-
         public void setMenuItems(Hash menuItems)
         {
-            if (m_appMainPage.ApplicationBar == null)
-                createEmptyToolBar();
-            else
-                m_appMainPage.ApplicationBar.MenuItems.Clear();
-
-            m_menuItems = menuItems;
-
-            foreach (KeyValuePair<object, object> kvp in m_menuItems)
+            m_webBrowser.Dispatcher.BeginInvoke( () =>
             {
-                ApplicationBarMenuItem item = new ApplicationBarMenuItem();
-                item.Text = kvp.Key.ToString();
-                String action = null; 
-                if (kvp.Value == null) 
-                    continue;
+                if (m_appMainPage.ApplicationBar == null)
+                    createEmptyToolBar();
                 else
-                    action = kvp.Value.ToString();
+                    m_appMainPage.ApplicationBar.MenuItems.Clear();
 
-                if (action == "close") continue;
+                m_menuItems = menuItems;
 
-                item.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
+                foreach (KeyValuePair<object, object> kvp in m_menuItems)
+                {
+                    ApplicationBarMenuItem item = new ApplicationBarMenuItem();
+                    item.Text = kvp.Key.ToString();
+                    String action = null; 
+                    if (kvp.Value == null) 
+                        continue;
+                    else
+                        action = kvp.Value.ToString();
 
-                m_appMainPage.ApplicationBar.MenuItems.Add(item);
-            }
+                    if (action == "close") continue;
+
+                    item.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
+
+                    m_appMainPage.ApplicationBar.MenuItems.Add(item);
+                }
+            });
         }
 
         private void createEmptyToolBar()
@@ -303,38 +324,44 @@ namespace rho.common
 
         public void createToolBar(int barType, Object barParams)
         {
-            createEmptyToolBar();
+            m_webBrowser.Dispatcher.BeginInvoke( () =>
+            {
+                createEmptyToolBar();
 
-            Object[] hashArray = null;
-            Hash paramHash = null;
-            object val = null;
+                Object[] hashArray = null;
+                Hash paramHash = null;
+                object val = null;
 
-            if (barParams is RubyArray)
-                hashArray = ((RubyArray)barParams).ToArray();
-            else
-                paramHash = (Hash)barParams;
+                if (barParams is RubyArray)
+                    hashArray = ((RubyArray)barParams).ToArray();
+                else
+                    paramHash = (Hash)barParams;
 
-            if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("background_color"), out val))
-                m_appMainPage.ApplicationBar.BackgroundColor = getColorFromString(val.ToString());
+                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("background_color"), out val))
+                    m_appMainPage.ApplicationBar.BackgroundColor = getColorFromString(val.ToString());
 
-            if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("buttons"), out val) && val is RubyArray)
-                hashArray = ((RubyArray)val).ToArray();
+                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("buttons"), out val) && val is RubyArray)
+                    hashArray = ((RubyArray)val).ToArray();
 
-            createToolBarButtons(barType, hashArray);
-            setMenuItems(m_menuItems);
+                createToolBarButtons(barType, hashArray);
+                setMenuItems(m_menuItems);
+            });
         }
 
         public void removeToolBar()
         {
-            if (m_appMainPage.ApplicationBar != null)
+            m_webBrowser.Dispatcher.BeginInvoke( () =>
             {
-                m_appMainPage.ApplicationBar.MenuItems.Clear();
-                m_appMainPage.ApplicationBar.Buttons.Clear();
-                m_appMainPage.ApplicationBar.IsMenuEnabled = false;
-                m_appMainPage.ApplicationBar.IsVisible = false;
+                if (m_appMainPage.ApplicationBar != null)
+                {
+                    m_appMainPage.ApplicationBar.MenuItems.Clear();
+                    m_appMainPage.ApplicationBar.Buttons.Clear();
+                    m_appMainPage.ApplicationBar.IsMenuEnabled = false;
+                    m_appMainPage.ApplicationBar.IsVisible = false;
 
-                m_appMainPage.ApplicationBar = null;
-            }
+                    m_appMainPage.ApplicationBar = null;
+                }
+            });
         }
 
         public void showLogScreen()
