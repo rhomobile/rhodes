@@ -34,7 +34,7 @@ namespace rho.net
 	        return m_pInstance;
         }
 
-        static void Destroy()
+        static public void Destroy()
         {
             if (m_pInstance != null)
             {
@@ -49,7 +49,7 @@ namespace rho.net
     
         public CAsyncHttp()
         {
-            CThreadQueue.setLogCategory(LOG.getLogCategory());
+            base.setLogCategory(LOG.getLogCategory());
 
             setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
         }

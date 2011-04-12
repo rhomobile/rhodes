@@ -5,11 +5,14 @@ using System.Collections.Generic;
 
 namespace rho.net
 {
-    public class CHttpServer
+    public class CHttpServer : CThreadQueue
     {
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+                    new RhoLogger("HttpServer");
+
         String m_root;
 
-        private CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
+        static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
         private CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         class CRoute
@@ -24,33 +27,178 @@ namespace rho.net
                 return s.Length > 2 && s[0] == '{' && s[s.Length - 1] == '}';
             }
         };
-        public class CResponse
+        /*public class CResponse
         {
             public String m_strUrl = "";
             public bool m_bRedirect = true;
 
             public CResponse(String strUrl) { m_strUrl = strUrl; m_bRedirect = true;  }
             public CResponse(bool bRedirect) { m_bRedirect = bRedirect; }
+        };*/
+        class CServerCommand : IQueueCommand
+        {
+            String m_method, m_uri, m_query, m_body;
+            CRoute m_route;
+            CHttpServer m_Parent;
+            int m_nCommand;
+
+            public const int scDispatch = 1, scIndex = 2;
+
+            public CServerCommand(CHttpServer Parent, CRoute route, 
+                String method, String uri, String query, String body, int nCommand)
+            {
+                m_Parent = Parent;
+                m_method = method;
+                m_uri = uri;
+                m_query = query;
+                m_body = body;
+                m_route = route;
+                m_nCommand = nCommand;
+            }
+
+            public void execute()
+            {
+                String strUrl = "";
+                if (m_nCommand == scDispatch )
+                    strUrl = m_Parent.processDispatch(m_route, m_method, m_uri, m_query, m_body);
+                else if ( m_nCommand == scIndex )
+                    strUrl = m_Parent.processIndex(m_route, m_method, m_uri, m_query, m_body);
+
+                RHODESAPP().processWebNavigate(strUrl);
+            }
+
+            public boolean equals(IQueueCommand cmd) { return false; }
+            public void cancel() { }
+            public String toString() { return "uri :" + m_uri + "; cmd: " + (m_nCommand == scDispatch ? "dispatch" : "index"); }
         };
 
         public CHttpServer(String strFileRoot)
         {
             m_root = strFileRoot;
+
+            base.setLogCategory(LOG.getLogCategory());
+
+            setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
+
+            start(epNormal);
         }
 
-        public bool process_registered(String uri)
+        public override void run()
         {
+            RHODESAPP().startApp();
+            base.run();
+        }
+
+        public override void processCommand(IQueueCommand pCmd)
+        {
+            (pCmd as CServerCommand).execute();
+        }
+
+        public boolean processBrowserRequest(Uri uri)
+        {
+            if (!uri.OriginalString.StartsWith(RHODESAPP().getHomeUrl())
+                           && (uri.IsAbsoluteUri || uri.OriginalString.StartsWith("res:")))
+                return false;
+
+            String query = "";
+            String url = uri.OriginalString;
+            url = url.StartsWith(RHODESAPP().getHomeUrl()) ? url.substring(RHODESAPP().getHomeUrl().length()) : url;
+
+            int nFrag = url.LastIndexOf('#');
+            if (nFrag >= 0)
+                url = url.Substring(0, nFrag);
+
+            int nQuery = url.IndexOf('?');
+            if (nQuery >= 0)
+            {
+                query = url.Substring(nQuery + 1);
+                url = url.Substring(0, nQuery);
+            }
+
+            if (url.EndsWith(".gen.html") || (isknowntype(url) && url.StartsWith(m_root)))
+                return false;
+
+            CRoute route = new CRoute();
+            if (dispatch(url, route))
+            {
+                addQueueCommand(new CServerCommand(this, route, "GET", url, query, "", CServerCommand.scDispatch));
+
+                return true;
+            }
+
+            String fullPath = url.StartsWith(m_root) ? url : CFilePath.join(m_root, url);
+
+            String strIndexFile = getIndex(fullPath);
+            if (strIndexFile.Length > 0)
+            {
+                addQueueCommand(new CServerCommand(this, route, "GET", url, query, "", CServerCommand.scIndex));
+
+                return true;
+            }
+
             return false;
         }
 
-
-        public CResponse decide(String method, String uri, String query, String body)
+        String processDispatch(CRoute route, String method, String uri, String query, String body)
         {
-            if ( uri.EndsWith(".gen.html") || (isknowntype(uri) && uri.StartsWith(m_root)) )
-                return new CResponse(false);
+            Object rhoReq = create_request_hash(route, method, uri, query, null, body);
+            Object rhoResp = RhoRuby.callServe(rhoReq);
 
-            if (process_registered(uri))
-                return new CResponse(false);
+            String strRedirectUrl = getRedirectUrl(rhoResp);
+            if (strRedirectUrl.Length > 0)
+                return strRedirectUrl;
+
+            String strFilePath = RHODESAPP().canonicalizeRhoPath(uri) + ".gen.html";
+            if (route.id.Length > 0)
+                strFilePath = CFilePath.join(m_root, route.application + "/" + route.model + "/" + route.action) + ".gen.html";
+
+            CRhoFile.recursiveCreateDir(strFilePath);
+            CRhoFile.writeDataToFile(strFilePath, getResponseBody(rhoResp));
+
+            if (method == "GET")
+                RHODESAPP().keepLastVisitedUrl(uri);
+
+            return strFilePath;
+        }
+
+        String processIndex(CRoute route, String method, String uri, String query, String body)
+        {
+            String fullPath = uri.StartsWith(m_root) ? uri : CFilePath.join(m_root, uri);
+            String strIndexFile = getIndex(fullPath);
+
+            if (!CRhoFile.isResourceFileExist(strIndexFile))
+            {
+                String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
+                String strFilePath = CFilePath.join(m_root, "rhodes_error") + ".gen.html";
+                CRhoFile.recursiveCreateDir(strFilePath);
+                CRhoFile.writeStringToFile(strFilePath, error);
+                return strFilePath;
+            }
+
+            if (CFilePath.getExtension(fullPath).Length > 0)
+                return strIndexFile;
+
+            Object rhoReq = create_request_hash(route, method, uri, query, null, body);
+            Object rhoResp = RhoRuby.callServeIndex(strIndexFile, rhoReq);
+
+            String strRedirectUrl = getRedirectUrl(rhoResp);
+            if (strRedirectUrl.Length > 0)
+                return strRedirectUrl;
+
+            strIndexFile += ".gen.html";
+            CRhoFile.recursiveCreateDir(strIndexFile);
+            CRhoFile.writeDataToFile(strIndexFile, getResponseBody(rhoResp));
+
+            if (method == "GET")
+                RHODESAPP().keepLastVisitedUrl(uri);
+
+            return strIndexFile;
+        }
+/*
+        CResponse decide(String method, String uri, String query, String body)
+        {
+            //if (process_registered(uri))
+            //    return new CResponse(false);
 
             CRoute route = new CRoute();
             if (dispatch(uri, route))
@@ -110,7 +258,7 @@ namespace rho.net
             }
 
             return new CResponse(false);
-        }
+        }*/
 
         public bool call_ruby_method(String uri, String body, out String strReply)
         {
@@ -259,6 +407,12 @@ namespace rho.net
 
             String strFileName = CFilePath.getBaseName(path);
             return find_in_string_array(strFileName, index_files) ? path : "";
+        }
+
+        public bool process_registered(String uri)
+        {
+            //TODO: process_registered
+            return false;
         }
 
         Object create_request_hash(CRoute route, String method, String uri, String query,

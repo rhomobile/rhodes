@@ -4,10 +4,10 @@ namespace rho.common
 {
     public abstract class CThreadQueue : CRhoThread
     {
-        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		    new RhoLogger("ThreadQueue");
 	
-	    public static void setLogCategory(String category)
+	    public void setLogCategory(String category)
 	    {
 		    LOG.setLogCategory(category);
 	    }
