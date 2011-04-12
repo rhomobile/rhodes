@@ -78,7 +78,8 @@ namespace rho.logging
 		        }
 		    }
 
-            int nWritten = m_pFile.writeString(strMsg);
+            //int nWritten = m_pFile.writeString(strMsg);
+            m_pFile.writeString(strMsg);
             m_pFile.flush();
 	
 		    if ( m_nCirclePos >= 0 )
