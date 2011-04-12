@@ -122,9 +122,20 @@ namespace rho.net
 		    }
 	    }
 
-        private static String makeClientCookie(HttpWebResponse response)
+        private String makeClientCookie(HttpWebResponse response)
         {
             String strRes = "";
+
+            if (response.Cookies != null)
+            {
+                CookieContainer container = new CookieContainer();
+                container.Add(new Uri(m_strUrl), response.Cookies);
+                strRes = container.GetCookieHeader(new Uri(m_strUrl));
+            }
+
+            if (strRes != null && strRes.Length > 0)
+                return strRes;
+
             for (int i = 0; i < response.Headers.Count; i++) 
             {
                 String strName = response.Headers.AllKeys[i];
@@ -195,10 +206,6 @@ namespace rho.net
             
             Stream stream = response.GetResponseStream();
 
-            //CookieContainer container = new CookieContainer();
-            //container.Add(new Uri(m_strUrl), response.Cookies);
-            //m_strCookies = container.GetCookieHeader(new Uri(m_strUrl));
-			
 		    m_code = Convert.ToInt32(response.StatusCode);
             LOG.INFO("getResponseCode : " + m_code);
 
