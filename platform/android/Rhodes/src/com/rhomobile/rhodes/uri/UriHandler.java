@@ -20,8 +20,10 @@
  */
 package com.rhomobile.rhodes.uri;
 
+import java.net.URISyntaxException;
+
 public interface UriHandler {
 
-	public boolean handle(String uri);
+	public boolean handle(String uri) throws URISyntaxException;
 	
 }
