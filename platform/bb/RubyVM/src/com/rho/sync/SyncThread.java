@@ -171,7 +171,7 @@ public class SyncThread extends ThreadQueue
 	SyncThread(RhoClassFactory factory)throws Exception
 	{
 		super(factory);
-		ThreadQueue.setLogCategory(LOG.getLogCategory());
+		super.setLogCategory(LOG.getLogCategory());
 		
 		if( RhoConf.getInstance().isExist("sync_poll_interval") )
 			setPollInterval(RhoConf.getInstance().getInt("sync_poll_interval"));
