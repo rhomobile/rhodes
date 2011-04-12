@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface AppManager : NSObject {
+@interface AppManager : NSObject <UIDocumentInteractionControllerDelegate>{
 
 	
 }
@@ -23,5 +23,9 @@
 - (void) copyFromMainBundle:(NSFileManager*)fileManager fromPath:(NSString*)source
 					 toPath:(NSString*)target remove:(BOOL)remove;
 - (void) configure;
+
+- (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller;
+
+
 
 @end
