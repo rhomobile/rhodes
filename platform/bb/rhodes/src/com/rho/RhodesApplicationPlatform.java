@@ -125,7 +125,7 @@ public class RhodesApplicationPlatform extends UiApplication implements PushAppl
 		{
 			super(new RhoClassFactory());
 			
-	        ThreadQueue.setLogCategory(LOG.getLogCategory());
+	        super.setLogCategory(LOG.getLogCategory());
 
 	        setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
 	        

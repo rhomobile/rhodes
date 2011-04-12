@@ -1053,6 +1053,7 @@ public class DBAdapter extends RubyBasic
 	    		
 	    		try
 	    		{
+	    			Lock();
 		    		rows = executeSQL( strSql, values, true);
 		    		RubyString[] colNames = null;
 		    		
@@ -1073,6 +1074,8 @@ public class DBAdapter extends RubyBasic
 	    		{
 	    			if ( rows != null )
 	    				rows.close();
+	    			
+	    			Unlock();
 	    		}
     		}
 		}catch(Exception e)

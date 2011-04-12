@@ -48,7 +48,7 @@ public class AsyncHttp extends ThreadQueue
     AsyncHttp(RhoClassFactory factory)
     {
     	super(factory);
-        ThreadQueue.setLogCategory(LOG.getLogCategory());
+        super.setLogCategory(LOG.getLogCategory());
 
         setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
     }
