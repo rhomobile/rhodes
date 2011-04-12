@@ -423,23 +423,24 @@ namespace rho.net
             return doRequest("POST", strUrl, null, oSession, headers);
         }
 	
-	    //long m_nMaxPacketSize = 0;
-	    //int m_nCurDownloadSize = 0;
-	    boolean m_bFlushFileAfterWrite = false;
+	    /*long m_nMaxPacketSize = 0;
+	    int m_nCurDownloadSize = 0;
+	    boolean m_bFlushFileAfterWrite = false;*/
 	    public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable<String, String> headers )
 	    {
-/*		    IRAFile file = null;
+		   /*
+         * IRAFile file = null;
 		    NetResponse resp = null;
 		
-		    m_nMaxPacketSize = RhoClassFactory.getNetworkAccess().getMaxPacketSize();
-		    m_bFlushFileAfterWrite = RhoConf.getInstance().getBool("use_persistent_storage");
+		    //m_nMaxPacketSize = RhoClassFactory.getNetworkAccess().getMaxPacketSize();
+		    //m_bFlushFileAfterWrite = RhoConf.getInstance().getBool("use_persistent_storage");
 		    m_bCancel = false;
     	
 		    try{
 
 	            if (!strFileName.startsWith("file:")) { 
             	    try{
-	            	    strFileName = FilePath.join(RhoClassFactory.createFile().getDirPath(""), strFileName);
+	            	    strFileName = CFilePath.join(RhoClassFactory.createFile().getDirPath(""), strFileName);
             	    } catch (IOException x) { 
                  	    LOG.ERROR("getDirPath failed.", x);
                         throw x;
@@ -467,8 +468,8 @@ namespace rho.net
 		    return resp != null && !m_bCancel ? resp : makeResponse("", IHttpConnection.HTTP_INTERNAL_ERROR );*/
             return makeResponse("",200);
 	    }
-/*	
-	    NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable headers )throws Exception
+	
+	    /*NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable<String, String> headers )
 	    {
 		    String strRespBody = null;
 		    InputStream is = null;
