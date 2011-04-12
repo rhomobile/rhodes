@@ -23,6 +23,8 @@
 #import "logging/RhoLog.h"
 #import "../Event/Event.h"
 
+#import "Rhodes.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -222,6 +224,37 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	RAWLOG_INFO("Rhodes started");
 }
 
+
+- (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
+    
+    return [[Rhodes sharedInstance] mainView]; 
+    
+}
+
+- (void)openDocInteractCommand:(NSString*)url {
+    if (NSClassFromString(@"UIDocumentInteractionController")) {
+        NSURL *fileURL = [NSURL fileURLWithPath:url];
+        
+        UIDocumentInteractionController* docController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+        
+        docController.delegate = self;//[AppManager instance];
+        
+        BOOL result = [docController presentPreviewAnimated:YES];
+        
+        if (!result) {
+        }    
+    }
+}
+
+
+
+
+- (void)openDocInteract:(NSString*)url {
+	[self performSelectorOnMainThread:@selector(openDocInteractCommand:) withObject:url waitUntilDone:NO];	
+}
+
+
+
 @end
 
 const char* rho_native_rhopath() 
@@ -292,15 +325,32 @@ void rho_sys_app_uninstall(const char *appname) {
 	NSLog(@"ALERT: Uninstall of applications is unsupported on iOS platfrom !!!");	
 }
 
+
 void rho_sys_open_url(const char* url) 
 {
     RAWLOG_INFO1("rho_sys_open_url: %s", url);	
 	
 	NSString* strUrl = [NSString stringWithUTF8String:url];
 	BOOL res = FALSE;
-	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]])
-		res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
-	
+
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:strUrl];
+    if (!fileExists) {
+        NSString *fixed_path = [NSString stringWithUTF8String:rho_rhodesapp_getapprootpath()];
+        fixed_path = [fixed_path stringByAppendingString:strUrl];
+        fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fixed_path];
+        if (fileExists) {
+            strUrl = fixed_path;
+        }
+    }
+    if (fileExists) {
+        res = TRUE;
+        [[AppManager instance] openDocInteract:strUrl];
+    }
+    else {
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]]) {
+            res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
+        }
+    }
 	if ( res)
 		RAWLOG_INFO("rho_sys_open_url suceeded.");	
 	else
