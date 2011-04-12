@@ -199,5 +199,7 @@ namespace rho.common
         public static rho.net.NetRequest createNetRequest() {  return new rho.net.NetRequest(); }
 
         public static rho.net.CAsyncHttp createAsyncHttp() { return new rho.net.CAsyncHttp(); }
+
+        public static rho.common.CRhoFile createFile() { return new rho.common.CRhoFile(); }
     }
 }

@@ -67,6 +67,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\IInputStream.cs" />
     <Compile Include="common\RhoParamArray.cs" />
     <Compile Include="common\RhoParams.cs" />
     <Compile Include="common\TimeInterval.cs" />

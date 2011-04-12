@@ -23,7 +23,9 @@ namespace rho.net
         String m_strBody = null;
         String m_strUrl = null;
         String m_strCookies = null;
+        bool m_isMultiPart = false;
         int m_code = -1;
+        Vector<MultipartItem> m_arItems = null;
         Hashtable<String, String> m_headers = null;
 
 	
@@ -200,7 +202,54 @@ namespace rho.net
             try
             {
                 stream = m_webRequest.EndGetRequestStream(asyncResult);
-                stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                if(m_strBody != null)
+                    stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                else if (m_isMultiPart)
+                {
+                    for (int i = 0; i < (int)m_arItems.size(); i++)
+                    {
+                        MultipartItem oItem = (MultipartItem)m_arItems.elementAt(i);
+                        stream.Write(new UTF8Encoding().GetBytes(oItem.m_strDataPrefix), 0, oItem.m_strDataPrefix.length());
+
+                        if (oItem.m_strFilePath.length() > 0)
+                        {
+                            IInputStream fis = null;
+                            CRhoFile file = RhoClassFactory.createFile();
+                            try
+                            {
+
+                                file.open(oItem.m_strFilePath, CRhoFile.EOpenModes.OpenReadOnly);
+                                if (!file.isOpened())
+                                {
+                                    LOG.ERROR("File not found: " + oItem.m_strFilePath);
+                                    throw new Exception("File not found:" + oItem.m_strFilePath);
+                                }
+
+                                fis = file.getInputStream();
+                                byte[] byteBuffer = new byte[1024 * 4];
+                                int nRead = 0;
+                                do
+                                {
+                                    nRead = fis.read(byteBuffer, 0, 1024 * 4);
+                                    if (nRead > 0)
+                                        stream.Write(byteBuffer, 0, nRead);
+                                } while (nRead > 0);
+                            }
+                            finally
+                            {
+                                if (file != null)
+                                    try { file.close(); }
+                                    catch (IOException e) { }
+                            }
+
+                        }
+                        else
+                        {
+                            stream.Write(new UTF8Encoding().GetBytes(oItem.m_strBody), 0, oItem.m_strBody.length());
+                        }
+                    }
+                    stream.Write(new UTF8Encoding().GetBytes(szMultipartPostfix), 0, szMultipartPostfix.length());
+                }
                 LOG.INFO("write body done");
             }
             finally
@@ -236,7 +285,9 @@ namespace rho.net
 			{
 		        if ( oSession != null )
                     m_webRequest.ContentType = oSession.getContentType();
-				else
+                else if (m_isMultiPart)
+                    m_webRequest.ContentType = "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
+                else
                     m_webRequest.ContentType = "application/x-www-form-urlencoded";
 
 				writeHeaders(headers);
@@ -256,6 +307,7 @@ namespace rho.net
             m_respWaitEvent.Reset();
             m_respWaitEvent.WaitOne();
 
+            m_isMultiPart = false;
             return makeResponse(m_strRespBody, m_code);
         }
 	
@@ -305,11 +357,8 @@ namespace rho.net
 		    return resp;
 	    }
 	
-	    //static String szMultipartPostfix = 
-	    //    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
-
-	    //static String szMultipartContType = 
-	    //    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
+	    static String szMultipartPostfix = 
+	        "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
 	    void processMultipartItems( Vector<MultipartItem> arItems )
 	    {
@@ -344,20 +393,19 @@ namespace rho.net
 	            long nContentSize = 0;
 	            if ( oItem.m_strFilePath.length() > 0 )
 	            {
-                    //TODO: process file
-/*	        	    SimpleFile file = null;
+	        	    CRhoFile file = null;
 	    		    try{
 	    			    file = RhoClassFactory.createFile();
-	    			    file.open(oItem.m_strFilePath, true, true);
-	    			    nContentSize = file.length();
+	    			    file.open(oItem.m_strFilePath, CRhoFile.EOpenModes.OpenReadOnly);
+	    			    nContentSize = file.size();
 	    			    if ( !file.isOpened() ){
 	    				    LOG.ERROR("File not found: " + oItem.m_strFilePath);
-	    				    throw new RuntimeException("File not found:" + oItem.m_strFilePath);
+	    				    throw new Exception("File not found:" + oItem.m_strFilePath);
 	    			    }
 	    		    }finally{
 	    			    if ( file != null )
 	    				    try{ file.close(); }catch(IOException e){}
-	    		    }*/
+	    		    }
 	            }
 	            else
 	                nContentSize = oItem.m_strBody.length();
@@ -372,118 +420,10 @@ namespace rho.net
 	
         public NetResponse pushMultipartData(String strUrl, Vector<MultipartItem> arItems, IRhoSession oSession, Hashtable<String,String> headers)
         {
-/*		    String strRespBody = null;
-		    InputStream is = null;
-		    OutputStream os = null;
-		    int code  = -1;
-		
-		    m_bCancel = false;
-    	
-		    try{
-			    closeConnection();
-			    m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
-			
-			    handleCookie(oSession);
-
-			    m_connection.setRequestProperty("Connection", "keep-alive");
-			    m_connection.setRequestProperty("content-type", szMultipartContType);
-			    writeHeaders(headers);
-			    m_connection.setRequestMethod(IHttpConnection.POST);
-			
-			    //PUSH specific
-			    processMultipartItems( arItems );
-			    os = m_connection.openOutputStream();
-	            //write all items
-	            for( int i = 0; i < (int)arItems.size(); i++ )
-	            {
-	                MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
-    			    os.write(oItem.m_strDataPrefix.getBytes(), 0, oItem.m_strDataPrefix.length());
-
-	                if ( oItem.m_strFilePath.length() > 0 )
-	                {
-
-		        	    SimpleFile file = null;
-		    		    InputStream fis = null;
-		        	
-		    		    try{
-		    			    file = RhoClassFactory.createFile();
-		    			    file.open(oItem.m_strFilePath, true, true);
-		        		
-		    			    if ( !file.isOpened() ){
-		    				    LOG.ERROR("File not found: " + oItem.m_strFilePath);
-		    				    throw new RuntimeException("File not found:" + oItem.m_strFilePath);
-		    			    }
-		    			
-		    			    fis = file.getInputStream();
-		    			    byte[]  byteBuffer = new byte[1024*4]; 
-		    			    int nRead = 0;
-		        		    do{
-		        			    nRead = fis.read(byteBuffer);	    			
-		        			    if ( nRead > 0 )
-		        				    os.write(byteBuffer, 0, nRead);
-		        		    }while( nRead > 0 );
-		    		    }finally{
-						    if (fis != null)
-							    try{ fis.close(); }catch(IOException e){}
-		    			
-		    			    if ( file != null )
-		    				    try{ file.close(); }catch(IOException e){}
-		    		    }
-	    			
-	                }else
-	                {
-	    			    os.write(oItem.m_strBody.getBytes(), 0, oItem.m_strBody.length());
-	                }
-	            }
-			    os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
-			    //os.flush();
-			    //PUSH specific
-			
-			    is = m_connection.openInputStream();
-			    code = m_connection.getResponseCode();
-		
-			    LOG.INFO("getResponseCode : " + code);
-
-			    readHeaders(headers);
-			    copyHashtable(m_OutHeaders, headers);
-			
-			    if (code >= 400 ) 
-			    {
-				    LOG.ERROR("Error retrieving data: " + code);
-				    if (code == IHttpConnection.HTTP_UNAUTHORIZED)
-				    {
-					    LOG.ERROR("Unauthorize error.Client will be logged out");
-					    oSession.logout();
-				    }
-				
-				    //if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					    strRespBody = readFully(is, getResponseEncoding());
-					    LOG.TRACE("Response body: " + strRespBody );
-				
-			    }else
-			    {
-				    long len = m_connection.getLength();
-				    LOG.INFO("fetchRemoteData data size:" + len );
-		
-				    strRespBody = readFully(is, getResponseEncoding());
-				
-				    LOG.INFO("fetchRemoteData data readFully.");
-			    }
-			
-		    }finally{
-			    try{
-				    if ( is != null )
-					    is.close();
-				    if (os != null)
-					    os.close();
-				
-				    closeConnection();
-				
-			    }catch(IOException exc2){}
-		    }
-		
-		    return makeResponse(strRespBody, code );  */
-            return makeResponse("", 200 );
+            m_arItems = arItems;
+            m_isMultiPart = true;
+            processMultipartItems( arItems );
+            return doRequest("POST", strUrl, null, oSession, headers);
         }
 	
 	    //long m_nMaxPacketSize = 0;
