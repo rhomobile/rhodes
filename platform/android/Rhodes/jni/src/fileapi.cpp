@@ -357,6 +357,13 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativ
     return rho_cast<jhstring>(env, make_rel_path(make_full_path(path))).release();
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_absolutePath
+  (JNIEnv *env, jclass, jstring pathObj)
+{
+    std::string path = rho_cast<std::string>(env, pathObj);
+    return rho_cast<jhstring>(env, make_full_path(path)).release();
+}
+
 static rho_stat_t *rho_stat(const char *path)
 {
     std::string relpath = make_rel_path(make_full_path(path));

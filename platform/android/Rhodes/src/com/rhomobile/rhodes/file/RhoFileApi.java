@@ -28,6 +28,7 @@ public class RhoFileApi {
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
 	public static native String normalizePath(String path);
+    public static native String absolutePath(String path);
 	
 	private static native boolean needEmulate(String path);
 	private static native String makeRelativePath(String path);

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -61,6 +62,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
+import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
@@ -1057,22 +1060,60 @@ public class RhodesService extends Service {
 			Logger.E(TAG, "Can't uninstall application " + appName + ": " + e.getMessage());
 		}
 	}
-	
-	public static void openExternalUrl(String url) {
-		try {
-			Context ctx = RhodesService.getContext();
-            Uri uri = Uri.parse(url);			
+
+    /** Opens remote or local URL*/
+    public static void openExternalUrl(String url)
+    {
+        try
+        {
+            File localFile = new File(url);
+            if(localFile.exists())
+                url = "file://" + RhoFileApi.absolutePath(url);
+
+            Intent intent = null;
+            if (URLUtil.isFileUrl(url))
+            {
+                Logger.D(TAG, "This is local file, handle it");
+
+                String path = Uri.parse(url).getPath();
+                File file = new File(path);
+                if(!file.isFile())
+                    throw new URISyntaxException(path, "File not found.");
+                
+                if(path.startsWith(LocalFileProvider.PATH_PREFIX))
+                {
+                    intent = new Intent();
+                    intent.setData(LocalFileProvider.uriFromLocalFile(file));
+                }
+                else
+                    intent = Intent.parseUri(url, 0);
+            }
+            else 
+            {
+                intent = Intent.parseUri(url, 0);
+            }
             
-		    Intent intent = new Intent(Intent.ACTION_VIEW);
-		    intent.setData(uri);
-		    
-		    ctx.startActivity(Intent.createChooser(intent, "Open in..."));
-		}
-		catch (Exception e) {
-			Logger.E(TAG, "Can't open url :" + url + ": " + e.getMessage());
-		}
-	}
-	
+            String ext = MimeTypeMap.getFileExtensionFromUrl(url);
+            if (ext != null && ext.length() > 0)
+            {
+                String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+                intent.setDataAndType(intent.getData(), mime);
+            }
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            Context ctx = RhodesService.getContext();
+            
+            //ActivityInfo info = intent.resolveActivityInfo(ctx.getPackageManager(), 0);
+            //ctx.grantUriPermission(info.packageName, intent.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Intent finalIntent = Intent.createChooser(intent, "Open in...");
+            ctx.startActivity(finalIntent);
+            
+        }
+        catch (Exception e) {
+            Logger.E(TAG, "Can't open url :'" + url + "': " + e.getMessage());
+        }
+    }
+
 	private native void setPushRegistrationId(String id);
 	
 	private native boolean callPushCallback(String data);
