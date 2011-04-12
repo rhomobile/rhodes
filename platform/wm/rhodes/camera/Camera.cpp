@@ -32,7 +32,7 @@ Camera::~Camera(void) {
 HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
 {
     HRESULT         hResult = S_OK;
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
     SHCAMERACAPTURE shcc;
 
     StringW root;
@@ -80,7 +80,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) 
 {
 	RHO_ASSERT(pszFilename);
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_CE )
 	OPENFILENAMEEX ofn = {0};
 #else
     OPENFILENAME ofn = {0};
@@ -92,7 +92,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
 	ofn.nMaxFile        = MAX_PATH;
 	ofn.lpstrInitialDir = NULL;
 	ofn.lpstrTitle      = _T("Select an image");
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_CE )
 	ofn.ExFlags         = OFN_EXFLAG_THUMBNAILVIEW|OFN_EXFLAG_NOFILECREATE|OFN_EXFLAG_LOCKDIRECTORY;
     if (GetOpenFileNameEx(&ofn))
 #else
