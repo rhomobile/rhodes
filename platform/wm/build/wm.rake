@@ -250,16 +250,29 @@ end
 
 namespace "run" do
 
+    def gelLogPath
+      win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+      win32logpath = File.join(win32rhopath,"RhoLog.txt")        
+      win32logpath = File.expand_path(win32logpath)
+      return win32logpath
+    end
     desc "Build and run on WM6 emulator"
     task :wm => ["device:wm:production"] do
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
 	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
 	  puts "\nStarting application on the WM6 emulator\n\n"
-	  Jake.run(detool,args)
+	  
+	  Thread.new { 
+            Jake.run(detool,args)
+          }
     end
 
   namespace "wm" do
+
+    task :get_log => "config:wm" do
+      puts "log_file=" + gelLogPath
+    end
 
     desc "Build and run on the Windows Phone"
     task :device => ["device:wm:production"] do
