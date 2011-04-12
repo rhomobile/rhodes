@@ -3,7 +3,7 @@
 #include "GeoLocationImpl.h"
 #include "rubyext/GeoLocation.h"
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
 IMPLEMENT_LOGCLASS(CGPSController,"GPSController");
 
@@ -413,7 +413,7 @@ void CGPSController::Unlock() {
 extern "C"{
 double rho_geo_latitude() 
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	CGPSController* gps = CGPSController::startInstance();
 	return gps->GetLatitude();
 #else
@@ -423,7 +423,7 @@ double rho_geo_latitude()
 
 double rho_geo_longitude() 
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
   CGPSController* gps = CGPSController::startInstance();
 	return gps->GetLongitude();
 #else
@@ -433,7 +433,7 @@ double rho_geo_longitude()
 
 int rho_geo_known_position() 
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	CGPSController* gps = CGPSController::startInstance();
 	return gps->IsKnownPosition();
 #else
@@ -447,7 +447,7 @@ void rho_geoimpl_settimeout(int nTimeoutSec)
 
 void rho_geoimpl_turngpsoff()
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	CGPSController::TurnGpsOff();
 #endif
 
@@ -455,7 +455,7 @@ void rho_geoimpl_turngpsoff()
 
 int rho_geo_is_available()
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
     return CGPSDevice::isAvailable() ? 1 : 0;
 #else
 	return 0;

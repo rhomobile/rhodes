@@ -39,12 +39,14 @@ if !defined?(RHO_WP7)
     config[:files] << "spec/barcode_spec" unless System.get_property('device_name') == 'Win32'            
     config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
     config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
+end
     config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
     config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
 
+if !defined?(RHO_WP7)
     config[:files] << "spec/blobsync_spec"
     config[:files] << "spec/bulksync_spec"
 end

@@ -308,8 +308,6 @@ Next, in your controller action that displays the object(s), add the object noti
 	  end
 	end
 
-**NOTE: If you use `url_for` in your .erb files, then when you select a specific object(s) to view, those objects are added to the object notify map automatically.**
-
 #### Object Notification Parameters
 The object notification callback receives three arrays of hashes: "deleted", "updated" and "created".  Each hash contains values for the keys "object" and "source_id" so you can display which records were changed.
 

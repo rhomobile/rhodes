@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "ruby/ext/rho/rhoruby.h"
-#if defined(OS_WINCE)
+#if defined(OS_WINCE)&& !defined( OS_PLATFORM_CE )
 #include "ruby/ext/calendar/event.h"
 #include "OutlookApp.h"
 #include "common/StringConverter.h"
@@ -13,7 +13,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Event"
 
-#ifdef _WIN32_WCE
+#if defined (_WIN32_WCE)
 #define INITGUID
 #include <pimstore.h>
 #endif //_WIN32_WCE

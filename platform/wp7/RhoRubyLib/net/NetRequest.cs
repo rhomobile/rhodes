@@ -23,7 +23,9 @@ namespace rho.net
         String m_strBody = null;
         String m_strUrl = null;
         String m_strCookies = null;
+        bool m_isMultiPart = false;
         int m_code = -1;
+        Vector<MultipartItem> m_arItems = null;
         Hashtable<String, String> m_headers = null;
 
 	
@@ -73,22 +75,39 @@ namespace rho.net
 		        }
 			
 		    }
+
+            m_webRequest.UserAgent = "rhodes-wp7";
 	    }
 
-	    private void readHeaders(Hashtable<String, String> headers)
+        static String addUniqueParam(String strUrl)
+        {
+            //Random RND = new Random();
+            //RND.Next(10000);
+            String strUnique = DateTime.Now.ToFileTime().ToString();
+
+            int nQuest = strUrl.indexOf('?');
+            if (nQuest >= 0)
+                strUrl += "&";
+            else
+                strUrl += "?";
+
+            strUrl += "wp7_nocache_param=" + strUnique;
+
+            return strUrl; 
+        }
+
+	    private void readHeaders(Hashtable<String, String> headers, HttpWebResponse response)
 	    {
 		    if ( headers != null )
 		    {
 			    m_OutHeaders = new Hashtable<String, String>();
 
-			    for (int i = 0; i < m_webRequest.Headers.Count; i++) {
-                    String strField = m_webRequest.Headers.AllKeys[i];// m_connection.getHeaderFieldKey(i);
-				    if (strField == null && i > 0)
-					    break;
-
+			    for (int i = 0; i < response.Headers.Count; i++) 
+                {
+                    String strField = response.Headers.AllKeys[i];
 				    if (strField != null ) 
 				    {
-                        String header_field = m_webRequest.Headers[m_webRequest.Headers.AllKeys[i]];// m_connection.getHeaderField(i);
+                        String header_field = response.Headers[strField];
 					
 					    String strKeyName = strField.toLowerCase();
 					    if ( m_OutHeaders.containsKey(strKeyName))
@@ -102,7 +121,42 @@ namespace rho.net
 			    }
 		    }
 	    }
-	
+
+        private String makeClientCookie(HttpWebResponse response)
+        {
+            String strRes = "";
+
+            if (response.Cookies != null)
+            {
+                CookieContainer container = new CookieContainer();
+                container.Add(new Uri(m_strUrl), response.Cookies);
+                strRes = container.GetCookieHeader(new Uri(m_strUrl));
+            }
+
+            if (strRes != null && strRes.Length > 0)
+                return strRes;
+
+            for (int i = 0; i < response.Headers.Count; i++) 
+            {
+                String strName = response.Headers.AllKeys[i];
+                String strValue = response.Headers[strName];
+
+                if (strName.equalsIgnoreCase("Set-Cookie"))
+                {
+                    LOG.INFO("Set-Cookie: " + strValue);
+
+                    int nSep = strValue.IndexOf(';');
+                    String strVal = strValue;
+                    if (nSep > 0)
+                        strVal = strVal.substring(0, nSep);
+
+                    strRes += strVal;//URI.parseCookie(strVal);
+                }
+            }
+
+            return strRes;
+        }
+
 	    public static void copyHashtable(Hashtable<String, String> from, Hashtable<String, String> to)
 	    {
 		    if ( from == null || to == null )
@@ -131,7 +185,7 @@ namespace rho.net
 			    String strSession = oSession.getSession();
 			    LOG.INFO("Cookie : " + (strSession != null ? strSession : "") );
                 if (strSession != null && strSession.length() > 0 && !strSession.equals("rho_empty"))
-                    m_webRequest.CookieContainer.SetCookies(new Uri(m_strUrl),strSession);
+                    m_webRequest.CookieContainer.SetCookies(new Uri(m_strUrl), strSession);
 		    }
 	    }
 
@@ -151,16 +205,13 @@ namespace rho.net
             }
             
             Stream stream = response.GetResponseStream();
-		    LOG.INFO("openInputStream done");
 
-            CookieContainer container = new CookieContainer();
-            container.Add(new Uri(m_strUrl), response.Cookies);
-            m_strCookies = container.GetCookieHeader(new Uri(m_strUrl));
-			
 		    m_code = Convert.ToInt32(response.StatusCode);
             LOG.INFO("getResponseCode : " + m_code);
 
-            readHeaders(m_headers);
+            m_strCookies = makeClientCookie(response);
+
+            readHeaders(m_headers, response);
             copyHashtable(m_OutHeaders, m_headers);
 
             try
@@ -200,7 +251,54 @@ namespace rho.net
             try
             {
                 stream = m_webRequest.EndGetRequestStream(asyncResult);
-                stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                if(m_strBody != null)
+                    stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                else if (m_isMultiPart)
+                {
+                    for (int i = 0; i < (int)m_arItems.size(); i++)
+                    {
+                        MultipartItem oItem = (MultipartItem)m_arItems.elementAt(i);
+                        stream.Write(new UTF8Encoding().GetBytes(oItem.m_strDataPrefix), 0, oItem.m_strDataPrefix.length());
+
+                        if (oItem.m_strFilePath.length() > 0)
+                        {
+                            IInputStream fis = null;
+                            CRhoFile file = RhoClassFactory.createFile();
+                            try
+                            {
+
+                                file.open(oItem.m_strFilePath, CRhoFile.EOpenModes.OpenReadOnly);
+                                if (!file.isOpened())
+                                {
+                                    LOG.ERROR("File not found: " + oItem.m_strFilePath);
+                                    throw new Exception("File not found:" + oItem.m_strFilePath);
+                                }
+
+                                fis = file.getInputStream();
+                                byte[] byteBuffer = new byte[1024 * 4];
+                                int nRead = 0;
+                                do
+                                {
+                                    nRead = fis.read(byteBuffer, 0, 1024 * 4);
+                                    if (nRead > 0)
+                                        stream.Write(byteBuffer, 0, nRead);
+                                } while (nRead > 0);
+                            }
+                            finally
+                            {
+                                if (file != null)
+                                    try { file.close(); }
+                                    catch (IOException e) { }
+                            }
+
+                        }
+                        else
+                        {
+                            stream.Write(new UTF8Encoding().GetBytes(oItem.m_strBody), 0, oItem.m_strBody.length());
+                        }
+                    }
+                    stream.Write(new UTF8Encoding().GetBytes(szMultipartPostfix), 0, szMultipartPostfix.length());
+                }
                 LOG.INFO("write body done");
             }
             finally
@@ -211,23 +309,20 @@ namespace rho.net
             }
         }
 
-
-
 	    public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable<String, String> headers )
         {
+            LOG.INFO("Url: " + strUrl + "; Body: " + strBody);
             m_respWaitEvent.WaitOne();
             m_respWaitEvent.Reset();
 
-
             m_oSession = oSession;
             m_strBody = strBody;
-            m_strUrl = strUrl;
+            m_strUrl = addUniqueParam(strUrl);
             m_headers = headers;
 		
 		    m_bCancel = false;
 
-            m_webRequest = WebRequest.Create(strUrl) as HttpWebRequest;
-            LOG.INFO("connection done");
+            m_webRequest = WebRequest.Create(m_strUrl) as HttpWebRequest;
 
             m_webRequest.CookieContainer = new CookieContainer();
             handleCookie(oSession);
@@ -236,11 +331,12 @@ namespace rho.net
 			{
 		        if ( oSession != null )
                     m_webRequest.ContentType = oSession.getContentType();
-				else
+                else if (m_isMultiPart)
+                    m_webRequest.ContentType = "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
+                else
                     m_webRequest.ContentType = "application/x-www-form-urlencoded";
 
 				writeHeaders(headers);
-				LOG.INFO("writeHeaders done");
                 m_webRequest.Method = strMethod;
 				
                 m_webRequest.BeginGetRequestStream(GetRequestStreamCallback, null);
@@ -256,6 +352,7 @@ namespace rho.net
             m_respWaitEvent.Reset();
             m_respWaitEvent.WaitOne();
 
+            m_isMultiPart = false;
             return makeResponse(m_strRespBody, m_code);
         }
 	
@@ -305,11 +402,8 @@ namespace rho.net
 		    return resp;
 	    }
 	
-	    //static String szMultipartPostfix = 
-	    //    "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
-
-	    //static String szMultipartContType = 
-	    //    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
+	    static String szMultipartPostfix = 
+	        "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
 	    void processMultipartItems( Vector<MultipartItem> arItems )
 	    {
@@ -344,20 +438,19 @@ namespace rho.net
 	            long nContentSize = 0;
 	            if ( oItem.m_strFilePath.length() > 0 )
 	            {
-                    //TODO: process file
-/*	        	    SimpleFile file = null;
+	        	    CRhoFile file = null;
 	    		    try{
 	    			    file = RhoClassFactory.createFile();
-	    			    file.open(oItem.m_strFilePath, true, true);
-	    			    nContentSize = file.length();
+	    			    file.open(oItem.m_strFilePath, CRhoFile.EOpenModes.OpenReadOnly);
+	    			    nContentSize = file.size();
 	    			    if ( !file.isOpened() ){
 	    				    LOG.ERROR("File not found: " + oItem.m_strFilePath);
-	    				    throw new RuntimeException("File not found:" + oItem.m_strFilePath);
+	    				    throw new Exception("File not found:" + oItem.m_strFilePath);
 	    			    }
 	    		    }finally{
 	    			    if ( file != null )
 	    				    try{ file.close(); }catch(IOException e){}
-	    		    }*/
+	    		    }
 	            }
 	            else
 	                nContentSize = oItem.m_strBody.length();
@@ -372,118 +465,10 @@ namespace rho.net
 	
         public NetResponse pushMultipartData(String strUrl, Vector<MultipartItem> arItems, IRhoSession oSession, Hashtable<String,String> headers)
         {
-/*		    String strRespBody = null;
-		    InputStream is = null;
-		    OutputStream os = null;
-		    int code  = -1;
-		
-		    m_bCancel = false;
-    	
-		    try{
-			    closeConnection();
-			    m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
-			
-			    handleCookie(oSession);
-
-			    m_connection.setRequestProperty("Connection", "keep-alive");
-			    m_connection.setRequestProperty("content-type", szMultipartContType);
-			    writeHeaders(headers);
-			    m_connection.setRequestMethod(IHttpConnection.POST);
-			
-			    //PUSH specific
-			    processMultipartItems( arItems );
-			    os = m_connection.openOutputStream();
-	            //write all items
-	            for( int i = 0; i < (int)arItems.size(); i++ )
-	            {
-	                MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
-    			    os.write(oItem.m_strDataPrefix.getBytes(), 0, oItem.m_strDataPrefix.length());
-
-	                if ( oItem.m_strFilePath.length() > 0 )
-	                {
-
-		        	    SimpleFile file = null;
-		    		    InputStream fis = null;
-		        	
-		    		    try{
-		    			    file = RhoClassFactory.createFile();
-		    			    file.open(oItem.m_strFilePath, true, true);
-		        		
-		    			    if ( !file.isOpened() ){
-		    				    LOG.ERROR("File not found: " + oItem.m_strFilePath);
-		    				    throw new RuntimeException("File not found:" + oItem.m_strFilePath);
-		    			    }
-		    			
-		    			    fis = file.getInputStream();
-		    			    byte[]  byteBuffer = new byte[1024*4]; 
-		    			    int nRead = 0;
-		        		    do{
-		        			    nRead = fis.read(byteBuffer);	    			
-		        			    if ( nRead > 0 )
-		        				    os.write(byteBuffer, 0, nRead);
-		        		    }while( nRead > 0 );
-		    		    }finally{
-						    if (fis != null)
-							    try{ fis.close(); }catch(IOException e){}
-		    			
-		    			    if ( file != null )
-		    				    try{ file.close(); }catch(IOException e){}
-		    		    }
-	    			
-	                }else
-	                {
-	    			    os.write(oItem.m_strBody.getBytes(), 0, oItem.m_strBody.length());
-	                }
-	            }
-			    os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
-			    //os.flush();
-			    //PUSH specific
-			
-			    is = m_connection.openInputStream();
-			    code = m_connection.getResponseCode();
-		
-			    LOG.INFO("getResponseCode : " + code);
-
-			    readHeaders(headers);
-			    copyHashtable(m_OutHeaders, headers);
-			
-			    if (code >= 400 ) 
-			    {
-				    LOG.ERROR("Error retrieving data: " + code);
-				    if (code == IHttpConnection.HTTP_UNAUTHORIZED)
-				    {
-					    LOG.ERROR("Unauthorize error.Client will be logged out");
-					    oSession.logout();
-				    }
-				
-				    //if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					    strRespBody = readFully(is, getResponseEncoding());
-					    LOG.TRACE("Response body: " + strRespBody );
-				
-			    }else
-			    {
-				    long len = m_connection.getLength();
-				    LOG.INFO("fetchRemoteData data size:" + len );
-		
-				    strRespBody = readFully(is, getResponseEncoding());
-				
-				    LOG.INFO("fetchRemoteData data readFully.");
-			    }
-			
-		    }finally{
-			    try{
-				    if ( is != null )
-					    is.close();
-				    if (os != null)
-					    os.close();
-				
-				    closeConnection();
-				
-			    }catch(IOException exc2){}
-		    }
-		
-		    return makeResponse(strRespBody, code );  */
-            return makeResponse("", 200 );
+            m_arItems = arItems;
+            m_isMultiPart = true;
+            processMultipartItems( arItems );
+            return doRequest("POST", strUrl, null, oSession, headers);
         }
 	
 	    //long m_nMaxPacketSize = 0;
@@ -662,30 +647,6 @@ namespace rho.net
 		    strClientCookie = URI.parseCookie("auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
 		    strClientCookie = URI.parseCookie("rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
 	    }*/
-	
-	    private static String makeClientCookie(Hashtable<String, String> headers)
-	    {
-		    if ( headers == null )
-			    return "";
-		
-		    //ParsedCookie cookie = new ParsedCookie();
-		    String strRes = "";
-            Hashtable<String, String>.Enumerator hashEnum = headers.GetEnumerator();
-		    while( hashEnum.MoveNext() )
-		    {
-				String strName = hashEnum.Current.Key;
-				String strValue = hashEnum.Current.Value;
-
-			    if (strName.equalsIgnoreCase("Set-Cookie")) 
-			    {
-				    LOG.INFO("Set-Cookie: " + strValue);
-				
-				    strRes += URI.parseCookie(strValue);
-			    }
-		    }
-
-		    return strRes;
-	    }
 
 	    public static String readFully(Stream stream, String strContType) 
 	    {
