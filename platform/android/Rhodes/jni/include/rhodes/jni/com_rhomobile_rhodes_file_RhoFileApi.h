@@ -35,6 +35,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePat
 
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    absolutePath
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_absolutePath
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
  * Method:    needEmulate
  * Signature: (Ljava/lang/String;)Z
  */
