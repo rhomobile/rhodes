@@ -4,15 +4,16 @@
 
 #pragma once
 
-#if !defined(_WIN32_WCE)
+//#if !defined(_WIN32_WCE)
 #define _CRT_SECURE_NO_WARNINGS
-#endif
+#define _CRT_SECURE_NO_DEPRECATE
+//#endif
 
 #ifndef _CRT_NONSTDC_NO_WARNINGS
 #define _CRT_NONSTDC_NO_WARNINGS 1
 #endif //_CRT_NONSTDC_NO_WARNINGS
 
-#ifdef _X86_
+#if defined( _X86_) || defined(OS_PLATFORM_CE) 
     #pragma comment(linker, "/nodefaultlib:libc.lib")
     #pragma comment(linker, "/nodefaultlib:libcd.lib")
     #pragma comment(linker, "/nodefaultlib:oldnames.lib")
@@ -96,15 +97,17 @@
 #include <tpcshell.h>
 #endif
 
+#ifndef OS_PLATFORM_CE
 #define _WTL_CE_NO_ZOOMSCROLL
 #include <atlwince.h>
+#endif //OS_PLATFORM_CE
 
 #undef max
 #undef min
 //---   ---
 #endif
 
-#if defined (_WIN32_WCE) 
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 #include <pvdispid.h>
 #include <piedocvw.h>
 #endif

@@ -3,7 +3,7 @@
 
 #include "ext/rho/rhoruby.h"
 
-#if _WIN32_WCE > 0x501
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
 
 #include "logging/RhoLog.h"
 #include "common/RhoMutexLock.h"

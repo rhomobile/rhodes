@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 
 #include <gpsapi.h>
 #include "logging/RhoLog.h"
