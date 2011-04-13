@@ -80,7 +80,27 @@ namespace rho
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
             //TODO: OpenInputFileStream with params
-            return OpenInputFileStream(path);
+
+            Stream st = null;
+            if (access == FileAccess.Read)
+            {
+                st = OpenInputFileStream(path);
+                if (st == null)
+                {
+                    CRhoFile file = new CRhoFile();
+                    file.open(path, CRhoFile.EOpenModes.OpenReadOnly);
+                    st = file.getStream();
+                }
+
+            }
+            else
+            {
+                CRhoFile file = new CRhoFile();
+                file.open(path, CRhoFile.EOpenModes.OpenForReadWrite);
+                st = file.getStream();
+            }
+
+            return st;
         }
     }
 

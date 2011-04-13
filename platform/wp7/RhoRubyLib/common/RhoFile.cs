@@ -63,7 +63,12 @@ namespace rho.common
         {
             m_pInputStream = new CFileInputStream(this);
             return m_pInputStream;
-        }       
+        }
+
+        public Stream getStream()
+        {
+            return m_st;
+        }  
 
         public void write(byte[] data, int len) 
         {
