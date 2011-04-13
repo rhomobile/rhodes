@@ -179,6 +179,15 @@ def set_app_name_android(newname)
     manifest.delete(e) if name.to_s =~ /\.C2D_MESSAGE$/
   end
 
+  app = doc.elements["manifest/application"]
+  provider = app.add_element(
+    "provider",
+    { "android:name" => "#{JAVA_PACKAGE_NAME}.LocalFileProvider",
+      "android:authorities" => $app_package_name,
+      "android:grantUriPermissions" => "false" } )
+
+  provider.add_element "grant-uri-permission", { "android:pathPrefix" => "/rhodes/apps/" }
+
   #manifest.elements.each('uses-permission') { |e| manifest.delete e }
 
   caps.sort.each do |cap|
@@ -1076,7 +1085,7 @@ namespace "build" do
                   dst_application.add e
             end
         end
-        
+
         puts 'Extension Manifest process root <manifest> item :'
         src_manifest.elements.each do |e|
             p = e.xpath
