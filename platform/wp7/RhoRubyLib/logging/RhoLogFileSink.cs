@@ -158,7 +158,6 @@ namespace rho.logging
 
         public int getCurPos()
         {
-            // TODO Auto-generated method stub
             return 0;
         }
 
