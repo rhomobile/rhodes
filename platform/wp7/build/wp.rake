@@ -6,6 +6,7 @@ namespace "config" do
 	task :wp => [:set_wp_platform, "config:common"] do
 		$rubypath = "res/build-tools/RhoRuby.exe"
 		$zippath = "res/build-tools/7za.exe"
+		$wp7runner = "res/build-tools/RhoAppRunner.exe"
 		$genpath = "ClassInitGenerator.exe"
 		$builddir = $config["build"]["wppath"] + "/build"
 		$vcbindir = $config["build"]["wppath"] + "/bin"
@@ -97,8 +98,9 @@ end
 
 			#args = ['/M4', 'rhodes.sln', "\"Release|#{$sdk}\""]
 			args = ['rhodes.sln']
+
 			puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-			puts Jake.run($msbuild,args)
+			Jake.run($msbuild,args)
 			unless $? == 0
 				puts "Error building"
 				exit 1
@@ -163,6 +165,13 @@ end
 namespace "run" do
 	namespace "wp" do
 		desc "Build, install .xap and run on WP7 emulator"
-		task :cab => ["device:wp:production"]
+		task :emu => ["device:wp:production"] do
+			args = []
+			args << $app_config["productid"]
+			args << $app_config["name"]
+			args << $app_path + "/icon/icon.png"
+			args << $targetdir + "/" + $appname + ".xap"
+			puts Jake.run($wp7runner, args)
+		end
 	end
 end
