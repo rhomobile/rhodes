@@ -45,29 +45,6 @@ public class MailUriHandler implements UriHandler {
 	
 		Logger.D(TAG, "This is 'mailto' uri, handle it");
 		
-//		MailTo muri = MailTo.parse(url);
-//		
-//		Intent intent = new Intent(Intent.ACTION_SEND);
-//		intent.setType("message/rfc882");
-//		
-//		String s = muri.getTo();
-//		if (s != null) intent.putExtra(Intent.EXTRA_EMAIL, new String[]{s});
-//		
-//		s = muri.getCc();
-//		if (s != null) intent.putExtra(Intent.EXTRA_CC, new String[]{s});
-//		
-//		s = muri.getSubject();
-//		if (s != null) intent.putExtra(Intent.EXTRA_SUBJECT, s);
-//		
-//		s = muri.getBody();
-//		if (s != null) intent.putExtra(Intent.EXTRA_TEXT, s);
-//		
-//		Map<String,String> headers = muri.getHeaders();
-//		s = headers.get("bcc");
-//		if (s != null) intent.putExtra(Intent.EXTRA_BCC, new String[]{s});
-//		
-//		ctx.startActivity(Intent.createChooser(intent, "Send e-mail..."));
-//		return true;
 		ctx.startActivity(Intent.createChooser(Intent.parseUri(url, 0), "Open in..."));
 		return true;
 
