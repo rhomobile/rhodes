@@ -27,6 +27,7 @@ import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
 import com.rhomobile.rhodes.uri.ExternalHttpHandler;
+import com.rhomobile.rhodes.uri.LocalFileHandler;
 import com.rhomobile.rhodes.uri.MailUriHandler;
 import com.rhomobile.rhodes.uri.SmsUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
@@ -329,6 +330,7 @@ public class RhodesService extends Service {
 		
 		// Register custom uri handlers here
 		mUriHandlers.addElement(new ExternalHttpHandler(context));
+		mUriHandlers.addElement(new LocalFileHandler(context));
 		mUriHandlers.addElement(new MailUriHandler(context));
 		mUriHandlers.addElement(new TelUriHandler(context));
 		mUriHandlers.addElement(new SmsUriHandler(context));
@@ -1070,29 +1072,14 @@ public class RhodesService extends Service {
             if(localFile.exists())
                 url = "file://" + RhoFileApi.absolutePath(url);
 
-            int intentFlags = 0;
-            if (URLUtil.isFileUrl(url))
-            {
-                Logger.D(TAG, "This is local file, handle it: " + url);
-
-                String path = Uri.parse(url).getPath();
-                File file = new File(path);
-                if(!file.isFile())
-                    throw new IllegalArgumentException("Unknown file: " + path);
-                
-                if(path.startsWith(LocalFileProvider.PATH_PREFIX))
-                {
-                    url = LocalFileProvider.uriFromLocalFile(file).toString();
-                    intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                }
-            }
-
-            Intent intent = Intent.parseUri(url, intentFlags);
+            //FIXME: Use common URI handling
             Context ctx = RhodesService.getContext();
-            
-            Intent finalIntent = Intent.createChooser(intent, "Open in...");
-            ctx.startActivity(finalIntent);
-            
+            LocalFileHandler fileHandler = new LocalFileHandler(ctx);
+            if(!fileHandler.handle(url))
+            {
+                Intent intent = Intent.parseUri(url, 0);
+                ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+            }
         }
         catch (Exception e) {
             Logger.E(TAG, "Can't open url :'" + url + "': " + e.getMessage());
