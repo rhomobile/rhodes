@@ -128,9 +128,15 @@ namespace rho.net
 
             if (response.Cookies != null)
             {
-                CookieContainer container = new CookieContainer();
-                container.Add(new Uri(m_strUrl), response.Cookies);
-                strRes = container.GetCookieHeader(new Uri(m_strUrl));
+                try
+                {
+                    CookieContainer container = new CookieContainer();
+                    container.Add(new Uri(m_strUrl), response.Cookies);
+                    strRes = container.GetCookieHeader(new Uri(m_strUrl));
+                }catch (Exception exc)
+                {
+                    LOG.WARNING("CookieContainer failed: " + exc.ToString());
+                }
             }
 
             if (strRes != null && strRes.Length > 0)
@@ -326,7 +332,58 @@ namespace rho.net
             try
             {
                 stream = m_webRequest.EndGetRequestStream(asyncResult);
-                stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                if(m_strBody != null)
+                    stream.Write(new UTF8Encoding().GetBytes(m_strBody), 0, m_strBody.length());//TODO ASCII ???
+                else if (m_isMultiPart)
+                {
+                    for (int i = 0; i < (int)m_arItems.size(); i++)
+                    {
+                        MultipartItem oItem = (MultipartItem)m_arItems.elementAt(i);
+                        stream.Write(new UTF8Encoding().GetBytes(oItem.m_strDataPrefix), 0, oItem.m_strDataPrefix.length());
+
+                        if (oItem.m_strFilePath.length() > 0)
+                        {
+                            IInputStream fis = null;
+                            CRhoFile file = RhoClassFactory.createFile();
+                            try
+                            {
+
+                                file.open(oItem.m_strFilePath, CRhoFile.EOpenModes.OpenReadOnly);
+                                if (!file.isOpened())
+                                {
+                                    LOG.ERROR("File not found: " + oItem.m_strFilePath);
+                                    throw new Exception("File not found:" + oItem.m_strFilePath);
+                                }
+
+                                fis = file.getInputStream();
+                                byte[] byteBuffer = new byte[1024 * 4];
+                                int nRead = 0;
+                                do
+                                {
+                                    nRead = fis.read(byteBuffer, 0, 1024 * 4);
+                                    if (nRead > 0)
+                                        stream.Write(byteBuffer, 0, nRead);
+                                } while (nRead > 0);
+                            }
+                            finally
+                            {
+                                if (file != null)
+                                    try { file.close(); }
+                                    catch (IOException e) 
+                                    {
+                                        LOG.ERROR("GetRequestStreamCallback: file close failed.", e);
+                                    }
+                            }
+
+                        }
+                        else
+                        {
+                            stream.Write(new UTF8Encoding().GetBytes(oItem.m_strBody), 0, oItem.m_strBody.length());
+                        }
+                    }
+                    stream.Write(new UTF8Encoding().GetBytes(szMultipartPostfix), 0, szMultipartPostfix.length());
+                }
+                LOG.INFO("write body done");
             }
             finally
             {
