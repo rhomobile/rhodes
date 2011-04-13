@@ -555,6 +555,7 @@ namespace rho.net
 		    copyHashtable(m_OutHeaders, headers);
 
             m_isPullFile = false;
+            m_nCurDownloadSize = 0;
             return resp != null && !m_bCancel ? resp : makeResponse("", Convert.ToInt32(HttpStatusCode.InternalServerError));
 	    }
 	
