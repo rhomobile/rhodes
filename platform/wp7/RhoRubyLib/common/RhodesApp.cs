@@ -102,6 +102,11 @@ namespace rho.common
             //net::CAsyncHttp::Destroy();
         }
 
+        public bool isMainRubyThread()
+        {
+            return m_httpServer.CurrentThread == Thread.CurrentThread;
+        }
+
         void initAppUrls()
         {
             m_strHomeUrl = "http://localhost:2375";
