@@ -535,7 +535,10 @@ namespace rho.net
 	    			    }
 	    		    }finally{
 	    			    if ( file != null )
-	    				    try{ file.close(); }catch(IOException e){}
+	    				    try{ file.close(); }catch(IOException e)
+                            {
+                                LOG.ERROR("file closing failed.", e);
+                            }
 	    		    }
 	            }
 	            else
@@ -563,6 +566,7 @@ namespace rho.net
 		   
             CRhoFile file = null;
 		    NetResponse resp = null;
+            m_isPullFile = true;
 
 		    m_bCancel = false;
     	
@@ -571,9 +575,8 @@ namespace rho.net
 	            if (!strFileName.startsWith("file:")) { 
             	    try{
 	            	    strFileName = CFilePath.join(CRhodesApp.getRhoRootPath(), strFileName);
-            	    } catch (IOException x) { 
-                 	    LOG.ERROR("getDirPath failed.", x);
-                        throw x;
+            	    } catch (IOException e) { 
+                 	    LOG.ERROR("getDirPath failed.", e);
                     }              	
 	            }
 
@@ -588,13 +591,18 @@ namespace rho.net
 		    }finally{
                 if (m_pulledFile != null)
 			    {
-                    m_pulledFile.close();
+                    try { m_pulledFile.close(); }
+                    catch (IOException e)
+                    {
+                        LOG.ERROR("file closing failed.", e);
+                    }
                     m_pulledFile = null;
 			    }
 		    }
 		
 		    copyHashtable(m_OutHeaders, headers);
 
+            m_isPullFile = false;
             return resp != null && !m_bCancel ? resp : makeResponse("", Convert.ToInt32(HttpStatusCode.InternalServerError));
 	    }
 	
