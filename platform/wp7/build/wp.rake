@@ -166,12 +166,17 @@ namespace "run" do
 	namespace "wp" do
 		desc "Build, install .xap and run on WP7 emulator"
 		task :emu => ["device:wp:production"] do
+		if $app_config["productid"] != nil
 			args = []
 			args << $app_config["productid"]
 			args << $app_config["name"]
 			args << $app_path + "/icon/icon.png"
 			args << $targetdir + "/" + $appname + ".xap"
 			puts Jake.run($wp7runner, args)
+		else
+			puts "productid must be set in build.yml"
+			puts "productid's format is {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
+		end
 		end
 	end
 end
