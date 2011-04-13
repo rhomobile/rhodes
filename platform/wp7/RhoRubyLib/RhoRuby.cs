@@ -218,12 +218,6 @@ namespace rho
             return arRes;
         }
 
-        public bool isMainRubyThread()
-        {
-            //TODO: isMainRubyThread
-            return true;
-        }
-
         public String getRhoDBVersion()
         {
             String strVer = "";
