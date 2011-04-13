@@ -16,8 +16,16 @@ public class LocalFileProvider extends ContentProvider
     private static final String TAG = LocalFileProvider.class.getSimpleName();
     public static final String PATH_PREFIX = "/data/data/";
     public static final String PROTOCOL_PREFIX = "content://";
-    public static final String AUTHORITY = "com.rhomobile.rhodes";
 
+    public static boolean isCorrectAuthority(String authority)
+    {
+//        Logger.D(TAG, "Comparing authorities: "
+//                    + RhodesService.getInstance().getClass().getPackage().getName()
+//                    + " vs. " + authority);
+//        return authority.equals(RhodesService.getInstance().getClass().getPackage().getName());
+        return true;
+    }
+    
     public static Uri uriFromLocalFile(File file)
     {
         String path = file.getAbsolutePath();
@@ -26,22 +34,37 @@ public class LocalFileProvider extends ContentProvider
         return Uri.parse(url);
     }
     
-    public static File fileFromUri(Uri uri)
+    public static File fileFromUri(Uri uri) throws IllegalArgumentException
     {
-        return new File(PATH_PREFIX + uri.getAuthority() + uri.getPath());
+        String authority = uri.getAuthority();
+        if(isCorrectAuthority(authority))
+            return new File(PATH_PREFIX + authority + uri.getPath());
+        else throw new IllegalArgumentException("Unknown URI authority: " + authority);
     }
     
     @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        
+    public ParcelFileDescriptor openFile(Uri uri, String mode)
+        throws FileNotFoundException, SecurityException
+    {
         Logger.D(TAG, "Opening content: " + uri);
         
-        File file = fileFromUri(uri);
+        if(!mode.equals("r"))
+        {
+            throw new SecurityException("Unacceptable openFile mode: " + mode);
+        }
         
-        Logger.D(TAG, "Opening content file: " + file.getAbsolutePath());
-        
-        ParcelFileDescriptor parcel = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-        return parcel;
+        try {
+            File file = fileFromUri(uri);
+            
+            Logger.D(TAG, "Opening content file: " + file.getAbsolutePath());
+            
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+        } catch(IllegalArgumentException error)
+        {
+            FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
+            fileError.initCause(error);
+            throw fileError;
+        }
     }
 
     @Override
