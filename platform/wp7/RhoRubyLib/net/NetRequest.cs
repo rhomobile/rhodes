@@ -128,9 +128,15 @@ namespace rho.net
 
             if (response.Cookies != null)
             {
-                CookieContainer container = new CookieContainer();
-                container.Add(new Uri(m_strUrl), response.Cookies);
-                strRes = container.GetCookieHeader(new Uri(m_strUrl));
+                try
+                {
+                    CookieContainer container = new CookieContainer();
+                    container.Add(new Uri(m_strUrl), response.Cookies);
+                    strRes = container.GetCookieHeader(new Uri(m_strUrl));
+                }catch (Exception exc)
+                {
+                    LOG.WARNING("CookieContainer failed: " + exc.ToString());
+                }
             }
 
             if (strRes != null && strRes.Length > 0)
@@ -363,7 +369,10 @@ namespace rho.net
                             {
                                 if (file != null)
                                     try { file.close(); }
-                                    catch (IOException e) { }
+                                    catch (IOException e) 
+                                    {
+                                        LOG.ERROR("GetRequestStreamCallback: file close failed.", e);
+                                    }
                             }
 
                         }
