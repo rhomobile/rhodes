@@ -247,12 +247,12 @@ namespace rho.db
 	public boolean isUIWaitDB(){ return m_bUIWaitDB; }
 	public void Lock()
 	{
-	    if ( RhoRuby.isMainRubyThread() )
+	    if ( RHODESAPP().isMainRubyThread() )
 	        m_bUIWaitDB = true;
 		
 		m_mxDB.Lock();
-		
-	    if ( RhoRuby.isMainRubyThread() )
+
+        if (RHODESAPP().isMainRubyThread())
 	        m_bUIWaitDB = false;
 	}
 	
@@ -517,7 +517,6 @@ namespace rho.db
     public void rb_open(String szDbName, String szDbPartition)
     {
         setDbPartition(szDbPartition);
-        //TODO: openDB
         openDB(szDbName, false);
 
         DBAdapter.getDBPartitions().put(szDbPartition, this);
@@ -666,7 +665,7 @@ namespace rho.db
 			
 		}catch(Exception e)
 		{
-    		LOG.ERROR("execute failed.", e);
+            LOG.ERROR("destroy_table failed.", e);
     		
 			if ( !m_bIsOpen )
 			{
@@ -686,9 +685,8 @@ namespace rho.db
 			} catch (DBException e1) {
 				LOG.ERROR("closing of DB caused exception: " + e1.Message);
 			}
-    		
-			//throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-            //TODO: threw ruby exception
+
+            throw e;
 		}
     }
     

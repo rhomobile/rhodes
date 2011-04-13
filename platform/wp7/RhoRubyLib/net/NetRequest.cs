@@ -50,8 +50,6 @@ namespace rho.net
 	        public String m_strDataPrefix = "";
 	    };
 	
-	    private Object /*IHttpConnection*/ m_connection = null;
-	
 	    private Hashtable<String, String> m_OutHeaders;
 	    public boolean isCancelled(){ return m_bCancel;}
 	
@@ -591,7 +589,7 @@ namespace rho.net
 	    public void cancel()
         {
 		    m_bCancel = true;
-		    closeConnection();
+		    //TODO: cancel current request
         }
 
 	    /*static{
@@ -639,19 +637,6 @@ namespace rho.net
             }
 
             return strRes;
-	    }
-	
-	    public void closeConnection(){
-		    if ( m_connection != null ){
-			    try{
-                    //TODO: close connection
-				    //m_connection.close();
-			    }catch(Exception exc){
-				    LOG.ERROR("There was an error close connection", exc);
-			    }
-		    }
-		
-		    m_connection = null;
 	    }
 
     }

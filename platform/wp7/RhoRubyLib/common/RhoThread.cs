@@ -17,7 +17,9 @@ namespace rho.common
         int m_nState;
         private Thread m_thread = new Thread(runProc);
 	    private Mutex m_syncObj = new Mutex();
-	
+
+        public Thread CurrentThread { get { return m_thread; } }
+
         public CRhoThread()
         {
     	    m_nState = TS_NONE;

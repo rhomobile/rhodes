@@ -57,7 +57,6 @@ namespace rho.db
 	    }
 
 	    public boolean isNonUnique() {
-		    // TODO Auto-generated method stub
 		    return false;
 	    }
 
