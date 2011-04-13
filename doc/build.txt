@@ -751,6 +751,56 @@ To clean all binaries run:
 
 Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 
+### Build experimental Rhodes Win32-emulator based on Qt port of WebKit
+
+Experimental Rhodes Win32-emulator uses WebKit's WebView and WebInspector to display and debug a client part of the Rhodes applications.
+At present the emulator is in active development alfa-stage. The basic functionality is implemented, but some important features are not functioning properly.
+Use it at your own risk!
+
+* Use Visual Studio 2005 Service Pack 1
+* First build the Qt libraries for VS 2005:
+    * Download the Qt source:
+        * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
+        * Choose the open source LGPL version
+        * Under the Framework Only section choose Qt libraries for Windows (VS 2008)
+        * Cancel automatically started download, and download the [source code](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.2.zip)
+        * Extract the downloaded archive, e.g. into `C:\Qt\4.7.2-msvc2005`
+    * Open Control Panel » System » Advanced system settings » Environment Variables and then:
+        * Create new system variable `QTDIR` = `C:\Qt\4.7.2-msvc2005`
+        * Add to the `PATH` variable: `%QTDIR%\bin`
+        * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
+    * Open Visual Studio 2005 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2005 » Visual Studio Tools » Visual Studio 2005 Command Prompt. Run in Visual Studio 2005 Command Prompt:
+
+			> vcvarsall.bat x86
+			> C:
+			> cd \Qt\4.7.2-msvc2005
+			> configure -platform win32-msvc2005
+			> nmake
+
+      Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so). Particularly the `configure` command may run for a few minutes, and the `nmake` command may run for a few hours.
+    * After the build process is completed exit Visual Studio 2005 Command Prompt
+* Check out the experimental `win32-emulator` branch using Git Bash (or alternatively performing the similar actions in some Windows GUI for Git), e.g. into `C:\Rhomobile`:
+
+		$ cd /c/Rhomobile
+		$ git clone git://github.com/rhomobile/rhodes.git
+		$ cd rhodes
+		$ git checkout -f -b win32-emulator --track origin/win32-emulator
+
+* Set your application as a default application for experimental Rhodes SDK:
+    * In `build.yml` of your application specify experimental Rhodes SDK path:
+
+			sdk: "C:/Rhomobile/rhodes"
+  
+    * In Windows Command Prompt run:
+
+			> cd <root-folder-of-your-application>
+			> rake build:win32:devrhobundle
+
+* Build experimental Rhodes Win32-emulator:
+    * In Visual Studio 2005 open the solution: `C:\Rhomobile\rhodes\platform\wm\rhodes\rhodes.vcproj`
+    * Build Solution for “`Debug | Win32`” configuration
+    * Run and enjoy!
+
 ## Build for Windows Phone 7
 
 ### Prerequisites
