@@ -307,7 +307,7 @@ namespace rho.net
 		    				    m_pulledFile.flush();
 		    				    m_nCurDownloadSize += nRead;
 		    			    }
-		    		    }while( !m_bCancel && nRead >= 0 );
+		    		    }while( !m_bCancel && nRead > 0 );
 
                         if (m_code == Convert.ToInt32(HttpStatusCode.OK) || (m_code == Convert.ToInt32(HttpStatusCode.PartialContent) && isFinishDownload(response.Headers["Content-Range"])))
 		    			    m_nCurDownloadSize = 0;
@@ -356,7 +356,7 @@ namespace rho.net
             m_webRequest.CookieContainer = new CookieContainer();
             handleCookie(oSession);
 
-			if ( strBody != null && strBody.length() > 0 )
+            if ((strBody != null && strBody.length() > 0) || m_isPullFile || m_isMultiPart)
 			{
                 if (oSession != null)
                     m_webRequest.ContentType = oSession.getContentType();
@@ -364,18 +364,21 @@ namespace rho.net
                     m_webRequest.ContentType = "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
                 else if (m_isPullFile)
                 {
-                    m_webRequest.Headers["Connection"] = "keep-alive";
-                    m_webRequest.Headers["Range"] = "bytes=" + nRangePos.ToString() + "-";
+                    if (nRangePos > 0)
+                        m_webRequest.Headers["Range"] = "bytes=" + nRangePos.ToString() + "-";
                 }
                 else
                     m_webRequest.ContentType = "application/x-www-form-urlencoded";
 
 				writeHeaders(headers);
                 m_webRequest.Method = strMethod;
-				
-                m_webRequest.BeginGetRequestStream(GetRequestStreamCallback, null);
-                m_reqWaitEvent.Reset();
-                m_reqWaitEvent.WaitOne();
+
+                if (!m_isPullFile)
+                {
+                    m_webRequest.BeginGetRequestStream(GetRequestStreamCallback, null);
+                    m_reqWaitEvent.Reset();
+                    m_reqWaitEvent.WaitOne();
+                }
 			}else
 			{
 				writeHeaders(headers);
@@ -515,8 +518,6 @@ namespace rho.net
 	    int m_nCurDownloadSize = 0;
 	    public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable<String, String> headers )
 	    {
-		   
-            CRhoFile file = null;
 		    NetResponse resp = null;
             m_isPullFile = true;
 
@@ -534,7 +535,7 @@ namespace rho.net
 
                 m_pulledFile = RhoClassFactory.createFile();
                 m_pulledFile.open(strFileName, CRhoFile.EOpenModes.OpenForReadWrite);
-                m_pulledFile.setPosTo(file.size());
+                m_pulledFile.setPosTo(m_pulledFile.size());
 			
 			    do{
                     resp = doRequest("GET", strUrl, null, oSession, headers, m_pulledFile.size());
