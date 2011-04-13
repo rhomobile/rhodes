@@ -56,6 +56,10 @@ namespace rho.rubyext
                 Vector<String> vecExcludes = RhoRuby.makeVectorStringFromArray(arExclude);
 
                 self.m_db.rb_destroy_tables(vecIncludes, vecExcludes);
+
+                //throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+                //TODO: threw ruby exception
+
             }
 
             [RubyMethod("execute")]

@@ -16,7 +16,6 @@ public class RhoLogOutputSink implements IRhoLogSink {
 	}
 	
 	public int getCurPos() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
