@@ -1070,41 +1070,26 @@ public class RhodesService extends Service {
             if(localFile.exists())
                 url = "file://" + RhoFileApi.absolutePath(url);
 
-            Intent intent = null;
+            int intentFlags = 0;
             if (URLUtil.isFileUrl(url))
             {
-                Logger.D(TAG, "This is local file, handle it");
+                Logger.D(TAG, "This is local file, handle it: " + url);
 
                 String path = Uri.parse(url).getPath();
                 File file = new File(path);
                 if(!file.isFile())
-                    throw new URISyntaxException(path, "File not found.");
+                    throw new IllegalArgumentException("Unknown file: " + path);
                 
                 if(path.startsWith(LocalFileProvider.PATH_PREFIX))
                 {
-                    intent = new Intent();
-                    intent.setData(LocalFileProvider.uriFromLocalFile(file));
+                    url = LocalFileProvider.uriFromLocalFile(file).toString();
+                    intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
                 }
-                else
-                    intent = Intent.parseUri(url, 0);
             }
-            else 
-            {
-                intent = Intent.parseUri(url, 0);
-            }
-            
-            String ext = MimeTypeMap.getFileExtensionFromUrl(url);
-            if (ext != null && ext.length() > 0)
-            {
-                String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-                intent.setDataAndType(intent.getData(), mime);
-            }
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
+            Intent intent = Intent.parseUri(url, intentFlags);
             Context ctx = RhodesService.getContext();
             
-            //ActivityInfo info = intent.resolveActivityInfo(ctx.getPackageManager(), 0);
-            //ctx.grantUriPermission(info.packageName, intent.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
             Intent finalIntent = Intent.createChooser(intent, "Open in...");
             ctx.startActivity(finalIntent);
             
