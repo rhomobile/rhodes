@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,9 +31,6 @@ public class LocalFileHandler implements UriHandler
         String path = Uri.parse(url).getPath();
         File file = new File(path);
 
-        if(!file.isFile())
-            throw new IllegalArgumentException("Unknown file: " + path);
-
         if(path.startsWith(LocalFileProvider.PATH_PREFIX))
         {
             url = LocalFileProvider.uriFromLocalFile(file).toString();
@@ -42,8 +38,6 @@ public class LocalFileHandler implements UriHandler
         }
 
         Intent intent = Intent.parseUri(url, intentFlags);
-        Context ctx = RhodesService.getContext();
-
         ctx.startActivity(Intent.createChooser(intent, "Open in..."));
 
         return true;
