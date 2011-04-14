@@ -3,8 +3,12 @@ package com.rhomobile.rhodes;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import com.rhomobile.rhodes.file.RhoFileApi;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -34,6 +38,15 @@ public class LocalFileProvider extends ContentProvider
         return Uri.parse(url);
     }
     
+    public static void revokeUriPermissions(Context ctx)
+    {
+        String rootUri = PROTOCOL_PREFIX + '/' + ctx.getPackageName();
+
+        Logger.I(TAG, "Revoke URI permissions: " + rootUri);
+
+        ctx.revokeUriPermission(Uri.parse(rootUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+    
     public static File fileFromUri(Uri uri) throws IllegalArgumentException
     {
         String authority = uri.getAuthority();
@@ -48,17 +61,21 @@ public class LocalFileProvider extends ContentProvider
     {
         Logger.D(TAG, "Opening content: " + uri);
         
-        if(!mode.equals("r"))
+        if(mode.compareTo("r") != 0)
         {
             throw new SecurityException("Unacceptable openFile mode: " + mode);
         }
         
         try {
-            File file = fileFromUri(uri);
+            File path = fileFromUri(uri);
             
-            Logger.D(TAG, "Opening content file: " + file.getAbsolutePath());
+            Logger.D(TAG, "Opening content file: " + path.getPath());
             
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
+            if(fd == null)
+                throw new IllegalArgumentException();
+            
+            return fd;
         } catch(IllegalArgumentException error)
         {
             FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
