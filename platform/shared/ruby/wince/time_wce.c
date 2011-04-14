@@ -155,6 +155,13 @@ time_t time( time_t *timer )
 	  *timer = t;
 	return *timer;
 }
+#ifdef OS_PLATFORM_CE
+struct tm *__cdecl localtime_s(const time_t *t)
+{
+    return localtime_s(t);
+}
+#endif //OS_PLATFORM_CE
+
 /*
 struct tm *localtime( const time_t *timer )
 {
