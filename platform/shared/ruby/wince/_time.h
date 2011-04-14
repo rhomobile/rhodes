@@ -47,7 +47,7 @@ typedef struct {
 
 time_t mktime(struct tm* pt);
 time_t time( time_t *timer );
-struct tm *localtime(const time_t *ptime);
+struct tm * __cdecl localtime(const time_t *ptime);
 struct tm *gmtime(const time_t *tod);
 char* ctime( const time_t *t );
 char* asctime(const struct tm *tptr);

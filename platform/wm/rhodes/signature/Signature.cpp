@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 #include <aygshell.h>
 #endif
 
 #include <atltime.h>
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 #include <msinkaut_i.c>
 #include <imaging.h>
 #endif
@@ -39,7 +39,7 @@ CRhoTakeSignatureDlg::~CRhoTakeSignatureDlg() {}
 
 LRESULT CRhoTakeSignatureDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (m_pInkOverlay != NULL) {
 		m_pInkOverlay->Release();
 		m_pInkOverlay = NULL;
@@ -50,7 +50,7 @@ LRESULT CRhoTakeSignatureDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, 
 }
 LRESULT CRhoTakeSignatureDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	SetWindowText(_T("Take signature"));
 
 	SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
@@ -220,7 +220,7 @@ LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
 HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 {
 	HRESULT res = S_OK;
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	res = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	if ((res == S_OK) || (res == S_FALSE)) {
 		IImagingFactory* factory=NULL;

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE )
 #include <exdispid.h>
 #include <exdisp.h>
 #endif
@@ -41,7 +41,7 @@ static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE
 static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
 
 class CMainWindow :
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	public CFrameWindowImpl<CMainWindow>, 
 	public CFullScreenFrame<CMainWindow>,
 #else
@@ -254,6 +254,6 @@ private:
     CSyncStatusDlg m_SyncStatusDlg;
 };
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE ) 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
 #endif
