@@ -249,6 +249,26 @@ with
 
 Otherwise your css files will not be loaded in Android 1.5 (and higher)
 
+### Device capabilities settings in build.yml
+
+Attention ! On Android you should specify list of device capabilities need for you application. By default there are not any capabilities enabled !
+This is important because all defined capability produce special <uses-permission ... > lines in AndroidManifest.xml specific to Android platfrom. Without enabled permission application can not access to device functions.
+List of capabilities related to changes in AndroidManifest - add or remove this items in "capabilities" section in your build.yml:
+	audio
+  	camera
+  	gps
+  	network_state
+  	phone
+  	pim
+  	record_audio
+  	vibrate
+  	bluetooth
+  	calendar
+  	sdcard
+  	push
+
+
+
 ### Building app and running it in emulator from the command line
 
 ** NOTE: make sure that your PATH has the path to java bin. **
