@@ -233,18 +233,25 @@ int __cdecl _getdrive (void);
 #define BUFSIZ  512
 
 #if defined(OS_PLATFORM_CE)
-_CRTIMP time_t __cdecl time(time_t *);
-_CRTIMP struct tm * __cdecl localtime(const time_t *);
-_CRTIMP size_t __cdecl strftime(char *, size_t, const char *,
+#ifdef __cplusplus
+extern "C"{
+#endif
+time_t time(time_t *);
+struct tm * __cdecl localtime(const time_t *);
+size_t strftime(char *, size_t, const char *,
 	const struct tm *);
-_CRTIMP struct tm * __cdecl gmtime(const time_t *);
-
-_CRTIMP extern char * tzname[2];
+struct tm * gmtime(const time_t *);
+extern char * tzname[2];
+time_t mktime(struct tm *);
 
 extern int _daylight;
 #define daylight _daylight
 
 extern long _timezone;
+#ifdef __cplusplus
+};
+#endif
+
 #endif
 
 #endif /* _EXT_CE_ */

@@ -179,7 +179,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
         m_spIWebBrowser2->put_StatusBar(VARIANT_FALSE);
 
     //m_spIWebBrowser2->put_Offline(VARIANT_TRUE);
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
     // Create a menubar
     // (mbi was initialized above)
     mbi.hwndParent = m_hWnd;
@@ -221,7 +221,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     MoveWindow(&rcMainWindow);
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 	//Set fullscreen after window resizing
 	if ( RHOCONF().getBool("full_screen"))
    	    SetFullScreen(true);
@@ -558,7 +558,7 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if ( g_hNotify )
 		RegistryCloseNotification(g_hNotify);
 #endif
@@ -613,7 +613,7 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
-#if defined (_WIN32_WCE) 
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 	SetFullScreen(!m_bFullScreen);
 #endif
 	return 0;
@@ -776,7 +776,7 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#ifndef OS_WINDOWS
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
 	RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
 	dlg->openDialog(RhoBluetoothManager::getInstance());
 #endif // OS_WINDOWS
@@ -784,7 +784,7 @@ LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 }
 
 LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#ifndef OS_WINDOWS
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
 	RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
 	dlg->openDialog(RhoBluetoothManager::getInstance());
 #endif // OS_WINDOWS
@@ -922,7 +922,7 @@ BSTR loadLoadingHtml()
 }
 
 void writeToTheDoc (
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
 					IPIEHTMLDocument2 *document
 #else
 					IHTMLDocument2 *document
@@ -964,7 +964,7 @@ void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
     hr = m_spIWebBrowser2->get_Document( &pHtmlDoc );
     if ( SUCCEEDED(hr) )
     {
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 		IPIEHTMLDocument2* pDoc;
 		hr = pHtmlDoc->QueryInterface(__uuidof(IPIEHTMLDocument2),  (void**)&pDoc );
 #else
@@ -1056,7 +1056,7 @@ BOOL CMainWindow::SetToolbarButtonEnabled(UINT uTbbID, BOOL bEnable)
 // **************************************************************************
 BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
-#ifdef OS_WINCE
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
 	if (pMsg->message == WM_CONTEXTMENU){
 		/*
 		CMenuHandle menu;
