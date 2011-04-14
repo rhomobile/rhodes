@@ -257,6 +257,13 @@ Rhodes can display the following error pages: app\E400.erb and app\E500.erb
 
 To get exception object use $! or Rho::RHO.current_exception
 
+## RhoSupport class
+### Rho::RhoSupport.url_encode(url) 
+Encode url replacing special characters to %XX
+
+### Rho::RhoSupport.url_decode(url)
+Decode url replacing %XX to special characters
+
 ## Per Platform Files
 
 On a per platform basis, you can use alternative files for any given file in your 'app' or 'public' folder. To do this, make a second file with the platform in the name of the file. 
