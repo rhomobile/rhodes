@@ -269,8 +269,11 @@ public class RhodesService extends Service {
 		if (Utils.isAppHashChanged()) {
 			try {
 				Log.i(TAG, "Application hash was changed, so remove files");
+				
 				Utils.deleteChildrenIgnoreFirstLevel(new File(getRootPath(), "apps"), "rhoconfig.txt");
 				Utils.deleteRecursively(new File(getRootPath(), "lib"));
+				
+				LocalFileProvider.revokeUriPermissions(context);
 /*				
 				String[] folders = {"apps", "lib"};
 				for (String folder : folders) {
@@ -1068,8 +1071,7 @@ public class RhodesService extends Service {
     {
         try
         {
-            File localFile = new File(url);
-            if(localFile.exists())
+            if(url.charAt(0) == '/')
                 url = "file://" + RhoFileApi.absolutePath(url);
 
             //FIXME: Use common URI handling
@@ -1077,6 +1079,8 @@ public class RhodesService extends Service {
             LocalFileHandler fileHandler = new LocalFileHandler(ctx);
             if(!fileHandler.handle(url))
             {
+                Logger.D(TAG, "Handling URI: " + url);
+
                 Intent intent = Intent.parseUri(url, 0);
                 ctx.startActivity(Intent.createChooser(intent, "Open in..."));
             }
